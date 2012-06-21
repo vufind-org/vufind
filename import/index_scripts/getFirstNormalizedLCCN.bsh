@@ -1,0 +1,75 @@
+import org.marc4j.marc.Record;
+
+// Give ourselves the ability to import other BeanShell scripts
+String vufindHome = System.getenv("VUFIND_HOME");
+String vufindLocal = System.getenv("VUFIND_LOCAL_DIR");
+addClassPath(vufindHome + "/import");
+if (vufindLocal != null) {
+    addClassPath(vufindLocal + "/import");
+}
+importCommands("index_scripts");
+
+// define the base level indexer so that its methods can be called from the script.
+// note that the SolrIndexer code will set this value before the script methods are called.
+org.solrmarc.index.SolrIndexer indexer = null;
+
+/**
+ * Extract the first valid LCCN from a record and return it in a normalized format
+ * with an optional prefix added (helpful for guaranteeing unique IDs)
+ * @param indexer
+ * @param record
+ * @param fieldSpec
+ * @param prefix
+ * @return Normalized LCCN
+ */
+public String getFirstNormalizedLCCN(org.solrmarc.index.SolrIndexer indexer, 
+    Record record, String fieldSpec, String prefix) {
+    // Loop through relevant fields in search of first valid LCCN:
+    Set lccns = indexer.getFieldList(record, fieldSpec);
+    Iterator lccnIter = lccns.iterator();
+    if (lccns != null) {
+        String current;
+        while(lccnIter.hasNext()) {
+            current = getNormalizedLCCN(lccnIter.next());
+            if (current != null && current != false && current.length() > 0) {
+                return prefix + current;
+            }
+        }
+    }
+
+    // If we got this far, we couldn't find a valid value:
+    return null;
+}
+
+/**
+ * Extract the first valid LCCN from a record and return it in a normalized format
+ * with an optional prefix added (helpful for guaranteeing unique IDs)
+ * @param record
+ * @param fieldSpec
+ * @param prefix
+ * @return Normalized LCCN
+ */
+public String getFirstNormalizedLCCN(Record record, String fieldSpec, String prefix) {
+    return getFirstNormalizedLCCN(indexer, record, fieldSpec, prefix);
+}
+
+/**
+ * Extract the first valid LCCN from a record and return it in a normalized format
+ * @param record
+ * @param fieldSpec
+ * @return Normalized LCCN
+ */
+public String getFirstNormalizedLCCN(Record record, String fieldSpec) {
+    // Send in a default prefix if none was provided by the user:
+    return getFirstNormalizedLCCN(indexer, record, fieldSpec, "");
+}
+
+/**
+ * Extract the first valid LCCN from a record and return it in a normalized format
+ * @param record
+ * @return Normalized LCCN
+ */
+public String getFirstNormalizedLCCN(Record record) {
+    // Send in a default fieldSpec/prefix if none were provided by the user:
+    return getFirstNormalizedLCCN(indexer, record, "010a", "");
+}

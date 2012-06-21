@@ -1,0 +1,123 @@
+<?
+// A driver-specific template may pass in format overrides; check for these before going to the driver itself:
+$formats = isset($this->overrideFormats) ? $this->overrideFormats : $this->driver->tryMethod('getFormats');
+if (is_array($formats)) {
+    foreach ($formats as $format) {
+        echo "%0 $format\n";
+    }
+}
+
+$author = $this->driver->tryMethod('getPrimaryAuthor');
+if (!empty($author)) {
+    echo "%A $author\n";
+}
+
+$secondaryAuthors = $this->driver->tryMethod('getSecondaryAuthors');
+if (is_array($secondaryAuthors)) {
+    foreach ($secondaryAuthors as $current) {
+        echo "%E $current\n";
+    }
+}
+
+$pubPlaces = $this->driver->tryMethod('getPlacesOfPublication');
+$pubDates = $this->driver->tryMethod('getPublicationDates');
+$pubNames = $this->driver->tryMethod('getPublishers');
+if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames)) {
+    $total = min(count($pubPlaces), count($pubDates), count($pubNames));
+    // if we have pub dates but no other details, we still want to export the year:
+    if ($total == 0 && count($pubDates) > 0) {
+        $total = 1;
+    }
+    for ($i = 0; $i < $total; $i++) {
+        if (isset($pubNames[$i])) {
+            echo "%I " . rtrim($pubNames[$i], ", ") . "\n";
+        }
+        $date = trim($pubDates[$i], '[]. ');
+        if (strlen($date) > 4) {
+            try {
+                $converter = new VF_Date_Converter();
+                $date = $converter->convertFromDisplayDate('Y', $date);
+            } catch (VF_Date_Exception $e) {
+                // bad date? just ignore it!
+                continue;
+            }
+        }
+        echo "%D $date\n";
+        if (isset($pubPlaces[$i])) {
+            echo "%C " . rtrim(str_replace(array('[', ']'), '', $pubPlaces[$i]), ': '). "\n";
+        }
+    }
+}
+
+$languages = $this->driver->tryMethod('getLanguages');
+if (is_array($languages)) {
+    foreach ($languages as $lang) {
+        echo "%G $lang\n";
+    }
+}
+
+$series = $this->driver->tryMethod('getSeries');
+if (is_array($series)) {
+    foreach ($series as $current) {
+        echo '%B ' . (is_array($current) ? $current['name'] : $current) . "\n";
+    }
+}
+
+$isbns = $this->driver->tryMethod('getISBNs');
+if (is_array($isbns)) {
+    foreach ($isbns as $isbn) {
+        echo "%@ $isbn\n";
+    }
+}
+
+$issns = $this->driver->tryMethod('getISSNs');
+if (is_array($issns)) {
+    foreach ($issns as $issn) {
+        echo "%@ $issn\n";
+    }
+}
+
+$title = rtrim($this->driver->getTitle(), " /");
+echo "%T $title\n";
+
+$journalTitle = $this->driver->tryMethod('getContainerTitle');
+if (!empty($journalTitle)) {
+    echo "%J $journalTitle\n";
+    $volume = $this->driver->tryMethod('getContainerVolume');
+    if (!empty($volume)) {
+        echo "%V $volume\n";
+    }
+    $number = $this->driver->tryMethod('getContainerIssue');
+    if (!empty($number)) {
+        echo "%N $number\n";
+    }
+    $page = $this->driver->tryMethod('getContainerStartPage');
+    if (!empty($page)) {
+        $end = $this->driver->tryMethod('getContainerEndPage');
+        if (!empty($end) && $end != $page) {
+            $page .= '-' . $end;
+        }
+        echo "%P $page\n";
+    }
+}
+
+$urls = $this->driver->tryMethod('getURLs');
+if (is_array($urls)) {
+    foreach (array_keys($urls) as $url) {
+        echo "%U $url\n";
+    }
+}
+
+$edition = $this->driver->tryMethod('getEdition');
+if (!empty($edition)) {
+    echo "%7 $edition\n";
+}
+
+$summary = $this->driver->tryMethod('getSummary');
+if (!empty($summary)) {
+    echo "%X {$summary[0]}\n";
+}
+
+// Record separator:
+echo "\n";
+?>

@@ -1,0 +1,20 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Export Record'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = $this->getLastSearchLink($this->transEsc('Search'), '', '<span>&gt;</span>') .
+        $this->recordLink()->getBreadcrumb($this->driver) . '<span>&gt;</span><em>' . $this->transEsc('Export Record') . '</em>';
+?>
+<?=$this->flashmessages()?>
+<? $exportFormats = $this->record($this->driver)->getExportFormats(); if (count($exportFormats) > 0): ?>
+  <?=$this->transEsc('export_choose_format')?>
+  <ul>
+  <? foreach ($exportFormats as $exportFormat): ?>
+    <li><a href="<?=$this->recordLink()->getUrl($this->driver, 'Export')?>?style=<?=$this->escape($exportFormat)?>"><?=$this->transEsc('Export to')?> <?=$this->escape($exportFormat)?></a></li>
+  <? endforeach; ?>
+  </ul>
+<? else: ?>
+  <?=$this->transEsc('export_no_formats')?>
+<? endif; ?>
+

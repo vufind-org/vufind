@@ -1,0 +1,7 @@
+<ul class="browse" id="list1">
+<? foreach ($this->browseOptions as $item=>$currentOption): ?>
+  <li<? if($currentOption['action'] == $this->currentAction): ?> class="active"<? endif; ?>>
+    <a href="<?=$this->url(array('controller' => 'Browse', 'action' => $currentOption['action']), 'default', true); ?>"><?=$this->transEsc($currentOption['description']) ?></a>
+  </li>
+<? endforeach; ?>
+</ul>

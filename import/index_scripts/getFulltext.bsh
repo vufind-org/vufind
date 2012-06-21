@@ -1,0 +1,170 @@
+/**
+ * Custom full text retrieval script.
+ *
+ * This can be used to override built-in SolrMarc custom functions.  If you change
+ * this script, you will need to activate it in import/marc_local.properties before
+ * it will be applied during indexing.
+ */
+import org.marc4j.marc.Record;
+import org.marc4j.marc.DataField;
+import java.util.regex.Pattern;
+import java.io.*;
+import org.ini4j.Ini;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+/**
+ * Extract full-text from the documents referenced in the tags
+ *
+ * @param Record record
+ * @param String field spec to search for URLs
+ * @param String only harvest files matching this extension (null for all)
+ * @return String The full-text
+ */
+public String getFulltext(Record record, String fieldSpec, String extension) {
+    String result = "";
+
+    // Get the path to Aperture web crawler (and return no text if it is unavailable)
+    String aperturePath = getAperturePath();
+    if (aperturePath == null) {
+        return null;
+    }
+
+    // Loop through the specified MARC fields:
+    Set fields = indexer.getFieldList(record, fieldSpec);
+    Iterator fieldsIter = fields.iterator();
+    if (fields != null) {
+        while(fieldsIter.hasNext()) {
+            // Get the current string to work on:
+            String current = fieldsIter.next();
+            // Filter by file extension
+            if (extension == null || current.endsWith(extension)) {
+                // Load the aperture output for each tag into a string
+                result = result + harvestWithAperture(current, aperturePath);
+            }
+        }
+    }
+    // return string to SolrMarc
+    return result;
+}
+
+/**
+ * Extract full-text from the documents referenced in the tags
+ *
+ * @param Record record
+ * @param String field spec to search for URLs
+ * @return String The full-text
+ */
+public String getFulltext(Record record, String fieldSpec) {
+    return getFulltext(record, fieldSpec, null);
+}
+
+/**
+ * Extract full-text from the documents referenced in the tags
+ *
+ * @param Record record
+ * @return String The full-text
+ */
+public String getFulltext(Record record) {
+    return getFulltext(record, "856u", null);
+}
+
+/**
+ * Extract the Aperture path from fulltext.ini
+ *
+ * @return String          Path to Aperture executables
+ */
+public String getAperturePath() {
+    // Obtain path to Aperture from the fulltext.ini file:
+    Ini ini = new Ini();
+
+    // Find VuFind's home directory in the environment; if it's not available,
+    // try using a relative path on the assumption that we are currently in
+    // VuFind's root directory:
+    String vufindHome = System.getenv("VUFIND_HOME");
+    if (vufindHome == null) {
+        vufindHome = "";
+    }
+
+    String fulltextIniFile = vufindHome + "/web/conf/fulltext.ini";
+    File file = new File(fulltextIniFile);
+    try {
+        ini.load(new FileReader(fulltextIniFile));
+    } catch (Throwable e) {
+        dieWithError("Unable to access " + fulltextIniFile);
+    }
+    String aperturePath = ini.get("Aperture", "webcrawler");
+    if (aperturePath == null) {
+        return null;
+    }
+
+    // Drop comments if necessary:
+    int pos = aperturePath.indexOf(';');
+    if (pos >= 0) {
+        aperturePath = aperturePath.substring(0, pos).trim();
+    }
+
+    // Strip wrapping quotes if necessary (the ini reader won't do this for us):
+    if (aperturePath.startsWith("\"")) {
+        aperturePath = aperturePath.substring(1, aperturePath.length());
+    }
+    if (aperturePath.endsWith("\"")) {
+        aperturePath = aperturePath.substring(0, aperturePath.length() - 1);
+    }
+
+    return aperturePath;
+}
+
+/**
+ * Harvest the contents of a document file (PDF, Word, etc.) using Aperture.
+ * This method will only work if Aperture is properly configured in the
+ * web/conf/fulltext.ini file.  Without proper configuration, this will
+ * simply return an empty string.
+ *
+ * @param String The url extracted from the MARC tag.
+ * @param String The path to Aperture
+ * @return String The full-text
+ */
+public String harvestWithAperture(url, aperturePath) {
+    String plainText = "";
+    // Create temp file.
+    File f = File.createTempFile("apt", ".txt");
+
+    // Delete temp file when program exits.
+    f.deleteOnExit();
+
+    // Construct the command to call Aperture
+    String cmd = aperturePath + " -o " + f.getAbsolutePath().toString()  + " -x " + url;
+
+    // Call Aperture
+    System.out.println("Loading fulltext from " + url + ". Please wait ...");
+    Process p = Runtime.getRuntime().exec(cmd);
+    BufferedReader stdInput = new BufferedReader(new
+        InputStreamReader(p.getInputStream()));
+    while ((s = stdInput.readLine()) != null) {
+        System.out.println(s);
+    }
+    // Wait for Aperture to finish
+    p.waitFor();
+
+    // Parse Aperture XML output
+    DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    DocumentBuilder db = dbf.newDocumentBuilder();
+    Document xmlDoc = db.parse(f);
+    NodeList nl = xmlDoc.getElementsByTagName("plainTextContent");
+    if(nl != null && nl.getLength() > 0) {
+        Node node = nl.item(0);
+        if (node.getNodeType() == Node.ELEMENT_NODE) {
+            plainText = plainText + node.getTextContent();
+        }
+    }
+
+    String badChars = "[^\\u0009\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\\u10000-\\u10FFFF]+";
+    plainText = plainText.replaceAll(badChars, " ");
+
+    return plainText;
+}

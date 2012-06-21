@@ -1,0 +1,28 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Text this'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = $this->getLastSearchLink($this->transEsc('Search'), '', '<span>&gt;</span>') .
+        $this->recordLink()->getBreadcrumb($this->driver) . '<span>&gt;</span><em>' . $this->transEsc('Text this') . '</em>';
+?>
+<?=$this->flashmessages()?>
+<form method="post" action="" name="smsRecord">
+  <input type="hidden" name="id" value="<?=$this->escape($this->driver->getUniqueId())?>" />
+  <input type="hidden" name="source" value="<?=$this->escape($this->driver->getResourceSource())?>" />
+  <label class="span-2" for="sms_to"><?=$this->transEsc('Number')?>:</label>
+  <input id="sms_to" type="text" name="to" value="<?=isset($this->to) ? $this->to : $this->transEsc('sms_phone_number')?>" 
+        onfocus="if (this.value=='<?=$this->transEsc('sms_phone_number')?>') this.value=''" 
+        onblur="if (this.value=='') this.value='<?=$this->transEsc('sms_phone_number')?>'"
+        class="<?=$this->jqueryValidation(array('required'=>'This field is required', 'phoneUS'=>'Invalid phone number.'))?>"/>
+  <br/>
+  <label class="span-2" for="sms_provider"><?=$this->transEsc('Provider')?>:</label>
+  <select id="sms_provider" name="provider" class="<?=$this->jqueryValidation(array('required'=>'This field is required'))?>">
+    <option selected="selected" value=""><?=$this->transEsc('Select your carrier')?></option>
+    <? foreach ($this->carriers as $val => $details): ?>
+      <option<?=(isset($this->provider) && $val == $this->provider) ? ' selected="selected"' : ''?> value="<?=$this->escape($val)?>"><?=$this->escape($details['name'])?></option>
+    <? endforeach; ?>
+  </select>
+  <br/>
+  <input class="button" type="submit" name="submit" value="<?=$this->transEsc('Send')?>"/>
+</form>

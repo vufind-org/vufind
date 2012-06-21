@@ -1,0 +1,25 @@
+<?
+    // This is a text-only email template; do not include HTML!
+
+    // If this record supports real-time status, we'll assume it's a local
+    // resource and display call number/location/title before URL; otherwise,
+    // we'll just show URL and title.  This prioritization is important,
+    // since text messages can be short, and we want the most important stuff
+    // at the top!
+    if ($this->driver->supportsAjaxStatus()) {
+        $holdings = $this->driver->getRealTimeHoldings();
+        $locations = array_keys($holdings);
+        if (isset($locations[0])) {
+            if (isset($holdings[$locations[0]]['items'][0]['callnumber'])) {
+                echo $this->translate('callnumber_abbrev') . ': '
+                    . $holdings[$locations[0]]['items'][0]['callnumber'] . "\n";
+            }
+            echo $this->translate('Location') . ': ' . trim($locations[0]) . "\n";
+        }
+        echo $this->driver->getBreadcrumb() . "\n";
+        echo $this->fullUrl($this->recordLink()->getUrl($this->driver)) . "\n";
+    } else {
+        echo $this->fullUrl($this->recordLink()->getUrl($this->driver)) . "\n";
+        echo $this->driver->getBreadcrumb() . "\n";
+    }
+?>

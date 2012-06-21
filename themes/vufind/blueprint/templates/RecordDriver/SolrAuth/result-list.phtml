@@ -1,0 +1,32 @@
+<?
+    $heading = $this->driver->getTitle();
+    if (empty($heading)) {
+        $heading = $this->translate('Heading unavailable.');
+    }
+    $seeAlso = $this->driver->getSeeAlso();
+    $useFor = $this->driver->getUseFor();
+?>
+<div class="listentry span-15">
+  <div class="resultItemLine1">
+    <a href="<?=$this->url(array('controller' => 'Authority', 'action' => 'Record'), 'default', true)?>?id=<?=urlencode($this->driver->getUniqueId())?>" class="title"><?=$this->escape($heading)?></a>
+  </div>
+
+  <div class="resultItemLine2">
+    <? if (!empty($seeAlso)): ?>
+      <?=$this->transEsc("See also")?>:<br/>
+      <? foreach ($seeAlso as $current): ?>
+        <a href="<?=$this->url(array('controller' => 'Authority', 'action' => 'Search'), 'default', true)?>?lookfor=%22<?=urlencode($current)?>%22&amp;type=MainHeading"><?=$this->escape($current)?></a><br/>
+      <? endforeach; ?>
+    <? endif; ?>
+  </div>
+
+  <div class="resultItemLine3">
+    <? if (!empty($useFor)): ?>
+      <?=$this->transEsc("Use for")?>:<br/>
+      <? foreach ($useFor as $current): ?>
+        <?=$this->escape($current)?><br/>
+      <? endforeach; ?>
+    <? endif; ?>
+  </div>
+</div>
+<div class="clearer"></div>

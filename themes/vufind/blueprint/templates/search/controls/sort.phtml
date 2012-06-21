@@ -1,0 +1,11 @@
+<? $list = $this->results->getSortList(); if (!empty($list)): ?>
+  <form action="<?=$this->url() . $this->results->getUrl()->setSort(null)?>" method="post">
+    <label for="sort_options_1"><?=$this->transEsc('Sort')?></label>
+    <select id="sort_options_1" name="sort" class="jumpMenu">
+      <? foreach ($this->results->getSortList() as $sortType => $sortData): ?>
+        <option value="<?=$this->escape($sortType)?>"<?=$sortData['selected']?' selected="selected"':''?>><?=$this->transEsc($sortData['desc'])?></option>
+      <? endforeach; ?>
+    </select>
+    <noscript><input type="submit" value="<?=$this->transEsc("Set")?>" /></noscript>
+  </form>
+<? endif; ?>

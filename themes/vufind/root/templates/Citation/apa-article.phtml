@@ -1,0 +1,7 @@
+<? if (!empty($this->authors)): ?><?=$this->escape($this->authors)?> <? endif; ?>
+<? if (!empty($this->date)): ?>(<?=$this->escape($this->date)?>). <? endif; ?>
+<?=$this->escape($this->title)?><? if ($this->periodAfterTitle): ?>.<? endif ?> 
+<span style="font-style:italic;"><?=$this->escape($this->journal)?><? if (!empty($this->volume) || !empty($this->issue) || !empty($this->pageRange)): ?>, <? endif; ?>
+<? if (!empty($this->volume)): ?><?=$this->escape($this->volume)?><? endif; ?></span><? if (!empty($this->issue)): ?>(<?=$this->escape($this->issue)?>)<? endif; ?>
+<? if (!empty($this->volume) || !empty($this->issue)): ?>, <? endif; ?>
+<?=$this->escape($this->pageRange)?>. <? if (isset($this->doi)): ?>doi:<?=$this->escape($this->doi)?><? endif; ?>

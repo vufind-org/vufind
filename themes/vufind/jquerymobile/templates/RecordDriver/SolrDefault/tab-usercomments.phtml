@@ -1,0 +1,19 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Comments') . ': ' . $this->driver->getBreadcrumb());
+?>
+<ul class="results comments" data-role="listview" data-split-icon="minus" data-split-theme="d" data-inset="true" data-dividertheme="e">
+  <?=$this->render('record/comments-list.phtml')?>
+</ul>
+
+<form name="commentRecord" id="commentRecord" action="<?=$this->recordLink()->getUrl($this->driver, 'AddComment')?>" method="post" data-ajax="false">
+  <input type="hidden" name="id" value="<?=$this->escape($this->driver->getUniqueId())?>"/>
+  <input type="hidden" name="source" value="<?=$this->escape($this->driver->getResourceSource())?>"/>
+  <div data-role="fieldcontain">
+    <label for="comments_form_comment"><?=$this->transEsc("Your Comment")?>:</label>
+    <textarea id="comments_form_comment" name="comment"></textarea>
+  </div>
+  <div data-role="fieldcontain">
+    <input type="submit" value="<?=$this->transEsc("Add your comment")?>"/>
+  </div>
+</form>

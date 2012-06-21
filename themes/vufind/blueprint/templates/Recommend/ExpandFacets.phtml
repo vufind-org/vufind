@@ -1,0 +1,17 @@
+<?
+    $expandFacetSet = $this->recommend->getExpandedSet();
+    // Get empty search object to use as basis for parameter generation below:
+    $blankResults = new VF_Search_Solr_Results(new VF_Search_Solr_Params());
+?>
+<? if ($expandFacetSet): ?>
+  <div class="sidegroup">
+ <? foreach ($expandFacetSet as $title=>$cluster): ?>
+    <h4><?=$this->translate($cluster['label']) ?></h4>
+    <ul class="bulleted">
+  <? foreach ($cluster['list'] as $thisFacet): ?>
+    <li><a href="<?=$this->url(array('controller'=>'Search','action'=>'Results'),'default',true) . $blankResults->getUrl()->addFacet($title, $thisFacet['value'])?>"><?=$this->escape($thisFacet['displayText'])?></a></li>
+  <? endforeach; ?>
+    </ul>
+ <? endforeach; ?>
+  </div>
+<? endif; ?>

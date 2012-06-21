@@ -1,0 +1,46 @@
+#! /bin/bash
+# getz3950
+# Get specific record(s) over a z3950 connection
+# $Id: getz3950
+
+E_BADARGS=65
+
+scriptdir=$( (cd -P $(dirname $0) && pwd) )
+if ! [ -e $scriptdir/MarcFetch.jar ] 
+then
+  scriptdir=$( (cd -P $(dirname $0)/.. && pwd) )
+fi
+if ! [ -e $scriptdir/MarcFetch.jar ] 
+then
+  echo "Error:  Optional MarcFetch.jar not found in the SolrMarc distribution directory. (exiting)"
+  exit 1
+fi
+
+server=
+
+if ! [ -p /dev/stdin ]
+then  
+  if [ $# -eq 0 ]
+  then
+    echo "    Usage: `basename $0` url_of_z3950_server:port id1 id2 id3 id4 id5 ..."
+    echo "    Usage: `basename $0` url_of_z3950_server:port file_with_list_of_ids.txt"
+    echo "    Usage: cat file_with_list_of_ids.txt  | `basename $0` url_of_z3950_server:port -"
+    
+    exit $E_BADARGS
+  fi
+  if  [ "`echo $1 | egrep '[A-Za-z0-9]+[.][A-Za-z0-9]+[.][A-Za-z0-9]+[.][A-Za-z0-9]+:[0-9]+'`" != "" ]
+  then
+    server=$1
+    shift
+  fi
+else
+  if [ "`echo $1 | egrep '[A-Za-z0-9]+[.][A-Za-z0-9]+[.][A-Za-z0-9]+[.][A-Za-z0-9]+:[0-9]+'`" != "" ]
+  then
+    server=$1
+    shift
+  fi
+fi
+
+java -Dsolrmarc.main.class="org.solrmarc.z3950.Z3950MarcReader" -jar $scriptdir/MarcFetch.jar $server $*
+
+exit 0

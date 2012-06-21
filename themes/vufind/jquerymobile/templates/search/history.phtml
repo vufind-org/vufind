@@ -1,0 +1,28 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Search History'));
+?>
+<div data-role="page" id="Search-history">
+  <?=$this->mobileMenu()->header()?>
+  <div data-role="content">
+    <? if (!empty($this->saved) || !empty($this->unsaved)): ?>
+      <? if (!empty($this->saved)): ?>
+        <ul class="results history" data-role="listview" data-dividertheme="e" data-split-icon="minus" data-split-theme="c" data-inset="true">
+          <li data-role="list-divider"><?=$this->transEsc("history_saved_searches")?></li>
+          <?=$this->context()->renderInContext('search/history-table.phtml', array('showSaved' => true));?>
+        </ul>
+      <? endif; ?>
+
+      <? if (!empty($this->unsaved)): ?>
+        <ul class="results history" data-role="listview" data-dividertheme="e" data-split-icon="plus" data-split-theme="c" data-inset="true">
+          <li data-role="list-divider"><?=$this->transEsc("history_recent_searches")?></li>
+          <?=$this->context()->renderInContext('search/history-table.phtml', array('showSaved' => false));?>
+        </ul>
+        <a rel="external" href="?purge=true" data-role="button"><?=$this->transEsc("history_purge")?></a>
+      <? endif; ?>
+    <? else: ?>
+      <p><?=$this->transEsc("history_no_searches")?></p>
+    <? endif; ?>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

@@ -1,0 +1,11 @@
+<?
+// Convert Summon formats to EndNote formats:
+$formats = $this->driver->getFormats();
+foreach ($formats as $i => $format) {
+    $formats[$i] = VF_Summon::getEndnoteFormat($format);
+}
+
+// Use the default template, but override the formats:
+$this->overrideFormats = $formats;
+echo $this->render('RecordDriver/Base/export-endnote.phtml');
+?>

@@ -1,0 +1,21 @@
+<form action="<?=$this->url(array('controller' => 'MyResearch', 'action' => 'Delete'), 'default', true)?>" method="post" name="bulkDelete">
+  <div id="popupMessages"><?=$this->flashmessages()?></div>
+  <div id="popupDetails">
+    <? if (!$this->list): ?>
+      <div class="info"><?=$this->transEsc("fav_delete_warn") ?></div>
+    <? else: ?>
+      <h2><?=$this->transEsc("List") ?>: <?=$this->escape($this->list->title) ?></h2>
+    <? endif; ?>
+    
+    <? foreach ($this->records as $favorite): ?>
+      <strong><?=$this->translate('Title') ?>:</strong>
+      <?=$this->escape($favorite->getBreadcrumb())?><br />
+    <? endforeach; ?>
+    <br />
+    <input class="submit" type="submit" name="submit" value="<?=$this->transEsc('Delete')?>"/>
+    <? foreach ($this->deleteIDS as $deleteID): ?>
+      <input type="hidden" name="ids[]" value="<?=$this->escape($deleteID)?>" />
+    <? endforeach; ?>
+      <input type="hidden" name="listID" value="<?=$this->list?$this->escape($this->list->id):''?>" />
+  </div>
+</form>

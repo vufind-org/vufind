@@ -1,0 +1,8 @@
+<? $summonDatabases = $this->recommend->getResults(); if (!empty($summonDatabases)): ?>
+<div class="authorbox">
+  <p><?=$this->transEsc('summon_database_recommendations')?></p>
+  <? foreach ($summonDatabases as $current): ?>
+    <p><a href="<?=$this->escape($current['link'])?>"><?=$this->escape($current['title'])?></a><br/><?=$this->escape($current['description'])?></p>
+  <? endforeach; ?>
+</div>
+<? endif; ?>

@@ -1,0 +1,71 @@
+<?
+  // Set page title.
+  $this->headTitle($this->translate('Advanced Search'));
+  // Set default value if necessary:
+  if (!isset($this->searchClassId)) {
+    $this->searchClassId = 'Solr';
+  }
+  // Load search actions and settings (if any):
+  $options = $this->searchOptions($this->searchClassId);
+  $basicSearch = $options->getSearchAction();
+  $searchHome = $basicSearch;
+  $searchHome['action'] = 'Home';
+  $advSearch = $options->getAdvancedSearchAction();
+  $lastSort = $options->getLastSort();
+  $lastLimit = $options->getLastLimit();
+?>
+<div data-role="page" id="Search-home">
+  <?=$this->mobileMenu()->header(array('hideSearchLink' => true))?>
+  <div data-role="content">
+    <? if (VF_Connection_Manager::connectToCatalog()->getOfflineMode() == "ils-offline"): ?>
+      <div class="sysInfo">
+        <h2><?=$this->transEsc('ils_offline_title')?></h2>
+        <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
+        <p><?=$this->transEsc('ils_offline_home_message')?></p>
+        <? $supportEmail = $this->escape(VF_Config_Reader::getConfig()->Site->email); ?>
+        <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
+      </div>
+    <? endif; ?>
+    <!-- SEARCH BOXES -->
+    <form method="get" action="<?=$this->url($basicSearch, 'default', true)?>" data-ajax="false">
+      <fieldset class="ui-grid-a">
+      <? for ($i = 0; $i < 3; $i++): ?>
+        <div class="ui-block-a">
+          <label class="offscreen" for="searchForm_lookfor">
+            <?=$this->transEsc("Search")?>
+          </label>
+          <input id="search_lookfor0" type="text" name="lookfor0[]" style="margin-top:.5em;height:28px"/>
+        </div>
+        <div class="ui-block-b">
+          <select id="searchForm_type" name="type0[]" data-mini="true">
+            <? foreach ($options->getBasicHandlers() as $searchVal => $searchDesc): ?>
+              <option value="<?=$this->escape($searchVal)?>"<?=$this->searchIndex == $searchVal ? ' selected="selected"' : ''?>><?=$this->transEsc($searchDesc)?></option>
+            <? endforeach; ?>
+          </select>
+        </div>
+      <? endfor; ?>
+        <div class="ui-block-a"><hr/></div><div class="ui-block-b"><hr/></div>
+        <div class="ui-block-a">
+          <select id="search_bool0" name="bool0[]">
+            <option value="AND"><?=$this->transEsc("search_match")?>: <?=$this->transEsc('search_AND') ?></option>
+            <option value="OR" ><?=$this->transEsc("search_match")?>: <?=$this->transEsc('search_OR')  ?></option>
+            <option value="NOT"><?=$this->transEsc("search_match")?>: <?=$this->transEsc('search_NOT') ?></option>
+          </select>
+        </div>
+        <div class="ui-block-b">
+          <input type="submit" name="submit" value="<?=$this->transEsc("Find")?>" data-role="button" data-theme="b"/>
+        </div>
+      </fieldset>
+      <?
+        /* Load hidden limit preference from Session */
+        if (!empty($lastLimit)) {
+          echo '<input type="hidden" name="limit" value="' . $this->escape($lastLimit) . '" />';
+        }
+        if (!empty($lastSort)) {
+          echo '<input type="hidden" name="sort" value="' . $this->escape($lastSort) . '" />';
+        }
+      ?>
+    </form>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

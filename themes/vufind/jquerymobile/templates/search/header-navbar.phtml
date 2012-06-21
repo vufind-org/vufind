@@ -1,0 +1,18 @@
+<? if ($this->action == 'history'): // use myresearch navbar for Search/history ?>
+  <?=$this->render('myresearch/header-navbar.phtml')?>
+<? elseif (isset($this->results) && $this->results->getResultTotal() > 0): ?>
+  <div data-role="navbar">
+    <ul>
+      <li><a href="#Search-narrow" data-rel="dialog" data-transition="flip"><?=$this->transEsc('Narrow Search')?></a></li>
+      <li>
+        <? if (isset($this->results) && is_numeric($this->results->getSearchId())): ?>
+          <? if ($this->results->isSavedSearch()): ?>
+            <a rel="external" href="<?=$this->url(array('controller' => 'MyResearch', 'action' => 'SaveSearch'), 'default')?>?delete=<?=urlencode($this->results->getSearchId())?>"><?=$this->transEsc('save_search_remove')?></a>
+          <? else: ?>
+            <a rel="external" href="<?=$this->url(array('controller' => 'MyResearch', 'action' => 'SaveSearch'), 'default')?>?save=<?=urlencode($this->results->getSearchId())?>"><?=$this->transEsc('save_search')?></a>
+          <? endif; ?>
+        <? endif; ?>
+      </li>
+    </ul>
+  </div>
+<? endif; ?>

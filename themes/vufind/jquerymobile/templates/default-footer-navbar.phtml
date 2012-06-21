@@ -1,0 +1,11 @@
+<div data-role="navbar">
+  <ul>
+    <li><a data-rel="dialog" href="#Language-dialog" data-transition="pop"><?=$this->transEsc('Language')?></a></li>
+    <? if (is_object($this->account) && $this->account->loginEnabled()): // hide login/logout if unavailable ?>
+      <li><a rel="external" href="<?=$this->url(array('controller' => 'MyResearch'), 'default', true)?>"><?=$this->transEsc('Account')?></a></li>
+    <? endif; ?>
+    <? if ($this->account->isLoggedIn()): ?>
+      <li><a rel="external" href="<?=$this->url(array('controller' => 'MyResearch', 'action' => 'Logout'), 'default', true)?>"><?=$this->transEsc("Log Out")?></a></li>
+    <? endif; ?>
+  </ul>
+</div>

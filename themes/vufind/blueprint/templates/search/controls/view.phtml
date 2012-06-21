@@ -1,0 +1,13 @@
+<div class="viewButtons">
+<? $viewList = $this->results->getViewList(); if (count($viewList) > 1): ?>
+  <? foreach ($viewList as $viewType => $viewData): ?>
+    <? if (!$viewData['selected']): ?>
+      <a href="<?=$this->results->getUrl()->setViewParam($viewType)?>" title="<?=$this->transEsc('Switch view to')?> <?=$this->transEsc($viewData['desc'])?>" >
+    <? endif; ?>
+    <img <? if ($viewData['selected']): ?>class="selected" <? endif; ?>src="<?=$this->imageLink('view_' . $viewType . '.png')?>"<?=$viewData['selected'] ? ' title="' . $this->transEsc($viewData['desc']) . ' ' . $this->transEsc('view already selected') . '"' : ''?> alt="<?=$this->transEsc($viewData['desc'])?>" />
+    <? if (!$viewData['selected']): ?>
+      </a>
+    <? endif; ?>
+  <? endforeach; ?>
+<? endif; ?>
+</div>

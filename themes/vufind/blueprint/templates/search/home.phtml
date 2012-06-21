@@ -1,0 +1,66 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Search Home'));
+
+    // Disable top search box -- this page has a special layout.
+    $this->layout()->searchbox = false;
+
+    // Set default value if necessary:
+    if (!isset($this->searchClassId)) {
+        $this->searchClassId = 'Solr';
+    }
+
+    // Load search actions and settings (if any):
+    $options = $this->searchOptions($this->searchClassId);
+    $basicSearch = $options->getSearchAction();
+    $advSearch = $options->getAdvancedSearchAction();
+?>
+<div class="searchHomeContent">
+  <? if (VF_Connection_Manager::connectToCatalog()->getOfflineMode() == "ils-offline"): ?>
+    <div class="sysInfo">
+      <h2><?=$this->transEsc('ils_offline_title')?></h2>
+      <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
+      <p><?=$this->transEsc('ils_offline_home_message')?></p>
+      <? $supportEmail = $this->escape(VF_Config_Reader::getConfig()->Site->email); ?>
+      <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
+    </div>
+  <? endif; ?>
+  <div class="searchHomeForm">
+    <?=$this->render("search/searchbox.phtml")?>
+  </div>
+</div>
+
+<? $facetList = is_object($this->results) ? $this->results->getFacetList() : array(); if (isset($facetList) && is_array($facetList)): ?>
+<div class="searchHomeBrowse">
+  <? foreach ($facetList as $field => $details): ?>
+    <? $currentWidth = ($field == 'callnumber-first') ? 10 : 5;?>
+    <h2 class="span-<?=$currentWidth?>"><?=$this->transEsc('home_browse') . ' ' . $this->transEsc($details['label'])?></h2>
+  <? endforeach; ?>
+  <div class="clearer"><!-- empty --></div>
+  <? foreach ($facetList as $field => $details): ?>
+    <ul class="span-5">
+      <? $sortedList = $this->sortFacetList($this->results, $field, $details['list'], $basicSearch); ?>
+      <? /* Special case: two columns for LC call numbers... */ ?>
+      <? if ($field == "callnumber-first"): ?>
+        <? $i = 0; foreach ($sortedList as $url => $value): ?>
+          <li><a href="<?=$url?>"><?=$this->escape($value)?></a></li>
+          <? if (++$i == 10): ?>
+            </ul>
+            <ul class="span-5">
+          <? endif; ?>
+        <? endforeach; ?>
+      <? else: ?>
+        <? $i = 0; foreach ($sortedList as $url => $value): ?>
+          <? if (++$i > 12): ?>
+            <li><a href="<?=$this->url($advSearch, 'default')?>"><strong><?=$this->transEsc("More options")?>...</strong></a></li>
+            <? break; ?>
+          <? else: ?>
+            <li><a href="<?=$url?>"><?=$this->escape($value)?></a></li>
+          <? endif; ?>
+        <? endforeach; ?>
+      <? endif; ?>
+    </ul>
+  <? endforeach; ?>
+  <div class="clear"></div>
+</div>
+<? endif; ?>

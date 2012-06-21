@@ -1,0 +1,46 @@
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('Login'));
+
+    // Convenience variables:
+    $hideLogin = !(is_object($this->account) && $this->account->loginEnabled());
+    $offlineMode = VF_Connection_Manager::connectToCatalog()->getOfflineMode();
+?>
+<div data-role="page" id="MyResearch-login">
+  <?=$this->mobileMenu()->header()?>
+  <div data-role="content">
+    <? if ($offlineMode == "ils-offline"): ?>
+      <div class="sysInfo">
+        <h2><?=$this->transEsc('ils_offline_title')?></h2>
+        <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
+        <p><?=$this->transEsc('ils_offline_login_message')?></p>
+        <? $supportEmail = $this->escape(VF_Config_Reader::getConfig()->Site->email); ?>
+        <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
+      </div>
+    <? elseif ($hideLogin): ?>
+      <div class="error"><?=$this->transEsc('login_disabled')?></div>
+    <? endif; ?>
+
+    <? if (!$hideLogin): ?>
+      <h3><?=$this->transEsc('Login')?></h3>
+      <?=$this->flashmessages()?>
+      <? if (!$this->account->getSessionInitiator()): // display default login form if no login URL provided ?>
+        <form method="post" action="<?=$this->url(array('controller' => 'MyResearch'), 'default', true)?>" name="loginForm" data-ajax="false">
+          <div data-role="fieldcontain">
+            <?=$this->auth()->getLoginFields()?>
+          </div>
+          <div data-role="fieldcontain">
+            <input type="submit" name="processLogin" value="<?=$this->transEsc('Login')?>"/>
+          </div>
+        </form>
+        <? if ($this->account->supportsCreation()): ?>
+          <a rel="external" data-role="button" class="new_account" href="<?=$this->url(array('controller' => 'MyResearch', 'action' => 'Account'), 'default')?>"><?=$this->transEsc('Create New Account')?></a>
+        <? endif; ?>
+      <? else: ?>
+        <a rel="external" data-role="button" href="<?=$this->escape($this->account->getSessionInitiator())?>"><?=$this->transEsc("Institutional Login")?></a>
+      <? endif; ?>
+    <? endif; ?>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>
+

@@ -1,0 +1,48 @@
+<?
+  // Set page title.
+  $this->headTitle($this->details['title']);
+  // More style
+  $this->headLink()->appendStylesheet('vudl.css');
+  $BACK_LINK = array(
+    'extraButtons'=>array('<a href="#grid" data-icon="arrow-l">'.$this->transEsc("navigate_back").'</a>')
+  );
+?>
+<div data-role="page" id="grid">
+  <?=$this->mobileMenu()->header()?>
+  <div data-role="content" class="ui-grid-c">
+    <? $i=0; foreach ($this->pages as $page): ?>
+      <div class="thumbnail ui-block-<?=substr('abcd', $i%4, 1) ?>">
+        <a href="#flow<?=$i ?>">
+            <span class="label"><?=$page['label'] ?></span>
+            <img src="<?=$page['thumbnail'] ?>" />
+        </a>
+      </div>
+    <? $i++; endforeach; ?>
+    <? foreach ($this->docs as $doc): ?>
+      <div class="thumbnail ui-block-<?=substr('abcd', $i%4, 1) ?>">
+        <a target="_new" href="<?=$doc['src'] ?>" class="label"><?=$doc['label'] ?></a>
+        <a target="_new" href="<?=$doc['src'] ?>" class="<?=$doc['img'] ?>"></a>
+      </div>
+    <? $i++; endforeach; ?>
+  </div>
+</div>
+<? foreach ($this->pages as $i=>$page): ?>
+  <div data-role="page" id="flow<?=$i ?>">
+    <?=$this->mobileMenu()->header($BACK_LINK)?>
+    <div data-role="content" class="content">  
+      <div class="ui-grid-a">
+        <div class="ui-block-a">
+          <? if($i > 0): ?>
+            <a data-role="button" data-theme="b" data-icon="arrow-l" href="#flow<?=($i-1)?>">Prev</a>
+          <? endif; ?>
+        </div>
+        <div class="ui-block-b">
+          <? if($i < count($this->pages)-1): ?>
+            <a data-role="button" data-theme="b" data-icon="arrow-r" data-iconpos="right" href="#flow<?=($i+1)?>">Next</a>
+          <? endif; ?>
+        </div>
+      </div>
+      <a href="<?=$this->pages[$i]['large'] ?>" class="preview"><img src="<?=$this->pages[$i]['medium'] ?>"/></a>
+    </div>
+  </div>
+<? endforeach; ?>

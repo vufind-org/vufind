@@ -1,0 +1,54 @@
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('Login'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<a href="' .
+        $this->url(array('controller' => 'MyResearch', 'action' => 'Home'), 'default', true) .
+        '">' . $this->transEsc('Your Account') . '</a>' . '<span>&gt;</span><em>' .
+        $this->transEsc('Login') . '</em>';
+
+    // If we're in AJAX mode, load some extra Javascript inline:
+    if ($this->layout()->getLayout() == 'lightbox') {
+        echo $this->inlineScript()->appendFile("rc4.js");
+    }
+
+    // Convenience variables:
+    $hideLogin = !(is_object($this->account) && $this->account->loginEnabled());
+    $offlineMode = VF_Connection_Manager::connectToCatalog()->getOfflineMode();
+?>
+
+<? if ($offlineMode == "ils-offline"): ?>
+  <div class="sysInfo">
+    <h2><?=$this->transEsc('ils_offline_title')?></h2>
+    <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
+    <p><?=$this->transEsc('ils_offline_login_message')?></p>
+    <? $supportEmail = $this->escape(VF_Config_Reader::getConfig()->Site->email); ?>
+    <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
+  </div>
+<? endif; ?>
+
+<h2><?=$this->transEsc('Login')?></h2>
+<?=$this->flashmessages()?>
+
+<? if ($hideLogin): ?>
+  <div class="error"><?=$this->transEsc('login_disabled')?></div>
+<? else: ?>
+  <? if (!$this->account->getSessionInitiator()): // display default login form if no login URL provided ?>
+    <form method="post" action="<?=$this->url(array('controller' => 'MyResearch'), 'default', true)?>" name="loginForm" id="loginForm">
+      <?=$this->auth()->getLoginFields()?>
+      <input class="push-2 button" type="submit" name="processLogin" value="<?=$this->transEsc('Login')?>"/>
+      <div class="clear"></div>
+    </form>
+    <?
+      // Set up form validation:
+      $initJs = '$(document).ready(function() { $(\'#loginForm\').validate(); });';
+      echo $this->inlineScript(Zend_View_Helper_HeadScript::SCRIPT, $initJs);
+    ?>
+    <? if ($this->account->supportsCreation()): ?>
+      <a class="new_account" href="<?=$this->url(array('controller' => 'MyResearch', 'action' => 'Account'), 'default')?>"><?=$this->transEsc('Create New Account')?></a>
+    <? endif; ?>
+  <? else: ?>
+    <a href="<?=$this->escape($this->account->getSessionInitiator())?>"><?=$this->transEsc("Institutional Login")?></a>
+  <? endif; ?>
+<? endif; ?>

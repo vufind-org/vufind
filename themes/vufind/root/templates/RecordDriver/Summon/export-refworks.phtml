@@ -1,0 +1,11 @@
+<?
+// Convert Summon formats to RefWorks formats:
+$formats = $this->driver->getFormats();
+foreach ($formats as $i => $format) {
+    $formats[$i] = VF_Summon::getRefWorksFormat($format);
+}
+
+// Use the default template, but override the formats:
+$this->overrideFormats = $formats;
+echo $this->render('RecordDriver/Base/export-refworks.phtml');
+?>

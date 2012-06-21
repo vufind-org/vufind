@@ -1,0 +1,63 @@
+<?
+    $this->headTitle($this->translate('Browse the Catalog'));
+    $this->layout()->breadcrumbs = '<a href="' .
+        $this->url(array('controller' => 'Browse', 'action' => 'Home'), 'default', true) .
+        '">' . $this->transEsc('Browse') . '</a>';
+
+    $BROWSE_BASE = $this->url(array('controller' => 'Browse', 'action' => $this->currentAction), 'default', true);
+    $SEARCH_BASE = ($this->currentAction == 'Tag')
+        ? $this->url(array('controller' => 'Tag', 'action' => 'Home'), 'default', true)
+        : $this->url(array('controller' => 'Search', 'action' => 'Results'), 'default', true);
+?>
+
+<? if (!isset($this->currentAction)): ?>
+    <h2><?=$this->transEsc('Choose a Category to Begin Browsing') ?>:</h2>
+<? endif; ?>
+
+<div class="span-5 browseNav">
+    <?=$this->render('browse/top_list.phtml'); ?>
+</div>
+
+<? if (!empty($this->categoryList)): ?>
+<div class="span-5 browseNav">
+  <ul class="browse" id="list2">
+  <? foreach($this->categoryList as $findby=>$category): ?>
+        <li<? if ($this->findby == $findby): ?> class="active"<? endif; ?>>
+            <a href="<?=$BROWSE_BASE ?>?findby=<?=urlencode($findby) ?>&query_field=<?=$this->browse()->getSolrField($findby, $this->currentAction) ?>"><?=$this->transEsc($category)/*html*/?></a>
+        </li>
+    <? endforeach; ?>
+    </ul>
+</div>
+<? endif; ?>
+
+<? if (!empty($this->secondaryList)): ?>
+<div class="span-5 browseNav">
+  <ul class="browse" id="list3">
+  <? foreach($this->secondaryList as $secondary): ?>
+    <li<? if ($this->query == $secondary['value'].'' || $this->query == $secondary['value'].'*'): ?> class="active"<? endif; ?>>
+            <? if (!empty($this->categoryList) && $this->currentAction != 'Tag' && $this->findby != 'alphabetical'):?>
+                <a href="<?=$SEARCH_BASE ?>?lookfor=<? if ($this->filter): ?>&filter[]=<?=urlencode($this->filter) ?>%3A<?=str_replace('+AND+','&filter[]=', urlencode($secondary['value'])) ?><? endif; ?>&filter[]=<?=$this->browse()->getSolrField($this->currentAction) ?>%3A[* TO *]" class="viewRecords"><?=$this->transEsc('View Records') ?></a>
+            <? endif; ?>
+      <a href="<?=$BROWSE_BASE ?>?findby=<?=urlencode($this->findby) ?>&category=<?=urlencode($this->category) ?>&query=<?=urlencode($secondary['value']) ?><? if ($this->facetPrefix): ?>&facet_prefix=<?=urlencode($secondary['displayText']) ?><? endif; ?><? if ($this->secondaryParams): foreach($this->secondaryParams as $var=>$val): ?>&<?=$var ?>=<?=urlencode($val) ?><? endforeach;endif; ?>"><?=$this->escape($secondary['displayText']) ?><? if ($this->findby != 'alphabetical'): ?> (<?=$secondary['count'] ?>)<? endif; ?></a>    </li>
+  <? endforeach; ?>
+  </ul>
+</div>
+<? endif; ?>
+
+<? if (!empty($this->resultList)): ?>
+<div class="span-5 browseNav">
+    <ul class="browse" id="list4">
+    <? foreach($this->resultList as $result): ?>
+        <li><a href="<?=$SEARCH_BASE ?>?<?=$this->paramTitle ?><?=urlencode($result['result']) ?><? if ($this->searchParams): foreach($this->searchParams as $var=>$val): ?>&<?=$var ?>=<?=urlencode($val) ?><? endforeach;endif; ?>"><?=$this->escape($result['result'])/*html*/?> (<?=$result['count'] ?>)</a></li>
+    <? endforeach; ?>
+    </ul>
+</div>
+<? elseif (isset($this->query)): ?>
+<div class="span-5 browseNav">
+    <ul class="browse" id="list4">
+        <li><a href=""><?=$this->transEsc('nohit_heading') ?></a></li>
+    </ul>
+</div>
+<? endif; ?>
+
+<div class="clear"></div>

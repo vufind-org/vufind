@@ -1,0 +1,16 @@
+<? $this->info = $this->recommend->getAuthorInfo() ?>
+<? if (!empty($this->info)): ?>
+<div class="authorbio">
+  <h2><?=$this->info['name'] ?></h2>
+
+  <? if (isset($this->info['image'])): ?>
+    <img src="<?=$this->info['image'] ?>" alt="<?=$this->escape($this->info['altimage']) ?>" width="150px" class="alignleft recordcover"/>
+  <? endif; ?>
+
+  <?=$this->truncate(preg_replace('/___baseurl___/', $this->url(array('controller' => 'Search', 'action' => 'Results'), 'default', true), $this->info['description']), 4500, "...") ?>
+
+  <div class="providerLink"><a class="wikipedia" href="http://<?=$this->info['wiki_lang'] ?>.wikipedia.org/wiki/<?=$this->escape($this->info['name']/*url*/) ?>" target="new"><?=$this->translate('wiki_link') ?></a></div>
+
+  <div class="clear"></div>
+</div>
+<? endif; ?>

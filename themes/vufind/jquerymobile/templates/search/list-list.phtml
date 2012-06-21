@@ -1,0 +1,5 @@
+<ul class="results" data-role="listview" data-split-icon="plus" data-split-theme="c">
+  <? foreach ($this->results->getResults() as $current): ?>
+    <li><?=$this->record($current)->getSearchResult('list')?></li>
+  <? endforeach; ?>
+</ul>

@@ -1,0 +1,51 @@
+import org.marc4j.marc.Record;
+
+// Give ourselves the ability to import other BeanShell scripts
+String vufindHome = System.getenv("VUFIND_HOME");
+String vufindLocal = System.getenv("VUFIND_LOCAL_DIR");
+addClassPath(vufindHome + "/import");
+if (vufindLocal != null) {
+    addClassPath(vufindLocal + "/import");
+}
+importCommands("index_scripts");
+
+// define the base level indexer so that its methods can be called from the script.
+// note that the SolrIndexer code will set this value before the script methods are called.
+org.solrmarc.index.SolrIndexer indexer = null;
+
+/**
+ * Extract LCCNs from a record and return them in a normalized format
+ * @param record
+ * @param fieldSpec
+ * @return Set of normalized LCCNs
+ */
+public Set getNormalizedLCCNs(Record record, String fieldSpec) {
+    // Initialize return value:
+    Set result = new LinkedHashSet();
+
+    // Loop through relevant fields and normalize everything:
+    Set lccns = indexer.getFieldList(record, fieldSpec);
+    Iterator lccnIter = lccns.iterator();
+    if (lccns != null) {
+        String current;
+        while(lccnIter.hasNext()) {
+            current = getNormalizedLCCN(lccnIter.next());
+            if (current != null && current != false && current.length() > 0) {
+                result.add(current);
+            }
+        }
+    }
+
+    // Send back results:
+    return result;
+}
+
+/**
+ * Extract LCCNs from a record and return them in a normalized format
+ * @param record
+ * @return Set of normalized LCCNs
+ */
+public Set getNormalizedLCCNs(Record record) {
+    // Send in a default fieldSpec if none was provided by the user:
+    return getNormalizedLCCNs(record, "010a");
+}

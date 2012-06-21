@@ -1,0 +1,25 @@
+<?
+    // Grab tab contents up front -- this will set the page title, which we need to
+    // do before we display the page header below.
+    $tab = $this->record($this->driver)->getTab($this->tab);
+?>
+<div data-role="page" id="Record-view">
+  <?=$this->mobileMenu()->header(array('driver' => $this->driver, 'tab' => $this->tab, 'searchLink' => array('action' => 'Home') + $this->searchOptions($this->searchClassId)->getSearchAction()))?>
+  <div class="record" data-role="content" data-record-id="<?=$this->escape($this->driver->getUniqueId())?>">
+    <?=$this->flashmessages()?>
+    <? if ($this->tab == $this->defaultTab): ?>
+      <?=$this->record($this->driver)->getCoreMetadata()?>
+    <? else: ?>
+      <h3><?=$this->escape($this->driver->getBreadcrumb())?></h3>
+    <? endif; ?>
+    <?=$tab?>
+    <div data-role="controlgroup">
+      <a href="<?=$this->recordLink()->getUrl($this->driver, 'Save')?>" data-role="button" rel="external"><?=$this->transEsc("Add to favorites")?></a>
+      <a href="<?=$this->recordLink()->getUrl($this->driver, 'AddTag')?>" data-role="button" rel="external"><?=$this->transEsc("Add Tag")?></a>
+      <a href="<?=$this->recordLink()->getUrl($this->driver, 'Cite')?>" data-role="button" rel="external"><?=$this->transEsc("Cite this")?></a>
+      <a href="<?=$this->recordLink()->getUrl($this->driver, 'Email')?>" data-role="button" rel="external"><?=$this->transEsc("Email this")?></a>
+      <a href="<?=$this->recordLink()->getUrl($this->driver, 'SMS')?>" data-role="button" rel="external"><?=$this->transEsc("Text this")?></a>
+    </div>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>

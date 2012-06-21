@@ -1,0 +1,22 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('auto_configure_title'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<a href="' . $this->url(array('action' => 'Home')) .'">' . $this->transEsc('auto_configure_title') . '</a>';
+?>
+<h1><?=$this->transEsc('auto_configure_title')?></h1>
+
+<p>VuFind cannot write to <b><?=$this->escape($this->cacheDir)?></b>.</p>
+
+<p>Please make sure that write permissions are available on this directory.</p>
+
+<p>In Linux, try this command (note that you may need to prefix with "sudo" on some flavors):</p>
+
+<pre>
+  <? if (isset($this->runningUser)): ?>
+    chown <?=$this->escape($this->runningUser)?>:<?=$this->escape($this->runningUser)?> <?=$this->escape($this->cacheDir)?>
+  <? else: ?>
+    chmod 777 <?=$this->escape($this->cacheDir)?>
+  <? endif; ?>
+</pre>

@@ -1,0 +1,35 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Search History'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<em>' . $this->transEsc('History') . '</em>';
+?>
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <? if (!empty($this->saved) || !empty($this->unsaved)): ?>
+    <? if (!empty($this->saved)): ?>
+      <h3><?=$this->transEsc("history_saved_searches")?></h3>
+      <?=$this->context()->renderInContext('search/history-table.phtml', array('showSaved' => true));?>
+    <? endif; ?>
+
+    <? if (!empty($this->unsaved)): ?>
+      <h3><?=$this->transEsc("history_recent_searches")?></h3>
+      <?=$this->context()->renderInContext('search/history-table.phtml', array('showSaved' => false));?>
+      <a href="?purge=true" class="delete"><?=$this->transEsc("history_purge")?></a>
+    <? endif; ?>
+  <? else: ?>
+    <h3><?=$this->transEsc("history_recent_searches")?></h3>
+    <?=$this->transEsc("history_no_searches")?>
+  <? endif; ?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->context($this)->renderInContext(
+         "myresearch/menu.phtml",
+         // Only activate search history in account menu if user is logged in.
+         VF_Account_Manager::getInstance()->isLoggedIn() ? array('active' => 'history') : array()
+     );
+  ?>
+</div>
+
+<div class="clear"></div>

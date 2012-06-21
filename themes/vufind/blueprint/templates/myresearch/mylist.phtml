@@ -1,0 +1,77 @@
+<?
+    // Grab list object from search results (if applicable):
+    $list = $this->results->getListObject();
+
+    // Set up page title:
+    $this->headTitle(isset($list) ? $list->title : $this->translate('Favorites'));
+
+    // Set up breadcrumbs:
+    $currPage = isset($list) ? 'List' : 'Favorites';
+    $this->layout()->breadcrumbs = '<a href="' .
+        $this->url(array('controller' => 'MyResearch', 'action' => 'Home'), 'default', true) .
+        '">' . $this->transEsc('Your Account') . '</a>' . '<span>&gt;</span><em>' .
+        $this->transEsc($currPage) . '</em>';
+
+    // Load Javascript dependencies into header:
+    $this->headScript()->appendFile("bulk_actions.js");
+?>
+
+<?=$this->flashmessages()?>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <? if (isset($list)): ?>
+    <div class="floatright">
+      <? if ($list->editAllowed()): ?>
+        <a href="<?=$this->url(array('id' => $list->id), 'editList', true) ?>" class="edit smallButton listEdit" title="<?=$this->transEsc("edit_list")?>"><?=$this->transEsc("edit_list")?></a>
+        <a href="<?=$this->url(array('action'=>'DeleteList', 'controller'=>'MyResearch'), 'default', true) ?>?listID=<?=urlencode($list->id)?>" class="delete deleteList smallButton" id="deleteList<?=$list->id ?>" title="<?=$this->transEsc("delete_list")?>"><?=$this->transEsc("delete_list")?></a>
+      <? endif; ?>
+    </div>
+    <h3 class="list"><?=$this->escape($list->title)?></h3>
+    <? if (!empty($list->description)): ?><p class="listDescription"><?=$this->escape($list->description)?></p><hr /><? endif; ?>
+  <? else: ?>
+    <h3 class="fav"><?=$this->transEsc("Your Favorites")?></h3>
+  <? endif; ?>
+
+  <? if (($recordTotal = $this->results->getResultTotal()) > 0): ?>
+    <div class="resulthead">
+      <div class="floatleft">
+        <?=$this->transEsc("Showing")?>
+        <strong><?=$this->escape($this->results->getStartRecord())?></strong> - <strong><?=$this->escape($this->results->getEndRecord())?></strong>
+        <?=$this->transEsc('of')?> <strong><?=$this->escape($recordTotal)?></strong>
+      </div>
+      <div class="floatright">
+        <?=$this->render('search/controls/sort.phtml')?>
+      </div>
+      <div class="clear"></div>
+    </div>
+    <form method="post" name="bulkActionForm" action="<?=$this->url(array('controller' => 'Cart', 'action' => 'MyResearchBulk'), 'default', true)?>">
+      <? if (isset($list)): ?>
+        <input type="hidden" name="listID" value="<?=$this->escape($list->id)?>" />
+        <input type="hidden" name="listName" value="<?=$this->escape($list->title)?>" />
+      <? endif; ?>
+      <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', array('idPrefix' => '', 'list' => isset($list) ? $list : null, 'account' => $this->account))?>
+      <ul class="recordSet">
+        <? $i = 0; foreach ($this->results->getResults() as $current): ?>
+          <li class="result<?=(++$i % 2 == 0) ? ' alt' : ''?>">
+            <span class="recordNumber"><?=$this->results->getStartRecord()+$i-1?><?=$this->record($current)->getCheckbox()?></span>
+            <?=$this->record($current)->getListEntry($list, $this->account->isLoggedIn())?>
+          </li>
+        <? endforeach; ?>
+      </ul>
+      <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', array('idPrefix' => 'bottom_', 'list' => isset($list) ? $list : null, 'account' => $this->account))?>
+    </form>
+    <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
+  <? else: ?>
+    <p><?=$this->transEsc('You do not have any saved resources')?></p>
+  <? endif; ?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => isset($list) ? 'list' : 'favorites'))?>
+
+  <? foreach ($this->results->getRecommendations('side') as $current): ?>
+    <?=$this->recommend($current)?>
+  <? endforeach; ?>
+</div>
+
+<div class="clear"></div>

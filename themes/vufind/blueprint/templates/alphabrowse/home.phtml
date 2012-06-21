@@ -1,0 +1,108 @@
+<?
+  $this->headTitle($this->translate('Browse the Collection Alphabetically'));
+  $this->layout()->breadcrumbs = '<a href="' .
+        $this->url(array('controller' => 'AlphaBrowse', 'action' => 'Home'), 'default', true) .
+        '">' . $this->transEsc('Browse Alphabetically') . '</a>';
+?>
+
+<? /* LOAD THE LINK INFORMATION INTO $pageLinks, similar to smarty's {capture} */ ?>
+<? ob_start(); ?>
+  <div class="alphaBrowsePageLinks">
+    <? if (isset($this->prevpage)): ?>
+      <div class="alphaBrowsePrevLink"><a href="<?=$this->url(array('controller' => 'AlphaBrowse'), 'default', true)?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($this->from)?>&amp;page=<?=urlencode($this->prevpage)?>">&laquo; <?=$this->transEsc('Prev')?></a></div>
+    <? endif; ?>
+
+    <? if (isset($this->nextpage)): ?>
+      <div class="alphaBrowseNextLink"><a href="<?=$this->url(array('controller' => 'AlphaBrowse'), 'default', true)?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($this->from)?>&amp;page=<?=urlencode($this->nextpage)?>"><?=$this->transEsc('Next')?> &raquo;</a></div>
+    <? endif; ?>
+    <div class="clear"></div>
+  </div>
+<? $pageLinks = ob_get_contents(); ?>
+<? ob_end_clean(); ?>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <div class="resulthead">
+    <form method="get" action="<?=$this->url(array('controller' => 'AlphaBrowse'), 'default', true)?>" name="alphaBrowseForm" id="alphaBrowseForm">
+      <label for="alphaBrowseForm_source"><?=$this->transEsc('Browse Alphabetically') ?></label>
+      <select id="alphaBrowseForm_source" name="source">
+        <? foreach ($this->alphaBrowseTypes as $key => $item): ?>
+          <option value="<?=$this->escape($key) ?>"<? if ($this->source == $key): ?> selected="selected"<? endif; ?>><?=$this->transEsc($item) ?></option>
+        <? endforeach; ?>
+      </select>
+      <label for="alphaBrowseForm_from"><?=$this->transEsc('starting from') ?></label>
+      <input type="text" name="from" id="alphaBrowseForm_from" value="<?=$this->escape($this->from) ?>"/>
+      <input type="submit" value="<?=$this->transEsc('Browse') ?>"/>
+    </form>
+  </div>
+
+  <? if ($this->result): ?>
+    <div class="alphaBrowseResult">
+    <?= $pageLinks ?>
+
+    <div class="alphaBrowseHeader"><?=$this->transEsc("alphabrowse_matches") ?></div>
+      <? foreach ($this->result['Browse']['items'] as $i => $item): ?>
+        <div class="alphaBrowseEntry<? if ($i%2==1): echo ' alt'; endif; ?>">
+        <div class="alphaBrowseHeading">
+          <? if ($item['count'] > 0): ?>
+          <? ob_start(); ?>
+            <?/* linking using bib ids is generally more reliable than
+              doing searches for headings, but headings give shorter
+              queries and don't look as strange. */?>
+            <? if ($item['count'] < 5): ?>
+              <?=$this->url(array('controller' => 'Search', 'action' => 'Results'), 'default', true)?>?type=ids&amp;lookfor=<? foreach ($item['ids'] as $id): ?><?=$id ?>+<? endforeach; ?>
+            <? else: ?>
+              <?=$this->url(array('controller' => 'Search', 'action' => 'Results'), 'default', true)?>?type=<?=urlencode(ucwords($this->source)) ?>Browse&amp;lookfor=<?=urlencode($item['heading'])?>
+            <? endif; ?>
+          <? $searchLink = ob_get_contents(); ?>
+          <? ob_end_clean(); ?>
+          <a href="<?=$searchLink ?>"><?=$this->escape($item['heading'])?></a>
+          <? else: ?>
+          <?=$this->escape($item['heading'])?>
+          <? endif; ?>
+        </div>
+        <div class="alphaBrowseCount"><? if ($item['count'] > 0): echo $item['count']; endif; ?></div>
+        <div class="clear"></div>
+
+        <? if (count($item['useInstead']) > 0): ?>
+          <div class="alphaBrowseRelatedHeading">
+          <div class="title"><?=$this->transEsc('Use instead') ?>:</div>
+          <ul>
+            <? foreach ($item['useInstead'] as $heading): ?>
+            <li><a href="<?=$this->url(array('controller' => 'AlphaBrowse'), 'default', true)?>/Results?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($heading)?>"><?=$this->escape($heading)?></a></li>
+            <? endforeach; ?>
+          </ul>
+          </div>
+        <? endif; ?>
+
+        <? if (count($item['seeAlso']) > 0): ?>
+          <div class="alphaBrowseRelatedHeading">
+          <div class="title"><?=$this->transEsc('See also') ?>:</div>
+          <ul>
+            <? foreach ($item['seeAlso'] as $heading): ?>
+            <li><a href="<?=$this->url(array('controller' => 'AlphaBrowse'), 'default', true)?>/Results?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($heading)?>"><?=$this->escape($heading)?></a></li>
+            <? endforeach; ?>
+          </ul>
+          </div>
+        <? endif; ?>
+
+        <? if ($item['note']): ?>
+          <div class="alphaBrowseRelatedHeading">
+          <div class="title"><?=$this->transEsc('Note') ?>:</div>
+          <ul>
+            <li><?=$this->escape($item['note'])?></li>
+          </ul>
+          </div>
+        <? endif; ?>
+
+        </div>
+      <? endforeach; ?>
+
+    <?= $pageLinks ?>
+    </div>
+  <? endif; ?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+</div>
+
+<div class="clear"></div>

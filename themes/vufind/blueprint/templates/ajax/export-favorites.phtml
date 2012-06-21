@@ -1,0 +1,7 @@
+<p>
+  <a class="save" onclick="hideLightbox();" href="<?=$this->escape($this->url)?>"<?=VF_Export::needsRedirect($this->format) ? ' target="_blank"' : ''?>><?=
+    VF_Export::needsRedirect($this->format)
+        ? $this->transEsc('export_redirect', array('%%service%%' => $this->translate($this->format)))
+        : $this->transEsc('export_download')
+  ?></a>
+</p>

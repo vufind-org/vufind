@@ -1,0 +1,46 @@
+<a id="logo" href="<?=$this->baseUrl()?>"></a>
+<div id="headerRight">
+  <? $cart = VF_Cart::getInstance(); if ($cart->isActive()): ?>
+    <div id="cartSummary" class="cartSummary">
+      <a id="cartItems" title="<?=$this->transEsc('View Book Bag')?>" class="bookbag" href="<?=$this->url(array('controller' => 'Cart', 'action' => 'Home'), 'default', true)?>"><strong><span><?=count($cart->getItems())?></span></strong> <?=$this->transEsc('items')?> <?=$cart->isFull() ? '(' .  $this->transEsc('bookbag_full') . ')' : ''?></a>
+      <a id="viewCart" title="<?=$this->transEsc('View Book Bag')?>" class="viewCart bookbag offscreen" href="<?=$this->url(array('controller' => 'Cart', 'action' => 'Home'), 'default', true)?>"><strong><span id="cartSize"><?=count($cart->getItems())?></span></strong> <?=$this->transEsc('items')?><span id="cartStatus"><?=$cart->isFull() ? $this->transEsc('bookbag_full') : '&nbsp;'?></span></a>
+    </div>
+  <? endif; ?>
+  <? if (is_object($this->account) && $this->account->loginEnabled()): // hide login/logout if unavailable ?>
+    <div id="logoutOptions"<?=!$this->account->isLoggedIn() ? ' class="hide"' : ''?>>
+      <a class="account" href="<?=$this->url(array('controller' => 'MyResearch'), 'default', true)?>"><?=$this->transEsc("Your Account")?></a> |
+      <a class="logout" href="<?=$this->url(array('controller' => 'MyResearch', 'action' => 'Logout'), 'default', true)?>"><?=$this->transEsc("Log Out")?></a>
+    </div>
+    <div id="loginOptions"<?=$this->account->isLoggedIn() ? ' class="hide"' : ''?>>
+    <? if ($sessionInitiator = $this->account->getSessionInitiator()): ?>
+      <a class="login" href="<?=$this->escape($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
+    <? else: ?>
+      <a class="login" href="<?=$this->url(array('controller' => 'MyResearch'), 'default', true)?>"><?=$this->transEsc("Login")?></a>
+    <? endif; ?>
+    </div>
+  <? endif; ?>
+  <? if (isset($this->themeOptions) && count($this->themeOptions) > 1): ?>
+  <form method="post" name="themeForm" action="" id="themeForm">
+    <label for="themeForm_ui"><?=$this->transEsc("Theme")?>:</label>
+    <select id="themeForm_ui" name="ui" class="jumpMenu">
+    <? foreach ($this->themeOptions as $current): ?>
+      <option value="<?=$this->escape($current['name'])?>"<?=$current['selected'] ? ' selected="selected"' : ''?>><?=$this->transEsc($current['desc'])?></option>
+    <? endforeach; ?>
+    </select>
+    <noscript><input type="submit" value="<?=$this->transEsc("Set")?>" /></noscript>
+  </form>
+  <? endif; ?>
+  <? if (isset($this->allLangs) && count($this->allLangs) > 1): ?>
+  <form method="post" name="langForm" action="" id="langForm">
+    <label for="langForm_mylang"><?=$this->transEsc("Language")?>:</label>
+    <select id="langForm_mylang" name="mylang" class="jumpMenu">
+    <? foreach ($this->allLangs as $langCode => $langName): ?>
+      <option value="<?=$langCode?>"<?=$this->userLang == $langCode ? ' selected="selected"' : ''?>><?=$this->displayLanguageOption($langName)?></option>
+    <? endforeach; ?>
+    </select>
+    <noscript><input type="submit" value="<?=$this->transEsc("Set")?>" /></noscript>
+  </form>
+  <? endif; ?>
+</div>
+
+<div class="clear"></div>

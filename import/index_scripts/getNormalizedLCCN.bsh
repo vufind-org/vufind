@@ -1,0 +1,27 @@
+/**
+ * Normalize a single LCCN using the procedure specified at:
+ *      http://www.loc.gov/marc/lccn-namespace.html#normalization
+ * @param lccn
+ * @return Normalized LCCN
+ */
+public String getNormalizedLCCN(String lccn) {
+    // Remove whitespace:
+    lccn = lccn.replaceAll(" ", "");
+
+    // Chop off anything following a forward slash:
+    String[] parts = lccn.split("/", 2);
+    lccn = parts[0];
+
+    // Normalize any characters following a hyphen to at least six digits:
+    parts = lccn.split("-", 2);
+    if (parts.length > 1) {
+        String secondPart = parts[1];
+        while (secondPart.length() < 6) {
+            secondPart = "0" + secondPart;
+        }
+        lccn = parts[0] + secondPart;
+    }
+
+    // Send back normalized LCCN:
+    return lccn;
+}

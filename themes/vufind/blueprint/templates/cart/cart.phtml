@@ -1,0 +1,30 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Book Bag'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = $this->getLastSearchLink($this->transEsc('Search'), '', '<span>&gt;</span>') .
+        '<em>' . $this->transEsc('Book Bag') . '</em>';
+
+    // Get cart object:
+    $this->cart = VF_Cart::getInstance();
+?>
+<?=$this->flashmessages()?>
+<form action="<?=$this->url(array('controller' => 'Cart', 'action' => 'Home'), 'default', true)?>" method="post"  name="cartForm">
+  <? if (!$this->cart->isEmpty()): ?>
+    <div class="bulkActionButtons">
+      <input type="checkbox" class="selectAllCheckboxes floatleft" name="selectAll" id="cartCheckboxSelectAll"/> <label for="cartCheckboxSelectAll" class="floatleft"><?=$this->transEsc('select_page')?></label>
+      <input type="submit" class="fav floatleft button" name="saveCart" value="<?=$this->transEsc('bookbag_save_selected')?>" title="<?=$this->transEsc('bookbag_save')?>"/>
+      <input type="submit" class="mail floatleft button" name="email" value="<?=$this->transEsc('bookbag_email_selected')?>" title="<?=$this->transEsc('bookbag_email')?>"/>
+      <? $exportOptions = VF_Export::getBulkOptions(); if (count($exportOptions) > 0): ?>
+        <input type="submit" class="export floatleft button" name="export" value="<?=$this->transEsc('bookbag_export_selected')?>" title="<?=$this->transEsc('bookbag_export')?>"/>
+      <? endif; ?>
+      <input type="submit" class="print floatleft button" name="print" value="<?=$this->transEsc('bookbag_print_selected')?>" title="<?=$this->transEsc('print_selected')?>"/>
+      <input type="submit" class="bookbagDelete floatleft button" name="delete" value="<?=$this->transEsc('bookbag_delete_selected')?>" title="<?=$this->transEsc('bookbag_delete')?>"/>
+      <input type="submit" class="bookbagEmpty floatleft button" name="empty" value="<?=$this->transEsc('Empty Book Bag')?>" title="<?=$this->transEsc('Empty Book Bag')?>"/>
+      <div class="clearer"></div>
+    </div>
+  <? endif; ?>
+
+  <?=$this->render('cart/contents.phtml')?>
+</form>

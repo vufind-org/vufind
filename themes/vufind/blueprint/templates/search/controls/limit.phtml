@@ -1,0 +1,13 @@
+<div class="limitSelect">
+  <? $limitList = $this->results->getLimitList(); if (count($limitList) > 1): ?>
+    <form action="<?=$this->url() . $this->results->getUrl()->setLimit(null)?>" method="post">
+      <label for="limit"><?=$this->transEsc('Results per page')?></label>
+      <select id="limit" name="limit" class="jumpMenu">
+        <? foreach ($limitList as $limitVal => $limitData): ?>
+          <option value="<?=$this->escape($limitVal)?>"<?=$limitData['selected']?' selected="selected"':''?>><?=$this->escape($limitData['desc'])?></option>
+        <? endforeach; ?>
+      </select>
+      <noscript><input type="submit" value="<?=$this->transEsc("Set")?>" /></noscript>
+    </form>
+  <? endif; ?>
+</div>

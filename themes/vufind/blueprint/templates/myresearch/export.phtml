@@ -1,0 +1,36 @@
+<form action="<?=$this->url() ?>/MyResearch/Export" method="post" name="bulkExport">
+  <? if ($errorMsg): ?><div class="error"><?=$this->translate($errorMsg) ?></div><? endif; ?>
+  <? if ($infoMsg): ?><div class="info"><?=$this->translate($infoMsg) ?></div><? endif; ?>
+
+  <div id="popupMessages"></div>
+  <div id="popupDetails"> 
+    <? if (empty($exportOptions)): ?>
+      <div class="error"><?=$this->translate("bulk_export_not_supported") ?></div>
+    <? else: ?>
+      <? foreach ($exportList as $favorite): ?>
+        <strong><?=$this->translate('Title') ?>:</strong>
+        <?=$this->escape(favorite['title']) ?><br />
+      <? endforeach; ?>
+      <label for="format"><?=$this->translate('Format') ?>:</label>
+      <select id="format" name="format">
+        <? foreach ($exportOptions as $exportOption): ?>
+          <option value="<?=$this->escape($exportOption) ?>"><?=$this->translate($exportOption) ?></option>
+        <? endforeach; ?>
+      </select>
+      <br />
+      <input class="button" type="submit" name="submit" value="<?=$this->translate('Export') ?>" />
+      <? foreach ($exportIDS as $exportID): ?>
+        <input type="hidden" name="ids[]" value="<?=$this->escape($exportID) ?>" />
+      <? endforeach; ?>
+      <? if ($listID): ?>
+        <input type="hidden" name="listID" value="<?=$this->escape($listID) ?>" />
+      <? endif; ?>
+      <? if ($followupModule): ?>
+        <input type="hidden" name="followupModule" value="<?=$this->escape($followupModule) ?>" />
+      <? endif; ?>
+      <? if ($followupAction): ?>
+        <input type="hidden" name="followupAction" value="<?=$this->escape($followupAction) ?>" />
+      <? endif; ?>
+    <? endif; ?>
+  </div>
+</form>

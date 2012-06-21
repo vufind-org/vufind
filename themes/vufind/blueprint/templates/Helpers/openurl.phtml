@@ -1,0 +1,31 @@
+<?
+    $this->headScript()->appendFile("openurl.js");
+    if ($this->openUrlEmbed) {
+        $class = ' class="fulltext openUrlEmbed openurl_id:' . $this->openUrlId . '"';
+    } elseif ($this->openUrlWindow) {
+        $class = ' class="fulltext openUrlWindow window_settings:' . $this->escape($this->openUrlWindow) . '"';
+    } else {
+        $class = '';
+    }
+?>
+<a href="<?=$this->escape($this->openUrlBase . '?' . $this->openUrl)?>"<?=$class?>>
+  <? /* put the openUrl here in a span (COinS almost) so we can retrieve it later */ ?>
+  <span title="<?=$this->escape($this->openUrl)?>" class="openUrl"></span>
+  <? if ($this->openUrlGraphic): ?>
+    <?
+        $style = '';
+        if ($this->openUrlGraphicWidth) {
+            $style .= 'width:' . $this->escape($this->openUrlGraphicWidth) . 'px;';
+        }
+        if ($this->openUrlGraphicHeight) {
+            $style .= 'height:' . $this->escape($this->openUrlGraphicHeight) . 'px;';
+        }
+    ?>
+    <img src="<?=$this->escape($this->openUrlGraphic)?>" alt="<?=$this->transEsc('Get full text')?>" style="<?=$style?>" />
+  <? else: ?>
+    <?=$this->transEsc('Get full text')?>
+  <? endif; ?>
+</a>
+<? if ($this->openUrlEmbed): ?>
+  <div id="openUrlEmbed<?=$this->openUrlId?>" class="resolver hide"><?=$this->transEsc('Loading')?>...</div>
+<? endif; ?>

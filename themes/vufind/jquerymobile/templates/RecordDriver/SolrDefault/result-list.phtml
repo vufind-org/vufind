@@ -1,0 +1,44 @@
+<a rel="external" href="<?=$this->recordLink()->getUrl($this->driver)?>">
+  <div class="result source<?=$this->escape($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
+    <input type="hidden" value="<?=$this->escape($this->driver->getUniqueID())?>" class="hiddenId" />
+    <h3><?
+      $summHighlightedTitle = $this->driver->getHighlightedTitle();
+      $summTitle = $this->driver->getTitle();
+      if (!empty($summHighlightedTitle)) {
+          echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
+      } else if (!empty($summTitle)) {
+          echo $this->escape($this->truncate($summTitle, 180));
+      } else {
+          echo $this->transEsc('Title not available');
+      }
+    ?></h3>
+    <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
+      <p><?=$this->transEsc('by')?> <?
+      $summHighlightedAuthor = $this->driver->getHighlightedAuthor();
+      echo !empty($summHighlightedAuthor)
+          ? $this->highlight($summHighlightedAuthor)
+          : $this->escape($summAuthor);
+      ?>
+    <? endif; ?>
+    <? if ($this->driver->supportsAjaxStatus()): ?>
+      <p class="callnumAndLocation">
+        <strong><?=$this->transEsc('Call Number')?>:</strong>
+        <span class="callnumber ajax_availability hide"><?=$this->transEsc('Loading')?>...</span><br />
+        <strong><?=$this->transEsc('Located')?>:</strong>
+        <span class="location ajax_availability hide"><?=$this->transEsc('Loading')?>...</span>
+      </p>
+    <? else: ?>
+      <? $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
+        <p><strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escape($summCallNo)?></p>
+      <? endif; ?>
+    <? endif; ?>
+    <?=$this->record($this->driver)->getFormatList()?>
+    <?
+       $openUrlActive = $this->driver->openURLActive('results');
+       $urls = $this->driver->getURLs();
+    ?>
+    <? if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
+      <p><span class="ajax_availability hide status"><?=$this->transEsc('Loading')?>...</span></p>
+    <? endif; ?>
+  </div>
+</a>

@@ -1,0 +1,40 @@
+<?
+  // Set default value if necessary:
+  if (!isset($this->searchClassId)) {
+      $this->searchClassId = 'Solr';
+  }
+
+  // Load search actions and settings (if any):
+  $options = $this->searchOptions($this->searchClassId);
+  $basicSearch = $options->getSearchAction();
+  $searchHome = $basicSearch;
+  $searchHome['action'] = 'Home';
+  $advSearch = $options->getAdvancedSearchAction();
+  $lastSort = $options->getLastSort();
+  $lastLimit = $options->getLastLimit();
+?>
+<form method="get" action="<?=$this->url($basicSearch, 'default', true)?>" data-ajax="false">
+  <label class="offscreen" for="searchForm_lookfor">
+    <?=$this->transEsc("Search")?>
+  </label>
+  <input type="search" placeholder="<?=$this->transEsc("Search")?>" name="lookfor" id="searchForm_lookfor" value="<?=$this->escape($this->lookfor)?>"/>
+  
+  <label class="offscreen" for="searchForm_type"><?=$this->transEsc("Search Type")?></label>
+  <select id="searchForm_type" name="type" data-native-menu="false">
+    <? foreach ($options->getBasicHandlers() as $searchVal => $searchDesc): ?>
+      <option value="<?=$this->escape($searchVal)?>"<?=$this->searchIndex == $searchVal ? ' selected="selected"' : ''?>><?=$this->transEsc($searchDesc)?></option>
+    <? endforeach; ?>
+  </select>
+  <div data-role="fieldcontain">
+    <input type="submit" data-theme="b" name="submit" value="<?=$this->transEsc("Find")?>"/>
+  </div>
+  <?
+    /* Load hidden limit preference from Session */
+    if (!empty($lastLimit)) {
+      echo '<input type="hidden" name="limit" value="' . $this->escape($lastLimit) . '" />';
+    }
+    if (!empty($lastSort)) {
+      echo '<input type="hidden" name="sort" value="' . $this->escape($lastSort) . '" />';
+    }
+  ?>
+</form>

@@ -1,0 +1,53 @@
+<div class="sidegroup">
+  <? $sideFacetSet = $this->recommend->getFacetSet(); ?>
+
+  <? if (isset($sideFacetSet['lists']) && !empty($sideFacetSet['lists']['list'])): ?>
+    <div class="sidegroup">
+      <h4 class="list"><?=$this->transEsc($sideFacetSet['lists']['label'])?></h4>
+      <ul>
+        <? foreach ($sideFacetSet['lists']['list'] as $current): ?>
+          <li>
+            <? if ($current['isApplied']): ?>
+              <strong><?=$this->escape($current['displayText'])?></strong>
+            <? else: ?>
+              <a href="<?=$this->url(array('id' => $current['value']), 'userList')?>"><?=$this->escape($current['displayText'])?></a>
+            <? endif; ?>
+            (<?=$this->escape($current['count'])?>)
+          </li>
+        <? endforeach; ?>
+      </ul>
+    </div>
+  <? endif; ?>
+
+  <? if (isset($sideFacetSet['tags']) && !empty($sideFacetSet['tags']['list'])): ?>
+    <div class="sidegroup">
+      <h4 class="tag"><?=$this->transEsc($sideFacetSet['tags']['label'])?></h4>
+      <? $filterList = $this->results->getFilterList(true);
+         $tagFilterList = isset($filterList[$sideFacetSet['tags']['label']]) ? $filterList[$sideFacetSet['tags']['label']] : null;
+         if (!empty($tagFilterList)): ?>
+        <strong><?=$this->transEsc('Remove Filters')?></strong>
+        <ul class="filters">
+        <? $field = $sideFacetSet['tags']['label'];
+           foreach ($tagFilterList as $filter): ?>
+          <? $removeLink = $this->url().$this->results->getUrl()->removeFacet($filter['field'], $filter['value']); ?>
+          <li>
+            <a href="<?=$removeLink?>"><img src="<?=$this->imageLink('silk/delete.png')?>" alt="<?=$this->transEsc('Delete') ?>"/></a>
+            <a href="<?=$removeLink?>"><?=$this->transEsc($field)?>: <?=$this->escape($filter['displayText'])?></a>
+          </li>
+        <? endforeach; ?>
+        </ul>
+      <? endif; ?>
+      <ul>
+        <? foreach ($sideFacetSet['tags']['list'] as $thisFacet): ?>
+          <li>
+          <? if ($thisFacet['isApplied']): ?>
+            <?=$this->escape($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="<?=$this->transEsc('Selected') ?>"/>
+          <? else: ?>
+            <a href="<?=$this->url().$this->results->getUrl()->addFacet('tags', $thisFacet['value'])?>"><?=$this->escape($thisFacet['displayText'])?></a> (<?=$this->escape($thisFacet['count'])?>)
+          <? endif; ?>
+          </li>
+        <? endforeach; ?>
+      </ul>
+    </div>
+  <? endif; ?>
+</div>

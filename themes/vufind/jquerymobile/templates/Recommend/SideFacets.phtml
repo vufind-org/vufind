@@ -1,0 +1,21 @@
+<? $filterList = $this->results->getFilterList(true); if (!empty($filterList)): ?>
+  <ul class="filters" data-role="listview" data-inset="true" data-dividertheme="e">
+    <li data-role="list-divider"><?=$this->transEsc('adv_search_filters')?></li>
+    <? $i = 0; foreach ($filterList as $field => $filters): ?>
+      <? foreach ($filters as $filter): ?>
+        <?
+            $removeLink = $this->url().$this->results->getUrl()->removeFacet($filter['field'], $filter['value']);
+            if ($filter['displayText'] == '[* TO *]') $filter['displayText'] = $this->translate('filter_wildcard');
+        ?>
+        <li data-icon="minus">
+          <a data-icon="minus" rel="external" href="<?=$removeLink?>"><?=$i++ > 0 ? $this->transEsc("AND") . ' ' : ''?><?=$this->transEsc($field)?>: <?=$this->escape($filter['displayText'])?></a>
+        </li>
+      <? endforeach; ?>
+    <? endforeach; ?>
+  </ul>
+<? endif; ?>
+<?
+    // Actual facet options are loaded as an extra hidden dialog box -- inject these into the appropriate
+    // area of the layout object (they won't work if simply displayed inline):
+    $this->layout()->extraDialogs .= $this->render('Recommend/SideFacets-dialog.phtml');
+?>

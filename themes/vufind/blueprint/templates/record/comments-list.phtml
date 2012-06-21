@@ -1,0 +1,15 @@
+<? $comments = $this->driver->getComments(); if (empty($comments) || count($comments) == 0): ?>
+  <li><?=$this->transEsc('Be the first to leave a comment')?>!</li>
+<? endif; ?>
+<? foreach ($comments as $comment): ?>
+  <li>
+    <?=$this->escape($comment->comment)?>
+    <div class="posted">
+      <?=$this->transEsc('Posted by')?> <strong><?=$this->escape(trim($comment->firstname . ' ' . $comment->lastname))?></strong>
+      <?=$this->transEsc('posted_on')?> <?=$this->escape($comment->created)?>
+      <? if (($user = VF_Account_Manager::getInstance()->isLoggedIn()) && $comment->user_id == $user->id): ?>
+        <a href="<?=$this->recordLink()->getUrl($this->driver, 'DeleteComment')?>?delete=<?=urlencode($comment->id)?>" id="recordComment<?=$this->escape($comment->id)?>" class="delete tool deleteRecordComment source<?=$this->escape($this->driver->getResourceSource())?>"><?=$this->transEsc('Delete')?></a>
+      <? endif; ?>
+    </div>
+  </li>
+<? endforeach; ?>

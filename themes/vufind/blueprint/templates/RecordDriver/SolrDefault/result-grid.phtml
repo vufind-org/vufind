@@ -1,0 +1,50 @@
+<div class="gridRecordBox source<?=$this->escape($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
+    <input type="hidden" value="<?=$this->escape($this->driver->getUniqueID())?>" class="hiddenId" />
+    <span class="gridImageBox">
+      <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
+        <? if ($summThumb = $this->driver->getThumbnail('large')): ?>
+          <img src="<?=$this->escape($summThumb)?>" class="gridImage" alt="<?=$this->transEsc('Cover Image')?>"/>
+        <? elseif ($summThumb = $this->driver->getThumbnail()): ?>
+          <img src="<?=$this->escape($summThumb)?>" class="gridImage" alt="<?=$this->transEsc('Cover Image')?>"/>
+        <? else: ?>
+          <img src="<?=$this->url(array('controller' => 'Cover', 'action' => 'Unavailable'), 'default', true)?>" class="gridImage" alt="<?=$this->transEsc('No Cover Image')?>"/>
+        <? endif; ?>
+      </a>
+    </span>
+    <div class="gridTitleBox" >
+      <a class="gridTitle" href="<?=$this->recordLink()->getUrl($this->driver)?>"><?
+        $summHighlightedTitle = $this->driver->getHighlightedTitle();
+        $summTitle = $this->driver->getTitle();
+        if (!empty($summHighlightedTitle)) {
+            echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
+        } else if (!empty($summTitle)) {
+            echo $this->escape($this->truncate($summTitle, 80));
+        } else {
+            echo $this->transEsc('Title not available');
+        }
+      ?></a>
+      <? /* We need to find out if we're supposed to display an OpenURL link ($openUrlActive),
+            but even if we don't plan to display the link, we still want to get the $openUrl
+            value for use in generating a COinS (Z3988) tag -- see bottom of file.
+          */
+         $openUrl = $this->driver->getOpenURL();
+         $openUrlActive = $this->driver->openURLActive('results');
+         $urls = $this->driver->getURLs();
+         if ($openUrlActive || !empty($urls)): ?>
+        <? if ($openUrlActive): ?>
+          <?=$this->openUrl($openUrl)?><br />
+          <? if ($this->driver->replaceURLsWithOpenURL()) $urls = array(); // clear URL list if replace setting is active ?>
+        <? endif; ?>
+        <? if (!is_array($urls)) $urls = array(); foreach ($urls as $recordurl => $urldesc): ?>
+          <a href="<?=$this->escape($this->proxyUrl($recordurl))?>" class="fulltext" target="new"><?=($recordurl == $urldesc) ? $this->transEsc('Get full text') : $this->escape($urldesc)?></a>
+          <br/>
+        <? endforeach; ?>
+      <? else: ?>
+        <? if ($this->driver->supportsAjaxStatus()): ?>
+          <div class="status ajax_availability hide"><?=$this->transEsc('Loading')?>...</div>
+        <? endif; ?>
+      <? endif; ?>
+    </div>
+</div>
+
+<?=$openUrl?'<span class="Z3988" title="'.$this->escape($openUrl).'"></span>':''?>

@@ -1,0 +1,28 @@
+<table class="summHoldings">
+<tbody>
+<tr>
+  <th class="locationColumn"><?=$this->transEsc('Location')?></th>
+  <th class="callnumColumn"><?=$this->transEsc('Call Number')?></th>
+  <th class="statusColumn"><?=$this->transEsc('Status')?></th>
+</tr>
+<? $i = 0; foreach ($this->statusItems as $item): ?>
+  <? if (++$i == 5) break; // Show no more than 5 items ?>
+  <tr>
+    <td class="locationColumn"><?=$this->escape($item['location'])?></td>
+    <td class="callnumColumn"><?=$this->escape($item['callnumber'])?></td>
+    <td class="statusColumn">
+      <? if (isset($item['use_unknown_message']) && $item['use_unknown_message']): ?>
+        <span class="unknown"><?=$this->transEsc("status_unknown_message")?></span>
+      <? elseif ($item['availability']): ?>
+        <span class="available"><?=($item['reserve'] == 'Y') ? $this->transEsc("On Reserve") : $this->transEsc("Available")?></span>
+      <? else: ?>
+        <span class="checkedout"><?=$this->transEsc($item['status'])?></span>
+      <? endif; ?>
+    </td>
+  </tr>
+<? endforeach; ?>
+</tbody>
+</table>
+<? if (count($this->statusItems) > 5): ?>
+  <a class="summHoldings" href="<?=$this->url(array('id' => $this->statusItems[0]['id']), 'record', true)?>"><?=count($this->statusItems) - 5?> <?=$this->transEsc('more')?> ...</a>
+<? endif; ?>

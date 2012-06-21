@@ -1,0 +1,30 @@
+.thumbnail {
+  text-align:center;
+  height:180px;
+}
+.label {
+  display:block;
+  margin-bottom:5px;
+}
+a.pdf,a.doc {
+  display:block;
+  margin:0 auto;
+}
+a.pdf {
+  background:url('../images/small/pdf.png');
+  width:70px;
+  height:87px;
+}
+a.doc {
+  background:url('../images/small/doc.png');
+  width:116px;
+  height:85px;
+}
+
+.content {
+  padding-top:0;
+}
+.preview {
+  display:block;
+  text-align:center;
+}

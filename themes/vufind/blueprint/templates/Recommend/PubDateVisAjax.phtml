@@ -1,0 +1,22 @@
+<? $visFacets = $this->recommend->getVisFacets(); ?>
+<? if ($visFacets): ?>
+
+  <? /* load jQuery flot */ ?>
+<?$this->headScript()->appendFile('flot/excanvas.min.js', null, array('conditional' => 'IE'));
+  $this->headScript()->appendFile('flot/jquery.flot.min.js');
+  $this->headScript()->appendFile('flot/jquery.flot.selection.min.js');
+  $this->headScript()->appendFile('pubdate_vis.js'); ?>
+
+  <? foreach ($visFacets as $facetField=>$facetRange): ?>
+    <div class="authorbox">
+      <strong><?=$this->translate($facetRange['label']) ?></strong>
+      <? /* space the flot visualisation */ ?>  
+      <div id="datevis<?=$facetField ?>x" style="margin:0 10px;width:auto;height:80px;cursor:crosshair;"></div>
+      <div id="clearButtonText" style="display: none"><?=$this->translate('Clear') ?></div>  
+    </div>
+  <? endforeach; ?>
+  <script type="text/javascript">
+    loadVis('<?=$this->recommend->getFacetFields() ?>', '<?=$this->recommend->getSearchParams() ?>', path, <?=$this->recommend->getZooming() ?>);
+  </script>
+
+<? endif; ?>

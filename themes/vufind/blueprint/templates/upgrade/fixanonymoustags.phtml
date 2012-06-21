@@ -1,0 +1,26 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Upgrade VuFind'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<em>' . $this->transEsc('Upgrade VuFind') . '</em>';
+?>
+<h1><?=$this->transEsc('Upgrade VuFind')?></h1>
+<?=$this->flashmessages()?>
+
+<p>Due to a bug in earlier versions of VuFind, you have <?=$this->anonymousTags?> tags
+in your database that are not associated with a user account.  It is
+recommended that you associate these tags with a user account for
+easier maintenance in the future.  Please enter a username (preferably
+an administrator) to associate with old anonymous tags.</p>
+
+<p>If you do not wish to fix the problem at this time, click the Skip button.</p>
+
+<p>See <a target="_jira" href="http://vufind.org/jira/browse/VUFIND-217">http://vufind.org/jira/browse/VUFIND-217</a> for more details.</p>
+
+<br />
+
+<form method="POST" action="<?=$this->url(array('controller' => 'Upgrade', 'action' => 'FixAnonymousTags'), 'default', true)?>">
+  <?=$this->transEsc('Username') ?>: <input type="text" name="username" /> <input type="submit" name="submit" value="<?=$this->transEsc('Submit') ?>" /><br /><br />
+  <input type="submit" name="skip" value="<?=$this->transEsc('skip_step') ?>." onclick="return confirm('<?=$this->transEsc('skip_confirm') ?>');"/>
+</form>

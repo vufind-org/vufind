@@ -1,0 +1,36 @@
+<?
+  $topFacetSet = $this->recommend->getTopFacetSet();
+  $topFacetSettings = $this->recommend->getTopFacetSettings();
+?>
+<? if (isset($topFacetSet)): ?>
+  <? foreach($topFacetSet as $title => $cluster): ?>
+    <div class="authorbox">
+      <strong><?=$this->transEsc($cluster['label'])?></strong><?=$this->transEsc("top_facet_suffix") ?>
+      <? $iter=1;$corner=$topFacetSettings['rows']*$topFacetSettings['cols']; ?>
+      <? foreach($cluster['list'] as $thisFacet): ?>
+        <? if ($iter == $corner+1): ?>
+          <br class="clear"/>
+          <a id="more<?=$this->escape($title)?>" href="#" onclick="moreFacets('<?=$this->escape($title)?>'); return false;"><?=$this->transEsc('more') ?> ...</a>
+          <div class="offscreen" id="narrowGroupHidden_<?=$this->escape($title)?>">
+          <br/>
+          <strong><?=$this->transEsc('top_facet_additional_prefix').$this->transEsc($cluster['label']) ?></strong><?=$this->transEsc("top_facet_suffix") ?>
+        <? endif; ?>
+        <? if ($iter % $topFacetSettings['cols'] == 1): ?><br/><? endif; ?>
+        <span class="span-5">
+          <? if ($thisFacet['isApplied']): ?>
+            <?=$this->escape($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="<?=$this->transEsc('Selected') ?>"/>
+          <? else: ?>
+            <a href="<?=$this->url().$this->results->getUrl()->addFacet($title, $thisFacet['value'])?>"><?=$this->escape($thisFacet['displayText'])?></a> (<?=$thisFacet['count'] ?>)
+          <? endif; ?>
+        </span>
+        <? if (count($cluster['list']) > $corner && $iter == count($cluster['list'])): ?>
+          <br class="clear"/>
+          <a href="#" onclick="lessFacets('<?=$title ?>'); return false;"><?=$this->transEsc('less') ?> ...</a>
+          </div>
+        <? endif; ?>
+        <? $iter++; ?>
+      <? endforeach; ?>
+      <div class="clear"></div>
+    </div>
+  <? endforeach; ?>
+<? endif; ?>

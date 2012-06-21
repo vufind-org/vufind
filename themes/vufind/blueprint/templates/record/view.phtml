@@ -1,0 +1,117 @@
+<?
+    $addThis = $this->addThis();
+    if (!empty($addThis)) {
+        $this->headScript()->appendFile('https://s7.addthis.com/js/250/addthis_widget.js?pub=' . urlencode($addThis));
+    }
+
+    // Set up standard record scripts:
+    $this->headScript()->appendFile("record.js");
+    $this->headScript()->appendFile("check_save_statuses.js");
+
+    // Set up some variables for convenience:
+    $tabs = $this->driver->getTabs();   // supported tabs
+    $id = $this->driver->getUniqueId();
+    $controllerClass = 'controller' . $this->record($this->driver)->getController();
+    $cart = VF_Cart::getInstance();
+    $cartId = $this->driver->getResourceSource() . '|' . $id;
+
+    // Add RDF header link if applicable:
+    if ($this->driver->supportsExport('RDF')) {
+        $this->headLink()->appendAlternate($this->recordLink()->getUrl($this->driver, 'RDF'), 'application/rdf+xml', 'RDF Representation');
+    }
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = $this->getLastSearchLink($this->transEsc('Search'), '', '<span>&gt;</span>') .
+        $this->recordLink()->getBreadcrumb($this->driver);
+?>
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <div class="toolbar">
+    <ul>
+      <? if (count($this->driver->getCitationFormats()) > 0): ?>
+        <li><a href="<?=$this->recordLink()->getUrl($this->driver, 'Cite')?>" class="citeRecord cite <?=$controllerClass?>" id="citeRecord" title="<?=$this->transEsc('Cite this')?>"><?=$this->transEsc('Cite this')?></a></li>
+      <? endif; ?>
+      <li><a href="<?=$this->recordLink()->getUrl($this->driver, 'SMS')?>" class="smsRecord sms <?=$controllerClass?>" id="smsRecord" title="<?=$this->transEsc('Text this')?>"><?=$this->transEsc('Text this')?></a></li>
+      <li><a href="<?=$this->recordLink()->getUrl($this->driver, 'Email')?>" class="mailRecord mail <?=$controllerClass?>" id="mailRecord" title="<?=$this->transEsc('Email this')?>"><?=$this->transEsc('Email this')?></a></li>
+      <? $exportFormats = $this->record($this->driver)->getExportFormats(); if (count($exportFormats) > 0): ?>
+      <li>
+        <a href="<?=$this->recordLink()->getUrl($this->driver, 'Export')?>" class="export exportMenu"><?=$this->transEsc('Export Record')?></a>
+        <ul class="menu offscreen" id="exportMenu">
+        <? foreach ($exportFormats as $exportFormat): ?>
+          <li><a <? if (VF_Export::needsRedirect($exportFormat)): ?>target="<?=$this->escape($exportFormat)?>Main" <? endif; ?>href="<?=$this->recordLink()->getUrl($this->driver, 'Export')?>?style=<?=$this->escape($exportFormat)?>"><?=$this->transEsc('Export to')?> <?=$this->escape($exportFormat)?></a></li>
+        <? endforeach; ?>
+        </ul>
+      </li>
+      <? endif; ?>
+      <li id="saveLink"><a href="<?=$this->recordLink()->getUrl($this->driver, 'Save')?>" class="saveRecord fav <?=$controllerClass?>" id="saveRecord" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a></li>
+      <? if (!empty($addThis)): ?>
+      <li id="addThis"><a class="addThis addthis_button" href="https://www.addthis.com/bookmark.php?v=250&amp;pub=<?=urlencode($addThis)?>"><?=$this->transEsc('Bookmark')?></a></li>
+      <? endif; ?>
+      <? if ($cart->isActive()): ?>
+        <li><a id="recordCart" class="<?=$cart->contains($cartId) ? 'bookbagDelete' : 'bookbagAdd'?> offscreen" href="#"><?=$this->transEsc('Add to Book Bag')?></a></li>
+      <? endif; ?>
+    </ul>
+    <? if ($cart->isActive()): ?>
+      <div class="cartSummary">
+        <form method="post" name="addForm" action="<?=$this->url(array('controller' => 'Cart', 'action' => 'Home'), 'default', true)?>">
+          <input id="cartId" type="hidden" name="ids[]" value="<?=$this->escape($cartId)?>" />
+          <noscript>
+            <? if ($cart->contains($cartId)): ?>
+              <input id="cartId" type="hidden" name="ids[]" value="<?=$this->escape($cartId)?>" />
+              <input type="submit" class="button cart bookbagDelete" name="delete" value="<?=$this->transEsc('Remove from Book Bag')?>"/>
+            <? else: ?>
+              <input type="submit" class="button bookbagAdd" name="add" value="<?=$this->transEsc('Add to Book Bag')?>"/>
+            <? endif; ?>
+          </noscript>
+        </form>
+      </div>
+    <? endif; ?>
+    <div class="clear"></div>
+  </div>
+
+  <div class="record recordId source<?=$this->escape($this->driver->getResourceSource())?>" id="record">
+    <input type="hidden" value="<?=$this->escape($id)?>" class="hiddenId" id="record_id" />
+    <?=$this->flashmessages()?>
+    <? if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
+      <div class="resultscroller">
+        <? if ($this->scrollData['previousRecord']): ?><a href="<?=$this->url(array('id' => $this->scrollData['previousRecord'], 'action' => 'Home'), $this->driver->getRecordRoute(), true)?>">&laquo; <?=$this->transEsc('Prev')?></a><? endif; ?>
+        #<?=$this->escape($this->scrollData['currentPosition']) . ' ' . $this->transEsc('of') . ' ' . $this->escape($this->scrollData['resultTotal'])?>
+        <? if ($this->scrollData['nextRecord']): ?><a href="<?=$this->url(array('id' => $this->scrollData['nextRecord'], 'action' => 'Home'), $this->driver->getRecordRoute(), true)?>"><?=$this->transEsc('Next')?> &raquo;</a><? endif; ?>
+      </div>
+    <? endif; ?>
+    <?=$this->record($this->driver)->getCoreMetadata()?>
+  </div>
+
+  <? if (count($tabs) > 0): ?>
+  <div id="tabnav">
+    <ul>
+      <? foreach ($tabs as $action => $desc): ?>
+      <? // add current tab to breadcrumbs if applicable:
+         $isCurrent = (strtolower($this->tab) == strtolower($action));
+         if ($isCurrent) {
+             $this->layout()->breadcrumbs .= '<span>&gt;</span><em>' . $this->transEsc($desc) . '</em>';
+         }
+      ?>
+      <li<?=$isCurrent ? ' class="active"' : ''?>>
+        <a href="<?=$this->recordLink()->getUrl($this->driver, $action)?>#tabnav"><?=$this->transEsc($desc)?></a>
+      </li>
+      <? endforeach; ?>
+    </ul>
+    <div class="clear"></div>
+  </div>
+  <? endif; ?>
+
+
+  <div class="recordsubcontent">
+    <?=$this->record($this->driver)->getTab($this->tab)?>
+  </div>
+
+  <span class="Z3988" title="<?=$this->escape($this->driver->getOpenURL())?>"></span>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <? foreach ($this->driver->getRelated() as $current): ?>
+    <?=$this->related($current)?>
+  <? endforeach; ?>
+</div>
+
+<div class="clear"></div>

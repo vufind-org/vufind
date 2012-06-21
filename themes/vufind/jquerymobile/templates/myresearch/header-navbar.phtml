@@ -1,0 +1,9 @@
+<? if (VF_Account_Manager::getInstance()->isLoggedIn()): ?>
+  <div data-role="navbar">
+    <ul>
+      <li><a rel="external" <?=$this->action=="checkedout" ? ' class="ui-btn-active"' : ''?> href="<?=$this->url(array('controller' => 'MyResearch', 'action' => 'CheckedOut'), 'default', true)?>"><?=$this->transEsc('Checked Out')?></a></li>
+      <li><a rel="external" <?=$this->action=="holds" ? ' class="ui-btn-active"' : ''?> href="<?=$this->url(array('controller' => 'MyResearch', 'action' => 'Holds'), 'default', true)?>"><?=$this->transEsc('Holds')?></a></li>
+      <li><a rel="external" <?=$this->action=="fines" ? ' class="ui-btn-active"' : ''?> href="<?=$this->url(array('controller' => 'MyResearch', 'action' => 'Fines'), 'default', true)?>"><?=$this->transEsc('Fines')?></a></li>
+    </ul>
+  </div>
+<? endif; ?>

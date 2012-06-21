@@ -1,0 +1,81 @@
+#! /bin/bash
+# getfromsolr.sh
+# extracts complete MARC records from Solr index documents.
+# $Id: getfromsolr.sh 
+
+E_BADARGS=65
+
+scriptdir=$( (cd -P $(dirname $0) && pwd) )
+if ! [ -e $scriptdir/SolrMarc.jar ] 
+then
+  scriptdir=$( (cd -P $(dirname $0)/.. && pwd) )
+fi
+
+if [ $# -eq 0 ]
+  then
+    echo "    Usage: `basename $0` http://remoteMachine:port/solr id:u30980"
+    echo "    Usage: `basename $0` id:u38989"
+    exit $E_BADARGS
+fi
+
+id=
+url=
+config=
+flag=
+field=
+
+handle_arg() {
+  if [ ! -z "$arg" ]
+  then
+    case "$arg" in
+      http*) url="$arg" ;;
+      *.properties) config="$arg" ;;
+      *:*) query="$arg" ;;
+      [A-Za-z0-9]*)
+         if [[ "$id" == ""  && "$query" == "" ]]
+         then
+            id="$arg"
+         else
+            field="$arg"
+         fi
+         ;;
+      -v) flag="$arg" ;;
+     -vv) flag="$arg" ;;
+     esac
+   fi
+}
+
+arg=$1
+handle_arg
+arg=$2
+handle_arg
+arg=$3
+handle_arg
+arg=$4
+handle_arg 
+arg=$5
+handle_arg
+
+if [[ "$query" == "" && "$id" != "" ]]
+then
+    query="id:$id"
+fi
+
+if [[ "$flag" == "-vv" ]] 
+then
+  echo config = $config 1>&2
+  echo url = $url 1>&2
+  echo query = $query 1>&2
+  echo id = $id 1>&2
+  echo field = $field 1>&2
+fi
+
+if [ "$url" == "" ]
+then
+    java -Dsolrmarc.main.class="org.solrmarc.marc.SolrReIndexer" -jar $scriptdir/SolrMarc.jar $config "$query" $field 2> /dev/null
+else
+    java -Dsolrmarc.main.class="org.solrmarc.solr.RemoteSolrSearcher" -jar $scriptdir/SolrMarc.jar $flag $url "$query" $field 
+fi
+
+exit 0
+

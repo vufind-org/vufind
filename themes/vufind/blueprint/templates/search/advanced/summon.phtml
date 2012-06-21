@@ -1,0 +1,39 @@
+<? if (!empty($this->facetList)): ?>
+  <h3><?=$this->transEsc('Limit To')?></h3>
+  <? foreach ($this->facetList as $field => $list): ?>
+  <div class="span-5">
+    <label class="displayBlock" for="limit_<?=$this->escape(str_replace(' ', '', $field))?>"><?=$this->transEsc($list['label'])?>:</label>
+    <select id="limit_<?=$this->escape(str_replace(' ', '', $field))?>" name="filter[]" multiple="multiple" size="10">
+      <?
+          // Sort the current facet list alphabetically; we'll use this data
+          // along with the foreach below to display facet options in the
+          // correct order.
+          $sorted = array();
+          foreach ($list['list'] as $i => $value) {
+              $sorted[$i] = $value['displayText'];
+          }
+          natcasesort($sorted);
+      ?>
+      <? foreach ($sorted as $i => $display): ?>
+        <? $value = $list['list'][$i]; ?>
+        <option value="<?=$this->escape($field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected'])?' selected="selected"':''?>><?=$this->escape($display)?></option>
+      <? endforeach; ?>
+    </select>
+  </div>
+  <? endforeach; ?>
+  <div class="clear"></div>
+<? endif; ?>
+<?=$this->render('search/advanced/limit.phtml')?>
+<? if (isset($this->dateRangeLimit)): ?>
+  <? /* Load the publication date slider UI widget */ $this->headScript()->appendFile('pubdate_slider.js'); ?>
+  <input type="hidden" name="daterange[]" value="publishDate"/>
+  <fieldset class="publishDateLimit span-5" id="publishDate">
+    <legend><?=$this->transEsc('adv_search_year')?></legend>
+    <label for="publishDatefrom"><?=$this->transEsc('date_from')?>:</label>
+    <input type="text" size="4" maxlength="4" class="yearbox" name="publishDatefrom" id="publishDatefrom" value="<?=$this->escape($this->dateRangeLimit[0])?>" />
+    <label for="publishDateto"><?=$this->transEsc('date_to')?>:</label>
+    <input type="text" size="4" maxlength="4" class="yearbox" name="publishDateto" id="publishDateto" value="<?=$this->escape($this->dateRangeLimit[1])?>" />
+    <div id="publishDateSlider" class="dateSlider"></div>
+  </fieldset>
+<? endif; ?>
+<div class="clear"></div>

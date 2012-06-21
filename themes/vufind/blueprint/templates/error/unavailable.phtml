@@ -1,0 +1,20 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('System Unavailable'));
+
+    // Disable top search box -- this page has a special layout.
+    $this->layout()->searchbox = false;
+?>
+<div class="error unavailable">
+  <h1><?=$this->transEsc('System Unavailable')?></h1>
+  <p>
+    <?=$this->transEsc('The system is currently unavailable due to system maintenance')?>.
+    <?=$this->transEsc('Please check back soon')?>.
+  </p>
+  <p>
+    <?=$this->transEsc('Please contact the Library Reference Department for assistance')?>
+    <br/>
+    <? $supportEmail = $this->escape(VF_Config_Reader::getConfig()->Site->email); ?>
+    <a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a>
+  </p>
+</div>

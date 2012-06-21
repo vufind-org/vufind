@@ -1,0 +1,12 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Author'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<em>' . $this->transEsc('Author') . '</em>';
+?>
+<form method="get" action="<?=$this->url(array('controller' => 'Author', 'action' => 'Search'), 'default', true)?>">
+  <label for="author_lookfor"><?=$this->transEsc('Author Results for')?>:</label>
+  <input type="text" id="author_lookfor" name="lookfor" />
+  <input type="submit" value="<?=$this->transEsc('Find')?>" />
+</form>

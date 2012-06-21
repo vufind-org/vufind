@@ -1,0 +1,23 @@
+<? if ($this->pageCount): ?>
+  <div class="pagination">
+  <? if (isset($this->previous)): ?>
+    <a href="<?=$this->url() . $this->results->getUrl()->setPage(1)?>">[1]</a>
+    <a href="<?=$this->url() . $this->results->getUrl()->setPage($this->previous)?>">&laquo; <?=$this->transEsc('Prev')?></a>
+  <? endif; ?>
+
+  <? if (count($this->pagesInRange) > 1): ?>
+    <? foreach ($this->pagesInRange as $page): ?>
+      <? if ($page != $this->current): ?>
+        <a href="<?=$this->url() . $this->results->getUrl()->setPage($page)?>"><?=$page?></a>
+      <? else: ?>
+        <span><?=$page?></span>
+      <? endif; ?>
+    <? endforeach; ?>
+  <? endif; ?>
+
+  <? if (isset($this->next)): ?>
+    <a href="<?=$this->url() . $this->results->getUrl()->setPage($this->next)?>"><?=$this->transEsc('Next');?> &raquo;</a>
+    <a href="<?=$this->url() . $this->results->getUrl()->setPage($this->pageCount)?>">[<?=$this->pageCount?>]</a>
+  <? endif; ?>
+  </div>
+<? endif; ?>

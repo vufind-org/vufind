@@ -1,0 +1,15 @@
+<? $data = $this->recommend->getResults(); if (is_array($data) && !empty($data)): ?>
+  <div class="authoritybox">
+    <div><strong><?=$this->transEsc('See also')?>:</strong></div>
+    <div>
+      <? for ($i = 0; $i < count($data); $i++): ?>
+        <?
+            // Generate a new search URL that replaces the user's current term with the authority term:
+            $url = $this->url($this->results->getSearchAction(), 'default', true)
+                . $this->results->getUrl()->replaceTerm($this->results->getDisplayQuery(), $data[$i]['heading']);
+        ?>
+        <a href="<?=$url?>"><?=$this->escape($data[$i]['heading'])?></a><? if ($i != count($data) - 1): ?>, <? endif; ?>
+      <? endfor; ?>
+    </div>
+  </div>
+<? endif; ?>

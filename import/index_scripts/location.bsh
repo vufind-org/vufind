@@ -1,0 +1,55 @@
+/**
+ * Custom latitude/longitude script.
+ *
+ * This can be used to override built-in SolrMarc custom functions.  If you change
+ * this script, you will need to activate it in import/marc_local.properties before
+ * it will be applied during indexing.
+ */
+import org.marc4j.marc.Record;
+import org.marc4j.marc.ControlField;
+import org.marc4j.marc.DataField;
+
+/**
+ * Determine the longitude and latitude of the items location.
+ *
+ * @param  Record    record
+ * @return String    "longitude, latitude"
+ */
+public String getLongLat(Record record) {
+    // Check 034 subfield d and f
+    List fields = record.getVariableFields("034");
+    Iterator fieldsIter = fields.iterator();
+    if (fields != null) {
+        DataField physical;
+        while(fieldsIter.hasNext()) {
+            physical = (DataField) fieldsIter.next();
+            String val;
+
+            List subfields_d = physical.getSubfields('d');
+            Iterator subfieldsIter_d = subfields_d.iterator();
+            if (subfields_d != null) {
+                while (subfieldsIter_d.hasNext()) {
+                    val = subfieldsIter_d.next().getData();
+                    if (!val.matches("-?\\d+(.\\d+)?")) {
+                        return null;
+                    }
+                }
+            }
+            List subfields_f = physical.getSubfields('f');
+            Iterator subfieldsIter_f = subfields_f.iterator();
+            if (subfields_f != null) {
+                while (subfieldsIter_f.hasNext()) {
+                    String val2 = subfieldsIter_f.next().getData();
+                    if (!val2.matches("-?\\d+(.\\d+)?")) {
+                        return null;
+                    }
+                    val = val + ',' + val2;
+                }
+            }
+        return val;
+        }
+    }
+    //otherwise return null
+    return null;
+}
+

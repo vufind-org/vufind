@@ -1,0 +1,88 @@
+<?=$this->doctype('XHTML1_TRANSITIONAL')?>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="<?=$this->userLang?>" xml:lang="en">
+  <head>
+    <?=$this->headMeta()?>
+    <?=$this->headTitle()?>
+    <?=$this->headStyle()?>
+    <?
+        // Set up OpenSearch link:
+        $this->headLink(
+            array(
+                'href' => $this->url(
+                    array('controller' => 'Search', 'action' => 'OpenSearch'),
+                    'default', true
+                ) . '?method=describe',
+                'type' => 'application/opensearchdescription+xml',
+                'title' => $this->transEsc('Library Catalog Search'),
+                'rel' => 'search'
+            )
+        );
+    ?>
+    <?=$this->headLink()?>
+    <?
+        // Set global path for Javascript code:
+        $this->headScript()->prependScript("path = '" . $this->baseUrl() . "';");
+
+        // Deal with cart stuff:
+        $cart = VF_Cart::getInstance();
+        if ($cart->isActive()) {
+            $this->headScript()->appendFile("jquery.cookie.js");
+            $this->headScript()->appendFile("cart.js");
+            $script = 'var vufindString = {};'
+                . 'vufindString.bulk_noitems_advice = "' . $this->transEsc('bulk_noitems_advice') . '";'
+                . 'vufindString.confirmEmpty = "' . $this->transEsc('bookbag_confirm_empty') . '";'
+                . 'vufindString.viewBookBag = "' . $this->transEsc('View Book Bag') . '";'
+                . 'vufindString.addBookBag = "' . $this->transEsc('Add to Book Bag') . '";'
+                . 'vufindString.removeBookBag = "' . $this->transEsc('Remove from Book Bag') . '";'
+                . 'vufindString.itemsAddBag = "' . $this->transEsc('items_added_to_bookbag') . '";'
+                . 'vufindString.itemsInBag = "' . $this->transEsc('items_already_in_bookbag') . '";'
+                . 'vufindString.bookbagMax = "' . $cart->getMaxSize() . '";'
+                . 'vufindString.bookbagFull = "' . $this->transEsc('bookbag_full_msg') . '";'
+                . 'vufindString.bookbagStatusFull = "' . $this->transEsc('bookbag_full') . '";';
+            $this->headScript()->appendScript($script);
+        }
+    ?>
+    <?=$this->headScript()?>
+  </head>
+  <body>
+    <? if ($mobileViewLink = $this->mobileUrl()): // display 'return to mobile' link when applicable ?>
+      <div class="mobileViewLink"><a href="<?=$this->escape($mobileViewLink)?>"><?=$this->transEsc("mobile_link")?></a></div>
+    <? endif; ?>
+    <div class="container">
+      <div class="header">
+        <?=$this->render('header.phtml')?>
+      </div>
+      <? // Set up the search box -- there are three possible cases:
+         // 1. No search box was set; we should default to the normal box
+         // 2. It was set to false; we should display nothing
+         // 3. It is set to a custom string; we should display the provided version
+
+         // Set up default search box if no data was provided from the template;
+         // this covers case 1.  Cases 2 and 3 are then covered by logic below.
+         if (!isset($this->layout()->searchbox)) {
+             $this->layout()->searchbox = $this->render('search/searchbox.phtml');
+         }
+      ?>
+      <? if ($this->layout()->searchbox !== false): ?>
+      <div class="searchbox">
+        <?=$this->layout()->searchbox?>
+      </div>
+      <? endif; ?>
+      <? if ($this->layout()->breadcrumbs): ?>
+      <div class="breadcrumbs">
+        <div class="breadcrumbinner">
+          <a href="<?=$this->baseUrl()?>"><?=$this->transEsc('Home')?></a> <span>&gt;</span>
+          <?=$this->layout()->breadcrumbs?>
+        </div>
+      </div>
+      <? endif; ?>
+      <div class="main">
+        <?=$this->layout()->content?>
+      </div>
+      <div class="footer">
+        <?=$this->render('footer.phtml')?>
+        <?=$this->layout()->poweredBy?>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+$(document).ready(function() {
+  <? if (isset($this->searchDetails) && is_array($this->searchDetails)): ?>
+    <? foreach ($this->searchDetails as $searchGroup): ?>
+      <? $i = 0; foreach ($searchGroup['group'] as $search): ?>
+        <? if (++$i == 1): ?>
+          var new_group = addGroup('<?=$this->escape(addslashes($search['lookfor']))?>', '<?=$this->escape(addslashes($search['field']))?>', '<?=$this->escape($search['bool'])?>');
+        <? else: ?>
+          addSearch(new_group, '<?=$this->escape(addslashes($search['lookfor']))?>', '<?=$this->escape(addslashes($search['field']))?>');
+        <? endif; ?>
+      <? endforeach; ?>
+    <? endforeach; ?>
+  <? else: ?>
+    var new_group = addGroup();
+    addSearch(new_group);
+    addSearch(new_group);
+  <? endif; ?>
+  // show the add group link
+  $("#addGroupLink").removeClass("offscreen");
+});

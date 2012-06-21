@@ -1,0 +1,11 @@
+<table style="border-bottom:1px solid #eee;">
+  <tr>
+    <? $i = 0; foreach ($this->results->getResults() as $current): ?>
+      <td id="result<?=$i ?>" class="gridCell gridCellHover">
+        <span class="recordNumber"><?=$this->results->getStartRecord()+(++$i)-1?><? if (VF_Cart::getInstance()->isActive()): ?><?=$this->record($current)->getCheckbox()?><? endif; ?></span>
+        <?=$this->record($current)->getSearchResult('grid')?>
+      </td>
+      <?=($i%4==0)?'</tr><tr>':''?>
+    <? endforeach; ?>
+  </tr>
+</table>

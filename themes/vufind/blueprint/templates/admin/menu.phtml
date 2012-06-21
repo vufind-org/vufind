@@ -1,0 +1,6 @@
+<ul id="list1">
+  <li<?=ucwords($this->action) == "Home" ? ' class="active"' : ''?>><a href="<?=$this->url(array('controller' => 'Admin', 'action' => 'Home'), 'default', true)?>"><?=$this->transEsc('Home')?></a></li>
+  <li<?=ucwords($this->action) == "Statistics" ? ' class="active"' : ''?>><a href="<?=$this->url(array('controller' => 'Admin', 'action' => 'Statistics'), 'default', true)?>"><?=$this->transEsc('Statistics')?></a></li>
+  <li<?=ucwords($this->action) == "Config" ? ' class="active"' : ''?>><a href="<?=$this->url(array('controller' => 'Admin', 'action' => 'Config'), 'default', true)?>"><?=$this->transEsc('Configuration')?></a>
+  <li<?=ucwords($this->action) == "Maintenance" ? ' class="active"' : ''?>><a href="<?=$this->url(array('controller' => 'Admin', 'action' => 'Maintenance'), 'default', true)?>"><?=$this->transEsc('System Maintenance')?></a></li>
+</ul>

@@ -1,0 +1,6 @@
+<label class="span-2" for="login_username"><?=$this->transEsc('Username')?>:</label>
+<input id="login_username" type="text" name="username" value="<?=$this->escape($this->request->getParam('username'))?>" size="15" class="mainFocus <?=$this->jqueryValidation(array('required'=>'This field is required'))?>"/>
+<br class="clear"/>
+<label class="span-2" for="login_password"><?=$this->transEsc('Password')?>:</label>
+<input id="login_password" type="password" name="password" size="15" class="<?=$this->jqueryValidation(array('required'=>'This field is required'))?>"/>
+<br class="clear"/>

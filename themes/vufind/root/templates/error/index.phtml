@@ -1,0 +1,24 @@
+<h1><?=$this->transEsc('An error has occurred')?></h1>
+<h2><?=$this->transEsc($this->message)?></h2>
+
+<? if ($this->showInstallLink): ?>
+  <h3><a href="<?=$this->url(array('controller' => 'Install'), 'default', true)?>"><?=$this->transEsc('auto_configure_title', array(), 'Auto Configure')?></a></h3>
+  <?=$this->transEsc('auto_configure_description', array(), 'If this is a new installation, you may be able to fix the error using VuFind\'s Auto Configure tool.')?>
+  <h3><a href="<?=$this->url(array('controller' => 'Upgrade'), 'default', true)?>"><?=$this->transEsc('Upgrade VuFind')?></a></h3>
+  <?=$this->transEsc('upgrade_description', array(), 'If you are upgrading a previous VuFind version, you can load your old settings with this tool.')?>
+<? endif; ?>
+
+<? if (isset($this->exception)): ?>
+  <h3><?=$this->transEsc('Exception')?>:</h3>
+  <p>
+    <b><?=$this->transEsc('Message')?>:</b> <?=$this->exception->getMessage()?>
+  </p>
+  
+  <h3><?=$this->transEsc('Backtrace')?>:</h3>
+  <pre><?=$this->exception->getTraceAsString()?>
+  </pre>
+  
+  <h3><?=$this->transEsc('error_page_parameter_list_heading')?>:</h3>
+  <pre><?=$this->escape(var_export($this->request->getParams(), true))?>
+  </pre>
+<? endif ?>

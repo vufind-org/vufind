@@ -1,0 +1,14 @@
+@CHARSET "UTF-8";
+
+#headerRight, .searchbox, .breadcrumbs, .authorbox, .resulthead, #tabnav, .main .span-5, .result .span-4, .searchtools, .toolbar, .footer, .pagination, .offscreen, .checkbox {
+    display: none;
+}
+
+.main .span-18 {
+    width: 930px;
+}
+
+.result .span-9 {
+    width: 810px;
+    margin-right: 0;
+}

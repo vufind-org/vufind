@@ -1,0 +1,16 @@
+<?
+  $this->headTitle($this->translate('MyResearch Help'));
+
+  try { // language missing
+    echo $this->render($this->tpl_lang);
+  } catch(Exception $e) {
+    try { // for missing file error message
+      $en = $this->render($this->tpl_en); // existence check
+      ?><p class="warning"><?=$this->transEsc('Sorry, but the help you requested is unavailable in your language.') ?></p><?
+      echo $en;
+    } catch(Exception $e) {
+      $this->layout->setLayout('layout');
+      throw new Exception('Unknown Help Page');
+    }
+  }
+?>
