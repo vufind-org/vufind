@@ -1,6 +1,6 @@
-<a id="logo" href="<?=$this->baseUrl()?>"></a>
+<a id="logo" href="<?=$this->url('home')?>"></a>
 <div id="headerRight">
-  <? $cart = VF_Cart::getInstance(); if ($cart->isActive()): ?>
+  <? $cart = \VuFind\Cart::getInstance(); if ($cart->isActive()): ?>
     <div id="cartSummary" class="cartSummary">
       <a id="cartItems" title="<?=$this->transEsc('View Book Bag')?>" class="bookbag" href="<?=$this->url(array('controller' => 'Cart', 'action' => 'Home'), 'default', true)?>"><strong><span><?=count($cart->getItems())?></span></strong> <?=$this->transEsc('items')?> <?=$cart->isFull() ? '(' .  $this->transEsc('bookbag_full') . ')' : ''?></a>
       <a id="viewCart" title="<?=$this->transEsc('View Book Bag')?>" class="viewCart bookbag offscreen" href="<?=$this->url(array('controller' => 'Cart', 'action' => 'Home'), 'default', true)?>"><strong><span id="cartSize"><?=count($cart->getItems())?></span></strong> <?=$this->transEsc('items')?><span id="cartStatus"><?=$cart->isFull() ? $this->transEsc('bookbag_full') : '&nbsp;'?></span></a>

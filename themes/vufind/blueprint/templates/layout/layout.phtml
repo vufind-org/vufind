@@ -9,8 +9,7 @@
         $this->headLink(
             array(
                 'href' => $this->url(
-                    array('controller' => 'Search', 'action' => 'OpenSearch'),
-                    'default', true
+                    'default', array('controller' => 'Search', 'action' => 'OpenSearch')
                 ) . '?method=describe',
                 'type' => 'application/opensearchdescription+xml',
                 'title' => $this->transEsc('Library Catalog Search'),
@@ -21,10 +20,10 @@
     <?=$this->headLink()?>
     <?
         // Set global path for Javascript code:
-        $this->headScript()->prependScript("path = '" . $this->baseUrl() . "';");
+        $this->headScript()->prependScript("path = '" . rtrim($this->url('home'), '/') . "';");
 
         // Deal with cart stuff:
-        $cart = VF_Cart::getInstance();
+        $cart = \VuFind\Cart::getInstance();
         if ($cart->isActive()) {
             $this->headScript()->appendFile("jquery.cookie.js");
             $this->headScript()->appendFile("cart.js");
@@ -71,7 +70,7 @@
       <? if ($this->layout()->breadcrumbs): ?>
       <div class="breadcrumbs">
         <div class="breadcrumbinner">
-          <a href="<?=$this->baseUrl()?>"><?=$this->transEsc('Home')?></a> <span>&gt;</span>
+          <a href="<?=$this->url('home')?>"><?=$this->transEsc('Home')?></a> <span>&gt;</span>
           <?=$this->layout()->breadcrumbs?>
         </div>
       </div>
