@@ -25,6 +25,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFindThemes\Root\Helpers;
+use VuFind\Mobile,
+    Zend\View\Helper\AbstractHelper;
 
 /**
  * Mobile URL view helper
@@ -35,7 +38,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_MobileUrl extends Zend_View_Helper_Abstract
+class MobileUrl extends AbstractHelper
 {
     /**
      * Return the mobile version of the current URL if the user is on a mobile device
@@ -43,22 +46,17 @@ class VuFind_Theme_Root_Helper_MobileUrl extends Zend_View_Helper_Abstract
      *
      * @return string
      */
-    public function mobileUrl()
+    public function __invoke()
     {
         // Do nothing special if we're not on a mobile device or no mobile theme is
         // enabled:
-        if (!VF_Mobile::enabled() || !VF_Mobile::detect()) {
+        if (!Mobile::enabled() || !Mobile::detect()) {
             return false;
         }
 
-        // TODO: find a better way to obtain GET parameters without using superglobal
-        // (Zend Framework doesn't seem to offer a simple solution).
-        $newParams = array('ui' => 'mobile');
-        foreach ($_GET as $key => $value) {
-            if ($key != 'ui') {
-                $newParams[$key] = $value;
-            }
-        }
-        return $this->view->url() . '?' . http_build_query($newParams);
+        $urlHelper = $this->getView()->plugin('serverurl');
+        $currentUrl = rtrim($urlHelper(true), '?');
+        $currentUrl .= strstr($currentUrl, '?') ? '&' : '?';
+        return $currentUrl .= 'ui=mobile';
     }
 }
