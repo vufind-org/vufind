@@ -10,7 +10,7 @@
     <?=$this->headLink()?>
     <?
         // Set global path for Javascript code:
-        $this->headScript()->prependScript("path = '" . $this->baseUrl() . "';");
+        $this->headScript()->prependScript("path = '" . rtrim($this->url('home'), '/') . "';");
     ?>
     <?=$this->headScript()?>
   </head>
