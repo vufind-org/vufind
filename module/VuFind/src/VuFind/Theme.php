@@ -390,9 +390,8 @@ class Theme
                 );
             }
 
-            // Add template and layout paths:
+            // Add template path:
             $templatePathStack[] = $this->baseDir . "/$key/templates";
-            $templatePathStack[] = $this->baseDir . "/$key/layouts";
 
             // Add CSS and JS dependencies:
             if ($css = $currentThemeInfo->get('css')) {
