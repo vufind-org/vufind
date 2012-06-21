@@ -8,7 +8,7 @@
   <p>
     <?=$this->transEsc('Please contact the Library Reference Department for assistance')?>
     <br/>
-    <? $supportEmail = $this->escape(VF_Config_Reader::getConfig()->Site->email); ?>
+    <? $supportEmail = $this->escape(\VuFind\Config\Reader::getConfig()->Site->email); ?>
     <a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a>
   </p>
 </div>
@@ -20,7 +20,7 @@
   <?=$this->transEsc('upgrade_description', array(), 'If you are upgrading a previous VuFind version, you can load your old settings with this tool.')?>
 <? endif; ?>
 
-<? if (isset($this->exception)): ?>
+<? if (isset($this->display_exceptions) && $this->display_exceptions): ?>
   <h3><?=$this->transEsc('Exception')?>:</h3>
   <p>
     <b><?=$this->transEsc('Message')?>:</b> <?=$this->exception->getMessage()?>
@@ -30,7 +30,18 @@
   <pre><?=$this->exception->getTraceAsString()?>
   </pre>
 
-  <h3><?=$this->transEsc('error_page_parameter_list_heading')?>:</h3>
-  <pre><?=$this->escape(var_export($this->request->getParams(), true))?>
-  </pre>
+  <? if ($e = $this->exception->getPrevious()): ?>
+    <h3>Previous exceptions:</h2>
+    <? while($e): ?>
+        <h4><?php echo get_class($e); ?></h4>
+        <p><?=$e->getMessage()?></p>
+        <pre><?=$e->getTraceAsString()?></pre>
+        <? $e = $e->getPrevious(); ?>
+    <? endwhile; ?>
+  <? endif; ?>
+
+  <? if (isset($this->request)): ?>
+    <h3><?=$this->transEsc('error_page_parameter_list_heading')?>:</h3>
+    <pre><?=$this->escape(var_export($this->request->getParams(), true))?></pre>
+  <? endif; ?>
 <? endif ?>
