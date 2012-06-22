@@ -50,7 +50,23 @@ class Tools
     }
 
     /**
-     * Get the container used for persisting session-related settings.
+     * Get the container used for handling public resources for themes
+     * (CSS, JS, etc.)
+     *
+     * @return Context
+     */
+    public static function getResourceContainer()
+    {
+        static $container = false;
+        if (!$container) {
+            $container = new ResourceContainer();
+        }
+        return $container;
+    }
+
+    /**
+     * Get the container used for persisting theme-related settings from
+     * page to page.
      *
      * @return SessionContainer
      */
@@ -61,5 +77,29 @@ class Tools
             $container = new SessionContainer('Theme');
         }
         return $container;
+    }
+
+    /**
+     * Search the themes for a particular file.  If it exists, return the
+     * first matching theme name; otherwise, return null.
+     *
+     * @param string $relativePath Relative path to search within themes
+     *
+     * @return string
+     */
+    public static function findContainingTheme($relativePath)
+    {
+        $session = static::getPersistenceContainer();
+        $basePath = static::getBaseDir();
+
+        $currentTheme = $session->currentTheme;
+
+        while (!empty($currentTheme)
+            && !file_exists("$basePath/$currentTheme/$relativePath")
+        ) {
+            $currentTheme = $session->allThemeInfo[$currentTheme]->extends;
+        }
+
+        return empty($currentTheme) ? null : $currentTheme;
     }
 }

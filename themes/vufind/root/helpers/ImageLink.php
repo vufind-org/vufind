@@ -25,6 +25,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
+namespace VuFindThemes\Root\Helpers;
+use VuFind\Theme\Tools as ThemeTools,
+    Zend\View\Helper\AbstractHelper;
 
 /**
  * Image link view helper (extended for VuFind's theme system)
@@ -35,7 +38,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class VuFind_Theme_Root_Helper_ImageLink extends Zend_View_Helper_Abstract
+class ImageLink extends AbstractHelper
 {
     /**
      * Returns an image path according the configured theme
@@ -44,28 +47,17 @@ class VuFind_Theme_Root_Helper_ImageLink extends Zend_View_Helper_Abstract
      *
      * @return string path, null if image not found
      */
-    public function imageLink($image)
+    public function __invoke($image)
     {
-        // Normalize href to account for themes, then call the parent class:
-        $session = new Zend_Session_Namespace('Theme');
+        // Normalize href to account for themes:
+        $relPath = 'images/' . $image;
+        $currentTheme = ThemeTools::findContainingTheme($relPath);
 
-        $currentTheme = $session->currentTheme;
-
-        while (!empty($currentTheme) &&
-            !file_exists(
-                APPLICATION_PATH .
-                "/themes/$currentTheme/images/{$image}"
-            )
-        ) {
-            $currentTheme = $session->allThemeInfo[$currentTheme]->extends;
+        if (is_null($currentTheme)) {
+            return null;
         }
 
-        if (!empty($currentTheme)) {
-            return Zend_Controller_Front::getInstance()->getBaseUrl() .
-                "/themes/$currentTheme/images/" . $image;
-        }
-
-        // Image not found!
-        return null;
+        $urlHelper = $this->getView()->plugin('url');
+        return $urlHelper('home') . "themes/$currentTheme/" . $relPath;
     }
 }

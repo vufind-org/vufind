@@ -47,6 +47,7 @@ class Initializer
     protected $autoLoader;
     protected $config;
     protected $event;
+    protected $resourceContainer;
     protected $serviceManager;
     protected $session;
 
@@ -74,6 +75,10 @@ class Initializer
 
         // Grab the service manager for convenience:
         $this->serviceManager = $this->event->getApplication()->getServiceManager();
+
+        // Grab the resource manager for tracking CSS, JS, etc.:
+        $this->resourceContainer
+            = call_user_func(array($tools, 'getResourceContainer'));
 
         // Set up a session namespace for storing theme settings:
         $this->session = call_user_func(array($tools, 'getPersistenceContainer'));
@@ -333,49 +338,6 @@ class Initializer
     }
 
     /**
-     * Support method for setUpThemes -- set up CSS for the current theme.
-     *
-     * @param array $css CSS files to load.
-     *
-     * @return void
-     */
-    protected function setUpThemeCss($css)
-    {
-        /* TODO:
-        foreach ($css as $current) {
-            $parts = explode(':', $current);
-            $this->view->headLink()->appendStylesheet(
-                trim($parts[0]),
-                isset($parts[1]) ? trim($parts[1]) : 'all',
-                isset($parts[2]) ? trim($parts[2]) : false
-            );
-        }
-         */
-    }
-
-    /**
-     * Support method for setUpThemes -- set up Javascript for the current theme.
-     *
-     * @param array $js Javascript files to load.
-     *
-     * @return void
-     */
-    protected function setUpThemeJs($js)
-    {
-        /* TODO:
-        foreach ($js as $current) {
-            $parts =  explode(':', $current);
-            $this->view->headScript()->appendFile(
-                trim($parts[0]),
-                'text/javascript',
-                isset($parts[1])
-                ? array('conditional' => trim($parts[1])) : array()
-            );
-        }
-         */
-    }
-
-    /**
      * Support method for init() -- set up theme once current settings are known.
      *
      * @param array $themes Theme configuration information.
@@ -399,16 +361,15 @@ class Initializer
 
             // Add CSS and JS dependencies:
             if ($css = $currentThemeInfo->get('css')) {
-                $this->setUpThemeCss($css);
+                $this->resourceContainer->addCss($css);
             }
             if ($js = $currentThemeInfo->get('js')) {
-                $this->setUpThemeJs($js);
+                $this->resourceContainer->addJs($js);
             }
 
-            // Select favicon (we only want one, so we'll pick the best available
-            // one inside this loop and actually load it later outside the loop):
+            // Select favicon:
             if ($favicon = $currentThemeInfo->get('favicon')) {
-                $bestFavicon = $favicon;
+                $this->resourceContainer->setFavicon($favicon);
             }
         }
 
@@ -422,18 +383,5 @@ class Initializer
                 $current->setPaths($templatePathStack);
             }
         }
-
-        /* TODO:
-        // If we found a favicon above, load it now:
-        if (isset($bestFavicon)) {
-            $this->view->headLink(
-                array(
-                    'href' => $this->view->imageLink($bestFavicon),
-                    'type' => 'image/x-icon',
-                    'rel' => 'shortcut icon'
-                )
-            );
-        }
-         */
     }
 }

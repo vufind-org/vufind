@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFindThemes\Root\Helpers;
+use VuFind\Theme\Tools as ThemeTools;
 
 /**
  * Head script view helper (extended for VuFind's theme system)
@@ -35,40 +37,28 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_HeadScript extends Zend_View_Helper_HeadScript
+class HeadScript extends \Zend\View\Helper\HeadScript
 {
     /**
      * Create script HTML
      *
-     * @param string $item        item to be string-ified
-     * @param string $indent      string to put before the escaped content
-     * @param string $escapeStart string to put before the returned content
-     * @param string $escapeEnd   string to put after the returned content
+     * @param mixed  $item        Item to convert
+     * @param string $indent      String to add before the item
+     * @param string $escapeStart Starting sequence
+     * @param string $escapeEnd   Ending sequence
      *
      * @return string
      */
     public function itemToString($item, $indent, $escapeStart, $escapeEnd)
     {
-        // Normalize href to account for themes, then call the parent class:
-        $session = new Zend_Session_Namespace('Theme');
+        // Normalize href to account for themes:
+        $relPath = 'js/' . $item->attributes['src'];
+        $currentTheme = ThemeTools::findContainingTheme($relPath);
 
-        $currentTheme = $session->currentTheme;
-
-        if (isset($item->attributes['src'])) {
-            while (!empty($currentTheme) &&
-                !file_exists(
-                    APPLICATION_PATH .
-                    "/themes/$currentTheme/js/{$item->attributes['src']}"
-                )
-            ) {
-                $currentTheme = $session->allThemeInfo[$currentTheme]->extends;
-            }
-
-            if (!empty($currentTheme)) {
-                $item->attributes['src']
-                    = Zend_Controller_Front::getInstance()->getBaseUrl() .
-                    "/themes/$currentTheme/js/" . $item->attributes['src'];
-            }
+        if (!empty($currentTheme)) {
+            $urlHelper = $this->getView()->plugin('url');
+            $item->attributes['src']
+                = $urlHelper('home') . "themes/$currentTheme/" . $relPath;
         }
 
         return parent::itemToString($item, $indent, $escapeStart, $escapeEnd);

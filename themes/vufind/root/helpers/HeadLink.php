@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFindThemes\Root\Helpers;
+use VuFind\Theme\Tools as ThemeTools;
 
 /**
  * Head link view helper (extended for VuFind's theme system)
@@ -35,7 +37,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_HeadLink extends Zend_View_Helper_HeadLink
+class HeadLink extends \Zend\View\Helper\HeadLink
 {
     /**
      * Create HTML link element from data item
@@ -44,27 +46,17 @@ class VuFind_Theme_Root_Helper_HeadLink extends Zend_View_Helper_HeadLink
      *
      * @return string
      */
-    public function itemToString(stdClass $item)
+    public function itemToString(\stdClass $item)
     {
         // Normalize href to account for themes, then call the parent class:
-        $session = new Zend_Session_Namespace('Theme');
-        
-        $currentTheme = $session->currentTheme;
-        
-        while (!empty($currentTheme) &&
-            !file_exists(
-                APPLICATION_PATH .
-                "/themes/$currentTheme/css/{$item->href}"
-            )
-        ) {
-            $currentTheme = $session->allThemeInfo[$currentTheme]->extends;
-        }
+        $relPath = 'css/' . $item->href;
+        $currentTheme = ThemeTools::findContainingTheme($relPath);
 
         if (!empty($currentTheme)) {
-            $item->href = Zend_Controller_Front::getInstance()->getBaseUrl() .
-                "/themes/$currentTheme/css/" . $item->href;
+            $urlHelper = $this->getView()->plugin('url');
+            $item->href = $urlHelper('home') . "themes/$currentTheme/" . $relPath;
         }
-        
+
         return parent::itemToString($item);
     }
 }
