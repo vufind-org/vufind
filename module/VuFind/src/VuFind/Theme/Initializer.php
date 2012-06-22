@@ -1,6 +1,6 @@
 <?php
 /**
- * VuFind Theme Handler
+ * VuFind Theme Initializer
  *
  * PHP version 5
  *
@@ -25,17 +25,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-namespace VuFind;
+namespace VuFind\Theme;
 use VuFind\Mobile,
     VuFind\Mvc\View\InjectTemplateListener,
     Zend\Config\Config,
     Zend\Config\Reader\Ini as IniReader,
     Zend\Mvc\MvcEvent,
-    Zend\Session\Container as SessionContainer,
     Zend\Stdlib\RequestInterface as Request;
 
 /**
- * VuFind Theme Handler
+ * VuFind Theme Initializer
  *
  * @category VuFind2
  * @package  Support_Classes
@@ -43,7 +42,7 @@ use VuFind\Mobile,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Theme
+class Initializer
 {
     protected $autoLoader;
     protected $config;
@@ -56,14 +55,19 @@ class Theme
      *
      * @param Config   $config Configuration object
      * @param MvcEvent $event  Zend MVC Event object
+     * @param string   $tools  Name of Tools class
      */
     public function __construct(Config $config, MvcEvent $event,
-        string $baseDir = null
+        string $tools = null
     ) {
+        // If no tools class name was passed in, use a default:
+        if (is_null($tools)) {
+            $tools = 'VuFind\Theme\Tools';
+        }
+
         $this->config = $config;
         $this->event = $event;
-        $this->baseDir = empty($baseDir)
-            ? APPLICATION_PATH . '/themes/vufind' : $baseDir;
+        $this->baseDir = call_user_func(array($tools, 'getBaseDir'));
 
         // Create a class loader for helper management:
         $this->autoLoader = $this->getAutoloader();
@@ -72,7 +76,7 @@ class Theme
         $this->serviceManager = $this->event->getApplication()->getServiceManager();
 
         // Set up a session namespace for storing theme settings:
-        $this->session = new SessionContainer('Theme');
+        $this->session = call_user_func(array($tools, 'getPersistenceContainer'));
     }
 
     /**

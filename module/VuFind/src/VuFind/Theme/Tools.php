@@ -1,6 +1,6 @@
 <?php
 /**
- * VuFind Bootstrapper
+ * VuFind Theme Support Methods
  *
  * PHP version 5
  *
@@ -25,12 +25,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-namespace VuFind;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Theme\Initializer as ThemeInitializer,
-    Zend\Mvc\MvcEvent;
+namespace VuFind\Theme;
+use Zend\Session\Container as SessionContainer;
+
 /**
- * VuFind Bootstrapper
+ * VuFind Theme Support Methods
  *
  * @category VuFind2
  * @package  Support_Classes
@@ -38,51 +37,29 @@ use VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Bootstrap
+class Tools
 {
-    protected $config;
-    protected $event;
-
     /**
-     * Constructor
+     * Get the base directory for themes.
      *
-     * @param MvcEvent $event Zend MVC Event object
+     * @return string
      */
-    public function __construct(MvcEvent $event)
+    public static function getBaseDir()
     {
-        $this->config = ConfigReader::getConfig();
-        $this->event = $event;
+        return APPLICATION_PATH . '/themes/vufind';
     }
 
     /**
-     * Bootstrap all necessary resources.
+     * Get the container used for persisting session-related settings.
      *
-     * @return void
+     * @return SessionContainer
      */
-    public function bootstrap()
+    public static function getPersistenceContainer()
     {
-        $this->initTheme();
-    }
-
-    /**
-     * Set up theme handling.
-     *
-     * @return void
-     */
-    protected function initTheme()
-    {
-        $events = $this->event->getApplication()->events();
-
-        // Attach template injection configuration to the route event:
-        $events->attach(
-            'route', array('VuFind\Theme\Initializer', 'configureTemplateInjection')
-        );
-
-        // Attach remaining theme configuration to the dispatch event:
-        $config =& $this->config;
-        $events->attach('dispatch', function($event) use ($config) {
-            $theme = new ThemeInitializer($config, $event);
-            $theme->init();
-        });
+        static $container = false;
+        if (!$container) {
+            $container = new SessionContainer('Theme');
+        }
+        return $container;
     }
 }
