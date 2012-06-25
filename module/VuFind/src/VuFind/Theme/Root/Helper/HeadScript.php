@@ -1,6 +1,6 @@
 <?php
 /**
- * Head link view helper (extended for VuFind's theme system)
+ * Head script view helper (extended for VuFind's theme system)
  *
  * PHP version 5
  *
@@ -25,11 +25,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-namespace VuFindThemes\Root\Helpers;
+namespace VuFind\Theme\Root\Helper;
 use VuFind\Theme\Tools as ThemeTools;
 
 /**
- * Head link view helper (extended for VuFind's theme system)
+ * Head script view helper (extended for VuFind's theme system)
  *
  * @category VuFind2
  * @package  View_Helpers
@@ -37,26 +37,30 @@ use VuFind\Theme\Tools as ThemeTools;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class HeadLink extends \Zend\View\Helper\HeadLink
+class HeadScript extends \Zend\View\Helper\HeadScript
 {
     /**
-     * Create HTML link element from data item
+     * Create script HTML
      *
-     * @param stdClass $item data item
+     * @param mixed  $item        Item to convert
+     * @param string $indent      String to add before the item
+     * @param string $escapeStart Starting sequence
+     * @param string $escapeEnd   Ending sequence
      *
      * @return string
      */
-    public function itemToString(\stdClass $item)
+    public function itemToString($item, $indent, $escapeStart, $escapeEnd)
     {
-        // Normalize href to account for themes, then call the parent class:
-        $relPath = 'css/' . $item->href;
+        // Normalize href to account for themes:
+        $relPath = 'js/' . $item->attributes['src'];
         $currentTheme = ThemeTools::findContainingTheme($relPath);
 
         if (!empty($currentTheme)) {
             $urlHelper = $this->getView()->plugin('url');
-            $item->href = $urlHelper('home') . "themes/$currentTheme/" . $relPath;
+            $item->attributes['src']
+                = $urlHelper('home') . "themes/$currentTheme/" . $relPath;
         }
 
-        return parent::itemToString($item);
+        return parent::itemToString($item, $indent, $escapeStart, $escapeEnd);
     }
 }

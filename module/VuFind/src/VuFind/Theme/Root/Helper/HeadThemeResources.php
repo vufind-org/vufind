@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-namespace VuFindThemes\Root\Helpers;
+namespace VuFind\Theme\Root\Helper;
 use VuFind\Theme\Tools as ThemeTools,
     Zend\View\Helper\AbstractHelper;
 

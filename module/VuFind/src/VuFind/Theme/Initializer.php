@@ -44,7 +44,6 @@ use VuFind\Mobile,
  */
 class Initializer
 {
-    protected $autoLoader;
     protected $config;
     protected $event;
     protected $resourceContainer;
@@ -70,9 +69,6 @@ class Initializer
         $this->event = $event;
         $this->baseDir = call_user_func(array($tools, 'getBaseDir'));
 
-        // Create a class loader for helper management:
-        $this->autoLoader = $this->getAutoloader();
-
         // Grab the service manager for convenience:
         $this->serviceManager = $this->event->getApplication()->getServiceManager();
 
@@ -82,20 +78,6 @@ class Initializer
 
         // Set up a session namespace for storing theme settings:
         $this->session = call_user_func(array($tools, 'getPersistenceContainer'));
-    }
-
-    /**
-     * Retrieve the Zend autoloader from PHP.
-     *
-     * @return Zend\Loader\StandardAutoloader
-     */
-    protected function getAutoloader()
-    {
-        $loader = array_pop(spl_autoload_functions());
-        if (!is_a($loader[0], 'Zend\Loader\StandardAutoloader')) {
-            throw new \Exception('Could not find registered autoloader!');
-        }
-        return $loader[0];
     }
 
     /**
@@ -322,11 +304,6 @@ class Initializer
         if (is_null($helpers)) {
             return;
         }
-
-        // Register the theme's namespace
-        $this->autoLoader->registerNamespace(
-            $namespace, $this->baseDir . "/$theme/helpers"
-        );
 
         // Grab the helper loader from the view manager:
         $loader = $this->serviceManager->get('viewmanager')->getHelperLoader();

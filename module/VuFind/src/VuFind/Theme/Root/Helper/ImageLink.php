@@ -1,6 +1,6 @@
 <?php
 /**
- * Head script view helper (extended for VuFind's theme system)
+ * Image link view helper (extended for VuFind's theme system)
  *
  * PHP version 5
  *
@@ -23,44 +23,41 @@
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://www.vufind.org  Main Page
  */
-namespace VuFindThemes\Root\Helpers;
-use VuFind\Theme\Tools as ThemeTools;
+namespace VuFind\Theme\Root\Helper;
+use VuFind\Theme\Tools as ThemeTools,
+    Zend\View\Helper\AbstractHelper;
 
 /**
- * Head script view helper (extended for VuFind's theme system)
+ * Image link view helper (extended for VuFind's theme system)
  *
  * @category VuFind2
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://www.vufind.org  Main Page
  */
-class HeadScript extends \Zend\View\Helper\HeadScript
+class ImageLink extends AbstractHelper
 {
     /**
-     * Create script HTML
+     * Returns an image path according the configured theme
      *
-     * @param mixed  $item        Item to convert
-     * @param string $indent      String to add before the item
-     * @param string $escapeStart Starting sequence
-     * @param string $escapeEnd   Ending sequence
+     * @param string $image image name/path
      *
-     * @return string
+     * @return string path, null if image not found
      */
-    public function itemToString($item, $indent, $escapeStart, $escapeEnd)
+    public function __invoke($image)
     {
         // Normalize href to account for themes:
-        $relPath = 'js/' . $item->attributes['src'];
+        $relPath = 'images/' . $image;
         $currentTheme = ThemeTools::findContainingTheme($relPath);
 
-        if (!empty($currentTheme)) {
-            $urlHelper = $this->getView()->plugin('url');
-            $item->attributes['src']
-                = $urlHelper('home') . "themes/$currentTheme/" . $relPath;
+        if (is_null($currentTheme)) {
+            return null;
         }
 
-        return parent::itemToString($item, $indent, $escapeStart, $escapeEnd);
+        $urlHelper = $this->getView()->plugin('url');
+        return $urlHelper('home') . "themes/$currentTheme/" . $relPath;
     }
 }

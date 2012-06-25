@@ -1,6 +1,6 @@
 <?php
 /**
- * Image link view helper (extended for VuFind's theme system)
+ * Mobile URL view helper
  *
  * PHP version 5
  *
@@ -23,41 +23,40 @@
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-namespace VuFindThemes\Root\Helpers;
-use VuFind\Theme\Tools as ThemeTools,
+namespace VuFind\Theme\Root\Helper;
+use VuFind\Mobile,
     Zend\View\Helper\AbstractHelper;
 
 /**
- * Image link view helper (extended for VuFind's theme system)
+ * Mobile URL view helper
  *
  * @category VuFind2
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class ImageLink extends AbstractHelper
+class MobileUrl extends AbstractHelper
 {
     /**
-     * Returns an image path according the configured theme
+     * Return the mobile version of the current URL if the user is on a mobile device
+     * and might want to switch over.  Return false when not on a mobile device.
      *
-     * @param string $image image name/path
-     *
-     * @return string path, null if image not found
+     * @return string
      */
-    public function __invoke($image)
+    public function __invoke()
     {
-        // Normalize href to account for themes:
-        $relPath = 'images/' . $image;
-        $currentTheme = ThemeTools::findContainingTheme($relPath);
-
-        if (is_null($currentTheme)) {
-            return null;
+        // Do nothing special if we're not on a mobile device or no mobile theme is
+        // enabled:
+        if (!Mobile::enabled() || !Mobile::detect()) {
+            return false;
         }
 
-        $urlHelper = $this->getView()->plugin('url');
-        return $urlHelper('home') . "themes/$currentTheme/" . $relPath;
+        $urlHelper = $this->getView()->plugin('serverurl');
+        $currentUrl = rtrim($urlHelper(true), '?');
+        $currentUrl .= strstr($currentUrl, '?') ? '&' : '?';
+        return $currentUrl .= 'ui=mobile';
     }
 }

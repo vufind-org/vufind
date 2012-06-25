@@ -1,6 +1,6 @@
 <?php
 /**
- * Mobile URL view helper
+ * Translate + escape view helper
  *
  * PHP version 5
  *
@@ -25,12 +25,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-namespace VuFindThemes\Root\Helpers;
-use VuFind\Mobile,
-    Zend\View\Helper\AbstractHelper;
+namespace VuFind\Theme\Root\Helper;
+use Zend\View\Helper\AbstractHelper;
 
 /**
- * Mobile URL view helper
+ * Translate + escape view helper
  *
  * @category VuFind2
  * @package  View_Helpers
@@ -38,25 +37,22 @@ use VuFind\Mobile,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class MobileUrl extends AbstractHelper
+class TransEsc extends AbstractHelper
 {
     /**
-     * Return the mobile version of the current URL if the user is on a mobile device
-     * and might want to switch over.  Return false when not on a mobile device.
+     * Translate and escape a string
+     *
+     * @param string $str     String to escape and translate
+     * @param array  $tokens  Tokens to inject into the translated string
+     * @param string $default Default value to use if no translation is found (null
+     * for no default).
      *
      * @return string
      */
-    public function __invoke()
+    public function __invoke($str, $tokens = array(), $default = null)
     {
-        // Do nothing special if we're not on a mobile device or no mobile theme is
-        // enabled:
-        if (!Mobile::enabled() || !Mobile::detect()) {
-            return false;
-        }
-
-        $urlHelper = $this->getView()->plugin('serverurl');
-        $currentUrl = rtrim($urlHelper(true), '?');
-        $currentUrl .= strstr($currentUrl, '?') ? '&' : '?';
-        return $currentUrl .= 'ui=mobile';
+        $escaper = $this->getView()->plugin('escape');
+        $translator = $this->getView()->plugin('translate');
+        return $escaper($translator($str, $tokens, $default));
     }
 }

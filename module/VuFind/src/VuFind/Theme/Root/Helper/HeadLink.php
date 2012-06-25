@@ -1,6 +1,6 @@
 <?php
 /**
- * Translate + escape view helper
+ * Head link view helper (extended for VuFind's theme system)
  *
  * PHP version 5
  *
@@ -25,11 +25,11 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-namespace VuFindThemes\Root\Helpers;
-use Zend\View\Helper\AbstractHelper;
+namespace VuFind\Theme\Root\Helper;
+use VuFind\Theme\Tools as ThemeTools;
 
 /**
- * Translate + escape view helper
+ * Head link view helper (extended for VuFind's theme system)
  *
  * @category VuFind2
  * @package  View_Helpers
@@ -37,22 +37,26 @@ use Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class TransEsc extends AbstractHelper
+class HeadLink extends \Zend\View\Helper\HeadLink
 {
     /**
-     * Translate and escape a string
+     * Create HTML link element from data item
      *
-     * @param string $str     String to escape and translate
-     * @param array  $tokens  Tokens to inject into the translated string
-     * @param string $default Default value to use if no translation is found (null
-     * for no default).
+     * @param stdClass $item data item
      *
      * @return string
      */
-    public function __invoke($str, $tokens = array(), $default = null)
+    public function itemToString(\stdClass $item)
     {
-        $escaper = $this->getView()->plugin('escape');
-        $translator = $this->getView()->plugin('translate');
-        return $escaper($translator($str, $tokens, $default));
+        // Normalize href to account for themes, then call the parent class:
+        $relPath = 'css/' . $item->href;
+        $currentTheme = ThemeTools::findContainingTheme($relPath);
+
+        if (!empty($currentTheme)) {
+            $urlHelper = $this->getView()->plugin('url');
+            $item->href = $urlHelper('home') . "themes/$currentTheme/" . $relPath;
+        }
+
+        return parent::itemToString($item);
     }
 }
