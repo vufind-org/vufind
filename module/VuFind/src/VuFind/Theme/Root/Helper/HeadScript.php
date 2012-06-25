@@ -52,13 +52,15 @@ class HeadScript extends \Zend\View\Helper\HeadScript
     public function itemToString($item, $indent, $escapeStart, $escapeEnd)
     {
         // Normalize href to account for themes:
-        $relPath = 'js/' . $item->attributes['src'];
-        $currentTheme = ThemeTools::findContainingTheme($relPath);
+        if (!empty($item->attributes['src'])) {
+            $relPath = 'js/' . $item->attributes['src'];
+            $currentTheme = ThemeTools::findContainingTheme($relPath);
 
-        if (!empty($currentTheme)) {
-            $urlHelper = $this->getView()->plugin('url');
-            $item->attributes['src']
-                = $urlHelper('home') . "themes/$currentTheme/" . $relPath;
+            if (!empty($currentTheme)) {
+                $urlHelper = $this->getView()->plugin('url');
+                $item->attributes['src']
+                    = $urlHelper('home') . "themes/$currentTheme/" . $relPath;
+            }
         }
 
         return parent::itemToString($item, $indent, $escapeStart, $escapeEnd);
