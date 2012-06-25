@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
+namespace VuFind\Search;
+use Zend\Session\Container as SessionContainer;
 
 /**
  * Wrapper class to handle search memory
@@ -35,7 +37,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class VF_Search_Memory
+class Memory
 {
     /**
      * Clear the last accessed search URL in the session.
@@ -44,7 +46,7 @@ class VF_Search_Memory
      */
     public static function forgetSearch()
     {
-        $session = new Zend_Session_Namespace('Search');
+        $session = new SessionContainer('Search');
         unset($session->last);
     }
 
@@ -59,7 +61,7 @@ class VF_Search_Memory
     {
         // Only remember URL if string is non-empty... otherwise clear the memory.
         if (strlen(trim($url)) > 0) {
-            $session = new Zend_Session_Namespace('Search');
+            $session = new SessionContainer('Search');
             $session->last = $url;
         } else {
             self::forgetSearch();
@@ -74,7 +76,7 @@ class VF_Search_Memory
      */
     public static function retrieve()
     {
-        $session = new Zend_Session_Namespace('Search');
+        $session = new SessionContainer('Search');
         return isset($session->last) ? $session->last : null;
     }
 }

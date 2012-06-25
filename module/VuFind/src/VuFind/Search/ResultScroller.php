@@ -25,6 +25,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
+namespace VuFind\Search;
+use VuFind\Config\Reader as ConfigReader,
+    Zend\Session\Container as SessionContainer;
 
 /**
  * Class for managing "next" and "previous" navigation within result sets.
@@ -35,7 +38,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
-class VF_Search_ResultScroller
+class ResultScroller
 {
     protected $enabled;
     protected $data;
@@ -46,12 +49,12 @@ class VF_Search_ResultScroller
     public function __construct()
     {
         // Is this functionality enabled in config.ini?
-        $config = VF_Config_Reader::getConfig();
+        $config = ConfigReader::getConfig();
         $this->enabled = (isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation);
 
         // Set up session namespace for the class.
-        $this->data = new Zend_Session_Namespace('ResultScroller');
+        $this->data = new SessionContainer('ResultScroller');
     }
 
     /**

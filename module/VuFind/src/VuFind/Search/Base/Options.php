@@ -26,6 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Base;
+use Zend\Session\Container as SessionContainer;
 
 /**
  * Abstract options search model.
@@ -359,13 +360,13 @@ abstract class Options
     /**
      * Get a session namespace specific to the current class.
      *
-     * @return Zend_Session_Namespace
+     * @return SessionContainer
      */
     public function getSession()
     {
         static $session = false;
         if (!$session) {
-            $session = new Zend_Session_Namespace(get_class($this));
+            $session = new SessionContainer(get_class($this));
         }
         return $session;
     }
