@@ -11,7 +11,7 @@
     $this->headScript()->appendFile("check_item_statuses.js");
 ?>
 <div data-role="page" id="Search-list" class="results-page">
-  <?=$this->mobileMenu()->header(array('results' => $this->results, 'searchLink' => isset($this->searchLink) ? $this->searchLink : null))?>
+  <?=$this->mobileMenu()->header()?>
   <div data-role="content">
     <?=$this->flashmessages()?>
     <? if (($recordTotal = $this->results->getResultTotal()) > 0): ?>

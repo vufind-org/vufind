@@ -4,7 +4,7 @@
     $tab = $this->record($this->driver)->getTab($this->tab);
 ?>
 <div data-role="page" id="Record-view">
-  <?=$this->mobileMenu()->header(array('driver' => $this->driver, 'tab' => $this->tab, 'searchLink' => array('action' => 'Home') + $this->searchOptions($this->searchClassId)->getSearchAction()))?>
+  <?=$this->mobileMenu()->header(array('searchLink' => array('action' => 'Home') + $this->searchOptions($this->searchClassId)->getSearchAction()))?>
   <div class="record" data-role="content" data-record-id="<?=$this->escape($this->driver->getUniqueId())?>">
     <?=$this->flashmessages()?>
     <? if ($this->tab == $this->defaultTab): ?>
