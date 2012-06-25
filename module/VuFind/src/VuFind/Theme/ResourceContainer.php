@@ -115,7 +115,7 @@ class ResourceContainer
      *
      * @return string
      */
-    public function getFavicon($favicon)
+    public function getFavicon()
     {
         return $this->favicon;
     }
