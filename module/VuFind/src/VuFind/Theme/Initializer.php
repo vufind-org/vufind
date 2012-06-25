@@ -259,7 +259,11 @@ class Initializer
      */
     protected function sendThemeOptionsToView()
     {
-        // TODO
+        // Get access to the view model:
+        $viewModel = $this->serviceManager->get('viewmanager')->getViewModel();
+
+        // Send down the view options:
+        $viewModel->setVariable('themeOptions', $this->getThemeOptions());
     }
 
     /**
