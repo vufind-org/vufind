@@ -27,9 +27,7 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Account\Manager as AccountManager,
-    Zend\Mvc\Controller\ActionController;
+use Zend\Mvc\Controller\ActionController;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -40,24 +38,17 @@ use VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class IndexController extends ActionController
+class SearchController extends ActionController
 {
     /**
-     * Determines what elements are displayed on the home page based on whether
-     * the user is logged in.
+     * Home action
      *
      * @return void
      */
     public function homeAction()
     {
-        $config = ConfigReader::getConfig();
-        $loggedInModule = isset($config->Site->defaultLoggedInModule)
-            ? $config->Site->defaultLoggedInModule : 'MyResearch';
-        $loggedOutModule = isset($config->Site->defaultModule)
-            ? $config->Site->defaultModule : 'Search';
-        $module = AccountManager::getInstance()->isLoggedIn()
-            ? $loggedInModule : $loggedOutModule;
-        $options = array('action' => 'Home', 'controller' => $module);
-        return $this->forward()->dispatch($module, $options);
+        /* TODO:
+        $this->view->results = $this->getAdvancedFacets();
+         */
     }
 }

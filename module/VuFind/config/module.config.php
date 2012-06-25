@@ -114,7 +114,8 @@ return array(
     ),
     'controller' => array(
         'classes' => array(
-            'index' => 'VuFind\Controller\IndexController'
+            'index' => 'VuFind\Controller\IndexController',
+            'search' => 'VuFind\Controller\SearchController'
         ),
     ),
     'view_manager' => array(
