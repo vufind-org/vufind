@@ -1,10 +1,10 @@
 <?php
 /**
- * "Retrieve search options" view helper
+ * Solr Reserves aspect of the Search Multi-class (Params)
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2011.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,34 +20,23 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  View_Helpers
+ * @package  SearchObject
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Tuan Nguyen <tuan@yorku.ca>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://www.vufind.org  Main Page
  */
-namespace VuFind\Theme\Root\Helper;
-use VuFind\Search\Options, Zend\View\Helper\AbstractHelper;
 
 /**
- * "Retrieve search options" view helper
+ * Solr Reserves Search Parameters
  *
  * @category VuFind2
- * @package  View_Helpers
+ * @package  SearchObject
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Tuan Nguyen <tuan@yorku.ca>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://www.vufind.org  Main Page
  */
-class SearchOptions extends AbstractHelper
+class VF_Search_SolrReserves_Params extends VF_Search_Solr_Params
 {
-    /**
-     * Wrapper function to the VF_Search_Options getInstance function
-     *
-     * @param string $type The search type of the object to retrieve
-     *
-     * @return SearchOptions
-     */
-    public function __invoke($type = 'Solr')
-    {
-        return Options::getInstance($type);
-    }
 }

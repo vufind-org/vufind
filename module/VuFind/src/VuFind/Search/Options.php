@@ -1,6 +1,6 @@
 <?php
 /**
- * "Retrieve search options" view helper
+ * Instance store for obtaining default search options objects.
  *
  * PHP version 5
  *
@@ -20,34 +20,53 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  View_Helpers
+ * @package  SearchObject
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://vufind.org   Main Site
  */
-namespace VuFind\Theme\Root\Helper;
-use VuFind\Search\Options, Zend\View\Helper\AbstractHelper;
+namespace VuFind\Search;
 
 /**
- * "Retrieve search options" view helper
+ * Instance store for obtaining default search options objects.
  *
  * @category VuFind2
- * @package  View_Helpers
+ * @package  SearchObject
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://vufind.org   Main Site
  */
-class SearchOptions extends AbstractHelper
+class Options
 {
     /**
-     * Wrapper function to the VF_Search_Options getInstance function
+     * Basic get
      *
      * @param string $type The search type of the object to retrieve
      *
-     * @return SearchOptions
+     * @return VF_Search_Base_Options
      */
-    public function __invoke($type = 'Solr')
+    public static function getInstance($type)
     {
-        return Options::getInstance($type);
+        static $store = array();
+
+        if (!isset($store[$type])) {
+            $class = 'VuFind\\Search\\' . $type . '\\Options';
+            $store[$type] = new $class();
+        }
+        return $store[$type];
+    }
+
+    /**
+     * Extract the name of the search class family from a class name.
+     *
+     * @param string $className Class name to examine.
+     *
+     * @return string
+     */
+    public static function extractSearchClassId($className)
+    {
+        // Parse identifier out of class name of format VuFind\Search\[id]\Params:
+        $class = explode('\\', $className);
+        return $class[2];
     }
 }

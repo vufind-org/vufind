@@ -1,6 +1,6 @@
 <?php
 /**
- * "Retrieve search options" view helper
+ * Tags aspect of the Search Multi-class (Params)
  *
  * PHP version 5
  *
@@ -20,34 +20,34 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  View_Helpers
+ * @package  SearchObject
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://vufind.org   Main Site
  */
-namespace VuFind\Theme\Root\Helper;
-use VuFind\Search\Options, Zend\View\Helper\AbstractHelper;
-
+ 
 /**
- * "Retrieve search options" view helper
+ * Search Tags Parameters
  *
  * @category VuFind2
- * @package  View_Helpers
+ * @package  SearchObject
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://vufind.org   Main Site
  */
-class SearchOptions extends AbstractHelper
+class VF_Search_Tags_Params extends VF_Search_Base_Params
 {
     /**
-     * Wrapper function to the VF_Search_Options getInstance function
+     * Load all recommendation settings from the relevant ini file.  Returns an
+     * associative array where the key is the location of the recommendations (top
+     * or side) and the value is the settings found in the file (which may be either
+     * a single string or an array of strings).
      *
-     * @param string $type The search type of the object to retrieve
-     *
-     * @return SearchOptions
+     * @return array associative: location (top/side) => search settings
      */
-    public function __invoke($type = 'Solr')
+    protected function getRecommendationSettings()
     {
-        return Options::getInstance($type);
+        // No recommendation modules in tag view currently:
+        return array();
     }
 }

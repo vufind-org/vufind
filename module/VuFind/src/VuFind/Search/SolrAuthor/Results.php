@@ -1,6 +1,6 @@
 <?php
 /**
- * "Retrieve search options" view helper
+ * Author aspect of the Search Multi-class (Results)
  *
  * PHP version 5
  *
@@ -20,34 +20,47 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  View_Helpers
+ * @package  SearchObject
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://vufind.org   Main Site
  */
-namespace VuFind\Theme\Root\Helper;
-use VuFind\Search\Options, Zend\View\Helper\AbstractHelper;
-
+ 
 /**
- * "Retrieve search options" view helper
+ * Author Search Options
  *
  * @category VuFind2
- * @package  View_Helpers
+ * @package  SearchObject
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://vufind.org   Main Site
  */
-class SearchOptions extends AbstractHelper
+
+class VF_Search_SolrAuthor_Results extends VF_Search_Solr_Results
 {
     /**
-     * Wrapper function to the VF_Search_Options getInstance function
+     * Constructor
      *
-     * @param string $type The search type of the object to retrieve
-     *
-     * @return SearchOptions
+     * @param VF_Search_Base_Params $params Object representing user search
+     * parameters.
      */
-    public function __invoke($type = 'Solr')
+    public function __construct($params)
     {
-        return Options::getInstance($type);
+        // Call parent constructor:
+        parent::__construct($params);
+
+        // Set up URL helper to use appropriate search parameter:
+        $this->getUrl()->setBasicSearchParam('author');
+    }
+
+    /**
+     * Is the current search saved in the database?
+     *
+     * @return bool
+     */
+    public function isSavedSearch()
+    {
+        // Author searches are never saved:
+        return false;
     }
 }

@@ -1,10 +1,10 @@
 <?php
 /**
- * "Retrieve search options" view helper
+ * WorldCat Search Parameters
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2011.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,34 +20,45 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  View_Helpers
+ * @package  SearchObject
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://www.vufind.org  Main Page
  */
-namespace VuFind\Theme\Root\Helper;
-use VuFind\Search\Options, Zend\View\Helper\AbstractHelper;
 
 /**
- * "Retrieve search options" view helper
+ * WorldCat Search Parameters
  *
  * @category VuFind2
- * @package  View_Helpers
+ * @package  SearchObject
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://www.vufind.org  Main Page
  */
-class SearchOptions extends AbstractHelper
+class VF_Search_WorldCat_Params extends VF_Search_Base_Params
 {
+    // Override Query
+    protected $overrideQuery = false;
+
     /**
-     * Wrapper function to the VF_Search_Options getInstance function
+     * Set the override query
      *
-     * @param string $type The search type of the object to retrieve
+     * @param string $q Override query
      *
-     * @return SearchOptions
+     * @return void
      */
-    public function __invoke($type = 'Solr')
+    public function setOverrideQuery($q)
     {
-        return Options::getInstance($type);
+        $this->overrideQuery = $q;
+    }
+
+    /**
+     * Get the override query
+     *
+     * @return string
+     */
+    public function getOverrideQuery()
+    {
+        return $this->overrideQuery;
     }
 }
