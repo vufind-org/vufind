@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFind\Theme\jQueryMobile\Helper;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * MobileMenu view helper
@@ -35,36 +37,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_MobileMenu extends Zend_View_Helper_Abstract
+class MobileMenu extends AbstractHelper
 {
-    protected $controller;
-    protected $action;
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $request = Zend_Controller_Front::getInstance()->getRequest();
-        // TODO: is there a better way to make controller/action names consistent?
-        $this->controller = preg_replace(
-            '/[^\w]/', '', strtolower($request->getControllerName())
-        );
-        $this->action = preg_replace(
-            '/[^\w]/', '', strtolower($request->getActionName())
-        );
-    }
-
-    /**
-     * Get access to the helper object.
-     *
-     * @return VuFind_Theme_Root_Helper_MobileMenu
-     */
-    public function mobileMenu()
-    {
-        return $this;
-    }
-
     /**
      * Display the top menu.
      *
@@ -75,13 +49,11 @@ class VuFind_Theme_Root_Helper_MobileMenu extends Zend_View_Helper_Abstract
      */
     public function header($extras = array())
     {
-        $context = array(
-            'controller' => $this->controller,
-            'action' => $this->action
-        ) + $extras;
-        return $this->view->context($this->view)->renderInContext(
-            'header.phtml', $context
-        );
+        // TODO: this assumes that the view has controller and action variables set;
+        // we either need to figure out how to set them here or else set them up
+        // globally as part of the bootstrap process.
+        $context = $this->getView()->plugin('context');
+        return $context($this->getView())->renderInContext('header.phtml', $extras);
     }
 
     /**
@@ -94,13 +66,8 @@ class VuFind_Theme_Root_Helper_MobileMenu extends Zend_View_Helper_Abstract
      */
     public function footer($extras = array())
     {
-        $context = array(
-            'controller' => $this->controller,
-            'action' => $this->action,
-            'account' => VF_Account_Manager::getInstance()
-        ) + $extras;
-        return $this->view->context($this->view)->renderInContext(
-            'footer.phtml', $context
-        );
+        // TODO: same as header()
+        $context = $this->getView()->plugin('context');
+        return $context($this->getView())->renderInContext('footer.phtml', $extras);
     }
 }

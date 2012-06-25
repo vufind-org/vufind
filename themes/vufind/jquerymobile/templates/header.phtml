@@ -21,7 +21,7 @@
     // if a module has header-navbar.tpl, then use it
     try {
         echo $this->render("{$this->controller}/header-navbar.phtml");
-    } catch (Zend_View_Exception $e) {
+    } catch (\Zend\View\Exception\RuntimeException $e) {
         // if this is a record view, load the record header; otherwise, do nothing:
         if (substr($this->controller, -6) == 'record') {
             echo $this->render('record/header-navbar.phtml');

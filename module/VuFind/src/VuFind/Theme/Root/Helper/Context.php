@@ -27,6 +27,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFind\Theme\Root\Helper;
+use Zend\View\Helper\AbstractHelper, Zend\View\Renderer\RendererInterface;
 
 /**
  * Context manager (useful for using render() instead of partial() for better
@@ -39,7 +41,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_Context extends Zend_View_Helper_Abstract
+class Context extends AbstractHelper
 {
     /**
      * Set an array of variables in the view; return the previous values of those
@@ -51,10 +53,12 @@ class VuFind_Theme_Root_Helper_Context extends Zend_View_Helper_Abstract
      */
     public function apply($vars)
     {
+        $view = $this->getView();
+
         $oldVars = array();
         foreach ($vars as $k => $v) {
-            $oldVars[$k] = isset($this->view->$k) ? $this->view->$k : null;
-            $this->view->$k = $v;
+            $oldVars[$k] = isset($view->$k) ? $view->$k : null;
+            $view->$k = $v;
         }
         return $oldVars;
     }
@@ -68,11 +72,13 @@ class VuFind_Theme_Root_Helper_Context extends Zend_View_Helper_Abstract
      */
     public function restore($vars)
     {
+        $view = $this->getView();
+
         foreach ($vars as $k => $v) {
             if (is_null($v)) {
-                unset($this->view->$k);
+                unset($view->$k);
             } else {
-                $this->view->$k = $v;
+                $view->$k = $v;
             }
         }
     }
@@ -91,7 +97,7 @@ class VuFind_Theme_Root_Helper_Context extends Zend_View_Helper_Abstract
     public function renderInContext($template, $context)
     {
         $oldContext = $this->apply($context);
-        $html = $this->view->render($template);
+        $html = $this->getView()->render($template);
         $this->restore($oldContext);
         return $html;
     }
@@ -99,14 +105,14 @@ class VuFind_Theme_Root_Helper_Context extends Zend_View_Helper_Abstract
     /**
      * Grab the helper object so we can call methods on it.
      *
-     * @param Zend_View_Abstract $view View object to modify.
+     * @param Renderer $view View object to modify.
      *
-     * @return VuFind_Theme_Root_Helper_Context
+     * @return Context
      */
-    public function context($view = null)
+    public function __invoke(RendererInterface $view = null)
     {
         if (!is_null($view)) {
-            $this->view = $view;
+            $this->setView($view);
         }
         return $this;
     }
