@@ -16,7 +16,7 @@
     $advSearch = $options->getAdvancedSearchAction();
 ?>
 <div class="searchHomeContent">
-  <? if (VF_Connection_Manager::connectToCatalog()->getOfflineMode() == "ils-offline"): ?>
+  <? if ($this->offlineMode() == "ils-offline"): ?>
     <div class="sysInfo">
       <h2><?=$this->transEsc('ils_offline_title')?></h2>
       <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
