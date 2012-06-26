@@ -52,8 +52,8 @@
    if ((isset($list) && $list->editAllowed()) || (!isset($list) && $this->user)): ?>
      <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
        $deleteUrl = is_null($list_id)
-           ? $this->url(array('controller' => 'MyResearch', 'action' => 'Favorites'), 'default', true)
-           : $this->url(array('id' => $list_id), 'userList');
+           ? $this->url('myresearch-favorites')
+           : $this->url('userList', array('id' => $list_id));
        $deleteUrl .= '?delete=' . urlencode($id) . '&amp;source=' . urlencode($source);
      ?>
      <a class="delete_from_mylist" href="<?=$deleteUrl?>" rel="external"><?=$this->transEsc('Delete')?></a>

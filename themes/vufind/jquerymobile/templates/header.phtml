@@ -8,7 +8,7 @@
   <?
       // If no search link value was passed in, pick a default:
       if (!isset($this->searchLink)) {
-          $this->searchLink = array('controller' => 'Search', 'action' => 'Home');
+          $this->searchLink = 'search-home';
       }
   ?>
   <? if ($this->searchLink): ?>
