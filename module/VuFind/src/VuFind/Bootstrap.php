@@ -66,6 +66,7 @@ class Bootstrap
     {
         $this->initAccount();
         $this->initContext();
+        $this->initHeadTitle();
         $this->initTheme();
     }
 
@@ -102,6 +103,24 @@ class Bootstrap
             $viewModel->setVariable('templateDir', $parts[0]);
             $viewModel->setVariable(
                 'templateName', isset($parts[1]) ? $parts[1] : null
+            );
+        };
+        $this->events->attach('dispatch', $callback);
+    }
+
+    /**
+     * Set up headTitle view helper -- we always want to set, not append, titles.
+     *
+     * @return void
+     */
+    protected function initHeadTitle()
+    {
+        $callback = function($event) {
+            $serviceManager = $event->getApplication()->getServiceManager();
+            $renderer = $serviceManager->get('viewmanager')->getRenderer();
+            $headTitle = $renderer->plugin('headtitle');
+            $headTitle->setDefaultAttachOrder(
+                \Zend\View\Helper\Placeholder\Container\AbstractContainer::SET
             );
         };
         $this->events->attach('dispatch', $callback);

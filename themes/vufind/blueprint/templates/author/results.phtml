@@ -5,10 +5,7 @@
     // Override some details...
 
     // Set up page title:
-    $this->headTitle(
-        $this->translate('Author Search Results'),
-        Zend_View_Helper_Placeholder_Container_Abstract::SET
-    );
+    $this->headTitle($this->translate('Author Search Results'));
 
     // Set up empty search box:
     $this->layout()->searchbox = $this->render('search/searchbox.phtml');
