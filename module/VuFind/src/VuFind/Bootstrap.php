@@ -26,7 +26,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind;
-use VuFind\Config\Reader as ConfigReader,
+use VuFind\Account\Manager as AccountManager,
+    VuFind\Config\Reader as ConfigReader,
     VuFind\Theme\Initializer as ThemeInitializer,
     Zend\Mvc\MvcEvent;
 /**
@@ -42,6 +43,7 @@ class Bootstrap
 {
     protected $config;
     protected $event;
+    protected $events;
 
     /**
      * Constructor
@@ -52,6 +54,7 @@ class Bootstrap
     {
         $this->config = ConfigReader::getConfig();
         $this->event = $event;
+        $this->events = $event->getApplication()->events();
     }
 
     /**
@@ -61,7 +64,23 @@ class Bootstrap
      */
     public function bootstrap()
     {
+        $this->initAccount();
         $this->initTheme();
+    }
+
+    /**
+     * Make account manager available to views.
+     *
+     * @return void
+     */
+    protected function initAccount()
+    {
+        $callback = function($event) {
+            $serviceManager = $event->getApplication()->getServiceManager();
+            $viewModel = $serviceManager->get('viewmanager')->getViewModel();
+            $viewModel->setVariable('account', AccountManager::getInstance());
+        };
+        $this->events->attach('dispatch', $callback);
     }
 
     /**
@@ -71,10 +90,8 @@ class Bootstrap
      */
     protected function initTheme()
     {
-        $events = $this->event->getApplication()->events();
-
         // Attach template injection configuration to the route event:
-        $events->attach(
+        $this->events->attach(
             'route', array('VuFind\Theme\Initializer', 'configureTemplateInjection')
         );
 
@@ -84,6 +101,6 @@ class Bootstrap
             $theme = new ThemeInitializer($config, $event);
             $theme->init();
         };
-        $events->attach('dispatch', $callback);
+        $this->events->attach('dispatch', $callback);
     }
 }

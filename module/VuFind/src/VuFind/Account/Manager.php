@@ -26,7 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Account;
-use VuFind\Config\Reader as ConfigReader,
+use VuFind\Auth\Factory as AuthFactory, VuFind\Config\Reader as ConfigReader,
     Zend\Registry, Zend\Session, Zend\Session\Container as SessionContainer;
 
 /**
@@ -51,11 +51,9 @@ class Manager
     public function __construct()
     {
         $this->config = ConfigReader::getConfig();
-        /* TODO:
-        $this->auth = VF_Auth_Factory::getAuth(
+        $this->auth = AuthFactory::getAuth(
             $this->config->Authentication->method, $this->config
         );
-         */
         $this->session = new SessionContainer('Account');
     }
 
@@ -139,6 +137,7 @@ class Manager
         }
         return !$catalog->loginIsHidden();
          */
+        return true;
     }
 
     /**
