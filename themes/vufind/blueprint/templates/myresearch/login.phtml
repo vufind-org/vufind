@@ -13,7 +13,8 @@
     }
 
     // Convenience variables:
-    $hideLogin = !(is_object($this->account) && $this->account->loginEnabled());
+    $account = $this->layout()->account;
+    $hideLogin = !(is_object($account) && $account->loginEnabled());
     $offlineMode = VF_Connection_Manager::connectToCatalog()->getOfflineMode();
 ?>
 
@@ -33,7 +34,7 @@
 <? if ($hideLogin): ?>
   <div class="error"><?=$this->transEsc('login_disabled')?></div>
 <? else: ?>
-  <? if (!$this->account->getSessionInitiator()): // display default login form if no login URL provided ?>
+  <? if (!$account->getSessionInitiator()): // display default login form if no login URL provided ?>
     <form method="post" action="<?=$this->url('myresearch-home')?>" name="loginForm" id="loginForm">
       <?=$this->auth()->getLoginFields()?>
       <input class="push-2 button" type="submit" name="processLogin" value="<?=$this->transEsc('Login')?>"/>
@@ -44,10 +45,10 @@
       $initJs = '$(document).ready(function() { $(\'#loginForm\').validate(); });';
       echo $this->inlineScript(Zend_View_Helper_HeadScript::SCRIPT, $initJs);
     ?>
-    <? if ($this->account->supportsCreation()): ?>
+    <? if ($account->supportsCreation()): ?>
       <a class="new_account" href="<?=$this->url('myresearch-account')?>"><?=$this->transEsc('Create New Account')?></a>
     <? endif; ?>
   <? else: ?>
-    <a href="<?=$this->escape($this->account->getSessionInitiator())?>"><?=$this->transEsc("Institutional Login")?></a>
+    <a href="<?=$this->escape($account->getSessionInitiator())?>"><?=$this->transEsc("Institutional Login")?></a>
   <? endif; ?>
 <? endif; ?>

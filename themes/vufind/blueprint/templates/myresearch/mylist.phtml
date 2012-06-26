@@ -13,6 +13,9 @@
 
     // Load Javascript dependencies into header:
     $this->headScript()->appendFile("bulk_actions.js");
+
+    // Convenience variable:
+    $account = $this->layout()->account;
 ?>
 
 <?=$this->flashmessages()?>
@@ -48,16 +51,16 @@
         <input type="hidden" name="listID" value="<?=$this->escape($list->id)?>" />
         <input type="hidden" name="listName" value="<?=$this->escape($list->title)?>" />
       <? endif; ?>
-      <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', array('idPrefix' => '', 'list' => isset($list) ? $list : null, 'account' => $this->account))?>
+      <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', array('idPrefix' => '', 'list' => isset($list) ? $list : null))?>
       <ul class="recordSet">
         <? $i = 0; foreach ($this->results->getResults() as $current): ?>
           <li class="result<?=(++$i % 2 == 0) ? ' alt' : ''?>">
             <span class="recordNumber"><?=$this->results->getStartRecord()+$i-1?><?=$this->record($current)->getCheckbox()?></span>
-            <?=$this->record($current)->getListEntry($list, $this->account->isLoggedIn())?>
+            <?=$this->record($current)->getListEntry($list, $account->isLoggedIn())?>
           </li>
         <? endforeach; ?>
       </ul>
-      <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', array('idPrefix' => 'bottom_', 'list' => isset($list) ? $list : null, 'account' => $this->account))?>
+      <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', array('idPrefix' => 'bottom_', 'list' => isset($list) ? $list : null))?>
     </form>
     <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
   <? else: ?>

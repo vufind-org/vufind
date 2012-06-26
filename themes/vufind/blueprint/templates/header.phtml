@@ -1,3 +1,4 @@
+<? $account = $this->layout()->account; ?>
 <a id="logo" href="<?=$this->url('home')?>"></a>
 <div id="headerRight">
   <? $cart = \VuFind\Cart::getInstance(); if ($cart->isActive()): ?>
@@ -6,24 +7,24 @@
       <a id="viewCart" title="<?=$this->transEsc('View Book Bag')?>" class="viewCart bookbag offscreen" href="<?=$this->url('cart-home')?>"><strong><span id="cartSize"><?=count($cart->getItems())?></span></strong> <?=$this->transEsc('items')?><span id="cartStatus"><?=$cart->isFull() ? $this->transEsc('bookbag_full') : '&nbsp;'?></span></a>
     </div>
   <? endif; ?>
-  <? if (is_object($this->account) && $this->account->loginEnabled()): // hide login/logout if unavailable ?>
-    <div id="logoutOptions"<?=!$this->account->isLoggedIn() ? ' class="hide"' : ''?>>
+  <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
+    <div id="logoutOptions"<?=!$account->isLoggedIn() ? ' class="hide"' : ''?>>
       <a class="account" href="<?=$this->url('myresearch-home')?>"><?=$this->transEsc("Your Account")?></a> |
       <a class="logout" href="<?=$this->url('myresearch-logout')?>"><?=$this->transEsc("Log Out")?></a>
     </div>
-    <div id="loginOptions"<?=$this->account->isLoggedIn() ? ' class="hide"' : ''?>>
-    <? if ($sessionInitiator = $this->account->getSessionInitiator()): ?>
+    <div id="loginOptions"<?=$account->isLoggedIn() ? ' class="hide"' : ''?>>
+    <? if ($sessionInitiator = $account->getSessionInitiator()): ?>
       <a class="login" href="<?=$this->escape($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
     <? else: ?>
       <a class="login" href="<?=$this->url('myresearch-home')?>"><?=$this->transEsc("Login")?></a>
     <? endif; ?>
     </div>
   <? endif; ?>
-  <? if (isset($this->themeOptions) && count($this->themeOptions) > 1): ?>
+  <? if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
   <form method="post" name="themeForm" action="" id="themeForm">
     <label for="themeForm_ui"><?=$this->transEsc("Theme")?>:</label>
     <select id="themeForm_ui" name="ui" class="jumpMenu">
-    <? foreach ($this->themeOptions as $current): ?>
+    <? foreach ($this->layout()->themeOptions as $current): ?>
       <option value="<?=$this->escape($current['name'])?>"<?=$current['selected'] ? ' selected="selected"' : ''?>><?=$this->transEsc($current['desc'])?></option>
     <? endforeach; ?>
     </select>

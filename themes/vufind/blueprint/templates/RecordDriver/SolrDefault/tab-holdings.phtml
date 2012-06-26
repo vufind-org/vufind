@@ -20,7 +20,7 @@
   </div>
 <? endif; ?>
 <? if ((VF_ILS_Connection::getHoldsMode() == 'driver' && !empty($holdings)) || VF_ILS_Connection::getTitleHoldsMode() == 'driver'): ?>
-  <? if ($this->account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
+  <? if ($this->layout()->account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
     <? if (!$user): ?>
       <div class="info">
         <a href="<?=$this->serverUrl()?>?login=true&catalogLogin=true"><?=$this->transEsc("Login")?></a> <?=$this->transEsc("hold_login")?>
