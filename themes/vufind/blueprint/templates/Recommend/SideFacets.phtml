@@ -16,7 +16,7 @@
     <? foreach ($filterList as $field => $filters): ?>
       <? foreach ($filters as $filter): ?>
         <?
-            $removeLink = $this->url().$this->results->getUrl()->removeFacet($filter['field'], $filter['value']);
+            $removeLink = $this->serverUrl().$this->results->getUrl()->removeFacet($filter['field'], $filter['value']);
             if ($filter['displayText'] == '[* TO *]') $filter['displayText'] = $this->translate('filter_wildcard');
         ?>
         <li>
@@ -57,7 +57,7 @@
             <? if ($thisFacet['isApplied']): ?>
               <dd><?=$this->escape($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="Selected"/></dd>
             <? else: ?>
-              <dd><a href="<?=$this->url().$this->results->getUrl()->addFacet($title, $thisFacet['value'])?>"><?=$this->escape($thisFacet['displayText'])?></a> (<?=$this->escape($thisFacet['count'])?>)</dd>
+              <dd><a href="<?=$this->serverUrl().$this->results->getUrl()->addFacet($title, $thisFacet['value'])?>"><?=$this->escape($thisFacet['displayText'])?></a> (<?=$this->escape($thisFacet['count'])?>)</dd>
             <? endif; ?>
           <? endforeach; ?>
           <? if ($i > 5): ?><dd><a href="#" onclick="lessFacets('<?=$this->escape($title)?>'); return false;"><?=$this->transEsc('less')?> ...</a></dd><? endif; ?>

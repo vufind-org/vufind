@@ -23,11 +23,11 @@
   <? if ($this->account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
     <? if (!$user): ?>
       <div class="info">
-        <a href="<?=$this->url()?>?login=true&catalogLogin=true"><?=$this->transEsc("Login")?></a> <?=$this->transEsc("hold_login")?>
+        <a href="<?=$this->serverUrl()?>?login=true&catalogLogin=true"><?=$this->transEsc("Login")?></a> <?=$this->transEsc("hold_login")?>
       </div>
     <? elseif (!$user->cat_username): ?>
       <div class="info">
-        <?=$this->translate("hold_profile_html", array('%%url%%' => $this->url() . '?catalogLogin=true'))?>
+        <?=$this->translate("hold_profile_html", array('%%url%%' => $this->serverUrl() . '?catalogLogin=true'))?>
       </div>
     <? endif; ?>
   <? endif; ?>
