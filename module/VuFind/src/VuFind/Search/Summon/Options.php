@@ -117,26 +117,24 @@ class VF_Search_Summon_Options extends VF_Search_Base_Options
     }
 
     /**
-     * Return an array describing the action used for rendering search results
-     * (same format as expected by the URL view helper).
+     * Return the route name for the search results action.
      *
-     * @return array
+     * @return string
      */
     public function getSearchAction()
     {
-        return array('controller' => 'Summon', 'action' => 'Search');
+        return 'summon-search';
     }
 
     /**
-     * Return an array describing the action used for performing advanced searches
-     * (same format as expected by the URL view helper).  Return false if the feature
-     * is not supported.
+     * Return the route name of the action used for performing advanced searches.
+     * Returns false if the feature is not supported.
      *
-     * @return array|bool
+     * @return string|bool
      */
     public function getAdvancedSearchAction()
     {
-        return array('controller' => 'Summon', 'action' => 'Advanced');
+        return 'summon-advanced';
     }
 
     /**

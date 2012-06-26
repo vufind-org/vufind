@@ -10,7 +10,7 @@
             <? if ($current['isApplied']): ?>
               <strong><?=$this->escape($current['displayText'])?></strong>
             <? else: ?>
-              <a href="<?=$this->url(array('id' => $current['value']), 'userList')?>"><?=$this->escape($current['displayText'])?></a>
+              <a href="<?=$this->url('userList', array('id' => $current['value']))?>"><?=$this->escape($current['displayText'])?></a>
             <? endif; ?>
             (<?=$this->escape($current['count'])?>)
           </li>

@@ -25,7 +25,7 @@
       <h3><?=$this->transEsc('Login')?></h3>
       <?=$this->flashmessages()?>
       <? if (!$this->account->getSessionInitiator()): // display default login form if no login URL provided ?>
-        <form method="post" action="<?=$this->url(array('controller' => 'MyResearch'), 'default', true)?>" name="loginForm" data-ajax="false">
+        <form method="post" action="<?=$this->url('myresearch-home')?>" name="loginForm" data-ajax="false">
           <div data-role="fieldcontain">
             <?=$this->auth()->getLoginFields()?>
           </div>
@@ -34,7 +34,7 @@
           </div>
         </form>
         <? if ($this->account->supportsCreation()): ?>
-          <a rel="external" data-role="button" class="new_account" href="<?=$this->url(array('controller' => 'MyResearch', 'action' => 'Account'), 'default')?>"><?=$this->transEsc('Create New Account')?></a>
+          <a rel="external" data-role="button" class="new_account" href="<?=$this->url('myresearch-account')?>"><?=$this->transEsc('Create New Account')?></a>
         <? endif; ?>
       <? else: ?>
         <a rel="external" data-role="button" href="<?=$this->escape($this->account->getSessionInitiator())?>"><?=$this->transEsc("Institutional Login")?></a>

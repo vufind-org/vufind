@@ -1,19 +1,17 @@
 <?
   $this->headTitle($this->translate('Browse the Collection Alphabetically'));
-  $this->layout()->breadcrumbs = '<a href="' .
-        $this->url(array('controller' => 'AlphaBrowse', 'action' => 'Home'), 'default', true) .
-        '">' . $this->transEsc('Browse Alphabetically') . '</a>';
+  $this->layout()->breadcrumbs = '<a href="' . $this->url('alphabrowse-home') . '">' . $this->transEsc('Browse Alphabetically') . '</a>';
 ?>
 
 <? /* LOAD THE LINK INFORMATION INTO $pageLinks, similar to smarty's {capture} */ ?>
 <? ob_start(); ?>
   <div class="alphaBrowsePageLinks">
     <? if (isset($this->prevpage)): ?>
-      <div class="alphaBrowsePrevLink"><a href="<?=$this->url(array('controller' => 'AlphaBrowse'), 'default', true)?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($this->from)?>&amp;page=<?=urlencode($this->prevpage)?>">&laquo; <?=$this->transEsc('Prev')?></a></div>
+      <div class="alphaBrowsePrevLink"><a href="<?=$this->url('alphabrowse-home')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($this->from)?>&amp;page=<?=urlencode($this->prevpage)?>">&laquo; <?=$this->transEsc('Prev')?></a></div>
     <? endif; ?>
 
     <? if (isset($this->nextpage)): ?>
-      <div class="alphaBrowseNextLink"><a href="<?=$this->url(array('controller' => 'AlphaBrowse'), 'default', true)?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($this->from)?>&amp;page=<?=urlencode($this->nextpage)?>"><?=$this->transEsc('Next')?> &raquo;</a></div>
+      <div class="alphaBrowseNextLink"><a href="<?=$this->url('alphabrowse-home')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($this->from)?>&amp;page=<?=urlencode($this->nextpage)?>"><?=$this->transEsc('Next')?> &raquo;</a></div>
     <? endif; ?>
     <div class="clear"></div>
   </div>
@@ -22,7 +20,7 @@
 
 <div class="<?=$this->layoutClass('mainbody')?>">
   <div class="resulthead">
-    <form method="get" action="<?=$this->url(array('controller' => 'AlphaBrowse'), 'default', true)?>" name="alphaBrowseForm" id="alphaBrowseForm">
+    <form method="get" action="<?=$this->url('alphabrowse-home')?>" name="alphaBrowseForm" id="alphaBrowseForm">
       <label for="alphaBrowseForm_source"><?=$this->transEsc('Browse Alphabetically') ?></label>
       <select id="alphaBrowseForm_source" name="source">
         <? foreach ($this->alphaBrowseTypes as $key => $item): ?>
@@ -49,9 +47,9 @@
               doing searches for headings, but headings give shorter
               queries and don't look as strange. */?>
             <? if ($item['count'] < 5): ?>
-              <?=$this->url(array('controller' => 'Search', 'action' => 'Results'), 'default', true)?>?type=ids&amp;lookfor=<? foreach ($item['ids'] as $id): ?><?=$id ?>+<? endforeach; ?>
+              <?=$this->url('search-results')?>?type=ids&amp;lookfor=<? foreach ($item['ids'] as $id): ?><?=$id ?>+<? endforeach; ?>
             <? else: ?>
-              <?=$this->url(array('controller' => 'Search', 'action' => 'Results'), 'default', true)?>?type=<?=urlencode(ucwords($this->source)) ?>Browse&amp;lookfor=<?=urlencode($item['heading'])?>
+              <?=$this->url('search-results')?>?type=<?=urlencode(ucwords($this->source)) ?>Browse&amp;lookfor=<?=urlencode($item['heading'])?>
             <? endif; ?>
           <? $searchLink = ob_get_contents(); ?>
           <? ob_end_clean(); ?>
@@ -68,7 +66,7 @@
           <div class="title"><?=$this->transEsc('Use instead') ?>:</div>
           <ul>
             <? foreach ($item['useInstead'] as $heading): ?>
-            <li><a href="<?=$this->url(array('controller' => 'AlphaBrowse'), 'default', true)?>/Results?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($heading)?>"><?=$this->escape($heading)?></a></li>
+            <li><a href="<?=$this->url('alphabrowse-results')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($heading)?>"><?=$this->escape($heading)?></a></li>
             <? endforeach; ?>
           </ul>
           </div>
@@ -79,7 +77,7 @@
           <div class="title"><?=$this->transEsc('See also') ?>:</div>
           <ul>
             <? foreach ($item['seeAlso'] as $heading): ?>
-            <li><a href="<?=$this->url(array('controller' => 'AlphaBrowse'), 'default', true)?>/Results?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($heading)?>"><?=$this->escape($heading)?></a></li>
+            <li><a href="<?=$this->url('alphabrowse-results')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($heading)?>"><?=$this->escape($heading)?></a></li>
             <? endforeach; ?>
           </ul>
           </div>

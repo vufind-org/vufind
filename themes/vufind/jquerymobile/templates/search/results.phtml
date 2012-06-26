@@ -51,7 +51,7 @@
       <?=$this->render('search/list-' . $this->results->getView() . '.phtml')?>
       <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
       <div data-role="controlgroup">
-        <a href="<?=$this->url(array('controller' => 'Search', 'action' => 'Email'), 'default')?>" data-role="button" rel="external"><?=$this->transEsc("Email this Search")?></a>
+        <a href="<?=$this->url('search-email')?>" data-role="button" rel="external"><?=$this->transEsc("Email this Search")?></a>
       </div>
     <? endif; ?>
   </div>

@@ -166,7 +166,7 @@
         <a rel="external" href="<?=$this->recordLink()->getUrl($this->driver, 'AddTag')?>" class="tool add tagRecord controller<?=$this->record($this->driver)->getController()?>" title="<?=$this->transEsc('Add Tag')?>" id="tagRecord"><?=$this->transEsc('Add Tag')?></a>
       </span>
       <div id="tagList">
-        <? $i = 0; foreach ($tagList as $tag): ?><?=($i++ == 0)?'':', '?><a rel="external" href="<?=$this->url(array('controller' => 'Tag', 'action' => 'Home'), 'default', true)?>?lookfor=<?=urlencode($tag->tag)?>"><?=$this->escape($tag->tag)?></a> (<?=$this->escape($tag->cnt)?>)<? endforeach; ?>
+        <? $i = 0; foreach ($tagList as $tag): ?><?=($i++ == 0)?'':', '?><a rel="external" href="<?=$this->url('tag-home')?>?lookfor=<?=urlencode($tag->tag)?>"><?=$this->escape($tag->tag)?></a> (<?=$this->escape($tag->cnt)?>)<? endforeach; ?>
       </div>
     </dd>
   <? endif; ?>

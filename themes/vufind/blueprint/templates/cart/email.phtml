@@ -7,7 +7,7 @@
         '<em>' . $this->transEsc('email_selected_favorites') . '</em>';
 ?>
 <?=$this->flashmessages()?>
-<form action="<?=$this->url(array('controller' => 'Cart', 'action' => 'Email'), 'default', true)?>" method="post"  name="bulkEmail">
+<form action="<?=$this->url('cart-email')?>" method="post"  name="bulkEmail">
     <? foreach ($this->records as $current): ?>
       <strong><?=$this->transEsc('Title')?>:</strong> <?=$this->escape($current->getBreadcrumb())?><br />
       <input type="hidden" name="ids[]" value="<?=$this->escape($current->getResourceSource() . '|' . $current->getUniqueId())?>" />

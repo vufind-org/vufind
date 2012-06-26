@@ -11,7 +11,7 @@
 
         <div class="mapInfoResultText">
         <a href="<?=$this->recordLink()->getUrl($record)?>"><?=$record->getTitle() ?></a><br/>
-        <?=$this->translate('by') ?> <a href="<?=$this->url(array('controller' => 'Author', 'action' => 'Home'), 'default', true)?>?author=<?=urlencode($record->getPrimaryAuthor())?>"><?=$this->escape($record->getPrimaryAuthor())?></a>
+        <?=$this->translate('by') ?> <a href="<?=$this->url('author-home')?>?author=<?=urlencode($record->getPrimaryAuthor())?>"><?=$this->escape($record->getPrimaryAuthor())?></a>
         </div>
 
       </div>
@@ -21,7 +21,7 @@
   </div>
   <? if ($this->recordCount > 5): ?>
     <div class="mapSeeAllDiv">
-      <a href="<?=$this->url(array('controller'=>'Search', 'action'=>'Results'), 'default', true) ?><?=$this->results->getUrl()->getParams() ?>"><?=$this->translate('see all') ?> <?=$this->escape($this->recordCount) ?>...</a>
+      <a href="<?=$this->url('search-results') ?><?=$this->results->getUrl()->getParams() ?>"><?=$this->translate('see all') ?> <?=$this->escape($this->recordCount) ?>...</a>
     </div>
   <? endif; ?>
 </div>

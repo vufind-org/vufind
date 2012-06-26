@@ -2,12 +2,6 @@
     // Set up page title:
     $pageTitle = empty($this->list->id) ? 'Create a List' : "edit_list";
     $this->headTitle($this->translate($pageTitle));
-
-    // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<a href="' .
-        $this->url(array('controller' => 'MyResearch', 'action' => 'Home'), 'default', true) .
-        '">' . $this->transEsc('Your Account') . '</a>' . '<span>&gt;</span><em>' .
-        $this->transEsc($pageTitle) . '</em>';
 ?>
 <div data-role="page" id="MyResearch-editlist">
   <?=$this->mobileMenu()->header()?>
@@ -34,7 +28,7 @@
             </div>
             <? if (!empty($this->list->id)): ?>
               <div class="ui-block-b">
-                <a data-role="button" data-theme="c" data-mini="true" href="<?=$this->url(array('action'=>'DeleteList', 'controller'=>'MyResearch'), 'default', true) ?>?listID=<?=urlencode($this->list->id)?>" id="deleteList<?=$this->list->id ?>" title="<?=$this->transEsc("delete_list")?>"><?=$this->transEsc("delete_list")?></a>
+                <a data-role="button" data-theme="c" data-mini="true" href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($this->list->id)?>" id="deleteList<?=$this->list->id ?>" title="<?=$this->transEsc("delete_list")?>"><?=$this->transEsc("delete_list")?></a>
               </div>
             <? endif; ?>
         </fieldset>

@@ -4,7 +4,7 @@
   <? if ($summThumb = $this->driver->getThumbnail()): ?>
     <img src="<?=$this->escape($summThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
   <? else: ?>
-    <img src="<?=$this->url(array('controller' => 'Cover', 'action' => 'Unavailable'), 'default', true)?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+    <img src="<?=$this->url('cover-unavailable')?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
   <? endif; ?>
   </div>
   <div class="span-9">

@@ -337,19 +337,30 @@ abstract class Options
     }
 
     /**
-     * Return an array describing the action used for rendering search results
-     * (same format as expected by the URL view helper).
+     * Return the route name for the search results action.
      *
-     * @return array
+     * @return string
      */
     abstract public function getSearchAction();
 
     /**
-     * Return an array describing the action used for performing advanced searches
-     * (same format as expected by the URL view helper).  Return false if the feature
-     * is not supported.
+     * Return the route name for the search home action.
      *
-     * @return array|bool
+     * @return string
+     */
+    public function getSearchHomeAction()
+    {
+        // Assume the home action is the same as the search action, only with
+        // a "-home" suffix in place of the search action.
+        $basicSearch = $this->getSearchAction();
+        return substr($basicSearch, 0, strpos($basicSearch, '-')) . '-home';
+    }
+
+    /**
+     * Return the route name of the action used for performing advanced searches.
+     * Returns false if the feature is not supported.
+     *
+     * @return string|bool
      */
     public function getAdvancedSearchAction()
     {

@@ -1,20 +1,20 @@
 <div class="span-5"><p><strong><?=$this->transEsc('Search Options')?></strong></p>
   <ul>
-    <li><a href="<?=$this->url(array('controller' => 'Search', 'action' => 'History'), 'default', true)?>"><?=$this->transEsc('Search History')?></a></li>
-    <li><a href="<?=$this->url(array('controller' => 'Search', 'action' => 'Advanced'), 'default', true)?>"><?=$this->transEsc('Advanced Search')?></a></li>
+    <li><a href="<?=$this->url('search-history')?>"><?=$this->transEsc('Search History')?></a></li>
+    <li><a href="<?=$this->url('search-advanced')?>"><?=$this->transEsc('Advanced Search')?></a></li>
   </ul>
 </div>
 <div class="span-5"><p><strong><?=$this->transEsc('Find More')?></strong></p>
   <ul>
-    <li><a href="<?=$this->url(array('controller' => 'Browse'), 'default', true)?>"><?=$this->transEsc('Browse the Catalog')?></a></li>
-    <li><a href="<?=$this->url(array('controller' => 'AlphaBrowse'), 'default', true)?>"><?=$this->transEsc('Browse Alphabetically')?></a></li>
-    <li><a href="<?=$this->url(array('controller' => 'Search', 'action' => 'Reserves'), 'default', true)?>"><?=$this->transEsc('Course Reserves')?></a></li>
-    <li><a href="<?=$this->url(array('controller' => 'Search', 'action' => 'NewItem'), 'default', true)?>"><?=$this->transEsc('New Items')?></a></li>
+    <li><a href="<?=$this->url('browse-home')?>"><?=$this->transEsc('Browse the Catalog')?></a></li>
+    <li><a href="<?=$this->url('alphabrowse-home')?>"><?=$this->transEsc('Browse Alphabetically')?></a></li>
+    <li><a href="<?=$this->url('search-reserves')?>"><?=$this->transEsc('Course Reserves')?></a></li>
+    <li><a href="<?=$this->url('search-newitem')?>"><?=$this->transEsc('New Items')?></a></li>
   </ul>
 </div>
 <div class="span-5 last"><p><strong><?=$this->transEsc('Need Help?')?></strong></p>
   <ul>
-    <li><a href="<?=$this->url(array('controller' => 'Help'), 'default', true)?>?topic=search" class="searchHelp"><?=$this->transEsc('Search Tips')?></a></li>
+    <li><a href="<?=$this->url('help-home')?>?topic=search" class="searchHelp"><?=$this->transEsc('Search Tips')?></a></li>
     <li><a href="#"><?=$this->transEsc('Ask a Librarian')?></a></li>
     <li><a href="#"><?=$this->transEsc('FAQs')?></a></li>
   </ul>

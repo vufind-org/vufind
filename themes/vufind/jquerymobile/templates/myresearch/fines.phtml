@@ -13,7 +13,7 @@
         <? foreach ($this->fines as $record): ?>
           <li>
             <? if ($showLink = (!empty($record['title']) && isset($record['id']))): ?>
-              <a rel="external" href="<?=$this->url(array('id' => $record['id']), 'record', true)?>">
+              <a rel="external" href="<?=$this->url('record', array('id' => $record['id']))?>">
             <? endif; ?>
             <div class="result">
               <h3>

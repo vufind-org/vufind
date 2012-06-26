@@ -7,9 +7,9 @@
       <li>
         <? if (isset($this->results) && is_numeric($this->results->getSearchId())): ?>
           <? if ($this->results->isSavedSearch()): ?>
-            <a rel="external" href="<?=$this->url(array('controller' => 'MyResearch', 'action' => 'SaveSearch'), 'default')?>?delete=<?=urlencode($this->results->getSearchId())?>"><?=$this->transEsc('save_search_remove')?></a>
+            <a rel="external" href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>"><?=$this->transEsc('save_search_remove')?></a>
           <? else: ?>
-            <a rel="external" href="<?=$this->url(array('controller' => 'MyResearch', 'action' => 'SaveSearch'), 'default')?>?save=<?=urlencode($this->results->getSearchId())?>"><?=$this->transEsc('save_search')?></a>
+            <a rel="external" href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>"><?=$this->transEsc('save_search')?></a>
           <? endif; ?>
         <? endif; ?>
       </li>

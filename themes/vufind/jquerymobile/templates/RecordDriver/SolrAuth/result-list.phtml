@@ -4,7 +4,7 @@
         $heading = $this->translate('Heading unavailable.');
     }
 ?>
-<a rel="external" href="<?=$this->url(array('controller' => 'Authority', 'action' => 'Record'), 'default', true)?>?id=<?=urlencode($this->driver->getUniqueId())?>">
+<a rel="external" href="<?=$this->url('authority-record')?>?id=<?=urlencode($this->driver->getUniqueId())?>">
   <div class="result">
     <h3><?=$this->escape($heading)?></h3>
   </div>

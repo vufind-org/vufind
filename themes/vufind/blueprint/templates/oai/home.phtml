@@ -1,7 +1,7 @@
 <?
     $this->headTitle($this->translate('OAI Server'));
     $this->layout()->breadcrumbs = $this->transEsc('OAI Server');
-    $baseUrl = $this->url(array('controller' => 'OAI', 'action' => 'Server'), 'default', true);
+    $baseUrl = $this->url('oai-server');
 ?>
 <div class="span-18">
   <h1><?=$this->transEsc('OAI Server')?></h1>

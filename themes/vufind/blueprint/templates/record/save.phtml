@@ -15,7 +15,7 @@
     <p><?=$this->transEsc('This item is already part of the following list/lists') ?>:</p>
     <ul>
     <? foreach ($this->containingLists as $list): ?>
-      <li><a href="<?=$this->url(array('id' => $list['id']), 'userList') ?>"><?=$this->escape($list['title'])?></a></li>
+      <li><a href="<?=$this->url('userList', array('id' => $list['id'])) ?>"><?=$this->escape($list['title'])?></a></li>
     <? endforeach; ?>
     </ul>
   <? endif; ?>
@@ -36,7 +36,7 @@
       <? endif; ?>
     </select>
   <? endif; ?>
-  <a href="<?=$this->url(array('id' => 'NEW'), 'editList', true) ?>?recordId=<?=urlencode($this->driver->getUniqueId())?>&amp;recordController=<?=urlencode($this->record($this->driver)->getController())?>" class="listEdit controller<?=$this->record($this->driver)->getController()?>" title="<?=$this->transEsc('Create a List') ?>"><? if ($showLists) echo $this->transEsc('or create a new list'); else echo $this->transEsc('Create a List'); ?></a>
+  <a href="<?=$this->url('editList', array('id' => 'NEW'))?>?recordId=<?=urlencode($this->driver->getUniqueId())?>&amp;recordController=<?=urlencode($this->record($this->driver)->getController())?>" class="listEdit controller<?=$this->record($this->driver)->getController()?>" title="<?=$this->transEsc('Create a List') ?>"><? if ($showLists) echo $this->transEsc('or create a new list'); else echo $this->transEsc('Create a List'); ?></a>
 
   <? if ($showLists): ?>
     <label class="displayBlock" for="add_mytags"><?=$this->transEsc('Add Tags') ?></label>

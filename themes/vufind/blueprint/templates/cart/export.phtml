@@ -11,7 +11,7 @@
 <?=$this->flashmessages()?>
 
 <? if (!empty($this->exportOptions)): ?>
-  <form method="post" action="<?=$this->url(array('controller' => 'Cart', 'action' => 'Export'), 'default', true)?>" name="exportForm" title="<?=$this->transEsc('Export Items')?>">
+  <form method="post" action="<?=$this->url('cart-export')?>" name="exportForm" title="<?=$this->transEsc('Export Items')?>">
     <? foreach ($this->records as $current): ?>
       <strong><?=$this->transEsc('Title')?>:</strong> <?=$this->escape($current->getBreadcrumb())?><br />
       <input type="hidden" name="ids[]" value="<?=$this->escape($current->getResourceSource() . '|' . $current->getUniqueId())?>" />

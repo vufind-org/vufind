@@ -9,7 +9,7 @@
     <h4><?=$this->translate($cluster['label']) ?></h4>
     <ul class="bulleted">
   <? foreach ($cluster['list'] as $thisFacet): ?>
-    <li><a href="<?=$this->url(array('controller'=>'Search','action'=>'Results'),'default',true) . $blankResults->getUrl()->addFacet($title, $thisFacet['value'])?>"><?=$this->escape($thisFacet['displayText'])?></a></li>
+    <li><a href="<?=$this->url('search-results') . $blankResults->getUrl()->addFacet($title, $thisFacet['value'])?>"><?=$this->escape($thisFacet['displayText'])?></a></li>
   <? endforeach; ?>
     </ul>
  <? endforeach; ?>

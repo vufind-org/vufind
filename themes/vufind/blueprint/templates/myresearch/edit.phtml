@@ -3,10 +3,9 @@
     $this->headTitle($this->translate('Edit') . ' : ' . $this->driver->getBreadcrumb());
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<a href="' .
-        $this->url(array('controller' => 'MyResearch', 'action' => 'Home'), 'default', true) .
-        '">' . $this->transEsc('Your Account') . '</a>' . '<span>&gt;</span><em>' .
-        $this->transEsc('Edit') . '</em>';
+    $this->layout()->breadcrumbs = '<a href="' . $this->url('myresearch-home') . '">'
+        . $this->transEsc('Your Account') . '</a>' . '<span>&gt;</span><em>'
+        . $this->transEsc('Edit') . '</em>';
 
     // Load Javascript dependencies into header:
     $this->headScript()->appendFile("bulk_actions.js");
@@ -26,7 +25,7 @@
   <? else: ?>
     <? foreach ($this->savedData as $i=>$current): ?>
       <strong><?=$this->transEsc('List') ?>: <?=$this->escape($current['listTitle'])?></strong>
-      <a href="<?=$this->url(array('id' => $current['listId']), 'userList') ?>?delete=<?=urlencode($this->driver->getUniqueId())?>&amp;source=<?=urlencode($this->driver->getResourceSource())?>" id="<?=$this->escape($this->driver->getUniqueId())?>delete<?=$current['listId'] ?>" title="<?=$this->transEsc('confirm_delete')?>" class="holdCancel delete tool"></a>
+      <a href="<?=$this->url('userList', array('id' => $current['listId'])) ?>?delete=<?=urlencode($this->driver->getUniqueId())?>&amp;source=<?=urlencode($this->driver->getResourceSource())?>" id="<?=$this->escape($this->driver->getUniqueId())?>delete<?=$current['listId'] ?>" title="<?=$this->transEsc('confirm_delete')?>" class="holdCancel delete tool"></a>
       <input type="hidden" name="lists[]" value="<?=$current['listId'] ?>"/>
       <label class="displayBlock" for="edit_tags<?=$current['listId'] ?>"><?=$this->transEsc('Tags') ?>:</label>
       <input id="edit_tags<?=$current['listId'] ?>" type="text" name="tags<?=$current['listId'] ?>" value="<?=$this->escape($current['tags'])?>" size="50"/>

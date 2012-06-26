@@ -7,20 +7,19 @@
     // Load search actions and settings (if any):
     $options = $this->searchOptions($this->searchClassId);
     $basicSearch = $options->getSearchAction();
-    $searchHome = $basicSearch;
-    $searchHome['action'] = 'Home';
+    $searchHome = $options->getSearchHomeAction();
     $advSearch = $options->getAdvancedSearchAction();
     $lastSort = $options->getLastSort();
     $lastLimit = $options->getLastLimit();
 ?>
 <div class="searchform">
   <? if ($this->searchType == 'advanced'): ?>
-    <a href="<?=$this->url($advSearch, 'default', true)?>?edit=<?=$this->escape($this->searchId)?>" class="small"><?=$this->transEsc("Edit this Advanced Search")?></a> |
-    <a href="<?=$this->url($advSearch, 'default', true)?>" class="small"><?=$this->transEsc("Start a new Advanced Search")?></a> |
-    <a href="<?=$this->url($searchHome, 'default', true)?>" class="small"><?=$this->transEsc("Start a new Basic Search")?></a>
+    <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escape($this->searchId)?>" class="small"><?=$this->transEsc("Edit this Advanced Search")?></a> |
+    <a href="<?=$this->url($advSearch)?>" class="small"><?=$this->transEsc("Start a new Advanced Search")?></a> |
+    <a href="<?=$this->url($searchHome)?>" class="small"><?=$this->transEsc("Start a new Basic Search")?></a>
     <br/><?=$this->transEsc("Your search terms")?> : "<strong><?=$this->escape($this->lookfor)?></strong>"
   <? else: ?>
-    <form method="get" action="<?=$this->url($basicSearch, 'default', true)?>" name="searchForm" id="searchForm" class="search">
+    <form method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" id="searchForm" class="search">
       <label for="searchForm_lookfor" class="offscreen"><?=$this->transEsc("Your search terms")?></label>
       <input id="searchForm_lookfor" type="text" name="lookfor" size="40" value="<?=$this->escape($this->lookfor)?>"<?=$options->autocompleteEnabled() ? ' class="autocomplete searcher:' . $this->escape($this->searchClassId) . ' typeSelector:searchForm_type"' : ''?>/>
       <label for="searchForm_type" class="offscreen"><?=$this->transEsc("Search Type")?></label>
@@ -31,7 +30,7 @@
       </select>
       <input type="submit" name="submit" value="<?=$this->transEsc("Find")?>"/>
       <? if ($advSearch): ?>
-        <a href="<?=$this->url($advSearch, 'default', true)?>" class="small"><?=$this->transEsc("Advanced")?></a>
+        <a href="<?=$this->url($advSearch)?>" class="small"><?=$this->transEsc("Advanced")?></a>
       <? endif; ?>
 
       <?

@@ -24,7 +24,7 @@
     // Step 3: Build the page
     $this->headScript()->appendScript($this->partial('search/advanced/build_page.phtml', array('searchDetails' => $searchDetails)));
 ?>
-<form method="get" action="<?=$this->url($this->options->getSearchAction(), 'default', true)?>" id="advSearchForm" name="searchForm" class="search">
+<form method="get" action="<?=$this->url($this->options->getSearchAction())?>" id="advSearchForm" name="searchForm" class="search">
   <div class="<?=$this->layoutClass('mainbody')?>">
     <h3><?=$this->transEsc('Advanced Search')?></h3>
     <div class="advSearchContent">
@@ -140,8 +140,8 @@
     <? endif; ?>
     <div class="sidegroup">
       <h4><?=$this->transEsc("Search Tips")?></h4>
-      <a href="<?=$this->url(array('controller' => 'Help'), 'default')?>?topic=searchadv" class="advsearchHelp"><?=$this->transEsc("Help with Advanced Search")?></a><br />
-      <a href="<?=$this->url(array('controller' => 'Help'), 'default')?>?topic=search" class="searchHelp"><?=$this->transEsc("Help with Search Operators")?></a>
+      <a href="<?=$this->url('help-home')?>?topic=searchadv" class="advsearchHelp"><?=$this->transEsc("Help with Advanced Search")?></a><br />
+      <a href="<?=$this->url('help-home')?>?topic=search" class="searchHelp"><?=$this->transEsc("Help with Search Operators")?></a>
     </div>
   </div>
 

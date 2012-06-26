@@ -8,6 +8,6 @@
 <h1><?=$this->transEsc('Upgrade VuFind')?></h1>
 <?=$this->flashmessages()?>
 <p>Please enter the full path of the directory containing your previous version of VuFind (i.e. /usr/local/vufind):</p>
-<form method="post" action="<?=$this->url(array('controller' => 'Upgrade', 'action' => 'GetSourceDir'), 'default', true)?>">
+<form method="post" action="<?=$this->url('upgrade-getsourcedir')?>">
 <input type="text" name="sourcedir" /> <input type="submit" />
 </form>

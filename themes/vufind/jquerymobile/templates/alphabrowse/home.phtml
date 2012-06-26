@@ -6,7 +6,7 @@
   <? if (!$this->result): ?>
     <?=$this->mobileMenu()->header() ?>
     <div class="resulthead">
-      <form method="get" action="<?=$this->url(array('controller' => 'AlphaBrowse'), 'default', true)?>" name="alphaBrowseForm" id="alphaBrowseForm" data-ajax="false">
+      <form method="get" action="<?=$this->url('alphabrowse-home')?>" name="alphaBrowseForm" id="alphaBrowseForm" data-ajax="false">
         <div class="ui-body ui-body-d">
           <label for="alphaBrowseForm_source"><?=$this->transEsc('Browse Alphabetically') ?></label>
           <select id="alphaBrowseForm_source" name="source">
@@ -23,7 +23,7 @@
   <? else: ?>
     <?=$this->mobileMenu()->header(array(
       'extraButtons' => array('<a rel="external" href="'
-        . $this->url(array('controller' => 'AlphaBrowse', 'action' => 'Home'), 'default', true)
+        . $this->url('alphabrowse-home')
         . '" data-icon="home" class="ui-btn-left">'
         . $this->transEsc("Browse Home")
         . '</a>'
@@ -32,12 +32,12 @@
       <div class="ui-grid-a">
         <div class="ui-block-a">
           <? if (isset($this->prevpage)): ?>
-            <a data-role="button" data-mini="true" data-icon="arrow-l" href="<?=$this->url(array('controller' => 'AlphaBrowse'), 'default', true)?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($this->from)?>&amp;page=<?=urlencode($this->prevpage)?>">Prev</a>
+            <a data-role="button" data-mini="true" data-icon="arrow-l" href="<?=$this->url('alphabrowse-home')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($this->from)?>&amp;page=<?=urlencode($this->prevpage)?>">Prev</a>
           <? endif; ?>
         </div>
         <div class="ui-block-b">
           <? if (isset($this->nextpage)): ?>
-            <a data-role="button" data-mini="true" data-icon="arrow-r" data-iconpos="right" href="<?=$this->url(array('controller' => 'AlphaBrowse'), 'default', true)?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($this->from)?>&amp;page=<?=urlencode($this->nextpage)?>">Next</a>
+            <a data-role="button" data-mini="true" data-icon="arrow-r" data-iconpos="right" href="<?=$this->url('alphabrowse-home')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($this->from)?>&amp;page=<?=urlencode($this->nextpage)?>">Next</a>
           <? endif; ?>
         </div>
       </div>
@@ -51,12 +51,12 @@
           <? if ($item['count'] > 0 || count($item['useInstead']) > 0): ?>
           <? ob_start(); ?>
             <? if (count($item['useInstead']) > 0): ?>
-              <?=$this->url(array('controller' => 'AlphaBrowse'), 'default', true)?>/Results?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode(implode($item['useInstead']))?>
+              <?=$this->url('alphabrowse-results')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode(implode($item['useInstead']))?>
             <? else: ?>
               <? if ($item['count'] < 5): ?>
-                <?=$this->url(array('controller' => 'Search', 'action' => 'Results'), 'default', true)?>?type=ids&amp;lookfor=<? foreach ($item['ids'] as $id): ?><?=$id ?>+<? endforeach; ?>
+                <?=$this->url('search-results')?>?type=ids&amp;lookfor=<? foreach ($item['ids'] as $id): ?><?=$id ?>+<? endforeach; ?>
               <? else: ?>
-                <?=$this->url(array('controller' => 'Search', 'action' => 'Results'), 'default', true)?>?type=<?=urlencode(ucwords($this->source)) ?>Browse&amp;lookfor=<?=urlencode($item['heading'])?>
+                <?=$this->url('search-results')?>?type=<?=urlencode(ucwords($this->source)) ?>Browse&amp;lookfor=<?=urlencode($item['heading'])?>
               <? endif; ?>
             <? endif; ?>
             <? $searchLink = ob_get_contents(); ?>

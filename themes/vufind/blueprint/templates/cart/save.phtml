@@ -10,7 +10,7 @@
 
 <?=$this->flashmessages()?>
 
-<form method="post" action="<?=$this->url(array('controller' => 'Cart', 'action' => 'Save'), 'default', true)?>" name="bulkSave">
+<form method="post" action="<?=$this->url('cart-save')?>" name="bulkSave">
   <? $idParams = array(); ?>
   <? foreach ($this->records as $current): ?>
     <? $idParams[] = urlencode('ids[]') . '=' . urlencode($current->getResourceSource() . '|' . $current->getUniqueId()) ?>
@@ -29,7 +29,7 @@
     <? endif; ?>
   </select>
 
-  <a href="<?=$this->url(array('id' => 'NEW'), 'editList', true) . '?' . implode('&', $idParams) ?>" class="listEdit" id="listEdit" title="<?=$this->transEsc('Create a List') ?>"><?=$this->transEsc('or create a new list');?></a>
+  <a href="<?=$this->url('editList', array('id' => 'NEW')) . '?' . implode('&', $idParams) ?>" class="listEdit" id="listEdit" title="<?=$this->transEsc('Create a List') ?>"><?=$this->transEsc('or create a new list');?></a>
 
   <label class="displayBlock" for="add_mytags"><?=$this->transEsc('Add Tags') ?></label>
   <input class="mainFocus" id="add_mytags" type="text" name="mytags" value="" size="50"/>

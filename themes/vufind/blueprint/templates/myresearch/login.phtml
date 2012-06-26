@@ -3,10 +3,9 @@
     $this->headTitle($this->translate('Login'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<a href="' .
-        $this->url(array('controller' => 'MyResearch', 'action' => 'Home'), 'default', true) .
-        '">' . $this->transEsc('Your Account') . '</a>' . '<span>&gt;</span><em>' .
-        $this->transEsc('Login') . '</em>';
+    $this->layout()->breadcrumbs = '<a href="' . $this->url('myresearch-home') . '">'
+        . $this->transEsc('Your Account') . '</a>' . '<span>&gt;</span><em>'
+        . $this->transEsc('Login') . '</em>';
 
     // If we're in AJAX mode, load some extra Javascript inline:
     if ($this->layout()->getLayout() == 'lightbox') {
@@ -35,7 +34,7 @@
   <div class="error"><?=$this->transEsc('login_disabled')?></div>
 <? else: ?>
   <? if (!$this->account->getSessionInitiator()): // display default login form if no login URL provided ?>
-    <form method="post" action="<?=$this->url(array('controller' => 'MyResearch'), 'default', true)?>" name="loginForm" id="loginForm">
+    <form method="post" action="<?=$this->url('myresearch-home')?>" name="loginForm" id="loginForm">
       <?=$this->auth()->getLoginFields()?>
       <input class="push-2 button" type="submit" name="processLogin" value="<?=$this->transEsc('Login')?>"/>
       <div class="clear"></div>
@@ -46,7 +45,7 @@
       echo $this->inlineScript(Zend_View_Helper_HeadScript::SCRIPT, $initJs);
     ?>
     <? if ($this->account->supportsCreation()): ?>
-      <a class="new_account" href="<?=$this->url(array('controller' => 'MyResearch', 'action' => 'Account'), 'default')?>"><?=$this->transEsc('Create New Account')?></a>
+      <a class="new_account" href="<?=$this->url('myresearch-account')?>"><?=$this->transEsc('Create New Account')?></a>
     <? endif; ?>
   <? else: ?>
     <a href="<?=$this->escape($this->account->getSessionInitiator())?>"><?=$this->transEsc("Institutional Login")?></a>

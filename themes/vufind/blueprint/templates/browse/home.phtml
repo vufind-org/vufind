@@ -1,13 +1,9 @@
 <?
     $this->headTitle($this->translate('Browse the Catalog'));
-    $this->layout()->breadcrumbs = '<a href="' .
-        $this->url(array('controller' => 'Browse', 'action' => 'Home'), 'default', true) .
-        '">' . $this->transEsc('Browse') . '</a>';
+    $this->layout()->breadcrumbs = '<a href="' . $this->url('browse-home') . '">' . $this->transEsc('Browse') . '</a>';
 
-    $BROWSE_BASE = $this->url(array('controller' => 'Browse', 'action' => $this->currentAction), 'default', true);
-    $SEARCH_BASE = ($this->currentAction == 'Tag')
-        ? $this->url(array('controller' => 'Tag', 'action' => 'Home'), 'default', true)
-        : $this->url(array('controller' => 'Search', 'action' => 'Results'), 'default', true);
+    $BROWSE_BASE = $this->url('browse-' . strtolower($this->currentAction));
+    $SEARCH_BASE = $this->url($this->currentAction == 'Tag' ? 'tag-home' : 'search-results');
 ?>
 
 <? if (!isset($this->currentAction)): ?>

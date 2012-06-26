@@ -52,7 +52,7 @@
     </ul>
     <? if ($cart->isActive()): ?>
       <div class="cartSummary">
-        <form method="post" name="addForm" action="<?=$this->url(array('controller' => 'Cart', 'action' => 'Home'), 'default', true)?>">
+        <form method="post" name="addForm" action="<?=$this->url('cart-home')?>">
           <input id="cartId" type="hidden" name="ids[]" value="<?=$this->escape($cartId)?>" />
           <noscript>
             <? if ($cart->contains($cartId)): ?>
@@ -73,9 +73,9 @@
     <?=$this->flashmessages()?>
     <? if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
       <div class="resultscroller">
-        <? if ($this->scrollData['previousRecord']): ?><a href="<?=$this->url(array('id' => $this->scrollData['previousRecord'], 'action' => 'Home'), $this->driver->getRecordRoute(), true)?>">&laquo; <?=$this->transEsc('Prev')?></a><? endif; ?>
+        <? if ($this->scrollData['previousRecord']): ?><a href="<?=$this->url($this->driver->getRecordRoute(), array('id' => $this->scrollData['previousRecord']))?>">&laquo; <?=$this->transEsc('Prev')?></a><? endif; ?>
         #<?=$this->escape($this->scrollData['currentPosition']) . ' ' . $this->transEsc('of') . ' ' . $this->escape($this->scrollData['resultTotal'])?>
-        <? if ($this->scrollData['nextRecord']): ?><a href="<?=$this->url(array('id' => $this->scrollData['nextRecord'], 'action' => 'Home'), $this->driver->getRecordRoute(), true)?>"><?=$this->transEsc('Next')?> &raquo;</a><? endif; ?>
+        <? if ($this->scrollData['nextRecord']): ?><a href="<?=$this->url($this->driver->getRecordRoute(), array('id' => $this->scrollData['nextRecord']))?>"><?=$this->transEsc('Next')?> &raquo;</a><? endif; ?>
       </div>
     <? endif; ?>
     <?=$this->record($this->driver)->getCoreMetadata()?>

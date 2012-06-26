@@ -196,7 +196,7 @@
         </span>
         <div id="tagList">
           <? if (count($tagList) > 0): ?>
-            <? $i = 0; foreach ($tagList as $tag): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->url(array('controller' => 'Tag', 'action' => 'Home'), 'default', true)?>?lookfor=<?=urlencode($tag->tag)?>"><?=$this->escape($tag->tag)?></a> (<?=$this->escape($tag->cnt)?>)<? endforeach; ?>
+            <? $i = 0; foreach ($tagList as $tag): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->url('tag-home')?>?lookfor=<?=urlencode($tag->tag)?>"><?=$this->escape($tag->tag)?></a> (<?=$this->escape($tag->cnt)?>)<? endforeach; ?>
           <? else: ?>
             <?=$this->transEsc('No Tags')?>, <?=$this->transEsc('Be the first to tag this record')?>!
           <? endif; ?>
@@ -215,7 +215,7 @@
       <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escape($mediumThumb);?>"/>
     <? if ($largeThumb): ?></a><? endif; ?>
   <? else: ?>
-    <img src="<?=$this->url(array('controller' => 'Cover', 'action' => 'Unavailable'), 'default')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+    <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
   <? endif; ?>
 
   <? /* Display the lists that this record is saved to */ ?>

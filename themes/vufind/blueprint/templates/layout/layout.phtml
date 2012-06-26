@@ -9,9 +9,7 @@
         // Set up OpenSearch link:
         $this->headLink(
             array(
-                'href' => $this->url(
-                    'default', array('controller' => 'Search', 'action' => 'OpenSearch')
-                ) . '?method=describe',
+                'href' => $this->url('search-opensearch') . '?method=describe',
                 'type' => 'application/opensearchdescription+xml',
                 'title' => $this->transEsc('Library Catalog Search'),
                 'rel' => 'search'

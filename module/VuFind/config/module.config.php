@@ -1,5 +1,7 @@
 <?php
-return array(
+namespace VuFind\Module\Configuration;
+
+$config = array(
     'router' => array(
         'routes' => array(
             'default' => array(
@@ -10,100 +12,6 @@ return array(
                         'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
                         'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
                     ),
-                    'defaults' => array(
-                        'controller' => 'index',
-                        'action'     => 'Home',
-                    ),
-                ),
-            ),
-            'record' => array(
-                'type'    => 'Zend\Mvc\Router\Http\Segment',
-                'options' => array(
-                    'route'    => '/Record/[:id[/:action]]',
-                    'constraints' => array(
-                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                    ),
-                    'defaults' => array(
-                        'controller' => 'Record',
-                        'action'     => 'Home',
-                    ),
-                ),
-            ),
-            'missingrecord' => array(
-                'type'    => 'Zend\Mvc\Router\Http\Segment',
-                'options' => array(
-                    'route'    => '/MissingRecord/[:id[/:action]]',
-                    'constraints' => array(
-                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                    ),
-                    'defaults' => array(
-                        'controller' => 'MissingRecord',
-                        'action'     => 'Home',
-                    ),
-                ),
-            ),
-            'summonrecord' => array(
-                'type'    => 'Zend\Mvc\Router\Http\Segment',
-                'options' => array(
-                    'route'    => '/SummonRecord/[:id[/:action]]',
-                    'constraints' => array(
-                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                    ),
-                    'defaults' => array(
-                        'controller' => 'MissingRecord',
-                        'action'     => 'Home',
-                    ),
-                ),
-            ),
-            'worldcatrecord' => array(
-                'type'    => 'Zend\Mvc\Router\Http\Segment',
-                'options' => array(
-                    'route'    => '/WorldCatRecord/[:id[/:action]]',
-                    'constraints' => array(
-                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                    ),
-                    'defaults' => array(
-                        'controller' => 'WorldCatRecord',
-                        'action'     => 'Home',
-                    ),
-                ),
-            ),
-            'userList' => array(
-                'type'    => 'Zend\Mvc\Router\Http\Segment',
-                'options' => array(
-                    'route'    => '/MyResearch/MyList/[:id]',
-                    'constraints' => array(
-                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                    ),
-                    'defaults' => array(
-                        'controller' => 'MyResearch',
-                        'action'     => 'MyList',
-                    ),
-                ),
-            ),
-            'editList' => array(
-                'type'    => 'Zend\Mvc\Router\Http\Segment',
-                'options' => array(
-                    'route'    => '/MyResearch/EditList/[:id]',
-                    'constraints' => array(
-                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
-                    ),
-                    'defaults' => array(
-                        'controller' => 'MyResearch',
-                        'action'     => 'EditList',
-                    ),
-                ),
-            ),
-            'home' => array(
-                'type' => 'Zend\Mvc\Router\Http\Literal',
-                'options' => array(
-                    'route'    => '/',
                     'defaults' => array(
                         'controller' => 'index',
                         'action'     => 'Home',
@@ -127,3 +35,110 @@ return array(
         'template_path_stack'      => array(),
     ),
 );
+
+// Define record view routes -- route name => controller
+$recordRoutes = array(
+    'record' => 'Record',
+    'missingrecord' => 'MissingRecord',
+    'summonrecord' => 'SummonRecord',
+    'worldcatrecord' => 'WorldCatRecord'
+);
+
+// Define list-related routes -- route name => MyResearch action
+$listRoutes = array('userList' => 'MyList', 'editList' => 'EditList');
+
+// Define static routes -- Controller/Action strings
+$staticRoutes = array(
+    'Admin/Config', 'Admin/DeleteExpiredSearches', 'Admin/EnableAutoConfig',
+    'Admin/Maintenance', 'Admin/Statistics', 'AlphaBrowse/Home',
+    'AlphaBrowse/Results',
+    'Author/Home', 'Author/Search',
+    'Authority/Home', 'Authority/Record', 'Authority/Search',
+    'Browse/Author', 'Browse/Dewey', 'Browse/Era', 'Browse/Genre', 'Browse/Home',
+    'Browse/LCC', 'Browse/Region', 'Browse/Tag', 'Browse/Topic',
+    'Cart/Email', 'Cart/Export', 'Cart/Home', 'Cart/MyResearchBulk', 'Cart/Save',
+    'Cover/Unavailable', 'Help/Home',
+    'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',
+    'Install/FixDatabase', 'Install/FixDependencies', 'Install/FixILS',
+    'Install/FixSolr', 'Install/Home',
+    'MyResearch/Account', 'MyResearch/CheckedOut', 'MyResearch/Delete',
+    'MyResearch/DeleteList', 'MyResearch/Edit', 'MyResearch/Email',
+    'MyResearch/Export', 'MyResearch/Favorites', 'MyResearch/Holds',
+    'MyResearch/Home', 'MyResearch/Logout', 'MyResearch/Profile',
+    'MyResearch/SaveSearch',
+    'OAI/Server', 'Records/Home',
+    'Search/Advanced', 'Search/Email', 'Search/History', 'Search/Home',
+    'Search/NewItem', 'Search/OpenSearch', 'Search/Reserves', 'Search/Results',
+    'Search/Suggest',
+    'Summon/Advanced', 'Summon/Home', 'Summon/Search',
+    'Tag/Home',
+    'Upgrade/Home', 'Upgrade/FixAnonymousTags', 'Upgrade/FixMetadata',
+    'Upgrade/GetDBCredentials', 'Upgrade/GetSourceDir', 'Upgrade/Reset',
+    'WorldCat/Advanced', 'WorldCat/Home', 'WorldCat/Search'
+);
+
+// Build record routes
+foreach ($recordRoutes as $routeName => $controller) {
+    $config['router']['routes'][$routeName] = array(
+        'type'    => 'Zend\Mvc\Router\Http\Segment',
+        'options' => array(
+            'route'    => '/' . $controller . '/[:id[/:action]]',
+            'constraints' => array(
+                'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+            ),
+            'defaults' => array(
+                'controller' => $controller,
+                'action'     => 'Home',
+            )
+        )
+    );
+}
+
+// Build list routes
+foreach ($listRoutes as $routeName => $action) {
+    $config['router']['routes'][$routeName] = array(
+        'type'    => 'Zend\Mvc\Router\Http\Segment',
+        'options' => array(
+            'route'    => '/MyResearch/' . $action . '/[:id]',
+            'constraints' => array(
+                'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+            ),
+            'defaults' => array(
+                'controller' => 'MyResearch',
+                'action'     => $action,
+            )
+        )
+    );
+}
+
+// Build static routes
+foreach ($staticRoutes as $route) {
+    list($controller, $action) = explode('/', $route);
+    $routeName = str_replace('/', '-', strtolower($route));
+    $config['router']['routes'][$routeName] = array(
+        'type' => 'Zend\Mvc\Router\Http\Literal',
+        'options' => array(
+            'route'    => '/' . $route,
+            'defaults' => array(
+                'controller' => $controller,
+                'action'     => $action,
+            )
+        )
+    );
+}
+
+// Add the home route last
+$config['router']['routes']['home'] = array(
+    'type' => 'Zend\Mvc\Router\Http\Literal',
+    'options' => array(
+        'route'    => '/',
+        'defaults' => array(
+            'controller' => 'index',
+            'action'     => 'Home',
+        )
+    )
+);
+
+return $config;

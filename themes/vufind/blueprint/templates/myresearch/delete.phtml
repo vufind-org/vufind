@@ -1,4 +1,4 @@
-<form action="<?=$this->url(array('controller' => 'MyResearch', 'action' => 'Delete'), 'default', true)?>" method="post" name="bulkDelete">
+<form action="<?=$this->url('myresearch-delete')?>" method="post" name="bulkDelete">
   <div id="popupMessages"><?=$this->flashmessages()?></div>
   <div id="popupDetails">
     <? if (!$this->list): ?>

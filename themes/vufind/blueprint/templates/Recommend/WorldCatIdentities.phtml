@@ -8,7 +8,7 @@
           </dl>
           <dl class="offscreen" id="narrowGroupHidden_WCIdents">
         <? endif; ?>
-        <dd>&bull; <a href="<?=$this->url(array('controller' => 'Search', 'action' => 'Results'), 'default', true)?>?lookfor=%22<?=urlencode($author)?>%22&amp;type=Author"><?=$this->escape($author)?></a>
+        <dd>&bull; <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($author)?>%22&amp;type=Author"><?=$this->escape($author)?></a>
         <? if (count($subjects) > 0): ?>
           <dl>
           <dd><?=$this->transEsc('Related Subjects')?>:</dd>
@@ -18,7 +18,7 @@
               </dl>
               <dl class="offscreen" id="narrowGroupHidden_WCIdents<?=$i?>">
             <? endif; ?>
-            <dd>&bull; <a href="<?=$this->url(array('controller' => 'Search', 'action' => 'Results'), 'default', true)?>?lookfor=%22<?=urlencode($subj)?>%22&amp;type=Subject"><?=$this->escape($subj)?></a></dd>
+            <dd>&bull; <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($subj)?>%22&amp;type=Subject"><?=$this->escape($subj)?></a></dd>
           <? endforeach; ?>
           <? if ($j > 2): ?><dd><a href="#" onclick="lessFacets('WCIdents<?=$i?>'); return false;"><?=$this->transEsc('less')?> ...</a></dd><? endif; ?>
           </dl>

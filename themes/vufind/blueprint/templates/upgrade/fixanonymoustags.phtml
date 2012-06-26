@@ -20,7 +20,7 @@ an administrator) to associate with old anonymous tags.</p>
 
 <br />
 
-<form method="POST" action="<?=$this->url(array('controller' => 'Upgrade', 'action' => 'FixAnonymousTags'), 'default', true)?>">
+<form method="POST" action="<?=$this->url('upgrade-fixanonymoustags')?>">
   <?=$this->transEsc('Username') ?>: <input type="text" name="username" /> <input type="submit" name="submit" value="<?=$this->transEsc('Submit') ?>" /><br /><br />
   <input type="submit" name="skip" value="<?=$this->transEsc('skip_step') ?>." onclick="return confirm('<?=$this->transEsc('skip_confirm') ?>');"/>
 </form>

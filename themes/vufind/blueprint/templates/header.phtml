@@ -2,20 +2,20 @@
 <div id="headerRight">
   <? $cart = \VuFind\Cart::getInstance(); if ($cart->isActive()): ?>
     <div id="cartSummary" class="cartSummary">
-      <a id="cartItems" title="<?=$this->transEsc('View Book Bag')?>" class="bookbag" href="<?=$this->url(array('controller' => 'Cart', 'action' => 'Home'), 'default', true)?>"><strong><span><?=count($cart->getItems())?></span></strong> <?=$this->transEsc('items')?> <?=$cart->isFull() ? '(' .  $this->transEsc('bookbag_full') . ')' : ''?></a>
-      <a id="viewCart" title="<?=$this->transEsc('View Book Bag')?>" class="viewCart bookbag offscreen" href="<?=$this->url(array('controller' => 'Cart', 'action' => 'Home'), 'default', true)?>"><strong><span id="cartSize"><?=count($cart->getItems())?></span></strong> <?=$this->transEsc('items')?><span id="cartStatus"><?=$cart->isFull() ? $this->transEsc('bookbag_full') : '&nbsp;'?></span></a>
+      <a id="cartItems" title="<?=$this->transEsc('View Book Bag')?>" class="bookbag" href="<?=$this->url('cart-home')?>"><strong><span><?=count($cart->getItems())?></span></strong> <?=$this->transEsc('items')?> <?=$cart->isFull() ? '(' .  $this->transEsc('bookbag_full') . ')' : ''?></a>
+      <a id="viewCart" title="<?=$this->transEsc('View Book Bag')?>" class="viewCart bookbag offscreen" href="<?=$this->url('cart-home')?>"><strong><span id="cartSize"><?=count($cart->getItems())?></span></strong> <?=$this->transEsc('items')?><span id="cartStatus"><?=$cart->isFull() ? $this->transEsc('bookbag_full') : '&nbsp;'?></span></a>
     </div>
   <? endif; ?>
   <? if (is_object($this->account) && $this->account->loginEnabled()): // hide login/logout if unavailable ?>
     <div id="logoutOptions"<?=!$this->account->isLoggedIn() ? ' class="hide"' : ''?>>
-      <a class="account" href="<?=$this->url(array('controller' => 'MyResearch'), 'default', true)?>"><?=$this->transEsc("Your Account")?></a> |
-      <a class="logout" href="<?=$this->url(array('controller' => 'MyResearch', 'action' => 'Logout'), 'default', true)?>"><?=$this->transEsc("Log Out")?></a>
+      <a class="account" href="<?=$this->url('myresearch-home')?>"><?=$this->transEsc("Your Account")?></a> |
+      <a class="logout" href="<?=$this->url('myresearch-logout')?>"><?=$this->transEsc("Log Out")?></a>
     </div>
     <div id="loginOptions"<?=$this->account->isLoggedIn() ? ' class="hide"' : ''?>>
     <? if ($sessionInitiator = $this->account->getSessionInitiator()): ?>
       <a class="login" href="<?=$this->escape($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
     <? else: ?>
-      <a class="login" href="<?=$this->url(array('controller' => 'MyResearch'), 'default', true)?>"><?=$this->transEsc("Login")?></a>
+      <a class="login" href="<?=$this->url('myresearch-home')?>"><?=$this->transEsc("Login")?></a>
     <? endif; ?>
     </div>
   <? endif; ?>

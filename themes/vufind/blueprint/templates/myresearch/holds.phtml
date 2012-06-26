@@ -3,10 +3,9 @@
     $this->headTitle($this->translate('My Holds'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<a href="' .
-        $this->url(array('controller' => 'MyResearch', 'action' => 'Home'), 'default', true) .
-        '">' . $this->transEsc('Your Account') . '</a>' . '<span>&gt;</span><em>' .
-        $this->transEsc('My Holds') . '</em>';
+    $this->layout()->breadcrumbs = '<a href="' . $this->url('myresearch-home') . '">'
+        . $this->transEsc('Your Account') . '</a>' . '<span>&gt;</span><em>'
+        . $this->transEsc('My Holds') . '</em>';
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h3><?=$this->translate('Your Holds and Recalls') ?></h3>
@@ -42,7 +41,7 @@
             <? if ($summThumb = $resource->getThumbnail()): ?>
               <img src="<?=$this->escape($summThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
             <? else: ?>
-              <img src="<?=$this->url(array('controller' => 'Cover', 'action' => 'Unavailable'), 'default', true)?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+              <img src="<?=$this->url('cover-unavailable')?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
             <? endif; ?>
           </div>
           <div class="span-10">

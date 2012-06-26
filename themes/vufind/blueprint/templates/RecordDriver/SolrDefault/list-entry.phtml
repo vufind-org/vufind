@@ -15,7 +15,7 @@
     <? if ($listThumb = $this->driver->getThumbnail()): ?>
       <img src="<?=$this->escape($listThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
     <? else: ?>
-      <img src="<?=$this->url(array('controller' => 'Cover', 'action' => 'Unavailable'), 'default', true)?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+      <img src="<?=$this->url('cover-unavailable')?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
     <? endif; ?>
   </div>
   <div class="span-10">
@@ -38,7 +38,7 @@
     ?>
     <? if (count($listTags) > 0): ?>
       <strong><?=$this->transEsc('Your Tags')?>:</strong>
-      <? $i = 0; foreach ($listTags as $tag): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->url(array('controller' => 'Tag', 'action' => 'Home'), 'default', true)?>?lookfor=<?=urlencode($tag->tag)?>"><?=$this->escape($tag->tag)?></a><? endforeach; ?>
+      <? $i = 0; foreach ($listTags as $tag): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->url('tag-home')?>?lookfor=<?=urlencode($tag->tag)?>"><?=$this->escape($tag->tag)?></a><? endforeach; ?>
       <br/>
     <? endif; ?>
     <? $listNotes = $this->driver->getListNotes($list_id, $user_id); ?>
@@ -53,7 +53,7 @@
     <? if (count($this->lists) > 0): ?>
         <strong><?=$this->transEsc('Saved in')?>:</strong>
         <? $i=0;foreach($this->lists as $current): ?>
-            <a href="<?=$this->url(array('id' => $current->id), 'userList', true)?>"><?=$current->title?></a><? if($i++ < count($this->lists)-1): ?>,<? endif; ?>
+            <a href="<?=$this->url('userList', array('id' => $current->id))?>"><?=$current->title?></a><? if($i++ < count($this->lists)-1): ?>,<? endif; ?>
         <? endforeach; ?>
         <br/>
     <? endif; ?>
@@ -65,11 +65,11 @@
      // and a user is logged in (which means we are viewing all of the user's favorites)
      if ((isset($list) && $list->editAllowed()) || (!isset($list) && $this->user)): ?>
     <div class="floatright">
-      <a href="<?=$this->url(array('controller' => 'MyResearch', 'action' => 'Edit'), 'default', true)?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a>
+      <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a>
       <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */ 
         $deleteUrl = is_null($list_id)
-            ? $this->url(array('controller' => 'MyResearch', 'action' => 'Favorites'), 'default', true)
-            : $this->url(array('id' => $list_id), 'userList');
+            ? $this->url('myresearch-favorites')
+            : $this->url('userList', array('id' => $list_id));
         $deleteUrl .= '?delete=' . urlencode($id) . '&amp;source=' . urlencode($source);
       ?>
       <a href="<?=$deleteUrl?>" title="<?=$this->transEsc('confirm_delete_brief')?>" class="delete tool source<?=$this->escape($source)?>"><?=$this->transEsc('Delete')?></a>

@@ -11,7 +11,7 @@
               </dl>
               <dl class="offscreen" id="narrowGroupHidden_WCTerms<?=$this->escape($type)?>">
             <? endif; ?>
-            <dd>&bull; <a href="<?=$this->url(array('controller' => 'Search', 'action' => 'Results'), 'default', true)?>?lookfor=%22<?=urlencode($subj)?>%22&amp;type=Subject"><?=$this->escape($subj)?></a></dd>
+            <dd>&bull; <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($subj)?>%22&amp;type=Subject"><?=$this->escape($subj)?></a></dd>
           <? endforeach; ?>
           <? if ($j > 3): ?><dd><a href="#" onclick="lessFacets('WCTerms<?=$this->escape($type)?>'); return false;"><?=$this->transEsc('less')?> ...</a></dd><? endif; ?>
         </dl>

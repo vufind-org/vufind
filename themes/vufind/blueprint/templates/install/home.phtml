@@ -9,10 +9,10 @@
 <ul>
   <? $errors = 0; foreach ($this->checks as $check): ?>
     <? if (!$check['status']) $errors++; ?>
-    <li><?=$this->escape($check['title'])?>... <?=$check['status'] ? '<span style="color:green">' . $this->transEsc('test_ok') . '</span>' : '<span style="color:red">' . $this->transesc('test_fail') . '</span> <a href="' . $this->url(array('action' => $check['fix'])) . '">' . $this->transEsc('test_fix') . '</a>' ?></li>
+    <li><?=$this->escape($check['title'])?>... <?=$check['status'] ? '<span style="color:green">' . $this->transEsc('test_ok') . '</span>' : '<span style="color:red">' . $this->transesc('test_fail') . '</span> <a href="' . $this->url('install-' . strtolower($check['fix'])) . '">' . $this->transEsc('test_fix') . '</a>' ?></li>
   <? endforeach; ?>
 </ul>
 
 <? if ($errors == 0): ?>
-  <p>No problems were found.  You may wish to <a href="<?=$this->url(array('action' => 'Done'))?>">Disable Auto Configuration</a> at this time.</p>
+  <p>No problems were found.  You may wish to <a href="<?=$this->url('install-done')?>">Disable Auto Configuration</a> at this time.</p>
 <? endif; ?>

@@ -11,7 +11,7 @@
 
   <h2>Utilities</h2>
   <?=$this->flashmessages()?>
-  <form method="get" action="<?=$this->url(array('controller' => 'Admin', 'action' => 'DeleteExpiredSearches'), 'default', true)?>">
+  <form method="get" action="<?=$this->url('admin-deleteexpiredsearches')?>">
     <label for="del_daysOld" style="font-weight: normal;">Delete unsaved user search histories older than</label>
     <input id="del_daysOld" type="text" name="daysOld" size="5" value="2"/> days.
     <input type="submit" name="submit" value="<?=$this->transEsc('Submit')?>"/>

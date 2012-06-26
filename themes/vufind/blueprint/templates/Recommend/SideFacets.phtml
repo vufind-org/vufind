@@ -32,7 +32,7 @@
     <? foreach ($sideFacetSet as $title => $cluster): ?>
       <? if (isset($dateFacets[$title])): ?>
         <? /* Load the publication date slider UI widget */ $this->headScript()->appendFile('pubdate_slider.js'); ?>
-        <form action="<?=$this->url()?>" name="<?=$this->escape($title)?>Filter" id="<?=$this->escape($title)?>Filter">
+        <form action="" name="<?=$this->escape($title)?>Filter" id="<?=$this->escape($title)?>Filter">
           <?=$this->results->getUrl()->asHiddenFields(array('filter' => "/^{$title}:.*/"))?>
           <input type="hidden" name="daterange[]" value="<?=$this->escape($title)?>"/>
           <fieldset class="publishDateLimit" id="<?=$this->escape($title)?>">

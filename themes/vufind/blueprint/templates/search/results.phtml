@@ -93,7 +93,7 @@
       <?=$this->recommend($current)?>
     <? endforeach; ?>
   <? else: ?>
-    <form method="post" name="bulkActionForm" action="<?=$this->url(array('controller' => 'Cart', 'action' => 'Home'), 'default', true)?>">
+    <form method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>">
       <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
       <?=$this->render('search/list-' . $this->results->getView() . '.phtml')?>
       <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => 'bottom_'))?>
@@ -103,12 +103,12 @@
     <div class="searchtools">
       <strong><?=$this->transEsc('Search Tools')?>:</strong>
       <a href="<?=$this->results->getUrl()->setViewParam('rss')?>" class="feed"><?=$this->transEsc('Get RSS Feed')?></a>
-      <a href="<?=$this->url(array('controller' => 'Search', 'action' => 'Email'), 'default')?>" class="mailSearch mail" id="mailSearch<?=$this->escape($this->results->getSearchId())?>" title="<?=$this->transEsc('Email this Search')?>"><?=$this->transEsc('Email this Search')?></a>
+      <a href="<?=$this->url('search-email')?>" class="mailSearch mail" id="mailSearch<?=$this->escape($this->results->getSearchId())?>" title="<?=$this->transEsc('Email this Search')?>"><?=$this->transEsc('Email this Search')?></a>
       <? if (is_numeric($this->results->getSearchId())): ?>
         <? if ($this->results->isSavedSearch()): ?>
-          <a href="<?=$this->url(array('controller' => 'MyResearch', 'action' => 'SaveSearch'), 'default')?>?delete=<?=urlencode($this->results->getSearchId())?>" class="delete"><?=$this->transEsc('save_search_remove')?></a>
+          <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>" class="delete"><?=$this->transEsc('save_search_remove')?></a>
         <? else: ?>
-          <a href="<?=$this->url(array('controller' => 'MyResearch', 'action' => 'SaveSearch'), 'default')?>?save=<?=urlencode($this->results->getSearchId())?>" class="add"><?=$this->transEsc('save_search')?></a>
+          <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>" class="add"><?=$this->transEsc('save_search')?></a>
         <? endif; ?>
       <? endif; ?>
     </div>

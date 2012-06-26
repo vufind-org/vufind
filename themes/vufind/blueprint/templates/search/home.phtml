@@ -52,7 +52,7 @@
       <? else: ?>
         <? $i = 0; foreach ($sortedList as $url => $value): ?>
           <? if (++$i > 12): ?>
-            <li><a href="<?=$this->url($advSearch, 'default')?>"><strong><?=$this->transEsc("More options")?>...</strong></a></li>
+            <li><a href="<?=$this->url($advSearch)?>"><strong><?=$this->transEsc("More options")?>...</strong></a></li>
             <? break; ?>
           <? else: ?>
             <li><a href="<?=$url?>"><?=$this->escape($value)?></a></li>

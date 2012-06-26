@@ -7,10 +7,9 @@
 
     // Set up breadcrumbs:
     $currPage = isset($list) ? 'List' : 'Favorites';
-    $this->layout()->breadcrumbs = '<a href="' .
-        $this->url(array('controller' => 'MyResearch', 'action' => 'Home'), 'default', true) .
-        '">' . $this->transEsc('Your Account') . '</a>' . '<span>&gt;</span><em>' .
-        $this->transEsc($currPage) . '</em>';
+    $this->layout()->breadcrumbs = '<a href="' . $this->url('myresearch-home') . '">'
+        . $this->transEsc('Your Account') . '</a>' . '<span>&gt;</span><em>'
+        . $this->transEsc($currPage) . '</em>';
 
     // Load Javascript dependencies into header:
     $this->headScript()->appendFile("bulk_actions.js");
@@ -22,8 +21,8 @@
   <? if (isset($list)): ?>
     <div class="floatright">
       <? if ($list->editAllowed()): ?>
-        <a href="<?=$this->url(array('id' => $list->id), 'editList', true) ?>" class="edit smallButton listEdit" title="<?=$this->transEsc("edit_list")?>"><?=$this->transEsc("edit_list")?></a>
-        <a href="<?=$this->url(array('action'=>'DeleteList', 'controller'=>'MyResearch'), 'default', true) ?>?listID=<?=urlencode($list->id)?>" class="delete deleteList smallButton" id="deleteList<?=$list->id ?>" title="<?=$this->transEsc("delete_list")?>"><?=$this->transEsc("delete_list")?></a>
+        <a href="<?=$this->url('editList', array('id' => $list->id)) ?>" class="edit smallButton listEdit" title="<?=$this->transEsc("edit_list")?>"><?=$this->transEsc("edit_list")?></a>
+        <a href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>" class="delete deleteList smallButton" id="deleteList<?=$list->id ?>" title="<?=$this->transEsc("delete_list")?>"><?=$this->transEsc("delete_list")?></a>
       <? endif; ?>
     </div>
     <h3 class="list"><?=$this->escape($list->title)?></h3>
@@ -44,7 +43,7 @@
       </div>
       <div class="clear"></div>
     </div>
-    <form method="post" name="bulkActionForm" action="<?=$this->url(array('controller' => 'Cart', 'action' => 'MyResearchBulk'), 'default', true)?>">
+    <form method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>">
       <? if (isset($list)): ?>
         <input type="hidden" name="listID" value="<?=$this->escape($list->id)?>" />
         <input type="hidden" name="listName" value="<?=$this->escape($list->title)?>" />

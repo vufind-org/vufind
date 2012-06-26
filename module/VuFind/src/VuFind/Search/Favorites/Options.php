@@ -54,13 +54,12 @@ class VF_Search_Favorites_Options extends VF_Search_Base_Options
     }
 
     /**
-     * Return an array describing the action used for rendering search results
-     * (same format as expected by the URL view helper).
+     * Return the route name for the search results action.
      *
-     * @return array
+     * @return string
      */
     public function getSearchAction()
     {
-        return array('controller' => 'MyResearch', 'action' => 'Favorites');
+        return 'myresearch-favorites';
     }
 }

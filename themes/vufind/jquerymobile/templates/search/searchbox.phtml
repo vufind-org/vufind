@@ -13,7 +13,7 @@
   $lastSort = $options->getLastSort();
   $lastLimit = $options->getLastLimit();
 ?>
-<form method="get" action="<?=$this->url($basicSearch, 'default', true)?>" data-ajax="false">
+<form method="get" action="<?=$this->url($basicSearch)?>" data-ajax="false">
   <label class="offscreen" for="searchForm_lookfor">
     <?=$this->transEsc("Search")?>
   </label>

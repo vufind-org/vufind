@@ -1,9 +1,9 @@
 <? if ($this->account->isLoggedIn()): ?>
   <div data-role="navbar">
     <ul>
-      <li><a rel="external" <?=$this->action=="mylist" ? ' class="ui-btn-active"' : ''?> href="<?=$this->url(array('controller' => 'MyResearch', 'action' => 'Favorites'), 'default', true)?>"><?=$this->transEsc('Favorites')?></a></li>
-      <li><a rel="external" <?=$this->action=="history" ? ' class="ui-btn-active"' : ''?> href="<?=$this->url(array('controller' => 'Search', 'action' => 'History'), 'default', true)?>?require_login"><?=$this->transEsc('History')?></a></li>
-      <li><a rel="external" href="<?=$this->url(array('controller' => 'MyResearch', 'action' => 'Logout'), 'default', true)?>"><?=$this->transEsc("Log Out")?></a></li>
+      <li><a rel="external" <?=$this->action=="mylist" ? ' class="ui-btn-active"' : ''?> href="<?=$this->url('myresearch-favorites')?>"><?=$this->transEsc('Favorites')?></a></li>
+      <li><a rel="external" <?=$this->action=="history" ? ' class="ui-btn-active"' : ''?> href="<?=$this->url('search-history')?>?require_login"><?=$this->transEsc('History')?></a></li>
+      <li><a rel="external" href="<?=$this->url('myresearch-logout')?>"><?=$this->transEsc("Log Out")?></a></li>
     </ul>
   </div>
 <? else: ?>

@@ -10,7 +10,7 @@
     $this->cart = VF_Cart::getInstance();
 ?>
 <?=$this->flashmessages()?>
-<form action="<?=$this->url(array('controller' => 'Cart', 'action' => 'Home'), 'default', true)?>" method="post"  name="cartForm">
+<form action="<?=$this->url('cart-home')?>" method="post"  name="cartForm">
   <? if (!$this->cart->isEmpty()): ?>
     <div class="bulkActionButtons">
       <input type="checkbox" class="selectAllCheckboxes floatleft" name="selectAll" id="cartCheckboxSelectAll"/> <label for="cartCheckboxSelectAll" class="floatleft"><?=$this->transEsc('select_page')?></label>

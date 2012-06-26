@@ -3,10 +3,9 @@
     $this->headTitle($this->translate('My Fines'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<a href="' .
-        $this->url(array('controller' => 'MyResearch', 'action' => 'Home'), 'default', true) .
-        '">' . $this->transEsc('Your Account') . '</a>' . '<span>&gt;</span><em>' .
-        $this->transEsc('Fines') . '</em>';
+    $this->layout()->breadcrumbs = '<a href="' . $this->url('myresearch-home') . '">'
+        . $this->transEsc('Your Account') . '</a>' . '<span>&gt;</span><em>'
+        . $this->transEsc('Fines') . '</em>';
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
   <? if (empty($this->fines)): ?>
@@ -30,7 +29,7 @@
           <? elseif (!isset($record['id'])): ?>
             <?=$this->escape(trim($record['title'], '/:'))?>
           <? else: ?>
-            <a href="<?=$this->url(array('id' => $record['id']), 'record', true)?>"><?=$this->escape(trim($record['title'], '/:'))?></a>
+            <a href="<?=$this->url('record', array('id' => $record['id']))?>"><?=$this->escape(trim($record['title'], '/:'))?></a>
           <? endif; ?>
         </td>
         <td><?=isset($record['checkout']) ? $this->escape($record['checkout']) : ''?></td>

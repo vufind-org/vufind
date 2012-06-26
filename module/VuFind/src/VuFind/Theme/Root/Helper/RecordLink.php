@@ -60,14 +60,12 @@ class VuFind_Theme_Root_Helper_RecordLink extends Zend_View_Helper_Abstract
     {
         switch ($link['type']) {
         case 'bib':
-            $url = $this->view->url(array('id' => $link['value']), 'record');
+            $url = $this->view->url('record', array('id' => $link['value']));
             break;
         case 'oclc':
-            $url = $this->view->url(
-                array('controller' => 'Search', 'action' => 'Results'), 'default'
-            );
-            $url .= '?lookfor=' . urlencode($link['value']) .
-                '&type=oclc_num&jumpto=1';
+            $url = $this->view->url('search-results');
+                . '?lookfor=' . urlencode($link['value'])
+                . '&type=oclc_num&jumpto=1';
             break;
         default:
             throw new Exception('Unexpected link type: ' . $link['type']);
@@ -90,7 +88,7 @@ class VuFind_Theme_Root_Helper_RecordLink extends Zend_View_Helper_Abstract
         if (!empty($action)) {
             $params['action'] = $action;
         }
-        return $this->view->url($params, $driver->getRecordRoute(), true);
+        return $this->view->url($driver->getRecordRoute(), $params);
     }
 
     /**

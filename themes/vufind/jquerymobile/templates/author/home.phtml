@@ -5,7 +5,7 @@
 <div data-role="page">
   <?=$this->mobileMenu()->header()?>
   <div data-role="content">
-    <form method="get" action="<?=$this->url(array('controller' => 'Author', 'action' => 'Search'), 'default', true)?>" data-ajax="false">
+    <form method="get" action="<?=$this->url('author-search')?>" data-ajax="false">
       <div data-role="fieldcontain">
         <label class="offscreen" for="author_lookfor"><?=$this->transEsc('Author Results for')?>:</label>
         <input type="search" id="author_lookfor" name="lookfor" />

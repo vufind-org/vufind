@@ -13,9 +13,9 @@
   <p>Some basic settings can also be adjusted through the auto-configuration tool.</p>
   <? if (!$this->showInstallLink): ?>
     <p><?=$this->transEsc('Auto configuration is currently disabled') ?>.</p>
-    <p><a href="<?=$this->url(array('controller' => 'Admin', 'action' => 'EnableAutoConfig'), 'default', true)?>"><?=$this->transEsc('Enable Auto Config')?></a></p>
+    <p><a href="<?=$this->url('admin-enableautoconfig')?>"><?=$this->transEsc('Enable Auto Config')?></a></p>
   <? else: ?>
-    <p><a href="<?=$this->url(array('controller' => 'Install'), 'default', true)?>"><?=$this->transEsc('auto_configure_title')?></a></p>
+    <p><a href="<?=$this->url('install-home')?>"><?=$this->transEsc('auto_configure_title')?></a></p>
   <? endif; ?>
 </div>
 

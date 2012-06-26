@@ -1,4 +1,4 @@
-<form action="<?=$this->url() ?>/MyResearch/Export" method="post" name="bulkExport">
+<form action="<?=$this->url('myresearch-export')?>" method="post" name="bulkExport">
   <? if ($errorMsg): ?><div class="error"><?=$this->translate($errorMsg) ?></div><? endif; ?>
   <? if ($infoMsg): ?><div class="info"><?=$this->translate($infoMsg) ?></div><? endif; ?>
 

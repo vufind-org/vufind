@@ -7,4 +7,4 @@
 ?>
 <h1><?=$this->transEsc('Upgrade VuFind')?></h1>
 <?=$this->flashmessages()?>
-<p><?=$this->transEsc('vufind_upgrade_fail') ?>.  You can try <a href="<?=$this->url(array('controller' => 'Upgrade', 'action' => 'Reset'), 'default', true)?>">starting over</a>.</p>
+<p><?=$this->transEsc('vufind_upgrade_fail') ?>.  You can try <a href="<?=$this->url('upgrade-reset')?>">starting over</a>.</p>

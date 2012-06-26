@@ -10,7 +10,7 @@
     <tr class="<?=$iteration % 2 == 1 ? 'even' : 'odd'?>row">
       <td><?=$this->escape(date("g:ia, jS M y", $info->getStartTime()))?></td>
       <td>
-        <a href="<?=$this->url($info->getSearchAction(), 'default', true) . $info->getUrl()->getParams()?>"><?
+        <a href="<?=$this->url($info->getSearchAction()) . $info->getUrl()->getParams()?>"><?
           $desc = $info->getDisplayQuery();
           echo empty($desc) ? $this->transEsc("history_empty_search") : $this->escape($desc);
         ?></a>
@@ -25,9 +25,9 @@
       <td><?=$this->escape(number_format($info->getResultTotal()))?></td>
       <td>
         <? if ($this->showSaved): ?>
-          <a href="<?=$this->url(array('controller' => 'MyResearch', 'action' => 'SaveSearch'), 'default')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history" class="delete"><?=$this->transEsc("history_delete_link")?></a>
+          <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history" class="delete"><?=$this->transEsc("history_delete_link")?></a>
         <? else: ?>
-          <a href="<?=$this->url(array('controller' => 'MyResearch', 'action' => 'SaveSearch'), 'default')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history" class="add"><?=$this->transEsc("history_save_link")?></a>
+          <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($info->getSearchId())?>&amp;mode=history" class="add"><?=$this->transEsc("history_save_link")?></a>
         <? endif; ?>
       </td>
     </tr>

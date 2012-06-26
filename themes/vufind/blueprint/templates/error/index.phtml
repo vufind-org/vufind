@@ -14,9 +14,9 @@
 </div>
 
 <? if ($this->showInstallLink): ?>
-  <h3><a href="<?=$this->url(array('controller' => 'Install'), 'default', true)?>"><?=$this->transEsc('auto_configure_title', array(), 'Auto Configure')?></a></h3>
+  <h3><a href="<?=$this->url('install-home')?>"><?=$this->transEsc('auto_configure_title', array(), 'Auto Configure')?></a></h3>
   <?=$this->transEsc('auto_configure_description', array(), 'If this is a new installation, you may be able to fix the error using VuFind\'s Auto Configure tool.')?>
-  <h3><a href="<?=$this->url(array('controller' => 'Upgrade'), 'default', true)?>"><?=$this->transEsc('Upgrade VuFind')?></a></h3>
+  <h3><a href="<?=$this->url('upgrade-home')?>"><?=$this->transEsc('Upgrade VuFind')?></a></h3>
   <?=$this->transEsc('upgrade_description', array(), 'If you are upgrading a previous VuFind version, you can load your old settings with this tool.')?>
 <? endif; ?>
 
