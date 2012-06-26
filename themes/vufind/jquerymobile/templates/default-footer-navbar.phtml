@@ -4,7 +4,7 @@
     <? if (is_object($this->account) && $this->account->loginEnabled()): // hide login/logout if unavailable ?>
       <li><a rel="external" href="<?=$this->url('myresearch-home')?>"><?=$this->transEsc('Account')?></a></li>
     <? endif; ?>
-    <? if ($this->account->isLoggedIn()): ?>
+    <? if (is_object($this->account) && $this->account->isLoggedIn()): ?>
       <li><a rel="external" href="<?=$this->url('myresearch-logout')?>"><?=$this->transEsc("Log Out")?></a></li>
     <? endif; ?>
   </ul>
