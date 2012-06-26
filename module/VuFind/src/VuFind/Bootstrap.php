@@ -80,9 +80,10 @@ class Bootstrap
 
         // Attach remaining theme configuration to the dispatch event:
         $config =& $this->config;
-        $events->attach('dispatch', function($event) use ($config) {
+        $callback = function($event) use ($config) {
             $theme = new ThemeInitializer($config, $event);
             $theme->init();
-        });
+        };
+        $events->attach('dispatch', $callback);
     }
 }
