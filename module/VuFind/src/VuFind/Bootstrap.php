@@ -65,6 +65,7 @@ class Bootstrap
     public function bootstrap()
     {
         $this->initAccount();
+        $this->initContext();
         $this->initTheme();
     }
 
@@ -79,6 +80,29 @@ class Bootstrap
             $serviceManager = $event->getApplication()->getServiceManager();
             $viewModel = $serviceManager->get('viewmanager')->getViewModel();
             $viewModel->setVariable('account', AccountManager::getInstance());
+        };
+        $this->events->attach('dispatch', $callback);
+    }
+
+    /**
+     * Set view variables representing the current context.
+     *
+     * @return void
+     */
+    protected function initContext()
+    {
+        $callback = function($event) {
+            $serviceManager = $event->getApplication()->getServiceManager();
+            $viewModel = $serviceManager->get('viewmanager')->getViewModel();
+
+            // Grab the template name from the first child -- we can use this to
+            // figure out the current template context.
+            $children = $viewModel->getChildren();
+            $parts = explode('/', $children[0]->getTemplate());
+            $viewModel->setVariable('templateDir', $parts[0]);
+            $viewModel->setVariable(
+                'templateName', isset($parts[1]) ? $parts[1] : null
+            );
         };
         $this->events->attach('dispatch', $callback);
     }

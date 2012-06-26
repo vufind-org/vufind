@@ -4,7 +4,7 @@
   <?
     // if a module has footer-navbar.tpl, then use it, otherwise use default
     try {
-        echo $this->render("{$this->controller}/footer-navbar.phtml");
+        echo $this->render("{$this->layout()->templateDir}/footer-navbar.phtml");
     } catch (\Zend\View\Exception\RuntimeException $e) {
         // no module-specific footer navbar found -- use default.
         echo $this->render('default-footer-navbar.phtml');

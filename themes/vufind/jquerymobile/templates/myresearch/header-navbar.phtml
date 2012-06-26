@@ -1,9 +1,9 @@
 <? if (VF_Account_Manager::getInstance()->isLoggedIn()): ?>
   <div data-role="navbar">
     <ul>
-      <li><a rel="external" <?=$this->action=="checkedout" ? ' class="ui-btn-active"' : ''?> href="<?=$this->url('myresearch-checkedout')?>"><?=$this->transEsc('Checked Out')?></a></li>
-      <li><a rel="external" <?=$this->action=="holds" ? ' class="ui-btn-active"' : ''?> href="<?=$this->url('myresearch-holds')?>"><?=$this->transEsc('Holds')?></a></li>
-      <li><a rel="external" <?=$this->action=="fines" ? ' class="ui-btn-active"' : ''?> href="<?=$this->url('myresearch-fines')?>"><?=$this->transEsc('Fines')?></a></li>
+      <li><a rel="external" <?=$this->layout()->templateName=="checkedout" ? ' class="ui-btn-active"' : ''?> href="<?=$this->url('myresearch-checkedout')?>"><?=$this->transEsc('Checked Out')?></a></li>
+      <li><a rel="external" <?=$this->layout()->templateName=="holds" ? ' class="ui-btn-active"' : ''?> href="<?=$this->url('myresearch-holds')?>"><?=$this->transEsc('Holds')?></a></li>
+      <li><a rel="external" <?=$this->layout()->templateName=="fines" ? ' class="ui-btn-active"' : ''?> href="<?=$this->url('myresearch-fines')?>"><?=$this->transEsc('Fines')?></a></li>
     </ul>
   </div>
 <? endif; ?>
