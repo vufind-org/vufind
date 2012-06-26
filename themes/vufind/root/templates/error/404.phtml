@@ -1,2 +1,3 @@
 <h1><?=$this->transEsc('An error has occurred')?></h1>
 <h2><?=$this->transEsc($this->message)?></h2>
+<? if (isset($this->reason) && $this->reason): ?><b><?=$this->transEsc('Message')?>:</b> <?=$this->transEsc($this->reason)?><? endif; ?>
