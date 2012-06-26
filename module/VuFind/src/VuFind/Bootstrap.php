@@ -64,10 +64,13 @@ class Bootstrap
      */
     public function bootstrap()
     {
-        $this->initAccount();
-        $this->initContext();
-        $this->initHeadTitle();
-        $this->initTheme();
+        // automatically call all methods starting with "init":
+        $methods = get_class_methods($this);
+        foreach ($methods as $method) {
+            if (substr($method, 0, 4) == 'init') {
+                $this->$method();
+            }
+        }
     }
 
     /**
