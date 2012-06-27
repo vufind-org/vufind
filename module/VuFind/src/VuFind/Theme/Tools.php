@@ -46,7 +46,7 @@ class Tools
      */
     public static function getBaseDir()
     {
-        return APPLICATION_PATH . '/themes/vufind';
+        return APPLICATION_PATH . '/themes';
     }
 
     /**
