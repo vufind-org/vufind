@@ -49,9 +49,6 @@ class MobileMenu extends AbstractHelper
      */
     public function header($extras = array())
     {
-        // TODO: this assumes that the view has controller and action variables set;
-        // we either need to figure out how to set them here or else set them up
-        // globally as part of the bootstrap process.
         $context = $this->getView()->plugin('context');
         return $context($this->getView())->renderInContext('header.phtml', $extras);
     }
@@ -66,7 +63,6 @@ class MobileMenu extends AbstractHelper
      */
     public function footer($extras = array())
     {
-        // TODO: same as header()
         $context = $this->getView()->plugin('context');
         return $context($this->getView())->renderInContext('footer.phtml', $extras);
     }
