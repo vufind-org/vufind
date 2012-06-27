@@ -32,13 +32,12 @@
       defaultpackagename="VuFind"
       output="HTML:Smarty:PHP">
       <fileset dir=".">
-        <include name="application/**/*.php" />
-        <include name="library/VF/**/*.php" />
+        <include name="module/VuFind/src/**/*.php" />
       </fileset>
     </phpdoc>
 
     <!-- PHP CodeSniffer -->
-    <exec command="phpcs --standard=PEAR --extensions=php --report=checkstyle ${srcdir}/application ${srcdir}/library/VF &gt; ${builddir}/reports/checkstyle.xml" escape="false" />
+    <exec command="phpcs --standard=PEAR --extensions=php --report=checkstyle ${srcdir}/module/VuFind/src &gt; ${builddir}/reports/checkstyle.xml" escape="false" />
 
     <!-- PHPUnit -->
     <exec dir="${srcdir}/tests" command="phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/" outputProperty="PHPUNITOUTPUT" />
