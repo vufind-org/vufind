@@ -155,7 +155,7 @@ class Manager
      *
      * @return void
      */
-    protected function createAPCCache($cacheName, $frontOptions)
+    protected function createAPCCache($cacheName)
     {
         $this->cacheSettings[$cacheName] = array(
             'adapter' => 'APC',
