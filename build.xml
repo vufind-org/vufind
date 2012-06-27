@@ -122,7 +122,7 @@
     <delete dir="${srcdir}/solr/biblio/index" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/biblio/spellchecker" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/biblio/spellShingle" includeemptydirs="true" failonerror="true" />
-    <delete>
+    <delete failonerror="false">
       <fileset dir="${srcdir}/solr/jetty/logs">
         <include name="*.log" />
       </fileset>
