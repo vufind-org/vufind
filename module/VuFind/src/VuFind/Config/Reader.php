@@ -26,7 +26,9 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Config;
-use Zend\Config\Config,
+use Horde_Yaml as Yaml,
+    VuFind\Cache\Manager as CacheManager,
+    Zend\Config\Config,
     Zend\Config\Reader\Ini as IniReader;
 
 /**
@@ -144,14 +146,16 @@ class Reader
      * Load the specified configuration file.
      *
      * @param string $filename config file name
+     * @param string $path     path relative to VuFind base (optional; defaults
+     * to config/vufind
      *
      * @return Zend\Config\Config
      */
-    public static function loadConfigFile($filename)
+    public static function loadConfigFile($filename, $path = 'config/vufind')
     {
         $configs = array();
 
-        $fullpath = self::getConfigPath($filename);
+        $fullpath = self::getConfigPath($filename, $path);
 
         // Retrieve and parse at least one configuration file, and possibly a whole
         // chain of them if the Parent_Config setting is used:
@@ -201,12 +205,11 @@ class Reader
      * @return array
      */
     public static function getSearchSpecs($filename)
-    {/*
+    {
         // Load data if it is not already in the object's static cache:
         if (!isset(self::$searchSpecs[$filename])) {
             // Connect to searchspecs cache:
-            $manager = new VF_Cache_Manager();
-            $cache = $manager->getCache('searchspecs');
+            $cache = CacheManager::getInstance()->getCache('searchspecs');
 
             // Determine full configuration file path:
             $fullpath = self::getBaseConfigPath($filename);
@@ -220,22 +223,22 @@ class Reader
             $key = md5($key);
 
             // Generate data if not found in cache:
-            if (!$cache || !($results = $cache->load($key))) {
-                $results = Horde_Yaml::load(file_get_contents($fullpath));
+            if (!$cache || !($results = $cache->getItem($key))) {
+                $results = Yaml::load(file_get_contents($fullpath));
                 if (!empty($local)) {
-                    $localResults = Horde_Yaml::load(file_get_contents($local));
+                    $localResults = Yaml::load(file_get_contents($local));
                     foreach ($localResults as $key => $value) {
                         $results[$key] = $value;
                     }
                 }
                 if ($cache) {
-                    $cache->save($results, $key);
+                    $cache->setItem($results, $key);
                 }
             }
             self::$searchSpecs[$filename] = $results;
         }
 
-        return self::$searchSpecs[$filename];*/
+        return self::$searchSpecs[$filename];
     }
 
     /**

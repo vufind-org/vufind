@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
-namespace VuFind\Tests;
+namespace VuFind\Tests\Code;
 use VuFind\Code\ISBN;
 
 /**
