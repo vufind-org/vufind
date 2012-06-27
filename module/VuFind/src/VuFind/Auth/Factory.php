@@ -63,7 +63,7 @@ class Factory
 
         // Load up the handler if a legal name has been supplied.
         $className = 'VuFind\\Auth\\' . $authNHandler;
-        if (@class_exists($className)) {
+        if (class_exists($className)) {
             return new $className($config);
         } else {
             throw new AuthException(
