@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+<schema name="VuFind Course Reserves Index" version="1.2">
+  <types>
+    <fieldtype name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
+    <fieldtype name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true"/>
+    <fieldtype name="date" class="solr.DateField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="text" class="solr.TextField" positionIncrementGap="100">
+      <analyzer type="index">
+        <tokenizer class="solr.ICUTokenizerFactory"/>
+        <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
+        <filter class="solr.ICUFoldingFilterFactory"/>
+        <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.ICUTokenizerFactory"/>
+        <filter class="solr.WordDelimiterFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="0" catenateNumbers="0" catenateAll="0" splitOnCaseChange="1"/>
+        <filter class="solr.ICUFoldingFilterFactory"/>
+        <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+      </analyzer>
+    </fieldType>
+  </types>
+ <fields>
+   <field name="id" type="string" indexed="true" stored="true"/>
+   <field name="bib_id" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="course" type="text" indexed="true" stored="true"/>
+   <field name="course_id" type="string" indexed="true" stored="true"/>
+   <field name="course_str" type="string" indexed="true" stored="true"/>
+   <field name="instructor" type="text" indexed="true" stored="true"/>
+   <field name="instructor_id" type="string" indexed="true" stored="true"/>
+   <field name="instructor_str" type="string" indexed="true" stored="true"/>
+   <field name="department" type="text" indexed="true" stored="true"/>
+   <field name="department_id" type="string" indexed="true" stored="true"/>
+   <field name="department_str" type="string" indexed="true" stored="true"/>
+ </fields>
+ <uniqueKey>id</uniqueKey>
+ <defaultSearchField>course</defaultSearchField>
+ <copyField source="course"     dest="course_str"/>
+ <copyField source="instructor" dest="instructor_str"/>
+ <copyField source="department" dest="department_str"/>
+ <!-- Default Boolean Operator -->
+ <solrQueryParser defaultOperator="AND"/>
+</schema>
