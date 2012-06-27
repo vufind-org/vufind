@@ -42,7 +42,8 @@ class InjectTemplateListener extends \Zend\Mvc\View\InjectTemplateListener
     /**
      * Inflect a name to a normalized value
      *
-     * @param  string $name
+     * @param string $name Name to inflect
+     *
      * @return string
      */
     protected function inflectName($name)
@@ -55,7 +56,8 @@ class InjectTemplateListener extends \Zend\Mvc\View\InjectTemplateListener
     /**
      * Determine the top-level namespace of the controller
      * 
-     * @param  string $controller 
+     * @param string $controller Controller name
+     *
      * @return string
      */
     protected function deriveModuleNamespace($controller)

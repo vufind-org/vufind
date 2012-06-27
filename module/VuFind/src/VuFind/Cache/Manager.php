@@ -127,8 +127,8 @@ class Manager
     /**
      * Add a file cache to the manager and ensure that necessary directory exists.
      *
-     * @param string $cacheName    Name of new cache to create
-     * @param string $dirName      Directory to use for storage
+     * @param string $cacheName Name of new cache to create
+     * @param string $dirName   Directory to use for storage
      *
      * @return void
      */
@@ -151,7 +151,7 @@ class Manager
     /**
      * Add an APC cache to the manager.
      *
-     * @param string $cacheName    Name of new cache to create
+     * @param string $cacheName Name of new cache to create
      *
      * @return void
      */

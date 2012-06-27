@@ -42,8 +42,6 @@ class OfflineMode extends AbstractHelper
     /**
      * Wrapper function to the VF_Search_Options getInstance function
      *
-     * @param string $type The search type of the object to retrieve
-     *
      * @return SearchOptions
      */
     public function __invoke()

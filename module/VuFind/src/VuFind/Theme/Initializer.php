@@ -85,6 +85,8 @@ class Initializer
      * This needs to be called prior to the dispatch event, which is why it is a
      * separate static method rather than part of the init() method below.
      *
+     * @param MvcEvent $event Dispatch event object
+     *
      * @return void
      */
     public static function configureTemplateInjection(MvcEvent $event)
@@ -180,9 +182,11 @@ class Initializer
             $allThemeInfo = array();
             do {
                 $iniReader = new IniReader();
-                $currentThemeInfo = new Config($iniReader->fromFile(
-                    $this->baseDir . "/$currentTheme/theme.ini"
-                ));
+                $currentThemeInfo = new Config(
+                    $iniReader->fromFile(
+                        $this->baseDir . "/$currentTheme/theme.ini"
+                    )
+                );
 
                 $allThemeInfo[$currentTheme] = $currentThemeInfo;
 
