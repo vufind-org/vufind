@@ -55,11 +55,8 @@ class Mobile
         // Do the most exhaustive device detection possible; other method calls
         // may be used instead of DetectMobileLong if you want to target a narrower
         // class of devices.
-        /* TODO: implement this
-        $mobile = new uagent_info();
+        $mobile = new \uagent_info();
         return $mobile->DetectMobileLong();
-         */
-        return false;
     }
 
     /**
