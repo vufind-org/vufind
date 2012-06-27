@@ -127,9 +127,8 @@
         <include name="*.log" />
       </fileset>
     </delete>
-    <delete dir="${srcdir}/local/cache" includeemptydirs="true" failonerror="true" />
-    <mkdir dir="${srcdir}/local/cache" />
-    <delete file="${srcdir}/local/config/vufind/config.ini" />
+    <delete dir="${srcdir}/local" includeemptydirs="true" failonerror="true" />
+    <exec command="git reset --hard" />
   </target>
 
   <!-- Prepare VuFind for distribution -->
