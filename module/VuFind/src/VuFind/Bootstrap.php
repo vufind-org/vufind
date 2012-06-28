@@ -74,6 +74,23 @@ class Bootstrap
     }
 
     /**
+     * Initializes locale and timezone values
+     *
+     * @return void
+     */
+    protected function initLocaleAndTimeZone()
+    {
+        // Try to set the locale to UTF-8, but fail back to the exact string from
+        // the config file if this doesn't work -- different systems may vary in
+        // their behavior here.
+        setlocale(
+            LC_MONETARY,
+            array("{$this->config->Site->locale}.UTF-8", $this->config->Site->locale)
+        );
+        date_default_timezone_set($this->config->Site->timezone);
+    }
+
+    /**
      * Make account manager available to views.
      *
      * @return void
@@ -148,5 +165,106 @@ class Bootstrap
             $theme->init();
         };
         $this->events->attach('dispatch', $callback);
+    }
+
+    /**
+     * Set up the default database adapter.
+     *
+     * @return void
+     */
+    protected function initDatabase()
+    {
+        /* TODO:
+        $this->_db = VF_DB::connect();
+        Zend_Db_Table::setDefaultAdapter($this->_db);
+         */
+    }
+
+    /**
+     * Set up mail configuration.
+     *
+     * @return void
+     */
+    protected function initMail()
+    {
+        /* TODO:
+        // Load settings from the config file into the object; we'll do the
+        // actual creation of the mail object later since that will make error
+        // detection easier to control.
+        // build Zend_Mail
+
+        $settings = array (
+            'port' => $this->config->Mail->port
+        );
+        if(isset($this->config->Mail->username)
+            && isset($this->config->Mail->password)
+        ) {
+            $settings['auth'] = 'login';
+            $settings['username'] = $this->config->Mail->username;
+            $settings['password'] = $this->config->Mail->password;
+        }
+        $tr = new Zend_Mail_Transport_Smtp($this->config->Mail->host,$settings);
+        Zend_Mail::setDefaultTransport($tr);
+         */
+    }
+
+    /**
+     * Set up logging.
+     *
+     * @return void
+     */
+    protected function initLog()
+    {
+        /* TODO:
+        // Note that we need to initialize the database and the mailer prior to
+        // starting up logging to ensure that dependencies are prepared!
+        if (!Zend_Registry::isRegistered('Log')) {
+            $logger = new VF_Logger();
+            Zend_Registry::set('Log', $logger);
+        }
+         */
+    }
+
+    /**
+     * Set up the session.
+     *
+     * @return void
+     */
+    protected function initSession()
+    {
+        // Don't bother with session in CLI mode (it just causes error messages):
+        if (PHP_SAPI == 'cli') {
+            return;
+        }
+
+        /* TODO:
+        // Get session configuration:
+        if (!isset($this->config->Session->type)) {
+            throw new Exception('Cannot initialize session; configuration missing');
+        }
+
+        // Set up session handler (after manipulating the type setting for legacy
+        // compatibility -- VuFind 1.x used MySQL instead of Database and had
+        // "Session" as part of the configuration string):
+        $type = ucwords(
+            str_replace('session', '', strtolower($this->config->Session->type))
+        );
+        if ($type == 'Mysql') {
+            $type = 'Database';
+        }
+        $class = 'VF_Session_' . $type;
+        Zend_Session::setSaveHandler(new $class($this->config->Session));
+
+        // Start up the session:
+        Zend_Session::start();
+
+        // According to the PHP manual, session_write_close should always be
+        // registered as a shutdown function when using an object as a session
+        // handler: http://us.php.net/manual/en/function.session-set-save-handler.php
+        register_shutdown_function(array('Zend_Session', 'writeClose'));
+
+        // Check user credentials:
+        VF_Account_Manager::getInstance()->checkForExpiredCredentials();
+         */
     }
 }
