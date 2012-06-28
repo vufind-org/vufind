@@ -32,7 +32,7 @@ use VuFind\Account\Manager as AccountManager,
     VuFind\Theme\Initializer as ThemeInitializer,
     VuFind\Translator\Factory as TranslatorFactory,
     Zend\Mvc\MvcEvent, Zend\Registry, Zend\Mvc\Router\Http\RouteMatch,
-    Zend\Translator\Translator;
+    Zend\Session\SessionManager, Zend\Translator\Translator;
 /**
  * VuFind Bootstrapper
  *
@@ -307,11 +307,14 @@ class Bootstrap
             return;
         }
 
-        /* TODO:
         // Get session configuration:
         if (!isset($this->config->Session->type)) {
             throw new Exception('Cannot initialize session; configuration missing');
         }
+
+        // Register a session manager:
+        $sessionManager = new SessionManager();
+        Registry::getInstance()->set('Zend_Session', $sessionManager);
 
         // Set up session handler (after manipulating the type setting for legacy
         // compatibility -- VuFind 1.x used MySQL instead of Database and had
@@ -322,19 +325,18 @@ class Bootstrap
         if ($type == 'Mysql') {
             $type = 'Database';
         }
-        $class = 'VF_Session_' . $type;
-        Zend_Session::setSaveHandler(new $class($this->config->Session));
+        $class = 'VuFind\\Session\\' . $type;
+        $sessionManager->setSaveHandler(new $class($this->config->Session));
 
         // Start up the session:
-        Zend_Session::start();
+        $sessionManager->start();
 
         // According to the PHP manual, session_write_close should always be
         // registered as a shutdown function when using an object as a session
         // handler: http://us.php.net/manual/en/function.session-set-save-handler.php
-        register_shutdown_function(array('Zend_Session', 'writeClose'));
+        register_shutdown_function(array($sessionManager, 'writeClose'));
 
         // Check user credentials:
-        VF_Account_Manager::getInstance()->checkForExpiredCredentials();
-         */
+        AccountManager::getInstance()->checkForExpiredCredentials();
     }
 }

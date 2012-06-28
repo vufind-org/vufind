@@ -27,7 +27,7 @@
  */
 namespace VuFind\Account;
 use VuFind\Auth\Factory as AuthFactory, VuFind\Config\Reader as ConfigReader,
-    Zend\Registry, Zend\Session, Zend\Session\Container as SessionContainer;
+    Zend\Registry, Zend\Session\Container as SessionContainer;
 
 /**
  * Wrapper class for handling logged-in user in session.
@@ -164,7 +164,7 @@ class Manager
 
         // Destroy the session for good measure, if requested.
         if ($destroy) {
-            Session::destroy();
+            Registry::getInstance()->get('Zend_Session')->destroy();
         } else {
             // If we don't want to destroy the session, we still need to empty it.
             // There should be a way to do this through Zend\Session, but there
