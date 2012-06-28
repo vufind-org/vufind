@@ -147,6 +147,50 @@ class Bootstrap
     }
 
     /**
+     * Set up language handling.
+     *
+     * @return void
+     */
+    protected function initLanguage()
+    {
+        $callback = function($event) {
+            /* TODO:
+            // Setup Translator
+            if (($language = $request->getPost('mylang', false))
+                || ($language = $request->getParam('lng', false))
+            ) {
+                setcookie('language', $language, null, '/');
+            } else {
+                $language = $request->getCookie('language')
+                    ? $request->getCookie('language')
+                    : $this->config->Site->language;
+            }
+            // Make sure language code is valid, reset to default if bad:
+            $validLanguages = array();
+            foreach ($this->config->Languages as $key => $value) {
+                $validLanguages[] = $key;
+            }
+            if (!in_array($language, $validLanguages)) {
+                $language = $this->config->Site->language;
+            }
+
+            // Set up language caching for better performance:
+            $manager = new VF_Cache_Manager();
+            Zend_Translate::setCache($manager->getCache('language'));
+
+            // Set up the actual translator object:
+            $translator = VF_Translate_Factory::getTranslator($language);
+            Zend_Registry::getInstance()->set('Zend_Translate', $translator);
+
+            // Send key values to view:
+            $this->view->userLang = $language;
+            $this->view->allLangs = $this->config->Languages;
+             */
+        };
+        $this->events->attach('dispatch', $callback);
+    }
+
+    /**
      * Set up theme handling.
      *
      * @return void
