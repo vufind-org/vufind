@@ -23,7 +23,7 @@
     <h2><?=$this->transEsc('ils_offline_title')?></h2>
     <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
     <p><?=$this->transEsc('ils_offline_login_message')?></p>
-    <? $supportEmail = $this->escape(VF_Config_Reader::getConfig()->Site->email); ?>
+    <? $supportEmail = $this->escape($this->systemEmail()); ?>
     <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
   </div>
 <? endif; ?>
