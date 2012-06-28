@@ -29,7 +29,7 @@ namespace VuFind;
 use VuFind\Account\Manager as AccountManager,
     VuFind\Config\Reader as ConfigReader,
     VuFind\Theme\Initializer as ThemeInitializer,
-    Zend\Mvc\MvcEvent;
+    Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch;
 /**
  * VuFind Bootstrapper
  *
@@ -70,6 +70,28 @@ class Bootstrap
             if (substr($method, 0, 4) == 'init') {
                 $this->$method();
             }
+        }
+    }
+
+    /**
+     * If the system is offline, set up a handler to override the routing output.
+     *
+     * @return void
+     */
+    protected function initSystemStatus()
+    {
+        // If the system is unavailable, forward to a different place:
+        if (isset($this->config->System->available)
+            && !$this->config->System->available
+        ) {
+            $callback = function($e) {
+                $routeMatch = new RouteMatch(
+                    array('controller' => 'Error', 'action' => 'Unavailable'), 1
+                );
+                $routeMatch->setMatchedRouteName('error-unavailable');
+                $e->setRouteMatch($routeMatch);
+            };
+            $this->events->attach('route', $callback);
         }
     }
 

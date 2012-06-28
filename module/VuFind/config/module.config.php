@@ -22,6 +22,7 @@ $config = array(
     ),
     'controller' => array(
         'classes' => array(
+            'error' => 'VuFind\Controller\ErrorController',
             'index' => 'VuFind\Controller\IndexController',
             'search' => 'VuFind\Controller\SearchController'
         ),
@@ -56,7 +57,7 @@ $staticRoutes = array(
     'Browse/Author', 'Browse/Dewey', 'Browse/Era', 'Browse/Genre', 'Browse/Home',
     'Browse/LCC', 'Browse/Region', 'Browse/Tag', 'Browse/Topic',
     'Cart/Email', 'Cart/Export', 'Cart/Home', 'Cart/MyResearchBulk', 'Cart/Save',
-    'Cover/Unavailable', 'Help/Home',
+    'Cover/Unavailable', 'Error/Unavailable', 'Help/Home',
     'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',
     'Install/FixDatabase', 'Install/FixDependencies', 'Install/FixILS',
     'Install/FixSolr', 'Install/Home',
