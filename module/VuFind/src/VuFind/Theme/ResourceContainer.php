@@ -41,6 +41,7 @@ class ResourceContainer
     protected $css = array();
     protected $js = array();
     protected $favicon = null;
+    protected $encoding = 'UTF-8';
 
     /**
      * Add a CSS file.
@@ -96,6 +97,28 @@ class ResourceContainer
     public function getJs()
     {
         return array_unique($this->js);
+    }
+
+    /**
+     * Set the encoding.
+     *
+     * @param string $e New encoding
+     *
+     * @return void
+     */
+    public function setEncoding($e)
+    {
+        $this->encoding = $e;
+    }
+
+    /**
+     * Get the encoding.
+     *
+     * @return void
+     */
+    public function getEncoding()
+    {
+        return $this->encoding;
     }
 
     /**

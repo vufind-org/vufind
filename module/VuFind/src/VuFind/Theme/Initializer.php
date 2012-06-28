@@ -352,6 +352,11 @@ class Initializer
                 $this->resourceContainer->addJs($js);
             }
 
+            // Select encoding:
+            if ($encoding = $currentThemeInfo->get('encoding')) {
+                $this->resourceContainer->setEncoding($encoding);
+            }
+
             // Select favicon:
             if ($favicon = $currentThemeInfo->get('favicon')) {
                 $this->resourceContainer->setFavicon($favicon);

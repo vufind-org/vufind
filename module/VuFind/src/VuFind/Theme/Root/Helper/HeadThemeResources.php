@@ -49,6 +49,12 @@ class HeadThemeResources extends AbstractHelper
     {
         $resourceContainer = ThemeTools::getResourceContainer();
 
+        // Set up encoding:
+        $headMeta = $this->getView()->plugin('headmeta');
+        $headMeta()->appendHttpEquiv(
+            'Content-Type', 'text/html; charset=' . $resourceContainer->getEncoding()
+        );
+
         // Load CSS:
         $headLink = $this->getView()->plugin('headlink');
         foreach ($resourceContainer->getCss() as $current) {
