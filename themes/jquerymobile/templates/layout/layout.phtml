@@ -23,13 +23,13 @@
         <h1><?=$this->transEsc("Language")?></h1>
       </div>
       <div data-role="content">
-        <? if (isset($this->allLangs) && count($this->allLangs) > 1): ?>
+        <? if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
         <form method="post" name="langForm" action="#" id="langForm" data-ajax="false">
           <div data-role="fieldcontain">
             <label for="langForm_mylang"><?=$this->transEsc("Language")?>:</label>
             <select id="langForm_mylang" name="mylang">
-              <? foreach ($this->allLangs as $langCode => $langName): ?>
-                <option value="<?=$langCode?>"<?=$this->userLang == $langCode ? ' selected="selected"' : ''?>><?=$this->displayLanguageOption($langName)?></option>
+              <? foreach ($this->layout()->allLangs as $langCode => $langName): ?>
+                <option value="<?=$langCode?>"<?=$this->layout()->userLang == $langCode ? ' selected="selected"' : ''?>><?=$this->displayLanguageOption($langName)?></option>
               <? endforeach; ?>
             </select>
             <input type="submit" value="<?=$this->transEsc("Set")?>" />

@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFind\Theme\Root\Helper;
+use VuFind\Translator\Factory as TranslatorFactory, Zend\View\Helper\AbstractHelper;
 
 /**
  * DisplayLanguageOption view helper
@@ -35,8 +37,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_DisplayLanguageOption
-                    extends Zend_View_Helper_Abstract
+class DisplayLanguageOption extends AbstractHelper
 {
     protected $translator;
 
@@ -45,7 +46,7 @@ class VuFind_Theme_Root_Helper_DisplayLanguageOption
      */
     public function __construct()
     {
-        $this->translator = VF_Translate_Factory::getTranslator('native');
+        $this->translator = TranslatorFactory::getTranslator('native');
     }
 
     /**
@@ -55,7 +56,7 @@ class VuFind_Theme_Root_Helper_DisplayLanguageOption
      *
      * @return string
      */
-    public function displayLanguageOption($str)
+    public function __invoke($str)
     {
         return $this->view->escape($this->translator->translate($str));
     }

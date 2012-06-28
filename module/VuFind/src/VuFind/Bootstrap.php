@@ -27,9 +27,12 @@
  */
 namespace VuFind;
 use VuFind\Account\Manager as AccountManager,
+    VuFind\Cache\Manager as CacheManager,
     VuFind\Config\Reader as ConfigReader,
     VuFind\Theme\Initializer as ThemeInitializer,
-    Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch;
+    VuFind\Translator\Factory as TranslatorFactory,
+    Zend\Mvc\MvcEvent, Zend\Registry, Zend\Mvc\Router\Http\RouteMatch,
+    Zend\Translator\Translator;
 /**
  * VuFind Bootstrapper
  *
@@ -175,39 +178,40 @@ class Bootstrap
      */
     protected function initLanguage()
     {
-        $callback = function($event) {
-            /* TODO:
+        $config =& $this->config;
+        $callback = function($event) use ($config) {
             // Setup Translator
-            if (($language = $request->getPost('mylang', false))
-                || ($language = $request->getParam('lng', false))
+            $request = $event->getRequest();
+            if (($language = $request->post()->get('mylang', false))
+                || ($language = $request->query()->get('lng', false))
             ) {
                 setcookie('language', $language, null, '/');
             } else {
-                $language = $request->getCookie('language')
-                    ? $request->getCookie('language')
-                    : $this->config->Site->language;
+                $language = !empty($request->cookie()->language)
+                    ? $request->cookie()->language
+                    : $config->Site->language;
             }
             // Make sure language code is valid, reset to default if bad:
             $validLanguages = array();
-            foreach ($this->config->Languages as $key => $value) {
+            foreach ($config->Languages as $key => $value) {
                 $validLanguages[] = $key;
             }
             if (!in_array($language, $validLanguages)) {
-                $language = $this->config->Site->language;
+                $language = $config->Site->language;
             }
 
             // Set up language caching for better performance:
-            $manager = new VF_Cache_Manager();
-            Zend_Translate::setCache($manager->getCache('language'));
+            Translator::setCache(CacheManager::getInstance()->getCache('language'));
 
             // Set up the actual translator object:
-            $translator = VF_Translate_Factory::getTranslator($language);
-            Zend_Registry::getInstance()->set('Zend_Translate', $translator);
+            $translator = TranslatorFactory::getTranslator($language);
+            Registry::getInstance()->set('Zend_Translator', $translator);
 
             // Send key values to view:
-            $this->view->userLang = $language;
-            $this->view->allLangs = $this->config->Languages;
-             */
+            $viewModel = $event->getApplication()->getServiceManager()
+                ->get('viewmanager')->getViewModel();
+            $viewModel->setVariable('userLang', $language);
+            $viewModel->setVariable('allLangs', $config->Languages);
         };
         $this->events->attach('dispatch', $callback);
     }

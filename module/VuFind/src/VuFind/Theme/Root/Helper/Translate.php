@@ -42,22 +42,6 @@ class Translate extends AbstractHelper
     protected $translator;
 
     /**
-     * Constructor for manually handling
-     *
-     * @param Zend_Translate|Zend_Translate_Adapter $translate Instance of
-     * Zend_Translate
-     */
-    public function __construct($translate = null)
-    {
-        /* TODO
-        // We can't extend Zend_View_Helper_Translate since we want to change the
-        // signature of the translate() method, so instead we will encapsulate an
-        // instance:
-        $this->translator = new Zend_View_Helper_Translate($translate);
-         */
-    }
-
-    /**
      * Translate a string
      *
      * @param string $str     String to translate
@@ -69,8 +53,8 @@ class Translate extends AbstractHelper
      */
     public function __invoke($str, $tokens = array(), $default = null)
     {
-        /* TODO:
-        $msg = $this->translator->translate($str);
+        $translator = $this->getView()->plugin('translator');
+        $msg = $translator($str);
 
         // Did the translation fail to change anything?  If so, use default:
         if (!is_null($default) && $msg == $str) {
@@ -88,7 +72,5 @@ class Translate extends AbstractHelper
         }
 
         return $msg;
-         */
-        return $str;
     }
 }
