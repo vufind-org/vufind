@@ -39,7 +39,7 @@ use Zend\Http\Client as HttpClient;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://api.summon.serialssolutions.com/help/api/ API Documentation
  */
-class Zend2 extends SerialsSolutions_Summon_Base
+class Zend2 extends \SerialsSolutions_Summon_Base
 {
     /**
      * The HTTP_Request object used for API transactions
