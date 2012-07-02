@@ -43,7 +43,7 @@ use SerialsSolutions\Summon\Zend2 as BaseSummon,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://api.summon.serialssolutions.com/help/api/ API Documentation
  */
-class Summon extends BaseSummon;
+class Summon extends BaseSummon
 {
     /**
      * Should boolean operators in the search string be treated as
