@@ -47,9 +47,9 @@ class Manager
     protected $caches = array();
 
     /**
-     * Constructor
+     * Constructor (protected to enforce use of getInstance).
      */
-    public function __construct()
+    protected function __construct()
     {
         // If we have a parent constructor, call it (none exists at the time of
         // this writing, but this is just in case Zend Framework changes later).
