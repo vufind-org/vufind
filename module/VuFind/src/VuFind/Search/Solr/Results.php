@@ -25,6 +25,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
+namespace VuFind\Search\Solr;
+use VuFind\Config\Reader as ConfigReader,
+    VuFind\Connection\Manager as ConnectionManager,
+    VuFind\Exception\RecordMissing as RecordMissingException,
+    VuFind\Search\Base\Results as BaseResults,
+    VuFind\Search\Options as SearchOptions,
+    VuFind\Translator\Translator;
 
 /**
  * Solr Search Parameters
@@ -35,7 +42,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class VF_Search_Solr_Results extends VF_Search_Base_Results
+class Results extends BaseResults
 {
     // Raw Solr search response:
     protected $rawResponse = null;
@@ -45,16 +52,17 @@ class VF_Search_Solr_Results extends VF_Search_Base_Results
      *
      * @param null|array $shards Selected shards to use (null for defaults)
      * @param string     $index  ID of index/search classes to use (this assumes
-     * that VF_Search_$index_Options and VF_Connection_$index are both valid classes)
+     * that \VuFind\Search\$index\Options and \VuFind\Connection\$index are both
+     * valid classes)
      *
-     * @return VF_Connection_Solr
+     * @return \VuFind\Connection\Solr
      */
     public static function getSolrConnection($shards = null, $index = 'Solr')
     {
         // Turn on all shards by default if none are specified (since we may get
         // called in a static context by getRecord(), we need to be sure that any
         // given ID will yield results, even if not all shards are on by default).
-        $options = VF_Search_Options::getInstance($index);
+        $options = SearchOptions::getInstance($index);
         $allShards = $options->getShards();
         if (is_null($shards)) {
             $shards = array_keys($allShards);
@@ -70,7 +78,7 @@ class VF_Search_Solr_Results extends VF_Search_Base_Results
         }
 
         // Connect to Solr and set up shards:
-        $solr = VF_Connection_Manager::connectToIndex($index);
+        $solr = ConnectionManager::connectToIndex($index);
         $solr->setShards($shards, $options->getSolrShardsFieldsToStrip());
         return $solr;
     }
@@ -327,7 +335,7 @@ class VF_Search_Solr_Results extends VF_Search_Base_Results
     protected function doSpellingReplace($term, $targetTerm, $inToken, $details,
         $returnArray
     ) {
-        $config = VF_Config_Reader::getConfig();
+        $config = ConfigReader::getConfig();
 
         $returnArray[$targetTerm]['freq'] = $details['freq'];
         foreach ($details['suggestions'] as $word => $freq) {
@@ -420,7 +428,7 @@ class VF_Search_Solr_Results extends VF_Search_Base_Results
                 $currentSettings = array();
                 $currentSettings['value'] = $facet[0];
                 $currentSettings['displayText']
-                    = $translate ? VF_Translator::translate($facet[0]) : $facet[0];
+                    = $translate ? Translator::translate($facet[0]) : $facet[0];
                 $currentSettings['count'] = $facet[1];
                 $currentSettings['isApplied']
                     = $this->params->hasFilter("$field:".$facet[0]);
@@ -437,23 +445,23 @@ class VF_Search_Solr_Results extends VF_Search_Base_Results
      *
      * @param string $id Unique identifier of record
      *
-     * @throws VF_Exception_RecordMissing
-     * @return VF_RecordDriver_Base
+     * @throws RecordMissingException
+     * @return \VuFind\RecordDriver\Base
      */
     public static function getRecord($id)
     {
         $solr = static::getSolrConnection();
 
         // Check if we need to apply hidden filters:
-        $options = VF_Search_Options::getInstance(
-            VF_Search_Options::extractSearchClassId(get_called_class())
+        $options = SearchOptions::getInstance(
+            SearchOptions::extractSearchClassId(get_called_class())
         );
         $filters = $options->getHiddenFilters();
         $extras = empty($filters) ? array() : array('fq' => $filters);
 
         $record = $solr->getRecord($id, $extras);
         if (empty($record)) {
-            throw new VF_Exception_RecordMissing(
+            throw new RecordMissingException(
                 'Record ' . $id . ' does not exist.'
             );
         }
@@ -471,7 +479,7 @@ class VF_Search_Solr_Results extends VF_Search_Base_Results
     {
         // Figure out how many records to retrieve at the same time --
         // we'll use either 100 or the ID request limit, whichever is smaller.
-        $params = new VF_Search_Solr_Params();
+        $params = new Params();
         $pageSize = $params->getQueryIDLimit();
         if ($pageSize < 1 || $pageSize > 100) {
             $pageSize = 100;
@@ -483,7 +491,7 @@ class VF_Search_Solr_Results extends VF_Search_Base_Results
             $currentPage = array_splice($ids, 0, $pageSize, array());
             $params->setQueryIDs($currentPage);
             $params->setLimit($pageSize);
-            $results = new VF_Search_Solr_Results($params);
+            $results = new Results($params);
             $retVal = array_merge($retVal, $results->getResults());
         }
 
@@ -519,7 +527,7 @@ class VF_Search_Solr_Results extends VF_Search_Base_Results
      *
      * @param array $data Solr data
      *
-     * @return VF_RecordDriver_Base
+     * @return \VuFind\RecordDriver\Base
      */
     protected static function initRecordDriver($data)
     {
@@ -527,12 +535,12 @@ class VF_Search_Solr_Results extends VF_Search_Base_Results
         static $badClasses = array();
 
         // Determine driver path based on record type:
-        $driver = 'VF_RecordDriver_Solr' . ucwords($data['recordtype']);
+        $driver = 'VuFind\\RecordDriver\\Solr' . ucwords($data['recordtype']);
 
         // If we can't load the driver, fall back to the default, index-based one:
         if (isset($badClasses[$driver]) || !@class_exists($driver)) {
             $badClasses[$driver] = 1;
-            $driver = 'VF_RecordDriver_SolrDefault';
+            $driver = 'VuFind\\RecordDriver\\SolrDefault';
         }
 
         // Build the object:

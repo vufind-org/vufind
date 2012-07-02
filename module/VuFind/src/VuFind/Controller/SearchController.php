@@ -27,7 +27,8 @@
  */
 namespace VuFind\Controller;
 
-use Zend\Mvc\Controller\ActionController;
+use VuFind\Cache\Manager as CacheManager, VuFind\Search\Solr\Params,
+    VuFind\Search\Solr\Results, Zend\Mvc\Controller\ActionController;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -47,8 +48,37 @@ class SearchController extends ActionController
      */
     public function homeAction()
     {
-        /* TODO:
-        $this->view->results = $this->getAdvancedFacets();
-         */
+        return array('results' => $this->getAdvancedFacets());
+    }
+
+    /**
+     * Return a Search Results object containing advanced facet information.  This
+     * data may come from the cache, and it is currently shared between the Home
+     * page and the Advanced search screen.
+     *
+     * @return VF_Search_Solr_Results
+     */
+    protected function getAdvancedFacets()
+    {
+        // Check if we have facet results cached, and build them if we don't.
+        $cache = CacheManager::getInstance()->getCache('object');
+        if (!($results = $cache->getItem('solrSearchHomeFacets'))) {
+            // Use advanced facet settings to get summary facets on the front page;
+            // we may want to make this more flexible later.  Also keep in mind that
+            // the template is currently looking for certain hard-coded fields; this
+            // should also be made smarter.
+            $params = new Params();
+            $params->initAdvancedFacets();
+
+            // We only care about facet lists, so don't get any results (this helps
+            // prevent problems with serialized File_MARC objects in the cache):
+            $params->setLimit(0);
+
+            $results = new Results($params);
+            /* TODO: fix caching:
+            $cache->setItem($results, 'solrSearchHomeFacets');
+             */
+        }
+        return $results;
     }
 }

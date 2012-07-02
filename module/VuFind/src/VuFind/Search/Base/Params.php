@@ -25,6 +25,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
+namespace VuFind\Search\Base;
+use VuFind\Config\Reader as ConfigReader, VuFind\Search\Options as SearchOptions,
+    VuFind\Translator;
 
 /**
  * Abstract parameters search model.
@@ -37,7 +40,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class VF_Search_Base_Params
+class Params
 {
     // Search terms
     protected $searchTerms = array();
@@ -73,7 +76,7 @@ class VF_Search_Base_Params
         if (is_null($options)) {
             // Create a copy of the default configuration:
             $this->options = clone(
-                VF_Search_Options::getInstance($this->getSearchClassId())
+                SearchOptions::getInstance($this->getSearchClassId())
             );
         } else {
             $this->options = $options;
@@ -97,7 +100,7 @@ class VF_Search_Base_Params
      */
     public function getSearchClassId()
     {
-        return VF_Search_Options::extractSearchClassId(get_class($this));
+        return SearchOptions::extractSearchClassId(get_class($this));
     }
 
     /**
@@ -594,10 +597,10 @@ class VF_Search_Base_Params
                 && $search['group'][0]['bool'] == 'NOT'
             ) {
                 $excludes[]
-                    = join(' ' . VF_Translator::translate('OR') . ' ', $thisGroup);
+                    = join(' ' . Translator::translate('OR') . ' ', $thisGroup);
             } else if (isset($search['group'][0]['bool'])) {
                 $groups[] = join(
-                    " " . VF_Translator::translate($search['group'][0]['bool'])." ",
+                    " " . Translator::translate($search['group'][0]['bool'])." ",
                     $thisGroup
                 );
             }
@@ -609,7 +612,7 @@ class VF_Search_Base_Params
             $output .= "(" .
                 join(
                     ") " .
-                    VF_Translator::translate($this->searchTerms[0]['join']) . " (",
+                    Translator::translate($this->searchTerms[0]['join']) . " (",
                     $groups
                 ) .
                 ")";
@@ -618,8 +621,8 @@ class VF_Search_Base_Params
         // Concatenate exclusion after that
         if (count($excludes) > 0) {
             $output .= ' ' .
-                VF_Translator::translate('NOT') . ' ((' .
-                join(') ' . VF_Translator::translate('OR') . ' (', $excludes) . "))";
+                Translator::translate('NOT') . ' ((' .
+                join(') ' . Translator::translate('OR') . ' (', $excludes) . "))";
         }
 
         return $output;
@@ -696,7 +699,7 @@ class VF_Search_Base_Params
 
         // Load the necessary settings to determine the appropriate recommendations
         // module:
-        $searchSettings = VF_Config_Reader::getConfig($this->getSearchIni());
+        $searchSettings = ConfigReader::getConfig($this->getSearchIni());
 
         // If we have a search type set, save it so we can try to load a
         // type-specific recommendations module:
@@ -776,7 +779,7 @@ class VF_Search_Base_Params
                 // Break apart the setting into module name and extra parameters:
                 $current = explode(':', $current);
                 $module = array_shift($current);
-                $class = 'VF_Recommend_' . $module;
+                $class = 'VuFind\\Recommend\\' . $module;
                 $params = implode(':', $current);
 
                 // Build a recommendation module with the provided settings.
@@ -1028,7 +1031,7 @@ class VF_Search_Base_Params
                     $list[$facetLabel][] = array(
                         'value'       => $value,
                         'displayText' =>
-                            $translate ? VF_Translator::translate($value) : $value,
+                            $translate ? Translator::translate($value) : $value,
                         'field'       => $field
                     );
                 }

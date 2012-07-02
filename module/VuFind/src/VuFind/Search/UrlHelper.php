@@ -25,7 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
- 
+namespace VuFind\Search;
+
 /**
  * Class to help build URLs and forms in the view based on search settings.
  *
@@ -35,7 +36,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class VF_Search_UrlHelper extends Zend_View_Helper_Abstract
+class UrlHelper
 {
     protected $results;
     protected $basicSearchParam = 'lookfor';

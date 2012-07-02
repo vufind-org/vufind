@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
+namespace VuFind\Search\Base;
+use VuFind\Search\UrlHelper;
 
 /**
  * Abstract results search model.
@@ -37,7 +39,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-abstract class VF_Search_Base_Results
+abstract class Results
 {
     protected $params;
     // Total number of results available
@@ -65,7 +67,7 @@ abstract class VF_Search_Base_Results
      * @param VF_Search_Base_Params $params Object representing user search
      * parameters.
      */
-    public function __construct(VF_Search_Base_Params $params)
+    public function __construct(Params $params)
     {
         // Save the parameters, then perform the search:
         $this->params = $params;
@@ -90,7 +92,7 @@ abstract class VF_Search_Base_Results
     {
         // Set up URL helper:
         if (!isset($this->helpers['url'])) {
-            $this->helpers['url'] = new VF_Search_UrlHelper($this);
+            $this->helpers['url'] = new UrlHelper($this);
         }
         return $this->helpers['url'];
     }

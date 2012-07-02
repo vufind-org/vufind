@@ -25,6 +25,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
+namespace VuFind\Search\Solr;
+use VuFind\Config\Reader as ConfigReader,
+    VuFind\Search\Base\Params as BaseParams;
 
 /**
  * Solr Search Parameters
@@ -35,7 +38,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class VF_Search_Solr_Params extends VF_Search_Base_Params
+class Params extends BaseParams
 {
     // Facets
     protected $facetLimit = 30;
@@ -49,14 +52,15 @@ class VF_Search_Solr_Params extends VF_Search_Base_Params
     /**
      * Constructor
      *
-     * @param VF_Search_Base_Options $options Options to use (null to load defaults)
+     * @param \VuFind\Search\Base\Options $options Options to use (null to load
+     * defaults)
      */
     public function __construct($options = null)
     {
         parent::__construct($options);
 
         // Use basic facet limit by default, if set:
-        $config = VF_Config_Reader::getConfig('facets');
+        $config = ConfigReader::getConfig('facets');
         if (isset($config->Results_Settings->facet_limit)
             && is_numeric($config->Results_Settings->facet_limit)
         ) {
@@ -241,7 +245,7 @@ class VF_Search_Solr_Params extends VF_Search_Base_Params
      */
     public function initAdvancedFacets()
     {
-        $config = VF_Config_Reader::getConfig('facets');
+        $config = ConfigReader::getConfig('facets');
         if (isset($config->Advanced)) {
             foreach ($config->Advanced as $key => $value) {
                 $this->addFacet($key, $value);
@@ -261,7 +265,7 @@ class VF_Search_Solr_Params extends VF_Search_Base_Params
      */
     public function initBasicFacets()
     {
-        $config = VF_Config_Reader::getConfig('facets');
+        $config = ConfigReader::getConfig('facets');
         if (isset($config->ResultsTop)) {
             foreach ($config->ResultsTop as $key => $value) {
                 $this->addFacet($key, $value);
@@ -393,7 +397,7 @@ class VF_Search_Solr_Params extends VF_Search_Base_Params
      */
     public function getQueryIDLimit()
     {
-        $config = VF_Config_Reader::getConfig();
+        $config = ConfigReader::getConfig();
         return isset($config->Index->maxBooleanClauses)
             ? $config->Index->maxBooleanClauses : 1024;
     }
