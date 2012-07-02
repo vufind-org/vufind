@@ -38,7 +38,7 @@ namespace VuFind\Connection\Summon;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://api.summon.serialssolutions.com/help/api/ API Documentation
  */
-class Query extends SerialsSolutions_Summon_Query
+class Query extends \SerialsSolutions_Summon_Query
 {
     protected $config;
 
