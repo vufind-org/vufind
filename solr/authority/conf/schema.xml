@@ -45,6 +45,14 @@
     <!-- Tracking fields to keep track of oldest and most recent index times -->
     <field name="first_indexed" type="date" indexed="true" stored="true"/>
     <field name="last_indexed" type="date" indexed="true" stored="true"/>
+
+    <!-- Dynamic fields for customization without schema modification -->
+    <dynamicField name="*_date" type="date" indexed="true" stored="true"/>
+    <dynamicField name="*_date_mv" type="date" indexed="true" stored="true" multiValued="true"/>
+    <dynamicField name="*_str" type="string" indexed="true" stored="true"/>
+    <dynamicField name="*_str_mv" type="string" indexed="true" stored="true" multiValued="true"/>
+    <dynamicField name="*_txt" type="text" indexed="true" stored="true"/>
+    <dynamicField name="*_txt_mv" type="text" indexed="true" stored="true" multiValued="true"/>
   </fields>
 
   <uniqueKey>id</uniqueKey>
