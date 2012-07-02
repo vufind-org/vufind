@@ -115,7 +115,7 @@ class Summon extends BaseSummon;
     protected function debugPrint($msg)
     {
         if ($this->debug) {
-            Logger::getInstance->debug("<pre>{$msg}</pre>\n");
+            Logger::getInstance()->debug("<pre>{$msg}</pre>\n");
         }
     }
 
