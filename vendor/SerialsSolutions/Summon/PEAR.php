@@ -28,7 +28,7 @@
  */
 require_once 'PEAR.php';
 require_once 'HTTP/Request.php';
-require_once 'SerialsSolutions/Summon/Base.php';
+require_once dirname(__FILE__) . '/Base.php';
 
 /**
  * Summon Search API Interface (PEAR implementation)

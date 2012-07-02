@@ -27,7 +27,7 @@
  * @link     http://api.summon.serialssolutions.com/help/api/ API Documentation
  */
 require_once 'Zend/Http/Client.php';
-require_once 'SerialsSolutions/Summon/Base.php';
+require_once dirname(__FILE__) . '/Base.php';
 
 /**
  * Summon Search API Interface (Zend implementation)

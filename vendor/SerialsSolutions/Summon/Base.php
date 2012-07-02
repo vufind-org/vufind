@@ -26,7 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://api.summon.serialssolutions.com/help/api/ API Documentation
  */
-require_once 'SerialsSolutions/Summon/Exception.php';
+require_once dirname(__FILE__) . '/Exception.php';
 
 /**
  * Summon REST API Interface (abstract base class)
