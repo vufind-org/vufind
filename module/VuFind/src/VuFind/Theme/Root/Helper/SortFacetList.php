@@ -26,6 +26,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFind\Theme\Root\Helper;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * Sort facet list view helper
@@ -36,27 +38,28 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_SortFacetList extends Zend_View_Helper_Abstract
+class SortFacetList extends AbstractHelper
 {
     /**
      * Turns facet information into an alphabetical list.
      *
-     * @param VF_Search_Base_Results $results     Search result object
-     * @param string                 $field       Facet field to sort
-     * @param array                  $list        Facet value list extract from the
-     * search result object's getFacetList method
-     * @param array                  $urlSettings Options to use to generate search
-     * URLs for individual facet values
+     * @param \VuFind\Search\Base\Results $results     Search result object
+     * @param string                      $field       Facet field to sort
+     * @param array                       $list        Facet value list extract from
+     * the search result object's getFacetList method
+     * @param array                       $searchRoute Route to use to generate
+     * search URLs for individual facet values
      *
      * @return array      Associative URL => description array sorted by description
      */
-    public function sortFacetList($results, $field, $list, $urlSettings)
+    public function __invoke($results, $field, $list, $searchRoute)
     {
         $facets = array();
         $results->setLimit($results->getDefaultLimit());    // avoid limit on URL
+        $urlHelper = $this->getView()->plugin('url');
         foreach ($list as $value) {
-            $url = $this->view->url($urlSettings, 'default', true) .
-                $results->getUrl()->addFacet($field, $value['value']);
+            $url = $urlHelper($searchRoute)
+                . $results->getUrl()->addFacet($field, $value['value']);
             $facets[$url] = $value['displayText'];
         }
         natcasesort($facets);
