@@ -25,7 +25,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
- 
+namespace VuFind\Search\Favorites;
+use VuFind\Search\Base\Options as BaseOptions;
+
 /**
  * Search Favorites Options
  *
@@ -35,7 +37,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class VF_Search_Favorites_Options extends VF_Search_Base_Options
+class Options extends BaseOptions
 {
     /**
      * Constructor

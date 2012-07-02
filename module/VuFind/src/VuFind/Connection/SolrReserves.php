@@ -84,7 +84,7 @@ class SolrReserves extends Solr
             if (!isset($record['INSTRUCTOR_ID']) || !isset($record['COURSE_ID'])
                 || !isset($record['DEPARTMENT_ID'])
             ) {
-                throw new Exception(
+                throw new \Exception(
                     'INSTRUCTOR_ID and/or COURSE_ID and/or DEPARTMENT_ID fields ' .
                     'not present in reserve records. Please update ILS driver.'
                 );

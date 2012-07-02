@@ -26,6 +26,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
+namespace VuFind\Search\SolrAuth;
+use VuFind\Search\Base\Options as BaseOptions;
 
 /**
  * Solr Reserves Search Options
@@ -37,7 +39,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class VF_Search_SolrReserves_Options extends VF_Search_Solr_Options
+class Options extends BaseOptions
 {
     /**
      * Constructor

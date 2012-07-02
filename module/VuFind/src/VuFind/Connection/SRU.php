@@ -265,7 +265,7 @@ class SRU
     public function checkForHttpError($result)
     {
         if (!$result->isSuccess()) {
-            throw new Exception('HTTP error ' . $result->getStatus());
+            throw new \Exception('HTTP error ' . $result->getStatus());
         }
     }
 
@@ -323,7 +323,7 @@ class SRU
     protected function process($result)
     {
         if (substr($result, 0, 5) != '<?xml') {
-            throw new Exception('Cannot Load Results');
+            throw new \Exception('Cannot Load Results');
         }
 
         // Send back either the raw XML or a SimpleXML object, as requested:

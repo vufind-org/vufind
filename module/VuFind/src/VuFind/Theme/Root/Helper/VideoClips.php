@@ -145,7 +145,7 @@ class VuFind_Theme_Root_Helper_VideoClips extends Zend_View_Helper_Abstract
 
         // Test XML Response
         if (!($xmldoc = @DOMDocument::loadXML($result->getBody()))) {
-            throw new Exception('Invalid XML');
+            throw new \Exception('Invalid XML');
         }
 
         $i = 0;
@@ -165,7 +165,7 @@ class VuFind_Theme_Root_Helper_VideoClips extends Zend_View_Helper_Abstract
                 // Test XML Response
                 $xmldoc2 = @DOMDocument::loadXML($result2->getBody());
                 if (!$xmldoc2) {
-                    throw new Exception('Invalid XML');
+                    throw new \Exception('Invalid XML');
                 }
 
                 // If we have syndetics plus, we don't actually want the content

@@ -25,7 +25,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
- 
+namespace VuFind\Search\SolrAuthor;
+use VuFind\Search\Base\Results as BaseResults;
+
 /**
  * Author Search Options
  *
@@ -36,7 +38,7 @@
  * @link     http://vufind.org   Main Site
  */
 
-class VF_Search_SolrAuthor_Results extends VF_Search_Solr_Results
+class Results extends BaseResults
 {
     /**
      * Constructor

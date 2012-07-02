@@ -116,7 +116,7 @@ class Params
         // Proxy undefined methods to the options object:
         $method = array($this->options, $methodName);
         if (!is_callable($method)) {
-            throw new Exception($methodName . ' cannot be called.');
+            throw new \Exception($methodName . ' cannot be called.');
         }
         return call_user_func_array($method, $params);
     }
@@ -270,7 +270,7 @@ class Params
         // to great lengths for compatibility.
         if (is_array($lookfor)) {
             if (count($lookfor) > 1) {
-                throw new Exception("Unsupported search URL.");
+                throw new \Exception("Unsupported search URL.");
             }
             $lookfor = $lookfor[0];
         }
@@ -788,7 +788,7 @@ class Params
                     $obj->init($this, $request);
                     $this->recommend[$location][] = $obj;
                 } else {
-                    throw new Exception(
+                    throw new \Exception(
                         'Could not load recommendation module: ' . $class
                     );
                 }
@@ -1435,7 +1435,7 @@ class Params
     public function setQueryIDs($ids)
     {
         // This needs to be defined in child classes:
-        throw new Exception(get_class($this) . ' does not support setQueryIDs().');
+        throw new \Exception(get_class($this) . ' does not support setQueryIDs().');
     }
 
     /**

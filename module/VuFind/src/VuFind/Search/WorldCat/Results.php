@@ -25,6 +25,12 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
+namespace VuFind\Search\WorldCat;
+use VuFind\Config\Reader as ConfigReader,
+    VuFind\Connection\WorldCat as WorldCatConnection,
+    VuFind\Exception\RecordMissing as RecordMissingException,
+    VuFind\RecordDriver\WorldCat as WorldCatRecord,
+    VuFind\Search\Base\Results as BaseResults;
 
 /**
  * WorldCat Search Parameters
@@ -35,7 +41,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class VF_Search_WorldCat_Results extends VF_Search_Base_Results
+class Results extends BaseResults
 {
     // Raw search response:
     protected $rawResponse = null;
@@ -43,13 +49,13 @@ class VF_Search_WorldCat_Results extends VF_Search_Base_Results
     /**
      * Get a connection to the WorldCat API.
      *
-     * @return VF_Connection_WorldCat
+     * @return WorldCatConnection
      */
     public static function getWorldCatConnection()
     {
         static $wc = false;
         if (!$wc) {
-            $wc = new VF_Connection_WorldCat();
+            $wc = new WorldCatConnection();
         }
         return $wc;
     }
@@ -63,7 +69,7 @@ class VF_Search_WorldCat_Results extends VF_Search_Base_Results
     protected function performSearch()
     {
         // Collect the search parameters:
-        $config = VF_Config_Reader::getConfig();
+        $config = ConfigReader::getConfig();
         $wc = static::getWorldCatConnection();
         $overrideQuery = $this->getOverrideQuery();
         $query = empty($overrideQuery)
@@ -97,15 +103,15 @@ class VF_Search_WorldCat_Results extends VF_Search_Base_Results
      *
      * @param string $id Unique identifier of record
      *
-     * @throws VF_Exception_RecordMissing
-     * @return VF_RecordDriver_Base
+     * @throws RecordMissingException
+     * @return \VuFind\RecordDriver\Base
      */
     public static function getRecord($id)
     {
         $wc = static::getWorldCatConnection();
         $record = $wc->getRecord($id);
         if (empty($record)) {
-            throw new VF_Exception_RecordMissing(
+            throw new RecordMissingException(
                 'Record ' . $id . ' does not exist.'
             );
         }
@@ -118,11 +124,11 @@ class VF_Search_WorldCat_Results extends VF_Search_Base_Results
      *
      * @param array $data Raw record data
      *
-     * @return VF_RecordDriver_Base
+     * @return \VuFind\RecordDriver\Base
      */
     protected static function initRecordDriver($data)
     {
-        return new VF_RecordDriver_WorldCat($data);
+        return new WorldCatRecord($data);
     }
 
     /**

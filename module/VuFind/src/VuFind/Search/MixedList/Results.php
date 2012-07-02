@@ -25,7 +25,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
- 
+namespace VuFind\Search\MixedList;
+use VuFind\Record, VuFind\Search\Base\Results as BaseResults;
+
 /**
  * Search Mixed List Results
  *
@@ -35,7 +37,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class VF_Search_MixedList_Results extends VF_Search_Base_Results
+class Results extends BaseResults
 {
     /**
      * Returns the stored list of facets for the last search
@@ -60,7 +62,7 @@ class VF_Search_MixedList_Results extends VF_Search_Base_Results
     protected function performSearch()
     {
         $recordsToRequest = $this->params->getRecordsToRequest();
-        $this->results = VF_Record::loadBatch($recordsToRequest);
+        $this->results = Record::loadBatch($recordsToRequest);
         $this->resultTotal = count($this->results);
     }
 
@@ -69,12 +71,12 @@ class VF_Search_MixedList_Results extends VF_Search_Base_Results
      *
      * @param string $id Unique identifier of record
      *
-     * @return VF_RecordDriver_Base
+     * @return \VuFind\RecordDriver\Base
      */
     public static function getRecord($id)
     {
-        throw new Exception(
-            'getRecord not supported by VF_Search_MixedList_Results'
+        throw new \Exception(
+            'getRecord not supported by VuFind\\Search\\MixedList\\Results'
         );
     }
 }

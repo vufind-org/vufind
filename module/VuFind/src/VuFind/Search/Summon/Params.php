@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
+namespace VuFind\Search\Summon;
+use VuFind\Search\Base\Params as BaseParams;
 
 /**
  * Summon Search Parameters
@@ -35,7 +37,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class VF_Search_Summon_Params extends VF_Search_Base_Params
+class Params extends BaseParams
 {
     protected $fullFacetSettings = array();
     protected $dateFacetSettings = array();

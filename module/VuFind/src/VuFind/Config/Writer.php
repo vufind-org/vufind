@@ -52,7 +52,7 @@ class VF_Config_Writer
         $this->filename = $filename;
         $this->content = file_get_contents($filename);
         if (!$this->content) {
-            throw new Exception('Could not read ' . $filename);
+            throw new \Exception('Could not read ' . $filename);
         }
     }
 

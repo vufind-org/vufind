@@ -25,7 +25,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
- 
+namespace VuFind\Search\Favorites;
+use VuFind\Search\Base\Params as BaseParams;
+
 /**
  * Search Favorites Parameters
  *
@@ -35,7 +37,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class VF_Search_Favorites_Params extends VF_Search_Base_Params
+class Params extends BaseParams
 {
     /**
      * Constructor

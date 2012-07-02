@@ -25,6 +25,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
+namespace VuFind\Search\SolrAuth;
+use VuFind\RecordDriver\SolrAuth as SolrAuthRecord,
+    VuFind\Search\Base\Params as BaseParams,
+    VuFind\Search\Base\Results as BaseResults;
 
 /**
  * Solr Authority Search Parameters
@@ -35,7 +39,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class VF_Search_SolrAuth_Results extends VF_Search_Solr_Results
+class Results extends BaseResults
 {
     /**
      * Constructor
@@ -43,7 +47,7 @@ class VF_Search_SolrAuth_Results extends VF_Search_Solr_Results
      * @param VF_Search_Base_Params $params Object representing user search
      * parameters.
      */
-    public function __construct(VF_Search_Base_Params $params)
+    public function __construct(BaseParams $params)
     {
         parent::__construct($params);
     }
@@ -72,6 +76,6 @@ class VF_Search_SolrAuth_Results extends VF_Search_Solr_Results
      */
     protected static function initRecordDriver($data)
     {
-        return new VF_RecordDriver_SolrAuth($data);
+        return new SolrAuthRecord($data);
     }
 }

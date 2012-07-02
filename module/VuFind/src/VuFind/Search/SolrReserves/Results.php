@@ -26,6 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
+namespace VuFind\Search\SolrReserves;
+use VuFind\RecordDriver\SolrReserves as SolrReservesRecord,
+    VuFind\Search\Base\Params as BaseParams,
+    VuFind\Search\Base\Results as BaseResults;
 
 /**
  * Solr Reserves Search Parameters
@@ -37,15 +41,15 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class VF_Search_SolrReserves_Results extends VF_Search_Solr_Results
+class Results extends BaseResults
 {
     /**
      * Constructor
      *
-     * @param VF_Search_Base_Params $params Object representing user search
+     * @param BaseParams $params Object representing user search
      * parameters.
      */
-    public function __construct(VF_Search_Base_Params $params)
+    public function __construct(BaseParams $params)
     {
         parent::__construct($params);
     }
@@ -55,9 +59,10 @@ class VF_Search_SolrReserves_Results extends VF_Search_Solr_Results
      *
      * @param null|array $shards Selected shards to use (null for defaults)
      * @param string     $index  ID of index/search classes to use (this assumes
-     * that VF_Search_$index_Options and VF_Connection_$index are both valid classes)
+     * that \VuFind\Search\$index\Options and \VuFind\Connection\$index are both
+     * valid classes)
      *
-     * @return VF_Connection_Solr
+     * @return \VuFind\Connection\Solr
      */
     public static function getSolrConnection($shards = null,
         $index = 'SolrReserves'
@@ -71,10 +76,10 @@ class VF_Search_SolrReserves_Results extends VF_Search_Solr_Results
      *
      * @param array $data Solr data
      *
-     * @return VF_RecordDriver_Base
+     * @return \VuFind\RecordDriver\Base
      */
     protected static function initRecordDriver($data)
     {
-        return new VF_RecordDriver_SolrReserves($data);
+        return new SolrReservesRecord($data);
     }
 }

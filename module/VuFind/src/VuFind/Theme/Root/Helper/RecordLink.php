@@ -68,7 +68,7 @@ class VuFind_Theme_Root_Helper_RecordLink extends Zend_View_Helper_Abstract
                 . '&type=oclc_num&jumpto=1';
             break;
         default:
-            throw new Exception('Unexpected link type: ' . $link['type']);
+            throw new \Exception('Unexpected link type: ' . $link['type']);
         }
 
         return $escape ? $this->view->escape($url) : $url;

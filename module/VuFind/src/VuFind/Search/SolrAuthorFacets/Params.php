@@ -25,7 +25,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
- 
+namespace VuFind\Search\SolrAuthorFacets;
+use VuFind\Search\Base\Params as BaseParams;
+
 /**
  * AuthorFacets Search Parameters
  *
@@ -35,7 +37,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class VF_Search_SolrAuthorFacets_Params extends VF_Search_Solr_Params
+class Params extends BaseParams
 {
     /**
      * Set parameters based on a search object

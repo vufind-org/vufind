@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
+namespace VuFind\Search\WorldCat;
+use VuFind\Search\Base\Params as BaseParams;
 
 /**
  * WorldCat Search Parameters
@@ -35,7 +37,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class VF_Search_WorldCat_Params extends VF_Search_Base_Params
+class Params extends BaseParams
 {
     // Override Query
     protected $overrideQuery = false;

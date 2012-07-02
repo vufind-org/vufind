@@ -548,7 +548,7 @@ class Results extends BaseResults
             return new $driver($data);
         }
 
-        throw new Exception('Cannot find record driver -- ' . $driver);
+        throw new \Exception('Cannot find record driver -- ' . $driver);
     }
     
     /**

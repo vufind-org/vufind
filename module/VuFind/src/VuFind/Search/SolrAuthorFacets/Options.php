@@ -25,7 +25,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
- 
+namespace VuFind\Search\SolrAuthorFacets;
+use VuFind\Search\Base\Options as BaseOptions;
+
 /**
  * AuthorFacets Search Options
  *
@@ -35,7 +37,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class VF_Search_SolrAuthorFacets_Options extends VF_Search_Solr_Options
+class Options extends BaseOptions
 {
     /**
      * Constructor

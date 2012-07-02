@@ -25,6 +25,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
+namespace VuFind\Search\WorldCat;
+use VuFind\Config\Reader as ConfigReader,
+    VuFind\Search\Base\Options as BaseOptions;
 
 /**
  * WorldCat Search Options
@@ -35,7 +38,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class VF_Search_WorldCat_Options extends VF_Search_Base_Options
+class Options extends BaseOptions
 {
     /**
      * Constructor
@@ -48,7 +51,7 @@ class VF_Search_WorldCat_Options extends VF_Search_Base_Options
         parent::__construct();
 
         // Load the configuration file:
-        $searchSettings = VF_Config_Reader::getConfig($this->searchIni);
+        $searchSettings = ConfigReader::getConfig($this->searchIni);
 
         // Search handler setup:
         $this->defaultHandler = 'srw.kw';

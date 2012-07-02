@@ -25,7 +25,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
- 
+namespace VuFind\Search\Tags;
+use VuFind\Record, VuFind\Search\Base\Results as BaseResults;
+
 /**
  * Search Tags Results
  *
@@ -35,7 +37,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class VF_Search_Tags_Results extends VF_Search_Base_Results
+class Results extends BaseResults
 {
     /**
      * Support method for performAndProcessSearch -- perform a search based on the
@@ -64,7 +66,7 @@ class VF_Search_Tags_Results extends VF_Search_Base_Results
             $recordsToRequest[]
                 = array('id' => $row->record_id, 'source' => $row->source);
         }
-        $this->results = VF_Record::loadBatch($recordsToRequest);
+        $this->results = Record::loadBatch($recordsToRequest);
     }
 
     /**
@@ -72,12 +74,12 @@ class VF_Search_Tags_Results extends VF_Search_Base_Results
      *
      * @param string $id Unique identifier of record
      *
-     * @return VF_RecordDriver_Base
+     * @return \VuFind\RecordDriver\Base
      */
     public static function getRecord($id)
     {
-        throw new Exception(
-            'getRecord not supported by VF_Tags_Favorites_Results'
+        throw new \Exception(
+            'getRecord not supported by VuFind\\Tags\\Favorites\\Results'
         );
     }
 

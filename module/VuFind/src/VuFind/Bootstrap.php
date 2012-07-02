@@ -309,7 +309,7 @@ class Bootstrap
 
         // Get session configuration:
         if (!isset($this->config->Session->type)) {
-            throw new Exception('Cannot initialize session; configuration missing');
+            throw new \Exception('Cannot initialize session; configuration missing');
         }
 
         // Register a session manager:

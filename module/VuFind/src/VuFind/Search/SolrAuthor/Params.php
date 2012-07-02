@@ -25,7 +25,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
- 
+namespace VuFind\Search\SolrAuthor;
+use VuFind\Config\Reader as ConfigReader, VuFind\Search\Base\Params as BaseParams;
+
 /**
  * Author Search Options
  *
@@ -35,7 +37,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class VF_Search_SolrAuthor_Params extends VF_Search_Solr_Params
+class Params extends BaseParams
 {
     /**
      * Support method for _initSearch() -- handle basic settings.
@@ -86,7 +88,7 @@ class VF_Search_SolrAuthor_Params extends VF_Search_Solr_Params
     {
         // Load the necessary settings to determine the appropriate recommendations
         // module:
-        $ss = VF_Config_Reader::getConfig($this->getSearchIni());
+        $ss = ConfigReader::getConfig($this->getSearchIni());
 
         // Load the AuthorModuleRecommendations configuration if available, use
         // standard defaults otherwise:

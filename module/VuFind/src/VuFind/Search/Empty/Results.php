@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
+namespace VuFind\Search\Empty;
+use VuFind\Search\Base\Results as BaseResults;
 
 /**
  * Simple search results object to represent an empty set (used when dealing with
@@ -36,7 +38,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class VF_Search_Empty_Results extends VF_Search_Base_Results
+class Results extends BaseResults
 {
     /**
      * Support method for constructor -- perform a search based on the parameters
@@ -72,6 +74,6 @@ class VF_Search_Empty_Results extends VF_Search_Base_Results
      */
     public static function getRecord($id)
     {
-        throw new Exception('Cannot get record from empty set.');
+        throw new \Exception('Cannot get record from empty set.');
     }
 }

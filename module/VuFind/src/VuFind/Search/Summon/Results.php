@@ -25,6 +25,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
+namespace VuFind\Search\Summon;
+use VuFind\Config\Reader as ConfigReader,
+    VuFind\Connection\Summon as SummonConnection,
+    VuFind\Connection\Summon\Query as SummonQuery,
+    VuFind\Exception\RecordMissing as RecordMissingException,
+    VuFind\RecordDriver\Summon as SummonRecord,
+    VuFind\Search\Base\Results as BaseResults,
+    VuFind\Translator\Translator;
 
 /**
  * Summon Search Parameters
@@ -35,7 +43,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class VF_Search_Summon_Results extends VF_Search_Base_Results
+class Results extends BaseResults
 {
     // Raw search response:
     protected $rawResponse = null;
@@ -43,16 +51,16 @@ class VF_Search_Summon_Results extends VF_Search_Base_Results
     /**
      * Get a connection to the Summon API.
      *
-     * @return VF_Connection_Summon
+     * @return SummonConnection
      */
     public static function getSummonConnection()
     {
         static $conn = false;
         if (!$conn) {
-            $config = VF_Config_Reader::getConfig();
+            $config = ConfigReader::getConfig();
             $id = isset($config->Summon->apiId) ? $config->Summon->apiId : null;
             $key = isset($config->Summon->apiKey) ? $config->Summon->apiKey : null;
-            $conn = new VF_Connection_Summon($id, $key);
+            $conn = new SummonConnection($id, $key);
         }
         return $conn;
     }
@@ -72,7 +80,7 @@ class VF_Search_Summon_Results extends VF_Search_Base_Results
 
         // Perform the actual search
         $summon = self::getSummonConnection();
-        $query = new VF_Connection_Summon_Query(
+        $query = new SummonQuery(
             $summon->buildQuery($this->getSearchTerms()),
             array(
                 'sort' => $finalSort,
@@ -126,15 +134,15 @@ class VF_Search_Summon_Results extends VF_Search_Base_Results
      *
      * @param string $id Unique identifier of record
      *
-     * @throws VF_Exception_RecordMissing
-     * @return VF_RecordDriver_Base
+     * @throws RecordMissingException
+     * @return \VuFind\RecordDriver\Base
      */
     public static function getRecord($id)
     {
         $summon = static::getSummonConnection();
         $record = $summon->getRecord($id);
         if (empty($record) || !isset($record['documents'][0])) {
-            throw new VF_Exception_RecordMissing(
+            throw new RecordMissingException(
                 'Record ' . $id . ' does not exist.'
             );
         }
@@ -147,11 +155,11 @@ class VF_Search_Summon_Results extends VF_Search_Base_Results
      *
      * @param array $data Raw record data
      *
-     * @return VF_RecordDriver_Base
+     * @return \VuFind\RecordDriver\Base
      */
     protected static function initRecordDriver($data)
     {
-        return new VF_RecordDriver_Summon($data);
+        return new SummonRecord($data);
     }
 
     /**
@@ -231,7 +239,7 @@ class VF_Search_Summon_Results extends VF_Search_Base_Results
 
                         // Create display value:
                         $current['counts'][$facetIndex]['displayText'] = $translate
-                            ? VF_Translator::translate($facetDetails['value'])
+                            ? Translator::translate($facetDetails['value'])
                             : $facetDetails['value'];
                     }
 

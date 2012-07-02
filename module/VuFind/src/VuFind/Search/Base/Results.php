@@ -155,7 +155,7 @@ abstract class Results
     public static function getRecord($id)
     {
         // This needs to be defined in subclasses:
-        throw new Exception('getRecord needs to be defined.');
+        throw new \Exception('getRecord needs to be defined.');
     }
 
     /**
@@ -195,7 +195,7 @@ abstract class Results
         // Proxy undefined methods to the parameter object:
         $method = array($this->params, $methodName);
         if (!is_callable($method)) {
-            throw new Exception($methodName . ' cannot be called.');
+            throw new \Exception($methodName . ' cannot be called.');
         }
         return call_user_func_array($method, $params);
     }
@@ -303,7 +303,7 @@ abstract class Results
         // is called...  blow up if somebody tries to get data that is not yet
         // available.
         if (is_null($this->savedSearch)) {
-            throw new Exception(
+            throw new \Exception(
                 'Cannot retrieve save status before updateSaveStatus is called.'
             );
         }

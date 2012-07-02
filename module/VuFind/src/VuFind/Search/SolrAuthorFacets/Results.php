@@ -25,7 +25,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
- 
+namespace VuFind\Search\SolrAuthorFacets;
+use VuFind\Connection\Manager as ConnectionManager,
+    VuFind\Search\Base\Results as BaseResults;
+
 /**
  * AuthorFacets Search Results
  *
@@ -35,7 +38,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class VF_Search_SolrAuthorFacets_Results extends VF_Search_Solr_Results
+class Results extends BaseResults
 {
     /**
      * Support method for performAndProcessSearch -- perform a search based on the
@@ -45,7 +48,7 @@ class VF_Search_SolrAuthorFacets_Results extends VF_Search_Solr_Results
      */
     protected function performSearch()
     {
-        $solr = VF_Connection_Manager::connectToIndex();
+        $solr = ConnectionManager::connectToIndex();
 
         // Collect the search parameters:
         $params = array(

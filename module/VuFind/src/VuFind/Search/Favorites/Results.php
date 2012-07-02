@@ -25,7 +25,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
- 
+namespace VuFind\Search\Favorites;
+use VuFind\Account\Manager as AccountManager,
+    VuFind\Exception\ListPermission as ListPermissionException,
+    VuFind\Record,
+    VuFind\Search\Base\Results as BaseResults,
+    VuFind\Translator\Translator;
+
 /**
  * Search Favorites Results
  *
@@ -35,7 +41,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class VF_Search_Favorites_Results extends VF_Search_Base_Results
+class Results extends BaseResults
 {
     protected $user = null;
     protected $list = false;
@@ -118,22 +124,22 @@ class VF_Search_Favorites_Results extends VF_Search_Base_Results
     protected function performSearch()
     {
         $list = $this->getListObject();
-        $account = VF_Account_Manager::getInstance();
+        $account = AccountManager::getInstance();
         $this->user = $account->isLoggedIn();
 
         // Make sure the user and/or list objects make it possible to view
         // the current result set -- we need to check logged in status and
         // list permissions.
         if (is_null($list) && !$this->user) {
-            throw new VF_Exception_ListPermission(
+            throw new ListPermissionException(
                 'Cannot retrieve favorites without logged in user.'
             );
         }
         if (!is_null($list) && !$list->public
             && (!$this->user || $list->user_id != $this->user->id)
         ) {
-            throw new VF_Exception_ListPermission(
-                VF_Translator::translate('list_access_denied')
+            throw new ListPermissionException(
+                Translator::translate('list_access_denied')
             );
         }
 
@@ -159,7 +165,7 @@ class VF_Search_Favorites_Results extends VF_Search_Base_Results
                 )
             );
         }
-        $this->results = VF_Record::loadBatch($recordsToRequest);
+        $this->results = Record::loadBatch($recordsToRequest);
     }
 
     /**
@@ -167,12 +173,12 @@ class VF_Search_Favorites_Results extends VF_Search_Base_Results
      *
      * @param string $id Unique identifier of record
      *
-     * @return VF_RecordDriver_Base
+     * @return \VuFind\RecordDriver\Base
      */
     public static function getRecord($id)
     {
-        throw new Exception(
-            'getRecord not supported by VF_Search_Favorites_Results'
+        throw new \Exception(
+            'getRecord not supported by VuFind\\Search\\Favorites\\Results'
         );
     }
 

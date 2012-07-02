@@ -92,7 +92,7 @@ class Manager
     {
         if (!isset($this->caches[$key])) {
             if (!isset($this->cacheSettings[$key])) {
-                throw new Exception('Requested unknown cache: ' . $key);
+                throw new \Exception('Requested unknown cache: ' . $key);
             }
             $this->caches[$key] = StorageFactory::factory(
                 $this->cacheSettings[$key]
