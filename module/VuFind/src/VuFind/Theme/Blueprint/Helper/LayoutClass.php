@@ -26,6 +26,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
+namespace VuFind\Theme\Blueprint\Helper;
+use VuFind\Config\Reader as ConfigReader, Zend\View\Helper\AbstractHelper;
 
 /**
  * Helper class for managing blueprint theme's high-level (body vs. sidebar) page
@@ -37,7 +39,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
-class VuFind_Theme_Blueprint_Helper_LayoutClass extends Zend_View_Helper_Abstract
+class LayoutClass extends AbstractHelper
 {
     /**
      * Helper to allow easily configurable page layout -- given a broad class
@@ -48,9 +50,9 @@ class VuFind_Theme_Blueprint_Helper_LayoutClass extends Zend_View_Helper_Abstrac
      *
      * @return string       CSS classes to apply
      */
-    public function layoutClass($class)
+    public function __invoke($class)
     {
-        $config = VF_Config_Reader::getConfig();
+        $config = ConfigReader::getConfig();
         $left = !isset($config->Site->sidebarOnLeft)
             ? false : $config->Site->sidebarOnLeft;
         switch ($class) {

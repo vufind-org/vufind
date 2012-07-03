@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
+namespace VuFind\Theme\Blueprint\Helper;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * Helper class for displaying search-related HTML chunks.
@@ -35,7 +37,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
-class VuFind_Theme_Blueprint_Helper_Search extends Zend_View_Helper_Abstract
+class Search extends AbstractHelper
 {
     /**
      * Support function to display spelling suggestions.
@@ -44,7 +46,7 @@ class VuFind_Theme_Blueprint_Helper_Search extends Zend_View_Helper_Abstract
      *
      * @return string
      */
-    function renderSpellingSuggestions($msg)
+    public function renderSpellingSuggestions($msg)
     {
         $spellingSuggestions = $this->view->results->getSpellingSuggestions();
         if (empty($spellingSuggestions)) {
@@ -76,15 +78,5 @@ class VuFind_Theme_Blueprint_Helper_Search extends Zend_View_Helper_Abstract
         }
         $html .= '</div>';
         return $html;
-    }
-
-    /**
-     * Get access to the helper so that other methods can be called.
-     *
-     * @return VuFind_Theme_Blueprint_Helper_Search
-     */
-    public function search()
-    {
-        return $this;
     }
 }
