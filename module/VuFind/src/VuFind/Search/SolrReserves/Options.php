@@ -26,7 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-namespace VuFind\Search\SolrAuth;
+namespace VuFind\Search\SolrReserves;
 use VuFind\Search\Solr\Options as SolrOptions;
 
 /**
