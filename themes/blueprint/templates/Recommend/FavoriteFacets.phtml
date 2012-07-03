@@ -29,7 +29,7 @@
         <ul class="filters">
         <? $field = $sideFacetSet['tags']['label'];
            foreach ($tagFilterList as $filter): ?>
-          <? $removeLink = $this->serverUrl().$this->results->getUrl()->removeFacet($filter['field'], $filter['value']); ?>
+          <? $removeLink = $this->currentPath().$this->results->getUrl()->removeFacet($filter['field'], $filter['value']); ?>
           <li>
             <a href="<?=$removeLink?>"><img src="<?=$this->imageLink('silk/delete.png')?>" alt="<?=$this->transEsc('Delete') ?>"/></a>
             <a href="<?=$removeLink?>"><?=$this->transEsc($field)?>: <?=$this->escape($filter['displayText'])?></a>
@@ -43,7 +43,7 @@
           <? if ($thisFacet['isApplied']): ?>
             <?=$this->escape($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="<?=$this->transEsc('Selected') ?>"/>
           <? else: ?>
-            <a href="<?=$this->serverUrl().$this->results->getUrl()->addFacet('tags', $thisFacet['value'])?>"><?=$this->escape($thisFacet['displayText'])?></a> (<?=$this->escape($thisFacet['count'])?>)
+            <a href="<?=$this->currentPath().$this->results->getUrl()->addFacet('tags', $thisFacet['value'])?>"><?=$this->escape($thisFacet['displayText'])?></a> (<?=$this->escape($thisFacet['count'])?>)
           <? endif; ?>
           </li>
         <? endforeach; ?>

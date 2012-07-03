@@ -1,5 +1,5 @@
 <? $list = $this->results->getSortList(); if (!empty($list)): ?>
-  <form action="<?=$this->serverUrl() . $this->results->getUrl()->setSort(null)?>" method="post">
+  <form action="<?=$this->currentPath() . $this->results->getUrl()->setSort(null)?>" method="post">
     <label for="sort_options_1"><?=$this->transEsc('Sort')?></label>
     <select id="sort_options_1" name="sort" class="jumpMenu">
       <? foreach ($this->results->getSortList() as $sortType => $sortData): ?>

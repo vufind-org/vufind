@@ -15,7 +15,7 @@
                 <? if ($thisFacet['isApplied']): ?>
                   <li data-icon="check" class="checked"><a href="" data-rel="back"><?=$this->escape($thisFacet['displayText'])?></a> <span class="ui-li-count"><?=$this->escape($thisFacet['count'])?></span></li>
                 <? else: ?>
-                  <li><a rel="external" href="<?=$this->serverUrl().$this->results->getUrl()->addFacet($title, $thisFacet['value'])?>"><?=$this->escape($thisFacet['displayText'])?></a> <span class="ui-li-count"><?=$this->escape($thisFacet['count'])?></span></li>
+                  <li><a rel="external" href="<?=$this->currentPath().$this->results->getUrl()->addFacet($title, $thisFacet['value'])?>"><?=$this->escape($thisFacet['displayText'])?></a> <span class="ui-li-count"><?=$this->escape($thisFacet['count'])?></span></li>
                 <? endif; ?>
               <? endforeach; ?>
             </ul>

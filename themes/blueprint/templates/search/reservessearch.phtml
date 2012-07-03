@@ -52,7 +52,7 @@
     </tr>
     <? foreach ($this->results->getResults() as $record): ?>
       <?
-          $url = $this->serverUrl() . $this->escape(
+          $url = $this->currentPath() . $this->escape(
               '?inst=' . urlencode($record->getInstructorId())
               . '&course=' . urlencode($record->getCourseId())
               . '&dept=' . urlencode($record->getDepartmentId())

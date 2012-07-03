@@ -60,11 +60,11 @@ class VuFind_Theme_Root_Helper_ResultFeed extends Zend_View_Helper_Abstract
             . $results->getDisplayQuery()
         );
         $feed->setLink(
-            $this->view->fullUrl($this->view->serverUrl())
+            $this->view->serverUrl($this->view->currentPath())
             . $results->getUrl()->setViewParam(null, false)
         );
         $feed->setFeedLink(
-            $this->view->fullUrl($this->view->serverUrl())
+            $this->view->serverUrl($this->view->currentPath())
             . $results->getUrl()->getParams(false),
             $results->getView()
         );

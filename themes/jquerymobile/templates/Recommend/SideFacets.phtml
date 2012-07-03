@@ -4,7 +4,7 @@
     <? $i = 0; foreach ($filterList as $field => $filters): ?>
       <? foreach ($filters as $filter): ?>
         <?
-            $removeLink = $this->serverUrl().$this->results->getUrl()->removeFacet($filter['field'], $filter['value']);
+            $removeLink = $this->currentPath().$this->results->getUrl()->removeFacet($filter['field'], $filter['value']);
             if ($filter['displayText'] == '[* TO *]') $filter['displayText'] = $this->translate('filter_wildcard');
         ?>
         <li data-icon="minus">

@@ -20,7 +20,7 @@
           <? if ($thisFacet['isApplied']): ?>
             <?=$this->escape($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="<?=$this->transEsc('Selected') ?>"/>
           <? else: ?>
-            <a href="<?=$this->serverUrl().$this->results->getUrl()->addFacet($title, $thisFacet['value'])?>"><?=$this->escape($thisFacet['displayText'])?></a> (<?=$thisFacet['count'] ?>)
+            <a href="<?=$this->currentPath().$this->results->getUrl()->addFacet($title, $thisFacet['value'])?>"><?=$this->escape($thisFacet['displayText'])?></a> (<?=$thisFacet['count'] ?>)
           <? endif; ?>
         </span>
         <? if (count($cluster['list']) > $corner && $iter == count($cluster['list'])): ?>
