@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFind\Theme\Root\Helper;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * Flash message view helper
@@ -35,16 +37,17 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_Flashmessages extends Zend_View_Helper_Abstract
+class Flashmessages extends AbstractHelper
 {
     /**
      * Generate flash message <div>'s with appropriate classes based on message type.
      *
      * @return string $html
      */
-    public function flashmessages()
+    public function __invoke()
     {
         $html = '';
+        /* TODO:
         if (is_object($this->view->flashMessenger)) {
             $namespaces = array('error', 'info');
             foreach ($namespaces as $ns) {
@@ -81,6 +84,7 @@ class VuFind_Theme_Root_Helper_Flashmessages extends Zend_View_Helper_Abstract
                 $this->view->flashMessenger->clearCurrentMessages();
             }
         }
+         */
         return $html;
     }
 }
