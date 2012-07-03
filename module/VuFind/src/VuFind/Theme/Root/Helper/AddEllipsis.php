@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
+namespace VuFind\Theme\Root\Helper;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * "Add ellipsis" view helper
@@ -35,7 +37,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class VuFind_Theme_Root_Helper_AddEllipsis extends Zend_View_Helper_Abstract
+class AddEllipsis extends AbstractHelper
 {
     /**
      * Adds "..." to the beginning and/or end of a highlighted phrase when
@@ -46,7 +48,7 @@ class VuFind_Theme_Root_Helper_AddEllipsis extends Zend_View_Helper_Abstract
      *
      * @return string             Highlighted string with ellipsis added
      */
-    public function addEllipsis($highlighted, $fullString)
+    public function __invoke($highlighted, $fullString)
     {
         // Remove highlighting markers from the string so we can perform a clean
         // comparison:

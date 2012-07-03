@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFind\Theme\Root\Helper;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * Record link view helper
@@ -35,18 +37,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_RecordLink extends Zend_View_Helper_Abstract
+class RecordLink extends AbstractHelper
 {
-    /**
-     * Get the current object so individual methods can be called.
-     *
-     * @return VuFind_Theme_Root_Helper_RecordLink
-     */
-    public function recordLink()
-    {
-        return $this;
-    }
-
     /**
      * Given an array representing a related record (which may be a bib ID or OCLC
      * number), this helper renders a URL linking to that record.
@@ -58,12 +50,13 @@ class VuFind_Theme_Root_Helper_RecordLink extends Zend_View_Helper_Abstract
      */
     public function related($link, $escape = true)
     {
+        $urlHelper = $this->getView()->plugin('url');
         switch ($link['type']) {
         case 'bib':
-            $url = $this->view->url('record', array('id' => $link['value']));
+            $url = $urlHelper('record', array('id' => $link['value']));
             break;
         case 'oclc':
-            $url = $this->view->url('search-results');
+            $url = $urlHelper('search-results')
                 . '?lookfor=' . urlencode($link['value'])
                 . '&type=oclc_num&jumpto=1';
             break;
@@ -71,14 +64,16 @@ class VuFind_Theme_Root_Helper_RecordLink extends Zend_View_Helper_Abstract
             throw new \Exception('Unexpected link type: ' . $link['type']);
         }
 
-        return $escape ? $this->view->escape($url) : $url;
+        $escapeHelper = $this->getView()->plugin('escape');
+        return $escape ? $escapeHelper($url) : $url;
     }
 
     /**
      * Given a record driver, get a URL for that record.
      *
-     * @param VF_RecordDriver_Base $driver Record to link to.
-     * @param string               $action Optional record action/tab to access
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record to link to.
+     * @param string                            $action Optional record action/tab to
+     * access
      *
      * @return string
      */
@@ -88,20 +83,23 @@ class VuFind_Theme_Root_Helper_RecordLink extends Zend_View_Helper_Abstract
         if (!empty($action)) {
             $params['action'] = $action;
         }
-        return $this->view->url($driver->getRecordRoute(), $params);
+        $urlHelper = $this->getView()->plugin('url');
+        return $urlHelper($driver->getRecordRoute(), $params);
     }
 
     /**
      * Given a record driver, generate HTML to link to the record from breadcrumbs.
      *
-     * @param VF_RecordDriver_Base $driver Record to link to.
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record to link to.
      *
      * @return string
      */
     public function getBreadcrumb($driver)
     {
+        $truncateHelper = $this->getView()->plugin('truncate');
+        $escapeHelper = $this->getView()->plugin('escape');
         return '<a href="' . $this->getUrl($driver) . '">' .
-            $this->view->escape($this->view->truncate($driver->getBreadcrumb(), 30))
+            $escapeHelper($truncateHelper($driver->getBreadcrumb(), 30))
             . '</a>';
     }
 }
