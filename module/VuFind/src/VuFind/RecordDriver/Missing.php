@@ -38,7 +38,7 @@ namespace VuFind\RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/other_than_marc Wiki
  */
-class Missing extends AbstractBase
+class Missing extends SolrDefault
 {
     /**
      * Constructor.
