@@ -37,6 +37,6 @@ use VuFind\Search\Base\Params as BaseParams;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Params extends BaseParams;
+class Params extends BaseParams
 {
 }
