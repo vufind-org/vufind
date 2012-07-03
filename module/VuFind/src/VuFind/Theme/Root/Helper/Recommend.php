@@ -25,6 +25,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFind\Theme\Root\Helper;
+use Zend\View\Exception\ExceptionInterface as ViewException,
+    Zend\View\Helper\AbstractHelper;
 
 /**
  * Recommendation module view helper
@@ -35,19 +38,21 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_Recommend extends Zend_View_Helper_Abstract
+class Recommend extends AbstractHelper
 {
     /**
      * Render the output of a recommendation module.
      *
-     * @param VF_Recommend_Interface $recommend The recommendation object to render
+     * @param \VuFind\Recommend\RecommendInterface $recommend The recommendation
+     * object to render
      *
      * @return string
      */
-    public function recommend($recommend)
+    public function __invoke($recommend)
     {
         // Set up the rendering context:
-        $oldContext = $this->view->context($this->view)->apply(
+        $contextHelper = $this->getView()->plugin('context');
+        $oldContext = $contextHelper($this->getView())->apply(
             array('recommend' => $recommend)
         );
 
@@ -57,20 +62,21 @@ class VuFind_Theme_Root_Helper_Recommend extends Zend_View_Helper_Abstract
         $className = get_class($recommend);
         while (true) {
             // Guess the template name for the current class:
-            $classParts = explode('_', $className);
+            $classParts = explode('\\', $className);
             $template = 'Recommend/' . array_pop($classParts) . '.phtml';
             try {
                 // Try to render the template....
-                $html = $this->view->render($template);
-                $this->view->context($this->view)->restore($oldContext);
+                $html = $this->getView()->render($template);
+                $contextHelper($this->getView())->restore($oldContext);
                 return $html;
-            } catch (Zend_View_Exception $e) {
+            } catch (ViewException $e) {
                 // If the template doesn't exist, let's see if we can inherit a
                 // template from a parent recommendation class:
                 $className = get_parent_class($className);
                 if (empty($className)) {
                     // No more parent classes left to try?  Throw an exception!
-                    throw new Zend_View_Exception(
+                    $exceptionClass = get_class($e);
+                    throw new $exceptionClass(
                         'Cannot find template for recommendation class: ' .
                         get_class($recommend)
                     );
