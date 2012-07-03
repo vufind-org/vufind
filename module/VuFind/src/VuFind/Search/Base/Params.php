@@ -164,7 +164,7 @@ class Params
     protected function initShards($request)
     {
         $legalShards = array_keys($this->options->getShards());
-        $requestShards = $request->getParam('shard', array());
+        $requestShards = $request->query()->get('shard', array());
         if (!is_array($requestShards)) {
             $requestShards = array($requestShards);
         }
@@ -195,7 +195,7 @@ class Params
     {
         // Check for a limit parameter in the url.
         $defaultLimit = $this->options->getDefaultLimit();
-        if (($limit = $request->getParam('limit')) != $defaultLimit) {
+        if (($limit = $request->query()->get('limit')) != $defaultLimit) {
             // make sure the url parameter is a valid limit
             if (in_array($limit, $this->options->getLimitOptions())) {
                 $this->limit = $limit;
@@ -221,7 +221,7 @@ class Params
      */
     protected function initPage($request)
     {
-        $this->page = intval($request->getParam('page'));
+        $this->page = intval($request->query()->get('page'));
         if ($this->page < 1) {
             $this->page = 1;
         }
@@ -260,7 +260,7 @@ class Params
     {
         // If no lookfor parameter was found, we have no search terms to
         // add to our array!
-        if (is_null($lookfor = $request->getParam('lookfor'))) {
+        if (is_null($lookfor = $request->query()->get('lookfor'))) {
             return false;
         }
 
@@ -276,7 +276,7 @@ class Params
         }
 
         // Flatten type arrays for backward compatibility:
-        $handler = $request->getParam('type');
+        $handler = $request->query()->get('type');
         if (is_array($handler)) {
             $handler = $handler[0];
         }
@@ -325,14 +325,14 @@ class Params
 
         $groupCount = 0;
         // Loop through each search group
-        while (!is_null($lookfor = $request->getParam('lookfor' . $groupCount))) {
+        while (!is_null($lookfor = $request->query()->get('lookfor' . $groupCount))) {
             $group = array();
             // Loop through each term inside the group
             for ($i = 0; $i < count($lookfor); $i++) {
                 // Ignore advanced search fields with no lookup
                 if ($lookfor[$i] != '') {
                     // Use default fields if not set
-                    $typeArr = $request->getParam('type' . $groupCount);
+                    $typeArr = $request->query()->get('type' . $groupCount);
                     if (isset($typeArr[$i]) && !empty($typeArr[$i])) {
                         $handler = $typeArr[$i];
                     } else {
@@ -340,7 +340,7 @@ class Params
                     }
 
                     // Add term to this group
-                    $boolArr = $request->getParam('bool' . $groupCount);
+                    $boolArr = $request->query()->get('bool' . $groupCount);
                     $group[] = array(
                         'field'   => $handler,
                         'lookfor' => $lookfor[$i],
@@ -354,7 +354,7 @@ class Params
                 // Add the completed group to the list
                 $this->searchTerms[] = array(
                     'group' => $group,
-                    'join'  => $request->getParam('join')
+                    'join'  => $request->query()->get('join')
                 );
             }
 
@@ -373,10 +373,10 @@ class Params
     protected function initSort($request)
     {
         // Check for special parameter only relevant in RSS mode:
-        if ($request->getParam('skip_rss_sort', 'unset') != 'unset') {
+        if ($request->query()->get('skip_rss_sort', 'unset') != 'unset') {
             $this->skipRssSort = true;
         }
-        $this->setSort($request->getParam('sort'));
+        $this->setSort($request->query()->get('sort'));
     }
 
     /**
@@ -389,7 +389,7 @@ class Params
     protected function initView($request)
     {
         // Check for a view parameter in the url.
-        $view = $request->getParam('view');
+        $view = $request->query()->get('view');
         $lastView = $this->getLastView();
         if (!empty($view)) {
             if ($view == 'rss') {
@@ -1123,16 +1123,16 @@ class Params
      */
     protected function initDateFilters($request)
     {
-        $daterange = $request->getParam('daterange');
+        $daterange = $request->query()->get('daterange');
         if (!empty($daterange)) {
             $ranges = is_array($daterange) ? $daterange : array($daterange);
             foreach ($ranges as $range) {
                 // Validate start and end of range:
                 $yearFrom = $this->formatYearForDateRange(
-                    $request->getParam($range . 'from')
+                    $request->query()->get($range . 'from')
                 );
                 $yearTo = $this->formatYearForDateRange(
-                    $request->getParam($range . 'to')
+                    $request->query()->get($range . 'to')
                 );
 
                 // Build filter only if necessary:
@@ -1155,7 +1155,7 @@ class Params
     protected function initFilters($request)
     {
         // Handle standard filters:
-        $filter = $request->getParam('filter');
+        $filter = $request->query()->get('filter');
         if (!empty($filter)) {
             if (is_array($filter)) {
                 foreach ($filter as $current) {

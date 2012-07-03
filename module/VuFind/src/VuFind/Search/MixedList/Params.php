@@ -50,7 +50,7 @@ class Params extends BaseParams
      */
     protected function initSearch($request)
     {
-        $this->recordsToRequest = $request->getParam('id', array());
+        $this->recordsToRequest = $request->query()->get('id', array());
 
         // We always want to display the entire list as one page:
         $this->setLimit(count($this->recordsToRequest));

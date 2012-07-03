@@ -73,7 +73,7 @@ class Params extends BaseParams
     protected function initFilters($request)
     {
         // Special filter -- if the "id" parameter is set, limit to a specific list:
-        $id = $request->getParam('id');
+        $id = $request->query()->get('id');
         if (!empty($id)) {
             $this->addFilter("lists:{$id}");
         }

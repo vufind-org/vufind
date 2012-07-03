@@ -50,7 +50,7 @@ class Params extends BaseParams
     {
         // If no lookfor parameter was found, we have no search terms to
         // add to our array!
-        if (is_null($lookfor = $request->getParam('author'))) {
+        if (is_null($lookfor = $request->query()->get('author'))) {
             return false;
         }
 

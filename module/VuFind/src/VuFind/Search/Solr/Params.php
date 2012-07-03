@@ -151,7 +151,7 @@ class Params extends BaseParams
     protected function initSearch($request)
     {
         // Special case -- did we get a list of IDs instead of a standard query?
-        $ids = $request->getParam('overrideIds', null);
+        $ids = $request->query()->get('overrideIds', null);
         if (is_array($ids) && !empty($ids)) {
             $this->setQueryIDs($ids);
         } else {
@@ -159,7 +159,7 @@ class Params extends BaseParams
             parent::initSearch($request);
 
             // Another special case -- are we doing a tag search?
-            $tag = $request->getParam('tag', '');
+            $tag = $request->query()->get('tag', '');
             if (!empty($tag)) {
                 $this->setBasicSearch($tag, 'tag');
             }
@@ -353,7 +353,7 @@ class Params extends BaseParams
         // Use the default behavior of the parent class, but add support for the
         // special illustrations filter.
         parent::initFilters($request);
-        switch ($request->getParam('illustration', -1)) {
+        switch ($request->query()->get('illustration', -1)) {
         case 1:
             $this->addFilter('illustrated:Illustrated');
             break;
@@ -363,7 +363,7 @@ class Params extends BaseParams
         }
 
         // Check for hidden filters:
-        $hidden = $request->getParam('hiddenFilters');
+        $hidden = $request->query()->get('hiddenFilters');
         if (!empty($hidden) && is_array($hidden)) {
             foreach ($hidden as $current) {
                 $this->addHiddenFilter($current);

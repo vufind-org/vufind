@@ -58,8 +58,8 @@ class Database extends AbstractBase
     public function authenticate($request)
     {
         // Make sure the credentials are non-blank:
-        $this->username = trim($request->getParam('username'));
-        $this->password = trim($request->getParam('password'));
+        $this->username = trim($request->post()->get('username'));
+        $this->password = trim($request->post()->get('password'));
         if ($this->username == '' || $this->password == '') {
             throw new AuthException('authentication_error_blank');
         }
@@ -92,7 +92,7 @@ class Database extends AbstractBase
             'password' => '', 'password2' => '', 'email' => ''
         );
         foreach ($params as $param => $junk) {
-            $params[$param] = $request->getParam($param, '');
+            $params[$param] = $request->post()->get($param, '');
         }
 
         // Validate Input
