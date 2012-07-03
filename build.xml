@@ -20,10 +20,31 @@
 
   <!-- Main Target -->
   <target name="main" description="main target">
+    <phingcall target="startup" />
+    <trycatch property="exceptionmsg">
+      <try>
+        <phingcall target="ci-tasks" />
+      </try>
+      <catch>
+        <phingcall target="shutdown" />
+        <fail>Unexpected error during continuous integration tasks -- ${exceptionmsg}</fail>
+      </catch>
+    </trycatch>
+    <phingcall target="shutdown" />
+  </target>
+
+  <!-- Continuous Integration Tasks -->
+  <target name="ci-tasks" description="continuous integration tasks">
 
     <!-- Create dirs -->
     <mkdir dir="${builddir}/reports"/>
     <mkdir dir="${builddir}/reports/coverage"/>
+
+    <!-- PHP CodeSniffer -->
+    <exec command="phpcs --standard=PEAR --extensions=php --report=checkstyle ${srcdir}/module/VuFind/src &gt; ${builddir}/reports/checkstyle.xml" escape="false" />
+
+    <!-- PHPUnit -->
+    <exec dir="${srcdir}/tests" command="VUFIND_LOCAL_DIR=${srcdir}/local phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/" passthru="true" checkreturn="true" />
 
     <!-- PHP API Documentation -->
     <phpdoc title="API Documentation"
@@ -35,12 +56,6 @@
         <include name="module/VuFind/src/**/*.php" />
       </fileset>
     </phpdoc>
-
-    <!-- PHP CodeSniffer -->
-    <exec command="phpcs --standard=PEAR --extensions=php --report=checkstyle ${srcdir}/module/VuFind/src &gt; ${builddir}/reports/checkstyle.xml" escape="false" />
-
-    <!-- PHPUnit -->
-    <exec dir="${srcdir}/tests" command="VUFIND_LOCAL_DIR=${srcdir}/local phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/" passthru="true" checkreturn="true" />
 
   </target>
 
