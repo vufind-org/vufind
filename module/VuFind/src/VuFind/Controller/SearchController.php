@@ -28,7 +28,7 @@
 namespace VuFind\Controller;
 
 use VuFind\Cache\Manager as CacheManager, VuFind\Search\Solr\Params,
-    VuFind\Search\Solr\Results, Zend\Mvc\Controller\ActionController;
+    VuFind\Search\Solr\Results;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -39,7 +39,7 @@ use VuFind\Cache\Manager as CacheManager, VuFind\Search\Solr\Params,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class SearchController extends ActionController
+class SearchController extends AbstractSearch
 {
     /**
      * Home action
