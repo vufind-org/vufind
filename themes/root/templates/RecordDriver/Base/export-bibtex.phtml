@@ -80,9 +80,9 @@ if (is_array($pubPlaces) && is_array($pubDates) && is_array($pubNames)) {
         $date = trim($pubDates[$i], '[]. ');
         if (strlen($date) > 4) {
             try {
-                $converter = new VF_Date_Converter();
+                $converter = new \VuFind\Date\Converter();
                 $date = $converter->convertFromDisplayDate('Y', $date);
-            } catch (VF_Date_Exception $e) {
+            } catch (\VuFind\Exception\Date $e) {
                 // bad date? just ignore it!
                 continue;
             }
