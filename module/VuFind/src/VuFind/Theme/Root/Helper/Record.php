@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Theme\Root\Helper;
-use VuFind\Config\Reader as ConfigReader,
-    Zend\View\Exception\ExceptionInterface as ViewException,
+use VuFind\Config\Reader as ConfigReader, Zend\View\Exception\RuntimeException,
     Zend\View\Helper\AbstractHelper;
 
 /**
@@ -77,14 +76,13 @@ class Record extends AbstractHelper
                 $html = $this->view->render($template);
                 $this->contextHelper->restore($oldContext);
                 return $html;
-            } catch (ViewException $e) {
+            } catch (RuntimeException $e) {
                 // If the template doesn't exist, let's see if we can inherit a
                 // template from a parent class:
                 $className = get_parent_class($className);
                 if (empty($className)) {
                     // No more parent classes left to try?  Throw an exception!
-                    $exceptionClass = get_class($e);
-                    throw new $exceptionClass(
+                    throw new RuntimeException(
                         'Cannot find ' . $name . ' template for record driver: ' .
                         get_class($this->driver)
                     );

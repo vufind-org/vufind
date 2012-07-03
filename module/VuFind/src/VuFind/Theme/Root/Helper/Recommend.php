@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Theme\Root\Helper;
-use Zend\View\Exception\ExceptionInterface as ViewException,
-    Zend\View\Helper\AbstractHelper;
+use Zend\View\Exception\RuntimeException, Zend\View\Helper\AbstractHelper;
 
 /**
  * Recommendation module view helper
@@ -69,14 +68,13 @@ class Recommend extends AbstractHelper
                 $html = $this->getView()->render($template);
                 $contextHelper($this->getView())->restore($oldContext);
                 return $html;
-            } catch (ViewException $e) {
+            } catch (RuntimeException $e) {
                 // If the template doesn't exist, let's see if we can inherit a
                 // template from a parent recommendation class:
                 $className = get_parent_class($className);
                 if (empty($className)) {
                     // No more parent classes left to try?  Throw an exception!
-                    $exceptionClass = get_class($e);
-                    throw new $exceptionClass(
+                    throw new RuntimeException(
                         'Cannot find template for recommendation class: ' .
                         get_class($recommend)
                     );
