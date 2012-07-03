@@ -26,7 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Base;
-use VuFind\Search\UrlHelper;
+use VuFind\Search\UrlHelper, Zend\Paginator\Paginator;
 
 /**
  * Abstract results search model.
@@ -379,7 +379,7 @@ abstract class Results
     /**
      * Get a paginator for the result set.
      *
-     * @return Zend_Paginator
+     * @return Paginator
      */
     public function getPaginator()
     {
@@ -392,7 +392,7 @@ abstract class Results
         }
 
         // Build the standard paginator control:
-        return Zend_Paginator::factory($total)
+        return Paginator::factory($total)
             ->setCurrentPageNumber($this->getPage())
             ->setItemCountPerPage($this->getLimit())
             ->setPageRange(11);
