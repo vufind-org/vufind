@@ -46,7 +46,7 @@ class ProxyUrl extends AbstractHelper
      *
      * @return string
      */
-    public function proxyUrl($url)
+    public function __invoke($url)
     {
         $config = ConfigReader::getConfig();
         if (isset($config->EZproxy->host)) {
