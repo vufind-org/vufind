@@ -5,13 +5,10 @@
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = $this->getLastSearchLink($this->transEsc('Search'), '', '<span>&gt;</span>') .
         '<em>' . $this->transEsc('Book Bag') . '</em>';
-
-    // Get cart object:
-    $this->cart = VF_Cart::getInstance();
 ?>
 <?=$this->flashmessages()?>
 <form action="<?=$this->url('cart-home')?>" method="post"  name="cartForm">
-  <? if (!$this->cart->isEmpty()): ?>
+  <? if (!$this->cart()->isEmpty()): ?>
     <div class="bulkActionButtons">
       <input type="checkbox" class="selectAllCheckboxes floatleft" name="selectAll" id="cartCheckboxSelectAll"/> <label for="cartCheckboxSelectAll" class="floatleft"><?=$this->transEsc('select_page')?></label>
       <input type="submit" class="fav floatleft button" name="saveCart" value="<?=$this->transEsc('bookbag_save_selected')?>" title="<?=$this->transEsc('bookbag_save')?>"/>

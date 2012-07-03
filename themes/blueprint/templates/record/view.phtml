@@ -12,7 +12,7 @@
     $tabs = $this->driver->getTabs();   // supported tabs
     $id = $this->driver->getUniqueId();
     $controllerClass = 'controller' . $this->record($this->driver)->getController();
-    $cart = VF_Cart::getInstance();
+    $cart = $this->cart();
     $cartId = $this->driver->getResourceSource() . '|' . $id;
 
     // Add RDF header link if applicable:

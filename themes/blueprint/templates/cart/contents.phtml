@@ -1,4 +1,4 @@
-<? $records = $this->cart->getRecordDetails(); if (!empty($records)): ?>
+<? $records = $this->cart()->getRecordDetails(); if (!empty($records)): ?>
   <ul class="cartContent">
   <? foreach ($records as $i => $record): ?>
     <li>

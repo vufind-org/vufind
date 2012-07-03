@@ -2,7 +2,7 @@
   <? $i = 0; foreach ($this->results->getResults() as $current):
   $recordNumber = $this->results->getStartRecord()+$i; ?>
   <li id="result<?=$i ?>" class="result<?=(++$i % 2 == 0) ? ' alt' : ''?>">
-    <span class="recordNumber"><?=$recordNumber?><? if (VF_Cart::getInstance()->isActive()): ?><?=$this->record($current)->getCheckbox()?><? endif; ?></span>
+    <span class="recordNumber"><?=$recordNumber?><? if ($this->cart()->isActive()): ?><?=$this->record($current)->getCheckbox()?><? endif; ?></span>
     <?=$this->record($current)->getSearchResult('list')?>
   </li>
   <? endforeach; ?>

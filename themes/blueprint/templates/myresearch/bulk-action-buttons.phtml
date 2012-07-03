@@ -10,7 +10,7 @@
     <input type="submit" class="export floatleft button" name="export" value="<?=$this->transEsc('Export')?>" title="<?=$this->transEsc('export_selected')?>"/>
   <? endif; ?>
   <input type="submit" class="print floatleft button" name="print" value="<?=$this->transEsc('Print')?>" title="<?=$this->transEsc('print_selected')?>"/>
-  <? if (VF_Cart::getInstance()->isActive()): ?>
+  <? if ($this->cart()->isActive()): ?>
     <input id="<?=$this->idPrefix?>updateCart" type="submit" class="button floatleft bookbagAdd" name="add" value="<?=$this->transEsc('Add to Book Bag')?>"/>
   <? endif; ?>
   <div class="clear"></div>
