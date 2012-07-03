@@ -389,8 +389,8 @@ class WorldCatUtils
         // we probably have bad MARCXML, which may indicate an API failure
         // or an empty record set.  Just give up if this happens!
         try {
-            $marc = new File_MARCXML($marcxml, File_MARCXML::SOURCE_STRING);
-        } catch (File_MARC_Exception $e) {
+            $marc = new \File_MARCXML($marcxml, File_MARCXML::SOURCE_STRING);
+        } catch (\File_MARC_Exception $e) {
             return false;
         }
 
