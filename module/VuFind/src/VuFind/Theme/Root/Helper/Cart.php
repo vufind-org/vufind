@@ -40,7 +40,7 @@ use VuFind\Cart as VuFindCart, Zend\View\Helper\AbstractHelper;
 class Cart extends AbstractHelper
 {
     /**
-     * Generate flash message <div>'s with appropriate classes based on message type.
+     * Get the Cart singleton object.
      *
      * @return VuFindCart
      */
