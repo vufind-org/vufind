@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFind\Theme\Root\Helper;
+use VuFind\Config\Reader as ConfigReader, Zend\View\Helper\AbstractHelper;
 
 /**
  * Proxy URL view helper
@@ -35,7 +37,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_ProxyUrl extends Zend_View_Helper_Abstract
+class ProxyUrl extends AbstractHelper
 {
     /**
      * Apply proxy prefix to URL (if configured).
@@ -46,7 +48,7 @@ class VuFind_Theme_Root_Helper_ProxyUrl extends Zend_View_Helper_Abstract
      */
     public function proxyUrl($url)
     {
-        $config = VF_Config_Reader::getConfig();
+        $config = ConfigReader::getConfig();
         if (isset($config->EZproxy->host)) {
             $url = $config->EZproxy->host . '/login?qurl=' . urlencode($url);
         }

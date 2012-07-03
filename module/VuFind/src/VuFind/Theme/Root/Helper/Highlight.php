@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFind\Theme\Root\Helper;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * Highlight view helper
@@ -35,7 +37,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_Highlight extends Zend_View_Helper_Abstract
+class Highlight extends AbstractHelper
 {
     /**
      * Adds a span tag with class "highlight" around a specific phrase for
@@ -46,7 +48,7 @@ class VuFind_Theme_Root_Helper_Highlight extends Zend_View_Helper_Abstract
      *
      * @return string          Highlighted, HTML encoded string
      */
-    public function highlight($haystack, $needle = null)
+    public function __invoke($haystack, $needle = null)
     {
         // Normalize value to an array so we can loop through it; this saves us from
         // writing the highlighting code twice, once for arrays, once for non-arrays.
