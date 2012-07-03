@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Search\SolrAuthor;
-use VuFind\Config\Reader as ConfigReader, VuFind\Search\Base\Params as BaseParams;
+use VuFind\Config\Reader as ConfigReader, VuFind\Search\Solr\Params as SolrParams;
 
 /**
  * Author Search Options
@@ -37,7 +37,7 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Search\Base\Params as BaseParam
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Params extends BaseParams
+class Params extends SolrParams
 {
     /**
      * Support method for _initSearch() -- handle basic settings.

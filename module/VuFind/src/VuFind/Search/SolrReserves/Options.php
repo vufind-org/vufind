@@ -27,7 +27,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\SolrAuth;
-use VuFind\Search\Base\Options as BaseOptions;
+use VuFind\Search\Solr\Options as SolrOptions;
 
 /**
  * Solr Reserves Search Options
@@ -39,7 +39,7 @@ use VuFind\Search\Base\Options as BaseOptions;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Options extends BaseOptions
+class Options extends SolrOptions
 {
     /**
      * Constructor

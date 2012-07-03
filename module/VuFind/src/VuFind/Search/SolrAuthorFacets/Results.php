@@ -27,7 +27,7 @@
  */
 namespace VuFind\Search\SolrAuthorFacets;
 use VuFind\Connection\Manager as ConnectionManager,
-    VuFind\Search\Base\Results as BaseResults;
+    VuFind\Search\Solr\Results as SolrResults;
 
 /**
  * AuthorFacets Search Results
@@ -38,7 +38,7 @@ use VuFind\Connection\Manager as ConnectionManager,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Results extends BaseResults
+class Results extends SolrResults
 {
     /**
      * Support method for performAndProcessSearch -- perform a search based on the

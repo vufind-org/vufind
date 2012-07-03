@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Search\SolrAuthor;
-use VuFind\Search\Base\Results as BaseResults;
+use VuFind\Search\Solr\Results as SolrResults;
 
 /**
  * Author Search Options
@@ -38,7 +38,7 @@ use VuFind\Search\Base\Results as BaseResults;
  * @link     http://vufind.org   Main Site
  */
 
-class Results extends BaseResults
+class Results extends SolrResults
 {
     /**
      * Constructor

@@ -27,7 +27,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\SolrReserves;
-use VuFind\Search\Base\Params as BaseParams;
+use VuFind\Search\Solr\Params as SolrParams;
 
 /**
  * Solr Reserves Search Parameters
@@ -39,6 +39,6 @@ use VuFind\Search\Base\Params as BaseParams;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Params extends BaseParams
+class Params extends SolrParams
 {
 }

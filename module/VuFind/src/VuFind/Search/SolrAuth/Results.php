@@ -28,7 +28,7 @@
 namespace VuFind\Search\SolrAuth;
 use VuFind\RecordDriver\SolrAuth as SolrAuthRecord,
     VuFind\Search\Base\Params as BaseParams,
-    VuFind\Search\Base\Results as BaseResults;
+    VuFind\Search\Solr\Results as SolrResults;
 
 /**
  * Solr Authority Search Parameters
@@ -39,7 +39,7 @@ use VuFind\RecordDriver\SolrAuth as SolrAuthRecord,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Results extends BaseResults
+class Results extends SolrResults
 {
     /**
      * Constructor

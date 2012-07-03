@@ -29,7 +29,7 @@
 namespace VuFind\Search\SolrReserves;
 use VuFind\RecordDriver\SolrReserves as SolrReservesRecord,
     VuFind\Search\Base\Params as BaseParams,
-    VuFind\Search\Base\Results as BaseResults;
+    VuFind\Search\Solr\Results as SolrResults;
 
 /**
  * Solr Reserves Search Parameters
@@ -41,7 +41,7 @@ use VuFind\RecordDriver\SolrReserves as SolrReservesRecord,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Results extends BaseResults
+class Results extends SolrResults
 {
     /**
      * Constructor
