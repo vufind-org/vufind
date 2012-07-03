@@ -73,7 +73,7 @@ class VuFind_Theme_Root_Helper_Reviews extends Zend_View_Helper_Abstract
                     if (empty($results[$provider])) {
                         unset($results[$provider]);
                     }
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     // Ignore exceptions:
                     unset($results[$provider]);
                 }
@@ -218,7 +218,7 @@ class VuFind_Theme_Root_Helper_Reviews extends Zend_View_Helper_Abstract
                     ? $this->config->Content->amazonassociate : null
             );
             $data = $amazon->itemLookup($this->getIsbn10(), $params);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // Something went wrong?  Just return empty list.
             return array();
         }

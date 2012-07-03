@@ -174,7 +174,7 @@ abstract class Results
         foreach ($ids as $id) {
             try {
                 $retVal[] = static::getRecord($id);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 // Just omit missing records from the return array; calling code
                 // in the VF_Record::loadBatch() method will deal with this.
             }

@@ -73,7 +73,7 @@ class VuFind_Theme_Root_Helper_AuthorNotes extends Zend_View_Helper_Abstract
                     if (empty($results[$provider])) {
                         unset($results[$provider]);
                     }
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     // Ignore exceptions:
                     unset($results[$provider]);
                 }

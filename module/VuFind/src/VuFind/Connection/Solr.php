@@ -1695,7 +1695,7 @@ class Solr
                 $info[$data['terms']['id'][$i]] = $data['terms']['id'][$i+1];
             }
             return $info;
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             return $result;
         }
     }

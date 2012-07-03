@@ -128,7 +128,7 @@ class Manager
         }
         try {
             $catalog = VF_Connection_Manager::connectToCatalog();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // If we can't connect to the catalog, assume that no special
             // ILS-related login settings exist -- this prevents ILS errors
             // from triggering an exception early in initialization before
@@ -247,7 +247,7 @@ class Manager
         } catch (VF_Exception_Auth $e) {
             // Pass authentication exceptions through unmodified
             throw $e;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // Catch other exceptions and treat them as technical difficulties
             throw new VF_Exception_Auth('authentication_error_technical');
         }

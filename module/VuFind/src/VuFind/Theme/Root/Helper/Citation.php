@@ -685,7 +685,7 @@ class VuFind_Theme_Root_Helper_Citation extends Zend_View_Helper_Abstract
                     return $converter->convertFromDisplayDate(
                         'Y', $this->details['pubDate']
                     );
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     // Ignore date errors -- no point in dying here:
                     return false;
                 }
