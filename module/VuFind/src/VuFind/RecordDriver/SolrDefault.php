@@ -967,11 +967,13 @@ class SolrDefault extends AbstractBase
      */
     public function getThumbnail($size = 'small')
     {
+        /* TODO
         if ($isbn = $this->getCleanISBN()) {
             $frontController = Zend_Controller_Front::getInstance();
             return $frontController->getBaseUrl() . '/Cover/Show?isn=' .
                 urlencode($isbn) . '&size=' . urlencode($size);
         }
+         */
 
         return false;
     }
