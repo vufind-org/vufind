@@ -25,8 +25,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-require_once APPLICATION_PATH . '/vendor/3rdparty/rc4.php';
 namespace VuFind\Crypt;
+
+require_once APPLICATION_PATH . '/vendor/3rdparty/rc4.php';
 
 /**
  * RC4 encryption class (wrapper around third-party functions)
