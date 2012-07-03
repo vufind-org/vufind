@@ -25,6 +25,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFind\Theme\Root\Helper;
+use VuFind\Config\Reader as ConfigReader,
+    Zend\View\Exception\ExceptionInterface as ViewException,
+    Zend\View\Helper\AbstractHelper;
 
 /**
  * Record driver view helper
@@ -35,8 +39,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_Record extends Zend_View_Helper_Abstract
+class Record extends AbstractHelper
 {
+    protected $contextHelper;
     protected $driver;
 
     /**
@@ -57,7 +62,7 @@ class VuFind_Theme_Root_Helper_Record extends Zend_View_Helper_Abstract
         }
 
         // Set up the needed context in the view:
-        $oldContext = $this->view->context($this->view)->apply($context);
+        $oldContext = $this->contextHelper->apply($context);
 
         // Get the current record driver's class name, then start a loop
         // in case we need to use a parent class' name to find the appropriate
@@ -65,20 +70,21 @@ class VuFind_Theme_Root_Helper_Record extends Zend_View_Helper_Abstract
         $className = get_class($this->driver);
         while (true) {
             // Guess the template name for the current class:
-            $classParts = explode('_', $className);
+            $classParts = explode('\\', $className);
             $template = 'RecordDriver/' . array_pop($classParts) . '/' . $name;
             try {
                 // Try to render the template....
                 $html = $this->view->render($template);
-                $this->view->context($this->view)->restore($oldContext);
+                $this->contextHelper->restore($oldContext);
                 return $html;
-            } catch (Zend_View_Exception $e) {
+            } catch (ViewException $e) {
                 // If the template doesn't exist, let's see if we can inherit a
                 // template from a parent class:
                 $className = get_parent_class($className);
                 if (empty($className)) {
                     // No more parent classes left to try?  Throw an exception!
-                    throw new Zend_View_Exception(
+                    $exceptionClass = get_class($e);
+                    throw new $exceptionClass(
                         'Cannot find ' . $name . ' template for record driver: ' .
                         get_class($this->driver)
                     );
@@ -91,12 +97,17 @@ class VuFind_Theme_Root_Helper_Record extends Zend_View_Helper_Abstract
      * Store a record driver object and return this object so that the appropriate
      * template can be rendered.
      *
-     * @param VF_RecordDriver_Base $driver Record driver object.
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver object.
      *
      * @return VuFind_Theme_Root_Helper_Record
      */
-    public function record($driver)
+    public function __invoke($driver)
     {
+        // Set up context helper:
+        $contextHelper = $this->getView()->plugin('context');
+        $this->contextHelper = $contextHelper($this->getView());
+
+        // Set up driver context:
         $this->driver = $driver;
         return $this;
     }
@@ -135,8 +146,8 @@ class VuFind_Theme_Root_Helper_Record extends Zend_View_Helper_Abstract
      */
     public function getExportFormats()
     {
-        $config = VF_Config_Reader::getConfig();
-        $exportConfig = VF_Config_Reader::getConfig('export');
+        $config = ConfigReader::getConfig();
+        $exportConfig = ConfigReader::getConfig('export');
 
         // Get an array of enabled export formats (from config, or use defaults
         // if nothing in config array).
@@ -218,7 +229,7 @@ class VuFind_Theme_Root_Helper_Record extends Zend_View_Helper_Abstract
      */
     public function getPreviews()
     {
-        $config = VF_Config_Reader::getConfig();
+        $config = ConfigReader::getConfig();
         return $this->renderTemplate(
             'preview.phtml',
             array('driver' => $this->driver, 'config' => $config)
@@ -232,9 +243,11 @@ class VuFind_Theme_Root_Helper_Record extends Zend_View_Helper_Abstract
      */
     public function getController()
     {
+        /* TODO
         $router = Zend_Controller_Front::getInstance()->getRouter();
         $route = $router->getRoute($this->driver->getRecordRoute());
         return $this->view->escape($route->getDefault('controller'));
+         */
     }
 
     /**
@@ -291,7 +304,7 @@ class VuFind_Theme_Root_Helper_Record extends Zend_View_Helper_Abstract
             . $this->driver->getUniqueId();
         $context
             = array('id' => $id, 'count' => $checkboxCount++, 'prefix' => $idPrefix);
-        return $this->view->context($this->view)->renderInContext(
+        return $this->contextHelper->renderInContext(
             'record/checkbox.phtml', $context
         );
     }
