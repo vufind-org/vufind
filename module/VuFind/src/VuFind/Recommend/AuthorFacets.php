@@ -131,7 +131,7 @@ class AuthorFacets implements RecommendInterface
         // Initialize an AuthorFacets search object using parameters from the
         // current Solr search object.
         $request = new Request();
-        $request->setQuery(new Parameters(array('lookfor' => $lookfor));
+        $request->setQuery(new Parameters(array('lookfor' => $lookfor)));
         $params = new SolrAuthorFacetsParams($options);
         $params->initFromRequest($request);
 
