@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFind\Theme\Root\Helper;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * Truncate view helper
@@ -35,7 +37,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_Truncate extends Zend_View_Helper_Abstract
+class Truncate extends AbstractHelper
 {
     /**
      * Truncate a string
@@ -47,7 +49,7 @@ class VuFind_Theme_Root_Helper_Truncate extends Zend_View_Helper_Abstract
      *
      * @return string
      */
-    public function truncate($str, $len, $append = '...')
+    public function __invoke($str, $len, $append = '...')
     {
         if ($len == 0) {
             return '';

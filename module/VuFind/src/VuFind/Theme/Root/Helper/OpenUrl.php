@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFind\Theme\Root\Helper;
+use VuFind\Config\Reader as ConfigReader, Zend\View\Helper\AbstractHelper;
 
 /**
  * OpenURL view helper
@@ -35,7 +37,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_OpenUrl extends Zend_View_Helper_Abstract
+class OpenUrl extends AbstractHelper
 {
     /**
      * Render appropriate UI controls for an OpenURL link.
@@ -44,12 +46,12 @@ class VuFind_Theme_Root_Helper_OpenUrl extends Zend_View_Helper_Abstract
      *
      * @return string
      */
-    public function openUrl($openUrl)
+    public function __invoke($openUrl)
     {
         // Static counter to ensure that each OpenURL gets a unique ID.
         static $counter = 0;
 
-        $config = VF_Config_Reader::getConfig();
+        $config = ConfigReader::getConfig();
         if (isset($config->OpenURL) && isset($config->OpenURL->url)) {
             // Trim off any parameters (for legacy compatibility -- default config
             // used to include extraneous parameters):
@@ -80,7 +82,8 @@ class VuFind_Theme_Root_Helper_OpenUrl extends Zend_View_Helper_Abstract
         );
 
         // Render the subtemplate:
-        return $this->view->context($this->view)->renderInContext(
+        $contextHelper = $this->getView()->plugin('context');
+        return $contextHelper($this->getView())->renderInContext(
             'Helpers/openurl.phtml', $params
         );
     }
