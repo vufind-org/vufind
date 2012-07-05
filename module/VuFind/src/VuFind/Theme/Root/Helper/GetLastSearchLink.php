@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFind\Theme\Root\Helper;
+use VuFind\Search\Memory, Zend\View\Helper\AbstractHelper;
 
 /**
  * "Last search link" view helper
@@ -35,7 +37,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_GetLastSearchLink extends Zend_View_Helper_Abstract
+class GetLastSearchLink extends AbstractHelper
 {
     /**
      * If a previous search is recorded in the session, return a link to it;
@@ -47,12 +49,13 @@ class VuFind_Theme_Root_Helper_GetLastSearchLink extends Zend_View_Helper_Abstra
      *
      * @return string
      */
-    public function getLastSearchLink($link, $prefix = '', $suffix = '')
+    public function __invoke($link, $prefix = '', $suffix = '')
     {
-        $last = VF_Search_Memory::retrieve();
+        $last = Memory::retrieve();
         if (!empty($last)) {
-            return $prefix . '<a href="' . $this->view->escape($last) .
-                '">' . $link . '</a>' . $suffix;
+            $escaper = $this->getView()->plugin('escape');
+            return $prefix . '<a href="' . $escaper($last) . '">' . $link . '</a>'
+                . $suffix;
         }
         return '';
     }

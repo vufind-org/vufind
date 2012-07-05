@@ -26,6 +26,8 @@
  * @link     http://www.vufind.org   Main Site
  * @link     http://www.jquery.com   jQuery Project Page
  */
+namespace VuFind\Theme\Root\Helper;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * Print a formatted string so jquery metadata and validation plugins can understand.
@@ -37,7 +39,7 @@
  * @link     http://www.vufind.org   Main Site
  * @link     http://www.jquery.com   jQuery Project Page
  */
-class VuFind_Theme_Root_Helper_JqueryValidation extends Zend_View_Helper_Abstract
+class JqueryValidation extends AbstractHelper
 {
     /**
      * Print a formatted string so jquery metadata
@@ -47,7 +49,7 @@ class VuFind_Theme_Root_Helper_JqueryValidation extends Zend_View_Helper_Abstrac
      *
      * @return string
      */
-    public function jqueryValidation($params)
+    public function __invoke($params)
     {
         // jquery validation rules that this plugin currently supports
         $supported_rules = array('required', 'email', 'digits', 'equalTo',
@@ -76,11 +78,13 @@ class VuFind_Theme_Root_Helper_JqueryValidation extends Zend_View_Helper_Abstrac
             if (!$first) {
                 $output .= ',';
             }
-            $message = $this->view->translate($message);
+            $translator = $this->getView()->plugin('translate');
+            $message = $translator($message);
             $output .= "$rule:'$message'";
             $first = false;
         }
         $output .= '}}';
-        return $this->view->escape($output);
+        $escaper = $this->getView()->plugin('escape');
+        return $escaper($output);
     }
 }

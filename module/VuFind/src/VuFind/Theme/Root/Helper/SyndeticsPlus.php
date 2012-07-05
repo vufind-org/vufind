@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
+namespace VuFind\Theme\Root\Helper;
+use VuFind\Config\Reader as ConfigReader, Zend\View\Helper\AbstractHelper;
 
 /**
  * SyndeticsPlus view helper
@@ -35,7 +37,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class VuFind_Theme_Root_Helper_SyndeticsPlus extends Zend_View_Helper_Abstract
+class SyndeticsPlus extends AbstractHelper
 {
     protected $config;
 
@@ -44,9 +46,9 @@ class VuFind_Theme_Root_Helper_SyndeticsPlus extends Zend_View_Helper_Abstract
      *
      * @return VuFind_Theme_Root_Helper_SyndeticsPlus
      */
-    public function syndeticsPlus()
+    public function __invoke()
     {
-        $this->config = VF_Config_Reader::getConfig();
+        $this->config = ConfigReader::getConfig();
         return $this;
     }
 

@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFind\Theme\Root\Helper;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * "Results as feed" view helper
@@ -35,9 +37,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_ResultFeed extends Zend_View_Helper_Abstract
+class ResultFeed extends AbstractHelper
 {
-
     /**
      * Represent the current search results as a feed.
      *
@@ -45,8 +46,9 @@ class VuFind_Theme_Root_Helper_ResultFeed extends Zend_View_Helper_Abstract
      *
      * @return Zend_Feed_Writer_Feed
      */
-    public function resultFeed($results)
+    public function __invoke($results)
     {
+        /* TODO
         // Set up plugin loader so we can use custom feed extensions:
         $loader = Zend_Feed_Writer::getPluginLoader();
         $loader->addPrefixPath(
@@ -81,6 +83,7 @@ class VuFind_Theme_Root_Helper_ResultFeed extends Zend_View_Helper_Abstract
         }
 
         return $feed;
+         */
     }
 
     /**

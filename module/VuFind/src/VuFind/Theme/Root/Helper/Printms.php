@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFind\Theme\Root\Helper;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * Prints a human readable format from a number of milliseconds
@@ -35,7 +37,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_Printms
+class Printms extends AbstractHelper
 {
     /**
      * Prints a human readable format from a number of milliseconds
@@ -44,7 +46,7 @@ class VuFind_Theme_Root_Helper_Printms
      *
      * @return string   Human-readable representation
      */
-    public function printms($ms)
+    public function __invoke($ms)
     {
         $seconds = floor($ms/1000);
         $ms = ($ms % 1000);

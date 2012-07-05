@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFind\Theme\Root\Helper;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * Browse controller view helper
@@ -35,18 +37,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_Browse extends Zend_View_Helper_Abstract
+class Browse extends AbstractHelper
 {
-    /**
-     * Return this object so that other methods can be called.
-     *
-     * @return VuFind_Theme_Root_Helper_Browse
-     */
-    public function browse()
-    {
-        return $this;
-    }
-
     /**
      * Get the Solr field associated with a particular browse action.
      *

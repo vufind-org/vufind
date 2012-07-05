@@ -26,6 +26,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFind\Theme\Root\Helper;
+use VuFind\Date\Converter as DateConverter, Zend\View\Helper\AbstractHelper;
 
 /**
  * Date format display view helper
@@ -36,16 +38,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_DisplayDateFormat extends Zend_View_Helper_Abstract
+class DisplayDateFormat extends AbstractHelper
 {
     /**
      * Builds an alphabetical help string based on the default display date format.
      *
      * @return string
      */
-    public function displayDateFormat()
+    public function __invoke()
     {
-        $dateFormat = new VF_Date_Converter();
+        $dateFormat = new DateConverter();
         $dueDateHelpString
             = $dateFormat->convertToDisplayDate("m-d-y", "11-22-3333");
         $search = array("1", "2", "3");

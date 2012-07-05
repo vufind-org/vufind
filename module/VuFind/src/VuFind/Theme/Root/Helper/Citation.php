@@ -25,6 +25,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFind\Theme\Root\Helper;
+use VuFind\Date\Converter as DateConverter, VuFind\Exception\Date as DateException,
+    Zend\View\Helper\AbstractHelper;
 
 /**
  * Citation view helper
@@ -35,7 +38,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_Citation extends Zend_View_Helper_Abstract
+class Citation extends AbstractHelper
 {
     protected $details = array();
     protected $driver;
@@ -44,11 +47,11 @@ class VuFind_Theme_Root_Helper_Citation extends Zend_View_Helper_Abstract
      * Store a record driver object and return this object so that the appropriate
      * template can be rendered.
      *
-     * @param VF_RecordDriver_Base $driver Record driver object.
+     * @param \VuFind\RecordDriver\Base $driver Record driver object.
      *
      * @return VuFind_Theme_Root_Helper_Record
      */
-    public function citation($driver)
+    public function __invoke($driver)
     {
         // Build author list:
         $authors = array();
@@ -110,7 +113,7 @@ class VuFind_Theme_Root_Helper_Citation extends Zend_View_Helper_Abstract
         // If this data comes from a MARC record, we can probably assume that
         // anything without a comma is a valid corporate author that should be
         // left alone...
-        if (is_a($this->driver, 'VF_RecordDriver_SolrMarc')) {
+        if (is_a($this->driver, 'VuFind\\RecordDriver\\SolrMarc')) {
             return $authors;
         }
 
@@ -175,10 +178,11 @@ class VuFind_Theme_Root_Helper_Citation extends Zend_View_Helper_Abstract
             = (!$this->isPunctuated($apa['title']) && empty($apa['edition']));
 
         // Behave differently for books vs. journals:
+        $partial = $this->getView()->plugin('partial');
         if (empty($this->details['journal'])) {
             $apa['publisher'] = $this->getPublisher();
             $apa['year'] = $this->getYear();
-            return $this->view->partial('Citation/apa.phtml', $apa);
+            return $partial('Citation/apa.phtml', $apa);
         } else {
             list($apa['volume'], $apa['issue'], $apa['date'])
                 = $this->getAPANumbersAndDate();
@@ -187,7 +191,7 @@ class VuFind_Theme_Root_Helper_Citation extends Zend_View_Helper_Abstract
             if ($doi = $this->driver->tryMethod('getCleanDOI')) {
                 $apa['doi'] = $doi;
             }
-            return $this->view->partial('Citation/apa-article.phtml', $apa);
+            return $partial('Citation/apa-article.phtml', $apa);
         }
     }
 
@@ -208,17 +212,18 @@ class VuFind_Theme_Root_Helper_Citation extends Zend_View_Helper_Abstract
         $mla['periodAfterTitle'] = !$this->isPunctuated($mla['title']);
 
         // Behave differently for books vs. journals:
+        $partial = $this->getView()->plugin('partial');
         if (empty($this->details['journal'])) {
             $mla['publisher'] = $this->getPublisher();
             $mla['year'] = $this->getYear();
             $mla['edition'] = $this->getEdition();
-            return $this->view->partial('Citation/mla.phtml', $mla);
+            return $partial('Citation/mla.phtml', $mla);
         } else {
             // Add other journal-specific details:
             $mla['pageRange'] = $this->getPageRange();
             $mla['journal'] =  $this->capitalizeTitle($this->details['journal']);
             $mla['numberAndDate'] = $this->getMLANumberAndDate();
-            return $this->view->partial('Citation/mla-article.phtml', $mla);
+            return $partial('Citation/mla-article.phtml', $mla);
         }
     }
 
@@ -246,12 +251,12 @@ class VuFind_Theme_Root_Helper_Citation extends Zend_View_Helper_Abstract
         $num = $this->driver->tryMethod('getContainerIssue');
         $date = $this->details['pubDate'];
         if (strlen($date) > 4) {
-            $converter = new VF_Date_Converter();
+            $converter = new DateConverter();
             try {
                 $year = $converter->convertFromDisplayDate('Y', $date);
                 $month = $converter->convertFromDisplayDate('M', $date) . '.';
                 $day = $converter->convertFromDisplayDate('j', $date);
-            } catch (VF_Exception_Date $e) {
+            } catch (DateException $e) {
                 // If conversion fails, use raw date as year -- not ideal,
                 // but probably better than nothing:
                 $year = $date;
@@ -293,12 +298,12 @@ class VuFind_Theme_Root_Helper_Citation extends Zend_View_Helper_Abstract
         $num = $this->driver->tryMethod('getContainerIssue');
         $date = $this->details['pubDate'];
         if (strlen($date) > 4) {
-            $converter = new VF_Date_Converter();
+            $converter = new DateConverter();
             try {
                 $year = $converter->convertFromDisplayDate('Y', $date);
                 $month = $converter->convertFromDisplayDate('F', $date);
                 $day = $converter->convertFromDisplayDate('j', $date);
-            } catch (VF_Exception_Date $e) {
+            } catch (DateException $e) {
                 // If conversion fails, use raw date as year -- not ideal,
                 // but probably better than nothing:
                 $year = $date;
@@ -680,7 +685,7 @@ class VuFind_Theme_Root_Helper_Citation extends Zend_View_Helper_Abstract
     {
         if (isset($this->details['pubDate'])) {
             if (strlen($this->details['pubDate']) > 4) {
-                $converter = new VF_Date_Converter();
+                $converter = new DateConverter();
                 try {
                     return $converter->convertFromDisplayDate(
                         'Y', $this->details['pubDate']

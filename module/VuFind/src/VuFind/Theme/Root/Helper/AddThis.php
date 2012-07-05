@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
+namespace VuFind\Theme\Root\Helper;
+use VuFind\Config\Reader as ConfigReader, Zend\View\Helper\AbstractHelper;
 
 /**
  * AddThis view helper
@@ -35,16 +37,16 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class VuFind_Theme_Root_Helper_AddThis extends Zend_View_Helper_Abstract
+class AddThis extends AbstractHelper
 {
     /**
      * Returns AddThis API key (if AddThis is active) or false if not.
      *
      * @return string|bool
      */
-    public function addThis()
+    public function __invoke()
     {
-        $config = VF_Config_Reader::getConfig();
+        $config = ConfigReader::getConfig();
         return isset($config->AddThis->key) ? $config->AddThis->key : false;
     }
 }
