@@ -25,6 +25,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFind\Theme\Root\Helper;
+use VuFind\Account\Manager as AccountManager,
+    Zend\View\Exception\RuntimeException, Zend\View\Helper\AbstractHelper;
 
 /**
  * Authentication view helper
@@ -35,7 +38,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_Auth extends Zend_View_Helper_Abstract
+class Auth extends AbstractHelper
 {
     /**
      * Render a template within an auth module folder.
@@ -48,45 +51,36 @@ class VuFind_Theme_Root_Helper_Auth extends Zend_View_Helper_Abstract
     protected function renderTemplate($name, $context = array())
     {
         // Set up the needed context in the view:
-        $oldContext = $this->view->context($this->view)->apply($context);
+        $contextHelper = $this->getView()->plugin('context');
+        $oldContext = $contextHelper($this->getView())->apply($context);
 
         // Get the current auth module's class name, then start a loop
         // in case we need to use a parent class' name to find the appropriate
         // template.
-        $className = VF_Account_Manager::getInstance()->getAuthClass();
+        $className = AccountManager::getInstance()->getAuthClass();
         $topClassName = $className; // for error message
         while (true) {
             // Guess the template name for the current class:
-            $classParts = explode('_', $className);
+            $classParts = explode('\\', $className);
             $template = 'Auth/' . array_pop($classParts) . '/' . $name;
             try {
                 // Try to render the template....
-                $html = $this->view->render($template, $context);
-                $this->view->context($this->view)->restore($oldContext);
+                $html = $this->getView()->render($template, $context);
+                $contextHelper($this->getView())->restore($oldContext);
                 return $html;
-            } catch (Zend_View_Exception $e) {
+            } catch (RuntimeException $e) {
                 // If the template doesn't exist, let's see if we can inherit a
                 // template from a parent class:
                 $className = get_parent_class($className);
                 if (empty($className)) {
                     // No more parent classes left to try?  Throw an exception!
-                    throw new Zend_View_Exception(
+                    throw new RuntimeException(
                         'Cannot find ' . $name . ' template for auth module: ' .
                         get_class($topClassName)
                     );
                 }
             }
         }
-    }
-
-    /**
-     * Return this object so that the appropriate template can be rendered.
-     *
-     * @return VuFind_Theme_Root_Helper_Auth
-     */
-    public function auth()
-    {
-        return $this;
     }
 
     /**
