@@ -25,6 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFind\Theme\Root\Helper;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * List view helper
@@ -35,18 +37,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_UserList extends Zend_View_Helper_Abstract
+class UserList extends AbstractHelper
 {
-    /**
-     * Get access to the helper object so other methods can be called.
-     *
-     * @return VuFind_Theme_Root_Helper_List
-     */
-    public function userList()
-    {
-        return $this;
-    }
-
     /**
      * Retrieve the ID of the last list that was accessed, if any.
      *
@@ -54,6 +46,7 @@ class VuFind_Theme_Root_Helper_UserList extends Zend_View_Helper_Abstract
      */
     public function lastUsed()
     {
+        // TODO
         return VuFind_Model_Db_UserListRow::getLastUsed();
     }
 }

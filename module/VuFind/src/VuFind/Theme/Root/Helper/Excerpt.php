@@ -25,6 +25,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFind\Theme\Root\Helper;
+use VuFind\Config\Reader as ConfigReader, VuFind\Code\ISBN,
+    VuFind\Http\Client as HttpClient, Zend\View\Helper\AbstractHelper;
 
 /**
  * Excerpt view helper
@@ -35,7 +38,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_Excerpt extends Zend_View_Helper_Abstract
+class Excerpt extends AbstractHelper
 {
     protected $config;
     protected $isbn;
@@ -47,15 +50,15 @@ class VuFind_Theme_Root_Helper_Excerpt extends Zend_View_Helper_Abstract
      *
      * @return array
      */
-    public function excerpt($isbn)
+    public function __invoke($isbn)
     {
         // We can't proceed without an ISBN:
         if (empty($isbn)) {
             return array();
         }
 
-        $this->config = VF_Config_Reader::getConfig();
-        $this->isbn = new VF_Code_ISBN($isbn);
+        $this->config = ConfigReader::getConfig();
+        $this->isbn = new ISBN($isbn);
         $results = array();
 
         // Fetch from provider
@@ -137,10 +140,10 @@ class VuFind_Theme_Root_Helper_Excerpt extends Zend_View_Helper_Abstract
         $review = array();
 
         //find out if there are any excerpts
-        $client = new VF_Http_Client();
+        $client = new HttpClient();
         $client->setUri($url);
-        $result = $client->request('GET');
-        if ($result->isError()) {
+        $result = $client->setMethod('GET')->send();
+        if (!$result->isSuccess()) {
             return $review;
         }
 
@@ -158,8 +161,8 @@ class VuFind_Theme_Root_Helper_Excerpt extends Zend_View_Helper_Abstract
                        $sourceInfo['file'] . '&client=' . $id . '&type=rw12,hw7';
 
                 $client->setUri($url);
-                $result2 = $client->request('GET');
-                if ($result2->isError()) {
+                $result2 = $client->send();
+                if (!$result2->isSuccess()) {
                     continue;
                 }
 
