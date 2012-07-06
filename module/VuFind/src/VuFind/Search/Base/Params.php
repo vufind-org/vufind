@@ -325,7 +325,7 @@ class Params
 
         $groupCount = 0;
         // Loop through each search group
-        while (!is_null($lookfor = $request->query()->get('lookfor' . $groupCount))) {
+        while (!is_null($lookfor = $request->query()->get("lookfor{$groupCount}"))) {
             $group = array();
             // Loop through each term inside the group
             for ($i = 0; $i < count($lookfor); $i++) {

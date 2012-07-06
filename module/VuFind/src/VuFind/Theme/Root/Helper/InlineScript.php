@@ -38,11 +38,13 @@ namespace VuFind\Theme\Root\Helper;
  */
 class InlineScript extends HeadScript
 {
+    // @codingStandardsIgnoreStart
     /**
      * Registry key for placeholder
      * @var string
      */
     protected $_regKey = 'Zend_View_Helper_InlineScript';
+    // @codingStandardsIgnoreEnd
 
     /**
      * Return InlineScript object
