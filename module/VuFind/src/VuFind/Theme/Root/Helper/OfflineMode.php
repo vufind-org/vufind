@@ -26,7 +26,8 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Theme\Root\Helper;
-use VuFind\Search\Options, Zend\View\Helper\AbstractHelper;
+use VuFind\Connection\Manager as ConnectionManager,
+    VuFind\Search\Options, Zend\View\Helper\AbstractHelper;
 
 /**
  * "Offline mode" view helper
@@ -46,9 +47,6 @@ class OfflineMode extends AbstractHelper
      */
     public function __invoke()
     {
-        /* TODO:
-        return VF_Connection_Manager::connectToCatalog()->getOfflineMode();
-         */
-        return '';
+        return ConnectionManager::connectToCatalog()->getOfflineMode();
     }
 }
