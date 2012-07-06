@@ -17,9 +17,9 @@
             echo $this->translate('Location') . ': ' . trim($locations[0]) . "\n";
         }
         echo $this->driver->getBreadcrumb() . "\n";
-        echo $this->fullUrl($this->recordLink()->getUrl($this->driver)) . "\n";
+        echo $this->serverUrl($this->recordLink()->getUrl($this->driver)) . "\n";
     } else {
-        echo $this->fullUrl($this->recordLink()->getUrl($this->driver)) . "\n";
+        echo $this->serverUrl($this->recordLink()->getUrl($this->driver)) . "\n";
         echo $this->driver->getBreadcrumb() . "\n";
     }
 ?>

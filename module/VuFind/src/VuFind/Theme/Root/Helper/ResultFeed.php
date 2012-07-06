@@ -99,9 +99,9 @@ class ResultFeed extends AbstractHelper
         $entry = $feed->createEntry();
         $title = $record->tryMethod('getTitle');
         $entry->setTitle(empty($title) ? $record->getBreadcrumb() : $title);
-        $entry->setLink(
-            $this->view->fullUrl($this->view->recordLink()->getUrl($record))
-        );
+        $serverUrl = $this->getView()->plugin('serverurl');
+        $recordLink = $this->getView()->plugin('recordlink');
+        $entry->setLink($serverUrl($recordLink->getUrl($record)));
         $date = $this->getDateModified($record);
         if (!empty($date)) {
             $entry->setDateModified($date);
