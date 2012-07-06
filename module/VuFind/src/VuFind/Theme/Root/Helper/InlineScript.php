@@ -25,6 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
+namespace VuFind\Theme\Root\Helper;
 
 /**
  * Inline script view helper (extended for VuFind's theme system)
@@ -35,18 +36,13 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class VuFind_Theme_Root_Helper_InlineScript
-                                          extends VuFind_Theme_Root_Helper_HeadScript
+class InlineScript extends HeadScript
 {
     /**
      * Registry key for placeholder
-     *
      * @var string
      */
-     
-    // @codingStandardsIgnoreStart
-    protected $_regKey = 'VuFind_Theme_Root_Helper_InlineScript';
-    // @codingStandardsIgnoreEnd
+    protected $_regKey = 'Zend_View_Helper_InlineScript';
 
     /**
      * Return InlineScript object
@@ -60,14 +56,11 @@ class VuFind_Theme_Root_Helper_InlineScript
      * @param array  $attrs     Array of script attributes
      * @param string $type      Script type and/or array of script attributes
      *
-     * @return VuFind_Theme_Root_Helper_InlineScript
+     * @return \VuFind\Theme\Root\Helper\InlineScript
      */
-    public function inlineScript(
-        $mode = Zend_View_Helper_HeadScript::FILE,
-        $spec = null, $placement = 'APPEND',
-        array $attrs = array(),
-        $type = 'text/javascript'
+    public function __invoke($mode = HeadScript::FILE, $spec = null,
+        $placement = 'APPEND', array $attrs = array(), $type = 'text/javascript'
     ) {
-        return $this->headScript($mode, $spec, $placement, $attrs, $type);
+        return parent::__invoke($mode, $spec, $placement, $attrs, $type);
     }
 }

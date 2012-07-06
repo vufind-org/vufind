@@ -25,6 +25,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
+namespace VuFind\Theme\Root\Helper;
+use VuFind\Config\Reader as ConfigReader, VuFind\Code\ISBN,
+    VuFind\Http\Client as HttpClient, Zend\View\Helper\AbstractHelper;
 
 /**
  * Author Notes view helper
@@ -35,7 +38,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VuFind_Theme_Root_Helper_AuthorNotes extends Zend_View_Helper_Abstract
+class AuthorNotes extends AbstractHelper
 {
     protected $config;
     protected $isbn;
@@ -47,15 +50,15 @@ class VuFind_Theme_Root_Helper_AuthorNotes extends Zend_View_Helper_Abstract
      *
      * @return array
      */
-    public function authorNotes($isbn)
+    public function __invoke($isbn)
     {
         // We can't proceed without an ISBN:
         if (empty($isbn)) {
             return array();
         }
 
-        $this->config = VF_Config_Reader::getConfig();
-        $this->isbn = new VF_Code_ISBN($isbn);
+        $this->config = ConfigReader::getConfig();
+        $this->isbn = new ISBN($isbn);
         $results = array();
 
         // Fetch from provider
@@ -67,8 +70,8 @@ class VuFind_Theme_Root_Helper_AuthorNotes extends Zend_View_Helper_Abstract
                 $func = 'load' . ucwords($provider);
                 $key = $parts[1];
                 try {
-                    $results[$provider] = method_exists($this, $func) ?
-                        $this->$func($key) : false;
+                    $results[$provider] = method_exists($this, $func)
+                        ? $this->$func($key) : false;
                     // If the current provider had no valid notes, store nothing:
                     if (empty($results[$provider])) {
                         unset($results[$provider]);
@@ -136,10 +139,10 @@ class VuFind_Theme_Root_Helper_AuthorNotes extends Zend_View_Helper_Abstract
         $anotes = array();
 
         //find out if there are any notes
-        $client = new VF_Http_Client();
+        $client = new HttpClient();
         $client->setUri($url);
-        $result = $client->request('GET');
-        if ($result->isError()) {
+        $result = $client->setMethod('GET')->send();
+        if (!$result->isSuccess()) {
             return $anotes;
         }
 
@@ -157,8 +160,8 @@ class VuFind_Theme_Root_Helper_AuthorNotes extends Zend_View_Helper_Abstract
                        $sourceInfo['file'] . '&client=' . $id . '&type=rw12,hw7';
 
                 $client->setUri($url);
-                $result2 = $client->request('GET');
-                if ($result2->isError()) {
+                $result2 = $client->send();
+                if (!$result2->isSuccess()) {
                     continue;
                 }
 

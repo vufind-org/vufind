@@ -211,6 +211,7 @@ class Reviews extends AbstractHelper
      */
     protected function loadAmazoneditorial($id)
     {
+        /* TODO
         try {
             $amazon = new Zend_Service_Amazon(
                 $id, 'US', $this->config->Content->amazonsecret
@@ -244,6 +245,7 @@ class Reviews extends AbstractHelper
             }
             return $result;
         }
+         */
     }
 
     /**
