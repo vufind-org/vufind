@@ -95,14 +95,15 @@ class OpenLibrarySubjects implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Zend\Http\Request         $request Zend request object
+     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * request.
      *
      * @return void
      */
     public function init($params, $request)
     {
         // Get and normalise $requestParam
-        $this->subject =  $request->query()->get($this->requestParam);
+        $this->subject =  $request->get($this->requestParam);
 
         // Set up the published date range if it has not already been provided:
         if (empty($this->publishedIn) && $this->pubFilter) {
@@ -149,7 +150,8 @@ class OpenLibrarySubjects implements RecommendInterface
      * @param string                     $field   Name of filter field to check for
      * date limits
      * @param \VuFind\Search\Params\Base $params  Search parameter object
-     * @param \Zend\Http\Request         $request Zend request object
+     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * request.
      *
      * @return string
      * @access protected
@@ -157,8 +159,8 @@ class OpenLibrarySubjects implements RecommendInterface
     protected function getPublishedDates($field, $params, $request)
     {
         // Try to extract range details from request parameters or SearchObject:
-        $from = $request->query()->get($field . 'from');
-        $to = $request->query()->get($field . 'to');
+        $from = $request->get($field . 'from');
+        $to = $request->get($field . 'to');
         if (!is_null($from) && !is_null($to)) {
             $range = array('from' => $from, 'to' => $to);
         } else if (is_object($params)) {

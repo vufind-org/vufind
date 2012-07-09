@@ -72,7 +72,8 @@ class AuthorFacets implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Zend\Http\Request         $request Zend request object
+     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * request.
      *
      * @return void
      */
@@ -130,10 +131,8 @@ class AuthorFacets implements RecommendInterface
 
         // Initialize an AuthorFacets search object using parameters from the
         // current Solr search object.
-        $request = new Request();
-        $request->setQuery(new Parameters(array('lookfor' => $lookfor)));
         $params = new SolrAuthorFacetsParams($options);
-        $params->initFromRequest($request);
+        $params->initFromRequest(new Parameters(array('lookfor' => $lookfor)));
 
         // Send back the results:
         $results = new SolrAuthorFacetsResults($params);

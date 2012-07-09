@@ -102,7 +102,7 @@ class AbstractSearch extends AbstractBase
         $paramsClass = $this->getParamsClass();
         $params = new $paramsClass();
         $params->recommendationsEnabled(true);
-        $params->initFromRequest($this->getRequest());
+        $params->initFromRequest($this->getRequest()->query());
         // Attempt to perform the search; if there is a problem, inspect any Solr
         // exceptions to see if we should communicate to the user about them.
         try {

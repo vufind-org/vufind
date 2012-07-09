@@ -42,7 +42,8 @@ class Params extends SolrParams
     /**
      * Support method for _initSearch() -- handle basic settings.
      *
-     * @param Zend_Controller_Request_Abstract $request A Zend request object.
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
      *
      * @return boolean True if search settings were found, false if not.
      */
@@ -50,7 +51,7 @@ class Params extends SolrParams
     {
         // If no lookfor parameter was found, we have no search terms to
         // add to our array!
-        if (is_null($lookfor = $request->query()->get('author'))) {
+        if (is_null($lookfor = $request->get('author'))) {
             return false;
         }
 

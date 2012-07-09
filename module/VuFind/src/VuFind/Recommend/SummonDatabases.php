@@ -69,14 +69,15 @@ class SummonDatabases implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Zend\Http\Request         $request Zend request object
+     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * request.
      *
      * @return void
      */
     public function init($params, $request)
     {
         // Save search query in case we need it later:
-        $this->lookfor = $request->query()->get($this->requestParam);
+        $this->lookfor = $request->get($this->requestParam);
     }
 
     /**

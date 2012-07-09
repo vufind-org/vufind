@@ -144,14 +144,15 @@ class Params extends BaseParams
     /**
      * Initialize the object's search settings from a request object.
      *
-     * @param Zend_Controller_Request_Abstract $request A Zend request object.
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
      *
      * @return void
      */
     protected function initSearch($request)
     {
         // Special case -- did we get a list of IDs instead of a standard query?
-        $ids = $request->query()->get('overrideIds', null);
+        $ids = $request->get('overrideIds', null);
         if (is_array($ids) && !empty($ids)) {
             $this->setQueryIDs($ids);
         } else {
@@ -159,7 +160,7 @@ class Params extends BaseParams
             parent::initSearch($request);
 
             // Another special case -- are we doing a tag search?
-            $tag = $request->query()->get('tag', '');
+            $tag = $request->get('tag', '');
             if (!empty($tag)) {
                 $this->setBasicSearch($tag, 'tag');
             }
@@ -344,7 +345,8 @@ class Params extends BaseParams
     /**
      * Add filters to the object based on values found in the request object.
      *
-     * @param Zend_Controller_Request_Abstract $request A Zend request object.
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
      *
      * @return void
      */
@@ -353,7 +355,7 @@ class Params extends BaseParams
         // Use the default behavior of the parent class, but add support for the
         // special illustrations filter.
         parent::initFilters($request);
-        switch ($request->query()->get('illustration', -1)) {
+        switch ($request->get('illustration', -1)) {
         case 1:
             $this->addFilter('illustrated:Illustrated');
             break;
@@ -363,7 +365,7 @@ class Params extends BaseParams
         }
 
         // Check for hidden filters:
-        $hidden = $request->query()->get('hiddenFilters');
+        $hidden = $request->get('hiddenFilters');
         if (!empty($hidden) && is_array($hidden)) {
             foreach ($hidden as $current) {
                 $this->addHiddenFilter($current);

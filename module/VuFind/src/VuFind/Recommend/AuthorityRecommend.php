@@ -82,14 +82,15 @@ class AuthorityRecommend implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Zend\Http\Request         $request Zend request object
+     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * request.
      *
      * @return void
      */
     public function init($params, $request)
     {
         // Save user search query:
-        $this->lookfor = $request->query()->get('lookfor');
+        $this->lookfor = $request->get('lookfor');
     }
 
     /**
@@ -115,7 +116,7 @@ class AuthorityRecommend implements RecommendInterface
         // core, i.e. it only returns results where $lookfor IS found in in the
         // "Heading" search and IS NOT found in the "MainHeading" search defined
         // in authsearchspecs.yaml.
-        $query = new Parameters(
+        $request = new Parameters(
             array(
                 'join' => 'AND',
                 'bool0' => array('AND'),
@@ -126,8 +127,6 @@ class AuthorityRecommend implements RecommendInterface
                 'type1' => array('MainHeading')
             )
         );
-        $request = new Request();
-        $request->setQuery($query);
 
         // Initialise and process search:
         $authParams = new SolrAuthParams();

@@ -44,13 +44,14 @@ class Params extends BaseParams
     /**
      * Initialize the object's search settings from a request object.
      *
-     * @param Zend_Controller_Request_Abstract $request A Zend request object.
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
      *
      * @return void
      */
     protected function initSearch($request)
     {
-        $this->recordsToRequest = $request->query()->get('id', array());
+        $this->recordsToRequest = $request->get('id', array());
 
         // We always want to display the entire list as one page:
         $this->setLimit(count($this->recordsToRequest));

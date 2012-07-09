@@ -69,7 +69,8 @@ abstract class SearchObject implements RecommendInterface
      * be needed.
      *
      * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Zend\Http\Request         $request Zend request object
+     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
+     * request.
      *
      * @return void
      */
@@ -80,7 +81,7 @@ abstract class SearchObject implements RecommendInterface
         $paramsClass = 'VuFind\\Search\\' . $id . '\\Params';
         $params = new $paramsClass();
         $params->setLimit($this->limit);
-        $params->setBasicSearch($request->query()->get($this->requestParam));
+        $params->setBasicSearch($request->get($this->requestParam));
 
         // Perform the search:
         $resultsClass = 'VuFind\\Search\\' . $id . '\\Results';

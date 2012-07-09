@@ -66,14 +66,15 @@ class Params extends BaseParams
     /**
      * Add filters to the object based on values found in the request object.
      *
-     * @param Zend_Controller_Request_Abstract $request A Zend request object.
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
      *
      * @return void
      */
     protected function initFilters($request)
     {
         // Special filter -- if the "id" parameter is set, limit to a specific list:
-        $id = $request->query()->get('id');
+        $id = $request->get('id');
         if (!empty($id)) {
             $this->addFilter("lists:{$id}");
         }

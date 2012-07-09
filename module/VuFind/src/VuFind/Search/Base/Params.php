@@ -27,7 +27,7 @@
  */
 namespace VuFind\Search\Base;
 use VuFind\Config\Reader as ConfigReader, VuFind\Search\Options as SearchOptions,
-    VuFind\Translator;
+    VuFind\Translator\Translator;
 
 /**
  * Abstract parameters search model.
@@ -125,7 +125,8 @@ class Params
     /**
      * Pull the search parameters
      *
-     * @param Zend_Controller_Request_Abstract $request the search object
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
      *
      * @return string
      */
@@ -157,14 +158,15 @@ class Params
     /**
      * Pull shard parameters from the request or set defaults
      *
-     * @param Zend_Controller_Request_Abstract $request the search object
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
      *
      * @return void
      */
     protected function initShards($request)
     {
         $legalShards = array_keys($this->options->getShards());
-        $requestShards = $request->query()->get('shard', array());
+        $requestShards = $request->get('shard', array());
         if (!is_array($requestShards)) {
             $requestShards = array($requestShards);
         }
@@ -187,7 +189,8 @@ class Params
     /**
      * Pull the page size parameter or set to default
      *
-     * @param Zend_Controller_Request_Abstract $request the search object
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
      *
      * @return void
      */
@@ -195,7 +198,7 @@ class Params
     {
         // Check for a limit parameter in the url.
         $defaultLimit = $this->options->getDefaultLimit();
-        if (($limit = $request->query()->get('limit')) != $defaultLimit) {
+        if (($limit = $request->get('limit')) != $defaultLimit) {
             // make sure the url parameter is a valid limit
             if (in_array($limit, $this->options->getLimitOptions())) {
                 $this->limit = $limit;
@@ -215,13 +218,14 @@ class Params
     /**
      * Pull the page parameter
      *
-     * @param Zend_Controller_Request_Abstract $request the search object
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
      *
      * @return void
      */
     protected function initPage($request)
     {
-        $this->page = intval($request->query()->get('page'));
+        $this->page = intval($request->get('page'));
         if ($this->page < 1) {
             $this->page = 1;
         }
@@ -230,7 +234,8 @@ class Params
     /**
      * Initialize the object's search settings from a request object.
      *
-     * @param Zend_Controller_Request_Abstract $request A Zend request object.
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
      *
      * @return void
      */
@@ -252,7 +257,8 @@ class Params
     /**
      * Support method for initSearch() -- handle basic settings.
      *
-     * @param Zend_Controller_Request_Abstract $request A Zend request object.
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
      *
      * @return boolean True if search settings were found, false if not.
      */
@@ -260,7 +266,7 @@ class Params
     {
         // If no lookfor parameter was found, we have no search terms to
         // add to our array!
-        if (is_null($lookfor = $request->query()->get('lookfor'))) {
+        if (is_null($lookfor = $request->get('lookfor'))) {
             return false;
         }
 
@@ -276,7 +282,7 @@ class Params
         }
 
         // Flatten type arrays for backward compatibility:
-        $handler = $request->query()->get('type');
+        $handler = $request->get('type');
         if (is_array($handler)) {
             $handler = $handler[0];
         }
@@ -315,7 +321,8 @@ class Params
      * searches have numeric subscripts on the lookfor and type parameters --
      * this is how they are distinguished from basic searches.
      *
-     * @param Zend_Controller_Request_Abstract $request A Zend request object.
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
      *
      * @return void
      */
@@ -325,14 +332,14 @@ class Params
 
         $groupCount = 0;
         // Loop through each search group
-        while (!is_null($lookfor = $request->query()->get("lookfor{$groupCount}"))) {
+        while (!is_null($lookfor = $request->get("lookfor{$groupCount}"))) {
             $group = array();
             // Loop through each term inside the group
             for ($i = 0; $i < count($lookfor); $i++) {
                 // Ignore advanced search fields with no lookup
                 if ($lookfor[$i] != '') {
                     // Use default fields if not set
-                    $typeArr = $request->query()->get('type' . $groupCount);
+                    $typeArr = $request->get('type' . $groupCount);
                     if (isset($typeArr[$i]) && !empty($typeArr[$i])) {
                         $handler = $typeArr[$i];
                     } else {
@@ -340,7 +347,7 @@ class Params
                     }
 
                     // Add term to this group
-                    $boolArr = $request->query()->get('bool' . $groupCount);
+                    $boolArr = $request->get('bool' . $groupCount);
                     $group[] = array(
                         'field'   => $handler,
                         'lookfor' => $lookfor[$i],
@@ -354,7 +361,7 @@ class Params
                 // Add the completed group to the list
                 $this->searchTerms[] = array(
                     'group' => $group,
-                    'join'  => $request->query()->get('join')
+                    'join'  => $request->get('join')
                 );
             }
 
@@ -366,30 +373,32 @@ class Params
     /**
      * Get the value for which type of sorting to use
      *
-     * @param Zend_Controller_Request_Abstract $request A Zend request object.
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
      *
      * @return string
      */
     protected function initSort($request)
     {
         // Check for special parameter only relevant in RSS mode:
-        if ($request->query()->get('skip_rss_sort', 'unset') != 'unset') {
+        if ($request->get('skip_rss_sort', 'unset') != 'unset') {
             $this->skipRssSort = true;
         }
-        $this->setSort($request->query()->get('sort'));
+        $this->setSort($request->get('sort'));
     }
 
     /**
      * Get the value for which results view to use
      *
-     * @param Zend_Controller_Request_Abstract $request A Zend request object.
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
      *
      * @return string
      */
     protected function initView($request)
     {
         // Check for a view parameter in the url.
-        $view = $request->query()->get('view');
+        $view = $request->get('view');
         $lastView = $this->getLastView();
         if (!empty($view)) {
             if ($view == 'rss') {
@@ -748,7 +757,8 @@ class Params
     /**
      * Initialize the recommendations modules.
      *
-     * @param Zend_Controller_Request_Abstract $request Zend request object
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
      *
      * @return void
      */
@@ -783,7 +793,7 @@ class Params
                 $params = implode(':', $current);
 
                 // Build a recommendation module with the provided settings.
-                if (@class_exists($class)) {
+                if (class_exists($class)) {
                     $obj = new $class($params);
                     $obj->init($this, $request);
                     $this->recommend[$location][] = $obj;
@@ -1117,22 +1127,23 @@ class Params
      * out as a separate method so that it can be more easily overridden by child
      * classes.
      *
-     * @param Zend_Controller_Request_Abstract $request A Zend request object.
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
      *
      * @return void
      */
     protected function initDateFilters($request)
     {
-        $daterange = $request->query()->get('daterange');
+        $daterange = $request->get('daterange');
         if (!empty($daterange)) {
             $ranges = is_array($daterange) ? $daterange : array($daterange);
             foreach ($ranges as $range) {
                 // Validate start and end of range:
                 $yearFrom = $this->formatYearForDateRange(
-                    $request->query()->get($range . 'from')
+                    $request->get($range . 'from')
                 );
                 $yearTo = $this->formatYearForDateRange(
-                    $request->query()->get($range . 'to')
+                    $request->get($range . 'to')
                 );
 
                 // Build filter only if necessary:
@@ -1148,14 +1159,15 @@ class Params
     /**
      * Add filters to the object based on values found in the request object.
      *
-     * @param Zend_Controller_Request_Abstract $request A Zend request object.
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
      *
      * @return void
      */
     protected function initFilters($request)
     {
         // Handle standard filters:
-        $filter = $request->query()->get('filter');
+        $filter = $request->get('filter');
         if (!empty($filter)) {
             if (is_array($filter)) {
                 foreach ($filter as $current) {
