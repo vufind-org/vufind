@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Theme\Root\Helper;
-use Zend\View\Helper\AbstractHelper;
+use Zend\I18n\View\Helper\Translate as Base;
 
 /**
  * Translate view helper
@@ -37,10 +37,8 @@ use Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class Translate extends AbstractHelper
+class Translate extends Base
 {
-    protected $translator;
-
     /**
      * Translate a string
      *
@@ -53,9 +51,7 @@ class Translate extends AbstractHelper
      */
     public function __invoke($str, $tokens = array(), $default = null)
     {
-        /* TODO
-        $translator = $this->getView()->plugin('translator');
-        $msg = $translator($str);
+        $msg = parent::__invoke($str);
 
         // Did the translation fail to change anything?  If so, use default:
         if (!is_null($default) && $msg == $str) {
@@ -73,7 +69,5 @@ class Translate extends AbstractHelper
         }
 
         return $msg;
-         */
-        return $str;
     }
 }

@@ -26,7 +26,8 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Theme\Root\Helper;
-use VuFind\Translator\Factory as TranslatorFactory, Zend\View\Helper\AbstractHelper;
+use VuFind\Cache\Manager as CacheManager,
+    VuFind\Translator\Translator, Zend\View\Helper\AbstractHelper;
 
 /**
  * DisplayLanguageOption view helper
@@ -46,7 +47,13 @@ class DisplayLanguageOption extends AbstractHelper
      */
     public function __construct()
     {
-        $this->translator = TranslatorFactory::getTranslator('native');
+        $this->translator = clone(Translator::getTranslator());
+        $this->translator->addTranslationFile(
+            'ExtendedIni',
+            APPLICATION_PATH  . '/languages/native.ini',
+            'default', 'native'
+        );
+        $this->translator->setLocale('native');
     }
 
     /**

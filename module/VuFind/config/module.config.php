@@ -27,6 +27,7 @@ $config = array(
             'search' => 'VuFind\Controller\SearchController'
         ),
     ),
+    'translator' => array(),
     'view_manager' => array(
         'display_not_found_reason' => APPLICATION_ENV == 'development',
         'display_exceptions'       => APPLICATION_ENV == 'development',

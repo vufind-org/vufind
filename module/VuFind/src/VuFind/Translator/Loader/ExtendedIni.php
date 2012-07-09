@@ -25,8 +25,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-namespace VuFind\Translator\Adapter;
-use Zend\Translator\Adapter\AbstractAdapter;
+namespace VuFind\Translator\Loader;
+use Zend\I18n\Translator\Loader\Exception\InvalidArgumentException,
+    Zend\I18n\Translator\Loader\LoaderInterface,
+    Zend\I18n\Translator\TextDomain;
 
 /**
  * Handles the language loading and language file parsing
@@ -37,50 +39,48 @@ use Zend\Translator\Adapter\AbstractAdapter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class ExtendedIni extends AbstractAdapter
+class ExtendedIni implements LoaderInterface
 {
-    protected $data = array();
+    protected $data;
 
-    // @codingStandardsIgnoreStart
     /**
-     * Load translation data
+     * load(): defined by LoaderInterface.
      *
-     * @param string|array $data    Data file to parse
-     * @param string       $locale  Locale/Language to add data for, identical
-     * with locale identifier, see Zend_Locale for more information
-     * @param array        $options OPTIONAL Options to use
+     * @param  string $filename
+     * @param  string $locale
      *
-     * @throws Zend_Translate_Exception Ini file not found
-     * @return array
+     * @return TextDomain
+     * @throws InvalidArgumentException
      */
-    protected function _loadTranslationData($data, $locale, array $options = array())
+    public function load($filename, $locale)
     {
-        $this->data = array();
-        if (!file_exists($data)) {
-            throw new Zend_Translate_Exception("Ini file '".$data."' not found");
+        $this->data = new TextDomain();
+        if (!file_exists($filename)) {
+            throw new InvalidArgumentException("Ini file '".$data."' not found");
         }
 
-        $inidata = $this->parseLanguageFile($data);
-        if (!isset($this->data[$locale])) {
-            $this->data[$locale] = array();
+        // Load base data:
+        $this->loadLanguageFile($filename);
+
+        // Load local overrides, if available:
+        $localFile = LOCAL_OVERRIDE_DIR . '/languages/' . basename($filename);
+        if (file_exists($localFile)) {
+            $this->loadLanguageFile($localFile);
         }
 
-        $this->data[$locale] = array_merge($this->data[$locale], $inidata);
         return $this->data;
     }
-    // @codingStandardsIgnoreEnd
 
     /**
      * Parse a language file.
      *
      * @param string $file Filename to load
      *
-     * @return array
+     * @return void
      */
-    protected function parseLanguageFile($file)
+    protected function loadLanguageFile($file)
     {
         // Manually parse the language file:
-        $words = array();
         $contents = file($file);
         if (is_array($contents)) {
             foreach ($contents as $current) {
@@ -96,22 +96,10 @@ class ExtendedIni extends AbstractAdapter
 
                         // Store the key/value pair (allow empty values -- sometimes
                         // we want to replace a language token with a blank string):
-                        $words[$key] = $value;
+                        $this->data[$key] = $value;
                     }
                 }
             }
         }
-        
-        return $words;
-    }
-
-    /**
-     * returns the adapter's name
-     *
-     * @return string
-     */
-    public function toString()
-    {
-        return "ExtendedIni";
     }
 }

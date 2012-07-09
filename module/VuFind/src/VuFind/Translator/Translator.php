@@ -26,10 +26,13 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Translator;
-use VuFind\Theme\Root\Helper\Translate as TranslatorHelper;
+use VuFind\Translator\Loader\ExtendedIni as ExtendedIniLoader,
+    Zend\I18n\Translator\TranslatorServiceFactory;
 
 /**
- * Wrapper class to handle text translation
+ * Wrapper class to handle text translation.
+ *
+ * TODO -- eliminate this (using DI?)
  *
  * @category VuFind2
  * @package  Support_Classes
@@ -39,6 +42,63 @@ use VuFind\Theme\Root\Helper\Translate as TranslatorHelper;
  */
 class Translator
 {
+    protected static $translator = null;
+
+    /**
+     * Set the translator object.
+     *
+     * @param \Zend\I18n\Translator\Translator $translator Translator object.
+     *
+     * @return void
+     */
+    public static function setTranslator($translator)
+    {
+        static::$translator = $translator;
+    }
+
+    /**
+     * Retrieve the translator object.
+     *
+     * @return \Zend\I18n\Translator\Translator
+     */
+    public static function getTranslator()
+    {
+        return static::$translator;
+    }
+
+    /**
+     * Initialize the translator.
+     *
+     * @param \Zend\Mvc\MvcEvent $event    Zend MVC Event object
+     * @param string             $language Selected language.
+     *
+     * @return void
+     */
+    public static function init($event, $language)
+    {
+        // Set up the actual translator object:
+        $factory = new TranslatorServiceFactory();
+        $serviceManager = $event->getApplication()->getServiceManager();
+        $translator = $factory->createService($serviceManager);
+        $translator->addTranslationFile(
+            'ExtendedIni',
+            APPLICATION_PATH  . '/languages/' . $language . '.ini',
+            'default', $language
+        );
+        $translator->setLocale($language);
+
+        // Set up the ExtendedIni plugin:
+        $pluginManager = $translator->getPluginManager();
+        $pluginManager->setService('extendedini', new ExtendedIniLoader());
+
+        // Set up language caching for better performance (TODO):
+        //$translator
+        //    ->setCache(CacheManager::getInstance()->getCache('language'));
+
+        // Store the translator object in the VuFind Translator wrapper:
+        self::setTranslator($translator);
+    }
+
     /**
      * Translate a string using the Translate view helper.
      *
@@ -48,10 +108,6 @@ class Translator
      */
     public static function translate($str)
     {
-        static $translator = false;
-        if (!$translator) {
-            $translator = new TranslatorHelper();
-        }
-        return $translator->__invoke($str);
+        return static::$translator->translate($str);
     }
 }

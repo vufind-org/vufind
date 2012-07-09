@@ -30,7 +30,7 @@ use VuFind\Account\Manager as AccountManager,
     VuFind\Cache\Manager as CacheManager,
     VuFind\Config\Reader as ConfigReader,
     VuFind\Registry, VuFind\Theme\Initializer as ThemeInitializer,
-    VuFind\Translator\Factory as TranslatorFactory,
+    VuFind\Translator\Translator,
     Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch,
     Zend\Session\SessionManager;
 /**
@@ -178,7 +178,6 @@ class Bootstrap
      */
     protected function initLanguage()
     {
-        /* TODO
         $config =& $this->config;
         $callback = function($event) use ($config) {
             // Setup Translator
@@ -201,12 +200,7 @@ class Bootstrap
                 $language = $config->Site->language;
             }
 
-            // Set up language caching for better performance:
-            Translator::setCache(CacheManager::getInstance()->getCache('language'));
-
-            // Set up the actual translator object:
-            $translator = TranslatorFactory::getTranslator($language);
-            Registry::getInstance()->set('Zend_Translator', $translator);
+            Translator::init($event, $language);
 
             // Send key values to view:
             $viewModel = $event->getApplication()->getServiceManager()
@@ -215,7 +209,6 @@ class Bootstrap
             $viewModel->setVariable('allLangs', $config->Languages);
         };
         $this->events->attach('dispatch', $callback);
-         */
     }
 
     /**
