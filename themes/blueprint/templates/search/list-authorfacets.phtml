@@ -5,8 +5,8 @@
     </tr>
     <? $i = 0; foreach ($this->results->getResults() as $record): ?>
     <tr<?=(++$i % 2 == 0) ? ' class="alt"' : ''?>>
-      <td><a href="<?=$this->url('author-home')?>?author=<?=urlencode($record['value'])?>"><?=$this->escape($record['value'])?></a></td>
-      <td><?=$this->escape($record['count'])?></td>
+      <td><a href="<?=$this->url('author-home')?>?author=<?=urlencode($record['value'])?>"><?=$this->escapeHtml($record['value'])?></a></td>
+      <td><?=$this->escapeHtml($record['count'])?></td>
     </tr>
     <? endforeach; ?>
   </tbody>

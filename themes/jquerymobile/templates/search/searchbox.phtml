@@ -17,12 +17,12 @@
   <label class="offscreen" for="searchForm_lookfor">
     <?=$this->transEsc("Search")?>
   </label>
-  <input type="search" placeholder="<?=$this->transEsc("Search")?>" name="lookfor" id="searchForm_lookfor" value="<?=$this->escape($this->lookfor)?>"/>
+  <input type="search" placeholder="<?=$this->transEsc("Search")?>" name="lookfor" id="searchForm_lookfor" value="<?=$this->escapeHtml($this->lookfor)?>"/>
   
   <label class="offscreen" for="searchForm_type"><?=$this->transEsc("Search Type")?></label>
   <select id="searchForm_type" name="type" data-native-menu="false">
     <? foreach ($options->getBasicHandlers() as $searchVal => $searchDesc): ?>
-      <option value="<?=$this->escape($searchVal)?>"<?=$this->searchIndex == $searchVal ? ' selected="selected"' : ''?>><?=$this->transEsc($searchDesc)?></option>
+      <option value="<?=$this->escapeHtml($searchVal)?>"<?=$this->searchIndex == $searchVal ? ' selected="selected"' : ''?>><?=$this->transEsc($searchDesc)?></option>
     <? endforeach; ?>
   </select>
   <div data-role="fieldcontain">
@@ -31,10 +31,10 @@
   <?
     /* Load hidden limit preference from Session */
     if (!empty($lastLimit)) {
-      echo '<input type="hidden" name="limit" value="' . $this->escape($lastLimit) . '" />';
+      echo '<input type="hidden" name="limit" value="' . $this->escapeHtml($lastLimit) . '" />';
     }
     if (!empty($lastSort)) {
-      echo '<input type="hidden" name="sort" value="' . $this->escape($lastSort) . '" />';
+      echo '<input type="hidden" name="sort" value="' . $this->escapeHtml($lastSort) . '" />';
     }
   ?>
 </form>

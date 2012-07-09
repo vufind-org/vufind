@@ -2,8 +2,8 @@
   <h3><?=$this->transEsc('Limit To')?></h3>
   <? foreach ($this->facetList as $field => $list): ?>
   <div class="<?=($field=='callnumber-first')?'span-7':'span-4'?>">
-    <label class="displayBlock" for="limit_<?=$this->escape(str_replace(' ', '', $field))?>"><?=$this->transEsc($list['label'])?>:</label>
-    <select id="limit_<?=$this->escape(str_replace(' ', '', $field))?>" name="filter[]" multiple="multiple" size="10">
+    <label class="displayBlock" for="limit_<?=$this->escapeHtml(str_replace(' ', '', $field))?>"><?=$this->transEsc($list['label'])?>:</label>
+    <select id="limit_<?=$this->escapeHtml(str_replace(' ', '', $field))?>" name="filter[]" multiple="multiple" size="10">
       <?
           // Sort the current facet list alphabetically; we'll use this data
           // along with the foreach below to display facet options in the
@@ -16,7 +16,7 @@
       ?>
       <? foreach ($sorted as $i => $display): ?>
         <? $value = $list['list'][$i]; ?>
-        <option value="<?=$this->escape($field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected'])?' selected="selected"':''?>><?=$this->escape($display)?></option>
+        <option value="<?=$this->escapeHtml($field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected'])?' selected="selected"':''?>><?=$this->escapeHtml($display)?></option>
       <? endforeach; ?>
     </select>
   </div>
@@ -27,8 +27,8 @@
   <fieldset class="span-4">
     <legend><?=$this->transEsc("Illustrated")?>:</legend>
     <? foreach ($this->illustratedLimit as $current): ?>
-      <input id="illustrated_<?=$this->escape($current['value'])?>" type="radio" name="illustration" value="<?=$this->escape($current['value'])?>"<?=$current['selected']?' checked="checked"':''?>/>
-      <label for="illustrated_<?=$this->escape($current['value'])?>"><?=$this->transEsc($current['text'])?></label><br/>
+      <input id="illustrated_<?=$this->escapeHtml($current['value'])?>" type="radio" name="illustration" value="<?=$this->escapeHtml($current['value'])?>"<?=$current['selected']?' checked="checked"':''?>/>
+      <label for="illustrated_<?=$this->escapeHtml($current['value'])?>"><?=$this->transEsc($current['text'])?></label><br/>
     <? endforeach; ?>
   </fieldset>
 <? endif; ?>
@@ -39,9 +39,9 @@
   <fieldset class="publishDateLimit span-5" id="publishDate">
     <legend><?=$this->transEsc('adv_search_year')?></legend>
     <label for="publishDatefrom"><?=$this->transEsc('date_from')?>:</label>
-    <input type="text" size="4" maxlength="4" class="yearbox" name="publishDatefrom" id="publishDatefrom" value="<?=$this->escape($this->dateRangeLimit[0])?>" />
+    <input type="text" size="4" maxlength="4" class="yearbox" name="publishDatefrom" id="publishDatefrom" value="<?=$this->escapeHtml($this->dateRangeLimit[0])?>" />
     <label for="publishDateto"><?=$this->transEsc('date_to')?>:</label>
-    <input type="text" size="4" maxlength="4" class="yearbox" name="publishDateto" id="publishDateto" value="<?=$this->escape($this->dateRangeLimit[1])?>" />
+    <input type="text" size="4" maxlength="4" class="yearbox" name="publishDateto" id="publishDateto" value="<?=$this->escapeHtml($this->dateRangeLimit[1])?>" />
     <div id="publishDateSlider" class="dateSlider"></div>
   </fieldset>
 <? endif; ?>

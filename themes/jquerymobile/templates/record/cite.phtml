@@ -11,7 +11,7 @@
 ?>
 <div data-role="page" id="Record-view">
   <?=$this->mobileMenu()->header()?>
-  <div class="record" data-role="content" data-record-id="<?=$this->escape($this->driver->getUniqueId())?>">
+  <div class="record" data-role="content" data-record-id="<?=$this->escapeHtml($this->driver->getUniqueId())?>">
     <? if (count($citations) == 0): ?>
       <?=$this->transEsc('No citations are available for this record')?>
     <? else: ?>

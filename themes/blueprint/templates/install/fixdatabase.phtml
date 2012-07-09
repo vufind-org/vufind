@@ -14,12 +14,12 @@
 <form method="POST">
   <table>
     <tbody>
-      <tr><td>New database name: </td><td><input type="text" name="dbname" value="<?=$this->escape($this->dbname)?>"/></td></tr>
-      <tr><td>New database user: </td><td><input type="text" name="dbuser" value="<?=$this->escape($this->dbuser)?>"/></td></tr>
+      <tr><td>New database name: </td><td><input type="text" name="dbname" value="<?=$this->escapeHtml($this->dbname)?>"/></td></tr>
+      <tr><td>New database user: </td><td><input type="text" name="dbuser" value="<?=$this->escapeHtml($this->dbuser)?>"/></td></tr>
       <tr><td>New user password: </td><td><input type="password" name="dbpass" value=""/></td></tr>
       <tr><td>Confirm new user password: </td><td><input type="password" name="dbpassconfirm" value=""/></td></tr>
-      <tr><td>MySQL Host: </td><td><input type="text" name="dbhost" value="<?=$this->escape($this->dbhost)?>"/></td></tr>
-      <tr><td>MySQL Root User: </td><td><input type="text" name="dbrootuser" value="<?=$this->escape($this->dbrootuser)?>"/></td></tr>
+      <tr><td>MySQL Host: </td><td><input type="text" name="dbhost" value="<?=$this->escapeHtml($this->dbhost)?>"/></td></tr>
+      <tr><td>MySQL Root User: </td><td><input type="text" name="dbrootuser" value="<?=$this->escapeHtml($this->dbrootuser)?>"/></td></tr>
       <tr><td>MySQL Root Password: </td><td><input type="password" name="dbrootpass" value=""/></td></tr>
       <tr><td></td><td><input type="submit" name="submit" value="<?=$this->transEsc('Submit') ?>" /></td></tr>
     </tbody>

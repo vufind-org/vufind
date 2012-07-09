@@ -2,10 +2,10 @@
 <? $suggestions = $this->serverUrl($this->url('search-suggest')); ?>
 <?='<'?>?xml version="1.0"?<?='>'?>
 <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
-  <ShortName><?=$this->escape($this->site->title)?></ShortName>
+  <ShortName><?=$this->escapeHtml($this->site->title)?></ShortName>
   <Description><?=$this->transEsc('Library Catalog Search')?></Description>
   <Image height="16" width="16" type="image/png"><?=$this->serverUrl($this->imageLink('vufind-favicon.png'))?></Image>
-  <Contact><?=$this->escape($this->site->email)?></Contact>
+  <Contact><?=$this->escapeHtml($this->site->email)?></Contact>
   <Url type="text/html" method="get" template="<?=$searchBase?>?lookfor={searchTerms}&amp;page={startPage?}"/>
   <Url type="application/rss+xml" method="get" template="<?=$searchBase?>?lookfor={searchTerms}&amp;view=rss"/>
   <Url type="application/x-suggestions+json" method="get" template="<?=$suggestions?>?lookfor={searchTerms}&amp;format=JSON"/>

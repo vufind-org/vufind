@@ -2,7 +2,7 @@
   <? $similarAuthors = $this->recommend->getSimilarAuthors(); ?>
   <? if (!empty($similarAuthors['list'])): ?>
     <div class="authorbox">
-      <p>Author Results for <strong><?=$this->escape($this->recommend->getSearchTerm()) ?></strong></p>
+      <p>Author Results for <strong><?=$this->escapeHtml($this->recommend->getSearchTerm()) ?></strong></p>
       <div class="span-5">
       <? foreach($similarAuthors['list'] as $i => $author): ?>
         <? if ($i == 5): ?>

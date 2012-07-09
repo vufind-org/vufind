@@ -84,7 +84,7 @@ class JqueryValidation extends AbstractHelper
             $first = false;
         }
         $output .= '}}';
-        $escaper = $this->getView()->plugin('escape');
+        $escaper = $this->getView()->plugin('escapeHtml');
         return $escaper($output);
     }
 }

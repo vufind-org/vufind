@@ -30,6 +30,6 @@
 
   <? if (isset($this->request)): ?>
     <h3><?=$this->transEsc('error_page_parameter_list_heading')?>:</h3>
-    <pre><?=$this->escape(var_export($this->request->getParams(), true))?></pre>
+    <pre><?=$this->escapeHtml(var_export($this->request->getParams(), true))?></pre>
   <? endif; ?>
 <? endif ?>

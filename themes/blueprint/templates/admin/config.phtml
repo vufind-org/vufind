@@ -9,7 +9,7 @@
 <div class="span-18 last">
   <h1><?=$this->transEsc('Configuration')?></h1>
   <?=$this->flashmessages()?>
-  <p>Most VuFind configuration is handled by editing the configuration files in <strong><?=$this->escape($this->baseConfigPath)?></strong>.</p>
+  <p>Most VuFind configuration is handled by editing the configuration files in <strong><?=$this->escapeHtml($this->baseConfigPath)?></strong>.</p>
   <p>Some basic settings can also be adjusted through the auto-configuration tool.</p>
   <? if (!$this->showInstallLink): ?>
     <p><?=$this->transEsc('Auto configuration is currently disabled') ?>.</p>

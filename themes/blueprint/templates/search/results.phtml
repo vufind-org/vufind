@@ -24,10 +24,10 @@
 
     // Set up breadcrumbs:
     if (isset($this->overrideTitle)) {
-        $this->layout()->breadcrumbs = '<em>' . $this->escape($this->overrideTitle) . '</em>';
+        $this->layout()->breadcrumbs = '<em>' . $this->escapeHtml($this->overrideTitle) . '</em>';
     } else {
         $this->layout()->breadcrumbs = '<em>' . $this->transEsc('Search') . ': ' .
-            $this->escape($lookfor) . '</em>';
+            $this->escapeHtml($lookfor) . '</em>';
     }
 
     // Load Javascript dependencies into header:
@@ -52,10 +52,10 @@
         <? if (isset($this->overrideSearchHeading)): ?>
           <?=$this->overrideSearchHeading?>
         <? elseif ($this->results->getSearchType() == 'basic'): ?>
-          <?=$this->transEsc('for search')?>: <strong>'<?=$this->escape($lookfor)?>'</strong>,
+          <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($lookfor)?>'</strong>,
         <? endif; ?>
         <? if ($qtime = $this->results->getQuerySpeed()): ?>
-          <?=$this->transEsc('query time')?>: <?=$this->escape(round($qtime, 2))?>s
+          <?=$this->transEsc('query time')?>: <?=$this->escapeHtml(round($qtime, 2))?>s
         <? endif; ?>
         <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:'); ?>
       <? else: ?>
@@ -79,7 +79,7 @@
       <? if (isset($this->overrideEmptyMessage)): ?>
         <?=$this->overrideEmptyMessage?>
       <? else: ?>
-        <?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escape($lookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?>
+        <?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($lookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?>
       <? endif; ?>
     </p>
     <? if (isset($this->parseError)): ?>
@@ -103,7 +103,7 @@
     <div class="searchtools">
       <strong><?=$this->transEsc('Search Tools')?>:</strong>
       <a href="<?=$this->results->getUrl()->setViewParam('rss')?>" class="feed"><?=$this->transEsc('Get RSS Feed')?></a>
-      <a href="<?=$this->url('search-email')?>" class="mailSearch mail" id="mailSearch<?=$this->escape($this->results->getSearchId())?>" title="<?=$this->transEsc('Email this Search')?>"><?=$this->transEsc('Email this Search')?></a>
+      <a href="<?=$this->url('search-email')?>" class="mailSearch mail" id="mailSearch<?=$this->escapeHtml($this->results->getSearchId())?>" title="<?=$this->transEsc('Email this Search')?>"><?=$this->transEsc('Email this Search')?></a>
       <? if (is_numeric($this->results->getSearchId())): ?>
         <? if ($this->results->isSavedSearch()): ?>
           <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>" class="delete"><?=$this->transEsc('save_search_remove')?></a>

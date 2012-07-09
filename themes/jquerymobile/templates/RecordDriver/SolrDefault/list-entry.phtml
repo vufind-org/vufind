@@ -16,14 +16,14 @@
       <?
         $listTitle = $this->driver->getTitle();
         if (!empty($listTitle)) {
-            echo $this->escape($this->truncate($listTitle, 180));
+            echo $this->escapeHtml($this->truncate($listTitle, 180));
         } else {
             echo $this->transEsc('Title not available');
         }
       ?>
     </h3>
     <? $listAuthor = $this->driver->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
-      <p><?=$this->transEsc('by')?> <?=$this->escape($listAuthor)?></p>
+      <p><?=$this->transEsc('by')?> <?=$this->escapeHtml($listAuthor)?></p>
     <? endif; ?>
     <? $listTags = $this->driver->getTags(
         $list_id, // get tags for all lists if no single list is selected
@@ -33,14 +33,14 @@
     <? if (count($listTags) > 0): ?>
       <p>
         <strong><?=$this->transEsc('Your Tags')?>:</strong>
-        <? $i = 0; foreach ($listTags as $tag): ?><?=($i++ == 0)?'':', '?><?=$this->escape($tag->tag)?><? endforeach; ?>
+        <? $i = 0; foreach ($listTags as $tag): ?><?=($i++ == 0)?'':', '?><?=$this->escapeHtml($tag->tag)?><? endforeach; ?>
       </p>
     <? endif; ?>
     <? $listNotes = $this->driver->getListNotes($list_id, $user_id); ?>
     <? if (count($listNotes) > 0): ?>
       <p><strong><?=$this->transEsc('Notes')?>:</strong></p>
       <? foreach ($listNotes as $note): ?>
-        <p><?=$this->escape($note)?></p>
+        <p><?=$this->escapeHtml($note)?></p>
       <? endforeach; ?>
     <? endif; ?>
 

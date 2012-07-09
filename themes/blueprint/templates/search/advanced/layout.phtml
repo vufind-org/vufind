@@ -60,7 +60,7 @@
                   <?
                     $options = array('AND', 'OR', 'NOT');
                     foreach ($options as $option) {
-                        echo '<option value="' . $this->escape($option) . '"';
+                        echo '<option value="' . $this->escapeHtml($option) . '"';
                         if ($searchDetails && isset($searchDetails[$i]['group'][0]['bool'])
                             && $searchDetails[$i]['group'][0]['bool'] == $option
                         ) {
@@ -88,13 +88,13 @@
                   <label <?=($j > 0)?'class="offscreen" ':''?>for="search_lookfor<?=$i?>_<?=$j?>"><?=$this->transEsc("adv_search_label")?>:</label>&nbsp;
                 </div>
                 <div class="terms">
-                  <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=isset($currRow['lookfor'])?$this->escape($currRow['lookfor']):''?>" size="50" name="lookfor<?=$i?>[]"/>
+                  <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=isset($currRow['lookfor'])?$this->escapeHtml($currRow['lookfor']):''?>" size="50" name="lookfor<?=$i?>[]"/>
                 </div>
                 <div class="field">
                   <label for="search_type<?=$i?>_<?=$j?>"><?=$this->transEsc("in")?></label>
                   <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]">
                   <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
-                    <option value="<?=$this->escape($searchVal)?>"<?=(isset($currRow['field']) && $currRow['field'] == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
+                    <option value="<?=$this->escapeHtml($searchVal)?>"<?=(isset($currRow['field']) && $currRow['field'] == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
                   <? endforeach; ?>
                   </select>
                 </div>
@@ -112,7 +112,7 @@
       <br/><br/>
 
       <? $lastSort = $this->options->getLastSort(); if (!empty($lastSort)): ?>
-        <input type="hidden" name="sort" value="<?=$this->escape($lastSort)?>" />
+        <input type="hidden" name="sort" value="<?=$this->escapeHtml($lastSort)?>" />
       <? endif; ?>
       <input type="submit" name="submit" value="<?=$this->transEsc("Find")?>"/>
       <? if (isset($this->extraAdvancedControls)): ?>
@@ -131,7 +131,7 @@
             <h4><?=$this->transEsc($field)?></h4>
             <ul>
               <? foreach ($data as $value): ?>
-                <li><input type="checkbox" checked="checked" name="filter[]" value='<?=$this->escape($value['field'])?>:"<?=$this->escape($value['value'])?>"' /> <?=$this->escape($value['displayText'])?></li>
+                <li><input type="checkbox" checked="checked" name="filter[]" value='<?=$this->escapeHtml($value['field'])?>:"<?=$this->escapeHtml($value['value'])?>"' /> <?=$this->escapeHtml($value['displayText'])?></li>
               <? endforeach; ?>
             </ul>
           </div>

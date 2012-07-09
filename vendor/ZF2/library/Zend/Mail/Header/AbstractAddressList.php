@@ -22,6 +22,7 @@
 namespace Zend\Mail\Header;
 
 use Zend\Mail\AddressList;
+use Zend\Mail\Headers;
 
 /**
  * Base class for headers composing address lists (to, from, cc, bcc, reply-to)
@@ -52,23 +53,15 @@ abstract class AbstractAddressList implements HeaderInterface
     protected $encoding = 'ASCII';
 
     /**
-     * @var string lowercased field name
+     * @var string lower case field name
      */
     protected static $type;
 
-    /**
-     * Parse string to create header object
-     *
-     * @param  string $headerLine
-     * @throws Exception\InvalidArgumentException
-     * @return AbstractAddressList
-     */
     public static function fromString($headerLine)
     {
-        $headerLine = iconv_mime_decode($headerLine, ICONV_MIME_DECODE_CONTINUE_ON_ERROR);
-
+        $decodedLine = iconv_mime_decode($headerLine, ICONV_MIME_DECODE_CONTINUE_ON_ERROR, 'UTF-8');
         // split into name/value
-        list($fieldName, $fieldValue) = explode(': ', $headerLine, 2);
+        list($fieldName, $fieldValue) = explode(': ', $decodedLine, 2);
 
         if (strtolower($fieldName) !== static::$type) {
             throw new Exception\InvalidArgumentException(sprintf(
@@ -77,9 +70,11 @@ abstract class AbstractAddressList implements HeaderInterface
             ));
         }
         $header = new static();
-
+        if ($decodedLine != $headerLine) {
+            $header->setEncoding('UTF-8');
+        }
         // split value on ","
-        $fieldValue = str_replace("\r\n ", " ", $fieldValue);
+        $fieldValue = str_replace(Headers::FOLDING, ' ', $fieldValue);
         $values     = explode(',', $fieldValue);
         array_walk($values, 'trim');
 
@@ -96,8 +91,6 @@ abstract class AbstractAddressList implements HeaderInterface
             }
             if (empty($name)) {
                 $name = null;
-            } else {
-                $name = iconv_mime_decode($name, ICONV_MIME_DECODE_CONTINUE_ON_ERROR);
             }
 
             if (isset($matches['namedEmail'])) {
@@ -111,26 +104,15 @@ abstract class AbstractAddressList implements HeaderInterface
             // populate address list
             $addressList->add($email, $name);
         }
-
         return $header;
     }
 
-    /**
-     * Get field name of this header
-     *
-     * @return string
-     */
     public function getFieldName()
     {
         return $this->fieldName;
     }
 
-    /**
-     * Get field value of this header
-     *
-     * @return string
-     */
-    public function getFieldValue()
+    public function getFieldValue($format = HeaderInterface::FORMAT_RAW)
     {
         $emails   = array();
         $encoding = $this->getEncoding();
@@ -144,33 +126,24 @@ abstract class AbstractAddressList implements HeaderInterface
                     $name = sprintf('"%s"', $name);
                 }
 
-                if ('ASCII' !== $encoding) {
-                    $name = HeaderWrap::mimeEncodeValue($name, $encoding, false);
+                if ($format == HeaderInterface::FORMAT_ENCODED
+                    && 'ASCII' !== $encoding
+                ) {
+                    $name = HeaderWrap::mimeEncodeValue($name, $encoding);
                 }
                 $emails[] = sprintf('%s <%s>', $name, $email);
             }
         }
-        $string = implode(",\r\n ", $emails);
-        return $string;
+
+        return implode(',' . Headers::FOLDING, $emails);
     }
 
-    /**
-     * Set header encoding
-     *
-     * @param  string $encoding
-     * @return AbstractAddressList
-     */
     public function setEncoding($encoding)
     {
         $this->encoding = $encoding;
         return $this;
     }
 
-    /**
-     * Get header encoding
-     *
-     * @return string
-     */
     public function getEncoding()
     {
         return $this->encoding;
@@ -199,15 +172,10 @@ abstract class AbstractAddressList implements HeaderInterface
         return $this->addressList;
     }
 
-    /**
-     * Serialize to string
-     *
-     * @return string
-     */
     public function toString()
     {
         $name  = $this->getFieldName();
-        $value = $this->getFieldValue();
-        return sprintf("%s: %s\r\n", $name, $value);
+        $value = $this->getFieldValue(HeaderInterface::FORMAT_ENCODED);
+        return (empty($value)) ? '' : sprintf('%s: %s', $name, $value);
     }
 }

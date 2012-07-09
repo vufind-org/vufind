@@ -26,8 +26,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Log;
-use VuFind\Config\Reader as ConfigReader, Zend\Log\Logger as BaseLogger,
-    Zend\Log\Filter\Priority as PriorityFilter, Zend\Registry;
+use VuFind\Config\Reader as ConfigReader, VuFind\Registry,
+    Zend\Log\Logger as BaseLogger, Zend\Log\Filter\Priority as PriorityFilter;
 
 /**
  * This class wraps the BaseLogger class to allow for log verbosity

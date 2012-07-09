@@ -76,7 +76,7 @@ class AbstractSearch extends AbstractBase
 
         // Handle request to edit existing saved search:
         $view->saved = false;
-        $searchId = $this->getRequest()->query()->get('edit', false);
+        $searchId = $this->getRequest()->getQuery()->get('edit', false);
         if ($searchId !== false) {
             $view->saved = $this->restoreAdvancedSearch($searchId);
         }
@@ -94,7 +94,7 @@ class AbstractSearch extends AbstractBase
         $view = new ViewModel();
 
         // Handle saved search requests:
-        $savedId = $this->getRequest()->query()->get('saved', false);
+        $savedId = $this->getRequest()->getQuery()->get('saved', false);
         if ($savedId !== false) {
             return $this->redirectToSavedSearch($savedId);
         }
@@ -102,7 +102,7 @@ class AbstractSearch extends AbstractBase
         $paramsClass = $this->getParamsClass();
         $params = new $paramsClass();
         $params->recommendationsEnabled(true);
-        $params->initFromRequest($this->getRequest()->query());
+        $params->initFromRequest($this->getRequest()->getQuery());
         // Attempt to perform the search; if there is a problem, inspect any Solr
         // exceptions to see if we should communicate to the user about them.
         try {
@@ -195,7 +195,7 @@ class AbstractSearch extends AbstractBase
     protected function processJumpTo($results)
     {
         // Missing/invalid parameter?  Ignore it:
-        $jumpto = $this->getRequest()->query()->get('jumpto');
+        $jumpto = $this->getRequest()->getQuery()->get('jumpto');
         if (empty($jumpto) || !is_numeric($jumpto)) {
             return false;
         }

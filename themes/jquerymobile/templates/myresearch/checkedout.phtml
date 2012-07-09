@@ -28,12 +28,12 @@
               // If this is a non-missing Solr record, we should display a link:
               if (is_a($resource, 'VF_RecordDriver_SolrDefault') && !is_a($resource, 'VF_RecordDriver_Missing')) {
                   $title = $resource->getTitle();
-                  $title = empty($title) ? $this->transEsc('Title not available') : $this->escape($title);
+                  $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
                   echo '<a rel="external" href="' . $this->recordLink()->getUrl($resource) . '">';
                   $openAnchor = true;
               } else if (isset($ilsDetails['title']) && !empty($ilsDetails['title'])){
                   // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
-                  $title = $this->escape($ilsDetails['title']);
+                  $title = $this->escapeHtml($ilsDetails['title']);
               } else {
                   // Last resort -- indicate that no title could be found.
                   $title = $this->transEsc('Title not available');
@@ -42,7 +42,7 @@
           <div class="result">
             <h3><?=$title?></h3>
             <? $listAuthor = $resource->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
-              <p><?=$this->transEsc('by')?> <?=$this->escape($listAuthor)?></p>
+              <p><?=$this->transEsc('by')?> <?=$this->escapeHtml($listAuthor)?></p>
             <? endif; ?>
             <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
               <?=$this->record($resource)->getFormatList()?>
@@ -53,14 +53,14 @@
               <? $renewDetails = $this->renewResult[$ilsDetails['item_id']]; ?>
               <? if (isset($renewDetails['success']) && $renewDetails['success']): ?>
                 <? $showStatus = false; ?>
-                <strong><?=$this->transEsc('Due Date')?>: <?=$this->escape($renewDetails['new_date'])?> <? if (isset($renewDetails['new_time'])): ?><?=$this->escape($renewDetails['new_time'])?><? endif; ?></strong>
+                <strong><?=$this->transEsc('Due Date')?>: <?=$this->escapeHtml($renewDetails['new_date'])?> <? if (isset($renewDetails['new_time'])): ?><?=$this->escapeHtml($renewDetails['new_time'])?><? endif; ?></strong>
                 <div class="success"><?=$this->transEsc('renew_success')?></div>
               <? else: ?>
-                <strong><?=$this->transEsc('Due Date')?>: <?=$this->escape($ilsDetails['duedate'])?><? if (isset($ilsDetails['dueTime'])): ?> <?=$this->escape($ilsDetails['dueTime'])?><? endif; ?></strong>
-                <div class="error"><?=$this->transEsc('renew_fail')?><? if (isset($renewDetails['sysMessage'])): ?>: <?=$this->escape($renewDetails['sysMessage'])?><? endif; ?></div>
+                <strong><?=$this->transEsc('Due Date')?>: <?=$this->escapeHtml($ilsDetails['duedate'])?><? if (isset($ilsDetails['dueTime'])): ?> <?=$this->escapeHtml($ilsDetails['dueTime'])?><? endif; ?></strong>
+                <div class="error"><?=$this->transEsc('renew_fail')?><? if (isset($renewDetails['sysMessage'])): ?>: <?=$this->escapeHtml($renewDetails['sysMessage'])?><? endif; ?></div>
               <? endif; ?>
             <? else: ?>
-              <strong><?=$this->transEsc('Due Date')?>: <?=$this->escape($ilsDetails['duedate'])?><? if (isset($ilsDetails['dueTime'])): ?> <?=$this->escape($ilsDetails['dueTime'])?><? endif; ?></strong>
+              <strong><?=$this->transEsc('Due Date')?>: <?=$this->escapeHtml($ilsDetails['duedate'])?><? if (isset($ilsDetails['dueTime'])): ?> <?=$this->escapeHtml($ilsDetails['dueTime'])?><? endif; ?></strong>
               <? if ($showStatus): ?>
                 <? if (isset($ilsDetails['dueStatus']) && $ilsDetails['dueStatus'] == "overdue"): ?>
                   <div class="error"><?=$this->transEsc("renew_item_overdue")?></div>
@@ -82,8 +82,8 @@
                   <fieldset data-type="horizontal" data-role="controlgroup">
                     <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
                     <label for="checkbox_<?=$safeId?>"><?=$this->transEsc("Select this record")?></label>
-                    <input type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escape($ilsDetails['renew_details'])?>" class="checkbox" style="margin-left: 0" id="checkbox_<?=$safeId?>" />
-                    <input type="hidden" name="renewAllIDS[]" value="<?=$this->escape($ilsDetails['renew_details'])?>" />
+                    <input type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtml($ilsDetails['renew_details'])?>" class="checkbox" style="margin-left: 0" id="checkbox_<?=$safeId?>" />
+                    <input type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtml($ilsDetails['renew_details'])?>" />
                   </fieldset>
                 </div>
             <? endif; ?>

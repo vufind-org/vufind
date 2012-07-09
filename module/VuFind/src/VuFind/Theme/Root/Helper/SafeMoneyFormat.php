@@ -50,7 +50,7 @@ class SafeMoneyFormat extends AbstractHelper
     {
         // money_format() does not exist on windows
         if (function_exists('money_format')) {
-            return $this->view->escape(money_format('%.2n', $number));
+            return $this->view->escapeHtml(money_format('%.2n', $number));
         } else {
             return self::windowsSafeMoneyFormat($number);
         }

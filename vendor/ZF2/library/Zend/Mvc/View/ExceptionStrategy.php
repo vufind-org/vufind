@@ -21,13 +21,13 @@
 
 namespace Zend\Mvc\View;
 
-use Zend\EventManager\EventManagerInterface,
-    Zend\EventManager\ListenerAggregateInterface,
-    Zend\Http\Response as HttpResponse,
-    Zend\Mvc\Application,
-    Zend\Mvc\MvcEvent,
-    Zend\Stdlib\ResponseInterface as Response,
-    Zend\View\Model\ViewModel;
+use Zend\EventManager\EventManagerInterface;
+use Zend\EventManager\ListenerAggregateInterface;
+use Zend\Http\Response as HttpResponse;
+use Zend\Mvc\Application;
+use Zend\Mvc\MvcEvent;
+use Zend\Stdlib\ResponseInterface as Response;
+use Zend\View\Model\ViewModel;
 
 /**
  * @category   Zend
@@ -84,7 +84,7 @@ class ExceptionStrategy implements ListenerAggregateInterface
     /**
      * Flag: display exceptions in error pages?
      *
-     * @param  bool $flag
+     * @param  bool $displayExceptions
      * @return ExceptionStrategy
      */
     public function setDisplayExceptions($displayExceptions)

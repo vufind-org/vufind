@@ -33,18 +33,18 @@ use Zend\Stdlib\Exception;
 class ClassMethods implements HydratorInterface
 {
     /**
-     * CamelCase usage to extract attribute with getter/setter method name
+     * Flag defining whether array keys are underscore-separated (true) or camel case (false)
      * @var boolean
      */
-    protected $useCamelCase;
+    protected $underscoreSeparatedKeys;
     
     /**
      * Define if extract values will use camel case or name with underscore
-     * @param boolean $useCamelCase 
+     * @param boolean $underscoreSeparatedKeys 
      */
-    public function __construct($useCamelCase = true)
+    public function __construct($underscoreSeparatedKeys = true)
     {
-        $this->useCamelCase = $useCamelCase;
+        $this->underscoreSeparatedKeys = $underscoreSeparatedKeys;
     }
     
     /**
@@ -81,10 +81,24 @@ class ClassMethods implements HydratorInterface
                 }
                 $attribute = substr($method, 3);
                 $attribute = lcfirst($attribute);
-                if (!$this->useCamelCase) {
+                if ($this->underscoreSeparatedKeys) {
                     $attribute = preg_replace_callback('/([A-Z])/', $transform, $attribute);
                 }
-                 $attributes[$attribute] = $object->$method();
+
+                $result = $object->$method();
+
+                // Recursively extract if object contains itself other objects or arrays of objects
+                if (is_object($result)) {
+                    $result = $this->extract($result);
+                } elseif (is_array($result)) {
+                    foreach ($result as $key => $value) {
+                        if (is_object($value)) {
+                            $result[$key] = $this->extract($value);
+                        }
+                    }
+                }
+
+                $attributes[$attribute] = $result;
             }
         }
         
@@ -98,7 +112,7 @@ class ClassMethods implements HydratorInterface
      * 
      * @param  array $data 
      * @param  object $object 
-     * @return void
+     * @return object
      * @throws Exception\BadMethodCallException for a non-object $object
      */
     public function hydrate(array $data, $object)
@@ -115,12 +129,16 @@ class ClassMethods implements HydratorInterface
             $letter = substr(array_shift($letters), 1, 1);
             return ucfirst($letter);
         };
+
         foreach ($data as $property => $value) {
-            if (!$this->useCamelCase) {
+            if ($this->underscoreSeparatedKeys) {
                 $property = preg_replace_callback('/(_[a-z])/', $transform, $property);
             }
             $method = 'set' . ucfirst($property);
-            $object->$method($value);
+            if (method_exists($object, $method)) {
+                $object->$method($value);
+            }
         }
+        return $object;
     }
 }

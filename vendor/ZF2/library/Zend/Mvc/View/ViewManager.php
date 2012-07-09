@@ -26,27 +26,30 @@ use Traversable;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\ListenerAggregateInterface;
 use Zend\Mvc\ApplicationInterface;
+use Zend\Mvc\Exception;
 use Zend\Mvc\MvcEvent;
+use Zend\ServiceManager\ConfigurationInterface;
+use Zend\ServiceManager\ServiceManager;
 use Zend\Stdlib\ArrayUtils;
-use Zend\View\HelperBroker as ViewHelperBroker;
-use Zend\View\HelperLoader as ViewHelperLoader;
+use Zend\View\HelperPluginManager as ViewHelperManager;
 use Zend\View\Renderer\PhpRenderer as ViewPhpRenderer;
 use Zend\View\Resolver as ViewResolver;
 use Zend\View\Strategy\PhpRendererStrategy;
 use Zend\View\View;
+use Zend\View\Helper as ViewHelper;
+use Zend\Mvc\Router\RouteMatch;
 
 /**
  * Prepares the view layer
  *
- * Instantiates and configures all classes related to the view layer, including 
- * the renderer (and its associated resolver(s) and helper broker), the view 
+ * Instantiates and configures all classes related to the view layer, including
+ * the renderer (and its associated resolver(s) and helper manager), the view
  * object (and its associated rendering strategies), and the various MVC
  * strategies and listeners.
  *
  * Defines and manages the following services:
  *
- * - ViewHelperLoader (also aliased to Zend\View\HelperLoader)
- * - ViewHelperBroker (also aliased to Zend\View\HelperBroker)
+ * - ViewHelperManager (also aliased to Zend\View\HelperPluginManager and ViewHelperBroker)
  * - ViewTemplateMapResolver (also aliased to Zend\View\Resolver\TemplateMapResolver)
  * - ViewTemplatePathStack (also aliased to Zend\View\Resolver\TemplatePathStack)
  * - ViewResolver (also aliased to Zend\View\Resolver\AggregateResolver and ResolverInterface)
@@ -86,8 +89,7 @@ class ViewManager implements ListenerAggregateInterface
      * configured by the view manager
      */
     protected $exceptionStrategy;
-    protected $helperBroker;
-    protected $helperLoader;
+    protected $helperManager;
     protected $mvcRenderingStrategy;
     protected $renderer;
     protected $rendererStrategy;
@@ -105,7 +107,7 @@ class ViewManager implements ListenerAggregateInterface
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->listeners[] = $events->attach('bootstrap', array($this, 'onBootstrap'), 10000);
+        $this->listeners[] = $events->attach(MvcEvent::EVENT_BOOTSTRAP, array($this, 'onBootstrap'), 10000);
     }
 
     /**
@@ -125,8 +127,8 @@ class ViewManager implements ListenerAggregateInterface
 
     /**
      * Prepares the view layer
-     * 
-     * @param  ApplicationInterface $application 
+     *
+     * @param  $event
      * @return void
      */
     public function onBootstrap($event)
@@ -134,11 +136,11 @@ class ViewManager implements ListenerAggregateInterface
         $application  = $event->getApplication();
         $services     = $application->getServiceManager();
         $config       = $services->get('Configuration');
-        $events       = $application->events();
+        $events       = $application->getEventManager();
         $sharedEvents = $events->getSharedManager();
 
         $this->config   = isset($config['view_manager']) && (is_array($config['view_manager']) || $config['view_manager'] instanceof ArrayAccess)
-                        ? $config['view_manager'] 
+                        ? $config['view_manager']
                         : array();
         $this->services = $services;
         $this->event    = $event;
@@ -150,13 +152,14 @@ class ViewManager implements ListenerAggregateInterface
         $injectTemplateListener  = new InjectTemplateListener();
         $injectViewModelListener = new InjectViewModelListener();
 
+        $this->registerMvcRenderingStrategies($events);
         $this->registerViewStrategies();
 
         $events->attach($routeNotFoundStrategy);
         $events->attach($exceptionStrategy);
         $events->attach(MvcEvent::EVENT_DISPATCH_ERROR, array($injectViewModelListener, 'injectViewModel'), -100);
         $events->attach($mvcRenderingStrategy);
-        
+
         $sharedEvents->attach('Zend\Stdlib\DispatchableInterface', MvcEvent::EVENT_DISPATCH, array($createViewModelListener, 'createViewModelFromArray'), -80);
         $sharedEvents->attach('Zend\Stdlib\DispatchableInterface', MvcEvent::EVENT_DISPATCH, array($routeNotFoundStrategy, 'prepareNotFoundViewModel'), -90);
         $sharedEvents->attach('Zend\Stdlib\DispatchableInterface', MvcEvent::EVENT_DISPATCH, array($createViewModelListener, 'createViewModelFromNull'), -80);
@@ -165,77 +168,22 @@ class ViewManager implements ListenerAggregateInterface
     }
 
     /**
-     * Instantiates and configures the renderer's helper loader
-     * 
-     * @return ViewHelperLoader
+     * Instantiates and configures the renderer's helper manager
+     *
+     * @return ViewHelperManager
      */
-    public function getHelperLoader()
+    public function getHelperManager()
     {
-        if ($this->helperLoader) {
-            return $this->helperLoader;
+        if ($this->helperManager) {
+            return $this->helperManager;
         }
 
-        $map = array();
-        if (isset($this->config['helper_map'])) {
-            $map = $this->config['helper_map'];
-        }
-        if (!in_array('Zend\Form\View\HelperLoader', $map)) {
-            array_unshift($map, 'Zend\Form\View\HelperLoader');
-        }
-        $this->helperLoader = new ViewHelperLoader($map);
-
-        $this->services->setService('ViewHelperLoader', $this->helperLoader);
-        $this->services->setAlias('Zend\View\HelperLoader', 'ViewHelperLoader');
-
-        return $this->helperLoader;
-    }
-
-    /**
-     * Instantiates and configures the renderer's helper broker
-     * 
-     * @return ViewHelperBroker
-     */
-    public function getHelperBroker()
-    {
-        if ($this->helperBroker) {
-            return $this->helperBroker;
-        }
-
-        $this->helperBroker = new ViewHelperBroker();
-        $this->helperBroker->setClassLoader($this->getHelperLoader());
-
-        // Seed with service manager
-        $this->helperBroker->setServiceLocator($this->services);
-
-        // Configure URL view helper with router
-        $router = $this->services->get('Router');
-        $url    = $this->helperBroker->load('url');
-        $url->setRouter($router);
-
-        // Configure basePath view helper with base path from configuration, if available
-        if (isset($this->config['base_path'])) {
-            $basePath = $this->config['base_path'];
-        } else {
-            $basePath = $this->services->get('Request')->getBasePath();
-        }
-        $basePathHelper = $this->helperBroker->load('basePath');
-        $basePathHelper->setBasePath($basePath);
-
-        // Configure doctype view helper with doctype from configuration, if available
-        if (isset($this->config['doctype'])) {
-            $doctype = $this->helperBroker->load('doctype');
-            $doctype->setDoctype($this->config['doctype']);
-        }
-
-        $this->services->setService('ViewHelperBroker', $this->helperBroker);
-        $this->services->setAlias('Zend\View\HelperBroker', 'ViewHelperBroker');
-
-        return $this->helperBroker;
+        return $this->helperManager = $this->services->get('ViewHelperManager');
     }
 
     /**
      * Instantiates and configures the renderer's resolver
-     * 
+     *
      * @return ViewAggregateResolver
      */
     public function getResolver()
@@ -253,9 +201,6 @@ class ViewManager implements ListenerAggregateInterface
         $stack = array();
         if (isset($this->config['template_path_stack'])) {
             $stack = $this->config['template_path_stack'];
-            if ($stack instanceof Traversable) {
-                $stack = ArrayUtils::iteratorToArray($stack);
-            }
         }
         $templatePathStack = new ViewResolver\TemplatePathStack();
         $templatePathStack->addPaths($stack);
@@ -278,7 +223,7 @@ class ViewManager implements ListenerAggregateInterface
 
     /**
      * Instantiates and configures the renderer
-     * 
+     *
      * @return ViewPhpRenderer
      */
     public function getRenderer()
@@ -288,7 +233,7 @@ class ViewManager implements ListenerAggregateInterface
         }
 
         $this->renderer = new ViewPhpRenderer;
-        $this->renderer->setBroker($this->getHelperBroker());
+        $this->renderer->setHelperPluginManager($this->getHelpermanager());
         $this->renderer->setResolver($this->getResolver());
 
         $model       = $this->getViewModel();
@@ -304,7 +249,7 @@ class ViewManager implements ListenerAggregateInterface
 
     /**
      * Instantiates and configures the renderer strategy for the view
-     * 
+     *
      * @return PhpRendererStrategy
      */
     public function getRendererStrategy()
@@ -325,7 +270,7 @@ class ViewManager implements ListenerAggregateInterface
 
     /**
      * Instantiates and configures the view
-     * 
+     *
      * @return View
      */
     public function getView()
@@ -336,7 +281,7 @@ class ViewManager implements ListenerAggregateInterface
 
         $this->view = new View();
         $this->view->setEventManager($this->services->get('EventManager'));
-        $this->view->events()->attach($this->getRendererStrategy());
+        $this->view->getEventManager()->attach($this->getRendererStrategy());
 
         $this->services->setService('View', $this->view);
         $this->services->setAlias('Zend\View\View', 'View');
@@ -346,7 +291,7 @@ class ViewManager implements ListenerAggregateInterface
 
     /**
      * Retrieves the layout template name from the configuration
-     * 
+     *
      * @return string
      */
     public function getLayoutTemplate()
@@ -360,7 +305,7 @@ class ViewManager implements ListenerAggregateInterface
 
     /**
      * Instantiates and configures the default MVC rendering strategy
-     * 
+     *
      * @return DefaultRenderingStrategy
      */
     public function getMvcRenderingStrategy()
@@ -380,7 +325,7 @@ class ViewManager implements ListenerAggregateInterface
 
     /**
      * Instantiates and configures the exception strategy
-     * 
+     *
      * @return ExceptionStrategy
      */
     public function getExceptionStrategy()
@@ -412,7 +357,7 @@ class ViewManager implements ListenerAggregateInterface
 
     /**
      * Instantiates and configures the "route not found", or 404, strategy
-     * 
+     *
      * @return RouteNotFoundStrategy
      */
     public function getRouteNotFoundStrategy()
@@ -445,7 +390,7 @@ class ViewManager implements ListenerAggregateInterface
 
     /**
      * Configures the MvcEvent view model to ensure it has the template injected
-     * 
+     *
      * @return \Zend\Mvc\View\Model\ModelInterface
      */
     public function getViewModel()
@@ -461,14 +406,48 @@ class ViewManager implements ListenerAggregateInterface
     }
 
     /**
+     * Register additional mvc rendering strategies
+     *
+     * If there is a "mvc_strategies" key of the view manager configuration, loop
+     * through it. Pull each as a service fromt the service manager, and, if it
+     * is a ListenerAggregate, attach it to the view, at priority 100. This
+     * latter allows each to trigger before the default mvc rendering strategy,
+     * and for them to trigger in the order they are registered.
+     */
+    protected function registerMvcRenderingStrategies(EventManagerInterface $events)
+    {
+        if (!isset($this->config['mvc_strategies'])) {
+            return;
+        }
+        $mvcStrategies = $this->config['mvc_strategies'];
+        if (is_string($mvcStrategies)) {
+            $mvcStrategies = array($mvcStrategies);
+        }
+        if (!is_array($mvcStrategies) && !$mvcStrategies instanceof Traversable) {
+            return;
+        }
+
+        foreach ($mvcStrategies as $mvcStrategy) {
+            if (!is_string($mvcStrategy)) {
+                continue;
+            }
+
+            $listener = $this->services->get($mvcStrategy);
+            if ($listener instanceof ListenerAggregateInterface) {
+                $events->attach($listener, 100);
+            }
+        }
+    }
+
+    /**
      * Register additional view strategies
      *
      * If there is a "strategies" key of the view manager configuration, loop
      * through it. Pull each as a service from the service manager, and, if it
-     * is a ListenerAggregate, attach it to the view, at priority 100. This 
+     * is a ListenerAggregate, attach it to the view, at priority 100. This
      * latter allows each to trigger before the default strategy, and for them
      * to trigger in the order they are registered.
-     * 
+     *
      * @return void
      */
     protected function registerViewStrategies()
@@ -493,7 +472,7 @@ class ViewManager implements ListenerAggregateInterface
 
             $listener = $this->services->get($strategy);
             if ($listener instanceof ListenerAggregateInterface) {
-                $view->events()->attach($listener, 100);
+                $view->getEventManager()->attach($listener, 100);
             }
         }
     }

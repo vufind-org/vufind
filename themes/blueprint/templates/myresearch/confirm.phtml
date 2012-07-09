@@ -5,13 +5,13 @@
 
   <?=$this->transEsc($this->message) ?>
   <div id="popupDetails" class="confirmDialog" style="margin-top:.5em">
-    <form action="<?=$this->escape($this->confirm)?>" method="post">
+    <form action="<?=$this->escapeHtml($this->confirm)?>" method="post">
       <? foreach ($this->extras as $extra=>$value): ?>
-        <input type="hidden" name="<?=$this->escape($extra) ?>" value="<?=$this->escape($value) ?>" />
+        <input type="hidden" name="<?=$this->escapeHtml($extra) ?>" value="<?=$this->escapeHtml($value) ?>" />
       <? endforeach; ?>
       <input type="submit" name="confirm" value="<?=$this->transEsc('confirm_dialog_yes') ?>" />
     </form>
-    <form action="<?=$this->escape($this->cancel) ?>" method="post">
+    <form action="<?=$this->escapeHtml($this->cancel) ?>" method="post">
       <input type="submit" name="cancel" value="<?=$this->transEsc('confirm_dialog_no') ?>" />
     </form>
     <div class="clearer"></div>

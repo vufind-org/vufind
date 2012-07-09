@@ -20,8 +20,6 @@
 
 namespace Zend\Validator\File;
 
-use Zend\Loader;
-
 /**
  * Validator for the crc32 hash of given files
  *
@@ -42,7 +40,7 @@ class Crc32 extends Hash
     /**
      * @var array Error message templates
      */
-    protected $_messageTemplates = array(
+    protected $messageTemplates = array(
         self::DOES_NOT_MATCH => "File '%value%' does not match the given crc32 hashes",
         self::NOT_DETECTED   => "A crc32 hash could not be evaluated for the given file",
         self::NOT_FOUND      => "File '%value%' is not readable or does not exist",
@@ -72,7 +70,7 @@ class Crc32 extends Hash
      * Sets the crc32 hash for one or multiple files
      *
      * @param  string|array $options
-     * @return \Zend\Validator\File\Hash Provides a fluent interface
+     * @return Crc32 Provides a fluent interface
      */
     public function setCrc32($options)
     {
@@ -84,7 +82,7 @@ class Crc32 extends Hash
      * Adds the crc32 hash for one or multiple files
      *
      * @param  string|array $options
-     * @return \Zend\Validator\File\Hash Provides a fluent interface
+     * @return Crc32 Provides a fluent interface
      */
     public function addCrc32($options)
     {
@@ -106,14 +104,14 @@ class Crc32 extends Hash
         }
 
         // Is file readable ?
-        if (!Loader::isReadable($value)) {
-            return $this->_throw($file, self::NOT_FOUND);
+        if (false === stream_resolve_include_path($value)) {
+            return $this->throwError($file, self::NOT_FOUND);
         }
 
         $hashes = array_unique(array_keys($this->getHash()));
         $filehash = hash_file('crc32', $value);
         if ($filehash === false) {
-            return $this->_throw($file, self::NOT_DETECTED);
+            return $this->throwError($file, self::NOT_DETECTED);
         }
 
         foreach($hashes as $hash) {
@@ -122,6 +120,6 @@ class Crc32 extends Hash
             }
         }
 
-        return $this->_throw($file, self::DOES_NOT_MATCH);
+        return $this->throwError($file, self::DOES_NOT_MATCH);
     }
 }

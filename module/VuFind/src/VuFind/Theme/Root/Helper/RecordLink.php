@@ -64,7 +64,7 @@ class RecordLink extends AbstractHelper
             throw new \Exception('Unexpected link type: ' . $link['type']);
         }
 
-        $escapeHelper = $this->getView()->plugin('escape');
+        $escapeHelper = $this->getView()->plugin('escapeHtml');
         return $escape ? $escapeHelper($url) : $url;
     }
 
@@ -97,7 +97,7 @@ class RecordLink extends AbstractHelper
     public function getBreadcrumb($driver)
     {
         $truncateHelper = $this->getView()->plugin('truncate');
-        $escapeHelper = $this->getView()->plugin('escape');
+        $escapeHelper = $this->getView()->plugin('escapeHtml');
         return '<a href="' . $this->getUrl($driver) . '">' .
             $escapeHelper($truncateHelper($driver->getBreadcrumb(), 30))
             . '</a>';

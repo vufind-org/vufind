@@ -11,7 +11,7 @@
     <legend><?=$this->transEsc('Results per page')?></legend>
     <select id="limit" name="limit">
       <? foreach ($limitList as $limitVal): ?>
-        <option value="<?=$this->escape($limitVal)?>"<?=($limitVal == $defaultLimit) ? 'selected="selected"' : ''?>><?=$this->escape($limitVal)?></option>
+        <option value="<?=$this->escapeHtml($limitVal)?>"<?=($limitVal == $defaultLimit) ? 'selected="selected"' : ''?>><?=$this->escapeHtml($limitVal)?></option>
       <? endforeach; ?>
     </select>
   </fieldset>

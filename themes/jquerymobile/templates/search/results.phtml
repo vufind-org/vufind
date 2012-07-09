@@ -24,7 +24,7 @@
         <? if (isset($this->overrideSearchHeading)): ?>
           <?=$this->overrideSearchHeading?>
         <? elseif ($this->results->getSearchType() == 'basic'): ?>
-          <?=$this->transEsc('for search')?>: <strong>'<?=$this->escape($lookfor)?>'</strong>
+          <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($lookfor)?>'</strong>
         <? endif; ?>
       </p>
     <? endif; ?>
@@ -38,7 +38,7 @@
         <? if (isset($this->overrideEmptyMessage)): ?>
           <?=$this->overrideEmptyMessage?>
         <? else: ?>
-          <?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escape($lookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?>
+          <?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($lookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?>
         <? endif; ?>
       </p>
       <? if (isset($this->parseError)): ?>

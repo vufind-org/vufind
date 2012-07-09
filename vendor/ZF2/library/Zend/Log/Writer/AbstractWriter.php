@@ -21,9 +21,9 @@
 
 namespace Zend\Log\Writer;
 
-use Zend\Log\Filter,
-    Zend\Log\Formatter\FormatterInterface as Formatter,
-    Zend\Log\Exception;
+use Zend\Log\Filter;
+use Zend\Log\Formatter\FormatterInterface as Formatter;
+use Zend\Log\Exception;
 
 /**
  * @category   Zend
@@ -59,9 +59,7 @@ abstract class AbstractWriter implements WriterInterface
     {
         if (is_int($filter)) {
             $filter = new Filter\Priority($filter);
-        }
-
-        if (!$filter instanceof Filter\FilterInterface) {
+        } elseif (!$filter instanceof Filter\FilterInterface) {
             throw new Exception\InvalidArgumentException(sprintf(
                 'Filter must implement Zend\Log\Filter; received %s',
                 is_object($filter) ? get_class($filter) : gettype($filter)

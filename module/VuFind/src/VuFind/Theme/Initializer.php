@@ -92,7 +92,8 @@ class Initializer
     public static function configureTemplateInjection(MvcEvent $event)
     {
         // Get access to the shared event manager:
-        $sharedEvents = $event->getApplication()->events()->getSharedManager();
+        $sharedEvents
+            = $event->getApplication()->getEventManager()->getSharedManager();
 
         // Detach the default listener:
         $listeners = $sharedEvents->getListeners(
@@ -215,9 +216,10 @@ class Initializer
             ? $this->config->Site->mobile_theme : false;
 
         // Find out if the user has a saved preference in the POST, URL or cookies:
-        $selectedUI = $request->post()->get(
-            'ui', $request->query()->get(
-                'ui', isset($request->cookie()->ui) ? $request->cookie()->ui : null
+        $selectedUI = $request->getPost()->get(
+            'ui', $request->getQuery()->get(
+                'ui', isset($request->getCookie()->ui)
+                    ? $request->getCookie()->ui : null
             )
         );
         if (empty($selectedUI)) {
@@ -314,11 +316,11 @@ class Initializer
         }
 
         // Grab the helper loader from the view manager:
-        $loader = $this->serviceManager->get('viewmanager')->getHelperLoader();
+        $loader = $this->serviceManager->get('viewmanager')->getHelperManager();
 
         // Register all the helpers:
         foreach ($helpers as $helper) {
-            $loader->registerPlugin(strtolower($helper), "$namespace\\$helper");
+            $loader->setInvokableClass(strtolower($helper), "$namespace\\$helper");
         }
     }
 

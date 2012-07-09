@@ -24,11 +24,11 @@
       <label for="alphaBrowseForm_source"><?=$this->transEsc('Browse Alphabetically') ?></label>
       <select id="alphaBrowseForm_source" name="source">
         <? foreach ($this->alphaBrowseTypes as $key => $item): ?>
-          <option value="<?=$this->escape($key) ?>"<? if ($this->source == $key): ?> selected="selected"<? endif; ?>><?=$this->transEsc($item) ?></option>
+          <option value="<?=$this->escapeHtml($key) ?>"<? if ($this->source == $key): ?> selected="selected"<? endif; ?>><?=$this->transEsc($item) ?></option>
         <? endforeach; ?>
       </select>
       <label for="alphaBrowseForm_from"><?=$this->transEsc('starting from') ?></label>
-      <input type="text" name="from" id="alphaBrowseForm_from" value="<?=$this->escape($this->from) ?>"/>
+      <input type="text" name="from" id="alphaBrowseForm_from" value="<?=$this->escapeHtml($this->from) ?>"/>
       <input type="submit" value="<?=$this->transEsc('Browse') ?>"/>
     </form>
   </div>
@@ -53,9 +53,9 @@
             <? endif; ?>
           <? $searchLink = ob_get_contents(); ?>
           <? ob_end_clean(); ?>
-          <a href="<?=$searchLink ?>"><?=$this->escape($item['heading'])?></a>
+          <a href="<?=$searchLink ?>"><?=$this->escapeHtml($item['heading'])?></a>
           <? else: ?>
-          <?=$this->escape($item['heading'])?>
+          <?=$this->escapeHtml($item['heading'])?>
           <? endif; ?>
         </div>
         <div class="alphaBrowseCount"><? if ($item['count'] > 0): echo $item['count']; endif; ?></div>
@@ -66,7 +66,7 @@
           <div class="title"><?=$this->transEsc('Use instead') ?>:</div>
           <ul>
             <? foreach ($item['useInstead'] as $heading): ?>
-            <li><a href="<?=$this->url('alphabrowse-results')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($heading)?>"><?=$this->escape($heading)?></a></li>
+            <li><a href="<?=$this->url('alphabrowse-results')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($heading)?>"><?=$this->escapeHtml($heading)?></a></li>
             <? endforeach; ?>
           </ul>
           </div>
@@ -77,7 +77,7 @@
           <div class="title"><?=$this->transEsc('See also') ?>:</div>
           <ul>
             <? foreach ($item['seeAlso'] as $heading): ?>
-            <li><a href="<?=$this->url('alphabrowse-results')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($heading)?>"><?=$this->escape($heading)?></a></li>
+            <li><a href="<?=$this->url('alphabrowse-results')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($heading)?>"><?=$this->escapeHtml($heading)?></a></li>
             <? endforeach; ?>
           </ul>
           </div>
@@ -87,7 +87,7 @@
           <div class="alphaBrowseRelatedHeading">
           <div class="title"><?=$this->transEsc('Note') ?>:</div>
           <ul>
-            <li><?=$this->escape($item['note'])?></li>
+            <li><?=$this->escapeHtml($item['note'])?></li>
           </ul>
           </div>
         <? endif; ?>

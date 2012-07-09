@@ -27,7 +27,7 @@
  */
 namespace VuFind\Cache;
 use VuFind\Config\Reader as ConfigReader,
-    Zend\Cache\StorageFactory, Zend\Registry;
+    VuFind\Registry, Zend\Cache\StorageFactory;
 
 /**
  * VuFind Cache Manager

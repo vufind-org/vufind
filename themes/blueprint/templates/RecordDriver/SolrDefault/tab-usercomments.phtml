@@ -7,8 +7,8 @@
 </ul>
 
 <form name="commentRecord" id="commentRecord" action="<?=$this->recordLink()->getUrl($this->driver, 'AddComment')?>" method="post">
-  <input type="hidden" name="id" value="<?=$this->escape($this->driver->getUniqueId())?>"/>
-  <input type="hidden" name="source" value="<?=$this->escape($this->driver->getResourceSource())?>"/>
+  <input type="hidden" name="id" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>"/>
+  <input type="hidden" name="source" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>"/>
   <label for="comment" class="offscreen"><?=$this->transEsc("Your Comment")?>:</label>
   <textarea id="comment" name="comment" rows="4" cols="50" class="<?=$this->jqueryValidation(array('required'=>'This field is required'))?>"></textarea>
   <br/><br/>

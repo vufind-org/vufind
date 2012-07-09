@@ -26,7 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Translator;
-use Zend\View\Helper\Translator as TranslatorHelper;
+use VuFind\Theme\Root\Helper\Translate as TranslatorHelper;
 
 /**
  * Wrapper class to handle text translation
@@ -52,6 +52,6 @@ class Translator
         if (!$translator) {
             $translator = new TranslatorHelper();
         }
-        return $translator->translate($str);
+        return $translator->__invoke($str);
     }
 }

@@ -244,7 +244,7 @@ class Record extends AbstractHelper
         /* TODO
         $router = Zend_Controller_Front::getInstance()->getRouter();
         $route = $router->getRoute($this->driver->getRecordRoute());
-        return $this->view->escape($route->getDefault('controller'));
+        return $this->view->escapeHtml($route->getDefault('controller'));
          */
     }
 

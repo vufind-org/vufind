@@ -3,12 +3,12 @@
 <? endif; ?>
 <? foreach ($comments as $comment): ?>
   <li>
-    <?=$this->escape($comment->comment)?>
+    <?=$this->escapeHtml($comment->comment)?>
     <div class="posted">
-      <?=$this->transEsc('Posted by')?> <strong><?=$this->escape(trim($comment->firstname . ' ' . $comment->lastname))?></strong>
-      <?=$this->transEsc('posted_on')?> <?=$this->escape($comment->created)?>
+      <?=$this->transEsc('Posted by')?> <strong><?=$this->escapeHtml(trim($comment->firstname . ' ' . $comment->lastname))?></strong>
+      <?=$this->transEsc('posted_on')?> <?=$this->escapeHtml($comment->created)?>
       <? if (($user = VF_Account_Manager::getInstance()->isLoggedIn()) && $comment->user_id == $user->id): ?>
-        <a href="<?=$this->recordLink()->getUrl($this->driver, 'DeleteComment')?>?delete=<?=urlencode($comment->id)?>" id="recordComment<?=$this->escape($comment->id)?>" class="delete tool deleteRecordComment source<?=$this->escape($this->driver->getResourceSource())?>"><?=$this->transEsc('Delete')?></a>
+        <a href="<?=$this->recordLink()->getUrl($this->driver, 'DeleteComment')?>?delete=<?=urlencode($comment->id)?>" id="recordComment<?=$this->escapeHtml($comment->id)?>" class="delete tool deleteRecordComment source<?=$this->escapeHtml($this->driver->getResourceSource())?>"><?=$this->transEsc('Delete')?></a>
       <? endif; ?>
     </div>
   </li>

@@ -1,11 +1,11 @@
-<div class="gridRecordBox source<?=$this->escape($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
-    <input type="hidden" value="<?=$this->escape($this->driver->getUniqueID())?>" class="hiddenId" />
+<div class="gridRecordBox source<?=$this->escapeHtml($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
+    <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueID())?>" class="hiddenId" />
     <span class="gridImageBox">
       <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
         <? if ($summThumb = $this->driver->getThumbnail('large')): ?>
-          <img src="<?=$this->escape($summThumb)?>" class="gridImage" alt="<?=$this->transEsc('Cover Image')?>"/>
+          <img src="<?=$this->escapeHtml($summThumb)?>" class="gridImage" alt="<?=$this->transEsc('Cover Image')?>"/>
         <? elseif ($summThumb = $this->driver->getThumbnail()): ?>
-          <img src="<?=$this->escape($summThumb)?>" class="gridImage" alt="<?=$this->transEsc('Cover Image')?>"/>
+          <img src="<?=$this->escapeHtml($summThumb)?>" class="gridImage" alt="<?=$this->transEsc('Cover Image')?>"/>
         <? else: ?>
           <img src="<?=$this->url('cover-unavailable')?>" class="gridImage" alt="<?=$this->transEsc('No Cover Image')?>"/>
         <? endif; ?>
@@ -18,7 +18,7 @@
         if (!empty($summHighlightedTitle)) {
             echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
         } else if (!empty($summTitle)) {
-            echo $this->escape($this->truncate($summTitle, 80));
+            echo $this->escapeHtml($this->truncate($summTitle, 80));
         } else {
             echo $this->transEsc('Title not available');
         }
@@ -36,7 +36,7 @@
           <? if ($this->driver->replaceURLsWithOpenURL()) $urls = array(); // clear URL list if replace setting is active ?>
         <? endif; ?>
         <? if (!is_array($urls)) $urls = array(); foreach ($urls as $recordurl => $urldesc): ?>
-          <a href="<?=$this->escape($this->proxyUrl($recordurl))?>" class="fulltext" target="new"><?=($recordurl == $urldesc) ? $this->transEsc('Get full text') : $this->escape($urldesc)?></a>
+          <a href="<?=$this->escapeHtml($this->proxyUrl($recordurl))?>" class="fulltext" target="new"><?=($recordurl == $urldesc) ? $this->transEsc('Get full text') : $this->escapeHtml($urldesc)?></a>
           <br/>
         <? endforeach; ?>
       <? else: ?>
@@ -47,4 +47,4 @@
     </div>
 </div>
 
-<?=$openUrl?'<span class="Z3988" title="'.$this->escape($openUrl).'"></span>':''?>
+<?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtml($openUrl).'"></span>':''?>

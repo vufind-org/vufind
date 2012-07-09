@@ -15,14 +15,14 @@
     <? if (in_array("comments", $this->extraHoldFields)): ?>
       <div>
       <strong><?=$this->transEsc("Comments")?>:</strong><br/>
-      <textarea rows="3" cols="20" name="gatheredDetails[comment]"><?=isset($this->gatheredDetails['comment']) ? $this->escape($this->gatheredDetails['comment']) : ''?></textarea>
+      <textarea rows="3" cols="20" name="gatheredDetails[comment]"><?=isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['comment']) : ''?></textarea>
       </div>
     <? endif; ?>
 
     <? if (in_array("requiredByDate", $this->extraHoldFields)): ?>
       <div>
       <strong><?=$this->transEsc("hold_required_by")?>: </strong>
-      <div id="requiredByHolder"><input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escape($this->gatheredDetails['requiredBy']) : $this->escape($this->defaultRequiredDate)?>" size="8" /> <strong>(<?=$this->displayDateFormat()?>)</strong></div>
+      <div id="requiredByHolder"><input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtml($this->gatheredDetails['requiredBy']) : $this->escapeHtml($this->defaultRequiredDate)?>" size="8" /> <strong>(<?=$this->displayDateFormat()?>)</strong></div>
       </div>
     <? endif; ?>
 
@@ -41,13 +41,13 @@
         <strong><?=$this->transEsc("pick_up_location")?>:</strong><br/>
         <select name="gatheredDetails[pickUpLocation]">
         <? foreach ($this->pickup as $lib): ?>
-          <option value="<?=$this->escape($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
-            <?=$this->escape($lib['locationDisplay'])?>
+          <option value="<?=$this->escapeHtml($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
+            <?=$this->escapeHtml($lib['locationDisplay'])?>
           </option>
         <? endforeach; ?>
         </select>
       <? else: ?>
-        <input type="hidden" name="gatheredDetails[pickUpLocation]" value="<?=$this->escape($this->defaultPickup)?>" />
+        <input type="hidden" name="gatheredDetails[pickUpLocation]" value="<?=$this->escapeHtml($this->defaultPickup)?>" />
       <? endif; ?>
       </div>
     <? endif; ?>

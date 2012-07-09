@@ -7,8 +7,8 @@
   <div data-role="content">
     <form method="post" name="tagRecord" data-ajax="false">
       <input type="hidden" name="submit" value="1" />
-      <input type="hidden" name="id" value="<?=$this->escape($this->driver->getUniqueId())?>" />
-      <input type="hidden" name="source" value="<?=$this->escape($this->driver->getResourceSource())?>" />
+      <input type="hidden" name="id" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>" />
+      <input type="hidden" name="source" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>" />
       <div data-role="fieldcontain">
         <label for="addtag_tag"><?=$this->transEsc("Tags")?>:</label>
         <input id="addtag_tag" type="text" name="tag" value=""/>

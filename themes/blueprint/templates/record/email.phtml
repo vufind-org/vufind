@@ -8,8 +8,8 @@
 ?>
 <?=$this->flashmessages()?>
 <form action="" method="post"  name="emailRecord">
-    <input type="hidden" name="id" value="<?=$this->escape($this->driver->getUniqueId())?>" />
-    <input type="hidden" name="source" value="<?=$this->escape($this->driver->getResourceSource())?>" />
+    <input type="hidden" name="id" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>" />
+    <input type="hidden" name="source" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>" />
     <label class="displayBlock" for="email_to"><?=$this->transEsc('To')?>:</label>
     <input id="email_to" type="text" name="to" value="<?=isset($this->to) ? $this->to : ''?>" size="40" class="mainFocus <?=$this->jqueryValidation(array('required'=>'This field is required', 'email'=>'Email address is invalid'))?>"/>
     <label class="displayBlock" for="email_from"><?=$this->transEsc('From')?>:</label>

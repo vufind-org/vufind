@@ -7,8 +7,8 @@
 </ul>
 
 <form name="commentRecord" id="commentRecord" action="<?=$this->recordLink()->getUrl($this->driver, 'AddComment')?>" method="post" data-ajax="false">
-  <input type="hidden" name="id" value="<?=$this->escape($this->driver->getUniqueId())?>"/>
-  <input type="hidden" name="source" value="<?=$this->escape($this->driver->getResourceSource())?>"/>
+  <input type="hidden" name="id" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>"/>
+  <input type="hidden" name="source" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>"/>
   <div data-role="fieldcontain">
     <label for="comments_form_comment"><?=$this->transEsc("Your Comment")?>:</label>
     <textarea id="comments_form_comment" name="comment"></textarea>

@@ -27,7 +27,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Controller;
-use Zend\Mvc\Controller\ActionController;
+use Zend\Mvc\Controller\AbstractActionController;
 
 /**
  * VuFind controller base class (defines some methods that can be shared by other
@@ -39,7 +39,7 @@ use Zend\Mvc\Controller\ActionController;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class AbstractBase extends ActionController
+class AbstractBase extends AbstractActionController
 {
     /**
      * Redirect the user to the login screen.
@@ -93,8 +93,8 @@ class AbstractBase extends ActionController
         }
 
         // Now check if the user has provided credentials with which to log in:
-        if (($username = $this->getRequest()->post()->get('cat_username', false))
-            && ($password = $this->getRequest()->post()->get('cat_password', false))
+        if (($username = $this->getRequest()->getPost()->get('cat_username', false))
+            && ($password = $this->getRequest()->getPost()->get('cat_password', false))
         ) {
             $patron = $account->newCatalogLogin($username, $password);
 

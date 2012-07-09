@@ -27,7 +27,7 @@
  */
 namespace VuFind\Account;
 use VuFind\Auth\Factory as AuthFactory, VuFind\Config\Reader as ConfigReader,
-    Zend\Registry, Zend\Session\Container as SessionContainer;
+    VuFind\Registry, Zend\Session\Container as SessionContainer;
 
 /**
  * Wrapper class for handling logged-in user in session.

@@ -15,7 +15,7 @@
     <h2><?=$this->transEsc('ils_offline_title')?></h2>
     <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
     <p><?=$this->transEsc('ils_offline_holdings_message')?></p>
-    <? $supportEmail = $this->escape($this->systemEmail()); ?>
+    <? $supportEmail = $this->escapeHtml($this->systemEmail()); ?>
     <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
   </div>
 <? endif; ?>
@@ -33,13 +33,13 @@
   <? endif; ?>
 <? endif; ?>
 <? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
-    <a class="holdPlace" href="<?=$this->escape($holdingTitleHold)?>"><?=$this->transEsc('title_hold_place')?></a>
+    <a class="holdPlace" href="<?=$this->escapeHtml($holdingTitleHold)?>"><?=$this->transEsc('title_hold_place')?></a>
 <? endif; ?>
 <? if (!empty($urls) || $openUrl): ?>
   <h3><?=$this->transEsc("Internet")?></h3>
   <? if (!empty($urls)): ?>
     <? foreach ($urls as $currentUrl => $desc): ?>
-      <a href="<?=$this->escape($this->proxyUrl($currentUrl))?>"><?=$this->escape($desc)?></a><br/>
+      <a href="<?=$this->escapeHtml($this->proxyUrl($currentUrl))?>"><?=$this->escapeHtml($desc)?></a><br/>
     <? endforeach; ?>
   <? endif; ?>
   <? if ($openUrl): ?><?=$this->openUrl($openUrl);?><? endif; ?>
@@ -50,7 +50,7 @@
   <? if (isset($holding['items'][0]['callnumber'])): ?>
   <tr>
     <th><?=$this->transEsc("Call Number")?>: </th>
-    <td><?=$this->escape($holding['items'][0]['callnumber'])?></td>
+    <td><?=$this->escapeHtml($holding['items'][0]['callnumber'])?></td>
   </tr>
   <? endif; ?>
   <? if (!empty($holding['summary'])): ?>
@@ -58,7 +58,7 @@
     <th><?=$this->transEsc("Volume Holdings")?>: </th>
     <td>
       <? foreach ($holding['summary'] as $current): ?>
-        <?=$this->escape($current)?><br/>
+        <?=$this->escapeHtml($current)?><br/>
       <? endforeach; ?>
     </td>
   </tr>
@@ -68,7 +68,7 @@
     <th><?=$this->transEsc("Notes")?>: </th>
     <td>
       <? foreach ($holding['notes'] as $data): ?>
-        <?=$this->escape($data)?><br/>
+        <?=$this->escapeHtml($data)?><br/>
       <? endforeach; ?>
     </td>
   </tr>
@@ -77,7 +77,7 @@
     <? $check = (isset($row['check']) && $row['check']); ?>
     <? if (isset($row['barcode']) && $row['barcode'] != ""): ?>
       <tr>
-        <th><?=$this->transEsc("Copy")?> <?=$this->escape($row['number'])?></th>
+        <th><?=$this->transEsc("Copy")?> <?=$this->escapeHtml($row['number'])?></th>
         <td>
           <? if ($row['reserve'] == "Y"): ?>
           <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?>
@@ -89,22 +89,22 @@
               <div>
                <span class="available"><?=$this->transEsc("Available")?></span>
               <? if (isset($row['link']) && $row['link']): ?>
-                <a class="holdPlace<?=$check ? ' checkRequest' : ''?>" href="<?=$this->escape($row['link'])?>"><span><?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></span></a>
+                <a class="holdPlace<?=$check ? ' checkRequest' : ''?>" href="<?=$this->escapeHtml($row['link'])?>"><span><?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></span></a>
               <? endif; ?>
               </div>
             <? else: ?>
               <? /* Begin Unavailable Items (Recalls) */ ?>
               <div>
               <span class="checkedout"><?=$this->transEsc($row['status'])?></span>
-              <? if (isset($row['returnDate']) && $row['returnDate']): ?> <span class="statusExtra"><?=$this->escape($row['returnDate'])?></span><? endif; ?>
+              <? if (isset($row['returnDate']) && $row['returnDate']): ?> <span class="statusExtra"><?=$this->escapeHtml($row['returnDate'])?></span><? endif; ?>
               <? if (isset($row['duedate']) && $row['duedate']): ?>
-                <span class="statusExtra"><?=$this->transEsc("Due")?>: <?=$this->escape($row['duedate'])?></span>
+                <span class="statusExtra"><?=$this->transEsc("Due")?>: <?=$this->escapeHtml($row['duedate'])?></span>
               <? endif; ?>
               <? if (isset($row['requests_placed']) && $row['requests_placed'] > 0): ?>
-                <span><?=$this->transEsc("Requests")?>: <?=$this->escape($row['requests_placed'])?></span>
+                <span><?=$this->transEsc("Requests")?>: <?=$this->escapeHtml($row['requests_placed'])?></span>
               <? endif; ?>
               <? if (isset($row['link']) && $row['link']): ?>
-                <a class="holdPlace<?=$check ? ' checkRequest' : ''?>" href="<?=$this->escape($row['link'])?>"><span><?=$this->transEsc($check ? "Check Recall" : "Recall This")?></span></a>
+                <a class="holdPlace<?=$check ? ' checkRequest' : ''?>" href="<?=$this->escapeHtml($row['link'])?>"><span><?=$this->transEsc($check ? "Check Recall" : "Recall This")?></span></a>
               <? endif; ?>
               </div>
             <? endif; ?>
@@ -121,7 +121,7 @@
 <h3><?=$this->transEsc("Most Recent Received Issues")?></h3>
 <ul>
   <? foreach ($history as $row): ?>
-    <li><?=$this->escape($row['issue'])?></li>
+    <li><?=$this->escapeHtml($row['issue'])?></li>
   <? endforeach; ?>
 </ul>
 <? endif; ?>

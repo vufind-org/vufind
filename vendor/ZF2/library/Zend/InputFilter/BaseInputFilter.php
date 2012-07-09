@@ -71,7 +71,7 @@ class BaseInputFilter implements InputFilterInterface
             ));
         }
 
-        if (empty($name)) {
+        if (is_null($name) || $name === '') {
             $name = $input->getName();
         }
         $this->inputs[$name] = $input;
@@ -149,49 +149,26 @@ class BaseInputFilter implements InputFilterInterface
         $valid               = true;
         
         $inputs = $this->validationGroup ?: array_keys($this->inputs);
+        //var_dump($inputs);
         foreach ($inputs as $name) {
-            $input = $this->inputs[$name];
-
-            if (!isset($this->data[$name])) {
-                // Not sure how to handle input filters in this case
-                if ($input instanceof InputFilterInterface) {
-                    if (!$input->isValid()) {
-                        $this->invalidInputs[$name] = $input;
-                        $valid = false;
+            $input = $this->inputs[$name]; 
+            if (!array_key_exists($name, $this->data) || (is_string($this->data[$name]) && strlen($this->data[$name]) === 0)) {
+                if($input instanceof InputInterface) {
+                    // - test if input is required
+                    if (!$input->isRequired()) {
+                        $this->validInputs[$name] = $input;
                         continue;
                     }
-                    $this->validInputs[$name] = $input;
-                    continue;
+                    // - test if input allows empty
+                    if ($input->allowEmpty()) {
+                        $this->validInputs[$name] = $input;
+                        continue;
+                    }
                 }
-
-                // no matching value in data
-                // - test if input is required
-                // - test if input allows empty
-                if (!$input->isRequired()) {
-                    $this->validInputs[$name] = $input;
-                    continue;
-                }
-
-                if ($input->allowEmpty()) {
-                    $this->validInputs[$name] = $input;
-                    continue;
-                }
-
-                // How do we mark the input as invalid in this case?
-                // (for purposes of a validation error message)
-
-                // Mark validation as having failed
-                $this->invalidInputs[$name] = $input;
-                $valid = false;
-                if ($input->breakOnFailure()) {
-                    // We failed validation, and this input is marked to
-                    // break on failure
-                    return false;
-                }
-                continue;
+                // make sure we have a value (empty) for validation
+                $this->data[$name] = '';
             }
 
-            $value = $this->data[$name];
             if ($input instanceof InputFilterInterface) {
                 if (!$input->isValid()) {
                     $this->invalidInputs[$name] = $input;
@@ -242,14 +219,30 @@ class BaseInputFilter implements InputFilterInterface
         }
 
         if (is_array($name)) {
-            $this->validateValidationGroup($name);
-            $this->validationGroup = $name;
+            $inputs = array();
+            foreach ($name as $key => $value) {
+                if (!$this->has($key)) {
+                    $inputs[] = $value;
+                } else {
+                    $inputs[] = $key;
+
+                    // Recursively populate validation groups for sub input filters
+                    $this->inputs[$key]->setValidationGroup($value);
+                }
+            }
+
+            if (!empty($inputs)) {
+                $this->validateValidationGroup($inputs);
+                $this->validationGroup = $inputs;
+            }
+
             return $this;
         }
 
         $inputs = func_get_args();
         $this->validateValidationGroup($inputs);
         $this->validationGroup = $inputs;
+
         return $this;
     }
 

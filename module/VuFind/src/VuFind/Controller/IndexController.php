@@ -29,7 +29,7 @@ namespace VuFind\Controller;
 
 use VuFind\Config\Reader as ConfigReader,
     VuFind\Account\Manager as AccountManager,
-    Zend\Mvc\Controller\ActionController;
+    Zend\Mvc\Controller\AbstractActionController;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -40,7 +40,7 @@ use VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class IndexController extends ActionController
+class IndexController extends AbstractActionController
 {
     /**
      * Determines what elements are displayed on the home page based on whether

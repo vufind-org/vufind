@@ -17,7 +17,7 @@
       <th><?=$this->transEsc('Summary')?>: </th>
       <td>
         <? foreach ($summ as $field): ?>
-          <?=$this->escape($field)?><br/>
+          <?=$this->escapeHtml($field)?><br/>
         <? endforeach; ?>
       </td>
     </tr>
@@ -29,7 +29,7 @@
       <th><?=$this->transEsc('Published')?>: </th>
       <td>
         <? foreach ($dateSpan as $field): ?>
-          <?=$this->escape($field)?><br/>
+          <?=$this->escapeHtml($field)?><br/>
         <? endforeach; ?>
       </td>
     </tr>
@@ -41,7 +41,7 @@
       <th><?=$this->transEsc('Item Description')?>: </th>
       <td>
         <? foreach ($notes as $field): ?>
-          <?=$this->escape($field)?><br/>
+          <?=$this->escapeHtml($field)?><br/>
         <? endforeach; ?>
       </td>
     </tr>
@@ -53,7 +53,7 @@
       <th><?=$this->transEsc('Physical Description')?>: </th>
       <td>
         <? foreach ($physical as $field): ?>
-          <?=$this->escape($field)?><br/>
+          <?=$this->escapeHtml($field)?><br/>
         <? endforeach; ?>
       </td>
     </tr>
@@ -65,7 +65,7 @@
       <th><?=$this->transEsc('Publication Frequency')?>: </th>
       <td>
         <? foreach ($freq as $field): ?>
-          <?=$this->escape($field)?><br/>
+          <?=$this->escapeHtml($field)?><br/>
         <? endforeach; ?>
       </td>
     </tr>
@@ -77,7 +77,7 @@
       <th><?=$this->transEsc('Playing Time')?>: </th>
       <td>
         <? foreach ($playTime as $field): ?>
-          <?=$this->escape($field)?><br/>
+          <?=$this->escapeHtml($field)?><br/>
         <? endforeach; ?>
       </td>
     </tr>
@@ -89,7 +89,7 @@
       <th><?=$this->transEsc('Format')?>: </th>
       <td>
         <? foreach ($system as $field): ?>
-          <?=$this->escape($field)?><br/>
+          <?=$this->escapeHtml($field)?><br/>
         <? endforeach; ?>
       </td>
     </tr>
@@ -101,7 +101,7 @@
       <th><?=$this->transEsc('Audience')?>: </th>
       <td>
         <? foreach ($audience as $field): ?>
-          <?=$this->escape($field)?><br/>
+          <?=$this->escapeHtml($field)?><br/>
         <? endforeach; ?>
       </td>
     </tr>
@@ -113,7 +113,7 @@
       <th><?=$this->transEsc('Awards')?>: </th>
       <td>
         <? foreach ($awards as $field): ?>
-          <?=$this->escape($field)?><br/>
+          <?=$this->escapeHtml($field)?><br/>
         <? endforeach; ?>
       </td>
     </tr>
@@ -125,7 +125,7 @@
       <th><?=$this->transEsc('Production Credits')?>: </th>
       <td>
         <? foreach ($credits as $field): ?>
-          <?=$this->escape($field)?><br/>
+          <?=$this->escapeHtml($field)?><br/>
         <? endforeach; ?>
       </td>
     </tr>
@@ -137,7 +137,7 @@
       <th><?=$this->transEsc('Bibliography')?>: </th>
       <td>
         <? foreach ($bib as $field): ?>
-          <?=$this->escape($field)?><br/>
+          <?=$this->escapeHtml($field)?><br/>
         <? endforeach; ?>
       </td>
     </tr>
@@ -149,7 +149,7 @@
       <th><?=$this->transEsc('ISBN')?>: </th>
       <td>
         <? foreach ($isbns as $field): ?>
-          <?=$this->escape($field)?><br/>
+          <?=$this->escapeHtml($field)?><br/>
         <? endforeach; ?>
       </td>
     </tr>
@@ -161,7 +161,7 @@
       <th><?=$this->transEsc('ISSN')?>: </th>
       <td>
         <? foreach ($issns as $field): ?>
-          <?=$this->escape($field)?><br/>
+          <?=$this->escapeHtml($field)?><br/>
         <? endforeach; ?>
       </td>
     </tr>
@@ -173,7 +173,7 @@
       <th><?=$this->transEsc('Related Items')?>: </th>
       <td>
         <? foreach ($related as $field): ?>
-          <?=$this->escape($field)?><br/>
+          <?=$this->escapeHtml($field)?><br/>
         <? endforeach; ?>
       </td>
     </tr>
@@ -185,7 +185,7 @@
       <th><?=$this->transEsc('Access')?>: </th>
       <td>
         <? foreach ($access as $field): ?>
-          <?=$this->escape($field)?><br/>
+          <?=$this->escapeHtml($field)?><br/>
         <? endforeach; ?>
       </td>
     </tr>
@@ -197,7 +197,7 @@
       <th><?=$this->transEsc('Finding Aid')?>: </th>
       <td>
         <? foreach ($findingAids as $field): ?>
-          <?=$this->escape($field)?><br/>
+          <?=$this->escapeHtml($field)?><br/>
         <? endforeach; ?>
       </td>
     </tr>

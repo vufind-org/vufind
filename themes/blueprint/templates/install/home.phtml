@@ -9,7 +9,7 @@
 <ul>
   <? $errors = 0; foreach ($this->checks as $check): ?>
     <? if (!$check['status']) $errors++; ?>
-    <li><?=$this->escape($check['title'])?>... <?=$check['status'] ? '<span style="color:green">' . $this->transEsc('test_ok') . '</span>' : '<span style="color:red">' . $this->transesc('test_fail') . '</span> <a href="' . $this->url('install-' . strtolower($check['fix'])) . '">' . $this->transEsc('test_fix') . '</a>' ?></li>
+    <li><?=$this->escapeHtml($check['title'])?>... <?=$check['status'] ? '<span style="color:green">' . $this->transEsc('test_ok') . '</span>' : '<span style="color:red">' . $this->transesc('test_fail') . '</span> <a href="' . $this->url('install-' . strtolower($check['fix'])) . '">' . $this->transEsc('test_fix') . '</a>' ?></li>
   <? endforeach; ?>
 </ul>
 

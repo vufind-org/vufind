@@ -13,7 +13,7 @@
   <h3><?=$this->transEsc('Search For Items on Reserve')?></h3>
   <form method="get" action="" name="reservesSearchForm" class="search">
     <label for="reservesSearchForm_lookfor" class="offscreen"><?=$this->transEsc("Your search terms")?></label>
-    <input id="reservesSearchForm_lookfor" type="text" name="lookfor" size="40" value="<?=$this->escape($reservesLookfor)?>" <?=$this->searchOptions('SolrReserves')->autocompleteEnabled() ? ' class="autocomplete searcher:SolrReserves type:Reserves"' : ''?> />
+    <input id="reservesSearchForm_lookfor" type="text" name="lookfor" size="40" value="<?=$this->escapeHtml($reservesLookfor)?>" <?=$this->searchOptions('SolrReserves')->autocompleteEnabled() ? ' class="autocomplete searcher:SolrReserves type:Reserves"' : ''?> />
     <input type="submit" name="submit" value="<?=$this->transEsc("Find")?>"/>
   </form>
   <script type="text/javascript">$("#reservesSearchForm_lookfor").focus()</script>
@@ -23,11 +23,11 @@
       <? if (($recordTotal = $this->results->getResultTotal()) > 0): ?>
         <?=$this->transEsc("Showing")?>
         <strong><?=$this->results->getStartRecord()?></strong> - <strong><?=$this->results->getEndRecord()?></strong>
-        <?=$this->transEsc('of')?> <strong><?=$this->escape($recordTotal)?></strong>
-        <?=$this->transEsc('for search')?>: <strong>'<?=$this->escape($reservesLookfor)?>'</strong>,
+        <?=$this->transEsc('of')?> <strong><?=$this->escapeHtml($recordTotal)?></strong>
+        <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($reservesLookfor)?>'</strong>,
       <? endif; ?>
       <? if ($qtime = $this->results->getQuerySpeed()): ?>
-        <?=$this->transEsc('query time')?>: <?=$this->escape(round($qtime, 2))?>s
+        <?=$this->transEsc('query time')?>: <?=$this->escapeHtml(round($qtime, 2))?>s
       <? endif; ?>
     </div>
   
@@ -38,7 +38,7 @@
   </div>
   
   <? if ($recordTotal < 1): ?>
-    <p class="error"><?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escape($reservesLookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?></p>
+    <p class="error"><?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($reservesLookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?></p>
     <? if (isset($this->parseError)): ?>
       <p class="error"><?=$this->transEsc('nohit_parse_error')?></p>
     <? endif; ?>
@@ -52,17 +52,17 @@
     </tr>
     <? foreach ($this->results->getResults() as $record): ?>
       <?
-          $url = $this->currentPath() . $this->escape(
+          $url = $this->currentPath() . $this->escapeHtml(
               '?inst=' . urlencode($record->getInstructorId())
               . '&course=' . urlencode($record->getCourseId())
               . '&dept=' . urlencode($record->getDepartmentId())
           );
       ?>
       <tr>
-        <td class="department"><a href="<?=$url?>"><?=$this->escape($record->getDepartment())?></a></td>
-        <td class="course"><a href="<?=$url?>"><?=$this->escape($record->getCourse())?></a></td>
-        <td class="instructor"><a href="<?=$url?>"><?=$this->escape($record->getInstructor())?></a></td>
-        <td class="items"><?=$this->escape($record->getItemCount())?></td>
+        <td class="department"><a href="<?=$url?>"><?=$this->escapeHtml($record->getDepartment())?></a></td>
+        <td class="course"><a href="<?=$url?>"><?=$this->escapeHtml($record->getCourse())?></a></td>
+        <td class="instructor"><a href="<?=$url?>"><?=$this->escapeHtml($record->getInstructor())?></a></td>
+        <td class="items"><?=$this->escapeHtml($record->getItemCount())?></td>
       </tr>
     <? endforeach; ?>
     </table>

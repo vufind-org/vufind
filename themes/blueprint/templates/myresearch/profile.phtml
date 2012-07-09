@@ -34,7 +34,7 @@
     ?>
     <select id="home_library" name="home_library">
       <? foreach ($this->pickup as $lib): ?>
-        <option value="<?=$this->escape($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->escape($lib['locationDisplay'])?></option>
+        <option value="<?=$this->escapeHtml($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->escapeHtml($lib['locationDisplay'])?></option>
       <? endforeach; ?>
     </select>
     <br class="clear"/>

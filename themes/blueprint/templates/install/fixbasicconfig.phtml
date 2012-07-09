@@ -8,7 +8,7 @@
 <h1><?=$this->transEsc('auto_configure_title')?></h1>
 
 <? if (isset($this->configDir)): ?>
-  <p>VuFind cannot write to <b><?=$this->escape($this->configDir)?></b>.</p>
+  <p>VuFind cannot write to <b><?=$this->escapeHtml($this->configDir)?></b>.</p>
 
   <p>Please make sure that write permissions are available on this directory.</p>
 
@@ -16,9 +16,9 @@
 
   <pre>
     <? if (isset($this->runningUser)): ?>
-      chown <?=$this->escape($this->runningUser)?>:<?=$this->escape($this->runningUser)?> <?=$this->escape($this->configDir)?>
+      chown <?=$this->escapeHtml($this->runningUser)?>:<?=$this->escapeHtml($this->runningUser)?> <?=$this->escapeHtml($this->configDir)?>
     <? else: ?>
-      chmod 777 <?=$this->escape($this->configDir)?>
+      chmod 777 <?=$this->escapeHtml($this->configDir)?>
     <? endif; ?>
   </pre>
 <? else: ?>

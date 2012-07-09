@@ -3,7 +3,7 @@
   <? foreach ($records as $i => $record): ?>
     <li>
       <?=$this->record($record)->getCheckbox('cart')?>
-      <a title="<?=$this->transEsc('View Record')?>" href="<?=$this->recordLink()->getUrl($record)?>"><?=$this->escape($record->getBreadcrumb())?></a>
+      <a title="<?=$this->transEsc('View Record')?>" href="<?=$this->recordLink()->getUrl($record)?>"><?=$this->escapeHtml($record->getBreadcrumb())?></a>
     </li>
   <? endforeach; ?>
   </ul>

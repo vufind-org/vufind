@@ -44,7 +44,7 @@
   </head>
   <body>
     <? if ($mobileViewLink = $this->mobileUrl()): // display 'return to mobile' link when applicable ?>
-      <div class="mobileViewLink"><a href="<?=$this->escape($mobileViewLink)?>"><?=$this->transEsc("mobile_link")?></a></div>
+      <div class="mobileViewLink"><a href="<?=$this->escapeHtml($mobileViewLink)?>"><?=$this->transEsc("mobile_link")?></a></div>
     <? endif; ?>
     <div class="container">
       <div class="header">

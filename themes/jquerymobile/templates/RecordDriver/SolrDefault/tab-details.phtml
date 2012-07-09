@@ -4,12 +4,12 @@
 ?>
 <dl class="biblio" title="<?=$this->transEsc('Staff View')?>">
   <? foreach ($this->driver->getAllFields() as $field => $values): ?>
-    <dt><?=$this->escape($field)?></dt>
+    <dt><?=$this->escapeHtml($field)?></dt>
     <dd>
       <div style="width: 500px; overflow: auto;">
         <? if (!is_array($values)) { $values = array($values); } ?>
         <? foreach ($values as $value): ?>
-          <p><?=$this->escape(is_array($value) ? print_r($value, true) : $value)?></p>
+          <p><?=$this->escapeHtml(is_array($value) ? print_r($value, true) : $value)?></p>
         <? endforeach; ?>
       </div>
     </dd>

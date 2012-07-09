@@ -8,14 +8,14 @@
 ?>
 <div class="listentry span-15">
   <div class="resultItemLine1">
-    <a href="<?=$this->url('authority-record')?>?id=<?=urlencode($this->driver->getUniqueId())?>" class="title"><?=$this->escape($heading)?></a>
+    <a href="<?=$this->url('authority-record')?>?id=<?=urlencode($this->driver->getUniqueId())?>" class="title"><?=$this->escapeHtml($heading)?></a>
   </div>
 
   <div class="resultItemLine2">
     <? if (!empty($seeAlso)): ?>
       <?=$this->transEsc("See also")?>:<br/>
       <? foreach ($seeAlso as $current): ?>
-        <a href="<?=$this->url('authority-search')?>?lookfor=%22<?=urlencode($current)?>%22&amp;type=MainHeading"><?=$this->escape($current)?></a><br/>
+        <a href="<?=$this->url('authority-search')?>?lookfor=%22<?=urlencode($current)?>%22&amp;type=MainHeading"><?=$this->escapeHtml($current)?></a><br/>
       <? endforeach; ?>
     <? endif; ?>
   </div>
@@ -24,7 +24,7 @@
     <? if (!empty($useFor)): ?>
       <?=$this->transEsc("Use for")?>:<br/>
       <? foreach ($useFor as $current): ?>
-        <?=$this->escape($current)?><br/>
+        <?=$this->escapeHtml($current)?><br/>
       <? endforeach; ?>
     <? endif; ?>
   </div>

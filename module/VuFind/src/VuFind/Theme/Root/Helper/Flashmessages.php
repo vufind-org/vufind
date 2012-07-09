@@ -67,7 +67,7 @@ class Flashmessages extends AbstractHelper
                                 ? 'translate' : 'transEsc';
                         } else {
                             $helper = (isset($msg['html']) && $msg['html'])
-                                ? false : 'escape';
+                                ? false : 'escapeHtml';
                         }
                         $tokens = isset($msg['tokens']) ? $msg['tokens'] : array();
                         $default = isset($msg['default']) ? $msg['default'] : null;

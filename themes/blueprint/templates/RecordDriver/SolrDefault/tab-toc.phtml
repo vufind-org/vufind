@@ -8,7 +8,7 @@
   <strong><?=$this->transEsc('Table of Contents')?>: </strong>
   <ul class="toc">
     <? foreach ($toc as $line): ?>
-      <li><?=$this->escape($line)?></li>
+      <li><?=$this->escapeHtml($line)?></li>
     <? endforeach; ?>
   </ul>
 <? else: ?>

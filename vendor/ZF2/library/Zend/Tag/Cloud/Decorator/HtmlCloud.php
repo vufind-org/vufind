@@ -29,7 +29,7 @@ namespace Zend\Tag\Cloud\Decorator;
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd     New BSD License
  */
-class HtmlCloud extends Cloud
+class HtmlCloud extends AbstractCloud
 {
     /**
      * @var string Encoding to use
@@ -122,13 +122,13 @@ class HtmlCloud extends Cloud
      * Defined by Zend\Tag\Cloud\Decorator\Cloud
      *
      * @param  array $tags
-     * @throws InvalidArgumentException
+     * @throws Exception\InvalidArgumentException
      * @return string
      */
     public function render($tags)
     {
         if (!is_array($tags)) {
-            throw new InvalidArgumentException(sprintf(
+            throw new Exception\InvalidArgumentException(sprintf(
                 'HtmlCloud::render() expects an array argument; received "%s"',
                 (is_object($tags) ? get_class($tags) : gettype($tags))
             ));

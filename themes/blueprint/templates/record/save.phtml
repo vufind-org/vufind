@@ -6,16 +6,16 @@
     $this->layout()->breadcrumbs = $this->getLastSearchLink($this->transEsc('Search'), '', '<span>&gt;</span>') .
         $this->recordLink()->getBreadcrumb($this->driver) . '<span>&gt;</span><em>' . $this->transEsc('Save') . '</em>';
 ?>
-<h2><?=$this->transEsc("add_favorite_prefix") ?> <?=$this->escape($this->driver->getBreadcrumb())?> <?=$this->transEsc("add_favorite_suffix") ?></h2>
+<h2><?=$this->transEsc("add_favorite_prefix") ?> <?=$this->escapeHtml($this->driver->getBreadcrumb())?> <?=$this->transEsc("add_favorite_suffix") ?></h2>
 <form method="get" action="" name="saveRecord">
   <input type="hidden" name="submit" value="1" />
-  <input type="hidden" name="id" value="<?=$this->escape($this->driver->getUniqueId()) ?>" />
-  <input type="hidden" name="source" value="<?=$this->escape($this->driver->getResourceSource())?>" />
+  <input type="hidden" name="id" value="<?=$this->escapeHtml($this->driver->getUniqueId()) ?>" />
+  <input type="hidden" name="source" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>" />
   <? if (!empty($this->containingLists)): ?>
     <p><?=$this->transEsc('This item is already part of the following list/lists') ?>:</p>
     <ul>
     <? foreach ($this->containingLists as $list): ?>
-      <li><a href="<?=$this->url('userList', array('id' => $list['id'])) ?>"><?=$this->escape($list['title'])?></a></li>
+      <li><a href="<?=$this->url('userList', array('id' => $list['id'])) ?>"><?=$this->escapeHtml($list['title'])?></a></li>
     <? endforeach; ?>
     </ul>
   <? endif; ?>
@@ -29,7 +29,7 @@
     <select id="save_list" name="list">
       <? if ($this->nonContainingLists): ?>
         <? foreach ($this->nonContainingLists as $list): ?>
-          <option value="<?=$list['id'] ?>"<? if ($list['id']==$this->userList()->lastUsed()): ?> selected="selected"<? endif; ?>><?=$this->escape($list['title'])?></option>
+          <option value="<?=$list['id'] ?>"<? if ($list['id']==$this->userList()->lastUsed()): ?> selected="selected"<? endif; ?>><?=$this->escapeHtml($list['title'])?></option>
         <? endforeach; ?>
       <? else: ?>
         <option value=""><?=$this->transEsc('My Favorites') ?></option>

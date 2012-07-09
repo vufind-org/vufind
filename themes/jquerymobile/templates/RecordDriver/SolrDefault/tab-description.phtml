@@ -16,7 +16,7 @@
     <dt><?=$this->transEsc('Summary')?>: </dt>
     <dd>
       <? foreach ($summ as $field): ?>
-        <p><?=$this->escape($field)?></p>
+        <p><?=$this->escapeHtml($field)?></p>
       <? endforeach; ?>
     </dd>
   <? endif; ?>
@@ -26,7 +26,7 @@
     <dt><?=$this->transEsc('Published')?>: </dt>
     <dd>
       <? foreach ($dateSpan as $field): ?>
-        <p><?=$this->escape($field)?></p>
+        <p><?=$this->escapeHtml($field)?></p>
       <? endforeach; ?>
     </dd>
   <? endif; ?>
@@ -36,7 +36,7 @@
     <dt><?=$this->transEsc('Item Description')?>: </dt>
     <dd>
       <? foreach ($notes as $field): ?>
-        <p><?=$this->escape($field)?></p>
+        <p><?=$this->escapeHtml($field)?></p>
       <? endforeach; ?>
     </dd>
   <? endif; ?>
@@ -46,7 +46,7 @@
     <dt><?=$this->transEsc('Physical Description')?>: </dt>
     <dd>
       <? foreach ($physical as $field): ?>
-        <p><?=$this->escape($field)?></p>
+        <p><?=$this->escapeHtml($field)?></p>
       <? endforeach; ?>
     </dd>
   <? endif; ?>
@@ -56,7 +56,7 @@
     <dt><?=$this->transEsc('Publication Frequency')?>: </dt>
     <dd>
       <? foreach ($freq as $field): ?>
-        <p><?=$this->escape($field)?></p>
+        <p><?=$this->escapeHtml($field)?></p>
       <? endforeach; ?>
     </dd>
   <? endif; ?>
@@ -66,7 +66,7 @@
     <dt><?=$this->transEsc('Playing Time')?>: </dt>
     <dd>
       <? foreach ($playTime as $field): ?>
-        <p><?=$this->escape($field)?></p>
+        <p><?=$this->escapeHtml($field)?></p>
       <? endforeach; ?>
     </dd>
   <? endif; ?>
@@ -76,7 +76,7 @@
     <dt><?=$this->transEsc('Format')?>: </dt>
     <dd>
       <? foreach ($system as $field): ?>
-        <p><?=$this->escape($field)?></p>
+        <p><?=$this->escapeHtml($field)?></p>
       <? endforeach; ?>
     </dd>
   <? endif; ?>
@@ -86,7 +86,7 @@
     <dt><?=$this->transEsc('Audience')?>: </dt>
     <dd>
       <? foreach ($audience as $field): ?>
-        <p><?=$this->escape($field)?></p>
+        <p><?=$this->escapeHtml($field)?></p>
       <? endforeach; ?>
     </dd>
   <? endif; ?>
@@ -96,7 +96,7 @@
     <dt><?=$this->transEsc('Awards')?>: </dt>
     <dd>
       <? foreach ($awards as $field): ?>
-        <p><?=$this->escape($field)?></p>
+        <p><?=$this->escapeHtml($field)?></p>
       <? endforeach; ?>
     </dd>
   <? endif; ?>
@@ -106,7 +106,7 @@
     <dt><?=$this->transEsc('Production Credits')?>: </dt>
     <dd>
       <? foreach ($credits as $field): ?>
-        <p><?=$this->escape($field)?></p>
+        <p><?=$this->escapeHtml($field)?></p>
       <? endforeach; ?>
     </dd>
   <? endif; ?>
@@ -116,7 +116,7 @@
     <dt><?=$this->transEsc('Bibliography')?>: </dt>
     <dd>
       <? foreach ($bib as $field): ?>
-        <p><?=$this->escape($field)?></p>
+        <p><?=$this->escapeHtml($field)?></p>
       <? endforeach; ?>
     </dd>
   <? endif; ?>
@@ -126,7 +126,7 @@
     <dt><?=$this->transEsc('ISBN')?>: </dt>
     <dd>
       <? foreach ($isbns as $field): ?>
-        <p><?=$this->escape($field)?></p>
+        <p><?=$this->escapeHtml($field)?></p>
       <? endforeach; ?>
     </dd>
   <? endif; ?>
@@ -136,7 +136,7 @@
     <dt><?=$this->transEsc('ISSN')?>: </dt>
     <dd>
       <? foreach ($issns as $field): ?>
-        <p><?=$this->escape($field)?></p>
+        <p><?=$this->escapeHtml($field)?></p>
       <? endforeach; ?>
     </dd>
   <? endif; ?>
@@ -146,7 +146,7 @@
     <dt><?=$this->transEsc('Related Items')?>: </dt>
     <dd>
       <? foreach ($related as $field): ?>
-        <p><?=$this->escape($field)?></p>
+        <p><?=$this->escapeHtml($field)?></p>
       <? endforeach; ?>
     </dd>
   <? endif; ?>
@@ -156,7 +156,7 @@
     <dt><?=$this->transEsc('Access')?>: </dt>
     <dd>
       <? foreach ($access as $field): ?>
-        <p><?=$this->escape($field)?></p>
+        <p><?=$this->escapeHtml($field)?></p>
       <? endforeach; ?>
     </dd>
   <? endif; ?>
@@ -166,7 +166,7 @@
     <dt><?=$this->transEsc('Finding Aid')?>: </dt>
     <dd>
       <? foreach ($findingAids as $field): ?>
-        <p><?=$this->escape($field)?></p>
+        <p><?=$this->escapeHtml($field)?></p>
       <? endforeach; ?>
     </dd>
   <? endif; ?>

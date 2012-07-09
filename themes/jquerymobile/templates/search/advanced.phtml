@@ -22,7 +22,7 @@
         <h2><?=$this->transEsc('ils_offline_title')?></h2>
         <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
         <p><?=$this->transEsc('ils_offline_home_message')?></p>
-        <? $supportEmail = $this->escape($this->systemEmail()); ?>
+        <? $supportEmail = $this->escapeHtml($this->systemEmail()); ?>
         <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
       </div>
     <? endif; ?>
@@ -39,7 +39,7 @@
         <div class="ui-block-b">
           <select id="searchForm_type" name="type0[]" data-mini="true">
             <? foreach ($options->getBasicHandlers() as $searchVal => $searchDesc): ?>
-              <option value="<?=$this->escape($searchVal)?>"<?=$this->searchIndex == $searchVal ? ' selected="selected"' : ''?>><?=$this->transEsc($searchDesc)?></option>
+              <option value="<?=$this->escapeHtml($searchVal)?>"<?=$this->searchIndex == $searchVal ? ' selected="selected"' : ''?>><?=$this->transEsc($searchDesc)?></option>
             <? endforeach; ?>
           </select>
         </div>
@@ -59,10 +59,10 @@
       <?
         /* Load hidden limit preference from Session */
         if (!empty($lastLimit)) {
-          echo '<input type="hidden" name="limit" value="' . $this->escape($lastLimit) . '" />';
+          echo '<input type="hidden" name="limit" value="' . $this->escapeHtml($lastLimit) . '" />';
         }
         if (!empty($lastSort)) {
-          echo '<input type="hidden" name="sort" value="' . $this->escape($lastSort) . '" />';
+          echo '<input type="hidden" name="sort" value="' . $this->escapeHtml($lastSort) . '" />';
         }
       ?>
     </form>

@@ -18,12 +18,9 @@
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 
-/**
- * @namespace
- */
 namespace Zend\Log;
 
-use Zend\Log\Logger;
+use Zend\Log\LoggerInterface;
 
 /**
  * Logger aware interface
@@ -35,5 +32,5 @@ use Zend\Log\Logger;
  */
 interface LoggerAwareInterface
 {
-    public function setLogger(Logger $logger);
+    public function setLogger(LoggerInterface $logger);
 }

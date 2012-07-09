@@ -5,12 +5,12 @@
 ?>
 <div data-role="page" id="Record-view">
   <?=$this->mobileMenu()->header(array('searchLink' => array('action' => 'Home') + $this->searchOptions($this->searchClassId)->getSearchAction()))?>
-  <div class="record" data-role="content" data-record-id="<?=$this->escape($this->driver->getUniqueId())?>">
+  <div class="record" data-role="content" data-record-id="<?=$this->escapeHtml($this->driver->getUniqueId())?>">
     <?=$this->flashmessages()?>
     <? if ($this->tab == $this->defaultTab): ?>
       <?=$this->record($this->driver)->getCoreMetadata()?>
     <? else: ?>
-      <h3><?=$this->escape($this->driver->getBreadcrumb())?></h3>
+      <h3><?=$this->escapeHtml($this->driver->getBreadcrumb())?></h3>
     <? endif; ?>
     <?=$tab?>
     <div data-role="controlgroup">

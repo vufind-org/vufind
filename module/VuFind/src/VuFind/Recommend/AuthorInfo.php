@@ -56,9 +56,11 @@ class AuthorInfo implements RecommendInterface
      */
     public function __construct($settings)
     {
+        /* TODO:
         $this->lang = Zend_Registry::getInstance()
             ->get('Zend_Translate')
             ->getAdapter()->getLocale();
+         */
     }
 
     /**

@@ -10,17 +10,17 @@
       <? foreach($cluster['list'] as $thisFacet): ?>
         <? if ($iter == $corner+1): ?>
           <br class="clear"/>
-          <a id="more<?=$this->escape($title)?>" href="#" onclick="moreFacets('<?=$this->escape($title)?>'); return false;"><?=$this->transEsc('more') ?> ...</a>
-          <div class="offscreen" id="narrowGroupHidden_<?=$this->escape($title)?>">
+          <a id="more<?=$this->escapeHtml($title)?>" href="#" onclick="moreFacets('<?=$this->escapeHtml($title)?>'); return false;"><?=$this->transEsc('more') ?> ...</a>
+          <div class="offscreen" id="narrowGroupHidden_<?=$this->escapeHtml($title)?>">
           <br/>
           <strong><?=$this->transEsc('top_facet_additional_prefix').$this->transEsc($cluster['label']) ?></strong><?=$this->transEsc("top_facet_suffix") ?>
         <? endif; ?>
         <? if ($iter % $topFacetSettings['cols'] == 1): ?><br/><? endif; ?>
         <span class="span-5">
           <? if ($thisFacet['isApplied']): ?>
-            <?=$this->escape($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="<?=$this->transEsc('Selected') ?>"/>
+            <?=$this->escapeHtml($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="<?=$this->transEsc('Selected') ?>"/>
           <? else: ?>
-            <a href="<?=$this->currentPath().$this->results->getUrl()->addFacet($title, $thisFacet['value'])?>"><?=$this->escape($thisFacet['displayText'])?></a> (<?=$thisFacet['count'] ?>)
+            <a href="<?=$this->currentPath().$this->results->getUrl()->addFacet($title, $thisFacet['value'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> (<?=$thisFacet['count'] ?>)
           <? endif; ?>
         </span>
         <? if (count($cluster['list']) > $corner && $iter == count($cluster['list'])): ?>

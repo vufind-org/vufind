@@ -20,12 +20,12 @@
 
 namespace Zend\Feed\Reader;
 
-use Zend\Cache\Storage\Adapter\AdapterInterface as CacheAdapter,
-    Zend\Http,
-    Zend\Loader,
-    Zend\Stdlib\ErrorHandler,
-    DOMDocument,
-    DOMXPath;
+use Zend\Cache\Storage\StorageInterface as CacheStorage;
+use Zend\Http;
+use Zend\Loader;
+use Zend\Stdlib\ErrorHandler;
+use DOMDocument;
+use DOMXPath;
 
 /**
 * @category Zend
@@ -66,7 +66,7 @@ class Reader
     /**
      * Cache instance
      *
-     * @var CacheAdapter
+     * @var CacheStorage
      */
     protected static $_cache = null;
 
@@ -112,7 +112,7 @@ class Reader
     /**
      * Get the Feed cache
      *
-     * @return CacheAdapter
+     * @return CacheStorage
      */
     public static function getCache()
     {
@@ -122,10 +122,10 @@ class Reader
     /**
      * Set the feed cache
      *
-     * @param  CacheAdapter $cache
+     * @param  CacheStorage $cache
      * @return void
      */
-    public static function setCache(CacheAdapter $cache)
+    public static function setCache(CacheStorage $cache)
     {
         self::$_cache = $cache;
     }
@@ -243,17 +243,17 @@ class Reader
             } else {
                 $responseXml = $response->getBody();
                 $cache->setItem($cacheId, $responseXml);
-                if ($response->headers()->get('ETag')) {
-                    $cache->setItem($cacheId . '_etag', $response->headers()->get('ETag')->getFieldValue());
+                if ($response->getHeaders()->get('ETag')) {
+                    $cache->setItem($cacheId . '_etag', $response->getHeaders()->get('ETag')->getFieldValue());
                 }
-                if ($response->headers()->get('Last-Modified')) {
-                    $cache->setItem($cacheId . '_lastmodified', $response->headers()->get('Last-Modified')->getFieldValue());
+                if ($response->getHeaders()->get('Last-Modified')) {
+                    $cache->setItem($cacheId . '_lastmodified', $response->getHeaders()->get('Last-Modified')->getFieldValue());
                 }
             }
             return self::importString($responseXml);
         } elseif ($cache) {
             $data = $cache->getItem($cacheId);
-            if ($data !== false) {
+            if ($data) {
                 return self::importString($data);
             }
             $response = $client->send();

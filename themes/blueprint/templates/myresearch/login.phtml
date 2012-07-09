@@ -23,7 +23,7 @@
     <h2><?=$this->transEsc('ils_offline_title')?></h2>
     <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
     <p><?=$this->transEsc('ils_offline_login_message')?></p>
-    <? $supportEmail = $this->escape($this->systemEmail()); ?>
+    <? $supportEmail = $this->escapeHtml($this->systemEmail()); ?>
     <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
   </div>
 <? endif; ?>
@@ -49,6 +49,6 @@
       <a class="new_account" href="<?=$this->url('myresearch-account')?>"><?=$this->transEsc('Create New Account')?></a>
     <? endif; ?>
   <? else: ?>
-    <a href="<?=$this->escape($account->getSessionInitiator())?>"><?=$this->transEsc("Institutional Login")?></a>
+    <a href="<?=$this->escapeHtml($account->getSessionInitiator())?>"><?=$this->transEsc("Institutional Login")?></a>
   <? endif; ?>
 <? endif; ?>

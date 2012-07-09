@@ -5,12 +5,12 @@
 <table class="citation">
   <? foreach ($this->driver->getAllFields() as $field => $values): ?>
     <tr>
-      <th><?=$this->escape($field)?></th>
+      <th><?=$this->escapeHtml($field)?></th>
       <td>
         <div style="width: 500px; overflow: auto;">
           <? if (!is_array($values)) { $values = array($values); } ?>
           <? foreach ($values as $value): ?>
-            <?=$this->escape(is_array($value) ? print_r($value, true) : $value)?><br />
+            <?=$this->escapeHtml(is_array($value) ? print_r($value, true) : $value)?><br />
           <? endforeach; ?>
         </div>
       </td>

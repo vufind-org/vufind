@@ -4,18 +4,18 @@
     <? if (!$this->list): ?>
       <div class="info"><?=$this->transEsc("fav_delete_warn") ?></div>
     <? else: ?>
-      <h2><?=$this->transEsc("List") ?>: <?=$this->escape($this->list->title) ?></h2>
+      <h2><?=$this->transEsc("List") ?>: <?=$this->escapeHtml($this->list->title) ?></h2>
     <? endif; ?>
     
     <? foreach ($this->records as $favorite): ?>
       <strong><?=$this->translate('Title') ?>:</strong>
-      <?=$this->escape($favorite->getBreadcrumb())?><br />
+      <?=$this->escapeHtml($favorite->getBreadcrumb())?><br />
     <? endforeach; ?>
     <br />
     <input class="submit" type="submit" name="submit" value="<?=$this->transEsc('Delete')?>"/>
     <? foreach ($this->deleteIDS as $deleteID): ?>
-      <input type="hidden" name="ids[]" value="<?=$this->escape($deleteID)?>" />
+      <input type="hidden" name="ids[]" value="<?=$this->escapeHtml($deleteID)?>" />
     <? endforeach; ?>
-      <input type="hidden" name="listID" value="<?=$this->list?$this->escape($this->list->id):''?>" />
+      <input type="hidden" name="listID" value="<?=$this->list?$this->escapeHtml($this->list->id):''?>" />
   </div>
 </form>

@@ -8,11 +8,11 @@
         <? foreach ($sideFacetSet['lists']['list'] as $current): ?>
           <li>
             <? if ($current['isApplied']): ?>
-              <strong><?=$this->escape($current['displayText'])?></strong>
+              <strong><?=$this->escapeHtml($current['displayText'])?></strong>
             <? else: ?>
-              <a href="<?=$this->url('userList', array('id' => $current['value']))?>"><?=$this->escape($current['displayText'])?></a>
+              <a href="<?=$this->url('userList', array('id' => $current['value']))?>"><?=$this->escapeHtml($current['displayText'])?></a>
             <? endif; ?>
-            (<?=$this->escape($current['count'])?>)
+            (<?=$this->escapeHtml($current['count'])?>)
           </li>
         <? endforeach; ?>
       </ul>
@@ -32,7 +32,7 @@
           <? $removeLink = $this->currentPath().$this->results->getUrl()->removeFacet($filter['field'], $filter['value']); ?>
           <li>
             <a href="<?=$removeLink?>"><img src="<?=$this->imageLink('silk/delete.png')?>" alt="<?=$this->transEsc('Delete') ?>"/></a>
-            <a href="<?=$removeLink?>"><?=$this->transEsc($field)?>: <?=$this->escape($filter['displayText'])?></a>
+            <a href="<?=$removeLink?>"><?=$this->transEsc($field)?>: <?=$this->escapeHtml($filter['displayText'])?></a>
           </li>
         <? endforeach; ?>
         </ul>
@@ -41,9 +41,9 @@
         <? foreach ($sideFacetSet['tags']['list'] as $thisFacet): ?>
           <li>
           <? if ($thisFacet['isApplied']): ?>
-            <?=$this->escape($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="<?=$this->transEsc('Selected') ?>"/>
+            <?=$this->escapeHtml($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="<?=$this->transEsc('Selected') ?>"/>
           <? else: ?>
-            <a href="<?=$this->currentPath().$this->results->getUrl()->addFacet('tags', $thisFacet['value'])?>"><?=$this->escape($thisFacet['displayText'])?></a> (<?=$this->escape($thisFacet['count'])?>)
+            <a href="<?=$this->currentPath().$this->results->getUrl()->addFacet('tags', $thisFacet['value'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> (<?=$this->escapeHtml($thisFacet['count'])?>)
           <? endif; ?>
           </li>
         <? endforeach; ?>

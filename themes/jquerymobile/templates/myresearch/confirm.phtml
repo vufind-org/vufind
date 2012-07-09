@@ -7,13 +7,13 @@
 
     <p><?=$this->transEsc($this->message) ?></p>
 
-    <form action="<?=$this->escape($this->confirm)?>" method="post" data-ajax="false">
+    <form action="<?=$this->escapeHtml($this->confirm)?>" method="post" data-ajax="false">
       <? foreach ($this->extras as $extra=>$value): ?>
-        <input type="hidden" name="<?=$this->escape($extra) ?>" value="<?=$this->escape($value) ?>" />
+        <input type="hidden" name="<?=$this->escapeHtml($extra) ?>" value="<?=$this->escapeHtml($value) ?>" />
       <? endforeach; ?>
       <input type="submit" name="confirm" value="<?=$this->transEsc('confirm_dialog_yes') ?>" />
     </form>
-    <form action="<?=$this->escape($this->cancel) ?>" method="post" data-ajax="false">
+    <form action="<?=$this->escapeHtml($this->cancel) ?>" method="post" data-ajax="false">
       <input type="submit" name="cancel" value="<?=$this->transEsc('confirm_dialog_no') ?>" />
     </form>
   </div>

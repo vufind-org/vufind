@@ -51,7 +51,7 @@ class TransEsc extends AbstractHelper
      */
     public function __invoke($str, $tokens = array(), $default = null)
     {
-        $escaper = $this->getView()->plugin('escape');
+        $escaper = $this->getView()->plugin('escapeHtml');
         $translator = $this->getView()->plugin('translate');
         return $escaper($translator($str, $tokens, $default));
     }

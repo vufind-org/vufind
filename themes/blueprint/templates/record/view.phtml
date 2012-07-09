@@ -37,7 +37,7 @@
         <a href="<?=$this->recordLink()->getUrl($this->driver, 'Export')?>" class="export exportMenu"><?=$this->transEsc('Export Record')?></a>
         <ul class="menu offscreen" id="exportMenu">
         <? foreach ($exportFormats as $exportFormat): ?>
-          <li><a <? if (VF_Export::needsRedirect($exportFormat)): ?>target="<?=$this->escape($exportFormat)?>Main" <? endif; ?>href="<?=$this->recordLink()->getUrl($this->driver, 'Export')?>?style=<?=$this->escape($exportFormat)?>"><?=$this->transEsc('Export to')?> <?=$this->escape($exportFormat)?></a></li>
+          <li><a <? if (VF_Export::needsRedirect($exportFormat)): ?>target="<?=$this->escapeHtml($exportFormat)?>Main" <? endif; ?>href="<?=$this->recordLink()->getUrl($this->driver, 'Export')?>?style=<?=$this->escapeHtml($exportFormat)?>"><?=$this->transEsc('Export to')?> <?=$this->escapeHtml($exportFormat)?></a></li>
         <? endforeach; ?>
         </ul>
       </li>
@@ -53,10 +53,10 @@
     <? if ($cart->isActive()): ?>
       <div class="cartSummary">
         <form method="post" name="addForm" action="<?=$this->url('cart-home')?>">
-          <input id="cartId" type="hidden" name="ids[]" value="<?=$this->escape($cartId)?>" />
+          <input id="cartId" type="hidden" name="ids[]" value="<?=$this->escapeHtml($cartId)?>" />
           <noscript>
             <? if ($cart->contains($cartId)): ?>
-              <input id="cartId" type="hidden" name="ids[]" value="<?=$this->escape($cartId)?>" />
+              <input id="cartId" type="hidden" name="ids[]" value="<?=$this->escapeHtml($cartId)?>" />
               <input type="submit" class="button cart bookbagDelete" name="delete" value="<?=$this->transEsc('Remove from Book Bag')?>"/>
             <? else: ?>
               <input type="submit" class="button bookbagAdd" name="add" value="<?=$this->transEsc('Add to Book Bag')?>"/>
@@ -68,13 +68,13 @@
     <div class="clear"></div>
   </div>
 
-  <div class="record recordId source<?=$this->escape($this->driver->getResourceSource())?>" id="record">
-    <input type="hidden" value="<?=$this->escape($id)?>" class="hiddenId" id="record_id" />
+  <div class="record recordId source<?=$this->escapeHtml($this->driver->getResourceSource())?>" id="record">
+    <input type="hidden" value="<?=$this->escapeHtml($id)?>" class="hiddenId" id="record_id" />
     <?=$this->flashmessages()?>
     <? if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
       <div class="resultscroller">
         <? if ($this->scrollData['previousRecord']): ?><a href="<?=$this->url($this->driver->getRecordRoute(), array('id' => $this->scrollData['previousRecord']))?>">&laquo; <?=$this->transEsc('Prev')?></a><? endif; ?>
-        #<?=$this->escape($this->scrollData['currentPosition']) . ' ' . $this->transEsc('of') . ' ' . $this->escape($this->scrollData['resultTotal'])?>
+        #<?=$this->escapeHtml($this->scrollData['currentPosition']) . ' ' . $this->transEsc('of') . ' ' . $this->escapeHtml($this->scrollData['resultTotal'])?>
         <? if ($this->scrollData['nextRecord']): ?><a href="<?=$this->url($this->driver->getRecordRoute(), array('id' => $this->scrollData['nextRecord']))?>"><?=$this->transEsc('Next')?> &raquo;</a><? endif; ?>
       </div>
     <? endif; ?>
@@ -105,7 +105,7 @@
     <?=$this->record($this->driver)->getTab($this->tab)?>
   </div>
 
-  <span class="Z3988" title="<?=$this->escape($this->driver->getOpenURL())?>"></span>
+  <span class="Z3988" title="<?=$this->escapeHtml($this->driver->getOpenURL())?>"></span>
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>">

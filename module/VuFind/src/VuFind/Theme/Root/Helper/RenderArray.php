@@ -57,7 +57,7 @@ class RenderArray extends AbstractHelper
             if (isset($arr[$key])) {
                 $html .= str_replace(
                     array('%%LABEL%%', '%%VALUE%%'),
-                    array($label, $this->view->escape($arr[$key])),
+                    array($label, $this->view->escapeHtml($arr[$key])),
                     $tpl
                 );
             }

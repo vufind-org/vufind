@@ -20,8 +20,8 @@ $config = array(
             ),
         ),
     ),
-    'controller' => array(
-        'classes' => array(
+    'controllers' => array(
+        'invokables' => array(
             'error' => 'VuFind\Controller\ErrorController',
             'index' => 'VuFind\Controller\IndexController',
             'search' => 'VuFind\Controller\SearchController'

@@ -9,13 +9,13 @@
           <? else: ?>
             <span>
           <? endif; ?>
-          <a href="<?=$this->recordLink()->getUrl($data)?>"><?=$this->escape($data->getTitle())?></a>
+          <a href="<?=$this->recordLink()->getUrl($data)?>"><?=$this->escapeHtml($data->getTitle())?></a>
           </span>
           <? $author = $data->getPrimaryAuthor(); if (!empty($author)): ?>
-            <br/><?=$this->transEsc('By')?>: <?=$this->escape($author);?>
+            <br/><?=$this->transEsc('By')?>: <?=$this->escapeHtml($author);?>
           <? endif; ?>
           <? $pubDates = $data->getPublicationDates(); if (!empty($pubDates)): ?>
-            <?=$this->transEsc('Published')?>: (<?=$this->escape($pubDates[0])?>)
+            <?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
           <? endif; ?>
         </li>
       <? endforeach; ?>

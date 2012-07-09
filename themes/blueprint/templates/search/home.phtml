@@ -21,7 +21,7 @@
       <h2><?=$this->transEsc('ils_offline_title')?></h2>
       <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
       <p><?=$this->transEsc('ils_offline_home_message')?></p>
-      <? $supportEmail = $this->escape($this->systemEmail()); ?>
+      <? $supportEmail = $this->escapeHtml($this->systemEmail()); ?>
       <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
     </div>
   <? endif; ?>
@@ -43,7 +43,7 @@
       <? /* Special case: two columns for LC call numbers... */ ?>
       <? if ($field == "callnumber-first"): ?>
         <? $i = 0; foreach ($sortedList as $url => $value): ?>
-          <li><a href="<?=$url?>"><?=$this->escape($value)?></a></li>
+          <li><a href="<?=$url?>"><?=$this->escapeHtml($value)?></a></li>
           <? if (++$i == 10): ?>
             </ul>
             <ul class="span-5">
@@ -55,7 +55,7 @@
             <li><a href="<?=$this->url($advSearch)?>"><strong><?=$this->transEsc("More options")?>...</strong></a></li>
             <? break; ?>
           <? else: ?>
-            <li><a href="<?=$url?>"><?=$this->escape($value)?></a></li>
+            <li><a href="<?=$url?>"><?=$this->escapeHtml($value)?></a></li>
           <? endif; ?>
         <? endforeach; ?>
       <? endif; ?>

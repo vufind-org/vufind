@@ -100,10 +100,12 @@ class ResultGoogleMapAjax implements RecommendInterface
      */
     public function userLang()
     {
+        /* TODO
         return Registry::getInstance()
                     ->get('Zend_Translate')
                     ->getAdapter()
                     ->getLocale();
+         */
     }
 
     /**

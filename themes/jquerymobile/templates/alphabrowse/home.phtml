@@ -11,11 +11,11 @@
           <label for="alphaBrowseForm_source"><?=$this->transEsc('Browse Alphabetically') ?></label>
           <select id="alphaBrowseForm_source" name="source">
             <? foreach ($this->alphaBrowseTypes as $key => $item): ?>
-              <option value="<?=$this->escape($key) ?>"<? if ($this->source == $key): ?> selected="selected"<? endif; ?>><?=$this->transEsc($item) ?></option>
+              <option value="<?=$this->escapeHtml($key) ?>"<? if ($this->source == $key): ?> selected="selected"<? endif; ?>><?=$this->transEsc($item) ?></option>
             <? endforeach; ?>
           </select>
           <label for="alphaBrowseForm_from"><?=$this->transEsc('starting from') ?></label>
-          <input type="search" name="from" id="alphaBrowseForm_from" value="<?=$this->escape($this->from) ?>"/>
+          <input type="search" name="from" id="alphaBrowseForm_from" value="<?=$this->escapeHtml($this->from) ?>"/>
           <input type="submit" data-theme="b" value="<?=$this->transEsc('Browse') ?>"/>
         </div>
       </form>
@@ -64,7 +64,7 @@
           <? endif; ?>
           <a class="ui-link-inherit" data-ajax="false" href="<?=$searchLink ?>">
             <div class="ui-btn-text">
-              <?=$this->escape($item['heading'])?>
+              <?=$this->escapeHtml($item['heading'])?>
               <? if (count($item['useInstead']) > 0): ?>
               <i>(<?=$this->transEsc('Use instead') ?>: <?=implode($item['useInstead']) ?>)</i>
               <? endif; ?>

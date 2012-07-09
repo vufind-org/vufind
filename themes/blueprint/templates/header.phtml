@@ -14,7 +14,7 @@
     </div>
     <div id="loginOptions"<?=$account->isLoggedIn() ? ' class="hide"' : ''?>>
     <? if ($sessionInitiator = $account->getSessionInitiator()): ?>
-      <a class="login" href="<?=$this->escape($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
+      <a class="login" href="<?=$this->escapeHtml($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
     <? else: ?>
       <a class="login" href="<?=$this->url('myresearch-home')?>"><?=$this->transEsc("Login")?></a>
     <? endif; ?>
@@ -25,7 +25,7 @@
     <label for="themeForm_ui"><?=$this->transEsc("Theme")?>:</label>
     <select id="themeForm_ui" name="ui" class="jumpMenu">
     <? foreach ($this->layout()->themeOptions as $current): ?>
-      <option value="<?=$this->escape($current['name'])?>"<?=$current['selected'] ? ' selected="selected"' : ''?>><?=$this->transEsc($current['desc'])?></option>
+      <option value="<?=$this->escapeHtml($current['name'])?>"<?=$current['selected'] ? ' selected="selected"' : ''?>><?=$this->transEsc($current['desc'])?></option>
     <? endforeach; ?>
     </select>
     <noscript><input type="submit" value="<?=$this->transEsc("Set")?>" /></noscript>

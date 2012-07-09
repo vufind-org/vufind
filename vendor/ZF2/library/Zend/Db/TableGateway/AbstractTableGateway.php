@@ -12,6 +12,7 @@ namespace Zend\Db\TableGateway;
 
 use Zend\Db\Adapter\Adapter,
     Zend\Db\Sql\TableIdentifier,
+    Zend\Db\ResultSet\ResultSetInterface,
     Zend\Db\ResultSet\ResultSet,
     Zend\Db\Sql\Sql,
     Zend\Db\Sql\Select,
@@ -26,7 +27,7 @@ use Zend\Db\Adapter\Adapter,
  *
  * @property Adapter $adapter
  * @property int $lastInsertValue
- * @property string $tableName
+ * @property string $table
  */
 abstract class AbstractTableGateway implements TableGatewayInterface
 {
@@ -57,7 +58,7 @@ abstract class AbstractTableGateway implements TableGatewayInterface
     protected $featureSet = null;
 
     /**
-     * @var ResultSet
+     * @var ResultSetInterface
      */
     protected $resultSetPrototype = null;
 
@@ -106,12 +107,12 @@ abstract class AbstractTableGateway implements TableGatewayInterface
             throw new Exception\RuntimeException('This table object does not have a valid table set.');
         }
 
-        if (!$this->resultSetPrototype instanceof ResultSet) {
+        if (!$this->resultSetPrototype instanceof ResultSetInterface) {
             $this->resultSetPrototype = new ResultSet;
         }
 
         if (!$this->sql instanceof Sql) {
-            $this->sql = new Sql($this->adapter, $this->tableName);
+            $this->sql = new Sql($this->adapter, $this->table);
         }
 
         $this->featureSet->apply('postInitialize', array());
@@ -198,7 +199,7 @@ abstract class AbstractTableGateway implements TableGatewayInterface
 
     /**
      * @param Sql\Select $select
-     * @return null|ResultSet
+     * @return null|ResultSetInterface
      * @throws \RuntimeException
      */
     public function selectWith(Select $select)
@@ -235,7 +236,7 @@ abstract class AbstractTableGateway implements TableGatewayInterface
 
         // build result set
         $resultSet = clone $this->resultSetPrototype;
-        $resultSet->setDataSource($result);
+        $resultSet->initialize($result);
 
         // apply postSelect features
         $this->featureSet->apply('postSelect', array($statement, $result, $resultSet));

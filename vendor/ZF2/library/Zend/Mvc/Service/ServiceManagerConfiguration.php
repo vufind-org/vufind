@@ -24,6 +24,8 @@ namespace Zend\Mvc\Service;
 use Zend\ServiceManager\ConfigurationInterface;
 use Zend\ServiceManager\ServiceManager;
 use Zend\ServiceManager\ServiceManagerAwareInterface;
+use Zend\EventManager\EventManagerInterface;
+use Zend\EventManager\EventManagerAwareInterface;
 
 /**
  * @category   Zend
@@ -36,57 +38,37 @@ class ServiceManagerConfiguration implements ConfigurationInterface
 {
     /**
      * Services that can be instantiated without factories
-     * 
+     *
      * @var array
      */
-    protected $services = array(
-        'DispatchListener' => 'Zend\Mvc\DispatchListener',
-        'Request'          => 'Zend\Http\PhpEnvironment\Request',
-        'Response'         => 'Zend\Http\PhpEnvironment\Response',
-        'RouteListener'    => 'Zend\Mvc\RouteListener',
-        'ViewManager'      => 'Zend\Mvc\View\ViewManager',
+    protected $invokables = array(
+        'SharedEventManager' => 'Zend\EventManager\SharedEventManager',
     );
 
     /**
      * Service factories
-     * 
+     *
      * @var array
      */
     protected $factories = array(
-        'Application'            => 'Zend\Mvc\Service\ApplicationFactory',
-        'Configuration'          => 'Zend\Mvc\Service\ConfigurationFactory',
-        'ControllerLoader'       => 'Zend\Mvc\Service\ControllerLoaderFactory',
-        'ControllerPluginBroker' => 'Zend\Mvc\Service\ControllerPluginBrokerFactory',
-        'ControllerPluginLoader' => 'Zend\Mvc\Service\ControllerPluginLoaderFactory',
-        'DependencyInjector'     => 'Zend\Mvc\Service\DiFactory',
-        'EventManager'           => 'Zend\Mvc\Service\EventManagerFactory',
-        'ModuleManager'          => 'Zend\Mvc\Service\ModuleManagerFactory',
-        'Router'                 => 'Zend\Mvc\Service\RouterFactory',
-        'ViewFeedRenderer'       => 'Zend\Mvc\Service\ViewFeedRendererFactory',
-        'ViewFeedStrategy'       => 'Zend\Mvc\Service\ViewFeedStrategyFactory',
-        'ViewJsonRenderer'       => 'Zend\Mvc\Service\ViewJsonRendererFactory',
-        'ViewJsonStrategy'       => 'Zend\Mvc\Service\ViewJsonStrategyFactory',
+        'EventManager'  => 'Zend\Mvc\Service\EventManagerFactory',
+        'ModuleManager' => 'Zend\Mvc\Service\ModuleManagerFactory',
     );
 
     /**
      * Abstract factories
-     * 
+     *
      * @var array
      */
     protected $abstractFactories = array();
 
     /**
      * Aliases
-     * 
+     *
      * @var array
      */
     protected $aliases = array(
-        'Config'                                  => 'Configuration',
-        'Di'                                      => 'DependencyInjector',
-        'Zend\Di\LocatorInterface'                => 'DependencyInjector',
         'Zend\EventManager\EventManagerInterface' => 'EventManager',
-        'Zend\Mvc\Controller\PluginLoader'        => 'ControllerPluginLoader',
-        'Zend\Mvc\Controller\PluginBroker'        => 'ControllerPluginBroker',
     );
 
     /**
@@ -94,25 +76,24 @@ class ServiceManagerConfiguration implements ConfigurationInterface
      *
      * Services are shared by default; this is primarily to indicate services
      * that should NOT be shared
-     * 
+     *
      * @var array
      */
     protected $shared = array(
-        'EventManager' => false
+        'EventManager' => false,
     );
 
     /**
      * Constructor
      *
      * Merges internal arrays with those passed via configuration
-     * 
-     * @param  array $configuration 
-     * @return void
+     *
+     * @param  array $configuration
      */
     public function __construct(array $configuration = array())
     {
-        if (isset($configuration['services'])) {
-            $this->services = array_merge($this->services, $configuration['services']);
+        if (isset($configuration['invokables'])) {
+            $this->invokables = array_merge($this->invokables, $configuration['invokables']);
         }
 
         if (isset($configuration['factories'])) {
@@ -141,13 +122,13 @@ class ServiceManagerConfiguration implements ConfigurationInterface
      * service manager, also adds an initializer to inject ServiceManagerAware
      * classes with the service manager.
      *
-     * @param  ServiceManager $serviceManager 
+     * @param  ServiceManager $serviceManager
      * @return void
      */
     public function configureServiceManager(ServiceManager $serviceManager)
     {
-        foreach ($this->services as $name => $service) {
-            $serviceManager->setInvokableClass($name, $service);
+        foreach ($this->invokables as $name => $class) {
+            $serviceManager->setInvokableClass($name, $class);
         }
 
         foreach ($this->factories as $name => $factoryClass) {
@@ -167,14 +148,16 @@ class ServiceManagerConfiguration implements ConfigurationInterface
         }
 
         $serviceManager->addInitializer(function ($instance) use ($serviceManager) {
-            if ($instance instanceof EventManagerAwareInterface) {
+            if ($instance instanceof EventManagerAwareInterface
+                && !$instance->getEventManager() instanceof EventManagerInterface
+            ) {
                 $instance->setEventManager($serviceManager->get('EventManager'));
             }
         });
 
         $serviceManager->addInitializer(function ($instance) use ($serviceManager) {
             if ($instance instanceof ServiceManagerAwareInterface) {
-                $instance->setServiceManager($instance);
+                $instance->setServiceManager($serviceManager);
             }
         });
 

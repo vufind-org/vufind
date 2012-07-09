@@ -29,10 +29,10 @@ namespace VuFind;
 use VuFind\Account\Manager as AccountManager,
     VuFind\Cache\Manager as CacheManager,
     VuFind\Config\Reader as ConfigReader,
-    VuFind\Theme\Initializer as ThemeInitializer,
+    VuFind\Registry, VuFind\Theme\Initializer as ThemeInitializer,
     VuFind\Translator\Factory as TranslatorFactory,
-    Zend\Mvc\MvcEvent, Zend\Registry, Zend\Mvc\Router\Http\RouteMatch,
-    Zend\Session\SessionManager, Zend\Translator\Translator;
+    Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch,
+    Zend\Session\SessionManager;
 /**
  * VuFind Bootstrapper
  *
@@ -57,7 +57,7 @@ class Bootstrap
     {
         $this->config = ConfigReader::getConfig();
         $this->event = $event;
-        $this->events = $event->getApplication()->events();
+        $this->events = $event->getApplication()->getEventManager();
     }
 
     /**
@@ -178,17 +178,18 @@ class Bootstrap
      */
     protected function initLanguage()
     {
+        /* TODO
         $config =& $this->config;
         $callback = function($event) use ($config) {
             // Setup Translator
             $request = $event->getRequest();
-            if (($language = $request->post()->get('mylang', false))
-                || ($language = $request->query()->get('lng', false))
+            if (($language = $request->getPost()->get('mylang', false))
+                || ($language = $request->getQuery()->get('lng', false))
             ) {
                 setcookie('language', $language, null, '/');
             } else {
-                $language = !empty($request->cookie()->language)
-                    ? $request->cookie()->language
+                $language = !empty($request->getCookie()->language)
+                    ? $request->getCookie()->language
                     : $config->Site->language;
             }
             // Make sure language code is valid, reset to default if bad:
@@ -214,6 +215,7 @@ class Bootstrap
             $viewModel->setVariable('allLangs', $config->Languages);
         };
         $this->events->attach('dispatch', $callback);
+         */
     }
 
     /**
@@ -228,13 +230,14 @@ class Bootstrap
             'route', array('VuFind\Theme\Initializer', 'configureTemplateInjection')
         );
 
-        // Attach remaining theme configuration to the dispatch event:
+        // Attach remaining theme configuration to the dispatch event at high
+        // priority (TODO: use priority constant once defined by framework):
         $config =& $this->config;
         $callback = function($event) use ($config) {
             $theme = new ThemeInitializer($config, $event);
             $theme->init();
         };
-        $this->events->attach('dispatch', $callback);
+        $this->events->attach('dispatch', $callback, 10000);
     }
 
     /**

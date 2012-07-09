@@ -53,7 +53,7 @@ class GetLastSearchLink extends AbstractHelper
     {
         $last = Memory::retrieve();
         if (!empty($last)) {
-            $escaper = $this->getView()->plugin('escape');
+            $escaper = $this->getView()->plugin('escapeHtml');
             return $prefix . '<a href="' . $escaper($last) . '">' . $link . '</a>'
                 . $suffix;
         }

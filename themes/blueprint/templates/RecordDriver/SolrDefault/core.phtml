@@ -1,10 +1,10 @@
 <div class="span-13">
-  <h1><?=$this->escape($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h1>
+  <h1><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h1>
 
   <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $summary[0] : false; ?>
   <? if ($summary): ?>
     <p>
-      <?=$this->escape($this->truncate($summary, 300))?>
+      <?=$this->escapeHtml($this->truncate($summary, 300))?>
       <a href='<?=$this->recordLink()->getUrl($this->driver, 'Description')?>#tabnav'><?=$this->transEsc('Full description')?></a>
     </p>
   <? endif; ?>
@@ -15,8 +15,8 @@
     <tr valign="top">
       <th><?=$this->transEsc('Journal Title')?>:</th>
       <td>
-        <a href="<?=$this->record($this->driver)->getLink('journaltitle', $journalTitle)?>"><?=$this->escape($journalTitle)?></a>
-        <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escape($ref); } ?>
+        <a href="<?=$this->record($this->driver)->getLink('journaltitle', $journalTitle)?>"><?=$this->escapeHtml($journalTitle)?></a>
+        <? $ref = $this->driver->getContainerReference(); if (!empty($ref)) { echo $this->escapeHtml($ref); } ?>
       </td>
     </tr>
     <? endif; ?>
@@ -27,7 +27,7 @@
       <th><?=$this->transEsc('New Title')?>: </th>
       <td>
         <? foreach($nextTitles as $field): ?>
-          <a href="<?=$this->record($this->driver)->getLink('title', $field)?>"><?=$this->escape($field)?></a><br/>
+          <a href="<?=$this->record($this->driver)->getLink('title', $field)?>"><?=$this->escapeHtml($field)?></a><br/>
         <? endforeach; ?>
       </td>
     </tr>
@@ -38,7 +38,7 @@
       <th><?=$this->transEsc('Previous Title')?>: </th>
       <td>
         <? foreach($prevTitles as $field): ?>
-          <a href="<?=$this->record($this->driver)->getLink('title', $field)?>"><?=$this->escape($field)?></a><br/>
+          <a href="<?=$this->record($this->driver)->getLink('title', $field)?>"><?=$this->escapeHtml($field)?></a><br/>
         <? endforeach; ?>
       </td>
     </tr>
@@ -64,14 +64,14 @@
     <? if (!empty($mainAuthor)): ?>
     <tr valign="top">
       <th><?=$this->transEsc('Main Author')?>: </th>
-      <td><a href="<?=$this->record($this->driver)->getLink('author', $mainAuthor)?>"><?=$this->escape($mainAuthor)?></a></td>
+      <td><a href="<?=$this->record($this->driver)->getLink('author', $mainAuthor)?>"><?=$this->escapeHtml($mainAuthor)?></a></td>
     </tr>
     <? endif; ?>
 
     <? if (!empty($corpAuthor)): ?>
     <tr valign="top">
       <th><?=$this->transEsc('Corporate Author')?>: </th>
-      <td><a href="<?=$this->record($this->driver)->getLink('author', $corpAuthor)?>"><?=$this->escape($corpAuthor)?></a></td>
+      <td><a href="<?=$this->record($this->driver)->getLink('author', $corpAuthor)?>"><?=$this->escapeHtml($corpAuthor)?></a></td>
     </tr>
     <? endif; ?>
 
@@ -79,7 +79,7 @@
     <tr valign="top">
       <th><?=$this->transEsc('Other Authors')?>: </th>
       <td>
-        <? $i = 0; foreach ($secondaryAuthors as $field): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->record($this->driver)->getLink('author', $field)?>"><?=$this->escape($field)?></a><? endforeach; ?>
+        <? $i = 0; foreach ($secondaryAuthors as $field): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->record($this->driver)->getLink('author', $field)?>"><?=$this->escapeHtml($field)?></a><? endforeach; ?>
       </td>
     </tr>
     <? endif; ?>
@@ -94,7 +94,7 @@
     <? $langs = $this->driver->getLanguages(); if (!empty($langs)): ?>
       <tr valign="top">
         <th><?=$this->transEsc('Language')?>: </th>
-        <td><? foreach ($langs as $lang): ?><?= $this->escape($lang)?><br/><? endforeach; ?></td>
+        <td><? foreach ($langs as $lang): ?><?= $this->escapeHtml($lang)?><br/><? endforeach; ?></td>
       </tr>
     <? endif; ?>
 
@@ -103,7 +103,7 @@
       <th><?=$this->transEsc('Published')?>: </th>
       <td>
         <? foreach ($publications as $field): ?>
-          <?=$this->escape($field)?><br/>
+          <?=$this->escapeHtml($field)?><br/>
         <? endforeach; ?>
       </td>
     </tr>
@@ -112,7 +112,7 @@
     <? $edition = $this->driver->getEdition(); if (!empty($edition)): ?>
     <tr valign="top">
       <th><?=$this->transEsc('Edition')?>: </th>
-      <td><?=$this->escape($edition)?></td>
+      <td><?=$this->escapeHtml($edition)?></td>
     </tr>
     <? endif; ?>
 
@@ -127,14 +127,14 @@
              name.  We should account for both cases to maximize compatibility. */?>
           <? if (is_array($field)): ?>
             <? if (!empty($field['name'])): ?>
-              <a href="<?=$this->record($this->driver)->getLink('series', $field['name'])?>"><?=$this->escape($field['name'])?></a>
+              <a href="<?=$this->record($this->driver)->getLink('series', $field['name'])?>"><?=$this->escapeHtml($field['name'])?></a>
               <? if (!empty($field['number'])): ?>
-                <?=$this->escape($field['number'])?>
+                <?=$this->escapeHtml($field['number'])?>
               <? endif; ?>
               <br/>
             <? endif; ?>
           <? else: ?>
-            <a href="<?=$this->record($this->driver)->getLink('series', $field)?>"><?=$this->escape($field)?></a><br/>
+            <a href="<?=$this->record($this->driver)->getLink('series', $field)?>"><?=$this->escapeHtml($field)?></a><br/>
           <? endif; ?>
         <? endforeach; ?>
       </td>
@@ -151,7 +151,7 @@
           <? $i = 0; foreach ($field as $subfield): ?>
             <?=($i++ == 0) ? '' : ' &gt; '?>
             <? $subject = trim($subject . ' ' . $subfield); ?>
-            <a title="<?=$this->escape($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>" class="subjectHeading"><?=$this->escape($subfield)?></a>
+            <a title="<?=$this->escapeHtml($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>" class="subjectHeading"><?=$this->escapeHtml($subfield)?></a>
           <? endforeach; ?>
         </div>
         <? endforeach; ?>
@@ -169,7 +169,7 @@
       <th><?=$this->transEsc('Online Access')?>: </th>
       <td>
         <? foreach ($urls as $currentUrl => $desc): ?>
-          <a href="<?=$this->escape($this->proxyUrl($currentUrl))?>"><?=$this->escape($desc)?></a><br/>
+          <a href="<?=$this->escapeHtml($this->proxyUrl($currentUrl))?>"><?=$this->escapeHtml($desc)?></a><br/>
         <? endforeach; ?>
         <? if ($openUrl): ?>
           <?=$this->openUrl($openUrl)?><br/>
@@ -182,7 +182,7 @@
       <? foreach ($recordLinks as $recordLink): ?>
         <tr valign="top">
           <th><?=$this->transEsc($recordLink['title'])?>: </th>
-          <td><a href="<?=$this->recordLink()->related($recordLink['link'])?>"><?=$this->escape($recordLink['value'])?></a></td>
+          <td><a href="<?=$this->recordLink()->related($recordLink['link'])?>"><?=$this->escapeHtml($recordLink['value'])?></a></td>
         </tr>
       <? endforeach; ?>
     <? endif; ?>
@@ -196,7 +196,7 @@
         </span>
         <div id="tagList">
           <? if (count($tagList) > 0): ?>
-            <? $i = 0; foreach ($tagList as $tag): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->url('tag-home')?>?lookfor=<?=urlencode($tag->tag)?>"><?=$this->escape($tag->tag)?></a> (<?=$this->escape($tag->cnt)?>)<? endforeach; ?>
+            <? $i = 0; foreach ($tagList as $tag): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->url('tag-home')?>?lookfor=<?=urlencode($tag->tag)?>"><?=$this->escapeHtml($tag->tag)?></a> (<?=$this->escapeHtml($tag->cnt)?>)<? endforeach; ?>
           <? else: ?>
             <?=$this->transEsc('No Tags')?>, <?=$this->transEsc('Be the first to tag this record')?>!
           <? endif; ?>
@@ -211,8 +211,8 @@
   <? /* Display thumbnail if appropriate: */ ?>
   <? $mediumThumb = $this->driver->getThumbnail('medium'); $largeThumb = $this->driver->getThumbnail('large'); ?>
   <? if ($mediumThumb): ?>
-    <? if ($largeThumb): ?><a href="<?=$this->escape($largeThumb)?>"><? endif; ?>
-      <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escape($mediumThumb);?>"/>
+    <? if ($largeThumb): ?><a href="<?=$this->escapeHtml($largeThumb)?>"><? endif; ?>
+      <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtml($mediumThumb);?>"/>
     <? if ($largeThumb): ?></a><? endif; ?>
   <? else: ?>
     <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>

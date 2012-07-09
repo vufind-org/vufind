@@ -13,7 +13,7 @@
       <select name="course" id="reserves_by_course">
         <option></option>
         <? foreach ($this->courseList as $courseId => $courseName): ?>
-          <option value="<?=$this->escape($courseId)?>"><?=$this->escape($courseName)?></option>
+          <option value="<?=$this->escapeHtml($courseId)?>"><?=$this->escapeHtml($courseName)?></option>
         <? endforeach; ?>
       </select>
       <input type="submit" name="submit" value="<?=$this->transEsc('Find')?>"/>
@@ -27,7 +27,7 @@
       <select name="inst" id="reserves_by_inst">
         <option></option>
         <? foreach ($this->instList as $instId => $instName): ?>
-          <option value="<?=$this->escape($instId)?>"><?=$this->escape($instName)?></option>
+          <option value="<?=$this->escapeHtml($instId)?>"><?=$this->escapeHtml($instName)?></option>
         <? endforeach; ?>
       </select>
       <input type="submit" name="submit" value="<?=$this->transEsc('Find')?>"/>
@@ -41,7 +41,7 @@
       <select name="dept" id="reserves_by_dept">
         <option></option>
         <? foreach ($this->deptList as $deptId => $deptName): ?>
-          <option value="<?=$this->escape($deptId)?>"><?=$this->escape($deptName)?></option>
+          <option value="<?=$this->escapeHtml($deptId)?>"><?=$this->escapeHtml($deptName)?></option>
         <? endforeach; ?>
       </select>
       <input type="submit" name="submit" value="<?=$this->transEsc('Find')?>"/>

@@ -7,7 +7,7 @@
   <?=$this->mobileMenu()->header()?>
   <div data-role="content">
     <form method="post" name="emailSearch" data-ajax="false">
-      <input type="hidden" name="url" value="<?=$this->escape($this->url)?>" />
+      <input type="hidden" name="url" value="<?=$this->escapeHtml($this->url)?>" />
       <div data-role="fieldcontain">
         <label for="email_to"><?=$this->transEsc('To')?>:</label>
         <input id="email_to" type="text" name="to" value="<?=isset($this->to) ? $this->to : ''?>" size="40" />

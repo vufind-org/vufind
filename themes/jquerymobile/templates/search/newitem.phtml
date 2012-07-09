@@ -14,9 +14,9 @@
         <fieldset data-role="controlgroup">
           <legend><?=$this->transEsc('Range')?>:</legend>
           <? foreach ($this->ranges as $key => $range): ?>
-            <input id="newitem_range_<?=$this->escape($key)?>" type="radio" name="range" value="<?=$this->escape($range)?>"<?= ($key == 0) ? ' checked="checked"' : ''?>/>
-            <label for="newitem_range_<?=$this->escape($key)?>">
-              <?=($range == 1) ? $this->transEsc('Yesterday') : $this->transEsc('Past') . ' ' . $this->escape($range) . ' ' . $this->transEsc('Days')?>
+            <input id="newitem_range_<?=$this->escapeHtml($key)?>" type="radio" name="range" value="<?=$this->escapeHtml($range)?>"<?= ($key == 0) ? ' checked="checked"' : ''?>/>
+            <label for="newitem_range_<?=$this->escapeHtml($key)?>">
+              <?=($range == 1) ? $this->transEsc('Yesterday') : $this->transEsc('Past') . ' ' . $this->escapeHtml($range) . ' ' . $this->transEsc('Days')?>
             </label>
           <? endforeach; ?>
         </fieldset>
@@ -26,7 +26,7 @@
           <label for="newitem_department"><?=$this->transEsc('Department')?>:</label>
           <select id="newitem_department" name="department">
           <? foreach ($this->fundList as $fundId => $fund): ?>
-            <option value="<?=$this->escape($fundId)?>"><?=$this->escape($fund)?></option>
+            <option value="<?=$this->escapeHtml($fundId)?>"><?=$this->escapeHtml($fund)?></option>
           <? endforeach; ?>
           </select>
         </div>

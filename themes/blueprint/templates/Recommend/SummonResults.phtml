@@ -13,7 +13,7 @@
         if (!empty($summHighlightedTitle)) {
             echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
         } else if (!empty($summTitle)) {
-            echo $this->escape($this->truncate($summTitle, 180));
+            echo $this->escapeHtml($this->truncate($summTitle, 180));
         } else {
             echo $this->transEsc('Title not available');
         }
@@ -27,7 +27,7 @@
         $summHighlightedAuthor = $driver->getHighlightedAuthor();
         echo !empty($summHighlightedAuthor)
             ? $this->highlight($summHighlightedAuthor)
-            : $this->escape($summAuthor);
+            : $this->escapeHtml($summAuthor);
       ?></a>
       <? endif; ?>
       </span>

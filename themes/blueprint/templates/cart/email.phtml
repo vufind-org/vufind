@@ -9,8 +9,8 @@
 <?=$this->flashmessages()?>
 <form action="<?=$this->url('cart-email')?>" method="post"  name="bulkEmail">
     <? foreach ($this->records as $current): ?>
-      <strong><?=$this->transEsc('Title')?>:</strong> <?=$this->escape($current->getBreadcrumb())?><br />
-      <input type="hidden" name="ids[]" value="<?=$this->escape($current->getResourceSource() . '|' . $current->getUniqueId())?>" />
+      <strong><?=$this->transEsc('Title')?>:</strong> <?=$this->escapeHtml($current->getBreadcrumb())?><br />
+      <input type="hidden" name="ids[]" value="<?=$this->escapeHtml($current->getResourceSource() . '|' . $current->getUniqueId())?>" />
     <? endforeach; ?>
     <br />
     <label class="displayBlock" for="email_to"><?=$this->transEsc('To')?>:</label>

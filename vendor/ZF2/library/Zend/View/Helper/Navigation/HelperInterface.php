@@ -21,8 +21,9 @@
 
 namespace Zend\View\Helper\Navigation;
 
-use Zend\Acl,
-    Zend\Navigation;
+use Zend\Acl;
+use Zend\I18n\Translator\Translator;
+use Zend\Navigation;
 
 /**
  * Interface for navigational helpers
@@ -38,18 +39,18 @@ interface HelperInterface
     /**
      * Sets navigation container the helper should operate on by default
      *
-     * @param  Navigation\Container $container [optional] container to operate 
+     * @param  string|Navigation\AbstractContainer $container [optional] container to operate
      *                                         on. Default is null, which 
      *                                         indicates that the container 
      *                                         should be reset.
      * @return HelperInterface fluent interface, returns self
      */
-    public function setContainer(Navigation\Container $container = null);
+    public function setContainer($container = null);
 
     /**
      * Returns the navigation container the helper operates on by default
      *
-     * @return Navigation\Container  navigation container
+     * @return Navigation\AbstractContainer  navigation container
      */
     public function getContainer();
 
@@ -62,7 +63,7 @@ interface HelperInterface
      *                           Default is null.
      * @return HelperInterface  fluent interface, returns self
      */
-    public function setTranslator($translator = null);
+    public function setTranslator(Translator $translator = null);
 
     /**
      * Returns translator used in helper
@@ -190,7 +191,7 @@ interface HelperInterface
     /**
      * Renders helper
      *
-     * @param  Navigation\Container $container [optional] container to render. 
+     * @param  string|Navigation\AbstractContainer $container [optional] container to render.
      *                                         Default is null, which indicates 
      *                                         that the helper should render 
      *                                         the container returned by {@link 
@@ -198,5 +199,5 @@ interface HelperInterface
      * @return string helper output
      * @throws \Zend\View\Exception\ExceptionInterface if unable to render
      */
-    public function render(Navigation\Container $container = null);
+    public function render($container = null);
 }

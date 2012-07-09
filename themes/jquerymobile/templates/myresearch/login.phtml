@@ -15,7 +15,7 @@
         <h2><?=$this->transEsc('ils_offline_title')?></h2>
         <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
         <p><?=$this->transEsc('ils_offline_login_message')?></p>
-        <? $supportEmail = $this->escape($this->systemEmail()); ?>
+        <? $supportEmail = $this->escapeHtml($this->systemEmail()); ?>
         <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
       </div>
     <? elseif ($hideLogin): ?>
@@ -38,7 +38,7 @@
           <a rel="external" data-role="button" class="new_account" href="<?=$this->url('myresearch-account')?>"><?=$this->transEsc('Create New Account')?></a>
         <? endif; ?>
       <? else: ?>
-        <a rel="external" data-role="button" href="<?=$this->escape($account->getSessionInitiator())?>"><?=$this->transEsc("Institutional Login")?></a>
+        <a rel="external" data-role="button" href="<?=$this->escapeHtml($account->getSessionInitiator())?>"><?=$this->transEsc("Institutional Login")?></a>
       <? endif; ?>
     <? endif; ?>
   </div>

@@ -20,13 +20,13 @@
                 <? if (empty($record['title'])): ?>
                   <?=$this->transEsc('not_applicable')?>
                 <? else: ?>
-                  <?=$this->escape(trim($record['title'], '/:'))?>
+                  <?=$this->escapeHtml(trim($record['title'], '/:'))?>
                 <? endif; ?>
               </h3>
               <span class="ui-li-aside"><?=isset($record['balance']) ? $this->safeMoneyFormat($record['balance']/100.00) : ''?></span>
-              <p><strong><?=$this->transEsc('Due Date')?></strong>: <?=isset($record['duedate']) ? $this->escape($record['duedate']) : ''?></p>
-              <p><strong><?=$this->transEsc('Checked Out')?></strong>: <?=isset($record['checkout']) ? $this->escape($record['checkout']) : ''?></p>
-              <p><strong><?=$this->transEsc('Fine')?></strong>: <?=isset($record['fine']) ? $this->escape($record['fine']) : ''?></p>
+              <p><strong><?=$this->transEsc('Due Date')?></strong>: <?=isset($record['duedate']) ? $this->escapeHtml($record['duedate']) : ''?></p>
+              <p><strong><?=$this->transEsc('Checked Out')?></strong>: <?=isset($record['checkout']) ? $this->escapeHtml($record['checkout']) : ''?></p>
+              <p><strong><?=$this->transEsc('Fine')?></strong>: <?=isset($record['fine']) ? $this->escapeHtml($record['fine']) : ''?></p>
               <p><strong><?=$this->transEsc('Fee')?></strong>: <?=isset($record['amount']) ? $this->safeMoneyFormat($record['amount']/100.00) : ''?></p>
             </div>
             <? if ($showLink): ?>

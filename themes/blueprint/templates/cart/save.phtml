@@ -14,15 +14,15 @@
   <? $idParams = array(); ?>
   <? foreach ($this->records as $current): ?>
     <? $idParams[] = urlencode('ids[]') . '=' . urlencode($current->getResourceSource() . '|' . $current->getUniqueId()) ?>
-    <strong><?=$this->transEsc('Title')?>:</strong> <?=$this->escape($current->getBreadcrumb())?><br />
-    <input type="hidden" name="ids[]" value="<?=$this->escape($current->getResourceSource() . '|' . $current->getUniqueId())?>" />
+    <strong><?=$this->transEsc('Title')?>:</strong> <?=$this->escapeHtml($current->getBreadcrumb())?><br />
+    <input type="hidden" name="ids[]" value="<?=$this->escapeHtml($current->getResourceSource() . '|' . $current->getUniqueId())?>" />
   <? endforeach; ?>
 
   <label class="displayBlock" for="save_list"><?=$this->transEsc('Choose a List') ?></label>
   <select id="save_list" name="list">
     <? if ($this->lists): ?>
       <? foreach ($this->lists as $list): ?>
-        <option value="<?=$list['id'] ?>"<? if ($list['id']==$this->userList()->lastUsed()): ?> selected="selected"<? endif; ?>><?=$this->escape($list['title'])?></option>
+        <option value="<?=$list['id'] ?>"<? if ($list['id']==$this->userList()->lastUsed()): ?> selected="selected"<? endif; ?>><?=$this->escapeHtml($list['title'])?></option>
       <? endforeach; ?>
     <? else: ?>
       <option value=""><?=$this->transEsc('My Favorites') ?></option>

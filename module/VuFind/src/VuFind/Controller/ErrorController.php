@@ -27,7 +27,7 @@
  */
 namespace VuFind\Controller;
 
-use Zend\Mvc\Controller\ActionController;
+use Zend\Mvc\Controller\AbstractActionController;
 
 /**
  * Error Controller
@@ -38,7 +38,7 @@ use Zend\Mvc\Controller\ActionController;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class ErrorController extends ActionController
+class ErrorController extends AbstractActionController
 {
     /**
      * Display unavailable message.

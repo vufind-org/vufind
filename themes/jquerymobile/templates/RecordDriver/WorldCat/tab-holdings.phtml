@@ -5,19 +5,19 @@
   <tr>
     <th colspan="2">
       <? if (isset($holding->electronicAddress->text) && !empty($holding->electronicAddress->text)): ?>
-      <a href="<?=$this->escape($holding->electronicAddress->text)?>"><?=$this->escape($holding->physicalLocation)?></a>
+      <a href="<?=$this->escapeHtml($holding->electronicAddress->text)?>"><?=$this->escapeHtml($holding->physicalLocation)?></a>
       <? else: ?>
-      <?=$this->escape($holding->physicalLocation)?>
+      <?=$this->escapeHtml($holding->physicalLocation)?>
       <? endif; ?>
     </th>
   </tr>
   <tr>
     <th><?=$this->transEsc('Address')?>: </th>
-    <td><?=$this->escape($holding->physicalAddress->text)?></td>
+    <td><?=$this->escapeHtml($holding->physicalAddress->text)?></td>
   </tr>
   <tr>
     <th><?=$this->transEsc('Copies')?>: </th>
-    <td><?=$this->escape($holding->holdingSimple->copiesSummary->copiesCount)?></td>
+    <td><?=$this->escapeHtml($holding->holdingSimple->copiesSummary->copiesCount)?></td>
   </tr>
 <? endforeach; ?>
 </table>

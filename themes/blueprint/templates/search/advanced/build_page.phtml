@@ -3,9 +3,9 @@ $(document).ready(function() {
     <? foreach ($this->searchDetails as $searchGroup): ?>
       <? $i = 0; foreach ($searchGroup['group'] as $search): ?>
         <? if (++$i == 1): ?>
-          var new_group = addGroup('<?=$this->escape(addslashes($search['lookfor']))?>', '<?=$this->escape(addslashes($search['field']))?>', '<?=$this->escape($search['bool'])?>');
+          var new_group = addGroup('<?=$this->escapeHtml(addslashes($search['lookfor']))?>', '<?=$this->escapeHtml(addslashes($search['field']))?>', '<?=$this->escapeHtml($search['bool'])?>');
         <? else: ?>
-          addSearch(new_group, '<?=$this->escape(addslashes($search['lookfor']))?>', '<?=$this->escape(addslashes($search['field']))?>');
+          addSearch(new_group, '<?=$this->escapeHtml(addslashes($search['lookfor']))?>', '<?=$this->escapeHtml(addslashes($search['field']))?>');
         <? endif; ?>
       <? endforeach; ?>
     <? endforeach; ?>

@@ -1,15 +1,15 @@
-<a rel="external" href="<?=$this->escape($this->openUrlBase . '?' . $this->openUrl)?>">
+<a rel="external" href="<?=$this->escapeHtml($this->openUrlBase . '?' . $this->openUrl)?>">
   <? if ($this->openUrlGraphic): ?>
     <?
         $style = '';
         if ($this->openUrlGraphicWidth) {
-            $style .= 'width:' . $this->escape($this->openUrlGraphicWidth) . 'px;';
+            $style .= 'width:' . $this->escapeHtml($this->openUrlGraphicWidth) . 'px;';
         }
         if ($this->openUrlGraphicHeight) {
-            $style .= 'height:' . $this->escape($this->openUrlGraphicHeight) . 'px;';
+            $style .= 'height:' . $this->escapeHtml($this->openUrlGraphicHeight) . 'px;';
         }
     ?>
-    <img src="<?=$this->escape($this->openUrlGraphic)?>" alt="<?=$this->transEsc('Get full text')?>" style="<?=$style?>" />
+    <img src="<?=$this->escapeHtml($this->openUrlGraphic)?>" alt="<?=$this->transEsc('Get full text')?>" style="<?=$style?>" />
   <? else: ?>
     <?=$this->transEsc('Get full text')?>
   <? endif; ?>

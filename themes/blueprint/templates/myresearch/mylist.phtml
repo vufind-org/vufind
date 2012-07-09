@@ -28,8 +28,8 @@
         <a href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>" class="delete deleteList smallButton" id="deleteList<?=$list->id ?>" title="<?=$this->transEsc("delete_list")?>"><?=$this->transEsc("delete_list")?></a>
       <? endif; ?>
     </div>
-    <h3 class="list"><?=$this->escape($list->title)?></h3>
-    <? if (!empty($list->description)): ?><p class="listDescription"><?=$this->escape($list->description)?></p><hr /><? endif; ?>
+    <h3 class="list"><?=$this->escapeHtml($list->title)?></h3>
+    <? if (!empty($list->description)): ?><p class="listDescription"><?=$this->escapeHtml($list->description)?></p><hr /><? endif; ?>
   <? else: ?>
     <h3 class="fav"><?=$this->transEsc("Your Favorites")?></h3>
   <? endif; ?>
@@ -38,8 +38,8 @@
     <div class="resulthead">
       <div class="floatleft">
         <?=$this->transEsc("Showing")?>
-        <strong><?=$this->escape($this->results->getStartRecord())?></strong> - <strong><?=$this->escape($this->results->getEndRecord())?></strong>
-        <?=$this->transEsc('of')?> <strong><?=$this->escape($recordTotal)?></strong>
+        <strong><?=$this->escapeHtml($this->results->getStartRecord())?></strong> - <strong><?=$this->escapeHtml($this->results->getEndRecord())?></strong>
+        <?=$this->transEsc('of')?> <strong><?=$this->escapeHtml($recordTotal)?></strong>
       </div>
       <div class="floatright">
         <?=$this->render('search/controls/sort.phtml')?>
@@ -48,8 +48,8 @@
     </div>
     <form method="post" name="bulkActionForm" action="<?=$this->url('cart-myresearchbulk')?>">
       <? if (isset($list)): ?>
-        <input type="hidden" name="listID" value="<?=$this->escape($list->id)?>" />
-        <input type="hidden" name="listName" value="<?=$this->escape($list->title)?>" />
+        <input type="hidden" name="listID" value="<?=$this->escapeHtml($list->id)?>" />
+        <input type="hidden" name="listName" value="<?=$this->escapeHtml($list->title)?>" />
       <? endif; ?>
       <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', array('idPrefix' => '', 'list' => isset($list) ? $list : null))?>
       <ul class="recordSet">

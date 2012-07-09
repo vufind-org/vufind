@@ -1,6 +1,6 @@
 var searchFields = new Array();
 <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
-  searchFields["<?=$this->escape($searchVal)?>"] = "<?=$this->transEsc($searchDesc)?>";
+  searchFields["<?=$this->escapeHtml($searchVal)?>"] = "<?=$this->transEsc($searchDesc)?>";
 <? endforeach; ?>
 var searchJoins = new Array();
 searchJoins["AND"]  = "<?=$this->transEsc("search_AND")?>";

@@ -16,7 +16,7 @@
     Pick a driver: 
     <select name="driver">
       <? foreach ($this->drivers as $driver): ?>
-        <option value="<?=$this->escape($driver)?>"><?=$this->escape($driver)?></option>
+        <option value="<?=$this->escapeHtml($driver)?>"><?=$this->escapeHtml($driver)?></option>
       <? endforeach; ?>
     </select>
     <input type="submit"/>
@@ -26,6 +26,6 @@
   <a href="http://vufind.org/wiki/vufind2:developer_manual">Developer Manual</a>.</p>
 <? else: ?>
   <p>VuFind is having trouble communicating with your Integrated Library System (ILS).  Check your configuration.
-  You may need to edit the file at <strong><?=$this->escape($this->configPath)?></strong> and fill in some
+  You may need to edit the file at <strong><?=$this->escapeHtml($this->configPath)?></strong> and fill in some
   connection details.</p>
 <? endif; ?>

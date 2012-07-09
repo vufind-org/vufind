@@ -6,7 +6,7 @@
   <div id="popupDetails"> 
     <? foreach ($this->emailList as $favorite): ?>
         <strong><?=$this->translate('Title') ?>:</strong>
-        <?=$this->escape($favorite['title']) ?><br />
+        <?=$this->escapeHtml($favorite['title']) ?><br />
     <? endforeach; ?>
     <br />
     <label class="displayBlock" for="email_to"><?=$this->translate('To') ?>:</label>
@@ -18,16 +18,16 @@
     <br />
     <input class="button" type="submit" name="submit" value="<?=$this->translate('Send') ?>"/>
     <? foreach ($emailIDS as $emailID): ?>
-    <input type="hidden" name="ids[]" value="<?=$this->escape($emailID) ?>"/>
+    <input type="hidden" name="ids[]" value="<?=$this->escapeHtml($emailID) ?>"/>
     <? endforeach; ?>
     <? if ($listID): ?>
-      <input type="hidden" name="listID" value="<?=$this->escape($listID) ?>"/>
+      <input type="hidden" name="listID" value="<?=$this->escapeHtml($listID) ?>"/>
     <? endif; ?>
     <? if ($followupModule): ?>
-    <input type="hidden" name="followupModule" value="<?=$this->escape($followupModule) ?>"/>
+    <input type="hidden" name="followupModule" value="<?=$this->escapeHtml($followupModule) ?>"/>
     <? endif; ?>
     <? if ($followupAction): ?>
-    <input type="hidden" name="followupAction" value="<?=$this->escape($followupAction) ?>"/>
+    <input type="hidden" name="followupAction" value="<?=$this->escapeHtml($followupAction) ?>"/>
     <? endif; ?>
   </div>
 </form>

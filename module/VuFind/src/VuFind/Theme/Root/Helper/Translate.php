@@ -53,6 +53,7 @@ class Translate extends AbstractHelper
      */
     public function __invoke($str, $tokens = array(), $default = null)
     {
+        /* TODO
         $translator = $this->getView()->plugin('translator');
         $msg = $translator($str);
 
@@ -72,5 +73,7 @@ class Translate extends AbstractHelper
         }
 
         return $msg;
+         */
+        return $str;
     }
 }

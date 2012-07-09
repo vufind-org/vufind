@@ -58,6 +58,6 @@ class DisplayLanguageOption extends AbstractHelper
      */
     public function __invoke($str)
     {
-        return $this->view->escape($this->translator->translate($str));
+        return $this->view->escapeHtml($this->translator->translate($str));
     }
 }

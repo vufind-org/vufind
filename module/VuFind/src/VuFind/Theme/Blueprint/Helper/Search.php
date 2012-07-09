@@ -56,7 +56,7 @@ class Search extends AbstractHelper
         $html = '<div class="corrections">';
         $html .= $msg;
         foreach ($spellingSuggestions as $term => $details) {
-            $html .= '<br/>' . $this->view->escape($term) . ' &raquo; ';
+            $html .= '<br/>' . $this->view->escapeHtml($term) . ' &raquo; ';
             $i = 0;
             foreach ($details['suggestions'] as $word => $data) {
                 if ($i++ > 0) {
@@ -65,7 +65,7 @@ class Search extends AbstractHelper
                 $html .= '<a href="'
                     . $this->view->results->getUrl()
                         ->replaceTerm($term, $data['new_term'])
-                    . '">' . $this->view->escape($word) . '</a>';
+                    . '">' . $this->view->escapeHtml($word) . '</a>';
                 if (isset($data['expand_term']) && !empty($data['expand_term'])) {
                     $html .= '<a href="'
                         . $this->view->results->getUrl()
