@@ -27,6 +27,8 @@
  */
 namespace VuFind\Account;
 use VuFind\Auth\Factory as AuthFactory, VuFind\Config\Reader as ConfigReader,
+    VuFind\Connection\Manager as ConnectionManager,
+    VuFind\Exception\Auth as AuthException, VuFind\Exception\ILS as ILSException,
     VuFind\Registry, Zend\Session\Container as SessionContainer;
 
 /**
@@ -120,14 +122,13 @@ class Manager
      */
     public function loginEnabled()
     {
-        /* TODO:
         if (isset($this->config->Authentication->hideLogin)
             && $this->config->Authentication->hideLogin
         ) {
             return false;
         }
         try {
-            $catalog = VF_Connection_Manager::connectToCatalog();
+            $catalog = ConnectionManager::connectToCatalog();
         } catch (\Exception $e) {
             // If we can't connect to the catalog, assume that no special
             // ILS-related login settings exist -- this prevents ILS errors
@@ -136,8 +137,6 @@ class Manager
             return true;
         }
         return !$catalog->loginIsHidden();
-         */
-        return true;
     }
 
     /**
@@ -218,7 +217,7 @@ class Manager
      * @param Zend_Controller_Request_Abstract $request Request object containing
      * new account details.
      *
-     * @throws VF_Exception_Auth
+     * @throws AuthException
      * @return Zend_Db_Table_Row_Abstract New user row.
      */
     public function create($request)
@@ -235,27 +234,25 @@ class Manager
      * @param Zend_Controller_Request_Abstract $request Request object containing
      * account credentials.
      *
-     * @throws VF_Exception_Auth
+     * @throws AuthException
      * @return Zend_Db_Table_Row_Abstract Object representing logged-in user.
      */
     public function login($request)
     {
-        /* TODO:
         // Perform authentication:
         try {
             $user = $this->auth->authenticate($request);
-        } catch (VF_Exception_Auth $e) {
+        } catch (AuthException $e) {
             // Pass authentication exceptions through unmodified
             throw $e;
         } catch (\Exception $e) {
             // Catch other exceptions and treat them as technical difficulties
-            throw new VF_Exception_Auth('authentication_error_technical');
+            throw new AuthException('authentication_error_technical');
         }
 
         // Store the user in the session and send it back to the caller:
         $this->updateSession($user);
         return $user;
-         */
     }
 
     /**
@@ -269,15 +266,14 @@ class Manager
      */
     public function storedCatalogLogin()
     {
-        /* TODO:
         // Do we have a previously cached ILS account?
         if (is_array($this->ilsAccount)) {
             return $this->ilsAccount;
         }
 
         try {
-            $catalog = VF_Connection_Manager::connectToCatalog();
-        } catch (VF_Exception_ILS $e) {
+            $catalog = ConnectionManager::connectToCatalog();
+        } catch (ILSException $e) {
             return false;
         }
         $user = $this->isLoggedIn();
@@ -290,7 +286,7 @@ class Manager
                     $user->cat_username,
                     isset($user->cat_password) ? $user->cat_password : null
                 );
-            } catch (VF_Exception_ILS $e) {
+            } catch (ILSException $e) {
                 $patron = null;
             }
             if (empty($patron)) {
@@ -306,7 +302,6 @@ class Manager
         }
 
         return false;
-         */
     }
 
     /**
@@ -321,11 +316,10 @@ class Manager
      */
     public function newCatalogLogin($username, $password)
     {
-        /* TODO:
         try {
-            $catalog = VF_Connection_Manager::connectToCatalog();
+            $catalog = ConnectionManager::connectToCatalog();
             $result = $catalog->patronLogin($username, $password);
-        } catch (VF_Exception_ILS $e) {
+        } catch (ILSException $e) {
             return false;
         }
         if ($result) {
@@ -338,6 +332,5 @@ class Manager
             return $result;
         }
         return false;
-         */
     }
 }
