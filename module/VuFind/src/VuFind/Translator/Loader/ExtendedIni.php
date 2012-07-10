@@ -46,8 +46,8 @@ class ExtendedIni implements LoaderInterface
     /**
      * load(): defined by LoaderInterface.
      *
-     * @param  string $filename
-     * @param  string $locale
+     * @param string $filename Language file to read
+     * @param string $locale   Locale to read from language file
      *
      * @return TextDomain
      * @throws InvalidArgumentException
