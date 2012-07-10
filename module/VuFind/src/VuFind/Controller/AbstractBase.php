@@ -93,8 +93,8 @@ class AbstractBase extends AbstractActionController
         }
 
         // Now check if the user has provided credentials with which to log in:
-        if (($username = $this->getRequest()->getPost()->get('cat_username', false))
-            && ($password = $this->getRequest()->getPost()->get('cat_password', false))
+        if (($username = $this->params()->fromPost('cat_username', false))
+            && ($password = $this->params()->fromPost('cat_password', false))
         ) {
             $patron = $account->newCatalogLogin($username, $password);
 

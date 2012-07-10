@@ -76,7 +76,7 @@ class AbstractSearch extends AbstractBase
 
         // Handle request to edit existing saved search:
         $view->saved = false;
-        $searchId = $this->getRequest()->getQuery()->get('edit', false);
+        $searchId = $this->params()->fromQuery('edit', false);
         if ($searchId !== false) {
             $view->saved = $this->restoreAdvancedSearch($searchId);
         }
@@ -94,7 +94,7 @@ class AbstractSearch extends AbstractBase
         $view = new ViewModel();
 
         // Handle saved search requests:
-        $savedId = $this->getRequest()->getQuery()->get('saved', false);
+        $savedId = $this->params()->fromQuery('saved', false);
         if ($savedId !== false) {
             return $this->redirectToSavedSearch($savedId);
         }
@@ -195,7 +195,7 @@ class AbstractSearch extends AbstractBase
     protected function processJumpTo($results)
     {
         // Missing/invalid parameter?  Ignore it:
-        $jumpto = $this->getRequest()->getQuery()->get('jumpto');
+        $jumpto = $this->params()->fromQuery('jumpto');
         if (empty($jumpto) || !is_numeric($jumpto)) {
             return false;
         }
