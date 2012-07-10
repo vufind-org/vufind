@@ -1,11 +1,11 @@
 <label for="account_firstname"><?=$this->transEsc('First Name')?>:</label>
-<input id="account_firstname" type="text" name="firstname" value="<?=$this->escapeHtml($this->request->getParam('firstname'))?>" />
+<input id="account_firstname" type="text" name="firstname" value="<?=$this->escapeHtml($this->request->get('firstname'))?>" />
 <label for="account_lastname"><?=$this->transEsc('Last Name')?>:</label>
-<input id="account_lastname" type="text" name="lastname" value="<?=$this->escapeHtml($this->request->getParam('lastname'))?>" />
+<input id="account_lastname" type="text" name="lastname" value="<?=$this->escapeHtml($this->request->get('lastname'))?>" />
 <label for="account_email"><?=$this->transEsc('Email Address')?>:</label>
-<input id="account_email" type="text" name="email" value="<?=$this->escapeHtml($this->request->getParam('email'))?>" />
+<input id="account_email" type="text" name="email" value="<?=$this->escapeHtml($this->request->get('email'))?>" />
 <label for="account_username"><?=$this->transEsc('Desired Username')?>:</label>
-<input id="account_username" type="text" name="username" value="<?=$this->escapeHtml($this->request->getParam('username'))?>" />
+<input id="account_username" type="text" name="username" value="<?=$this->escapeHtml($this->request->get('username'))?>" />
 <label for="account_password"><?=$this->transEsc('Password')?>:</label>
 <input id="account_password" type="password" name="password" />
 <label for="account_password2"><?=$this->transEsc('Password Again')?>:</label>
