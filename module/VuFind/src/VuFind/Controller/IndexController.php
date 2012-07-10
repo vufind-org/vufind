@@ -57,7 +57,7 @@ class IndexController extends AbstractActionController
             ? $config->Site->defaultModule : 'Search';
         $module = AccountManager::getInstance()->isLoggedIn()
             ? $loggedInModule : $loggedOutModule;
-        $options = array('action' => 'Home', 'controller' => $module);
+        $options = array('action' => 'Home');
         return $this->forward()->dispatch($module, $options);
     }
 }
