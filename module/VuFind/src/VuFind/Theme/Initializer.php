@@ -219,7 +219,7 @@ class Initializer
         $selectedUI = $request->getPost()->get(
             'ui', $request->getQuery()->get(
                 'ui', isset($request->getCookie()->ui)
-                    ? $request->getCookie()->ui : null
+                ? $request->getCookie()->ui : null
             )
         );
         if (empty($selectedUI)) {
