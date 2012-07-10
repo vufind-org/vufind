@@ -791,11 +791,13 @@ class SolrMarc extends SolrDefault
      * Get an array of information about record holdings, obtained in real-time
      * from the ILS.
      *
+     * @param \VuFind\Account\Manager $account Account manager object
+     *
      * @return array
      */
-    public function getRealTimeHoldings()
+    public function getRealTimeHoldings($account)
     {
-        $holdLogic = new HoldLogic();
+        $holdLogic = new HoldLogic($account);
         return $holdLogic->getHoldings($this->getUniqueID());
     }
 
@@ -820,17 +822,19 @@ class SolrMarc extends SolrDefault
     /**
      * Get a link for placing a title level hold.
      *
+     * @param \VuFind\Account\Manager $account Account manager object
+     *
      * @return mixed A url if a hold is possible, boolean false if not
      * @access protected
      */
-    protected function getRealTimeTitleHold()
+    protected function getRealTimeTitleHold($account)
     {
         $biblioLevel = $this->getBibliographicLevel();
         if ("monograph" == strtolower($biblioLevel)
             || stristr("part", $biblioLevel)
         ) {
             if (ILSConnection::getTitleHoldsMode() != "disabled") {
-                $holdLogic = new TitleHoldLogic();
+                $holdLogic = new TitleHoldLogic($account);
                 return $holdLogic->getHold($this->getUniqueID());
             }
         }

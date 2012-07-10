@@ -116,16 +116,23 @@ class Bootstrap
     }
 
     /**
-     * Make account manager available to views.
+     * Make account manager available to service manager and views.
      *
      * @return void
      */
     protected function initAccount()
     {
-        $callback = function($event) {
+        $accountManager = new AccountManager();
+
+        // Register in service manager:
+        $serviceManager = $this->event->getApplication()->getServiceManager();
+        $serviceManager->setService('AccountManager', $accountManager);
+
+        // Register in view:
+        $callback = function($event) use ($accountManager) {
             $serviceManager = $event->getApplication()->getServiceManager();
             $viewModel = $serviceManager->get('viewmanager')->getViewModel();
-            $viewModel->setVariable('account', AccountManager::getInstance());
+            $viewModel->setVariable('account', $accountManager);
         };
         $this->events->attach('dispatch', $callback);
     }
@@ -333,6 +340,7 @@ class Bootstrap
         register_shutdown_function(array($sessionManager, 'writeClose'));
 
         // Check user credentials:
-        AccountManager::getInstance()->checkForExpiredCredentials();
+        $serviceManager = $this->event->getApplication()->getServiceManager();
+        $serviceManager->get('AccountManager')->checkForExpiredCredentials();
     }
 }

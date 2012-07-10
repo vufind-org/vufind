@@ -26,7 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller;
-use VuFind\Account\Manager as AccountManager, VuFind\Search\Memory,
+use VuFind\Search\Memory,
     VuFind\Search\Options as SearchOptions, VuFind\Search\ResultScroller,
     Zend\View\Model\ViewModel;
 /**
@@ -54,7 +54,6 @@ class AbstractSearch extends AbstractBase
      */
     public function init()
     {
-        $this->user = AccountManager::getInstance()->isLoggedIn();
         /* TODO
         $this->view->searchClassId = $this->searchClassId;
         $this->view->flashMessenger = $this->_helper->flashMessenger;
@@ -132,12 +131,13 @@ class AbstractSearch extends AbstractBase
             /* TODO
             // Add to search history:
             if ($this->saveToHistory) {
+                $user = $this->getUser();
                 $history = new VuFind_Model_Db_Search();
                 $history->saveSearch(
                     $results,
                     $history->getSearches(
                         Zend_Session::getId(),
-                        isset($this->user->id) ? $this->user->id : null
+                        isset($user->id) ? $user->id : null
                     )
                 );
             }
@@ -256,8 +256,9 @@ class AbstractSearch extends AbstractBase
         $search = $rows->getRow(0);
 
         // Fail if user has no permission to view this search:
+        $user = $this->getUser();
         if ($search->session_id != Zend_Session::getId()
-            && $search->user_id != $this->user->id
+            && $search->user_id != $user->id
         ) {
             $this->_helper->flashMessenger->setNamespace('error')
                 ->addMessage('advSearchError_noRights');

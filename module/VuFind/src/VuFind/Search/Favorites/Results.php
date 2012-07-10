@@ -26,8 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Search\Favorites;
-use VuFind\Account\Manager as AccountManager,
-    VuFind\Exception\ListPermission as ListPermissionException,
+use VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Record,
     VuFind\Search\Base\Results as BaseResults,
     VuFind\Translator\Translator;
@@ -124,8 +123,8 @@ class Results extends BaseResults
     protected function performSearch()
     {
         $list = $this->getListObject();
-        $account = AccountManager::getInstance();
-        $this->user = $account->isLoggedIn();
+        $account = $this->getAccountManager();
+        $this->user = $account ? $account->isLoggedIn() : false;
 
         // Make sure the user and/or list objects make it possible to view
         // the current result set -- we need to check logged in status and

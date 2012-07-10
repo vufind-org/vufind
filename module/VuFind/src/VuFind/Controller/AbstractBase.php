@@ -27,7 +27,8 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Controller;
-use Zend\Mvc\Controller\AbstractActionController;
+use Zend\Mvc\Controller\AbstractActionController, Zend\ServiceManager\ServiceLocatorInterface,
+    Zend\ServiceManager\ServiceLocatorAwareInterface;
 
 /**
  * VuFind controller base class (defines some methods that can be shared by other
@@ -40,7 +41,55 @@ use Zend\Mvc\Controller\AbstractActionController;
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 class AbstractBase extends AbstractActionController
+    implements ServiceLocatorAwareInterface
 {
+    protected $serviceLocator;
+
+    /**
+     * Get the service locator object.
+     *
+     * @return ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        if (!is_object($this->serviceLocator)) {
+            throw new \Exception("Problem accessing service locator");
+        }
+        return $this->serviceLocator;
+    }
+
+    /**
+     * Set the service locator object.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Service locator.
+     *
+     * @return void
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+    }
+
+    /**
+     * Get the account manager object.
+     *
+     * @return \VuFind\Account\Manager
+     */
+    protected function getAccount()
+    {
+        return $this->getServiceLocator()->get('AccountManager');
+    }
+
+    /**
+     * Get the user object if logged in, false otherwise.
+     *
+     * @return object|bool
+     */
+    protected function getUser()
+    {
+        return $this->getAccount()->isLoggedIn();
+    }
+
     /**
      * Redirect the user to the login screen.
      *
@@ -51,27 +100,26 @@ class AbstractBase extends AbstractActionController
      */
     protected function forceLogin($msg = null, $extras = array())
     {
-        /* TODO:
         // Set default message if necessary.
         if (is_null($msg)) {
             $msg = 'You must be logged in first';
         }
 
+        /* TODO:
         // Store the current URL as a login followup action unless we are in a
         // lightbox (since lightboxes use a different followup mechanism).
         if ($this->_helper->layout->getLayout() != 'lightbox') {
             $this->_helper->followup->store($extras);
         }
+         */
         if (!empty($msg)) {
-            $this->_helper->flashMessenger->setNamespace('error')
-                ->addMessage($msg);
+            $this->flashMessenger()->setNamespace('error')->addMessage($msg);
         }
 
         // Set a flag indicating that we are forcing login:
-        $this->_request->setParam('forcingLogin', true);
+        $this->getRequest()->getPost()->set('forcingLogin', true);
 
-        $this->_forward('Login', 'MyResearch');
-         */
+        $this->forward()->dispatch('MyResearch', array('action' => 'Login'));
     }
 
     /**
@@ -83,11 +131,9 @@ class AbstractBase extends AbstractActionController
      */
     protected function catalogLogin()
     {
-        /* TODO:
         // First make sure user is logged in to VuFind:
-        $account = VF_Account_Manager::getInstance();
-        $user = $account->isLoggedIn();
-        if ($user == false) {
+        $account = $this->getAccount();
+        if ($account->isLoggedIn() == false) {
             $this->forceLogin();
             return false;
         }
@@ -100,7 +146,7 @@ class AbstractBase extends AbstractActionController
 
             // If login failed, store a warning message:
             if (!$patron) {
-                $this->_helper->flashMessenger->setNamespace('error')
+                $this->flashMessenger()->setNamespace('error')
                     ->addMessage('Invalid Patron Login');
             }
         } else {
@@ -110,11 +156,11 @@ class AbstractBase extends AbstractActionController
 
         // If catalog login failed, send the user to the right page:
         if (!$patron) {
-            $this->_forward('CatalogLogin', 'MyResearch');
+            $this->forward()
+                ->dispatch('MyResearch', array('action' => 'CatalogLogin'));
         }
 
         // Send value (either false or patron array) back to caller:
         return $patron;
-         */
     }
 }

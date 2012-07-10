@@ -91,31 +91,6 @@ class Manager
     }
 
     /**
-     * Get the current instance of the class.
-     *
-     * @return Manager
-     */
-    public static function getInstance()
-    {
-        $registry = Registry::getInstance();
-        if (!$registry->isRegistered('VF_Account')) {
-            self::resetInstance();
-        }
-        return $registry->get('VF_Account');
-    }
-
-    /**
-     * Reset the current instance of the class.
-     *
-     * @return void
-     */
-    public static function resetInstance()
-    {
-        $registry = Registry::getInstance();
-        $registry->set('VF_Account', new Manager());
-    }
-
-    /**
      * Is login currently allowed?
      *
      * @return bool

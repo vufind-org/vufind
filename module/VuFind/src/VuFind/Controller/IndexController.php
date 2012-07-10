@@ -27,9 +27,7 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Account\Manager as AccountManager,
-    Zend\Mvc\Controller\AbstractActionController;
+use VuFind\Config\Reader as ConfigReader;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -40,7 +38,7 @@ use VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class IndexController extends AbstractActionController
+class IndexController extends AbstractBase
 {
     /**
      * Determines what elements are displayed on the home page based on whether
@@ -55,8 +53,7 @@ class IndexController extends AbstractActionController
             ? $config->Site->defaultLoggedInModule : 'MyResearch';
         $loggedOutModule = isset($config->Site->defaultModule)
             ? $config->Site->defaultModule : 'Search';
-        $module = AccountManager::getInstance()->isLoggedIn()
-            ? $loggedInModule : $loggedOutModule;
+        $module = $this->getUser() ? $loggedInModule : $loggedOutModule;
         $options = array('action' => 'Home');
         return $this->forward()->dispatch($module, $options);
     }

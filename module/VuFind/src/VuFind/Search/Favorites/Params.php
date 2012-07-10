@@ -39,6 +39,8 @@ use VuFind\Search\Base\Params as BaseParams;
  */
 class Params extends BaseParams
 {
+    protected $account;
+
     /**
      * Constructor
      *
@@ -81,5 +83,27 @@ class Params extends BaseParams
 
         // Otherwise use standard parent behavior:
         return parent::initFilters($request);
+    }
+
+    /**
+     * Get account manager.
+     *
+     * @return \VuFind\Account\Manager
+     */
+    public function getAccountManager()
+    {
+        return $this->account;
+    }
+
+    /**
+     * Inject dependency: account manager.
+     *
+     * @param \VuFind\Account\Manager $account Account manager object.
+     *
+     * @return void
+     */
+    public function setAccountManager($account)
+    {
+        $this->account = $account;
     }
 }

@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Theme\Root\Helper;
-use VuFind\Account\Manager as AccountManager,
-    Zend\View\Exception\RuntimeException, Zend\View\Helper\AbstractHelper;
+use Zend\View\Exception\RuntimeException, Zend\View\Helper\AbstractHelper;
 
 /**
  * Authentication view helper
@@ -57,7 +56,8 @@ class Auth extends AbstractHelper
         // Get the current auth module's class name, then start a loop
         // in case we need to use a parent class' name to find the appropriate
         // template.
-        $className = AccountManager::getInstance()->getAuthClass();
+        $layout = $this->getView()->plugin('layout');
+        $className = $layout()->account->getAuthClass();
         $topClassName = $className; // for error message
         while (true) {
             // Guess the template name for the current class:
@@ -65,7 +65,7 @@ class Auth extends AbstractHelper
             $template = 'Auth/' . array_pop($classParts) . '/' . $name;
             try {
                 // Try to render the template....
-                $html = $this->getView()->render($template, $context);
+                $html = $this->getView()->render($template);
                 $contextHelper($this->getView())->restore($oldContext);
                 return $html;
             } catch (RuntimeException $e) {
@@ -75,8 +75,8 @@ class Auth extends AbstractHelper
                 if (empty($className)) {
                     // No more parent classes left to try?  Throw an exception!
                     throw new RuntimeException(
-                        'Cannot find ' . $name . ' template for auth module: ' .
-                        get_class($topClassName)
+                        'Cannot find ' . $name . ' template for auth module: '
+                        . $topClassName
                     );
                 }
             }

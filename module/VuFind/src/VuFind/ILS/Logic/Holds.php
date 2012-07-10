@@ -27,8 +27,7 @@
  * @link     http://vufind.org/wiki/system_classes#index_interface Wiki
  */
 namespace VuFind\ILS\Logic;
-use VuFind\Account\Manager as AccountManager,
-    VuFind\Config\Reader as ConfigReader,
+use VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
     VuFind\Crypt\HMAC,
     VuFind\ILS\Connection as ILSConnection;
@@ -45,6 +44,7 @@ use VuFind\Account\Manager as AccountManager,
  */
 class Holds
 {
+    protected $account;
     protected $catalog;
     protected $config;
     protected $hideHoldings = array();
@@ -52,10 +52,12 @@ class Holds
     /**
      * Constructor
      *
-     * @param ILSConnection $catalog A catalog connection
+     * @param \VuFind\Account\Manager $account Account manager object
+     * @param ILSConnection           $catalog A catalog connection
      */
-    public function __construct($catalog = false)
+    public function __construct($account, $catalog = false)
     {
+        $this->account = $account;
         $this->config = ConfigReader::getConfig();
 
         if (isset($this->config->Record->hide_holdings)) {
@@ -135,7 +137,7 @@ class Holds
             // Retrieve stored patron credentials; it is the responsibility of the
             // controller and view to inform the user that these credentials are
             // needed for hold data.
-            $patron = AccountManager::getInstance()->storedCatalogLogin();
+            $patron = $this->account->storedCatalogLogin();
             $result = $this->catalog->getHolding($id, $patron);
             $mode = ILSConnection::getHoldsMode();
 

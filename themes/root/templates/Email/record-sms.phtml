@@ -7,7 +7,7 @@
     // since text messages can be short, and we want the most important stuff
     // at the top!
     if ($this->driver->supportsAjaxStatus()) {
-        $holdings = $this->driver->getRealTimeHoldings();
+        $holdings = $this->driver->getRealTimeHoldings($this->layout()->account);
         $locations = array_keys($holdings);
         if (isset($locations[0])) {
             if (isset($holdings[$locations[0]]['items'][0]['callnumber'])) {

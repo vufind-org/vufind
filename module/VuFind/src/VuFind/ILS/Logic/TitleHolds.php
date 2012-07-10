@@ -27,8 +27,7 @@
  * @link     http://vufind.org/wiki/system_classes#index_interface Wiki
  */
 namespace VuFind\ILS\Logic;
-use VuFind\Account\Manager as AccountManager,
-    VuFind\Config\Reader as ConfigReader,
+use VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
     VuFind\Crypt\HMAC,
     VuFind\ILS\Connection as ILSConnection;
@@ -45,6 +44,7 @@ use VuFind\Account\Manager as AccountManager,
  */
 class TitleHolds
 {
+    protected $account;
     protected $catalog;
     protected $config;
     protected $hideHoldings = array();
@@ -52,10 +52,12 @@ class TitleHolds
     /**
      * Constructor
      *
-     * @param ILSConnection $catalog A catalog connection
+     * @param \VuFind\Account\Manager $account Account manager object
+     * @param ILSConnection           $catalog A catalog connection
      */
-    public function __construct($catalog = false)
+    public function __construct($account, $catalog = false)
     {
+        $this->account = $account;
         $this->config = ConfigReader::getConfig();
 
         if (isset($this->config->Record->hide_holdings)) {
@@ -83,7 +85,7 @@ class TitleHolds
             if ($mode == "disabled") {
                  return false;
             } else if ($mode == "driver") {
-                $patron = AccountManager::getInstance()->storedCatalogLogin();
+                $patron = $this->account->storedCatalogLogin();
                 if (!$patron) {
                     return false;
                 }

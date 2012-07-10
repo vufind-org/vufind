@@ -843,9 +843,11 @@ class SolrDefault extends AbstractBase
      * Get an array of information about record holdings, obtained in real-time
      * from the ILS.
      *
+     * @param \VuFind\Account\Manager $account Account manager object
+     *
      * @return array
      */
-    public function getRealTimeHoldings()
+    public function getRealTimeHoldings($account)
     {
         // Not supported by the Solr index -- implement in child classes.
         return array();

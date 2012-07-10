@@ -1,7 +1,7 @@
 <?
     // Set up convenience variables:
     $user = VF_Account_Manager::getInstance()->isLoggedIn();
-    $holdings = $this->driver->getRealTimeHoldings();
+    $holdings = $this->driver->getRealTimeHoldings($this->layout()->account);
     $openUrl = $this->driver->openURLActive('holdings') ? $this->driver->getOpenURL() : false;
     $offlineMode = VF_Connection_Manager::connectToCatalog()->getOfflineMode();
     // Account for replace_other_urls setting
@@ -32,7 +32,7 @@
     <? endif; ?>
   <? endif; ?>
 <? endif; ?>
-<? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
+<? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold', array($this->layout()->account)); if (!empty($holdingTitleHold)): ?>
     <a rel="external" class="holdPlace" href="<?=$this->escapeHtml(array_shift(explode('#', $holdingTitleHold)))?>"><?=$this->transEsc('title_hold_place')?></a>
 <? endif; ?>
 <? foreach ($holdings as $location => $holding): ?>
