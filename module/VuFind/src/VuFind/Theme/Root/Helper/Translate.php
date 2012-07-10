@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Theme\Root\Helper;
-use Zend\I18n\View\Helper\Translate as Base;
+use Zend\I18n\Exception\RuntimeException, Zend\I18n\View\Helper\Translate as Base;
 
 /**
  * Translate view helper
@@ -51,7 +51,13 @@ class Translate extends Base
      */
     public function __invoke($str, $tokens = array(), $default = null)
     {
-        $msg = parent::__invoke($str);
+        try {
+            $msg = parent::__invoke($str);
+        } catch (RuntimeException $e) {
+            // If we get called before the translator is set up, it will throw an
+            // exception, but we should still try to display some text!
+            $msg = $str;
+        }
 
         // Did the translation fail to change anything?  If so, use default:
         if (!is_null($default) && $msg == $str) {
