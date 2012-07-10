@@ -5,5 +5,5 @@
 ?>
 <div id="openLibraryDeferredRecommend">
     <p><?=$this->transEsc("Loading")?>... <img src="<?=$this->imageLink('ajax_loading.gif')?>" /></p>
-    <?=$this->inlineScript(Zend_View_Helper_HeadScript::SCRIPT, $loadJs)?>
+    <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $loadJs)?>
 </div>

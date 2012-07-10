@@ -5,7 +5,7 @@
     // Convenience variables:
     $account = $this->layout()->account;
     $hideLogin = !(is_object($account) && $account->loginEnabled());
-    $offlineMode = VF_Connection_Manager::connectToCatalog()->getOfflineMode();
+    $offlineMode = \VuFind\Connection\Manager::connectToCatalog()->getOfflineMode();
 ?>
 <div data-role="page" id="MyResearch-login">
   <?=$this->mobileMenu()->header()?>

@@ -8,14 +8,16 @@
         . $this->transEsc('Login') . '</em>';
 
     // If we're in AJAX mode, load some extra Javascript inline:
+    /* TODO:
     if ($this->layout()->getLayout() == 'lightbox') {
         echo $this->inlineScript()->appendFile("rc4.js");
     }
+     */
 
     // Convenience variables:
     $account = $this->layout()->account;
     $hideLogin = !(is_object($account) && $account->loginEnabled());
-    $offlineMode = VF_Connection_Manager::connectToCatalog()->getOfflineMode();
+    $offlineMode = \VuFind\Connection\Manager::connectToCatalog()->getOfflineMode();
 ?>
 
 <? if ($offlineMode == "ils-offline"): ?>
@@ -43,7 +45,7 @@
     <?
       // Set up form validation:
       $initJs = '$(document).ready(function() { $(\'#loginForm\').validate(); });';
-      echo $this->inlineScript(Zend_View_Helper_HeadScript::SCRIPT, $initJs);
+      echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $initJs);
     ?>
     <? if ($account->supportsCreation()): ?>
       <a class="new_account" href="<?=$this->url('myresearch-account')?>"><?=$this->transEsc('Create New Account')?></a>
