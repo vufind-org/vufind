@@ -24,6 +24,7 @@ $config = array(
         'invokables' => array(
             'error' => 'VuFind\Controller\ErrorController',
             'index' => 'VuFind\Controller\IndexController',
+            'my-research' => 'VuFind\Controller\MyResearchController',
             'search' => 'VuFind\Controller\SearchController'
         ),
     ),
