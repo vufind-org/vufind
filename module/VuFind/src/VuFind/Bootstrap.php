@@ -29,10 +29,13 @@ namespace VuFind;
 use VuFind\Account\Manager as AccountManager,
     VuFind\Cache\Manager as CacheManager,
     VuFind\Config\Reader as ConfigReader,
+    VuFind\Db\AdapterFactory as DbAdapterFactory,
     VuFind\Registry, VuFind\Theme\Initializer as ThemeInitializer,
     VuFind\Translator\Translator,
+    Zend\Db\TableGateway\Feature\GlobalAdapterFeature as DbGlobalAdapter,
     Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch,
     Zend\Session\SessionManager;
+
 /**
  * VuFind Bootstrapper
  *
@@ -247,10 +250,7 @@ class Bootstrap
      */
     protected function initDatabase()
     {
-        /* TODO:
-        $this->_db = VF_DB::connect();
-        Zend_Db_Table::setDefaultAdapter($this->_db);
-         */
+        DbGlobalAdapter::setStaticAdapter(DbAdapterFactory::getAdapter());
     }
 
     /**
