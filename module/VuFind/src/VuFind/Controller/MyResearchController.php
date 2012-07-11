@@ -63,7 +63,7 @@ class MyResearchController extends AbstractBase
         // Process login request, if necessary:
         if ($this->params()->fromPost('processLogin')) {
             try {
-                $this->getAccount()->login($this->_request);
+                $this->getAccount()->login($this->getRequest()->getPost());
             } catch (AuthException $e) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage($e->getMessage());
@@ -100,13 +100,14 @@ class MyResearchController extends AbstractBase
      */
     public function accountAction()
     {
-        /* TODO:
         // If authentication mechanism does not support account creation, send
         // the user away!
         if (!$this->getAccount()->supportsCreation()) {
-            return $this->_forward('Home');
+            return $this->forward()
+                ->dispatch('MyResearch', array('action' => 'Home'));
         }
 
+        /* TODO
         // We may have come in from a lightbox.  In this case, a prior module
         // will not have set the followup information.  We should grab the referer
         // so the user doesn't get lost.
@@ -114,12 +115,14 @@ class MyResearchController extends AbstractBase
         if (!isset($followup->url)) {
             $followup->url = $this->getRequest()->getServer('HTTP_REFERER');
         }
+         */
 
         // Process request, if necessary:
-        if (!is_null($this->_request->getParam('submit', null))) {
+        if (!is_null($this->params()->fromPost('submit', null))) {
             try {
-                $this->getAccount()->create($this->_request);
-                $this->_forward('Home');
+                $this->getAccount()->create($this->getRequest()->getPost());
+                return $this->forward()
+                    ->dispatch('MyResearch', array('action' => 'Home'));
             } catch (AuthException $e) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage($e->getMessage());
@@ -127,8 +130,9 @@ class MyResearchController extends AbstractBase
         }
 
         // Pass request to view so we can repopulate user parameters in form:
-        $this->view->request = $this->_request;
-         */
+        $view = new ViewModel();
+        $view->request = $this->getRequest()->getPost();
+        return $view;
     }
 
     /**
@@ -200,11 +204,11 @@ class MyResearchController extends AbstractBase
 
         // Check for the save / delete parameters and process them appropriately:
         $search = new VuFind_Model_Db_Search();
-        if (($id = $this->_request->getParam('save', false)) !== false) {
+        if (($id = $this->params()->fromQuery('save', false)) !== false) {
             $search->setSavedFlag($id, true, $user->id);
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage('search_save_success');
-        } else if (($id = $this->_request->getParam('delete', false)) !== false) {
+        } else if (($id = $this->params()->fromQuery('delete', false)) !== false) {
             $search->setSavedFlag($id, false);
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage('search_unsave_success');
@@ -213,12 +217,12 @@ class MyResearchController extends AbstractBase
         }
 
         // Forward to the appropriate place:
-        if ($this->_request->getParam('mode') == 'history') {
+        if ($this->params()->fromQuery('mode') == 'history') {
             return $this->_redirect('/Search/History');
         } else {
             // Forward to the Search/Results action with the "saved" parameter set;
             // this will in turn redirect the user to the appropriate results screen.
-            $this->_request->setParam('saved', $id);
+            $this->getRequest()->getQuery()->set('saved', $id);
             return $this->_forward('Results', 'Search');
         }
          */
@@ -241,7 +245,7 @@ class MyResearchController extends AbstractBase
         $user = $this->getUser();
 
         // Process home library parameter (if present):
-        $homeLibrary = $this->_request->getParam('home_library', false);
+        $homeLibrary = $this->params()->fromPost('home_library', false);
         if (!empty($homeLibrary)) {
             $user->changeHomeLibrary($homeLibrary);
             $this->getAccount()->updateSession($user);

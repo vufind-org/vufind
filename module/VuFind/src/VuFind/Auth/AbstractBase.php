@@ -58,8 +58,8 @@ abstract class AbstractBase
     /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
-     * @param Zend_Controller_Request_Abstract $request Request object containing
-     * account credentials.
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request (account credentials).
      *
      * @throws VF_Exception_Auth
      * @return Zend_Db_Table_Row_Abstract Object representing logged-in user.
@@ -80,8 +80,8 @@ abstract class AbstractBase
     /**
      * Create a new user account from the request.
      *
-     * @param Zend_Controller_Request_Abstract $request Request object containing
-     * new account details.
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request (new account details).
      *
      * @throws AuthException
      * @return Zend_Db_Table_Row_Abstract New user row.
