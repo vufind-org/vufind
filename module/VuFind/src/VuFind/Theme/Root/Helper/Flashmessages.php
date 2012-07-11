@@ -47,14 +47,12 @@ class Flashmessages extends AbstractHelper
     public function __invoke()
     {
         $html = '';
-        /* TODO:
-        if (is_object($this->view->flashMessenger)) {
+        if (is_object($fm = $this->getView()->flashMessenger)) {
             $namespaces = array('error', 'info');
             foreach ($namespaces as $ns) {
-                $this->view->flashMessenger->setNamespace($ns);
+                $fm->setNamespace($ns);
                 $messages = array_merge(
-                    $this->view->flashMessenger->getMessages(),
-                    $this->view->flashMessenger->getCurrentMessages()
+                    $fm->getMessages(), $fm->getCurrentMessages()
                 );
                 foreach ($messages as $msg) {
                     $html .= '<div class="' . $ns . '">';
@@ -69,22 +67,25 @@ class Flashmessages extends AbstractHelper
                             $helper = (isset($msg['html']) && $msg['html'])
                                 ? false : 'escapeHtml';
                         }
+                        $helper = $helper
+                            ? $this->getView()->plugin($helper) : false;
                         $tokens = isset($msg['tokens']) ? $msg['tokens'] : array();
                         $default = isset($msg['default']) ? $msg['default'] : null;
                         $html .= $helper
-                            ? $this->view->$helper($msg['msg'], $tokens, $default)
-                            : $msg['msg'];
+                            ? $helper($msg['msg'], $tokens, $default) : $msg['msg'];
                     } else {
                         // Basic default string:
-                        $html .= $this->view->transEsc($msg);
+                        $transEsc = $this->getView()->plugin('transEsc');
+                        $html .= $transEsc($msg);
                     }
                     $html .= '</div>';
                 }
-                $this->view->flashMessenger->clearMessages();
-                $this->view->flashMessenger->clearCurrentMessages();
+                $fm->clearMessages();
+                // TODO: figure out why this line has to be commented out to make
+                // things work properly:
+                //$fm->clearCurrentMessages();
             }
         }
-         */
         return $html;
     }
 }
