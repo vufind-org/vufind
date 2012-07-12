@@ -29,7 +29,7 @@ namespace VuFind\Controller;
 
 use VuFind\Config\Reader as ConfigReader, VuFind\Exception\Auth as AuthException,
     VuFind\Exception\ListPermission as ListPermissionException,
-    Zend\View\Model\ViewModel;;
+    Zend\View\Model\ViewModel;
 
 /**
  * Controller for the user account area.
