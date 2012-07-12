@@ -26,7 +26,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Search\Favorites;
-use VuFind\Exception\ListPermission as ListPermissionException,
+use VuFind\Db\Table\Resource as ResourceTable,
+    VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Record,
     VuFind\Search\Base\Results as BaseResults,
     VuFind\Translator\Translator;
@@ -142,7 +143,7 @@ class Results extends BaseResults
             );
         }
 
-        $resource = new VuFind_Model_Db_Resource();
+        $resource = new ResourceTable();
         $rawResults = $resource->getFavorites(
             is_null($list) ? $this->user->id : $list->user_id,
             isset($list->id) ? $list->id : null,

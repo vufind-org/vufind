@@ -28,6 +28,7 @@
 namespace VuFind\Controller;
 
 use VuFind\Config\Reader as ConfigReader, VuFind\Exception\Auth as AuthException,
+    VuFind\Exception\ListPermission as ListPermissionException,
     Zend\View\Model\ViewModel;;
 
 /**
@@ -285,10 +286,8 @@ class MyResearchController extends AbstractBase
      */
     public function favoritesAction()
     {
-        /* TODO:
         // Favorites is the same as MyList, but without the list ID parameter.
-        return $this->_forward('MyList');
-         */
+        return $this->forward()->dispatch('MyResearch', array('action' => 'MyList'));
     }
 
     /**
@@ -475,13 +474,14 @@ class MyResearchController extends AbstractBase
      */
     public function mylistAction()
     {
-        /* TODO:
         // Delete user_resource from...
-        if ($this->_request->getParam('delete')) {
-            if ($this->_request->getParam('confirm')) {
-                return $this->_forward('DeleteFavorite');
+        if ($this->params()->fromPost('delete')) {
+            if ($this->params()->fromPost('confirm')) {
+                return $this->forward()
+                    ->dispatch('MyResearch', array('action' => 'DeleteFavorite'));
             }
 
+            /* TODO:
             // If we got this far, we must display a confirmation message
             $router = Zend_Controller_Front::getInstance()->getRouter();
             $listID = $this->_request->getParam('id');
@@ -505,22 +505,22 @@ class MyResearchController extends AbstractBase
             $this->_request->setParam('confirmTitle', 'confirm_delete_brief');
             $this->_request->setParam('confirmMessage', "confirm_delete");
             return $this->_forward('Confirm');
+             */
         }
 
         try {
-            $params = new VF_Search_Favorites_Params();
-            $params->initFromRequest($this->_request);
-            $results = new VF_Search_Favorites_Results($params);
+            $params = new \VuFind\Search\Favorites\Params();
+            $params->setAccountManager($this->getAccount());
+            $params->initFromRequest($this->getRequest()->getQuery());
+            $results = new \VuFind\Search\Favorites\Results($params);
             $results->performAndProcessSearch();
-            $this->view->results = $results;
-        } catch (VF_Exception_ListPermission $e) {
-            $user = $this->getUser();
-            if ($user == false) {
+            return new ViewModel(array('results' => $results));
+        } catch (ListPermissionException $e) {
+            if (!$this->getUser()) {
                 return $this->forceLogin();
             }
             throw $e;
         }
-         */
     }
 
     /**
