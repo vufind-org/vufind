@@ -136,6 +136,18 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Are we running in a lightbox?
+     *
+     * @return bool
+     */
+    public function inLightbox()
+    {
+        // TODO
+        // return $this->_helper->layout->getLayout() != 'lightbox'
+        return false;
+    }
+
+    /**
      * Login Action
      *
      * @return ViewModel
@@ -157,9 +169,7 @@ class MyResearchController extends AbstractBase
             // it may cause weird behavior -- better to display an error there!
             if (!$this->params()->getPost('processLogin', false)
                 && !$this->params()->getPost('forcingLogin', false)
-                /* TODO:
-                && $this->_helper->layout->getLayout() != 'lightbox'
-                 */
+                && !$this->inLightbox()
             ) {
                 $this->getRequest()->getPost()->set('processLogin', true);
                 return $this->forward()

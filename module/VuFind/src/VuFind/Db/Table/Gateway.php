@@ -43,6 +43,9 @@ class Gateway extends AbstractTableGateway
 {
     /**
      * Constructor
+     *
+     * @param string $table    Name of database table to interface with
+     * @param string $rowClass Name of class used to represent rows
      */
     public function __construct($table, $rowClass)
     {

@@ -27,7 +27,8 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Controller;
-use Zend\Mvc\Controller\AbstractActionController, Zend\ServiceManager\ServiceLocatorInterface,
+use Zend\Mvc\Controller\AbstractActionController,
+    Zend\ServiceManager\ServiceLocatorInterface,
     Zend\ServiceManager\ServiceLocatorAwareInterface, Zend\View\Model\ViewModel;
 
 /**
