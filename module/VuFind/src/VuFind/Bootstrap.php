@@ -140,26 +140,6 @@ class Bootstrap
     }
 
     /**
-     * Set up flash messenger.
-     *
-     * @return void
-     */
-    protected function initFlashMessenger()
-    {
-        // Register in view:
-        $callback = function($event) {
-            $viewModel = $event->getResult();
-            $controller = $event->getTarget();
-            if (is_a($viewModel, 'Zend\View\Model\ViewModel')
-                && is_a($controller, 'Zend\Mvc\Controller\AbstractActionController')
-            ) {
-                $viewModel->setVariable('flashMessenger', $controller->flashMessenger());
-            }
-        };
-        $this->events->attach('dispatch', $callback);
-    }
-
-    /**
      * Set view variables representing the current context.
      *
      * @return void

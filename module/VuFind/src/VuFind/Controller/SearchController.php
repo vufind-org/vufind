@@ -48,7 +48,9 @@ class SearchController extends AbstractSearch
      */
     public function homeAction()
     {
-        return array('results' => $this->getAdvancedFacets());
+        return $this->createViewModel(
+            array('results' => $this->getAdvancedFacets())
+        );
     }
 
     /**

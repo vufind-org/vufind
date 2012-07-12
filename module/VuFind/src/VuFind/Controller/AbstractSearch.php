@@ -27,8 +27,8 @@
  */
 namespace VuFind\Controller;
 use VuFind\Search\Memory,
-    VuFind\Search\Options as SearchOptions, VuFind\Search\ResultScroller,
-    Zend\View\Model\ViewModel;
+    VuFind\Search\Options as SearchOptions, VuFind\Search\ResultScroller;
+
 /**
  * VuFind Search Controller
  *
@@ -67,7 +67,7 @@ class AbstractSearch extends AbstractBase
      */
     public function advancedAction()
     {
-        $view = new ViewModel();
+        $view = $this->createViewModel();
         $view->options = SearchOptions::getInstance($this->searchClassId);
         if ($view->options->getAdvancedSearchAction() === false) {
             throw new \Exception('Advanced search not supported.');
@@ -90,7 +90,7 @@ class AbstractSearch extends AbstractBase
      */
     public function resultsAction()
     {
-        $view = new ViewModel();
+        $view = $this->createViewModel();
 
         // Handle saved search requests:
         $savedId = $this->params()->fromQuery('saved', false);

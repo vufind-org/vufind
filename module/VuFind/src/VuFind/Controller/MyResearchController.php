@@ -28,8 +28,7 @@
 namespace VuFind\Controller;
 
 use VuFind\Config\Reader as ConfigReader, VuFind\Exception\Auth as AuthException,
-    VuFind\Exception\ListPermission as ListPermissionException,
-    Zend\View\Model\ViewModel;
+    VuFind\Exception\ListPermission as ListPermissionException;
 
 /**
  * Controller for the user account area.
@@ -131,7 +130,7 @@ class MyResearchController extends AbstractBase
         }
 
         // Pass request to view so we can repopulate user parameters in form:
-        $view = new ViewModel();
+        $view = $this->createViewModel();
         $view->request = $this->getRequest()->getPost();
         return $view;
     }
@@ -169,7 +168,7 @@ class MyResearchController extends AbstractBase
         }
 
         // Make request available to view for form updating:
-        $view = new ViewModel();
+        $view = $this->createViewModel();
         $view->request = $this->getRequest()->getPost();
         return $view;
     }
@@ -510,7 +509,7 @@ class MyResearchController extends AbstractBase
             $params->initFromRequest($this->getRequest()->getQuery());
             $results = new \VuFind\Search\Favorites\Results($params);
             $results->performAndProcessSearch();
-            return new ViewModel(array('results' => $results));
+            return $this->createViewModel(array('results' => $results));
         } catch (ListPermissionException $e) {
             if (!$this->getUser()) {
                 return $this->forceLogin();

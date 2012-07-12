@@ -28,7 +28,7 @@
  */
 namespace VuFind\Controller;
 use Zend\Mvc\Controller\AbstractActionController, Zend\ServiceManager\ServiceLocatorInterface,
-    Zend\ServiceManager\ServiceLocatorAwareInterface;
+    Zend\ServiceManager\ServiceLocatorAwareInterface, Zend\View\Model\ViewModel;
 
 /**
  * VuFind controller base class (defines some methods that can be shared by other
@@ -44,6 +44,23 @@ class AbstractBase extends AbstractActionController
     implements ServiceLocatorAwareInterface
 {
     protected $serviceLocator;
+
+    /**
+     * Create a new ViewModel.
+     *
+     * @param array $params Parameters to pass to ViewModel constructor.
+     *
+     * @return ViewModel
+     */
+    public function createViewModel($params = null)
+    {
+        $view = new ViewModel($params);
+
+        // Always make flash messenger available to view:
+        $view->flashMessenger = $this->flashMessenger();
+
+        return $view;
+    }
 
     /**
      * Get the service locator object.
