@@ -42,7 +42,8 @@ class Params extends SolrParams
     /**
      * Set parameters based on a search object
      *
-     * @param Zend_Controller_Request_Abstract $request Zend request object
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
      *
      * @return void
      */
@@ -102,7 +103,8 @@ class Params extends SolrParams
     /**
      * Initialize view
      *
-     * @param Zend_Controller_Request_Abstract $request A Zend request object.
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
      *
      * @return void
      */
