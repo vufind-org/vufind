@@ -6,7 +6,7 @@
   <? if ((!is_null($this->list) && $this->list->editAllowed()) || is_null($this->list) && $this->layout()->account->isLoggedIn()): ?>
     <input id="<?=$this->idPrefix?>delete_list_items_<?=!is_null($this->list) ? $this->escapeHtml($this->list->id) : ''?>" type="submit" class="delete floatleft button" name="delete" value="<?=$this->transEsc('Delete')?>" title="<?=$this->transEsc('delete_selected')?>"/>
   <? endif; ?>
-  <? $exportOptions = VF_Export::getBulkOptions(); if (count($exportOptions) > 0): ?>
+  <? $exportOptions = \VuFind\Export::getBulkOptions(); if (count($exportOptions) > 0): ?>
     <input type="submit" class="export floatleft button" name="export" value="<?=$this->transEsc('Export')?>" title="<?=$this->transEsc('export_selected')?>"/>
   <? endif; ?>
   <input type="submit" class="print floatleft button" name="print" value="<?=$this->transEsc('Print')?>" title="<?=$this->transEsc('print_selected')?>"/>
