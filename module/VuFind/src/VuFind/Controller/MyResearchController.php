@@ -64,7 +64,7 @@ class MyResearchController extends AbstractBase
         // Process login request, if necessary:
         if ($this->params()->fromPost('processLogin')) {
             try {
-                $this->getAuthManager()->login($this->getRequest()->getPost());
+                $this->getAuthManager()->login($this->getRequest());
             } catch (AuthException $e) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage($e->getMessage());
@@ -121,7 +121,7 @@ class MyResearchController extends AbstractBase
         // Process request, if necessary:
         if (!is_null($this->params()->fromPost('submit', null))) {
             try {
-                $this->getAuthManager()->create($this->getRequest()->getPost());
+                $this->getAuthManager()->create($this->getRequest());
                 return $this->forward()
                     ->dispatch('MyResearch', array('action' => 'Home'));
             } catch (AuthException $e) {

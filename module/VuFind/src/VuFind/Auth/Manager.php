@@ -189,7 +189,7 @@ class Manager
     /**
      * Create a new user account from the request.
      *
-     * @param Zend_Controller_Request_Abstract $request Request object containing
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
      * new account details.
      *
      * @throws AuthException
@@ -206,7 +206,7 @@ class Manager
      * Try to log in the user using current query parameters; return User object
      * on success, throws exception on failure.
      *
-     * @param Zend_Controller_Request_Abstract $request Request object containing
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
      * @throws AuthException

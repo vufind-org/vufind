@@ -49,8 +49,8 @@ class Database extends AbstractBase
     /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
-     * request (account credentials).
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * account credentials.
      *
      * @throws AuthException
      * @return Zend_Db_Table_Row_Abstract Object representing logged-in user.
@@ -58,8 +58,8 @@ class Database extends AbstractBase
     public function authenticate($request)
     {
         // Make sure the credentials are non-blank:
-        $this->username = trim($request->get('username'));
-        $this->password = trim($request->get('password'));
+        $this->username = trim($request->getPost()->get('username'));
+        $this->password = trim($request->getPost()->get('password'));
         if ($this->username == '' || $this->password == '') {
             throw new AuthException('authentication_error_blank');
         }
@@ -78,8 +78,8 @@ class Database extends AbstractBase
     /**
      * Create a new user account from the request.
      *
-     * @param \Zend\StdLib\Parameters $request Parameter object representing user
-     * request (new account details).
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * new account details.
      *
      * @throws AuthException
      * @return Zend_Db_Table_Row_Abstract New user row.
@@ -93,7 +93,7 @@ class Database extends AbstractBase
             'password' => '', 'password2' => '', 'email' => ''
         );
         foreach ($params as $param => $junk) {
-            $params[$param] = $request->get($param, '');
+            $params[$param] = $request->getPost()->get($param, '');
         }
 
         // Validate Input
