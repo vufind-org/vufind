@@ -48,7 +48,7 @@ class SIP2 extends AbstractBase
      * account credentials.
      *
      * @throws AuthException
-     * @return Zend_Db_Table_Row_Abstract Object representing logged-in user.
+     * @return \VuFind\Db\Row\User Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -123,7 +123,7 @@ class SIP2 extends AbstractBase
      * @param string $password The user's ILS password
      *
      * @throws AuthException
-     * @return Zend_Db_Table_Row_Abstract Processed User object.
+     * @return \VuFind\Db\Row\User Processed User object.
      */
     protected function processSIP2User($info, $username, $password)
     {

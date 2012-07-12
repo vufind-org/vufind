@@ -53,7 +53,7 @@ class Database extends AbstractBase
      * account credentials.
      *
      * @throws AuthException
-     * @return Zend_Db_Table_Row_Abstract Object representing logged-in user.
+     * @return \VuFind\Db\Row\User Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -82,7 +82,7 @@ class Database extends AbstractBase
      * new account details.
      *
      * @throws AuthException
-     * @return Zend_Db_Table_Row_Abstract New user row.
+     * @return \VuFind\Db\Row\User New user row.
      */
     public function create($request)
     {

@@ -152,7 +152,7 @@ class Manager
     /**
      * Checks whether the user is logged in.
      *
-     * @return Zend_Db_Table_Row_Abstract|bool Object if user is logged in, false
+     * @return \VuFind\Db\Row\User|bool Object if user is logged in, false
      * otherwise.
      */
     public function isLoggedIn()
@@ -177,7 +177,7 @@ class Manager
     /**
      * Updates the user information in the session.
      *
-     * @param Zend_Db_Table_Row_Abstract $user User object to store in the session
+     * @param \VuFind\Db\Row\User $user User object to store in the session
      *
      * @return void
      */
@@ -193,7 +193,7 @@ class Manager
      * new account details.
      *
      * @throws AuthException
-     * @return Zend_Db_Table_Row_Abstract New user row.
+     * @return \VuFind\Db\Row\User New user row.
      */
     public function create($request)
     {
@@ -210,7 +210,7 @@ class Manager
      * account credentials.
      *
      * @throws AuthException
-     * @return Zend_Db_Table_Row_Abstract Object representing logged-in user.
+     * @return \VuFind\Db\Row\User Object representing logged-in user.
      */
     public function login($request)
     {

@@ -49,7 +49,7 @@ class ILS extends AbstractBase
      * account credentials.
      *
      * @throws AuthException
-     * @return Zend_Db_Table_Row_Abstract Object representing logged-in user.
+     * @return \VuFind\Db\Row\User Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -81,7 +81,7 @@ class ILS extends AbstractBase
      * @param array $info User details returned by ILS driver.
      *
      * @throws AuthException
-     * @return Zend_Db_Table_Row_Abstract Processed User object.
+     * @return \VuFind\Db\Row\User Processed User object.
      */
     protected function processILSUser($info)
     {
