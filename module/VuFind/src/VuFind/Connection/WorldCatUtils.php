@@ -75,8 +75,8 @@ class WorldCatUtils
             $url .= '&ai=' . urlencode($wcId);
         }
 
-        // Print Debug code
-        Logger::getInstance()->debug("XISBN: $url");
+        // TODO: Print Debug code
+        //Logger::getInstance()->debug("XISBN: $url");
 
         // Fetch results
         $isbns = array();
@@ -113,8 +113,8 @@ class WorldCatUtils
             $url .= '&ai=' . urlencode($wcId);
         }
 
-        // Print Debug code
-        Logger::getInstance()->debug("XOCLCNUM: $url");
+        // TODO: Print Debug code
+        //Logger::getInstance()->debug("XOCLCNUM: $url");
 
         // Fetch results
         $results = array();
@@ -152,8 +152,8 @@ class WorldCatUtils
             $url .= '&ai=' . urlencode($wcId);
         }
 
-        // Print Debug code
-        Logger::getInstance()->debug("XISSN: $url");
+        // TODO: Print Debug code
+        //Logger::getInstance()->debug("XISSN: $url");
 
         // Fetch results
         $issns = array();
