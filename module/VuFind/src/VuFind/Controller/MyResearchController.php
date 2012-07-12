@@ -181,13 +181,9 @@ class MyResearchController extends AbstractBase
      */
     public function logoutAction()
     {
-        /* TODO:
-        // Log out the user and send them back to the homepage
-        $router = Zend_Controller_Front::getInstance()->getRouter();
-        $path = $router->assemble(array(), 'default', true, false);
-        $url = $this->view->fullUrl($path);
-        return $this->_redirect($this->getAccount()->logout($url));
-         */
+        $serverHelper = new \Zend\View\Helper\ServerUrl();
+        $url = $serverHelper->__invoke($this->url()->fromRoute('home'));
+        return $this->redirect()->toUrl($this->getAccount()->logout($url));
     }
 
     /**
