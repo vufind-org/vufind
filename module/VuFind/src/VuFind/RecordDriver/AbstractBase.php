@@ -82,8 +82,10 @@ abstract class AbstractBase
      */
     public function getComments()
     {
+        /* TODO:
         $table = new VuFind_Model_Db_Comments();
         return $table->getForResource($this->getUniqueId(), $this->resourceSource);
+         */
     }
 
     /**
@@ -111,10 +113,12 @@ abstract class AbstractBase
      */
     public function getTags($list_id = null, $user_id = null, $sort = 'count')
     {
+        /* TODO
         $tags = new VuFind_Model_Db_Tags();
         return $tags->getForResource(
             $this->getUniqueId(), $this->resourceSource, 0, $list_id, $user_id, $sort
         );
+         */
     }
 
     /**
@@ -127,12 +131,14 @@ abstract class AbstractBase
      */
     public function addTags($user, $tags)
     {
+        /* TODO
         $resources = new VuFind_Model_Db_Resource();
         $resource
             = $resources->findResource($this->getUniqueId(), $this->resourceSource);
         foreach (Tags::parse($tags) as $tag) {
             $resource->addTag($tag, $user);
         }
+         */
     }
 
     /**
@@ -150,6 +156,7 @@ abstract class AbstractBase
      */
     public function saveToFavorites($params, $user)
     {
+        /* TODO
         // Validate incoming parameters:
         if (!$user) {
             throw new LoginRequiredException('You must be logged in first');
@@ -178,6 +185,7 @@ abstract class AbstractBase
             isset($params['mytags']) ? Tags::parse(trim($params['mytags'])) : '',
             isset($params['notes']) ? $params['notes'] : ''
         );
+         */
     }
 
     /**
@@ -190,6 +198,7 @@ abstract class AbstractBase
      */
     public function getListNotes($list_id = null, $user_id = null)
     {
+        /* TODO
         $db = new VuFind_Model_Db_UserResource();
         $data = $db->getSavedData(
             $this->getUniqueId(), $this->resourceSource, $list_id, $user_id
@@ -201,6 +210,7 @@ abstract class AbstractBase
             }
         }
         return $notes;
+         */
     }
 
     /**
@@ -212,10 +222,12 @@ abstract class AbstractBase
      */
     public function getContainingLists($user_id = null)
     {
+        /* TODO
         $table = new VuFind_Model_Db_UserList();
         return $table->getListsContainingResource(
             $this->getUniqueId(), $this->resourceSource, $user_id
         );
+         */
     }
 
     /**
@@ -267,7 +279,7 @@ abstract class AbstractBase
             if (@class_exists($class)) {
                 $retVal[] = new $class($params, $this);
             } else {
-                throw new Exception("Class {$class} does not exist.");
+                throw new \Exception("Class {$class} does not exist.");
             }
         }
         return $retVal;

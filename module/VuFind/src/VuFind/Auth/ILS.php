@@ -62,7 +62,7 @@ class ILS extends AbstractBase
         try {
             $catalog = ConnectionManager::connectToCatalog();
             $patron = $catalog->patronLogin($username, $password);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             throw new AuthException('authentication_error_technical');
         }
 

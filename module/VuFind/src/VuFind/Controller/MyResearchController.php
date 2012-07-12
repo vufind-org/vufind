@@ -209,7 +209,7 @@ class MyResearchController extends AbstractBase
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage('search_unsave_success');
         } else {
-            throw new Exception('Missing save and delete parameters.');
+            throw new \Exception('Missing save and delete parameters.');
         }
 
         // Forward to the appropriate place:
@@ -257,7 +257,7 @@ class MyResearchController extends AbstractBase
             $this->view->pickup = $catalog->getPickUpLocations($patron);
             $this->view->defaultPickupLocation
                 = $catalog->getDefaultPickUpLocation($patron);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // Do nothing; if we're unable to load information about pickup
             // locations, they are not supported and we should ignore them.
         }
@@ -353,7 +353,7 @@ class MyResearchController extends AbstractBase
         $idToDelete = $this->_request->getParam('delete');
         $idSource = $this->_request->getParam('source', 'VuFind');
         if (empty($idToDelete)) {
-            throw new Exception('Cannot delete empty ID!');
+            throw new \Exception('Cannot delete empty ID!');
         }
 
         // Perform delete and send appropriate flash message:
@@ -573,7 +573,7 @@ class MyResearchController extends AbstractBase
                 }
 
                 return $this->_redirect('/MyResearch/MyList/' . $finalId);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 switch(get_class($e)) {
                 case 'VF_Exception_ListPermission':
                 case 'VF_Exception_MissingField':
@@ -824,11 +824,11 @@ class MyResearchController extends AbstractBase
             // Attempt to look up and inject title:
             try {
                 if (!isset($row['id']) || empty($row['id'])) {
-                    throw new Exception();
+                    throw new \Exception();
                 }
                 $record = VF_Search_Solr_Results::getRecord($row['id']);
                 $row['title'] = $record->getShortTitle();
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 if (!isset($row['title'])) {
                     $row['title'] = null;
                 }

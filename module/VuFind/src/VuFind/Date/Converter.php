@@ -99,7 +99,7 @@ class Converter
             );
             try {
                 $date = new DateTime($dateString);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $getErrors['error_count']++;
                 $getErrors['errors'][] = $e->getMessage();
             }

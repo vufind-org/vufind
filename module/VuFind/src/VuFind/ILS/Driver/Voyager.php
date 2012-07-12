@@ -696,7 +696,7 @@ class Voyager implements DriverInterface
                     }
                 }
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             trigger_error(
                 'Poorly Formatted MFHD Record', E_USER_NOTICE
             );
