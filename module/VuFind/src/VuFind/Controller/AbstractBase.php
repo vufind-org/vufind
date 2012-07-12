@@ -52,7 +52,7 @@ class AbstractBase extends AbstractActionController
      *
      * @return ViewModel
      */
-    public function createViewModel($params = null)
+    protected function createViewModel($params = null)
     {
         $view = new ViewModel($params);
 
@@ -113,7 +113,7 @@ class AbstractBase extends AbstractActionController
      * @param string $msg    Flash message to display on login screen
      * @param array  $extras Associative array of extra fields to store
      *
-     * @return void
+     * @return ViewModel
      */
     protected function forceLogin($msg = null, $extras = array())
     {
@@ -136,7 +136,7 @@ class AbstractBase extends AbstractActionController
         // Set a flag indicating that we are forcing login:
         $this->getRequest()->getPost()->set('forcingLogin', true);
 
-        $this->forward()->dispatch('MyResearch', array('action' => 'Login'));
+        return $this->forward()->dispatch('MyResearch', array('action' => 'Login'));
     }
 
     /**
@@ -144,7 +144,7 @@ class AbstractBase extends AbstractActionController
      * of patron data if so, otherwise forwards to appropriate login prompt and
      * returns false.
      *
-     * @return array|bool
+     * @return ViewModel|array|bool
      */
     protected function catalogLogin()
     {
@@ -173,7 +173,7 @@ class AbstractBase extends AbstractActionController
 
         // If catalog login failed, send the user to the right page:
         if (!$patron) {
-            $this->forward()
+            return $this->forward()
                 ->dispatch('MyResearch', array('action' => 'CatalogLogin'));
         }
 

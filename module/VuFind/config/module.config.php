@@ -25,6 +25,7 @@ $config = array(
             'error' => 'VuFind\Controller\ErrorController',
             'index' => 'VuFind\Controller\IndexController',
             'my-research' => 'VuFind\Controller\MyResearchController',
+            'record' => 'VuFind\Controller\RecordController',
             'search' => 'VuFind\Controller\SearchController'
         ),
     ),
