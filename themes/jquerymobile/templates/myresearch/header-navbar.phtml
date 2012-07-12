@@ -1,4 +1,4 @@
-<? if (VF_Account_Manager::getInstance()->isLoggedIn()): ?>
+<? if ($this->layout()->account->isLoggedIn()): ?>
   <div data-role="navbar">
     <ul>
       <li><a rel="external" <?=$this->layout()->templateName=="checkedout" ? ' class="ui-btn-active"' : ''?> href="<?=$this->url('myresearch-checkedout')?>"><?=$this->transEsc('Checked Out')?></a></li>

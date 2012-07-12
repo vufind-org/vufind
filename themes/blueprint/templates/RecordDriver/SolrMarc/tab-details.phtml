@@ -2,4 +2,4 @@
     // Set page title.
     $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb());
 ?>
-<?=VF_XSLT::process('record-marc.xsl', $this->driver->getXML('marc21'))?>
+<?=\VuFind\XSLT\Processor::process('record-marc.xsl', $this->driver->getXML('marc21'))?>

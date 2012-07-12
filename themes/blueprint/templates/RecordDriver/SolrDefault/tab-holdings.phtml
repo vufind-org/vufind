@@ -1,9 +1,9 @@
 <?
     // Set up convenience variables:
-    $user = VF_Account_Manager::getInstance()->isLoggedIn();
+    $user = $this->layout()->account->isLoggedIn();
     $holdings = $this->driver->getRealTimeHoldings($this->layout()->account);
     $openUrl = $this->driver->openURLActive('holdings') ? $this->driver->getOpenURL() : false;
-    $offlineMode = VF_Connection_Manager::connectToCatalog()->getOfflineMode();
+    $offlineMode = \VuFind\Connection\Manager::connectToCatalog()->getOfflineMode();
     // Account for replace_other_urls setting
     $urls = ($openUrl && $this->driver->replaceURLsWithOpenURL()) ? array() : $this->driver->getURLs();
 
@@ -19,7 +19,7 @@
     <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
   </div>
 <? endif; ?>
-<? if ((VF_ILS_Connection::getHoldsMode() == 'driver' && !empty($holdings)) || VF_ILS_Connection::getTitleHoldsMode() == 'driver'): ?>
+<? if ((\VuFind\ILS\Connection::getHoldsMode() == 'driver' && !empty($holdings)) || \VuFind\ILS\Connection::getTitleHoldsMode() == 'driver'): ?>
   <? if ($this->layout()->account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
     <? if (!$user): ?>
       <div class="info">

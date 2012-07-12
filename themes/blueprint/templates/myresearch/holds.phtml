@@ -47,7 +47,7 @@
           <div class="span-10">
             <?
                 // If this is a non-missing Solr record, we should display a link:
-                if (is_a($resource, 'VF_RecordDriver_SolrDefault') && !is_a($resource, 'VF_RecordDriver_Missing')) {
+                if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
                     $title = $resource->getTitle();
                     $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
                     echo '<a href="' . $this->recordLink()->getUrl($resource) .

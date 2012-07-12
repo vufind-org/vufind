@@ -2,7 +2,7 @@
 // Convert Summon formats to RefWorks formats:
 $formats = $this->driver->getFormats();
 foreach ($formats as $i => $format) {
-    $formats[$i] = VF_Summon::getRefWorksFormat($format);
+    $formats[$i] = \VuFind\Summon::getRefWorksFormat($format);
 }
 
 // Use the default template, but override the formats:

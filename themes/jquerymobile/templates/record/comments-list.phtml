@@ -8,7 +8,7 @@
       <p class="posted-by"><?=$this->transEsc('Posted by')?> <strong><?=$this->escapeHtml(trim($comment->firstname . ' ' . $comment->lastname))?></strong></p>
       <span class="ui-li-aside"><?=$this->escapeHtml(array_shift(explode(' ', $comment->created)))?></span>
     </a>
-    <? if (($user = VF_Account_Manager::getInstance()->isLoggedIn()) && $comment->user_id == $user->id): ?>
+    <? if (($user = $this->layout()->account->isLoggedIn()) && $comment->user_id == $user->id): ?>
       <a rel="external" href="<?=$this->recordLink()->getUrl($this->driver, 'DeleteComment')?>?delete=<?=urlencode($comment->id)?>" data-comment-id="<?=$this->escapeHtml($comment->id)?>" class="deleteRecordComment">
         <?=$this->transEsc('Delete')?>
       </a>
