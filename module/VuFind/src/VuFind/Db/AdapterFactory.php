@@ -80,15 +80,23 @@ class AdapterFactory
             break;
         }
 
-        // Set up database connection:
-        return new Adapter(
-            array(
-                'driver' => $type,
-                'hostname' => $host,
-                'username' => $username,
-                'password' => $password,
-                'database' => $dbName
-            )
+        // Set up default options:
+        $options = array(
+            'driver' => $type,
+            'hostname' => $host,
+            'username' => $username,
+            'password' => $password,
+            'database' => $dbName
         );
+
+        // Set up custom options by database type:
+        switch (strtolower($type)) {
+        case 'mysqli':
+            $options['options'] = array('buffer_results' => true);
+            break;
+        }
+
+        // Set up database connection:
+        return new Adapter($options);
     }
 }
