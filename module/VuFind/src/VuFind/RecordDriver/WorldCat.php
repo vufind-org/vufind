@@ -69,7 +69,7 @@ class WorldCat extends SolrMarc
      * Get an array of information about record holdings, obtained in real-time
      * from the ILS.
      *
-     * @param \VuFind\Account\Manager $account Account manager object
+     * @param \VuFind\Auth\Manager $account Auth manager object
      *
      * @return array
      */

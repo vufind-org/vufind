@@ -64,7 +64,7 @@ class MyResearchController extends AbstractBase
         // Process login request, if necessary:
         if ($this->params()->fromPost('processLogin')) {
             try {
-                $this->getAccount()->login($this->getRequest()->getPost());
+                $this->getAuthManager()->login($this->getRequest()->getPost());
             } catch (AuthException $e) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage($e->getMessage());
@@ -72,7 +72,7 @@ class MyResearchController extends AbstractBase
         }
 
         // Not logged in?  Force user to log in:
-        if (!$this->getAccount()->isLoggedIn()) {
+        if (!$this->getAuthManager()->isLoggedIn()) {
             return $this->forward()
                 ->dispatch('MyResearch', array('action' => 'Login'));
         }
@@ -103,7 +103,7 @@ class MyResearchController extends AbstractBase
     {
         // If authentication mechanism does not support account creation, send
         // the user away!
-        if (!$this->getAccount()->supportsCreation()) {
+        if (!$this->getAuthManager()->supportsCreation()) {
             return $this->forward()
                 ->dispatch('MyResearch', array('action' => 'Home'));
         }
@@ -121,7 +121,7 @@ class MyResearchController extends AbstractBase
         // Process request, if necessary:
         if (!is_null($this->params()->fromPost('submit', null))) {
             try {
-                $this->getAccount()->create($this->getRequest()->getPost());
+                $this->getAuthManager()->create($this->getRequest()->getPost());
                 return $this->forward()
                     ->dispatch('MyResearch', array('action' => 'Home'));
             } catch (AuthException $e) {
@@ -145,7 +145,7 @@ class MyResearchController extends AbstractBase
     {
         // If this authentication method doesn't use a VuFind-generated login
         // form, force it through:
-        if ($this->getAccount()->getSessionInitiator()) {
+        if ($this->getAuthManager()->getSessionInitiator()) {
             // Don't get stuck in an infinite loop -- if processLogin is already
             // set, it probably means Home action is forwarding back here to
             // report an error!
@@ -183,7 +183,7 @@ class MyResearchController extends AbstractBase
     {
         $serverHelper = new \Zend\View\Helper\ServerUrl();
         $url = $serverHelper->__invoke($this->url()->fromRoute('home'));
-        return $this->redirect()->toUrl($this->getAccount()->logout($url));
+        return $this->redirect()->toUrl($this->getAuthManager()->logout($url));
     }
 
     /**
@@ -194,7 +194,7 @@ class MyResearchController extends AbstractBase
     public function savesearchAction()
     {
         /* TODO:
-        $user = $this->getAccount()->isLoggedIn();
+        $user = $this->getAuthManager()->isLoggedIn();
         if ($user == false) {
             return $this->forceLogin();
         }
@@ -245,7 +245,7 @@ class MyResearchController extends AbstractBase
         $homeLibrary = $this->params()->fromPost('home_library', false);
         if (!empty($homeLibrary)) {
             $user->changeHomeLibrary($homeLibrary);
-            $this->getAccount()->updateSession($user);
+            $this->getAuthManager()->updateSession($user);
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage('profile_update');
         }
@@ -506,7 +506,7 @@ class MyResearchController extends AbstractBase
 
         try {
             $params = new \VuFind\Search\Favorites\Params();
-            $params->setAccountManager($this->getAccount());
+            $params->setAuthManager($this->getAuthManager());
             $params->initFromRequest($this->getRequest()->getQuery());
             $results = new \VuFind\Search\Favorites\Results($params);
             $results->performAndProcessSearch();

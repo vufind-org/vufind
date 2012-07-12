@@ -26,8 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind;
-use VuFind\Account\Manager as AccountManager,
-    VuFind\Cache\Manager as CacheManager,
+use VuFind\Auth\Manager as AuthManager, VuFind\Cache\Manager as CacheManager,
     VuFind\Config\Reader as ConfigReader,
     VuFind\Db\AdapterFactory as DbAdapterFactory,
     VuFind\Registry, VuFind\Theme\Initializer as ThemeInitializer,
@@ -125,17 +124,17 @@ class Bootstrap
      */
     protected function initAccount()
     {
-        $accountManager = new AccountManager();
+        $authManager = new AuthManager();
 
         // Register in service manager:
         $serviceManager = $this->event->getApplication()->getServiceManager();
-        $serviceManager->setService('AccountManager', $accountManager);
+        $serviceManager->setService('AuthManager', $authManager);
 
         // Register in view:
-        $callback = function($event) use ($accountManager) {
+        $callback = function($event) use ($authManager) {
             $serviceManager = $event->getApplication()->getServiceManager();
             $viewModel = $serviceManager->get('viewmanager')->getViewModel();
-            $viewModel->setVariable('account', $accountManager);
+            $viewModel->setVariable('account', $authManager);
         };
         $this->events->attach('dispatch', $callback);
     }
@@ -361,6 +360,6 @@ class Bootstrap
 
         // Check user credentials:
         $serviceManager = $this->event->getApplication()->getServiceManager();
-        $serviceManager->get('AccountManager')->checkForExpiredCredentials();
+        $serviceManager->get('AuthManager')->checkForExpiredCredentials();
     }
 }

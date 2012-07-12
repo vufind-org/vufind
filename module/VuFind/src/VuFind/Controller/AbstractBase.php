@@ -75,9 +75,9 @@ class AbstractBase extends AbstractActionController
      *
      * @return \VuFind\Account\Manager
      */
-    protected function getAccount()
+    protected function getAuthManager()
     {
-        return $this->getServiceLocator()->get('AccountManager');
+        return $this->getServiceLocator()->get('AuthManager');
     }
 
     /**
@@ -87,7 +87,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function getUser()
     {
-        return $this->getAccount()->isLoggedIn();
+        return $this->getAuthManager()->isLoggedIn();
     }
 
     /**
@@ -132,7 +132,7 @@ class AbstractBase extends AbstractActionController
     protected function catalogLogin()
     {
         // First make sure user is logged in to VuFind:
-        $account = $this->getAccount();
+        $account = $this->getAuthManager();
         if ($account->isLoggedIn() == false) {
             $this->forceLogin();
             return false;

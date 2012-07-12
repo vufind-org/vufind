@@ -88,9 +88,9 @@ class Params extends BaseParams
     /**
      * Get account manager.
      *
-     * @return \VuFind\Account\Manager
+     * @return \VuFind\Auth\Manager
      */
-    public function getAccountManager()
+    public function getAuthManager()
     {
         return $this->account;
     }
@@ -98,11 +98,11 @@ class Params extends BaseParams
     /**
      * Inject dependency: account manager.
      *
-     * @param \VuFind\Account\Manager $account Account manager object.
+     * @param \VuFind\Auth\Manager $account Auth manager object.
      *
      * @return void
      */
-    public function setAccountManager($account)
+    public function setAuthManager($account)
     {
         $this->account = $account;
     }

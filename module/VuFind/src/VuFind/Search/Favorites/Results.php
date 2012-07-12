@@ -124,7 +124,7 @@ class Results extends BaseResults
     protected function performSearch()
     {
         $list = $this->getListObject();
-        $account = $this->getAccountManager();
+        $account = $this->getAuthManager();
         $this->user = $account ? $account->isLoggedIn() : false;
 
         // Make sure the user and/or list objects make it possible to view

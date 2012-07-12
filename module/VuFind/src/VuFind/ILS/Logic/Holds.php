@@ -52,8 +52,8 @@ class Holds
     /**
      * Constructor
      *
-     * @param \VuFind\Account\Manager $account Account manager object
-     * @param ILSConnection           $catalog A catalog connection
+     * @param \VuFind\Auth\Manager $account Auth manager object
+     * @param ILSConnection        $catalog A catalog connection
      */
     public function __construct($account, $catalog = false)
     {

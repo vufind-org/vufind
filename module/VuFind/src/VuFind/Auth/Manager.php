@@ -25,8 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-namespace VuFind\Account;
-use VuFind\Auth\Factory as AuthFactory, VuFind\Config\Reader as ConfigReader,
+namespace VuFind\Auth;
+use VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
     VuFind\Exception\Auth as AuthException, VuFind\Exception\ILS as ILSException,
     VuFind\Registry, Zend\Session\Container as SessionContainer;
@@ -53,7 +53,7 @@ class Manager
     public function __construct()
     {
         $this->config = ConfigReader::getConfig();
-        $this->auth = AuthFactory::getAuth(
+        $this->auth = Factory::getAuth(
             $this->config->Authentication->method, $this->config
         );
         $this->session = new SessionContainer('Account');
