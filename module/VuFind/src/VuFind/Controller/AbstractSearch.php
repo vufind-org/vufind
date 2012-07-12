@@ -48,11 +48,9 @@ class AbstractSearch extends AbstractBase
     protected $user;
 
     /**
-     * init
-     *
-     * @return void
+     * Constructor
      */
-    public function init()
+    public function __construct()
     {
         /* TODO
         $this->view->searchClassId = $this->searchClassId;

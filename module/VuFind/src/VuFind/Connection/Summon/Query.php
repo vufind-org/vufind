@@ -27,6 +27,7 @@
  * @link     http://api.summon.serialssolutions.com/help/api/ API Documentation
  */
 namespace VuFind\Connection\Summon;
+use VuFind\Config\Reader as ConfigReader, VuFind\Solr\Utils as SolrUtils;
 
 /**
  * Summon REST API Interface (query model - VuFind implementation)
@@ -53,7 +54,7 @@ class Query extends \SerialsSolutions_Summon_Query
     public function __construct($query = null, $options = array())
     {
         parent::__construct($query, $options);
-        $this->config = VF_Config_Reader::getConfig('Summon');
+        $this->config = ConfigReader::getConfig('Summon');
     }
 
     /**
@@ -107,7 +108,7 @@ class Query extends \SerialsSolutions_Summon_Query
                         // Special case -- support a checkbox for excluding
                         // newspapers:
                         $this->addFilter("ContentType,Newspaper Article,true");
-                    } else if ($range = VF_Solr_Utils::parseRange($filt['value'])) {
+                    } else if ($range = SolrUtils::parseRange($filt['value'])) {
                         // Special case -- range query (translate [x TO y] syntax):
                         $from = self::escapeParam($range['from']);
                         $to = self::escapeParam($range['to']);
