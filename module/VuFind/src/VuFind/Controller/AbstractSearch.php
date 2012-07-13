@@ -52,10 +52,22 @@ class AbstractSearch extends AbstractBase
      */
     public function __construct()
     {
-        /* TODO
-        $this->view->searchClassId = $this->searchClassId;
-        $this->view->flashMessenger = $this->_helper->flashMessenger;
-         */
+        // Placeholder so child classes can call parent::__construct() in case
+        // of future global behavior.
+    }
+
+    /**
+     * Create a new ViewModel.
+     *
+     * @param array $params Parameters to pass to ViewModel constructor.
+     *
+     * @return ViewModel
+     */
+    protected function createViewModel($params = null)
+    {
+        $view = parent::createViewModel($params);
+        $view->searchClassId = $this->searchClassId;
+        return $view;
     }
 
     /**
