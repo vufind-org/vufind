@@ -26,7 +26,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Row;
-use Zend\Db\RowGateway\RowGateway;
+use VuFind\Db\Table\Tags as TagsTable, Zend\Db\RowGateway\RowGateway,
+    Zend\Db\Sql\Expression, Zend\Db\Sql\Predicate\Predicate;
 
 /**
  * Row Definition for user
@@ -112,34 +113,49 @@ class User extends RowGateway
      */
     public function getTags($resourceId = null, $listId = null, $source = 'VuFind')
     {
-        /* TODO
-        $tagList = array();
+        $userId = $this->id;
+        $callback = function ($select) use ($userId, $resourceId, $listId, $source) {
+            $select->columns(
+                    array(
+                        'id' => new Expression(
+                            'min(?)', array('tags.id'),
+                            array(Expression::TYPE_IDENTIFIER)
+                        ),
+                        'tag',
+                        'cnt' => new Expression(
+                            'COUNT(?)', array('rt.id'),
+                            array(Expression::TYPE_IDENTIFIER)
+                        )
+                    )
+                )
+                ->join(
+                    array('rt' => 'resource_tags'), 'tags.id = rt.tag_id', array()
+                )
+                ->join(array('r' => 'resource'), 'rt.resource_id = r.id', array())
+                ->join(
+                    array('ur' => 'user_resource'), 'r.id = ur.resource_id', array()
+                )
+                ->group(array('tag'))
+                ->order(array('tag'));
 
-        $table = new VuFind_Model_Db_Tags();
-        $select = $table->select();
-        $select->setIntegrityCheck(false)   // allow join
-            ->from(
-                array('t' => 'tags'),
-                array('min(t.id)', 't.tag', 'cnt' => 'COUNT(rt.id)')
-            )
-            ->join(array('rt' => 'resource_tags'), 't.id = rt.tag_id', array())
-            ->join(array('r' => 'resource'), 'rt.resource_id = r.id', array())
-            ->join(array('ur' => 'user_resource'), 'r.id = ur.resource_id', array())
-            ->where('ur.user_id = ?', $this->id)
-            ->where('rt.user_id = ?', $this->id)
-            ->where('ur.list_id = rt.list_id')
-            ->where('r.source = ?', $source)
-            ->group(array('t.tag'))
-            ->order(array('t.tag'));
-        if (!is_null($resourceId)) {
-            $select->where('r.record_id = ?', $resourceId);
-        }
-        if (!is_null($listId)) {
-            $select->where('rt.list_id = ?', $listId);
-        }
+            $select->where->equalTo('ur.user_id', $userId)
+                ->equalTo('rt.user_id', $userId)
+                ->equalTo(
+                    'ur.list_id', 'rt.list_id',
+                    Predicate::TYPE_IDENTIFIER, Predicate::TYPE_IDENTIFIER
+                )
+                ->equalTo('r.source', $source);
 
-        return $table->fetchAll($select);
-         */
+            if (!is_null($resourceId)) {
+                $select->where->equalTo('r.record_id', $resourceId);
+            }
+            if (!is_null($listId)) {
+                $select->where->equalTo('rt.list_id', $listId);
+            }
+        };
+
+        $table = new TagsTable();
+        return $table->select($callback);
     }
 
     /**
