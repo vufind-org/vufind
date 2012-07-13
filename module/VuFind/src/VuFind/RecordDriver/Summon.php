@@ -416,6 +416,7 @@ class Summon extends SolrDefault
      */
     public function getThumbnail($size = 'small')
     {
+        /* TODO
         $formats = $this->getFormats();
         if ($isbn = $this->getCleanISBN() || !empty($formats)) {
             $frontController = Zend_Controller_Front::getInstance();
@@ -429,6 +430,7 @@ class Summon extends SolrDefault
             }
             return $url . implode('&', $params);
         }
+         */
 
         return false;
     }
