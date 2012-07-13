@@ -109,9 +109,7 @@ class Zend2 extends \SerialsSolutions_Summon_Base
             );
         }
 
-        foreach ($headers as $key => $value) {
-            $this->client->setHeaders($key, $value);
-        }
+        $this->client->setHeaders($headers);
 
         // Send Request
         $this->client->setUri($baseUrl);
