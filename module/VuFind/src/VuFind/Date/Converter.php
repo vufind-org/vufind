@@ -27,7 +27,8 @@
  * @link     http://vufind.org/wiki/Date_And_Time_Functions Wiki
  */
 namespace VuFind\Date;
-use VuFind\Config\Reader as ConfigReader, VuFind\Exception\Date as DateException;
+use DateTime, VuFind\Config\Reader as ConfigReader,
+    VuFind\Exception\Date as DateException;
 
 /**
  * Date/time conversion functionality.
