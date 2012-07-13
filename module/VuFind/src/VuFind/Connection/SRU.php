@@ -265,7 +265,7 @@ class SRU
     public function checkForHttpError($result)
     {
         if (!$result->isSuccess()) {
-            throw new \Exception('HTTP error ' . $result->getStatus());
+            throw new \Exception('HTTP error ' . $result->getStatusCode());
         }
     }
 

@@ -75,7 +75,7 @@ class WorldCat extends SRU
         if ($this->logger) {
             $this->logger->debug('Connect: ' . $uri);
         }
-        $result = $this->client->request('POST');
+        $result = $this->client->setMethod('POST')->send();
         $this->checkForHttpError($result);
 
         return simplexml_load_string($result->getBody());
@@ -98,7 +98,7 @@ class WorldCat extends SRU
         if ($this->logger) {
             $this->logger->debug('Connect: ' . $uri);
         }
-        $result = $this->client->request('POST');
+        $result = $this->client->setMethod('POST')->send();
         $this->checkForHttpError($result);
 
         return $result->getBody();
