@@ -28,7 +28,9 @@ $config = array(
             'record' => 'VuFind\Controller\RecordController',
             'search' => 'VuFind\Controller\SearchController',
             'summon' => 'VuFind\Controller\SummonController',
-            'summonrecord' => 'VuFind\Controller\SummonrecordController'
+            'summonrecord' => 'VuFind\Controller\SummonrecordController',
+            'worldcat' => 'VuFind\Controller\WorldcatController',
+            'worldcatrecord' => 'VuFind\Controller\WorldcatrecordController'
         ),
     ),
     'translator' => array(),
@@ -46,7 +48,7 @@ $recordRoutes = array(
     'record' => 'Record',
     'missingrecord' => 'MissingRecord',
     'summonrecord' => 'SummonRecord',
-    'worldcatrecord' => 'WorldCatRecord'
+    'worldcatrecord' => 'WorldcatRecord'
 );
 
 // Define list-related routes -- route name => MyResearch action
@@ -79,7 +81,7 @@ $staticRoutes = array(
     'Tag/Home',
     'Upgrade/Home', 'Upgrade/FixAnonymousTags', 'Upgrade/FixMetadata',
     'Upgrade/GetDBCredentials', 'Upgrade/GetSourceDir', 'Upgrade/Reset',
-    'WorldCat/Advanced', 'WorldCat/Home', 'WorldCat/Search'
+    'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search'
 );
 
 // Build record routes
