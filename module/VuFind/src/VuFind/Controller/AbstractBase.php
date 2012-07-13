@@ -47,6 +47,15 @@ class AbstractBase extends AbstractActionController
     protected $serviceLocator;
 
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        // Placeholder so child classes can call parent::__construct() in case
+        // of future global behavior.
+    }
+
+    /**
      * Create a new ViewModel.
      *
      * @param array $params Parameters to pass to ViewModel constructor.
@@ -55,7 +64,15 @@ class AbstractBase extends AbstractActionController
      */
     protected function createViewModel($params = null)
     {
-        $view = new ViewModel($params);
+        // I would expect to be able to just pass $params to the ViewModel
+        // constructor, but as of beta5, that seems to make the resulting
+        // object unable to accept additional variables.
+        $view = new ViewModel();
+        if (!empty($params)) {
+            foreach ($params as $k => $v) {
+                $view->setVariable($k, $v);
+            }
+        }
 
         // Always make flash messenger available to view:
         $view->flashMessenger = $this->flashMessenger();
