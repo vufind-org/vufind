@@ -116,26 +116,26 @@ class User extends RowGateway
         $userId = $this->id;
         $callback = function ($select) use ($userId, $resourceId, $listId, $source) {
             $select->columns(
-                    array(
-                        'id' => new Expression(
-                            'min(?)', array('tags.id'),
-                            array(Expression::TYPE_IDENTIFIER)
-                        ),
-                        'tag',
-                        'cnt' => new Expression(
-                            'COUNT(?)', array('rt.id'),
-                            array(Expression::TYPE_IDENTIFIER)
-                        )
+                array(
+                    'id' => new Expression(
+                        'min(?)', array('tags.id'),
+                        array(Expression::TYPE_IDENTIFIER)
+                    ),
+                    'tag',
+                    'cnt' => new Expression(
+                        'COUNT(?)', array('rt.id'),
+                        array(Expression::TYPE_IDENTIFIER)
                     )
                 )
-                ->join(
-                    array('rt' => 'resource_tags'), 'tags.id = rt.tag_id', array()
-                )
-                ->join(array('r' => 'resource'), 'rt.resource_id = r.id', array())
-                ->join(
-                    array('ur' => 'user_resource'), 'r.id = ur.resource_id', array()
-                )
-                ->group(array('tag'))
+            );
+            $select->join(
+                array('rt' => 'resource_tags'), 'tags.id = rt.tag_id', array()
+            );
+            $select->join(array('r' => 'resource'), 'rt.resource_id = r.id', array())
+            $select->join(
+                array('ur' => 'user_resource'), 'r.id = ur.resource_id', array()
+            );
+            $select->group(array('tag'))
                 ->order(array('tag'));
 
             $select->where->equalTo('ur.user_id', $userId)
