@@ -22,6 +22,7 @@ $config = array(
     ),
     'controllers' => array(
         'invokables' => array(
+            'ajax' => 'VuFind\Controller\AjaxController',
             'error' => 'VuFind\Controller\ErrorController',
             'index' => 'VuFind\Controller\IndexController',
             'my-research' => 'VuFind\Controller\MyResearchController',
