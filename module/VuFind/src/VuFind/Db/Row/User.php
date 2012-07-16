@@ -176,7 +176,6 @@ class User extends RowGateway
     public function getTagString($resourceId = null, $listId = null,
         $source = 'VuFind'
     ) {
-        /* TODO
         $myTagList = $this->getTags($resourceId, $listId, $source);
         $tagStr = '';
         if (count($myTagList) > 0) {
@@ -189,7 +188,6 @@ class User extends RowGateway
             }
         }
         return trim($tagStr);
-         */
     }
 
     /**
