@@ -55,22 +55,23 @@ class HeadThemeResources extends AbstractHelper
             'Content-Type', 'text/html; charset=' . $resourceContainer->getEncoding()
         );
 
-        // Load CSS:
+        // Load CSS (make sure we prepend them in the appropriate order; theme
+        // resources should load before extras added by individual templates):
         $headLink = $this->getView()->plugin('headlink');
-        foreach ($resourceContainer->getCss() as $current) {
+        foreach (array_reverse($resourceContainer->getCss()) as $current) {
             $parts = explode(':', $current);
-            $headLink()->appendStylesheet(
+            $headLink()->prependStylesheet(
                 trim($parts[0]),
                 isset($parts[1]) ? trim($parts[1]) : 'all',
                 isset($parts[2]) ? trim($parts[2]) : false
             );
         }
 
-        // Load Javascript:
+        // Load Javascript (same ordering considerations as CSS, above):
         $headScript = $this->getView()->plugin('headscript');
-        foreach ($resourceContainer->getJs() as $current) {
+        foreach (array_reverse($resourceContainer->getJs()) as $current) {
             $parts =  explode(':', $current);
-            $headScript()->appendFile(
+            $headScript()->prependFile(
                 trim($parts[0]),
                 'text/javascript',
                 isset($parts[1])
