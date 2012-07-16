@@ -217,7 +217,7 @@ class Bootstrap
             $viewModel->setVariable('userLang', $language);
             $viewModel->setVariable('allLangs', $config->Languages);
         };
-        $this->events->attach('dispatch', $callback);
+        $this->events->attach('dispatch', $callback, 9000);
     }
 
     /**

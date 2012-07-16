@@ -108,6 +108,10 @@ class Translator
      */
     public static function translate($str)
     {
-        return static::$translator->translate($str);
+        if (is_object(static::$translator)) {
+            return static::$translator->translate($str);
+        } else {
+            throw new \Exception('Translator not initialized');
+        }
     }
 }
