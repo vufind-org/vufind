@@ -83,23 +83,32 @@ class Tools
      * Search the themes for a particular file.  If it exists, return the
      * first matching theme name; otherwise, return null.
      *
-     * @param string $relativePath Relative path to search within themes
+     * @param string|array $relativePath Relative path (or array of paths) to
+     * search within themes
+     * @param bool         $returnFile   If true, return full file path instead
+     * of theme name
      *
      * @return string
      */
-    public static function findContainingTheme($relativePath)
+    public static function findContainingTheme($relativePath, $returnFile = false)
     {
         $session = static::getPersistenceContainer();
         $basePath = static::getBaseDir();
+        $allPaths = is_array($relativePath)
+            ? $relativePath : array($relativePath);
 
         $currentTheme = $session->currentTheme;
 
-        while (!empty($currentTheme)
-            && !file_exists("$basePath/$currentTheme/$relativePath")
-        ) {
+        while (!empty($currentTheme)) {
+            foreach ($allPaths as $currentPath) {
+                $file = "$basePath/$currentTheme/$currentPath";
+                if (file_exists($file)) {
+                    return $returnFile ? $file : $currentTheme;
+                }
+            }
             $currentTheme = $session->allThemeInfo[$currentTheme]->extends;
         }
 
-        return empty($currentTheme) ? null : $currentTheme;
+        return null;
     }
 }

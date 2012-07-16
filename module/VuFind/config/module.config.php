@@ -18,11 +18,22 @@ $config = array(
                     ),
                 ),
             ),
+            'legacy-bookcover' => array(
+                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'options' => array(
+                    'route'    => '/bookcover.php',
+                    'defaults' => array(
+                        'controller' => 'cover',
+                        'action'     => 'Show',
+                    )
+                )
+            )
         ),
     ),
     'controllers' => array(
         'invokables' => array(
             'ajax' => 'VuFind\Controller\AjaxController',
+            'cover' => 'VuFind\Controller\CoverController',
             'error' => 'VuFind\Controller\ErrorController',
             'index' => 'VuFind\Controller\IndexController',
             'my-research' => 'VuFind\Controller\MyResearchController',
