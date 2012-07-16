@@ -131,7 +131,9 @@ class User extends RowGateway
             $select->join(
                 array('rt' => 'resource_tags'), 'tags.id = rt.tag_id', array()
             );
-            $select->join(array('r' => 'resource'), 'rt.resource_id = r.id', array())
+            $select->join(
+                array('r' => 'resource'), 'rt.resource_id = r.id', array()
+            );
             $select->join(
                 array('ur' => 'user_resource'), 'r.id = ur.resource_id', array()
             );
