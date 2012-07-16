@@ -26,8 +26,9 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Row;
-use VuFind\Db\Table\Tags as TagsTable, Zend\Db\RowGateway\RowGateway,
-    Zend\Db\Sql\Expression, Zend\Db\Sql\Predicate\Predicate;
+use VuFind\Db\Table\Tags as TagsTable, VuFind\Db\Table\UserList as UserListTable,
+    Zend\Db\RowGateway\RowGateway, Zend\Db\Sql\Expression,
+    Zend\Db\Sql\Predicate\Predicate;
 
 /**
  * Row Definition for user
@@ -198,25 +199,30 @@ class User extends RowGateway
      */
     public function getLists()
     {
-        /* TODO
-        $userList = new VuFind_Model_Db_UserList();
-        $select = $userList->select();
-        $select->setIntegrityCheck(false)   // allow join
-            ->from(
-                array('ul' => 'user_list'),
-                array('ul.*', 'cnt' => 'COUNT(ur.list_id)')
-            )
-            ->joinLeft(array('ur' => 'user_resource'), 'ul.id = ur.list_id', array())
-            ->where('ul.user_id = ?', $this->id)
-            ->group(
+        $userId = $this->id;
+        $callback = function ($select) use ($userId) {
+            $select->columns(
                 array(
-                    'ul.id', 'ul.user_id', 'ul.title', 'ul.description',
-                    'ul.created', 'ul.public'
+                    '*',
+                    'cnt' => new Expression(
+                        'COUNT(?)', array('ur.list_id'),
+                        array(Expression::TYPE_IDENTIFIER)
+                    )
                 )
-            )
-            ->order(array('ul.title'));
-        return $userList->fetchAll($select);
-         */
+            );
+            $select->join(
+                array('ur' => 'user_resource'), 'user_list.id = ur.list_id',
+                array(), $select::JOIN_LEFT
+            );
+            $select->where->equalTo('user_list.user_id', $userId);
+            $select->group(
+                array('id', 'user_id', 'title', 'description', 'created', 'public')
+            );
+            $select->order(array('title'));
+        };
+
+        $table = new UserListTable();
+        return $table->select($callback);
     }
 
     /**
