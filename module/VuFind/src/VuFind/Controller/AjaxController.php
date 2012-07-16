@@ -77,10 +77,12 @@ class AjaxController extends AbstractBase
             && method_exists($this, $method)
         ) {
             try {
-                $this->$method();
+                return $this->$method();
             } catch (\Exception $e) {
+                $debugMsg = ('development' == APPLICATION_ENV)
+                    ? ': ' . $e->getMessage() : '';
                 return $this->output(
-                    Translator::translate('An error has occurred'),
+                    Translator::translate('An error has occurred') . $debugMsg,
                     self::STATUS_ERROR
                 );
             }
@@ -153,7 +155,7 @@ class AjaxController extends AbstractBase
     {
         static $hideHoldings = false;
         if ($hideHoldings === false) {
-            $logic = new \VuFind\ILS\Logic\Holds($this->getAccount());
+            $logic = new \VuFind\ILS\Logic\Holds($this->getAuthManager());
             $hideHoldings = $logic->getSuppressedLocations();
         }
 
@@ -178,19 +180,10 @@ class AjaxController extends AbstractBase
      */
     public function getItemStatuses()
     {
-        try {
-            $catalog = ConnectionManager::connectToCatalog();
-        } catch (\Exception $e) {
-            return $this->output(
-                Translator::translate('An error has occurred'), self::STATUS_ERROR
-            );
-        }
+        $catalog = ConnectionManager::connectToCatalog();
         $ids = $this->params()->fromQuery('id');
-        try {
-            $results = $catalog->getStatuses($ids);
-        } catch (\Exception $e) {
-            return $this->output($e->getMessage(), self::STATUS_ERROR);
-        }
+        $results = $catalog->getStatuses($ids);
+
         if (!is_array($results)) {
             // If getStatuses returned garbage, let's turn it into an empty array
             // to avoid triggering a notice in the foreach loop below.
@@ -272,7 +265,7 @@ class AjaxController extends AbstractBase
         }
 
         // Done
-        $this->output($statuses, self::STATUS_OK);
+        return $this->output($statuses, self::STATUS_OK);
     }
 
     /**
@@ -488,7 +481,7 @@ class AjaxController extends AbstractBase
                 }
             }
         }
-        $this->output($result, self::STATUS_OK);
+        return $this->output($result, self::STATUS_OK);
     }
 
     /**
@@ -560,7 +553,7 @@ class AjaxController extends AbstractBase
      */
     protected function getSalt()
     {
-        $this->output($this->generateSalt(), self::STATUS_OK);
+        return $this->output($this->generateSalt(), self::STATUS_OK);
     }
 
     /**
@@ -584,7 +577,7 @@ class AjaxController extends AbstractBase
 
         // Authenticate the user:
         try {
-            $this->getAccount()->login($this->getRequest());
+            $this->getAuthManager()->login($this->getRequest());
         } catch (AuthException $e) {
             return $this->output(
                 Translator::translate($e->getMessage()),
@@ -592,7 +585,7 @@ class AjaxController extends AbstractBase
             );
         }
 
-        $this->output(true, self::STATUS_OK);
+        return $this->output(true, self::STATUS_OK);
     }
 
     /**
@@ -626,7 +619,7 @@ class AjaxController extends AbstractBase
             );
         }
 
-        $this->output(Translator::translate('Done'), self::STATUS_OK);
+        return $this->output(Translator::translate('Done'), self::STATUS_OK);
     }
 
     /**
@@ -673,33 +666,26 @@ class AjaxController extends AbstractBase
     {
         $params = new \VuFind\Search\Solr\Params();
         $params->initFromRequest($this->getRequest->getQuery());
-        // Attempt to perform the search; if there is a problem, inspect any Solr
-        // exceptions to see if we should communicate to the user about them.
-        try {
-            $results = new \VuFind\Search\Solr\Results($params);
+        $results = new \VuFind\Search\Solr\Results($params);
 
-            $facets = $results->getFullFieldFacets($fields, false);
+        $facets = $results->getFullFieldFacets($fields, false);
 
-            $markers=array();
-            $i = 0;
-            $list = isset($facets['long_lat']['data']['list'])
-                ? $facets['long_lat']['data']['list'] : array();
-            foreach ($list as $location) {
-                $longLat = explode(',', $location['value']);
-                $markers[$i] = array(
-                    'title' => (string)$location['count'], //needs to be a string
-                    'location_facet' =>
-                        $location['value'], //needed to load in the location
-                    'lon' => $longLat[0],
-                    'lat' => $longLat[1]
-                );
-                $i++;
-            }
-            $this->output($markers, self::STATUS_OK);
-        } catch (\Exception $e) {
-            echo $e;
-            $this->output("", self::STATUS_ERROR);
+        $markers=array();
+        $i = 0;
+        $list = isset($facets['long_lat']['data']['list'])
+            ? $facets['long_lat']['data']['list'] : array();
+        foreach ($list as $location) {
+            $longLat = explode(',', $location['value']);
+            $markers[$i] = array(
+                'title' => (string)$location['count'], //needs to be a string
+                'location_facet' =>
+                    $location['value'], //needed to load in the location
+                'lon' => $longLat[0],
+                'lat' => $longLat[1]
+            );
+            $i++;
         }
+        return $this->output($markers, self::STATUS_OK);
     }
 
     /**
@@ -744,30 +730,23 @@ class AjaxController extends AbstractBase
     {
         $params = new \VuFind\Search\Solr\Params();
         $params->initFromRequest($this->getRequest()->getQuery());
-        // Attempt to perform the search; if there is a problem, inspect any Solr
-        // exceptions to see if we should communicate to the user about them.
-        try {
-            $results = new \VuFind\Search\Solr\Results($params);
-            $filters = $results->getFilters();
-            $dateFacets = $this->params()->fromQuery('facetFields');
-            $dateFacets = empty($dateFacets) ? array() : explode(':', $dateFacets);
-            $fields = $this->processDateFacets($filters, $dateFacets, $results);
-            $facets = $this->processFacetValues($fields, $results);
-            foreach ($fields as $field => $val) {
-                $facets[$field]['min'] = $val[0] > 0 ? $val[0] : 0;
-                $facets[$field]['max'] = $val[1] > 0 ? $val[1] : 0;
-                $facets[$field]['removalURL']
-                    = $results->getUrl()->removeFacet(
-                        $field,
-                        isset($filters[$field][0]) ? $filters[$field][0] : null,
-                        false
-                    );
-            }
-            $this->output($facets, self::STATUS_OK);
-        } catch (\Exception $e) {
-            echo $e;
-            $this->output("", self::STATUS_ERROR);
+        $results = new \VuFind\Search\Solr\Results($params);
+        $filters = $results->getFilters();
+        $dateFacets = $this->params()->fromQuery('facetFields');
+        $dateFacets = empty($dateFacets) ? array() : explode(':', $dateFacets);
+        $fields = $this->processDateFacets($filters, $dateFacets, $results);
+        $facets = $this->processFacetValues($fields, $results);
+        foreach ($fields as $field => $val) {
+            $facets[$field]['min'] = $val[0] > 0 ? $val[0] : 0;
+            $facets[$field]['max'] = $val[1] > 0 ? $val[1] : 0;
+            $facets[$field]['removalURL']
+                = $results->getUrl()->removeFacet(
+                    $field,
+                    isset($filters[$field][0]) ? $filters[$field][0] : null,
+                    false
+                );
         }
+        return $this->output($facets, self::STATUS_OK);
     }
 
     /**
@@ -1065,7 +1044,7 @@ class AjaxController extends AbstractBase
 
             try {
                 $catalog = ConnectionManager::connectToCatalog();
-                $patron = $this->getAccount()->storedCatalogLogin();
+                $patron = $this->getAuthManager()->storedCatalogLogin();
                 if ($patron) {
                     $results = $catalog->checkRequestIsValid($id, $data, $patron);
 
