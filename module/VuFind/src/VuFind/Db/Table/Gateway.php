@@ -45,16 +45,19 @@ class Gateway extends AbstractTableGateway
      * Constructor
      *
      * @param string $table    Name of database table to interface with
-     * @param string $rowClass Name of class used to represent rows
+     * @param string $rowClass Name of class used to represent rows (null for
+     * default)
      */
-    public function __construct($table, $rowClass)
+    public function __construct($table, $rowClass = null)
     {
         $this->table = $table;
         $this->featureSet = new FeatureSet();
         $this->featureSet->addFeature(new GlobalAdapterFeature());
         $this->initialize();
-        $resultSetPrototype = $this->getResultSetPrototype();
-        $resultSetPrototype
-            ->setArrayObjectPrototype(new $rowClass($this->getAdapter()));
+        if (!is_null($rowClass)) {
+            $resultSetPrototype = $this->getResultSetPrototype();
+            $resultSetPrototype
+                ->setArrayObjectPrototype(new $rowClass($this->getAdapter()));
+        }
     }
 }

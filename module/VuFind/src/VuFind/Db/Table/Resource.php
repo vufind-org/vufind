@@ -167,21 +167,18 @@ class Resource extends Gateway
 
             // Adjust for tags if necessary:
             if (!empty($tags)) {
-                /* TODO:
+                $linkingTable = new ResourceTags();
                 foreach ($tags as $tag) {
-                    $subSelect = $this->select();
-                    $subSelect->setIntegrityCheck(false)
-                        ->distinct()
-                        ->from(array('rt' => 'resource_tags'), 'rt.resource_id')
-                        ->join(array('t' => 'tags'), 'rt.tag_id = t.id', array())
-                        ->where('t.tag = ?', $tag)
-                        ->where('rt.user_id = ?', $userId);
-                    if (!is_null($listId)) {
-                        $subSelect->where('rt.list_id = ?', $listId);
-                    }
-                    $select->where('r.id in ?', $subSelect);
+                    $matches
+                        = $linkingTable->getResourcesForTag($tag, $userId, $listId);
+                    $select->where->in(
+                        'resource.id',
+                        array_map(
+                            function ($i) { return $i['resource_id']; },
+                            $matches->toArray()
+                        )
+                    );
                 }
-                 */
             }
 
             // Apply sorting, if necessary:
