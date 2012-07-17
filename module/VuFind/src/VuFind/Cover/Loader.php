@@ -183,7 +183,7 @@ class Loader
      */
     protected function getCachePath($size, $isn, $extension = 'jpg')
     {
-        $cm = new CacheManager();
+        $cm = CacheManager::getInstance();
         $base = $cm->getCacheDir() . 'covers';
         if (!is_dir($base)) {
             mkdir($base);
