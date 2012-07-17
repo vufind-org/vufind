@@ -825,9 +825,8 @@ class SolrMarc extends SolrDefault
      * @param \VuFind\Auth\Manager $account Auth manager object
      *
      * @return mixed A url if a hold is possible, boolean false if not
-     * @access protected
      */
-    protected function getRealTimeTitleHold($account)
+    public function getRealTimeTitleHold($account)
     {
         $biblioLevel = $this->getBibliographicLevel();
         if ("monograph" == strtolower($biblioLevel)
