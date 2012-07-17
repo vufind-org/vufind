@@ -27,7 +27,8 @@
  */
 namespace VuFind\Controller;
 use VuFind\Search\Memory,
-    VuFind\Search\Options as SearchOptions, VuFind\Search\ResultScroller;
+    VuFind\Search\Options as SearchOptions, VuFind\Search\ResultScroller,
+    Zend\Stdlib\Parameters;
 
 /**
  * VuFind Search Controller
@@ -111,7 +112,15 @@ class AbstractSearch extends AbstractBase
         $paramsClass = $this->getParamsClass();
         $params = new $paramsClass();
         $params->recommendationsEnabled(true);
-        $params->initFromRequest($this->getRequest()->getQuery());
+
+        // Send both GET and POST variables to search class:
+        $params->initFromRequest(
+            new Parameters(
+                $this->getRequest()->getQuery()->toArray()
+                + $this->getRequest()->getPost()->toArray()
+            )
+        );
+
         // Attempt to perform the search; if there is a problem, inspect any Solr
         // exceptions to see if we should communicate to the user about them.
         try {

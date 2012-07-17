@@ -28,7 +28,8 @@
 namespace VuFind\Controller;
 
 use VuFind\Config\Reader as ConfigReader, VuFind\Exception\Auth as AuthException,
-    VuFind\Exception\ListPermission as ListPermissionException;
+    VuFind\Exception\ListPermission as ListPermissionException,
+    Zend\Stdlib\Parameters;
 
 /**
  * Controller for the user account area.
@@ -516,7 +517,17 @@ class MyResearchController extends AbstractBase
         try {
             $params = new \VuFind\Search\Favorites\Params();
             $params->setAuthManager($this->getAuthManager());
-            $params->initFromRequest($this->getRequest()->getQuery());
+
+            // We want to merge together GET, POST and route parameters to
+            // initialize our search object:
+            $params->initFromRequest(
+                new Parameters(
+                    $this->getRequest()->getQuery()->toArray()
+                    + $this->getRequest()->getPost()->toArray()
+                    + array('id' => $this->params()->fromRoute('id'))
+                )
+            );
+
             $results = new \VuFind\Search\Favorites\Results($params);
             $results->performAndProcessSearch();
             return $this->createViewModel(array('results' => $results));
