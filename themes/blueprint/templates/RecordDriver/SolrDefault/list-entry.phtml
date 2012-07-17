@@ -2,7 +2,7 @@
     // Set up some convenience variables:
     $id = $this->driver->getUniqueId();
     $source = $this->driver->getResourceSource();
-    if (isset($this->list)) {
+    if (isset($this->list) && is_object($this->list)) {
         $list_id = $this->list->id;
         $user_id = $this->list->user_id;
     } else {
