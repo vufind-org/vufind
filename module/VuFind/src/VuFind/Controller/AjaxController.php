@@ -169,6 +169,16 @@ class AjaxController extends AbstractBase
     }
 
     /**
+     * Get the view renderer
+     *
+     * @return object
+     */
+    protected function getViewRenderer()
+    {
+        return $this->getServiceLocator()->get('viewmanager')->getRenderer();
+    }
+
+    /**
      * Get Item Statuses
      *
      * This is responsible for printing the holdings information for a
@@ -196,14 +206,15 @@ class AjaxController extends AbstractBase
         // need special handling.
         $missingIds = array_flip($ids);
 
-        /* TODO
+        // Get access to PHP template renderer for partials:
+        $renderer = $this->getViewRenderer();
+
         // Load messages for response:
         $messages = array(
-            'available' => $this->view->render('ajax/status-available.phtml'),
-            'unavailable' => $this->view->render('ajax/status-unavailable.phtml'),
-            'unknown' => $this->view->render('ajax/status-unknown.phtml')
+            'available' => $renderer->render('ajax/status-available.phtml'),
+            'unavailable' => $renderer->render('ajax/status-unavailable.phtml'),
+            'unknown' => $renderer->render('ajax/status-unknown.phtml')
         );
-         */
 
         // Load callnumber and location settings:
         $config = ConfigReader::getConfig();
@@ -233,12 +244,9 @@ class AjaxController extends AbstractBase
                 }
                 // If a full status display has been requested, append the HTML:
                 if ($showFullStatus) {
-                    /* TODO
-                    $this->view->statusItems = $record;
-                    $current['full_status'] = $this->view->render(
-                        'ajax/status-full.phtml'
+                    $current['full_status'] = $renderer->render(
+                        'ajax/status-full.phtml', array('statusItems' => $record)
                     );
-                     */
                 }
                 $current['record_number'] = array_search($current['id'], $ids);
                 $statuses[] = $current;
@@ -1135,7 +1143,7 @@ class AjaxController extends AbstractBase
             $this->params()->fromQuery('id'),
             $this->params()->fromQuery('source', 'VuFind')
         );
-        $html = $this->view->render('record/comments-list.phtml');
+        $html = $this->getViewRenderer()->render('record/comments-list.phtml');
         return $this->output($html, self::STATUS_OK);
          */
     }
@@ -1207,7 +1215,7 @@ class AjaxController extends AbstractBase
         );
         $this->view->url = $url;
         $this->view->format = $format;
-        $html = $this->view->render('ajax/export-favorites.phtml');
+        $html = $this->getViewRenderer()->render('ajax/export-favorites.phtml');
         return $this->output(
             array(
                 'result' => Translator::translate('Done'),
@@ -1278,7 +1286,7 @@ class AjaxController extends AbstractBase
         $this->view->print = $print;
         $this->view->electronic = $electronic;
         $this->view->services = $services;
-        $html = $this->view->render('ajax/resolverLinks.phtml');
+        $html = $this->getViewRenderer()->render('ajax/resolverLinks.phtml');
 
         // output HTML encoded in JSON object
         return $this->output($html, self::STATUS_OK);
