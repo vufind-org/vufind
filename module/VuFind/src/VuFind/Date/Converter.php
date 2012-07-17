@@ -47,10 +47,15 @@ class Converter
 
     /**
      * Constructor
+     *
+     * @param \Zend\Config\Config $config Configuration to use (set to null to load
+     * default configuration using ConfigReader class).
      */
-    public function __construct()
+    public function __construct($config = null)
     {
-        $config = ConfigReader::getConfig();
+        if (is_null($config)) {
+            $config = ConfigReader::getConfig();
+        }
 
         // Set Display Date Format
         $this->displayDateFormat
