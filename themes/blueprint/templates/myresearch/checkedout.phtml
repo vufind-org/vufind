@@ -37,7 +37,7 @@
         <? endif; ?>
         <div id="record<?=$this->escapeHtml($resource->getUniqueId())?>">
           <div class="span-2">
-            <? if ($summThumb = $resource->getThumbnail()): ?>
+            <? if ($summThumb = $this->record($resource)->getThumbnail()): ?>
               <img src="<?=$this->escapeHtml($summThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
             <? else: ?>
               <img src="<?=$this->url('cover-unavailable')?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>

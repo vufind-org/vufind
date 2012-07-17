@@ -1,5 +1,5 @@
 <? /* Display thumbnail if appropriate: */ ?>
-<? $mediumThumb = $this->driver->getThumbnail('medium'); $largeThumb = $this->driver->getThumbnail('large'); ?>
+<? $mediumThumb = $this->record($this->driver)->getThumbnail('medium'); $largeThumb = $this->record($this->driver)->getThumbnail('large'); ?>
 <? if ($mediumThumb): ?>
   <? if ($largeThumb): ?><a rel="external" href="<?=$this->escapeHtml($largeThumb)?>"><? endif; ?>
     <div class="recordcover">

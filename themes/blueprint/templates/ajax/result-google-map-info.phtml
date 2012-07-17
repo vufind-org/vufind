@@ -6,7 +6,7 @@
     <? $i++; ?>
       <div class="mapInfoResult <? if ($i % 2 == 0): ?>alt <? endif; ?>record<?=$i ?>">
         <div class="mapInfoResultThumb">
-          <? if ($record->getThumbnail()): ?><img class="mapInfoResultThumbImg" src="<?=$this->escapeHtml($record->getThumbnail()) ?>" style="display:block"/><? endif; ?>
+          <? if ($thumb = $this->record($record)->getThumbnail()): ?><img class="mapInfoResultThumbImg" src="<?=$this->escapeHtml($thumb) ?>" style="display:block"/><? endif; ?>
         </div>
 
         <div class="mapInfoResultText">

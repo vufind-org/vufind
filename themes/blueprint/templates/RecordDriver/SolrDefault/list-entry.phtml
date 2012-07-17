@@ -12,7 +12,7 @@
 ?>
 <div class="listentry recordId source<?=$this->escapeHtml($source)?>" id="record<?=$this->escapeHtml($id)?>">
   <div class="span-2">
-    <? if ($listThumb = $this->driver->getThumbnail()): ?>
+    <? if ($listThumb = $this->record($this->driver)->getThumbnail()): ?>
       <img src="<?=$this->escapeHtml($listThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
     <? else: ?>
       <img src="<?=$this->url('cover-unavailable')?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>

@@ -406,32 +406,29 @@ class Summon extends SolrDefault
     }
 
     /**
-     * Return a URL to a thumbnail preview of the record, if available; false
-     * otherwise.
+     * Returns one of three things: a full URL to a thumbnail preview of the record
+     * if an image is available in an external system; an array of parameters to
+     * send to VuFind's internal cover generator if no fixed URL exists; or false
+     * if no thumbnail can be generated.
      *
-     * @param array $size Size of thumbnail (small, medium or large -- small is
+     * @param string $size Size of thumbnail (small, medium or large -- small is
      * default).
      *
-     * @return string|bool
+     * @return string|array|bool
      */
     public function getThumbnail($size = 'small')
     {
-        /* TODO
         $formats = $this->getFormats();
         if ($isbn = $this->getCleanISBN() || !empty($formats)) {
-            $frontController = Zend_Controller_Front::getInstance();
-            $url = $frontController->getBaseUrl() . '/Cover/Show?';
-            $params = array('size=' . urlencode($size));
+            $params = array('size' => $size);
             if ($isbn) {
-                $params[] = 'isn=' . urlencode($isbn);
+                $params['isn'] = $isbn;
             }
             if (!empty($formats)) {
-                $params[] = 'contenttype=' . urlencode($formats[0]);
+                $params['contenttype'] = $formats[0];
             }
-            return $url . implode('&', $params);
+            return $params;
         }
-         */
-
         return false;
     }
 

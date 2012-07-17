@@ -306,4 +306,32 @@ class Record extends AbstractHelper
             'record/checkbox.phtml', $context
         );
     }
+
+    /**
+     * Generate a thumbnail URL (return false if unsupported).
+     *
+     * @param string $size Size of thumbnail (small, medium or large -- small is
+     * default).
+     *
+     * @return string|bool
+     */
+    public function getThumbnail($size = 'small')
+    {
+        // Try to build thumbnail:
+        $thumb = $this->driver->tryMethod('getThumbnail', array($size));
+
+        // No thumbnail?  Return false:
+        if (empty($thumb)) {
+            return false;
+        }
+
+        // Array?  It's parameters to send to the cover generator:
+        if (is_array($thumb)) {
+            $urlHelper = $this->getView()->plugin('url');
+            return $urlHelper('cover-show') . '?' . http_build_query($thumb);
+        }
+
+        // Default case -- return fixed string:
+        return $thumb;
+    }
 }

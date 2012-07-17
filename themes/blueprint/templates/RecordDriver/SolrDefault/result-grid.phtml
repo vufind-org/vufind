@@ -2,9 +2,9 @@
     <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueID())?>" class="hiddenId" />
     <span class="gridImageBox">
       <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
-        <? if ($summThumb = $this->driver->getThumbnail('large')): ?>
+        <? if ($summThumb = $this->record($this->driver)->getThumbnail('large')): ?>
           <img src="<?=$this->escapeHtml($summThumb)?>" class="gridImage" alt="<?=$this->transEsc('Cover Image')?>"/>
-        <? elseif ($summThumb = $this->driver->getThumbnail()): ?>
+        <? elseif ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
           <img src="<?=$this->escapeHtml($summThumb)?>" class="gridImage" alt="<?=$this->transEsc('Cover Image')?>"/>
         <? else: ?>
           <img src="<?=$this->url('cover-unavailable')?>" class="gridImage" alt="<?=$this->transEsc('No Cover Image')?>"/>

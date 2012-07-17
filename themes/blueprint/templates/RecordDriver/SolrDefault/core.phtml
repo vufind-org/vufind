@@ -209,7 +209,7 @@
 
 <div class="span-4 last">
   <? /* Display thumbnail if appropriate: */ ?>
-  <? $mediumThumb = $this->driver->getThumbnail('medium'); $largeThumb = $this->driver->getThumbnail('large'); ?>
+  <? $mediumThumb = $this->record($this->driver)->getThumbnail('medium'); $largeThumb = $this->record($this->driver)->getThumbnail('large'); ?>
   <? if ($mediumThumb): ?>
     <? if ($largeThumb): ?><a href="<?=$this->escapeHtml($largeThumb)?>"><? endif; ?>
       <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtml($mediumThumb);?>"/>
