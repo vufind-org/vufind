@@ -124,7 +124,7 @@ class User extends RowGateway
                     ),
                     'tag',
                     'cnt' => new Expression(
-                        'COUNT(?)', array('rt.id'),
+                        'COUNT(DISTINCT(?))', array('rt.resource_id'),
                         array(Expression::TYPE_IDENTIFIER)
                     )
                 )
