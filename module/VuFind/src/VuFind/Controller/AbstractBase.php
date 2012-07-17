@@ -42,10 +42,7 @@ use Zend\Mvc\Controller\AbstractActionController,
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 class AbstractBase extends AbstractActionController
-    implements ServiceLocatorAwareInterface
 {
-    protected $serviceLocator;
-
     /**
      * Constructor
      */
@@ -78,31 +75,6 @@ class AbstractBase extends AbstractActionController
         $view->flashMessenger = $this->flashMessenger();
 
         return $view;
-    }
-
-    /**
-     * Get the service locator object.
-     *
-     * @return ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        if (!is_object($this->serviceLocator)) {
-            throw new \Exception("Problem accessing service locator");
-        }
-        return $this->serviceLocator;
-    }
-
-    /**
-     * Set the service locator object.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Service locator.
-     *
-     * @return void
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
     }
 
     /**
