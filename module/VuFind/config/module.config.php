@@ -76,7 +76,7 @@ $staticRoutes = array(
     'Browse/Author', 'Browse/Dewey', 'Browse/Era', 'Browse/Genre', 'Browse/Home',
     'Browse/LCC', 'Browse/Region', 'Browse/Tag', 'Browse/Topic',
     'Cart/Email', 'Cart/Export', 'Cart/Home', 'Cart/MyResearchBulk', 'Cart/Save',
-    'Cover/Unavailable', 'Error/Unavailable', 'Help/Home',
+    'Cover/Show', 'Cover/Unavailable', 'Error/Unavailable', 'Help/Home',
     'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',
     'Install/FixDatabase', 'Install/FixDependencies', 'Install/FixILS',
     'Install/FixSolr', 'Install/Home',
