@@ -143,21 +143,29 @@ class Results extends BaseResults
             );
         }
 
+        // How many results were there?
         $resource = new ResourceTable();
         $rawResults = $resource->getFavorites(
             is_null($list) ? $this->user->id : $list->user_id,
             isset($list->id) ? $list->id : null,
             $this->getTagFilters(), $this->getSort()
         );
-
-        // How many results were there?
         $this->resultTotal = count($rawResults);
 
+        // Apply offset and limit if necessary!
+        $limit = $this->getLimit();
+        if ($this->resultTotal > $limit) {
+            $rawResults = $resource->getFavorites(
+                is_null($list) ? $this->user->id : $list->user_id,
+                isset($list->id) ? $list->id : null,
+                $this->getTagFilters(), $this->getSort(),
+                $this->getStartRecord() - 1, $limit
+            );
+        }
+
         // Retrieve record drivers for the selected items.
-        $end = $this->getEndRecord();
         $recordsToRequest = array();
-        for ($i = $this->getStartRecord() - 1; $i < $end; $i++) {
-            $row = $rawResults->getRow($i);
+        foreach ($rawResults as $row) {
             $recordsToRequest[] = array(
                 'id' => $row->record_id, 'source' => $row->source,
                 'extra_fields' => array(

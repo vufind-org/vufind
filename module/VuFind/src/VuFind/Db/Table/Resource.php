@@ -26,6 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Table;
+use Zend\Db\Sql\Expression;
 
 /**
  * Table Definition for resource
@@ -126,50 +127,70 @@ class Resource extends Gateway
      * @param array  $tags   Tags to use for limiting results
      * @param string $sort   Resource table field to use for sorting (null for
      * no particular sort).
+     * @param int    $offset Offset for results
+     * @param int    $limit  Limit for results (null for none)
      *
      * @return Zend_Db_Table_Rowset
      */
     public function getFavorites($userId, $listId = null, $tags = array(),
-        $sort = null
+        $sort = null, $offset = 0, $limit = null
     ) {
-        /* TODO
         // Set up base query:
-        $select = $this->select();
-        $select->setIntegrityCheck(false)   // allow join
-            ->distinct()
-            ->from(array('r' => $this->_name), 'r.*')
-            ->join(array('ur' => 'user_resource'), 'r.id = ur.resource_id', array())
-            ->where('ur.user_id = ?', $userId);
+        $callback = function ($select) use ($userId, $listId, $tags, $sort, $offset,
+            $limit
+        ) {
+            $select->columns(
+                array(
+                    new Expression(
+                        'DISTINCT(?)', array('resource.id'),
+                        array(Expression::TYPE_IDENTIFIER)
+                    ), '*'
+                )
+            );
+            $select->join(
+                array('ur' => 'user_resource'), 'resource.id = ur.resource_id',
+                array()
+            );
+            $select->where->equalTo('ur.user_id', $userId);
 
-        // Adjust for list if necessary:
-        if (!is_null($listId)) {
-            $select->where('ur.list_id = ?', $listId);
-        }
-
-        // Adjust for tags if necessary:
-        if (!empty($tags)) {
-            foreach ($tags as $tag) {
-                $subSelect = $this->select();
-                $subSelect->setIntegrityCheck(false)
-                    ->distinct()
-                    ->from(array('rt' => 'resource_tags'), 'rt.resource_id')
-                    ->join(array('t' => 'tags'), 'rt.tag_id = t.id', array())
-                    ->where('t.tag = ?', $tag)
-                    ->where('rt.user_id = ?', $userId);
-                if (!is_null($listId)) {
-                    $subSelect->where('rt.list_id = ?', $listId);
-                }
-                $select->where('r.id in ?', $subSelect);
+            // Adjust for list if necessary:
+            if (!is_null($listId)) {
+                $select->where->equalTo('ur.list_id', $listId);
             }
-        }
 
-        // Apply sorting, if necessary:
-        if (!empty($sort)) {
-            VuFind_Model_Db_Resource::applySort($select, $sort);
-        }
+            if ($offset > 0) {
+                $select->offset($offset);
+            }
+            if (!is_null($limit)) {
+                $select->limit($limit);
+            }
 
-        return $this->fetchAll($select);
-         */
+            // Adjust for tags if necessary:
+            if (!empty($tags)) {
+                /* TODO:
+                foreach ($tags as $tag) {
+                    $subSelect = $this->select();
+                    $subSelect->setIntegrityCheck(false)
+                        ->distinct()
+                        ->from(array('rt' => 'resource_tags'), 'rt.resource_id')
+                        ->join(array('t' => 'tags'), 'rt.tag_id = t.id', array())
+                        ->where('t.tag = ?', $tag)
+                        ->where('rt.user_id = ?', $userId);
+                    if (!is_null($listId)) {
+                        $subSelect->where('rt.list_id = ?', $listId);
+                    }
+                    $select->where('r.id in ?', $subSelect);
+                }
+                 */
+            }
+
+            // Apply sorting, if necessary:
+            if (!empty($sort)) {
+                Resource::applySort($select, $sort);
+            }
+        };
+
+        return $this->select($callback);
     }
 
     /**
@@ -195,13 +216,13 @@ class Resource extends Gateway
      * @param Zend_Db_Select $query Query to modify
      * @param string         $sort  Field to use for sorting (may include 'desc'
      * qualifier)
-     * @param string         $alias Alias to the resource table (defaults to 'r')
+     * @param string         $alias Alias to the resource table (defaults to
+     * 'resource')
      *
      * @return void
      */
-    public static function applySort($query, $sort, $alias = 'r')
+    public static function applySort($query, $sort, $alias = 'resource')
     {
-        /* TODO
         // Apply sorting, if necessary:
         $legalSorts = array(
             'title', 'title desc', 'author', 'author desc', 'year', 'year desc'
@@ -218,7 +239,12 @@ class Resource extends Gateway
             // The title field can't be null, so don't bother with the extra
             // isnull() sort in that case.
             if (strtolower($rawField) != 'title') {
-                $order[] = 'isnull(' . $alias . '.' . $rawField . ')';
+                /* TODO
+                $order[] = new Expression(
+                    'isnull(?)', array($alias . '.' . $rawField),
+                    array(Expression::TYPE_IDENTIFIER)
+                );
+                  */
             }
 
             // Apply the user-specified sort:
@@ -227,6 +253,5 @@ class Resource extends Gateway
             // Inject the sort preferences into the query object:
             $query->order($order);
         }
-         */
     }
 }
