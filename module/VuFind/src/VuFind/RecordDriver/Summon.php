@@ -419,7 +419,7 @@ class Summon extends SolrDefault
     public function getThumbnail($size = 'small')
     {
         $formats = $this->getFormats();
-        if ($isbn = $this->getCleanISBN() || !empty($formats)) {
+        if (($isbn = $this->getCleanISBN()) || !empty($formats)) {
             $params = array('size' => $size);
             if ($isbn) {
                 $params['isn'] = $isbn;
