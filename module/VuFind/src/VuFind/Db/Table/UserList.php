@@ -26,6 +26,8 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Db\Table;
+use VuFind\Exception\LoginRequired as LoginRequiredException,
+    VuFind\Exception\RecordMissing as RecordMissingException;
 
 /**
  * Table Definition for user_list
@@ -52,20 +54,20 @@ class UserList extends Gateway
      * @param VuFind_Model_Db_UserListRow $user User object representing owner of
      * new list
      *
-     * @return VuFind_Model_Db_UserListRow
+     * @return \VuFind\Db\Row\UserList
+     * @throws LoginRequiredException
      */
     public static function getNew($user)
     {
-        /* TODO
         if (!$user) {
-            throw new VF_Exception_LoginRequired('Log in to create lists.');
+            throw new LoginRequiredException('Log in to create lists.');
         }
 
-        $table = new VuFind_Model_Db_UserList();
-        $row = $table->createRow();
+        $class = get_called_class();
+        $table = new $class();
+        $row = clone($table->getResultSetPrototype()->getArrayObjectPrototype());
         $row->user_id = $user->id;
         return $row;
-         */
     }
 
     /**
@@ -73,19 +75,18 @@ class UserList extends Gateway
      *
      * @param int $id Numeric ID for existing list.
      *
-     * @return VuFind_Model_Db_UserListRow
-     * @throws VF_Exception_RecordMissing
+     * @return \VuFind\Db\Row\UserList
+     * @throws RecordMissingException
      */
     public static function getExisting($id)
     {
-        /* TODO
-        $table = new VuFind_Model_Db_UserList();
-        $result = $table->find($id)->current();
+        $class = get_called_class();
+        $table = new $class();
+        $result = $table->select(array('id' => $id))->current();
         if (is_null($result)) {
-            throw new VF_Exception_RecordMissing('Cannot load list ' . $id);
+            throw new RecordMissingException('Cannot load list ' . $id);
         }
         return $result;
-         */
     }
 
     /**

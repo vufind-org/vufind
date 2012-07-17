@@ -27,6 +27,7 @@
  */
 namespace VuFind\Search\Favorites;
 use VuFind\Db\Table\Resource as ResourceTable,
+    VuFind\Db\Table\UserList as UserListTable,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Record,
     VuFind\Search\Base\Results as BaseResults,
@@ -205,7 +206,7 @@ class Results extends BaseResults
      * Get the list object associated with the current search (null if no list
      * selected).
      *
-     * @return VuFind_Model_Db_UserListRow|null
+     * @return \VuFind\Db\Row\UserList|null
      */
     public function getListObject()
     {
@@ -216,7 +217,7 @@ class Results extends BaseResults
             $filters = $this->params->getFilters();
             $listId = isset($filters['lists'][0]) ? $filters['lists'][0] : null;
             $this->list = is_null($listId)
-                ? null : VuFind_Model_Db_UserList::getExisting($listId);
+                ? null : UserListTable::getExisting($listId);
         }
         return $this->list;
     }
