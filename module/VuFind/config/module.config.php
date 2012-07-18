@@ -68,6 +68,7 @@ $config = array(
             'author' => 'VuFind\Controller\AuthorController',
             'authority' => 'VuFind\Controller\AuthorityController',
             'browse' => 'VuFind\Controller\BrowseController',
+            'cart' => 'VuFind\Controller\CartController',
             'cover' => 'VuFind\Controller\CoverController',
             'error' => 'VuFind\Controller\ErrorController',
             'index' => 'VuFind\Controller\IndexController',
