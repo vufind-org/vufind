@@ -137,18 +137,6 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Are we running in a lightbox?
-     *
-     * @return bool
-     */
-    public function inLightbox()
-    {
-        // TODO
-        // return $this->_helper->layout->getLayout() != 'lightbox'
-        return false;
-    }
-
-    /**
      * Login Action
      *
      * @return ViewModel

@@ -98,6 +98,18 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Are we running in a lightbox?
+     *
+     * @return bool
+     */
+    public function inLightbox()
+    {
+        // TODO
+        // return $this->_helper->layout->getLayout() != 'lightbox'
+        return false;
+    }
+
+    /**
      * Redirect the user to the login screen.
      *
      * @param string $msg     Flash message to display on login screen
@@ -113,13 +125,13 @@ class AbstractBase extends AbstractActionController
             $msg = 'You must be logged in first';
         }
 
-        /* TODO:
         // Store the current URL as a login followup action unless we are in a
         // lightbox (since lightboxes use a different followup mechanism).
-        if ($this->_helper->layout->getLayout() != 'lightbox') {
+        if (!$this->inLightbox()) {
+            /* TODO:
             $this->_helper->followup->store($extras);
+            */
         }
-         */
         if (!empty($msg)) {
             $this->flashMessenger()->setNamespace('error')->addMessage($msg);
         }
