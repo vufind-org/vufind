@@ -18,6 +18,16 @@ $config = array(
                     ),
                 ),
             ),
+            'legacy-alphabrowse-results' => array(
+                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'options' => array(
+                    'route'    => '/AlphaBrowse/Results',
+                    'defaults' => array(
+                        'controller' => 'Alphabrowse',
+                        'action'     => 'Home',
+                    )
+                )
+            ),
             'legacy-bookcover' => array(
                 'type' => 'Zend\Mvc\Router\Http\Literal',
                 'options' => array(
@@ -54,6 +64,7 @@ $config = array(
         'invokables' => array(
             'admin' => 'VuFind\Controller\AdminController',
             'ajax' => 'VuFind\Controller\AjaxController',
+            'alphabrowse' => 'VuFind\Controller\AlphabrowseController',
             'cover' => 'VuFind\Controller\CoverController',
             'error' => 'VuFind\Controller\ErrorController',
             'index' => 'VuFind\Controller\IndexController',
@@ -95,8 +106,7 @@ $listRoutes = array('userList' => 'MyList', 'editList' => 'EditList');
 // Define static routes -- Controller/Action strings
 $staticRoutes = array(
     'Admin/Config', 'Admin/DeleteExpiredSearches', 'Admin/EnableAutoConfig',
-    'Admin/Home', 'Admin/Maintenance', 'Admin/Statistics', 'AlphaBrowse/Home',
-    'AlphaBrowse/Results',
+    'Admin/Home', 'Admin/Maintenance', 'Admin/Statistics', 'Alphabrowse/Home',
     'Author/Home', 'Author/Search',
     'Authority/Home', 'Authority/Record', 'Authority/Search',
     'Browse/Author', 'Browse/Dewey', 'Browse/Era', 'Browse/Genre', 'Browse/Home',

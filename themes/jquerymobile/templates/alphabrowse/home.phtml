@@ -51,7 +51,7 @@
           <? if ($item['count'] > 0 || count($item['useInstead']) > 0): ?>
           <? ob_start(); ?>
             <? if (count($item['useInstead']) > 0): ?>
-              <?=$this->url('alphabrowse-results')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode(implode($item['useInstead']))?>
+              <?=$this->url('alphabrowse-home')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode(implode($item['useInstead']))?>
             <? else: ?>
               <? if ($item['count'] < 5): ?>
                 <?=$this->url('search-results')?>?type=ids&amp;lookfor=<? foreach ($item['ids'] as $id): ?><?=$id ?>+<? endforeach; ?>
