@@ -65,6 +65,7 @@ $config = array(
             'admin' => 'VuFind\Controller\AdminController',
             'ajax' => 'VuFind\Controller\AjaxController',
             'alphabrowse' => 'VuFind\Controller\AlphabrowseController',
+            'author' => 'VuFind\Controller\AuthorController',
             'cover' => 'VuFind\Controller\CoverController',
             'error' => 'VuFind\Controller\ErrorController',
             'index' => 'VuFind\Controller\IndexController',
