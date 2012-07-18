@@ -77,16 +77,14 @@ class MyResearchController extends AbstractBase
                 ->dispatch('MyResearch', array('action' => 'Login'));
         }
 
-        /* TODO
         // Logged in?  Forward user to followup action (if set) or default action
         // (if no followup provided):
-        $followup = $this->_helper->followup();
+        $followup = $this->followup()->retrieve();
         if (isset($followup->url)) {
             $url = $followup->url;
             unset($followup->url);
-            return $this->_redirect($url, array('prependBase' => false));
+            return $this->redirect()->toUrl($url);
         }
-         */
 
         $config = ConfigReader::getConfig();
         $page = isset($configArray->Site->defaultAccountPage)
@@ -108,15 +106,13 @@ class MyResearchController extends AbstractBase
                 ->dispatch('MyResearch', array('action' => 'Home'));
         }
 
-        /* TODO
         // We may have come in from a lightbox.  In this case, a prior module
         // will not have set the followup information.  We should grab the referer
         // so the user doesn't get lost.
-        $followup = $this->_helper->followup();
+        $followup = $this->followup()->retrieve();
         if (!isset($followup->url)) {
-            $followup->url = $this->getRequest()->getServer('HTTP_REFERER');
+            $followup->url = $this->getRequest()->getServer()->get('HTTP_REFERER');
         }
-         */
 
         // Process request, if necessary:
         if (!is_null($this->params()->fromPost('submit', null))) {

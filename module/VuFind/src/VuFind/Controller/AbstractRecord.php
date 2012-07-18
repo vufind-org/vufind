@@ -113,7 +113,7 @@ class AbstractRecord extends AbstractBase
         $comment = $this->_request->getParam('comment');
         if (empty($comment)) {
             // No comment?  Try to restore from session:
-            $session = $this->_helper->followup->retrieve();
+            $session = $this->followup()->retrieve();
             if (isset($session->comment)) {
                 $comment = $session->comment;
                 unset($session->comment);

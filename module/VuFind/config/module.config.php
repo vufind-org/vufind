@@ -66,6 +66,11 @@ $config = array(
             'worldcatrecord' => 'VuFind\Controller\WorldcatrecordController'
         ),
     ),
+    'controller_plugins' => array(
+        'invokables' => array(
+            'followup' => 'VuFind\Controller\Plugin\Followup'
+        )
+    ),
     'translator' => array(),
     'view_manager' => array(
         'display_not_found_reason' => APPLICATION_ENV == 'development',

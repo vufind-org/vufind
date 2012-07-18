@@ -128,9 +128,7 @@ class AbstractBase extends AbstractActionController
         // Store the current URL as a login followup action unless we are in a
         // lightbox (since lightboxes use a different followup mechanism).
         if (!$this->inLightbox()) {
-            /* TODO:
-            $this->_helper->followup->store($extras);
-            */
+            $this->followup()->store($extras);
         }
         if (!empty($msg)) {
             $this->flashMessenger()->setNamespace('error')->addMessage($msg);
