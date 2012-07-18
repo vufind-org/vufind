@@ -71,6 +71,7 @@ $config = array(
             'cart' => 'VuFind\Controller\CartController',
             'cover' => 'VuFind\Controller\CoverController',
             'error' => 'VuFind\Controller\ErrorController',
+            'help' => 'VuFind\Controller\HelpController',
             'index' => 'VuFind\Controller\IndexController',
             'my-research' => 'VuFind\Controller\MyResearchController',
             'record' => 'VuFind\Controller\RecordController',
