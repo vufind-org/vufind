@@ -73,6 +73,7 @@ $config = array(
             'error' => 'VuFind\Controller\ErrorController',
             'help' => 'VuFind\Controller\HelpController',
             'index' => 'VuFind\Controller\IndexController',
+            'install' => 'VuFind\Controller\InstallController',
             'my-research' => 'VuFind\Controller\MyResearchController',
             'record' => 'VuFind\Controller\RecordController',
             'search' => 'VuFind\Controller\SearchController',
