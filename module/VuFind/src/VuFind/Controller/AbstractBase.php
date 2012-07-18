@@ -100,12 +100,13 @@ class AbstractBase extends AbstractActionController
     /**
      * Redirect the user to the login screen.
      *
-     * @param string $msg    Flash message to display on login screen
-     * @param array  $extras Associative array of extra fields to store
+     * @param string $msg     Flash message to display on login screen
+     * @param array  $extras  Associative array of extra fields to store
+     * @param bool   $forward True to forward, false to redirect
      *
      * @return ViewModel
      */
-    protected function forceLogin($msg = null, $extras = array())
+    protected function forceLogin($msg = null, $extras = array(), $forward = true)
     {
         // Set default message if necessary.
         if (is_null($msg)) {
@@ -126,7 +127,9 @@ class AbstractBase extends AbstractActionController
         // Set a flag indicating that we are forcing login:
         $this->getRequest()->getPost()->set('forcingLogin', true);
 
-        return $this->forward()->dispatch('MyResearch', array('action' => 'Login'));
+        return $forward
+            ? $this->forward()->dispatch('MyResearch', array('action' => 'Login'))
+            : $this->redirect()->toRoute('myresearch-home');
     }
 
     /**
