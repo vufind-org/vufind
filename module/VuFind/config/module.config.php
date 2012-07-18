@@ -52,6 +52,7 @@ $config = array(
     ),
     'controllers' => array(
         'invokables' => array(
+            'admin' => 'VuFind\Controller\AdminController',
             'ajax' => 'VuFind\Controller\AjaxController',
             'cover' => 'VuFind\Controller\CoverController',
             'error' => 'VuFind\Controller\ErrorController',
@@ -89,7 +90,7 @@ $listRoutes = array('userList' => 'MyList', 'editList' => 'EditList');
 // Define static routes -- Controller/Action strings
 $staticRoutes = array(
     'Admin/Config', 'Admin/DeleteExpiredSearches', 'Admin/EnableAutoConfig',
-    'Admin/Maintenance', 'Admin/Statistics', 'AlphaBrowse/Home',
+    'Admin/Home', 'Admin/Maintenance', 'Admin/Statistics', 'AlphaBrowse/Home',
     'AlphaBrowse/Results',
     'Author/Home', 'Author/Search',
     'Authority/Home', 'Authority/Record', 'Authority/Search',
