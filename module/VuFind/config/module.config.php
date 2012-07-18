@@ -27,6 +27,26 @@ $config = array(
                         'action'     => 'Show',
                     )
                 )
+            ),
+            'legacy-summonrecord' => array(
+                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'options' => array(
+                    'route'    => '/Summon/Record',
+                    'defaults' => array(
+                        'controller' => 'SummonRecord',
+                        'action'     => 'Home',
+                    )
+                )
+            ),
+            'legacy-worldcatrecord' => array(
+                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'options' => array(
+                    'route'    => '/WorldCat/Record',
+                    'defaults' => array(
+                        'controller' => 'WorldcatRecord',
+                        'action'     => 'Home',
+                    )
+                )
             )
         ),
     ),

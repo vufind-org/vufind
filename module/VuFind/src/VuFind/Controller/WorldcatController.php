@@ -68,28 +68,5 @@ class WorldcatController extends AbstractSearch
     {
         return $this->resultsAction();
     }
-
-    /**
-     * Forward unrecognized actions to record controller for legacy URL
-     * compatibility.
-     *
-     * @param string $method Method name being called.
-     * @param array  $params Parameters passed to method.
-     *
-     * @return void
-     */
-    public function __call($method, $params)
-    {
-        if (substr($method, -6) == 'Action') {
-            $action = substr($method, 0, strlen($method) - 6);
-            // Special case for default record action:
-            if ($action == 'record') {
-                $action = 'home';
-            }
-            return $this->forward()
-                ->dispatch('WorldcatRecord', array('action' => $action));
-        }
-        return parent::__call($method, $params);
-    }
 }
 
