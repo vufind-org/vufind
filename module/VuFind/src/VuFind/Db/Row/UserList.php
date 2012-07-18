@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Row;
-use Zend\Db\RowGateway\RowGateway;
+use VuFind\Db\Table\User as UserTable, Zend\Db\RowGateway\RowGateway;
 
 /**
  * Row Definition for user_list
@@ -73,14 +73,12 @@ class UserList extends RowGateway
      */
     public function getTags()
     {
-        /* TODO
-        $table = new VuFind_Model_Db_User();
-        $user = $table->find($this->user_id)->current();
+        $table = new UserTable();
+        $user = $table->select(array('id' => $this->user_id))->current();
         if (is_null($user)) {
             return array();
         }
         return $user->getTags(null, $this->id);
-         */
     }
 
     /**
