@@ -26,6 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Table;
+use Zend\Db\Sql\Expression;
 
 /**
  * Table Definition for tags
@@ -79,13 +80,11 @@ class Tags extends Gateway
      */
     public function matchText($text)
     {
-        /* TODO
-        $select = $this->select();
-        $select->where('lower(tag) LIKE lower(?)', $text . '%');
-        $select->order('tag');
-        $result = $this->fetchAll($select);
-        return $result->toArray();
-         */
+        $callback = function ($select) use ($text) {
+            $select->where->literal('lower(tag) like lower(?)', array($text . '%'));
+            $select->order('tag');
+        };
+        return $this->select($callback);
     }
 
     /**
@@ -118,18 +117,20 @@ class Tags extends Gateway
      */
     public function getCount($tag_id)
     {
-        /* TODO
-        $resourceTagTable = new VuFind_Model_Db_ResourceTags();
-        $select = $resourceTagTable
-            ->select()
-            ->from(
-                array('resource_tags'),
-                array('cnt' => 'COUNT(*)')
-            )
-            ->where('tag_id = ?', $tag_id);
-        $count = $resourceTagTable->fetchRow($select);
-        return $count['cnt'];
-         */
+        $resourceTagTable = new ResourceTags();
+        $callback = function ($select) use ($tag_id) {
+            $select->columns(
+                array(
+                    'cnt' => new Expression(
+                        'COUNT(DISTINCT(?))', array('resource_id'),
+                        array(Expression::TYPE_IDENTIFIER)
+                    )
+                )
+            );
+            $select->where->equalTo('tag_id', $tag_id);
+        };
+        $count = $resourceTagTable->select($callback)->current();
+        return isset($count['cnt']) ? $count['cnt'] : 0;
     }
 
     /**
@@ -190,52 +191,57 @@ class Tags extends Gateway
      *
      * @param string $sort        Sort/search parameter
      * @param int    $limit       Maximum number of tags
-     * @param string $extra_where Additional select parameters
      *
      * @return array Tag details.
      */
-    public function getTagList($sort, $limit = 100, $extra_where = '')
+    public function getTagList($sort, $limit = 100)
     {
-        /* TODO
-        $tagList = array();
-        $select = $this->select();
-        $select->from(
-            array('tags'),
-            array('tags.tag', 'COUNT(resource_tags.id) AS cnt')
-        );
-        $select->join(
-            array('resource_tags'),
-            'tags.id = resource_tags.tag_id',
-            array()
-        );
-        if (strlen($extra_where) > 0) {
-            $select->where($extra_where);
-        }
-        $select->group('tags.tag');
-        switch ($sort) {
-        case 'alphabetical':
-            $select->order(array('tags.tag', 'cnt DESC'));
-            break;
-        case 'popularity':
-            $select->order(array('cnt DESC', 'tags.tag'));
-            break;
-        case 'recent':
-            $select->order(
-                array('max(resource_tags.posted) DESC', 'cnt DESC', 'tags.tag')
+        $callback = function($select) use ($sort, $limit) {
+            $select->columns(
+                array(
+                    'tag',
+                    'cnt' => new Expression(
+                        'COUNT(DISTINCT(?))', array('resource_tags.resource_id'),
+                        array(Expression::TYPE_IDENTIFIER)
+                    ),
+                    'posted' => new Expression(
+                        'MAX(?)', array('resource_tags.posted'),
+                        array(Expression::TYPE_IDENTIFIER)
+                    )
+                )
             );
-            break;
-        }
-        // Limit the size of our results based on the ini browse limit setting
-        $select->limit($limit);
-        $tags = $this->fetchAll($select);
-        foreach ($tags as $t) {
+            $select->join(
+                'resource_tags', 'tags.id = resource_tags.tag_id', array()
+            );
+            if (strlen($extra_where) > 0) {
+                $select->where($extra_where);
+            }
+            $select->group('tags.tag');
+            switch ($sort) {
+            case 'alphabetical':
+                $select->order(array('tags.tag', 'cnt DESC'));
+                break;
+            case 'popularity':
+                $select->order(array('cnt DESC', 'tags.tag'));
+                break;
+            case 'recent':
+                $select->order(
+                    array('posted DESC', 'cnt DESC', 'tags.tag')
+                );
+                break;
+            }
+            // Limit the size of our results based on the ini browse limit setting
+            //$select->limit($limit);
+        };
+
+        $tagList = array();
+        foreach ($this->select($callback) as $t) {
             $tagList[] = array(
                 'tag' => $t->tag,
                 'cnt' => $t->cnt
             );
         }
         return $tagList;
-         */
     }
 
     /**
