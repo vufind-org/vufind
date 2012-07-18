@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Recommend;
-use Zend\Registry;
+use VuFind\Translator\Translator, Zend\Registry;
 
 /**
  * AuthorInfo Recommendations Module
@@ -100,12 +100,8 @@ class ResultGoogleMapAjax implements RecommendInterface
      */
     public function userLang()
     {
-        /* TODO
-        return Registry::getInstance()
-                    ->get('Zend_Translate')
-                    ->getAdapter()
-                    ->getLocale();
-         */
+        $translator = Translator::getTranslator();
+        return is_object($translator) ? $translator->getLocale() : 'en';
     }
 
     /**
