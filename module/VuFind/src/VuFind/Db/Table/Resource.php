@@ -169,15 +169,12 @@ class Resource extends Gateway
             if (!empty($tags)) {
                 $linkingTable = new ResourceTags();
                 foreach ($tags as $tag) {
-                    $matches
-                        = $linkingTable->getResourcesForTag($tag, $userId, $listId);
-                    $select->where->in(
-                        'resource.id',
-                        array_map(
-                            function ($i) { return $i['resource_id']; },
-                            $matches->toArray()
-                        )
-                    );
+                    $matches = $linkingTable
+                        ->getResourcesForTag($tag, $userId, $listId)->toArray();
+                    $getId = function ($i) {
+                        return $i['resource_id'];
+                    };
+                    $select->where->in('resource.id', array_map($getId, $matches));
                 }
             }
 
