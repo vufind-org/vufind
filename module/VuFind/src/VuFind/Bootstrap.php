@@ -295,6 +295,10 @@ class Bootstrap
             Zend_Registry::set('Log', $logger);
         }
          */
+
+        // TODO: in addition to setting up the logger, we also need to figure out
+        // how to capture exceptions to the log -- the logic found in 2.0alpha's
+        // ErrorController needs a new home in 2.0beta.
     }
 
     /**
