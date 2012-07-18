@@ -203,7 +203,7 @@ class User extends RowGateway
                 array(
                     '*',
                     'cnt' => new Expression(
-                        'COUNT(?)', array('ur.list_id'),
+                        'COUNT(DISTINCT(?))', array('ur.resource_id'),
                         array(Expression::TYPE_IDENTIFIER)
                     )
                 )
