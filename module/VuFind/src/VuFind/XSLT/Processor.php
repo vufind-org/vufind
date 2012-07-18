@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/ Wiki
  */
 namespace VuFind\XSLT;
+use DOMDocument, XSLTProcessor;
 
 /**
  * VuFind XSLT wrapper
@@ -50,7 +51,7 @@ class Processor
     {
         $style = new DOMDocument();
         // TODO: support local overrides
-        $style->load(APPLICATION_PATH . '/xsl/' . $xslt);
+        $style->load(APPLICATION_PATH . '/module/VuFind/xsl/' . $xslt);
         $xsl = new XSLTProcessor();
         $xsl->importStyleSheet($style);
         $doc = new DOMDocument();
