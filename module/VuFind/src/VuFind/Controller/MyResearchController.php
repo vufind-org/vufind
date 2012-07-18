@@ -45,16 +45,6 @@ class MyResearchController extends AbstractBase
     protected $account;
 
     /**
-     * init
-     *
-     * @return void
-     */
-    public function init()
-    {
-        $this->getView()->layout()->flashMessenger = $this->flashMessenger();
-    }
-
-    /**
      * Prepare and direct the home page where it needs to go
      *
      * @return string
