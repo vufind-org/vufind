@@ -146,10 +146,10 @@ class Results extends BaseResults
 
         // How many results were there?
         $resource = new ResourceTable();
+        $userId = is_null($list) ? $this->user->id : $list->user_id;
+        $listId = is_null($list) ? null : $list->id;
         $rawResults = $resource->getFavorites(
-            is_null($list) ? $this->user->id : $list->user_id,
-            isset($list->id) ? $list->id : null,
-            $this->getTagFilters(), $this->getSort()
+            $userId, $listId, $this->getTagFilters(), $this->getSort()
         );
         $this->resultTotal = count($rawResults);
 
@@ -157,9 +157,7 @@ class Results extends BaseResults
         $limit = $this->getLimit();
         if ($this->resultTotal > $limit) {
             $rawResults = $resource->getFavorites(
-                is_null($list) ? $this->user->id : $list->user_id,
-                isset($list->id) ? $list->id : null,
-                $this->getTagFilters(), $this->getSort(),
+                $userId, $listId, $this->getTagFilters(), $this->getSort(),
                 $this->getStartRecord() - 1, $limit
             );
         }
