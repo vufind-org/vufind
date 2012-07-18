@@ -26,6 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
+use Zend\Mvc\MvcEvent;
 
 /**
  * Summon Record Controller
@@ -48,12 +49,33 @@ class SummonrecordController extends AbstractRecord
         $this->searchClassId = 'Summon';
         $this->useResultScroller = false;
         $this->defaultTab = 'Description';
-        /* TODO
-        $this->view->layout()->poweredBy
-            = 'Powered by Summon™ from Serials Solutions, a division of ProQuest.';
-         */
 
         // Call standard record controller initialization:
         parent::__construct();
+    }
+
+    /**
+     * preDispatch -- block access when appropriate.
+     *
+     * @param MvcEvent $e Event object
+     *
+     * @return void
+     */
+    public function preDispatch(MvcEvent $e)
+    {
+        $this->layout()->poweredBy
+            = 'Powered by Summon™ from Serials Solutions, a division of ProQuest.';
+    }
+
+    /**
+     * Register the default events for this controller
+     *
+     * @return void
+     */
+    protected function attachDefaultListeners()
+    {
+        parent::attachDefaultListeners();
+        $events = $this->getEventManager();
+        $events->attach(MvcEvent::EVENT_DISPATCH, array($this, 'preDispatch'), 1000);
     }
 }

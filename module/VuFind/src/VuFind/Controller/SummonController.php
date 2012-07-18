@@ -28,7 +28,7 @@
 namespace VuFind\Controller;
 use VuFind\Cache\Manager as CacheManager,
     VuFind\Search\Summon\Params as SummonParams,
-    VuFind\Search\Summon\Results as SummonResults;
+    VuFind\Search\Summon\Results as SummonResults, Zend\Mvc\MvcEvent;
 
 /**
  * Summon Controller
@@ -49,11 +49,32 @@ class SummonController extends AbstractSearch
     {
         $this->searchClassId = 'Summon';
         $this->useResultScroller = false;
-        /* TODO
-        $this->view->layout()->poweredBy
-            = 'Powered by Summon™ from Serials Solutions, a division of ProQuest.';
-         */
         parent::__construct();
+    }
+
+    /**
+     * preDispatch -- block access when appropriate.
+     *
+     * @param MvcEvent $e Event object
+     *
+     * @return void
+     */
+    public function preDispatch(MvcEvent $e)
+    {
+        $this->layout()->poweredBy
+            = 'Powered by Summon™ from Serials Solutions, a division of ProQuest.';
+    }
+
+    /**
+     * Register the default events for this controller
+     *
+     * @return void
+     */
+    protected function attachDefaultListeners()
+    {
+        parent::attachDefaultListeners();
+        $events = $this->getEventManager();
+        $events->attach(MvcEvent::EVENT_DISPATCH, array($this, 'preDispatch'), 1000);
     }
 
     /**
