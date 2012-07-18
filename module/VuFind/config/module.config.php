@@ -76,6 +76,7 @@ $config = array(
             'install' => 'VuFind\Controller\InstallController',
             'missingrecord' => 'VuFind\Controller\MissingrecordController',
             'my-research' => 'VuFind\Controller\MyResearchController',
+            'oai' => 'VuFind\Controller\OaiController',
             'record' => 'VuFind\Controller\RecordController',
             'search' => 'VuFind\Controller\SearchController',
             'summon' => 'VuFind\Controller\SummonController',
