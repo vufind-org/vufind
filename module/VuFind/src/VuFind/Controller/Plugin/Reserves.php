@@ -39,7 +39,7 @@ use VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class VuFind_Action_Helper_Reserves extends Zend_Controller_Action_Helper_Abstract
+class Reserves extends AbstractPlugin
 {
     /**
      * Do we need to use the Solr index for reserves (true) or the ILS driver
