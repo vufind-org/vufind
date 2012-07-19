@@ -26,7 +26,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Row;
-use Zend\Db\RowGateway\RowGateway;
+use VuFind\Db\Table\Resource as ResourceTable, Zend\Db\RowGateway\RowGateway,
+    Zend\Db\Sql\Expression;
 
 /**
  * Row Definition for tags
@@ -54,35 +55,50 @@ class Tags extends RowGateway
      *
      * @param string $source Record source (optional limiter)
      * @param string $sort   Resource field to sort on (optional)
+     * @param int    $offset Offset for results
+     * @param int    $limit  Limit for results (null for none)
      *
      * @return array
      * @access public
      */
-    public function getResources($source = null, $sort = null)
-    {
-        /* TODO
+    public function getResources($source = null, $sort = null, $offset = 0,
+        $limit = null
+    ) {
         // Set up base query:
-        $table = new VuFind_Model_Db_ResourceTags();
-        $select = $table->select();
-        $select->setIntegrityCheck(false)   // allow join
-            ->distinct()
-            ->from(array('r' => 'resource'), 'r.*')
-            ->join(
+        $tag = $this;
+        $callback = function ($select) use ($tag, $source, $sort, $offset, $limit) {
+            $select->columns(
+                array(
+                    new Expression(
+                        'DISTINCT(?)', array('resource.id'),
+                        array(Expression::TYPE_IDENTIFIER)
+                    ), '*'
+                )
+            );
+            $select->join(
                 array('rt' => 'resource_tags'),
-                'r.id = rt.resource_id',
+                'resource.id = rt.resource_id',
                 array()
-            )
-            ->where('rt.tag_id = ?', $this->id);
+            );
+            $select->where->equalTo('rt.tag_id', $tag->id);
 
-        if (!empty($source)) {
-            $select->where('r.source = ?', $source);
-        }
+            if (!empty($source)) {
+                $select->where->equalTo('source', $source);
+            }
 
-        if (!empty($sort)) {
-            VuFind_Model_Db_Resource::applySort($select, $sort);
-        }
+            if (!empty($sort)) {
+                ResourceTable::applySort($select, $sort);
+            }
 
-        return $table->fetchAll($select);
-         */
+            if ($offset > 0) {
+                $select->offset($offset);
+            }
+            if (!is_null($limit)) {
+                $select->limit($limit);
+            }
+        };
+
+        $table = new ResourceTable();
+        return $table->select($callback);
     }
 }

@@ -26,7 +26,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Search\Tags;
-use VuFind\Record, VuFind\Search\Base\Results as BaseResults;
+use VuFind\Db\Table\Tags as TagsTable, VuFind\Record,
+    VuFind\Search\Base\Results as BaseResults;
 
 /**
  * Search Tags Results
@@ -47,7 +48,7 @@ class Results extends BaseResults
      */
     protected function performSearch()
     {
-        $table = new VuFind_Model_Db_Tags();
+        $table = new TagsTable();
         $tag = $table->getByText($this->getDisplayQuery());
         if (!empty($tag)) {
             $rawResults = $tag->getResources(null, $this->getSort());
@@ -58,11 +59,17 @@ class Results extends BaseResults
         // How many results were there?
         $this->resultTotal = count($rawResults);
 
+        // Apply offset and limit if necessary!
+        $limit = $this->getLimit();
+        if ($this->resultTotal > $limit) {
+            $rawResults = $tag->getResources(
+                null, $this->getSort(), $this->getStartRecord() - 1, $limit
+            );
+        }
+
         // Retrieve record drivers for the selected items.
-        $end = $this->getEndRecord();
         $recordsToRequest = array();
-        for ($i = $this->getStartRecord() - 1; $i < $end; $i++) {
-            $row = $rawResults->getRow($i);
+        foreach ($rawResults as $row) {
             $recordsToRequest[]
                 = array('id' => $row->record_id, 'source' => $row->source);
         }

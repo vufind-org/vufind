@@ -58,17 +58,14 @@ class Tags extends Gateway
      */
     public function getByText($tag, $create = true)
     {
-        /* TODO
-        $select = $this->select();
-        $select->where('tag = ?', $tag);
-        $result = $this->fetchRow($select);
+        $result = $this->select(array('tag' => $tag))->current();
         if (is_null($result) && $create) {
-            $result = $this->createRow();
+            $result
+                = clone($this->getResultSetPrototype()->getArrayObjectPrototype());
             $result->tag = $tag;
             $result->save();
         }
         return $result;
-         */
     }
 
     /**
