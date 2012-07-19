@@ -83,12 +83,17 @@ $config = array(
             'summon' => 'VuFind\Controller\SummonController',
             'summonrecord' => 'VuFind\Controller\SummonrecordController',
             'worldcat' => 'VuFind\Controller\WorldcatController',
-            'worldcatrecord' => 'VuFind\Controller\WorldcatrecordController'
+            'worldcatrecord' => 'VuFind\Controller\WorldcatrecordController',
         ),
     ),
     'controller_plugins' => array(
         'invokables' => array(
-            'followup' => 'VuFind\Controller\Plugin\Followup'
+            'db-upgrade' => 'VuFind\Controller\Plugin\DbUpgrade',
+            'favorites' => 'VuFind\Controller\Plugin\Favorites',
+            'followup' => 'VuFind\Controller\Plugin\Followup',
+            'holds' => 'VuFind\Controller\Plugin\Holds',
+            'renewals' => 'VuFind\Controller\Plugin\Renewals',
+            'reserves' => 'VuFind\Controller\Plugin\Reserves',
         )
     ),
     'translator' => array(),
