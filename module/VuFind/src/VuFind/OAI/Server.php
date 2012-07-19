@@ -27,6 +27,8 @@
  */
 namespace VuFind\OAI;
 use SimpleXMLElement, VuFind\Config\Reader as ConfigReader,
+    VuFind\Db\Table\ChangeTracker as ChangeTrackerTable,
+    VuFind\Db\Table\OaiResumption as OaiResumptionTable,
     VuFind\Exception\RecordMissing as RecordMissingException, VuFind\SimpleXML;
 
 /**
@@ -231,7 +233,7 @@ class Server
             }
         } else {
             // No record in index -- is this deleted?
-            $tracker = new VuFind_Model_Db_ChangeTracker();
+            $tracker = new ChangeTrackerTable();
             $row = $tracker->retrieve(
                 $this->core, $this->stripID($this->params['identifier'])
             );
@@ -534,7 +536,7 @@ class Server
      */
     protected function listRecordsGetDeleted($from, $until)
     {
-        $tracker = new VuFind_Model_Db_ChangeTracker();
+        $tracker = new ChangeTrackerTable();
         return $tracker->retrieveDeleted(
             $this->core, date('Y-m-d H:i:s', $from), date('Y-m-d H:i:s', $until)
         );
@@ -699,7 +701,7 @@ class Server
     protected function loadResumptionToken($token)
     {
         // Create object for loading tokens:
-        $search = new VuFind_Model_Db_OaiResumption();
+        $search = new OaiResumptionTable();
 
         // Clean up expired records before doing our search:
         $search->removeExpired();
@@ -763,7 +765,7 @@ class Server
         $params['cursor'] = $currentCursor;
 
         // Save everything to the database:
-        $search = new VuFind_Model_Db_OaiResumption();
+        $search = new OaiResumptionTable();
         $expire = time() + 24 * 60 * 60;
         $token = $search->saveToken($params, $expire);
 
