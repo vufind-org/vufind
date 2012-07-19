@@ -20,7 +20,7 @@ $config = array(
         ),
     ),
 );
-if (PHP_SAPI == 'cli') {
+if (PHP_SAPI == 'cli' && !defined('VUFIND_PHPUNIT_RUNNING')) {
     $config['modules'][] = 'VuFind\\CLI';
 }
 return $config;
