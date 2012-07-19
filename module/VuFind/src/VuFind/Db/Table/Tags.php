@@ -189,8 +189,8 @@ class Tags extends Gateway
     /**
      * Get a list of tags based on a sort method ($sort)
      *
-     * @param string $sort        Sort/search parameter
-     * @param int    $limit       Maximum number of tags
+     * @param string $sort  Sort/search parameter
+     * @param int    $limit Maximum number of tags
      *
      * @return array Tag details.
      */

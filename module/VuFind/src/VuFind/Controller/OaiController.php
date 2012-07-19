@@ -97,7 +97,9 @@ class OaiController extends AbstractBase
 
         // Build OAI response or die trying:
         try {
-            $server = new $serverClass($baseURL, $this->getRequest()->getQuery()->toArray());
+            $server = new $serverClass(
+                $baseURL, $this->getRequest()->getQuery()->toArray()
+            );
             $xml = $server->getResponse();
         } catch (\Exception $e) {
             $response->setStatusCode(500);
