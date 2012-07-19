@@ -49,7 +49,7 @@ class Importer
      * @param string $index      Solr index to use.
      * @param bool   $testMode   Are we in test-only mode?
      *
-     * @throws Exception
+     * @throws \Exception
      * @return void
      */
     public static function save($xmlFile, $properties, $index = 'Solr',
@@ -73,7 +73,7 @@ class Importer
      * @param string $xmlFile    XML file to transform.
      * @param string $properties Properties file.
      *
-     * @throws Exception
+     * @throws \Exception
      * @return mixed             Transformed XML.
      */
     protected static function generateXML($xmlFile, $properties)
@@ -81,13 +81,13 @@ class Importer
         // Load properties file:
         $properties = ConfigReader::getConfigPath($properties, 'import');
         if (!file_exists($properties)) {
-            throw new Exception("Cannot load properties file: {$properties}.");
+            throw new \Exception("Cannot load properties file: {$properties}.");
         }
         $options = parse_ini_file($properties, true);
 
         // Make sure required parameter is set:
         if (!isset($options['General']['xslt'])) {
-            throw new Exception(
+            throw new \Exception(
                 "Properties file ({$properties}) is missing General/xslt setting."
             );
         }
@@ -101,20 +101,20 @@ class Importer
         // Load up the style sheet
         $style = new DOMDocument;
         if (!$style->load($xslFile)) {
-            throw new Exception("Problem loading XSL file: {$xslFile}.");
+            throw new \Exception("Problem loading XSL file: {$xslFile}.");
         }
         $xsl->importStyleSheet($style);
 
         // Load up the XML document
         $xml = new DOMDocument;
         if (!$xml->load($xmlFile)) {
-            throw new Exception("Problem loading XML file: {$xmlFile}.");
+            throw new \Exception("Problem loading XML file: {$xmlFile}.");
         }
 
         // Process and return the XML through the style sheet
         $result = $xsl->transformToXML($xml);
         if (!$result) {
-            throw new Exception("Problem transforming XML.");
+            throw new \Exception("Problem transforming XML.");
         }
         return $result;
     }
@@ -125,7 +125,7 @@ class Importer
      *
      * @param array $options Parsed contents of properties file.
      *
-     * @throws Exception
+     * @throws \Exception
      * @return object        XSLT processor.
      */
     protected static function initProcessor($options)
