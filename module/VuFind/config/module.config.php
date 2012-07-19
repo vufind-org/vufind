@@ -83,6 +83,8 @@ $config = array(
             'summon' => 'VuFind\Controller\SummonController',
             'summonrecord' => 'VuFind\Controller\SummonrecordController',
             'tag' => 'VuFind\Controller\TagController',
+            'upgrade' => 'VuFind\Controller\UpgradeController',
+            'vudl' => 'VuFind\Controller\VudlController',
             'worldcat' => 'VuFind\Controller\WorldcatController',
             'worldcatrecord' => 'VuFind\Controller\WorldcatrecordController',
         ),
