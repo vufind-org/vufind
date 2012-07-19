@@ -1028,7 +1028,7 @@ class Solr
     public function getSaveXML($fields)
     {
         // Create XML Document
-        $doc = new DOMDocument('1.0', 'UTF-8');
+        $doc = new \DOMDocument('1.0', 'UTF-8');
 
         // Create add node
         $node = $doc->createElement('add');
@@ -1314,9 +1314,8 @@ class Solr
         if ($method == 'GET') {
             $uri .= '?' . $queryString;
         } elseif ($method == 'POST') {
-            $this->client->setRawBody(
-                $queryString, 'application/x-www-form-urlencoded'
-            );
+            $this->client->setEncType('application/x-www-form-urlencoded');
+            $this->client->setRawBody($queryString);
         }
 
         // Send Request
@@ -1340,7 +1339,7 @@ class Solr
     protected function update($xml, $options = array())
     {
         $this->client->resetParameters();
-        $this->client->setConfig($options);
+        $this->client->setOptions($options);
         $this->client->setUri($this->host . "/update/");
 
         // debug
@@ -1352,7 +1351,8 @@ class Solr
         }
 
         // Set up XML
-        $this->client->setRawBody($xml, 'text/xml; charset=utf-8');
+        $this->client->setEncType('text/xml; charset=utf-8');
+        $this->client->setRawBody($xml);
 
         // Send Request
         $result = $this->client->setMethod('POST')->send();
@@ -1642,9 +1642,8 @@ class Solr
         if ($method == 'GET') {
             $uri .= '?' . $queryString;
         } elseif ($method == 'POST') {
-            $this->client->setRawBody(
-                $queryString, 'application/x-www-form-urlencoded'
-            );
+            $this->client->setEncType('application/x-www-form-urlencoded');
+            $this->client->setRawBody($queryString);
         }
 
         // Send Request
@@ -1675,13 +1674,14 @@ class Solr
     {
         $this->client->setUri($this->host . '/term');
 
-        $this->client->setParameterGet('terms', 'true');
-        $this->client->setParameterGet('terms.fl', $field);
-        $this->client->setParameterGet('terms.lower.incl', 'false');
-        $this->client->setParameterGet('terms.lower', $start);
-        $this->client->setParameterGet('terms.limit', $limit);
-        $this->client->setParameterGet('terms.sort', 'index');
-        $this->client->setParameterGet('wt', 'json');
+        $query = $this->client->getRequest()->getQuery();
+        $query->set('terms', 'true');
+        $query->set('terms.fl', $field);
+        $query->set('terms.lower.incl', 'false');
+        $query->set('terms.lower', $start);
+        $query->set('terms.limit', $limit);
+        $query->set('terms.sort', 'index');
+        $query->set('wt', 'json');
 
         $result = $this->client->setMethod('GET')->send();
         $result = substr($result, strpos($result, '{'));
