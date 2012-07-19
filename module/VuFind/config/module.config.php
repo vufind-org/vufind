@@ -78,6 +78,7 @@ $config = array(
             'my-research' => 'VuFind\Controller\MyResearchController',
             'oai' => 'VuFind\Controller\OaiController',
             'record' => 'VuFind\Controller\RecordController',
+            'records' => 'VuFind\Controller\RecordsController',
             'search' => 'VuFind\Controller\SearchController',
             'summon' => 'VuFind\Controller\SummonController',
             'summonrecord' => 'VuFind\Controller\SummonrecordController',
