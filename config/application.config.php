@@ -1,5 +1,5 @@
 <?php
-return array(
+$config = array(
     'modules' => array(
         'VuFind',
     ),
@@ -20,3 +20,7 @@ return array(
         ),
     ),
 );
+if (PHP_SAPI == 'cli') {
+    $config['modules'][] = 'VuFind\\CLI';
+}
+return $config;

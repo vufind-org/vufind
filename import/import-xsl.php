@@ -27,6 +27,7 @@
  * @link     http://vufind.org/wiki/importing_records Wiki
  */
 
-// Load the Zend framework -- this will automatically trigger
-// CliController::harvestnafAction() based on the current filename.
-require_once dirname(__FILE__) . '/../public/index.php';
+// Load the Zend framework -- this will automatically trigger the appropriate
+// controller action based on directory and file names
+define('CLI_DIR', __DIR__);     // save directory name of current script
+require_once __DIR__ . '/../public/index.php';

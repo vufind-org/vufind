@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/importing_records Wiki
  */
 namespace VuFind\XSLT\Import;
-use VuFind\Config\Reader as ConfigReader;
+use DOMDocument, VuFind\Config\Reader as ConfigReader;
 
 /**
  * XSLT support class -- all methods of this class must be public and static;

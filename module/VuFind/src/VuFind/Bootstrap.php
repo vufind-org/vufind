@@ -153,11 +153,13 @@ class Bootstrap
             // Grab the template name from the first child -- we can use this to
             // figure out the current template context.
             $children = $viewModel->getChildren();
-            $parts = explode('/', $children[0]->getTemplate());
-            $viewModel->setVariable('templateDir', $parts[0]);
-            $viewModel->setVariable(
-                'templateName', isset($parts[1]) ? $parts[1] : null
-            );
+            if (!empty($children)) {
+                $parts = explode('/', $children[0]->getTemplate());
+                $viewModel->setVariable('templateDir', $parts[0]);
+                $viewModel->setVariable(
+                    'templateName', isset($parts[1]) ? $parts[1] : null
+                );
+            }
         };
         $this->events->attach('dispatch', $callback);
     }
