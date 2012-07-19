@@ -178,7 +178,9 @@ class OAI
         // Create the directory if it does not already exist:
         if (!is_dir($this->basePath)) {
             if (!mkdir($this->basePath)) {
-                throw new \Exception("Problem creating directory {$this->basePath}.");
+                throw new \Exception(
+                    "Problem creating directory {$this->basePath}."
+                );
             }
         }
     }

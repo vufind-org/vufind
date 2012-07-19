@@ -67,7 +67,9 @@ class NAF
         $this->basePath = $home . '/harvest/lcnaf/';
         if (!is_dir($this->basePath)) {
             if (!mkdir($this->basePath)) {
-                throw new \Exception("Problem creating directory {$this->basePath}.");
+                throw new \Exception(
+                    "Problem creating directory {$this->basePath}."
+                );
             }
         }
 
