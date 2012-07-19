@@ -72,7 +72,7 @@ class ImportController extends AbstractBase
                 . "SolrAuth to load authority records.\n\n"
                 . "Note: See vudl.properties and ojs.properties for configuration "
                 . "examples.\n";
-            exit(1);
+            return $this->getFailureResponse();
         }
 
         // Try to import the document if successful:
@@ -80,11 +80,11 @@ class ImportController extends AbstractBase
             Importer::save($argv[0], $argv[1], $index, $testMode);
         } catch (\Exception $e) {
             echo "Fatal error: " . $e->getMessage() . "\n";
-            exit(1);
+            return $this->getFailureResponse();
         }
         if (!$testMode) {
             echo "Successfully imported {$argv[0]}...\n";
         }
-        exit(0);
+        return $this->getSuccessResponse();
     }
 }

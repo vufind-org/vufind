@@ -71,4 +71,26 @@ class AbstractBase extends AbstractActionController
             echo "Without it, inappropriate default settings may be loaded.\n\n";
         }
     }
+
+    /**
+     * Indicate failure.
+     *
+     * @return void
+     */
+    protected function getFailureResponse()
+    {
+        // TODO: better framework integration for response codes
+        exit(1);
+    }
+
+    /**
+     * Indicate success.
+     *
+     * @return void
+     */
+    protected function getSuccessResponse()
+    {
+        // TODO: better framework integration for response codes
+        exit(0);
+    }
 }
