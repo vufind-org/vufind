@@ -1067,7 +1067,7 @@ class SolrDefault extends AbstractBase
         // For OAI-PMH Dublin Core, produce the necessary XML:
         if ($format == 'oai_dc') {
             $dc = 'http://purl.org/dc/elements/1.1/';
-            $xml = new SimpleXMLElement(
+            $xml = new \SimpleXMLElement(
                 '<oai_dc:dc '
                 . 'xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" '
                 . 'xmlns:dc="' . $dc . '" '
