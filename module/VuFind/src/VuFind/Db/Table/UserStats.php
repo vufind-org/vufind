@@ -1,0 +1,88 @@
+<?php
+/**
+ * Table Definition for statistics (user data)
+ *
+ * PHP version 5
+ *
+ * Copyright (C) Villanova University 2010.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @category VuFind2
+ * @package  DB_Models
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org   Main Site
+ */
+namespace VuFind\Db\Table;
+
+/**
+ * Table Definition for user statistics
+ *
+ * @category VuFind2
+ * @package  DB_Models
+ * @author   Chris Hallberg <challber@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org   Main Site
+ */
+class UserStats extends Gateway
+{
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        parent::__construct('user_stats');
+    }
+
+    /**
+     * Returns the list of most popular browsers with use counts
+     *
+     * @param boolean $withVersions Include browser version numbers?
+     * True = versions (Firefox 12.0) False = names only (Firefox).
+     * @param integer $limit        How many to return
+     *
+     * @return array
+     */
+    public function getBrowserStats($withVersions = false, $limit = 5)
+    {
+        /* TODO
+        $select = $this->select();
+        if ($withVersions) {
+            $select->from(
+                array($this->_name),
+                array(
+                    'browserName' => 'CONCAT_WS(" ",browser,browserVersion)',
+                    'count' => 'COUNT(DISTINCT session)'
+                )
+            );
+            $select->group('browserName');
+        } else {
+            $select->from(
+                array($this->_name),
+                array(
+                    'browserName' => 'browser',
+                    'count' => 'COUNT(DISTINCT session)'
+                )
+            );
+            $select->group('browser');
+        }
+        $select->limit($limit);
+        $select->order('count DESC');
+        $stmt = $select->query();
+        $result = $stmt->fetchAll();
+        return $result;
+         */
+    }
+}
