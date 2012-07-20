@@ -402,10 +402,10 @@ class AbstractRecord extends AbstractBase
      */
     public function citeAction()
     {
-        /* TODO
         $this->loadRecord();
-        $this->render('record/cite', null, true);
-         */
+        $view = $this->createViewModel();
+        $view->setTemplate('record/cite');
+        return $view;
     }
 
     /**
