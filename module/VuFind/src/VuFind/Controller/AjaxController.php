@@ -28,6 +28,7 @@
 namespace VuFind\Controller;
 use VuFind\Cart, VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
+    VuFind\Db\Table\Tags as TagsTable,
     VuFind\Exception\Auth as AuthException, VuFind\Export,
     VuFind\Record, VuFind\Translator\Translator;
 
@@ -636,7 +637,7 @@ class AjaxController extends AbstractBase
     protected function getRecordTags()
     {
         // Retrieve from database:
-        $tagTable = new VuFind_Model_Db_Tags();
+        $tagTable = new TagsTable();
         $tags = $tagTable->getForResource(
             $this->params()->fromQuery('id'),
             $this->params()->fromQuery('source', 'VuFind')

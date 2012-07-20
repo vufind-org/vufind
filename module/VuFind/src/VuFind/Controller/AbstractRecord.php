@@ -173,23 +173,24 @@ class AbstractRecord extends AbstractBase
      */
     public function addtagAction()
     {
-        /* TODO
         // Force login:
-        if (!($user = $this->account->isLoggedIn())) {
+        if (!($user = $this->getUser())) {
             return $this->forceLogin();
         }
 
         // Obtain the current record object:
-        $this->loadRecord();
+        $driver = $this->loadRecord();
 
         // Save tags, if any:
-        if ($this->_request->getParam('submit')) {
-            $this->view->driver->addTags($user, $this->_request->getParam('tag'));
+        if ($this->params()->fromPost('submit')) {
+            $driver->addTags($user, $this->params()->fromPost('tag'));
             return $this->redirectToRecord();
         }
 
-        $this->render('record/addtag', null, true);
-         */
+        // Display the "add tag" form:
+        $view = $this->createViewModel();
+        $view->setTemplate('record/addtag');
+        return $view;
     }
 
     /**
@@ -500,15 +501,12 @@ class AbstractRecord extends AbstractBase
      */
     protected function redirectToRecord($params = '', $options = array())
     {
-        /* TODO
-        $this->loadRecord();
-        $router = Zend_Controller_Front::getInstance()->getRouter();
-        $target = $router->assemble(
-            $options + array('id' => $this->view->driver->getUniqueId()),
-            $this->view->driver->getRecordRoute(), true, false
+        $driver = $this->loadRecord();
+        $target = $this->url()->fromRoute(
+            $driver->getRecordRoute(),
+            $options + array('id' => $driver->getUniqueId())
         );
-        return $this->_redirect($target . $params, array('prependBase' => false));
-         */
+        return $this->redirect()->toUrl($target . $params);
     }
 
     /**
