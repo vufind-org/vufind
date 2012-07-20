@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Controller;
-use VuFind\Search\ResultScroller;
+use VuFind\Db\Table\Resource as ResourceTable, VuFind\Search\ResultScroller;
 
 /**
  * VuFind Record Controller
@@ -97,20 +97,19 @@ class AbstractRecord extends AbstractBase
      */
     public function addcommentAction()
     {
-        /* TODO
         // Force login:
-        if (!($user = $this->account->isLoggedIn())) {
+        if (!($user = $this->getUser())) {
             // Remember comment since POST data will be lost:
             return $this->forceLogin(
-                null, array('comment' => $this->_request->getParam('comment'))
+                null, array('comment' => $this->params()->fromPost('comment'))
             );
         }
 
         // Obtain the current record object:
-        $this->loadRecord();
+        $driver = $this->loadRecord();
 
         // Save comment:
-        $comment = $this->_request->getParam('comment');
+        $comment = $this->params()->fromPost('comment');
         if (empty($comment)) {
             // No comment?  Try to restore from session:
             $session = $this->followup()->retrieve();
@@ -124,21 +123,19 @@ class AbstractRecord extends AbstractBase
         // something has gone wrong (or user submitted blank form) and we
         // should do nothing:
         if (!empty($comment)) {
-            $table = new VuFind_Model_Db_Resource();
+            $table = new ResourceTable();
             $resource = $table->findResource(
-                $this->view->driver->getUniqueId(),
-                $this->view->driver->getResourceSource(), true, $this->view->driver
+                $driver->getUniqueId(), $driver->getResourceSource(), true, $driver
             );
             $resource->addComment($comment, $user);
-            $this->_helper->flashMessenger->setNamespace('info')
+            $this->flashMessenger()->setNamespace('info')
                 ->addMessage('add_comment_success');
         } else {
-            $this->_helper->flashMessenger->setNamespace('error')
+            $this->flashMessenger()->setNamespace('error')
                 ->addMessage('add_comment_fail_blank');
         }
 
         return $this->redirectToRecord('', array('action' => 'UserComments'));
-         */
     }
 
     /**
