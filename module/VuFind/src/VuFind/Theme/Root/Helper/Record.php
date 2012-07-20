@@ -241,11 +241,16 @@ class Record extends AbstractHelper
      */
     public function getController()
     {
-        /* TODO
-        $router = Zend_Controller_Front::getInstance()->getRouter();
-        $route = $router->getRoute($this->driver->getRecordRoute());
-        return $this->view->escapeHtml($route->getDefault('controller'));
-         */
+        // Figure out controller using naming convention based on resource
+        // source:
+        $source = $this->driver->getResourceSource();
+        if ($source == 'VuFind') {
+            // "VuFind" is special case -- it refers to Solr, which uses
+            // the basic record controller.
+            return 'Record';
+        }
+        // All non-Solr controllers will correspond with the record source:
+        return ucwords(strtolower($source)) . 'record';
     }
 
     /**
