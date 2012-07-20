@@ -130,17 +130,15 @@ class AjaxController extends AbstractBase
      */
     public function getLightbox()
     {
-        /* TODO
         // Turn layouts on for this action since we want to render the
         // page inside a lightbox:
-        $this->_helper->layout->setLayout('lightbox');
+        $this->layout()->setTemplate('layout/lightbox');
 
         // Call the requested action:
-        return $this->_forward(
-            $this->params()->fromQuery('subaction'),
-            $this->params()->fromQuery('submodule')
+        return $this->forward()->dispatch(
+            $this->params()->fromQuery('submodule'),
+            array('action' => $this->params()->fromQuery('subaction'))
         );
-         */
     }
 
     /**
