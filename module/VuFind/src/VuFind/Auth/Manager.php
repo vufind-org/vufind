@@ -29,7 +29,9 @@ namespace VuFind\Auth;
 use VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
     VuFind\Exception\Auth as AuthException, VuFind\Exception\ILS as ILSException,
-    VuFind\Registry, Zend\Session\Container as SessionContainer;
+    Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorInterface,
+    Zend\Session\Container as SessionContainer;
 
 /**
  * Wrapper class for handling logged-in user in session.
@@ -40,12 +42,13 @@ use VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Manager
+class Manager implements ServiceLocatorAwareInterface
 {
     protected $auth;
     protected $config;
     protected $session;
     protected $ilsAccount = false;
+    protected $serviceLocator;
 
     /**
      * Constructor
@@ -138,7 +141,7 @@ class Manager
 
         // Destroy the session for good measure, if requested.
         if ($destroy) {
-            Registry::getInstance()->get('Zend_Session')->destroy();
+            $this->getServiceLocator()->get('SessionManager')->destroy();
         } else {
             // If we don't want to destroy the session, we still need to empty it.
             // There should be a way to do this through Zend\Session, but there
@@ -307,5 +310,28 @@ class Manager
             return $result;
         }
         return false;
+    }
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return Manager
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
     }
 }

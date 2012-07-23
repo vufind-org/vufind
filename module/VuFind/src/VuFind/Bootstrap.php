@@ -29,7 +29,7 @@ namespace VuFind;
 use VuFind\Auth\Manager as AuthManager, VuFind\Cache\Manager as CacheManager,
     VuFind\Config\Reader as ConfigReader,
     VuFind\Db\AdapterFactory as DbAdapterFactory,
-    VuFind\Registry, VuFind\Theme\Initializer as ThemeInitializer,
+    VuFind\Theme\Initializer as ThemeInitializer,
     VuFind\Translator\Translator,
     Zend\Db\TableGateway\Feature\GlobalAdapterFeature as DbGlobalAdapter,
     Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch,
@@ -129,6 +129,10 @@ class Bootstrap
         // Register in service manager:
         $serviceManager = $this->event->getApplication()->getServiceManager();
         $serviceManager->setService('AuthManager', $authManager);
+
+        // ...and register service manager in AuthManager (for access to other
+        // services, such as the session manager):
+        $authManager->setServiceLocator($serviceManager);
 
         // Register in view:
         $callback = function($event) use ($authManager) {
@@ -320,9 +324,10 @@ class Bootstrap
             throw new \Exception('Cannot initialize session; configuration missing');
         }
 
-        // Register a session manager:
+        // Register a session manager in the service manager:
         $sessionManager = new SessionManager();
-        Registry::getInstance()->set('Zend_Session', $sessionManager);
+        $serviceManager = $this->event->getApplication()->getServiceManager();
+        $serviceManager->setService('SessionManager', $sessionManager);
 
         // Set up session handler (after manipulating the type setting for legacy
         // compatibility -- VuFind 1.x used MySQL instead of Database and had
@@ -345,7 +350,6 @@ class Bootstrap
         register_shutdown_function(array($sessionManager, 'writeClose'));
 
         // Check user credentials:
-        $serviceManager = $this->event->getApplication()->getServiceManager();
         $serviceManager->get('AuthManager')->checkForExpiredCredentials();
     }
 }
