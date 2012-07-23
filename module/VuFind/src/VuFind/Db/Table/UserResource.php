@@ -26,6 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Db\Table;
+use Zend\Db\Sql\Expression;
 
 /**
  * Table Definition for user_resource
@@ -61,33 +62,35 @@ class UserResource extends Gateway
     public function getSavedData($resourceId, $source = 'VuFind', $listId = null,
         $userId = null
     ) {
-        /* TODO
-        // Set up base query:
-        $select = $this->select();
-        $select->setIntegrityCheck(false)   // allow join
-            ->distinct()
-            ->from(array('ur' => $this->_name), 'ur.*')
-            ->join(
-                array('r' => 'resource'), 'r.id = ur.resource_id',
+        $callback = function ($select) use ($resourceId, $source, $listId, $userId) {
+            $select->columns(
+                array(
+                    new Expression(
+                        'DISTINCT(?)', array('user_resource.id'),
+                        array(Expression::TYPE_IDENTIFIER)
+                    ), '*'
+                )
+            );
+            $select->join(
+                array('r' => 'resource'), 'r.id = user_resource.resource_id',
                 array()
-            )
-            ->join(
+            );
+            $select->join(
                 array('ul' => 'user_list'),
-                'ur.list_id = ul.id',
-                array('list_title' => 'ul.title', 'list_id' => 'ul.id')
-            )
-            ->where('r.source = ?', $source)
-            ->where('r.record_id = ?', $resourceId);
+                'user_resource.list_id = ul.id',
+                array('list_title' => 'title', 'list_id' => 'id')
+            );
+            $select->where->equalTo('r.source', $source)
+                ->equalTo('r.record_id', $resourceId);
 
-        if (!is_null($userId)) {
-            $select->where('ur.user_id = ?', $userId);
-        }
-        if (!is_null($listId)) {
-            $select->where('ur.list_id = ?', $listId);
-        }
-
-        return $this->fetchAll($select);
-         */
+            if (!is_null($userId)) {
+                $select->where->equalTo('user_resource.user_id', $userId);
+            }
+            if (!is_null($listId)) {
+                $select->where->equalTo('user_resource.list_id', $listId);
+            }
+        };
+        return $this->select($callback);
     }
 
     /**

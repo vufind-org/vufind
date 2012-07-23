@@ -29,6 +29,7 @@ namespace VuFind\RecordDriver;
 use VuFind\Config\Reader as ConfigReader,
     VuFind\Db\Table\Comments as CommentsTable,
     VuFind\Db\Table\Tags as TagsTable,
+    VuFind\Db\Table\UserResource as UserResourceTable,
     VuFind\Exception\LoginRequired as LoginRequiredException,
     VuFind\Tags, VuFind\Translator\Translator,
     VuFind\XSLT\Import\VuFind as ArticleStripper;
@@ -196,8 +197,7 @@ abstract class AbstractBase
      */
     public function getListNotes($list_id = null, $user_id = null)
     {
-        /* TODO
-        $db = new VuFind_Model_Db_UserResource();
+        $db = new UserResourceTable();
         $data = $db->getSavedData(
             $this->getUniqueId(), $this->resourceSource, $list_id, $user_id
         );
@@ -208,7 +208,6 @@ abstract class AbstractBase
             }
         }
         return $notes;
-         */
     }
 
     /**
