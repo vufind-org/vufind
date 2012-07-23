@@ -161,8 +161,7 @@ class AbstractSearch extends AbstractBase
 
             // Set up results scroller:
             if ($this->useResultScroller) {
-                $scroller = new ResultScroller();
-                $scroller->init($results);
+                $this->resultScroller()->init($results);
             }
         } catch (\Exception $e) {
             // If it's a parse error or the user specified an invalid field, we

@@ -25,8 +25,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
-namespace VuFind\Search;
-use VuFind\Config\Reader as ConfigReader,
+namespace VuFind\Controller\Plugin;
+use VuFind\Config\Reader as ConfigReader, VuFind\Db\Table\Search as SearchTable,
+    VuFind\Search\Memory, Zend\Mvc\Controller\Plugin\AbstractPlugin,
     Zend\Session\Container as SessionContainer;
 
 /**
@@ -38,7 +39,7 @@ use VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
-class ResultScroller
+class ResultScroller extends AbstractPlugin
 {
     protected $enabled;
     protected $data;
@@ -135,7 +136,9 @@ class ResultScroller
                 = isset($this->data->total) ? $this->data->total : 0;
 
             // find where this record is in the current result page
-            $pos = array_search($id, $this->data->currIds);
+            $pos = is_array($this->data->currIds)
+                ? array_search($id, $this->data->currIds)
+                : false;
             if ($pos !== false) {
                 // OK, found this record in the current result page
                 // calculate it's position relative to the result set
@@ -213,7 +216,7 @@ class ResultScroller
                 // the current record is not on the current page
 
                 // if there is something on the previous page
-                if (!empty($this->data->prevIds)) {
+                if (is_array($this->data->prevIds) && !empty($this->data->prevIds)) {
                     // check if current record is on the previous page
                     $pos = array_search($id, $this->data->prevIds);
                     if ($pos !== false) {
@@ -249,7 +252,7 @@ class ResultScroller
                 }
 
                 // if there is something on the next page
-                if (!empty($this->data->nextIds)) {
+                if (is_array($this->data->nextIds) && !empty($this->data->nextIds)) {
                     // check if current record is on the next page
                     $pos = array_search($id, $this->data->nextIds);
                     if ($pos !== false) {
@@ -319,11 +322,10 @@ class ResultScroller
     protected function restoreLastSearch()
     {
         if (isset($this->data->searchId)) {
-            $searchTable = new VuFind_Model_Db_Search();
-            $rows = $searchTable->find($this->data->searchId);
-            if (count($rows) > 0) {
-                $search = $rows->getRow(0);
-                $minSO = unserialize($search->search_object);
+            $searchTable = new SearchTable();
+            $row = $searchTable->getRowById($this->data->searchId, false);
+            if (!empty($row)) {
+                $minSO = unserialize($row->search_object);
                 return $minSO->deminify();
             }
         }
@@ -339,11 +341,10 @@ class ResultScroller
      */
     protected function rememberSearch($search)
     {
-        $details = $search->getSearchAction();
-        $fc = Zend_Controller_Front::getInstance();
-        $baseUrl = $fc->getBaseUrl() . '/' .
-            $details['controller'] . '/' . $details['action'];
-        VF_Search_Memory::rememberSearch(
+        $baseUrl = $this->getController()->url()->fromRoute(
+            $search->getSearchAction()
+        );
+        Memory::rememberSearch(
             $baseUrl . $search->getUrl()->getParams(false)
         );
     }

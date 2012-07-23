@@ -97,6 +97,7 @@ $config = array(
             'holds' => 'VuFind\Controller\Plugin\Holds',
             'renewals' => 'VuFind\Controller\Plugin\Renewals',
             'reserves' => 'VuFind\Controller\Plugin\Reserves',
+            'result-scroller' => 'VuFind\Controller\Plugin\ResultScroller',
         )
     ),
     'translator' => array(),

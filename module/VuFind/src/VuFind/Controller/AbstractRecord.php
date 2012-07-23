@@ -533,14 +533,11 @@ class AbstractRecord extends AbstractBase
         $view->tab = strtolower($tab);
         $view->defaultTab = strtolower($this->defaultTab);
 
-        /* TODO
         // Set up next/previous record links (if appropriate)
         if ($this->useResultScroller) {
-            $scroller = new ResultScroller();
-            $view->scrollData
-                = $scroller->getScrollData($this->params()->fromRoute('id'));
+            $view->scrollData = $this->resultScroller()
+                ->getScrollData($this->params()->fromRoute('id'));
         }
-         */
 
         $view->setTemplate('record/view');
         return $view;
