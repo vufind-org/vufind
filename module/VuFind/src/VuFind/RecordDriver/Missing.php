@@ -43,7 +43,7 @@ class Missing extends SolrDefault
     /**
      * Constructor.
      *
-     * @param array  $data   Raw data from the Solr index representing the record;
+     * @param array $data Raw data from the Solr index representing the record;
      * Solr Record Model objects are normally constructed by Solr Record Driver
      * objects using data passed in from a Solr Search Results object.
      */

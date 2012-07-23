@@ -86,7 +86,7 @@ class Record
      *
      * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
      * representing record to link to, or source|id pipe-delimited string
-     * @param string                                   $action Action to access
+     * @param string                                   $tab    Action to access
      *
      * @return array
      */
@@ -110,8 +110,9 @@ class Record
      *
      * @return array
      */
-    public static function getRouteDetails($driver, $routeSuffix, $extraParams = array())
-    {
+    public static function getRouteDetails($driver, $routeSuffix,
+        $extraParams = array()
+    ) {
         // Extract source and ID from driver or string:
         if (is_object($driver)) {
             $source = $driver->getResourceSource();
