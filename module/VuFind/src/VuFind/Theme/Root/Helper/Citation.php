@@ -56,6 +56,9 @@ class Citation extends AbstractHelper
         // Build author list:
         $authors = array();
         $primary = $driver->tryMethod('getPrimaryAuthor');
+        if (empty($primary)) {
+            $primary = $driver->tryMethod('getCorporateAuthor');
+        }
         if (!empty($primary)) {
             $authors[] = $primary;
         }
