@@ -214,15 +214,16 @@ class ResultScroller extends AbstractPlugin
                 }
             } else {
                 // the current record is not on the current page
-
                 // if there is something on the previous page
-                if (is_array($this->data->prevIds) && !empty($this->data->prevIds)) {
+                if (!empty($this->data->prevIds)) {
                     // check if current record is on the previous page
-                    $pos = array_search($id, $this->data->prevIds);
+                    $pos = is_array($this->data->prevIds)
+                        ? array_search($id, $this->data->prevIds) : false;
                     if ($pos !== false) {
                         // decrease the page in the session because
                         // we're now sliding into the previous page
-                        $this->data->page--;
+                        // (for some reason, -- doesn't work here)
+                        $this->data->page = $this->data->page - 1;
 
                         // shift pages to the right
                         $tmp = $this->data->currIds;
@@ -252,13 +253,15 @@ class ResultScroller extends AbstractPlugin
                 }
 
                 // if there is something on the next page
-                if (is_array($this->data->nextIds) && !empty($this->data->nextIds)) {
+                if (!empty($this->data->nextIds)) {
                     // check if current record is on the next page
-                    $pos = array_search($id, $this->data->nextIds);
+                    $pos = is_array($this->data->nextIds)
+                        ? array_search($id, $this->data->nextIds) : false;
                     if ($pos !== false) {
                         // increase the page in the session because
                         // we're now sliding into the next page
-                        $this->data->page++;
+                        // (for some reason, ++ doesn't work here)
+                        $this->data->page = $this->data->page + 1;
 
                         // shift pages to the left
                         $tmp = $this->data->currIds;
