@@ -146,41 +146,50 @@ class Tags extends Gateway
     public function getForResource($id, $source = 'VuFind', $limit = 0,
         $list_id = null, $user_id = null, $sort = 'count'
     ) {
-        /* TODO
-        $select = $this->select();
-        $select->setIntegrityCheck(false)   // allow join
-            ->from(
-                array('t' => $this->_name),
-                array('t.id', 't.tag', 'cnt' => 'COUNT(t.tag)')
-            )
-            ->join(array('rt' => 'resource_tags'), 't.id = rt.tag_id', array())
-            ->join(array('r' => 'resource'), 'rt.resource_id = r.id', array())
-            ->where('r.record_id = ?', $id)
-            ->where('r.source = ?', $source)
-            ->group(array('t.id', 't.tag'));
+        $callback = function ($select) use ($id, $source, $limit, $list_id, $user_id,
+            $sort
+        ) {
+            $select->columns(
+                array(
+                    'id', 'tag',
+                    'cnt' => new Expression(
+                        'COUNT(?)', array('tags.tag'),
+                        array(Expression::TYPE_IDENTIFIER)
+                    )
+                )
+            );
+            $select->join(
+                array('rt' => 'resource_tags'), 'tags.id = rt.tag_id', array()
+            );
+            $select->join(
+                array('r' => 'resource'), 'rt.resource_id = r.id', array()
+            );
+            $select->where->equalTo('r.record_id', $id)
+                ->equalTo('r.source', $source);
+            $select->group(array('id', 'tag'));
 
-        if ($sort == 'count') {
-            $select->order(array('cnt DESC', 't.tag'));
-        } else if ($sort == 'tag') {
-            $select->order(array('t.tag'));
-        }
+            if ($sort == 'count') {
+                $select->order(array('cnt DESC', 'tags.tag'));
+            } else if ($sort == 'tag') {
+                $select->order(array('tags.tag'));
+            }
 
-        if ($limit > 0) {
-            $select->limit($limit);
-        }
-        if ($list_id === true) {
-            $select->where('rt.list_id is not null');
-        } else if ($list_id === false) {
-            $select->where('rt.list_id is null');
-        } else if (!is_null($list_id)) {
-            $select->where('rt.list_id = ?', $list_id);
-        }
-        if (!is_null($user_id)) {
-            $select->where('rt.user_id = ?', $user_id);
-        }
+            if ($limit > 0) {
+                $select->limit($limit);
+            }
+            if ($list_id === true) {
+                $select->where->isNotNull('rt.list_id');
+            } else if ($list_id === false) {
+                $select->where->isNull('rt.list_id');
+            } else if (!is_null($list_id)) {
+                $select->where->equalTo('rt.list_id', $list_id);
+            }
+            if (!is_null($user_id)) {
+                $select->where->equalTo('rt.user_id', $user_id);
+            }
+        };
 
-        return $this->fetchAll($select);
-         */
+        return $this->select($callback);
     }
 
     /**

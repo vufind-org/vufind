@@ -28,6 +28,7 @@
 namespace VuFind\RecordDriver;
 use VuFind\Config\Reader as ConfigReader,
     VuFind\Db\Table\Comments as CommentsTable,
+    VuFind\Db\Table\Tags as TagsTable,
     VuFind\Exception\LoginRequired as LoginRequiredException,
     VuFind\Tags, VuFind\Translator\Translator,
     VuFind\XSLT\Import\VuFind as ArticleStripper;
@@ -112,12 +113,10 @@ abstract class AbstractBase
      */
     public function getTags($list_id = null, $user_id = null, $sort = 'count')
     {
-        /* TODO
-        $tags = new VuFind_Model_Db_Tags();
+        $tags = new TagsTable();
         return $tags->getForResource(
             $this->getUniqueId(), $this->resourceSource, 0, $list_id, $user_id, $sort
         );
-         */
     }
 
     /**
