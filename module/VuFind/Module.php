@@ -15,6 +15,11 @@ class Module
     public function getAutoloaderConfig()
     {
         return array(
+            'Zend\Loader\ClassMapAutoloader' => array(
+                'classes' => array(
+                    'minSO' => __DIR__ . '/src/VuFind/Search/minSO.php'
+                )
+            ),
             'Zend\Loader\StandardAutoloader' => array(
                 'namespaces' => array(
                     __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
