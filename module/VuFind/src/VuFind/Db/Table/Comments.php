@@ -56,25 +56,23 @@ class Comments extends Gateway
      */
     public function getForResource($id, $source = 'VuFind')
     {
-        /* TODO
-        $resourceTable = new VuFind_Model_Db_Resource();
+        $resourceTable = new Resource();
         $resource = $resourceTable->findResource($id, $source, false);
         if (empty($resource)) {
             return array();
         }
 
-        $select = $this->select()
-            ->setIntegrityCheck(false)   // allow join
-            ->from(array('c' => $this->_name))
-            ->join(
-                array('u' => 'user'), 'u.id = c.user_id',
-                array('u.firstname', 'u.lastname')
-            )
-            ->where('c.resource_id = ?', $resource->id)
-            ->order(array('c.created'));
+        $callback = function ($select) use ($resource) {
+            $select->columns(array('*'));
+            $select->join(
+                array('u' => 'user'), 'u.id = comments.user_id',
+                array('firstname', 'lastname')
+            );
+            $select->where->equalTo('comments.resource_id',  $resource->id);
+            $select->order('comments.created');
+        };
 
-        return $this->fetchAll($select);
-         */
+        return $this->select($callback);
     }
 
     /**

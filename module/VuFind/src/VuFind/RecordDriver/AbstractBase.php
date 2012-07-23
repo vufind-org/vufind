@@ -27,6 +27,7 @@
  */
 namespace VuFind\RecordDriver;
 use VuFind\Config\Reader as ConfigReader,
+    VuFind\Db\Table\Comments as CommentsTable,
     VuFind\Exception\LoginRequired as LoginRequiredException,
     VuFind\Tags, VuFind\Translator\Translator,
     VuFind\XSLT\Import\VuFind as ArticleStripper;
@@ -82,10 +83,8 @@ abstract class AbstractBase
      */
     public function getComments()
     {
-        /* TODO:
-        $table = new VuFind_Model_Db_Comments();
+        $table = new CommentsTable();
         return $table->getForResource($this->getUniqueId(), $this->resourceSource);
-         */
     }
 
     /**

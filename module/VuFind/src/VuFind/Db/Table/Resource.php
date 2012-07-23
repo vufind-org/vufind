@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Table;
-use Zend\Db\Sql\Expression;
+use VuFind\Record, Zend\Db\Sql\Expression;
 
 /**
  * Table Definition for resource
@@ -64,24 +64,22 @@ class Resource extends Gateway
     public function findResource($id, $source = 'VuFind', $create = true,
         $driver = null
     ) {
-        /* TODO
         if (empty($id)) {
             throw new \Exception('Resource ID cannot be empty');
         }
-        $select = $this->select();
-        $select->where('record_id = ?', $id)
-            ->where('source = ?', $source);
-        $result = $this->fetchRow($select);
+        $select = $this->select(array('record_id' => $id, 'source' => $source));
+        $result = $select->current();
 
         // Create row if it does not already exist and creation is enabled:
         if (is_null($result) && $create) {
-            $result = $this->createRow();
+            $result
+                = clone($this->getResultSetPrototype()->getArrayObjectPrototype());
             $result->record_id = $id;
             $result->source = $source;
 
             // Load record if it was not provided:
             if (is_null($driver)) {
-                $driver = VF_Record::load($id, $source);
+                $driver = Record::load($id, $source);
             }
 
             // Load metadata into the database for sorting/failback purposes:
@@ -91,7 +89,6 @@ class Resource extends Gateway
             $result->save();
         }
         return $result;
-         */
     }
 
     /**
