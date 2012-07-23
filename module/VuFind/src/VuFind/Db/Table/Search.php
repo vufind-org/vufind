@@ -26,6 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Db\Table;
+use minSO;
 
 /**
  * Table Definition for search
@@ -43,7 +44,7 @@ class Search extends Gateway
      */
     public function __construct()
     {
-        parent::__construct('search');
+        parent::__construct('search', 'VuFind\Db\Row\Search');
     }
 
 
@@ -74,17 +75,14 @@ class Search extends Gateway
      */
     public function getSearches($sid, $uid = null)
     {
-        /* TODO
-        $db = $this->getAdapter();
-        $select = $this->select()
-            ->where($db->quoteIdentifier('session_id') . ' = ?', $sid);
-        if ($uid != null) {
-            $select->orWhere($db->quoteIdentifier('user_id') . ' = ?', $uid);
-        }
-        $select->order('id');
-
-        return $this->fetchAll($select);
-         */
+        $callback = function ($select) use ($sid, $uid) {
+            $select->where->equalTo('session_id', $sid);
+            if ($uid != null) {
+                $select->where->equalTo('user_id', $uid);
+            }
+            $select->order('id');
+        };
+        return $this->select($callback);
     }
 
     /**
@@ -113,20 +111,20 @@ class Search extends Gateway
     /**
      * Get a single row matching a primary key value.
      *
-     * @param int $id Primary key value.
+     * @param int  $id                 Primary key value
+     * @param bool $exceptionIfMissing Should we throw an exception if the row is
+     * missing?
      *
-     * @throws Exception
+     * @throws \Exception
      * @return Zend_Db_Table_Row
      */
-    public function getRowById($id)
+    public function getRowById($id, $exceptionIfMissing = true)
     {
-        /* TODO
-        $rows = $this->find($id);
-        if (count($rows) < 1) {
-            throw new Exception('Cannot find id ' . $id);
+        $row = $this->select(array('id' => $id))->current();
+        if (empty($row) && $exceptionIfMissing) {
+            throw new \Exception('Cannot find id ' . $id);
         }
-        return $rows->getRow(0);
-         */
+        return $row;
     }
 
     /**
@@ -154,14 +152,14 @@ class Search extends Gateway
      * Add a search into the search table (history)
      *
      * @param VF_Search_Base_Results $newSearch     Search to save
+     * @param string                 $sessionId     Current session ID
      * @param array                  $searchHistory Existing saved searches (for
      * deduplication purposes)
      *
      * @return void
      */
-    public function saveSearch($newSearch, $searchHistory = array())
+    public function saveSearch($newSearch, $sessionId, $searchHistory = array())
     {
-        /* TODO
         // Duplicate elimination
         $dupSaved  = false;
         foreach ($searchHistory as $oldSearch) {
@@ -196,34 +194,16 @@ class Search extends Gateway
         // If we got this far, we didn't find a saved duplicate, so we should
         // save the new search:
         $data = array(
-            'session_id' => Zend_Session::getId(),
+            'session_id' => $sessionId,
             'created' => date('Y-m-d'),
             'search_object' => serialize(new minSO($newSearch))
         );
-        $row = $this->getRowById($this->insert($data));
+        $this->insert($data);
+        $row = $this->getRowById($this->getLastInsertValue());
 
         // Chicken and egg... We didn't know the id before insert
         $newSearch->updateSaveStatus($row);
         $row->search_object = serialize(new minSO($newSearch));
         $row->save();
-         */
     }
 }
-
-/**
- * Support class for legacy compatibility (this old class name used to be
- * used by earlier versions of VuFind; by instantiating the class here, we
- * make sure that the minSO name will work any time the database is accessed).
- *
- * @category VuFind2
- * @package  SearchObject
- * @author   Demian Katz <demian.katz@villanova.edu>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
- */
-/* TODO
-// @codingStandardsIgnoreStart - lowercase class name
-class minSO extends VF_MS // @codingStandardsIgnoreEnd
-{
-}
- */

@@ -26,7 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller;
-use VuFind\Search\Memory,
+use VuFind\Db\Table\Search as SearchTable, VuFind\Search\Memory,
     VuFind\Search\Options as SearchOptions, VuFind\Search\ResultScroller,
     Zend\Stdlib\Parameters;
 
@@ -147,20 +147,17 @@ class AbstractSearch extends AbstractBase
             }
              */
 
-            /* TODO
             // Add to search history:
             if ($this->saveToHistory) {
                 $user = $this->getUser();
-                $history = new VuFind_Model_Db_Search();
+                $sessId = $this->getServiceLocator()->get('SessionManager')->getId();
+                $history = new SearchTable();
                 $history->saveSearch(
-                    $results,
-                    $history->getSearches(
-                        Zend_Session::getId(),
-                        isset($user->id) ? $user->id : null
+                    $results, $sessId, $history->getSearches(
+                        $sessId, isset($user->id) ? $user->id : null
                     )
                 );
             }
-             */
 
             // Set up results scroller:
             if ($this->useResultScroller) {
