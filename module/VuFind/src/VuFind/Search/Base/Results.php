@@ -299,7 +299,7 @@ abstract class Results
      */
     public function isSavedSearch()
     {
-        // This data is not available until VuFind_Model_Db_Search::saveSearch()
+        // This data is not available until \VuFind\Db\Table\Search::saveSearch()
         // is called...  blow up if somebody tries to get data that is not yet
         // available.
         if (is_null($this->savedSearch)) {
