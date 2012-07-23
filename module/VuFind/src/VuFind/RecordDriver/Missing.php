@@ -46,24 +46,13 @@ class Missing extends SolrDefault
      * @param array  $data   Raw data from the Solr index representing the record;
      * Solr Record Model objects are normally constructed by Solr Record Driver
      * objects using data passed in from a Solr Search Results object.
-     * @param string $source The source of the missing record (for proper linking).
      */
-    public function __construct($data = null, $source = 'VuFind')
+    public function __construct($data = null)
     {
         if (!is_array($data)) {
             $data = array();
         }
         parent::__construct($data);
-        $this->resourceSource = $source;
-    }
-
-    /**
-     * Get the name of the route used to build links to URLs representing the record.
-     *
-     * @return string
-     */
-    public function getRecordRoute()
-    {
-        return 'missingrecord';
+        $this->resourceSource = 'missing';
     }
 }

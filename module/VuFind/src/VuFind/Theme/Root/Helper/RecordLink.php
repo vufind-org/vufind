@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Theme\Root\Helper;
-use Zend\View\Helper\AbstractHelper;
+use VuFind\Record as RecordTools, Zend\View\Helper\AbstractHelper;
 
 /**
  * Record link view helper
@@ -71,20 +71,19 @@ class RecordLink extends AbstractHelper
     /**
      * Given a record driver, get a URL for that record.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver Record to link to.
-     * @param string                            $action Optional record action/tab to
-     * access
+     * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
+     * representing record to link to, or source|id pipe-delimited string
+     * @param string                                   $action Optional record
+     * action/tab to access
      *
      * @return string
      */
     public function getUrl($driver, $action = null)
     {
-        $params = array('id' => $driver->getUniqueId());
-        if (!empty($action)) {
-            $params['action'] = $action;
-        }
+        // Build the URL:
         $urlHelper = $this->getView()->plugin('url');
-        return $urlHelper($driver->getRecordRoute(), $params);
+        $details = RecordTools::getDetailsForRouter($driver, $action);
+        return $urlHelper($details['route'], $details['params']);
     }
 
     /**

@@ -73,9 +73,9 @@
     <?=$this->flashmessages()?>
     <? if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
       <div class="resultscroller">
-        <? if ($this->scrollData['previousRecord']): ?><a href="<?=$this->url($this->driver->getRecordRoute(), array('id' => $this->scrollData['previousRecord']))?>">&laquo; <?=$this->transEsc('Prev')?></a><? endif; ?>
+        <? if ($this->scrollData['previousRecord']): ?><a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>">&laquo; <?=$this->transEsc('Prev')?></a><? endif; ?>
         #<?=$this->escapeHtml($this->scrollData['currentPosition']) . ' ' . $this->transEsc('of') . ' ' . $this->escapeHtml($this->scrollData['resultTotal'])?>
-        <? if ($this->scrollData['nextRecord']): ?><a href="<?=$this->url($this->driver->getRecordRoute(), array('id' => $this->scrollData['nextRecord']))?>"><?=$this->transEsc('Next')?> &raquo;</a><? endif; ?>
+        <? if ($this->scrollData['nextRecord']): ?><a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>"><?=$this->transEsc('Next')?> &raquo;</a><? endif; ?>
       </div>
     <? endif; ?>
     <?=$this->record($this->driver)->getCoreMetadata()?>

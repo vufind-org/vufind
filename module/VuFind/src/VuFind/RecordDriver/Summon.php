@@ -332,16 +332,6 @@ class Summon extends SolrDefault
     }
 
     /**
-     * Get the name of the route used to build links to URLs representing the record.
-     *
-     * @return string
-     */
-    public function getRecordRoute()
-    {
-        return 'summonrecord';
-    }
-
-    /**
      * Get an array of all secondary authors (complementing getPrimaryAuthor()).
      *
      * @return array

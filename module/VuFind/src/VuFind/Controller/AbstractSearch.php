@@ -26,7 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller;
-use VuFind\Db\Table\Search as SearchTable, VuFind\Search\Memory,
+use VuFind\Db\Table\Search as SearchTable, VuFind\Record, VuFind\Search\Memory,
     VuFind\Search\Options as SearchOptions, VuFind\Search\ResultScroller,
     Zend\Stdlib\Parameters;
 
@@ -221,10 +221,8 @@ class AbstractSearch extends AbstractBase
 
         // If we got this far, we have a valid parameter so we should redirect
         // and report success:
-        return $this->redirect()->toRoute(
-            $recordList[$jumpto - 1]->getRecordRoute(),
-            array('id' => $recordList[$jumpto - 1]->getUniqueId())
-        );
+        $details = Record::getDetailsForRouter($recordList[$jumpto - 1]);
+        return $this->redirect()->toRoute($details['route'], $details['params']);
     }
 
     /**

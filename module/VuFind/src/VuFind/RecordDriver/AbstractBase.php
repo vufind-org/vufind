@@ -231,17 +231,6 @@ abstract class AbstractBase
     }
 
     /**
-     * Get the name of the route used to build links to URLs representing the record.
-     *
-     * @return string
-     */
-    public function getRecordRoute()
-    {
-        // Assume Solr route by default:
-        return 'record';
-    }
-
-    /**
      * Get the source value used to identify resources of this type in the database.
      *
      * @return string

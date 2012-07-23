@@ -99,11 +99,12 @@ class ResultScroller extends AbstractPlugin
      * Return array('previousRecord'=>previd, 'nextRecord'=>nextid,
      * 'currentPosition'=>number, 'resultTotal'=>number).
      *
-     * @param string $id The ID currently being displayed
+     * @param \VuFind\RecordDriver\AbstractBase $driver Driver for the record
+     * currently being displayed
      *
      * @return array
      */
-    public function getScrollData($id)
+    public function getScrollData($driver)
     {
         $retVal = array(
             'previousRecord'=>null,
@@ -117,6 +118,9 @@ class ResultScroller extends AbstractPlugin
         }
 
         if (isset($this->data->currIds) && isset($this->data->searchId)) {
+            // build a full ID string using the driver:
+            $id = $driver->getResourceSource() . '|' . $driver->getUniqueId();
+
             // we need to restore the last search object
             // to fetch either the previous/next page of results
             $lastSearch = $this->restoreLastSearch();
@@ -312,7 +316,7 @@ class ResultScroller extends AbstractPlugin
 
         $retVal = array();
         foreach ($searchObject->getResults() as $record) {
-            $retVal[] = $record->getUniqueId();
+            $retVal[] = $record->getResourceSource() . '|' . $record->getUniqueId();
         }
         return $retVal;
     }

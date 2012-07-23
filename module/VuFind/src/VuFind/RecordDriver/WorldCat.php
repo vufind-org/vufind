@@ -275,16 +275,6 @@ class WorldCat extends SolrMarc
     }
 
     /**
-     * Get the name of the route used to build links to URLs representing the record.
-     *
-     * @return string
-     */
-    public function getRecordRoute()
-    {
-        return 'worldcatrecord';
-    }
-
-    /**
      * Get an array of newer titles for the record.
      *
      * @return array

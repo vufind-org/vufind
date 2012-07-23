@@ -26,7 +26,8 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Controller;
-use VuFind\Db\Table\Resource as ResourceTable, VuFind\Search\ResultScroller;
+use VuFind\Db\Table\Resource as ResourceTable, VuFind\Record,
+    VuFind\Search\ResultScroller;
 
 /**
  * VuFind Record Controller
@@ -135,7 +136,7 @@ class AbstractRecord extends AbstractBase
                 ->addMessage('add_comment_fail_blank');
         }
 
-        return $this->redirectToRecord('', array('action' => 'UserComments'));
+        return $this->redirectToRecord('', 'UserComments');
     }
 
     /**
@@ -159,7 +160,7 @@ class AbstractRecord extends AbstractBase
             $this->_helper->flashMessenger->setNamespace('error')
                 ->addMessage('delete_comment_failure');
         }
-        return $this->redirectToRecord('', array('action' => 'UserComments'));
+        return $this->redirectToRecord('', 'UserComments');
          */
     }
 
@@ -492,17 +493,14 @@ class AbstractRecord extends AbstractBase
      * Redirect the user to the main record view.
      *
      * @param string $params  Parameters to append to record URL.
-     * @param array  $options Options to add to the array sent to the router
+     * @param string $action  Record action to access (null for default).
      *
      * @return void
      */
-    protected function redirectToRecord($params = '', $options = array())
+    protected function redirectToRecord($params = '', $action = null)
     {
-        $driver = $this->loadRecord();
-        $target = $this->url()->fromRoute(
-            $driver->getRecordRoute(),
-            $options + array('id' => $driver->getUniqueId())
-        );
+        $details = Record::getDetailsForRouter($this->loadRecord(), $action);
+        $target = $this->url()->fromRoute($details['route'], $details['params']);
         return $this->redirect()->toUrl($target . $params);
     }
 
@@ -528,15 +526,14 @@ class AbstractRecord extends AbstractBase
             return $patron;
         }
 
-        $this->loadRecord();
+        $driver = $this->loadRecord();
         $view = $this->createViewModel();
         $view->tab = strtolower($tab);
         $view->defaultTab = strtolower($this->defaultTab);
 
         // Set up next/previous record links (if appropriate)
         if ($this->useResultScroller) {
-            $view->scrollData = $this->resultScroller()
-                ->getScrollData($this->params()->fromRoute('id'));
+            $view->scrollData = $this->resultScroller()->getScrollData($driver);
         }
 
         $view->setTemplate('record/view');

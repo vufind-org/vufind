@@ -68,6 +68,46 @@ class Record
     }
 
     /**
+     * Get routing details (route name and parameters array) to link to a record.
+     *
+     * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
+     * representing record to link to, or source|id pipe-delimited string
+     * @param string                                   $action Optional record
+     * action/tab to access
+     *
+     * @return array
+     */
+    public static function getDetailsForRouter($driver, $action = null)
+    {
+        // Extract source and ID from driver or string:
+        if (is_object($driver)) {
+            $source = $driver->getResourceSource();
+            $id = $driver->getUniqueId();
+        } else {
+            $parts = explode('|', $driver, 2);
+            if (count($parts) < 2) {
+                $source = 'VuFind';
+                $id = $parts[0];
+            } else {
+                $source = $parts[0];
+                $id = $parts[1];
+            }
+        }
+
+        // Build URL parameters:
+        $params = array('id' => $id);
+        if (!empty($action)) {
+            $params['action'] = $action;
+        }
+
+        // Determine route based on naming convention (default VuFind route is
+        // the exception to the rule):
+        $route = ($source == 'VuFind') ? 'record' : strtolower($source . 'record');
+
+        return array('params' => $params, 'route' => $route);
+    }
+
+    /**
      * Given an ID and record source, load the requested record object.
      *
      * @param string $id     Record ID
@@ -134,7 +174,7 @@ class Record
                     ? $details['extra_fields'] : array();
                 $fields['id'] = $details['id'];
                 $retVal[$i]
-                    = new \VuFind\RecordDriver\Missing($fields, $details['source']);
+                    = new \VuFind\RecordDriver\Missing($fields);
             }
         }
 

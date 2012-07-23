@@ -59,16 +59,8 @@ class RecordsController extends AbstractSearch
         // If there is exactly one record, send the user directly there:
         $ids = $this->params()->fromQuery('id', array());
         if (count($ids) == 1) {
-            $parts = explode('|', $ids[0], 2);
-            if (count($parts) == 2) {
-                list($source, $id) = $parts;
-            } else {
-                list($source, $id) = array('VuFind', $parts[0]);
-            }
-            $driver = Record::load($id, $source);
-            $target = $this->url()->fromRoute(
-                $driver->getRecordRoute(), array('id' => $driver->getUniqueId())
-            );
+            $details = Record::getDetailsForRouter($ids[0]);
+            $target = $this->url()->fromRoute($details['route'], $details['params']);
             // forward print param, if necessary:
             $print = $this->params()->fromQuery('print');
             $params = empty($print) ? '' : '?print=' . urlencode($print);
