@@ -139,13 +139,11 @@ class AbstractSearch extends AbstractBase
             // Send results to the view and remember the current URL as the last
             // search.
             $view->results = $results;
-            /* TODO
             if ($this->rememberSearch) {
-                Memory::rememberSearch(
-                    $this->view->url() . $results->getUrl()->getParams(false)
-                );
+                $searchUrl = $this->url()->fromRoute($results->getSearchAction())
+                    . $results->getUrl()->getParams(false);
+                Memory::rememberSearch($searchUrl);
             }
-             */
 
             // Add to search history:
             if ($this->saveToHistory) {

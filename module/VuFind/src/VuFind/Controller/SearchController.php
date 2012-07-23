@@ -27,8 +27,9 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Cache\Manager as CacheManager, VuFind\Search\Solr\Params,
-    VuFind\Search\Solr\Results, VuFind\Solr\Utils as SolrUtils;
+use VuFind\Cache\Manager as CacheManager, VuFind\Search\Memory,
+    VuFind\Search\Solr\Params, VuFind\Search\Solr\Results,
+    VuFind\Solr\Utils as SolrUtils;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -252,7 +253,7 @@ class SearchController extends AbstractSearch
                     $current->delete();
 
                     // We don't want to remember the last search after a purge:
-                    VF_Search_Memory::forgetSearch();
+                    Memory::forgetSearch();
                 } else {
                     // Otherwise add to the list
                     $this->view->unsaved[] = $minSO->deminify();
