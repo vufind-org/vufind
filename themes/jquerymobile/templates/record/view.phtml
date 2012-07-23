@@ -4,7 +4,7 @@
     $tab = $this->record($this->driver)->getTab($this->tab);
 ?>
 <div data-role="page" id="Record-view">
-  <?=$this->mobileMenu()->header(array('searchLink' => array('action' => 'Home') + $this->searchOptions($this->searchClassId)->getSearchAction()))?>
+  <?=$this->mobileMenu()->header(array('searchLink' => $this->searchOptions($this->searchClassId)->getSearchHomeAction()))?>
   <div class="record" data-role="content" data-record-id="<?=$this->escapeHtml($this->driver->getUniqueId())?>">
     <?=$this->flashmessages()?>
     <? if ($this->tab == $this->defaultTab): ?>
@@ -14,11 +14,11 @@
     <? endif; ?>
     <?=$tab?>
     <div data-role="controlgroup">
-      <a href="<?=$this->recordLink()->getUrl($this->driver, 'Save')?>" data-role="button" rel="external"><?=$this->transEsc("Add to favorites")?></a>
-      <a href="<?=$this->recordLink()->getUrl($this->driver, 'AddTag')?>" data-role="button" rel="external"><?=$this->transEsc("Add Tag")?></a>
-      <a href="<?=$this->recordLink()->getUrl($this->driver, 'Cite')?>" data-role="button" rel="external"><?=$this->transEsc("Cite this")?></a>
-      <a href="<?=$this->recordLink()->getUrl($this->driver, 'Email')?>" data-role="button" rel="external"><?=$this->transEsc("Email this")?></a>
-      <a href="<?=$this->recordLink()->getUrl($this->driver, 'SMS')?>" data-role="button" rel="external"><?=$this->transEsc("Text this")?></a>
+      <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" data-role="button" rel="external"><?=$this->transEsc("Add to favorites")?></a>
+      <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'AddTag')?>" data-role="button" rel="external"><?=$this->transEsc("Add Tag")?></a>
+      <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Cite')?>" data-role="button" rel="external"><?=$this->transEsc("Cite this")?></a>
+      <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Email')?>" data-role="button" rel="external"><?=$this->transEsc("Email this")?></a>
+      <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'SMS')?>" data-role="button" rel="external"><?=$this->transEsc("Text this")?></a>
     </div>
   </div>
   <?=$this->mobileMenu()->footer()?>

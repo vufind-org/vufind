@@ -73,17 +73,49 @@ class RecordLink extends AbstractHelper
      *
      * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
      * representing record to link to, or source|id pipe-delimited string
-     * @param string                                   $action Optional record
-     * action/tab to access
+     * @param string                                   $action Record
+     * action to access
      *
      * @return string
      */
-    public function getUrl($driver, $action = null)
+    public function getActionUrl($driver, $action)
     {
         // Build the URL:
         $urlHelper = $this->getView()->plugin('url');
-        $details = RecordTools::getDetailsForRouter($driver, $action);
+        $details = RecordTools::getActionRouteDetails($driver, $action);
         return $urlHelper($details['route'], $details['params']);
+    }
+
+    /**
+     * Given a record driver, get a URL for that record.
+     *
+     * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
+     * representing record to link to, or source|id pipe-delimited string
+     * @param string                                   $tab    Optional record
+     * tab to access
+     *
+     * @return string
+     */
+    public function getTabUrl($driver, $tab = null)
+    {
+        // Build the URL:
+        $urlHelper = $this->getView()->plugin('url');
+        $details = RecordTools::getTabRouteDetails($driver, $tab);
+        return $urlHelper($details['route'], $details['params']);
+    }
+
+    /**
+     * Get the default URL for a record.
+     *
+     * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
+     * representing record to link to, or source|id pipe-delimited string
+     *
+     * @return string
+     */
+    public function getUrl($driver)
+    {
+        // Display default tab by default:
+        return $this->getTabUrl($driver);
     }
 
     /**

@@ -6,7 +6,7 @@
   <?=$this->render('record/comments-list.phtml')?>
 </ul>
 
-<form name="commentRecord" id="commentRecord" action="<?=$this->recordLink()->getUrl($this->driver, 'AddComment')?>" method="post" data-ajax="false">
+<form name="commentRecord" id="commentRecord" action="<?=$this->recordLink()->getActionUrl($this->driver, 'AddComment')?>" method="post" data-ajax="false">
   <input type="hidden" name="id" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>"/>
   <input type="hidden" name="source" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>"/>
   <div data-role="fieldcontain">

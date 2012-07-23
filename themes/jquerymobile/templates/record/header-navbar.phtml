@@ -6,9 +6,9 @@
 <? if (!empty($tabs)): ?>
   <div data-role="navbar">
     <ul>
-      <? foreach ($tabs as $action => $desc): ?>
+      <? foreach ($tabs as $tab => $desc): ?>
         <li>
-          <a rel="external"<?=(strtolower(isset($this->tab) ? $this->tab : '') == strtolower($action)) ? ' class="ui-btn-active"' : ''?> href="<?=$this->recordLink()->getUrl($this->driver, $action)?>"><?=$this->transEsc($desc)?></a>
+          <a rel="external"<?=(strtolower(isset($this->tab) ? $this->tab : '') == strtolower($tab)) ? ' class="ui-btn-active"' : ''?> href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>"><?=$this->transEsc($desc)?></a>
         </li>
       <? endforeach; ?>
     </ul>

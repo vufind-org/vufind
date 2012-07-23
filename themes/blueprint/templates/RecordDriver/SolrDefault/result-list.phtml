@@ -102,7 +102,7 @@
   </div>
 
   <div class="span-4 last">
-    <a href="<?=$this->recordLink()->getUrl($this->driver, 'Save')?>" class="fav tool saveRecord controller<?=$this->record($this->driver)->getController()?>" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a>
+    <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="fav tool saveRecord controller<?=$this->record($this->driver)->getController()?>" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a>
 
     <div class="savedLists info hide">
       <strong><?=$this->transEsc("Saved in")?>:</strong>

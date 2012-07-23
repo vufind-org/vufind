@@ -117,6 +117,10 @@ $recordRoutes = array(
     'summonrecord' => 'SummonRecord',
     'worldcatrecord' => 'WorldcatRecord'
 );
+$nonTabRecordActions = array(
+    'AddComment', 'DeleteComment', 'AddTag', 'Save', 'Email', 'SMS', 'Cite',
+    'Export', 'RDF'
+);
 
 // Define list-related routes -- route name => MyResearch action
 $listRoutes = array('userList' => 'MyList', 'editList' => 'EditList');
@@ -151,11 +155,12 @@ $staticRoutes = array(
 );
 
 // Build record routes
-foreach ($recordRoutes as $routeName => $controller) {
-    $config['router']['routes'][$routeName] = array(
+foreach ($recordRoutes as $routeBase => $controller) {
+    // catch-all "tab" route:
+    $config['router']['routes'][$routeBase . '-tab'] = array(
         'type'    => 'Zend\Mvc\Router\Http\Segment',
         'options' => array(
-            'route'    => '/' . $controller . '/[:id[/:action]]',
+            'route'    => '/' . $controller . '/[:id[/:tab]]',
             'constraints' => array(
                 'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
                 'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
@@ -166,6 +171,23 @@ foreach ($recordRoutes as $routeName => $controller) {
             )
         )
     );
+    // special non-tab actions that each need their own route:
+    foreach ($nonTabRecordActions as $action) {
+        $config['router']['routes'][$routeBase . '-' . strtolower($action)] = array(
+            'type'    => 'Zend\Mvc\Router\Http\Segment',
+            'options' => array(
+                'route'    => '/' . $controller . '/[:id]/' . $action,
+                'constraints' => array(
+                    'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    'action'     => '[a-zA-Z][a-zA-Z0-9_-]*',
+                ),
+                'defaults' => array(
+                    'controller' => $controller,
+                    'action'     => $action,
+                )
+            )
+        );
+    }
 }
 
 // Build list routes

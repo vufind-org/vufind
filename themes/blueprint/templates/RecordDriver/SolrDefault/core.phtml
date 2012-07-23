@@ -5,7 +5,7 @@
   <? if ($summary): ?>
     <p>
       <?=$this->escapeHtml($this->truncate($summary, 300))?>
-      <a href='<?=$this->recordLink()->getUrl($this->driver, 'Description')?>#tabnav'><?=$this->transEsc('Full description')?></a>
+      <a href='<?=$this->recordLink()->getActionUrl($this->driver, 'Description')?>#tabnav'><?=$this->transEsc('Full description')?></a>
     </p>
   <? endif; ?>
 
@@ -192,7 +192,7 @@
       <th><?=$this->transEsc('Tags')?>: </th>
       <td>
         <span style="float:right;">
-          <a href="<?=$this->recordLink()->getUrl($this->driver, 'AddTag')?>" class="tool add tagRecord controller<?=$this->record($this->driver)->getController()?>" title="<?=$this->transEsc('Add Tag')?>" id="tagRecord"><?=$this->transEsc('Add Tag')?></a>
+          <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'AddTag')?>" class="tool add tagRecord controller<?=$this->record($this->driver)->getController()?>" title="<?=$this->transEsc('Add Tag')?>" id="tagRecord"><?=$this->transEsc('Add Tag')?></a>
         </span>
         <div id="tagList">
           <? if (count($tagList) > 0): ?>

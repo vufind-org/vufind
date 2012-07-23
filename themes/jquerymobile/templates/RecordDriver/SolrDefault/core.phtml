@@ -163,7 +163,7 @@
     <dt><?=$this->transEsc('Tags')?>: </dt>
     <dd>
       <span style="float:right;">
-        <a rel="external" href="<?=$this->recordLink()->getUrl($this->driver, 'AddTag')?>" class="tool add tagRecord controller<?=$this->record($this->driver)->getController()?>" title="<?=$this->transEsc('Add Tag')?>" id="tagRecord"><?=$this->transEsc('Add Tag')?></a>
+        <a rel="external" href="<?=$this->recordLink()->getActionUrl($this->driver, 'AddTag')?>" class="tool add tagRecord controller<?=$this->record($this->driver)->getController()?>" title="<?=$this->transEsc('Add Tag')?>" id="tagRecord"><?=$this->transEsc('Add Tag')?></a>
       </span>
       <div id="tagList">
         <? $i = 0; foreach ($tagList as $tag): ?><?=($i++ == 0)?'':', '?><a rel="external" href="<?=$this->url('tag-home')?>?lookfor=<?=urlencode($tag->tag)?>"><?=$this->escapeHtml($tag->tag)?></a> (<?=$this->escapeHtml($tag->cnt)?>)<? endforeach; ?>

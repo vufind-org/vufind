@@ -68,16 +68,49 @@ class Record
     }
 
     /**
-     * Get routing details (route name and parameters array) to link to a record.
+     * Get routing details for a controller action.
      *
      * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
      * representing record to link to, or source|id pipe-delimited string
-     * @param string                                   $action Optional record
-     * action/tab to access
+     * @param string                                   $action Action to access
      *
      * @return array
      */
-    public static function getDetailsForRouter($driver, $action = null)
+    public static function getActionRouteDetails($driver, $action)
+    {
+        return static::getRouteDetails($driver, strtolower($action));
+    }
+
+    /**
+     * Get routing details to display a particular tab.
+     *
+     * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
+     * representing record to link to, or source|id pipe-delimited string
+     * @param string                                   $action Action to access
+     *
+     * @return array
+     */
+    public static function getTabRouteDetails($driver, $tab = null)
+    {
+        return static::getRouteDetails(
+            $driver, 'tab',
+            empty($tab) ? array() : array('tab' => $tab)
+        );
+    }
+
+    /**
+     * Get routing details (route name and parameters array) to link to a record.
+     *
+     * @param \VuFind\RecordDriver\AbstractBase|string $driver      Record driver
+     * representing record to link to, or source|id pipe-delimited string
+     * @param string                                   $routeSuffix Suffix to add
+     * to route name
+     * @param array                                    $extraParams Extra parameters
+     * for route
+     *
+     * @return array
+     */
+    public static function getRouteDetails($driver, $routeSuffix, $extraParams = array())
     {
         // Extract source and ID from driver or string:
         if (is_object($driver)) {
@@ -95,16 +128,20 @@ class Record
         }
 
         // Build URL parameters:
-        $params = array('id' => $id);
+        $params = $extraParams;
+        $params['id'] = $id;
         if (!empty($action)) {
             $params['action'] = $action;
         }
 
         // Determine route based on naming convention (default VuFind route is
         // the exception to the rule):
-        $route = ($source == 'VuFind') ? 'record' : strtolower($source . 'record');
+        $routeBase = ($source == 'VuFind')
+            ? 'record' : strtolower($source . 'record');
 
-        return array('params' => $params, 'route' => $route);
+        return array(
+            'params' => $params, 'route' => $routeBase . '-' . $routeSuffix
+        );
     }
 
     /**

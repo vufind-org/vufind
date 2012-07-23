@@ -75,23 +75,6 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Magic method for handling undefined methods; this makes it easier to
-     * add new tabs to the record view without modifying controllers.
-     *
-     * @param string $method Method name being called.
-     * @param array  $params Parameters passed to method.
-     *
-     * @return void
-     */
-    public function __call($method, $params)
-    {
-        if (substr($method, -6) == 'Action') {
-            return $this->showTab(substr($method, 0, strlen($method) - 6));
-        }
-        return parent::__call($method, $params);
-    }
-
-    /**
      * Add a comment
      *
      * @return void
@@ -192,7 +175,7 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Home (default) action -- forward to default tab.
+     * Home (default) action -- forward to requested (or default) tab.
      *
      * @return void
      */
@@ -214,7 +197,7 @@ class AbstractRecord extends AbstractBase
         }
          */
 
-         return $this->showTab($this->defaultTab);
+         return $this->showTab($this->params()->fromRoute('tab', $this->defaultTab));
     }
 
     /**
@@ -492,14 +475,14 @@ class AbstractRecord extends AbstractBase
     /**
      * Redirect the user to the main record view.
      *
-     * @param string $params  Parameters to append to record URL.
-     * @param string $action  Record action to access (null for default).
+     * @param string $params Parameters to append to record URL.
+     * @param string $tab    Record tab to display (null for default).
      *
      * @return void
      */
-    protected function redirectToRecord($params = '', $action = null)
+    protected function redirectToRecord($params = '', $tab = null)
     {
-        $details = Record::getDetailsForRouter($this->loadRecord(), $action);
+        $details = Record::getTabRouteDetails($this->loadRecord(), $tab);
         $target = $this->url()->fromRoute($details['route'], $details['params']);
         return $this->redirect()->toUrl($target . $params);
     }

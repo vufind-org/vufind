@@ -221,7 +221,7 @@ class AbstractSearch extends AbstractBase
 
         // If we got this far, we have a valid parameter so we should redirect
         // and report success:
-        $details = Record::getDetailsForRouter($recordList[$jumpto - 1]);
+        $details = Record::getTabRouteDetails($recordList[$jumpto - 1]);
         return $this->redirect()->toRoute($details['route'], $details['params']);
     }
 

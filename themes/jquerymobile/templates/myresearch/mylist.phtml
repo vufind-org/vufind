@@ -42,7 +42,7 @@
       <ul class="results mylist" data-role="listview" data-split-icon="minus" data-split-theme="d" data-inset="false">
         <? $i = 0; foreach ($this->results->getResults() as $current): ?>
           <li>
-            <?=$this->record($current)->getListEntry($list, $this->account->isLoggedIn())?>
+            <?=$this->record($current)->getListEntry($list, $this->layout()->account->isLoggedIn())?>
           </li>
         <? endforeach; ?>
       </ul>
