@@ -27,8 +27,8 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Cache\Manager as CacheManager, VuFind\Search\Memory,
-    VuFind\Search\Solr\Params, VuFind\Search\Solr\Results,
+use VuFind\Cache\Manager as CacheManager, VuFind\Db\Table\Search as SearchTable,
+    VuFind\Search\Memory, VuFind\Search\Solr\Params, VuFind\Search\Solr\Results,
     VuFind\Solr\Utils as SolrUtils;
 
 /**
@@ -220,23 +220,21 @@ class SearchController extends AbstractSearch
      */
     public function historyAction()
     {
-        /* TODO
         // Force login if necessary
-        if ($this->_request->getParam('require_login', 'no') !== 'no'
-            && !$this->user
-        ) {
+        $user = $this->getUser();
+        if ($this->params()->fromQuery('require_login', 'no') !== 'no' && !$user) {
             return $this->forceLogin();
         }
 
         // Retrieve search history
-        $search = new VuFind_Model_Db_Search();
+        $search = new SearchTable();
         $searchHistory = $search->getSearches(
-            Zend_Session::getId(),
-            isset($this->user->id) ? $this->user->id : null
+            $this->getServiceLocator()->get('SessionManager')->getId(),
+            is_object($user) ? $user->id : null
         );
 
         // Build arrays of history entries
-        $this->view->saved = $this->view->unsaved = array();
+        $saved = $unsaved = array();
 
         // Loop through the history
         foreach ($searchHistory as $current) {
@@ -244,23 +242,26 @@ class SearchController extends AbstractSearch
 
             // Saved searches
             if ($current->saved == 1) {
-                $this->view->saved[] = $minSO->deminify();
+                $saved[] = $minSO->deminify();
             } else {
                 // All the others...
 
                 // If this was a purge request we don't need this
-                if ($this->_request->getParam('purge') == 'true') {
+                if ($this->params()->fromQuery('purge') == 'true') {
                     $current->delete();
 
                     // We don't want to remember the last search after a purge:
                     Memory::forgetSearch();
                 } else {
                     // Otherwise add to the list
-                    $this->view->unsaved[] = $minSO->deminify();
+                    $unsaved[] = $minSO->deminify();
                 }
             }
         }
-         */
+
+        return $this->createViewModel(
+            array('saved' => $saved, 'unsaved' => $unsaved)
+        );
     }
 
     /**
@@ -491,13 +492,12 @@ class SearchController extends AbstractSearch
     protected function redirectToSavedSearch($id)
     {
         /* TODO
-        $table = new VuFind_Model_Db_Search();
+        $table = new SearchTable();
         $search = $table->getRowById($id);
 
         // Found, make sure the user has the rights to view this search
-        if ($search->session_id == Zend_Session::getId()
-            || $search->user_id == $this->user->id
-        ) {
+        $sessId = $this->getServiceLocator()->get('SessionManager')->getId();
+        if ($search->session_id == $sessId || $search->user_id == $this->user->id) {
             // They do, deminify it to a new object.
             $minSO = unserialize($search->search_object);
             $savedSearch = $minSO->deminify();
