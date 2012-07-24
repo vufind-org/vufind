@@ -44,7 +44,7 @@ class UserResource extends Gateway
      */
     public function __construct()
     {
-        parent::__construct('user_resource');
+        parent::__construct('user_resource', 'VuFind\Db\Row\UserResource');
     }
 
     /**
@@ -106,12 +106,11 @@ class UserResource extends Gateway
     public function createOrUpdateLink($resource_id, $user_id, $list_id,
         $notes = ''
     ) {
-        /* TODO
-        $select = $this->select();
-        $select->where('resource_id = ?', $resource_id)
-            ->where('list_id = ?', $list_id)
-            ->where('user_id = ?', $user_id);
-        $result = $this->fetchRow($select);
+        $params = array(
+            'resource_id' => $resource_id, 'list_id' => $list_id,
+            'user_id' => $user_id
+        );
+        $result = $this->select($params)->current();
 
         // Only create row if it does not already exist:
         if (empty($result)) {
@@ -124,7 +123,6 @@ class UserResource extends Gateway
         // Update the notes:
         $result->notes = $notes;
         $result->save();
-         */
     }
 
     /**
