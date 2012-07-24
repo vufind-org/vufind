@@ -26,8 +26,9 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Row;
-use VuFind\Db\Table\Tags as TagsTable,
-    VuFind\Db\Table\ResourceTags as ResourceTagsTable, Zend\Db\RowGateway\RowGateway;
+use VuFind\Date\Converter as DateConverter, VuFind\Db\Table\Tags as TagsTable,
+    VuFind\Db\Table\ResourceTags as ResourceTagsTable,
+    VuFind\Exception\Date as DateException, Zend\Db\RowGateway\RowGateway;
 
 /**
  * Row Definition for resource
@@ -61,10 +62,8 @@ class Resource extends RowGateway
      */
     public function deleteTags($user, $list_id = null)
     {
-        /* TODO
-        $unlinker = new VuFind_Model_Db_ResourceTags();
+        $unlinker = new ResourceTagsTable();
         $unlinker->destroyLinks($this->id, $user->id, $list_id);
-         */
     }
 
     /**
@@ -129,7 +128,6 @@ class Resource extends RowGateway
      */
     public function assignMetadata($driver)
     {
-        /* TODO
         // Grab title -- we have to have something in this field!
         $this->title = $driver->tryMethod('getSortTitle');
         if (empty($this->title)) {
@@ -145,10 +143,10 @@ class Resource extends RowGateway
         // Try to find a year; if not available, just leave the default null:
         $dates = $driver->tryMethod('getPublicationDates');
         if (isset($dates[0]) && strlen($dates[0]) > 4) {
-            $converter = new VF_Date_Converter();
+            $converter = new DateConverter();
             try {
                 $year = $converter->convertFromDisplayDate('Y', $dates[0]);
-            } catch (VF_Exception_Date $e) {
+            } catch (DateException $e) {
                 // If conversion fails, don't store a date:
                 $year = '';
             }
@@ -160,6 +158,5 @@ class Resource extends RowGateway
         }
 
         return $this;
-         */
     }
 }
