@@ -44,7 +44,7 @@ class ResourceTags extends Gateway
      */
     public function __construct()
     {
-        parent::__construct('resource_tags', 'VuFind\Db\Row\Resource');
+        parent::__construct('resource_tags', 'VuFind\Db\Row\ResourceTags');
     }
 
     /**
@@ -60,24 +60,26 @@ class ResourceTags extends Gateway
     public function createLink($resource_id, $tag_id, $user_id = null,
         $list_id = null
     ) {
-        /* TODO
-        $select = $this->select();
-        $select->where('resource_id = ?', $resource_id)
-            ->where('tag_id = ?', $tag_id);
-        if (!is_null($list_id)) {
-            $select->where('list_id = ?', $list_id);
-        } else {
-            $select->where('list_id is null');
-        }
-        if (!is_null($user_id)) {
-            $select->where('user_id = ?', $user_id);
-        } else {
-            $select->where('user_id is null');
-        }
-        $result = $this->fetchRow($select);
+        $callback = function ($select) use ($resource_id, $tag_id, $user_id,
+            $list_id
+        ) {
+            $select->where->equalTo('resource_id', $resource_id)
+                ->equalTo('tag_id', $tag_id);
+            if (!is_null($list_id)) {
+                $select->where->equalTo('list_id', $list_id);
+            } else {
+                $select->where->isNull('list_id');
+            }
+            if (!is_null($user_id)) {
+                $select->where->equalTo('user_id', $user_id);
+            } else {
+                $select->where->isNull('user_id');
+            }
+        };
+        $result = $this->select($callback)->current();
 
         // Only create row if it does not already exist:
-        if (is_null($result)) {
+        if (empty($result)) {
             $result = $this->createRow();
             $result->resource_id = $resource_id;
             $result->tag_id = $tag_id;
@@ -89,7 +91,6 @@ class ResourceTags extends Gateway
             }
             $result->save();
         }
-         */
     }
 
     /**

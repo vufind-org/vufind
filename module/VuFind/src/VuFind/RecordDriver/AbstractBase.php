@@ -28,6 +28,7 @@
 namespace VuFind\RecordDriver;
 use VuFind\Config\Reader as ConfigReader,
     VuFind\Db\Table\Comments as CommentsTable,
+    VuFind\Db\Table\Resource as ResourceTable,
     VuFind\Db\Table\Tags as TagsTable,
     VuFind\Db\Table\UserResource as UserResourceTable,
     VuFind\Exception\LoginRequired as LoginRequiredException,
@@ -130,14 +131,12 @@ abstract class AbstractBase
      */
     public function addTags($user, $tags)
     {
-        /* TODO
-        $resources = new VuFind_Model_Db_Resource();
+        $resources = new ResourceTable();
         $resource
             = $resources->findResource($this->getUniqueId(), $this->resourceSource);
         foreach (Tags::parse($tags) as $tag) {
             $resource->addTag($tag, $user);
         }
-         */
     }
 
     /**

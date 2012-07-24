@@ -612,10 +612,10 @@ class AjaxController extends AbstractBase
         // empty tag
         try {
             $driver = Record::load(
-                $this->params()->fromQuery('id'),
-                $this->params()->fromQuery('source', 'VuFind')
+                $this->params()->fromPost('id'),
+                $this->params()->fromPost('source', 'VuFind')
             );
-            $tag = $this->params()->fromQuery('tag', '');
+            $tag = $this->params()->fromPost('tag', '');
             if (strlen($tag) > 0) { // don't add empty tags
                 $driver->addTags($user, $tag);
             }

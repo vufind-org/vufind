@@ -59,7 +59,7 @@ class Tags extends Gateway
     public function getByText($tag, $create = true)
     {
         $result = $this->select(array('tag' => $tag))->current();
-        if (is_null($result) && $create) {
+        if (empty($result) && $create) {
             $result = $this->createRow();
             $result->tag = $tag;
             $result->save();

@@ -26,7 +26,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Row;
-use Zend\Db\RowGateway\RowGateway;
+use VuFind\Db\Table\Tags as TagsTable,
+    VuFind\Db\Table\ResourceTags as ResourceTagsTable, Zend\Db\RowGateway\RowGateway;
 
 /**
  * Row Definition for resource
@@ -77,18 +78,16 @@ class Resource extends RowGateway
      */
     public function addTag($tagText, $user, $list_id = null)
     {
-        /* TODO
         $tagText = trim($tagText);
         if (!empty($tagText)) {
-            $tags = new VuFind_Model_Db_Tags();
+            $tags = new TagsTable();
             $tag = $tags->getByText($tagText);
 
-            $linker = new VuFind_Model_Db_ResourceTags();
+            $linker = new ResourceTagsTable();
             $linker->createLink(
                 $this->id, $tag->id, is_object($user) ? $user->id : null, $list_id
             );
         }
-         */
     }
 
     /**
