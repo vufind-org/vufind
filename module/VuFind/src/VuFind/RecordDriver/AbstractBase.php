@@ -155,7 +155,6 @@ abstract class AbstractBase
      */
     public function saveToFavorites($params, $user)
     {
-        /* TODO
         // Validate incoming parameters:
         if (!$user) {
             throw new LoginRequiredException('You must be logged in first');
@@ -164,16 +163,16 @@ abstract class AbstractBase
         // Get or create a list object as needed:
         $listId = isset($params['list']) ? $params['list'] : '';
         if (empty($listId) || $listId == 'NEW') {
-            $list = VuFind_Model_Db_UserList::getNew($user);
+            $list = UserListTable::getNew($user);
             $list->title = Translator::translate('My Favorites');
             $list->save();
         } else {
-            $list = VuFind_Model_Db_UserList::getExisting($listId);
+            $list = UserListTable::getExisting($listId);
             $list->rememberLastUsed(); // handled by save() in other case
         }
 
         // Get or create a resource object as needed:
-        $resourceTable = new VuFind_Model_Db_Resource();
+        $resourceTable = new ResourceTable();
         $resource = $resourceTable->findResource(
             $this->getUniqueId(), $this->resourceSource, true, $this
         );
@@ -184,7 +183,6 @@ abstract class AbstractBase
             isset($params['mytags']) ? Tags::parse(trim($params['mytags'])) : '',
             isset($params['notes']) ? $params['notes'] : ''
         );
-         */
     }
 
     /**

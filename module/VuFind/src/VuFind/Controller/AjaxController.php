@@ -831,10 +831,10 @@ class AjaxController extends AbstractBase
         }
 
         $driver = Record::load(
-            $this->params()->fromQuery('id'),
-            $this->params()->fromQuery('source', 'VuFind')
+            $this->params()->fromPost('id'),
+            $this->params()->fromPost('source', 'VuFind')
         );
-        $driver->saveToFavorites($this->getRequest()->getQuery(), $user);
+        $driver->saveToFavorites($this->getRequest()->getPost()->toArray(), $user);
         return $this->output('Done', self::STATUS_OK);
     }
 

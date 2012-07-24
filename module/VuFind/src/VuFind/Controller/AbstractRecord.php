@@ -27,7 +27,7 @@
  */
 namespace VuFind\Controller;
 use VuFind\Db\Table\Resource as ResourceTable, VuFind\Record,
-    VuFind\Search\ResultScroller;
+    VuFind\Search\ResultScroller, Zend\Session\Container as SessionContainer;
 
 /**
  * VuFind Record Controller
@@ -201,40 +201,38 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * ProcessSave action -- store the results of the Save action.
+     * ProcessSave -- store the results of the Save action.
      *
      * @return void
      */
-    public function processsaveAction()
+    protected function processSave()
     {
-        /* TODO
         // Retrieve user object and force login if necessary:
-        if (!($user = $this->account->isLoggedIn())) {
+        if (!($user = $this->getUser())) {
             return $this->forceLogin();
         }
 
         // Perform the save operation:
-        $this->loadRecord();
-        $this->view->driver->saveToFavorites($this->_request->getParams(), $user);
+        $driver = $this->loadRecord();
+        $driver->saveToFavorites($this->getRequest()->getPost()->toArray(), $user);
 
         // Grab the followup namespace so we know where to send the user next:
-        $followup = new Zend_Session_Namespace($this->searchObject . 'SaveFollowup');
-        if (isset($followup->url) && !empty($followup->url)) {
+        $followup = new SessionContainer($this->searchObject . 'SaveFollowup');
+        $url = isset($followup->url) ? (string)$followup->url : false;
+        if (!empty($url)) {
             // Display a success status message:
-            $this->_helper->flashMessenger->setNamespace('info')
+            $this->flashMessenger()->setNamespace('info')
                 ->addMessage('bulk_save_success');
 
             // Clear followup URL in session -- we're done with it now:
-            $url = $followup->url;
             unset($followup->url);
 
             // Redirect!
-            return $this->_redirect($url, array('prependBase' => false));
+            return $this->redirect()->toUrl($url);
         }
 
         // No followup info found?  Send back to record view:
         return $this->redirectToRecord();
-         */
     }
 
     /**
@@ -245,14 +243,13 @@ class AbstractRecord extends AbstractBase
      */
     public function saveAction()
     {
-        /* TODO
         // Process form submission:
-        if ($this->_request->getParam('submit')) {
-            return $this->_forward('ProcessSave');
+        if ($this->params()->fromPost('submit')) {
+            return $this->processSave();
         }
 
         // Retrieve user object and force login if necessary:
-        if (!($user = $this->account->isLoggedIn())) {
+        if (!($user = $this->getUser())) {
             return $this->forceLogin();
         }
 
@@ -260,41 +257,46 @@ class AbstractRecord extends AbstractBase
         // ProcessSave action (to get back to where we came from after saving).
         // We only save if we don't already have a saved URL; otherwise we
         // might accidentally redirect to the "create new list" screen!
-        $followup = new Zend_Session_Namespace($this->searchObject . 'SaveFollowup');
+        $followup = new SessionContainer($this->searchObject . 'SaveFollowup');
         $followup->url = (isset($followup->url) && !empty($followup->url))
-            ? $followup->url : $this->_request->getServer('HTTP_REFERER');
+            ? $followup->url : $this->getRequest()->getServer()->get('HTTP_REFERER');
 
         // Retrieve the record driver:
-        $this->loadRecord();
+        $driver = $this->loadRecord();
 
         // Find out if the item is already part of any lists; save list info/IDs
         $listIds = array();
         $resources = $user->getSavedData(
-            $this->view->driver->getUniqueId(), null,
-            $this->view->driver->getResourceSource()
+            $driver->getUniqueId(), null, $driver->getResourceSource()
         );
         foreach ($resources as $userResource) {
             $listIds[] = $userResource->list_id;
         }
 
         // Loop through all user lists and sort out containing/non-containing lists
-        $this->view->containingLists = $this->view->nonContainingLists = array();
+        $containingLists = $nonContainingLists = array();
         foreach ($user->getLists() as $list) {
             // Assign list to appropriate array based on whether or not we found
             // it earlier in the list of lists containing the selected record.
             if (in_array($list->id, $listIds)) {
-                $this->view->containingLists[] = array(
+                $containingLists[] = array(
                     'id' => $list->id, 'title' => $list->title
                 );
             } else {
-                $this->view->nonContainingLists[] = array(
+                $nonContainingLists[] = array(
                     'id' => $list->id, 'title' => $list->title
                 );
             }
         }
 
-        $this->render('record/save', null, true);
-         */
+        $view = $this->createViewModel(
+            array(
+                'containingLists' => $containingLists,
+                'nonContainingLists' => $nonContainingLists
+            )
+        );
+        $view->setTemplate('record/save');
+        return $view;
     }
 
     /**

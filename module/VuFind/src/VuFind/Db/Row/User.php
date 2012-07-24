@@ -27,6 +27,7 @@
  */
 namespace VuFind\Db\Row;
 use VuFind\Db\Table\Tags as TagsTable, VuFind\Db\Table\UserList as UserListTable,
+    VuFind\Db\Table\UserResource as UserResourceTable,
     Zend\Db\RowGateway\RowGateway, Zend\Db\Sql\Expression,
     Zend\Db\Sql\Predicate\Predicate;
 
@@ -235,10 +236,8 @@ class User extends RowGateway
      */
     public function getSavedData($resourceId, $listId = null, $source = 'VuFind')
     {
-        /* TODO
-        $table = new VuFind_Model_Db_UserResource();
+        $table = new UserResourceTable();
         return $table->getSavedData($resourceId, $source, $listId, $this->id);
-         */
     }
 
     /**
@@ -273,10 +272,9 @@ class User extends RowGateway
     public function saveResource(
         $resource, $list, $tagArray, $notes, $replaceExisting = true
     ) {
-        /* TODO
         // Create the resource link if it doesn't exist and update the notes in any
         // case:
-        $linkTable = new VuFind_Model_Db_UserResource();
+        $linkTable = new UserResourceTable();
         $linkTable->createOrUpdateLink($resource->id, $this->id, $list->id, $notes);
 
         // If we're replacing existing tags, delete the old ones before adding the
@@ -289,7 +287,6 @@ class User extends RowGateway
         foreach ($tagArray as $tag) {
             $resource->addTag($tag, $this, $list->id);
         }
-         */
     }
 
     /**
