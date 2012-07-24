@@ -29,7 +29,8 @@ namespace VuFind\Db\Row;
 use VuFind\Db\Table\Tags as TagsTable, VuFind\Db\Table\UserList as UserListTable,
     VuFind\Db\Table\UserResource as UserResourceTable,
     Zend\Db\RowGateway\RowGateway, Zend\Db\Sql\Expression,
-    Zend\Db\Sql\Predicate\Predicate;
+    Zend\Db\Sql\Predicate\Predicate, Zend\Db\Sql\Sql,
+    Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
 
 /**
  * Row Definition for user
@@ -63,12 +64,10 @@ class User extends RowGateway
      */
     public function save()
     {
-        /* TODO?
         // Since this object is frequently stored in the session, we should
         // reconnect to the database as part of the save action to prevent
         // exceptions:
-        $this->setTable(new VuFind_Model_Db_User());
-         */
+        $this->sql = new Sql(GlobalAdapterFeature::getStaticAdapter(), $this->table);
         return parent::save();
     }
 
