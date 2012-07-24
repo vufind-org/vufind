@@ -8,11 +8,9 @@
         . $this->transEsc('Login') . '</em>';
 
     // If we're in AJAX mode, load some extra Javascript inline:
-    /* TODO:
-    if ($this->layout()->getLayout() == 'lightbox') {
+    if ($this->layout()->getTemplate() == 'layout/lightbox') {
         echo $this->inlineScript()->appendFile("rc4.js");
     }
-     */
 
     // Convenience variables:
     $account = $this->layout()->account;

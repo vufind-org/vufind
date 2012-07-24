@@ -574,7 +574,7 @@ class AjaxController extends AbstractBase
         $salt = $this->generateSalt();
 
         // HexDecode Password
-        $password = pack('H*', $this->params()->fromQuery('password'));
+        $password = pack('H*', $this->params()->fromPost('password'));
 
         // Decrypt Password
         $password = \VuFind\Crypt\RC4::encrypt($salt, $password);
