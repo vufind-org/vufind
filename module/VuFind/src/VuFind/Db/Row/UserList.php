@@ -26,7 +26,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Row;
-use VuFind\Db\Table\User as UserTable, Zend\Db\RowGateway\RowGateway;
+use VuFind\Db\Table\User as UserTable, Zend\Db\RowGateway\RowGateway,
+    Zend\Session\Container as SessionContainer;
 
 /**
  * Row Definition for user_list
@@ -137,10 +138,8 @@ class UserList extends RowGateway
      */
     public function rememberLastUsed()
     {
-        /* TODO
-        $session = new Zend_Session_Namespace('List');
+        $session = new SessionContainer('List');
         $session->lastUsed = $this->id;
-         */
     }
 
     /**
@@ -150,10 +149,8 @@ class UserList extends RowGateway
      */
     public static function getLastUsed()
     {
-        /* TODO
-        $session = new Zend_Session_Namespace('List');
+        $session = new SessionContainer('List');
         return isset($session->lastUsed) ? $session->lastUsed : null;
-         */
     }
 
     /**
