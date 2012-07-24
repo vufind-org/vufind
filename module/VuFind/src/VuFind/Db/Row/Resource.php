@@ -26,9 +26,12 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Row;
-use VuFind\Date\Converter as DateConverter, VuFind\Db\Table\Tags as TagsTable,
+use VuFind\Date\Converter as DateConverter,
+    VuFind\Db\Table\Comments as CommentsTable, VuFind\Db\Table\Tags as TagsTable,
     VuFind\Db\Table\ResourceTags as ResourceTagsTable,
-    VuFind\Exception\Date as DateException, Zend\Db\RowGateway\RowGateway;
+    VuFind\Exception\Date as DateException,
+    VuFind\Exception\LoginRequired as LoginRequiredException,
+    Zend\Db\RowGateway\RowGateway;
 
 /**
  * Row Definition for resource
@@ -100,14 +103,13 @@ class Resource extends RowGateway
      */
     public function addComment($comment, $user)
     {
-        /* TODO
         if (!isset($user->id)) {
-            throw new VF_Exception_LoginRequired(
+            throw new LoginRequiredException(
                 "Can't add comments without logging in."
             );
         }
 
-        $table = new VuFind_Model_Db_Comments();
+        $table = new CommentsTable();
         $row = $table->createRow();
         $row->user_id = $user->id;
         $row->resource_id = $this->id;
@@ -115,7 +117,6 @@ class Resource extends RowGateway
         $row->created = date('Y-m-d h:i:s');
         $row->save();
         return $row->id;
-         */
     }
 
     /**

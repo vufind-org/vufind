@@ -43,7 +43,7 @@ class Comments extends Gateway
      */
     public function __construct()
     {
-        parent::__construct('comments');
+        parent::__construct('comments', 'VuFind\Db\Row\Comments');
     }
 
     /**
@@ -85,14 +85,13 @@ class Comments extends Gateway
      */
     public function deleteIfOwnedByUser($id, $user)
     {
-        /* TODO
         // User must be object with ID:
         if (!is_object($user) || !isset($user->id)) {
             return false;
         }
 
         // Comment row must exist:
-        $matches = $this->find($id);
+        $matches = $this->select(array('id' => $id));
         if (count($matches) == 0 || !($row = $matches->current())) {
             return false;
         }
@@ -105,6 +104,5 @@ class Comments extends Gateway
         // If we got this far, everything is okay:
         $row->delete();
         return true;
-         */
     }
 }

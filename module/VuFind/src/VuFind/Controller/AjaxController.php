@@ -28,7 +28,8 @@
 namespace VuFind\Controller;
 use VuFind\Cart, VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
-    VuFind\Db\Table\Tags as TagsTable,
+    VuFind\Db\Table\Comments as CommentsTable,
+    VuFind\Db\Table\Resource as ResourceTable, VuFind\Db\Table\Tags as TagsTable,
     VuFind\Exception\Auth as AuthException, VuFind\Export,
     VuFind\Record, VuFind\Translator\Translator;
 
@@ -1087,17 +1088,17 @@ class AjaxController extends AbstractBase
             );
         }
 
-        $id = $this->params()->fromQuery('id');
-        $comment = $this->params()->fromQuery('comment');
+        $id = $this->params()->fromPost('id');
+        $comment = $this->params()->fromPost('comment');
         if (empty($id) || empty($comment)) {
             return $this->output(
                 Translator::translate('An error has occurred'), self::STATUS_ERROR
             );
         }
 
-        $table = new VuFind_Model_Db_Resource();
+        $table = new ResourceTable();
         $resource = $table->findResource(
-            $id, $this->params()->fromQuery('source', 'VuFind')
+            $id, $this->params()->fromPost('source', 'VuFind')
         );
         $id = $resource->addComment($comment, $user);
 
@@ -1120,7 +1121,7 @@ class AjaxController extends AbstractBase
         }
 
         $id = $this->params()->fromQuery('id');
-        $table = new VuFind_Model_Db_Comments();
+        $table = new CommentsTable();
         if (empty($id) || !$table->deleteIfOwnedByUser($id, $user)) {
             return $this->output(
                 Translator::translate('An error has occurred'), self::STATUS_ERROR
@@ -1137,14 +1138,14 @@ class AjaxController extends AbstractBase
      */
     public function getRecordCommentsAsHTML()
     {
-        /* TODO
-        $this->view->driver = Record::load(
+        $driver = Record::load(
             $this->params()->fromQuery('id'),
             $this->params()->fromQuery('source', 'VuFind')
         );
-        $html = $this->getViewRenderer()->render('record/comments-list.phtml');
+        $this->layout()->account = $this->getAuthManager();
+        $html = $this->getViewRenderer()
+            ->render('record/comments-list.phtml', array('driver' => $driver));
         return $this->output($html, self::STATUS_OK);
-         */
     }
 
     /**

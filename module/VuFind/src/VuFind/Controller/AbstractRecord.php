@@ -26,7 +26,8 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Controller;
-use VuFind\Db\Table\Resource as ResourceTable, VuFind\Record,
+use VuFind\Db\Table\Comments as CommentsTable,
+    VuFind\Db\Table\Resource as ResourceTable, VuFind\Record,
     VuFind\Search\ResultScroller, Zend\Session\Container as SessionContainer;
 
 /**
@@ -129,22 +130,20 @@ class AbstractRecord extends AbstractBase
      */
     public function deletecommentAction()
     {
-        /* TODO
         // Force login:
-        if (!($user = $this->account->isLoggedIn())) {
+        if (!($user = $this->getUser())) {
             return $this->forceLogin();
         }
-        $id = $this->_request->getParam('delete');
-        $table = new VuFind_Model_Db_Comments();
+        $id = $this->params()->fromQuery('delete');
+        $table = new CommentsTable();
         if (!is_null($id) && $table->deleteIfOwnedByUser($id, $user)) {
-            $this->_helper->flashMessenger->setNamespace('info')
+            $this->flashMessenger()->setNamespace('info')
                 ->addMessage('delete_comment_success');
         } else {
-            $this->_helper->flashMessenger->setNamespace('error')
+            $this->flashMessenger()->setNamespace('error')
                 ->addMessage('delete_comment_failure');
         }
         return $this->redirectToRecord('', 'UserComments');
-         */
     }
 
     /**
