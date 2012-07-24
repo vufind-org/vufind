@@ -27,7 +27,9 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Config\Reader as ConfigReader, VuFind\Db\Table\Search as SearchTable,
+use VuFind\Config\Reader as ConfigReader,
+    VuFind\Connection\Manager as ConnectionManager,
+    VuFind\Db\Table\Search as SearchTable,
     VuFind\Exception\Auth as AuthException,
     VuFind\Exception\ListPermission as ListPermissionException,
     Zend\Stdlib\Parameters;
@@ -216,10 +218,9 @@ class MyResearchController extends AbstractBase
      */
     public function profileAction()
     {
-        /* TODO:
         // Stop now if the user does not have valid catalog credentials available:
-        if (!($patron = $this->catalogLogin())) {
-            return;
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
         }
 
         // User must be logged in at this point, so we can assume this is non-false:
@@ -234,19 +235,24 @@ class MyResearchController extends AbstractBase
                 ->addMessage('profile_update');
         }
 
+        // Begin building view object:
+        $view = $this->createViewModel();
+
         // Obtain user information from ILS:
-        $catalog = VF_Connection_Manager::connectToCatalog();
-        $this->view->profile = $catalog->getMyProfile($patron);
-        $this->view->profile['home_library'] = $user->home_library;
+        $catalog = ConnectionManager::connectToCatalog();
+        $profile = $catalog->getMyProfile($patron);
+        $profile['home_library'] = $user->home_library;
+        $view->profile = $profile;
         try {
-            $this->view->pickup = $catalog->getPickUpLocations($patron);
-            $this->view->defaultPickupLocation
+            $view->pickup = $catalog->getPickUpLocations($patron);
+            $view->defaultPickupLocation
                 = $catalog->getDefaultPickUpLocation($patron);
         } catch (\Exception $e) {
             // Do nothing; if we're unable to load information about pickup
             // locations, they are not supported and we should ignore them.
         }
-         */
+
+        return $view;
     }
 
     /**
@@ -257,6 +263,7 @@ class MyResearchController extends AbstractBase
     public function catalogloginAction()
     {
         // No special action needed -- just display form
+        return $this->createViewModel();
     }
 
     /**
@@ -702,12 +709,12 @@ class MyResearchController extends AbstractBase
     {
         /* TODO:
         // Stop now if the user does not have valid catalog credentials available:
-        if (!($patron = $this->catalogLogin())) {
-            return;
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
         }
 
         // Connect to the ILS:
-        $catalog = VF_Connection_Manager::connectToCatalog();
+        $catalog = ConnectionManager::connectToCatalog();
 
         // Process cancel requests if necessary:
         $cancelStatus = $catalog->checkFunction('cancelHolds');
@@ -755,12 +762,12 @@ class MyResearchController extends AbstractBase
     {
         /* TODO:
         // Stop now if the user does not have valid catalog credentials available:
-        if (!($patron = $this->catalogLogin())) {
-            return;
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
         }
 
         // Connect to the ILS:
-        $catalog = VF_Connection_Manager::connectToCatalog();
+        $catalog = ConnectionManager::connectToCatalog();
 
         // Get the current renewal status and process renewal form, if necessary:
         $renewStatus = $catalog->checkFunction('Renewals');
@@ -805,12 +812,12 @@ class MyResearchController extends AbstractBase
     {
         /* TODO:
         // Stop now if the user does not have valid catalog credentials available:
-        if (!($patron = $this->catalogLogin())) {
-            return;
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
         }
 
         // Connect to the ILS:
-        $catalog = VF_Connection_Manager::connectToCatalog();
+        $catalog = ConnectionManager::connectToCatalog();
 
         // Get fine details:
         $result = $catalog->getMyFines($patron);

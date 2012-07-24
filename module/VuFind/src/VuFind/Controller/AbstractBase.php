@@ -145,15 +145,14 @@ class AbstractBase extends AbstractActionController
      * of patron data if so, otherwise forwards to appropriate login prompt and
      * returns false.
      *
-     * @return ViewModel|array|bool
+     * @return ViewModel|array
      */
     protected function catalogLogin()
     {
         // First make sure user is logged in to VuFind:
         $account = $this->getAuthManager();
         if ($account->isLoggedIn() == false) {
-            $this->forceLogin();
-            return false;
+            return $this->forceLogin();
         }
 
         // Now check if the user has provided credentials with which to log in:
