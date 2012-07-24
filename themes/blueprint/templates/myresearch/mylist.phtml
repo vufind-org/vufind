@@ -23,7 +23,7 @@
 <div class="<?=$this->layoutClass('mainbody')?>">
   <? if (isset($list)): ?>
     <div class="floatright">
-      <? if ($list->editAllowed()): ?>
+      <? if ($list->editAllowed($account->isLoggedIn())): ?>
         <a href="<?=$this->url('editList', array('id' => $list->id)) ?>" class="edit smallButton listEdit" title="<?=$this->transEsc("edit_list")?>"><?=$this->transEsc("edit_list")?></a>
         <a href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>" class="delete deleteList smallButton" id="deleteList<?=$list->id ?>" title="<?=$this->transEsc("delete_list")?>"><?=$this->transEsc("delete_list")?></a>
       <? endif; ?>

@@ -345,7 +345,7 @@ class MyResearchController extends AbstractBase
         if (!is_null($listID)) {
             // ...Specific List
             $list = VuFind_Model_Db_UserList::getExisting($listID);
-            $list->removeResourcesById(array($idToDelete), $idSource);
+            $list->removeResourcesById($user, array($idToDelete), $idSource);
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage('Item removed from list');
         } else {
@@ -541,7 +541,7 @@ class MyResearchController extends AbstractBase
         // handle errors appropriately:
         if ($this->_request->getParam('submit')) {
             try {
-                $finalId = $list->updateFromRequest($this->_request);
+                $finalId = $list->updateFromRequest($user, $this->_request);
 
                 // If the user is in the process of saving a record, send them back
                 // to the save screen; otherwise, send them back to the list they
@@ -618,7 +618,7 @@ class MyResearchController extends AbstractBase
                 $list = VuFind_Model_Db_UserList::getExisting(
                     $this->_request->getParam('listID')
                 );
-                $list->delete();
+                $list->delete($this->getUser());
 
                 // Success Message
                 $this->flashMessenger()->setNamespace('info')

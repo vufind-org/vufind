@@ -66,7 +66,7 @@ class Favorites extends AbstractPlugin
         if (empty($listId) || $listId == 'NEW') {
             $list = UserListTable::getNew($user);
             $list->title = Translator::translate('My Favorites');
-            $list->save();
+            $list->save($user);
         } else {
             $list = UserListTable::getExisting($listId);
             $list->rememberLastUsed(); // handled by save() in other case
@@ -111,15 +111,17 @@ class Favorites extends AbstractPlugin
             $sorted[$source][] = $id;
         }
 
-        // Both user and list objects have identical removeResourcesById methods,
-        // so we just need to pick an appropriate object based on $listID:
-        $object = !empty($listID)
-            ? UserListTable::getExisting($listID)    // Specific list
-            : $user;                                 // Current user
-
-        // Delete favorites one source at a time:
-        foreach ($sorted as $source => $ids) {
-            $object->removeResourcesById($ids, $source);
+        // Delete favorites one source at a time, using a different object depending
+        // on whether we are working with a list or user favorites.
+        if (empty($listID)) {
+            foreach ($sorted as $source => $ids) {
+                $user->removeResourcesById($ids, $source);
+            }
+        } else {
+            $list = UserListTable::getExisting($listID);
+            foreach ($sorted as $source => $ids) {
+                $list->removeResourcesById($user, $ids, $source);
+            }
         }
     }
 }

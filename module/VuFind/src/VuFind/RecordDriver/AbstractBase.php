@@ -165,7 +165,7 @@ abstract class AbstractBase
         if (empty($listId) || $listId == 'NEW') {
             $list = UserListTable::getNew($user);
             $list->title = Translator::translate('My Favorites');
-            $list->save();
+            $list->save($user);
         } else {
             $list = UserListTable::getExisting($listId);
             $list->rememberLastUsed(); // handled by save() in other case

@@ -894,7 +894,7 @@ class AjaxController extends AbstractBase
 
         try {
             $list = VuFind_Model_Db_UserList::getNew($user);
-            $id = $list->updateFromRequest($this->getRequest()->getQuery());
+            $id = $list->updateFromRequest($user, $this->getRequest()->getQuery());
         } catch (\Exception $e) {
             switch(get_class($e)) {
             case 'VuFind\\Exception\\LoginRequired':

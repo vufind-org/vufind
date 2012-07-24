@@ -63,7 +63,7 @@
 
   <? // Allow editing if a list is selected and edit is allowed OR if no list is selected
      // and a user is logged in (which means we are viewing all of the user's favorites)
-     if ((isset($list) && $list->editAllowed()) || (!isset($list) && $this->user)): ?>
+     if ((isset($list) && $list->editAllowed($this->user)) || (!isset($list) && $this->user)): ?>
     <div class="floatright">
       <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a>
       <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */ 

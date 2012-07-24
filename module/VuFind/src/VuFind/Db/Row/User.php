@@ -322,16 +322,14 @@ class User extends RowGateway
      */
     public function delete()
     {
-        /* TODO
         // Remove all lists owned by the user:
         $lists = $this->getLists();
         foreach ($lists as $current) {
             // The rows returned by getLists() are read-only, so we need to retrieve
             // a new object for each row in order to perform a delete operation:
-            $list = VuFind_Model_Db_UserList::getExisting($current->id);
-            $list->delete(true);
+            $list = UserListTable::getExisting($current->id);
+            $list->delete($this, true);
         }
-         */
 
         // Remove the user itself:
         return parent::delete();

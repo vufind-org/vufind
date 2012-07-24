@@ -49,7 +49,7 @@
 </a>
 <? // Allow editing if a list is selected and edit is allowed OR if no list is selected
    // and a user is logged in (which means we are viewing all of the user's favorites)
-   if ((isset($list) && $list->editAllowed()) || (!isset($list) && $this->user)): ?>
+   if ((isset($list) && $list->editAllowed($this->user)) || (!isset($list) && $this->user)): ?>
      <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
        $deleteUrl = is_null($list_id)
            ? $this->url('myresearch-favorites')

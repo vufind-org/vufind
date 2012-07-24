@@ -26,7 +26,11 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Row;
-use VuFind\Db\Table\User as UserTable, Zend\Db\RowGateway\RowGateway,
+use VuFind\Db\Table\Resource as ResourceTable, VuFind\Db\Table\User as UserTable,
+    VuFind\Db\Table\UserResource as UserResourceTable,
+    VuFind\Exception\ListPermission as ListPermissionException,
+    VuFind\Exception\MissingField as MissingFieldException,
+    Zend\Db\RowGateway\RowGateway,
     Zend\Session\Container as SessionContainer;
 
 /**
@@ -53,18 +57,16 @@ class UserList extends RowGateway
     /**
      * Is the current user allowed to edit this list?
      *
+     * @param \VuFind\Db\Row\User|bool $user Logged-in user (false if none)
+     *
      * @return bool
      */
-    public function editAllowed()
+    public function editAllowed($user)
     {
-        /* TODO
-        $account = VF_Account_Manager::getInstance();
-        $user = $account->isLoggedIn();
         if ($user && $user->id == $this->user_id) {
             return true;
         }
         return false;
-         */
     }
 
     /**
@@ -86,21 +88,21 @@ class UserList extends RowGateway
      * Update and save the list object using a request object -- useful for
      * sharing form processing between multiple actions.
      *
+     * @param \VuFind\Db\Row\User|bool         $user    Logged-in user (false if
+     * none)
      * @param Zend_Controller_Request_Abstract $request Request to process
      *
-     * @return mixed The primary key value(s), as an associative array if the
-     *     key is compound, or a scalar if the key is single-column.
-     * @throws VF_Exception_ListPermission
-     * @throws VF_Exception_MissingField
+     * @return int ID of newly created row
+     * @throws ListPermissionException
+     * @throws MissingFieldException
      */
-    public function updateFromRequest($request)
+    public function updateFromRequest($user, $request)
     {
-        /* TODO
         $this->title = $request->getParam('title');
         $this->description = $request->getParam('desc');
         $this->public = $request->getParam('public');
-        return $this->save();
-         */
+        $this->save($user);
+        return $this->id;
     }
 
     /**
@@ -109,25 +111,25 @@ class UserList extends RowGateway
      * This performs an intelligent insert/update, and reloads the
      * properties with fresh data from the table on success.
      *
+     * @param \VuFind\Db\Row\User|bool $user Logged-in user (false if none)
+     *
      * @return mixed The primary key value(s), as an associative array if the
      *     key is compound, or a scalar if the key is single-column.
-     * @throws VF_Exception_ListPermission
-     * @throws VF_Exception_MissingField
+     * @throws ListPermissionException
+     * @throws MissingFieldException
      */
-    public function save()
+    public function save($user = false)
     {
-        /* TODO
-        if (!$this->editAllowed()) {
-            throw new VF_Exception_ListPermission('list_access_denied');
+        if (!$this->editAllowed($user)) {
+            throw new ListPermissionException('list_access_denied');
         }
         if (empty($this->title)) {
-            throw new VF_Exception_MissingField('list_edit_name_required');
+            throw new MissingFieldException('list_edit_name_required');
         }
 
-        $this->id = parent::save();
+        parent::save();
         $this->rememberLastUsed();
         return $this->id;
-         */
     }
 
     /**
@@ -156,20 +158,20 @@ class UserList extends RowGateway
     /**
      * Given an array of item ids, remove them from all lists
      *
-     * @param array  $ids    IDs to remove from the list
-     * @param string $source Type of resource identified by IDs
+     * @param \VuFind\Db\Row\User|bool $user   Logged-in user (false if none)
+     * @param array                    $ids    IDs to remove from the list
+     * @param string                   $source Type of resource identified by IDs
      *
      * @return void
      */
-    public function removeResourcesById($ids, $source = 'VuFind')
+    public function removeResourcesById($user, $ids, $source = 'VuFind')
     {
-        /* TODO
-        if (!$this->editAllowed()) {
-            throw new VF_Exception_ListPermission('list_access_denied');
+        if (!$this->editAllowed($user)) {
+            throw new ListPermissionException('list_access_denied');
         }
 
         // Retrieve a list of resource IDs:
-        $resourceTable = new VuFind_Model_Db_Resource();
+        $resourceTable = new ResourceTable();
         $resources = $resourceTable->findResources($ids, $source);
 
         $resourceIDs = array();
@@ -178,31 +180,30 @@ class UserList extends RowGateway
         }
 
         // Remove Resource (related tags are also removed implicitly)
-        $userResourceTable = new VuFind_Model_Db_UserResource();
+        $userResourceTable = new UserResourceTable();
         $userResourceTable->destroyLinks($resourceIDs, $this->user_id, $this->id);
-         */
     }
 
     /**
      * Destroy the list.
      *
-     * @param bool $force Should we force the delete without checking permissions?
+     * @param \VuFind\Db\Row\User|bool $user  Logged-in user (false if none)
+     * @param bool                     $force Should we force the delete without
+     * checking permissions?
      *
      * @return int The number of rows deleted.
      */
-    public function delete($force = false)
+    public function delete($user = false, $force = false)
     {
-        /* TODO
-        if (!$force && !$this->editAllowed()) {
-            throw new VF_Exception_ListPermission('list_access_denied');
+        if (!$force && !$this->editAllowed($user)) {
+            throw new ListPermissionException('list_access_denied');
         }
 
         // Remove user_resource and resource_tags rows:
-        $userResource = new VuFind_Model_Db_UserResource();
+        $userResource = new UserResourceTable();
         $userResource->destroyLinks(null, $this->user_id, $this->id);
 
         // Remove the list itself:
         return parent::delete();
-         */
     }
 }
