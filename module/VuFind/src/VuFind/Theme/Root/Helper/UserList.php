@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Theme\Root\Helper;
-use Zend\View\Helper\AbstractHelper;
+use VuFind\Db\Row\UserList as UserListRow, Zend\View\Helper\AbstractHelper;
 
 /**
  * List view helper
@@ -46,7 +46,6 @@ class UserList extends AbstractHelper
      */
     public function lastUsed()
     {
-        // TODO
-        return VuFind_Model_Db_UserListRow::getLastUsed();
+        return UserListRow::getLastUsed();
     }
 }
