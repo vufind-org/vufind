@@ -27,7 +27,8 @@
  */
 namespace VuFind\Db\Table;
 use VuFind\Exception\LoginRequired as LoginRequiredException,
-    VuFind\Exception\RecordMissing as RecordMissingException;
+    VuFind\Exception\RecordMissing as RecordMissingException,
+    Zend\Db\Sql\Expression;
 
 /**
  * Table Definition for user_list
@@ -102,30 +103,31 @@ class UserList extends Gateway
     public function getListsContainingResource($resourceId, $source = 'VuFind',
         $userId = null
     ) {
-        /* TODO
         // Set up base query:
-        $select = $this->select();
-        $select->setIntegrityCheck(false)   // allow join
-            ->distinct()
-            ->from(array('ul' => $this->_name), 'ul.*')
-            ->join(
-                array('ur' => 'user_resource'),
-                'ur.list_id = ul.id',
+        $callback = function ($select) use ($resourceId, $source, $userId) {
+            $select->columns(
+                array(
+                    new Expression(
+                        'DISTINCT(?)', array('user_list.id'),
+                        array(Expression::TYPE_IDENTIFIER)
+                    ), '*'
+                )
+            );
+            $select->join(
+                array('ur' => 'user_resource'), 'ur.list_id = user_list.id',
                 array()
-            )
-            ->join(
-                array('r' => 'resource'), 'r.id = ur.resource_id',
-                array()
-            )
-            ->where('r.source = ?', $source)
-            ->where('r.record_id = ?', $resourceId)
-            ->order(array('ul.title'));
+            );
+            $select->join(
+                array('r' => 'resource'), 'r.id = ur.resource_id', array()
+            );
+            $select->where->equalTo('r.source', $source)
+                ->equalTo('r.record_id', $resourceId);
+            $select->order(array('title'));
 
-        if (!is_null($userId)) {
-            $select->where('ur.user_id = ?', $userId);
-        }
-
-        return $this->fetchAll($select);
-         */
+            if (!is_null($userId)) {
+                $select->where->equalTo('ur.user_id', $userId);
+            }
+        };
+        return $this->select($callback);
     }
 }

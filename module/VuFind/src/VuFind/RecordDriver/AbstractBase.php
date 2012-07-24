@@ -30,6 +30,7 @@ use VuFind\Config\Reader as ConfigReader,
     VuFind\Db\Table\Comments as CommentsTable,
     VuFind\Db\Table\Resource as ResourceTable,
     VuFind\Db\Table\Tags as TagsTable,
+    VuFind\Db\Table\UserList as UserListTable,
     VuFind\Db\Table\UserResource as UserResourceTable,
     VuFind\Exception\LoginRequired as LoginRequiredException,
     VuFind\Tags, VuFind\Translator\Translator,
@@ -218,12 +219,10 @@ abstract class AbstractBase
      */
     public function getContainingLists($user_id = null)
     {
-        /* TODO
-        $table = new VuFind_Model_Db_UserList();
+        $table = new UserListTable();
         return $table->getListsContainingResource(
             $this->getUniqueId(), $this->resourceSource, $user_id
         );
-         */
     }
 
     /**
