@@ -78,7 +78,7 @@ class Search extends Gateway
         $callback = function ($select) use ($sid, $uid) {
             $select->where->equalTo('session_id', $sid);
             if ($uid != null) {
-                $select->where->equalTo('user_id', $uid);
+                $select->where->OR->equalTo('user_id', $uid);
             }
             $select->order('id');
         };
@@ -138,14 +138,12 @@ class Search extends Gateway
      */
     public function setSavedFlag($id, $saved, $user_id = false)
     {
-        /* TODO
         $row = $this->getRowById($id);
         $row->saved = $saved ? 1 : 0;
         if ($user_id !== false) {
             $row->user_id = $user_id;
         }
         $row->save();
-         */
     }
 
     /**

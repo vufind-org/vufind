@@ -483,45 +483,6 @@ class SearchController extends AbstractSearch
     }
 
     /**
-     * Given a saved search ID, redirect the user to the appropriate place.
-     *
-     * @param int $id ID from search history
-     *
-     * @return void
-     */
-    protected function redirectToSavedSearch($id)
-    {
-        /* TODO
-        $table = new SearchTable();
-        $search = $table->getRowById($id);
-
-        // Found, make sure the user has the rights to view this search
-        $sessId = $this->getServiceLocator()->get('SessionManager')->getId();
-        if ($search->session_id == $sessId || $search->user_id == $this->user->id) {
-            // They do, deminify it to a new object.
-            $minSO = unserialize($search->search_object);
-            $savedSearch = $minSO->deminify();
-
-            // Now redirect to the URL associated with the saved search; this
-            // simplifies problems caused by mixing different classes of search
-            // object, and it also prevents the user from ever landing on a
-            // "?saved=xxxx" URL, which may not persist beyond the current session.
-            // (We want all searches to be persistent and bookmarkable).
-            $details = $savedSearch->getSearchAction();
-            $url = '/' . $details['controller'] . '/' . $details['action'];
-            $url .= $savedSearch->getUrl()->getParams(false);
-            return $this->_redirect($url);
-        } else {
-            // They don't
-            // TODO : Error handling -
-            //    User is trying to view a saved search from another session
-            //    (deliberate or expired) or associated with another user.
-            throw new Exception("Attempt to access invalid search ID");
-        }
-         */
-    }
-
-    /**
      * Return a Search Results object containing advanced facet information.  This
      * data may come from the cache, and it is currently shared between the Home
      * page and the Advanced search screen.

@@ -27,7 +27,8 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Config\Reader as ConfigReader, VuFind\Exception\Auth as AuthException,
+use VuFind\Config\Reader as ConfigReader, VuFind\Db\Table\Search as SearchTable,
+    VuFind\Exception\Auth as AuthException,
     VuFind\Exception\ListPermission as ListPermissionException,
     Zend\Stdlib\Parameters;
 
@@ -177,14 +178,13 @@ class MyResearchController extends AbstractBase
      */
     public function savesearchAction()
     {
-        /* TODO:
-        $user = $this->getAuthManager()->isLoggedIn();
+        $user = $this->getUser();
         if ($user == false) {
             return $this->forceLogin();
         }
 
         // Check for the save / delete parameters and process them appropriately:
-        $search = new VuFind_Model_Db_Search();
+        $search = new SearchTable();
         if (($id = $this->params()->fromQuery('save', false)) !== false) {
             $search->setSavedFlag($id, true, $user->id);
             $this->flashMessenger()->setNamespace('info')
@@ -199,14 +199,14 @@ class MyResearchController extends AbstractBase
 
         // Forward to the appropriate place:
         if ($this->params()->fromQuery('mode') == 'history') {
-            return $this->_redirect('/Search/History');
+            return $this->redirect()->toRoute('search-history');
         } else {
             // Forward to the Search/Results action with the "saved" parameter set;
             // this will in turn redirect the user to the appropriate results screen.
             $this->getRequest()->getQuery()->set('saved', $id);
-            return $this->_forward('Results', 'Search');
+            return $this->forward()
+                ->dispatch('Search', array('action' => 'Results'));
         }
-         */
     }
 
     /**
