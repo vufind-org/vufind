@@ -6,7 +6,7 @@
   <?=$this->mobileMenu()->header()?>
   <div data-role="content">
     <h3><?=$this->transEsc("add_favorite_prefix") ?> <?=$this->escapeHtml($this->driver->getBreadcrumb())?> <?=$this->transEsc("add_favorite_suffix") ?></h3>
-    <form method="get" name="saveRecord" data-ajax="false">
+    <form method="post" name="saveRecord" data-ajax="false">
       <input type="hidden" name="submit" value="1" />
       <input type="hidden" name="id" value="<?=$this->escapeHtml($this->driver->getUniqueId()) ?>" />
       <input type="hidden" name="source" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>" />
