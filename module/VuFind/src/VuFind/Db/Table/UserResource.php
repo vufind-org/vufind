@@ -114,7 +114,7 @@ class UserResource extends Gateway
         $result = $this->fetchRow($select);
 
         // Only create row if it does not already exist:
-        if (is_null($result)) {
+        if (empty($result)) {
             $result = $this->createRow();
             $result->resource_id = $resource_id;
             $result->list_id = $list_id;

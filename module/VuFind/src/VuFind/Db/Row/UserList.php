@@ -75,7 +75,7 @@ class UserList extends RowGateway
     {
         $table = new UserTable();
         $user = $table->select(array('id' => $this->user_id))->current();
-        if (is_null($user)) {
+        if (empty($user)) {
             return array();
         }
         return $user->getTags(null, $this->id);

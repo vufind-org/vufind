@@ -84,7 +84,7 @@ class UserList extends Gateway
         $class = get_called_class();
         $table = new $class();
         $result = $table->select(array('id' => $id))->current();
-        if (is_null($result)) {
+        if (empty($result)) {
             throw new RecordMissingException('Cannot load list ' . $id);
         }
         return $result;

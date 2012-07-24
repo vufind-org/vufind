@@ -71,7 +71,7 @@ class Resource extends Gateway
         $result = $select->current();
 
         // Create row if it does not already exist and creation is enabled:
-        if (is_null($result) && $create) {
+        if (empty($result) && $create) {
             $result = $this->createRow();
             $result->record_id = $id;
             $result->source = $source;
