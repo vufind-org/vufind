@@ -96,7 +96,7 @@ class ChangeTracker extends Gateway
     {
         $row = $this->retrieve($core, $id);
         if (empty($row)) {
-            $row = clone($this->getResultSetPrototype()->getArrayObjectPrototype());
+            $row = $this->createRow();
             $row->core = $core;
             $row->id = $id;
             $row->first_indexed = $row->last_indexed = date($this->dateFormat);

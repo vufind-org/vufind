@@ -72,8 +72,7 @@ class Resource extends Gateway
 
         // Create row if it does not already exist and creation is enabled:
         if (is_null($result) && $create) {
-            $result
-                = clone($this->getResultSetPrototype()->getArrayObjectPrototype());
+            $result = $this->createRow();
             $result->record_id = $id;
             $result->source = $source;
 

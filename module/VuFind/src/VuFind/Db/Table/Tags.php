@@ -60,8 +60,7 @@ class Tags extends Gateway
     {
         $result = $this->select(array('tag' => $tag))->current();
         if (is_null($result) && $create) {
-            $result
-                = clone($this->getResultSetPrototype()->getArrayObjectPrototype());
+            $result = $this->createRow();
             $result->tag = $tag;
             $result->save();
         }

@@ -59,7 +59,7 @@ class User extends Gateway
     {
         $row = $this->select(array('username' => $username))->current();
         if ($create && empty($row)) {
-            $row = clone($this->getResultSetPrototype()->getArrayObjectPrototype());
+            $row = $this->createRow();
             $row->username = $username;
             $row->created = date('Y-m-d h:i:s');
         }

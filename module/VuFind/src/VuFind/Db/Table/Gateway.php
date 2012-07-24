@@ -60,4 +60,14 @@ class Gateway extends AbstractTableGateway
                 ->setArrayObjectPrototype(new $rowClass($this->getAdapter()));
         }
     }
+
+    /**
+     * Create a new row.
+     *
+     * @return object
+     */
+    public function createRow()
+    {
+        return clone($this->getResultSetPrototype()->getArrayObjectPrototype());
+    }
 }

@@ -84,7 +84,7 @@ class OaiResumption extends Gateway
      */
     public function saveToken($params, $expire)
     {
-        $row = clone($this->getResultSetPrototype()->getArrayObjectPrototype());
+        $row = $this->createRow();
         $row->saveParams($params);
         $row->expires = date('Y-m-d H:i:s', $expire);
         $row->save();
