@@ -183,7 +183,7 @@ class TitleHolds
      * @param array $data     An array of item data
      * @param array $HMACKeys An array of keys to hash
      *
-     * @return string A url link (with HMAC key)
+     * @return array          Details for generating URL
      */
     protected function getHoldDetails($data, $HMACKeys)
     {
@@ -199,14 +199,13 @@ class TitleHolds
         }
 
         //Add HMAC
-        $queryString[] = "hashKey=" . $HMACkey;
+        $queryString[] = "hashKey=" . urlencode($HMACkey);
+        $queryString = implode('&', $queryString);
 
         // Build Params
-        $router = Zend_Controller_Front::getInstance()->getRouter();
-        $base = $router->assemble(
-            array('id' => $data['id'], 'action' => 'Hold'), 'record', true,
-            false
+        return array(
+            'action' => 'Hold', 'record' => $data['id'], 'query' => $queryString,
+            'anchor' => '#tabnav'
         );
-        return $base . "?" . implode("&", $queryString) . "#tabnav";
     }
 }

@@ -313,7 +313,7 @@ class Holds
      * @param array $holdDetails An array of item data
      * @param array $HMACKeys    An array of keys to hash
      *
-     * @return string A url link (with HMAC key)
+     * @return array             Details for generating URL
      */
     protected function getHoldDetails($holdDetails, $HMACKeys)
     {
@@ -329,16 +329,14 @@ class Holds
         }
 
         //Add HMAC
-        $queryString[] = "hashKey=" . $HMACkey;
+        $queryString[] = "hashKey=" . urlencode($HMACkey);
+        $queryString = implode('&', $queryString);
 
         // Build Params
-        $router = Zend_Controller_Front::getInstance()->getRouter();
-        $urlParams = $router->assemble(
-            array('id' => $holdDetails['id'], 'action' => 'Hold'), 'record', true,
-            false
+        return array(
+            'action' => 'Hold', 'record' => $holdDetails['id'],
+            'query' => $queryString, 'anchor' => "#tabnav"
         );
-        $urlParams .= "?" . implode("&", $queryString);
-        return $urlParams."#tabnav";
     }
 
     /**
@@ -346,15 +344,13 @@ class Holds
      *
      * @param array $holdDetails An array of item data
      *
-     * @return string A url link
+     * @return array             Details for generating URL
      */
     protected function getBlockedDetails($holdDetails)
     {
         // Build Params
-        $router = Zend_Controller_Front::getInstance()->getRouter();
-        return $router->assemble(
-            array('id' => $holdDetails['id'], 'action' => 'BlockedHold'), 'record',
-            true, false
+        return array(
+            'action' => 'BlockedHold', 'record' => $holdDetails['id']
         );
     }
 

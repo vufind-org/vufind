@@ -33,7 +33,7 @@
   <? endif; ?>
 <? endif; ?>
 <? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold', array($this->layout()->account)); if (!empty($holdingTitleHold)): ?>
-    <a rel="external" class="holdPlace" href="<?=$this->escapeHtml(array_shift(explode('#', $holdingTitleHold)))?>"><?=$this->transEsc('title_hold_place')?></a>
+    <a rel="external" class="holdPlace" href="<?=$this->recordLink()->getHoldUrl($holdingTitleHold, false)?>"><?=$this->transEsc('title_hold_place')?></a>
 <? endif; ?>
 <? foreach ($holdings as $location => $holding): ?>
 <h4><?=$this->transEsc($location)?></h4>
@@ -80,7 +80,7 @@
                <span class="available"><?=$this->transEsc("Available")?></span>
               <? if (isset($row['link']) && $row['link']): ?>
                 <br />
-                <a rel="external" class="holdPlace<?=$check ? ' checkRequest' : ''?>" href="<?=$this->escapeHtml(array_shift(explode('#', $row['link'])))?>"><span><?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></span></a>
+                <a rel="external" class="holdPlace<?=$check ? ' checkRequest' : ''?>" href="<?=$this->recordLink()->getHoldUrl($row['link'], false)?>"><span><?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></span></a>
               <? endif; ?>
             <? else: ?>
               <? /* Begin Unavailable Items (Recalls) */ ?>
@@ -94,7 +94,7 @@
               <? endif; ?>
               <? if (isset($row['link']) && $row['link']): ?>
                 <br />
-                <a rel="external" class="holdPlace<?=$check ? ' checkRequest' : ''?>" href="<?=$this->escapeHtml(array_shift(explode('#', $row['link'])))?>"><span><?=$this->transEsc($check ? "Check Recall" : "Recall This")?></span></a>
+                <a rel="external" class="holdPlace<?=$check ? ' checkRequest' : ''?>" href="<?=$this->recordLink()->getHoldUrl($row['link'], false)?>"><span><?=$this->transEsc($check ? "Check Recall" : "Recall This")?></span></a>
               <? endif; ?>
             <? endif; ?>
           <? endif; ?>

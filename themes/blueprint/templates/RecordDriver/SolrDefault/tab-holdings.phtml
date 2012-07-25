@@ -33,7 +33,7 @@
   <? endif; ?>
 <? endif; ?>
 <? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold', array($this->layout()->account)); if (!empty($holdingTitleHold)): ?>
-    <a class="holdPlace" href="<?=$this->escapeHtml($holdingTitleHold)?>"><?=$this->transEsc('title_hold_place')?></a>
+    <a class="holdPlace" href="<?=$this->recordLink()->getHoldUrl($holdingTitleHold)?>"><?=$this->transEsc('title_hold_place')?></a>
 <? endif; ?>
 <? if (!empty($urls) || $openUrl): ?>
   <h3><?=$this->transEsc("Internet")?></h3>
@@ -89,7 +89,7 @@
               <div>
                <span class="available"><?=$this->transEsc("Available")?></span>
               <? if (isset($row['link']) && $row['link']): ?>
-                <a class="holdPlace<?=$check ? ' checkRequest' : ''?>" href="<?=$this->escapeHtml($row['link'])?>"><span><?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></span></a>
+                <a class="holdPlace<?=$check ? ' checkRequest' : ''?>" href="<?=$this->recordLink()->getHoldUrl($row['link'])?>"><span><?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></span></a>
               <? endif; ?>
               </div>
             <? else: ?>
@@ -104,7 +104,7 @@
                 <span><?=$this->transEsc("Requests")?>: <?=$this->escapeHtml($row['requests_placed'])?></span>
               <? endif; ?>
               <? if (isset($row['link']) && $row['link']): ?>
-                <a class="holdPlace<?=$check ? ' checkRequest' : ''?>" href="<?=$this->escapeHtml($row['link'])?>"><span><?=$this->transEsc($check ? "Check Recall" : "Recall This")?></span></a>
+                <a class="holdPlace<?=$check ? ' checkRequest' : ''?>" href="<?=$this->recordLink()->getHoldUrl($row['link'])?>"><span><?=$this->transEsc($check ? "Check Recall" : "Recall This")?></span></a>
               <? endif; ?>
               </div>
             <? endif; ?>

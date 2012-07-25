@@ -87,6 +87,40 @@ class RecordLink extends AbstractHelper
     }
 
     /**
+     * Given a string or array of parts, build a hold URL.
+     *
+     * @param string|array $url           URL to process
+     * @param bool         $includeAnchor Should we include an anchor?
+     *
+     * @return string
+     */
+    public function getHoldUrl($url, $includeAnchor = true)
+    {
+        if (is_array($url)) {
+            // Assemble URL string from array parts:
+            $urlHelper = $this->getView()->plugin('url');
+            $finalUrl
+                = $this->getActionUrl('VuFind|' . $url['record'], $url['action']);
+            if (isset($url['query'])) {
+                $finalUrl .= '?' . $url['query'];
+            }
+            if (isset($url['anchor']) && $includeAnchor) {
+                $finalUrl .= $url['anchor'];
+            }
+        } else {
+            // If URL is already a string but we don't want anchors, strip
+            // the anchor now:
+            if (!$includeAnchor) {
+                list($finalUrl) = explode('#', $url);
+            } else {
+                $finalUrl = $url;
+            }
+        }
+        // Make sure everything is properly HTML encoded:
+        $escaper = $this->getView()->plugin('escapehtml');
+        return $escaper($finalUrl);
+    }
+    /**
      * Given a record driver, get a URL for that record.
      *
      * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
