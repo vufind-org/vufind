@@ -455,46 +455,63 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Process a request to delete a favorite item.
+     *
+     * @param string $id     ID of record to delete
+     * @param string $source Source of record to delete
+     *
+     * @return object
+     */
+    protected function processDeleteFavorite($id, $source)
+    {
+        // If the user already confirmed the operation, perform the delete now:
+        if ($this->params()->fromPost('confirm')) {
+            return $this->forward()
+                ->dispatch('MyResearch', array('action' => 'DeleteFavorite'));
+        }
+
+        // If we got this far, we must display a confirmation message...
+
+        // Normally list ID is found in the route match, but in lightbox context it
+        // may sometimes be a GET parameter.  We must cover both cases.
+        $listID = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
+        if (empty($listID)) {
+            $url = $this->url()->fromRoute('myresearch-favorites');
+        } else {
+            $url = $this->url()->fromRoute('userList', array('id' => $listID));
+        }
+        $this->getRequest()->getQuery()->set('confirmAction', $url);
+        $this->getRequest()->getQuery()->set('cancelAction', $url);
+        $this->getRequest()->getQuery()->set(
+            'extraFields', array('delete' => $id, 'source' => $source)
+        );
+        $this->getRequest()->getQuery()
+            ->set('confirmTitle', 'confirm_delete_brief');
+        $this->getRequest()->getQuery()->set('confirmMessage', "confirm_delete");
+        return $this->forward()
+            ->dispatch('MyResearch', array('action' => 'Confirm'));
+    }
+
+    /**
      * Send user's saved favorites from a particular list to the view
      *
      * @return void (forward)
      */
     public function mylistAction()
     {
-        // Delete user_resource from...
-        if ($this->params()->fromPost('delete')) {
-            if ($this->params()->fromPost('confirm')) {
-                return $this->forward()
-                    ->dispatch('MyResearch', array('action' => 'DeleteFavorite'));
-            }
-
-            /* TODO:
-            // If we got this far, we must display a confirmation message
-            $router = Zend_Controller_Front::getInstance()->getRouter();
-            $listID = $this->_request->getParam('id');
-            if (empty($listID)) {
-                $url = $router->assemble(
-                    array('controller' => 'MyResearch', 'action' => 'Favorites'),
-                    'default', true
-                );
-            } else {
-                $url = $router->assemble(array('id' => $listID), 'userList', true);
-            }
-            $this->_request->setParam('confirmAction', $url);
-            $this->_request->setParam('cancelAction', $url);
-            $this->_request->setParam(
-                'extraFields',
-                array(
-                    'delete' => $this->_request->getParam('delete'),
-                    'source' => $this->_request->getParam('source')
-                )
+        // Check for "delete item" request; parameter may be in GET or POST depending
+        // on calling context.
+        $deleteId = $this->params()->fromPost(
+            'delete', $this->params()->fromQuery('delete')
+        );
+        if ($deleteId) {
+            $deleteSource = $this->params()->fromPost(
+                'source', $this->params()->fromQuery('source')
             );
-            $this->_request->setParam('confirmTitle', 'confirm_delete_brief');
-            $this->_request->setParam('confirmMessage', "confirm_delete");
-            return $this->_forward('Confirm');
-             */
+            return $this->processDeleteFavorite($deleteId, $deleteSource);
         }
 
+        // If we got this far, we just need to display the favorites:
         try {
             $params = new \VuFind\Search\Favorites\Params();
             $params->setAuthManager($this->getAuthManager());
@@ -599,16 +616,15 @@ class MyResearchController extends AbstractBase
      */
     public function confirmAction()
     {
-        /* TODO:
-        $this->view->title   = $this->_request->getParam('confirmTitle');
-        $this->view->message = $this->_request->getParam('confirmMessage');
-        // arrays controller=>,action=>
-        $this->view->confirm = $this->_request->getParam('confirmAction');
-        $this->view->cancel  = $this->_request->getParam('cancelAction');
-        // extra data
-        // confirmUri/cancelUri to add / separated params to the urls
-        $this->view->extras  = $this->_request->getParam('extraFields');
-         */
+        return $this->createViewModel(
+            array(
+                'title' => $this->params()->fromQuery('confirmTitle'),
+                'message' => $this->params()->fromQuery('confirmMessage'),
+                'confirm' => $this->params()->fromQuery('confirmAction'),
+                'cancel' => $this->params()->fromQuery('cancelAction'),
+                'extras' => $this->params()->fromQuery('extraFields')
+            )
+        );
     }
 
     /**
