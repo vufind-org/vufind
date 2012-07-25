@@ -157,7 +157,7 @@ $staticRoutes = array(
 // Build record routes
 foreach ($recordRoutes as $routeBase => $controller) {
     // catch-all "tab" route:
-    $config['router']['routes'][$routeBase . '-tab'] = array(
+    $config['router']['routes'][$routeBase] = array(
         'type'    => 'Zend\Mvc\Router\Http\Segment',
         'options' => array(
             'route'    => '/' . $controller . '/[:id[/:tab]]',

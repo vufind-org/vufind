@@ -78,7 +78,7 @@ class Record
      */
     public static function getActionRouteDetails($driver, $action)
     {
-        return static::getRouteDetails($driver, strtolower($action));
+        return static::getRouteDetails($driver, '-' . strtolower($action));
     }
 
     /**
@@ -93,8 +93,7 @@ class Record
     public static function getTabRouteDetails($driver, $tab = null)
     {
         return static::getRouteDetails(
-            $driver, 'tab',
-            empty($tab) ? array() : array('tab' => $tab)
+            $driver, '', empty($tab) ? array() : array('tab' => $tab)
         );
     }
 
@@ -141,7 +140,7 @@ class Record
             ? 'record' : strtolower($source . 'record');
 
         return array(
-            'params' => $params, 'route' => $routeBase . '-' . $routeSuffix
+            'params' => $params, 'route' => $routeBase . $routeSuffix
         );
     }
 
