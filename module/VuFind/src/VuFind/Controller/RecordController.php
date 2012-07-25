@@ -26,7 +26,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Config\Reader as ConfigReader;
+use VuFind\Config\Reader as ConfigReader,
+    VuFind\Connection\Manager as ConnectionManager;
 
 /**
  * Record Controller
@@ -74,60 +75,46 @@ class RecordController extends AbstractRecord
      */
     public function holdAction()
     {
-        /* TODO
         // If we're not supposed to be here, give up now!
-        $catalog = VF_Connection_Manager::connectToCatalog();
+        $catalog = ConnectionManager::connectToCatalog();
         $checkHolds = $catalog->checkFunction("Holds");
         if (!$checkHolds) {
-            return $this->_forward('Home');
+            return $this->forward()->dispatch('Record', array('action' => 'Home'));
         }
 
         // Stop now if the user does not have valid catalog credentials available:
-        if (!($patron = $this->catalogLogin())) {
-            return;
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
         }
 
         // Do we have valid information?
         // Sets $this->logonURL and $this->gatheredDetails
-        $gatheredDetails = $this->_helper->holds->validateRequest(
-            $this->_request, $checkHolds['HMACKeys']
-        );
+        $gatheredDetails = $this->holds()->validateRequest($checkHolds['HMACKeys']);
         if (!$gatheredDetails) {
             return $this->redirectToRecord();
         }
 
         // Block invalid requests:
-        $this->loadRecord();
+        $driver = $this->loadRecord();
         if (!$catalog->checkRequestIsValid(
-            $this->view->driver->getUniqueID(), $gatheredDetails, $patron
+            $driver->getUniqueID(), $gatheredDetails, $patron
         )) {
             return $this->blockedholdAction();
         }
 
         // Send various values to the view so we can build the form:
-        $this->view->gatheredDetails = $gatheredDetails;
-        $this->view->pickup = $catalog->getPickUpLocations(
-            $patron, $gatheredDetails
-        );
-        $this->view->defaultPickup = $catalog->getDefaultPickUpLocation(
-            $patron, $gatheredDetails
-        );
-        $this->view->homeLibrary
-            = VF_Account_Manager::getInstance()->isLoggedIn()->home_library;
-        $this->view->extraHoldFields = isset($checkHolds['extraHoldFields'])
+        $pickup = $catalog->getPickUpLocations($patron, $gatheredDetails);
+        $extraHoldFields = isset($checkHolds['extraHoldFields'])
             ? explode(":", $checkHolds['extraHoldFields']) : array();
-        $this->view->defaultRequiredDate
-            = $this->_helper->holds->getDefaultRequiredDate($checkHolds);
 
         // Process form submissions if necessary:
-        if (!is_null($this->_request->getParam('placeHold'))) {
+        if (!is_null($this->params()->fromPost('placeHold'))) {
             // If the form contained a pickup location, make sure that
             // the value has not been tampered with:
-            if (!$this->_helper->holds->validatePickUpInput(
-                $gatheredDetails['pickUpLocation'], $this->view->extraHoldFields,
-                $this->view->pickup
+            if (!$this->holds()->validatePickUpInput(
+                $gatheredDetails['pickUpLocation'], $extraHoldFields, $pickup
             )) {
-                $this->_helper->flashMessenger->setNamespace('error')
+                $this->flashMessenger()->setNamespace('error')
                     ->addMessage('error_inconsistent_parameters');
             } else {
                 // If we made it this far, we're ready to place the hold;
@@ -142,23 +129,37 @@ class RecordController extends AbstractRecord
 
                 // Success: Go to Display Holds
                 if (isset($results['success']) && $results['success'] == true) {
-                    $this->_helper->flashMessenger->setNamespace('info')
+                    $this->flashMessenger()->setNamespace('info')
                         ->addMessage('hold_place_success');
-                    return $this->_redirect('/MyResearch/Holds');
+                    return $this->redirect()->toRoute('myresearch-holds');
                 } else {
                     // Failure: use flash messenger to display messages, stay on
                     // the current form.
                     if (isset($results['status'])) {
-                        $this->_helper->flashMessenger->setNamespace('error')
+                        $this->flashMessenger()->setNamespace('error')
                             ->addMessage($results['status']);
                     }
                     if (isset($results['sysMessage'])) {
-                        $this->_helper->flashMessenger->setNamespace('error')
+                        $this->flashMessenger()->setNamespace('error')
                             ->addMessage($results['sysMessage']);
                     }
                 }
             }
         }
-         */
+
+        return $this->createViewModel(
+            array(
+                'gatheredDetails' => $gatheredDetails,
+                'pickup' => $pickup,
+                'defaultPickup' => $catalog->getDefaultPickUpLocation(
+                    $patron, $gatheredDetails
+                ),
+                'homeLibrary' => $this->getUser()->home_library,
+                'extraHoldFields' => $extraHoldFields,
+                'defaultRequiredDate' => $this->holds()->getDefaultRequiredDate(
+                    $checkHolds
+                )
+            )
+        );
     }
 }

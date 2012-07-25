@@ -166,20 +166,22 @@ class Holds extends AbstractPlugin
      * Method for validating contents of a "place hold" request; returns an array of
      * collected details if request is valid, otherwise returns false.
      *
-     * @param Zend_Controller_Request_Abstract $request  Request object
-     * @param array                            $linkData An array of keys to check
+     * @param array $linkData An array of keys to check
      *
      * @return boolean|array
      */
-    public function validateRequest($request, $linkData)
+    public function validateRequest($linkData)
     {
+        $controller = $this->getController();
+        $params = $controller->params();
+
         $keyValueArray = array();
         foreach ($linkData as $details) {
-            $keyValueArray[$details] = $request->getParam($details);
+            $keyValueArray[$details] = $params->fromQuery($details);
         }
         $hashKey = HMAC::generate($linkData, $keyValueArray);
 
-        if ($request->getParam('hashKey') != $hashKey) {
+        if ($params->fromQuery('hashKey') != $hashKey) {
             return false;
         }
 
@@ -189,11 +191,11 @@ class Holds extends AbstractPlugin
         // FIRST and then override it with GET values in order to ensure that
         // the user doesn't bypass the hashkey verification by manipulating POST
         // values.
-        $gatheredDetails = $request->getPost('gatheredDetails', array());
+        $gatheredDetails = $params->fromPost('gatheredDetails', array());
 
         // Make sure the bib ID is included, even if it's not loaded as part of
         // the validation loop below.
-        $gatheredDetails['id'] = $request->getParam('id');
+        $gatheredDetails['id'] = $params->fromRoute('id');
 
         // Get Values Passed from holdings.php
         $gatheredDetails += $keyValueArray;
