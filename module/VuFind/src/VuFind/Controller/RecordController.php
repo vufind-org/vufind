@@ -64,7 +64,7 @@ class RecordController extends AbstractRecord
     {
         $this->flashMessenger()->setNamespace('error')
             ->addMessage('hold_error_blocked');
-        $this->redirectToRecord('#top');
+        return $this->redirectToRecord('#top');
     }
 
     /**
