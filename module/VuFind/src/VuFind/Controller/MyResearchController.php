@@ -32,6 +32,7 @@ use VuFind\Config\Reader as ConfigReader,
     VuFind\Db\Table\Search as SearchTable,
     VuFind\Exception\Auth as AuthException,
     VuFind\Exception\ListPermission as ListPermissionException,
+    VuFind\Search\Solr\Results as SolrResults,
     Zend\Stdlib\Parameters;
 
 /**
@@ -705,7 +706,7 @@ class MyResearchController extends AbstractBase
             if (!isset($current['id'])) {
                 throw new VF_Exception_RecordMissing();
             }
-            $record = VF_Search_Solr_Results::getRecord($current['id']);
+            $record = SolrResults::getRecord($current['id']);
         } catch (VF_Exception_RecordMissing $e) {
             $record = new VF_RecordDriver_Missing(
                 array('id' => isset($current['id']) ? $current['id'] : null)
@@ -826,7 +827,6 @@ class MyResearchController extends AbstractBase
      */
     public function finesAction()
     {
-        /* TODO:
         // Stop now if the user does not have valid catalog credentials available:
         if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
@@ -837,22 +837,23 @@ class MyResearchController extends AbstractBase
 
         // Get fine details:
         $result = $catalog->getMyFines($patron);
-        $this->view->fines = array();
+        $fines = array();
         foreach ($result as $row) {
             // Attempt to look up and inject title:
             try {
                 if (!isset($row['id']) || empty($row['id'])) {
                     throw new \Exception();
                 }
-                $record = VF_Search_Solr_Results::getRecord($row['id']);
+                $record = SolrResults::getRecord($row['id']);
                 $row['title'] = $record->getShortTitle();
             } catch (\Exception $e) {
                 if (!isset($row['title'])) {
                     $row['title'] = null;
                 }
             }
-            $this->view->fines[] = $row;
+            $fines[] = $row;
         }
-         */
+
+        return $this->createViewModel(array('fines' => $fines));
     }
 }
