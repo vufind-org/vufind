@@ -32,6 +32,7 @@ use VuFind\Config\Reader as ConfigReader,
     VuFind\Db\Table\Search as SearchTable,
     VuFind\Exception\Auth as AuthException,
     VuFind\Exception\ListPermission as ListPermissionException,
+    VuFind\Exception\RecordMissing as RecordMissingException,
     VuFind\Search\Solr\Results as SolrResults,
     Zend\Stdlib\Parameters;
 
@@ -701,20 +702,18 @@ class MyResearchController extends AbstractBase
      */
     protected function getDriverForILSRecord($current)
     {
-        /* TODO:
         try {
             if (!isset($current['id'])) {
-                throw new VF_Exception_RecordMissing();
+                throw new RecordMissingException();
             }
             $record = SolrResults::getRecord($current['id']);
-        } catch (VF_Exception_RecordMissing $e) {
-            $record = new VF_RecordDriver_Missing(
+        } catch (RecordMissingException $e) {
+            $record = new \VuFind\RecordDriver\Missing(
                 array('id' => isset($current['id']) ? $current['id'] : null)
             );
         }
         $record->setExtraDetail('ils_details', $current);
         return $record;
-         */
     }
 
     /**
@@ -724,7 +723,6 @@ class MyResearchController extends AbstractBase
      */
     public function holdsAction()
     {
-        /* TODO:
         // Stop now if the user does not have valid catalog credentials available:
         if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
@@ -735,29 +733,27 @@ class MyResearchController extends AbstractBase
 
         // Process cancel requests if necessary:
         $cancelStatus = $catalog->checkFunction('cancelHolds');
-        $this->view->cancelResults = $cancelStatus
-            ? $this->_helper->holds->cancelHolds(
-                $this->_request, $catalog, $patron
-            )
-            : array();
+        $view = $this->createViewModel();
+        $view->cancelResults = $cancelStatus
+            ? $this->holds()->cancelHolds($catalog, $patron) : array();
 
         // By default, assume we will not need to display a cancel form:
-        $this->view->cancelForm = false;
+        $view->cancelForm = false;
 
         // Get held item details:
         $result = $catalog->getMyHolds($patron);
         $recordList = array();
-        $this->_helper->holds->resetValidation();
+        $this->holds()->resetValidation();
         foreach ($result as $current) {
             // Add cancel details if appropriate:
-            $current = $this->_helper->holds->addCancelDetails(
+            $current = $this->holds()->addCancelDetails(
                 $catalog, $current, $cancelStatus
             );
             if ($cancelStatus && $cancelStatus['function'] != "getCancelHoldLink"
                 && isset($current['cancel_details'])
             ) {
                 // Enable cancel form if necessary:
-                $this->view->cancelForm = true;
+                $view->cancelForm = true;
             }
 
             // Build record driver:
@@ -765,9 +761,9 @@ class MyResearchController extends AbstractBase
         }
 
         // Get List of PickUp Libraries based on patron's home library
-        $this->view->pickup = $catalog->getPickUpLocations($patron);
-        $this->view->recordList = $recordList;
-         */
+        $view->pickup = $catalog->getPickUpLocations($patron);
+        $view->recordList = $recordList;
+        return $view;
     }
 
     /**

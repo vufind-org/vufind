@@ -69,6 +69,22 @@ class Holds extends AbstractPlugin
     }
 
     /**
+     * Add an ID to the validation array.
+     *
+     * @param string $id ID to remember
+     *
+     * @return void
+     */
+    public function rememberValidId($id)
+    {
+        // The session container doesn't allow modification of entries (as of
+        // ZF2beta5 anyway), so we have to do this in a roundabout way.
+        $existingArray = $this->getSession()->validIds;
+        $existingArray[] = $id;
+        $this->getSession()->validIds = $existingArray;
+    }
+
+    /**
      * Update ILS details with renewal-specific information, if appropriate.
      *
      * @param VF_ILS_Connection $catalog      ILS connection object
@@ -90,8 +106,9 @@ class Holds extends AbstractPlugin
                     = $catalog->getCancelHoldLink($ilsDetails);
             } else {
                 // Form Details
-                $ilsDetails['cancel_details'] = $this->getSession()->validIds[]
+                $ilsDetails['cancel_details']
                     = $catalog->getCancelHoldDetails($ilsDetails);
+                $this->rememberValidId($ilsDetails['cancel_details']);
             }
         }
 
@@ -101,27 +118,25 @@ class Holds extends AbstractPlugin
     /**
      * Process renewal requests.
      *
-     * @param Zend_Controller_Request_Abstract $request Request object
-     * @param VF_ILS_Connection                $catalog ILS connection object
-     * @param array                            $patron  Current logged in patron
+     * @param VuFind\ILS\Connection $catalog ILS connection object
+     * @param array                 $patron  Current logged in patron
      *
      * @return array                           The result of the renewal, an
      * associative array keyed by item ID (empty if no renewals performed)
      */
-    public function cancelHolds($request, $catalog, $patron)
+    public function cancelHolds($catalog, $patron)
     {
-        /* TODO
         // Retrieve the flashMessenger helper:
-        $flashMsg
-            = Zend_Controller_Action_HelperBroker::getStaticHelper('flashMessenger');
+        $flashMsg = $this->getController()->flashMessenger();
+        $params = $this->getController()->params();
 
         // Pick IDs to renew based on which button was pressed:
-        $all = $request->getParam('cancelAll');
-        $selected = $request->getParam('cancelSelected');
+        $all = $params->fromPost('cancelAll');
+        $selected = $params->fromPost('cancelSelected');
         if (!empty($all)) {
-            $details = $request->getParam('cancelAllIDS');
+            $details = $params->fromPost('cancelAllIDS');
         } else if (!empty($selected)) {
-            $details = $request->getParam('cancelSelectedIDS');
+            $details = $params->fromPost('cancelSelectedIDS');
         } else {
             // No button pushed -- no action needed
             return array();
@@ -159,7 +174,6 @@ class Holds extends AbstractPlugin
              $flashMsg->setNamespace('error')->addMessage('hold_empty_selection');
         }
         return array();
-         */
     }
 
     /**
