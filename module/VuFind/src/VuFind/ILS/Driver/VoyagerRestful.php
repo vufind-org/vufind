@@ -462,7 +462,7 @@ class VoyagerRestful extends Voyager
         }
 
         // Send Request and Retrieve Response
-        $result = $client->setMode($mode)->send();
+        $result = $client->setMethod($mode)->send();
         if (!$result->isSuccess()) {
             throw new ILSException('Problem with RESTful API.');
         }
