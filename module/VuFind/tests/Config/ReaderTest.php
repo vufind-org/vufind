@@ -38,7 +38,7 @@ use VuFind\Config\Reader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
-class ReaderTest extends \PHPUnit_Framework_TestCase
+class ReaderTest extends \VuFind\Tests\TestCase
 {
     /**
      * Test basic config.ini loading.
