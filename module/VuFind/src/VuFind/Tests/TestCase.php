@@ -45,7 +45,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * Call protected or private method for side-effect and result.
      *
-     * Uses PHP's reflection API in order to modify method accesibility.
+     * Uses PHP's reflection API in order to modify method accessibility.
      *
      * @param object|string $object    Object or class name
      * @param string        $method    Method name
@@ -65,7 +65,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * Return protected or private property.
      *
-     * Uses PHP's reflection API in order to modify property accesibility.
+     * Uses PHP's reflection API in order to modify property accessibility.
      *
      * @param object|string $object   Object or class name
      * @param string        $property Property name
@@ -84,7 +84,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     /**
      * Set protected or private property.
      *
-     * Uses PHP's reflection API in order to modify property accesibility.
+     * Uses PHP's reflection API in order to modify property accessibility.
      *
      * @param object|string $object   Object or class name
      * @param string        $property Property name
