@@ -30,7 +30,7 @@ use VuFind\Auth\Manager as AuthManager, VuFind\Cache\Manager as CacheManager,
     VuFind\Config\Reader as ConfigReader,
     VuFind\Db\AdapterFactory as DbAdapterFactory, VuFind\Logger,
     VuFind\Theme\Initializer as ThemeInitializer,
-    VuFind\Translator\Translator,
+    VuFind\Translator\Translator, Zend\Console\Console,
     Zend\Db\TableGateway\Feature\GlobalAdapterFeature as DbGlobalAdapter,
     Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch,
     Zend\Session\SessionManager;
@@ -193,6 +193,11 @@ class Bootstrap
      */
     protected function initLanguage()
     {
+        // Language not supported in CLI mode:
+        if (Console::isConsole()) {
+            return;
+        }
+
         $config =& $this->config;
         $callback = function($event) use ($config) {
             // Setup Translator
@@ -233,6 +238,11 @@ class Bootstrap
      */
     protected function initTheme()
     {
+        // Themes not needed in console mode:
+        if (Console::isConsole()) {
+            return;
+        }
+
         // Attach template injection configuration to the route event:
         $this->events->attach(
             'route', array('VuFind\Theme\Initializer', 'configureTemplateInjection')
@@ -312,7 +322,7 @@ class Bootstrap
     protected function initSession()
     {
         // Don't bother with session in CLI mode (it just causes error messages):
-        if (PHP_SAPI == 'cli') {
+        if (Console::isConsole()) {
             return;
         }
 

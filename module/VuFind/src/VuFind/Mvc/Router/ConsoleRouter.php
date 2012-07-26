@@ -63,10 +63,8 @@ class ConsoleRouter implements RouteStackInterface
     {
         // Get command line arguments and present working directory from
         // server superglobal:
-        $server = $request->getServer();
-        $args = $server->get('argv');
-        $filename = $args[0];
-        $pwd = $server->get('PWD', CLI_DIR);
+        $filename = $request->getScriptName();
+        $pwd = CLI_DIR;
 
         // Convert base filename (minus .php extension and underscores) and
         // containing directory name into action and controller, respectively:
