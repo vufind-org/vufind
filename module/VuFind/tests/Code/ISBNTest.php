@@ -38,7 +38,7 @@ use VuFind\Code\ISBN;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
-class ISBNTest extends \PHPUnit_Framework_TestCase
+class ISBNTest extends \VuFind\Tests\TestCase
 {
     /**
      * Test Valid ISBN-10.
