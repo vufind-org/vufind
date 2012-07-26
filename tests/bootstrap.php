@@ -1,7 +1,7 @@
 <?php
 use Zend\Loader\AutoloaderFactory;
 use Zend\ServiceManager\ServiceManager;
-use Zend\Mvc\Service\ServiceManagerConfiguration;
+use Zend\Mvc\Service\ServiceManagerConfig;
 
 // Set flag that we're in test mode
 define('VUFIND_PHPUNIT_RUNNING', 1);
@@ -33,6 +33,6 @@ if (!class_exists('Zend\Loader\AutoloaderFactory')) {
 $configuration = include 'config/application.config.php';
 
 // Setup service manager
-$serviceManager = new ServiceManager(new ServiceManagerConfiguration($configuration['service_manager']));
-$serviceManager->setService('ApplicationConfiguration', $configuration);
+$serviceManager = new ServiceManager(new ServiceManagerConfig($configuration['service_manager']));
+$serviceManager->setService('ApplicationConfig', $configuration);
 $serviceManager->get('ModuleManager')->loadModules();
