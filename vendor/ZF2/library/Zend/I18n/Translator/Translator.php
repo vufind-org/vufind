@@ -1,32 +1,21 @@
 <?php
 /**
- * Zend Framework
+ * Zend Framework (http://framework.zend.com/)
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
- *
- * @category   Zend
- * @package    Zend_I18n
- * @subpackage Translator
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_I18n
  */
 
 namespace Zend\I18n\Translator;
 
 use Locale;
 use Traversable;
-use Zend\Stdlib\ArrayUtils;
 use Zend\Cache;
 use Zend\Cache\Storage\StorageInterface as CacheStorage;
 use Zend\I18n\Exception;
+use Zend\Stdlib\ArrayUtils;
 
 /**
  * Translator.
@@ -34,8 +23,6 @@ use Zend\I18n\Exception;
  * @category   Zend
  * @package    Zend_I18n
  * @subpackage Translator
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Translator
 {
@@ -218,7 +205,7 @@ class Translator
      */
     public function setFallbackLocale($locale)
     {
-        $this->locale = $locale;
+        $this->fallbackLocale = $locale;
         return $this;
     }
 
@@ -229,11 +216,7 @@ class Translator
      */
     public function getFallbackLocale()
     {
-        if ($this->locale === null) {
-            $this->locale = Locale::getDefault();
-        }
-
-        return $this->locale;
+        return $this->fallbackLocale;
     }
 
     /**
@@ -260,8 +243,8 @@ class Translator
 
     /**
      * Set the plugin manager for translation loaders
-     * 
-     * @param  LoaderPluginManager $pluginManager 
+     *
+     * @param  LoaderPluginManager $pluginManager
      * @return Translator
      */
     public function setPluginManager(LoaderPluginManager $pluginManager)
@@ -301,9 +284,9 @@ class Translator
 
         if ($translation !== null && $translation !== '') {
             return $translation;
-        } 
-        
-        if (null !== ($fallbackLocale = $this->getFallbackLocale()) 
+        }
+
+        if (null !== ($fallbackLocale = $this->getFallbackLocale())
             && $locale !== $fallbackLocale
         ) {
             return $this->translate($message, $textDomain, $fallbackLocale);
@@ -334,19 +317,19 @@ class Translator
         $translation = $this->getTranslatedMessage($singular, $locale, $textDomain);
 
         if ($translation === null || $translation === '') {
-            if (null !== ($fallbackLocale = $this->getFallbackLocale()) 
+            if (null !== ($fallbackLocale = $this->getFallbackLocale())
                 && $locale !== $fallbackLocale
             ) {
                 return $this->translatePlural(
-                    $singular, 
-                    $plural, 
-                    $number, 
-                    $textDomain, 
+                    $singular,
+                    $plural,
+                    $number,
+                    $textDomain,
                     $fallbackLocale
                 );
             }
 
-            return ($number != 1 ? $singular : $plural);
+            return ($number == 1 ? $singular : $plural);
         }
 
         $index = $this->messages[$textDomain][$locale]

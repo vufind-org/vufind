@@ -1,6 +1,16 @@
 <?php
+/**
+ * Zend Framework (http://framework.zend.com/)
+ *
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_ServiceManager
+ */
 
 namespace Zend\ServiceManager;
+
+use ReflectionClass;
 
 class ServiceManager implements ServiceLocatorInterface
 {
@@ -89,12 +99,12 @@ class ServiceManager implements ServiceLocatorInterface
     protected $throwExceptionInCreate = true;
 
     /**
-     * @param ConfigurationInterface $configuration
+     * @param ConfigInterface $config
      */
-    public function __construct(ConfigurationInterface $configuration = null)
+    public function __construct(ConfigInterface $config = null)
     {
-        if ($configuration) {
-            $configuration->configureServiceManager($this);
+        if ($config) {
+            $config->configureServiceManager($this);
         }
     }
 
@@ -270,12 +280,18 @@ class ServiceManager implements ServiceLocatorInterface
 
     /**
      * @param $initializer
+     * @return ServiceManager
      * @throws Exception\InvalidArgumentException
      */
     public function addInitializer($initializer, $topOfStack = true)
     {
         if (!is_callable($initializer) && !$initializer instanceof InitializerInterface) {
-            throw new Exception\InvalidArgumentException('$initializer should be callable.');
+            if (!is_string($initializer) 
+                || !$this->isSubclassOf($initializer, __NAMESPACE__ . '\InitializerInterface')
+            ) {
+                throw new Exception\InvalidArgumentException('$initializer should be callable.');
+            }
+            $initializer = new $initializer;
         }
 
         if ($topOfStack) {
@@ -299,7 +315,6 @@ class ServiceManager implements ServiceLocatorInterface
     public function setService($name, $service, $shared = true)
     {
         $cName = $this->canonicalizeName($name);
-        $rName = $name;
 
         if ($this->allowOverride === false && $this->has($cName, false)) {
             throw new Exception\InvalidServiceNameException(sprintf(
@@ -381,7 +396,7 @@ class ServiceManager implements ServiceLocatorInterface
             if (!$instance) {
                 if ($this->canCreate(array($cName, $rName))) {
                     $instance = $this->create(array($cName, $rName));
-                } else if ($usePeeringServiceManagers && !$retrieveFromPeeringManagerFirst) {
+                } elseif ($usePeeringServiceManagers && !$retrieveFromPeeringManagerFirst) {
                     $instance = $this->retrieveFromPeeringManager($name);
                 }
             }
@@ -426,6 +441,7 @@ class ServiceManager implements ServiceLocatorInterface
             $cName = $this->canonicalizeName($rName);
         }
 
+
         if (isset($this->factories[$cName])) {
             $instance = $this->createFromFactory($cName, $rName);
         }
@@ -448,11 +464,11 @@ class ServiceManager implements ServiceLocatorInterface
 
         foreach ($this->initializers as $initializer) {
             if ($initializer instanceof InitializerInterface) {
-                $initializer->initialize($instance);
+                $initializer->initialize($instance, $this);
             } elseif (is_object($initializer) && is_callable($initializer)) {
-                $initializer($instance);
+                $initializer($instance, $this);
             } else {
-                call_user_func($initializer, $instance);
+                call_user_func($initializer, $instance, $this);
             }
         }
 
@@ -697,6 +713,28 @@ class ServiceManager implements ServiceLocatorInterface
     }
 
     /**
+     * Retrieve a keyed list of all canonical names. Handy for debugging!
+     *
+     * @return array
+     */
+    public function getCanonicalNames()
+    {
+        return $this->canonicalNames;
+    }
+
+    /**
+     * Allows to override the canonical names lookup map with predefined
+     * values.
+     *
+     * @return array $canonicalNames
+     * @return ServiceManager
+     */
+    public function setCanonicalNames($canonicalNames)
+    {
+        $this->canonicalNames = $canonicalNames;
+    }
+
+    /**
      * Attempt to retrieve an instance via a peering manager
      *
      * @param  string $name
@@ -779,7 +817,7 @@ class ServiceManager implements ServiceLocatorInterface
             // support factories as strings
             if (is_string($abstractFactory) && class_exists($abstractFactory, true)) {
                 $this->abstractFactories[$index] = $abstractFactory = new $abstractFactory;
-            } else if (!$abstractFactory instanceof AbstractFactoryInterface) {
+            } elseif (!$abstractFactory instanceof AbstractFactoryInterface) {
                 throw new Exception\ServiceNotCreatedException(sprintf(
                     'While attempting to create %s%s an abstract factory could not produce a valid instance.',
                     $canonicalName,
@@ -812,5 +850,29 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         return $instance;
+    }
+
+    /**
+     * Checks if the object has this class as one of its parents
+     *
+     * @see https://bugs.php.net/bug.php?id=53727
+     * @see https://github.com/zendframework/zf2/pull/1807
+     *
+     * @param string $className
+     * @param string $type
+     */
+    protected static function isSubclassOf($className, $type)
+    {
+        if (is_subclass_of($className, $type)) {
+            return true;
+        }
+        if (version_compare(PHP_VERSION, '5.3.7', '>=')) {
+            return false;
+        }
+        if (!interface_exists($type)) {
+            return false;
+        }
+        $r = new ReflectionClass($className);
+        return $r->implementsInterface($type);
     }
 }

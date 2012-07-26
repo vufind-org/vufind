@@ -1,32 +1,22 @@
 <?php
 /**
- * Zend Framework
+ * Zend Framework (http://framework.zend.com/)
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
- *
- * @category   Zend
- * @package    Zend_Validator
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_Validator
  */
 
 namespace Zend\Validator;
 
+use Zend\I18n\Translator\TranslatorAwareInterface;
 use Zend\ServiceManager\AbstractPluginManager;
+use Zend\ServiceManager\ConfigInterface;
 
 /**
  * @category   Zend
  * @package    Zend_Validator
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class ValidatorPluginManager extends AbstractPluginManager
 {
@@ -116,6 +106,37 @@ class ValidatorPluginManager extends AbstractPluginManager
         'stringlength'             => 'Zend\Validator\StringLength',
         'step'                     => 'Zend\Validator\Step',
     );
+
+    /**
+     * Constructor
+     *
+     * After invoking parent constructor, add an initializer to inject the
+     * attached translator, if any, to the currently requested helper.
+     *
+     * @param  null|ConfigInterface $configuration
+     * @return void
+     */
+    public function __construct(ConfigInterface $configuration = null)
+    {
+        parent::__construct($configuration);
+        $this->addInitializer(array($this, 'injectTranslator'));
+    }
+
+    /**
+     * Inject a validator instance with the registered translator
+     *
+     * @param  ValidatorInterface $validator
+     * @return void
+     */
+    public function injectTranslator($validator)
+    {
+        if ($validator instanceof TranslatorAwareInterface) {
+            $locator = $this->getServiceLocator();
+            if ($locator && $locator->has('translator')) {
+                $validator->setTranslator($locator->get('translator'));
+            }
+        }
+    }
 
     /**
      * Validate the plugin

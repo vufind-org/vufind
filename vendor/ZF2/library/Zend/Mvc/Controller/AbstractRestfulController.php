@@ -1,32 +1,21 @@
 <?php
 /**
- * Zend Framework
+ * Zend Framework (http://framework.zend.com/)
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
- *
- * @category   Zend
- * @package    Zend_Mvc
- * @subpackage Controller
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_Mvc
  */
 
 namespace Zend\Mvc\Controller;
 
-use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\EventInterface as Event;
 use Zend\EventManager\EventManager;
 use Zend\EventManager\EventManagerAwareInterface;
-use Zend\Http\Request as HttpRequest;
+use Zend\EventManager\EventManagerInterface;
 use Zend\Http\PhpEnvironment\Response as HttpResponse;
+use Zend\Http\Request as HttpRequest;
 use Zend\Mvc\Exception;
 use Zend\Mvc\InjectApplicationEventInterface;
 use Zend\Mvc\MvcEvent;
@@ -42,8 +31,6 @@ use Zend\Stdlib\ResponseInterface as Response;
  * @category   Zend
  * @package    Zend_Mvc
  * @subpackage Controller
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class AbstractRestfulController implements
     Dispatchable,
@@ -210,18 +197,11 @@ abstract class AbstractRestfulController implements
                     break;
                 case 'post':
                     $action = 'create';
-                    $return = $this->create($request->getPost()->toArray());
+                    $return = $this->processPostData($request);
                     break;
                 case 'put':
-                    if (null === $id = $routeMatch->getParam('id')) {
-                        if (!($id = $request->getQuery()->get('id', false))) {
-                            throw new \DomainException('Missing identifier');
-                        }
-                    }
-                    $content = $request->getContent();
-                    parse_str($content, $parsedParams);
                     $action = 'update';
-                    $return = $this->update($id, $parsedParams);
+                    $return = $this->processPutData($request, $routeMatch);
                     break;
                 case 'delete':
                     if (null === $id = $routeMatch->getParam('id')) {
@@ -244,6 +224,34 @@ abstract class AbstractRestfulController implements
         // If a listener returns a response object, return it immediately
         $e->setResult($return);
         return $return;
+    }
+
+    /**
+     * Process post data and call create
+     * 
+     * @param Request $request
+     */
+    public function processPostData(Request $request)
+    {     
+        return $this->create($request->getPost()->toArray());
+    }
+
+    /**
+     * Process put data and call update
+     * 
+     * @param Request $request
+     * @param $routeMatch
+     */
+    public function processPutData(Request $request, $routeMatch)
+    {
+        if (null === $id = $routeMatch->getParam('id')) {
+            if (!($id = $request->getQuery()->get('id', false))) {
+                throw new \DomainException('Missing identifier');
+            }
+        }
+        $content = $request->getContent();
+        parse_str($content, $parsedParams);
+        return $this->update($id, $parsedParams);
     }
 
     /**
@@ -283,7 +291,8 @@ abstract class AbstractRestfulController implements
         $events->setIdentifiers(array(
             'Zend\Stdlib\DispatchableInterface',
             __CLASS__,
-            get_called_class()
+            get_called_class(),
+            substr(get_called_class(), 0, strpos(get_called_class(), '\\'))
         ));
         $this->events = $events;
         $this->attachDefaultListeners();
@@ -376,7 +385,7 @@ abstract class AbstractRestfulController implements
     /**
      * Set plugin manager
      *
-     * @param  string|PluginManager $plugins 
+     * @param  string|PluginManager $plugins
      * @return RestfulController
      * @throws Exception\InvalidArgumentException
      */

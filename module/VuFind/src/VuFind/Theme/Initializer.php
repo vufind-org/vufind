@@ -27,7 +27,7 @@
  */
 namespace VuFind\Theme;
 use VuFind\Mobile,
-    VuFind\Mvc\View\InjectTemplateListener,
+    VuFind\Mvc\View\Http\InjectTemplateListener,
     Zend\Config\Config,
     Zend\Config\Reader\Ini as IniReader,
     Zend\Mvc\MvcEvent,
@@ -102,7 +102,7 @@ class Initializer
         foreach ($listeners as $listener) {
             $metadata = $listener->getMetadata();
             $callback = $listener->getCallback();
-            if (is_a($callback[0], 'Zend\Mvc\View\InjectTemplateListener')) {
+            if (is_a($callback[0], 'Zend\Mvc\View\Http\InjectTemplateListener')) {
                 $priority = $metadata['priority'];
                 $sharedEvents->detach(
                     'Zend\Stdlib\DispatchableInterface', $listener

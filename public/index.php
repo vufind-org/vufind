@@ -1,7 +1,7 @@
 <?php
 use Zend\Loader\AutoloaderFactory;
 use Zend\ServiceManager\ServiceManager;
-use Zend\Mvc\Service\ServiceManagerConfiguration;
+use Zend\Mvc\Service\ServiceManagerConfig;
 
 // If the XHProf profiler is enabled, set it up now:
 $xhprof = getenv('VUFIND_PROFILER_XHPROF');
@@ -56,8 +56,8 @@ if (!class_exists('Zend\Loader\AutoloaderFactory')) {
 $configuration = include 'config/application.config.php';
 
 // Setup service manager
-$serviceManager = new ServiceManager(new ServiceManagerConfiguration($configuration['service_manager']));
-$serviceManager->setService('ApplicationConfiguration', $configuration);
+$serviceManager = new ServiceManager(new ServiceManagerConfig($configuration['service_manager']));
+$serviceManager->setService('ApplicationConfig', $configuration);
 $serviceManager->get('ModuleManager')->loadModules();
 
 // Run application

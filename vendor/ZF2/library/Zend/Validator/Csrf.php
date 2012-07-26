@@ -1,29 +1,19 @@
 <?php
 /**
- * Zend Framework
+ * Zend Framework (http://framework.zend.com/)
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
- *
- * @category   Zend
- * @package    Zend_Validator
- * @subpackage UnitTest
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_Validator
  */
 
 namespace Zend\Validator;
 
 use Traversable;
-use Zend\Stdlib\ArrayUtils;
+use Zend\Math\Rand;
 use Zend\Session\Container as SessionContainer;
+use Zend\Stdlib\ArrayUtils;
 
 class Csrf extends AbstractValidator
 {
@@ -215,7 +205,7 @@ class Csrf extends AbstractValidator
     /**
      * Retrieve CSRF token
      *
-     * If no CSRF token currently exists, or should be regenrated, 
+     * If no CSRF token currently exists, or should be regenrated,
      * generates one.
      *
      * @param  bool $regenerate    default false
@@ -296,12 +286,7 @@ class Csrf extends AbstractValidator
         if (isset(static::$hashCache[$this->getSessionName()])) {
             $this->hash = static::$hashCache[$this->getSessionName()];
         } else {
-            $this->hash = md5(
-                mt_rand(1,1000000)
-                .  $this->getSalt()
-                .  $this->getName()
-                .  mt_rand(1,1000000)
-            );
+            $this->hash = md5($this->getSalt() . Rand::getBytes(32) .  $this->getName());
             static::$hashCache[$this->getSessionName()] = $this->hash;
         }
         $this->setValue($this->hash);

@@ -7,18 +7,19 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_ModuleManager
  */
+
 namespace Zend\ModuleManager\Listener;
 
 use ArrayAccess;
 use Traversable;
 use Zend\Config\Config;
 use Zend\Config\Factory as ConfigFactory;
+use Zend\EventManager\EventManagerInterface;
+use Zend\EventManager\ListenerAggregateInterface;
 use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\ModuleManager\ModuleEvent;
 use Zend\Stdlib\ArrayUtils;
 use Zend\Stdlib\Glob;
-use Zend\EventManager\EventManagerInterface;
-use Zend\EventManager\ListenerAggregateInterface;
 
 /**
  * Config listener
@@ -134,7 +135,7 @@ class ConfigListener extends AbstractListener implements
      */
     public function onLoadModule(ModuleEvent $e)
     {
-        $module = $e->getParam('module');
+        $module = $e->getModule();
 
         if (!$module instanceof ConfigProviderInterface
             && !is_callable(array($module, 'getConfig'))

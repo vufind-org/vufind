@@ -10,8 +10,8 @@
 
 namespace Zend\Db\Metadata\Source;
 
-use Zend\Db\Metadata\MetadataInterface;
 use Zend\Db\Adapter\Adapter;
+use Zend\Db\Metadata\MetadataInterface;
 use Zend\Db\Metadata\Object;
 
 /**
@@ -80,7 +80,7 @@ abstract class AbstractSource implements MetadataInterface
         if ($includeViews) {
             return array_keys($this->data['table_names'][$schema]);
         }
-        
+
         $tableNames = array();
         foreach ($this->data['table_names'][$schema] as $tableName => $data) {
             if ('BASE TABLE' == $data['table_type']) {

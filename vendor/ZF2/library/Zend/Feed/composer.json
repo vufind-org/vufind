@@ -1,5 +1,6 @@
 {
     "name": "zendframework/zend-feed",
+    "description": "provides functionality for consuming RSS and Atom feeds",
     "license": "BSD-3-Clause",
     "keywords": [
         "zf2",
@@ -10,8 +11,10 @@
             "Zend\\Feed": ""
         }
     },
+    "target-dir": "Zend/Feed",
     "require": {
-        "php": ">=5.3.3"
+        "php": ">=5.3.3",
+        "zendframework/zend-stdlib": "self.version"
     },
     "suggest": {
         "zendframework/zend-uri": "Zend\\Uri component",

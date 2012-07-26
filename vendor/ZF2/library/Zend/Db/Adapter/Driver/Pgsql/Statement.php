@@ -11,8 +11,8 @@
 namespace Zend\Db\Adapter\Driver\Pgsql;
 
 use Zend\Db\Adapter\Driver\StatementInterface;
-use Zend\Db\Adapter\ParameterContainer;
 use Zend\Db\Adapter\Exception;
+use Zend\Db\Adapter\ParameterContainer;
 
 /**
  * @category   Zend
@@ -57,7 +57,7 @@ class Statement implements StatementInterface
     protected $parameterContainer;
 
     /**
-     * @param  Pgsql $driver 
+     * @param  Pgsql $driver
      * @return Statement
      */
     public function setDriver(Pgsql $driver)
@@ -67,7 +67,7 @@ class Statement implements StatementInterface
     }
 
     /**
-     * @param  resource $pgsql 
+     * @param  resource $pgsql
      * @return void
      * @throws Exception\RuntimeException for invalid or missing postgresql connection
      */

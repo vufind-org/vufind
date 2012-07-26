@@ -1,27 +1,17 @@
 <?php
 /**
- * Zend Framework
+ * Zend Framework (http://framework.zend.com/)
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
- *
- * @category   Zend
- * @package    Zend_Form
- * @subpackage Annotation
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_Form
  */
 
 namespace Zend\Form\Annotation;
 
 use ArrayObject;
+use ReflectionClass;
 use Zend\Code\Annotation\AnnotationCollection;
 use Zend\Code\Annotation\AnnotationManager;
 use Zend\Code\Annotation\Parser;
@@ -41,8 +31,6 @@ use Zend\Stdlib\ArrayUtils;
  * @category   Zend
  * @package    Zend_Form
  * @subpackage Annotation
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class AnnotationBuilder implements EventManagerAwareInterface
 {
@@ -81,10 +69,12 @@ class AnnotationBuilder implements EventManagerAwareInterface
         'Input',
         'InputFilter',
         'Name',
+        'Object',
         'Options',
         'Required',
         'Type',
-        'Validator',
+        'ValidationGroup',
+        'Validator'
     );
 
     /**
@@ -339,7 +329,7 @@ class AnnotationBuilder implements EventManagerAwareInterface
             : 'Zend\Form\Element';
 
         // Compose as a fieldset or an element, based on specification type
-        if ($this->isFieldset($type)) {
+        if (self::isSubclassOf($type, 'Zend\Form\FieldsetInterface')) {
             if (!isset($formSpec['fieldsets'])) {
                 $formSpec['fieldsets'] = array();
             }
@@ -387,22 +377,26 @@ class AnnotationBuilder implements EventManagerAwareInterface
     }
 
     /**
-     * Determine if the type represents a fieldset
+     * Checks if the object has this class as one of its parents
      *
-     * For PHP versions >= 5.3.7, uses is_subclass_of; otherwise, uses
-     * reflection to determine the interfaces implemented.
+     * @see https://bugs.php.net/bug.php?id=53727
+     * @see https://github.com/zendframework/zf2/pull/1807
      *
-     * @param  string $type
-     * @return bool
+     * @param string $className
+     * @param string $type
      */
-    protected function isFieldset($type)
+    protected static function isSubclassOf($className, $type)
     {
-        if (version_compare(PHP_VERSION, '5.3.7', 'gte')) {
-            return is_subclass_of($type, 'Zend\Form\FieldsetInterface');
+        if (is_subclass_of($className, $type)) {
+            return true;
         }
-
-        $r = new ClassReflection($type);
-        $interfaces = $r->getInterfaceNames();
-        return (in_array('Zend\Form\FieldsetInterface', $interfaces));
+        if (version_compare(PHP_VERSION, '5.3.7', '>=')) {
+            return false;
+        }
+        if (!interface_exists($type)) {
+            return false;
+        }
+        $r = new ReflectionClass($className);
+        return $r->implementsInterface($type);
     }
 }

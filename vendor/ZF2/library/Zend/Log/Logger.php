@@ -1,37 +1,25 @@
 <?php
 /**
- * Zend Framework
+ * Zend Framework (http://framework.zend.com/)
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
- *
- * @category   Zend
- * @package    Zend_Log
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_Log
  */
 
 namespace Zend\Log;
 
 use DateTime;
-use Zend\Stdlib\SplPriorityQueue;
 use Traversable;
 use Zend\Stdlib\ArrayUtils;
+use Zend\Stdlib\SplPriorityQueue;
 
 /**
  * Logging messages with a stack of backends
  *
  * @category   Zend
  * @package    Zend_Log
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Logger implements LoggerInterface
 {
@@ -71,7 +59,7 @@ class Logger implements LoggerInterface
         self::INFO   => 'INFO',
         self::DEBUG  => 'DEBUG',
     );
-
+   
     /**
      * Writers
      *
@@ -153,10 +141,10 @@ class Logger implements LoggerInterface
      *
      * @return WriterPluginManager
      */
-    public function getPluginManager()
+    public function getWriterPluginManager()
     {
         if (null === $this->writerPlugins) {
-            $this->setPluginManager(new WriterPluginManager());
+            $this->setWriterPluginManager(new WriterPluginManager());
         }
         return $this->writerPlugins;
     }
@@ -164,11 +152,11 @@ class Logger implements LoggerInterface
     /**
      * Set writer plugin manager
      *
-     * @param string|WriterPluginManager $plugins
+     * @param  string|WriterPluginManager $plugins
      * @return Logger
      * @throws Exception\InvalidArgumentException
      */
-    public function setPluginManager($plugins)
+    public function setWriterPluginManager($plugins)
     {
         if (is_string($plugins)) {
             $plugins = new $plugins;
@@ -192,9 +180,9 @@ class Logger implements LoggerInterface
      * @param array|null $options
      * @return Writer
      */
-    public function plugin($name, array $options = null)
+    public function writerPlugin($name, array $options = null)
     {
-        return $this->getPluginManager()->get($name, $options);
+        return $this->getWriterPluginManager()->get($name, $options);
     }
 
     /**
@@ -205,10 +193,10 @@ class Logger implements LoggerInterface
      * @return Logger
      * @throws Exception\InvalidArgumentException
      */
-    public function addWriter($writer, $priority=1)
+    public function addWriter($writer, $priority = 1, array $options = null)
     {
         if (is_string($writer)) {
-            $writer = $this->plugin($writer);
+            $writer = $this->writerPlugin($writer, $options);
         } elseif (!$writer instanceof Writer\WriterInterface) {
             throw new Exception\InvalidArgumentException(sprintf(
                 'Writer must implement Zend\Log\Writer; received "%s"',
@@ -292,7 +280,7 @@ class Logger implements LoggerInterface
         if (is_array($message)) {
             $message = var_export($message, true);
         }
-
+        
         foreach ($this->writers->toArray() as $writer) {
             $writer->write(array(
                 'timestamp'    => $timestamp,

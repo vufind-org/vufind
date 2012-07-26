@@ -1,21 +1,11 @@
 <?php
 /**
- * Zend Framework
+ * Zend Framework (http://framework.zend.com/)
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
- *
- * @category   Zend
- * @package    Zend_Feed_Writer
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_Feed
  */
 
 namespace Zend\Feed\Writer\Renderer\Feed;
@@ -30,15 +20,13 @@ use Zend\Uri;
 /**
 * @category Zend
 * @package Zend_Feed_Writer
-* @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
-* @license http://framework.zend.com/license/new-bsd New BSD License
 */
 class Rss extends Renderer\AbstractRenderer implements Renderer\RendererInterface
 {
     /**
      * Constructor
-     * 
-     * @param  Zend_Feed_Writer_Feed $container 
+     *
+     * @param  Zend_Feed_Writer_Feed $container
      * @return void
      */
     public function __construct (Writer\Feed $container)
@@ -48,7 +36,7 @@ class Rss extends Renderer\AbstractRenderer implements Renderer\RendererInterfac
 
     /**
      * Render RSS feed
-     * 
+     *
      * @return Zend_Feed_Writer_Renderer_Feed_Rss
      */
     public function render()
@@ -62,7 +50,7 @@ class Rss extends Renderer\AbstractRenderer implements Renderer\RendererInterfac
         $rss = $this->_dom->createElement('rss');
         $this->setRootElement($rss);
         $rss->setAttribute('version', '2.0');
-        
+
         $channel = $this->_dom->createElement('channel');
         $rss->appendChild($channel);
         $this->_dom->appendChild($rss);
@@ -79,14 +67,14 @@ class Rss extends Renderer\AbstractRenderer implements Renderer\RendererInterfac
         $this->_setAuthors($this->_dom, $channel);
         $this->_setCopyright($this->_dom, $channel);
         $this->_setCategories($this->_dom, $channel);
-        
+
         foreach ($this->_extensions as $ext) {
             $ext->setType($this->getType());
             $ext->setRootElement($this->getRootElement());
             $ext->setDOMDocument($this->getDOMDocument(), $channel);
             $ext->render();
         }
-        
+
         foreach ($this->_container as $entry) {
             if ($this->getDataContainer()->getEncoding()) {
                 $entry->setEncoding($this->getDataContainer()->getEncoding());
@@ -111,9 +99,9 @@ class Rss extends Renderer\AbstractRenderer implements Renderer\RendererInterfac
 
     /**
      * Set feed language
-     * 
-     * @param DOMDocument $dom 
-     * @param DOMElement $root 
+     *
+     * @param DOMDocument $dom
+     * @param DOMElement $root
      * @return void
      */
     protected function _setLanguage(DOMDocument $dom, DOMElement $root)
@@ -129,9 +117,9 @@ class Rss extends Renderer\AbstractRenderer implements Renderer\RendererInterfac
 
     /**
      * Set feed title
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      * @throws Writer\Exception\InvalidArgumentException
      */
@@ -157,9 +145,9 @@ class Rss extends Renderer\AbstractRenderer implements Renderer\RendererInterfac
 
     /**
      * Set feed description
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      * @throws Writer\Exception\InvalidArgumentException
      */
@@ -184,9 +172,9 @@ class Rss extends Renderer\AbstractRenderer implements Renderer\RendererInterfac
 
     /**
      * Set date feed was last modified
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      */
     protected function _setDateModified(DOMDocument $dom, DOMElement $root)
@@ -205,9 +193,9 @@ class Rss extends Renderer\AbstractRenderer implements Renderer\RendererInterfac
 
     /**
      * Set feed generator string
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      */
     protected function _setGenerator(DOMDocument $dom, DOMElement $root)
@@ -233,9 +221,9 @@ class Rss extends Renderer\AbstractRenderer implements Renderer\RendererInterfac
 
     /**
      * Set link to feed
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      * @throws Writer\Exception\InvalidArgumentException
      */
@@ -261,12 +249,12 @@ class Rss extends Renderer\AbstractRenderer implements Renderer\RendererInterfac
             $link->setAttribute('isPermaLink', 'false');
         }
     }
-    
+
     /**
      * Set feed authors
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      */
     protected function _setAuthors(DOMDocument $dom, DOMElement $root)
@@ -286,12 +274,12 @@ class Rss extends Renderer\AbstractRenderer implements Renderer\RendererInterfac
             $root->appendChild($author);
         }
     }
-    
+
     /**
      * Set feed copyright
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      */
     protected function _setCopyright(DOMDocument $dom, DOMElement $root)
@@ -308,9 +296,9 @@ class Rss extends Renderer\AbstractRenderer implements Renderer\RendererInterfac
 
     /**
      * Set feed channel image
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      * @throws Writer\Exception\InvalidArgumentException
      */
@@ -419,12 +407,12 @@ class Rss extends Renderer\AbstractRenderer implements Renderer\RendererInterfac
             $img->appendChild($desc);
         }
     }
-    
+
     /**
      * Set date feed was created
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      */
     protected function _setDateCreated(DOMDocument $dom, DOMElement $root)
@@ -441,9 +429,9 @@ class Rss extends Renderer\AbstractRenderer implements Renderer\RendererInterfac
 
     /**
      * Set date feed last build date
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      */
     protected function _setLastBuildDate(DOMDocument $dom, DOMElement $root)
@@ -459,12 +447,12 @@ class Rss extends Renderer\AbstractRenderer implements Renderer\RendererInterfac
         );
         $lastBuildDate->appendChild($text);
     }
-    
+
     /**
      * Set base URL to feed links
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      */
     protected function _setBaseUrl(DOMDocument $dom, DOMElement $root)
@@ -475,12 +463,12 @@ class Rss extends Renderer\AbstractRenderer implements Renderer\RendererInterfac
         }
         $root->setAttribute('xml:base', $baseUrl);
     }
-    
+
     /**
      * Set feed categories
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      */
     protected function _setCategories(DOMDocument $dom, DOMElement $root)

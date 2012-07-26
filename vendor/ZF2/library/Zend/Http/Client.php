@@ -1,38 +1,26 @@
 <?php
 /**
- * Zend Framework
+ * Zend Framework (http://framework.zend.com/)
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
- *
- * @category   Zend
- * @package    Zend\Http
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_Http
  */
 
 namespace Zend\Http;
 
+use ArrayIterator;
 use Traversable;
+use Zend\Stdlib;
 use Zend\Stdlib\ArrayUtils;
-use ArrayIterator,
-    Zend\Uri\Http,
-    Zend\Stdlib;
+use Zend\Uri\Http;
 
 /**
  * Http client
  *
  * @category   Zend
  * @package    Zend\Http
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Client implements Stdlib\DispatchableInterface
 {
@@ -135,7 +123,7 @@ class Client implements Stdlib\DispatchableInterface
      *
      * @var resource
      */
-    static protected $_fileInfoDb = null;
+    protected static $_fileInfoDb = null;
 
     /**
      * Constructor
@@ -590,7 +578,7 @@ class Client implements Stdlib\DispatchableInterface
      */
     public function getStream()
     {
-        return $this->config["outputstream"];
+        return $this->config['outputstream'];
     }
 
     /**
@@ -946,7 +934,7 @@ class Client implements Stdlib\DispatchableInterface
             }
         }
 
-        $this->getRequest()->getFile()->set($filename, array(
+        $this->getRequest()->getFiles()->set($filename, array(
             'formname' => $formname,
             'filename' => basename($filename),
             'ctype' => $ctype,
@@ -964,9 +952,9 @@ class Client implements Stdlib\DispatchableInterface
      */
     public function removeFileUpload($filename)
     {
-        $file = $this->getRequest()->getFile()->get($filename);
+        $file = $this->getRequest()->getFiles()->get($filename);
         if (!empty($file)) {
-            $this->getRequest()->getFile()->set($filename, null);
+            $this->getRequest()->getFiles()->set($filename, null);
             return true;
         }
         return false;
@@ -1108,7 +1096,7 @@ class Client implements Stdlib\DispatchableInterface
         $totalFiles = 0;
 
         if (!$this->getRequest()->getHeaders()->has('Content-Type')) {
-            $totalFiles = count($this->getRequest()->getFile()->toArray());
+            $totalFiles = count($this->getRequest()->getFiles()->toArray());
             // If we have files to upload, force encType to multipart/form-data
             if ($totalFiles > 0) {
                 $this->setEncType(self::ENC_FORMDATA);
@@ -1130,7 +1118,7 @@ class Client implements Stdlib\DispatchableInterface
                 }
 
                 // Encode files
-                foreach ($this->getRequest()->getFile()->toArray() as $key => $file) {
+                foreach ($this->getRequest()->getFiles()->toArray() as $key => $file) {
                     $fhead = array('Content-Type' => $file['ctype']);
                     $body .= $this->encodeFormData($boundary, $file['formname'], $file['data'], $file['filename'], $fhead);
                 }

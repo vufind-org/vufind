@@ -55,7 +55,7 @@ class LDAP extends AbstractBase
     public function __construct($config = null)
     {
         parent::__construct($config);
-        $this->validateConfiguration();
+        $this->validateConfig();
     }
 
     /**
@@ -64,7 +64,7 @@ class LDAP extends AbstractBase
      * @throws AuthException
      * @return void
      */
-    protected function validateConfiguration()
+    protected function validateConfig()
     {
         // Check for missing parameters:
         $requiredParams = array('host', 'port', 'basedn', 'username');

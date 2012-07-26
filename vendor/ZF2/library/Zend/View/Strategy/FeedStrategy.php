@@ -1,22 +1,11 @@
 <?php
 /**
- * Zend Framework
+ * Zend Framework (http://framework.zend.com/)
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
- *
- * @category   Zend
- * @package    Zend_View
- * @subpackage Strategy
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_View
  */
 
 namespace Zend\View\Strategy;
@@ -34,8 +23,6 @@ use Zend\View\ViewEvent;
  * @category   Zend
  * @package    Zend_View
  * @subpackage Strategy
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class FeedStrategy implements ListenerAggregateInterface
 {
@@ -111,24 +98,25 @@ class FeedStrategy implements ListenerAggregateInterface
         }
 
         $headers = $request->getHeaders();
-        if ($headers->has('accept')) {
-            $accept  = $headers->get('accept');
-            foreach ($accept->getPrioritized() as $mediaType) {
-                if (0 === strpos($mediaType, 'application/rss+xml')) {
-                    // application/rss+xml Accept header found
-                    $this->renderer->setFeedType('rss');
-                    return $this->renderer;
-                }
-                if (0 === strpos($mediaType, 'application/atom+xml')) {
-                    // application/atom+xml Accept header found
-                    $this->renderer->setFeedType('atom');
-                    return $this->renderer;
-                }
-            }
+        if (!$headers->has('accept')) {
+            return;
         }
 
-        // Not matched!
-        return;
+        $accept  = $headers->get('accept');
+        if (($match = $accept->match('application/rss+xml, application/atom+xml')) == false) {
+            return;
+        }
+
+        if ($match->getTypeString() == 'application/rss+xml') {
+            $this->renderer->setFeedType('rss');
+            return $this->renderer;
+        }
+
+        if ($match->getTypeString() == 'application/atom+xml') {
+            $this->renderer->setFeedType('atom');
+            return $this->renderer;
+        }
+
     }
 
     /**

@@ -1,22 +1,11 @@
 <?php
 /**
- * Zend Framework
+ * Zend Framework (http://framework.zend.com/)
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
- *
- * @category   Zend
- * @package    Zend_Form
- * @subpackage Element
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_Form
  */
 
 namespace Zend\Form\Element;
@@ -26,17 +15,15 @@ use DateTime as PhpDateTime;
 use Zend\Form\Element;
 use Zend\InputFilter\InputProviderInterface;
 use Zend\Validator\Date as DateValidator;
+use Zend\Validator\DateStep as DateStepValidator;
 use Zend\Validator\GreaterThan as GreaterThanValidator;
 use Zend\Validator\LessThan as LessThanValidator;
-use Zend\Validator\DateStep as DateStepValidator;
 use Zend\Validator\ValidatorInterface;
 
 /**
  * @category   Zend
  * @package    Zend_Form
  * @subpackage Element
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class DateTime extends Element implements InputProviderInterface
 {
@@ -50,9 +37,62 @@ class DateTime extends Element implements InputProviderInterface
     );
 
     /**
+     * Date format to use for DateTime values. By default, this is RFC-3339, 
+     * which is what HTML5 dictates.
+     * 
+     * @var string
+     */
+    protected $format = PhpDateTime::RFC3339;
+
+    /**
      * @var array
      */
     protected $validators;
+
+    /**
+     * Retrieve the element value
+     *
+     * If the value is a DateTime object, and $returnFormattedValue is true 
+     * (the default), we return the string
+     * representation using the currently registered format.
+     *
+     * If $returnFormattedValue is false, the original value will be
+     * returned, regardless of type.
+     * 
+     * @param  bool $returnFormattedValue
+     * @return mixed
+     */
+    public function getValue($returnFormattedValue = true)
+    {
+        $value = parent::getValue();
+        if (!$value instanceof PhpDateTime || !$returnFormattedValue) {
+            return $value;
+        }
+        $format = $this->getFormat();
+        return $value->format($format);
+    }
+
+    /**
+     * Set value for format
+     *
+     * @param  string format
+     * @return DateTime
+     */
+    public function setFormat($format)
+    {
+        $this->format = (string) $format;
+        return $this;
+    }
+    
+    /**
+     * Retrieve the DateTime format to use for the value
+     *
+     * @return string
+     */
+    public function getFormat()
+    {
+        return $this->format;
+    }
 
     /**
      * Get validators
@@ -114,9 +154,9 @@ class DateTime extends Element implements InputProviderInterface
                      ? $this->attributes['min'] : '1970-01-01T00:00:00Z';
 
         return new DateStepValidator(array(
-            'format'       => PhpDateTime::ISO8601,
-            'baseValue'    => $baseValue,
-            'step' => new DateInterval("PT{$stepValue}M"),
+            'format'    => PhpDateTime::ISO8601,
+            'baseValue' => $baseValue,
+            'step'      => new DateInterval("PT{$stepValue}M"),
         ));
     }
 

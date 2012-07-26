@@ -1,26 +1,14 @@
 <?php
 /**
- * Zend Framework
+ * Zend Framework (http://framework.zend.com/)
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
- *
- * @category   Zend
- * @package    Zend_ServiceManager
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_ServiceManager
  */
 
 namespace Zend\ServiceManager;
-
-use Zend\Code\Reflection\ClassReflection;
 
 /**
  * ServiceManager implementation for managing plugins
@@ -34,8 +22,6 @@ use Zend\Code\Reflection\ClassReflection;
  *
  * @category   Zend
  * @package    Zend_ServiceManager
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class AbstractPluginManager extends ServiceManager implements ServiceLocatorAwareInterface
 {
@@ -45,6 +31,13 @@ abstract class AbstractPluginManager extends ServiceManager implements ServiceLo
      * @var bool
      */
     protected $allowOverride   = true;
+
+    /**
+     * Whether or not to auto-add a class as an invokable class if it exists
+     * 
+     * @var bool
+     */
+    protected $autoAddInvokableClass = true;
 
     /**
      * @var mixed Options to use when creating an instance
@@ -64,10 +57,10 @@ abstract class AbstractPluginManager extends ServiceManager implements ServiceLo
      * Add a default initializer to ensure the plugin is valid after instance
      * creation.
      *
-     * @param  null|ConfigurationInterface $configuration
+     * @param  null|ConfigInterface $configuration
      * @return void
      */
-    public function __construct(ConfigurationInterface $configuration = null)
+    public function __construct(ConfigInterface $configuration = null)
     {
         parent::__construct($configuration);
         $self = $this;
@@ -105,7 +98,7 @@ abstract class AbstractPluginManager extends ServiceManager implements ServiceLo
     public function get($name, $options = array(), $usePeeringServiceManagers = true)
     {
         // Allow specifying a class name directly; registers as an invokable class
-        if (!$this->has($name) && class_exists($name)) {
+        if (!$this->has($name) && $this->autoAddInvokableClass && class_exists($name)) {
             $this->setInvokableClass($name, $name);
         }
 
@@ -192,26 +185,5 @@ abstract class AbstractPluginManager extends ServiceManager implements ServiceLo
         }
 
         return $instance;
-    }
-
-    /**
-     * Determine if a class implements a given interface
-     *
-     * For PHP versions >= 5.3.7, uses is_subclass_of; otherwise, uses
-     * reflection to determine the interfaces implemented.
-     *
-     * @param  string $class
-     * @param  string $type
-     * @return bool
-     */
-    protected function isSubclassOf($class, $type)
-    {
-        if (version_compare(PHP_VERSION, '5.3.7', 'gte')) {
-            return is_subclass_of($class, $type);
-        }
-
-        $r = new ClassReflection($class);
-        $interfaces = $r->getInterfaceNames();
-        return (in_array($type, $interfaces));
     }
 }

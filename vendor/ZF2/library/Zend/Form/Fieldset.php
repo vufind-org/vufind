@@ -1,36 +1,24 @@
 <?php
 /**
- * Zend Framework
+ * Zend Framework (http://framework.zend.com/)
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
- *
- * @category   Zend
- * @package    Zend_Form
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_Form
  */
 
 namespace Zend\Form;
 
 use Traversable;
 use Zend\Form\Element\Collection;
-use Zend\Stdlib\PriorityQueue;
 use Zend\Stdlib\Hydrator;
 use Zend\Stdlib\Hydrator\HydratorInterface;
+use Zend\Stdlib\PriorityQueue;
 
 /**
  * @category   Zend
  * @package    Zend_Form
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Fieldset extends Element implements FieldsetInterface
 {
@@ -331,7 +319,9 @@ class Fieldset extends Element implements FieldsetInterface
             $messages = array();
             foreach ($this->byName as $name => $element) {
                 $messageSet = $element->getMessages();
-                if (!is_array($messageSet) && !$messageSet instanceof Traversable) {
+                if (!is_array($messageSet) 
+                    && !$messageSet instanceof Traversable
+                    || empty($messageSet)) {
                     continue;
                 }
                 $messages[$name] = $messageSet;
@@ -401,7 +391,7 @@ class Fieldset extends Element implements FieldsetInterface
                 continue;
             }
 
-            $element->setAttribute('value', $value);
+            $element->setValue($value);
         }
     }
 
@@ -498,15 +488,8 @@ class Fieldset extends Element implements FieldsetInterface
             $element = $this->byName[$name];
 
             if ($element instanceof Collection) {
-                $collection = array();
-                foreach ($value as $subName => $subValue) {
-                    $collection[] = $element->get($subName)->bindValues($subValue);
-                }
-
-                $value = $collection;
-            }
-
-            if ($element instanceof FieldsetInterface && is_object($element->object)) {
+                $value = $element->bindValues($value);
+            } elseif ($element instanceof FieldsetInterface && is_object($element->object)) {
                 $value = $element->bindValues($value);
             }
 
@@ -537,6 +520,48 @@ class Fieldset extends Element implements FieldsetInterface
     public function useAsBaseFieldset()
     {
         return $this->useAsBaseFieldset;
+    }
+
+    /**
+     * Extract values from the bound object
+     *
+     * @return array
+     */
+    protected function extract()
+    {
+        if (!is_object($this->object)) {
+            return array();
+        }
+        $hydrator = $this->getHydrator();
+        if (!$hydrator instanceof Hydrator\HydratorInterface) {
+            return array();
+        }
+
+        $values = $hydrator->extract($this->object);
+
+        if (!is_array($values)) {
+            // Do nothing if the hydrator returned a non-array
+            return array();
+        }
+
+        // Recursively extract and populate values for nested fieldsets
+        foreach ($this->fieldsets as $fieldset) {
+            $name = $fieldset->getName();
+
+            if (isset($values[$name])) {
+                $object = $values[$name];
+
+                // Is the object bound to the fieldset of the same type ? Note that we are using a little hack
+                // here, as in case of collection, we bind array to object instance, and let the collection extract
+                // the data
+                if ($fieldset instanceof Collection || (is_object($object) && $fieldset->object && $object instanceof $fieldset->object)) {
+                    $fieldset->object = $object;
+                    $values[$name] = $fieldset->extract();
+                }
+            }
+        }
+
+        return $values;
     }
 
     /**

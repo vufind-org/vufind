@@ -1,5 +1,5 @@
 <?php
-namespace VuFind\Module\Configuration;
+namespace VuFind\Module\Config;
 
 $config = array(
     'router' => array(

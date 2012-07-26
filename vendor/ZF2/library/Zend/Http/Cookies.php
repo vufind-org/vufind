@@ -1,10 +1,18 @@
 <?php
+/**
+ * Zend Framework (http://framework.zend.com/)
+ *
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_Http
+ */
 
 namespace Zend\Http;
 
-use Zend\Uri,
-    Zend\Http\Header\Cookie,
-    Zend\Http\Response;
+use Zend\Http\Header\Cookie;
+use Zend\Http\Response;
+use Zend\Uri;
 
 /**
  * A Zend_Http_CookieJar object is designed to contain and maintain HTTP cookies, and should
@@ -26,8 +34,6 @@ use Zend\Uri,
  *
  * @category   Zend
  * @package    Zend\Http\Client
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Cookies extends Headers
 {
@@ -214,7 +220,8 @@ class Cookies extends Headers
      * @param int $ret_as What value to return
      * @return array|string
      */
-    protected function _flattenCookiesArray($ptr, $ret_as = self::COOKIE_OBJECT) {
+    protected function _flattenCookiesArray($ptr, $ret_as = self::COOKIE_OBJECT)
+    {
         if (is_array($ptr)) {
             $ret = ($ret_as == self::COOKIE_STRING_CONCAT ? '' : array());
             foreach ($ptr as $item) {

@@ -26,7 +26,8 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Theme\Root\Helper;
-use Zend\I18n\Exception\RuntimeException, Zend\I18n\View\Helper\Translate as Base;
+use Zend\I18n\Exception\RuntimeException,
+    Zend\I18n\View\Helper\AbstractTranslatorHelper;
 
 /**
  * Translate view helper
@@ -37,7 +38,7 @@ use Zend\I18n\Exception\RuntimeException, Zend\I18n\View\Helper\Translate as Bas
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class Translate extends Base
+class Translate extends AbstractTranslatorHelper
 {
     /**
      * Translate a string
@@ -52,7 +53,11 @@ class Translate extends Base
     public function __invoke($str, $tokens = array(), $default = null)
     {
         try {
-            $msg = parent::__invoke($str);
+            $translator = $this->getTranslator();
+            if (!is_object($translator)) {
+                throw new RuntimeException();
+            }
+            $msg = $translator->translate($str);
         } catch (RuntimeException $e) {
             // If we get called before the translator is set up, it will throw an
             // exception, but we should still try to display some text!

@@ -86,6 +86,7 @@ class Translator
             'default', $language
         );
         $translator->setLocale($language);
+        $serviceManager->setService('translator', $translator);
 
         // Set up the ExtendedIni plugin:
         $pluginManager = $translator->getPluginManager();
