@@ -28,7 +28,7 @@
 namespace VuFind;
 use VuFind\Auth\Manager as AuthManager, VuFind\Cache\Manager as CacheManager,
     VuFind\Config\Reader as ConfigReader,
-    VuFind\Db\AdapterFactory as DbAdapterFactory,
+    VuFind\Db\AdapterFactory as DbAdapterFactory, VuFind\Logger,
     VuFind\Theme\Initializer as ThemeInitializer,
     VuFind\Translator\Translator,
     Zend\Db\TableGateway\Feature\GlobalAdapterFeature as DbGlobalAdapter,
@@ -296,10 +296,7 @@ class Bootstrap
         /* TODO:
         // Note that we need to initialize the database and the mailer prior to
         // starting up logging to ensure that dependencies are prepared!
-        if (!Zend_Registry::isRegistered('Log')) {
-            $logger = new VF_Logger();
-            Zend_Registry::set('Log', $logger);
-        }
+        $logger = Logger::getInstance();
          */
 
         // TODO: in addition to setting up the logger, we also need to figure out

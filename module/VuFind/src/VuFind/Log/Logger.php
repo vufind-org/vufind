@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Log;
-use VuFind\Config\Reader as ConfigReader, VuFind\Registry,
+use VuFind\Config\Reader as ConfigReader,
     Zend\Log\Logger as BaseLogger, Zend\Log\Filter\Priority as PriorityFilter;
 
 /**
@@ -205,11 +205,11 @@ class Logger extends BaseLogger
      */
     public static function getInstance($msg)
     {
-        $registry = Registry::getInstance();
-        if (!$registry->isRegistered('Log')) {
-            $registry->set('Log', new Manager());
+        static $instance;
+        if (!$instance) {
+            $instance = new Manager();
         }
-        return $registry->get('Log');
+        return $instance;
     }
 
     /**

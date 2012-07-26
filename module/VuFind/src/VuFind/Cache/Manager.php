@@ -26,8 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Cache;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Registry, Zend\Cache\StorageFactory;
+use VuFind\Config\Reader as ConfigReader, Zend\Cache\StorageFactory;
 
 /**
  * VuFind Cache Manager
@@ -170,10 +169,10 @@ class Manager
      */
     public static function getInstance()
     {
-        $registry = Registry::getInstance();
-        if (!$registry->isRegistered('VF_Cache_Manager')) {
-            $registry->set('VF_Cache_Manager', new Manager());
+        static $instance = false;
+        if (!$instance) {
+            $instance = new Manager();
         }
-        return $registry->get('VF_Cache_Manager');
+        return $instance;
     }
 }

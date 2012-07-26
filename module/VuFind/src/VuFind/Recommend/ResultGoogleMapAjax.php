@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Translator\Translator, Zend\Registry;
+use VuFind\Translator\Translator;
 
 /**
  * AuthorInfo Recommendations Module
