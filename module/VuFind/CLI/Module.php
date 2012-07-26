@@ -1,8 +1,8 @@
 <?php
 
 namespace VuFind\CLI;
-use Zend\ModuleManager\ModuleManager,
-    Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch;
+use VuFind\Mvc\Router\ConsoleRouter,
+    Zend\ModuleManager\ModuleManager, Zend\Mvc\MvcEvent;
 
 class Module
 {
@@ -26,27 +26,9 @@ class Module
     public function onBootstrap(MvcEvent $e)
     {
         $callback = function ($e) {
-            // Get command line arguments and present working directory from
-            // server superglobal:
-            $server = $e->getApplication()->getRequest()->getServer();
-            $args = $server->get('argv');
-            $filename = $args[0];
-            $pwd = $server->get('PWD', CLI_DIR);
-
-            // Convert base filename (minus .php extension and underscores) and
-            // containing directory name into action and controller, respectively:
-            $baseFilename = str_replace('_', '', basename($filename));
-            $baseFilename = substr($baseFilename, 0, strlen($baseFilename) - 4);
-            $baseDirname = basename(dirname(realpath($pwd . '/' . $filename)));
-            $routeMatch = new RouteMatch(
-                array('controller' => $baseDirname, 'action' => $baseFilename), 1
-            );
-
-            // Override standard routing:
-            $routeMatch->setMatchedRouteName('default');
-            $e->setRouteMatch($routeMatch);
+            $e->setRouter(new ConsoleRouter());
         };
         $events = $e->getApplication()->getEventManager();
-        $events->attach('route', $callback);
+        $events->attach('route', $callback, 10000);
     }
 }
