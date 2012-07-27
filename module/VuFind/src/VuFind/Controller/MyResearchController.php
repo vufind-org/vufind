@@ -808,7 +808,6 @@ class MyResearchController extends AbstractBase
      */
     public function checkedoutAction()
     {
-        /* TODO:
         // Stop now if the user does not have valid catalog credentials available:
         if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
@@ -819,36 +818,40 @@ class MyResearchController extends AbstractBase
 
         // Get the current renewal status and process renewal form, if necessary:
         $renewStatus = $catalog->checkFunction('Renewals');
-        $this->view->renewResult = $renewStatus
-            ? $this->_helper->renewals->processRenewals(
-                $this->_request, $catalog, $patron
+        $renewResult = $renewStatus
+            ? $this->renewals()->processRenewals(
+                $this->getRequest()->getPost(), $catalog, $patron
             )
             : array();
 
         // By default, assume we will not need to display a renewal form:
-        $this->view->renewForm = false;
+        $renewForm = false;
 
         // Get checked out item details:
         $result = $catalog->getMyTransactions($patron);
         $transactions = array();
         foreach ($result as $current) {
             // Add renewal details if appropriate:
-            $current = $this->_helper->renewals->addRenewDetails(
+            $current = $this->renewals()->addRenewDetails(
                 $catalog, $current, $renewStatus
             );
             if ($renewStatus && !isset($current['renew_link'])
                 && $current['renewable']
             ) {
                 // Enable renewal form if necessary:
-                $this->view->renewForm = true;
+                $renewForm = true;
             }
 
             // Build record driver:
             $transactions[] = $this->getDriverForILSRecord($current);
         }
 
-        $this->view->transactions = $transactions;
-         */
+        return $this->createViewModel(
+            array(
+                'transactions' => $transactions, 'renewForm' => $renewForm,
+                'renewResult' => $renewResult
+            )
+        );
     }
 
     /**

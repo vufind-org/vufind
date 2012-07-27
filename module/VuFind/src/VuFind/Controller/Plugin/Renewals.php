@@ -80,21 +80,19 @@ class Renewals extends AbstractPlugin
      */
     public function processRenewals($request, $catalog, $patron)
     {
-        /* TODO
         // Pick IDs to renew based on which button was pressed:
-        $all = $request->getParam('renewAll');
-        $selected = $request->getParam('renewSelected');
+        $all = $request->get('renewAll');
+        $selected = $request->get('renewSelected');
         if (!empty($all)) {
-            $ids = $request->getParam('renewAllIDS');
+            $ids = $request->get('renewAllIDS');
         } else if (!empty($selected)) {
-            $ids = $request->getParam('renewSelectedIDS');
+            $ids = $request->get('renewSelectedIDS');
         } else {
             $ids = array();
         }
 
         // Retrieve the flashMessenger helper:
-        $flashMsg
-            = Zend_Controller_Action_HelperBroker::getStaticHelper('flashMessenger');
+        $flashMsg = $this->getController()->flashMessenger();
 
         // If there is actually something to renew, attempt the renewal action:
         if (is_array($ids) && !empty($ids)) {
@@ -123,6 +121,5 @@ class Renewals extends AbstractPlugin
         }
 
         return array();
-         */
     }
 }
