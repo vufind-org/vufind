@@ -36,7 +36,7 @@
       <? endif; ?>
     </select>
   <? endif; ?>
-  <a href="<?=$this->url('editList', array('id' => 'NEW'))?>?recordId=<?=urlencode($this->driver->getUniqueId())?>&amp;recordController=<?=urlencode($this->record($this->driver)->getController())?>" class="listEdit controller<?=$this->record($this->driver)->getController()?>" title="<?=$this->transEsc('Create a List') ?>"><? if ($showLists) echo $this->transEsc('or create a new list'); else echo $this->transEsc('Create a List'); ?></a>
+  <a href="<?=$this->url('editList', array('id' => 'NEW'))?>?recordId=<?=urlencode($this->driver->getUniqueId())?>&amp;recordSource=<?=urlencode($this->driver->getResourceSource())?>" class="listEdit controller<?=$this->record($this->driver)->getController()?>" title="<?=$this->transEsc('Create a List') ?>"><? if ($showLists) echo $this->transEsc('or create a new list'); else echo $this->transEsc('Create a List'); ?></a>
 
   <? if ($showLists): ?>
     <label class="displayBlock" for="add_mytags"><?=$this->transEsc('Add Tags') ?></label>

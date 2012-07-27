@@ -30,6 +30,7 @@ use VuFind\Cart, VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
     VuFind\Db\Table\Comments as CommentsTable,
     VuFind\Db\Table\Resource as ResourceTable, VuFind\Db\Table\Tags as TagsTable,
+    VuFind\Db\Table\UserList as UserListTable,
     VuFind\Exception\Auth as AuthException, VuFind\Export,
     VuFind\Record, VuFind\Translator\Translator;
 
@@ -894,8 +895,8 @@ class AjaxController extends AbstractBase
         $user = $this->getUser();
 
         try {
-            $list = VuFind_Model_Db_UserList::getNew($user);
-            $id = $list->updateFromRequest($user, $this->getRequest()->getQuery());
+            $list = UserListTable::getNew($user);
+            $id = $list->updateFromRequest($user, $this->getRequest()->getPost());
         } catch (\Exception $e) {
             switch(get_class($e)) {
             case 'VuFind\\Exception\\LoginRequired':

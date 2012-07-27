@@ -30,6 +30,7 @@ namespace VuFind\Controller;
 use VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
     VuFind\Db\Table\Search as SearchTable,
+    VuFind\Db\Table\UserList as UserListTable,
     VuFind\Exception\Auth as AuthException,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\RecordMissing as RecordMissingException,
@@ -558,13 +559,70 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Process the "edit list" submission.
+     *
+     * @param \VuFind\Db\Row\User     $user Logged in user
+     * @param \VuFind\Db\Row\UserList $list List being created/edited
+     *
+     * @return object|bool                  Response object if redirect is
+     * needed, false if form needs to be redisplayed.
+     */
+    protected function processEditList($user, $list)
+    {
+        // Process form within a try..catch so we can handle errors appropriately:
+        try {
+            $finalId
+                = $list->updateFromRequest($user, $this->getRequest()->getPost());
+
+            // If the user is in the process of saving a record, send them back
+            // to the save screen; otherwise, send them back to the list they
+            // just edited.
+            $recordId = $this->params()->fromQuery('recordId');
+            $recordSource = $this->params()->fromQuery('recordSource', 'VuFind');
+            if (!empty($recordId)) {
+                $details = Record::getActionRouteDetails(
+                    $recordSource . '|' . $recordId, 'Save'
+                );
+                return $this->redirect()
+                    ->toRoute($details['route'], $details['params']);
+            }
+
+            // Similarly, if the user is in the process of bulk-saving records,
+            // send them back to the appropriate place in the cart.
+            $bulkIds = $this->params()->fromPost('ids', array());
+            if (!empty($bulkIds)) {
+                $params = array();
+                foreach ($bulkIds as $id) {
+                    $params[] = urlencode('ids[]') . '=' . urlencode($id);
+                }
+                $saveUrl = $this->url()->forRoute('cart-save');
+                return $this->redirect()
+                    ->toUrl($saveUrl . '?' . implode('&', $params));
+            }
+
+            return $this->redirect()->toRoute('userList', array('id' => $finalId));
+        } catch (\Exception $e) {
+            switch(get_class($e)) {
+            case 'VuFind\\Exception\\ListPermission':
+            case 'VuFind\\Exception\\MissingField':
+                $this->flashMessenger()->setNamespace('error')
+                    ->addMessage($e->getMessage());
+                return false;
+            case 'VuFind\\Exception\\LoginRequired':
+                return $this->forceLogin();
+            default:
+                throw $e;
+            }
+        }
+    }
+
+    /**
      * Send user's saved favorites from a particular list to the edit view
      *
      * @return void (forward)
      */
     public function editlistAction()
     {
-        /* TODO:
         // User must be logged in to edit list:
         $user = $this->getUser();
         if ($user == false) {
@@ -573,60 +631,19 @@ class MyResearchController extends AbstractBase
 
         // Is this a new list or an existing list?  Handle the special 'NEW' value
         // of the ID parameter:
-        $id = $this->_request->getParam('id');
+        $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
         $list = ($id == 'NEW')
-            ? VuFind_Model_Db_UserList::getNew($user)
-            : VuFind_Model_Db_UserList::getExisting($id);
+            ? UserListTable::getNew($user) : UserListTable::getExisting($id);
 
-        // Send the list to the view:
-        $this->view->list = $list;
-
-        // If we're processing a form submission, do it within a try..catch so we can
-        // handle errors appropriately:
-        if ($this->_request->getParam('submit')) {
-            try {
-                $finalId = $list->updateFromRequest($user, $this->_request);
-
-                // If the user is in the process of saving a record, send them back
-                // to the save screen; otherwise, send them back to the list they
-                // just edited.
-                $recordId = $this->_request->getParam('recordId');
-                $recordController
-                    = $this->_request->getParam('recordController', 'Record');
-                if (!empty($recordId)) {
-                    return $this->_redirect(
-                        '/' . $recordController . 
-                        '/' . urlencode($recordId) . '/Save'
-                    );
-                }
-
-                // Similarly, if the user is in the process of bulk-saving records,
-                // send them back to the appropriate place in the cart.
-                $bulkIds = $this->_request->getParam('ids', array());
-                if (!empty($bulkIds)) {
-                    $params = array();
-                    foreach ($bulkIds as $id) {
-                        $params[] = urlencode('ids[]') . '=' . urlencode($id);
-                    }
-                    return $this->_redirect('/Cart/Save?' . implode('&', $params));
-                }
-
-                return $this->_redirect('/MyResearch/MyList/' . $finalId);
-            } catch (\Exception $e) {
-                switch(get_class($e)) {
-                case 'VF_Exception_ListPermission':
-                case 'VF_Exception_MissingField':
-                    $this->flashMessenger()->setNamespace('error')
-                        ->addMessage($e->getMessage());
-                    break;
-                case 'VF_Exception_LoginRequired':
-                    return $this->forceLogin();
-                default:
-                    throw $e;
-                }
+        // Process form submission:
+        if ($this->params()->fromPost('submit')) {
+            if ($redirect = $this->processEditList($user, $list)) {
+                return $redirect;
             }
         }
-         */
+
+        // Send the list to the view:
+        return $this->createViewModel(array('list' => $list));
     }
 
     /**
