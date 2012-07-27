@@ -8,9 +8,7 @@
     // Set up extra button for header:
     $extraButton = isset($list)
         ? '<a rel="external" href="'
-            . $this->url('myresearch-editlist')
-            . '/'
-            . $list->id
+            . $this->url('editList', array('id' => $list->id))
             . '" data-icon="gear" class="ui-btn-left">'
             . $this->transEsc("edit_list")
             . '</a>'
