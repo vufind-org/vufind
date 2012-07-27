@@ -33,7 +33,7 @@ use VuFind\Config\Reader as ConfigReader,
     VuFind\Exception\Auth as AuthException,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\Search\Solr\Results as SolrResults,
+    VuFind\Record, VuFind\Search\Solr\Results as SolrResults,
     Zend\Stdlib\Parameters;
 
 /**
@@ -371,13 +371,49 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Process the submission of the edit favorite form.
+     *
+     * @param \VuFind\Db\Row\User               $user   Logged-in user
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver for favorite
+     * @param int                               $listID List being edited (null
+     * if editing all favorites)
+     *
+     * @return object
+     */
+    protected function processEditSubmit($user, $driver, $listID)
+    {
+        $lists = $this->params()->fromPost('lists');
+        foreach ($lists as $list) {
+            $driver->saveToFavorites(
+                array(
+                    'list'  => $list,
+                    'mytags'  => $this->params()->fromPost('tags'.$list),
+                    'notes' => $this->params()->fromPost('notes'.$list)
+                ),
+                $user
+            );
+        }
+        // add to a new list?
+        $addToList = $this->params()->fromPost('addToList');
+        if ($addToList > -1) {
+            $driver->saveToFavorites(array('list' => $addToList), $user);
+        }
+        $this->flashMessenger()->setNamespace('info')
+            ->addMessage('edit_list_success');
+
+        $newUrl = is_null($listID)
+            ? $this->url()->fromRoute('myresearch-favorites')
+            : $this->url()->fromRoute('userList', array('id' => $listID));
+        return $this->redirect()->toUrl($newUrl);
+    }
+
+    /**
      * Edit record
      *
      * @return void (forward)
      */
     public function editAction()
     {
-        /* TODO:
         // Force login:
         $user = $this->getUser();
         if (!$user) {
@@ -385,48 +421,25 @@ class MyResearchController extends AbstractBase
         }
 
         // Get current record (and, if applicable, selected list ID) for convenience:
-        $id = $this->_request->getParam('id');
-        $source = $this->_request->getParam('source', 'VuFind');
-        $this->view->driver = VF_Record::load($id, $source);
-        $listID = $this->_request->getParam('list_id', null);
-
-        // SAVE
-        if ($this->_request->getParam('submit')) {
-            $lists = $this->_request->getParam('lists');
-            foreach ($lists as $list) {
-                $this->view->driver->saveToFavorites(
-                    array(
-                        'list'  => $list,
-                        'mytags'  => $this->_request->getParam('tags'.$list),
-                        'notes' => $this->_request->getParam('notes'.$list)
-                    ),
-                    $user
-                );
-            }
-            // add to a new list?
-            if ($this->_request->getParam('addToList') > -1) {
-                $this->view->driver->saveToFavorites(
-                    array('list' => $this->_request->getParam('addToList')),
-                    $user
-                );
-            }
-            $this->flashMessenger()->setNamespace('info')
-                ->addMessage('edit_list_success');
-
-            $newUrl = is_null($listID)
-                ? '/MyResearch/Favorites' : '/MyResearch/MyList/' . $listID;
-            return $this->_redirect($newUrl);
-        }
-
-        $userResources = $user->getSavedData(
-            $id,
-            $listID, // if null, returns from My Favorites
-            $source
+        $id = $this->params()->fromPost('id', $this->params()->fromQuery('id'));
+        $source = $this->params()->fromPost(
+            'source', $this->params()->fromQuery('source', 'VuFind')
+        );
+        $driver = Record::load($id, $source);
+        $listID = $this->params()->fromPost(
+            'list_id', $this->params()->fromQuery('list_id', null)
         );
 
-        $this->view->savedData = array();
+        // Process save action if necessary:
+        if ($this->params()->fromPost('submit')) {
+            return $this->processEditSubmit($user, $driver, $listID);
+        }
+
+        // Get saved favorites for selected list (or all lists if $listID is null)
+        $userResources = $user->getSavedData($id, $listID, $source);
+        $savedData = array();
         foreach ($userResources as $current) {
-            $this->view->savedData[] = array(
+            $savedData[] = array(
                 'listId' => $current->list_id,
                 'listTitle' => $current->list_title,
                 'notes' => $current->notes,
@@ -447,13 +460,18 @@ class MyResearchController extends AbstractBase
 
         // Send non-containing lists to the view for user selection:
         $userLists = $user->getLists();
-        $this->view->lists = array();
+        $lists = array();
         foreach ($userLists as $userList) {
             if (!in_array($userList->id, $containingLists)) {
-                $this->view->lists[$userList->id] = $userList->title;
+                $lists[$userList->id] = $userList->title;
             }
         }
-         */
+
+        return $this->createViewModel(
+            array(
+                'driver' => $driver, 'lists' => $lists, 'savedData' => $savedData
+            )
+        );
     }
 
     /**
