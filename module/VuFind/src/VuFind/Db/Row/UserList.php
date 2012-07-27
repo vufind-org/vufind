@@ -98,9 +98,9 @@ class UserList extends RowGateway
      */
     public function updateFromRequest($user, $request)
     {
-        $this->title = $request->getParam('title');
-        $this->description = $request->getParam('desc');
-        $this->public = $request->getParam('public');
+        $this->title = $request->get('title');
+        $this->description = $request->get('desc');
+        $this->public = $request->get('public');
         $this->save($user);
         return $this->id;
     }
@@ -182,6 +182,16 @@ class UserList extends RowGateway
         // Remove Resource (related tags are also removed implicitly)
         $userResourceTable = new UserResourceTable();
         $userResourceTable->destroyLinks($resourceIDs, $this->user_id, $this->id);
+    }
+
+    /**
+     * Is this a public list?
+     *
+     * @return bool
+     */
+    public function isPublic()
+    {
+        return isset($this->public) && ($this->public == 1);
     }
 
     /**
