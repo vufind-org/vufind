@@ -98,7 +98,7 @@ class Resource extends RowGateway
      * @param string            $comment The comment to save.
      * @param Zend_Db_Table_Row $user    The user posting the comment.
      *
-     * @throws VF_Exception_LoginRequired
+     * @throws LoginRequiredException
      * @return int                       ID of newly-created comment.
      */
     public function addComment($comment, $user)

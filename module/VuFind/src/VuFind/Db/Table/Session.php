@@ -26,6 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Db\Table;
+use VuFind\Exception\SessionExpired as SessionExpiredException;
 
 /**
  * Table Definition for session
@@ -79,7 +80,7 @@ class Session extends Gateway
      * @param string $sid      Session ID to retrieve
      * @param int    $lifetime Session lifetime (in seconds)
      *
-     * @throws VF_Exception_SessionExpired
+     * @throws SessionExpiredException
      * @return string     Session data
      */
     public function readSession($sid, $lifetime)
@@ -89,7 +90,7 @@ class Session extends Gateway
 
         // enforce lifetime of this session data
         if (!empty($s->last_used) && $s->last_used + $lifetime <= time()) {
-            throw new VF_Exception_SessionExpired('Session expired!');
+            throw new SessionExpiredException('Session expired!');
         }
 
         // if we got this far, session is good -- update last access time, save
