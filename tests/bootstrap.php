@@ -36,3 +36,6 @@ $configuration = include 'config/application.config.php';
 $serviceManager = new ServiceManager(new ServiceManagerConfig($configuration['service_manager']));
 $serviceManager->setService('ApplicationConfig', $configuration);
 $serviceManager->get('ModuleManager')->loadModules();
+
+// Use output buffering -- some tests involve HTTP headers and will fail if there is output.
+ob_start();

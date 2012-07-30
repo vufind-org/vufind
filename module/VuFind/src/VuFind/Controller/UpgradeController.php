@@ -26,6 +26,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
+use VuFind\Cookie\Container as CookieContainer,
+    Zend\Session\Container as SessionContainer;
 
 /**
  * Class controls VuFind upgrading.
@@ -55,13 +57,13 @@ class UpgradeController extends AbstractBase
         // session is unreliable -- if the user upgrades a configuration that uses
         // a different session handler than the default one, we'll lose track of our
         // upgrade state in the middle of the process!
-        $this->cookie = new VF_Cookie_Namespace('vfup');
+        $this->cookie = new CookieContainer('vfup');
 
         // ...however, once the configuration piece of the upgrade is done, we can
         // safely use the session for storing some values.  We'll use this for the
         // temporary storage of root database credentials, since it is unwise to
         // send such sensitive values around as cookies!
-        $this->session = new Zend_Session_Namespace('upgrade');
+        $this->session = new SessionContainer('upgrade');
 
         // We should also use the session for storing warnings once we know it will
         // be stable; this will prevent the cookies from getting too big.
