@@ -26,7 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Base;
-use Zend\Session\Container as SessionContainer;
+use VuFind\Translator\Translator, Zend\Session\Container as SessionContainer;
 
 /**
  * Abstract options search model.
@@ -308,9 +308,9 @@ abstract class Options
     public function getHumanReadableFieldName($field)
     {
         if (isset($this->basicHandlers[$field])) {
-            return VF_Translator::translate($this->basicHandlers[$field]);
+            return Translator::translate($this->basicHandlers[$field]);
         } else if (isset($this->advancedHandlers[$field])) {
-            return VF_Translator::translate($this->advancedHandlers[$field]);
+            return Translator::translate($this->advancedHandlers[$field]);
         } else {
             return $field;
         }
