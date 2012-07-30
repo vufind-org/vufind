@@ -89,6 +89,22 @@ class Mailer
     }
 
     /**
+     * Get a blank email message object.
+     *
+     * @return Message
+     */
+    public function getNewMessage()
+    {
+        $message = new Message();
+        $message->setEncoding('UTF-8');
+        $headers = $message->getHeaders();
+        $ctype = new \Zend\Mail\Header\ContentType();
+        $ctype->addParameter('charset', 'UTF-8');
+        $headers->addHeader($ctype);
+        return $message;
+    }
+
+    /**
      * Set the mail transport object.
      *
      * @param \Zend\Mail\Transport\TransportInterface $transport Mail transport
@@ -126,10 +142,10 @@ class Mailer
         // Convert all exceptions thrown by mailer into MailException objects:
         try {
             // Send message
-            $message = new Message();
-            $message->setBody($body, 'UTF-8')
+            $message = $this->getNewMessage()
                 ->addFrom($from)
                 ->addTo($to)
+                ->setBody($body)
                 ->setSubject($subject);
             $this->getTransport()->send($message);
         } catch (\Exception $e) {
