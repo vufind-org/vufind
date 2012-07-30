@@ -161,7 +161,7 @@ class UpgradeController extends AbstractBase
             $this->cookie->warnings = $upgrader->getWarnings();
             $this->cookie->configOkay = true;
             return $this->_forward('Home');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $extra = is_a($e, 'VF_Exception_FileAccess')
                 ? '  Check file permissions.' : '';
             $this->_helper->flashMessenger->setNamespace('error')
@@ -247,7 +247,7 @@ class UpgradeController extends AbstractBase
                 $this->view->anonymousCount = $anonymousTags;
                 return $this->_forward('FixAnonymousTags');
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->_helper->flashMessenger->setNamespace('error')
                 ->addMessage('Database upgrade failed: ' . $e->getMessage());
             return $this->_forward('Error');
@@ -279,7 +279,7 @@ class UpgradeController extends AbstractBase
                 $this->session->dbRootUser = $this->view->dbrootuser;
                 $this->session->dbRootPass = $pass;
                 return $this->_forward('FixDatabase');
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $this->_helper->flashMessenger->setNamespace('error')
                     ->addMessage('Could not connect; please try again.');
             }

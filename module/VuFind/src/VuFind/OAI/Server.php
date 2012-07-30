@@ -399,7 +399,7 @@ class Server
         // and output an appropriate error.
         try {
             $params = $this->listRecordsGetParams();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $parts = explode(':', $e->getMessage(), 2);
             if (count($parts) != 2) {
                 throw $e;
@@ -507,7 +507,7 @@ class Server
         $results = new $resultsClass($params);
         try {
             $facets = $results->getFullFieldFacets(array($this->setField));
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $facets = null;
         }
         if (empty($facets) || !isset($facets[$this->setField]['data']['list'])) {

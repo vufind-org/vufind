@@ -683,7 +683,7 @@ class MyResearchController extends AbstractBase
                 // Success Message
                 $this->flashMessenger()->setNamespace('info')
                     ->addMessage('fav_list_delete');
-            } catch(Exception $e) {
+            } catch (\Exception $e) {
                 switch(get_class($e)) {
                 case 'VF_Exception_LoginRequired':
                 case 'VF_Exception_ListPermission':

@@ -141,7 +141,7 @@ class InstallController extends AbstractBase
             if (!$writer->save()) {
                 throw new Exception('Cannot write config to disk.');
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->view->configDir = dirname($config);
             if (function_exists('posix_getpwuid')
                 && function_exists('posix_geteuid')
@@ -200,7 +200,7 @@ class InstallController extends AbstractBase
             $tags = new VuFind_Model_Db_Tags();
             $test = $tags->getByText('test', false);
             $status = true;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $status = false;
         }
         return array(
@@ -340,7 +340,7 @@ class InstallController extends AbstractBase
                         return $this->_forward('fixbasicconfig');
                     }
                     return $this->_redirect('/Install');
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     $this->_helper->flashMessenger->setNamespace('error')
                         ->addMessage($e->getMessage());
                 }
@@ -364,7 +364,7 @@ class InstallController extends AbstractBase
             try {
                 $catalog = VF_Connection_Manager::connectToCatalog();
                 $status = true;
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $status = false;
             }
         }
@@ -438,7 +438,7 @@ class InstallController extends AbstractBase
             $solr = VF_Connection_Manager::connectToIndex();
             $results = $solr->search();
             $status = true;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $status = false;
         }
         return array('title' => 'Solr', 'status' => $status, 'fix' => 'fixsolr');
@@ -469,7 +469,7 @@ class InstallController extends AbstractBase
                     return $this->_forward('fixbasicconfig');
                 }
                 return $this->_redirect('/Install');
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 // Didn't work!
             }
         }
