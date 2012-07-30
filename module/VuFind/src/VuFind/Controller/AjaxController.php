@@ -915,16 +915,14 @@ class AjaxController extends AbstractBase
      */
     public function getACSuggestions()
     {
-        /* TODO
         return $this->output(
             array_values(
-                VF_Autocomplete_Factory::getSuggestions(
+                \VuFind\Autocomplete\Factory::getSuggestions(
                     $this->getRequest()->getQuery()
                 )
             ),
             self::STATUS_OK
         );
-         */
     }
 
     /**
