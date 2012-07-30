@@ -32,7 +32,7 @@ use VuFind\Cart, VuFind\Config\Reader as ConfigReader,
     VuFind\Db\Table\Resource as ResourceTable, VuFind\Db\Table\Tags as TagsTable,
     VuFind\Db\Table\UserList as UserListTable,
     VuFind\Exception\Auth as AuthException, VuFind\Export, VuFind\Mailer,
-    VuFind\Record, VuFind\Translator\Translator;
+    VuFind\Mailer\SMS, VuFind\Record, VuFind\Translator\Translator;
 
 /**
  * This controller handles global AJAX functionality
@@ -934,17 +934,16 @@ class AjaxController extends AbstractBase
      */
     public function smsRecord()
     {
-        /* TODO
         // Attempt to send the email:
         try {
             $record = Record::load(
-                $this->params()->fromQuery('id'),
-                $this->params()->fromQuery('source', 'VuFind')
+                $this->params()->fromPost('id'),
+                $this->params()->fromPost('source', 'VuFind')
             );
-            $mailer = new VF_Mailer_SMS();
+            $mailer = new SMS();
             $mailer->textRecord(
-                $this->params()->fromQuery('provider'),
-                $this->params()->fromQuery('to'), $record, $this->view
+                $this->params()->fromPost('provider'),
+                $this->params()->fromPost('to'), $record, $this->getViewRenderer()
             );
             return $this->output(
                 Translator::translate('sms_success'), self::STATUS_OK
@@ -954,7 +953,6 @@ class AjaxController extends AbstractBase
                 Translator::translate($e->getMessage()), self::STATUS_ERROR
             );
         }
-         */
     }
 
 

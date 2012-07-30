@@ -28,8 +28,9 @@
 namespace VuFind\Controller;
 use VuFind\Db\Table\Comments as CommentsTable,
     VuFind\Db\Table\Resource as ResourceTable,
-    VuFind\Exception\Mail as MailException, VuFind\Mailer, VuFind\Record,
-    VuFind\Search\ResultScroller, Zend\Session\Container as SessionContainer;
+    VuFind\Exception\Mail as MailException, VuFind\Mailer, VuFind\Mailer\SMS,
+    VuFind\Record, VuFind\Search\ResultScroller,
+    Zend\Session\Container as SessionContainer;
 
 /**
  * VuFind Record Controller
@@ -345,38 +346,37 @@ class AbstractRecord extends AbstractBase
      */
     public function smsAction()
     {
-        /* TODO
         // Retrieve the record driver:
-        $this->loadRecord();
+        $driver = $this->loadRecord();
 
         // Load the SMS carrier list:
-        $mailer = new VF_Mailer_SMS();
-        $this->view->carriers = $mailer->getCarriers();
+        $mailer = new SMS();
+        $view = $this->createViewModel();
+        $view->carriers = $mailer->getCarriers();
 
         // Process form submission:
-        if ($this->_request->getParam('submit')) {
+        if ($this->params()->fromPost('submit')) {
             // Send parameters back to view so form can be re-populated:
-            $this->view->to = $this->_request->getParam('to');
-            $this->view->provider = $this->_request->getParam('provider');
+            $view->to = $this->params()->fromPost('to');
+            $view->provider = $this->params()->fromPost('provider');
 
             // Attempt to send the email and show an appropriate flash message:
             try {
                 $mailer->textRecord(
-                    $this->view->provider, $this->view->to, $this->view->driver,
-                    $this->view
+                    $view->provider, $view->to, $driver, $this->getViewRenderer()
                 );
-                $this->_helper->flashMessenger->setNamespace('info')
+                $this->flashMessenger()->setNamespace('info')
                     ->addMessage('sms_success');
                 return $this->redirectToRecord();
-            } catch (VF_Exception_Mail $e) {
-                $this->_helper->flashMessenger->setNamespace('error')
+            } catch (MailException $e) {
+                $this->flashMessenger()->setNamespace('error')
                     ->addMessage($e->getMessage());
             }
         }
 
         // Display the template:
-        $this->render('record/sms', null, true);
-         */
+        $view->setTemplate('record/sms');
+        return $view;
     }
 
     /**
