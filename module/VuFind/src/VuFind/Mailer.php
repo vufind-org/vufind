@@ -188,7 +188,7 @@ class Mailer
      * @param string                            $from   Sender email address
      * @param string                            $msg    User notes to include in
      * message
-     * @param \VuFind\RecordDriver\AbstractBase $record   Record being emailed
+     * @param \VuFind\RecordDriver\AbstractBase $record Record being emailed
      * @param Zend_View                         $view   View object (used to render
      * email templates)
      *
