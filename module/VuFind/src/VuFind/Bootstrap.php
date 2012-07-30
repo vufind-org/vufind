@@ -269,34 +269,6 @@ class Bootstrap
     }
 
     /**
-     * Set up mail configuration.
-     *
-     * @return void
-     */
-    protected function initMail()
-    {
-        /* TODO:
-        // Load settings from the config file into the object; we'll do the
-        // actual creation of the mail object later since that will make error
-        // detection easier to control.
-        // build Zend_Mail
-
-        $settings = array (
-            'port' => $this->config->Mail->port
-        );
-        if(isset($this->config->Mail->username)
-            && isset($this->config->Mail->password)
-        ) {
-            $settings['auth'] = 'login';
-            $settings['username'] = $this->config->Mail->username;
-            $settings['password'] = $this->config->Mail->password;
-        }
-        $tr = new Zend_Mail_Transport_Smtp($this->config->Mail->host,$settings);
-        Zend_Mail::setDefaultTransport($tr);
-         */
-    }
-
-    /**
      * Set up logging.
      *
      * @return void

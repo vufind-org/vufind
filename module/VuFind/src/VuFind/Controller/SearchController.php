@@ -28,6 +28,7 @@
 namespace VuFind\Controller;
 
 use VuFind\Cache\Manager as CacheManager, VuFind\Db\Table\Search as SearchTable,
+    VuFind\Exception\Mail as MailException, VuFind\Mailer,
     VuFind\Search\Memory, VuFind\Search\Solr\Params, VuFind\Search\Solr\Results,
     VuFind\Solr\Utils as SolrUtils;
 
@@ -76,42 +77,44 @@ class SearchController extends AbstractSearch
      */
     public function emailAction()
     {
-        /* TODO
         // If a URL was explicitly passed in, use that; otherwise, try to
         // find the HTTP referrer.
-        $this->view->url = $this->_request->getParam(
-            'url', $this->_request->getServer('HTTP_REFERER')
+        $view = $this->createViewModel();
+        $view->url = $this->params()->fromPost(
+            'url', $this->params()->fromQuery(
+                'url', $this->getRequest()->getServer()->get('HTTP_REFERER')
+            )
         );
 
         // Fail if we can't figure out a URL to share:
-        if (empty($this->view->url)) {
-            throw new Exception('Cannot determine URL to share.');
+        if (empty($view->url)) {
+            throw new \Exception('Cannot determine URL to share.');
         }
 
         // Process form submission:
-        if ($this->_request->getParam('submit')) {
+        if ($this->params()->fromPost('submit')) {
             // Send parameters back to view so form can be re-populated:
-            $this->view->to = $this->_request->getParam('to');
-            $this->view->from = $this->_request->getParam('from');
-            $this->view->message = $this->_request->getParam('message');
+            $view->to = $this->params()->fromPost('to');
+            $view->from = $this->params()->fromPost('from');
+            $view->message = $this->params()->fromPost('message');
 
             // Attempt to send the email and show an appropriate flash message:
             try {
                 // If we got this far, we're ready to send the email:
-                $mailer = new VF_Mailer();
+                $mailer = new Mailer();
                 $mailer->sendLink(
-                    $this->view->to, $this->view->from, $this->view->message,
-                    $this->view->url, $this->view
+                    $view->to, $view->from, $view->message,
+                    $view->url, $this->getViewRenderer()
                 );
-                $this->_helper->flashMessenger->setNamespace('info')
+                $this->flashMessenger()->setNamespace('info')
                     ->addMessage('email_success');
-                return $this->_redirect($this->view->url);
-            } catch (VF_Exception_Mail $e) {
-                $this->_helper->flashMessenger->setNamespace('error')
+                return $this->redirect()->toUrl($view->url);
+            } catch (MailException $e) {
+                $this->flashMessenger()->setNamespace('error')
                     ->addMessage($e->getMessage());
             }
         }
-         */
+        return $view;
     }
 
     /**

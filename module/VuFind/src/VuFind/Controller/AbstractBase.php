@@ -98,6 +98,16 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Get the view renderer
+     *
+     * @return object
+     */
+    protected function getViewRenderer()
+    {
+        return $this->getServiceLocator()->get('viewmanager')->getRenderer();
+    }
+
+    /**
      * Are we running in a lightbox?
      *
      * @return bool

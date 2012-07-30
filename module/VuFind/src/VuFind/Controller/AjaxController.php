@@ -31,7 +31,7 @@ use VuFind\Cart, VuFind\Config\Reader as ConfigReader,
     VuFind\Db\Table\Comments as CommentsTable,
     VuFind\Db\Table\Resource as ResourceTable, VuFind\Db\Table\Tags as TagsTable,
     VuFind\Db\Table\UserList as UserListTable,
-    VuFind\Exception\Auth as AuthException, VuFind\Export,
+    VuFind\Exception\Auth as AuthException, VuFind\Export, VuFind\Mailer,
     VuFind\Record, VuFind\Translator\Translator;
 
 /**
@@ -167,16 +167,6 @@ class AjaxController extends AbstractBase
             }
         }
         return $filtered;
-    }
-
-    /**
-     * Get the view renderer
-     *
-     * @return object
-     */
-    protected function getViewRenderer()
-    {
-        return $this->getServiceLocator()->get('viewmanager')->getRenderer();
     }
 
     /**
@@ -1005,21 +995,21 @@ class AjaxController extends AbstractBase
      */
     public function emailSearch()
     {
-        /* TODO
         // Make sure URL is properly formatted -- if no protocol is specified, run it
         // through the fullUrl helper:
-        $url = $this->params()->fromQuery('url');
+        $url = $this->params()->fromPost('url');
         if (substr($url, 0, 4) != 'http') {
-            $url = $this->view->fullUrl($url);
+            $urlHelper = $this->getViewRenderer()->plugin('serverurl');
+            $url = $urlHelper($url);
         }
 
         // Attempt to send the email:
         try {
-            $mailer = new VF_Mailer();
+            $mailer = new Mailer();
             $mailer->sendLink(
-                $this->params()->fromQuery('to'), $this->params()->fromQuery('from'),
-                $this->params()->fromQuery('message'),
-                $url, $this->view, $this->params()->fromQuery('subject')
+                $this->params()->fromPost('to'), $this->params()->fromPost('from'),
+                $this->params()->fromPost('message'),
+                $url, $this->getViewRenderer(), $this->params()->fromPost('subject')
             );
             return $this->output(
                 Translator::translate('email_success'), self::STATUS_OK
@@ -1029,7 +1019,6 @@ class AjaxController extends AbstractBase
                 Translator::translate($e->getMessage()), self::STATUS_ERROR
             );
         }
-         */
     }
 
     /**
