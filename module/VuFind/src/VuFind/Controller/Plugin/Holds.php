@@ -87,10 +87,10 @@ class Holds extends AbstractPlugin
     /**
      * Update ILS details with renewal-specific information, if appropriate.
      *
-     * @param VF_ILS_Connection $catalog      ILS connection object
-     * @param array             $ilsDetails   Hold details from ILS driver's
+     * @param \VuFind\ILS\Connection $catalog      ILS connection object
+     * @param array                  $ilsDetails   Hold details from ILS driver's
      * getMyHolds() method
-     * @param array             $cancelStatus Cancel settings from ILS driver's
+     * @param array                  $cancelStatus Cancel settings from ILS driver's
      * checkFunction() method
      *
      * @return array $ilsDetails with renewal info added

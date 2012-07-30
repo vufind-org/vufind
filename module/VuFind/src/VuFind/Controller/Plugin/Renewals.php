@@ -42,10 +42,10 @@ class Renewals extends AbstractPlugin
     /**
      * Update ILS details with renewal-specific information, if appropriate.
      *
-     * @param VF_ILS_Connection $catalog     ILS connection object
-     * @param array             $ilsDetails  Transaction details from ILS driver's
-     * getMyTransactions() method
-     * @param array             $renewStatus Renewal settings from ILS driver's
+     * @param \VuFind\ILS\Connection $catalog     ILS connection object
+     * @param array                  $ilsDetails  Transaction details from ILS
+     * driver's getMyTransactions() method
+     * @param array                  $renewStatus Renewal settings from ILS driver's
      * checkFunction() method
      *
      * @return array $ilsDetails with renewal info added
@@ -71,11 +71,11 @@ class Renewals extends AbstractPlugin
     /**
      * Process renewal requests.
      *
-     * @param Zend_Controller_Request_Abstract $request Request object
-     * @param VF_ILS_Connection                $catalog ILS connection object
-     * @param array                            $patron  Current logged in patron
+     * @param \Zend\Stdlib\Parameters $request Request object
+     * @param \VuFind\ILS\Connection  $catalog ILS connection object
+     * @param array                   $patron  Current logged in patron
      *
-     * @return array                           The result of the renewal, an
+     * @return array                  The result of the renewal, an
      * associative array keyed by item ID (empty if no renewals performed)
      */
     public function processRenewals($request, $catalog, $patron)
