@@ -1219,13 +1219,12 @@ class AjaxController extends AbstractBase
      */
     protected function getResolverLinks()
     {
-        /* TODO
         $openUrl = $this->params()->fromQuery('openurl', '');
 
         $config = ConfigReader::getConfig();
         $resolverType = isset($config->OpenURL->resolver)
             ? $config->OpenURL->resolver : 'other';
-        $resolver = new VF_Resolver_Connection($resolverType);
+        $resolver = new \VuFind\Resolver\Connection($resolverType);
         if (!$resolver->driverLoaded()) {
             return $this->output(
                 Translator::translate("Could not load driver for $resolverType"),
@@ -1266,15 +1265,13 @@ class AjaxController extends AbstractBase
         }
 
         // Render the links using the view:
-        $this->view->openUrlBase = $base;
-        $this->view->openUrl = $openUrl;
-        $this->view->print = $print;
-        $this->view->electronic = $electronic;
-        $this->view->services = $services;
-        $html = $this->getViewRenderer()->render('ajax/resolverLinks.phtml');
+        $view = array(
+            'openUrlBase' => $base, 'openUrl' => $openUrl, 'print' => $print,
+            'electronic' => $electronic, 'services' => $services
+        );
+        $html = $this->getViewRenderer()->render('ajax/resolverLinks.phtml', $view);
 
         // output HTML encoded in JSON object
         return $this->output($html, self::STATUS_OK);
-         */
     }
 }
