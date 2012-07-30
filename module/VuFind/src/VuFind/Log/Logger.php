@@ -1,6 +1,6 @@
 <?php
 /**
- * VF_Logger
+ * VuFind Logger
  *
  * PHP version 5
  *
