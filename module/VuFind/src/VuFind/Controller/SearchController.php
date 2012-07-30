@@ -27,8 +27,9 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Cache\Manager as CacheManager, VuFind\Db\Table\Search as SearchTable,
-    VuFind\Exception\Mail as MailException, VuFind\Mailer,
+use VuFind\Cache\Manager as CacheManager, VuFind\Config\Reader as ConfigReader,
+    VuFind\Db\Table\Search as SearchTable, VuFind\Exception\Mail as MailException,
+    VuFind\Mailer,
     VuFind\Search\Memory, VuFind\Search\Solr\Params, VuFind\Search\Solr\Results,
     VuFind\Solr\Utils as SolrUtils;
 
@@ -298,7 +299,7 @@ class SearchController extends AbstractSearch
         // Find out if there are user configured range options; if not,
         // default to the standard 1/5/30 days:
         $this->view->ranges = array();
-        $searchSettings = VF_Config_Reader::getConfig('searches');
+        $searchSettings = ConfigReader::getConfig('searches');
         if (isset($searchSettings->NewItem->ranges)) {
             $tmp = explode(',', $searchSettings->NewItem->ranges);
             foreach ($tmp as $range) {
@@ -326,7 +327,7 @@ class SearchController extends AbstractSearch
         $range = $this->_request->getParam('range');
         $dept = $this->_request->getParam('department');
 
-        $searchSettings = VF_Config_Reader::getConfig('searches');
+        $searchSettings = ConfigReader::getConfig('searches');
 
         // The code always pulls in enough catalog results to get a fixed number
         // of pages worth of Solr results.  Note that if the Solr index is out of
@@ -528,7 +529,7 @@ class SearchController extends AbstractSearch
         $this->_helper->layout->disableLayout();
         switch ($this->_request->getParam('method')) {
         case 'describe':
-            $config = VF_Config_Reader::getConfig();
+            $config = ConfigReader::getConfig();
             $this->view->site = $config->Site;
             $this->render('search/opensearch-describe', null, true);
             return;

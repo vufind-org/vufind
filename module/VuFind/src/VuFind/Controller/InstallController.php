@@ -104,7 +104,7 @@ class InstallController extends AbstractBase
         // See if the URL setting remains at the default (unless we already
         // know we've failed):
         if ($status) {
-            $config = VF_Config_Reader::getConfig();
+            $config = ConfigReader::getConfig();
             if (stristr($config->Site->url, 'myuniversity.edu')) {
                 $status = false;
             }
@@ -357,7 +357,7 @@ class InstallController extends AbstractBase
     protected function checkILS()
     {
         /* TODO
-        $config = VF_Config_Reader::getConfig();
+        $config = ConfigReader::getConfig();
         if (in_array($config->Catalog->driver, array('Sample', 'Demo'))) {
             $status = false;
         } else {
@@ -405,7 +405,7 @@ class InstallController extends AbstractBase
 
         // If we got this far, check whether we have an error with a real driver
         // or if we need to warn the user that they have selected a fake driver:
-        $config = VF_Config_Reader::getConfig();
+        $config = ConfigReader::getConfig();
         if (in_array($config->Catalog->driver, array('Sample', 'Demo'))) {
             $this->view->demo = true;
             // Get a list of available drivers:
@@ -454,7 +454,7 @@ class InstallController extends AbstractBase
     {
         /* TODO
         // In Windows, localhost may fail -- see if switching to 127.0.0.1 helps:
-        $config = VF_Config_Reader::getConfig();
+        $config = ConfigReader::getConfig();
         $configFile = LOCAL_OVERRIDE_DIR . '/application/configs/config.ini';
         if (stristr($config->Index->url, 'localhost')) {
             $newUrl = str_replace('localhost', '127.0.0.1', $config->Index->url);

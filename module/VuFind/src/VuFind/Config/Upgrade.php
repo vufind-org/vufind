@@ -25,6 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
+use VuFind\Config\Reader as ConfigReader;
 
 /**
  * Class to upgrade previous VuFind configurations to the current version
@@ -205,7 +206,7 @@ class VF_Config_Upgrade
             $this->newConfigs[$config]
                 = parse_ini_file($this->rawDir . '/' . $config, true);
             $this->comments[$config]
-                = VF_Config_Reader::extractComments($this->rawDir . '/' . $config);
+                = ConfigReader::extractComments($this->rawDir . '/' . $config);
         }
     }
 

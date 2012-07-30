@@ -148,7 +148,7 @@ class AdminController extends AbstractBase
     public function statisticsAction()
     {
         /* TODO
-        $config = VF_Config_Reader::getConfig();
+        $config = ConfigReader::getConfig();
         $statsFilled = array(
             'search' => false,
             'record' => false
@@ -249,7 +249,7 @@ class AdminController extends AbstractBase
 
             // Reload config now that it has been edited (otherwise, old setting
             // will persist in cache):
-            VF_Config_Reader::getConfig(null, true);
+            ConfigReader::getConfig(null, true);
         } else {
             $this->view->flashMessenger->setNamespace('error')
                 ->addMessage(
