@@ -965,17 +965,17 @@ class AjaxController extends AbstractBase
      */
     public function emailRecord()
     {
-        /* TODO
         // Attempt to send the email:
         try {
             $record = Record::load(
-                $this->params()->fromQuery('id'),
-                $this->params()->fromQuery('source', 'VuFind')
+                $this->params()->fromPost('id'),
+                $this->params()->fromPost('source', 'VuFind')
             );
-            $mailer = new VF_Mailer();
+            $mailer = new Mailer();
             $mailer->sendRecord(
-                $this->params()->fromQuery('to'), $this->params()->fromQuery('from'),
-                $this->params()->fromQuery('message'), $record, $this->view
+                $this->params()->fromPost('to'), $this->params()->fromPost('from'),
+                $this->params()->fromPost('message'), $record,
+                $this->getViewRenderer()
             );
             return $this->output(
                 Translator::translate('email_success'), self::STATUS_OK
@@ -985,7 +985,6 @@ class AjaxController extends AbstractBase
                 Translator::translate($e->getMessage()), self::STATUS_ERROR
             );
         }
-         */
     }
 
     /**
