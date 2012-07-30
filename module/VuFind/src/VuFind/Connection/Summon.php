@@ -92,8 +92,9 @@ class Summon extends BaseSummon
         }
 
         // Set default debug behavior:
+        $this->logger = Logger::getInstance();
         if (!isset($options['debug'])) {
-            $options['debug'] = Logger::debugNeeded();
+            $options['debug'] = $this->logger->debugNeeded();
         }
 
         $timeout = isset($config->General->timeout)
@@ -115,7 +116,7 @@ class Summon extends BaseSummon
     protected function debugPrint($msg)
     {
         if ($this->debug) {
-            Logger::getInstance()->debug("<pre>{$msg}</pre>\n");
+            $this->logger->debug("<pre>{$msg}</pre>\n");
         }
     }
 

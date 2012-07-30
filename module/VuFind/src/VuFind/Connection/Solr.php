@@ -142,7 +142,8 @@ class Solr
         );
 
         // Don't waste time generating debug messages if nobody is listening:
-        $this->logger = Logger::debugNeeded() ? Logger::getInstance() : false;
+        $logger = Logger::getInstance();
+        $this->logger = $logger->debugNeeded() ? $logger : false;
     }
 
     /**

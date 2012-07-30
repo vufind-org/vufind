@@ -29,7 +29,7 @@
 namespace VuFind\Cover;
 use VuFind\Cache\Manager as CacheManager, VuFind\Code\ISBN,
     VuFind\Config\Reader as ConfigReader, VuFind\Http\Client as HttpClient,
-    VuFind\Theme\Tools as ThemeTools;
+    VuFind\Log\Logger, VuFind\Theme\Tools as ThemeTools;
 
 /**
  * Book Cover Generator
@@ -269,9 +269,7 @@ class Loader
 
         // If file defined but does not exist, log error and display default:
         if (!file_exists($noCoverImage) || !is_readable($noCoverImage)) {
-            /* TODO
-            VF_Logger::debug("Cannot access file: '$noCoverImage'");
-             */
+            Logger::getInstance()->debug("Cannot access file: '$noCoverImage'");
             return $this->loadDefaultFailImage();
         }
 
@@ -287,11 +285,9 @@ class Loader
         // Log error and bail out if file lacks a known image extension:
         $fileExtension = strtolower(end(explode('.', $noCoverImage)));
         if (!array_key_exists($fileExtension, $allowedFileExtensions)) {
-            /* TODO
-            VF_Logger::debug(
+            Logger::getInstance()->debug(
                 "Illegal file-extension '$fileExtension' for image '$noCoverImage'"
             );
-             */
             return $this->loadDefaultFailImage();
         }
 

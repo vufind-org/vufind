@@ -275,15 +275,8 @@ class Bootstrap
      */
     protected function initLog()
     {
-        /* TODO:
-        // Note that we need to initialize the database and the mailer prior to
-        // starting up logging to ensure that dependencies are prepared!
-        $logger = Logger::getInstance();
-         */
-
-        // TODO: in addition to setting up the logger, we also need to figure out
-        // how to capture exceptions to the log -- the logic found in 2.0alpha's
-        // ErrorController needs a new home in 2.0beta.
+        // TODO: We need to figure out how to capture exceptions to the log -- the
+        // logic found in 2.0alpha's ErrorController needs a new home in 2.0beta.
     }
 
     /**

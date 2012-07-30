@@ -26,8 +26,9 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Log;
-use VuFind\Config\Reader as ConfigReader,
-    Zend\Log\Logger as BaseLogger, Zend\Log\Filter\Priority as PriorityFilter;
+use VuFind\Config\Reader as ConfigReader, VuFind\Mailer,
+    Zend\Db\TableGateway\Feature\GlobalAdapterFeature as DbGlobalAdapter,
+    Zend\Log\Logger as BaseLogger;
 
 /**
  * This class wraps the BaseLogger class to allow for log verbosity
@@ -38,10 +39,9 @@ use VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
 class Logger extends BaseLogger
 {
-    protected static $debugNeeded = false;
+    protected $debugNeeded = false;
 
     /**
      * Constructor
@@ -51,11 +51,11 @@ class Logger extends BaseLogger
         parent::__construct();
 
         $config = ConfigReader::getConfig();
-        /* TODO:
+
         // DEBUGGER
         if (!$config->System->debug == false) {
-            $writer = new VF_Log_Writer_Stream('php://output');
-            $formatter = new Zend_Log_Formatter_Simple(
+            $writer = new Writer\Stream('php://output');
+            $formatter = new \Zend\Log\Formatter\Simple(
                 '<pre>%timestamp% %priorityName%: %message%</pre>' . PHP_EOL
             );
             $writer->setFormatter($formatter);
@@ -81,10 +81,9 @@ class Logger extends BaseLogger
 
             // Make Writers
             $filters = explode(',', $error_types);
-            $writer = new VF_Log_Writer_Db(
-                Zend_Db_Table::getDefaultAdapter(),
-                $table_name,
-                $columnMapping
+            $writer = new Writer\Db(
+                DbGlobalAdapter::getStaticAdapter(),
+                $table_name, $columnMapping
             );
             $this->addWriters($writer, $filters);
         }
@@ -97,7 +96,7 @@ class Logger extends BaseLogger
 
             // Make Writers
             $filters = explode(',', $error_types);
-            $writer = new VF_Log_Writer_Stream($file);
+            $writer = new Writer\Stream($file);
             $this->addWriters($writer, $filters);
         }
 
@@ -110,22 +109,22 @@ class Logger extends BaseLogger
             $error_types = isset($parts[1]) ? $parts[1] : '';
 
             // use smtp
-            $mailer = new Zend_Mail('UTF-8');
-            $mailer->setFrom($config->Site->email);
-            $mailer->setSubject('VuFind Log Message');
-            $mailer->addTo($email);
+            $mailer = new Mailer(null, $config);
+            $msg = $mailer->getNewMessage()
+                ->addFrom($config->Site->email)
+                ->addTo($email)
+                ->setSubject('VuFind Log Message');
 
             // Make Writers
             $filters = explode(',', $error_types);
-            $writer = new VF_Log_Writer_Mail($mailer);
+            $writer = new Writer\Mail($msg, $mailer->getTransport());
             $this->addWriters($writer, $filters);
         }
 
         // Null writer to avoid errors
-        if (count($this->_writers) == 0) {
-            $this->addWriter(new VF_Log_Writer_Null());
+        if (count($this->writers) == 0) {
+            $this->addWriter(new \Zend\Log\Writer\Null());
         }
-         */
     }
 
     /**
@@ -133,11 +132,13 @@ class Logger extends BaseLogger
      *
      * Filter keys: alert, error, notice, debug
      *
-     * @param Zend_Log_Writer_Abstract $writer  The writer to apply the filters to
-     * @param string|array             $filters An array or comma-separated string of
+     * @param Zend\Log\Writer\WriterInterface $writer  The writer to apply the
+     * filters to
+     * @param string|array                    $filters An array or comma-separated
+     * string of
      * logging levels
      *
-     * @return \Zend\Log\Writer $writer
+     * @return void
      */
     protected function addWriters($writer, $filters)
     {
@@ -155,7 +156,7 @@ class Logger extends BaseLogger
             switch(trim($priority)) {
             case 'debug':
                 // Set static flag indicating that debug is turned on:
-                self::$debugNeeded = true;
+                $this->debugNeeded = true;
 
                 $max = BaseLogger::INFO;  // Informational: informational messages
                 $min = BaseLogger::DEBUG; // Debug: debug messages
@@ -182,12 +183,18 @@ class Logger extends BaseLogger
 
             // verbosity
             if ($verbosity) {
-                $newWriter->setVerbosity($verbosity);
+                if (method_exists($newWriter, 'setVerbosity')) {
+                    $newWriter->setVerbosity($verbosity);
+                } else {
+                    throw new \Exception(
+                        get_class($newWriter) . ' does not support verbosity.'
+                    );
+                }
             }
 
             // filtering -- only log messages between the min and max priority levels
-            $filter1 = new PriorityFilter($min, '<=');
-            $filter2 = new PriorityFilter($max, '>=');
+            $filter1 = new \Zend\Log\Filter\Priority($min, '<=');
+            $filter2 = new \Zend\Log\Filter\Priority($max, '>=');
             $newWriter->addFilter($filter1);
             $newWriter->addFilter($filter2);
 
@@ -197,17 +204,15 @@ class Logger extends BaseLogger
     }
 
     /**
-     * Log a message at the debug priority level
+     * Get the logger instance.
      *
-     * @param string $msg Debug message
-     *
-     * @return void
+     * @return Logger
      */
-    public static function getInstance($msg)
+    public static function getInstance()
     {
         static $instance;
         if (!$instance) {
-            $instance = new Manager();
+            $instance = new Logger();
         }
         return $instance;
     }
@@ -219,8 +224,8 @@ class Logger extends BaseLogger
      *
      * @return bool
      */
-    public static function debugNeeded()
+    public function debugNeeded()
     {
-        return self::$debugNeeded;
+        return $this->debugNeeded;
     }
 }
