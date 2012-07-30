@@ -54,7 +54,7 @@ interface DriverInterface
      *
      * @param string $id The record id to retrieve the holdings for
      *
-     * @throws VF_Exception_ILS
+     * @throws \VuFind\Exception\ILS
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
@@ -68,7 +68,7 @@ interface DriverInterface
      *
      * @param array $ids The array of record ids to retrieve the status for
      *
-     * @throws VF_Exception_ILS
+     * @throws \VuFind\Exception\ILS
      * @return array     An array of getStatus() return values on success.
      */
     public function getStatuses($ids);
@@ -82,7 +82,7 @@ interface DriverInterface
      * @param string $id     The record id to retrieve the holdings for
      * @param array  $patron Patron data
      *
-     * @throws VF_Exception_ILS
+     * @throws \VuFind\Exception\ILS
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
@@ -97,7 +97,7 @@ interface DriverInterface
      *
      * @param string $id The record id to retrieve the info for
      *
-     * @throws VF_Exception_ILS
+     * @throws \VuFind\Exception\ILS
      * @return array     An array with the acquisitions data on success.
      */
     public function getPurchaseHistory($id);

@@ -25,7 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-use VuFind\Config\Reader as ConfigReader;
+use VuFind\Config\Reader as ConfigReader,
+    VuFind\Exception\FileAccess as FileAccessException;
 
 /**
  * Class to upgrade previous VuFind configurations to the current version
@@ -242,7 +243,7 @@ class VF_Config_Upgrade
      * @param string $filename Name of config file to write (contents will be
      * pulled from current state of object properties).
      *
-     * @throws VF_Exception_FileAccess
+     * @throws FileAccessException
      * @return void
      */
     protected function saveModifiedConfig($filename)
@@ -252,7 +253,7 @@ class VF_Config_Upgrade
             $this->newConfigs[$filename], $this->comments[$filename], $outfile
         );
         if (!$result) {
-            throw new VF_Exception_FileAccess(
+            throw new FileAccessException(
                 "Error: Problem writing to {$outfile}."
             );
         }
@@ -264,7 +265,7 @@ class VF_Config_Upgrade
      *
      * @param string $filename Path to the old config file
      *
-     * @throws VF_Exception_FileAccess
+     * @throws FileAccessException
      * @return void
      */
     protected function saveUnmodifiedConfig($filename)
@@ -282,7 +283,7 @@ class VF_Config_Upgrade
 
         // If we got this far, we need to copy the user's file into place:
         if (!copy($src, $dest)) {
-            throw new VF_Exception_FileAccess(
+            throw new FileAccessException(
                 "Error: Could not copy {$src} to {$dest}."
             );
         }
@@ -322,7 +323,7 @@ class VF_Config_Upgrade
     /**
      * Upgrade config.ini.
      *
-     * @throws VF_Exception_FileAccess
+     * @throws FileAccessException
      * @return void
      */
     protected function upgradeConfig()
@@ -408,7 +409,7 @@ class VF_Config_Upgrade
     /**
      * Upgrade facets.ini.
      *
-     * @throws VF_Exception_FileAccess
+     * @throws FileAccessException
      * @return void
      */
     protected function upgradeFacets()
@@ -442,7 +443,7 @@ class VF_Config_Upgrade
     /**
      * Upgrade searches.ini.
      *
-     * @throws VF_Exception_FileAccess
+     * @throws FileAccessException
      * @return void
      */
     protected function upgradeSearches()
@@ -477,7 +478,7 @@ class VF_Config_Upgrade
     /**
      * Upgrade fulltext.ini.
      *
-     * @throws VF_Exception_FileAccess
+     * @throws FileAccessException
      * @return void
      */
     protected function upgradeFulltext()
@@ -488,7 +489,7 @@ class VF_Config_Upgrade
     /**
      * Upgrade sitemap.ini.
      *
-     * @throws VF_Exception_FileAccess
+     * @throws FileAccessException
      * @return void
      */
     protected function upgradeSitemap()
@@ -499,7 +500,7 @@ class VF_Config_Upgrade
     /**
      * Upgrade sms.ini.
      *
-     * @throws VF_Exception_FileAccess
+     * @throws FileAccessException
      * @return void
      */
     protected function upgradeSms()
@@ -510,7 +511,7 @@ class VF_Config_Upgrade
     /**
      * Upgrade authority.ini.
      *
-     * @throws VF_Exception_FileAccess
+     * @throws FileAccessException
      * @return void
      */
     protected function upgradeAuthority()
@@ -529,7 +530,7 @@ class VF_Config_Upgrade
     /**
      * Upgrade reserves.ini.
      *
-     * @throws VF_Exception_FileAccess
+     * @throws FileAccessException
      * @return void
      */
     protected function upgradeReserves()
@@ -555,7 +556,7 @@ class VF_Config_Upgrade
     /**
      * Upgrade Summon.ini.
      *
-     * @throws VF_Exception_FileAccess
+     * @throws FileAccessException
      * @return void
      */
     protected function upgradeSummon()
@@ -580,7 +581,7 @@ class VF_Config_Upgrade
     /**
      * Upgrade WorldCat.ini.
      *
-     * @throws VF_Exception_FileAccess
+     * @throws FileAccessException
      * @return void
      */
     protected function upgradeWorldCat()
@@ -604,7 +605,7 @@ class VF_Config_Upgrade
     /**
      * Upgrade SolrMarc configurations.
      *
-     * @throws VF_Exception_FileAccess
+     * @throws FileAccessException
      * @return void
      */
     protected function upgradeSolrMarc()
@@ -631,7 +632,7 @@ class VF_Config_Upgrade
             $dest = realpath($this->newDir . '/../../import')
                 . '/marc_local.properties';
             if (!copy($src, $dest) || !file_exists($dest)) {
-                throw new VF_Exception_FileAccess(
+                throw new FileAccessException(
                     "Cannot copy {$src} to {$dest}."
                 );
             }
@@ -641,7 +642,7 @@ class VF_Config_Upgrade
     /**
      * Upgrade .yaml configurations.
      *
-     * @throws VF_Exception_FileAccess
+     * @throws FileAccessException
      * @return void
      */
     protected function upgradeSearchSpecs()
@@ -655,7 +656,7 @@ class VF_Config_Upgrade
             $new = $this->newDir . '/' . $file . '.yaml';
             if (file_exists($old)) {
                 if (!copy($old, $new)) {
-                    throw new VF_Exception_FileAccess(
+                    throw new FileAccessException(
                         "Cannot copy {$old} to {$new}."
                     );
                 }
@@ -666,7 +667,7 @@ class VF_Config_Upgrade
     /**
      * Upgrade ILS driver configuration.
      *
-     * @throws VF_Exception_FileAccess
+     * @throws FileAccessException
      * @return void
      */
     protected function upgradeILS()

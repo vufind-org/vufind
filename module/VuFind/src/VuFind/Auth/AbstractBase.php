@@ -61,7 +61,7 @@ abstract class AbstractBase
      * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
      * account credentials.
      *
-     * @throws VF_Exception_Auth
+     * @throws AuthException
      * @return \VuFind\Db\Row\User Object representing logged-in user.
      */
     abstract public function authenticate($request);
