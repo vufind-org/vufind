@@ -110,7 +110,7 @@ class Database extends AbstractBase
             throw new AuthException('Passwords do not match');
         }
         // Invalid Email Check
-        $validator = new Zend_Validate_EmailAddress();
+        $validator = new \Zend\Validator\EmailAddress();
         if (!$validator->isValid($params['email'])) {
             throw new AuthException('Email address is invalid');
         }
