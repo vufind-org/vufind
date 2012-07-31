@@ -75,12 +75,12 @@ class ResultFeed extends AbstractHelper
     protected function registerExtension()
     {
         $manager = FeedWriter::getExtensionManager();
-        $manager->setService(
+        $manager->setInvokableClass(
             'dublincorerendererentry',
-            new \VuFind\Feed\Writer\Extension\DublinCore\Renderer\Entry()
+            'VuFind\Feed\Writer\Extension\DublinCore\Renderer\Entry'
         );
-        $manager->setService(
-            'dublincoreentry', new \VuFind\Feed\Writer\Extension\DublinCore\Entry()
+        $manager->setInvokableClass(
+            'dublincoreentry', 'VuFind\Feed\Writer\Extension\DublinCore\Entry'
         );
     }
 
