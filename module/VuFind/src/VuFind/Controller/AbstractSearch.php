@@ -224,15 +224,15 @@ class AbstractSearch extends AbstractBase
         }
          */
 
-        /* TODO
         // Special case: If we're in RSS view, we need to render differently:
-        if ($this->view->results->getView() == 'rss') {
-            $this->_helper->viewRenderer->setNoRender();
-            $this->_helper->layout->disableLayout();
-            header('Content-type: text/xml', true);
-            echo $this->view->ResultFeed($this->view->results)->export('rss');
+        if ($view->results->getView() == 'rss') {
+            $response = $this->getResponse();
+            $response->getHeaders()->addHeaderLine('Content-type', 'text/xml');
+            $feed = $this->getViewRenderer()->plugin('resultfeed');
+            $response->setContent($feed($view->results)->export('rss'));
+            return $response;
         }
-         */
+
         return $view;
     }
 

@@ -22,7 +22,7 @@
  *
  * @category VuFind2
  * @package  Tests
- * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
@@ -33,7 +33,7 @@ namespace VuFind\Tests;
  *
  * @category VuFind2
  * @package  Tests
- * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
@@ -43,11 +43,12 @@ abstract class ViewHelperTestCase extends TestCase
     /**
      * Get a working renderer.
      *
-     * @param string $theme Theme directory to load from
+     * @param array  $plugins Custom VuFind plug-ins to register
+     * @param string $theme   Theme directory to load from
      *
      * @return \Zend\View\Renderer\PhpRenderer
      */
-    protected function getPhpRenderer($theme = 'blueprint')
+    protected function getPhpRenderer($plugins = array(), $theme = 'blueprint')
     {
         $resolver = new \Zend\View\Resolver\TemplatePathStack();
 
@@ -62,6 +63,12 @@ abstract class ViewHelperTestCase extends TestCase
         );
         $renderer = new \Zend\View\Renderer\PhpRenderer();
         $renderer->setResolver($resolver);
+        if (!empty($plugins)) {
+            $pluginManager = $renderer->getHelperPluginManager();
+            foreach ($plugins as $key => $value) {
+                $pluginManager->setService($key, $value);
+            }
+        }
         return $renderer;
     }
 

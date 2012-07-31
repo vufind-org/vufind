@@ -26,7 +26,8 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Theme\Root\Helper;
-use Zend\View\Helper\AbstractHelper;
+use DateTime, Zend\Feed\Writer\Writer as FeedWriter, Zend\Feed\Writer\Feed,
+    Zend\View\Helper\AbstractHelper;
 
 /**
  * "Results as feed" view helper
@@ -39,43 +40,87 @@ use Zend\View\Helper\AbstractHelper;
  */
 class ResultFeed extends AbstractHelper
 {
+    protected $translator = false;
+
+    /**
+     * Get access to the translator helper.
+     *
+     * @return object
+     */
+    public function getTranslator()
+    {
+        if (!$this->translator) {
+            $this->translator = $this->getView()->plugin('translate');
+        }
+        return $this->translator;
+    }
+
+    /**
+     * Override the translator helper (useful for testing purposes).
+     *
+     * @param object $translator New translator object.
+     *
+     * @return void
+     */
+    public function setTranslator($translator)
+    {
+        $this->translator = $translator;
+    }
+
+    /**
+     * Set up Dublin Core extension.
+     *
+     * @return void
+     */
+    protected function registerExtension()
+    {
+        $manager = FeedWriter::getExtensionManager();
+        $manager->setService(
+            'dublincorerendererentry',
+            new \VuFind\Feed\Writer\Extension\DublinCore\Renderer\Entry()
+        );
+        $manager->setService(
+            'dublincoreentry', new \VuFind\Feed\Writer\Extension\DublinCore\Entry()
+        );
+    }
+
     /**
      * Represent the current search results as a feed.
      *
-     * @param VF_Search_Base_Results $results Search results to convert to feed.
+     * @param \VuFind\Search\Base\Results $results     Search results to convert to
+     * feed
+     * @param string                      $currentPath Base path to display in feed
+     * (leave null to load dynamically using currentpath view helper)
      *
      * @return Zend_Feed_Writer_Feed
      */
-    public function __invoke($results)
+    public function __invoke($results, $currentPath = null)
     {
-        /* TODO
-        // Set up plugin loader so we can use custom feed extensions:
-        $loader = Zend_Feed_Writer::getPluginLoader();
-        $loader->addPrefixPath(
-            'VF_Feed_Writer_Extension_', 'VF/Feed/Writer/Extension/'
-        );
+        $this->registerExtension();
+
+        // Determine base URL if not already provided:
+        if (is_null($currentPath)) {
+            $currentPath = $this->getView()->plugin('currentpath')->__invoke();
+        }
+        $serverUrl = $this->getView()->plugin('serverurl');
+        $baseUrl = $serverUrl($currentPath);
 
         // Create the parent feed
-        $feed = new Zend_Feed_Writer_Feed();
+        $feed = new Feed();
+        $translator = $this->getTranslator();
         $feed->setTitle(
-            $this->view->translate('Results for') . ' '
-            . $results->getDisplayQuery()
+            $translator('Results for') . ' ' . $results->getDisplayQuery()
         );
-        $feed->setLink(
-            $this->view->serverUrl($this->view->currentPath())
-            . $results->getUrl()->setViewParam(null, false)
-        );
+        $feed->setLink($baseUrl . $results->getUrl()->setViewParam(null, false));
         $feed->setFeedLink(
-            $this->view->serverUrl($this->view->currentPath())
-            . $results->getUrl()->getParams(false),
-            $results->getView()
+            $baseUrl . $results->getUrl()->getParams(false), $results->getView()
         );
 
         $records = $results->getResults();
         $feed->setDescription(
-            $this->view->translate('Displaying the top') . ' ' . count($records)
-            . ' ' . $this->view->translate('search results of') . ' '
-            . $results->getResultTotal() . ' ' . $this->view->translate('found')
+            $translator('Displaying the top') . ' ' . count($records)
+            . ' ' . $translator('search results of') . ' '
+            . $results->getResultTotal() . ' ' . $translator('found')
         );
 
         foreach ($records as $current) {
@@ -83,7 +128,6 @@ class ResultFeed extends AbstractHelper
         }
 
         return $feed;
-         */
     }
 
     /**
@@ -129,7 +173,7 @@ class ResultFeed extends AbstractHelper
      *
      * @param VF_RecordDriver_Base $record Record to pull date from.
      *
-     * @return int|Zend_Date|null
+     * @return int|DateTime|null
      */
     protected function getDateModified($record)
     {
@@ -144,9 +188,9 @@ class ResultFeed extends AbstractHelper
         if (isset($date[0])) {
             // Extract first string of numbers -- this should be a year:
             preg_match('/[^0-9]*([0-9]+).*/', $date[0], $matches);
-            return new Zend_Date(
-                array('year' => $matches[1], 'month' => 1, 'day' => 1)
-            );
+            $date = new DateTime();
+            $date->setDate($matches[1], 1, 1);
+            return $date;
         }
 
         // If we got this far, no date is available:
