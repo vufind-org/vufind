@@ -226,7 +226,7 @@ class ResultScroller extends AbstractPlugin
                     if ($pos !== false) {
                         // decrease the page in the session because
                         // we're now sliding into the previous page
-                        // (for some reason, -- doesn't work here)
+                        // (-- doesn't work on ArrayObjects)
                         $this->data->page = $this->data->page - 1;
 
                         // shift pages to the right
@@ -264,7 +264,7 @@ class ResultScroller extends AbstractPlugin
                     if ($pos !== false) {
                         // increase the page in the session because
                         // we're now sliding into the next page
-                        // (for some reason, ++ doesn't work here)
+                        // (++ doesn't work on ArrayObjects)
                         $this->data->page = $this->data->page + 1;
 
                         // shift pages to the left
