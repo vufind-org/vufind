@@ -22,7 +22,7 @@
  *
  * @category VuFind2
  * @package  Tests
- * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
@@ -35,7 +35,7 @@ use VuFind\Db\AdapterFactory as DbAdapterFactory,
  *
  * @category VuFind2
  * @package  Tests
- * @author   David Maus <maus@hab.de>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
