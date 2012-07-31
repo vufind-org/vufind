@@ -30,7 +30,7 @@
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use VuFind\Config\Reader as ConfigReader,
+use ArrayObject, VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
     VuFind\Date\Converter as DateConverter,
     VuFind\Exception\Date as DateException,
@@ -191,7 +191,7 @@ class Demo implements DriverInterface
             'addLink'      => rand()%10 == 0 ? 'block' : true
         );
     }
-    
+
     /**
      * Get Status
      *
@@ -231,7 +231,7 @@ class Demo implements DriverInterface
         }
         return $holding;
     }
-    
+
     /**
      * Set Status
      *
@@ -249,7 +249,7 @@ class Demo implements DriverInterface
         $status = ($holding['status']) ? $holding['status'] : $this->getFakeStatus();
         $i = ($this->session->statuses) ? count($this->session->statuses)+1 : 1;
         $holding = array_merge($this->getRandomHolding($id, $i), $holding);
-        
+
         // if statuses is already stored
         if ($this->session->statuses) {
             // and this id is part of it
@@ -266,7 +266,7 @@ class Demo implements DriverInterface
         }
         return $holding;
     }
-    
+
     /**
      * Set Status to return an invalid entry
      *
@@ -276,7 +276,7 @@ class Demo implements DriverInterface
      */
     public function setInvalidId($id)
     {
-        $id = (string)$id;        
+        $id = (string)$id;
         // if statuses is already stored
         if ($this->session->statuses) {
             $this->session->statuses[$id] = array();
@@ -285,9 +285,9 @@ class Demo implements DriverInterface
             $this->session->statuses = array($id => array());
         }
     }
-    
+
     /**
-     * Clear status 
+     * Clear status
      *
      * @param array $id id for clearing the status
      *
@@ -296,7 +296,7 @@ class Demo implements DriverInterface
     public function clearStatus($id)
     {
         $id = (string)$id;
-        
+
         // if statuses is already stored
         if ($this->session->statuses) {
             unset($this->session->statuses[$id]);
@@ -501,9 +501,9 @@ class Demo implements DriverInterface
             // loop.
             $this->prepSolr();
 
-            $holdList = array();
+            $holdList = new ArrayObject();
             for ($i = 0; $i < $holds; $i++) {
-                $holdList[] = array(
+                $currentHold = array(
                     "location" => $this->getFakeLoc(false),
                     "expire"   => date("j-M-y", strtotime("now + 30 days")),
                     "create"   =>
@@ -512,16 +512,17 @@ class Demo implements DriverInterface
                     "item_id" => $i
                 );
                 if ($this->idsInMyResearch) {
-                    $holdList[$i]['id'] = $this->getRandomBibId();
+                    $currentHold['id'] = $this->getRandomBibId();
                 } else {
-                    $holdList[$i]['title'] = 'Demo Title ' . $i;
+                    $currentHold['title'] = 'Demo Title ' . $i;
                 }
                 $pos = rand()%5;
                 if ($pos > 1) {
-                    $holdList[$i]['position'] = $pos;
+                    $currentHold['position'] = $pos;
                 } else {
-                    $holdList[$i]['available'] = true;
+                    $currentHold['available'] = true;
                 }
+                $holdList->append($currentHold);
             }
             $this->session->holds = $holdList;
         }
@@ -785,11 +786,11 @@ class Demo implements DriverInterface
     {
         // Rewrite the holds in the session, removing those the user wants to
         // cancel.
-        $newHolds = array();
+        $newHolds = new ArrayObject();
         $retVal = array('count' => 0, 'items' => array());
         foreach ($this->session->holds as $current) {
             if (!in_array($current['reqnum'], $cancelDetails['details'])) {
-                $newHolds[] = $current;
+                $newHolds->append($current);
             } else {
                 // 50% chance of cancel failure for testing purposes
                 if (rand() % 2) {
@@ -799,7 +800,7 @@ class Demo implements DriverInterface
                         'status' => 'hold_cancel_success'
                     );
                 } else {
-                    $newHolds[] = $current;
+                    $newHolds->append($current);
                     $retVal['items'][$current['item_id']] = array(
                         'success' => false,
                         'status' => 'hold_cancel_fail',
@@ -848,18 +849,19 @@ class Demo implements DriverInterface
         // Set up return value -- no blocks in demo driver currently.
         $finalResult = array('blocks' => array(), 'details' => array());
 
-        foreach ($this->session->transactions as $i => $current) {
+        // Grab transactions from session so we can modify them:
+        $transactions = $this->session->transactions;
+        foreach ($transactions as $i => $current) {
             // Only renew requested items:
             if (in_array($current['item_id'], $renewDetails['details'])) {
                 if (rand() % 2) {
-                    $old = $this->session->transactions[$i]['duedate'];
-                    $this->session->transactions[$i]['duedate']
+                    $old = $transactions[$i]['duedate'];
+                    $transactions[$i]['duedate']
                         = date("j-M-y", strtotime($old . " + 7 days"));
 
                     $finalResult['details'][$current['item_id']] = array(
                         "success" => true,
-                        "new_date" =>
-                            $this->session->transactions[$i]['duedate'],
+                        "new_date" => $transactions[$i]['duedate'],
                         "new_time" => '',
                         "item_id" => $current['item_id'],
                     );
@@ -868,13 +870,17 @@ class Demo implements DriverInterface
                         "success" => false,
                         "new_date" => false,
                         "item_id" => $current['item_id'],
-                        "sysMessage" => 
+                        "sysMessage" =>
                             'Demonstrating failure; keep trying and ' .
                             'it will work eventually.'
                     );
                 }
             }
         }
+
+        // Write modified transactions back to session; in-place changes do not
+        // work due to ArrayObject eccentricities:
+        $this->session->transactions = $transactions;
 
         return $finalResult;
     }
@@ -913,14 +919,14 @@ class Demo implements DriverInterface
         if (rand() % 2) {
             return array(
                 "success" => false,
-                "sysMessage" => 
+                "sysMessage" =>
                     'Demonstrating failure; keep trying and ' .
                     'it will work eventually.'
             );
         }
 
         if (!isset($this->session->holds)) {
-            $this->session->holds = array();
+            $this->session->holds = new ArrayObject();
         }
         $lastHold = count($this->session->holds) - 1;
         $nextId = $lastHold >= 0
@@ -950,13 +956,15 @@ class Demo implements DriverInterface
             );
         }
 
-        $this->session->holds[] = array(
-            "id"       => $holdDetails['id'],
-            "location" => $holdDetails['pickUpLocation'],
-            "expire"   => date("j-M-y", $expire),
-            "create"   => date("j-M-y"),
-            "reqnum"   => sprintf("%06d", $nextId),
-            "item_id" => $nextId
+        $this->session->holds->append(
+            array(
+                "id"       => $holdDetails['id'],
+                "location" => $holdDetails['pickUpLocation'],
+                "expire"   => date("j-M-y", $expire),
+                "create"   => date("j-M-y"),
+                "reqnum"   => sprintf("%06d", $nextId),
+                "item_id" => $nextId
+            )
         );
 
         return array('success' => true);
