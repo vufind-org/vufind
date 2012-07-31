@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract base class for PHPUnit test cases.
+ * Abstract base class for PHPUnit database test cases.
  *
  * PHP version 5
  *
@@ -31,7 +31,7 @@ use VuFind\Db\AdapterFactory as DbAdapterFactory,
     Zend\Db\TableGateway\Feature\GlobalAdapterFeature as DbGlobalAdapter;
 
 /**
- * Abstract base class for PHPUnit test cases.
+ * Abstract base class for PHPUnit database test cases.
  *
  * @category VuFind2
  * @package  Tests
