@@ -26,7 +26,10 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Cookie\Container as CookieContainer,
+use ArrayObject, VuFind\Cache\Manager as CacheManager,
+    VuFind\Cookie\Container as CookieContainer,
+    VuFind\Db\Table\Resource as ResourceTable,
+    VuFind\Exception\RecordMissing as RecordMissingException, VuFind\Record,
     Zend\Session\Container as SessionContainer;
 
 /**
@@ -44,15 +47,10 @@ class UpgradeController extends AbstractBase
     protected $session;
 
     /**
-     * init
-     *
-     * @return void
+     * Constructor
      */
-    public function init()
+    public function __construct()
     {
-        /* TODO
-        $this->view->flashMessenger = $this->_helper->flashMessenger;
-
         // We want to use cookies for tracking the state of the upgrade, since the
         // session is unreliable -- if the user upgrades a configuration that uses
         // a different session handler than the default one, we'll lose track of our
@@ -68,9 +66,8 @@ class UpgradeController extends AbstractBase
         // We should also use the session for storing warnings once we know it will
         // be stable; this will prevent the cookies from getting too big.
         if (!isset($this->session->warnings)) {
-            $this->session->warnings = array();
+            $this->session->warnings = new ArrayObject();
         }
-         */
     }
 
     /**
@@ -109,37 +106,31 @@ class UpgradeController extends AbstractBase
      */
     public function establishversionsAction()
     {
-        /* TODO
-        $this->cookie->oldVersion = $this->getVersion(
-            realpath(APPLICATION_PATH . '/..')
-        );
-        $this->cookie->newVersion = $this->getVersion(
-            $this->cookie->sourceDir
-        );
+        $this->cookie->oldVersion = $this->getVersion(realpath(APPLICATION_PATH));
+        $this->cookie->newVersion = $this->getVersion($this->cookie->sourceDir);
 
         // Block upgrade when encountering common errors:
         if (empty($this->cookie->oldVersion)) {
-            $this->_helper->flashMessenger->setNamespace('error')
+            $this->flashMessenger()->setNamespace('error')
                 ->addMessage('Cannot determine source version.');
             unset($this->cookie->oldVersion);
-            return $this->_forward('Error');
+            return $this->forward()->dispatch('Upgrade', array('action' => 'Error'));
         }
         if (empty($this->cookie->newVersion)) {
-            $this->_helper->flashMessenger->setNamespace('error')
+            $this->flashMessenger()->setNamespace('error')
                 ->addMessage('Cannot determine destination version.');
             unset($this->cookie->newVersion);
-            return $this->_forward('Error');
+            return $this->forward()->dispatch('Upgrade', array('action' => 'Error'));
         }
         if ($this->cookie->newVersion == $this->cookie->oldVersion) {
-            $this->_helper->flashMessenger->setNamespace('error')
+            $this->flashMessenger()->setNamespace('error')
                 ->addMessage('Cannot upgrade version to itself.');
             unset($this->cookie->newVersion);
-            return $this->_forward('Error');
+            return $this->forward()->dispatch('Upgrade', array('action' => 'Error'));
         }
 
         // If we got this far, everything is okay:
-        return $this->_forward('Home');
-         */
+        return $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
     }
 
     /**
@@ -160,13 +151,13 @@ class UpgradeController extends AbstractBase
             $upgrader->run();
             $this->cookie->warnings = $upgrader->getWarnings();
             $this->cookie->configOkay = true;
-            return $this->_forward('Home');
+            return $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
         } catch (\Exception $e) {
             $extra = is_a($e, 'VF_Exception_FileAccess')
                 ? '  Check file permissions.' : '';
-            $this->_helper->flashMessenger->setNamespace('error')
+            $this->flashMessenger()->setNamespace('error')
                 ->addMessage('Config upgrade failed: ' . $e->getMessage() . $extra);
-            return $this->_forward('Error');
+            return $this->forward()->dispatch('Upgrade', array('action' => 'Error'));
         }
          */
     }
@@ -191,14 +182,16 @@ class UpgradeController extends AbstractBase
                 if (!isset($this->session->dbRootUser)
                     || !isset($this->session->dbRootPass)
                 ) {
-                    return $this->_forward('GetDbCredentials');
+                    return $this->forward()
+                        ->dispatch('Upgrade', array('action' => 'GetDbCredentials'));
                 }
                 $db = VF_DB::connect(
                     $this->session->dbRootUser, $this->session->dbRootPass
                 );
                 $this->_helper->dbUpgrade->createMissingTables($missingTables, $db);
-                $this->session->warnings[] = "Created missing table(s): "
-                    . implode(', ', $missingTables);
+                $this->session->warnings->append(
+                    "Created missing table(s): " . implode(', ', $missingTables
+                );
             }
 
             // Check for missing columns.
@@ -207,7 +200,8 @@ class UpgradeController extends AbstractBase
                 if (!isset($this->session->dbRootUser)
                     || !isset($this->session->dbRootPass)
                 ) {
-                    return $this->_forward('GetDbCredentials');
+                    return $this->forward()
+                        ->dispatch('Upgrade', array('action' => 'GetDbCredentials'));
                 }
                 if (!isset($db)) {  // connect to DB if not already connected
                     $db = VF_DB::connect(
@@ -215,8 +209,10 @@ class UpgradeController extends AbstractBase
                     );
                 }
                 $this->_helper->dbUpgrade->createMissingColumns($missingCols, $db);
-                $this->session->warnings[] = "Added column(s) to table(s): "
-                    . implode(', ', array_keys($missingCols));
+                $this->session->warnings->append(
+                    "Added column(s) to table(s): "
+                    . implode(', ', array_keys($missingCols))
+                );
             }
 
             // Check for modified columns.
@@ -225,7 +221,8 @@ class UpgradeController extends AbstractBase
                 if (!isset($this->session->dbRootUser)
                     || !isset($this->session->dbRootPass)
                 ) {
-                    return $this->_forward('GetDbCredentials');
+                    return $this->forward()
+                        ->dispatch('Upgrade', array('action' => 'GetDbCredentials'));
                 }
                 if (!isset($db)) {  // connect to DB if not already connected
                     $db = VF_DB::connect(
@@ -233,8 +230,10 @@ class UpgradeController extends AbstractBase
                     );
                 }
                 $this->_helper->dbUpgrade->updateModifiedColumns($modifiedCols, $db);
-                $this->session->warnings[] = "Modified column(s) in table(s): "
-                    . implode(', ', array_keys($modifiedCols));
+                $this->session->warnings->append(
+                    "Modified column(s) in table(s): "
+                    . implode(', ', array_keys($modifiedCols))
+                );
             }
 
             // Don't keep DB credentials in session longer than necessary:
@@ -245,16 +244,17 @@ class UpgradeController extends AbstractBase
             $anonymousTags = VuFind_Model_Db_Tags::getAnonymousCount();
             if ($anonymousTags > 0 && !isset($this->cookie->skipAnonymousTags)) {
                 $this->view->anonymousCount = $anonymousTags;
-                return $this->_forward('FixAnonymousTags');
+                    return $this->forward()
+                        ->dispatch('Upgrade', array('action' => 'FixAnonymousTags'));
             }
         } catch (\Exception $e) {
-            $this->_helper->flashMessenger->setNamespace('error')
+            $this->flashMessenger()->setNamespace('error')
                 ->addMessage('Database upgrade failed: ' . $e->getMessage());
-            return $this->_forward('Error');
+            return $this->forward()->dispatch('Upgrade', array('action' => 'Error'));
         }
 
         $this->cookie->databaseOkay = true;
-        return $this->_forward('Home');
+        return $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
          */
     }
 
@@ -278,9 +278,10 @@ class UpgradeController extends AbstractBase
                 $db->query("SELECT * FROM user;");  // query a table known to exist
                 $this->session->dbRootUser = $this->view->dbrootuser;
                 $this->session->dbRootPass = $pass;
-                return $this->_forward('FixDatabase');
+                return $this->forward()
+                    ->dispatch('Upgrade', array('action' => 'FixDatabase'));
             } catch (\Exception $e) {
-                $this->_helper->flashMessenger->setNamespace('error')
+                $this->flashMessenger()->setNamespace('error')
                     ->addMessage('Could not connect; please try again.');
             }
         }
@@ -298,26 +299,29 @@ class UpgradeController extends AbstractBase
         // Handle skip action:
         if (strlen($this->_request->getParam('skip', '')) > 0) {
             $this->cookie->skipAnonymousTags = true;
-            return $this->_forward('FixDatabase');
+            return $this->forward()
+                ->dispatch('Upgrade', array('action' => 'FixDatabase'));
         }
 
         // Handle submit action:
         if (strlen($this->_request->getParam('submit', '')) > 0) {
             $user = $this->_request->getParam('username');
             if (empty($user)) {
-                $this->_helper->flashMessenger->setNamespace('error')
+                $this->flashMessenger()->setNamespace('error')
                     ->addMessage('Username must not be empty.');
             } else {
                 $user = VuFind_Model_Db_User::getByUsername($user, false);
                 if (empty($user) || !is_object($user) || !isset($user->id)) {
-                    $this->_helper->flashMessenger->setNamespace('error')
+                    $this->flashMessenger()->setNamespace('error')
                         ->addMessage("User {$user} not found.");
                 } else {
                     $table = new VuFind_Model_Db_ResourceTags();
                     $table->assignAnonymousTags($user->id);
-                    $this->session->warnings[]
-                        = "Assigned all anonymous tags to {$user->username}.";
-                    return $this->_forward('FixDatabase');
+                    $this->session->warnings->append(
+                        "Assigned all anonymous tags to {$user->username}."
+                    );
+                    return $this->forward()
+                        ->dispatch('Upgrade', array('action' => 'FixDatabase'));
                 }
             }
         }
@@ -331,39 +335,38 @@ class UpgradeController extends AbstractBase
      */
     public function fixmetadataAction()
     {
-        /* TODO
         // User requested skipping this step?  No need to do further work:
-        if (strlen($this->_request->getParam('skip', '')) > 0) {
+        if (strlen($this->params()->fromPost('skip', '')) > 0) {
             $this->cookie->metadataOkay = true;
-            return $this->_forward('Home');
+            return $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
         }
 
         // Check for problems:
-        $table = new VuFind_Model_Db_Resource();
+        $table = new ResourceTable();
         $problems = $table->findMissingMetadata();
 
         // No problems?  We're done here!
         if (count($problems) == 0) {
             $this->cookie->metadataOkay = true;
-            return $this->_forward('Home');
+            return $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
         }
 
         // Process submit button:
-        if (strlen($this->_request->getParam('submit', '')) > 0) {
+        if (strlen($this->params()->fromPost('submit', '')) > 0) {
             foreach ($problems as $problem) {
                 try {
-                    $driver = VF_Record::load($problem->record_id, $problem->source);
+                    $driver = Record::load($problem->record_id, $problem->source);
                     $problem->assignMetadata($driver)->save();
-                } catch (VF_Exception_RecordMissing $e) {
-                    $this->session->warnings[]
-                        = "Unable to load metadata for record "
-                        . "{$problem->source}:{$problem->record_id}";
+                } catch (RecordMissingException $e) {
+                    $this->session->warnings->append(
+                        "Unable to load metadata for record "
+                        . "{$problem->source}:{$problem->record_id}"
+                    );
                 }
             }
             $this->cookie->metadataOkay = true;
-            return $this->_forward('Home');
+            return $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
         }
-         */
     }
 
     /**
@@ -373,29 +376,26 @@ class UpgradeController extends AbstractBase
      */
     public function getsourcedirAction()
     {
-        /* TODO
         // Process form submission:
-        $dir = $this->_request->getParam('sourcedir');
+        $dir = $this->params()->fromPost('sourcedir');
         if (!empty($dir)) {
-            $this->cookie->sourceDir = rtrim($dir, '\/');
-            // Clear out request to avoid infinite loop:
-            $this->_request->setParam('sourcedir', '');
-            return $this->_forward('Home');
-        }
-
-        // If a bad directory was provided, display an appropriate error:
-        if (isset($this->cookie->sourceDir)) {
-            if (!is_dir($this->cookie->sourceDir)) {
-                $this->_helper->flashMessenger->setNamespace('error')
-                    ->addMessage($this->cookie->sourceDir . ' does not exist.');
-            } else if (!file_exists($this->cookie->sourceDir . '/build.xml')) {
-                $this->_helper->flashMessenger->setNamespace('error')->addMessage(
+            if (!is_dir($dir)) {
+                $this->flashMessenger()->setNamespace('error')
+                    ->addMessage($dir . ' does not exist.');
+            } else if (!file_exists($dir . '/build.xml')) {
+                $this->flashMessenger()->setNamespace('error')->addMessage(
                     'Could not find build.xml in source directory;'
                     . ' upgrade does not support VuFind versions prior to 1.1.'
                 );
+            } else {
+                $this->cookie->sourceDir = rtrim($dir, '\/');
+                // Clear out request to avoid infinite loop:
+                $this->getRequest()->getPost()->set('sourcedir', '');
+                return $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
             }
         }
-         */
+
+        return $this->createViewModel();
     }
 
     /**
@@ -405,56 +405,60 @@ class UpgradeController extends AbstractBase
      */
     public function homeAction()
     {
-        /* TODO
         // If the cache is messed up, nothing is going to work right -- check that
         // first:
-        $cache = new VF_Cache_Manager();
+        $cache = CacheManager::getInstance();
         if ($cache->hasDirectoryCreationError()) {
-            return $this->_redirect('/Install/fixcache');
+            return $this->redirect()->toRoute('install-fixcache');
         }
 
         // First find out which version we are upgrading:
         if (!isset($this->cookie->sourceDir)
             || !is_dir($this->cookie->sourceDir)
         ) {
-            return $this->_forward('GetSourceDir');
+            return $this->forward()
+                ->dispatch('Upgrade', array('action' => 'GetSourceDir'));
         }
 
         // Next figure out which version(s) are involved:
         if (!isset($this->cookie->oldVersion)
             || !isset($this->cookie->newVersion)
         ) {
-            return $this->_forward('EstablishVersions');
+            return $this->forward()
+                ->dispatch('Upgrade', array('action' => 'EstablishVersions'));
         }
 
+        /* TODO
         // Now make sure we have a configuration file ready:
         if (!isset($this->cookie->configOkay)) {
-            return $this->_redirect('/Upgrade/FixConfig');
+            return $this->redirect()->toRoute('upgrade-fixconfig');
         }
 
         // Now make sure the database is up to date:
         if (!isset($this->cookie->databaseOkay)) {
-            return $this->_redirect('/Upgrade/FixDatabase');
+            return $this->redirect()->toRoute('upgrade-fixdatabase');
         }
+         */
 
         // Check for missing metadata in the resource table; note that we do a
         // redirect rather than a forward here so that a submit button clicked
         // in the database action doesn't cause the metadata action to also submit!
         if (!isset($this->cookie->metadataOkay)) {
-            return $this->_redirect('/Upgrade/FixMetadata');
+            return $this->redirect()->toRoute('upgrade-fixmetadata');
         }
 
         // We're finally done -- display any warnings that we collected during
         // the process.
         $allWarnings = array_merge(
             isset($this->cookie->warnings) ? $this->cookie->warnings : array(),
-            $this->session->warnings
+            (array)$this->session->warnings
         );
         foreach ($allWarnings as $warning) {
-            $this->_helper->flashMessenger->setNamespace('info')
+            $this->flashMessenger()->setNamespace('info')
                 ->addMessage($warning);
         }
-         */
+
+        return $this->createViewModel();
     }
 
     /**
@@ -464,15 +468,13 @@ class UpgradeController extends AbstractBase
      */
     public function resetAction()
     {
-        /* TODO
         foreach ($this->cookie->getAllValues() as $k => $v) {
             unset($this->cookie->$k);
         }
-        foreach ($this->session as $k => $v) {
-            unset($this->session->$k);
-        }
-        return $this->_forward('Home');
-         */
+        $storage = $this->session->getManager()->getStorage();
+        $storage[$this->session->getName()]
+            = new ArrayObject(array(), ArrayObject::ARRAY_AS_PROPS);
+        return $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
     }
 }
 

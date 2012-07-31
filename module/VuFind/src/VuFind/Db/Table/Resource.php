@@ -191,13 +191,12 @@ class Resource extends Gateway
      */
     public function findMissingMetadata()
     {
-        /* TODO
-        $select = $this->select();
-        $select->where('title = ?', '');
-        $select->orWhere('author is null');
-        $select->orWhere('year is null');
-        return $this->fetchAll($select);
-         */
+        $callback = function ($select) {
+            $select->where->equalTo('title', '')
+                ->OR->isNull('author')
+                ->OR->isNull('year');
+        };
+        return $this->select($callback);
     }
 
     /**
