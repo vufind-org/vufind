@@ -45,7 +45,7 @@ class ChangeTracker extends Gateway
      */
     public function __construct()
     {
-        parent::__construct('change_tracker');
+        parent::__construct('change_tracker', 'VuFind\Db\Row\ChangeTracker');
     }
 
     /**
