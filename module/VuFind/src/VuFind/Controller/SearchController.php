@@ -52,23 +52,22 @@ class SearchController extends AbstractSearch
     public function advancedAction()
     {
         // Standard setup from base class:
-        parent::advancedAction();
+        $view = parent::advancedAction();
 
-        /* TODO
         // Set up facet information:
-        $this->view->facetList = $this->processAdvancedFacets(
-            $this->getAdvancedFacets()->getFacetList(), $this->view->saved
+        $view->facetList = $this->processAdvancedFacets(
+            $this->getAdvancedFacets()->getFacetList(), $view->saved
         );
-        $specialFacets = $this->view->options->getSpecialAdvancedFacets();
+        $specialFacets = $view->options->getSpecialAdvancedFacets();
         if (stristr($specialFacets, 'illustrated')) {
-            $this->view->illustratedLimit
-                = $this->getIllustrationSettings($this->view->saved);
+            $view->illustratedLimit
+                = $this->getIllustrationSettings($view->saved);
         }
         if (stristr($specialFacets, 'daterange')) {
-            $this->view->dateRangeLimit
-                = $this->getDateRangeSettings($this->view->saved);
+            $view->dateRangeLimit
+                = $this->getDateRangeSettings($view->saved);
         }
-         */
+        return $view;
     }
 
     /**

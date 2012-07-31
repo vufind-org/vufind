@@ -294,23 +294,20 @@ class AbstractSearch extends AbstractBase
      */
     protected function restoreAdvancedSearch($searchId)
     {
-        /* TODO
         // Look up search in database and fail if it is not found:
-        $searchTable = new VuFind_Model_Db_Search();
-        $rows = $searchTable->find($searchId);
-        if (count($rows) < 1) {
-            $this->_helper->flashMessenger->setNamespace('error')
+        $searchTable = new SearchTable();
+        $search = $searchTable->select(array('id' => $searchId))->current();
+        if (empty($search)) {
+            $this->flashMessenger()->setNamespace('error')
                 ->addMessage('advSearchError_notFound');
             return false;
         }
-        $search = $rows->getRow(0);
 
         // Fail if user has no permission to view this search:
         $user = $this->getUser();
-        if ($search->session_id != Zend_Session::getId()
-            && $search->user_id != $user->id
-        ) {
-            $this->_helper->flashMessenger->setNamespace('error')
+        $sessId = $this->getServiceLocator()->get('SessionManager')->getId();
+        if ($search->session_id != $sessId && $search->user_id != $user->id) {
+            $this->flashMessenger()->setNamespace('error')
                 ->addMessage('advSearchError_noRights');
             return false;
         }
@@ -321,7 +318,7 @@ class AbstractSearch extends AbstractBase
 
         // Fail if this is not the right type of search:
         if ($savedSearch->getSearchType() != 'advanced') {
-            $this->_helper->flashMessenger->setNamespace('error')
+            $this->flashMessenger()->setNamespace('error')
                 ->addMessage('advSearchError_notAdvanced');
             return false;
         }
@@ -331,6 +328,5 @@ class AbstractSearch extends AbstractBase
 
         // Make the object available to the view:
         return $savedSearch;
-         */
     }
 }
