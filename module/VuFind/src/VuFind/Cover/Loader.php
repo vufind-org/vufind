@@ -27,8 +27,7 @@
  * @link     http://vufind.org/wiki/use_of_external_content Wiki
  */
 namespace VuFind\Cover;
-use VuFind\Cache\Manager as CacheManager, VuFind\Code\ISBN,
-    VuFind\Config\Reader as ConfigReader, VuFind\Http\Client as HttpClient,
+use VuFind\Code\ISBN, VuFind\Http\Client as HttpClient,
     VuFind\Log\Logger, VuFind\Theme\Tools as ThemeTools;
 
 /**
@@ -50,7 +49,10 @@ class Loader
     protected $validSizes = array('small', 'medium', 'large');
 
     // property to hold VuFind configuration settings
-    protected $config = array();
+    protected $config;
+
+    // directory to store downloaded images
+    protected $baseDir;
 
     // current user parameters:
     protected $isn;
@@ -63,10 +65,17 @@ class Loader
 
     /**
      * Constructor
+     *
+     * @param \Zend\Config\Config $config  VuFind configuration
+     * @param string              $baseDir Directory to store downloaded images
+     * (set to system temp dir if not otherwise specified)
      */
-    public function __construct()
+    public function __construct($config, $baseDir = null)
     {
-        $this->config = ConfigReader::getConfig();
+        $this->config = $config;
+        $this->baseDir = rtrim(
+            is_null($baseDir) ? sys_get_temp_dir() : $baseDir, '\\/'
+        );
     }
 
     /**
@@ -183,8 +192,7 @@ class Loader
      */
     protected function getCachePath($size, $isn, $extension = 'jpg')
     {
-        $cm = CacheManager::getInstance();
-        $base = $cm->getCacheDir() . 'covers';
+        $base = $this->baseDir . '/covers';
         if (!is_dir($base)) {
             mkdir($base);
         }

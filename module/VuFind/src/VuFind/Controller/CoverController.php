@@ -26,7 +26,8 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller;
-use VuFind\Cover\Loader;
+use VuFind\Cache\Manager as CacheManager, VuFind\Config\Reader as ConfigReader,
+    VuFind\Cover\Loader;
 
 /**
  * Generates covers for book entries
@@ -47,7 +48,9 @@ class CoverController extends AbstractBase
     public function __construct()
     {
         // Construct object for loading cover images:
-        $this->loader = new Loader();
+        $this->loader = new Loader(
+            ConfigReader::getConfig(), CacheManager::getInstance()->getCacheDir()
+        );
         parent::__construct();
     }
 
