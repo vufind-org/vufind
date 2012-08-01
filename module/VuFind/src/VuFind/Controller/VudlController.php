@@ -59,12 +59,12 @@ class VudlController extends AbstractBase
         // GET XML FILE NAME
         $driver = SolrResults::getRecord($id);
         if (!method_exists($driver, 'getFullRecord')) {
-            throw new Exception('Cannot obtain VuDL record');
+            throw new \Exception('Cannot obtain VuDL record');
         }
         $result = $driver->getFullRecord();
         $url = isset($result->url) ? trim($result->url) : false;
         if (empty($url)) {
-            throw new Exception('Not a VuDL Record: '.$id);
+            throw new \Exception('Not a VuDL Record: '.$id);
         }
 
         // LOAD FILE (this is the only time we pull the whole XML file

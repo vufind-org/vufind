@@ -82,7 +82,7 @@ class DbUpgrade extends AbstractPlugin
         // Load the default database adapter (by this point, it should be valid):
         $db = Zend_Db_Table::getDefaultAdapter();
         if (!is_object($db)) {
-            throw new Exception('Could not load default database adapter.');
+            throw new \Exception('Could not load default database adapter.');
         }
 
         // Get a list of all tables in the database:
@@ -111,7 +111,7 @@ class DbUpgrade extends AbstractPlugin
         // Load the default database adapter (by this point, it should be valid):
         $db = Zend_Db_Table::getDefaultAdapter();
         if (!is_object($db)) {
-            throw new Exception('Could not load default database adapter.');
+            throw new \Exception('Could not load default database adapter.');
         }
 
         // Get a list of all tables in the database:

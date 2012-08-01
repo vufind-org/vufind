@@ -599,7 +599,7 @@ class Server
         if (!empty($this->params['resumptionToken'])) {
             $params = $this->loadResumptionToken($this->params['resumptionToken']);
             if ($params === false) {
-                throw new Exception(
+                throw new \Exception(
                     'badResumptionToken:Invalid or expired resumption token'
                 );
             }
@@ -628,13 +628,13 @@ class Server
         if (is_null($this->setField) && isset($params['set'])
             && !empty($params['set'])
         ) {
-            throw new Exception('noSetHierarchy:Sets not supported');
+            throw new \Exception('noSetHierarchy:Sets not supported');
         }
 
         // Validate requested metadata format:
         $prefixes = array_keys($this->metadataFormats);
         if (!in_array($params['metadataPrefix'], $prefixes)) {
-            throw new Exception('cannotDisseminateFormat:Unknown Format');
+            throw new \Exception('cannotDisseminateFormat:Unknown Format');
         }
 
         return $params;
@@ -869,7 +869,7 @@ class Server
      */
     protected function unexpectedError($msg)
     {
-        throw new Exception("Unexpected fatal error -- {$msg}.");
+        throw new \Exception("Unexpected fatal error -- {$msg}.");
     }
 }
 ?>

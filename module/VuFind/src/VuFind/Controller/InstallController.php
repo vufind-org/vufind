@@ -129,7 +129,7 @@ class InstallController extends AbstractBase
             $config = LOCAL_OVERRIDE_DIR . '/application/configs/config.ini';
             if (!file_exists($config)) {
                 if (!copy(APPLICATION_PATH . '/configs/config.ini', $config)) {
-                    throw new Exception('Cannot copy file into position.');
+                    throw new \Exception('Cannot copy file into position.');
                 }
             }
             $writer = new VF_Config_Writer($config);
@@ -139,7 +139,7 @@ class InstallController extends AbstractBase
             );
             $writer->set('Site', 'url', rtrim($this->view->fullUrl($path), '/'));
             if (!$writer->save()) {
-                throw new Exception('Cannot write config to disk.');
+                throw new \Exception('Cannot write config to disk.');
             }
         } catch (\Exception $e) {
             $this->view->configDir = dirname($config);
@@ -303,7 +303,7 @@ class InstallController extends AbstractBase
                     $connection = $db->getConnection();
                     $query = 'CREATE DATABASE ' . $this->view->dbname;
                     if (!$connection->query($query)) {
-                        throw new Exception($connection->error);
+                        throw new \Exception($connection->error);
                     }
                     $grant = "GRANT SELECT,INSERT,UPDATE,DELETE ON "
                         . $this->view->dbname
@@ -312,10 +312,10 @@ class InstallController extends AbstractBase
                         . $connection->real_escape_string($newpass)
                         . "' WITH GRANT OPTION";
                     if (!$connection->query($grant)) {
-                        throw new Exception($connection->error);
+                        throw new \Exception($connection->error);
                     };
                     if (!$connection->query('FLUSH PRIVILEGES')) {
-                        throw new Exception($connection->error);
+                        throw new \Exception($connection->error);
                     }
                     $connection->select_db($this->view->dbname);
                     $sql = file_get_contents(APPLICATION_PATH . '/sql/mysql.sql');
@@ -326,7 +326,7 @@ class InstallController extends AbstractBase
                             continue;
                         }
                         if (!$connection->query($current)) {
-                            throw new Exception($connection->error);
+                            throw new \Exception($connection->error);
                         }
                     }
                     // If we made it this far, we can update the config file and
