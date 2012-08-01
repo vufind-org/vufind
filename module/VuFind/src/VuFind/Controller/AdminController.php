@@ -298,7 +298,7 @@ class AdminController extends AbstractBase
                 foreach ($expired as $oldSearch) {
                     $oldSearch->delete();
                 }
-                echo $msg = "{$count} expired searches deleted.";
+                $msg = "{$count} expired searches deleted.";
             }
             $this->view->flashMessenger->setNamespace('info')->addMessage($msg);
         }
