@@ -108,7 +108,7 @@ class File extends AbstractBase
         if ($fp = @fopen($sess_file, "w")) {
             $return = fwrite($fp, $data);
             fclose($fp);
-            if ($return) {
+            if ($return !== false) {
                 return;
             }
         }
