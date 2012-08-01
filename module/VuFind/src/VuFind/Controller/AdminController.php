@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Config\Reader as ConfigReader,
+use VuFind\Config\Reader as ConfigReader, VuFind\Db\Table\Search as SearchTable,
     VuFind\Exception\Forbidden as ForbiddenException,
     VuFind\Http\Client as HttpClient, Zend\Mvc\MvcEvent;
 
@@ -244,14 +244,14 @@ class AdminController extends AbstractBase
         $writer = new VF_Config_Writer($configFile);
         $writer->set('System', 'autoConfigure', 1);
         if (@$writer->save()) {
-            $this->view->flashMessenger->setNamespace('info')
+            $this->flashMessenger()->setNamespace('info')
                 ->addMessage('Auto-configuration enabled.');
 
             // Reload config now that it has been edited (otherwise, old setting
             // will persist in cache):
             ConfigReader::getConfig(null, true);
         } else {
-            $this->view->flashMessenger->setNamespace('error')
+            $this->flashMessenger()->setNamespace('error')
                 ->addMessage(
                     'Could not enable auto-configuration; check permissions on '
                     . $configFile . '.'
@@ -278,10 +278,9 @@ class AdminController extends AbstractBase
      */
     public function deleteexpiredsearchesAction()
     {
-        /* TODO
-        $daysOld = intval($this->_request->getParam('daysOld', 2));
+        $daysOld = intval($this->params()->fromQuery('daysOld', 2));
         if ($daysOld < 2) {
-            $this->view->flashMessenger->setNamespace('error')
+            $this->flashMessenger()->setNamespace('error')
                 ->addMessage(
                     'Expiration age must be at least two days.'
                 );
@@ -289,21 +288,17 @@ class AdminController extends AbstractBase
             // Delete the expired searches--this cleans up any junk left in the
             // database from old search histories that were not caught by the
             // session garbage collector.
-            $search = new VuFind_Model_Db_Search();
-            $expired = $search->getExpiredSearches($daysOld);
-            if (count($expired) == 0) {
+            $search = new SearchTable();
+            $query = $search->getExpiredQuery($daysOld);
+            if (($count = count($search->select($query))) == 0) {
                 $msg = "No expired searches to delete.";
             } else {
-                $count = count($expired);
-                foreach ($expired as $oldSearch) {
-                    $oldSearch->delete();
-                }
+                $search->delete($query);
                 $msg = "{$count} expired searches deleted.";
             }
-            $this->view->flashMessenger->setNamespace('info')->addMessage($msg);
+            $this->flashMessenger()->setNamespace('info')->addMessage($msg);
         }
-        return $this->_forward('Maintenance');
-         */
+        return $this->forward()->dispatch('Admin', array('action' => 'Maintenance'));
     }
 }
 

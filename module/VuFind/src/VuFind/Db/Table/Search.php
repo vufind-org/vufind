@@ -81,26 +81,22 @@ class Search extends Gateway
     }
 
     /**
-     * Get an array of rows representing expired, unsaved searches.
+     * Get a query representing expired searches (this can be passed
+     * to select() or delete() for further processing).
      *
      * @param int $daysOld Age in days of an "expired" search.
      *
-     * @return array       Matching SearchEntry objects.
+     * @return function
      */
-    public function getExpiredSearches($daysOld = 2)
+    public function getExpiredQuery($daysOld = 2)
     {
-        /* TODO
         // Determine the expiration date:
         $expireDate = date('Y-m-d', time() - $daysOld * 24 * 60 * 60);
-
-        // Find expired, unsaved searches:
-        $db = $this->getAdapter();
-        $select = $this->select()
-            ->where($db->quoteIdentifier('saved') . ' = ?', 0)
-            ->where($db->quoteIdentifier('created') . ' < ?', $expireDate);
-
-        return $this->fetchAll($select);
-         */
+        $callback = function ($select) use ($expireDate) {
+            $select->where->lessThan('created', $expireDate)
+                ->equalTo('saved', 0);
+        };
+        return $callback;
     }
 
     /**
