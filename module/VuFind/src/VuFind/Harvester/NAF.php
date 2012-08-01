@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/authority_control Wiki
  */
 namespace VuFind\Harvester;
-use VuFind\Connection\SRU;
+use VuFind\Connection\SRU, Zend\Console\Console;
 
 /**
  * NAF Class
@@ -66,7 +66,7 @@ class NAF
         }
         $this->basePath = $home . '/harvest/lcnaf/';
         if (!is_dir($this->basePath)) {
-            if (!mkdir($this->basePath)) {
+            if (!@mkdir($this->basePath)) {
                 throw new \Exception(
                     "Problem creating directory {$this->basePath}."
                 );
@@ -141,7 +141,7 @@ class NAF
         $id = '';
         $solr = ConnectionManager::connectToIndex('SolrAuth');
         do {
-            echo "Reading IDs starting with '{$id}'...\n";
+            Console::writeLine("Reading IDs starting with '{$id}'...");
             $list = $solr->getTerms('id', $id, 10000);
             if (isset($list['terms']['id']) && !empty($list['terms']['id'])) {
                 foreach ($list['terms']['id'] as $id => $count) {
@@ -295,7 +295,7 @@ class NAF
      */
     protected function scanLCCNs($handle, $start = '', $retry = 0)
     {
-        echo "Scanning LCCNs after \"{$start}\"...\n";
+        Console::writeLine("Scanning LCCNs after \"{$start}\"...");
 
         // Find all dates AFTER the specified start date
         try {
@@ -312,7 +312,7 @@ class NAF
                 if ($retry > 2) {
                     throw new \Exception("Problem loading XML: {$result}");
                 } else {
-                    echo "Problem loading XML; retrying...\n";
+                    Console::writeLine("Problem loading XML; retrying...");
                     // Wait a few seconds in case that helps...
                     sleep(5);
 
@@ -390,7 +390,7 @@ class NAF
             return;
         }
 
-        echo "Processing records for {$date}...\n";
+        Console::writeLine("Processing records for {$date}...");
 
         // Open the output file:
         $file = fopen($path, 'w');
@@ -485,7 +485,7 @@ class NAF
      */
     protected function scanDates($start)
     {
-        echo "Scanning dates after {$start}...\n";
+        Console::writeLine("Scanning dates after {$start}...");
 
         // Find all dates AFTER the specified start date
         try {

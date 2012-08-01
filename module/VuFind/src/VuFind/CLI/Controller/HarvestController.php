@@ -26,7 +26,8 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\CLI\Controller;
-use VuFind\Config\Reader as ConfigReader, VuFind\Harvester\NAF, VuFind\Harvester\OAI;
+use VuFind\Config\Reader as ConfigReader, VuFind\Harvester\NAF, VuFind\Harvester\OAI,
+    Zend\Console\Console;
 
 /**
  * This controller handles various command-line tools
@@ -58,7 +59,7 @@ class HarvestController extends AbstractBase
             }
             $harvest->launch();
         } catch (\Exception $e) {
-            echo $e->getMessage() . "\n";
+            Console::writeLine($e->getMessage());
             return $this->getFailureResponse();
         }
         return $this->getSuccessResponse();
@@ -77,7 +78,7 @@ class HarvestController extends AbstractBase
         $configFile = ConfigReader::getConfigPath('oai.ini', 'harvest');
         $oaiSettings = @parse_ini_file($configFile, true);
         if (empty($oaiSettings)) {
-            echo "Please add OAI-PMH settings to oai.ini.\n";
+            Console::writeLine("Please add OAI-PMH settings to oai.ini.");
             return $this->getFailureResponse();
         }
 
@@ -88,7 +89,7 @@ class HarvestController extends AbstractBase
             if (isset($oaiSettings[$argv[0]])) {
                 $oaiSettings = array($argv[0] => $oaiSettings[$argv[0]]);
             } else {
-                echo "Could not load settings for {$argv[0]}.\n";
+                Console::writeLine("Could not load settings for {$argv[0]}.");
                 return $this->getFailureResponse();
             }
         }
@@ -97,12 +98,12 @@ class HarvestController extends AbstractBase
         $processed = 0;
         foreach ($oaiSettings as $target => $settings) {
             if (!empty($target) && !empty($settings)) {
-                echo "Processing {$target}...\n";
+                Console::writeLine("Processing {$target}...");
                 try {
                     $harvest = new OAI($target, $settings);
                     $harvest->launch();
                 } catch (\Exception $e) {
-                    echo $e->getMessage() . "\n";
+                    Console::writeLine($e->getMessage());
                     return $this->getFailureResponse();
                 }
                 $processed++;
@@ -110,7 +111,9 @@ class HarvestController extends AbstractBase
         }
 
         // All done.
-        echo "Completed without errors -- {$processed} source(s) processed.\n";
+        Console::writeLine(
+            "Completed without errors -- {$processed} source(s) processed."
+        );
         return $this->getSuccessResponse();
     }
 }

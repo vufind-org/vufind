@@ -27,7 +27,7 @@
  */
 namespace VuFind\CLI\Controller;
 use File_MARC, File_MARCXML, VuFind\Connection\Manager as ConnectionManager,
-    VuFind\Sitemap;
+    VuFind\Sitemap, Zend\Console\Console;
 
 /**
  * This controller handles various command-line tools
@@ -121,7 +121,7 @@ class UtilController extends AbstractBase
         $generator = new Sitemap();
         $generator->generate();
         foreach ($generator->getWarnings() as $warning) {
-            echo "$warning\n";
+            Console::writeLine("$warning");
         }
         return $this->getSuccessResponse();
     }
@@ -143,25 +143,35 @@ class UtilController extends AbstractBase
 
         // No filename specified?  Give usage guidelines:
         if (empty($filename)) {
-            echo "Delete records from VuFind's index.\n\n",
-                "Usage: deletes.php [filename] [format] [index]\n\n",
-                "[filename] is the file containing records to delete.\n",
-                "[format] is the format of the file",
-                " -- it may be one of the following:\n",
-                "\tflat - flat text format",
-                " (deletes all IDs in newline-delimited file)\n",
-                "\tmarc - binary MARC format",
-                " (delete all record IDs from 001 fields)\n",
-                "\tmarcxml - MARC-XML format",
-                " (delete all record IDs from 001 fields)\n",
-                '"marc" is used by default if no format is specified.' . "\n",
-                "[index] is the index to use (default = Solr)\n";
+            Console::writeLine("Delete records from VuFind's index.");
+            Console::writeLine("");
+            Console::writeLine("Usage: deletes.php [filename] [format] [index]");
+            Console::writeLine("");
+            Console::writeLine(
+                "[filename] is the file containing records to delete."
+            );
+            Console::writeLine(
+                "[format] is the format of the file -- "
+                . "it may be one of the following:"
+            );
+            Console::writeLine(
+                "\tflat - flat text format "
+                . "(deletes all IDs in newline-delimited file)"
+            );
+            Console::writeLine(
+                "\tmarc - binary MARC format (delete all record IDs from 001 fields)"
+            );
+            Console::writeLine(
+                "\tmarcxml - MARC-XML format (delete all record IDs from 001 fields)"
+            );
+            Console::writeLine('"marc" is used by default if no format is specified.');
+            Console::writeLine("[index] is the index to use (default = Solr)");
             return $this->getFailureResponse();
         }
 
         // File doesn't exist?
         if (!file_exists($filename)) {
-            echo "Cannot find file: {$filename}\n";
+            Console::writeLine("Cannot find file: {$filename}");
             return $this->getFailureResponse();
         }
 
@@ -217,7 +227,7 @@ class UtilController extends AbstractBase
 
         // Abort if we have an invalid expiration age.
         if ($daysOld < 2) {
-            echo "Expiration age must be at least two days.\n";
+            Console::writeLine("Expiration age must be at least two days.");
             return $this->getFailureResponse();
         }
 
@@ -227,14 +237,15 @@ class UtilController extends AbstractBase
         $search = new VuFind_Model_Db_Search();
         $expired = $search->getExpiredSearches($daysOld);
         if (count($expired) == 0) {
-            echo "No expired searches to delete.\n";
+            Console::writeLine("No expired searches to delete.");
             return $this->getFailureResponse();
         }
         $count = count($expired);
         foreach ($expired as $oldSearch) {
             $oldSearch->delete();
         }
-        echo "\n{$count} expired searches deleted.\n";
+        Console::writeLine("");
+        Console::writeLine("{$count} expired searches deleted.");
         return $this->getSuccessResponse();
     }
 
@@ -266,16 +277,16 @@ class UtilController extends AbstractBase
                 $result = $catalog->getSuppressedRecords();
             }
         } catch (\Exception $e) {
-            echo "ILS error -- " . $e->getMessage() . "\n";
+            Console::writeLine("ILS error -- " . $e->getMessage());
             return $this->getFailureResponse();
         }
 
         // Validate result:
         if (!is_array($result)) {
-            echo "Could not obtain suppressed record list from ILS.\n";
+            Console::writeLine("Could not obtain suppressed record list from ILS.");
             return $this->getFailureResponse();
         } else if (empty($result)) {
-            echo "No suppressed records to delete.\n";
+            Console::writeLine("No suppressed records to delete.");
             return $this->getSuccessResponse();
         }
 
@@ -286,7 +297,7 @@ class UtilController extends AbstractBase
             $solr->commit();
             $solr->optimize();
         } else {
-            echo "Delete failed.\n";
+            Console::writeLine("Delete failed.");
             return $this->getFailureResponse();
         }
         return $this->getSuccessResponse();

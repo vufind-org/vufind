@@ -96,8 +96,7 @@ class VuFind
 
         $text = file_get_contents($url);
         if ($text === false) {
-            echo "Unable to access {$url}.\n";
-            exit(1);
+            throw new \Exception("Unable to access {$url}.");
         }
         return $text;
     }

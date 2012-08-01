@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/importing_records#oai-pmh_harvesting Wiki
  */
 namespace VuFind\Harvester;
-use VuFind\Http\Client;
+use VuFind\Http\Client, Zend\Console\Console;
 
 /**
  * OAI Class
@@ -246,8 +246,9 @@ class OAI
     {
         // Debug:
         if ($this->verbose) {
-            echo "Sending request: verb = {$verb}, params = ";
-            print_r($params);
+            Console::write(
+                "Sending request: verb = {$verb}, params = " . print_r($params, true)
+            );
         }
 
         // Set up retry loop:
@@ -273,7 +274,9 @@ class OAI
                     ? $delayHeader->getDeltaSeconds() : 0;
                 if ($delay > 0) {
                     if ($this->verbose) {
-                        echo "Received 503 response; waiting {$delay} seconds...\n";
+                        Console::writeLine(
+                            "Received 503 response; waiting {$delay} seconds..."
+                        );
                     }
                     sleep($delay);
                 }
@@ -411,10 +414,10 @@ class OAI
      */
     protected function loadGranularity()
     {
-        echo "Autodetecting date granularity... ";
+        Console::write("Autodetecting date granularity... ");
         $response = $this->sendRequest('Identify');
         $this->granularity = (string)$response->Identify->granularity;
-        echo "found {$this->granularity}.\n";
+        Console::writeLine("found {$this->granularity}.");
     }
 
     /**
@@ -424,7 +427,7 @@ class OAI
      */
     protected function loadSetNames()
     {
-        echo "Loading set list... ";
+        Console::write("Loading set list... ");
 
         // On the first pass through the following loop, we want to get the
         // first page of sets without using a resumption token:
@@ -453,7 +456,7 @@ class OAI
                 $params['resumptionToken']
                     = (string)$response->ListSets->resumptionToken;
             } else {
-                echo "found " . count($this->setNames) . "\n";
+                Console::writeLine("found " . count($this->setNames));
                 return;
             }
         }
@@ -494,7 +497,7 @@ class OAI
      */
     protected function processRecords($records)
     {
-        echo 'Processing ' . count($records) . " records...\n";
+        Console::writeLine('Processing ' . count($records) . " records...");
 
         // Array for tracking successfully harvested IDs:
         $harvestedIds = array();

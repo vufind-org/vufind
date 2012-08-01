@@ -27,7 +27,8 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\CLI\Controller;
-use Zend\Console\Getopt, Zend\Mvc\Controller\AbstractActionController;
+use Zend\Console\Console, Zend\Console\Getopt,
+    Zend\Mvc\Controller\AbstractActionController;
 
 /**
  * VuFind controller base class (defines some methods that can be shared by other
@@ -65,32 +66,37 @@ class AbstractBase extends AbstractActionController
     protected function checkLocalSetting()
     {
         if (!getenv('VUFIND_LOCAL_DIR')) {
-            echo "WARNING: The VUFIND_LOCAL_DIR environment variable is not set.\n";
-            echo "This should point to your local configuration directory (i.e. \n";
-            echo realpath(APPLICATION_PATH . '/../local') . ").\n";
-            echo "Without it, inappropriate default settings may be loaded.\n\n";
+            Console::writeLine(
+                "WARNING: The VUFIND_LOCAL_DIR environment variable is not set."
+            );
+            Console::writeLine(
+                "This should point to your local configuration directory (i.e."
+            );
+            Console::writeLine(realpath(APPLICATION_PATH . '/local') . ").");
+            Console::writeLine(
+                "Without it, inappropriate default settings may be loaded."
+            );
+            Console::writeLine("");
         }
     }
 
     /**
      * Indicate failure.
      *
-     * @return void
+     * @return \Zend\Console\Response
      */
     protected function getFailureResponse()
     {
-        // TODO: better framework integration for response codes
-        exit(1);
+        return $this->getResponse()->setErrorLevel(1);
     }
 
     /**
      * Indicate success.
      *
-     * @return void
+     * @return \Zend\Console\Response
      */
     protected function getSuccessResponse()
     {
-        // TODO: better framework integration for response codes
-        exit(0);
+        return $this->getResponse()->setErrorLevel(0);
     }
 }

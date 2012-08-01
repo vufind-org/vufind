@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\CLI\Controller;
-use VuFind\XSLT\Importer;
+use VuFind\XSLT\Importer, Zend\Console\Console;
 
 /**
  * This controller handles various command-line tools
@@ -59,19 +59,38 @@ class ImportController extends AbstractBase
         // Display help message if parameters missing:
         $argv = $this->consoleOpts->getRemainingArgs();
         if (!isset($argv[1])) {
-            echo "Usage: import-xsl.php [--test-only] [--index <type>] XML_file "
-                . "properties_file\n"
-                . "\tXML_file - source file to index\n"
-                . "\tproperties_file - import configuration file\n"
-                . "If the optional --test-only flag is set, transformed XML will "
-                . "be displayed\non screen for debugging purposes, but it will "
-                . "not be indexed into VuFind.\n\n"
-                . "If the optional --index parameter is set, it must be followed by "
-                . "the name of\na class for accessing Solr; it defaults to the "
-                . "standard Solr class, but could\nbe overridden with, for example, "
-                . "SolrAuth to load authority records.\n\n"
-                . "Note: See vudl.properties and ojs.properties for configuration "
-                . "examples.\n";
+            Console::writeLine(
+                "Usage: import-xsl.php [--test-only] [--index <type>] "
+                . "XML_file properties_file"
+            );
+            Console::writeLine("\tXML_file - source file to index");
+            Console::writeLine("\tproperties_file - import configuration file");
+            Console::writeLine(
+                "If the optional --test-only flag is set, "
+                . "transformed XML will be displayed"
+            );
+            Console::writeLine(
+                "on screen for debugging purposes, "
+                . "but it will not be indexed into VuFind."
+            );
+            Console::writeLine("");
+            Console::writeLine(
+                "If the optional --index parameter is set, "
+                . "it must be followed by the name of"
+            );
+            Console::writeLine(
+                "a class for accessing Solr; it defaults to the "
+                . "standard Solr class, but could"
+            );
+            Console::writeLine(
+                "be overridden with, for example, SolrAuth to "
+                . "load authority records."
+            );
+            Console::writeLine("");
+            Console::writeLine(
+                "Note: See vudl.properties and ojs.properties "
+                . "for configuration examples."
+            );
             return $this->getFailureResponse();
         }
 
@@ -79,11 +98,11 @@ class ImportController extends AbstractBase
         try {
             Importer::save($argv[0], $argv[1], $index, $testMode);
         } catch (\Exception $e) {
-            echo "Fatal error: " . $e->getMessage() . "\n";
+            Console::writeLine("Fatal error: " . $e->getMessage());
             return $this->getFailureResponse();
         }
         if (!$testMode) {
-            echo "Successfully imported {$argv[0]}...\n";
+            Console::writeLine("Successfully imported {$argv[0]}...");
         }
         return $this->getSuccessResponse();
     }

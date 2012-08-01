@@ -28,7 +28,7 @@
 namespace VuFind\XSLT;
 use DOMDocument, VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
-    XSLTProcessor;
+    XSLTProcessor, Zend\Console\Console;
 
 /**
  * VuFind XSLT importer
@@ -63,7 +63,7 @@ class Importer
             $solr = ConnectionManager::connectToIndex($index);
             $result = $solr->saveRecord($xml);
         } else {
-            echo $xml . "\n";
+            Console::write($xml . "\n");
         }
     }
 
