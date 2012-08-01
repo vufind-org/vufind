@@ -244,7 +244,7 @@ class InstallController extends AbstractBase
                 ." For details on how to do this, see "
                 ."http://vufind.org/wiki/installation "
                 ."and look at the PHP installation instructions for your platform.";
-            $this->_helper->flashMessenger->setNamespace('error')->addMessage($msg);
+            $this->flashMessenger()->setNamespace('error')->addMessage($msg);
             $this->view->problems++;
         }
 
@@ -256,7 +256,7 @@ class InstallController extends AbstractBase
                 . " For details on how to do this, see "
                 . "http://vufind.org/wiki/installation "
                 . "and look at the PHP installation instructions for your platform.";
-            $this->_helper->flashMessenger->setNamespace('error')->addMessage($msg);
+            $this->flashMessenger()->setNamespace('error')->addMessage($msg);
             $this->view->problems++;
         }
          */
@@ -276,19 +276,19 @@ class InstallController extends AbstractBase
         $this->view->dbrootuser = $this->_request->getParam('dbrootuser', 'root');
 
         if (!preg_match('/^\w*$/', $this->view->dbname)) {
-            $this->_helper->flashMessenger->setNamespace('error')
+            $this->flashMessenger()->setNamespace('error')
                 ->addMessage('Database name must be alphanumeric.');
         } else if (!preg_match('/^\w*$/', $this->view->dbuser)) {
-            $this->_helper->flashMessenger->setNamespace('error')
+            $this->flashMessenger()->setNamespace('error')
                 ->addMessage('Database user must be alphanumeric.');
         } else if (strlen($this->_request->getParam('submit', '')) > 0) {
             $newpass = $this->_request->getParam('dbpass');
             $newpassConf = $this->_request->getParam('dbpassconfirm');
             if (empty($newpass) || empty($newpassConf)) {
-                $this->_helper->flashMessenger->setNamespace('error')
+                $this->flashMessenger()->setNamespace('error')
                     ->addMessage('Password fields must not be blank.');
             } else if ($newpass != $newpassConf) {
-                $this->_helper->flashMessenger->setNamespace('error')
+                $this->flashMessenger()->setNamespace('error')
                     ->addMessage('Password fields must match.');
             } else {
                 // Connect to database:
@@ -341,7 +341,7 @@ class InstallController extends AbstractBase
                     }
                     return $this->_redirect('/Install');
                 } catch (\Exception $e) {
-                    $this->_helper->flashMessenger->setNamespace('error')
+                    $this->flashMessenger()->setNamespace('error')
                         ->addMessage($e->getMessage());
                 }
             }

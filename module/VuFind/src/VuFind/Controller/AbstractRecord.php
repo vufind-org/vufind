@@ -406,7 +406,7 @@ class AbstractRecord extends AbstractBase
         // Display export menu if missing/invalid option
         if (empty($format) || !$this->view->driver->supportsExport($format)) {
             if (!empty($format)) {
-                $this->_helper->flashMessenger->setNamespace('error')
+                $this->flashMessenger()->setNamespace('error')
                     ->addMessage('export_invalid_format');
             }
             return $this->render('record/export-menu', null, true);

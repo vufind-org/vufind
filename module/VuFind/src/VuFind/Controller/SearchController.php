@@ -354,7 +354,7 @@ class SearchController extends AbstractSearch
         $limit = $params->getQueryIDLimit();
         if (count($bibIDs) > $limit) {
             $bibIDs = array_slice($bibIDs, 0, $limit);
-            $this->_helper->flashMessenger->setNamespace('info')
+            $this->flashMessenger()->setNamespace('info')
                 ->addMessage('too_many_new_items');
         }
 
@@ -467,7 +467,7 @@ class SearchController extends AbstractSearch
         $limit = $params->getQueryIDLimit();
         if (count($bibIDs) > $limit) {
             $bibIDs = array_slice($bibIDs, 0, $limit);
-            $this->_helper->flashMessenger->setNamespace('info')
+            $this->flashMessenger()->setNamespace('info')
                 ->addMessage('too_many_reserves');
         }
 
