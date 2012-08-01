@@ -97,9 +97,12 @@ class Shibboleth extends AbstractBase
      * Get the URL to establish a session (needed when the internal VuFind login
      * form is inadequate).  Returns false when no session initiator is needed.
      *
+     * @param string $target Full URL where external authentication method should
+     * send user to after login (some drivers may override this).
+     *
      * @return bool|string
      */
-    public function getSessionInitiator()
+    public function getSessionInitiator($target)
     {
         if (!isset($this->config->Shibboleth->login)) {
             throw new AuthException(
@@ -110,14 +113,7 @@ class Shibboleth extends AbstractBase
         if (isset($this->config->Shibboleth->target)) {
             $shibTarget = $this->config->Shibboleth->target;
         } else {
-            /* TODO -- perhaps this should be passed in as a parameter
-            $myRes = isset($this->config->Site->defaultLoggedInModule)
-                ? $this->config->Site->defaultLoggedInModule : 'MyResearch';
-            $urlOptions = array('controller' => $myRes, 'action' => 'Home');
-            $router = Zend_Controller_Front::getInstance()->getRouter();
-            $shibTarget = VF_Url::getBaseUrl()
-                . $router->assemble($urlOptions, 'default', false, false);
-             */
+            $shibTarget = $target;
         }
         $sessionInitiator = $this->config->Shibboleth->login
             . '?target=' . urlencode($shibTarget);

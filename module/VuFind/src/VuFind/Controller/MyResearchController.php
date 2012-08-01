@@ -129,6 +129,19 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Get VuFind's home URL.
+     *
+     * @param string $route Name of route to render as URL
+     *
+     * @return string
+     */
+    protected function getServerUrl($route)
+    {
+        $serverHelper = new \Zend\View\Helper\ServerUrl();
+        return $serverHelper->__invoke($this->url()->fromRoute($route));
+    }
+
+    /**
      * Login Action
      *
      * @return ViewModel
@@ -137,7 +150,8 @@ class MyResearchController extends AbstractBase
     {
         // If this authentication method doesn't use a VuFind-generated login
         // form, force it through:
-        if ($this->getAuthManager()->getSessionInitiator()) {
+        $url = $this->getServerUrl('myresearch-home');
+        if ($this->getAuthManager()->getSessionInitiator($url)) {
             // Don't get stuck in an infinite loop -- if processLogin is already
             // set, it probably means Home action is forwarding back here to
             // report an error!
@@ -148,8 +162,8 @@ class MyResearchController extends AbstractBase
             //
             // Finally, we don't want to auto-forward if we're in a lightbox, since
             // it may cause weird behavior -- better to display an error there!
-            if (!$this->params()->getPost('processLogin', false)
-                && !$this->params()->getPost('forcingLogin', false)
+            if (!$this->params()->fromPost('processLogin', false)
+                && !$this->params()->fromPost('forcingLogin', false)
                 && !$this->inLightbox()
             ) {
                 $this->getRequest()->getPost()->set('processLogin', true);
@@ -171,9 +185,8 @@ class MyResearchController extends AbstractBase
      */
     public function logoutAction()
     {
-        $serverHelper = new \Zend\View\Helper\ServerUrl();
-        $url = $serverHelper->__invoke($this->url()->fromRoute('home'));
-        return $this->redirect()->toUrl($this->getAuthManager()->logout($url));
+        return $this->redirect()
+            ->toUrl($this->getAuthManager()->logout($this->getServerUrl('home')));
     }
 
     /**

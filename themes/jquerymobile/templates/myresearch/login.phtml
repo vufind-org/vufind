@@ -25,7 +25,8 @@
     <? if (!$hideLogin): ?>
       <h3><?=$this->transEsc('Login')?></h3>
       <?=$this->flashmessages()?>
-      <? if (!$account->getSessionInitiator()): // display default login form if no login URL provided ?>
+      <? $sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home'))); ?>
+      <? if (!$sessionInitiator): // display default login form if no login URL provided ?>
         <form method="post" action="<?=$this->url('myresearch-home')?>" name="loginForm" data-ajax="false">
           <div data-role="fieldcontain">
             <?=$this->auth()->getLoginFields()?>
@@ -38,7 +39,7 @@
           <a rel="external" data-role="button" class="new_account" href="<?=$this->url('myresearch-account')?>"><?=$this->transEsc('Create New Account')?></a>
         <? endif; ?>
       <? else: ?>
-        <a rel="external" data-role="button" href="<?=$this->escapeHtml($account->getSessionInitiator())?>"><?=$this->transEsc("Institutional Login")?></a>
+        <a rel="external" data-role="button" href="<?=$this->escapeHtml($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
       <? endif; ?>
     <? endif; ?>
   </div>

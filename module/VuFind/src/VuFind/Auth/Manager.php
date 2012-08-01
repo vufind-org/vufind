@@ -76,11 +76,14 @@ class Manager implements ServiceLocatorAwareInterface
      * Get the URL to establish a session (needed when the internal VuFind login
      * form is inadequate).  Returns false when no session initiator is needed.
      *
+     * @param string $target Full URL where external authentication method should
+     * send user to after login (some drivers may override this).
+     *
      * @return bool|string
      */
-    public function getSessionInitiator()
+    public function getSessionInitiator($target)
     {
-        return $this->auth->getSessionInitiator();
+        return $this->auth->getSessionInitiator($target);
     }
 
     /**
