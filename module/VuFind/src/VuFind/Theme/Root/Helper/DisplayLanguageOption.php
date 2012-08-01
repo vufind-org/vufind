@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Theme\Root\Helper;
-use VuFind\Cache\Manager as CacheManager,
-    VuFind\Translator\Translator, Zend\View\Helper\AbstractHelper;
+use VuFind\Translator\Translator, Zend\View\Helper\AbstractHelper;
 
 /**
  * DisplayLanguageOption view helper
