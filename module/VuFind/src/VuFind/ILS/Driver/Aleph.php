@@ -273,6 +273,8 @@ class AlephRestfulException extends \Exception
  */
 class Aleph implements DriverInterface
 {
+    protected $translator = false;
+
     /**
      * Constructor
      *
@@ -318,18 +320,20 @@ class Aleph implements DriverInterface
             && isset($configArray['util']['tab_sub_library'])
         ) {
             if (isset($configArray['Cache']['type'])) {
-                $manager = new CacheManager();
+                /* TODO
+                $manager = CacheManager::getInstance();
                 $cache = $manager->getCache($configArray['Cache']['type']);
                 $this->translator = $cache->load('alephTranslator');
-                if ($this->translator == false) {
-                    $this->translator = new AlephTranslator($configArray);
+                 */
+            }
+            if ($this->translator == false) {
+                $this->translator = new AlephTranslator($configArray);
+                /* TODO
+                if (isset($cache)) {
                     $cache->save($this->translator, 'alephTranslator');
                 }
-            } else {
-                $this->translator = new AlephTranslator($configArray);
+                 */
             }
-        } else {
-            $this->translator = false;
         }
     }
 
