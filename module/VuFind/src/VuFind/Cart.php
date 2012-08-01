@@ -283,8 +283,6 @@ class Cart
      */
     public function getRecordDetails()
     {
-        /* TODO:
         return Record::loadBatch($this->items);
-         */
     }
 }

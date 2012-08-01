@@ -59,24 +59,23 @@ class CartController extends AbstractBase
      */
     public function homeAction()
     {
-        /* TODO
         // We came in from the cart -- let's remember this we can redirect there
         // when we're done:
         $this->session->url = '/Cart';
 
         // Now forward to the requested action:
-        if (strlen($this->_request->getParam('email', '')) > 0) {
-            return $this->_forward('Email');
-        } else if (strlen($this->_request->getParam('print', '')) > 0) {
-            return $this->_forward('PrintCart');
-        } else if (strlen($this->_request->getParam('saveCart', '')) > 0) {
-            return $this->_forward('Save');
-        } else if (strlen($this->_request->getParam('export', '')) > 0) {
-            return $this->_forward('Export');
+        if (strlen($this->params()->fromPost('email', '')) > 0) {
+            $action = 'Email';
+        } else if (strlen($this->params()->fromPost('print', '')) > 0) {
+            $action = 'PrintCart';
+        } else if (strlen($this->params()->fromPost('saveCart', '')) > 0) {
+            $action = 'Save';
+        } else if (strlen($this->params()->fromPost('export', '')) > 0) {
+            $action = 'Export';
         } else {
-            return $this->_forward('Cart');
+            $action = 'Cart';
         }
-         */
+        return $this->forward()->dispatch('Cart', array('action' => $action));
     }
 
     /**
@@ -86,21 +85,20 @@ class CartController extends AbstractBase
      */
     public function cartAction()
     {
-        /* TODO
-        $ids = is_null($this->_request->getParam('selectAll'))
-            ? $this->_request->getParam('ids')
-            : $this->_request->getParam('idsAll');
+        $ids = is_null($this->params()->fromPost('selectAll'))
+            ? $this->params()->fromPost('ids')
+            : $this->params()->fromPost('idsAll');
 
         // Add items if necessary:
-        if (strlen($this->_request->getParam('empty', '')) > 0) {
+        if (strlen($this->params()->fromPost('empty', '')) > 0) {
             Cart::getInstance()->emptyCart();
-        } else if (strlen($this->_request->getParam('delete', '')) > 0) {
+        } else if (strlen($this->params()->fromPost('delete', '')) > 0) {
             if (empty($ids)) {
                 return $this->redirectToSource('error', 'bulk_noitems_advice');
             } else {
                 Cart::getInstance()->removeItems($ids);
             }
-        } else if (strlen($this->_request->getParam('add', '')) > 0) {
+        } else if (strlen($this->params()->fromPost('add', '')) > 0) {
             if (empty($ids)) {
                 return $this->redirectToSource('error', 'bulk_noitems_advice');
             } else {
@@ -109,12 +107,12 @@ class CartController extends AbstractBase
                     $msg = Translator::translate('bookbag_full_msg') . ". "
                         . $addItems['notAdded'] . " "
                         . Translator::translate('items_already_in_bookbag') . ".";
-                    $this->_helper->flashMessenger->setNamespace('info')
+                    $this->flashMessenger()->setNamespace('info')
                         ->addMessage($msg);
                 }
             }
         }
-         */
+        return $this->createViewModel();
     }
 
     /**
@@ -125,28 +123,30 @@ class CartController extends AbstractBase
      */
     public function myresearchbulkAction()
     {
-        /* TODO
         // We came in from the MyResearch section -- let's remember which list (if
         // any) we came from so we can redirect there when we're done:
-        $listID = $this->_request->getParam('listID');
+        $listID = $this->params()->fromPost('listID');
         $this->session->url = empty($listID)
-            ? '/MyResearch/Favorites' : '/MyResearch/MyList/' . $listID;
+            ? $this->url()->fromRoute('myresearch-favorites')
+            : $this->url()->fromRoute('userList', array('id' => $listID));
 
-        // Now forward to the requested action:
-        if (strlen($this->_request->getParam('email', '')) > 0) {
-            return $this->_forward('Email');
-        } else if (strlen($this->_request->getParam('print', '')) > 0) {
-            return $this->_forward('PrintCart');
-        } else if (strlen($this->_request->getParam('delete', '')) > 0) {
-            return $this->_forward('Delete', 'MyResearch');
-        } else if (strlen($this->_request->getParam('add', '')) > 0) {
-            return $this->_forward('Cart');
-        } else if (strlen($this->_request->getParam('export', '')) > 0) {
-            return $this->_forward('Export');
+        // Now forward to the requested controller/action:
+        $controller = 'Cart';   // assume Cart unless overridden below.
+        if (strlen($this->params()->fromPost('email', '')) > 0) {
+            $action = 'Email';
+        } else if (strlen($this->params()->fromPost('print', '')) > 0) {
+            $action = 'PrintCart';
+        } else if (strlen($this->params()->fromPost('delete', '')) > 0) {
+            $controller = 'MyResearch';
+            $action = 'Delete';
+        } else if (strlen($this->params()->fromPost('add', '')) > 0) {
+            $action = 'Cart';
+        } else if (strlen($this->params()->fromPost('export', '')) > 0) {
+            $action = 'Export';
         } else {
-            throw new Exception('Unrecognized bulk action.');
+            throw new \Exception('Unrecognized bulk action.');
         }
-         */
+        return $this->forward()->dispatch($controller, array('action' => $action));
     }
 
     /**
@@ -157,20 +157,20 @@ class CartController extends AbstractBase
     public function emailAction()
     {
         /* TODO
-        $ids = is_null($this->_request->getParam('selectAll'))
-            ? $this->_request->getParam('ids')
-            : $this->_request->getParam('idsAll');
+        $ids = is_null($this->params()->fromPost('selectAll'))
+            ? $this->params()->fromPost('ids')
+            : $this->params()->fromPost('idsAll');
         if (!is_array($ids) || empty($ids)) {
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
         $this->view->records = Record::loadBatch($ids);
 
         // Process form submission:
-        if ($this->_request->getParam('submit')) {
+        if ($this->params()->fromPost('submit')) {
             // Send parameters back to view so form can be re-populated:
-            $this->view->to = $this->_request->getParam('to');
-            $this->view->from = $this->_request->getParam('from');
-            $this->view->message = $this->_request->getParam('message');
+            $this->view->to = $this->params()->fromPost('to');
+            $this->view->from = $this->params()->fromPost('from');
+            $this->view->message = $this->params()->fromPost('message');
 
             // Build the URL to share:
             $params = array();
@@ -194,7 +194,7 @@ class CartController extends AbstractBase
                 );
                 return $this->redirectToSource('info', 'email_success');
             } catch (VF_Exception_Mail $e) {
-                $this->_helper->flashMessenger->setNamespace('error')
+                $this->flashMessenger()->setNamespace('error')
                     ->addMessage($e->getMessage());
             }
         }
@@ -209,9 +209,9 @@ class CartController extends AbstractBase
     public function printcartAction()
     {
         /* TODO
-        $ids = is_null($this->_request->getParam('selectAll'))
-            ? $this->_request->getParam('ids')
-            : $this->_request->getParam('idsAll');
+        $ids = is_null($this->params()->fromPost('selectAll'))
+            ? $this->params()->fromPost('ids')
+            : $this->params()->fromPost('idsAll');
         if (!is_array($ids) || empty($ids)) {
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
@@ -229,16 +229,16 @@ class CartController extends AbstractBase
     {
         /* TODO
         // Get the desired ID list:
-        $ids = is_null($this->_request->getParam('selectAll'))
-            ? $this->_request->getParam('ids')
-            : $this->_request->getParam('idsAll');
+        $ids = is_null($this->params()->fromPost('selectAll'))
+            ? $this->params()->fromPost('ids')
+            : $this->params()->fromPost('idsAll');
         if (!is_array($ids) || empty($ids)) {
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
 
         // Process form submission if necessary:
-        if (!is_null($this->_request->getParam('submit'))) {
-            $format = $this->_request->getParam('format');
+        if (!is_null($this->params()->fromPost('submit'))) {
+            $format = $this->params()->fromPost('format');
             $url = Export::getBulkUrl($this->view, $format, $ids);
             if (Export::needsRedirect($format)) {
                 return $this->_redirect($url);
@@ -270,7 +270,7 @@ class CartController extends AbstractBase
 
         // No legal export options?  Display a warning:
         if (empty($this->view->exportOptions)) {
-            $this->_helper->flashMessenger->setNamespace('error')
+            $this->flashMessenger()->setNamespace('error')
                 ->addMessage('bulk_export_not_supported');
         }
          */
@@ -286,8 +286,8 @@ class CartController extends AbstractBase
         /* TODO
         // We use abbreviated parameters here to keep the URL short (there may
         // be a long list of IDs, and we don't want to run out of room):
-        $ids = $this->_request->getParam('i', array());
-        $format = $this->_request->getParam('f');
+        $ids = $this->params()->fromPost('i', array());
+        $format = $this->params()->fromPost('f');
 
         // Make sure we have IDs to export:
         if (!is_array($ids) || empty($ids)) {
@@ -328,19 +328,19 @@ class CartController extends AbstractBase
         }
 
         // Load record information:
-        $ids = is_null($this->_request->getParam('selectAll'))
-            ? $this->_request->getParam('ids')
-            : $this->_request->getParam('idsAll');
+        $ids = is_null($this->params()->fromPost('selectAll'))
+            ? $this->params()->fromPost('ids')
+            : $this->params()->fromPost('idsAll');
         if (!is_array($ids) || empty($ids)) {
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
 
         // Process submission if necessary:
-        if (!is_null($this->_request->getParam('submit'))) {
-            $this->_helper->favorites->saveBulk($this->_request->getParams(), $user);
-            $this->_helper->flashMessenger->setNamespace('info')
+        if (!is_null($this->params()->fromPost('submit'))) {
+            $this->_helper->favorites->saveBulk($this->params()->fromPosts(), $user);
+            $this->flashMessenger()->setNamespace('info')
                 ->addMessage('bulk_save_success');
-            $list = $this->_request->getParam('list');
+            $list = $this->params()->fromPost('list');
             if (!empty($list)) {
                 return $this->_redirect('/MyResearch/MyList/' . $list);
             } else {
@@ -366,10 +366,9 @@ class CartController extends AbstractBase
      */
     public function redirectToSource($flashNamespace = null, $flashMsg = null)
     {
-        /* TODO
         // Set flash message if requested:
         if (!is_null($flashNamespace) && !empty($flashMsg)) {
-            $this->_helper->flashMessenger->setNamespace($flashNamespace)
+            $this->flashMessenger()->setNamespace($flashNamespace)
                 ->addMessage($flashMsg);
         }
 
@@ -380,9 +379,8 @@ class CartController extends AbstractBase
             $target = $this->session->url;
             unset($this->session->url);
         } else {
-            $target = '/MyResearch';
+            $target = $this->url()->fromRoute('myresearch-home');
         }
-        return $this->_redirect($target);
-         */
+        return $this->redirect()->toUrl($target);
     }
 }
