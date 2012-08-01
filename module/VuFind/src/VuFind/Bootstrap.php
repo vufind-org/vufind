@@ -79,6 +79,61 @@ class Bootstrap
     }
 
     /**
+     * Set up the default database adapter.  Do this first since the session handler
+     * may depend on database access.
+     *
+     * @return void
+     */
+    protected function initDatabase()
+    {
+        DbGlobalAdapter::setStaticAdapter(DbAdapterFactory::getAdapter());
+    }
+
+    /**
+     * Set up the session.  This should be done early since other startup routines
+     * may rely on session access.
+     *
+     * @return void
+     */
+    protected function initSession()
+    {
+        // Don't bother with session in CLI mode (it just causes error messages):
+        if (Console::isConsole()) {
+            return;
+        }
+
+        // Get session configuration:
+        if (!isset($this->config->Session->type)) {
+            throw new \Exception('Cannot initialize session; configuration missing');
+        }
+
+        // Register a session manager in the service manager:
+        $sessionManager = new SessionManager();
+        $serviceManager = $this->event->getApplication()->getServiceManager();
+        $serviceManager->setService('SessionManager', $sessionManager);
+
+        // Set up session handler (after manipulating the type setting for legacy
+        // compatibility -- VuFind 1.x used MySQL instead of Database and had
+        // "Session" as part of the configuration string):
+        $type = ucwords(
+            str_replace('session', '', strtolower($this->config->Session->type))
+        );
+        if ($type == 'Mysql') {
+            $type = 'Database';
+        }
+        $class = 'VuFind\\Session\\' . $type;
+        $sessionManager->setSaveHandler(new $class($this->config->Session));
+
+        // Start up the session:
+        $sessionManager->start();
+
+        // According to the PHP manual, session_write_close should always be
+        // registered as a shutdown function when using an object as a session
+        // handler: http://us.php.net/manual/en/function.session-set-save-handler.php
+        register_shutdown_function(array($sessionManager, 'writeClose'));
+    }
+
+    /**
      * If the system is offline, set up a handler to override the routing output.
      *
      * @return void
@@ -133,6 +188,9 @@ class Bootstrap
         // ...and register service manager in AuthManager (for access to other
         // services, such as the session manager):
         $authManager->setServiceLocator($serviceManager);
+
+        // Now that we're all set up, make sure credentials haven't expired:
+        $authManager->checkForExpiredCredentials();
 
         // Register in view:
         $callback = function($event) use ($authManager) {
@@ -259,16 +317,6 @@ class Bootstrap
     }
 
     /**
-     * Set up the default database adapter.
-     *
-     * @return void
-     */
-    protected function initDatabase()
-    {
-        DbGlobalAdapter::setStaticAdapter(DbAdapterFactory::getAdapter());
-    }
-
-    /**
      * Set up logging.
      *
      * @return void
@@ -277,51 +325,5 @@ class Bootstrap
     {
         // TODO: We need to figure out how to capture exceptions to the log -- the
         // logic found in 2.0alpha's ErrorController needs a new home in 2.0beta.
-    }
-
-    /**
-     * Set up the session.
-     *
-     * @return void
-     */
-    protected function initSession()
-    {
-        // Don't bother with session in CLI mode (it just causes error messages):
-        if (Console::isConsole()) {
-            return;
-        }
-
-        // Get session configuration:
-        if (!isset($this->config->Session->type)) {
-            throw new \Exception('Cannot initialize session; configuration missing');
-        }
-
-        // Register a session manager in the service manager:
-        $sessionManager = new SessionManager();
-        $serviceManager = $this->event->getApplication()->getServiceManager();
-        $serviceManager->setService('SessionManager', $sessionManager);
-
-        // Set up session handler (after manipulating the type setting for legacy
-        // compatibility -- VuFind 1.x used MySQL instead of Database and had
-        // "Session" as part of the configuration string):
-        $type = ucwords(
-            str_replace('session', '', strtolower($this->config->Session->type))
-        );
-        if ($type == 'Mysql') {
-            $type = 'Database';
-        }
-        $class = 'VuFind\\Session\\' . $type;
-        $sessionManager->setSaveHandler(new $class($this->config->Session));
-
-        // Start up the session:
-        $sessionManager->start();
-
-        // According to the PHP manual, session_write_close should always be
-        // registered as a shutdown function when using an object as a session
-        // handler: http://us.php.net/manual/en/function.session-set-save-handler.php
-        register_shutdown_function(array($sessionManager, 'writeClose'));
-
-        // Check user credentials:
-        $serviceManager->get('AuthManager')->checkForExpiredCredentials();
     }
 }
