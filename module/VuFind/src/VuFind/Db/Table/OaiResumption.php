@@ -53,12 +53,11 @@ class OaiResumption extends Gateway
      */
     public function removeExpired()
     {
-        /* TODO
-        $db = $this->getAdapter();
-        $now = date('Y-m-d H:i:s');
-        $where = $db->quoteInto('expires <= ?', $now);
-        $this->delete($where);
-         */
+        $callback = function ($select) {
+            $now = date('Y-m-d H:i:s');
+            $select->where->lessThanOrEqualTo('expires', $now);
+        };
+        $this->delete($callback);
     }
 
     /**
