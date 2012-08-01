@@ -578,7 +578,6 @@ class BrowseController extends AbstractBase
         }
         $params->setFacetSort($sort);
         $result = $searchObject->getFacetList();
-        //var_dump($result[$facet]['list']);
         if (isset($result[$facet])) {
             return $result[$facet]['list'];
         } else {

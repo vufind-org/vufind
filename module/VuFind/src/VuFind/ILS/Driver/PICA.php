@@ -322,7 +322,6 @@ class PICA extends DAIA
                 );
             }
         }
-        //print_r($transList);
         return $transList;
     }
 
@@ -632,7 +631,6 @@ class PICA extends DAIA
     protected function postit($file, $data_to_send)
     {
         // Parameter verarbeiten
-        //print_r($data_to_send); # Zum Debuggen
         foreach ($data_to_send as $key => $dat) {
             $data_to_send[$key]
                 = "$key=".rawurlencode(utf8_encode(stripslashes($dat)));

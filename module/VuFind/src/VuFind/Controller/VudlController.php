@@ -70,12 +70,10 @@ class VudlController extends AbstractBase
         // LOAD FILE (this is the only time we pull the whole XML file
         $xml = simplexml_load_file($url);
         if (!$xml) {
-            //echo 'catch','<br>';
             // DOUBLE ENCODING MADNESS - some of the records need to be encoded
             $split = explode('/', $url);
             // uri encode everything in url after 'VuDL'
             for ($i=8;$i<count($split);$i++) {
-                //echo $split[$i],'<br>';
                 $split[$i] = rawurlencode($split[$i]);
             }
             $url = implode($split, '/');
