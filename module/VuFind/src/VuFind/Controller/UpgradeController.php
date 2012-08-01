@@ -391,7 +391,8 @@ class UpgradeController extends AbstractBase
                 $this->cookie->sourceDir = rtrim($dir, '\/');
                 // Clear out request to avoid infinite loop:
                 $this->getRequest()->getPost()->set('sourcedir', '');
-                return $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
+                return $this->forward()
+                    ->dispatch('Upgrade', array('action' => 'Home'));
             }
         }
 
