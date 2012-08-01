@@ -44,7 +44,7 @@ class Session extends Gateway
      */
     public function __construct()
     {
-        parent::__construct('session');
+        parent::__construct('session', 'VuFind\Db\Row\Session');
     }
 
     /**
@@ -58,20 +58,13 @@ class Session extends Gateway
      */
     public function getBySessionId($sid, $create = true)
     {
-        /* TODO
-        $db = $this->getAdapter();
-        $row = $this->fetchRow(
-            $this->select()->where(
-                $db->quoteIdentifier('session_id') . ' = ?', $sid
-            )
-        );
+        $row = $this->select(array('session_id' => $sid))->current();
         if ($create && empty($row)) {
             $row = $this->createRow();
             $row->session_id = $sid;
             $row->created = date('Y-m-d h:i:s');
         }
         return $row;
-         */
     }
 
     /**
@@ -85,7 +78,6 @@ class Session extends Gateway
      */
     public function readSession($sid, $lifetime)
     {
-        /* TODO
         $s = $this->getBySessionId($sid);
 
         // enforce lifetime of this session data
@@ -98,7 +90,6 @@ class Session extends Gateway
         $s->last_used = time();
         $s->save();
         return empty($s->data) ? '' : $s->data;
-         */
     }
 
     /**
@@ -111,12 +102,10 @@ class Session extends Gateway
      */
     public function writeSession($sid, $data)
     {
-        /* TODO
         $s = $this->getBySessionId($sid);
         $s->last_used = time();
         $s->data = $data;
         $s->save();
-         */
     }
 
     /**
@@ -128,12 +117,10 @@ class Session extends Gateway
      */
     public function destroySession($sid)
     {
-        /* TODO
         $s = $this->getBySessionId($sid, false);
         if (!empty($s)) {
             $s->delete();
         }
-         */
     }
 
     /**
@@ -145,11 +132,10 @@ class Session extends Gateway
      */
     public function garbageCollect($sess_maxlifetime)
     {
-        /* TODO
-        $db = $this->getAdapter();
-        $where = $db->quoteIdentifier('last_used') . ' + '
-            . intval($sess_maxlifetime) . ' < ' . time();
-        $this->delete($where);
-         */
+        $callback = function ($select) use ($sess_maxlifetime) {
+            $select->where
+                ->lessThan('last_used', time() - intval($sess_maxlifetime));
+        };
+        $this->delete($callback);
     }
 }

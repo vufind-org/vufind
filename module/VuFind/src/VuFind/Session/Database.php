@@ -26,7 +26,8 @@
  * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
  */
 namespace VuFind\Session;
-use VuFind\Exception\SessionExpired as SessionExpiredException;
+use VuFind\Db\Table\Session as SessionTable,
+    VuFind\Exception\SessionExpired as SessionExpiredException;
 
 /**
  * Database session handler
@@ -50,9 +51,7 @@ class Database extends AbstractBase
     public function __construct($config)
     {
         // Create database connection:
-        /* TODO:
-        $this->table = new VuFind_Model_Db_Session();
-         */
+        $this->table = new SessionTable();
 
         // Call standard session initialization from this point.
         parent::__construct($config);
