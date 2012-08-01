@@ -57,12 +57,7 @@ class Search extends Gateway
      */
     public function destroySession($sid)
     {
-        /* TODO
-        $db = $this->getAdapter();
-        $where = $db->quoteInto($db->quoteIdentifier('session_id') . ' = ?', $sid)
-            . ' AND '. $db->quoteInto($db->quoteIdentifier('saved') . ' = ?', 0);
-        $this->delete($where);
-         */
+        $this->delete(array('session_id' => $sid, 'saved' => 0));
     }
 
     /**

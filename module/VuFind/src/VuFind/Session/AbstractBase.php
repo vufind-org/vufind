@@ -26,7 +26,8 @@
  * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
  */
 namespace VuFind\Session;
-use Zend\Session\SaveHandler\SaveHandlerInterface;
+use VuFind\Db\Table\Search as SearchTable,
+    Zend\Session\SaveHandler\SaveHandlerInterface;
 
 /**
  * Base class for session handling
@@ -117,10 +118,8 @@ abstract class AbstractBase implements SaveHandlerInterface
      */
     public function destroy($sess_id)
     {
-        /* TODO
-        $table = new VuFind_Model_Db_Search();
+        $table = new SearchTable();
         $table->destroySession($sess_id);
-         */
     }
 
     /**
