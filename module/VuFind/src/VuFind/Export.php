@@ -200,30 +200,16 @@ class Export
     }
 
     /**
-     * Set headers for the requested format.
+     * Get headers for the requested format.
      *
-     * @param string                            $format   Selected export format
-     * @param Zend_Controller_Response_Abstract $response Response object to modify
+     * @param string $format Selected export format
      *
-     * @return void
+     * @return array
      */
-    public static function setHeaders($format, $response)
+    public static function getHeaders($format)
     {
         $exportConfig = ConfigReader::getConfig('export');
-        if (isset($exportConfig->$format->headers)) {
-            $headerTypes = array();
-            foreach ($exportConfig->$format->headers as $header) {
-                // Keep track of which header keys we have already seen -- we
-                // want to allow duplicate values, so if we've previously encountered
-                // a particular key, we should set the "replace" parameter of the
-                // setHeader() method to false:
-                $parts = explode(':', $header, 2);
-                $key = strtolower($parts[0]);
-                $response->setHeader(
-                    trim($parts[0]), trim($parts[1]), !isset($headerTypes[$key])
-                );
-                $headerTypes[$key] = 1;
-            }
-        }
+        return isset($exportConfig->$format->headers)
+            ? $exportConfig->$format->headers : array();
     }
 }

@@ -28,8 +28,8 @@
 namespace VuFind\Controller;
 use VuFind\Db\Table\Comments as CommentsTable,
     VuFind\Db\Table\Resource as ResourceTable,
-    VuFind\Exception\Mail as MailException, VuFind\Mailer, VuFind\Mailer\SMS,
-    VuFind\Record, VuFind\Search\ResultScroller,
+    VuFind\Exception\Mail as MailException, VuFind\Export, VuFind\Mailer,
+    VuFind\Mailer\SMS, VuFind\Record, VuFind\Search\ResultScroller,
     Zend\Session\Container as SessionContainer;
 
 /**
@@ -399,44 +399,42 @@ class AbstractRecord extends AbstractBase
      */
     public function exportAction()
     {
-        /* TODO
-        $this->loadRecord();
-        $format = $this->_request->getParam('style');
+        $driver = $this->loadRecord();
+        $view = $this->createViewModel();
+        $format = $this->params()->fromQuery('style');
 
         // Display export menu if missing/invalid option
-        if (empty($format) || !$this->view->driver->supportsExport($format)) {
+        if (empty($format) || !$driver->supportsExport($format)) {
             if (!empty($format)) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('export_invalid_format');
             }
-            return $this->render('record/export-menu', null, true);
+            $view->setTemplate('record/export-menu');
+            return $view;
         }
 
         // If this is an export format that redirects to an external site, perform
         // the redirect now (unless we're being called back from that service!):
-        if (VF_Export::needsRedirect($format)
-            && !$this->_request->getParam('callback')
+        if (Export::needsRedirect($format)
+            && !$this->params()->fromQuery('callback')
         ) {
             // Build callback URL:
-            $callback = $this->view->fullUrl(
-                $this->view->url() . '?callback=1&style=' . urlencode($format)
-            );
+            $serverUrl = $this->getViewRenderer()->plugin('serverurl');
+            $parts = explode('?', $serverUrl(true));
+            $callback = $parts[0] . '?callback=1&style=' . urlencode($format);
 
-            return $this->_redirect(VF_Export::getRedirectUrl($format, $callback));
+            return $this->redirect()
+                ->toUrl(Export::getRedirectUrl($format, $callback));
         }
 
         // Send appropriate HTTP headers for requested format:
-        VF_Export::setHeaders($format, $this->getResponse());
-
-        // Turn off layouts and rendering -- we only want to display export data!
-        $this->_helper->viewRenderer->setNoRender();
-        $this->_helper->layout->disableLayout();
+        $response = $this->getResponse();
+        $response->getHeaders()->addHeaders(Export::getHeaders($format));
 
         // Actually export the record
-        $this->getResponse()->appendBody(
-            $this->view->record($this->view->driver)->getExport($format)
-        );
-         */
+        $recordHelper = $this->getViewRenderer()->plugin('record');
+        $response->setContent($recordHelper($driver)->getExport($format));
+        return $response;
     }
 
     /**
@@ -446,10 +444,8 @@ class AbstractRecord extends AbstractBase
      */
     public function rdfAction()
     {
-        /* TODO
-        $this->_request->setParam('style', 'RDF');
-        return $this->_forward('Export');
-         */
+        $this->getRequest()->getQuery()->set('style', 'RDF');
+        return $this->exportAction();
     }
 
     /**
