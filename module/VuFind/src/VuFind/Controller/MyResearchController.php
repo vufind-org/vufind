@@ -137,8 +137,8 @@ class MyResearchController extends AbstractBase
      */
     protected function getServerUrl($route)
     {
-        $serverHelper = new \Zend\View\Helper\ServerUrl();
-        return $serverHelper->__invoke($this->url()->fromRoute($route));
+        $serverHelper = $this->getViewRenderer()->plugin('serverurl');
+        return $serverHelper($this->url()->fromRoute($route));
     }
 
     /**
