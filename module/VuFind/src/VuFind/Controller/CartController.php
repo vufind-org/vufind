@@ -61,7 +61,7 @@ class CartController extends AbstractBase
     {
         // We came in from the cart -- let's remember this we can redirect there
         // when we're done:
-        $this->session->url = '/Cart';
+        $this->session->url = $this->url()->fromRoute('cart-home');
 
         // Now forward to the requested action:
         if (strlen($this->params()->fromPost('email', '')) > 0) {
@@ -227,7 +227,6 @@ class CartController extends AbstractBase
      */
     public function exportAction()
     {
-        /* TODO
         // Get the desired ID list:
         $ids = is_null($this->params()->fromPost('selectAll'))
             ? $this->params()->fromPost('ids')
@@ -239,41 +238,43 @@ class CartController extends AbstractBase
         // Process form submission if necessary:
         if (!is_null($this->params()->fromPost('submit'))) {
             $format = $this->params()->fromPost('format');
-            $url = Export::getBulkUrl($this->view, $format, $ids);
+            $url = Export::getBulkUrl($this->getViewRenderer(), $format, $ids);
             if (Export::needsRedirect($format)) {
-                return $this->_redirect($url);
+                return $this->redirect()->toUrl($url);
             }
-            $this->view->url = $url;
             $msg = array(
                 'translate' => false, 'html' => true,
-                'msg' => $this->view->render('cart/export-success.phtml')
+                'msg' => $this->getViewRenderer()->render(
+                    'cart/export-success.phtml', array('url' => $url)
+                )
             );
             return $this->redirectToSource('info', $msg);
         }
 
         // Load the records:
-        $this->view->records = Record::loadBatch($ids);
+        $view = $this->createViewModel();
+        $view->records = Record::loadBatch($ids);
 
         // Assign the list of legal export options.  We'll filter them down based
         // on what the selected records actually support.
-        $this->view->exportOptions = Export::getBulkOptions();
-        foreach ($this->view->records as $driver) {
+        $view->exportOptions = Export::getBulkOptions();
+        foreach ($view->records as $driver) {
             // Filter out unsupported export formats:
             $newFormats = array();
-            foreach ($this->view->exportOptions as $current) {
+            foreach ($view->exportOptions as $current) {
                 if ($driver->supportsExport($current)) {
                     $newFormats[] = $current;
                 }
             }
-            $this->view->exportOptions = $newFormats;
+            $view->exportOptions = $newFormats;
         }
 
         // No legal export options?  Display a warning:
-        if (empty($this->view->exportOptions)) {
+        if (empty($view->exportOptions)) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('bulk_export_not_supported');
         }
-         */
+        return $view;
     }
 
     /**
@@ -283,11 +284,10 @@ class CartController extends AbstractBase
      */
     public function doexportAction()
     {
-        /* TODO
         // We use abbreviated parameters here to keep the URL short (there may
         // be a long list of IDs, and we don't want to run out of room):
-        $ids = $this->params()->fromPost('i', array());
-        $format = $this->params()->fromPost('f');
+        $ids = $this->params()->fromQuery('i', array());
+        $format = $this->params()->fromQuery('f');
 
         // Make sure we have IDs to export:
         if (!is_array($ids) || empty($ids)) {
@@ -295,22 +295,21 @@ class CartController extends AbstractBase
         }
 
         // Send appropriate HTTP headers for requested format:
-        Export::setHeaders($format, $this->getResponse());
+        $response = $this->getResponse();
+        $response->getHeaders()->addHeaders(Export::getHeaders($format));
 
-        // Turn off layouts and rendering -- we only want to display export data!
-        $this->_helper->viewRenderer->setNoRender();
-        $this->_helper->layout->disableLayout();
 
         // Actually export the records
         $records = Record::loadBatch($ids);
+        $recordHelper = $this->getViewRenderer()->plugin('record');
         $parts = array();
         foreach ($records as $record) {
-            $parts[] = $this->view->record($record)->getExport($format);
+            $parts[] = $recordHelper($record)->getExport($format);
         }
 
         // Process and display the exported records
-        $this->getResponse()->appendBody(Export::processGroup($format, $parts));
-         */
+        $response->setContent(Export::processGroup($format, $parts));
+        return $response;
     }
 
     /**
@@ -367,6 +366,7 @@ class CartController extends AbstractBase
     public function redirectToSource($flashNamespace = null, $flashMsg = null)
     {
         // Set flash message if requested:
+        // TODO: figure out why flash messages are not working after redirect!!
         if (!is_null($flashNamespace) && !empty($flashMsg)) {
             $this->flashMessenger()->setNamespace($flashNamespace)
                 ->addMessage($flashMsg);

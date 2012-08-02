@@ -71,9 +71,11 @@ class Export
     /**
      * Get the URL for bulk export.
      *
-     * @param Zend_View $view   View object (needed for URL generation)
-     * @param string    $format Export format being used
-     * @param array     $ids    Array of IDs to export (in source|id format)
+     * @param \Zend\View\Renderer\RendererInterface $view   View object (needed for
+     * URL generation)
+     * @param string                                $format Export format being used
+     * @param array                                 $ids    Array of IDs to export
+     * (in source|id format)
      *
      * @return string
      */
@@ -84,13 +86,10 @@ class Export
         foreach ($ids as $id) {
             $params[] = urlencode('i[]') . '=' . urlencode($id);
         }
-        $url = $view->fullUrl(
-            $view->url(
-                array('controller' => 'Cart', 'action' => 'doExport'), 'default',
-                true
-            )
-        );
-        $url .= '?' . implode('&', $params);
+        $serverUrlHelper = $view->plugin('serverurl');
+        $urlHelper = $view->plugin('url');
+        $url = $serverUrlHelper($urlHelper('cart-doexport'))
+            . '?' . implode('&', $params);
 
         return self::needsRedirect($format)
             ? self::getRedirectUrl($format, $url) : $url;

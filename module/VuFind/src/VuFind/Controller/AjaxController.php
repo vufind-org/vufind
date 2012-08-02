@@ -1193,21 +1193,21 @@ class AjaxController extends AbstractBase
      */
     protected function exportFavorites()
     {
-        /* TODO
-        $format = $this->params()->fromQuery('format');
+        $format = $this->params()->fromPost('format');
         $url = Export::getBulkUrl(
-            $this->view, $format, $this->params()->fromQuery('ids', array())
+            $this->getViewRenderer(), $format,
+            $this->params()->fromPost('ids', array())
         );
-        $this->view->url = $url;
-        $this->view->format = $format;
-        $html = $this->getViewRenderer()->render('ajax/export-favorites.phtml');
+        $html = $this->getViewRenderer()->render(
+            'ajax/export-favorites.phtml',
+            array('url' => $url, 'format' => $format)
+        );
         return $this->output(
             array(
                 'result' => Translator::translate('Done'),
                 'result_additional' => $html
             ), self::STATUS_OK
         );
-         */
     }
 
     /**
