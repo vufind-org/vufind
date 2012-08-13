@@ -50,8 +50,8 @@ class Entry extends ParentEntry
         if (strtolower($this->getType()) == 'atom') {
             return;
         }
-        $this->setDCFormats($this->_dom, $this->_base);
-        $this->setDCDate($this->_dom, $this->_base);
+        $this->setDCFormats($this->dom, $this->base);
+        $this->setDCDate($this->dom, $this->base);
         parent::render();
     }
 
@@ -70,12 +70,12 @@ class Entry extends ParentEntry
             return;
         }
         foreach ($dcFormats as $data) {
-            $format = $this->_dom->createElement('dc:format');
+            $format = $this->dom->createElement('dc:format');
             $text = $dom->createTextNode($data);
             $format->appendChild($text);
             $root->appendChild($format);
         }
-        $this->_called = true;
+        $this->called = true;
     }
 
     /**
@@ -92,10 +92,10 @@ class Entry extends ParentEntry
         if (empty($dcDate)) {
             return;
         }
-        $date = $this->_dom->createElement('dc:date');
+        $date = $this->dom->createElement('dc:date');
         $text = $dom->createTextNode($dcDate);
         $date->appendChild($text);
         $root->appendChild($date);
-        $this->_called = true;
+        $this->called = true;
     }
 }
