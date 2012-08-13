@@ -1727,3 +1727,8 @@ div#closeContextHelp:active {
     border: solid 2px #E77825;
     font-size:24px;
 }
+
+/* Make sure COinS information is invisible */
+.Z3988 {
+    display: none;
+}
