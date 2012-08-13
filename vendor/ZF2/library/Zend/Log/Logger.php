@@ -37,14 +37,6 @@ class Logger implements LoggerInterface
     const DEBUG  = 7;
 
     /**
-     * The format of the date used for a log entry (ISO 8601 date)
-     *
-     * @see http://nl3.php.net/manual/en/function.date.php
-     * @var string
-     */
-    protected $dateTimeFormat = 'c';
-
-    /**
      * List of priority code => priority (short) name
      *
      * @var array
@@ -59,7 +51,7 @@ class Logger implements LoggerInterface
         self::INFO   => 'INFO',
         self::DEBUG  => 'DEBUG',
     );
-   
+
     /**
      * Writers
      *
@@ -111,29 +103,6 @@ class Logger implements LoggerInterface
                 $writer->shutdown();
             } catch (\Exception $e) {}
         }
-    }
-
-    /**
-     * Return the format of DateTime
-     *
-     * @return string
-     */
-    public function getDateTimeFormat()
-    {
-        return $this->dateTimeFormat;
-    }
-
-    /**
-     * Set the format of DateTime
-     *
-     * @see    http://nl3.php.net/manual/en/function.date.php
-     * @param  string $format
-     * @return Logger
-     */
-    public function setDateTimeFormat($format)
-    {
-        $this->dateTimeFormat = (string) $format;
-        return $this;
     }
 
     /**
@@ -274,13 +243,12 @@ class Logger implements LoggerInterface
             throw new Exception\RuntimeException('No log writer specified');
         }
 
-        $date = new DateTime();
-        $timestamp = $date->format($this->getDateTimeFormat());
+        $timestamp = new DateTime();
 
         if (is_array($message)) {
             $message = var_export($message, true);
         }
-        
+
         foreach ($this->writers->toArray() as $writer) {
             $writer->write(array(
                 'timestamp'    => $timestamp,

@@ -18,14 +18,14 @@ use Zend\Filter\Exception;
  */
 class SeparatorToSeparator extends \Zend\Filter\PregReplace
 {
-    protected $_searchSeparator = null;
-    protected $_replacementSeparator = null;
+    protected $searchSeparator = null;
+    protected $replacementSeparator = null;
 
     /**
      * Constructor
      *
-     * @param  string  $searchSeparator      Seperator to search for
-     * @param  string  $replacementSeperator Seperator to replace with
+     * @param  string  $searchSeparator      Separator to search for
+     * @param  string  $replacementSeparator Separator to replace with
      */
     public function __construct($searchSeparator = ' ', $replacementSeparator = '-')
     {
@@ -41,46 +41,46 @@ class SeparatorToSeparator extends \Zend\Filter\PregReplace
      */
     public function setSearchSeparator($separator)
     {
-        $this->_searchSeparator = $separator;
+        $this->searchSeparator = $separator;
         return $this;
     }
 
     /**
-     * Returns the actual set seperator to search for
+     * Returns the actual set separator to search for
      *
      * @return  string
      */
     public function getSearchSeparator()
     {
-        return $this->_searchSeparator;
+        return $this->searchSeparator;
     }
 
     /**
-     * Sets a new seperator which replaces the searched one
+     * Sets a new separator which replaces the searched one
      *
-     * @param  string  $separator  Seperator which replaces the searched one
+     * @param  string  $separator  Separator which replaces the searched one
      * @return SeparatorToSeparator
      */
     public function setReplacementSeparator($separator)
     {
-        $this->_replacementSeparator = $separator;
+        $this->replacementSeparator = $separator;
         return $this;
     }
 
     /**
-     * Returns the actual set seperator which replaces the searched one
+     * Returns the actual set separator which replaces the searched one
      *
      * @return  string
      */
     public function getReplacementSeparator()
     {
-        return $this->_replacementSeparator;
+        return $this->replacementSeparator;
     }
 
     /**
      * Defined by Zend\Filter\Filter
      *
-     * Returns the string $value, replacing the searched seperators with the defined ones
+     * Returns the string $value, replacing the searched separators with the defined ones
      *
      * @param  string $value
      * @return string
@@ -101,12 +101,12 @@ class SeparatorToSeparator extends \Zend\Filter\PregReplace
      */
     protected function _separatorToSeparatorFilter($value)
     {
-        if ($this->_searchSeparator == null) {
+        if ($this->searchSeparator == null) {
             throw new Exception\RuntimeException('You must provide a search separator for this filter to work.');
         }
 
-        $this->setPattern('#' . preg_quote($this->_searchSeparator, '#') . '#');
-        $this->setReplacement($this->_replacementSeparator);
+        $this->setPattern('#' . preg_quote($this->searchSeparator, '#') . '#');
+        $this->setReplacement($this->replacementSeparator);
         return parent::filter($value);
     }
 

@@ -17,7 +17,7 @@ use Zend\Stdlib\Exception;
  * @package    Zend_Stdlib
  * @subpackage Hydrator
  */
-class ObjectProperty implements HydratorInterface
+class ObjectProperty extends AbstractHydrator
 {
     /**
      * Extract values from an object
@@ -32,12 +32,16 @@ class ObjectProperty implements HydratorInterface
     {
         if (!is_object($object)) {
             throw new Exception\BadMethodCallException(sprintf(
-                '%s expects the provided $object to be a PHP object)',
-                __METHOD__
+                '%s expects the provided $object to be a PHP object)', __METHOD__
             ));
         }
 
-        return get_object_vars($object);
+        $self = $this;
+        $data = get_object_vars($object);
+        array_walk($data, function(&$value, $name) use ($self) {
+            $value = $self->extractValue($name, $value);
+        });
+        return $data;
     }
 
     /**
@@ -54,12 +58,11 @@ class ObjectProperty implements HydratorInterface
     {
         if (!is_object($object)) {
             throw new Exception\BadMethodCallException(sprintf(
-                '%s expects the provided $object to be a PHP object)',
-                __METHOD__
+                '%s expects the provided $object to be a PHP object)', __METHOD__
             ));
         }
         foreach ($data as $property => $value) {
-            $object->$property = $value;
+            $object->$property = $this->hydrateValue($property, $value);
         }
         return $object;
     }

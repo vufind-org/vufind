@@ -12,7 +12,7 @@ namespace Zend\Mvc\Controller;
 
 use Zend\Mvc\Exception;
 use Zend\ServiceManager\AbstractPluginManager;
-use Zend\ServiceManager\ConfigurationInterface;
+use Zend\ServiceManager\ConfigInterface;
 use Zend\Stdlib\DispatchableInterface;
 
 /**
@@ -62,13 +62,33 @@ class PluginManager extends AbstractPluginManager
      * After invoking parent constructor, add an initializer to inject the
      * attached controller, if any, to the currently requested plugin.
      *
-     * @param  null|ConfigurationInterface $configuration
-     * @return void
+     * @param  null|ConfigInterface $configuration
      */
-    public function __construct(ConfigurationInterface $configuration = null)
+    public function __construct(ConfigInterface $configuration = null)
     {
         parent::__construct($configuration);
         $this->addInitializer(array($this, 'injectController'));
+    }
+
+    /**
+     * Retrieve a registered instance
+     *
+     * After the plugin is retrieved from the service locator, inject the
+     * controller in the plugin every time it is requested. This is required
+     * because a controller can use a plugin and another controller can be
+     * dispatched afterwards. If this second controller uses the same plugin
+     * as the first controller, the reference to the controller inside the
+     * plugin is lost.
+     *
+     * @param  string $cName
+     * @param  array $params
+     * @return mixed
+     */
+    public function get($name, $usePeeringServiceManagers = true)
+    {
+        $plugin = parent::get($name, $usePeeringServiceManagers);
+        $this->injectController($plugin);
+        return $plugin;
     }
 
     /**
@@ -123,6 +143,7 @@ class PluginManager extends AbstractPluginManager
      *
      * @param  mixed $plugin
      * @return true
+     * @throws Exception\InvalidPluginException
      */
     public function validatePlugin($plugin)
     {

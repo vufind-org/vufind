@@ -22,10 +22,10 @@ use Zend\ModuleManager\Feature\ConsoleUsageProviderInterface;
 use Zend\Mvc\Exception\RuntimeException;
 use Zend\Console\Response as ConsoleResponse;
 use Zend\Console\Request as ConsoleRequest;
-use Zend\Console\AdapterInterface as ConsoleAdapter;
+use Zend\Console\Adapter\AdapterInterface as ConsoleAdapter;
 use Zend\Mvc\Router\RouteInterface;
 use Zend\View\Model\ConsoleModel;
-use Zend\Version;
+use Zend\Version\Version;
 use Zend\Stdlib\ResponseInterface as Response;
 
 /**
@@ -39,20 +39,6 @@ class RouteNotFoundStrategy implements ListenerAggregateInterface
      * @var \Zend\Stdlib\CallbackHandler[]
      */
     protected $listeners = array();
-
-    /**
-     * Whether or not to display exceptions related to the 404 condition
-     *
-     * @var bool
-     */
-    protected $displayExceptions = false;
-
-    /**
-     * Whether or not to display the reason for a 404
-     *
-     * @var bool
-     */
-    protected $displayNotFoundReason = false;
 
     /**
      * The reason for a not-found condition
@@ -94,7 +80,8 @@ class RouteNotFoundStrategy implements ListenerAggregateInterface
      * encountered, sets the response status code to 404.
      *
      * @param  MvcEvent $e
-     * @throws \Zend\Mvc\Exception\RuntimeException
+     * @throws RuntimeException
+     * @throws ServiceNotFoundException
      * @return void
      */
     public function handleRouteNotFoundError(MvcEvent $e)
@@ -192,13 +179,14 @@ class RouteNotFoundStrategy implements ListenerAggregateInterface
      * @param ConsoleAdapter         $console
      * @return string
      */
-    protected function getConsoleBanner(ConsoleAdapter $console, ModuleManagerInterface $moduleManager = null){
+    protected function getConsoleBanner(ConsoleAdapter $console, ModuleManagerInterface $moduleManager = null)
+    {
         /**
          * Loop through all loaded modules and collect banners
          */
         $banners = array();
         if($moduleManager !== null){
-            foreach($moduleManager->getLoadedModules(false) as $name => $module){
+            foreach($moduleManager->getLoadedModules(false) as $module){
                 if(!$module instanceof ConsoleBannerProviderInterface){
                     continue; // this module does not provide a banner
                 }
@@ -224,16 +212,16 @@ class RouteNotFoundStrategy implements ListenerAggregateInterface
     /**
      * Build Console usage information by querying currently loaded modules.
      *
-     * @param ModuleManagerInterface $moduleManager
-     * @param string                 $scriptName
      * @param ConsoleAdapter         $console
+     * @param string                 $scriptName
+     * @param ModuleManagerInterface $moduleManager
      * @return string
+     * @throws RuntimeException
      */
     protected function getConsoleUsage(
         ConsoleAdapter $console,
         $scriptName,
-        ModuleManagerInterface $moduleManager = null,
-        RouteInterface $router = null
+        ModuleManagerInterface $moduleManager = null
     ){
         /**
          * Loop through all loaded modules and collect usage info
@@ -271,6 +259,7 @@ class RouteNotFoundStrategy implements ListenerAggregateInterface
         $result = '';
         $table = false;
         $tableCols = 0;
+        $tableType = 0;
         foreach($usageInfo as $moduleName => $usage){
             if(is_string($usage)){
                 // It's a plain string - output as is
@@ -282,25 +271,33 @@ class RouteNotFoundStrategy implements ListenerAggregateInterface
                         /**
                          *    'ivocation method' => 'explanation'
                          */
-                        if($tableCols !== 2 && $table !== false){
+                        if(($tableCols !== 2 || $tableType != 1) && $table !== false){
                             // render last table
                             $result .= $this->renderTable($table, $tableCols,$console->getWidth());
                             $table = false;
+
+                             // add extra newline for clarity
+                            $result .= "\n";
                         }
 
                         $tableCols = 2;
+                        $tableType = 1;
                         $table[] = array($scriptName . ' ' . $a, $b);
                     }elseif(is_array($b)){
                         /**
                          *  array( '--param', '--explanation' )
                          */
-                        if(count($b) != $tableCols && $table !== false){
+                        if((count($b) != $tableCols || $tableType != 2) && $table !== false){
                             // render last table
-                            $result .= $this->renderTable($table, $tableCols,$console->getWidth());
+                            $result .= $this->renderTable($table, $tableCols, $console->getWidth());
                             $table = false;
+
+                             // add extra newline for clarity
+                            $result .= "\n";
                         }
 
                         $tableCols = count($b);
+                        $tableType = 2;
                         $table[] = $b;
                     }else{
                         /**
@@ -308,12 +305,14 @@ class RouteNotFoundStrategy implements ListenerAggregateInterface
                          */
                         if($table !== false){
                             // render last table
-                            $result .= $this->renderTable($table, $tableCols,$console->getWidth());
+                            $result .= $this->renderTable($table, $tableCols, $console->getWidth());
                             $table = false;
 
                             // add extra newline for clarity
                             $result .= "\n";
                         }
+
+                        $tableType = 0;
                         $result .= $b."\n";
                     }
                 }
@@ -325,7 +324,6 @@ class RouteNotFoundStrategy implements ListenerAggregateInterface
         // Finish last table
         if($table !== false){
             $result .= $this->renderTable($table, $tableCols,$console->getWidth());
-            $table = false;
         }
 
         return $result;
@@ -339,7 +337,8 @@ class RouteNotFoundStrategy implements ListenerAggregateInterface
      * @param $consoleWidth
      * @return string
      */
-    protected function renderTable($data, $cols, $consoleWidth){
+    protected function renderTable($data, $cols, $consoleWidth)
+    {
         $result = '';
         $padding = 2;
 
@@ -390,8 +389,6 @@ class RouteNotFoundStrategy implements ListenerAggregateInterface
             $table->appendRow($row);
         }
 
-        $foo = $table->render();
-        $bar = urlencode(substr($foo,-30));
-        return $foo;
+        return $table->render();
     }
 }

@@ -31,7 +31,7 @@ class FormCheckbox extends FormInput
     public function render(ElementInterface $element)
     {
         $name = $element->getName();
-        if (empty($name)) {
+        if (empty($name) && $name !== 0) {
             throw new Exception\DomainException(sprintf(
                 '%s requires that the element has an assigned name; none discovered',
                 __METHOD__
@@ -72,23 +72,6 @@ class FormCheckbox extends FormInput
         }
 
         return $rendered;
-    }
-
-    /**
-     * Invoke helper as functor
-     *
-     * Proxies to {@link render()}.
-     *
-     * @param  ElementInterface $element
-     * @return string|FormCheckbox
-     */
-    public function __invoke(ElementInterface $element = null)
-    {
-        if (!$element) {
-            return $this;
-        }
-
-        return $this->render($element);
     }
 
     /**

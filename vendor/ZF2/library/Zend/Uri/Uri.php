@@ -18,7 +18,7 @@ use Zend\Validator;
  * @category  Zend
  * @package   Zend_Uri
  */
-class Uri
+class Uri implements UriInterface
 {
     /**
      * Character classes defined in RFC-3986
@@ -135,7 +135,7 @@ class Uri
     {
         if (is_string($uri)) {
             $this->parse($uri);
-        } elseif ($uri instanceof Uri) {
+        } elseif ($uri instanceof UriInterface) {
             // Copy constructor
             $this->setScheme($uri->getScheme());
             $this->setUserInfo($uri->getUserInfo());
@@ -276,6 +276,7 @@ class Uri
             $this->setPath($match[0]);
             $uri = substr($uri, strlen($match[0]));
         }
+
         if (!$uri) {
             return $this;
         }
@@ -387,6 +388,7 @@ class Uri
         }
 
         // If path is empty (and we have a host), path should be '/'
+        // Isn't this valid ONLY for HTTP-URI?
         if ($this->host && empty($this->path)) {
             $this->path = '/';
         }

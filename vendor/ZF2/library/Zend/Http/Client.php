@@ -123,7 +123,7 @@ class Client implements Stdlib\DispatchableInterface
      *
      * @var resource
      */
-    protected static $_fileInfoDb = null;
+    protected static $fileInfoDb = null;
 
     /**
      * Constructor
@@ -174,7 +174,7 @@ class Client implements Stdlib\DispatchableInterface
      * Load the connection adapter
      *
      * While this method is not called more than one for a client, it is
-     * seperated from ->request() to preserve logic and readability
+     * separated from ->request() to preserve logic and readability
      *
      * @param  Client\Adapter\AdapterInterface|string $adapter
      * @return Client
@@ -1155,12 +1155,12 @@ class Client implements Stdlib\DispatchableInterface
 
         // First try with fileinfo functions
         if (function_exists('finfo_open')) {
-            if (self::$_fileInfoDb === null) {
-                self::$_fileInfoDb = @finfo_open(FILEINFO_MIME);
+            if (self::$fileInfoDb === null) {
+                self::$fileInfoDb = @finfo_open(FILEINFO_MIME);
             }
 
-            if (self::$_fileInfoDb) {
-                $type = finfo_file(self::$_fileInfoDb, $file);
+            if (self::$fileInfoDb) {
+                $type = finfo_file(self::$fileInfoDb, $file);
             }
 
         } elseif (function_exists('mime_content_type')) {

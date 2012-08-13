@@ -334,9 +334,13 @@ class ViewManager implements ListenerAggregateInterface
 
         $this->routeNotFoundStrategy = new RouteNotFoundStrategy();
 
+        $displayExceptions     = false;
         $displayNotFoundReason = false;
         $notFoundTemplate      = '404';
 
+        if (isset($this->config['display_exceptions'])) {
+            $displayExceptions = $this->config['display_exceptions'];
+        }
         if (isset($this->config['display_not_found_reason'])) {
             $displayNotFoundReason = $this->config['display_not_found_reason'];
         }
@@ -344,6 +348,7 @@ class ViewManager implements ListenerAggregateInterface
             $notFoundTemplate = $this->config['not_found_template'];
         }
 
+        $this->routeNotFoundStrategy->setDisplayExceptions($displayExceptions);
         $this->routeNotFoundStrategy->setDisplayNotFoundReason($displayNotFoundReason);
         $this->routeNotFoundStrategy->setNotFoundTemplate($notFoundTemplate);
 
@@ -376,7 +381,7 @@ class ViewManager implements ListenerAggregateInterface
      * Register additional mvc rendering strategies
      *
      * If there is a "mvc_strategies" key of the view manager configuration, loop
-     * through it. Pull each as a service fromt the service manager, and, if it
+     * through it. Pull each as a service from the service manager, and, if it
      * is a ListenerAggregate, attach it to the view, at priority 100. This
      * latter allows each to trigger before the default mvc rendering strategy,
      * and for them to trigger in the order they are registered.

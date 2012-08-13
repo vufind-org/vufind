@@ -53,11 +53,13 @@ class Socket implements HttpAdapter, StreamInterface
      * @var array
      */
     protected $config = array(
-        'persistent'    => false,
-        'ssltransport'  => 'ssl',
-        'sslcert'       => null,
-        'sslpassphrase' => null,
-        'sslusecontext' => false
+        'persistent'            => false,
+        'ssltransport'          => 'ssl',
+        'sslcert'               => null,
+        'sslpassphrase'         => null,
+        'sslverifypeer'         => true,
+        'sslallowselfsigned'    => false,
+        'sslusecontext'         => false
     );
 
     /**
@@ -72,7 +74,7 @@ class Socket implements HttpAdapter, StreamInterface
      *
      * @var resource
      */
-    protected $_context = null;
+    protected $context = null;
 
     /**
      * Adapter constructor, currently empty. Config is set using setOptions()
@@ -129,10 +131,10 @@ class Socket implements HttpAdapter, StreamInterface
     public function setStreamContext($context)
     {
         if (is_resource($context) && get_resource_type($context) == 'stream-context') {
-            $this->_context = $context;
+            $this->context = $context;
 
         } elseif (is_array($context)) {
-            $this->_context = stream_context_create($context);
+            $this->context = stream_context_create($context);
 
         } else {
             // Invalid parameter
@@ -153,11 +155,11 @@ class Socket implements HttpAdapter, StreamInterface
      */
     public function getStreamContext()
     {
-        if (! $this->_context) {
-            $this->_context = stream_context_create();
+        if (! $this->context) {
+            $this->context = stream_context_create();
         }
 
-        return $this->_context;
+        return $this->context;
     }
 
     /**
@@ -182,6 +184,18 @@ class Socket implements HttpAdapter, StreamInterface
         if (! is_resource($this->socket) || ! $this->config['keepalive']) {
             $context = $this->getStreamContext();
             if ($secure || $this->config['sslusecontext']) {
+                if ($this->config['sslverifypeer'] !== null) {
+                    if (! stream_context_set_option($context, 'ssl', 'verify_peer',
+                                                    $this->config['sslverifypeer'])) {
+                        throw new AdapterException\RuntimeException('Unable to set sslverifypeer option');
+                    }
+                    if ($this->config['sslallowselfsigned'] !== null) {
+                        if (! stream_context_set_option($context, 'ssl', 'allow_self_signed',
+                                                        $this->config['sslallowselfsigned'])) {
+                            throw new AdapterException\RuntimeException('Unable to set sslallowselfsigned option');
+                        }
+                    }
+                }
                 if ($this->config['sslcert'] !== null) {
                     if (! stream_context_set_option($context, 'ssl', 'local_cert',
                                                     $this->config['sslcert'])) {

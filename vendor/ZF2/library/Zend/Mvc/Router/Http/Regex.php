@@ -41,7 +41,7 @@ class Regex implements RouteInterface
     /**
      * Specification for URL assembly.
      *
-     * Parameters accepting subsitutions should be denoted as "%key%"
+     * Parameters accepting substitutions should be denoted as "%key%"
      *
      * @var string
      */
@@ -102,8 +102,8 @@ class Regex implements RouteInterface
     /**
      * match(): defined by RouteInterface interface.
      *
-     * @see    Route::match()
      * @param  Request $request
+     * @param  integer $pathOffset
      * @return RouteMatch
      */
     public function match(Request $request, $pathOffset = null)

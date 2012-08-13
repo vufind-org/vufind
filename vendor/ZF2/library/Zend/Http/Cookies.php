@@ -43,6 +43,11 @@ class Cookies extends Headers
     protected $headers = null;
 
     /**
+     * @var $_rawCookies
+     */
+    protected $rawCookies;
+
+    /**
      * @static
      * @throws Exception\RuntimeException
      * @param $string
@@ -85,7 +90,7 @@ class Cookies extends Headers
                 $this->cookies[$domain][$path] = array();
             }
             $this->cookies[$domain][$path][$cookie->getName()] = $cookie;
-            $this->_rawCookies[] = $cookie;
+            $this->rawCookies[] = $cookie;
         } else {
             throw new Exception\InvalidArgumentException('Supplient argument is not a valid cookie string or object');
         }
@@ -152,7 +157,7 @@ class Cookies extends Headers
         $cookies = $this->_matchPath($cookies, $uri->getPath());
         $cookies = $this->_flattenCookiesArray($cookies, self::COOKIE_OBJECT);
 
-        // Next, run Cookie->match on all cookies to check secure, time and session mathcing
+        // Next, run Cookie->match on all cookies to check secure, time and session matching
         $ret = array();
         foreach ($cookies as $cookie)
             if ($cookie->match($uri, $matchSessionCookies, $now))
@@ -213,7 +218,7 @@ class Cookies extends Headers
     }
 
     /**
-     * Helper function to recursivly flatten an array. Shoud be used when exporting the
+     * Helper function to recursively flatten an array. Should be used when exporting the
      * cookies array (or parts of it)
      *
      * @param \Zend\Http\Header\Cookie|array $ptr
@@ -332,7 +337,7 @@ class Cookies extends Headers
      */
     public function reset()
     {
-        $this->cookies = $this->_rawCookies = array();
+        $this->cookies = $this->rawCookies = array();
         return $this;
     }
 

@@ -20,7 +20,7 @@ use Zend\Filter\PregReplace as PregReplaceFilter;
 abstract class AbstractSeparator extends PregReplaceFilter
 {
 
-    protected $_separator = null;
+    protected $separator = null;
 
     /**
      * Constructor
@@ -40,9 +40,9 @@ abstract class AbstractSeparator extends PregReplaceFilter
     }
 
     /**
-     * Sets a new seperator
+     * Sets a new separator
      *
-     * @param  string  $separator  Seperator
+     * @param  string  $separator  Separator
      * @return AbstractSeparator
      * @throws Exception\InvalidArgumentException
      */
@@ -51,17 +51,17 @@ abstract class AbstractSeparator extends PregReplaceFilter
         if (!is_string($separator)) {
             throw new Exception\InvalidArgumentException('"' . $separator . '" is not a valid separator.');
         }
-        $this->_separator = $separator;
+        $this->separator = $separator;
         return $this;
     }
 
     /**
-     * Returns the actual set seperator
+     * Returns the actual set separator
      *
      * @return  string
      */
     public function getSeparator()
     {
-        return $this->_separator;
+        return $this->separator;
     }
 }

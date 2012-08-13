@@ -13,7 +13,7 @@ namespace Zend\Mvc\Controller;
 use Zend\EventManager\EventManagerAwareInterface;
 use Zend\Mvc\Exception;
 use Zend\ServiceManager\AbstractPluginManager;
-use Zend\ServiceManager\ConfigurationInterface;
+use Zend\ServiceManager\ConfigInterface;
 use Zend\ServiceManager\ServiceLocatorAwareInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\Stdlib\DispatchableInterface;
@@ -31,7 +31,7 @@ class ControllerManager extends AbstractPluginManager
 {
     /**
      * We do not want arbitrary classes instantiated as controllers.
-     * 
+     *
      * @var bool
      */
     protected $autoAddInvokableClass = false;
@@ -42,13 +42,13 @@ class ControllerManager extends AbstractPluginManager
      * After invoking parent constructor, add an initializer to inject the
      * service manager, event manager, and plugin manager
      *
-     * @param  null|ConfigurationInterface $configuration
-     * @return void
+     * @param  null|ConfigInterface $configuration
      */
-    public function __construct(ConfigurationInterface $configuration = null)
+    public function __construct(ConfigInterface $configuration = null)
     {
         parent::__construct($configuration);
-        $this->addInitializer(array($this, 'injectControllerDependencies'));
+        // Pushing to bottom of stack to ensure this is done last
+        $this->addInitializer(array($this, 'injectControllerDependencies'), false);
     }
 
     /**
@@ -103,10 +103,10 @@ class ControllerManager extends AbstractPluginManager
 
     /**
      * Override: do not use peering service manager to retrieve controller
-     * 
-     * @param  string $name 
-     * @param  array $options 
-     * @param  bool $usePeeringServiceManagers 
+     *
+     * @param  string $name
+     * @param  array $options
+     * @param  bool $usePeeringServiceManagers
      * @return mixed
      */
     public function get($name, $options = array(), $usePeeringServiceManagers = false)

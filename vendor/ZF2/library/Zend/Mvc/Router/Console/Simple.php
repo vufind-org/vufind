@@ -111,17 +111,17 @@ class Simple implements RouteInterface
                 $this->filters = $filters;
             }elseif($filters instanceof Traversable){
                 $this->filters = new FilterChain(array(
-                    'filters' => ArrayUtils::iteratorToArray($filters, false) 
+                    'filters' => ArrayUtils::iteratorToArray($filters, false)
                 ));
             }elseif(is_array($filters)){
                 $this->filters = new FilterChain(array(
-                    'filters' => $filters 
+                    'filters' => $filters
                 ));
             }else{
                 throw new InvalidArgumentException('Cannot use '.gettype($filters).' as filters for '.__CLASS__);
             }
         }
-        
+
         if($validators !== null){
             if($validators instanceof ValidatorChain){
                 $this->validators = $validators;
@@ -134,7 +134,7 @@ class Simple implements RouteInterface
                 throw new InvalidArgumentException('Cannot use '.gettype($validators).' as validators for '.__CLASS__);
             }
         }
-        
+
         $this->parts = $this->parseRouteDefinition($route);
     }
 
@@ -192,6 +192,7 @@ class Simple implements RouteInterface
      *
      * @param  string $def
      * @return array
+     * @throws Exception\InvalidArgumentException
      */
     protected function parseRouteDefinition($def)
     {
@@ -346,9 +347,9 @@ class Simple implements RouteInterface
                 );
             }
             /**
-             * Required long flag alternative
-             *    ( --something | --somethingElse | --anotherOne )
-             *    ( --something | --somethingElse | --anotherOne ):namedGroup
+             * Required long/short flag alternative
+             *    ( --something | --somethingElse | --anotherOne | -s | -a )
+             *    ( --something | --somethingElse | --anotherOne | -s | -a ):namedGroup
              */
             elseif (preg_match( '/
                 \G
@@ -381,6 +382,47 @@ class Simple implements RouteInterface
                     'name'          => isset($m['groupName']) ? $m['groupName']:'unnamedGroupAt'.$unnamedGroupCounter++,
                     'literal'       => false,
                     'required'      => true,
+                    'positional'    => false,
+                    'alternatives'  => $options,
+                    'hasValue'      => false,
+                );
+            }
+            /**
+             * Optional flag alternative
+             *    [ --something | --somethingElse | --anotherOne | -s | -a ]
+             *    [ --something | --somethingElse | --anotherOne | -s | -a ]:namedGroup
+             */
+            elseif (preg_match( '/
+                \G
+                \[
+                    (?<options>
+                        (?:
+                            \ *?
+                            \-+(?<name>[a-zA-Z0-9][a-zA-Z0-9_\-]*?)
+                            \ *?
+                            (?:\||(?=\]))
+                            \ *?
+                        )+
+                    )
+                \]
+                (?:\:(?<groupName>[a-zA-Z0-9]+))?
+                (?:\ +|$)
+                /sx', $def, $m, 0, $pos
+            )) {
+                // extract available options
+                $options = preg_split('/ *\| */',trim($m['options']),0,PREG_SPLIT_NO_EMPTY);
+
+                // remove dupes
+                array_unique($options);
+
+                // remove prefix
+                array_walk($options,function(&$val,$key){$val = ltrim($val,'-');});
+
+                // prepare item
+                $item = array(
+                    'name'          => isset($m['groupName']) ? $m['groupName']:'unnamedGroupAt'.$unnamedGroupCounter++,
+                    'literal'       => false,
+                    'required'      => false,
                     'positional'    => false,
                     'alternatives'  => $options,
                     'hasValue'      => false,
@@ -463,8 +505,7 @@ class Simple implements RouteInterface
                     'positional' => true,
                     'hasValue'   => false,
                 );
-            }
-            else {
+            } else {
                 throw new Exception\InvalidArgumentException(
                     'Cannot understand Console route at "' . substr( $def, $pos ) . '"'
                 );
@@ -650,6 +691,15 @@ class Simple implements RouteInterface
                         }
                     }
                 }
+            }
+        }
+
+        /**
+         * Scan for left-out flags that should result in a mismatch
+         */
+        foreach($params as $param){
+            if(preg_match('#^\-+#',$param)){
+                return; // there is an unrecognized flag
             }
         }
 

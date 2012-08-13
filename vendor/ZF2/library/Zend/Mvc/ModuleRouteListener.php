@@ -31,7 +31,7 @@ class ModuleRouteListener implements ListenerAggregateInterface
      * Attach to an event manager
      *
      * @param  EventManagerInterface $events
-     * @return void
+     * @param  integer $priority
      */
     public function attach(EventManagerInterface $events, $priority = 1)
     {
@@ -64,7 +64,7 @@ class ModuleRouteListener implements ListenerAggregateInterface
      * @param  MvcEvent $e
      * @return null
      */
-    public function onRoute($e)
+    public function onRoute(MvcEvent $e)
     {
         $matches = $e->getRouteMatch();
         if (!$matches instanceof Router\RouteMatch) {

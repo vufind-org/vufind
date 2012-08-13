@@ -22,21 +22,21 @@ use Zend\Json\Json;
 class JsPull extends AbstractAdapter
 {
     /**
-     * Wether to exit after json data send or not
+     * Whether to exit after json data send or not
      *
      * @var boolean
      */
-    protected $_exitAfterSend = true;
+    protected $exitAfterSend = true;
 
     /**
-     * Set wether to exit after json data send or not
+     * Set whether to exit after json data send or not
      *
      * @param  boolean $exitAfterSend
      * @return \Zend\ProgressBar\Adapter\JsPull
      */
     public function setExitAfterSend($exitAfterSend)
     {
-        $this->_exitAfterSend = $exitAfterSend;
+        $this->exitAfterSend = $exitAfterSend;
     }
 
     /**
@@ -92,7 +92,7 @@ class JsPull extends AbstractAdapter
     {
         echo $data;
 
-        if ($this->_exitAfterSend) {
+        if ($this->exitAfterSend) {
             exit;
         }
     }

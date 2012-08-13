@@ -17,8 +17,8 @@ namespace Zend\Mime;
 class Message
 {
 
-    protected $_parts = array();
-    protected $_mime = null;
+    protected $parts = array();
+    protected $mime = null;
 
     /**
      * Returns the list of all Zend_Mime_Parts in the message
@@ -27,7 +27,7 @@ class Message
      */
     public function getParts()
     {
-        return $this->_parts;
+        return $this->parts;
     }
 
     /**
@@ -37,7 +37,7 @@ class Message
      */
     public function setParts($parts)
     {
-        $this->_parts = $parts;
+        $this->parts = $parts;
     }
 
     /**
@@ -50,7 +50,7 @@ class Message
         /**
          * @todo check for duplicate object handle
          */
-        $this->_parts[] = $part;
+        $this->parts[] = $part;
     }
 
     /**
@@ -61,7 +61,7 @@ class Message
      */
     public function isMultiPart()
     {
-        return (count($this->_parts) > 1);
+        return (count($this->parts) > 1);
     }
 
     /**
@@ -74,7 +74,7 @@ class Message
      */
     public function setMime(Mime $mime)
     {
-        $this->_mime = $mime;
+        $this->mime = $mime;
     }
 
     /**
@@ -87,11 +87,11 @@ class Message
      */
     public function getMime()
     {
-        if ($this->_mime === null) {
-            $this->_mime = new Mime();
+        if ($this->mime === null) {
+            $this->mime = new Mime();
         }
 
-        return $this->_mime;
+        return $this->mime;
     }
 
     /**
@@ -101,7 +101,7 @@ class Message
      * only one part is present, the content of this part is returned. If no
      * part had been added, an empty string is returned.
      *
-     * Parts are seperated by the mime boundary as defined in Zend_Mime. If
+     * Parts are separated by the mime boundary as defined in Zend_Mime. If
      * {@link setMime()} has been called before this method, the Zend_Mime
      * object set by this call will be used. Otherwise, a new Zend_Mime object
      * is generated and used.
@@ -112,7 +112,7 @@ class Message
     public function generateMessage($EOL = Mime::LINEEND)
     {
         if (! $this->isMultiPart()) {
-            $body = array_shift($this->_parts);
+            $body = array_shift($this->parts);
             $body = $body->getContent($EOL);
         } else {
             $mime = $this->getMime();
@@ -121,7 +121,7 @@ class Message
             $body = 'This is a message in Mime Format.  If you see this, '
                   . "your mail reader does not support this format." . $EOL;
 
-            foreach (array_keys($this->_parts) as $p) {
+            foreach (array_keys($this->parts) as $p) {
                 $body .= $boundaryLine
                        . $this->getPartHeaders($p, $EOL)
                        . $EOL
@@ -142,7 +142,7 @@ class Message
      */
     public function getPartHeadersArray($partnum)
     {
-        return $this->_parts[$partnum]->getHeadersArray();
+        return $this->parts[$partnum]->getHeadersArray();
     }
 
     /**
@@ -153,7 +153,7 @@ class Message
      */
     public function getPartHeaders($partnum, $EOL = Mime::LINEEND)
     {
-        return $this->_parts[$partnum]->getHeaders($EOL);
+        return $this->parts[$partnum]->getHeaders($EOL);
     }
 
     /**
@@ -164,11 +164,11 @@ class Message
      */
     public function getPartContent($partnum, $EOL = Mime::LINEEND)
     {
-        return $this->_parts[$partnum]->getContent($EOL);
+        return $this->parts[$partnum]->getContent($EOL);
     }
 
     /**
-     * Explode MIME multipart string into seperate parts
+     * Explode MIME multipart string into separate parts
      *
      * Parts consist of the header and the body of each MIME part.
      *

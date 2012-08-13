@@ -174,27 +174,27 @@ abstract class AbstractObject implements ObjectInterface
 
     /**
      * Fix barcode length (numeric or string like 'even')
-     * @var $_barcodeLength integer | string
+     * @var $barcodeLength integer | string
      */
     protected $barcodeLength = null;
 
     /**
      * Activate automatic addition of leading zeros
      * if barcode length is fixed
-     * @var $_addLeadingZeros boolean
+     * @var $addLeadingZeros boolean
      */
     protected $addLeadingZeros = true;
 
     /**
      * Activation of mandatory checksum
      * to deactivate unauthorized modification
-     * @var $_mandatoryChecksum boolean
+     * @var $mandatoryChecksum boolean
      */
     protected $mandatoryChecksum = false;
 
     /**
      * Character used to substitute checksum character for validation
-     * @var $_substituteChecksumCharacter mixed
+     * @var $substituteChecksumCharacter mixed
      */
     protected $substituteChecksumCharacter = 0;
 
@@ -1182,7 +1182,7 @@ abstract class AbstractObject implements ObjectInterface
 
     /**
      * Check for invalid characters
-     * @param   string $value    Text to be ckecked
+     * @param   string $value    Text to be checked
      * @return void
      */
     public function validateText($value)

@@ -203,7 +203,7 @@ abstract class AbstractAccept implements HeaderInterface
 
 
     /**
-     * Assemble and escape the field value parameters based on RFC 2616 secion 2.1
+     * Assemble and escape the field value parameters based on RFC 2616 section 2.1
      *
      * @todo someone should review this thoroughly
      * @param string value
@@ -396,8 +396,7 @@ abstract class AbstractAccept implements HeaderInterface
      */
     protected function sortFieldValueParts()
     {
-        $sort = function($a, $b) // If A has higher prio than B, return -1.
-        {
+        $sort = function($a, $b) { // If A has higher prio than B, return -1.
             if ($a->priority > $b->priority) {
                 return -1;
             } elseif ($a->priority < $b->priority) {

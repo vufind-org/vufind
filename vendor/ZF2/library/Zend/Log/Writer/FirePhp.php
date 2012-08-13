@@ -22,15 +22,15 @@ use Zend\Log\Logger;
 class FirePhp extends AbstractWriter
 {
     /**
-     * The instance of FirePhp that is used to log messages to.
-     * 
+     * A FirePhpInterface instance that is used to log messages to.
+     *
      * @var FirePhp\FirePhpInterface
      */
     protected $firephp;
 
     /**
      * Initializes a new instance of this class.
-     * 
+     *
      * @param null|FirePhp\FirePhpInterface $instance An instance of FirePhpInterface
      *        that should be used for logging
      */
@@ -48,7 +48,9 @@ class FirePhp extends AbstractWriter
      */
     protected function doWrite(array $event)
     {
-        if (!$this->firephp->getEnabled()) {
+        $firephp = $this->getFirePhp();
+
+        if (!$firephp->getEnabled()) {
             return;
         }
 
@@ -59,37 +61,37 @@ class FirePhp extends AbstractWriter
             case Logger::ALERT:
             case Logger::CRIT:
             case Logger::ERR:
-                $this->firephp->error($line);
+                $firephp->error($line);
                 break;
             case Logger::WARN:
-                $this->firephp->warn($line);
+                $firephp->warn($line);
                 break;
             case Logger::NOTICE:
             case Logger::INFO:
-                $this->firephp->info($line);
+                $firephp->info($line);
                 break;
             case Logger::DEBUG:
-                $this->firephp->trace($line);
+                $firephp->trace($line);
                 break;
             default:
-                $this->firephp->log($line);
+                $firephp->log($line);
                 break;
         }
     }
 
     /**
-     * Gets the FirePhp instance that is used for logging.
-     * 
+     * Gets the FirePhpInterface instance that is used for logging.
+     *
      * @return FirePhp\FirePhpInterface
      */
     public function getFirePhp()
     {
-        // Remember: class names in strings are absolute; thus the class_exists 
+        // Remember: class names in strings are absolute; thus the class_exists
         // here references the canonical name for the FirePHP class
         if (!$this->firephp instanceof FirePhp\FirePhpInterface
             && class_exists('FirePHP')
         ) {
-            // FirePHPService is an alias for FirePHP; otherwise the class 
+            // FirePHPService is an alias for FirePHP; otherwise the class
             // names would clash in this file on this line.
             $this->setFirePhp(new FirePhp\FirePhpBridge(new FirePHPService()));
         }
@@ -97,9 +99,9 @@ class FirePhp extends AbstractWriter
     }
 
     /**
-     * Sets the FirePhp instance that is used for logging.
-     * 
-     * @param  FirePhp\FirePhpInterface $instance The FirePhp instance to set.
+     * Sets the FirePhpInterface instance that is used for logging.
+     *
+     * @param  FirePhp\FirePhpInterface $instance A FirePhpInterface instance to set.
      * @return FirePhp
      */
     public function setFirePhp(FirePhp\FirePhpInterface $instance)

@@ -20,21 +20,21 @@ use Zend\View\Exception;
  * @package    Zend_View
  * @subpackage Helper
  */
-class HeadTitle extends Placeholder\Container\AbstractStandalone implements 
+class HeadTitle extends Placeholder\Container\AbstractStandalone implements
     TranslatorAwareInterface
 {
     /**
      * Registry key for placeholder
      * @var string
      */
-    protected $_regKey = 'Zend_View_Helper_HeadTitle';
+    protected $regKey = 'Zend_View_Helper_HeadTitle';
 
     /**
      * Default title rendering order (i.e. order in which each title attached)
      *
      * @var string
      */
-    protected $_defaultAttachOrder = null;
+    protected $defaultAttachOrder = null;
 
     /**
      * Translator (optional)
@@ -104,7 +104,7 @@ class HeadTitle extends Placeholder\Container\AbstractStandalone implements
                 "You must use a valid attach order: 'PREPEND', 'APPEND' or 'SET'"
             );
         }
-        $this->_defaultAttachOrder = $setType;
+        $this->defaultAttachOrder = $setType;
 
         return $this;
     }
@@ -116,7 +116,7 @@ class HeadTitle extends Placeholder\Container\AbstractStandalone implements
      */
     public function getDefaultAttachOrder()
     {
-        return $this->_defaultAttachOrder;
+        return $this->defaultAttachOrder;
     }
 
     /**
@@ -160,7 +160,7 @@ class HeadTitle extends Placeholder\Container\AbstractStandalone implements
             $output .= $postfix;
         }
 
-        $output = ($this->_autoEscape) ? $this->_escape($output) : $output;
+        $output = ($this->autoEscape) ? $this->escape($output) : $output;
 
         return $indent . '<title>' . $output . '</title>';
     }

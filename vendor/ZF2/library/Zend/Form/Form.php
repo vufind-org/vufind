@@ -262,7 +262,32 @@ class Form extends Fieldset implements FormInterface
                 break;
         }
 
+        $data = $this->prepareBindData($data, $this->data);
         $this->object = parent::bindValues($data);
+    }
+
+    /**
+     * Parse filtered values and return only posted fields for binding
+     *
+     * @param array $values
+     * @param array $match
+     * @return array
+     */
+    protected function prepareBindData(array $values, array $match)
+    {
+        $data = array();
+        foreach ($values as $name => $value) {
+            if (!array_key_exists($name, $match)) {
+                continue;
+            }
+
+            if (is_array($value)) {
+                $data[$name] = $this->prepareBindData($value, $match[$name]);
+            } else {
+                $data[$name] = $value;
+            }
+        }
+        return $data;
     }
 
     /**
@@ -480,6 +505,11 @@ class Form extends Fieldset implements FormInterface
             $fieldset = $formOrFieldset->byName[$key];
 
             if ($fieldset instanceof Collection) {
+                if (!isset($data[$key])) {
+                    unset ($validationGroup[$key]);
+                    continue;
+                }
+
                 $values = array();
                 $count = count($data[$key]);
 
@@ -517,7 +547,16 @@ class Form extends Fieldset implements FormInterface
     public function getInputFilter()
     {
         if ($this->object instanceof InputFilterAwareInterface) {
-            $this->filter = $this->object->getInputFilter();
+            if (null == $this->baseFieldset) {
+                $this->filter = $this->object->getInputFilter();
+            } else {
+                $name = $this->baseFieldset->getName();
+                if (!$this->filter instanceof InputFilterInterface || !$this->filter->has($name)) {
+                    $filter = new InputFilter();
+                    $filter->add($this->object->getInputFilter(), $name);
+                    $this->filter = $filter;
+                }
+            }
         }
 
         if ($this->filter instanceof InputFilterInterface && $this->useInputFilterDefaults()) {

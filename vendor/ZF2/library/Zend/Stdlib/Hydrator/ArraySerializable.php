@@ -17,8 +17,9 @@ use Zend\Stdlib\Exception;
  * @package    Zend_Stdlib
  * @subpackage Hydrator
  */
-class ArraySerializable implements HydratorInterface
+class ArraySerializable extends AbstractHydrator
 {
+
     /**
      * Extract values from the provided object
      *
@@ -32,11 +33,16 @@ class ArraySerializable implements HydratorInterface
     {
         if (!is_callable(array($object, 'getArrayCopy'))) {
             throw new Exception\BadMethodCallException(sprintf(
-                '%s expects the provided object to implement getArrayCopy()',
-                __METHOD__
+                '%s expects the provided object to implement getArrayCopy()', __METHOD__
             ));
         }
-        return $object->getArrayCopy();
+
+        $self = $this;
+        $data = $object->getArrayCopy();
+        array_walk($data, function(&$value, $name) use ($self) {
+            $value = $self->extractValue($name, $value);
+        });
+        return $data;
     }
 
     /**
@@ -52,14 +58,18 @@ class ArraySerializable implements HydratorInterface
      */
     public function hydrate(array $data, $object)
     {
+        $self = $this;
+        array_walk($data, function(&$value, $name) use ($self) {
+            $value = $self->hydrateValue($name, $value);
+        });
+
         if (is_callable(array($object, 'exchangeArray'))) {
             $object->exchangeArray($data);
         } elseif (is_callable(array($object, 'populate'))) {
             $object->populate($data);
         } else {
             throw new Exception\BadMethodCallException(sprintf(
-                '%s expects the provided object to implement exchangeArray() or populate()',
-                __METHOD__
+                '%s expects the provided object to implement exchangeArray() or populate()', __METHOD__
             ));
         }
         return $object;

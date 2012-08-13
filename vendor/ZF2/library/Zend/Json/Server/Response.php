@@ -23,31 +23,36 @@ class Response
      * Response error
      * @var null|Error
      */
-    protected $_error;
+    protected $error;
 
     /**
      * Request ID
      * @var mixed
      */
-    protected $_id;
+    protected $id;
 
     /**
      * Result
      * @var mixed
      */
-    protected $_result;
+    protected $result;
 
     /**
      * Service map
      * @var Smd\Smd
      */
-    protected $_serviceMap;
+    protected $serviceMap;
 
     /**
      * JSON-RPC version
      * @var string
      */
-    protected $_version;
+    protected $version;
+
+    /**
+     * @var $args
+     */
+    protected $args;
 
     /**
      * Set response state
@@ -95,7 +100,7 @@ class Response
      */
     public function setResult($value)
     {
-        $this->_result = $value;
+        $this->result = $value;
         return $this;
     }
 
@@ -106,7 +111,7 @@ class Response
      */
     public function getResult()
     {
-        return $this->_result;
+        return $this->result;
     }
 
     // RPC error, if response results in fault
@@ -118,7 +123,7 @@ class Response
      */
     public function setError(Error $error)
     {
-        $this->_error = $error;
+        $this->error = $error;
         return $this;
     }
 
@@ -129,7 +134,7 @@ class Response
      */
     public function getError()
     {
-        return $this->_error;
+        return $this->error;
     }
 
     /**
@@ -150,7 +155,7 @@ class Response
      */
     public function setId($name)
     {
-        $this->_id = $name;
+        $this->id = $name;
         return $this;
     }
 
@@ -161,7 +166,7 @@ class Response
      */
     public function getId()
     {
-        return $this->_id;
+        return $this->id;
     }
 
     /**
@@ -174,9 +179,9 @@ class Response
     {
         $version = (string) $version;
         if ('2.0' == $version) {
-            $this->_version = '2.0';
+            $this->version = '2.0';
         } else {
-            $this->_version = null;
+            $this->version = null;
         }
 
         return $this;
@@ -189,7 +194,7 @@ class Response
      */
     public function getVersion()
     {
-        return $this->_version;
+        return $this->version;
     }
 
     /**
@@ -225,7 +230,7 @@ class Response
      */
     public function getArgs()
     {
-        return $this->_args;
+        return $this->args;
     }
 
     /**
@@ -236,7 +241,7 @@ class Response
      */
     public function setArgs($args)
     {
-        $this->_args = $args;
+        $this->args = $args;
         return $this;
     }
 
@@ -248,7 +253,7 @@ class Response
      */
     public function setServiceMap($serviceMap)
     {
-        $this->_serviceMap = $serviceMap;
+        $this->serviceMap = $serviceMap;
         return $this;
     }
 
@@ -259,7 +264,7 @@ class Response
      */
     public function getServiceMap()
     {
-        return $this->_serviceMap;
+        return $this->serviceMap;
     }
 
     /**

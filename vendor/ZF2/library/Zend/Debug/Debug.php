@@ -8,7 +8,7 @@
  * @package   Zend_Debug.php
  */
 
-namespace Zend;
+namespace Zend\Debug;
 
 /**
  * Concrete class for generating debug dumps related to the output source.
@@ -22,7 +22,7 @@ class Debug
     /**
      * @var string
      */
-    protected static $_sapi = null;
+    protected static $sapi = null;
 
     /**
      * Get the current value of the debug output environment.
@@ -32,14 +32,14 @@ class Debug
      */
     public static function getSapi()
     {
-        if (self::$_sapi === null) {
-            self::$_sapi = PHP_SAPI;
+        if (self::$sapi === null) {
+            self::$sapi = PHP_SAPI;
         }
-        return self::$_sapi;
+        return self::$sapi;
     }
 
     /**
-     * Set the debug ouput environment.
+     * Set the debug output environment.
      * Setting a value of null causes Zend_Debug to use PHP_SAPI.
      *
      * @param string $sapi
@@ -47,7 +47,7 @@ class Debug
      */
     public static function setSapi($sapi)
     {
-        self::$_sapi = $sapi;
+        self::$sapi = $sapi;
     }
 
     /**

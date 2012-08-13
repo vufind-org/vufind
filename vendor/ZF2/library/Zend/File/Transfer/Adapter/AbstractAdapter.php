@@ -111,7 +111,7 @@ abstract class AbstractAdapter implements TranslatorAwareInterface
      *         type,            - Mime type of this file
      *         size,            - Filesize in bytes
      *         tmp_name,        - Internally temporary filename for uploaded files
-     *         error,           - Error which has occured
+     *         error,           - Error which has occurred
      *         destination,     - New destination for this file
      *         validators,      - Set validator names for this file
      *         files            - Set file names for this file
@@ -224,8 +224,8 @@ abstract class AbstractAdapter implements TranslatorAwareInterface
 
     /**
      * Set the filter plugin manager instance
-     * 
-     * @param  FilterPluginManager $filterManager 
+     *
+     * @param  FilterPluginManager $filterManager
      * @return AbstractAdapter
      */
     public function setFilterManager(FilterPluginManager $filterManager)
@@ -236,7 +236,7 @@ abstract class AbstractAdapter implements TranslatorAwareInterface
 
     /**
      * Get the filter plugin manager instance
-     * 
+     *
      * @return FilterPluginManager
      */
     public function getFilterManager()
@@ -249,8 +249,8 @@ abstract class AbstractAdapter implements TranslatorAwareInterface
 
     /**
      * Set the validator plugin manager instance
-     * 
-     * @param  ValidatorPluginManager $validatorManager 
+     *
+     * @param  ValidatorPluginManager $validatorManager
      * @return AbstractAdapter
      */
     public function setValidatorManager(ValidatorPluginManager $validatorManager)
@@ -261,7 +261,7 @@ abstract class AbstractAdapter implements TranslatorAwareInterface
 
     /**
      * Get the validator plugin manager instance
-     * 
+     *
      * @return ValidatorPluginManager
      */
     public function getValidatorManager()

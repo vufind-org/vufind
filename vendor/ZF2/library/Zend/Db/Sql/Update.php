@@ -124,6 +124,10 @@ class Update extends AbstractSql implements SqlInterface, PreparableSqlInterface
      */
     public function where($predicate, $combination = Predicate\PredicateSet::OP_AND)
     {
+        if (is_null($predicate)) {
+            throw new \Zend\Db\Sql\Exception\InvalidArgumentException('Predicate cannot be null');
+        }
+
         if ($predicate instanceof Where) {
             $this->where = $predicate;
         } elseif ($predicate instanceof \Closure) {
@@ -131,6 +135,7 @@ class Update extends AbstractSql implements SqlInterface, PreparableSqlInterface
         } else {
             if (is_string($predicate)) {
                 $predicate = new Predicate\Expression($predicate);
+                $this->where->addPredicate($predicate, $combination);
             } elseif (is_array($predicate)) {
                 foreach ($predicate as $pkey => $pvalue) {
                     if (is_string($pkey) && strpos($pkey, '?') !== false) {
@@ -140,9 +145,9 @@ class Update extends AbstractSql implements SqlInterface, PreparableSqlInterface
                     } else {
                         $predicate = new Predicate\Expression($pvalue);
                     }
+                    $this->where->addPredicate($predicate, $combination);
                 }
             }
-            $this->where->addPredicate($predicate, $combination);
         }
         return $this;
     }
