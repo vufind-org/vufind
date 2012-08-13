@@ -114,23 +114,27 @@ class UpgradeController extends AbstractBase
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('Cannot determine source version.');
             unset($this->cookie->oldVersion);
-            return $this->forward()->dispatch('Upgrade', array('action' => 'Error'));
+            $this->forward()->dispatch('Upgrade', array('action' => 'Error'));
+            return false;
         }
         if (empty($this->cookie->newVersion)) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('Cannot determine destination version.');
             unset($this->cookie->newVersion);
-            return $this->forward()->dispatch('Upgrade', array('action' => 'Error'));
+            $this->forward()->dispatch('Upgrade', array('action' => 'Error'));
+            return false;
         }
         if ($this->cookie->newVersion == $this->cookie->oldVersion) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('Cannot upgrade version to itself.');
             unset($this->cookie->newVersion);
-            return $this->forward()->dispatch('Upgrade', array('action' => 'Error'));
+            $this->forward()->dispatch('Upgrade', array('action' => 'Error'));
+            return false;
         }
 
         // If we got this far, everything is okay:
-        return $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
+        $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
+        return false;
     }
 
     /**
@@ -151,13 +155,15 @@ class UpgradeController extends AbstractBase
             $upgrader->run();
             $this->cookie->warnings = $upgrader->getWarnings();
             $this->cookie->configOkay = true;
-            return $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
+            $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
+            return false;
         } catch (\Exception $e) {
             $extra = is_a($e, 'VF_Exception_FileAccess')
                 ? '  Check file permissions.' : '';
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('Config upgrade failed: ' . $e->getMessage() . $extra);
-            return $this->forward()->dispatch('Upgrade', array('action' => 'Error'));
+            $this->forward()->dispatch('Upgrade', array('action' => 'Error'));
+            return false;
         }
          */
     }
@@ -182,8 +188,9 @@ class UpgradeController extends AbstractBase
                 if (!isset($this->session->dbRootUser)
                     || !isset($this->session->dbRootPass)
                 ) {
-                    return $this->forward()
+                    $this->forward()
                         ->dispatch('Upgrade', array('action' => 'GetDbCredentials'));
+                    return false;
                 }
                 $db = VF_DB::connect(
                     $this->session->dbRootUser, $this->session->dbRootPass
@@ -200,8 +207,9 @@ class UpgradeController extends AbstractBase
                 if (!isset($this->session->dbRootUser)
                     || !isset($this->session->dbRootPass)
                 ) {
-                    return $this->forward()
+                    $this->forward()
                         ->dispatch('Upgrade', array('action' => 'GetDbCredentials'));
+                    return false;
                 }
                 if (!isset($db)) {  // connect to DB if not already connected
                     $db = VF_DB::connect(
@@ -221,8 +229,9 @@ class UpgradeController extends AbstractBase
                 if (!isset($this->session->dbRootUser)
                     || !isset($this->session->dbRootPass)
                 ) {
-                    return $this->forward()
+                    $this->forward()
                         ->dispatch('Upgrade', array('action' => 'GetDbCredentials'));
+                    return false;
                 }
                 if (!isset($db)) {  // connect to DB if not already connected
                     $db = VF_DB::connect(
@@ -244,17 +253,20 @@ class UpgradeController extends AbstractBase
             $anonymousTags = VuFind_Model_Db_Tags::getAnonymousCount();
             if ($anonymousTags > 0 && !isset($this->cookie->skipAnonymousTags)) {
                 $this->view->anonymousCount = $anonymousTags;
-                    return $this->forward()
+                    $this->forward()
                         ->dispatch('Upgrade', array('action' => 'FixAnonymousTags'));
+                    return false;
             }
         } catch (\Exception $e) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('Database upgrade failed: ' . $e->getMessage());
-            return $this->forward()->dispatch('Upgrade', array('action' => 'Error'));
+            $this->forward()->dispatch('Upgrade', array('action' => 'Error'));
+            return false;
         }
 
         $this->cookie->databaseOkay = true;
-        return $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
+        $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
+        return false;
          */
     }
 
@@ -278,8 +290,9 @@ class UpgradeController extends AbstractBase
                 $db->query("SELECT * FROM user;");  // query a table known to exist
                 $this->session->dbRootUser = $this->view->dbrootuser;
                 $this->session->dbRootPass = $pass;
-                return $this->forward()
+                $this->forward()
                     ->dispatch('Upgrade', array('action' => 'FixDatabase'));
+                return false;
             } catch (\Exception $e) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('Could not connect; please try again.');
@@ -299,8 +312,8 @@ class UpgradeController extends AbstractBase
         // Handle skip action:
         if (strlen($this->_request->getParam('skip', '')) > 0) {
             $this->cookie->skipAnonymousTags = true;
-            return $this->forward()
-                ->dispatch('Upgrade', array('action' => 'FixDatabase'));
+            $this->forward()->dispatch('Upgrade', array('action' => 'FixDatabase'));
+            return false;
         }
 
         // Handle submit action:
@@ -320,8 +333,9 @@ class UpgradeController extends AbstractBase
                     $this->session->warnings->append(
                         "Assigned all anonymous tags to {$user->username}."
                     );
-                    return $this->forward()
+                    $this->forward()
                         ->dispatch('Upgrade', array('action' => 'FixDatabase'));
+                    return false;
                 }
             }
         }
@@ -338,7 +352,8 @@ class UpgradeController extends AbstractBase
         // User requested skipping this step?  No need to do further work:
         if (strlen($this->params()->fromPost('skip', '')) > 0) {
             $this->cookie->metadataOkay = true;
-            return $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
+            $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
+            return false;
         }
 
         // Check for problems:
@@ -348,7 +363,8 @@ class UpgradeController extends AbstractBase
         // No problems?  We're done here!
         if (count($problems) == 0) {
             $this->cookie->metadataOkay = true;
-            return $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
+            $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
+            return false;
         }
 
         // Process submit button:
@@ -365,7 +381,8 @@ class UpgradeController extends AbstractBase
                 }
             }
             $this->cookie->metadataOkay = true;
-            return $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
+            $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
+            return false;
         }
     }
 
@@ -391,8 +408,8 @@ class UpgradeController extends AbstractBase
                 $this->cookie->sourceDir = rtrim($dir, '\/');
                 // Clear out request to avoid infinite loop:
                 $this->getRequest()->getPost()->set('sourcedir', '');
-                return $this->forward()
-                    ->dispatch('Upgrade', array('action' => 'Home'));
+                $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
+                return false;
             }
         }
 
@@ -417,16 +434,17 @@ class UpgradeController extends AbstractBase
         if (!isset($this->cookie->sourceDir)
             || !is_dir($this->cookie->sourceDir)
         ) {
-            return $this->forward()
-                ->dispatch('Upgrade', array('action' => 'GetSourceDir'));
+            $this->forward()->dispatch('Upgrade', array('action' => 'GetSourceDir'));
+            return false;
         }
 
         // Next figure out which version(s) are involved:
         if (!isset($this->cookie->oldVersion)
             || !isset($this->cookie->newVersion)
         ) {
-            return $this->forward()
+            $this->forward()
                 ->dispatch('Upgrade', array('action' => 'EstablishVersions'));
+            return false;
         }
 
         /* TODO
@@ -475,7 +493,8 @@ class UpgradeController extends AbstractBase
         $storage = $this->session->getManager()->getStorage();
         $storage[$this->session->getName()]
             = new ArrayObject(array(), ArrayObject::ARRAY_AS_PROPS);
-        return $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
+        $this->forward()->dispatch('Upgrade', array('action' => 'Home'));
+        return false;
     }
 }
 

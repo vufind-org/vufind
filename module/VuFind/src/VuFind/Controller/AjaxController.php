@@ -138,10 +138,11 @@ class AjaxController extends AbstractBase
         $this->layout()->setTemplate('layout/lightbox');
 
         // Call the requested action:
-        return $this->forward()->dispatch(
+        $this->forward()->dispatch(
             $this->params()->fromQuery('submodule'),
             array('action' => $this->params()->fromQuery('subaction'))
         );
+        return false;
     }
 
     /**

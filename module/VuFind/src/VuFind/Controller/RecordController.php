@@ -79,7 +79,8 @@ class RecordController extends AbstractRecord
         $catalog = ConnectionManager::connectToCatalog();
         $checkHolds = $catalog->checkFunction("Holds");
         if (!$checkHolds) {
-            return $this->forward()->dispatch('Record', array('action' => 'Home'));
+            $this->forward()->dispatch('Record', array('action' => 'Home'));
+            return false;
         }
 
         // Stop now if the user does not have valid catalog credentials available:

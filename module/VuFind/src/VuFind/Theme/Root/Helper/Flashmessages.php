@@ -81,9 +81,7 @@ class Flashmessages extends AbstractHelper
                     $html .= '</div>';
                 }
                 $fm->clearMessages();
-                // TODO: figure out why this line has to be commented out to make
-                // things work properly:
-                //$fm->clearCurrentMessages();
+                $fm->clearCurrentMessages();
             }
         }
         return $html;

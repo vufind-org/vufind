@@ -75,7 +75,8 @@ class CartController extends AbstractBase
         } else {
             $action = 'Cart';
         }
-        return $this->forward()->dispatch('Cart', array('action' => $action));
+        $this->forward()->dispatch('Cart', array('action' => $action));
+        return false;
     }
 
     /**
@@ -146,7 +147,8 @@ class CartController extends AbstractBase
         } else {
             throw new \Exception('Unrecognized bulk action.');
         }
-        return $this->forward()->dispatch($controller, array('action' => $action));
+        $this->forward()->dispatch($controller, array('action' => $action));
+        return false;
     }
 
     /**
@@ -366,7 +368,6 @@ class CartController extends AbstractBase
     public function redirectToSource($flashNamespace = null, $flashMsg = null)
     {
         // Set flash message if requested:
-        // TODO: figure out why flash messages are not working after redirect!!
         if (!is_null($flashNamespace) && !empty($flashMsg)) {
             $this->flashMessenger()->setNamespace($flashNamespace)
                 ->addMessage($flashMsg);

@@ -124,7 +124,7 @@ class AbstractBase extends AbstractActionController
      * @param array  $extras  Associative array of extra fields to store
      * @param bool   $forward True to forward, false to redirect
      *
-     * @return ViewModel
+     * @return mixed
      */
     protected function forceLogin($msg = null, $extras = array(), $forward = true)
     {
@@ -145,9 +145,11 @@ class AbstractBase extends AbstractActionController
         // Set a flag indicating that we are forcing login:
         $this->getRequest()->getPost()->set('forcingLogin', true);
 
-        return $forward
-            ? $this->forward()->dispatch('MyResearch', array('action' => 'Login'))
-            : $this->redirect()->toRoute('myresearch-home');
+        if ($forward) {
+            $this->forward()->dispatch('MyResearch', array('action' => 'Login'));
+            return false;
+        }
+        return $this->redirect()->toRoute('myresearch-home');
     }
 
     /**
@@ -155,7 +157,7 @@ class AbstractBase extends AbstractActionController
      * of patron data if so, otherwise forwards to appropriate login prompt and
      * returns false.
      *
-     * @return ViewModel|array
+     * @return bool|array
      */
     protected function catalogLogin()
     {
@@ -183,8 +185,9 @@ class AbstractBase extends AbstractActionController
 
         // If catalog login failed, send the user to the right page:
         if (!$patron) {
-            return $this->forward()
+            $this->forward()
                 ->dispatch('MyResearch', array('action' => 'CatalogLogin'));
+            return false;
         }
 
         // Send value (either false or patron array) back to caller:

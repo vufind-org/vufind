@@ -69,8 +69,8 @@ class MyResearchController extends AbstractBase
 
         // Not logged in?  Force user to log in:
         if (!$this->getAuthManager()->isLoggedIn()) {
-            return $this->forward()
-                ->dispatch('MyResearch', array('action' => 'Login'));
+            $this->forward()->dispatch('MyResearch', array('action' => 'Login'));
+            return false;
         }
 
         // Logged in?  Forward user to followup action (if set) or default action
@@ -85,7 +85,8 @@ class MyResearchController extends AbstractBase
         $config = ConfigReader::getConfig();
         $page = isset($configArray->Site->defaultAccountPage)
             ? $configArray->Site->defaultAccountPage : 'Favorites';
-        return $this->forward()->dispatch('MyResearch', array('action' => $page));
+        $this->forward()->dispatch('MyResearch', array('action' => $page));
+        return false;
     }
 
     /**
@@ -98,8 +99,8 @@ class MyResearchController extends AbstractBase
         // If authentication mechanism does not support account creation, send
         // the user away!
         if (!$this->getAuthManager()->supportsCreation()) {
-            return $this->forward()
-                ->dispatch('MyResearch', array('action' => 'Home'));
+            $this->forward()->dispatch('MyResearch', array('action' => 'Home'));
+            return false;
         }
 
         // We may have come in from a lightbox.  In this case, a prior module
@@ -114,8 +115,8 @@ class MyResearchController extends AbstractBase
         if (!is_null($this->params()->fromPost('submit', null))) {
             try {
                 $this->getAuthManager()->create($this->getRequest());
-                return $this->forward()
-                    ->dispatch('MyResearch', array('action' => 'Home'));
+                $this->forward()->dispatch('MyResearch', array('action' => 'Home'));
+                return false;
             } catch (AuthException $e) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage($e->getMessage());
@@ -167,8 +168,8 @@ class MyResearchController extends AbstractBase
                 && !$this->inLightbox()
             ) {
                 $this->getRequest()->getPost()->set('processLogin', true);
-                return $this->forward()
-                    ->dispatch('MyResearch', array('action' => 'Home'));
+                $this->forward()->dispatch('MyResearch', array('action' => 'Home'));
+                return false;
             }
         }
 
@@ -222,8 +223,8 @@ class MyResearchController extends AbstractBase
             // Forward to the Search/Results action with the "saved" parameter set;
             // this will in turn redirect the user to the appropriate results screen.
             $this->getRequest()->getQuery()->set('saved', $id);
-            return $this->forward()
-                ->dispatch('Search', array('action' => 'Results'));
+            $this->forward()->dispatch('Search', array('action' => 'Results'));
+            return false;
         }
     }
 
@@ -290,7 +291,8 @@ class MyResearchController extends AbstractBase
     public function favoritesAction()
     {
         // Favorites is the same as MyList, but without the list ID parameter.
-        return $this->forward()->dispatch('MyResearch', array('action' => 'MyList'));
+        $this->forward()->dispatch('MyResearch', array('action' => 'MyList'));
+        return false;
     }
 
     /**
@@ -500,8 +502,9 @@ class MyResearchController extends AbstractBase
     {
         // If the user already confirmed the operation, perform the delete now:
         if ($this->params()->fromPost('confirm')) {
-            return $this->forward()
+            $this->forward()
                 ->dispatch('MyResearch', array('action' => 'DeleteFavorite'));
+            return false;
         }
 
         // If we got this far, we must display a confirmation message...
@@ -522,8 +525,8 @@ class MyResearchController extends AbstractBase
         $this->getRequest()->getQuery()
             ->set('confirmTitle', 'confirm_delete_brief');
         $this->getRequest()->getQuery()->set('confirmMessage', "confirm_delete");
-        return $this->forward()
-            ->dispatch('MyResearch', array('action' => 'Confirm'));
+        $this->forward()->dispatch('MyResearch', array('action' => 'Confirm'));
+        return false;
     }
 
     /**

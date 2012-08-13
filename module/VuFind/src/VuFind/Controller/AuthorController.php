@@ -75,8 +75,8 @@ class AuthorController extends AbstractSearch
         // display the search form:
         $author = $this->params()->fromQuery('author');
         if (!empty($author)) {
-            return $this->forward()
-                ->dispatch('Author', array('action' => 'Results'));
+            $this->forward()->dispatch('Author', array('action' => 'Results'));
+            return false;
         }
         return $this->createViewModel();
     }
