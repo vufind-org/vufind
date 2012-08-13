@@ -110,7 +110,7 @@ class Manager
         if (strlen(LOCAL_OVERRIDE_DIR) > 0) {
             return LOCAL_OVERRIDE_DIR . '/cache/';
         }
-        return APPLICATION_PATH . '/cache/';
+        return APPLICATION_PATH . '/data/cache/';
     }
 
     /**
