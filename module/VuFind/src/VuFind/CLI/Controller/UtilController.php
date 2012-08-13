@@ -164,7 +164,9 @@ class UtilController extends AbstractBase
             Console::writeLine(
                 "\tmarcxml - MARC-XML format (delete all record IDs from 001 fields)"
             );
-            Console::writeLine('"marc" is used by default if no format is specified.');
+            Console::writeLine(
+                '"marc" is used by default if no format is specified.'
+            );
             Console::writeLine("[index] is the index to use (default = Solr)");
             return $this->getFailureResponse();
         }
