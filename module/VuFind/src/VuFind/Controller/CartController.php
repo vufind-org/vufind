@@ -75,8 +75,7 @@ class CartController extends AbstractBase
         } else {
             $action = 'Cart';
         }
-        $this->forward()->dispatch('Cart', array('action' => $action));
-        return false;
+        return $this->forwardTo('Cart', $action);
     }
 
     /**
@@ -147,8 +146,7 @@ class CartController extends AbstractBase
         } else {
             throw new \Exception('Unrecognized bulk action.');
         }
-        $this->forward()->dispatch($controller, array('action' => $action));
-        return false;
+        return $this->forwardTo($controller, $action);
     }
 
     /**

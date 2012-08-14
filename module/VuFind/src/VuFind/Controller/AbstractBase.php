@@ -146,8 +146,7 @@ class AbstractBase extends AbstractActionController
         $this->getRequest()->getPost()->set('forcingLogin', true);
 
         if ($forward) {
-            $this->forward()->dispatch('MyResearch', array('action' => 'Login'));
-            return false;
+            return $this->forwardTo('MyResearch', 'Login');
         }
         return $this->redirect()->toRoute('myresearch-home');
     }
@@ -185,12 +184,35 @@ class AbstractBase extends AbstractActionController
 
         // If catalog login failed, send the user to the right page:
         if (!$patron) {
-            $this->forward()
-                ->dispatch('MyResearch', array('action' => 'CatalogLogin'));
-            return false;
+            return $this->forwardTo('MyResearch', 'CatalogLogin');
         }
 
         // Send value (either false or patron array) back to caller:
         return $patron;
+    }
+
+    /**
+     * Convenience method to make invocation of forward() helper less verbose.
+     *
+     * @param string $controller Controller to invoke
+     * @param string $action     Action to invoke
+     * @param array  $params     Extra parameters for the RouteMatch object (no
+     * need to provide action here, since $action takes care of that)
+     *
+     * @return bool              Returns false so this can be returned by a
+     * controller without causing duplicate ViewModel attachment.
+     */
+    public function forwardTo($controller, $action, $params = array())
+    {
+        // Inject action into the RouteMatch parameters
+        $params['action'] = $action;
+
+        // Dispatch the requested controller/action:
+        $this->forward()->dispatch($controller, $params);
+
+        // Always return false.  If we return the output of dispatch(), the
+        // framework will attach duplicate objects to the response and templates
+        // will get processed multiple times unnecessarily!
+        return false;
     }
 }

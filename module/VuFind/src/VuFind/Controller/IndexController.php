@@ -54,8 +54,6 @@ class IndexController extends AbstractBase
         $loggedOutModule = isset($config->Site->defaultModule)
             ? $config->Site->defaultModule : 'Search';
         $module = $this->getUser() ? $loggedInModule : $loggedOutModule;
-        $options = array('action' => 'Home');
-        $this->forward()->dispatch($module, $options);
-        return false;
+        return $this->forwardTo($module, 'Home');
     }
 }

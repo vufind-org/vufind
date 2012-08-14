@@ -298,8 +298,7 @@ class AdminController extends AbstractBase
             }
             $this->flashMessenger()->setNamespace('info')->addMessage($msg);
         }
-        $this->forward()->dispatch('Admin', array('action' => 'Maintenance'));
-        return false;
+        return $this->forwardTo('Admin', 'Maintenance');
     }
 }
 

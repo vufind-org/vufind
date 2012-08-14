@@ -69,8 +69,7 @@ class MyResearchController extends AbstractBase
 
         // Not logged in?  Force user to log in:
         if (!$this->getAuthManager()->isLoggedIn()) {
-            $this->forward()->dispatch('MyResearch', array('action' => 'Login'));
-            return false;
+            return $this->forwardTo('MyResearch', 'Login');
         }
 
         // Logged in?  Forward user to followup action (if set) or default action
@@ -85,8 +84,7 @@ class MyResearchController extends AbstractBase
         $config = ConfigReader::getConfig();
         $page = isset($configArray->Site->defaultAccountPage)
             ? $configArray->Site->defaultAccountPage : 'Favorites';
-        $this->forward()->dispatch('MyResearch', array('action' => $page));
-        return false;
+        return $this->forwardTo('MyResearch', $page);
     }
 
     /**
@@ -99,8 +97,7 @@ class MyResearchController extends AbstractBase
         // If authentication mechanism does not support account creation, send
         // the user away!
         if (!$this->getAuthManager()->supportsCreation()) {
-            $this->forward()->dispatch('MyResearch', array('action' => 'Home'));
-            return false;
+            return $this->forwardTo('MyResearch', 'Home');
         }
 
         // We may have come in from a lightbox.  In this case, a prior module
@@ -115,8 +112,7 @@ class MyResearchController extends AbstractBase
         if (!is_null($this->params()->fromPost('submit', null))) {
             try {
                 $this->getAuthManager()->create($this->getRequest());
-                $this->forward()->dispatch('MyResearch', array('action' => 'Home'));
-                return false;
+                return $this->forwardTo('MyResearch', 'Home');
             } catch (AuthException $e) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage($e->getMessage());
@@ -168,8 +164,7 @@ class MyResearchController extends AbstractBase
                 && !$this->inLightbox()
             ) {
                 $this->getRequest()->getPost()->set('processLogin', true);
-                $this->forward()->dispatch('MyResearch', array('action' => 'Home'));
-                return false;
+                return $this->forwardTo('MyResearch', 'Home');
             }
         }
 
@@ -223,8 +218,7 @@ class MyResearchController extends AbstractBase
             // Forward to the Search/Results action with the "saved" parameter set;
             // this will in turn redirect the user to the appropriate results screen.
             $this->getRequest()->getQuery()->set('saved', $id);
-            $this->forward()->dispatch('Search', array('action' => 'Results'));
-            return false;
+            return $this->forwardTo('Search', 'Results');
         }
     }
 
@@ -291,8 +285,7 @@ class MyResearchController extends AbstractBase
     public function favoritesAction()
     {
         // Favorites is the same as MyList, but without the list ID parameter.
-        $this->forward()->dispatch('MyResearch', array('action' => 'MyList'));
-        return false;
+        return $this->forwardTo('MyResearch', 'MyList');
     }
 
     /**
@@ -502,9 +495,7 @@ class MyResearchController extends AbstractBase
     {
         // If the user already confirmed the operation, perform the delete now:
         if ($this->params()->fromPost('confirm')) {
-            $this->forward()
-                ->dispatch('MyResearch', array('action' => 'DeleteFavorite'));
-            return false;
+            return $this->forwardTo('MyResearch', 'DeleteFavorite');
         }
 
         // If we got this far, we must display a confirmation message...
@@ -525,8 +516,7 @@ class MyResearchController extends AbstractBase
         $this->getRequest()->getQuery()
             ->set('confirmTitle', 'confirm_delete_brief');
         $this->getRequest()->getQuery()->set('confirmMessage', "confirm_delete");
-        $this->forward()->dispatch('MyResearch', array('action' => 'Confirm'));
-        return false;
+        return $this->forwardTo('MyResearch', 'Confirm');
     }
 
     /**
