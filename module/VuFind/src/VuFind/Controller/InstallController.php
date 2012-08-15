@@ -178,14 +178,14 @@ class InstallController extends AbstractBase
      */
     public function fixcacheAction()
     {
-        /* TODO
         $cache = \VuFind\Cache\Manager::getInstance();
-        $this->view->cacheDir = $cache->getCacheDir();
+        $view = $this->createViewModel();
+        $view->cacheDir = $cache->getCacheDir();
         if (function_exists('posix_getpwuid') && function_exists('posix_geteuid')) {
             $processUser = posix_getpwuid(posix_geteuid());
-            $this->view->runningUser = $processUser['name'];
+            $view->runningUser = $processUser['name'];
         }
-         */
+        return $view;
     }
 
     /**
@@ -357,11 +357,11 @@ class InstallController extends AbstractBase
                     // forward back to the home action!
                     $string = "mysql://{$this->view->dbuser}:{$newpass}@"
                         . $this->view->dbhost . '/' . $this->view->dbname;
-                    $config = LOCAL_OVERRIDE_DIR . '/application/configs/config.ini';
-                    $writer = new VF_Config_Writer($config);
+                    $config = ConfigReader::getLocalConfigPath('config.ini', null, true);
+                    $writer = new ConfigWriter($config);
                     $writer->set('Database', 'database', $string);
                     if (!$writer->save()) {
-                        return $this->_forward('fixbasicconfig');
+                        return $this->forwardTo('Install', 'fixbasicconfig');
                     }
                     return $this->_redirect('/Install');
                 } catch (\Exception $e) {
@@ -405,11 +405,11 @@ class InstallController extends AbstractBase
         // Process incoming parameter -- user may have selected a new driver:
         $newDriver = $this->_request->getParam('driver');
         if (!empty($newDriver)) {
-            $configPath = LOCAL_OVERRIDE_DIR . '/application/configs/config.ini';
-            $writer = new VF_Config_Writer($configPath);
+            $configPath = ConfigReader::getLocalConfigPath('config.ini', null, true);
+            $writer = new ConfigWriter($configPath);
             $writer->set('Catalog', 'driver', $newDriver);
             if (!$writer->save()) {
-                return $this->_forward('fixbasicconfig');
+                return $this->forwardTo('Install', 'fixbasicconfig');
             }
             // Copy configuration, if applicable:
             $ilsIni = APPLICATION_PATH . '/configs/' . $newDriver . '.ini';
@@ -419,7 +419,7 @@ class InstallController extends AbstractBase
                     LOCAL_OVERRIDE_DIR . "/application/configs/{$newDriver}.ini"
                 );
                 if (!$success) {
-                    return $this->_forward('fixbasicconfig');
+                    return $this->forwardTo('Install', 'fixbasicconfig');
                 }
             }
             return $this->_redirect('/Install');
@@ -472,10 +472,9 @@ class InstallController extends AbstractBase
      */
     public function fixsolrAction()
     {
-        /* TODO
         // In Windows, localhost may fail -- see if switching to 127.0.0.1 helps:
         $config = ConfigReader::getConfig();
-        $configFile = LOCAL_OVERRIDE_DIR . '/application/configs/config.ini';
+        $configFile = ConfigReader::getLocalConfigPath('config.ini', null, true);
         if (stristr($config->Index->url, 'localhost')) {
             $newUrl = str_replace('localhost', '127.0.0.1', $config->Index->url);
             try {
@@ -483,12 +482,12 @@ class InstallController extends AbstractBase
                 $results= $solr->search();
 
                 // If we got this far, the fix worked.  Let's write it to disk!
-                $writer = new VF_Config_Writer($configFile);
+                $writer = new ConfigWriter($configFile);
                 $writer->set('Index', 'url', $newUrl);
                 if (!$writer->save()) {
-                    return $this->_forward('fixbasicconfig');
+                    return $this->forwardTo('Install', 'fixbasicconfig');
                 }
-                return $this->_redirect('/Install');
+                return $this->redirect()->toRoute('install-home');
             } catch (\Exception $e) {
                 // Didn't work!
             }
@@ -496,15 +495,17 @@ class InstallController extends AbstractBase
 
         // If we got this far, the automatic fix didn't work, so let's just assign
         // some variables to use in offering troubleshooting advice:
-        $this->view->rawUrl = $config->Index->url;
-        $this->view->userUrl = str_replace(
-            array('localhost', '127.0.0.1'), $this->_request->getHttpHost(),
+        $view = $this->createViewModel();
+        $view->rawUrl = $config->Index->url;
+        $view->userUrl = str_replace(
+            array('localhost', '127.0.0.1'),
+            $this->getRequest()->getServer()->get('HTTP_HOST'),
             $config->Index->url
         );
-        $this->view->core = isset($config->Index->default_core)
+        $view->core = isset($config->Index->default_core)
             ? $config->Index->default_core : "biblio";
-        $this->view->configFile = $configFile;
-         */
+        $view->configFile = $configFile;
+        return $view;
     }
 
     /**
@@ -514,15 +515,13 @@ class InstallController extends AbstractBase
      */
     public function doneAction()
     {
-        /* TODO
-        $configDir = LOCAL_OVERRIDE_DIR . '/application/configs';
-        $writer = new VF_Config_Writer($configDir . '/config.ini');
+        $config = ConfigReader::getLocalConfigPath('config.ini', null, true);
+        $writer = new ConfigWriter($config);
         $writer->set('System', 'autoConfigure', 0);
         if (!$writer->save()) {
-            return $this->_forward('fixbasicconfig');
+            return $this->forwardTo('Install', 'fixbasicconfig');
         }
-        $this->view->configDir = $configDir;
-         */
+        return $this->createViewModel(array('configDir' => dirname($config)));
     }
 
     /**
