@@ -386,6 +386,7 @@ class InstallController extends AbstractBase
         } else {
             try {
                 $catalog = ConnectionManager::connectToCatalog();
+                $catalog->getStatus('1');
                 $status = true;
             } catch (\Exception $e) {
                 $status = false;
@@ -401,9 +402,8 @@ class InstallController extends AbstractBase
      */
     public function fixilsAction()
     {
-        /* TODO
         // Process incoming parameter -- user may have selected a new driver:
-        $newDriver = $this->_request->getParam('driver');
+        $newDriver = $this->params()->fromPost('driver');
         if (!empty($newDriver)) {
             $configPath = ConfigReader::getLocalConfigPath('config.ini', null, true);
             $writer = new ConfigWriter($configPath);
@@ -412,40 +412,42 @@ class InstallController extends AbstractBase
                 return $this->forwardTo('Install', 'fixbasicconfig');
             }
             // Copy configuration, if applicable:
-            $ilsIni = APPLICATION_PATH . '/configs/' . $newDriver . '.ini';
-            if (file_exists($ilsIni)) {
-                $success = copy(
-                    $ilsIni,
-                    LOCAL_OVERRIDE_DIR . "/application/configs/{$newDriver}.ini"
-                );
-                if (!$success) {
+            $ilsIni = ConfigReader::getBaseConfigPath($newDriver . '.ini');
+            $localIlsIni
+                = ConfigReader::getLocalConfigPath("{$newDriver}.ini", null, true);
+            if (file_exists($ilsIni) && !file_exists($localIlsIni)) {
+                if (!copy($ilsIni, $localIlsIni)) {
                     return $this->forwardTo('Install', 'fixbasicconfig');
                 }
             }
-            return $this->_redirect('/Install');
+            return $this->redirect()->toRoute('install-home');
         }
 
         // If we got this far, check whether we have an error with a real driver
         // or if we need to warn the user that they have selected a fake driver:
         $config = ConfigReader::getConfig();
+        $view = $this->createViewModel();
         if (in_array($config->Catalog->driver, array('Sample', 'Demo'))) {
-            $this->view->demo = true;
+            $view->demo = true;
             // Get a list of available drivers:
-            $dir = opendir(APPLICATION_PATH . '/../library/VF/ILS/Driver');
-            $this->view->drivers = array();
+            $dir
+                = opendir(APPLICATION_PATH . '/module/VuFind/src/VuFind/ILS/Driver');
+            $drivers = array();
             $blacklist = array('Sample.php', 'Demo.php', 'Interface.php');
             while ($line = readdir($dir)) {
                 if (stristr($line, '.php') && !in_array($line, $blacklist)) {
-                    $this->view->drivers[] = str_replace('.php', '', $line);
+                    $drivers[] = str_replace('.php', '', $line);
                 }
             }
             closedir($dir);
-            sort($this->view->drivers);
+            sort($drivers);
+            $view->drivers = $drivers;
         } else {
-            $this->view->configPath = LOCAL_OVERRIDE_DIR
-                . "/application/configs/{$config->Catalog->driver}.ini";
+            $view->configPath = ConfigReader::getLocalConfigPath(
+                "{$config->Catalog->driver}.ini", null, true
+            );
         }
-         */
+        return $view;
     }
 
     /**
