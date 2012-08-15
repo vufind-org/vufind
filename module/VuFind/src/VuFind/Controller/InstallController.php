@@ -209,16 +209,35 @@ class InstallController extends AbstractBase
     }
 
     /**
+     * Support method for check/fix dependencies code -- do we have a new enough
+     * version of PHP?
+     *
+     * @return bool
+     */
+    protected function phpVersionIsNewEnough()
+    {
+        // PHP_VERSION_ID was introduced in 5.2.7; if it's missing, we have a
+        // problem.
+        if (!defined('PHP_VERSION_ID')) {
+            return false;
+        }
+
+        // We need at least PHP v5.3.3:
+        return PHP_VERSION_ID >= 50303;
+    }
+
+    /**
      * Check for missing dependencies.
      *
      * @return array
      */
     protected function checkDependencies()
     {
-        $status
+        $requiredFunctionsExist
             = function_exists('mb_substr') && is_callable('imagecreatefromstring');
         return array(
-            'title' => 'Dependencies', 'status' => $status,
+            'title' => 'Dependencies',
+            'status' => $requiredFunctionsExist && $this->phpVersionIsNewEnough(),
             'fix' => 'fixdependencies'
         );
     }
@@ -230,8 +249,15 @@ class InstallController extends AbstractBase
      */
     public function fixdependenciesAction()
     {
-        /* TODO
-        $this->view->problems = 0;
+        $problems = 0;
+
+        // Is our version new enough?
+        if (!$this->phpVersionIsNewEnough()) {
+            $msg = "VuFind requires PHP version 5.3.3 or newer; you are running "
+                . phpversion() . ".  Please upgrade.";
+            $this->flashMessenger()->setNamespace('error')->addMessage($msg);
+            $problems++;
+        }
 
         // Is the mbstring library missing?
         if (!function_exists('mb_substr')) {
@@ -242,7 +268,7 @@ class InstallController extends AbstractBase
                 ."http://vufind.org/wiki/installation "
                 ."and look at the PHP installation instructions for your platform.";
             $this->flashMessenger()->setNamespace('error')->addMessage($msg);
-            $this->view->problems++;
+            $problems++;
         }
 
         // Is the GD library missing?
@@ -254,9 +280,10 @@ class InstallController extends AbstractBase
                 . "http://vufind.org/wiki/installation "
                 . "and look at the PHP installation instructions for your platform.";
             $this->flashMessenger()->setNamespace('error')->addMessage($msg);
-            $this->view->problems++;
+            $problems++;
         }
-         */
+
+        return $this->createViewModel(array('problems' => $problems));
     }
 
     /**
