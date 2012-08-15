@@ -25,7 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
- 
+namespace VuFind\Config;
+
 /**
  * Class to update VuFind configuration settings
  *
@@ -35,7 +36,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class VF_Config_Writer
+class Writer
 {
     protected $filename;
     protected $content;
