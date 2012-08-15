@@ -26,8 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller\Plugin;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Session\Container,
-    Zend\View\Helper\ServerUrl;
+use Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Session\Container;
 
 /**
  * Zend action helper to deal with login followup; responsible for remembering URLs
@@ -72,8 +71,7 @@ class Followup extends AbstractPlugin
     public function store($extras = array())
     {
         // Store the current URL:
-        $serverHelper = new ServerUrl();
-        $this->session->url = $serverHelper->__invoke(true);
+        $this->session->url = $this->getController()->getServerUrl();
 
         // Store the extra parameters:
         foreach ($extras as $key => $value) {

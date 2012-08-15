@@ -91,8 +91,7 @@ class OaiController extends AbstractBase
         }
 
         // Collect relevant parameters for OAI server:
-        $serverHelper = new \Zend\View\Helper\ServerUrl();
-        $url = explode('?', $serverHelper->__invoke(true));
+        $url = explode('?', $this->getServerUrl());
         $baseURL = $url[0];
 
         // Build OAI response or die trying:

@@ -192,6 +192,22 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Get the full URL to one of VuFind's routes.
+     *
+     * @param bool|string $route Boolean true for current URL, otherwise name of
+     * route to render as URL
+     *
+     * @return string
+     */
+    public function getServerUrl($route = true)
+    {
+        $serverHelper = $this->getViewRenderer()->plugin('serverurl');
+        return $serverHelper(
+            $route === true ? true : $this->url()->fromRoute($route)
+        );
+    }
+
+    /**
      * Convenience method to make invocation of forward() helper less verbose.
      *
      * @param string $controller Controller to invoke

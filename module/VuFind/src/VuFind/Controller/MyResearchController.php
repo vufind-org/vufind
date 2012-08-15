@@ -126,19 +126,6 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Get VuFind's home URL.
-     *
-     * @param string $route Name of route to render as URL
-     *
-     * @return string
-     */
-    protected function getServerUrl($route)
-    {
-        $serverHelper = $this->getViewRenderer()->plugin('serverurl');
-        return $serverHelper($this->url()->fromRoute($route));
-    }
-
-    /**
      * Login Action
      *
      * @return ViewModel

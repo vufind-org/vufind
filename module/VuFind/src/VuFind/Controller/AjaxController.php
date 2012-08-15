@@ -991,7 +991,7 @@ class AjaxController extends AbstractBase
     public function emailSearch()
     {
         // Make sure URL is properly formatted -- if no protocol is specified, run it
-        // through the fullUrl helper:
+        // through the serverurl helper:
         $url = $this->params()->fromPost('url');
         if (substr($url, 0, 4) != 'http') {
             $urlHelper = $this->getViewRenderer()->plugin('serverurl');

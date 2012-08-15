@@ -419,8 +419,7 @@ class AbstractRecord extends AbstractBase
             && !$this->params()->fromQuery('callback')
         ) {
             // Build callback URL:
-            $serverUrl = $this->getViewRenderer()->plugin('serverurl');
-            $parts = explode('?', $serverUrl(true));
+            $parts = explode('?', $this->getServerUrl(true));
             $callback = $parts[0] . '?callback=1&style=' . urlencode($format);
 
             return $this->redirect()
