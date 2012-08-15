@@ -205,16 +205,14 @@ class CartController extends AbstractBase
      */
     public function printcartAction()
     {
-        /* TODO
         $ids = is_null($this->params()->fromPost('selectAll'))
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');
         if (!is_array($ids) || empty($ids)) {
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
-        $this->_request->setParam('id', $ids);
-        return $this->_forward('Home', 'Records');
-         */
+        $this->getRequest()->getQuery()->set('id', $ids);
+        return $this->forwardTo('Records', 'Home');
     }
 
     /**
