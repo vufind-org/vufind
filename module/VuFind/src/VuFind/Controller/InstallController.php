@@ -26,7 +26,9 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Config\Reader as ConfigReader, Zend\Mvc\MvcEvent;
+use VuFind\Config\Reader as ConfigReader, VuFind\Config\Writer as ConfigWriter,
+    VuFind\Connection\Manager as ConnectionManager,
+    Zend\Mvc\MvcEvent;
 
 /**
  * Class controls VuFind auto-configuration.
@@ -83,23 +85,29 @@ class InstallController extends AbstractBase
     }
 
     /**
+     * Copy the basic configuration file into position and report success or
+     * failure.
+     *
+     * @return bool
+     */
+    protected function installBasicConfig()
+    {
+        $config = ConfigReader::getLocalConfigPath('config.ini', null, true);
+        if (!file_exists($config)) {
+            return copy(ConfigReader::getBaseConfigPath('config.ini'), $config);
+        }
+        return true;        // report success if file already exists
+    }
+
+    /**
      * Check if basic configuration is taken care of.
      *
      * @return array
      */
     protected function checkBasicConfig()
     {
-        /* TODO
-        // Assume success by default -- we'll set to failure if necessary:
-        $status = true;
-
-        // Make sure we have a local configuration file:
-        $config = LOCAL_OVERRIDE_DIR . '/application/configs/config.ini';
-        if (!file_exists($config)) {
-            if (!copy(APPLICATION_PATH . '/configs/config.ini', $config)) {
-                $status = false;
-            }
-        }
+        // Initialize status based on existence of config file...
+        $status = $this->installBasicConfig();
 
         // See if the URL setting remains at the default (unless we already
         // know we've failed):
@@ -114,7 +122,6 @@ class InstallController extends AbstractBase
             'title' => 'Basic Configuration', 'status' => $status,
             'fix' => 'fixbasicconfig'
         );
-         */
     }
 
     /**
@@ -124,33 +131,29 @@ class InstallController extends AbstractBase
      */
     public function fixbasicconfigAction()
     {
-        /* TODO
+        $view = $this->createViewModel();
+        $config = ConfigReader::getLocalConfigPath('config.ini', null, true);
         try {
-            $config = LOCAL_OVERRIDE_DIR . '/application/configs/config.ini';
-            if (!file_exists($config)) {
-                if (!copy(APPLICATION_PATH . '/configs/config.ini', $config)) {
-                    throw new \Exception('Cannot copy file into position.');
-                }
+            if (!$this->installBasicConfig()) {
+                throw new \Exception('Cannot copy file into position.');
             }
-            $writer = new VF_Config_Writer($config);
-            $path = $this->view->url(
-                array('controller' => 'index', 'action' => 'Home'),
-                'default', true, false
-            );
-            $writer->set('Site', 'url', rtrim($this->view->fullUrl($path), '/'));
+            $writer = new ConfigWriter($config);
+            $serverUrl = $this->getViewRenderer()->plugin('serverurl');
+            $path = $this->url()->fromRoute('home');
+            $writer->set('Site', 'url', rtrim($serverUrl($path), '/'));
             if (!$writer->save()) {
                 throw new \Exception('Cannot write config to disk.');
             }
         } catch (\Exception $e) {
-            $this->view->configDir = dirname($config);
+            $view->configDir = dirname($config);
             if (function_exists('posix_getpwuid')
                 && function_exists('posix_geteuid')
             ) {
                 $processUser = posix_getpwuid(posix_geteuid());
-                $this->view->runningUser = $processUser['name'];
+                $view->runningUser = $processUser['name'];
             }
         }
-         */
+        return $view;
     }
 
     /**
@@ -160,14 +163,12 @@ class InstallController extends AbstractBase
      */
     protected function checkCache()
     {
-        /* TODO
-        $cache = new VF_Cache_Manager();
+        $cache = \VuFind\Cache\Manager::getInstance();
         return array(
             'title' => 'Cache',
             'status' => !$cache->hasDirectoryCreationError(),
             'fix' => 'fixcache'
         );
-         */
     }
 
     /**
@@ -178,7 +179,7 @@ class InstallController extends AbstractBase
     public function fixcacheAction()
     {
         /* TODO
-        $cache = new VF_Cache_Manager();
+        $cache = \VuFind\Cache\Manager::getInstance();
         $this->view->cacheDir = $cache->getCacheDir();
         if (function_exists('posix_getpwuid') && function_exists('posix_geteuid')) {
             $processUser = posix_getpwuid(posix_geteuid());
@@ -194,10 +195,9 @@ class InstallController extends AbstractBase
      */
     protected function checkDatabase()
     {
-        /* TODO
         try {
             // Try to read the tags table just to see if we can connect to the DB:
-            $tags = new VuFind_Model_Db_Tags();
+            $tags = new \VuFind\Db\Table\Tags();
             $test = $tags->getByText('test', false);
             $status = true;
         } catch (\Exception $e) {
@@ -206,7 +206,6 @@ class InstallController extends AbstractBase
         return array(
             'title' => 'Database', 'status' => $status, 'fix' => 'fixdatabase'
         );
-         */
     }
 
     /**
@@ -216,14 +215,12 @@ class InstallController extends AbstractBase
      */
     protected function checkDependencies()
     {
-        /* TODO
         $status
             = function_exists('mb_substr') && is_callable('imagecreatefromstring');
         return array(
             'title' => 'Dependencies', 'status' => $status,
             'fix' => 'fixdependencies'
         );
-         */
     }
 
     /**
@@ -356,20 +353,18 @@ class InstallController extends AbstractBase
      */
     protected function checkILS()
     {
-        /* TODO
         $config = ConfigReader::getConfig();
         if (in_array($config->Catalog->driver, array('Sample', 'Demo'))) {
             $status = false;
         } else {
             try {
-                $catalog = VF_Connection_Manager::connectToCatalog();
+                $catalog = ConnectionManager::connectToCatalog();
                 $status = true;
             } catch (\Exception $e) {
                 $status = false;
             }
         }
         return array('title' => 'ILS', 'status' => $status, 'fix' => 'fixils');
-         */
     }
 
     /**
@@ -433,16 +428,14 @@ class InstallController extends AbstractBase
      */
     protected function checkSolr()
     {
-        /* TODO
         try {
-            $solr = VF_Connection_Manager::connectToIndex();
+            $solr = ConnectionManager::connectToIndex();
             $results = $solr->search();
             $status = true;
         } catch (\Exception $e) {
             $status = false;
         }
         return array('title' => 'Solr', 'status' => $status, 'fix' => 'fixsolr');
-         */
     }
 
     /**
@@ -459,7 +452,7 @@ class InstallController extends AbstractBase
         if (stristr($config->Index->url, 'localhost')) {
             $newUrl = str_replace('localhost', '127.0.0.1', $config->Index->url);
             try {
-                $solr = VF_Connection_Manager::connectToIndex(null, null, $newUrl);
+                $solr = ConnectionManager::connectToIndex(null, null, $newUrl);
                 $results= $solr->search();
 
                 // If we got this far, the fix worked.  Let's write it to disk!
@@ -512,16 +505,15 @@ class InstallController extends AbstractBase
      */
     public function homeAction()
     {
-        /* TODO
         // Perform all checks (based on naming convention):
         $methods = get_class_methods($this);
-        $this->view->checks = array();
+        $checks = array();
         foreach ($methods as $method) {
             if (substr($method, 0, 5) == 'check') {
-                $this->view->checks[] = $this->$method();
+                $checks[] = $this->$method();
             }
         }
-         */
+        return $this->createViewModel(array('checks' => $checks));
     }
 }
 
