@@ -70,16 +70,21 @@ class Reader
      *
      * @param string $filename config file name
      * @param string $path     path relative to VuFind base (optional; defaults
-     * to config/vufind
+     * to config/vufind if set to null)
+     * @param bool   $force    force method to return path even if file does not
+     * exist (default = false, do not force)
      *
      * @return string
      */
-    public static function getLocalConfigPath($filename,
-        $path = 'config/vufind'
+    public static function getLocalConfigPath($filename, $path = null,
+        $force = false
     ) {
+        if (is_null($path)) {
+            $path = 'config/vufind';
+        }
         if (defined('LOCAL_OVERRIDE_DIR') && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0) {
             $path = LOCAL_OVERRIDE_DIR . '/' . $path . '/' . $filename;
-            if (file_exists($path)) {
+            if ($force || file_exists($path)) {
                 return $path;
             }
         }
