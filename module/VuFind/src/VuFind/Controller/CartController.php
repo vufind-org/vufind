@@ -26,7 +26,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Cart, VuFind\Export, VuFind\Record, VuFind\Translator\Translator,
+use VuFind\Cart, VuFind\Exception\Mail as MailException, VuFind\Export,
+    VuFind\Mailer, VuFind\Record, VuFind\Translator\Translator,
     Zend\Session\Container as SessionContainer;
 
 /**
@@ -156,49 +157,45 @@ class CartController extends AbstractBase
      */
     public function emailAction()
     {
-        /* TODO
         $ids = is_null($this->params()->fromPost('selectAll'))
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');
         if (!is_array($ids) || empty($ids)) {
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
-        $this->view->records = Record::loadBatch($ids);
+        $view = $this->createViewModel();
+        $view->records = Record::loadBatch($ids);
 
         // Process form submission:
         if ($this->params()->fromPost('submit')) {
             // Send parameters back to view so form can be re-populated:
-            $this->view->to = $this->params()->fromPost('to');
-            $this->view->from = $this->params()->fromPost('from');
-            $this->view->message = $this->params()->fromPost('message');
+            $view->to = $this->params()->fromPost('to');
+            $view->from = $this->params()->fromPost('from');
+            $view->message = $this->params()->fromPost('message');
 
             // Build the URL to share:
             $params = array();
             foreach ($ids as $current) {
                 $params[] = urlencode('id[]') . '=' . urlencode($current);
             }
-            $router = Zend_Controller_Front::getInstance()->getRouter();
-            $target = $router->assemble(
-                array('controller' => 'Records', 'action' => 'Home'), 'default',
-                true, false
-            );
-            $url = $this->view->fullUrl($target) . '?' . implode('&', $params);
+            $url = $this->getServerUrl('records-home') . '?' . implode('&', $params);
 
             // Attempt to send the email and show an appropriate flash message:
             try {
                 // If we got this far, we're ready to send the email:
-                $mailer = new VF_Mailer();
+                $mailer = new Mailer();
                 $mailer->sendLink(
-                    $this->view->to, $this->view->from, $this->view->message,
-                    $url, $this->view, 'bulk_email_title'
+                    $view->to, $view->from, $view->message,
+                    $url, $this->getViewRenderer(), 'bulk_email_title'
                 );
                 return $this->redirectToSource('info', 'email_success');
-            } catch (VF_Exception_Mail $e) {
+            } catch (MailException $e) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage($e->getMessage());
             }
         }
-         */
+
+        return $view;
     }
 
     /**
