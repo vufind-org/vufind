@@ -53,7 +53,27 @@ class AdapterFactory
     {
         // Parse details from connection string:
         $config = ConfigReader::getConfig();
-        list($type, $details) = explode('://', $config->Database->database);
+        return static::getAdapterFromConnectionString(
+            $config->Database->database, $overrideUser, $overridePass
+        );
+    }
+
+    /**
+     * Obtain a Zend\DB connection using a connection string.
+     *
+     * @param string $connectionString Connection string of the form
+     * [db_type]://[username]:[password]@[host]/[db_name]
+     * @param string $overrideUser     Username override (leave null to use username
+     * from connection string)
+     * @param string $overridePass     Password override (leave null to use password
+     * from connection string)
+     *
+     * @return object
+     */
+    public static function getAdapterFromConnectionString($connectionString,
+        $overrideUser = null, $overridePass = null
+    ) {
+        list($type, $details) = explode('://', $connectionString);
         preg_match('/(.+)@([^@]+)\/(.+)/', $details, $matches);
         $credentials = isset($matches[1]) ? $matches[1] : null;
         $host = isset($matches[2]) ? $matches[2] : null;

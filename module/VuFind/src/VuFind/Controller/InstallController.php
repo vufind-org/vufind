@@ -27,7 +27,7 @@
  */
 namespace VuFind\Controller;
 use VuFind\Config\Reader as ConfigReader, VuFind\Config\Writer as ConfigWriter,
-    VuFind\Connection\Manager as ConnectionManager,
+    VuFind\Connection\Manager as ConnectionManager, VuFind\Db\AdapterFactory,
     Zend\Mvc\MvcEvent;
 
 /**
@@ -293,21 +293,21 @@ class InstallController extends AbstractBase
      */
     public function fixdatabaseAction()
     {
-        /* TODO
-        $this->view->dbname = $this->_request->getParam('dbname', 'vufind');
-        $this->view->dbuser = $this->_request->getParam('dbuser', 'vufind');
-        $this->view->dbhost = $this->_request->getParam('dbhost', 'localhost');
-        $this->view->dbrootuser = $this->_request->getParam('dbrootuser', 'root');
+        $view = $this->createViewModel();
+        $view->dbname = $this->params()->fromPost('dbname', 'vufind');
+        $view->dbuser = $this->params()->fromPost('dbuser', 'vufind');
+        $view->dbhost = $this->params()->fromPost('dbhost', 'localhost');
+        $view->dbrootuser = $this->params()->fromPost('dbrootuser', 'root');
 
-        if (!preg_match('/^\w*$/', $this->view->dbname)) {
+        if (!preg_match('/^\w*$/', $view->dbname)) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('Database name must be alphanumeric.');
-        } else if (!preg_match('/^\w*$/', $this->view->dbuser)) {
+        } else if (!preg_match('/^\w*$/', $view->dbuser)) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('Database user must be alphanumeric.');
-        } else if (strlen($this->_request->getParam('submit', '')) > 0) {
-            $newpass = $this->_request->getParam('dbpass');
-            $newpassConf = $this->_request->getParam('dbpassconfirm');
+        } else if (strlen($this->params()->fromPost('submit', '')) > 0) {
+            $newpass = $this->params()->fromPost('dbpass');
+            $newpassConf = $this->params()->fromPost('dbpassconfirm');
             if (empty($newpass) || empty($newpassConf)) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('Password fields must not be blank.');
@@ -316,61 +316,54 @@ class InstallController extends AbstractBase
                     ->addMessage('Password fields must match.');
             } else {
                 // Connect to database:
-                $params = array(
-                    'host' => $this->view->dbhost,
-                    'username' => $this->view->dbrootuser,
-                    'password' => $this->_request->getParam('dbrootpass'),
-                    'dbname' => null
+                $connection = 'mysql://' . $view->dbrootuser . ':'
+                    . $this->params()->fromPost('dbrootpass') . '@'
+                    . $view->dbhost;
+                $db = AdapterFactory::getAdapterFromConnectionString(
+                    $connection . '/mysql'
                 );
-                $db = Zend_Db::factory('mysqli', $params);
                 try {
-                    $connection = $db->getConnection();
-                    $query = 'CREATE DATABASE ' . $this->view->dbname;
-                    if (!$connection->query($query)) {
-                        throw new \Exception($connection->error);
-                    }
+                    $query = 'CREATE DATABASE ' . $view->dbname;
+                    $db->query($query, $db::QUERY_MODE_EXECUTE);
                     $grant = "GRANT SELECT,INSERT,UPDATE,DELETE ON "
-                        . $this->view->dbname
-                        . ".* TO '{$this->view->dbuser}'@'{$this->view->dbhost}' "
-                        . "IDENTIFIED BY '"
-                        . $connection->real_escape_string($newpass)
-                        . "' WITH GRANT OPTION";
-                    if (!$connection->query($grant)) {
-                        throw new \Exception($connection->error);
-                    };
-                    if (!$connection->query('FLUSH PRIVILEGES')) {
-                        throw new \Exception($connection->error);
-                    }
-                    $connection->select_db($this->view->dbname);
-                    $sql = file_get_contents(APPLICATION_PATH . '/sql/mysql.sql');
+                        . $view->dbname
+                        . ".* TO '{$view->dbuser}'@'{$view->dbhost}' "
+                        . "IDENTIFIED BY " . $db->getPlatform()->quoteValue($newpass)
+                        . " WITH GRANT OPTION";
+                    $db->query($grant, $db::QUERY_MODE_EXECUTE);
+                    $db->query('FLUSH PRIVILEGES', $db::QUERY_MODE_EXECUTE);
+                    $db = AdapterFactory::getAdapterFromConnectionString(
+                        $connection . '/' . $view->dbname
+                    );
+                    $sql = file_get_contents(
+                        APPLICATION_PATH . '/module/VuFind/sql/mysql.sql'
+                    );
                     $statements = explode(';', $sql);
                     foreach ($statements as $current) {
                         // Skip empty sections:
                         if (strlen(trim($current)) == 0) {
                             continue;
                         }
-                        if (!$connection->query($current)) {
-                            throw new \Exception($connection->error);
-                        }
+                        $db->query($current, $db::QUERY_MODE_EXECUTE);
                     }
                     // If we made it this far, we can update the config file and
                     // forward back to the home action!
-                    $string = "mysql://{$this->view->dbuser}:{$newpass}@"
-                        . $this->view->dbhost . '/' . $this->view->dbname;
+                    $string = "mysql://{$view->dbuser}:{$newpass}@"
+                        . $view->dbhost . '/' . $view->dbname;
                     $config = ConfigReader::getLocalConfigPath('config.ini', null, true);
                     $writer = new ConfigWriter($config);
                     $writer->set('Database', 'database', $string);
                     if (!$writer->save()) {
                         return $this->forwardTo('Install', 'fixbasicconfig');
                     }
-                    return $this->_redirect('/Install');
+                    return $this->redirect()->toRoute('install-home');
                 } catch (\Exception $e) {
                     $this->flashMessenger()->setNamespace('error')
                         ->addMessage($e->getMessage());
                 }
             }
         }
-         */
+        return $view;
     }
 
     /**
