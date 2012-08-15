@@ -25,7 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-use VuFind\Config\Reader as ConfigReader,
+namespace VuFind\Config;
+use VuFind\Config\Reader as ConfigReader, VuFind\Config\Writer as ConfigWriter,
     VuFind\Exception\FileAccess as FileAccessException;
 
 /**
@@ -37,7 +38,7 @@ use VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class VF_Config_Upgrade
+class Upgrade
 {
     protected $from;
     protected $to;
@@ -249,10 +250,10 @@ class VF_Config_Upgrade
     protected function saveModifiedConfig($filename)
     {
         $outfile = $this->newDir . '/' . $filename;
-        $result = VF_Config_Writer::writeFile(
-            $this->newConfigs[$filename], $this->comments[$filename], $outfile
+        $writer = new ConfigWriter(
+            $outfile, $this->newConfigs[$filename], $this->comments[$filename]
         );
-        if (!$result) {
+        if (!$writer->save()) {
             throw new FileAccessException(
                 "Error: Problem writing to {$outfile}."
             );

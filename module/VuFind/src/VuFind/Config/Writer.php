@@ -44,16 +44,24 @@ class Writer
     /**
      * Constructor
      *
-     * @param string $filename Configuration file to load
+     * @param string     $filename Configuration file to write
+     * @param array|null $content  Content to load into file (set to null to load
+     * contents of existing file specified by $filename)
+     * @param array      $comments Comments to associate with content (ignored if
+     * $content is null).
      *
      * @throws Exception
      */
-    public function __construct($filename)
+    public function __construct($filename, $content = null, $comments = array())
     {
         $this->filename = $filename;
-        $this->content = file_get_contents($filename);
-        if (!$this->content) {
-            throw new \Exception('Could not read ' . $filename);
+        if (is_null($content)) {
+            $this->content = file_get_contents($filename);
+            if (!$this->content) {
+                throw new \Exception('Could not read ' . $filename);
+            }
+        } else {
+            $this->content = $this->buildContent($content, $comments);
         }
     }
 
@@ -122,23 +130,33 @@ class Writer
     }
 
     /**
+     * Get the modified file's contents as a string.
+     *
+     * @return string
+     */
+    public function getContent()
+    {
+        return $this->content;
+    }
+
+    /**
      * Save the modified file to disk.  Return true on success, false on error.
      *
      * @return bool
      */
     public function save()
     {
-        return file_put_contents($this->filename, $this->content);
+        return file_put_contents($this->filename, $this->getContent());
     }
 
     /**
-     * support method for writeFile -- format a value
+     * support method for buildContent -- format a value
      *
      * @param mixed $e Value to format
      *
      * @return string  Value formatted for output to ini file.
      */
-    protected static function writeValue($e)
+    protected function buildContentValue($e)
     {
         if ($e === true) {
             return 'true';
@@ -152,7 +170,7 @@ class Writer
     }
 
     /**
-     * support method for writeFile -- format a line
+     * support method for buildContent -- format a line
      *
      * @param string $key   Configuration key
      * @param mixed  $value Configuration value
@@ -160,15 +178,15 @@ class Writer
      *
      * @return string       Formatted line
      */
-    protected static function writeLine($key, $value, $tab = 17)
+    protected function buildContentLine($key, $value, $tab = 17)
     {
         // Build a tab string so the equals signs line up attractively:
         $tabStr = '';
         for ($i = strlen($key); $i < $tab; $i++) {
             $tabStr .= ' ';
         }
-    
-        return $key . $tabStr . "= ". self::writeValue($value);
+
+        return $key . $tabStr . "= ". $this->buildContentValue($value);
     }
 
     /**
@@ -177,11 +195,10 @@ class Writer
      *
      * @param array  $assoc_arr Array to output
      * @param array  $comments  Comments to inject
-     * @param string $path      File to write
      *
-     * @return bool             True on success, false on error.
+     * @return string
      */
-    public static function writeFile($assoc_arr, $comments, $path)
+    protected function buildContent($assoc_arr, $comments)
     {
         $content = "";
         foreach ($assoc_arr as $key=>$elem) {
@@ -203,11 +220,13 @@ class Writer
                 }
                 if (is_array($elem2)) {
                     for ($i = 0; $i < count($elem2); $i++) {
-                        $content
-                            .= self::writeLine($key2 . "[]", $elem2[$i]) . "\n";
+                        $content .= $this->buildContentLine(
+                            $key2 . "[]", $elem2[$i]
+                        );
+                        $content .= "\n";
                     }
                 } else {
-                    $content .= self::writeLine($key2, $elem2);
+                    $content .= $this->buildContentLine($key2, $elem2);
                 }
                 if (!empty($settingComments['inline'])) {
                     $content .= "\t" . $settingComments['inline'];
@@ -215,16 +234,8 @@ class Writer
                 $content .= "\n";
             }
         }
-    
+
         $content .= $comments['after'];
-    
-        if (!$handle = fopen($path, 'w')) {
-            return false;
-        }
-        if (!fwrite($handle, $content)) {
-            return false;
-        }
-        fclose($handle);
-        return true;
+        return $content;
     }
 }
