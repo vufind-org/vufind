@@ -26,7 +26,8 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller\Plugin;
-use VuFind\Db\Table\UserList as UserListTable,
+use VuFind\Db\Table\Resource as ResourceTable,
+    VuFind\Db\Table\UserList as UserListTable,
     VuFind\Exception\LoginRequired as LoginRequiredException, VuFind\Tags,
     VuFind\Translator\Translator, Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
@@ -78,7 +79,7 @@ class Favorites extends AbstractPlugin
             list($source, $id) = explode('|', $current, 2);
 
             // Get or create a resource object as needed:
-            $resourceTable = new VuFind_Model_Db_Resource();
+            $resourceTable = new ResourceTable();
             $resource = $resourceTable->findResource($id, $source);
 
             // Add the information to the user's account:

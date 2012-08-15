@@ -314,14 +314,8 @@ class CartController extends AbstractBase
      */
     public function saveAction()
     {
-        /* TODO
-        // Make sure user is logged in:
-        $user = $this->getUser;
-        if ($user == false) {
-            return $this->forceLogin();
-        }
-
-        // Load record information:
+        // Load record information first (no need to prompt for login if we just
+        // need to display a "no records" error message):
         $ids = is_null($this->params()->fromPost('selectAll'))
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');
@@ -329,24 +323,33 @@ class CartController extends AbstractBase
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
 
+        // Make sure user is logged in:
+        $user = $this->getUser();
+        if ($user == false) {
+            return $this->forceLogin();
+        }
+
         // Process submission if necessary:
         if (!is_null($this->params()->fromPost('submit'))) {
-            $this->_helper->favorites->saveBulk($this->params()->fromPosts(), $user);
+            $this->favorites()
+                ->saveBulk($this->getRequest()->getPost()->toArray(), $user);
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage('bulk_save_success');
             $list = $this->params()->fromPost('list');
             if (!empty($list)) {
-                return $this->_redirect('/MyResearch/MyList/' . $list);
+                return $this->redirect()->toRoute('userList', array('id' => $list));
             } else {
                 return $this->redirectToSource();
             }
         }
 
-        $this->view->records = Record::loadBatch($ids);
-
-        // Load list information:
-        $this->view->lists = $user->getLists();
-         */
+        // Pass record and list information to view:
+        return $this->createViewModel(
+            array(
+                'records' => Record::loadBatch($ids),
+                'lists' => $user->getLists()
+            )
+        );
     }
 
     /**

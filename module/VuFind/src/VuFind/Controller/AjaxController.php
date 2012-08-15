@@ -834,13 +834,11 @@ class AjaxController extends AbstractBase
      * Saves records to a User's favorites
      *
      * @return void
-     * @access public
      */
     public function bulkSave()
     {
-        /* TODO
         // Without IDs, we can't continue
-        $ids = $this->params()->fromQuery('ids', array());
+        $ids = $this->params()->fromPost('ids', array());
         if (empty($ids)) {
             return $this->output(
                 array('result'=>Translator::translate('bulk_error_missing')),
@@ -857,12 +855,12 @@ class AjaxController extends AbstractBase
         }
 
         try {
-            $this->_helper->favorites->saveBulk(
-                $this->getRequest()->getParams(), $user
+            $this->favorites()->saveBulk(
+                $this->getRequest()->getPost()->toArray(), $user
             );
             return $this->output(
                 array(
-                    'result' => array('list' => $this->params()->fromQuery('list')),
+                    'result' => array('list' => $this->params()->fromPost('list')),
                     'info' => Translator::translate("bulk_save_success")
                 ), self::STATUS_OK
             );
@@ -872,7 +870,6 @@ class AjaxController extends AbstractBase
                 self::STATUS_ERROR
             );
         }
-         */
     }
 
     /**
