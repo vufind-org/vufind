@@ -128,7 +128,7 @@ class Minified
     /**
      * Turn the current object into search results.
      *
-     * @return VuFind\\Search\\Base\\Results
+     * @return \VuFind\Search\Base\Results
      */
     public function deminify()
     {

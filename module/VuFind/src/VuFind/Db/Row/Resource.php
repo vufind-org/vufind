@@ -123,9 +123,9 @@ class Resource extends RowGateway
      * Use a record driver to assign metadata to the current row.  Return the
      * current object to allow fluent interface.
      *
-     * @param VF_RecordDriver_Base $driver The record driver.
+     * @param \VuFind\RecordDriver\AbstractBase $driver The record driver.
      *
-     * @return VuFind_Model_Db_ResourceRow
+     * @return \VuFind\Db\Row\Resource
      */
     public function assignMetadata($driver)
     {

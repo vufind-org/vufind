@@ -47,7 +47,7 @@ class SearchController extends AbstractSearch
     /**
      * Handle an advanced search
      *
-     * @return void
+     * @return mixed
      */
     public function advancedAction()
     {
@@ -73,7 +73,7 @@ class SearchController extends AbstractSearch
     /**
      * Email action - Allows the email form to appear.
      *
-     * @return void
+     * @return mixed
      */
     public function emailAction()
     {
@@ -219,7 +219,7 @@ class SearchController extends AbstractSearch
     /**
      * Handle search history display && purge
      *
-     * @return void
+     * @return mixed
      */
     public function historyAction()
     {
@@ -270,7 +270,7 @@ class SearchController extends AbstractSearch
     /**
      * Home action
      *
-     * @return void
+     * @return mixed
      */
     public function homeAction()
     {
@@ -282,7 +282,7 @@ class SearchController extends AbstractSearch
     /**
      * New item search form
      *
-     * @return void
+     * @return mixed
      */
     public function newitemAction()
     {
@@ -317,7 +317,7 @@ class SearchController extends AbstractSearch
     /**
      * New item result list
      *
-     * @return void
+     * @return mixed
      */
     public function newitemresultsAction()
     {
@@ -389,7 +389,7 @@ class SearchController extends AbstractSearch
     /**
      * Course reserves
      *
-     * @return void
+     * @return mixed
      */
     public function reservesAction()
     {
@@ -420,7 +420,7 @@ class SearchController extends AbstractSearch
     /**
      * Show search form for Solr-driven reserves.
      *
-     * @return void
+     * @return mixed
      */
     public function reservessearchAction()
     {
@@ -434,7 +434,7 @@ class SearchController extends AbstractSearch
     /**
      * Show results of reserves search.
      *
-     * @return void
+     * @return mixed
      */
     public function reservesresultsAction()
     {
@@ -490,7 +490,7 @@ class SearchController extends AbstractSearch
      * data may come from the cache, and it is currently shared between the Home
      * page and the Advanced search screen.
      *
-     * @return VF_Search_Solr_Results
+     * @return \VuFind\Search\Solr\Results
      */
     protected function getAdvancedFacets()
     {
@@ -519,7 +519,7 @@ class SearchController extends AbstractSearch
     /**
      * Handle OpenSearch.
      *
-     * @return void
+     * @return mixed
      */
     public function opensearchAction()
     {
@@ -543,7 +543,7 @@ class SearchController extends AbstractSearch
      *
      * http://www.opensearch.org/Specifications/OpenSearch/Extensions/Suggestions/1.0
      *
-     * @return void
+     * @return mixed
      */
     public function suggestAction()
     {

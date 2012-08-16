@@ -44,7 +44,7 @@ class OaiController extends AbstractBase
     /**
      * Display OAI server form.
      *
-     * @return void
+     * @return \Zend\View\Model\ViewModel
      */
     public function homeAction()
     {
@@ -55,7 +55,7 @@ class OaiController extends AbstractBase
     /**
      * Standard OAI server.
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     public function authserverAction()
     {
@@ -65,7 +65,7 @@ class OaiController extends AbstractBase
     /**
      * Standard OAI server.
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     public function serverAction()
     {
@@ -77,7 +77,7 @@ class OaiController extends AbstractBase
      *
      * @param string $serverClass Class to load for handling OAI requests.
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     protected function handleOAI($serverClass)
     {

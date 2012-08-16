@@ -51,7 +51,7 @@ class Reader
      * @param string $name        Config file name (no .ini; null for main config)
      * @param bool   $forceReload Reload config from disk even if already in cache
      *
-     * @return Zend\Config\Config
+     * @return \Zend\Config\Config
      */
     public static function getConfig($name = null, $forceReload = false)
     {
@@ -129,7 +129,7 @@ class Reader
     /**
      * Get the Ini Reader.
      *
-     * @return Zend\Config\Reader\Ini
+     * @return \Zend\Config\Reader\Ini
      */
     protected static function getIniReader()
     {
@@ -154,7 +154,7 @@ class Reader
      * @param string $path     path relative to VuFind base (optional; defaults
      * to config/vufind
      *
-     * @return Zend\Config\Config
+     * @return \Zend\Config\Config
      */
     public static function loadConfigFile($filename, $path = 'config/vufind')
     {

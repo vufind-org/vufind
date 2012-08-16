@@ -44,7 +44,7 @@ class SyndeticsPlus extends AbstractHelper
     /**
      * Provides access to other class methods.
      *
-     * @return VuFind_Theme_Root_Helper_SyndeticsPlus
+     * @return \VuFind\Theme\Root\Helper\SyndeticsPlus
      */
     public function __invoke()
     {

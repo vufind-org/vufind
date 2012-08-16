@@ -47,7 +47,7 @@ class VudlController extends AbstractBase
      *
      * Data is later loaded and rendered with JS
      *
-     * @return void
+     * @return mixed
      */
     public function recordAction()
     {
@@ -132,11 +132,12 @@ class VudlController extends AbstractBase
     }
 
     /**
-     * In order to reduce initial load time the majority
-     * of the data is called here after document.ready
+     * In order to reduce initial load time the majority of the data is called
+     * here after document.ready; a response is generated containing JSON
+     * encoded data with the urls of all the images for each page associated
+     * with the document.
      *
-     * @return string JSON encoded data with the urls of all the images
-     *                for each page associated with the document
+     * @return mixed
      */
     public function pageDataAction()
     {
@@ -178,10 +179,10 @@ class VudlController extends AbstractBase
     /**
      * Parses the xml file for the section detailing the files
      *
-     * @param SimpleXMLElement $xml - to be parsed
+     * @param SimpleXMLElement $xml XML to be parsed
      *
-     * @return  An array of file objects, string-indexed by ID
-     *          Object contains 'src','type','use'(size)
+     * @return array                An array of file objects, string-indexed by ID;
+     * Object contains 'src','type','use'(size)
      */
     protected function getAllFiles($xml)
     {
@@ -210,10 +211,10 @@ class VudlController extends AbstractBase
      *
      * Data is string indexed by what type of information it is
      *
-     * @param SimpleXMLElement $xml - to be parsed
+     * @param SimpleXMLElement $xml XML to be parsed
      *
-     * @return  title-indexed array of basic document data
-     *          'author' => 'Kevin Bacon', etc.
+     * @return array                title-indexed array of basic document data
+     * ('author' => 'Kevin Bacon', etc.)
      */
     protected function getDocSummary($xml)
     {
@@ -234,11 +235,12 @@ class VudlController extends AbstractBase
     /**
      * Used to AJAX information about a page that may not have been loaded yet.
      *
-     * This is a hardly used fallback and may be a candid for deletion
+     * This is a hardly used fallback and may be a candidate for deletion
      *
-     * @return  JSON encoded array with information about the images
-     *          associated with the parameter-specified page.
-     *          Indexed by use (size)
+     * Response contains JSON encoded array with information about the images
+     * associated with the parameter-specified page.  Indexed by use (size)
+     *
+     * @return mixed
      */
     public function pageTabsAction()
     {

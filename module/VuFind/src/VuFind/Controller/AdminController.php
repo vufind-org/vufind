@@ -114,7 +114,7 @@ class AdminController extends AbstractBase
     /**
      * Display disabled message.
      *
-     * @return void
+     * @return \Zend\View\Model\ViewModel
      */
     public function disabledAction()
     {
@@ -124,7 +124,7 @@ class AdminController extends AbstractBase
     /**
      * Admin home.
      *
-     * @return void
+     * @return \Zend\View\Model\ViewModel
      */
     public function homeAction()
     {
@@ -143,7 +143,7 @@ class AdminController extends AbstractBase
     /**
      * Statistics reporting
      *
-     * @return void
+     * @return \Zend\View\Model\ViewModel
      */
     public function statisticsAction()
     {
@@ -219,7 +219,7 @@ class AdminController extends AbstractBase
     /**
      * Configuration management
      *
-     * @return void
+     * @return \Zend\View\Model\ViewModel
      */
     public function configAction()
     {
@@ -234,7 +234,7 @@ class AdminController extends AbstractBase
     /**
      * Support action for config -- attempt to enable auto configuration.
      *
-     * @return void
+     * @return mixed
      */
     public function enableautoconfigAction()
     {
@@ -264,7 +264,7 @@ class AdminController extends AbstractBase
     /**
      * System maintenance
      *
-     * @return void
+     * @return \Zend\View\Model\ViewModel
      */
     public function maintenanceAction()
     {
@@ -274,7 +274,7 @@ class AdminController extends AbstractBase
     /**
      * Support action for maintenance -- delete expired searches.
      *
-     * @return void
+     * @return mixed
      */
     public function deleteexpiredsearchesAction()
     {

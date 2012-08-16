@@ -74,7 +74,7 @@ class AbstractSearch extends AbstractBase
     /**
      * Handle an advanced search
      *
-     * @return ViewModel
+     * @return \Zend\View\Model\ViewModel
      */
     public function advancedAction()
     {
@@ -99,7 +99,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param int $id ID from search history
      *
-     * @return void
+     * @return mixed
      */
     protected function redirectToSavedSearch($id)
     {
@@ -136,7 +136,7 @@ class AbstractSearch extends AbstractBase
     /**
      * Send search results to results view
      *
-     * @return ViewModel
+     * @return \Zend\View\Model\ViewModel
      */
     public function resultsAction()
     {
@@ -242,7 +242,7 @@ class AbstractSearch extends AbstractBase
      *
      * @param \VuFind\Search\Base\Results $results Search results object.
      *
-     * @return bool|ViewModel
+     * @return bool|\Zend\View\Model\ViewModel
      */
     protected function processJumpTo($results)
     {

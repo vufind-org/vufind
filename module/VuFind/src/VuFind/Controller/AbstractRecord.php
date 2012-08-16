@@ -65,7 +65,7 @@ class AbstractRecord extends AbstractBase
      *
      * @param array $params Parameters to pass to ViewModel constructor.
      *
-     * @return ViewModel
+     * @return \Zend\View\Model\ViewModel
      */
     protected function createViewModel($params = null)
     {
@@ -80,7 +80,7 @@ class AbstractRecord extends AbstractBase
     /**
      * Add a comment
      *
-     * @return void
+     * @return mixed
      */
     public function addcommentAction()
     {
@@ -128,7 +128,7 @@ class AbstractRecord extends AbstractBase
     /**
      * Delete a comment
      *
-     * @return void
+     * @return mixed
      */
     public function deletecommentAction()
     {
@@ -151,7 +151,7 @@ class AbstractRecord extends AbstractBase
     /**
      * Add a tag
      *
-     * @return void
+     * @return mixed
      */
     public function addtagAction()
     {
@@ -178,7 +178,7 @@ class AbstractRecord extends AbstractBase
     /**
      * Home (default) action -- forward to requested (or default) tab.
      *
-     * @return void
+     * @return mixed
      */
     public function homeAction()
     {
@@ -204,7 +204,7 @@ class AbstractRecord extends AbstractBase
     /**
      * ProcessSave -- store the results of the Save action.
      *
-     * @return void
+     * @return mixed
      */
     protected function processSave()
     {
@@ -240,7 +240,7 @@ class AbstractRecord extends AbstractBase
      * Save action - Allows the save template to appear,
      *   passes containingLists & nonContainingLists
      *
-     * @return void
+     * @return mixed
      */
     public function saveAction()
     {
@@ -303,7 +303,7 @@ class AbstractRecord extends AbstractBase
     /**
      * Email action - Allows the email form to appear.
      *
-     * @return void
+     * @return \Zend\View\Model\ViewModel
      */
     public function emailAction()
     {
@@ -342,7 +342,7 @@ class AbstractRecord extends AbstractBase
     /**
      * SMS action - Allows the SMS form to appear.
      *
-     * @return void
+     * @return \Zend\View\Model\ViewModel
      */
     public function smsAction()
     {
@@ -382,7 +382,7 @@ class AbstractRecord extends AbstractBase
     /**
      * Show citations for the current record.
      *
-     * @return void
+     * @return \Zend\View\Model\ViewModel
      */
     public function citeAction()
     {
@@ -395,7 +395,7 @@ class AbstractRecord extends AbstractBase
     /**
      * Export the record
      *
-     * @return void
+     * @return mixed
      */
     public function exportAction()
     {
@@ -439,7 +439,7 @@ class AbstractRecord extends AbstractBase
     /**
      * Special action for RDF export
      *
-     * @return void
+     * @return mixed
      */
     public function rdfAction()
     {
@@ -475,7 +475,7 @@ class AbstractRecord extends AbstractBase
      * @param string $params Parameters to append to record URL.
      * @param string $tab    Record tab to display (null for default).
      *
-     * @return void
+     * @return mixed
      */
     protected function redirectToRecord($params = '', $tab = null)
     {
@@ -489,7 +489,7 @@ class AbstractRecord extends AbstractBase
      *
      * @param string $tab Name of tab to display
      *
-     * @return void
+     * @return mixed
      */
     protected function showTab($tab)
     {

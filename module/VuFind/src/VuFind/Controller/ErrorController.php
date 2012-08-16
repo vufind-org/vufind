@@ -43,7 +43,7 @@ class ErrorController extends AbstractActionController
     /**
      * Display unavailable message.
      *
-     * @return void
+     * @return mixed
      */
     public function unavailableAction()
     {

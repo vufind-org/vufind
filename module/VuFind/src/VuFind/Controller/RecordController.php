@@ -41,9 +41,7 @@ use VuFind\Config\Reader as ConfigReader,
 class RecordController extends AbstractRecord
 {
     /**
-     * init
-     *
-     * @return void
+     * Constructor
      */
     public function __construct()
     {
@@ -59,7 +57,7 @@ class RecordController extends AbstractRecord
     /**
      * Action for dealing with blocked holds.
      *
-     * @return void
+     * @return mixed
      */
     public function blockedholdAction()
     {
@@ -71,7 +69,7 @@ class RecordController extends AbstractRecord
     /**
      * Action for dealing with holds.
      *
-     * @return void
+     * @return mixed
      */
     public function holdAction()
     {

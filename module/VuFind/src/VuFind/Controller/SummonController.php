@@ -80,7 +80,7 @@ class SummonController extends AbstractSearch
     /**
      * Handle an advanced search
      *
-     * @return void
+     * @return mixed
      */
     public function advancedAction()
     {
@@ -98,7 +98,7 @@ class SummonController extends AbstractSearch
     /**
      * Home action
      *
-     * @return void
+     * @return mixed
      */
     public function homeAction()
     {
@@ -110,7 +110,7 @@ class SummonController extends AbstractSearch
     /**
      * Search action -- call standard results action
      *
-     * @return void
+     * @return mixed
      */
     public function searchAction()
     {

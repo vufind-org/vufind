@@ -66,7 +66,7 @@ class AjaxController extends AbstractBase
     /**
      * Handles passing data to the class
      *
-     * @return void
+     * @return mixed
      */
     public function jsonAction()
     {
@@ -99,7 +99,7 @@ class AjaxController extends AbstractBase
     /**
      * Load a recommendation module via AJAX.
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     public function recommendAction()
     {
@@ -129,7 +129,7 @@ class AjaxController extends AbstractBase
      * Get the contents of a lightbox; note that unlike most methods, this
      * one actually returns HTML rather than JSON.
      *
-     * @return void
+     * @return mixed
      */
     public function getLightbox()
     {
@@ -175,7 +175,7 @@ class AjaxController extends AbstractBase
      * This is responsible for printing the holdings information for a
      * collection of records in JSON format.
      *
-     * @return void
+     * @return \Zend\Http\Response
      * @author Chris Delis <cedelis@uillinois.edu>
      * @author Tuan Nguyen <tuan@yorku.ca>
      */
@@ -440,7 +440,7 @@ class AjaxController extends AbstractBase
     /**
      * Check one or more records to see if they are saved in one of the user's list.
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     protected function getSaveStatuses()
     {
@@ -489,7 +489,7 @@ class AjaxController extends AbstractBase
      * @param mixed  $data   The response data
      * @param string $status Status of the request
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     protected function output($data, $status)
     {
@@ -524,7 +524,7 @@ class AjaxController extends AbstractBase
      * @param string $errfile File where error occured
      * @param string $errline Line number of error
      *
-     * @return true - to cancel default error handling
+     * @return bool           Always true to cancel default error handling
      */
     public static function storeError($errno, $errstr, $errfile, $errline)
     {
@@ -548,7 +548,7 @@ class AjaxController extends AbstractBase
     /**
      * Send the "salt" to be used in the salt'ed login request.
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     protected function getSalt()
     {
@@ -558,7 +558,7 @@ class AjaxController extends AbstractBase
     /**
      * Login with post'ed username and encrypted password.
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     protected function login()
     {
@@ -590,7 +590,7 @@ class AjaxController extends AbstractBase
     /**
      * Tag a record.
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     protected function tagRecord()
     {
@@ -624,7 +624,7 @@ class AjaxController extends AbstractBase
     /**
      * Get all tags for a record.
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     protected function getRecordTags()
     {
@@ -659,7 +659,7 @@ class AjaxController extends AbstractBase
      * @author   Chris Hallberg <crhallberg@gmail.com>
      * @author   Lutz Biedinger <lutz.biedinger@gmail.com>
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     public function getMapData($fields = array('long_lat'))
     {
@@ -695,7 +695,7 @@ class AjaxController extends AbstractBase
      * @author   Chris Hallberg <crhallberg@gmail.com>
      * @author   Lutz Biedinger <lutz.biedinger@gmail.com>
      *
-     * @return void
+     * @return mixed
      */
     public function resultgooglemapinfoAction($fields = array('long_lat'))
     {
@@ -723,7 +723,7 @@ class AjaxController extends AbstractBase
      * @author   Chris Hallberg <crhallberg@gmail.com>
      * @author   Till Kinstler <kinstler@gbv.de>
      *
-     * @return void (thru output)
+     * @return \Zend\Http\Response
      */
     public function getVisData($fields = array('publishDate'))
     {
@@ -810,7 +810,7 @@ class AjaxController extends AbstractBase
     /**
      * Save a record to a list.
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     public function saveRecord()
     {
@@ -833,7 +833,7 @@ class AjaxController extends AbstractBase
     /**
      * Saves records to a User's favorites
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     public function bulkSave()
     {
@@ -875,7 +875,7 @@ class AjaxController extends AbstractBase
     /**
      * Add a list.
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     public function addList()
     {
@@ -908,7 +908,7 @@ class AjaxController extends AbstractBase
     /**
      * Get Autocomplete suggestions.
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     public function getACSuggestions()
     {
@@ -925,7 +925,7 @@ class AjaxController extends AbstractBase
     /**
      * Text a record.
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     public function smsRecord()
     {
@@ -954,7 +954,7 @@ class AjaxController extends AbstractBase
     /**
      * Email a record.
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     public function emailRecord()
     {
@@ -983,7 +983,7 @@ class AjaxController extends AbstractBase
     /**
      * Email a search.
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     public function emailSearch()
     {
@@ -1016,7 +1016,7 @@ class AjaxController extends AbstractBase
     /**
      * Check Request is Valid
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     public function checkRequestIsValid()
     {
@@ -1058,7 +1058,7 @@ class AjaxController extends AbstractBase
     /**
      * Comment on a record.
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     public function commentRecord()
     {
@@ -1090,7 +1090,7 @@ class AjaxController extends AbstractBase
     /**
      * Delete a comment on a record.
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     public function deleteRecordComment()
     {
@@ -1116,7 +1116,7 @@ class AjaxController extends AbstractBase
     /**
      * Get list of comments for a record as HTML.
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     public function getRecordCommentsAsHTML()
     {
@@ -1133,7 +1133,7 @@ class AjaxController extends AbstractBase
     /**
      * Delete multiple items from favorites or a list.
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     protected function deleteFavorites()
     {
@@ -1167,7 +1167,7 @@ class AjaxController extends AbstractBase
     /**
      * Delete records from a User's cart
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     protected function removeItemsCart()
     {
@@ -1186,7 +1186,7 @@ class AjaxController extends AbstractBase
     /**
      * Process an export request
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     protected function exportFavorites()
     {
@@ -1211,7 +1211,7 @@ class AjaxController extends AbstractBase
      * Fetch Links from resolver given an OpenURL and format as HTML
      * and output the HTML content in JSON object.
      *
-     * @return void
+     * @return \Zend\Http\Response
      * @author Graham Seaman <Graham.Seaman@rhul.ac.uk>
      */
     protected function getResolverLinks()

@@ -52,7 +52,7 @@ class AuthorityController extends AbstractSearch
     /**
      * Home action
      *
-     * @return void
+     * @return \Zend\View\Model\ViewModel
      */
     public function homeAction()
     {
@@ -63,7 +63,7 @@ class AuthorityController extends AbstractSearch
     /**
      * Record action -- display a record
      *
-     * @return void
+     * @return \Zend\View\Model\ViewModel
      */
     public function recordAction()
     {
@@ -77,7 +77,7 @@ class AuthorityController extends AbstractSearch
     /**
      * Search action -- call standard results action
      *
-     * @return void
+     * @return mixed
      */
     public function searchAction()
     {

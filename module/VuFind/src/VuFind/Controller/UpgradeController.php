@@ -91,7 +91,7 @@ class UpgradeController extends AbstractBase
     /**
      * Display a fatal error message.
      *
-     * @return void
+     * @return mixed
      */
     public function errorAction()
     {
@@ -102,7 +102,7 @@ class UpgradeController extends AbstractBase
     /**
      * Figure out which version(s) are being used.
      *
-     * @return void
+     * @return mixed
      */
     public function establishversionsAction()
     {
@@ -136,7 +136,7 @@ class UpgradeController extends AbstractBase
     /**
      * Upgrade the configuration files.
      *
-     * @return void
+     * @return mixed
      */
     public function fixconfigAction()
     {
@@ -163,7 +163,7 @@ class UpgradeController extends AbstractBase
     /**
      * Upgrade the database.
      *
-     * @return void
+     * @return mixed
      */
     public function fixdatabaseAction()
     {
@@ -255,7 +255,7 @@ class UpgradeController extends AbstractBase
     /**
      * Prompt the user for database credentials.
      *
-     * @return void
+     * @return mixed
      */
     public function getdbcredentialsAction()
     {
@@ -284,7 +284,7 @@ class UpgradeController extends AbstractBase
     /**
      * Prompt the user about fixing anonymous tags.
      *
-     * @return void
+     * @return mixed
      */
     public function fixanonymoustagsAction()
     {
@@ -322,7 +322,7 @@ class UpgradeController extends AbstractBase
     /**
      * Fix missing metadata in the resource table.
      *
-     * @return void
+     * @return mixed
      */
     public function fixmetadataAction()
     {
@@ -363,7 +363,7 @@ class UpgradeController extends AbstractBase
     /**
      * Prompt the user for a source directory.
      *
-     * @return void
+     * @return mixed
      */
     public function getsourcedirAction()
     {
@@ -392,7 +392,7 @@ class UpgradeController extends AbstractBase
     /**
      * Display summary of installation status
      *
-     * @return void
+     * @return mixed
      */
     public function homeAction()
     {
@@ -460,7 +460,7 @@ class UpgradeController extends AbstractBase
     /**
      * Start over with the upgrade process in case of an error.
      *
-     * @return void
+     * @return mixed
      */
     public function resetAction()
     {
