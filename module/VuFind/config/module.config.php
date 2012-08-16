@@ -150,8 +150,9 @@ $staticRoutes = array(
     'Search/Suggest',
     'Summon/Advanced', 'Summon/Home', 'Summon/Search',
     'Tag/Home',
-    'Upgrade/Home', 'Upgrade/FixAnonymousTags', 'Upgrade/FixMetadata',
-    'Upgrade/GetDBCredentials', 'Upgrade/GetSourceDir', 'Upgrade/Reset',
+    'Upgrade/Home', 'Upgrade/FixAnonymousTags', 'Upgrade/FixConfig',
+    'Upgrade/FixDatabase', 'Upgrade/FixMetadata', 'Upgrade/GetDBCredentials',
+    'Upgrade/GetSourceDir', 'Upgrade/Reset',
     'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search'
 );
 

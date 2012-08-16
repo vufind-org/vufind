@@ -27,7 +27,7 @@
  */
 namespace VuFind\Controller;
 use ArrayObject, VuFind\Cache\Manager as CacheManager,
-    VuFind\Cookie\Container as CookieContainer,
+    VuFind\Config\Reader as ConfigReader, VuFind\Cookie\Container as CookieContainer,
     VuFind\Db\Table\Resource as ResourceTable,
     VuFind\Exception\RecordMissing as RecordMissingException, VuFind\Record,
     Zend\Session\Container as SessionContainer;
@@ -140,12 +140,11 @@ class UpgradeController extends AbstractBase
      */
     public function fixconfigAction()
     {
-        /* TODO
-        $upgrader = new VF_Config_Upgrade(
+        $upgrader = new \VuFind\Config\Upgrade(
             $this->cookie->oldVersion, $this->cookie->newVersion,
             $this->cookie->sourceDir . '/web/conf',
-            APPLICATION_PATH . '/configs',
-            LOCAL_OVERRIDE_DIR . '/application/configs'
+            dirname(ConfigReader::getBaseConfigPath('config.ini')),
+            dirname(ConfigReader::getLocalConfigPath('config.ini', null, true))
         );
         try {
             $upgrader->run();
@@ -153,13 +152,12 @@ class UpgradeController extends AbstractBase
             $this->cookie->configOkay = true;
             return $this->forwardTo('Upgrade', 'Home');
         } catch (\Exception $e) {
-            $extra = is_a($e, 'VF_Exception_FileAccess')
+            $extra = is_a($e, 'VuFind\Exception\FileAccess')
                 ? '  Check file permissions.' : '';
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('Config upgrade failed: ' . $e->getMessage() . $extra);
             return $this->forwardTo('Upgrade', 'Error');
         }
-         */
     }
 
     /**
@@ -419,12 +417,12 @@ class UpgradeController extends AbstractBase
             return $this->forwardTo('Upgrade', 'EstablishVersions');
         }
 
-        /* TODO
         // Now make sure we have a configuration file ready:
         if (!isset($this->cookie->configOkay)) {
             return $this->redirect()->toRoute('upgrade-fixconfig');
         }
 
+        /* TODO
         // Now make sure the database is up to date:
         if (!isset($this->cookie->databaseOkay)) {
             return $this->redirect()->toRoute('upgrade-fixdatabase');
@@ -449,7 +447,14 @@ class UpgradeController extends AbstractBase
                 ->addMessage($warning);
         }
 
-        return $this->createViewModel();
+        return $this->createViewModel(
+            array(
+                'configDir' => dirname(
+                    ConfigReader::getLocalConfigPath('config.ini', null, true)
+                ),
+                'importDir' => LOCAL_OVERRIDE_DIR . '/import'
+            )
+        );
     }
 
     /**

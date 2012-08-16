@@ -10,8 +10,8 @@
 <p>Upgrade complete.  You may still have some work to do:</p>
 
 <ol>
-  <li>If you have customized your SolrMarc import settings, we have migrated your marc_local.properties file, but you will need to move custom translation maps, index scripts, etc. by hand.  Custom import files belong under <?=$this->escapeHtml(LOCAL_OVERRIDE_DIR)?>/import -- this will make future upgrades easier.</li>
-  <li>You should look over the configuration files in <?=$this->escapeHtml(LOCAL_OVERRIDE_DIR)?>/application/configs and make sure settings look correct.  The automatic update process sometimes re-enables disabled settings and removes comments.</li>
+  <li>If you have customized your SolrMarc import settings, your marc_local.properties file has been migrated, but you will need to move custom translation maps, index scripts, etc. by hand.  Custom import files belong under <?=$this->escapeHtml($this->importDir)?> -- this will make future upgrades easier.</li>
+  <li>You should look over the configuration files in <?=$this->escapeHtml($this->configDir)?> and make sure settings look correct.  The automatic update process sometimes re-enables disabled settings and removes comments.</li>
   <li>If you have customized any of the YAML searchspecs files without using the *_local.yaml override mechanism, you will need to reapply those changes.</li>
   <li>If you have customized code or templates in your previous version, you will need to adapt those changes to the new architecture.</li>
   <li>You should reindex all of your content.</li>
