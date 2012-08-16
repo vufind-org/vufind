@@ -57,7 +57,7 @@ class CoverController extends AbstractBase
     /**
      * Send image data for display in the view
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     public function showAction()
     {
@@ -72,7 +72,7 @@ class CoverController extends AbstractBase
     /**
      * Return the default 'image not found' information
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     public function unavailableAction()
     {
@@ -84,7 +84,7 @@ class CoverController extends AbstractBase
      * Support method -- update the view to display the image currently found in the
      * \VuFind\Cover\Loader.
      *
-     * @return void
+     * @return \Zend\Http\Response
      */
     protected function displayImage()
     {

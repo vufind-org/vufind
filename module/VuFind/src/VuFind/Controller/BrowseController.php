@@ -259,7 +259,7 @@ class BrowseController extends AbstractBase
     /**
      * Browse tags
      *
-     * @return void
+     * @return \Zend\View\Model\ViewModel
      */
     public function tagAction()
     {
@@ -324,7 +324,7 @@ class BrowseController extends AbstractBase
     /**
      * Browse LCC
      *
-     * @return void
+     * @return \Zend\View\Model\ViewModel
      */
     public function lccAction()
     {
@@ -342,7 +342,7 @@ class BrowseController extends AbstractBase
     /**
      * Browse Dewey
      *
-     * @return void
+     * @return \Zend\View\Model\ViewModel
      */
     public function deweyAction()
     {
@@ -386,7 +386,7 @@ class BrowseController extends AbstractBase
      * @param string $facetPrefix   if this is true and we're looking
      * alphabetically, add a facet_prefix to the URL
      *
-     * @return void
+     * @return \Zend\View\Model\ViewModel
      */
     protected function performBrowse($currentAction, $categoryList, $facetPrefix)
     {
@@ -411,7 +411,7 @@ class BrowseController extends AbstractBase
     /**
      * Browse Author
      *
-     * @return void
+     * @return \Zend\View\Model\ViewModel
      */
     public function authorAction()
     {
@@ -430,7 +430,7 @@ class BrowseController extends AbstractBase
     /**
      * Browse Topic
      *
-     * @return void
+     * @return \Zend\View\Model\ViewModel
      */
     public function topicAction()
     {
@@ -447,7 +447,7 @@ class BrowseController extends AbstractBase
     /**
      * Browse Genre
      *
-     * @return void
+     * @return \Zend\View\Model\ViewModel
      */
     public function genreAction()
     {
@@ -464,7 +464,7 @@ class BrowseController extends AbstractBase
     /**
      * Browse Region
      *
-     * @return void
+     * @return \Zend\View\Model\ViewModel
      */
     public function regionAction()
     {
@@ -481,7 +481,7 @@ class BrowseController extends AbstractBase
     /**
      * Browse Era
      *
-     * @return void
+     * @return \Zend\View\Model\ViewModel
      */
     public function eraAction()
     {
@@ -555,7 +555,8 @@ class BrowseController extends AbstractBase
      * @param string $sort     how are we ranking these? || 'index'
      * @param string $query    is there a specific query? No = wildcard
      *
-     * @return array, indexed by value with text of displayText and count
+     * @return array           Array indexed by value with text of displayText and
+     * count
      */
     protected function getFacetList($facet, $category = null,
         $sort = 'count', $query = '[* TO *]'
@@ -588,9 +589,9 @@ class BrowseController extends AbstractBase
     /**
      * Helper class that adds quotes around the values of an array
      *
-     * @param array $array object array where each item has a value param
+     * @param array $array Two-dimensional array where each entry has a value param
      *
-     * @return array, indexed by value with text of displayText and count
+     * @return array       Array indexed by value with text of displayText and count
      */
     protected function quoteValues($array)
     {

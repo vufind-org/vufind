@@ -53,7 +53,7 @@ class MyResearchController extends AbstractBase
     /**
      * Prepare and direct the home page where it needs to go
      *
-     * @return string
+     * @return mixed
      */
     public function homeAction()
     {
@@ -90,7 +90,7 @@ class MyResearchController extends AbstractBase
     /**
      * "Create account" action
      *
-     * @return void
+     * @return mixed
      */
     public function accountAction()
     {
@@ -128,7 +128,7 @@ class MyResearchController extends AbstractBase
     /**
      * Login Action
      *
-     * @return ViewModel
+     * @return mixed
      */
     public function loginAction()
     {
@@ -164,7 +164,7 @@ class MyResearchController extends AbstractBase
     /**
      * Logout Action
      *
-     * @return string
+     * @return mixed
      */
     public function logoutAction()
     {
@@ -175,7 +175,7 @@ class MyResearchController extends AbstractBase
     /**
      * Handle 'save/unsave search' request
      *
-     * @return void (forward)
+     * @return mixed
      */
     public function savesearchAction()
     {
@@ -212,7 +212,7 @@ class MyResearchController extends AbstractBase
     /**
      * Gather user profile data
      *
-     * @return void
+     * @return mixed
      */
     public function profileAction()
     {
@@ -256,7 +256,7 @@ class MyResearchController extends AbstractBase
     /**
      * Catalog Login Action
      *
-     * @return void
+     * @return mixed
      */
     public function catalogloginAction()
     {
@@ -267,7 +267,7 @@ class MyResearchController extends AbstractBase
     /**
      * Action for sending all of a user's saved favorites to the view
      *
-     * @return void (forward)
+     * @return mixed
      */
     public function favoritesAction()
     {
@@ -278,7 +278,7 @@ class MyResearchController extends AbstractBase
     /**
      * Delete group of records from favorites.
      *
-     * @return void
+     * @return mixed
      */
     public function deleteAction()
     {
@@ -324,9 +324,9 @@ class MyResearchController extends AbstractBase
     /**
      * Delete record
      *
-     * PARAMS: id = list ID, delete = record ID
+     * Incoming query parameters: id = list ID, delete = record ID
      *
-     * @return void (forward)
+     * @return mixed
      */
     public function deletefavoriteAction()
     {
@@ -406,7 +406,7 @@ class MyResearchController extends AbstractBase
     /**
      * Edit record
      *
-     * @return void (forward)
+     * @return mixed
      */
     public function editAction()
     {
@@ -476,7 +476,7 @@ class MyResearchController extends AbstractBase
      * @param string $id     ID of record to delete
      * @param string $source Source of record to delete
      *
-     * @return object
+     * @return mixed
      */
     protected function processDeleteFavorite($id, $source)
     {
@@ -509,7 +509,7 @@ class MyResearchController extends AbstractBase
     /**
      * Send user's saved favorites from a particular list to the view
      *
-     * @return void (forward)
+     * @return mixed
      */
     public function mylistAction()
     {
@@ -612,7 +612,7 @@ class MyResearchController extends AbstractBase
     /**
      * Send user's saved favorites from a particular list to the edit view
      *
-     * @return void (forward)
+     * @return mixed
      */
     public function editlistAction()
     {
@@ -642,7 +642,7 @@ class MyResearchController extends AbstractBase
     /**
      * Takes params from the request and uses them to display a confirmation box
      *
-     * @return void
+     * @return mixed
      */
     public function confirmAction()
     {
@@ -660,7 +660,7 @@ class MyResearchController extends AbstractBase
     /**
      * Creates a confirmation box to delete or not delete the current list
      *
-     * @return void
+     * @return mixed
      */
     public function deletelistAction()
     {
@@ -726,7 +726,7 @@ class MyResearchController extends AbstractBase
      *
      * @param array $current Record information
      *
-     * @return VF_RecordDriver_Base
+     * @return \VuFind\RecordDriver\AbstractBase
      */
     protected function getDriverForILSRecord($current)
     {
@@ -747,7 +747,7 @@ class MyResearchController extends AbstractBase
     /**
      * Send list of holds to view
      *
-     * @return void
+     * @return mixed
      */
     public function holdsAction()
     {
@@ -797,7 +797,7 @@ class MyResearchController extends AbstractBase
     /**
      * Send list of checked out books to view
      *
-     * @return void
+     * @return mixed
      */
     public function checkedoutAction()
     {
@@ -850,7 +850,7 @@ class MyResearchController extends AbstractBase
     /**
      * Send list of fines to view
      *
-     * @return void
+     * @return mixed
      */
     public function finesAction()
     {

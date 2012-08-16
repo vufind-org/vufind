@@ -49,7 +49,7 @@ class Citation extends AbstractHelper
      *
      * @param \VuFind\RecordDriver\Base $driver Record driver object.
      *
-     * @return VuFind_Theme_Root_Helper_Record
+     * @return \VuFind\Theme\Root\Helper\Citation
      */
     public function __invoke($driver)
     {

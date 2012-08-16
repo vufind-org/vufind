@@ -41,7 +41,7 @@ class AuthorController extends AbstractSearch
     /**
      * Sets the configuration for displaying author results
      * 
-     * @return void
+     * @return mixed
      */
     public function resultsAction()
     {
@@ -53,7 +53,7 @@ class AuthorController extends AbstractSearch
     /**
      * Sets the configuration for performing an author search
      * 
-     * @return void
+     * @return mixed
      */
     public function searchAction()
     {
@@ -67,7 +67,7 @@ class AuthorController extends AbstractSearch
     /**
      * Displays the proper page for a search action
      * 
-     * @return void
+     * @return mixed
      */
     public function homeAction()
     {

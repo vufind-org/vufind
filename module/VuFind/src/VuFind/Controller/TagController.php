@@ -51,7 +51,7 @@ class TagController extends AbstractSearch
     /**
      * Home action
      *
-     * @return void
+     * @return mixed
      */
     public function homeAction()
     {

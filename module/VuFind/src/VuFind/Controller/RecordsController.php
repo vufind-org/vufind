@@ -52,7 +52,7 @@ class RecordsController extends AbstractSearch
     /**
      * Home action -- call standard results action
      *
-     * @return void
+     * @return mixed
      */
     public function homeAction()
     {

@@ -42,7 +42,7 @@ class MissingrecordController extends AbstractBase
     /**
      * Display simple message.
      *
-     * @return void
+     * @return mixed
      */
     public function homeAction()
     {

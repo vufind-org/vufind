@@ -56,7 +56,7 @@ class CartController extends AbstractBase
     /**
      * Process requests for main cart.
      *
-     * @return void
+     * @return mixed
      */
     public function homeAction()
     {
@@ -82,7 +82,7 @@ class CartController extends AbstractBase
     /**
      * Display cart contents.
      *
-     * @return void
+     * @return mixed
      */
     public function cartAction()
     {
@@ -120,7 +120,7 @@ class CartController extends AbstractBase
      * Process bulk actions from the MyResearch area; most of this is only necessary
      * when Javascript is disabled.
      *
-     * @return void
+     * @return mixed
      */
     public function myresearchbulkAction()
     {
@@ -153,7 +153,7 @@ class CartController extends AbstractBase
     /**
      * Email a batch of records.
      *
-     * @return void
+     * @return mixed
      */
     public function emailAction()
     {
@@ -201,7 +201,7 @@ class CartController extends AbstractBase
     /**
      * Print a batch of records.
      *
-     * @return void
+     * @return mixed
      */
     public function printcartAction()
     {
@@ -218,7 +218,7 @@ class CartController extends AbstractBase
     /**
      * Set up export of a batch of records.
      *
-     * @return void
+     * @return mixed
      */
     public function exportAction()
     {
@@ -275,7 +275,7 @@ class CartController extends AbstractBase
     /**
      * Actually perform the export operation.
      *
-     * @return void
+     * @return mixed
      */
     public function doexportAction()
     {
@@ -310,7 +310,7 @@ class CartController extends AbstractBase
     /**
      * Save a batch of records.
      *
-     * @return void
+     * @return mixed
      */
     public function saveAction()
     {
@@ -359,7 +359,7 @@ class CartController extends AbstractBase
      * @param string $flashNamespace Namespace for flash message (null for none)
      * @param string $flashMsg       Flash message to set (ignored if namespace null)
      *
-     * @return void
+     * @return mixed
      */
     public function redirectToSource($flashNamespace = null, $flashMsg = null)
     {

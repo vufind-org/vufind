@@ -53,7 +53,7 @@ class Followup extends AbstractPlugin
     /**
      * Retrieve the stored followup information.
      *
-     * @return Zend_Session_Namespace
+     * @return \Zend\Session\Container
      */
     public function retrieve()
     {

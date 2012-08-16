@@ -77,7 +77,7 @@ class InstallController extends AbstractBase
     /**
      * Display disabled message.
      *
-     * @return void
+     * @return mixed
      */
     public function disabledAction()
     {
@@ -127,7 +127,7 @@ class InstallController extends AbstractBase
     /**
      * Display repair instructions for basic configuration problems.
      *
-     * @return void
+     * @return mixed
      */
     public function fixbasicconfigAction()
     {
@@ -174,7 +174,7 @@ class InstallController extends AbstractBase
     /**
      * Display repair instructions for cache problems.
      *
-     * @return void
+     * @return mixed
      */
     public function fixcacheAction()
     {
@@ -245,7 +245,7 @@ class InstallController extends AbstractBase
     /**
      * Show how to fix dependency problems.
      *
-     * @return void
+     * @return mixed
      */
     public function fixdependenciesAction()
     {
@@ -289,7 +289,7 @@ class InstallController extends AbstractBase
     /**
      * Display repair instructions for database problems.
      *
-     * @return void
+     * @return mixed
      */
     public function fixdatabaseAction()
     {
@@ -391,7 +391,7 @@ class InstallController extends AbstractBase
     /**
      * Display repair instructions for ILS problems.
      *
-     * @return void
+     * @return mixed
      */
     public function fixilsAction()
     {
@@ -463,7 +463,7 @@ class InstallController extends AbstractBase
     /**
      * Display repair instructions for Solr problems.
      *
-     * @return void
+     * @return mixed
      */
     public function fixsolrAction()
     {
@@ -506,7 +506,7 @@ class InstallController extends AbstractBase
     /**
      * Disable auto-configuration.
      *
-     * @return void
+     * @return mixed
      */
     public function doneAction()
     {
@@ -522,7 +522,7 @@ class InstallController extends AbstractBase
     /**
      * Display summary of installation status
      *
-     * @return void
+     * @return mixed
      */
     public function homeAction()
     {

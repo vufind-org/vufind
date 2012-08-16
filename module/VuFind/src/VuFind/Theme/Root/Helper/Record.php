@@ -97,7 +97,7 @@ class Record extends AbstractHelper
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver object.
      *
-     * @return VuFind_Theme_Root_Helper_Record
+     * @return \VuFind\Theme\Root\Helper\Record
      */
     public function __invoke($driver)
     {

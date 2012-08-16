@@ -44,7 +44,7 @@ class IndexController extends AbstractBase
      * Determines what elements are displayed on the home page based on whether
      * the user is logged in.
      *
-     * @return void
+     * @return mixed
      */
     public function homeAction()
     {

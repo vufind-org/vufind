@@ -47,7 +47,7 @@ class HelpController extends AbstractBase
      * Uses the user language to determine which Help template to use
      * Uses the English template as a back-up
      *
-     * @return void  Sends data to the view (tpl_lang, tpl_en)
+     * @return mixed
      */
     public function homeAction()
     {

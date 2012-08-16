@@ -51,7 +51,7 @@ class WorldcatController extends AbstractSearch
     /**
      * Home action
      *
-     * @return void
+     * @return mixed
      */
     public function homeAction()
     {
@@ -62,7 +62,7 @@ class WorldcatController extends AbstractSearch
     /**
      * Search action -- call standard results action
      *
-     * @return void
+     * @return mixed
      */
     public function searchAction()
     {
