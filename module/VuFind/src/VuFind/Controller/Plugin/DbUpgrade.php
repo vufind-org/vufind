@@ -26,7 +26,8 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller\Plugin;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use Zend\Db\Adapter\Adapter as DbAdapter, Zend\Db\Metadata\Metadata as DbMetadata,
+    Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
  * Zend action helper to perform database upgrades
@@ -40,6 +41,8 @@ use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 class DbUpgrade extends AbstractPlugin
 {
     protected $dbCommands = array();
+    protected $adapter;
+    protected $tableInfo = false;
 
     /**
      * Given a SQL file, parse it for table creation commands.
@@ -50,7 +53,7 @@ class DbUpgrade extends AbstractPlugin
      */
     public function loadSql($file)
     {
-        $sql = file_get_contents(APPLICATION_PATH . '/module/VuFind/sql/mysql.sql');
+        $sql = file_get_contents($file);
         $statements = explode(';', $sql);
 
         // Create an array, indexed by table name, of commands necessary to create
@@ -71,30 +74,74 @@ class DbUpgrade extends AbstractPlugin
     }
 
     /**
+     * Get the database adapter.
+     *
+     * @return DbAdapter
+     */
+    public function getAdapter()
+    {
+        if (!is_object($this->adapter)) {
+            throw new \Exception('Database adapter not set.');
+        }
+        return $this->adapter;
+    }
+
+    /**
+     * Set a database adapter.
+     *
+     * @param DbAdapter $adapter Adapter to set
+     *
+     * @return DbUpgrade
+     */
+    public function setAdapter($adapter)
+    {
+        $this->adapter = $adapter;
+        return $this;
+    }
+
+    /**
+     * Execute a query.
+     *
+     * @param string $sql SQL to run
+     *
+     * @return void
+     */
+    public function query($sql)
+    {
+        /* TODO
+        $this->getAdapter()->query($sql, DbAdapter::QUERY_MODE_EXECUTE);
+         */
+    }
+
+    /**
+     * Load table metadata.
+     *
+     * @param bool $reload Force a reload? (Default is false).
+     *
+     * @return array
+     */
+    protected function getTableInfo($reload = false)
+    {
+        if ($reload || !$this->tableInfo) {
+            $metadata = new DbMetadata($this->getAdapter());
+            $tables = $metadata->getTables();
+            $this->tableInfo = array();
+            foreach ($tables as $current) {
+                $this->tableInfo[$current->getName()] = $current;
+            }
+        }
+        return $this->tableInfo;
+    }
+
+    /**
      * Get a list of all tables in the database.
      *
      * @throws Exception
      * @return array
      */
-    public function getAllTables()
+    protected function getAllTables()
     {
-        /* TODO
-        // Load the default database adapter (by this point, it should be valid):
-        $db = Zend_Db_Table::getDefaultAdapter();
-        if (!is_object($db)) {
-            throw new \Exception('Could not load default database adapter.');
-        }
-
-        // Get a list of all tables in the database:
-        $results = $db->query("SHOW TABLES;");
-        $tmp = $results->fetchAll();
-        $tables = array();
-        foreach ($tmp as $current) {
-            $keys = array_keys($current);
-            $tables[] = trim(strtolower($current[$keys[0]]));
-        }
-        return $tables;
-         */
+        return array_keys($this->getTableInfo());
     }
 
     /**
@@ -105,24 +152,15 @@ class DbUpgrade extends AbstractPlugin
      * @throws Exception
      * @return array
      */
-    public function getTableColumns($table)
+    protected function getTableColumns($table)
     {
-        /* TODO
-        // Load the default database adapter (by this point, it should be valid):
-        $db = Zend_Db_Table::getDefaultAdapter();
-        if (!is_object($db)) {
-            throw new \Exception('Could not load default database adapter.');
+        $info = $this->getTableInfo();
+        $columns = isset($info[$table]) ? $info[$table]->getColumns() : array();
+        $retVal = array();
+        foreach ($columns as $current) {
+            $retVal[strtolower($current->getName())] = $current;
         }
-
-        // Get a list of all tables in the database:
-        $results = $db->query("DESCRIBE `$table`;");
-        $tmp = $results->fetchAll();
-        $columns = array();
-        foreach ($tmp as $current) {
-            $columns[trim(strtolower($current['Field']))] = $current;
-        }
-        return $columns;
-         */
+        return $retVal;
     }
 
     /**
@@ -148,16 +186,15 @@ class DbUpgrade extends AbstractPlugin
     /**
      * Create missing tables based on the output of getMissingTables().
      *
-     * @param array  $tables Output of getMissingTables()
-     * @param object $db     Database connection with CREATE permission
+     * @param array $tables Output of getMissingTables()
      *
      * @throws Exception
      * @return void
      */
-    public function createMissingTables($tables, $db)
+    public function createMissingTables($tables)
     {
         foreach ($tables as $table) {
-            $db->query($this->dbCommands[$table][0]);
+            $this->query($this->dbCommands[$table][0]);
         }
     }
 
@@ -211,13 +248,14 @@ class DbUpgrade extends AbstractPlugin
      */
     public function getModifiedColumns()
     {
+        /* TODO
         $missing = array();
         foreach ($this->dbCommands as $table => $sql) {
             // Parse column names out of the CREATE TABLE SQL, which will always be
             // the first entry in the array; we assume the standard mysqldump
             // formatting is used here.
             preg_match_all(
-                '/^  `([^`]*)`\s+([^\s,]+)[\s,]+.*$/m', $sql[0],
+                '/^  `([^`]*)`\s+([^\s,]+)[\t ,]+.*$/m', $sql[0],
                 $matches
             );
             $expectedColumns = array_map('strtolower', $matches[1]);
@@ -236,7 +274,16 @@ class DbUpgrade extends AbstractPlugin
             // Now check for mismatched types:
             $actualColumns = $this->getTableColumns($table);
             foreach ($expectedColumns as $i => $column) {
-                if ($actualColumns[$column]['Type'] != $expectedTypes[$i]) {
+                $type = $actualColumns[$column]->getDataType();
+                $charLen = $actualColumns[$column]->getCharacterMaximumLength();
+                if ($charLen) {
+                    $type .= '(' . $charLen . ')';
+                }
+                $precision = $actualColumns[$column]->getNumericPrecision();
+                if ($precision) {
+                    $type .= '(' . $precision . ')';
+                }
+                if ($type != $expectedTypes[$i]) {
                     if (!isset($missing[$table])) {
                         $missing[$table] = array();
                     }
@@ -245,22 +292,22 @@ class DbUpgrade extends AbstractPlugin
             }
         }
         return $missing;
+         */
     }
 
     /**
      * Create missing columns based on the output of getMissingColumns().
      *
-     * @param array  $columns Output of getMissingColumns()
-     * @param object $db      Database connection with ALTER permission
+     * @param array $columns Output of getMissingColumns()
      *
      * @throws Exception
      * @return void
      */
-    public function createMissingColumns($columns, $db)
+    public function createMissingColumns($columns)
     {
         foreach ($columns as $table => $sql) {
             foreach ($sql as $column) {
-                $db->query("ALTER TABLE `{$table}` ADD COLUMN {$column}");
+                $this->query("ALTER TABLE `{$table}` ADD COLUMN {$column}");
             }
         }
     }
@@ -269,16 +316,15 @@ class DbUpgrade extends AbstractPlugin
      * Modify columns based on the output of getModifiedColumns().
      *
      * @param array  $columns Output of getModifiedColumns()
-     * @param object $db      Database connection with ALTER permission
      *
      * @throws Exception
      * @return void
      */
-    public function updateModifiedColumns($columns, $db)
+    public function updateModifiedColumns($columns)
     {
         foreach ($columns as $table => $sql) {
             foreach ($sql as $column) {
-                $db->query("ALTER TABLE `{$table}` MODIFY COLUMN {$column}");
+                $this->query("ALTER TABLE `{$table}` MODIFY COLUMN {$column}");
             }
         }
     }

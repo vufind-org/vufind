@@ -28,8 +28,9 @@
 namespace VuFind\Controller;
 use ArrayObject, VuFind\Cache\Manager as CacheManager,
     VuFind\Config\Reader as ConfigReader, VuFind\Cookie\Container as CookieContainer,
-    VuFind\Db\Table\Resource as ResourceTable,
+    VuFind\Db\AdapterFactory, VuFind\Db\Table\Resource as ResourceTable,
     VuFind\Exception\RecordMissing as RecordMissingException, VuFind\Record,
+    Zend\Db\TableGateway\Feature\GlobalAdapterFeature as DbGlobalAdapter,
     Zend\Session\Container as SessionContainer;
 
 /**
@@ -161,38 +162,51 @@ class UpgradeController extends AbstractBase
     }
 
     /**
+     * Get a database adapter for root access using credentials in session.
+     *
+     * @return \Zend\Db\Adapter\Adapter
+     */
+    protected function getRootDbAdapter()
+    {
+        return AdapterFactory::getAdapter(
+            $this->session->dbRootUser, $this->session->dbRootPass
+        );
+    }
+
+    /**
      * Upgrade the database.
      *
      * @return mixed
      */
     public function fixdatabaseAction()
     {
-        /* TODO
         try {
             // Set up the helper with information from our SQL file:
-            $this->_helper->dbUpgrade->loadSql(APPLICATION_PATH . '/sql/mysql.sql');
+            $this->dbUpgrade()
+                ->setAdapter(DbGlobalAdapter::getStaticAdapter())
+                ->loadSql(APPLICATION_PATH . '/module/VuFind/sql/mysql.sql');
 
+            /* TODO
             // Check for missing tables.  Note that we need to finish dealing with
             // missing tables before we proceed to the missing columns check, or else
             // the missing tables will cause fatal errors during the column test.
-            $missingTables = $this->_helper->dbUpgrade->getMissingTables();
+            $missingTables = $this->dbUpgrade()->getMissingTables();
             if (!empty($missingTables)) {
                 if (!isset($this->session->dbRootUser)
                     || !isset($this->session->dbRootPass)
                 ) {
                     return $this->forwardTo('Upgrade', 'GetDbCredentials');
                 }
-                $db = VF_DB::connect(
-                    $this->session->dbRootUser, $this->session->dbRootPass
-                );
-                $this->_helper->dbUpgrade->createMissingTables($missingTables, $db);
+                $db = $this->getRootDbAdapter();
+                $this->dbUpgrade()->setAdapter($db)
+                    ->createMissingTables($missingTables);
                 $this->session->warnings->append(
-                    "Created missing table(s): " . implode(', ', $missingTables
+                    "Created missing table(s): " . implode(', ', $missingTables)
                 );
             }
 
             // Check for missing columns.
-            $missingCols = $this->_helper->dbUpgrade->getMissingColumns();
+            $missingCols = $this->dbUpgrade()->getMissingColumns();
             if (!empty($missingCols)) {
                 if (!isset($this->session->dbRootUser)
                     || !isset($this->session->dbRootPass)
@@ -200,11 +214,10 @@ class UpgradeController extends AbstractBase
                     return $this->forwardTo('Upgrade', 'GetDbCredentials');
                 }
                 if (!isset($db)) {  // connect to DB if not already connected
-                    $db = VF_DB::connect(
-                        $this->session->dbRootUser, $this->session->dbRootPass
-                    );
+                    $db = $this->getRootDbAdapter();
                 }
-                $this->_helper->dbUpgrade->createMissingColumns($missingCols, $db);
+                $this->dbUpgrade()->setAdapter($db)
+                    ->createMissingColumns($missingCols);
                 $this->session->warnings->append(
                     "Added column(s) to table(s): "
                     . implode(', ', array_keys($missingCols))
@@ -212,7 +225,7 @@ class UpgradeController extends AbstractBase
             }
 
             // Check for modified columns.
-            $modifiedCols = $this->_helper->dbUpgrade->getModifiedColumns();
+            $modifiedCols = $this->dbUpgrade()->getModifiedColumns();
             if (!empty($modifiedCols)) {
                 if (!isset($this->session->dbRootUser)
                     || !isset($this->session->dbRootPass)
@@ -220,11 +233,10 @@ class UpgradeController extends AbstractBase
                     return $this->forwardTo('Upgrade', 'GetDbCredentials');
                 }
                 if (!isset($db)) {  // connect to DB if not already connected
-                    $db = VF_DB::connect(
-                        $this->session->dbRootUser, $this->session->dbRootPass
-                    );
+                    $db = $this->getRootDbAdapter();
                 }
-                $this->_helper->dbUpgrade->updateModifiedColumns($modifiedCols, $db);
+                $this->dbUpgrade()->setAdapter($db)
+                    ->updateModifiedColumns($modifiedCols);
                 $this->session->warnings->append(
                     "Modified column(s) in table(s): "
                     . implode(', ', array_keys($modifiedCols))
@@ -241,6 +253,7 @@ class UpgradeController extends AbstractBase
                 $this->view->anonymousCount = $anonymousTags;
                 return $this->forwardTo('Upgrade', 'FixAnonymousTags');
             }
+             */
         } catch (\Exception $e) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('Database upgrade failed: ' . $e->getMessage());
@@ -249,7 +262,6 @@ class UpgradeController extends AbstractBase
 
         $this->cookie->databaseOkay = true;
         return $this->forwardTo('Upgrade', 'Home');
-         */
     }
 
     /**
@@ -259,18 +271,18 @@ class UpgradeController extends AbstractBase
      */
     public function getdbcredentialsAction()
     {
-        /* TODO
-        $this->view->dbrootuser = $this->_request->getParam('dbrootuser', 'root');
+        $dbrootuser = $this->params()->fromPost('dbrootuser', 'root');
 
         // Process form submission:
-        if (strlen($this->_request->getParam('submit', '')) > 0) {
-            $pass = $this->_request->getParam('dbrootpass');
+        if (strlen($this->params()->fromPost('submit', '')) > 0) {
+            $pass = $this->params()->fromPost('dbrootpass');
 
             // Test the connection:
             try {
-                $db = VF_DB::connect($this->view->dbrootuser, $pass);
-                $db->query("SELECT * FROM user;");  // query a table known to exist
-                $this->session->dbRootUser = $this->view->dbrootuser;
+                // Query a table known to exist
+                $db = AdapterFactory::getAdapter($dbrootuser, $pass);
+                $db->query("SELECT * FROM user;");
+                $this->session->dbRootUser = $dbrootuser;
                 $this->session->dbRootPass = $pass;
                 return $this->forwardTo('Upgrade', 'FixDatabase');
             } catch (\Exception $e) {
@@ -278,7 +290,8 @@ class UpgradeController extends AbstractBase
                     ->addMessage('Could not connect; please try again.');
             }
         }
-         */
+
+        return $this->createViewModel(array('dbrootuser' => $dbrootuser));
     }
 
     /**
@@ -290,14 +303,14 @@ class UpgradeController extends AbstractBase
     {
         /* TODO
         // Handle skip action:
-        if (strlen($this->_request->getParam('skip', '')) > 0) {
+        if (strlen($this->params()->fromPost('skip', '')) > 0) {
             $this->cookie->skipAnonymousTags = true;
             return $this->forwardTo('Upgrade', 'FixDatabase');
         }
 
         // Handle submit action:
-        if (strlen($this->_request->getParam('submit', '')) > 0) {
-            $user = $this->_request->getParam('username');
+        if (strlen($this->params()->fromPost('submit', '')) > 0) {
+            $user = $this->params()->fromPost('username');
             if (empty($user)) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('Username must not be empty.');
@@ -422,12 +435,10 @@ class UpgradeController extends AbstractBase
             return $this->redirect()->toRoute('upgrade-fixconfig');
         }
 
-        /* TODO
         // Now make sure the database is up to date:
         if (!isset($this->cookie->databaseOkay)) {
             return $this->redirect()->toRoute('upgrade-fixdatabase');
         }
-         */
 
         // Check for missing metadata in the resource table; note that we do a
         // redirect rather than a forward here so that a submit button clicked
