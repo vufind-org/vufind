@@ -124,6 +124,6 @@ class Factory
         }
 
         return (isset($handler) && is_object($handler))
-            ? $handler->getSuggestions($query) : array();
+            ? array_values($handler->getSuggestions($query)) : array();
     }
 }
