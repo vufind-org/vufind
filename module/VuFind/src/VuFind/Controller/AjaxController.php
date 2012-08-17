@@ -113,16 +113,17 @@ class AjaxController extends AbstractBase
         $results = new \VuFind\Search\Solr\Results($params);
         $module->process($results);
 
-        /* TODO
         // Set headers:
-        $resp = $this->getResponse();
-        $resp->setHeader('Content-type', 'text/html');
-        $resp->setHeader('Cache-Control', 'no-cache, must-revalidate');
-        $resp->setHeader('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT');
+        $response = $this->getResponse();
+        $headers = $response->getHeaders();
+        $headers->addHeaderLine('Content-type', 'text/html');
+        $headers->addHeaderLine('Cache-Control', 'no-cache, must-revalidate');
+        $headers->addHeaderLine('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT');
 
         // Render recommendations:
-        $resp->appendBody($this->view->recommend($module));
-         */
+        $recommend = $this->getViewRenderer()->plugin('recommend');
+        $response->setContent($recommend($module));
+        return $response;
     }
 
     /**
