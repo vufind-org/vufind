@@ -28,6 +28,7 @@
 namespace VuFind\Controller;
 
 use VuFind\Cache\Manager as CacheManager, VuFind\Config\Reader as ConfigReader,
+    VuFind\Connection\Manager as ConnectionManager,
     VuFind\Db\Table\Search as SearchTable, VuFind\Exception\Mail as MailException,
     VuFind\Mailer,
     VuFind\Search\Memory, VuFind\Search\Solr\Params, VuFind\Search\Solr\Results,
@@ -286,32 +287,32 @@ class SearchController extends AbstractSearch
      */
     public function newitemAction()
     {
-        /* TODO
         // Search parameters set?  Process results.
-        if ($this->_request->getParam('range') !== null) {
-            return $this->_forward('NewItemResults');
+        if ($this->params()->fromQuery('range') !== null) {
+            return $this->forwardTo('Search', 'NewItemResults');
         }
-
-        $catalog = VF_Connection_Manager::connectToCatalog();
-        $this->view->fundList = $catalog->getFunds();
 
         // Find out if there are user configured range options; if not,
         // default to the standard 1/5/30 days:
-        $this->view->ranges = array();
+        $ranges = array();
         $searchSettings = ConfigReader::getConfig('searches');
         if (isset($searchSettings->NewItem->ranges)) {
             $tmp = explode(',', $searchSettings->NewItem->ranges);
             foreach ($tmp as $range) {
                 $range = intval($range);
                 if ($range > 0) {
-                    $this->view->ranges[] = $range;
+                    $ranges[] = $range;
                 }
             }
         }
-        if (empty($this->view->ranges)) {
-            $this->view->ranges = array(1, 5, 30);
+        if (empty($ranges)) {
+            $ranges = array(1, 5, 30);
         }
-         */
+
+        $catalog = ConnectionManager::connectToCatalog();
+        return $this->createViewModel(
+            array('fundList' => $catalog->getFunds(), 'ranges' => $ranges)
+        );
     }
 
     /**
@@ -323,8 +324,8 @@ class SearchController extends AbstractSearch
     {
         /* TODO
         // Retrieve new item list:
-        $range = $this->_request->getParam('range');
-        $dept = $this->_request->getParam('department');
+        $range = $this->params()->fromQuery('range');
+        $dept = $this->params()->fromQuery('department');
 
         $searchSettings = ConfigReader::getConfig('searches');
 
@@ -340,7 +341,7 @@ class SearchController extends AbstractSearch
         } else {
             $resultPages = 10;
         }
-        $catalog = VF_Connection_Manager::connectToCatalog();
+        $catalog = ConnectionManager::connectToCatalog();
         $perPage = $params->getLimit();
         $newItems = $catalog->getNewItems(1, $perPage * $resultPages, $range, $dept);
 
@@ -395,22 +396,22 @@ class SearchController extends AbstractSearch
     {
         /* TODO
         // Search parameters set?  Process results.
-        if ($this->_request->getParam('inst') !== null
-            || $this->_request->getParam('course') !== null
-            || $this->_request->getParam('dept') !== null
+        if ($this->params()->fromQuery('inst') !== null
+            || $this->params()->fromQuery('course') !== null
+            || $this->params()->fromQuery('dept') !== null
         ) {
-            return $this->_forward('ReservesResults');
+            return $this->forwardTo('Search', 'ReservesResults');
         }
         
         // No params?  Show appropriate form (varies depending on whether we're
         // using driver-based or Solr-based reserves searching).
         if ($this->_helper->reserves()->useIndex()) {
-            return $this->_forward('ReservesSearch');
+            return $this->forwardTo('Search', 'ReservesSearch');
         }
 
         // If we got this far, we're using driver-based searching and need to
         // send options to the view:
-        $catalog = VF_Connection_Manager::connectToCatalog();
+        $catalog = ConnectionManager::connectToCatalog();
         $this->view->deptList = $catalog->getDepartments();
         $this->view->instList = $catalog->getInstructors();
         $this->view->courseList =  $catalog->getCourses();
@@ -440,9 +441,9 @@ class SearchController extends AbstractSearch
     {
         /* TODO
         // Retrieve course reserves item list:
-        $course = $this->_request->getParam('course');
-        $inst = $this->_request->getParam('inst');
-        $dept = $this->_request->getParam('dept');
+        $course = $this->params()->fromQuery('course');
+        $inst = $this->params()->fromQuery('inst');
+        $dept = $this->params()->fromQuery('dept');
         $result = $this->_helper->reserves()->findReserves($course, $inst, $dept);
 
         // Pass some key values to the view, if found:
@@ -526,7 +527,7 @@ class SearchController extends AbstractSearch
         /* TODO
         $this->getResponse()->setHeader('Content-type', 'text/xml');
         $this->_helper->layout->disableLayout();
-        switch ($this->_request->getParam('method')) {
+        switch ($this->params()->fromQuery('method')) {
         case 'describe':
             $config = ConfigReader::getConfig();
             $this->view->site = $config->Site;
@@ -570,7 +571,7 @@ class SearchController extends AbstractSearch
         $this->getResponse()->appendBody(
             json_encode(
                 array(
-                    $this->_request->getParam('lookfor', ''), $suggestions,
+                    $this->params()->fromQuery('lookfor', ''), $suggestions,
                 )
             )
         );
