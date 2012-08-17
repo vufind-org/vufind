@@ -27,7 +27,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Config\Reader as ConfigReader;
+use VuFind\Config\Reader as ConfigReader, Zend\Feed\Reader\Reader as FeedReader;
 
 /**
  * EuropeanaResults Recommendations Module
@@ -155,9 +155,8 @@ class EuropeanaResults implements RecommendInterface
      */
     public function process($results)
     {
-        /* TODO
-        Zend_Feed::setHttpClient(new VF_Http_Client());
-        $parsedFeed = Zend_Feed::import($this->targetUrl);
+        FeedReader::setHttpClient(new \VuFind\Http\Client());
+        $parsedFeed = FeedReader::import($this->targetUrl);
         $resultsProcessed = array();
         foreach ($parsedFeed as $key => $value) {
             $link = (string)$value->link;
@@ -182,7 +181,6 @@ class EuropeanaResults implements RecommendInterface
         } else {
             $this->results = false;
         }
-         */
     }
 
     /**
