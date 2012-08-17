@@ -79,22 +79,27 @@ class SolrVudl extends SolrDefault
     }
 
     /**
-     * Return an associative array of URLs associated with this record (key = URL,
-     * value = description).
+     * Return an array of associative URL arrays with one or more of the following
+     * keys:
+     *
+     * <li>
+     *   <ul>desc: URL description text to display (optional)</ul>
+     *   <ul>url: fully-formed URL (required if 'route' is absent)</ul>
+     *   <ul>route: VuFind route to build URL with (required if 'url' is absent)</ul>
+     *   <ul>routeParams: Parameters for route (optional)</ul>
+     *   <ul>queryString: Query params to append after building route (optional)</ul>
+     * </li>
      *
      * @return array
      */
     public function getURLs()
     {
-        /* TODO
-        // VuDL records get displayed within a custom VuFind module -- let's just
-        // link directly there:
-        $router = Zend_Controller_Front::getInstance()->getRouter();
-        $urlOptions = array('controller' => 'VuDL', 'action' => 'Record');
-        $base = $router->assemble($urlOptions, 'default', false, false);
-        $url = $base . '?id=' . urlencode($this->getUniqueID());
-        return array($url => $url);
-         */
+        return array(
+            array(
+                'route' => 'vudl-record',
+                'queryString' => '?id=' . urlencode($this->getUniqueID())
+            )
+        );
     }
 
     /**

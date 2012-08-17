@@ -101,11 +101,8 @@ if (!empty($journalTitle)) {
     }
 }
 
-$urls = $this->driver->tryMethod('getURLs');
-if (is_array($urls)) {
-    foreach (array_keys($urls) as $url) {
-        echo "%U $url\n";
-    }
+foreach ($this->record($this->driver)->getUrlList() as $url) {
+    echo "%U $url\n";
 }
 
 $edition = $this->driver->tryMethod('getEdition');

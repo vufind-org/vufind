@@ -78,16 +78,16 @@
           */
          $openUrl = $this->driver->getOpenURL();
          $openUrlActive = $this->driver->openURLActive('results');
-         $urls = $this->driver->getURLs();
+         $urls = $this->record($this->driver)->getLinkDetails();
          if ($openUrlActive || !empty($urls)): ?>
         <? if ($openUrlActive): ?>
           <br/>
           <?=$this->openUrl($openUrl)?>
           <? if ($this->driver->replaceURLsWithOpenURL()) $urls = array(); // clear URL list if replace setting is active ?>
         <? endif; ?>
-        <? if (!is_array($urls)) $urls = array(); foreach ($urls as $recordurl => $urldesc): ?>
+        <? if (!is_array($urls)) $urls = array(); foreach ($urls as $current): ?>
           <br/>
-          <a href="<?=$this->escapeHtml($this->proxyUrl($recordurl))?>" class="fulltext" target="new"><?=($recordurl == $urldesc) ? $this->transEsc('Get full text') : $this->escapeHtml($urldesc)?></a>
+          <a href="<?=$this->escapeHtml($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
         <? endforeach; ?>
       <? endif; ?>
 

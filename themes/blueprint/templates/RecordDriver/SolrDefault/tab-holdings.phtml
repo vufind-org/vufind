@@ -5,7 +5,7 @@
     $openUrl = $this->driver->openURLActive('holdings') ? $this->driver->getOpenURL() : false;
     $offlineMode = \VuFind\Connection\Manager::connectToCatalog()->getOfflineMode();
     // Account for replace_other_urls setting
-    $urls = ($openUrl && $this->driver->replaceURLsWithOpenURL()) ? array() : $this->driver->getURLs();
+    $urls = ($openUrl && $this->driver->replaceURLsWithOpenURL()) ? array() : $this->record($this->driver)->getLinkDetails();
 
     // Set page title.
     $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
@@ -38,8 +38,8 @@
 <? if (!empty($urls) || $openUrl): ?>
   <h3><?=$this->transEsc("Internet")?></h3>
   <? if (!empty($urls)): ?>
-    <? foreach ($urls as $currentUrl => $desc): ?>
-      <a href="<?=$this->escapeHtml($this->proxyUrl($currentUrl))?>"><?=$this->escapeHtml($desc)?></a><br/>
+    <? foreach ($urls as $current): ?>
+      <a href="<?=$this->escapeHtml($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
     <? endforeach; ?>
   <? endif; ?>
   <? if ($openUrl): ?><?=$this->openUrl($openUrl);?><? endif; ?>

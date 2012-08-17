@@ -339,4 +339,65 @@ class Record extends AbstractHelper
         // Default case -- return fixed string:
         return $thumb;
     }
+
+    /**
+     * Get all URLs associated with the record.  Returns an array of strings.
+     *
+     * @return array
+     */
+    public function getUrlList()
+    {
+        // Use a filter to pick URLs from the output of getLinkDetails():
+        $filter = function ($i) {
+            return $i['url'];
+        };
+        return array_map($filter, $this->getLinkDetails());
+    }
+
+    /**
+     * Get all the links associated with this record.  Returns an array of
+     * associative arrays each containing 'desc' and 'url' keys.
+     *
+     * @return array
+     */
+     public function getLinkDetails()
+     {
+         // See if there are any links available:
+         $urls = $this->driver->tryMethod('getURLs');
+         if (empty($urls)) {
+             return array();
+         }
+
+         // If we found links, we may need to convert from the "route" format
+         // to the "full URL" format.
+         $urlHelper = $this->getView()->plugin('url');
+         $serverUrlHelper = $this->getView()->plugin('serverurl');
+         $formatLink = function ($link) use ($urlHelper, $serverUrlHelper) {
+             // Error if route AND URL are missing at this point!
+             if (!isset($link['route']) && !isset($link['url'])) {
+                 throw new \Exception('Invalid URL array.');
+             }
+
+             // Build URL from route/query details if missing:
+             if (!isset($link['url'])) {
+                 $routeParams = isset($link['routeParams'])
+                    ? $link['routeParams'] : array();
+
+                 $link['url'] = $serverUrlHelper(
+                     $urlHelper($link['route'], $routeParams)
+                 );
+                 if (isset($link['queryString'])) {
+                     $link['url'] .= $link['queryString'];
+                 }
+             }
+
+             // Use URL as description if missing:
+             if (!isset($link['desc'])) {
+                 $link['desc'] = $link['url'];
+             }
+             return $link;
+         };
+
+         return array_map($formatLink, $urls);
+     }
 }

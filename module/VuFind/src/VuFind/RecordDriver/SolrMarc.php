@@ -579,7 +579,7 @@ class SolrMarc extends SolrDefault
                             $desc = $address;
                         }
 
-                        $retVal[$address] = $desc;
+                        $retVal[] = array('url' => $address, 'desc' => $desc);
                     }
                 }
             }

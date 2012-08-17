@@ -1030,15 +1030,15 @@ class SolrDefault extends AbstractBase
      */
     public function getURLs()
     {
-        $urls = array();
+        // If non-empty, map internal URL array to expected return format;
+        // otherwise, return empty array:
         if (isset($this->fields['url']) && is_array($this->fields['url'])) {
-            foreach ($this->fields['url'] as $url) {
-                // The index doesn't contain descriptions for URLs, so we'll just
-                // use the URL itself as the description.
-                $urls[$url] = $url;
-            }
+            $filter = function($url) {
+                return array('url' => $url);
+            };
+            return array_map($filter, $this->fields['url']);
         }
-        return $urls;
+        return array();
     }
 
     /**
