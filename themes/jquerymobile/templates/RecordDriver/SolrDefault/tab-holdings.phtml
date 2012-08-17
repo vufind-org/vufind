@@ -2,10 +2,7 @@
     // Set up convenience variables:
     $user = $this->layout()->account->isLoggedIn();
     $holdings = $this->driver->getRealTimeHoldings($this->layout()->account);
-    $openUrl = $this->driver->openURLActive('holdings') ? $this->driver->getOpenURL() : false;
     $offlineMode = \VuFind\Connection\Manager::connectToCatalog()->getOfflineMode();
-    // Account for replace_other_urls setting
-    $urls = ($openUrl && $this->driver->replaceURLsWithOpenURL()) ? array() : $this->driver->getURLs();
 
     // Set page title.
     $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
