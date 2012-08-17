@@ -41,9 +41,9 @@ use VuFind\Connection\Manager as ConnectionManager,
 class OfflineMode extends AbstractHelper
 {
     /**
-     * Wrapper function to the VF_Search_Options getInstance function
+     * Wrapper function to the get the catalog's current offline mode.
      *
-     * @return SearchOptions
+     * @return string
      */
     public function __invoke()
     {

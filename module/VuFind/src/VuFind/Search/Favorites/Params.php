@@ -44,7 +44,8 @@ class Params extends BaseParams
     /**
      * Constructor
      *
-     * @param VF_Search_Base_Options $options Options to use (null to load defaults)
+     * @param \VuFind\Search\Base\Options $options Options to use (null to load
+     * defaults)
      */
     public function __construct($options = null)
     {

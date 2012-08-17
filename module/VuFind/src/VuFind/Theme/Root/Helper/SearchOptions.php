@@ -40,11 +40,11 @@ use VuFind\Search\Options, Zend\View\Helper\AbstractHelper;
 class SearchOptions extends AbstractHelper
 {
     /**
-     * Wrapper function to the VF_Search_Options getInstance function
+     * Wrapper function to the \VuFind\Search\Options getInstance function
      *
      * @param string $type The search type of the object to retrieve
      *
-     * @return SearchOptions
+     * @return \VuFind\Search\Base\Options
      */
     public function __invoke($type = 'Solr')
     {

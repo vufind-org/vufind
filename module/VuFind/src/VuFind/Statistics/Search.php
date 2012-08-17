@@ -41,7 +41,7 @@ class Search extends AbstractBase
     /**
      * Saves the search to wherever the config [Statistics] says so
      *
-     * @param VF_Search_Solr_Results       $data    Results from Search controller
+     * @param \VuFind\Search\Base\Results  $data    Results from Search controller
      * @param Zend_Controller_Request_Http $request Request data from the controller
      *
      * @return void

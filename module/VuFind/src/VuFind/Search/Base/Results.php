@@ -64,7 +64,7 @@ abstract class Results
     /**
      * Constructor
      *
-     * @param VF_Search_Base_Params $params Object representing user search
+     * @param \VuFind\Search\Base\Params $params Object representing user search
      * parameters.
      */
     public function __construct(Params $params)
@@ -86,7 +86,7 @@ abstract class Results
     /**
      * Get the URL helper for this object.
      *
-     * @return VF_Search_UrlHelper
+     * @return UrlHelper
      */
     public function getUrl()
     {

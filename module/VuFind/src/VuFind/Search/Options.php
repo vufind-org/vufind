@@ -43,7 +43,7 @@ class Options
      *
      * @param string $type The search type of the object to retrieve
      *
-     * @return VF_Search_Base_Options
+     * @return \VuFind\Search\Base\Options
      */
     public static function getInstance($type)
     {

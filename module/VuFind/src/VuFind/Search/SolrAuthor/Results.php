@@ -43,7 +43,7 @@ class Results extends SolrResults
     /**
      * Constructor
      *
-     * @param VF_Search_Base_Params $params Object representing user search
+     * @param \VuFind\Search\Base\Params $params Object representing user search
      * parameters.
      */
     public function __construct($params)

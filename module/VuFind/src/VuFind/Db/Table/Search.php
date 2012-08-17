@@ -140,9 +140,9 @@ class Search extends Gateway
     /**
      * Add a search into the search table (history)
      *
-     * @param VF_Search_Base_Results $newSearch     Search to save
-     * @param string                 $sessionId     Current session ID
-     * @param array                  $searchHistory Existing saved searches (for
+     * @param \VuFind\Search\Base\Results $newSearch     Search to save
+     * @param string                      $sessionId     Current session ID
+     * @param array                       $searchHistory Existing saved searches (for
      * deduplication purposes)
      *
      * @return void

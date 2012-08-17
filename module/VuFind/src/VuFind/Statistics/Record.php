@@ -41,7 +41,7 @@ class Record extends AbstractBase
     /**
      * Saves the record view to wherever the config [Statistics] says so
      *
-     * @param VF_Search_Solr_Results       $data    Results from Search controller
+     * @param \VuFind\Search\Base\Results  $data    Results from Search controller
      * @param Zend_Controller_Request_Http $request Request data
      *
      * @return void

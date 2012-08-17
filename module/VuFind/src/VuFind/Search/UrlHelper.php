@@ -45,7 +45,7 @@ class UrlHelper
     /**
      * Constructor
      *
-     * @param VF_Search_Base_Results $results VuFind search results object.
+     * @param \VuFind\Search\Base\Results $results VuFind search results object.
      */
     public function __construct($results)
     {

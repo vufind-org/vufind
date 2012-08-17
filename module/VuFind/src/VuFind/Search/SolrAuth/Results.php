@@ -44,7 +44,7 @@ class Results extends SolrResults
     /**
      * Constructor
      *
-     * @param VF_Search_Base_Params $params Object representing user search
+     * @param \VuFind\Search\Base\Params $params Object representing user search
      * parameters.
      */
     public function __construct(BaseParams $params)
@@ -57,9 +57,10 @@ class Results extends SolrResults
      *
      * @param null|array $shards Selected shards to use (null for defaults)
      * @param string     $index  ID of index/search classes to use (this assumes
-     * that VF_Search_$index_Options and VF_Connection_$index are both valid classes)
+     * that \VuFind\Search\$index\Options and VuFind\Connection\$index are both
+     * valid classes)
      *
-     * @return VF_Connection_Solr
+     * @return VuFind\Connection\Solr
      */
     public static function getSolrConnection($shards = null, $index = 'SolrAuth')
     {

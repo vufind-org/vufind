@@ -56,7 +56,7 @@ class Params
     protected $selectedShards = array();
     // View
     protected $view = null;
-    // VF_Search_Base_Options subclass
+    // \VuFind\Search\Base\Options subclass
     protected $options;
     // Recommendation settings
     protected $recommend = array();
@@ -69,7 +69,8 @@ class Params
     /**
      * Constructor
      *
-     * @param VF_Search_Base_Options $options Options to use (null to load defaults)
+     * @param \VuFind\Search\Base\Options $options Options to use (null to load
+     * defaults)
      */
     public function __construct($options = null)
     {

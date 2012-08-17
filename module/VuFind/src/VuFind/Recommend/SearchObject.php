@@ -108,7 +108,7 @@ abstract class SearchObject implements RecommendInterface
     /**
      * Get search results.
      *
-     * @return VF_Search_Base_Results
+     * @return \VuFind\Search\Base\Results
      */
     public function getResults()
     {

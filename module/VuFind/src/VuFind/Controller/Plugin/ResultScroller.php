@@ -62,7 +62,7 @@ class ResultScroller extends AbstractPlugin
      * Initialize this result set scroller. This should only be called
      * prior to displaying the results of a new search.
      *
-     * @param VF_Search_Base_Results $searchObject The search object that was
+     * @param \VuFind\Search\Base\Results $searchObject The search object that was
      * used to execute the last search.
      *
      * @return bool
@@ -324,7 +324,7 @@ class ResultScroller extends AbstractPlugin
     /**
      * Restore the last saved search.
      *
-     * @return VF_Search_Base_Results
+     * @return \VuFind\Search\Base\Results
      */
     protected function restoreLastSearch()
     {
@@ -342,7 +342,7 @@ class ResultScroller extends AbstractPlugin
     /**
      * Update the remembered "last search" in the session.
      *
-     * @param VF_Search_Base_Results $search Search object to remember.
+     * @param \VuFind\Search\Base\Results $search Search object to remember.
      *
      * @return void
      */
