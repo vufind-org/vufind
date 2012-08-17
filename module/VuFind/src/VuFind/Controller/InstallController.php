@@ -350,7 +350,8 @@ class InstallController extends AbstractBase
                     // forward back to the home action!
                     $string = "mysql://{$view->dbuser}:{$newpass}@"
                         . $view->dbhost . '/' . $view->dbname;
-                    $config = ConfigReader::getLocalConfigPath('config.ini', null, true);
+                    $config
+                        = ConfigReader::getLocalConfigPath('config.ini', null, true);
                     $writer = new ConfigWriter($config);
                     $writer->set('Database', 'database', $string);
                     if (!$writer->save()) {

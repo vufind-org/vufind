@@ -315,7 +315,7 @@ class DbUpgrade extends AbstractPlugin
     /**
      * Modify columns based on the output of getModifiedColumns().
      *
-     * @param array  $columns Output of getModifiedColumns()
+     * @param array $columns Output of getModifiedColumns()
      *
      * @throws Exception
      * @return void

@@ -193,8 +193,8 @@ class Writer
      * write an ini file, adapted from
      * http://php.net/manual/function.parse-ini-file.php
      *
-     * @param array  $assoc_arr Array to output
-     * @param array  $comments  Comments to inject
+     * @param array $assoc_arr Array to output
+     * @param array $comments  Comments to inject
      *
      * @return string
      */
