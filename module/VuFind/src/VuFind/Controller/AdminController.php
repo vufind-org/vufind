@@ -238,12 +238,10 @@ class AdminController extends AbstractBase
      */
     public function enableautoconfigAction()
     {
-        /* TODO
-        $configDir = LOCAL_OVERRIDE_DIR . '/application/configs';
-        $configFile = $configDir . '/config.ini';
-        $writer = new VF_Config_Writer($configFile);
+        $configFile = ConfigReader::getConfigPath('config.ini');
+        $writer = new \VuFind\Config\Writer($configFile);
         $writer->set('System', 'autoConfigure', 1);
-        if (@$writer->save()) {
+        if ($writer->save()) {
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage('Auto-configuration enabled.');
 
@@ -257,8 +255,7 @@ class AdminController extends AbstractBase
                     . $configFile . '.'
                 );
         }
-        return $this->_forward('Config');
-         */
+        return $this->forwardTo('Admin', 'Config');
     }
 
     /**
