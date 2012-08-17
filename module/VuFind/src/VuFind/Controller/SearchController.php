@@ -394,7 +394,6 @@ class SearchController extends AbstractSearch
      */
     public function reservesAction()
     {
-        /* TODO
         // Search parameters set?  Process results.
         if ($this->params()->fromQuery('inst') !== null
             || $this->params()->fromQuery('course') !== null
@@ -405,17 +404,20 @@ class SearchController extends AbstractSearch
         
         // No params?  Show appropriate form (varies depending on whether we're
         // using driver-based or Solr-based reserves searching).
-        if ($this->_helper->reserves()->useIndex()) {
+        if ($this->reserves()->useIndex()) {
             return $this->forwardTo('Search', 'ReservesSearch');
         }
 
         // If we got this far, we're using driver-based searching and need to
         // send options to the view:
         $catalog = ConnectionManager::connectToCatalog();
-        $this->view->deptList = $catalog->getDepartments();
-        $this->view->instList = $catalog->getInstructors();
-        $this->view->courseList =  $catalog->getCourses();
-         */
+        return $this->createViewModel(
+            array(
+                'deptList' => $catalog->getDepartments(),
+                'instList' => $catalog->getInstructors(),
+                'courseList' =>  $catalog->getCourses()
+            )
+        );
     }
 
     /**
@@ -439,32 +441,18 @@ class SearchController extends AbstractSearch
      */
     public function reservesresultsAction()
     {
-        /* TODO
         // Retrieve course reserves item list:
         $course = $this->params()->fromQuery('course');
         $inst = $this->params()->fromQuery('inst');
         $dept = $this->params()->fromQuery('dept');
-        $result = $this->_helper->reserves()->findReserves($course, $inst, $dept);
-
-        // Pass some key values to the view, if found:
-        if (isset($result[0]['instructor']) && !empty($result[0]['instructor'])) {
-            $this->view->instructor = $result[0]['instructor'];
-        }
-        if (isset($result[0]['course']) && !empty($result[0]['course'])) {
-            $this->view->course = $result[0]['course'];
-        }
+        $result = $this->reserves()->findReserves($course, $inst, $dept);
 
         // Build a list of unique IDs
-        $bibIDs = array();
-        foreach ($result as $record) {
-            // Avoid duplicate IDs (necessary for Voyager ILS driver):
-            if (!in_array($record['BIB_ID'], $bibIDs)) {
-                $bibIDs[] = $record['BIB_ID'];
-            }
-        }
+        $callback = function($i) { return $i['BIB_ID']; };
+        $bibIDs = array_unique(array_map($callback, $result));
 
         // Truncate the list if it is too long:
-        $params = new VF_Search_Solr_Params();
+        $params = new \VuFind\Search\Solr\Params();
         $limit = $params->getQueryIDLimit();
         if (count($bibIDs) > $limit) {
             $bibIDs = array_slice($bibIDs, 0, $limit);
@@ -473,17 +461,25 @@ class SearchController extends AbstractSearch
         }
 
         // Use standard search action with override parameter to show results:
-        $this->_request->setParam('overrideIds', $bibIDs);
+        $this->getRequest()->getQuery()->set('overrideIds', $bibIDs);
 
         // Call rather than forward, so we can use custom template
-        $this->resultsAction();
+        $view = $this->resultsAction();
+
+        // Pass some key values to the view, if found:
+        if (isset($result[0]['instructor']) && !empty($result[0]['instructor'])) {
+            $view->instructor = $result[0]['instructor'];
+        }
+        if (isset($result[0]['course']) && !empty($result[0]['course'])) {
+            $view->course = $result[0]['course'];
+        }
 
         // Customize the URL helper to make sure it builds proper reserves URLs:
-        $url = $this->view->results->getUrl();
+        $url = $view->results->getUrl();
         $url->setDefaultParameter('course', $course);
         $url->setDefaultParameter('inst', $inst);
         $url->setDefaultParameter('dept', $dept);
-         */
+        return $view;
     }
 
     /**
