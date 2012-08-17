@@ -51,10 +51,10 @@ class VudlController extends AbstractBase
      */
     public function recordAction()
     {
-        /* TODO
         // TARGET ID
-        $id = $this->_request->getParam('id');
-        $this->view->id = $id;
+        $id = $this->params()->fromQuery('id');
+        $view = $this->createViewModel();
+        $view->id = $id;
 
         // GET XML FILE NAME
         $driver = SolrResults::getRecord($id);
@@ -82,8 +82,8 @@ class VudlController extends AbstractBase
 
         // FILE INFORMATION / DESCRIPTION
         $fileDetails = $this->getDocSummary($xml);
-        $this->view->details = $fileDetails;
-        $this->view->file = urlencode($url);
+        $view->details = $fileDetails;
+        $view->file = urlencode($url);
 
         // GET IDS FOR ALL FILES
         $files = $this->getAllFiles($xml);
@@ -126,54 +126,9 @@ class VudlController extends AbstractBase
 
         // SEND THE DATA FOR THE FIRST PAGES
         // (Original, Large, Medium, Thumbnail srcs) and THE DOCUMENTS
-        $this->view->pages = $pages;
-        $this->view->docs = $docs;
-         */
-    }
-
-    /**
-     * In order to reduce initial load time the majority of the data is called
-     * here after document.ready; a response is generated containing JSON
-     * encoded data with the urls of all the images for each page associated
-     * with the document.
-     *
-     * @return mixed
-     */
-    public function pageDataAction()
-    {
-        /* TODO
-        // We don't want to use views or layouts in this controller since
-        // it is responsible for generating AJAX responses rather than HTML.
-        $this->_helper->viewRenderer->setNoRender();
-        $this->_helper->layout->disableLayout();
-
-        $url = $this->_request->getParam('file');
-        $xml = simplexml_load_file($url);
-
-        // GET IDS FOR ALL FILES
-        $files = $this->getAllFiles($xml);
-
-        // RETURN IMAGES BY use AND labels
-        foreach ($xml->xpath('//METS:structMap/METS:div/METS:div') as $div) {
-            error_reporting(0); // No notices in my JSON please!
-            foreach ($div->xpath('METS:div') as $item) {
-                if ($div['TYPE'] == 'page_level') {
-                    $index = intval($item['ORDER']) - 1;
-                    $pages[$index] = array(
-                        'label'=>(string) $item['LABEL'],
-                        'original' => ''
-                    );
-                    // Store image srcs under their use
-                    foreach ($item->xpath('METS:fptr') as $id) {
-                        $file = $files[(string) $id['FILEID']];
-                        $pages[$index][$file['use']] = $file['src'];
-                    }
-                }
-            }
-        }
-        echo json_encode($pages);
-        error_reporting(-1);
-         */
+        $view->pages = $pages;
+        $view->docs = $docs;
+        return $view;
     }
 
     /**
@@ -230,45 +185,5 @@ class VudlController extends AbstractBase
                 return $data;
             }
         }
-    }
-
-    /**
-     * Used to AJAX information about a page that may not have been loaded yet.
-     *
-     * This is a hardly used fallback and may be a candidate for deletion
-     *
-     * Response contains JSON encoded array with information about the images
-     * associated with the parameter-specified page.  Indexed by use (size)
-     *
-     * @return mixed
-     */
-    public function pageTabsAction()
-    {
-        /* TODO
-        // We don't want to use views or layouts in this controller since
-        // it is responsible for generating AJAX responses rather than HTML.
-        $this->_helper->viewRenderer->setNoRender();
-        $this->_helper->layout->disableLayout();
-
-        $page = intval($this->_request->getParam('page'));
-        // TARGET ID
-        $id = $this->_request->getParam('id');
-        $xml = $this->getXMLRecord($id);
-
-        // GET FILE IDs AND SRCs
-        $files = $this->getAllFiles($xml);
-
-        // GET PAGES
-        $pages = $this->getPageStructure($xml);
-        if ($id >= count($pages)) {
-            echo '';
-        }
-
-        $re = array();
-        foreach ($pages[$page]['ids'] as $id) {
-            $re[strtolower($files[$id]['use'])] = $files[$id]['src'];
-        }
-        echo json_encode($re);
-         */
     }
 }
