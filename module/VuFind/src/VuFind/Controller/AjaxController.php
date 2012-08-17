@@ -664,7 +664,7 @@ class AjaxController extends AbstractBase
     public function getMapData($fields = array('long_lat'))
     {
         $params = new \VuFind\Search\Solr\Params();
-        $params->initFromRequest($this->getRequest->getQuery());
+        $params->initFromRequest($this->getRequest()->getQuery());
         $results = new \VuFind\Search\Solr\Results($params);
 
         $facets = $results->getFullFieldFacets($fields, false);
@@ -699,20 +699,21 @@ class AjaxController extends AbstractBase
      */
     public function resultgooglemapinfoAction($fields = array('long_lat'))
     {
-        /* TODO
-        // Turn layouts on for this action since we want to render the
-        // page inside a lightbox:
-        $this->_helper->layout->setLayout('lightbox');
-        $this->_helper->viewRenderer->setNoRender(false);
+        // Set layout to render the page inside a lightbox:
+        $this->layout()->setTemplate('layout/lightbox');
 
         $params = new \VuFind\Search\Solr\Params();
         $params->initFromRequest($this->getRequest()->getQuery());
         $results = new \VuFind\Search\Solr\Results($params);
-        $this->view->results = $results;
-        $this->view->recordSet = $results->getResults();
-        $this->view->recordCount = $results->getResultTotal();
-        $this->view->completeListUrl = $results->getUrl()->getParams();
-         */
+
+        return $this->createViewModel(
+            array(
+                'results' => $results,
+                'recordSet' => $results->getResults(),
+                'recordCount' => $results->getResultTotal(),
+                'completeListUrl' => $results->getUrl()->getParams()
+            )
+        );
     }
 
     /**
