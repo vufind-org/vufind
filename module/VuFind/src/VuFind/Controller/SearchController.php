@@ -322,7 +322,6 @@ class SearchController extends AbstractSearch
      */
     public function newitemresultsAction()
     {
-        /* TODO
         // Retrieve new item list:
         $range = $this->params()->fromQuery('range');
         $dept = $this->params()->fromQuery('department');
@@ -332,7 +331,6 @@ class SearchController extends AbstractSearch
         // The code always pulls in enough catalog results to get a fixed number
         // of pages worth of Solr results.  Note that if the Solr index is out of
         // sync with the ILS, we may see fewer results than expected.
-        $params = new VF_Search_Solr_Params();
         if (isset($searchSettings->NewItem->result_pages)) {
             $resultPages = intval($searchSettings->NewItem->result_pages);
             if ($resultPages < 1) {
@@ -342,6 +340,7 @@ class SearchController extends AbstractSearch
             $resultPages = 10;
         }
         $catalog = ConnectionManager::connectToCatalog();
+        $params = new \VuFind\Search\Solr\Params();
         $perPage = $params->getLimit();
         $newItems = $catalog->getNewItems(1, $perPage * $resultPages, $range, $dept);
 
@@ -360,7 +359,7 @@ class SearchController extends AbstractSearch
         }
 
         // Use standard search action with override parameter to show results:
-        $this->_request->setParam('overrideIds', $bibIDs);
+        $this->getRequest()->getQuery()->set('overrideIds', $bibIDs);
 
         // Are there "new item" filter queries specified in the config file?
         // If so, we should apply them as hidden filters so they do not show
@@ -374,17 +373,18 @@ class SearchController extends AbstractSearch
                     $hiddenFilters[] = $current;
                 }
             }
-            $this->_request->setParam('hiddenFilters', $hiddenFilters);
+            $this->getRequest()->getQuery()->set('hiddenFilters', $hiddenFilters);
         }
 
         // Call rather than forward, so we can use custom template
-        $this->resultsAction();
+        $view = $this->resultsAction();
 
         // Customize the URL helper to make sure it builds proper reserves URLs:
-        $url = $this->view->results->getUrl();
+        $url = $view->results->getUrl();
         $url->setDefaultParameter('range', $range);
         $url->setDefaultParameter('department', $dept);
-         */
+
+        return $view;
     }
 
     /**
