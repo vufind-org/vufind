@@ -520,23 +520,27 @@ class SearchController extends AbstractSearch
     /**
      * Handle OpenSearch.
      *
-     * @return mixed
+     * @return \Zend\Http\Response
      */
     public function opensearchAction()
     {
-        /* TODO
-        $this->getResponse()->setHeader('Content-type', 'text/xml');
-        $this->_helper->layout->disableLayout();
         switch ($this->params()->fromQuery('method')) {
         case 'describe':
             $config = ConfigReader::getConfig();
-            $this->view->site = $config->Site;
-            $this->render('search/opensearch-describe', null, true);
-            return;
+            $xml = $this->getViewRenderer()->render(
+                'search/opensearch-describe.phtml', array('site' => $config->Site)
+            );
+            break;
         default:
-            $this->render('search/opensearch-error', null, true);
+            $xml = $this->getViewRenderer()->render('search/opensearch-error.phtml');
+            break;
         }
-         */
+
+        $response = $this->getResponse();
+        $headers = $response->getHeaders();
+        $headers->addHeaderLine('Content-type', 'text/xml');
+        $response->setContent($xml);
+        return $response;
     }
 
     /**
@@ -544,37 +548,27 @@ class SearchController extends AbstractSearch
      *
      * http://www.opensearch.org/Specifications/OpenSearch/Extensions/Suggestions/1.0
      *
-     * @return mixed
+     * @return \Zend\Http\Response
      */
     public function suggestAction()
     {
-        /* TODO
-        // Set up JSON response format -- we don't want to render a normal page here:
-        $this->_helper->viewRenderer->setNoRender();
-        $this->_helper->layout->disableLayout();
-
         // Always use 'AllFields' as our autosuggest type:
-        $this->_request->setParam('type', 'AllFields');
+        $query = $this->getRequest()->getQuery();
+        $query->set('type', 'AllFields');
 
         // Get suggestions and make sure they are an array (we don't want to JSON
         // encode them into an object):
-        $rawSuggestions = VF_Autocomplete_Factory::getSuggestions(
-            $this->_request, 'type', 'lookfor'
+        $suggestions = \VuFind\Autocomplete\Factory::getSuggestions(
+            $query, 'type', 'lookfor'
         );
-        $suggestions = array();
-        foreach ($rawSuggestions as $c) {
-            $suggestions[] = $c;
-        }
 
         // Send the JSON response:
-        $this->getResponse()->setHeader('Content-type', 'application/javascript');
-        $this->getResponse()->appendBody(
-            json_encode(
-                array(
-                    $this->params()->fromQuery('lookfor', ''), $suggestions,
-                )
-            )
+        $response = $this->getResponse();
+        $headers = $response->getHeaders();
+        $headers->addHeaderLine('Content-type', 'application/javascript');
+        $response->setContent(
+            json_encode(array($query->get('lookfor', ''), $suggestions))
         );
-         */
+        return $response;
     }
 }
