@@ -427,11 +427,10 @@ class SearchController extends AbstractSearch
      */
     public function reservessearchAction()
     {
-        /* TODO
-        $params = new VF_Search_SolrReserves_Params();
-        $params->initFromRequest($this->_request);
-        $this->view->results = new VF_Search_SolrReserves_Results($params);
-         */
+        $params = new \VuFind\Search\SolrReserves\Params();
+        $params->initFromRequest($this->getRequest()->getQuery());
+        $results = new \VuFind\Search\SolrReserves\Results($params);
+        return $this->createViewModel(array('results' => $results));
     }
 
     /**
