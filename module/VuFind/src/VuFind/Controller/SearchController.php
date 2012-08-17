@@ -447,7 +447,9 @@ class SearchController extends AbstractSearch
         $result = $this->reserves()->findReserves($course, $inst, $dept);
 
         // Build a list of unique IDs
-        $callback = function($i) { return $i['BIB_ID']; };
+        $callback = function($i) {
+            return $i['BIB_ID'];
+        };
         $bibIDs = array_unique(array_map($callback, $result));
 
         // Truncate the list if it is too long:

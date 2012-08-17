@@ -385,7 +385,9 @@ class Params extends BaseParams
     {
         // No need for spell checking on an ID query!
         $this->options->spellcheckEnabled(false);
-        $callback = function($i) { return '"' . addcslashes($i, '"') . '"'; };
+        $callback = function($i) {
+            return '"' . addcslashes($i, '"') . '"';
+        };
         $ids = array_map($callback, $ids);
         $this->setOverrideQuery('id:(' . implode(' OR ', $ids) . ')');
     }
