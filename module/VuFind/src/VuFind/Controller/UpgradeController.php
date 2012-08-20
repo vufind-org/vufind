@@ -29,6 +29,8 @@ namespace VuFind\Controller;
 use ArrayObject, VuFind\Cache\Manager as CacheManager,
     VuFind\Config\Reader as ConfigReader, VuFind\Cookie\Container as CookieContainer,
     VuFind\Db\AdapterFactory, VuFind\Db\Table\Resource as ResourceTable,
+    VuFind\Db\Table\ResourceTags as ResourceTagsTable,
+    VuFind\Db\Table\User as UserTable,
     VuFind\Exception\RecordMissing as RecordMissingException, VuFind\Record,
     Zend\Db\TableGateway\Feature\GlobalAdapterFeature as DbGlobalAdapter,
     Zend\Session\Container as SessionContainer;
@@ -246,14 +248,13 @@ class UpgradeController extends AbstractBase
             unset($this->session->dbRootUser);
             unset($this->session->dbRootPass);
 
-            /* TODO
             // Check for legacy "anonymous tag" bug:
-            $anonymousTags = VuFind_Model_Db_Tags::getAnonymousCount();
+            $resourceTagsTable = new ResourceTagsTable();
+            $anonymousTags = $resourceTagsTable->getAnonymousCount();
             if ($anonymousTags > 0 && !isset($this->cookie->skipAnonymousTags)) {
-                $this->view->anonymousCount = $anonymousTags;
+                $this->getRequest()->getQuery()->set('anonymousCnt', $anonymousTags);
                 return $this->forwardTo('Upgrade', 'FixAnonymousTags');
             }
-             */
         } catch (\Exception $e) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('Database upgrade failed: ' . $e->getMessage());
@@ -301,7 +302,6 @@ class UpgradeController extends AbstractBase
      */
     public function fixanonymoustagsAction()
     {
-        /* TODO
         // Handle skip action:
         if (strlen($this->params()->fromPost('skip', '')) > 0) {
             $this->cookie->skipAnonymousTags = true;
@@ -315,12 +315,13 @@ class UpgradeController extends AbstractBase
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('Username must not be empty.');
             } else {
-                $user = VuFind_Model_Db_User::getByUsername($user, false);
+                $userTable = new UserTable();
+                $user = $userTable->getByUsername($user, false);
                 if (empty($user) || !is_object($user) || !isset($user->id)) {
                     $this->flashMessenger()->setNamespace('error')
                         ->addMessage("User {$user} not found.");
                 } else {
-                    $table = new VuFind_Model_Db_ResourceTags();
+                    $table = new ResourceTagsTable();
                     $table->assignAnonymousTags($user->id);
                     $this->session->warnings->append(
                         "Assigned all anonymous tags to {$user->username}."
@@ -329,7 +330,12 @@ class UpgradeController extends AbstractBase
                 }
             }
         }
-         */
+
+        return $this->createViewModel(
+            array(
+                'anonymousTags' => $this->params()->fromQuery('anonymousCnt')
+            )
+        );
     }
 
     /**

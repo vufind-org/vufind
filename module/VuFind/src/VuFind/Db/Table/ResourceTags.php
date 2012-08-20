@@ -233,6 +233,19 @@ class ResourceTags extends Gateway
     }
 
     /**
+     * Get count of anonymous tags
+     *
+     * @return int count
+     */
+    public function getAnonymousCount()
+    {
+        $callback = function ($select) {
+            $select->where->isNull('user_id');
+        };
+        return count($this->select($callback));
+    }
+
+    /**
      * Assign anonymous tags to the specified user ID.
      *
      * @param int $id User ID to own anonymous tags.
@@ -241,8 +254,9 @@ class ResourceTags extends Gateway
      */
     public function assignAnonymousTags($id)
     {
-        /* TODO
-        $this->update(array('user_id' => $id), 'user_id IS NULL');
-         */
+        $callback = function ($select) {
+            $select->where->isNull('user_id');
+        };
+        $this->update(array('user_id' => $id), $callback);
     }
 }

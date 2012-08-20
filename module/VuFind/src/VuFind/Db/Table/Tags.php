@@ -84,27 +84,6 @@ class Tags extends Gateway
     }
 
     /**
-     * Get count of anonymous tags
-     *
-     * @return int count
-     */
-    public static function getAnonymousCount()
-    {
-        /* TODO
-        $resourceTagTable = new VuFind_Model_Db_ResourceTags();
-        $select = $resourceTagTable
-            ->select()
-            ->from(
-                array('resource_tags'),
-                array('cnt' => 'COUNT(*)')
-            )
-            ->where('user_id IS NULL');
-        $count = $resourceTagTable->fetchRow($select);
-        return $count['cnt'];
-         */
-    }
-
-    /**
      * Get count of usage for a tag by id
      *
      * @param int $tag_id tag id
