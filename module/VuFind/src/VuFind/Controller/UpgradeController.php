@@ -186,7 +186,6 @@ class UpgradeController extends AbstractBase
                 ->setAdapter(DbGlobalAdapter::getStaticAdapter())
                 ->loadSql(APPLICATION_PATH . '/module/VuFind/sql/mysql.sql');
 
-            /* TODO
             // Check for missing tables.  Note that we need to finish dealing with
             // missing tables before we proceed to the missing columns check, or else
             // the missing tables will cause fatal errors during the column test.
@@ -247,6 +246,7 @@ class UpgradeController extends AbstractBase
             unset($this->session->dbRootUser);
             unset($this->session->dbRootPass);
 
+            /* TODO
             // Check for legacy "anonymous tag" bug:
             $anonymousTags = VuFind_Model_Db_Tags::getAnonymousCount();
             if ($anonymousTags > 0 && !isset($this->cookie->skipAnonymousTags)) {

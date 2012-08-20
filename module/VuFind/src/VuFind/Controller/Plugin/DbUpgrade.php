@@ -108,9 +108,7 @@ class DbUpgrade extends AbstractPlugin
      */
     public function query($sql)
     {
-        /* TODO
         $this->getAdapter()->query($sql, DbAdapter::QUERY_MODE_EXECUTE);
-         */
     }
 
     /**
@@ -154,7 +152,7 @@ class DbUpgrade extends AbstractPlugin
      */
     protected function getTableColumns($table)
     {
-        $info = $this->getTableInfo();
+        $info = $this->getTableInfo(true);
         $columns = isset($info[$table]) ? $info[$table]->getColumns() : array();
         $retVal = array();
         foreach ($columns as $current) {
@@ -240,6 +238,43 @@ class DbUpgrade extends AbstractPlugin
     }
 
     /**
+     * Given a table column object, return true if the object's type matches the
+     * specified $type parameter.  Return false if there is a mismatch that will
+     * require table structure updates.
+     *
+     * @param \Zend\Db\Metadata\Object\ColumnObject $column       Object to check
+     * @param string                                $expectedType Type to compare
+     *
+     * @return bool
+     */
+    protected function typeMatches($column, $expectedType)
+    {
+        // Get base type:
+        $type = $column->getDataType();
+
+        // If it's not a blob or a text (which don't have explicit sizes in our SQL),
+        // we should see what the character length is, if any:
+        if ($type != 'blob' && $type != 'text') {
+            $charLen = $column->getCharacterMaximumLength();
+            if ($charLen) {
+                $type .= '(' . $charLen . ')';
+            }
+        }
+
+        // If it's an integer, the expected type will have a parenthetical value;
+        // this is a display width which we can't retrieve using the column metadata
+        // object.  Since display width is not important to VuFind, we should ignore
+        // this factor when comparing things.
+        if ($type == 'int' || $type == 'tinyint' || $type == 'smallint'
+            || $type == 'mediumint' || $type == 'bigint'
+        ) {
+            list($expectedType) = explode('(', $expectedType);
+        }
+
+        return $type == $expectedType;
+    }
+
+    /**
      * Get a list of changed columns in the database tables (associative array,
      * key = table name, value = array of column name => new data type).
      *
@@ -248,7 +283,6 @@ class DbUpgrade extends AbstractPlugin
      */
     public function getModifiedColumns()
     {
-        /* TODO
         $missing = array();
         foreach ($this->dbCommands as $table => $sql) {
             // Parse column names out of the CREATE TABLE SQL, which will always be
@@ -274,16 +308,8 @@ class DbUpgrade extends AbstractPlugin
             // Now check for mismatched types:
             $actualColumns = $this->getTableColumns($table);
             foreach ($expectedColumns as $i => $column) {
-                $type = $actualColumns[$column]->getDataType();
-                $charLen = $actualColumns[$column]->getCharacterMaximumLength();
-                if ($charLen) {
-                    $type .= '(' . $charLen . ')';
-                }
-                $precision = $actualColumns[$column]->getNumericPrecision();
-                if ($precision) {
-                    $type .= '(' . $precision . ')';
-                }
-                if ($type != $expectedTypes[$i]) {
+                $currentColumn = $actualColumns[$column];
+                if (!$this->typeMatches($currentColumn, $expectedTypes[$i])) {
                     if (!isset($missing[$table])) {
                         $missing[$table] = array();
                     }
@@ -292,7 +318,6 @@ class DbUpgrade extends AbstractPlugin
             }
         }
         return $missing;
-         */
     }
 
     /**
