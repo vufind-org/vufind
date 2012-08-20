@@ -86,7 +86,7 @@ class Gravatar extends AbstractHtmlElement
      * @param  string|null $email Email address.
      * @param  null|array $options Options
      * @param  array $attribs Attributes for image tag (title, alt etc.)
-     * @return Zend\View\Helper\Gravatar
+     * @return Gravatar
      */
     public function __invoke($email = "", $options = array(), $attribs = array())
     {
@@ -173,6 +173,7 @@ class Gravatar extends AbstractHtmlElement
      *
      * @link   http://pl.gravatar.com/site/implement/url More information about rating.
      * @param  string $rating Value for rating. Allowed values are: g, px, r,x
+     * @return Gravatar
      * @throws Exception\DomainException
      */
     public function setRating($rating)

@@ -151,6 +151,7 @@ abstract class AbstractSource implements MetadataInterface
      * Get view names
      *
      * @param string $schema
+     * @return array
      */
     public function getViewNames($schema = null)
     {
@@ -173,6 +174,7 @@ abstract class AbstractSource implements MetadataInterface
      * Get views
      *
      * @param string $schema
+     * @return array
      */
     public function getViews($schema = null)
     {
@@ -192,6 +194,7 @@ abstract class AbstractSource implements MetadataInterface
      *
      * @param string $viewName
      * @param string $schema
+     * @return \Zend\Db\Metadata\Object\TableObject
      */
     public function getView($viewName, $schema = null)
     {
@@ -375,8 +378,7 @@ abstract class AbstractSource implements MetadataInterface
      * @param  string $constraint
      * @param  string $table
      * @param  string $schema
-     * @param  string $database
-     * @return Object\ConstraintKeyObject
+     * @return array
      */
     public function getConstraintKeys($constraint, $table, $schema = null)
     {
@@ -417,6 +419,7 @@ abstract class AbstractSource implements MetadataInterface
      * Get trigger names
      *
      * @param string $schema
+     * @return array
      */
     public function getTriggerNames($schema = null)
     {
@@ -433,6 +436,7 @@ abstract class AbstractSource implements MetadataInterface
      * Get triggers
      *
      * @param string $schema
+     * @return array
      */
     public function getTriggers($schema = null)
     {
@@ -452,6 +456,7 @@ abstract class AbstractSource implements MetadataInterface
      *
      * @param string $triggerName
      * @param string $schema
+     * @return Object\TriggerObject
      */
     public function getTrigger($triggerName, $schema = null)
     {

@@ -652,7 +652,7 @@ class Client implements Stdlib\DispatchableInterface
             throw new Exception\InvalidArgumentException("Invalid or not supported authentication type: '$type'");
         }
         $response = false;
-        switch(strtolower($type)) {
+        switch (strtolower($type)) {
             case self::AUTH_BASIC :
                 // In basic authentication, the user name cannot contain ":"
                 if (strpos($user, ':') !== false) {
@@ -1254,8 +1254,8 @@ class Client implements Stdlib\DispatchableInterface
      * the interaction with the adapter
      *
      * @param Http $uri
-     * @param string $secure
      * @param string $method
+     * @param boolean $secure
      * @param array $headers
      * @param string $body
      * @return string the raw response
