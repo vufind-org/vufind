@@ -1135,7 +1135,6 @@ class AjaxController extends AbstractBase
      */
     protected function deleteFavorites()
     {
-        /* TODO
         $user = $this->getUser();
         if ($user === false) {
             return $this->output(
@@ -1144,8 +1143,8 @@ class AjaxController extends AbstractBase
             );
         }
 
-        $listID = $this->params()->fromQuery('listID');
-        $ids = $this->params()->fromQuery('ids');
+        $listID = $this->params()->fromPost('listID');
+        $ids = $this->params()->fromPost('ids');
 
         if (!is_array($ids)) {
             return $this->output(
@@ -1154,12 +1153,11 @@ class AjaxController extends AbstractBase
             );
         }
 
-        $this->_helper->favorites->delete($ids, $listID, $user);
+        $this->favorites()->delete($ids, $listID, $user);
         return $this->output(
             array('result' => Translator::translate('fav_delete_success')),
             self::STATUS_OK
         );
-         */
     }
 
     /**

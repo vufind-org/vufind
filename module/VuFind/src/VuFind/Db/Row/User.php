@@ -26,7 +26,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Row;
-use VuFind\Db\Table\Tags as TagsTable, VuFind\Db\Table\UserList as UserListTable,
+use VuFind\Db\Table\Resource as ResourceTable, VuFind\Db\Table\Tags as TagsTable,
+    VuFind\Db\Table\UserList as UserListTable,
     VuFind\Db\Table\UserResource as UserResourceTable,
     Zend\Db\RowGateway\RowGateway, Zend\Db\Sql\Expression,
     Zend\Db\Sql\Predicate\Predicate, Zend\Db\Sql\Sql,
@@ -298,9 +299,8 @@ class User extends RowGateway
      */
     public function removeResourcesById($ids, $source = 'VuFind')
     {
-        /* TODO
         // Retrieve a list of resource IDs:
-        $resourceTable = new VuFind_Model_Db_Resource();
+        $resourceTable = new ResourceTable();
         $resources = $resourceTable->findResources($ids, $source);
 
         $resourceIDs = array();
@@ -309,9 +309,8 @@ class User extends RowGateway
         }
 
         // Remove Resource (related tags are also removed implicitly)
-        $userResourceTable = new VuFind_Model_Db_UserResource();
-        $userResourceTable->destroyLinks($resourceIDs, $this->id);\
-         */
+        $userResourceTable = new UserResourceTable();
+        $userResourceTable->destroyLinks($resourceIDs, $this->id);
     }
 
     /**

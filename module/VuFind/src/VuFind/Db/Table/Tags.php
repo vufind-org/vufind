@@ -237,20 +237,14 @@ class Tags extends Gateway
      */
     public function deleteByIdArray($ids)
     {
-        /* TODO
         // Do nothing if we have no IDs to delete!
         if (empty($ids)) {
             return;
         }
 
-        $db = $this->getAdapter();
-
-        $clauses = array();
-        foreach ($ids as $current) {
-            $clauses[] = $db->quoteInto('id = ?', $current);
-        }
-
-        $this->delete(implode(' OR ', $clauses));
-         */
+        $callback = function ($select) use ($ids) {
+            $select->where->in('id', $ids);
+        };
+        $this->delete($callback);
     }
 }

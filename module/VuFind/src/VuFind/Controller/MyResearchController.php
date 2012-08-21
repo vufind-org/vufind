@@ -282,7 +282,6 @@ class MyResearchController extends AbstractBase
      */
     public function deleteAction()
     {
-        /* TODO:
         // Force login:
         $user = $this->getUser();
         if (!$user) {
@@ -290,35 +289,39 @@ class MyResearchController extends AbstractBase
         }
 
         // Get target URL for after deletion:
-        $listID = $this->_request->getParam('listID');
+        $listID = $this->params()->fromPost('listID');
         $newUrl = empty($listID)
-            ? '/MyResearch/Favorites' : '/MyResearch/MyList/' . $listID;
+            ? $this->url()->fromRoute('myresearch-favorites')
+            : $this->url()->fromRoute('userList', array('id' => $listID));
 
         // Fail if we have nothing to delete:
-        $ids = is_null($this->_request->getParam('selectAll'))
-            ? $this->_request->getParam('ids')
-            : $this->_request->getParam('idsAll');
+        $ids = is_null($this->params()->fromPost('selectAll'))
+            ? $this->params()->fromPost('ids')
+            : $this->params()->fromPost('idsAll');
         if (!is_array($ids) || empty($ids)) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('bulk_noitems_advice');
-            return $this->_redirect($newUrl);
+            return $this->redirect()->toUrl($newUrl);
         }
 
         // Process the deletes if necessary:
-        if (!is_null($this->_request->getParam('submit'))) {
-            $this->_helper->favorites->delete($ids, $listID, $user);
+        if (!is_null($this->params()->fromPost('submit'))) {
+            $this->favorites()->delete($ids, $listID, $user);
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage('fav_delete_success');
-            return $this->_redirect($newUrl);
+            return $this->redirect()->toUrl($newUrl);
         }
 
         // If we got this far, the operation has not been confirmed yet; show
         // the necessary dialog box:
-        $this->view->list = empty($listID)
-            ? false : VuFind_Model_Db_UserList::getExisting($listID);
-        $this->view->deleteIDS = $ids;
-        $this->view->records = VF_Record::loadBatch($ids);
-         */
+        return $this->createViewModel(
+            array(
+                'list' => empty($listID)
+                    ? false : UserListTable::getExisting($listID),
+                'deleteIDS' => $ids,
+                'records' => Record::loadBatch($ids)
+            )
+        );
     }
 
     /**

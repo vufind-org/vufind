@@ -102,21 +102,20 @@ class ResourceTags extends Gateway
      */
     public function checkForTags($ids)
     {
-        /* TODO
         // Set up return arrays:
         $retVal = array('present' => array(), 'missing' => array());
 
         // Look up IDs in the table:
-        $select = $this->select()->distinct()->from($this->_name, 'tag_id');
-        foreach ($ids as $current) {
-            $select->orWhere('tag_id = ?', $current);
-        }
-        $results = $this->fetchAll($select);
+        $callback = function ($select) use ($ids) {
+            $select->where->in('tag_id', $ids);
+        };
+        $results = $this->select($callback);
 
         // Record all IDs that are present:
         foreach ($results as $current) {
             $retVal['present'][] = $current->tag_id;
         }
+        $retVal['present'] = array_unique($retVal['present']);
 
         // Detect missing IDs:
         foreach ($ids as $current) {
@@ -127,7 +126,6 @@ class ResourceTags extends Gateway
 
         // Send back the results:
         return $retVal;
-         */
     }
 
     /**
@@ -179,43 +177,37 @@ class ResourceTags extends Gateway
     public function destroyLinks($resource_id, $user_id, $list_id = null,
         $tag_id = null
     ) {
-        /* TODO
-        $db = $this->getAdapter();
-
-        $where = $db->quoteInto('user_id = ?', $user_id);
-
-        if (!is_null($resource_id)) {
-            if (is_array($resource_id)) {
-                $resourceSQL = array();
-                foreach ($resource_id as $current) {
-                    $resourceSQL[] = $db->quoteInto('resource_id = ?', $current);
+        $callback = function ($select) use ($resource_id, $user_id, $list_id,
+            $tag_id
+        ) {
+            $select->where->equalTo('user_id', $user_id);
+            if (!is_null($resource_id)) {
+                if (!is_array($resource_id)) {
+                    $resource_id = array($resource_id);
                 }
-                $where .= ' AND (' . implode(' OR ', $resourceSQL) . ')';
-            } else {
-                $where .= $db->quoteInto(' AND resource_id = ?', $resource_id);
+                $select->where->in('resource_id', $resource_id);
             }
-        }
-        if (!is_null($list_id)) {
-            if ($list_id != 'none') {
-                $where .= $db->quoteInto(' AND list_id = ?', $list_id);
-            } else {
-                // special case -- if $list_id is set to the string "none", we
-                // want to delete tags that are not associated with lists.
-                $where .= ' AND list_id is null';
+            if (!is_null($list_id)) {
+                if ($list_id != 'none') {
+                    $select->where->equalTo('list_id', $list_id);
+                } else {
+                    // special case -- if $list_id is set to the string "none", we
+                    // want to delete tags that are not associated with lists.
+                    $select->where->isNull('list_id');
+                }
             }
-        }
-        if (!is_null($tag_id)) {
-            $where .= $db->quoteInto(' AND tag_id = ?', $tag_id);
-        }
+            if (!is_null($tag_id)) {
+                $select->where->equalTo('tag_id', $tag_id);
+            }
+        };
+
 
         // Get a list of all tag IDs being deleted; we'll use these for
         // orphan-checking:
-        $select = $this->select()->distinct()->from($this->_name, 'tag_id')
-            ->where($where);
-        $potentialOrphans = $this->fetchAll($select);
+        $potentialOrphans = $this->select($callback);
 
         // Now delete the unwanted rows:
-        $this->delete($where);
+        $this->delete($callback);
 
         // Check for orphans:
         if (count($potentialOrphans) > 0) {
@@ -223,13 +215,12 @@ class ResourceTags extends Gateway
             foreach ($potentialOrphans as $current) {
                 $ids[] = $current->tag_id;
             }
-            $checkResults = $this->checkForTags($ids);
+            $checkResults = $this->checkForTags(array_unique($ids));
             if (count($checkResults['missing']) > 0) {
-                $tagTable = new VuFind_Model_Db_Tags();
+                $tagTable = new Tags();
                 $tagTable->deleteByIdArray($checkResults['missing']);
             }
         }
-         */
     }
 
     /**

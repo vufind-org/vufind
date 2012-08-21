@@ -26,7 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Db\Table;
-use Zend\Db\Sql\Expression;
+use VuFind\Db\Table\ResourceTags as ResourceTagsTable, Zend\Db\Sql\Expression;
 
 /**
  * Table Definition for user_resource
@@ -139,35 +139,28 @@ class UserResource extends Gateway
      */
     public function destroyLinks($resource_id, $user_id, $list_id = null)
     {
-        /* TODO
         // Remove any tags associated with the links we are removing; we don't
         // want to leave orphaned tags in the resource_tags table after we have
         // cleared out favorites in user_resource!
-        $resourceTags = new VuFind_Model_Db_ResourceTags();
+        $resourceTags = new ResourceTagsTable();
         $resourceTags->destroyLinks($resource_id, $user_id, $list_id);
 
         // Now build the where clause to figure out which rows to remove:
-        $db = $this->getAdapter();
-
-        $where = $db->quoteInto('user_id = ?', $user_id);
-
-        if (!is_null($resource_id)) {
-            if (is_array($resource_id)) {
-                $resourceSQL = array();
-                foreach ($resource_id as $current) {
-                    $resourceSQL[] = $db->quoteInto('resource_id = ?', $current);
+        $callback = function ($select) use ($resource_id, $user_id, $list_id) {
+            $select->where->equalTo('user_id', $user_id);
+            if (!is_null($resource_id)) {
+                if (!is_array($resource_id)) {
+                    $resource_id = array($resource_id);
                 }
-                $where .= ' AND (' . implode(' OR ', $resourceSQL) . ')';
-            } else {
-                $where .= $db->quoteInto(' AND resource_id = ?', $resource_id);
+                $select->where->in('resource_id', $resource_id);
             }
-        }
-        if (!is_null($list_id)) {
-            $where .= $db->quoteInto(' AND list_id = ?', $list_id);
-        }
+            if (!is_null($list_id)) {
+                $select->where->equalTo('list_id', $list_id);
+            }
+        };
+
 
         // Delete the rows:
-        $this->delete($where);
-         */
+        $this->delete($callback);
     }
 }

@@ -100,19 +100,11 @@ class Resource extends Gateway
      */
     public function findResources($ids, $source = 'VuFind')
     {
-        /* TODO
-        $db = $this->getAdapter();
-        $parts = array();
-        foreach ($ids as $current) {
-            $parts[] = $db->quoteInto('record_id = ?', $current);
-        }
-
-        $select = $this->select()
-            ->where('(' . implode(' OR ', $parts) . ')')
-            ->where('source = ?', $source);
-
-        return $this->fetchAll($select);
-         */
+        $callback = function ($select) use ($ids, $source) {
+            $select->where->in('record_id', $ids);
+            $select->where->equalTo('source', $source);
+        };
+        return $this->select($callback);
     }
 
     /**
