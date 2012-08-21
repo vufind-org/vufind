@@ -327,13 +327,14 @@ class MyResearchController extends AbstractBase
     /**
      * Delete record
      *
-     * Incoming query parameters: id = list ID, delete = record ID
+     * @param string $id     ID of record to delete
+     * @param string $source Source of record to delete
      *
-     * @return mixed
+     * @return mixed         True on success; otherwise returns a value that can
+     * be returned by the controller to forward to another action (i.e. force login)
      */
-    public function deletefavoriteAction()
+    public function performDeleteFavorite($id, $source)
     {
-        /* TODO:
         // Force login:
         $user = $this->getUser();
         if (!$user) {
@@ -341,32 +342,28 @@ class MyResearchController extends AbstractBase
         }
 
         // Load/check incoming parameters:
-        $listID = $this->_request->getParam('id');
+        $listID = $this->params()->fromRoute('id');
         $listID = empty($listID) ? null : $listID;
-        $idToDelete = $this->_request->getParam('delete');
-        $idSource = $this->_request->getParam('source', 'VuFind');
-        if (empty($idToDelete)) {
+        if (empty($id)) {
             throw new \Exception('Cannot delete empty ID!');
         }
 
         // Perform delete and send appropriate flash message:
         if (!is_null($listID)) {
             // ...Specific List
-            $list = VuFind_Model_Db_UserList::getExisting($listID);
-            $list->removeResourcesById($user, array($idToDelete), $idSource);
+            $list = UserListTable::getExisting($listID);
+            $list->removeResourcesById($user, array($id), $source);
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage('Item removed from list');
         } else {
             // ...My Favorites
-            $user->removeResourcesById(array($idToDelete), $idSource);
+            $user->removeResourcesById(array($id), $source);
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage('Item removed from favorites');
         }
 
-        // All done -- show the appropriate action:
-        $this->_request->setParam('delete', false);
-        return $this->_forward('MyList');
-         */
+        // All done -- return true to indicate success.
+        return true;
     }
 
     /**
@@ -474,22 +471,15 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Process a request to delete a favorite item.
+     * Confirm a request to delete a favorite item.
      *
      * @param string $id     ID of record to delete
      * @param string $source Source of record to delete
      *
      * @return mixed
      */
-    protected function processDeleteFavorite($id, $source)
+    protected function confirmDeleteFavorite($id, $source)
     {
-        // If the user already confirmed the operation, perform the delete now:
-        if ($this->params()->fromPost('confirm')) {
-            return $this->forwardTo('MyResearch', 'DeleteFavorite');
-        }
-
-        // If we got this far, we must display a confirmation message...
-
         // Normally list ID is found in the route match, but in lightbox context it
         // may sometimes be a GET parameter.  We must cover both cases.
         $listID = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
@@ -523,9 +513,18 @@ class MyResearchController extends AbstractBase
         );
         if ($deleteId) {
             $deleteSource = $this->params()->fromPost(
-                'source', $this->params()->fromQuery('source')
+                'source', $this->params()->fromQuery('source', 'VuFind')
             );
-            return $this->processDeleteFavorite($deleteId, $deleteSource);
+            // If the user already confirmed the operation, perform the delete now;
+            // otherwise prompt for confirmation:
+            if ($this->params()->fromPost('confirm')) {
+                $success = $this->performDeleteFavorite($deleteId, $deleteSource);
+                if ($success !== true) {
+                    return $success;
+                }
+            } else {
+                return $this->confirmDeleteFavorite($deleteId, $deleteSource);
+            }
         }
 
         // If we got this far, we just need to display the favorites:
