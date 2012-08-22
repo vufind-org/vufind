@@ -666,13 +666,14 @@ class MyResearchController extends AbstractBase
      */
     public function deletelistAction()
     {
-        /* TODO:
+        // Get requested list ID:
+        $listID = $this->params()
+            ->fromPost('listID', $this->params()->fromQuery('listID'));
+
         // Have we confirmed this?
-        if ($this->_request->getParam('confirm')) {
+        if ($this->params()->fromPost('confirm')) {
             try {
-                $list = VuFind_Model_Db_UserList::getExisting(
-                    $this->_request->getParam('listID')
-                );
+                $list = UserListTable::getExisting($listID);
                 $list->delete($this->getUser());
 
                 // Success Message
@@ -680,8 +681,8 @@ class MyResearchController extends AbstractBase
                     ->addMessage('fav_list_delete');
             } catch (\Exception $e) {
                 switch(get_class($e)) {
-                case 'VF_Exception_LoginRequired':
-                case 'VF_Exception_ListPermission':
+                case 'VuFind\Exception\LoginRequired':
+                case 'VuFind\Exception\ListPermission':
                     $user = $this->getUser();
                     if ($user == false) {
                         return $this->forceLogin();
@@ -692,34 +693,23 @@ class MyResearchController extends AbstractBase
                 }
             }
             // Redirect to MyResearch home
-            return $this->_redirect('/MyResearch/Favorites');
+            return $this->redirect()->toRoute('myresearch-favorites');
         }
 
         // If we got this far, we must display a confirmation message:
-        $router = Zend_Controller_Front::getInstance()->getRouter();
-        $this->_request->setParam(
-            'confirmAction',
-            $router->assemble(
-                array(
-                    'controller'=>'MyResearch',
-                    'action'    =>'DeleteList'
-                ), 'default', true
-            )
+        $this->getRequest()->getQuery()->set(
+            'confirmAction', $this->url()->fromRoute('myresearch-deletelist')
         );
-        $this->_request->setParam(
+        $this->getRequest()->getQuery()->set(
             'cancelAction',
-            $router->assemble(
-                array('id' => $this->_request->getParam('listID')), 'userList', true
-            )
+            $this->url()->fromRoute('userList', array('id' => $listID))
         );
-        $this->_request->setParam(
-            'extraFields',
-            array('listID' => $this->_request->getParam('listID'))
+        $this->getRequest()->getQuery()->set(
+            'extraFields', array('listID' => $listID)
         );
-        $this->_request->setParam('confirmTitle', 'confirm_delete_list_brief');
-        $this->_request->setParam('confirmMessage', 'confirm_delete_list_text');
-        return $this->_forward('Confirm');
-         */
+        $this->getRequest()->getQuery()->set('confirmTitle', 'confirm_delete_list_brief');
+        $this->getRequest()->getQuery()->set('confirmMessage', 'confirm_delete_list_text');
+        return $this->forwardTo('MyResearch', 'Confirm');
     }
 
     /**
