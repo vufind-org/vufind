@@ -26,8 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind;
-use VuFind\Auth\Manager as AuthManager, VuFind\Cache\Manager as CacheManager,
-    VuFind\Config\Reader as ConfigReader,
+use VuFind\Auth\Manager as AuthManager, VuFind\Config\Reader as ConfigReader,
     VuFind\Db\AdapterFactory as DbAdapterFactory, VuFind\Logger,
     VuFind\Theme\Initializer as ThemeInitializer,
     VuFind\Translator\Translator, Zend\Console\Console,
