@@ -507,9 +507,8 @@ class SearchController extends AbstractSearch
             $params->setLimit(0);
 
             $results = new Results($params);
-            /* TODO: fix caching:
-            $cache->setItem($results, 'solrSearchHomeFacets');
-             */
+            $results->getResults();                     // force processing for cache
+            $cache->setItem('solrSearchHomeFacets', $results);
         }
         return $results;
     }

@@ -237,7 +237,7 @@ class Reader
                     }
                 }
                 if ($cache) {
-                    $cache->setItem($results, $key);
+                    $cache->setItem($key, $results);
                 }
             }
             self::$searchSpecs[$filename] = $results;

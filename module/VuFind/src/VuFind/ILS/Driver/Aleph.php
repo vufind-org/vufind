@@ -320,19 +320,15 @@ class Aleph implements DriverInterface
             && isset($configArray['util']['tab_sub_library'])
         ) {
             if (isset($configArray['Cache']['type'])) {
-                /* TODO
                 $manager = CacheManager::getInstance();
                 $cache = $manager->getCache($configArray['Cache']['type']);
-                $this->translator = $cache->load('alephTranslator');
-                 */
+                $this->translator = $cache->getItem('alephTranslator');
             }
             if ($this->translator == false) {
                 $this->translator = new AlephTranslator($configArray);
-                /* TODO
                 if (isset($cache)) {
-                    $cache->save($this->translator, 'alephTranslator');
+                    $cache->setItem('alephTranslator', $this->translator);
                 }
-                 */
             }
         }
     }

@@ -137,10 +137,8 @@ class SummonController extends AbstractSearch
             $params->setLimit(0);
 
             $results = new SummonResults($params);
-            $results->getResults();
-            /* TODO: fix caching
-            $cache->setItem($results, 'summonSearchHomeFacets');
-             */
+            $results->getResults();                     // force processing for cache
+            $cache->setItem('summonSearchHomeFacets', $results);
         }
         return $results;
     }

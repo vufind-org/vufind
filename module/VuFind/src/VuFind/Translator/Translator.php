@@ -26,7 +26,8 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Translator;
-use VuFind\Translator\Loader\ExtendedIni as ExtendedIniLoader,
+use VuFind\Cache\Manager as CacheManager,
+    VuFind\Translator\Loader\ExtendedIni as ExtendedIniLoader,
     Zend\I18n\Translator\TranslatorServiceFactory;
 
 /**
@@ -92,9 +93,11 @@ class Translator
         $pluginManager = $translator->getPluginManager();
         $pluginManager->setService('extendedini', new ExtendedIniLoader());
 
-        // Set up language caching for better performance (TODO):
-        //$translator
-        //    ->setCache(CacheManager::getInstance()->getCache('language'));
+        /* TODO -- uncomment this when Zend translator bug is fixed (RC5?):
+        // Set up language caching for better performance:
+        $translator
+            ->setCache(CacheManager::getInstance()->getCache('language'));
+         */
 
         // Store the translator object in the VuFind Translator wrapper:
         self::setTranslator($translator);
