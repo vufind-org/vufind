@@ -211,7 +211,7 @@ class Summon extends BaseSummon
      *
      * @param array $input The raw response from Summon
      *
-     * @throws SerialsSolutions_Summon_Exception
+     * @throws \SerialsSolutions_Summon_Exception
      * @return array       The processed response from Summon
      */
     protected function process($input)

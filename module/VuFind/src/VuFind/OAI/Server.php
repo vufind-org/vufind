@@ -589,7 +589,7 @@ class Server
     /**
      * Get parameters for use in the listRecords method.
      *
-     * @throws Exception
+     * @throws \Exception
      * @return mixed Array of parameters or false on error
      */
     protected function listRecordsGetParams()
@@ -864,7 +864,7 @@ class Server
      *
      * @param string $msg Error message
      *
-     * @throws Exception
+     * @throws \Exception
      * @return void
      */
     protected function unexpectedError($msg)

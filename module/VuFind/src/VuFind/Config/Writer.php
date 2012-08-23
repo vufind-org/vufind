@@ -50,7 +50,7 @@ class Writer
      * @param array      $comments Comments to associate with content (ignored if
      * $content is null).
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function __construct($filename, $content = null, $comments = array())
     {

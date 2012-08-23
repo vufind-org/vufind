@@ -63,7 +63,7 @@ class WorldCat extends SRU
      *
      * @param string $id Record to obtain holdings for.
      *
-     * @throws Exception
+     * @throws \Exception
      * @return SimpleXMLElement
      */
     public function getHoldings($id)
@@ -86,7 +86,7 @@ class WorldCat extends SRU
      *
      * @param string $id Record ID to retrieve
      *
-     * @throws Exception
+     * @throws \Exception
      * @return string    MARC XML
      */
     public function getRecord($id)
@@ -113,7 +113,7 @@ class WorldCat extends SRU
      * @param int    $limit    The number of records to return per page
      * @param string $sort     The value to be used by for sorting
      *
-     * @throws Exception
+     * @throws \Exception
      * @return array          An array of query results
      */
     public function search($query, $oclcCode = null, $page = 1, $limit = 10,
@@ -146,7 +146,7 @@ class WorldCat extends SRU
      *
      * @param array $search An array of search parameters
      *
-     * @throws Exception
+     * @throws \Exception
      * @return string       The query
      */
     public function buildQuery($search)

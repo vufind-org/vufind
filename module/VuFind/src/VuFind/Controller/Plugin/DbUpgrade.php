@@ -134,7 +134,7 @@ class DbUpgrade extends AbstractPlugin
     /**
      * Get a list of all tables in the database.
      *
-     * @throws Exception
+     * @throws \Exception
      * @return array
      */
     protected function getAllTables()
@@ -147,7 +147,7 @@ class DbUpgrade extends AbstractPlugin
      *
      * @param string $table Table to describe.
      *
-     * @throws Exception
+     * @throws \Exception
      * @return array
      */
     protected function getTableColumns($table)
@@ -164,7 +164,7 @@ class DbUpgrade extends AbstractPlugin
     /**
      * Get a list of missing tables in the database.
      *
-     * @throws Exception
+     * @throws \Exception
      * @return array
      */
     public function getMissingTables()
@@ -186,7 +186,7 @@ class DbUpgrade extends AbstractPlugin
      *
      * @param array $tables Output of getMissingTables()
      *
-     * @throws Exception
+     * @throws \Exception
      * @return void
      */
     public function createMissingTables($tables)
@@ -200,7 +200,7 @@ class DbUpgrade extends AbstractPlugin
      * Get a list of missing columns in the database tables (associative array,
      * key = table name, value = array of missing column definitions).
      *
-     * @throws Exception
+     * @throws \Exception
      * @return array
      */
     public function getMissingColumns()
@@ -278,7 +278,7 @@ class DbUpgrade extends AbstractPlugin
      * Get a list of changed columns in the database tables (associative array,
      * key = table name, value = array of column name => new data type).
      *
-     * @throws Exception
+     * @throws \Exception
      * @return array
      */
     public function getModifiedColumns()
@@ -325,7 +325,7 @@ class DbUpgrade extends AbstractPlugin
      *
      * @param array $columns Output of getMissingColumns()
      *
-     * @throws Exception
+     * @throws \Exception
      * @return void
      */
     public function createMissingColumns($columns)
@@ -342,7 +342,7 @@ class DbUpgrade extends AbstractPlugin
      *
      * @param array $columns Output of getModifiedColumns()
      *
-     * @throws Exception
+     * @throws \Exception
      * @return void
      */
     public function updateModifiedColumns($columns)

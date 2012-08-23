@@ -129,8 +129,8 @@ class Initializer
      * Initialize the theme.  This needs to be triggered as part of the dispatch
      * event.
      *
+     * @throws \Exception
      * @return void
-     * @throws Exception
      */
     public function init()
     {

@@ -92,7 +92,7 @@ class SRU
      *
      * @param array $search An array of search parameters
      *
-     * @throws Exception
+     * @throws \Exception
      * @return array        An array of query results
      */
     public function buildQuery($search)
@@ -174,7 +174,7 @@ class SRU
      * @param string $id     The record id
      * @param int    $max    The maximum records to return; Default is 5
      *
-     * @throws Exception
+     * @throws \Exception
      * @return array         An array of query results
      */
     public function getMoreLikeThis($record, $id, $max = 5)
@@ -230,7 +230,7 @@ class SRU
      * @param string $schema  Record schema to use in results list
      * @param bool   $process Process into array (true) or return raw (false)
      *
-     * @throws Exception
+     * @throws \Exception
      * @return array          An array of query results
      */
     public function search($query, $start = 1, $limit = null, $sortBy = null,
@@ -260,7 +260,7 @@ class SRU
      *
      * @param Zend_Http_Response $result The response to check.
      *
-     * @throws Exception
+     * @throws \Exception
      * @return void
      */
     public function checkForHttpError($result)

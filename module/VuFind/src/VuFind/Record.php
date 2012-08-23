@@ -44,7 +44,7 @@ class Record
      *
      * @param string $source Record source
      *
-     * @throws Exception
+     * @throws \Exception
      * @return string
      */
     protected static function getClassForSource($source)
@@ -171,7 +171,7 @@ class Record
      * formatted as if it belongs to the Solr schema; this is used to create
      * a mock driver object if the real data source is unavailable.
      *
-     * @throws Exception
+     * @throws \Exception
      * @return array     Array of record drivers
      */
     public static function loadBatch($ids)

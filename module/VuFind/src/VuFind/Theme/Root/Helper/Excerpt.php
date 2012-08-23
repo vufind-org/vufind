@@ -115,7 +115,7 @@ class Excerpt extends AbstractHelper
      * @param string $id     Client access key
      * @param bool   $s_plus Are we operating in Syndetics Plus mode?
      *
-     * @throws Exception
+     * @throws \Exception
      * @return array     Returns array with excerpt data.
      * @author Joel Timothy Norman <joel.t.norman@wmich.edu>
      * @author Andrew Nagy <vufind-tech@lists.sourceforge.net>
@@ -225,7 +225,7 @@ class Excerpt extends AbstractHelper
      *
      * @param string $id Client access key
      *
-     * @throws Exception
+     * @throws \Exception
      * @return array     Returns array with auth notes data.
      */
     protected function loadSyndeticsplus($id) 
