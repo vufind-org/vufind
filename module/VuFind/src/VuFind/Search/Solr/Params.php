@@ -26,7 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Solr;
-use VuFind\Config\Reader as ConfigReader,
+use VuFind\Config\Reader as ConfigReader, VuFind\Db\Table\Tags as TagsTable,
     VuFind\Search\Base\Params as BaseParams;
 
 /**
@@ -177,7 +177,7 @@ class Params extends BaseParams
      */
     public function initTagSearch()
     {
-        $table = new VuFind_Model_Db_Tags();
+        $table = new TagsTable();
         $tag = $table->getByText($this->getDisplayQuery());
         if (!empty($tag)) {
             $rawResults = $tag->getResources('VuFind');
@@ -385,6 +385,12 @@ class Params extends BaseParams
     {
         // No need for spell checking on an ID query!
         $this->options->spellcheckEnabled(false);
+
+        // Special case -- no IDs to set:
+        if (empty($ids)) {
+            return $this->setOverrideQuery('NOT *:*');
+        }
+
         $callback = function($i) {
             return '"' . addcslashes($i, '"') . '"';
         };
