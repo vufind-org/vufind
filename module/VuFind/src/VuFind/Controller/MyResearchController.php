@@ -707,8 +707,10 @@ class MyResearchController extends AbstractBase
         $this->getRequest()->getQuery()->set(
             'extraFields', array('listID' => $listID)
         );
-        $this->getRequest()->getQuery()->set('confirmTitle', 'confirm_delete_list_brief');
-        $this->getRequest()->getQuery()->set('confirmMessage', 'confirm_delete_list_text');
+        $this->getRequest()->getQuery()
+            ->set('confirmTitle', 'confirm_delete_list_brief');
+        $this->getRequest()->getQuery()
+            ->set('confirmMessage', 'confirm_delete_list_text');
         return $this->forwardTo('MyResearch', 'Confirm');
     }
 
