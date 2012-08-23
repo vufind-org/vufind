@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Theme\Root\Helper;
-use VuFind\Config\Reader as ConfigReader, VuFind\Code\ISBN,
+use DOMDocument, VuFind\Config\Reader as ConfigReader, VuFind\Code\ISBN,
     VuFind\Http\Client as HttpClient, Zend\View\Helper\AbstractHelper;
 
 /**
@@ -147,7 +147,7 @@ class VideoClips extends AbstractHelper
         }
 
         // Test XML Response
-        if (!($xmldoc = @DOMDocument::loadXML($result->getBody()))) {
+        if (!($xmldoc = DOMDocument::loadXML($result->getBody()))) {
             throw new \Exception('Invalid XML');
         }
 
@@ -166,7 +166,7 @@ class VideoClips extends AbstractHelper
                 }
 
                 // Test XML Response
-                $xmldoc2 = @DOMDocument::loadXML($result2->getBody());
+                $xmldoc2 = DOMDocument::loadXML($result2->getBody());
                 if (!$xmldoc2) {
                     throw new \Exception('Invalid XML');
                 }

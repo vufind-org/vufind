@@ -31,7 +31,7 @@
  * @link     http://vufind.org/wiki/building_a_link_resolver_driver Wiki
  */
 namespace VuFind\Resolver\Driver;
-use DomDocument, DOMXpath, VuFind\Config\Reader as ConfigReader;
+use DOMDocument, DOMXpath, VuFind\Config\Reader as ConfigReader;
 
 /**
  * EZB Link Resolver Driver
@@ -112,7 +112,7 @@ class Ezb implements DriverInterface
     {
         $records = array(); // array to return
 
-        $xml = new DomDocument();
+        $xml = new DOMDocument();
         if (!@$xml->loadXML($xmlstr)) {
             return $records;
         }

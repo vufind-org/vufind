@@ -28,7 +28,8 @@
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException;
+use DOMDocument, VuFind\Config\Reader as ConfigReader,
+    VuFind\Exception\ILS as ILSException;
 
 /**
  * ILS Driver for VuFind to query availability information via DAIA.
@@ -142,18 +143,18 @@ class DAIA implements DriverInterface
     }
 
     /**
-     * Query a DAIA server and return the result as DomDocument object.
+     * Query a DAIA server and return the result as DOMDocument object.
      * The returned object is an XML document containing
      * content as described in the DAIA format specification.
      *
      * @param string $id Document to look up.
      *
-     * @return DomDocument Object representation of an XML document containing
+     * @return DOMDocument Object representation of an XML document containing
      * content as described in the DAIA format specification.
      */
     protected function queryDAIA($id)
     {
-        $daia = new DomDocument();
+        $daia = new DOMDocument();
         $daia->load($this->baseURL . '?output=xml&ppn='.$id);
 
         return $daia;

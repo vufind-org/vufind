@@ -28,7 +28,7 @@
  * @link     http://vufind.org/wiki/building_a_link_resolver_driver Wiki
  */
 namespace VuFind\Resolver\Driver;
-use DomDocument, DOMXpath, VuFind\Config\Reader as ConfigReader;
+use DOMDocument, DOMXpath, VuFind\Config\Reader as ConfigReader;
 
 /**
  * 360Link Link Resolver Driver
@@ -86,7 +86,7 @@ class Threesixtylink implements DriverInterface
     {
         $records = array(); // array to return
 
-        $xml = new DomDocument();
+        $xml = new DOMDocument();
         if (!@$xml->loadXML($xmlstr)) {
             return $records;
         }

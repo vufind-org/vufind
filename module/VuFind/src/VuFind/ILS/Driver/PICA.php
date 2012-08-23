@@ -30,7 +30,8 @@
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException;
+use DOMDocument, VuFind\Config\Reader as ConfigReader,
+    VuFind\Exception\ILS as ILSException;
 
 /**
  * ILS Driver for VuFind to get information from PICA
@@ -671,7 +672,7 @@ class PICA extends DAIA
         $searchUrl = "http://" . $this->catalogHost .
             "/DB={$this->dbsid}/XML=1.0/CMD?ACT=SRCHA&IKT=1016&SRT=YOP&TRM=sgn+" .
             $barcode;
-        $doc = new DomDocument();
+        $doc = new DOMDocument();
         $doc->load($searchUrl);
         // get Availability information from DAIA
         $itemlist = $doc->getElementsByTagName('SHORTTITLE');
@@ -695,7 +696,7 @@ class PICA extends DAIA
         $searchUrl = "http://" . $this->catalogHost .
             "/DB={$this->dbsid}/XML=1.0/SET=1/TTL=1/FAM?PPN=" . $ppn .
             "&SHRTST=10000";
-        $doc = new DomDocument();
+        $doc = new DOMDocument();
         $doc->load($searchUrl);
         $itemlist = $doc->getElementsByTagName('SHORTTITLE');
         $ppn = array();
