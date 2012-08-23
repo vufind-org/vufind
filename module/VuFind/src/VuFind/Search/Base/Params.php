@@ -1365,7 +1365,7 @@ class Params
     /**
      * Restore settings from a minified object found in the database.
      *
-     * @param VF_MS $minified Minified Search Object
+     * @param \VuFind\Search\Minified $minified Minified Search Object
      *
      * @return void
      */

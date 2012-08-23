@@ -35,7 +35,7 @@ namespace VuFind\Recommend;
  *
  * Note that every class implementing this interface needs to be accompanied by
  * a template file in the Recommend subdirectory of every theme's template
- * directory.  For example, VF_Recommend_SideFacets needs a corresponding
+ * directory.  For example, \VuFind\Recommend\SideFacets needs a corresponding
  * Recommend/SideFacets.phtml template.  The template will be rendered as a
  * partial with two available variables: recommend (the recommendation object)
  * and results (the search results object).

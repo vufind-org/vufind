@@ -42,7 +42,8 @@ class Related extends AbstractHelper
     /**
      * Render the output of a related records module.
      *
-     * @param VF_Related_Interface $related The related records object to render
+     * @param \VuFind\Related\RelatedInterface $related The related records object to
+     * render
      *
      * @return string
      */

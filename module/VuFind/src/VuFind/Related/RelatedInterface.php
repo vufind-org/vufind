@@ -35,7 +35,7 @@ namespace VuFind\Related;
  *
  * Note that every class implementing this interface needs to be accompanied by
  * a template file in the Related subdirectory of every theme's template
- * directory.  For example, VF_Related_Similar needs a corresponding
+ * directory.  For example, \VuFind\Related\Similar needs a corresponding
  * Related/Similar.phtml template.  The template will be rendered as a
  * partial with two available variables: related (the related records object)
  * and driver (the record driver representing the source record).

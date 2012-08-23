@@ -176,7 +176,7 @@ abstract class Results
                 $retVal[] = static::getRecord($id);
             } catch (\Exception $e) {
                 // Just omit missing records from the return array; calling code
-                // in the VF_Record::loadBatch() method will deal with this.
+                // in the \VuFind\Record::loadBatch() method will deal with this.
             }
         }
         return $retVal;
@@ -468,7 +468,7 @@ abstract class Results
     /**
      * Restore settings from a minified object found in the database.
      *
-     * @param VF_MS $minified Minified Search Object
+     * @param \VuFind\Search\Minified $minified Minified Search Object
      *
      * @return void
      */
