@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  SearchObject
+ * @package  Search_Favorites
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
@@ -32,7 +32,7 @@ use VuFind\Search\Base\Params as BaseParams;
  * Search Favorites Parameters
  *
  * @category VuFind2
- * @package  SearchObject
+ * @package  Search_Favorites
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site

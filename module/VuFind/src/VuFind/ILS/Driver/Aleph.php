@@ -249,7 +249,7 @@ class AlephTranslator
  * ILS Exception
  *
  * @category VuFind
- * @package  Support_Classes
+ * @package  Exceptions
  * @author   Vaclav Rosecky <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes#index_interface Wiki

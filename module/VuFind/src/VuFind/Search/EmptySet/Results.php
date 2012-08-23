@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  SearchObject
+ * @package  Search_EmptySet
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
@@ -33,7 +33,7 @@ use VuFind\Search\Base\Results as BaseResults;
  * exceptions that prevent a "real" search object from being constructed).
  *
  * @category VuFind2
- * @package  SearchObject
+ * @package  Search_EmptySet
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page

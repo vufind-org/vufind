@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  DB_Models
+ * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
@@ -32,7 +32,7 @@ use VuFind\Db\Table\ResourceTags as ResourceTagsTable, Zend\Db\Sql\Expression;
  * Table Definition for user_resource
  *
  * @category VuFind2
- * @package  DB_Models
+ * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page

@@ -26,7 +26,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Support_Classes
+ * @package  Mobile
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://code.google.com/p/mobileesp/ MobileESP Project
@@ -38,7 +38,7 @@ use VuFind\Config\Reader as ConfigReader;
  * Mobile Device Detection Wrapper
  *
  * @category VuFind2
- * @package  Support_Classes
+ * @package  Mobile
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://code.google.com/p/mobileesp/ MobileESP Project

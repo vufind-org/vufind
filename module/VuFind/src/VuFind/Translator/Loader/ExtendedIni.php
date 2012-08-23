@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Support_Classes
+ * @package  Translator
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
@@ -34,7 +34,7 @@ use Zend\I18n\Translator\Loader\Exception\InvalidArgumentException,
  * Handles the language loading and language file parsing
  *
  * @category VuFind2
- * @package  Support_Classes
+ * @package  Translator
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site

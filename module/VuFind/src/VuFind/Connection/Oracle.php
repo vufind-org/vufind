@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Support_Classes
+ * @package  Oracle
  * @author   Greg Pendlebury <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes Wiki
@@ -31,7 +31,7 @@ namespace VuFind\Connection;
  * Oracle support code for VTLS Virtua Driver
  *
  * @category VuFind2
- * @package  Support_Classes
+ * @package  Oracle
  * @author   Greg Pendlebury <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes Wiki

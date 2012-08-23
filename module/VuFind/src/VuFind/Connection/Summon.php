@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Support_Classes
+ * @package  Summon
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
@@ -37,7 +37,7 @@ use SerialsSolutions\Summon\Zend2 as BaseSummon,
  * Summon Search API Interface (VuFind implementation)
  *
  * @category VuFind2
- * @package  Support_Classes
+ * @package  Summon
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License

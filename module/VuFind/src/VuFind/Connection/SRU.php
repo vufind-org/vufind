@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Support_Classes
+ * @package  SRU
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes#searching Wiki
@@ -33,7 +33,7 @@ use VuFind\Http\Client as HttpClient, VuFind\Log\Logger,
  * SRU Search Interface
  *
  * @category VuFind2
- * @package  Support_Classes
+ * @package  SRU
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes#searching Wiki

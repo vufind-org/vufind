@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Support_Classes
+ * @package  WorldCat
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
@@ -33,7 +33,7 @@ use VuFind\Config\Reader as ConfigReader;
  * WorldCat SRU Search Interface
  *
  * @category VuFind2
- * @package  Support_Classes
+ * @package  WorldCat
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes Wiki

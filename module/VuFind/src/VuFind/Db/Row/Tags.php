@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  DB_Models
+ * @package  Db_Row
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
@@ -33,7 +33,7 @@ use VuFind\Db\Table\Resource as ResourceTable, Zend\Db\RowGateway\RowGateway,
  * Row Definition for tags
  *
  * @category VuFind2
- * @package  DB_Models
+ * @package  Db_Row
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site

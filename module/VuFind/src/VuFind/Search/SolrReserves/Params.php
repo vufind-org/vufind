@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  SearchObject
+ * @package  Search_SolrReserves
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Tuan Nguyen <tuan@yorku.ca>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
@@ -33,7 +33,7 @@ use VuFind\Search\Solr\Params as SolrParams;
  * Solr Reserves Search Parameters
  *
  * @category VuFind2
- * @package  SearchObject
+ * @package  Search_SolrReserves
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Tuan Nguyen <tuan@yorku.ca>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
