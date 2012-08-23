@@ -20,7 +20,7 @@
 
   <label class="displayBlock" for="save_list"><?=$this->transEsc('Choose a List') ?></label>
   <select id="save_list" name="list">
-    <? if ($this->lists): ?>
+    <? if (count($this->lists) > 0): ?>
       <? foreach ($this->lists as $list): ?>
         <option value="<?=$list['id'] ?>"<? if ($list['id']==$this->userList()->lastUsed()): ?> selected="selected"<? endif; ?>><?=$this->escapeHtml($list['title'])?></option>
       <? endforeach; ?>
