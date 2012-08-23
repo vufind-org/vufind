@@ -220,7 +220,7 @@ class Resource extends Gateway
             // The title field can't be null, so don't bother with the extra
             // isnull() sort in that case.
             if (strtolower($rawField) != 'title') {
-                /* TODO
+                /* TODO -- uncomment when order() method supports Expressions
                 $order[] = new Expression(
                     'isnull(?)', array($alias . '.' . $rawField),
                     array(Expression::TYPE_IDENTIFIER)
