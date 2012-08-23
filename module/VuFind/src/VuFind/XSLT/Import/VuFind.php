@@ -26,7 +26,8 @@
  * @link     http://vufind.org/wiki/importing_records Wiki
  */
 namespace VuFind\XSLT\Import;
-use DOMDocument, VuFind\Config\Reader as ConfigReader;
+use DOMDocument, VuFind\Config\Reader as ConfigReader,
+    VuFind\Db\Table\ChangeTracker as ChangeTrackerTable;
 
 /**
  * XSLT support class -- all methods of this class must be public and static;
@@ -53,11 +54,13 @@ class VuFind
      */
     public static function getFirstIndexed($core, $id, $date)
     {
+        /* TODO: test this when AbstractRowGateway supports multi-part keys:
         $date = strtotime($date);
-        $tracker = new VuFind_Model_Db_ChangeTracker();
+        $tracker = new ChangeTrackerTable();
         $row = $tracker->index($core, $id, $date);
         $iso8601 = 'Y-m-d\TH:i:s\Z';
         return date($iso8601, strtotime($row->first_indexed));
+         */
     }
 
     /**
@@ -72,11 +75,13 @@ class VuFind
      */
     public static function getLastIndexed($core, $id, $date)
     {
+        /* TODO: test this when AbstractRowGateway supports multi-part keys:
         $date = strtotime($date);
-        $tracker = new VuFind_Model_Db_ChangeTracker();
+        $tracker = new ChangeTrackerTable();
         $row = $tracker->index($core, $id, $date);
         $iso8601 = 'Y-m-d\TH:i:s\Z';
         return date($iso8601, strtotime($row->last_indexed));
+         */
     }
 
     /**

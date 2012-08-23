@@ -28,6 +28,7 @@
  */
 namespace VuFind\Connection;
 use VuFind\Config\Reader as ConfigReader,
+    VuFind\Db\Table\ChangeTracker as ChangeTrackerTable,
     VuFind\Exception\Solr as SolrException,
     VuFind\Http\Client as HttpClient,
     VuFind\Log\Logger,
@@ -1134,8 +1135,10 @@ class Solr
 
         // Record the deletions in our change tracker database:
         foreach ($idList as $id) {
-            $tracker = new VuFind_Model_Db_ChangeTracker();
+            /* TODO: test this when AbstractRowGateway supports multi-part keys:
+            $tracker = new ChangeTrackerTable();
             $tracker->markDeleted($this->core, $id);
+             */
         }
 
         return $result;
