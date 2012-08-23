@@ -27,8 +27,8 @@
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use SoapFault, VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\ILS as ILSException;
+use SoapFault, VuFind\Cache\Manager as CacheManager,
+    VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException;
 
 /**
  * Symphony Web Services (symws) ILS Driver
@@ -44,7 +44,7 @@ use SoapFault, VuFind\Config\Reader as ConfigReader,
 class Symphony implements DriverInterface
 {
     protected $config;
-    protected $cacheManager = false;
+    protected $policyCache = false;
     protected $policies;
 
     /**
@@ -108,22 +108,12 @@ class Symphony implements DriverInterface
             'userProfileGroupField' => 'USER_PROFILE_ID'
         );
 
-        /* TODO
         // Initialize cache manager.
-        $this->cacheManager = new Zend_Cache_Manager;
-        $this->cacheManager->setCacheTemplate(
-            'policy', array(
-                'frontend' => array(
-                    'name' => 'Core',
-                    'options' => $this->config['PolicyCache']['frontendOptions'],
-                ),
-                'backend' => array(
-                    'name' => $this->config['PolicyCache']['backend'],
-                    'options' => $this->config['PolicyCache']['backendOptions'],
-                ),
-            )
-        );
-         */
+        if (isset($configArray['PolicyCache']['type'])) {
+            $manager = CacheManager::getInstance();
+            $this->policyCache
+                = $manager->getCache($configArray['PolicyCache']['type']);
+        }
     }
 
     /**
@@ -1404,14 +1394,12 @@ class Symphony implements DriverInterface
     protected function getPolicyList($policyType)
     {
         try {
-            $policyCache = is_object($this->cacheManager)
-                ? $this->cacheManager->getCache('policy') : false;
-            $cacheKey    = hash('sha256', "${policyType}");
+            $cacheKey = 'symphony' . hash('sha256', "${policyType}");
 
             if (isset($this->policies[$policyType])) {
                 return $this->policies[$policyType];
-            } elseif ($policyCache
-                && ($policyList = $policyCache->load($cacheKey))
+            } elseif ($this->policyCache
+                && ($policyList = $this->policyCache->getItem($cacheKey))
             ) {
                 $this->policies[$policyType] = $policyList;
                 return $policyList;
@@ -1427,7 +1415,9 @@ class Symphony implements DriverInterface
                         = $policyInfo->policyDescription;
                 }
 
-                $policyCache->save($policyList, $cacheKey);
+                if ($this->policyCache) {
+                    $this->policyCache->setItem($cacheKey, $policyList);
+                }
 
                 return $policyList;
             }
