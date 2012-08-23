@@ -66,7 +66,7 @@ class OaiResumption extends Gateway
      *
      * @param string $token The resumption token to retrieve.
      *
-     * @return Zend_Db_Table_Row_Abstract|null
+     * @return \VuFind\Db\Row\OaiResumption|null
      */
     public function findToken($token)
     {

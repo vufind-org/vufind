@@ -125,8 +125,8 @@ abstract class AbstractBase
     /**
      * Add tags to the record.
      *
-     * @param Zend_Db_Table_Row $user The user posting the tag
-     * @param string            $tags The user-provided tag string
+     * @param \VuFind\Db\Row\User $user The user posting the tag
+     * @param string              $tags The user-provided tag string
      *
      * @return void
      */
@@ -143,13 +143,13 @@ abstract class AbstractBase
     /**
      * Save this record to the user's favorites.
      *
-     * @param array             $params Array with some or all of these keys:
+     * @param array               $params Array with some or all of these keys:
      *  <ul>
      *    <li>mytags - Unparsed tag string to associate with record (optional)</li>
      *    <li>notes - Notes to associate with record (optional)</li>
      *    <li>list - ID of list to save record into (omit to create new list)</li>
      *  </ul>
-     * @param Zend_Db_Table_Row $user   The user saving the record
+     * @param \VuFind\Db\Row\User $user   The user saving the record
      *
      * @return void
      */

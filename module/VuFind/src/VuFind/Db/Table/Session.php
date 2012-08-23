@@ -54,7 +54,7 @@ class Session extends Gateway
      * @param string $sid    Session ID to retrieve
      * @param bool   $create Should we create rows that don't already exist?
      *
-     * @return Zend_Db_Table_Row_Abstract
+     * @return \VuFind\Db\Row\Session
      */
     public function getBySessionId($sid, $create = true)
     {

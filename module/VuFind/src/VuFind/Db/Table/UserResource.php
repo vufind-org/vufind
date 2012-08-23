@@ -57,7 +57,7 @@ class UserResource extends Gateway
      * @param int    $userId     Optional user ID (to limit results to a particular
      * user).
      *
-     * @return Zend_Db_Table_Rowset
+     * @return \Zend\Db\ResultSet\AbstractResultSet
      */
     public function getSavedData($resourceId, $source = 'VuFind', $listId = null,
         $userId = null

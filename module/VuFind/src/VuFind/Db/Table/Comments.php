@@ -52,7 +52,7 @@ class Comments extends Gateway
      * @param string $id     Record ID to look up
      * @param string $source Source of record to look up
      *
-     * @return array|Zend_Db_Table_Rowset_Abstract
+     * @return array|\Zend\Db\ResultSet\AbstractResultSet
      */
     public function getForResource($id, $source = 'VuFind')
     {
@@ -78,8 +78,8 @@ class Comments extends Gateway
     /**
      * Delete a comment if the owner is logged in.  Returns true on success.
      *
-     * @param int                        $id   ID of row to delete
-     * @param Zend_Db_Table_Row_Abstract $user Logged in user object
+     * @param int                 $id   ID of row to delete
+     * @param \VuFind\Db\Row\User $user Logged in user object
      *
      * @return bool
      */

@@ -59,7 +59,7 @@ class Resource extends Gateway
      * resource being created (optional -- improves efficiency if provided, but will
      * be auto-loaded as needed if left null).
      *
-     * @return Zend_Db_Table_Row|null Matching row if found or created, null
+     * @return \VuFind\Db\Row\Resource|null Matching row if found or created, null
      * otherwise.
      */
     public function findResource($id, $source = 'VuFind', $create = true,
@@ -97,7 +97,7 @@ class Resource extends Gateway
      * @param array  $ids    Array of IDs
      * @param string $source Source of records to look up
      *
-     * @return Zend_Db_Table_Rowset
+     * @return \Zend\Db\ResultSet\AbstractResultSet
      */
     public function findResources($ids, $source = 'VuFind')
     {
@@ -119,7 +119,7 @@ class Resource extends Gateway
      * @param int    $offset Offset for results
      * @param int    $limit  Limit for results (null for none)
      *
-     * @return Zend_Db_Table_Rowset
+     * @return \Zend\Db\ResultSet\AbstractResultSet
      */
     public function getFavorites($userId, $listId = null, $tags = array(),
         $sort = null, $offset = 0, $limit = null
@@ -180,7 +180,7 @@ class Resource extends Gateway
      * Get a set of records that do not have metadata stored in the resource
      * table.
      *
-     * @return Zend_Db_Table_Rowset
+     * @return \Zend\Db\ResultSet\AbstractResultSet
      */
     public function findMissingMetadata()
     {

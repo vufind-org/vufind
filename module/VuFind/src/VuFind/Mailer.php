@@ -156,12 +156,15 @@ class Mailer
     /**
      * Send an email message representing a link.
      *
-     * @param string    $to      Recipient email address
-     * @param string    $from    Sender email address
-     * @param string    $msg     User notes to include in message
-     * @param string    $url     URL to share
-     * @param Zend_View $view    View object (used to render email templates)
-     * @param string    $subject Subject for email (optional)
+     * @param string                                $to      Recipient email address
+     * @param string                                $from    Sender email address
+     * @param string                                $msg     User notes to include in
+     * message
+     * @param string                                $url     URL to share
+     * @param \Zend\View\Renderer\RendererInterface $view    View object (used to
+     * render email templates)
+     * @param string                                $subject Subject for email
+     * (optional)
      *
      * @throws MailException
      * @return void
@@ -184,13 +187,13 @@ class Mailer
     /**
      * Send an email message representing a record.
      *
-     * @param string                            $to     Recipient email address
-     * @param string                            $from   Sender email address
-     * @param string                            $msg    User notes to include in
+     * @param string                                $to     Recipient email address
+     * @param string                                $from   Sender email address
+     * @param string                                $msg    User notes to include in
      * message
-     * @param \VuFind\RecordDriver\AbstractBase $record Record being emailed
-     * @param Zend_View                         $view   View object (used to render
-     * email templates)
+     * @param \VuFind\RecordDriver\AbstractBase     $record Record being emailed
+     * @param \Zend\View\Renderer\RendererInterface $view   View object (used to
+     * render email templates)
      *
      * @throws MailException
      * @return void

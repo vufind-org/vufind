@@ -55,7 +55,7 @@ class ChangeTracker extends Gateway
      * @param string $core The Solr core holding the record.
      * @param string $id   The ID of the record being indexed.
      *
-     * @return Zend_Db_Table_Row_Abstract|null
+     * @return \VuFind\Db\Row\ChangeTracker|null
      */
     public function retrieve($core, $id)
     {
@@ -69,7 +69,7 @@ class ChangeTracker extends Gateway
      * @param string $from  The beginning date of the range to search.
      * @param string $until The end date of the range to search.
      *
-     * @return Zend_Db_Table_Rowset
+     * @return \Zend\Db\ResultSet\AbstractResultSet
      */
     public function retrieveDeleted($core, $from, $until)
     {
@@ -90,7 +90,7 @@ class ChangeTracker extends Gateway
      * @param string $core The Solr core holding the record.
      * @param string $id   The ID of the record being indexed.
      *
-     * @return Zend_Db_Table_Row_Abstract
+     * @return \VuFind\Db\Row\ChangeTracker
      */
     public function retrieveOrCreate($core, $id)
     {
@@ -112,7 +112,7 @@ class ChangeTracker extends Gateway
      * @param string $core The Solr core holding the record.
      * @param string $id   The ID of the record being indexed.
      *
-     * @return Zend_Db_Table_Row_Abstract
+     * @return \VuFind\Db\Row\ChangeTracker
      */
     public function markDeleted($core, $id)
     {
@@ -142,7 +142,7 @@ class ChangeTracker extends Gateway
      * @param string $id     The ID of the record being indexed.
      * @param int    $change The timestamp of the last record change.
      *
-     * @return Zend_Db_Table_Row_Abstract
+     * @return \VuFind\Db\Row\ChangeTracker
      */
     public function index($core, $id, $change)
     {

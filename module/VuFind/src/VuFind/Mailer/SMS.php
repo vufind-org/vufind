@@ -127,11 +127,11 @@ class SMS extends Mailer
     /**
      * Send a text message representing a record.
      *
-     * @param string                            $provider The provider ID to send to
-     * @param string                            $to       Recipient phone number
-     * @param \VuFind\RecordDriver\AbstractBase $record   Record being emailed
-     * @param Zend_View                         $view     View object (used to render
-     * email templates)
+     * @param string                                $provider Target SMS provider
+     * @param string                                $to       Recipient phone number
+     * @param \VuFind\RecordDriver\AbstractBase     $record   Record being emailed
+     * @param \Zend\View\Renderer\RendererInterface $view     View object (used to
+     * render email templates)
      *
      * @throws MailException
      * @return void

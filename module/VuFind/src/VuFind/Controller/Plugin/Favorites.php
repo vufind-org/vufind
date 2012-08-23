@@ -45,13 +45,13 @@ class Favorites extends AbstractPlugin
     /**
      * Save a group of records to the user's favorites.
      *
-     * @param array             $params Array with some or all of these keys:
+     * @param array               $params Array with some or all of these keys:
      *  <ul>
      *    <li>ids - Array of IDs in source|id format</li>
      *    <li>mytags - Unparsed tag string to associate with record (optional)</li>
      *    <li>list - ID of list to save record into (omit to create new list)</li>
      *  </ul>
-     * @param Zend_Db_Table_Row $user   The user saving the record
+     * @param \VuFind\Db\Row\User $user   The user saving the record
      *
      * @return void
      */
@@ -93,10 +93,10 @@ class Favorites extends AbstractPlugin
     /**
      * Delete a group of favorites.
      *
-     * @param array                      $ids    Array of IDs in source|id format.
-     * @param mixed                      $listID ID of list to delete from (null for
-     * all lists)
-     * @param Zend_Db_Table_Row_Abstract $user   Logged in user
+     * @param array               $ids    Array of IDs in source|id format.
+     * @param mixed               $listID ID of list to delete from (null for all
+     * lists)
+     * @param \VuFind\Db\Row\User $user   Logged in user
      *
      * @return void
      */

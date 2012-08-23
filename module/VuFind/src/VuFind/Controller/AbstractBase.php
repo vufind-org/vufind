@@ -100,7 +100,7 @@ class AbstractBase extends AbstractActionController
     /**
      * Get the view renderer
      *
-     * @return object
+     * @return \Zend\View\Renderer\RendererInterface
      */
     protected function getViewRenderer()
     {

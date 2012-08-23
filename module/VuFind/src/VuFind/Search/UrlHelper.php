@@ -321,8 +321,8 @@ class UrlHelper
      * Return HTTP parameters to render the current page with a different view
      * parameter.
      *
-     * Note: This is called setViewParam rather than setView to avoid a conflict
-     * with the Zend_View_Helper_Abstract interface.
+     * Note: This is called setViewParam rather than setView to avoid confusion
+     * with the \Zend\View\Helper\AbstractHelper interface.
      *
      * @param string $v      New sort parameter (null for NO view parameter)
      * @param bool   $escape Should we escape the string for use in the view?

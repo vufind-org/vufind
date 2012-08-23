@@ -258,7 +258,7 @@ class SRU
     /**
      * Check for HTTP errors in a response.
      *
-     * @param Zend_Http_Response $result The response to check.
+     * @param \Zend\Http\Response $result The response to check.
      *
      * @throws \Exception
      * @return void

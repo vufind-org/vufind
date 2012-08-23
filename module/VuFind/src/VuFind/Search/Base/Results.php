@@ -314,7 +314,7 @@ abstract class Results
      * Given a database row corresponding to the current search object,
      * mark whether this search is saved and what its database ID is.
      *
-     * @param Zend_Db_Table_Row $row Relevant database row.
+     * @param \VuFind\Db\Row\Search $row Relevant database row.
      *
      * @return void
      */

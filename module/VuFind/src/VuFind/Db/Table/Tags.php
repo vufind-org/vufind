@@ -53,7 +53,7 @@ class Tags extends Gateway
      * @param string $tag    Tag to look up.
      * @param bool   $create Should we create the row if it does not exist?
      *
-     * @return Zend_Db_Table_Row|null Matching row if found or created, null
+     * @return \VuFind\Db\Row\Tags|null Matching row if found or created, null
      * otherwise.
      */
     public function getByText($tag, $create = true)
@@ -72,7 +72,7 @@ class Tags extends Gateway
      *
      * @param string $text Tag to look up.
      *
-     * @return array of Zend_Db_Table_Row
+     * @return array Array of \VuFind\Db\Row\Tags objects
      */
     public function matchText($text)
     {

@@ -111,7 +111,7 @@ class User extends RowGateway
      * filter).
      * @param string $source     Filter for tags tied to a specific record source.
      *
-     * @return Zend_Db_Table_Rowset
+     * @return \Zend\Db\ResultSet\AbstractResultSet
      */
     public function getTags($resourceId = null, $listId = null, $source = 'VuFind')
     {
@@ -194,7 +194,7 @@ class User extends RowGateway
     /**
      * Get all of the lists associated with this user.
      *
-     * @return Zend_Db_Table_Rowset
+     * @return \Zend\Db\ResultSet\AbstractResultSet
      */
     public function getLists()
     {

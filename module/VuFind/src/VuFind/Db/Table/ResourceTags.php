@@ -135,7 +135,7 @@ class ResourceTags extends Gateway
      * @param string $userId ID of user owning favorite list
      * @param string $listId ID of list to retrieve (null for all favorites)
      *
-     * @return Zend_Db_Table_Rowset
+     * @return \Zend\Db\ResultSet\AbstractResultSet
      */
     public function getResourcesForTag($tag, $userId, $listId = null)
     {

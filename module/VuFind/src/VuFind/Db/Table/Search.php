@@ -107,7 +107,7 @@ class Search extends Gateway
      * missing?
      *
      * @throws \Exception
-     * @return Zend_Db_Table_Row
+     * @return \VuFind\Db\Row\Search
      */
     public function getRowById($id, $exceptionIfMissing = true)
     {

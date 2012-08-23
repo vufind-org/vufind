@@ -92,7 +92,7 @@ class ResultFeed extends AbstractHelper
      * @param string                      $currentPath Base path to display in feed
      * (leave null to load dynamically using currentpath view helper)
      *
-     * @return Zend_Feed_Writer_Feed
+     * @return Feed
      */
     public function __invoke($results, $currentPath = null)
     {
@@ -133,7 +133,7 @@ class ResultFeed extends AbstractHelper
     /**
      * Support method to turn a record driver object into an RSS entry.
      *
-     * @param Zend_Feed_Writer_Feed              $feed   Feed to update
+     * @param Feed                               $feed   Feed to update
      * @param \VuFind\RecordDriver\AbstractBase  $record Record to add to feed
      *
      * @return void

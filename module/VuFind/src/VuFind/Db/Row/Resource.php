@@ -57,8 +57,8 @@ class Resource extends RowGateway
     /**
      * Remove tags from the current resource.
      *
-     * @param Zend_Db_Table_Row $user    The user deleting the tags.
-     * @param string            $list_id The list associated with the tags
+     * @param \VuFind\Db\Row\User $user    The user deleting the tags.
+     * @param string              $list_id The list associated with the tags
      * (optional -- omitting this will delete ALL of the user's tags).
      *
      * @return void
@@ -72,9 +72,10 @@ class Resource extends RowGateway
     /**
      * Add a tag to the current resource.
      *
-     * @param string            $tagText The tag to save.
-     * @param Zend_Db_Table_Row $user    The user posting the tag.
-     * @param string            $list_id The list associated with the tag (optional).
+     * @param string              $tagText The tag to save.
+     * @param \VuFind\Db\Row\User $user    The user posting the tag.
+     * @param string              $list_id The list associated with the tag
+     * (optional).
      *
      * @return void
      */
@@ -95,11 +96,11 @@ class Resource extends RowGateway
     /**
      * Add a comment to the current resource.
      *
-     * @param string            $comment The comment to save.
-     * @param Zend_Db_Table_Row $user    The user posting the comment.
+     * @param string              $comment The comment to save.
+     * @param \VuFind\Db\Row\User $user    The user posting the comment.
      *
      * @throws LoginRequiredException
-     * @return int                       ID of newly-created comment.
+     * @return int                         ID of newly-created comment.
      */
     public function addComment($comment, $user)
     {

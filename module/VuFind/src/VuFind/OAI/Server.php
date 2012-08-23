@@ -532,7 +532,7 @@ class Server
      * @param int $from  Start date.
      * @param int $until End date.
      *
-     * @return Zend_Db_Table_Rowset
+     * @return \Zend\Db\ResultSet\AbstractResultSet
      */
     protected function listRecordsGetDeleted($from, $until)
     {

@@ -203,7 +203,7 @@ class Record
             }
         }
 
-        // Check for missing records and fill gaps with VF_RecordDriver_Missing
+        // Check for missing records and fill gaps with \VuFind\RecordDriver\Missing
         // objects:
         foreach ($ids as $i => $details) {
             if (!isset($retVal[$i]) || !is_object($retVal[$i])) {
