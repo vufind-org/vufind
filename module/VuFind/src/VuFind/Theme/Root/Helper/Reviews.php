@@ -27,7 +27,8 @@
  */
 namespace VuFind\Theme\Root\Helper;
 use VuFind\Config\Reader as ConfigReader, VuFind\Code\ISBN,
-    VuFind\Http\Client as HttpClient, Zend\View\Helper\AbstractHelper;
+    VuFind\Http\Client as HttpClient, Zend\View\Helper\AbstractHelper,
+    ZendService\Amazon\Amazon;
 
 /**
  * Reviews view helper
@@ -115,9 +116,7 @@ class Reviews extends AbstractHelper
      */
     protected function loadAmazon($id)
     {
-        // TODO: rewrite this to use Zend_Service_Amazon once the library is updated
-        // to support later Amazon API versions (since this relies on 2010-10-10, we
-        // can't currently use the library).
+        // TODO: rewrite this to use ZendService\Amazon.
 
         // Collect all the parameters:
         $endpoint = 'webservices.amazon.com';
@@ -211,11 +210,8 @@ class Reviews extends AbstractHelper
      */
     protected function loadAmazoneditorial($id)
     {
-        /* TODO
         try {
-            $amazon = new Zend_Service_Amazon(
-                $id, 'US', $this->config->Content->amazonsecret
-            );
+            $amazon = new Amazon($id, 'US', $this->config->Content->amazonsecret);
             $params = array(
                 'ResponseGroup' => 'EditorialReview',
                 'AssociateTag' => isset($this->config->Content->amazonassociate)
@@ -245,7 +241,6 @@ class Reviews extends AbstractHelper
             }
             return $result;
         }
-         */
     }
 
     /**

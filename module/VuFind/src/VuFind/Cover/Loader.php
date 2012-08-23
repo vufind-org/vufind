@@ -28,7 +28,8 @@
  */
 namespace VuFind\Cover;
 use VuFind\Code\ISBN, VuFind\Http\Client as HttpClient,
-    VuFind\Log\Logger, VuFind\Theme\Tools as ThemeTools;
+    VuFind\Log\Logger, VuFind\Theme\Tools as ThemeTools,
+    ZendService\Amazon\Amazon;
 
 /**
  * Book Cover Generator
@@ -553,18 +554,13 @@ class Loader
     protected function amazon($id)
     {
         try {
-            /* TODO
-            $amazon = new Zend_Service_Amazon(
-                $id, 'US', $this->config->Content->amazonsecret
-            );
+            $amazon = new Amazon($id, 'US', $this->config->Content->amazonsecret);
             $params = array(
                 'ResponseGroup' => 'Images',
                 'AssociateTag' => isset($this->config->Content->amazonassociate)
                     ? $this->config->Content->amazonassociate : null
             );
             $result = $amazon->itemLookup($this->isn, $params);
-             */
-            throw new \Exception('todo');
         } catch (\Exception $e) {
             // Something went wrong?  Just report failure:
             return false;

@@ -11,4 +11,6 @@ return array(
     'Structures' => $vendorDir,
     'Validate' => $vendorDir,
     'Zend' => $vendorDir . '/ZF2/library/',
+    'ZendRest' => $vendorDir . '/ZendRest/library/',
+    'ZendService' => $vendorDir . '/ZendService/library/',
 );
