@@ -44,8 +44,8 @@ class WorldCatSimilar extends Similar
      *
      * Establishes base settings for making recommendations.
      *
-     * @param string                           $settings Settings from config.ini
-     * @param VuFind\RecordDriver\AbstractBase $driver   Record driver object
+     * @param string                            $settings Settings from config.ini
+     * @param \VuFind\RecordDriver\AbstractBase $driver   Record driver object
      */
     public function __construct($settings, $driver)
     {

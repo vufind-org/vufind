@@ -52,8 +52,8 @@ class UserList extends Gateway
     /**
      * Create a new list object.
      *
-     * @param VuFind_Model_Db_UserListRow $user User object representing owner of
-     * new list
+     * @param \VuFind\Db\Row\UserList $user User object representing owner of new
+     * list
      *
      * @return \VuFind\Db\Row\UserList
      * @throws LoginRequiredException

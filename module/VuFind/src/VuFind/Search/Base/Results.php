@@ -150,7 +150,7 @@ abstract class Results
      *
      * @param string $id Unique identifier of record
      *
-     * @return VF_RecordDriver_Base
+     * @return \VuFind\RecordDriver\AbstractBase
      */
     public static function getRecord($id)
     {

@@ -60,7 +60,7 @@ class Results extends SolrResults
      * that \VuFind\Search\$index\Options and VuFind\Connection\$index are both
      * valid classes)
      *
-     * @return VuFind\Connection\Solr
+     * @return \VuFind\Connection\Solr
      */
     public static function getSolrConnection($shards = null, $index = 'SolrAuth')
     {
@@ -73,7 +73,7 @@ class Results extends SolrResults
      *
      * @param array $data Solr data
      *
-     * @return VF_RecordDriver_Base
+     * @return \VuFind\RecordDriver\AbstractBase
      */
     protected static function initRecordDriver($data)
     {

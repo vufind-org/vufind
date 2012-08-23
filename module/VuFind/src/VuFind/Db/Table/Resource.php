@@ -50,13 +50,14 @@ class Resource extends Gateway
     /**
      * Look up a row for the specified resource.
      *
-     * @param string               $id     Record ID to look up
-     * @param string               $source Source of record to look up
-     * @param bool                 $create If true, create the row if it does not
+     * @param string                            $id     Record ID to look up
+     * @param string                            $source Source of record to look up
+     * @param bool                              $create If true, create the row if it
+     * does not
      * yet exist.
-     * @param VF_RecordDriver_Base $driver A record driver for the resource being
-     * created (optional -- improves efficiency if provided, but will be auto-loaded
-     * as needed if left null).
+     * @param \VuFind\RecordDriver\AbstractBase $driver A record driver for the
+     * resource being created (optional -- improves efficiency if provided, but will
+     * be auto-loaded as needed if left null).
      *
      * @return Zend_Db_Table_Row|null Matching row if found or created, null
      * otherwise.

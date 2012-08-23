@@ -150,8 +150,8 @@ class Record
      * @param string $id     Record ID
      * @param string $source Record source
      *
-     * @throws Exception
-     * @return VF_RecordDriver_Base
+     * @throws \Exception
+     * @return \VuFind\RecordDriver\AbstractBase
      */
     public static function load($id, $source = 'VuFind')
     {

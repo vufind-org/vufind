@@ -118,10 +118,10 @@ class Holds extends AbstractPlugin
     /**
      * Process renewal requests.
      *
-     * @param VuFind\ILS\Connection $catalog ILS connection object
-     * @param array                 $patron  Current logged in patron
+     * @param \VuFind\ILS\Connection $catalog ILS connection object
+     * @param array                  $patron  Current logged in patron
      *
-     * @return array                           The result of the renewal, an
+     * @return array                          The result of the renewal, an
      * associative array keyed by item ID (empty if no renewals performed)
      */
     public function cancelHolds($catalog, $patron)

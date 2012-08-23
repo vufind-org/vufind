@@ -133,8 +133,8 @@ class ResultFeed extends AbstractHelper
     /**
      * Support method to turn a record driver object into an RSS entry.
      *
-     * @param Zend_Feed_Writer_Feed $feed   Feed to update
-     * @param VF_RecordDriver_Base  $record Record to add to feed
+     * @param Zend_Feed_Writer_Feed              $feed   Feed to update
+     * @param \VuFind\RecordDriver\AbstractBase  $record Record to add to feed
      *
      * @return void
      */
@@ -171,7 +171,7 @@ class ResultFeed extends AbstractHelper
     /**
      * Support method to extract modified date from a record driver object.
      *
-     * @param VF_RecordDriver_Base $record Record to pull date from.
+     * @param \VuFind\RecordDriver\AbstractBase $record Record to pull date from.
      *
      * @return int|DateTime|null
      */

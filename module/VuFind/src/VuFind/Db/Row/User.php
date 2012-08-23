@@ -257,14 +257,13 @@ class User extends RowGateway
     /**
      * Add/update a resource in the user's account.
      *
-     * @param VuFind_Model_Db_ResourceRow $resource        The resource to add/update
-     * @param VuFind_Model_Db_UserListRow $list            The list to store the
-     * resource in.
-     * @param array                       $tagArray        An array of tags to
-     * associate with the resource.
-     * @param string                      $notes           User notes about the
-     * resource.
-     * @param bool                        $replaceExisting Whether to replace all
+     * @param \VuFind\Db\Row\Resource $resource        The resource to add/update
+     * @param \VuFind\Db\Row\UserList $list            The list to store the resource
+     * in.
+     * @param array                   $tagArray        An array of tags to associate
+     * with the resource.
+     * @param string                  $notes           User notes about the resource.
+     * @param bool                    $replaceExisting Whether to replace all
      * existing tags (true) or append to the existing list (false).
      *
      * @return void

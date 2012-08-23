@@ -195,10 +195,9 @@ class Record extends AbstractHelper
     /**
      * Render an entry in a favorite list.
      *
-     * @param VuFind_Model_Db_UserListRow $list Currently selected list (null for
+     * @param \VuFind\Db\Row\UserList $list Currently selected list (null for
      * combined favorites)
-     * @param VuFind_Model_Db_UserRow     $user Current logged in user (false if
-     * none)
+     * @param \VuFind\Db\Row\User     $user Current logged in user (false if none)
      *
      * @return string
      */

@@ -69,8 +69,8 @@ class Results extends BaseResults
      *
      * @param string $id Unique identifier of record
      *
-     * @throws VF_Exception_RecordMissing
-     * @return VF_RecordDriver_Base
+     * @throws \Exception
+     * @return \VuFind\RecordDriver\AbstractBase
      */
     public static function getRecord($id)
     {
