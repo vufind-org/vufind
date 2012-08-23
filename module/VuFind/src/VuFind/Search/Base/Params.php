@@ -790,7 +790,7 @@ class Params
                 // Break apart the setting into module name and extra parameters:
                 $current = explode(':', $current);
                 $module = array_shift($current);
-                $class = 'VuFind\\Recommend\\' . $module;
+                $class = 'VuFind\Recommend\\' . $module;
                 $params = implode(':', $current);
 
                 // Build a recommendation module with the provided settings.

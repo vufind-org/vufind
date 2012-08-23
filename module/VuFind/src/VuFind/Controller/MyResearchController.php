@@ -598,12 +598,12 @@ class MyResearchController extends AbstractBase
             return $this->redirect()->toRoute('userList', array('id' => $finalId));
         } catch (\Exception $e) {
             switch(get_class($e)) {
-            case 'VuFind\\Exception\\ListPermission':
-            case 'VuFind\\Exception\\MissingField':
+            case 'VuFind\Exception\ListPermission':
+            case 'VuFind\Exception\MissingField':
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage($e->getMessage());
                 return false;
-            case 'VuFind\\Exception\\LoginRequired':
+            case 'VuFind\Exception\LoginRequired':
                 return $this->forceLogin();
             default:
                 throw $e;

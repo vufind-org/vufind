@@ -155,8 +155,8 @@ class Minified
         // Simple case -- this is a recently-built object which has a search class ID
         // populated:
         if (isset($this->cl)) {
-            $this->pc = 'VuFind\\Search\\' . $this->cl . '\\Params';
-            $this->rc = 'VuFind\\Search\\' . $this->cl . '\\Results';
+            $this->pc = 'VuFind\Search\\' . $this->cl . '\Params';
+            $this->rc = 'VuFind\Search\\' . $this->cl . '\Results';
             return;
         }
 
@@ -165,25 +165,25 @@ class Minified
         switch($this->ty) {
         case 'Summon':
         case 'SummonAdvanced':
-            $this->pc = 'VuFind\\Search\\Summon\\Params';
-            $this->rc = 'VuFind\\Search\\Summon\\Results';
+            $this->pc = 'VuFind\Search\Summon\Params';
+            $this->rc = 'VuFind\Search\Summon\Results';
             $fixType = true;
             break;
         case 'WorldCat':
         case 'WorldCatAdvanced':
-            $this->pc = 'VuFind\\Search\\WorldCat\\Params';
-            $this->rc = 'VuFind\\Search\\WorldCat\\Results';
+            $this->pc = 'VuFind\Search\WorldCat\Params';
+            $this->rc = 'VuFind\Search\WorldCat\Results';
             $fixType = true;
             break;
         case 'Authority':
         case 'AuthorityAdvanced':
-            $this->pc = 'VuFind\\Search\\SolrAuth\\Params';
-            $this->rc = 'VuFind\\Search\\SolrAuth\\Results';
+            $this->pc = 'VuFind\Search\SolrAuth\Params';
+            $this->rc = 'VuFind\Search\SolrAuth\Results';
             $fixType = true;
             break;
         default:
-            $this->pc = 'VuFind\\Search\\Solr\\Params';
-            $this->rc = 'VuFind\\Search\\Solr\\Results';
+            $this->pc = 'VuFind\Search\Solr\Params';
+            $this->rc = 'VuFind\Search\Solr\Results';
             $fixType = false;
             break;
         }

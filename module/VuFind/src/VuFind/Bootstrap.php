@@ -120,7 +120,7 @@ class Bootstrap
         if ($type == 'Mysql') {
             $type = 'Database';
         }
-        $class = 'VuFind\\Session\\' . $type;
+        $class = 'VuFind\Session\\' . $type;
         $sessionManager->setSaveHandler(new $class($this->config->Session));
 
         // Start up the session:

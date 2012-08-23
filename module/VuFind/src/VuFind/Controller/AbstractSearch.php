@@ -271,7 +271,7 @@ class AbstractSearch extends AbstractBase
      */
     protected function getParamsClass()
     {
-        return 'VuFind\\Search\\' . $this->searchClassId . '\\Params';
+        return 'VuFind\Search\\' . $this->searchClassId . '\Params';
     }
 
     /**
@@ -281,7 +281,7 @@ class AbstractSearch extends AbstractBase
      */
     protected function getResultsClass()
     {
-        return 'VuFind\\Search\\' . $this->searchClassId . '\\Results';
+        return 'VuFind\Search\\' . $this->searchClassId . '\Results';
     }
 
     /**

@@ -116,7 +116,7 @@ class Citation extends AbstractHelper
         // If this data comes from a MARC record, we can probably assume that
         // anything without a comma is a valid corporate author that should be
         // left alone...
-        if (is_a($this->driver, 'VuFind\\RecordDriver\\SolrMarc')) {
+        if (is_a($this->driver, 'VuFind\RecordDriver\SolrMarc')) {
             return $authors;
         }
 

@@ -501,9 +501,9 @@ class Server
         // we'll assume that this list is short enough to load in a single response;
         // it may be necessary to implement a resumption token mechanism if this
         // proves not to be the case:
-        $paramsClass = 'VuFind\\Search\\' . $this->searchClassId . '\\Params';
+        $paramsClass = 'VuFind\Search\\' . $this->searchClassId . '\Params';
         $params = new $paramsClass();
-        $resultsClass = 'VuFind\\Search\\' . $this->searchClassId . '\\Results';
+        $resultsClass = 'VuFind\Search\\' . $this->searchClassId . '\Results';
         $results = new $resultsClass($params);
         try {
             $facets = $results->getFullFieldFacets(array($this->setField));
@@ -557,7 +557,7 @@ class Server
         $set = ''
     ) {
         // Set up search parameters:
-        $paramsClass = 'VuFind\\Search\\' . $this->searchClassId . '\\Params';
+        $paramsClass = 'VuFind\Search\\' . $this->searchClassId . '\Params';
         $params = new $paramsClass();
         $params->setLimit($limit);
         $params->disableHighlighting();
@@ -578,7 +578,7 @@ class Server
         }
 
         // Perform a Solr search:
-        $resultsClass = 'VuFind\\Search\\' . $this->searchClassId . '\\Results';
+        $resultsClass = 'VuFind\Search\\' . $this->searchClassId . '\Results';
         $results = new $resultsClass($params);
         $results->overrideStartRecord($offset + 1);
 
@@ -681,7 +681,7 @@ class Server
         // Strip the ID prefix, if necessary:
         $id = $this->stripID($id);
         if ($id !== false) {
-            $resultsClass = 'VuFind\\Search\\' . $this->searchClassId . '\\Results';
+            $resultsClass = 'VuFind\Search\\' . $this->searchClassId . '\Results';
             try {
                 return $resultsClass::getRecord($id);
             } catch (RecordMissingException $e) {

@@ -88,7 +88,7 @@ class Manager
         }
 
         // Construct the object appropriately based on the $core setting:
-        $class = 'VuFind\\Connection\\' . $type;
+        $class = 'VuFind\Connection\\' . $type;
         if (empty($core)) {
             $index = new $class($url);
         } else {

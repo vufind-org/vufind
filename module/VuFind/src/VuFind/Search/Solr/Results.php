@@ -535,12 +535,12 @@ class Results extends BaseResults
         static $badClasses = array();
 
         // Determine driver path based on record type:
-        $driver = 'VuFind\\RecordDriver\\Solr' . ucwords($data['recordtype']);
+        $driver = 'VuFind\RecordDriver\Solr' . ucwords($data['recordtype']);
 
         // If we can't load the driver, fall back to the default, index-based one:
         if (isset($badClasses[$driver]) || !@class_exists($driver)) {
             $badClasses[$driver] = 1;
-            $driver = 'VuFind\\RecordDriver\\SolrDefault';
+            $driver = 'VuFind\RecordDriver\SolrDefault';
         }
 
         // Build the object:

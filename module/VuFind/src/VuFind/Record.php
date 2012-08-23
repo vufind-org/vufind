@@ -57,7 +57,7 @@ class Record
         }
 
         // Use the appropriate Search class to load the requested record:
-        $class = 'VuFind\\Search\\' . $source . '\\Results';
+        $class = 'VuFind\Search\\' . $source . '\Results';
 
         // Throw an error if we can't find a loader class:
         if (!class_exists($class)) {

@@ -57,7 +57,7 @@ class AbstractRecord extends AbstractBase
     public function __construct()
     {
         // Set up search class ID-related settings:
-        $this->searchObject = "VuFind\\Search\\{$this->searchClassId}\\Results";
+        $this->searchObject = 'VuFind\Search\\' . $this->searchClassId . '\Results";
     }
 
     /**

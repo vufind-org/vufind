@@ -50,7 +50,7 @@ class Options
         static $store = array();
 
         if (!isset($store[$type])) {
-            $class = 'VuFind\\Search\\' . $type . '\\Options';
+            $class = 'VuFind\Search\\' . $type . '\Options';
             $store[$type] = new $class();
         }
         return $store[$type];

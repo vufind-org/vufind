@@ -76,7 +76,7 @@ class Results extends BaseResults
     public static function getRecord($id)
     {
         throw new \Exception(
-            'getRecord not supported by VuFind\\Search\\MixedList\\Results'
+            'getRecord not supported by VuFind\Search\MixedList\Results'
         );
     }
 }

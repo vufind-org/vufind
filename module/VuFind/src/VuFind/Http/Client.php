@@ -98,7 +98,7 @@ class Client extends BaseClient
         // Proxy server settings
         if (isset($config->Proxy->host) && !$skipProxy) {
             $options = array(
-                'adapter' => 'Zend\\Http\\Client\\Adapter\\Proxy',
+                'adapter' => 'Zend\Http\Client\Adapter\Proxy',
                 'proxy_host' => $config->Proxy->host
             );
             if (isset($config->Proxy->port)) {
@@ -107,7 +107,7 @@ class Client extends BaseClient
             $this->setConfig($options);
         } else {
             // Default if no proxy settings found:
-            $this->setAdapter('Zend\\Http\\Client\\Adapter\\Socket');
+            $this->setAdapter('Zend\Http\Client\Adapter\Socket');
         }
     }
 }

@@ -66,7 +66,7 @@ class Factory
 
         // Try to load the appropriate class, if any:
         if (!empty($module)) {
-            $module = 'VuFind\\Autocomplete\\' . $module;
+            $module = 'VuFind\Autocomplete\\' . $module;
             if (class_exists($module)) {
                 $auto = new $module($params);
                 return $auto;

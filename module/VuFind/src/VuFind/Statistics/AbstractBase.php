@@ -94,7 +94,7 @@ abstract class AbstractBase
                 }
 
                 // If we got this far, we want the current option!  Build the driver:
-                $class = 'VuFind\\Statistics\\Driver\\' . ucwords($setting[0]);
+                $class = 'VuFind\Statistics\Driver\\' . ucwords($setting[0]);
 
                 // When we construct the driver, we pass the name of the data source;
                 // we use the special value "global" to represent global writer

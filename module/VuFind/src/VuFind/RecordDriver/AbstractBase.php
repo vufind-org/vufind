@@ -257,7 +257,7 @@ abstract class AbstractBase
             $parts = explode(':', $current);
             $type = $parts[0];
             $params = isset($parts[1]) ? $parts[1] : null;
-            $class = 'VuFind\\Related\\' . $type;
+            $class = 'VuFind\Related\\' . $type;
             if (@class_exists($class)) {
                 $retVal[] = new $class($params, $this);
             } else {

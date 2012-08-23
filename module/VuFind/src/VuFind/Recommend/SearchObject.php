@@ -78,13 +78,13 @@ abstract class SearchObject implements RecommendInterface
     {
         // Build a search parameters object:
         $id = $this->getSearchClassId();
-        $paramsClass = 'VuFind\\Search\\' . $id . '\\Params';
+        $paramsClass = 'VuFind\Search\\' . $id . '\Params';
         $params = new $paramsClass();
         $params->setLimit($this->limit);
         $params->setBasicSearch($request->get($this->requestParam));
 
         // Perform the search:
-        $resultsClass = 'VuFind\\Search\\' . $id . '\\Results';
+        $resultsClass = 'VuFind\Search\\' . $id . '\Results';
         $this->results = new $resultsClass($params);
         $this->results->performAndProcessSearch();
     }

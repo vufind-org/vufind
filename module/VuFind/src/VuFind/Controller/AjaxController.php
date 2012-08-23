@@ -60,7 +60,7 @@ class AjaxController extends AbstractBase
     public function __construct()
     {
         // Add notices to a key in the output
-        set_error_handler(array("VuFind\\Controller\\AjaxController", "storeError"));
+        set_error_handler(array('VuFind\Controller\AjaxController', "storeError"));
     }
 
     /**
@@ -106,7 +106,7 @@ class AjaxController extends AbstractBase
         // Process recommendations -- for now, we assume Solr-based search objects,
         // since deferred recommendations work best for modules that don't care about
         // the details of the search objects anyway:
-        $class = 'VuFind\\Recommend\\' . $this->params()->fromQuery('mod');
+        $class = 'VuFind\Recommend\\' . $this->params()->fromQuery('mod');
         $module = new $class($this->params()->fromQuery('params'));
         $params = new \VuFind\Search\Solr\Params();
         $module->init($params, $this->getRequest()->getQuery());
@@ -888,14 +888,14 @@ class AjaxController extends AbstractBase
             $id = $list->updateFromRequest($user, $this->getRequest()->getPost());
         } catch (\Exception $e) {
             switch(get_class($e)) {
-            case 'VuFind\\Exception\\LoginRequired':
+            case 'VuFind\Exception\LoginRequired':
                 return $this->output(
                     Translator::translate('You must be logged in first'),
                     self::STATUS_NEED_AUTH
                 );
                 break;
-            case 'VuFind\\Exception\\ListPermission':
-            case 'VuFind\\Exception\\MissingField':
+            case 'VuFind\Exception\ListPermission':
+            case 'VuFind\Exception\MissingField':
                 return $this->output(
                     Translator::translate($e->getMessage()), self::STATUS_ERROR
                 );

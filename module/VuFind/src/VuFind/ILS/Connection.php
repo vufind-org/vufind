@@ -72,7 +72,7 @@ class Connection
         if (!isset($config->Catalog->driver)) {
             throw new ILSException('ILS driver setting missing.');
         }
-        $class = 'VuFind\\ILS\\Driver\\' . $config->Catalog->driver;
+        $class = 'VuFind\ILS\Driver\\' . $config->Catalog->driver;
         if (!class_exists($class)) {
             // Don't throw ILSException here -- we don't want this to be
             // treated as a login problem; it's more serious than that!
@@ -88,7 +88,7 @@ class Connection
             try {
                 $this->getDriver();
             } catch (\Exception $e) {
-                $this->driverClass = 'VuFind\\ILS\\Driver\\NoILS';
+                $this->driverClass = 'VuFind\ILS\Driver\NoILS';
             }
         }
     }

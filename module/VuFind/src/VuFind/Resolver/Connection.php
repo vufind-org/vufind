@@ -90,7 +90,7 @@ class Connection
         if (strtolower($driver) == '360link') {
             $driver = 'threesixtylink';
         }
-        $class = 'VuFind\\Resolver\\Driver\\' . ucwords($driver);
+        $class = 'VuFind\Resolver\Driver\\' . ucwords($driver);
         if (class_exists($class)) {
             $this->driver = new $class();
             $this->status = true;
