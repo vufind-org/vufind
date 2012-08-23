@@ -46,7 +46,7 @@ class Memcache extends AbstractBase
     /**
      * Constructor.
      *
-     * @param Zend_Config $config Session configuration ([Session] section of
+     * @param \Zend\Config\Config $config Session configuration ([Session] section of
      * config.ini)
      */
     public function __construct($config)

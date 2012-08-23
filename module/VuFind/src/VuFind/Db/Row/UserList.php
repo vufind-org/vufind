@@ -88,9 +88,8 @@ class UserList extends RowGateway
      * Update and save the list object using a request object -- useful for
      * sharing form processing between multiple actions.
      *
-     * @param \VuFind\Db\Row\User|bool         $user    Logged-in user (false if
-     * none)
-     * @param Zend_Controller_Request_Abstract $request Request to process
+     * @param \VuFind\Db\Row\User|bool $user    Logged-in user (false if none)
+     * @param \Zend\Stdlib\Parameters  $request Request to process
      *
      * @return int ID of newly created row
      * @throws ListPermissionException
