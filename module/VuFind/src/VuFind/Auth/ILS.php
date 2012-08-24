@@ -42,6 +42,34 @@ use VuFind\Connection\Manager as ConnectionManager,
  */
 class ILS extends AbstractBase
 {
+    protected $catalog = null;
+
+    /**
+     * Get the ILS driver associated with this object (or load the default from
+     * the connection manager.
+     *
+     * @return \VuFind\ILS\Driver\DriverInterface
+     */
+    public function getCatalog()
+    {
+        if (null === $this->catalog) {
+            $this->catalog = ConnectionManager::connectToCatalog();
+        }
+        return $this->catalog;
+    }
+
+    /**
+     * Set the ILS driver associated with this object.
+     *
+     * @param \VuFind\ILS\Driver\DriverInterface $driver Driver to set
+     *
+     * @return void
+     */
+    public function setCatalog(\VuFind\ILS\Driver\DriverInterface $driver)
+    {
+        $this->catalog = $driver;
+    }
+
     /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
@@ -58,10 +86,10 @@ class ILS extends AbstractBase
         if ($username == '' || $password == '') {
             throw new AuthException('authentication_error_blank');
         }
+
         // Connect to catalog:
         try {
-            $catalog = ConnectionManager::connectToCatalog();
-            $patron = $catalog->patronLogin($username, $password);
+            $patron = $this->getCatalog()->patronLogin($username, $password);
         } catch (\Exception $e) {
             throw new AuthException('authentication_error_technical');
         }
@@ -101,15 +129,15 @@ class ILS extends AbstractBase
         $user->password = "";
 
         // Update user information based on ILS data:
-        $user->firstname = $info['firstname'] == null ? " " : $info['firstname'];
-        $user->lastname = $info['lastname'] == null ? " " : $info['lastname'];
-        $user->cat_username = $info['cat_username'] == null
+        $user->firstname = !isset($info['firstname']) ? " " : $info['firstname'];
+        $user->lastname = !isset($info['lastname']) ? " " : $info['lastname'];
+        $user->cat_username = !isset($info['cat_username'])
             ? " " : $info['cat_username'];
-        $user->cat_password = $info['cat_password'] == null
+        $user->cat_password = !isset($info['cat_password'])
             ? " " : $info['cat_password'];
-        $user->email = $info['email'] == null ? " " : $info['email'];
-        $user->major = $info['major'] == null ? " " : $info['major'];
-        $user->college = $info['college'] == null ? " " : $info['college'];
+        $user->email = !isset($info['email']) ? " " : $info['email'];
+        $user->major = !isset($info['major']) ? " " : $info['major'];
+        $user->college = !isset($info['college']) ? " " : $info['college'];
 
         // Update the user in the database, then return it to the caller:
         $user->save();
