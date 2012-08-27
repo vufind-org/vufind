@@ -292,7 +292,8 @@ class Loader
         );
 
         // Log error and bail out if file lacks a known image extension:
-        $fileExtension = strtolower(end(explode('.', $noCoverImage)));
+        $parts = explode('.', $noCoverImage);
+        $fileExtension = strtolower(end($parts));
         if (!array_key_exists($fileExtension, $allowedFileExtensions)) {
             Logger::getInstance()->debug(
                 "Illegal file-extension '$fileExtension' for image '$noCoverImage'"
