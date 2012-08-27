@@ -74,8 +74,7 @@ class Search extends AbstractBase
         foreach ($this->drivers as $driver) {
             $summary = $driver->getFullList('phrase');
             if (!empty($summary)) {
-                $summary = $summary->toArray();
-                $sources = $driver->getFullList('searchSource')->toArray();
+                $sources = $driver->getFullList('searchSource');
                 $hashes = array();
                 // Generate hashes (faster than grouping by looping)
                 for ($i=0;$i<count($summary);$i++) {

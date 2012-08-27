@@ -210,7 +210,7 @@ class AdminController extends AbstractBase
 
         // Initialize browser/version data in view based on what we found above:
         if ($matchFound) {
-            $view->browserStats = $browserStats->toArray();
+            $view->browserStats = $browserStats;
             $view->topVersions = $currentDriver->getBrowserStats(true, 5);
         } else {
             $view->browserStats = $view->topVersions = null;

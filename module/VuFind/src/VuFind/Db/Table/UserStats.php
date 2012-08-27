@@ -96,6 +96,6 @@ class UserStats extends Gateway
             $select->order('count DESC');
         };
         
-        return $this->select($callback);
+        return $this->select($callback)->toArray();
     }
 }

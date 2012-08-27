@@ -93,7 +93,7 @@ class Db extends AbstractBase
     public function getFullList($field, $value = array())
     {
         // Use the model
-        return $this->statsTable->getFields($field, $value);
+        return $this->statsTable->getFields($field, $value)->toArray();
     }
     
     /**

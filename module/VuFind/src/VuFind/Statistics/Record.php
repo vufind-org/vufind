@@ -72,8 +72,7 @@ class Record extends AbstractBase
         foreach ($this->drivers as $driver) {
             $summary = $driver->getFullList('recordId');
             if (!empty($summary)) {
-                $summary = $summary->toArray();
-                $sources = $driver->getFullList('recordSource')->toArray();
+                $sources = $driver->getFullList('recordSource');
                 $hashes = array();
                 // Generate hashes (faster than grouping by looping)
                 for ($i=0;$i<count($summary);$i++) {
