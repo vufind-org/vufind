@@ -29,7 +29,8 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Recommend;
-use VuFind\Search\SolrAuth\Params as SolrAuthParams,
+use VuFind\Exception\Solr as SolrException,
+    VuFind\Search\SolrAuth\Params as SolrAuthParams,
     VuFind\Search\SolrAuth\Results as SolrAuthResults,
     Zend\Http\Request, Zend\StdLib\Parameters;
 
@@ -128,17 +129,23 @@ class AuthorityRecommend implements RecommendInterface
             )
         );
 
-        // Initialise and process search:
-        $authParams = new SolrAuthParams();
-        $authParams->initFromRequest($request);
-        foreach ($this->filters as $filter) {
-            $authParams->addHiddenFilter($filter);
+        // Initialise and process search (ignore Solr errors -- no reason to fail
+        // just because search syntax is not compatible with Authority core):
+        try {
+            $authParams = new SolrAuthParams();
+            $authParams->initFromRequest($request);
+            foreach ($this->filters as $filter) {
+                $authParams->addHiddenFilter($filter);
+            }
+            $authResults = new SolrAuthResults($authParams);
+            $results = $authResults->getResults();
+        } catch (SolrException $e) {
+            return;
         }
-        $authResults = new SolrAuthResults($authParams);
 
         // loop through records and assign id and headings to separate arrays defined
         // above
-        foreach ($authResults->getResults() as $result) {
+        foreach ($results as $result) {
             // Extract relevant details:
             $recordArray = array(
                 'id' => $result->getUniqueID(),
