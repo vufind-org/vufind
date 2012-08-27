@@ -93,11 +93,9 @@ class Translator
         $pluginManager = $translator->getPluginManager();
         $pluginManager->setService('extendedini', new ExtendedIniLoader());
 
-        /* TODO -- uncomment this when Zend translator bug is fixed (RC5?):
         // Set up language caching for better performance:
         $translator
             ->setCache(CacheManager::getInstance()->getCache('language'));
-         */
 
         // Store the translator object in the VuFind Translator wrapper:
         self::setTranslator($translator);

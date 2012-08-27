@@ -55,7 +55,6 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
      * Constructor
      *
      * @param  null|string $table
-     * @param  null|string $schema
      */
     public function __construct($table = null)
     {
@@ -68,7 +67,6 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
      * Crete INTO clause
      *
      * @param  string $table
-     * @param  null|string $databaseOrSchema
      * @return Insert
      */
     public function into($table)
@@ -195,6 +193,8 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
             if ($value instanceof Expression) {
                 $exprData = $this->processExpression($value, $adapterPlatform);
                 $values[] = $exprData->getSql();
+            } elseif (is_null($value)) {
+                $values[] = 'NULL';
             } else {
                 $values[] = $adapterPlatform->quoteValue($value);
             }

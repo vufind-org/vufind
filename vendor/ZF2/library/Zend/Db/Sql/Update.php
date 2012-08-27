@@ -64,7 +64,6 @@ class Update extends AbstractSql implements SqlInterface, PreparableSqlInterface
      * Constructor
      *
      * @param  null|string $table
-     * @param  null|string $schema
      */
     public function __construct($table = null)
     {
@@ -78,7 +77,6 @@ class Update extends AbstractSql implements SqlInterface, PreparableSqlInterface
      * Specify table for statement
      *
      * @param  string $table
-     * @param  null|string $schema
      * @return Update
      */
     public function table($table)
@@ -133,15 +131,37 @@ class Update extends AbstractSql implements SqlInterface, PreparableSqlInterface
             $predicate($this->where);
         } else {
             if (is_string($predicate)) {
+                // String $predicate should be passed as an expression
                 $predicate = new Predicate\Expression($predicate);
                 $this->where->addPredicate($predicate, $combination);
             } elseif (is_array($predicate)) {
+
                 foreach ($predicate as $pkey => $pvalue) {
+                    // loop through predicates
+
                     if (is_string($pkey) && strpos($pkey, '?') !== false) {
+                        // First, process strings that the abstraction replacement character ?
+                        // as an Expression predicate
                         $predicate = new Predicate\Expression($pkey, $pvalue);
+
                     } elseif (is_string($pkey)) {
-                        $predicate = new Predicate\Operator($pkey, Predicate\Operator::OP_EQ, $pvalue);
+                        // Otherwise, if still a string, do something intelligent with the PHP type provided
+
+                        if (is_null($pvalue)) {
+                            // map PHP null to SQL IS NULL expression
+                            $predicate = new Predicate\IsNull($pkey, $pvalue);
+                        } elseif (is_array($pvalue)) {
+                            // if the value is an array, assume IN() is desired
+                            $predicate = new Predicate\In($pkey, $pvalue);
+                        } else {
+                            // otherwise assume that array('foo' => 'bar') means "foo" = 'bar'
+                            $predicate = new Predicate\Operator($pkey, Predicate\Operator::OP_EQ, $pvalue);
+                        }
+                    } elseif ($pvalue instanceof Predicate\PredicateInterface) {
+                        // Predicate type is ok
+                        $predicate = $pvalue;
                     } else {
+                        // must be an array of expressions (with int-indexed array)
                         $predicate = new Predicate\Expression($pvalue);
                     }
                     $this->where->addPredicate($predicate, $combination);
@@ -227,6 +247,8 @@ class Update extends AbstractSql implements SqlInterface, PreparableSqlInterface
                 if ($value instanceof Expression) {
                     $exprData = $this->processExpression($value, $adapterPlatform);
                     $setSql[] = $adapterPlatform->quoteIdentifier($column) . ' = ' . $exprData->getSql();
+                } elseif (is_null($value)) {
+                    $setSql[] = $adapterPlatform->quoteIdentifier($column) . ' = NULL';
                 } else {
                     $setSql[] = $adapterPlatform->quoteIdentifier($column) . ' = ' . $adapterPlatform->quoteValue($value);
                 }

@@ -224,11 +224,6 @@ class AbstractBase extends AbstractActionController
         $params['action'] = $action;
 
         // Dispatch the requested controller/action:
-        $this->forward()->dispatch($controller, $params);
-
-        // Always return false.  If we return the output of dispatch(), the
-        // framework will attach duplicate objects to the response and templates
-        // will get processed multiple times unnecessarily!
-        return false;
+        return $this->forward()->dispatch($controller, $params);
     }
 }
