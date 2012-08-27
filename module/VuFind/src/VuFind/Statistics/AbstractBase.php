@@ -26,7 +26,9 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Statistics;
-use VuFind\Config\Reader as ConfigReader;
+use VuFind\Config\Reader as ConfigReader,
+    Zend\ServiceManager\ServiceLocatorInterface,
+    Zend\ServiceManager\ServiceLocatorAwareInterface;
 
 /**
  * VuFind Search Controller
@@ -37,9 +39,10 @@ use VuFind\Config\Reader as ConfigReader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-abstract class AbstractBase
+abstract class AbstractBase implements ServiceLocatorAwareInterface
 {
     protected $drivers;
+    protected $serviceLocator;
 
     /**
      * Constructor
@@ -50,6 +53,15 @@ abstract class AbstractBase
         $source = explode('_', get_class($this));
         $source = end($source);
         $this->drivers = self::getDriversForSource($source);
+    }
+    
+    // Set it
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator) {
+        $this->serviceLocator = $serviceLocator;
+    }
+    // Get it
+    public function getServiceLocator() {
+        return $this->serviceLocator;
     }
 
     /**
@@ -144,19 +156,19 @@ abstract class AbstractBase
      */
     protected function getUserData($request)
     {
-        $agent = $request->getServer('HTTP_USER_AGENT');
+        $agent = $request->getServer()->get('HTTP_USER_AGENT');
         list($browser, $version) = explode(' ', static::getBrowser($agent));
         return array(
             'id'               => uniqid('', true),
             'datestamp'        => substr(date('c', strtotime('now')), 0, -6) . 'Z',
             'browser'          => $browser,
             'browserVersion'   => $version,
-            'ipaddress'        => $request->getServer('REMOTE_ADDR'),
-            'referrer'         => ($request->getServer('HTTP_REFERER') == null)
+            'ipaddress'        => $request->getServer()->get('REMOTE_ADDR'),
+            'referrer'         => ($request->getServer()->get('HTTP_REFERER') == null)
                 ? 'Manual'
-                : $request->getServer('HTTP_REFERER'),
-            'url'              => $request->getServer('REQUEST_URI'),
-            'session'          => Zend_Session::getId()
+                : $request->getServer()->get('HTTP_REFERER'),
+            'url'              => $request->getServer()->get('REQUEST_URI'),
+            'session'          => $this->getServiceLocator()->get('SessionManager')->getId()
         );
     }
 

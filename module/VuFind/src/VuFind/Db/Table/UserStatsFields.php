@@ -57,7 +57,6 @@ class UserStatsFields extends Gateway
      */
     public function save($stats, $userData)
     {
-        /* TODO
         // Statistics data
         foreach ($stats as $field=>$value) {
             if (gettype($value) == "boolean") {
@@ -72,9 +71,8 @@ class UserStatsFields extends Gateway
             );
         }
         // User data
-        $userStats = new VuFind_Model_Db_UserStats();
+        $userStats = new \VuFind\Db\Table\UserStats();
         $userStats->insert($userData);
-         */
     }
 
     /**

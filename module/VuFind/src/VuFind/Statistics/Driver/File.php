@@ -54,7 +54,8 @@ class File extends AbstractBase
         $configs = ConfigReader::getConfig();
         $this->folder = $configs->Statistics->file;
         // Use class name as file name
-        $this->file = strToLower($source);
+        $parts = explode('\\',$source);
+        $this->file = strToLower(end($parts));
     }
 
     /**

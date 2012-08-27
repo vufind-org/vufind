@@ -216,13 +216,12 @@ class AbstractSearch extends AbstractBase
                 throw $e;
             }
         }
-        /* TODO
         // Save statistics:
         if ($this->logStatistics) {
-            $statController = new VF_Statistics_Search();
+            $statController = new \VuFind\Statistics\Search();
+            $statController->setServiceLocator($this->getServiceLocator());
             $statController->log($results, $this->getRequest());
         }
-         */
 
         // Special case: If we're in RSS view, we need to render differently:
         if ($view->results->getView() == 'rss') {

@@ -190,15 +190,14 @@ class AbstractRecord extends AbstractBase
             $this->defaultTab = $keys[0];
         }
 
-        /* TODO
         // Save statistics:
         if ($this->logStatistics) {
-            $statController = new VF_Statistics_Record();
-            $statController->log($this->view->driver, $this->_request);
+            $statController = new \VuFind\Statistics\Record();
+            $statController->setServiceLocator($this->getServiceLocator());
+            $statController->log($driver, $this->getRequest());
         }
-         */
 
-         return $this->showTab($this->params()->fromRoute('tab', $this->defaultTab));
+        return $this->showTab($this->params()->fromRoute('tab', $this->defaultTab));
     }
 
     /**
