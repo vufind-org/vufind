@@ -106,7 +106,7 @@ class UserStatsFields extends Gateway
                     array($fields[$i] => 'field'.$i.'.value')
                 );
             }
-             foreach ($values as $key=>$value) {
+            foreach ($values as $key=>$value) {
                 $select->where->equalTo($key, $value);
             }
         };
