@@ -27,6 +27,8 @@
  */
 namespace VuFind\Db\Table;
 
+use Zend\Db\Sql\Expression;
+
 /**
  * Table Definition for statistics
  *
@@ -85,35 +87,31 @@ class UserStatsFields extends Gateway
      */
     public function getFields($fields, $values = array())
     {
-        /* TODO
         if (empty($fields)) {
             return null;
         }
         if (!is_array($fields)) {
             $fields = array($fields);
         }
-        // Build select
-        $select = $this->select()
-            ->setIntegrityCheck(false);
-        $select->from(
-            $this->_name,
-            array($fields[0] => 'value')
-        );
-        $select->where($this->_name.'.field = ?', $fields[0]);
-        for ($i=1;$i<count($fields);$i++) {
-            $select->where('field'.$i.'.field = ?', $fields[$i]);
-            $select->join(
-                array('field'.$i => $this->_name),
-                $this->_name.'.id=field'.$i.'.id',
-                array($fields[$i] => 'field'.$i.'.value')
+        $callback = function($select) use ($fields, $values) {
+            $select->columns(
+                array($fields[0] => 'value')
             );
-        }
-        foreach ($values as $key=>$value) {
-            $select->where($this->_name.'.'.$key.' = ?', $value);
-        }
-        $stmt = $select->query();
-        return $stmt->fetchAll();
-         */
+            $select->where->equalTo('field', $fields[0]);
+            for ($i=1;$i<count($fields);$i++) {
+                $select->where->equalTo('field'.$i.'.field', $fields[$i]);
+                $select->join(
+                    array('field'.$i => 'user_stats_fields'),
+                    'user_stats_fields.id=field'.$i.'.id',
+                    array($fields[$i] => 'field'.$i.'.value')
+                );
+            }
+             foreach ($values as $key=>$value) {
+                $select->where->equalTo($key, $value);
+            }
+        };
+        
+        return $this->select($callback);
     }
 
     /**
@@ -126,22 +124,24 @@ class UserStatsFields extends Gateway
      */
     public function getCount($field, $value = null)
     {
-        /* TODO
-        $select = $this->select();
-        $select->from(
-            array($this->_name),
-            array(
-                'count' => 'COUNT(value)'
-            )
-        );
-        $select->where('field = ?', $field);
-        if ($value != null) {
-            $select->where('value = ?', $value);
-        }
-        $stmt = $select->query();
-        $result = $stmt->fetch();
-        return $result['count'];
-         */
+        // TODO
+        $callback = function($select) use ($field, $value) {
+            $select->columns(
+                array(
+                    'count' => new Expression(
+                        'COUNT(?)',
+                        array('value'),
+                        array(Expression::TYPE_IDENTIFIER)
+                    )
+                )
+            );
+            $select->where->equalTo('field', $field);
+            if ($value != null) {
+                $select->where->equalTo('value', $value);
+            }
+        };
+        
+        return $this->select($callback)->current()->count;
     }
 
     /**
@@ -154,21 +154,24 @@ class UserStatsFields extends Gateway
      */
     public function getTop($field, $number)
     {
-        /* TODO
-        $select = $this->select();
-        $select->from(
-            array($this->_name),
-            array(
-                'value',
-                'count' => 'COUNT(value)'
-            )
-        );
-        $select->limit($number);
-        $select->group('value');
-        $select->order('count DESC');
-        $select->where('field = ?', $field);
-        $stmt = $select->query();
-        $result = $stmt->fetchAll();
+        // TODO
+        $callback = function($select) use ($field, $number) {
+            $select->columns(
+                array(
+                    'value',
+                    'count' => new Expression(
+                        'COUNT(?)',
+                        array('value'),
+                        array(Expression::TYPE_IDENTIFIER)
+                    )
+                )
+            );
+            $select->limit($number);
+            $select->group('value');
+            $select->order('count DESC');
+            $select->where->equalTo('field', $field);
+        };
+        $result = $this->select($callback);
         $top = array();
         $emptyIndex = -1;
         foreach ($result as $row) {
@@ -187,6 +190,5 @@ class UserStatsFields extends Gateway
             );
         }
         return $top;
-         */
     }
 }

@@ -27,6 +27,8 @@
  */
 namespace VuFind\Db\Table;
 
+use Zend\Db\Sql\Expression;
+
 /**
  * Table Definition for user statistics
  *
@@ -57,32 +59,43 @@ class UserStats extends Gateway
      */
     public function getBrowserStats($withVersions = false, $limit = 5)
     {
-        /* TODO
-        $select = $this->select();
-        if ($withVersions) {
-            $select->from(
-                array($this->_name),
-                array(
-                    'browserName' => 'CONCAT_WS(" ",browser,browserVersion)',
-                    'count' => 'COUNT(DISTINCT session)'
-                )
-            );
-            $select->group('browserName');
-        } else {
-            $select->from(
-                array($this->_name),
-                array(
-                    'browserName' => 'browser',
-                    'count' => 'COUNT(DISTINCT session)'
-                )
-            );
-            $select->group('browser');
-        }
-        $select->limit($limit);
-        $select->order('count DESC');
-        $stmt = $select->query();
-        $result = $stmt->fetchAll();
-        return $result;
-         */
+        $callback = function($select) use ($withVersions, $limit) {
+            if ($withVersions) {
+                $select->columns(
+                    array(
+                        'browserName' => new Expression(
+                            'CONCAT_WS(" ",?,?)',
+                            array('browser', 'browserVersion'),
+                            array(
+                                Expression::TYPE_IDENTIFIER,
+                                Expression::TYPE_IDENTIFIER
+                            )
+                        ),
+                        'count' => new Expression(
+                            'COUNT(DISTINCT (?))',
+                            array('session'),
+                            array(Expression::TYPE_IDENTIFIER)
+                        )
+                    )
+                );
+                $select->group('browserName');
+            } else {
+                $select->columns(
+                    array(
+                        'browserName' => 'browser',
+                        'count' => new Expression(
+                            'COUNT(DISTINCT (?))',
+                            array('session'),
+                            array(Expression::TYPE_IDENTIFIER)
+                        )
+                    )
+                );
+                $select->group('browser');
+            }
+            $select->limit($limit);
+            $select->order('count DESC');
+        };
+        
+        return $this->select($callback);
     }
 }

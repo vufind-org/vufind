@@ -28,7 +28,8 @@
 namespace VuFind\Controller;
 use VuFind\Config\Reader as ConfigReader, VuFind\Db\Table\Search as SearchTable,
     VuFind\Exception\Forbidden as ForbiddenException,
-    VuFind\Http\Client as HttpClient, Zend\Mvc\MvcEvent;
+    VuFind\Http\Client as HttpClient, Zend\Mvc\MvcEvent,
+    VuFind\Statistics\AbstractBase as Statistics;
 
 /**
  * Class controls VuFind administration.
@@ -147,46 +148,47 @@ class AdminController extends AbstractBase
      */
     public function statisticsAction()
     {
-        /* TODO
+        $view = $this->createViewModel();
+        //todo
         $config = ConfigReader::getConfig();
         $statsFilled = array(
             'search' => false,
             'record' => false
         );
         // Search statistics
-        $search = new VF_Statistics_Search();
-        $this->view->searchesBySource
+        $search = new \VuFind\Statistics\Search();
+        $view->searchesBySource
             = $config->Statistics->searchesBySource
             ?: false;
         $searchSummary = $search->getStatsSummary(
             $config, 7, $config->Statistics->searchesBySource
         );
-        $this->view->topSearches = isset($searchSummary['top'])
+        $view->topSearches = isset($searchSummary['top'])
             ? $searchSummary['top'] : null;
-        $this->view->emptySearches = isset($searchSummary['empty'])
+        $view->emptySearches = isset($searchSummary['empty'])
             ? $searchSummary['empty'] : null;
-        $this->view->totalSearches = isset($searchSummary['total'])
+        $view->totalSearches = isset($searchSummary['total'])
             ? $searchSummary['total'] : null;
 
         // Record statistics
-        $records = new VF_Statistics_Record();
-        $this->view->recordsBySource = $config->Statistics->recordsBySource ?: false;
+        $records = new \VuFind\Statistics\Record();
+        $view->recordsBySource = $config->Statistics->recordsBySource ?: false;
         $recordSummary = $records->getStatsSummary(
             $config, 5, $config->Statistics->recordsBySource
         );
-        $this->view->topRecords = isset($recordSummary['top'])
+        $view->topRecords = isset($recordSummary['top'])
             ? $recordSummary['top'] : null;
-        $this->view->totalRecordViews = isset($recordSummary['total'])
+        $view->totalRecordViews = isset($recordSummary['total'])
             ? $recordSummary['total'] : null;
 
         // Browser statistics
-        $this->view->currentBrowser = VF_Statistics::getBrowser(
+        $view->currentBrowser = Statistics::getBrowser(
             $this->getRequest()->getServer('HTTP_USER_AGENT')
         );
 
         // Look for universal statistics recorder
         $matchFound = false;
-        foreach (VF_Statistics::getDriversForSource(null) as $currentDriver) {
+        foreach (Statistics::getDriversForSource(null) as $currentDriver) {
             $browserStats = $currentDriver->getBrowserStats(false, 5);
             if (!empty($browserStats)) {
                 $matchFound = true;
@@ -196,7 +198,7 @@ class AdminController extends AbstractBase
 
         // If no full coverage mode found, take the first valid source
         if (!$matchFound) {
-            $drivers = VF_Statistics::getDriversForSource(null, true);
+            $drivers = Statistics::getDriversForSource(null, true);
             foreach ($drivers as $currentDriver) {
                 $browserStats = $currentDriver->getBrowserStats(false, 5);
                 if (!empty($browserStats)) {
@@ -208,12 +210,13 @@ class AdminController extends AbstractBase
 
         // Initialize browser/version data in view based on what we found above:
         if ($matchFound) {
-            $this->view->browserStats = $browserStats;
-            $this->view->topVersions = $currentDriver->getBrowserStats(true, 5);
+            $view->browserStats = $browserStats->toArray();
+            $view->topVersions = $currentDriver->getBrowserStats(true, 5);
         } else {
-            $this->view->browserStats = $this->view->topVersions = null;
+            $view->browserStats = $view->topVersions = null;
         }
-         */
+        
+        return $view;
     }
 
     /**
