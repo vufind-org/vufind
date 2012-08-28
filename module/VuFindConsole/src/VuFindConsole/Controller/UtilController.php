@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-namespace VuFind\CLI\Controller;
+namespace VuFindConsole\Controller;
 use File_MARC, File_MARCXML, VuFind\Connection\Manager as ConnectionManager,
     VuFind\Db\Table\Search as SearchTable, VuFind\Sitemap, Zend\Console\Console;
 
@@ -240,7 +240,7 @@ class UtilController extends AbstractBase
         $query = $search->getExpiredQuery($daysOld);
         if (($count = count($search->select($query))) == 0) {
             Console::writeLine("No expired searches to delete.");
-            return $this->getFailureResponse();
+            return $this->getSuccessResponse();
         }
         $search->delete($query);
         Console::writeLine("{$count} expired searches deleted.");

@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-namespace VuFind\CLI\Controller;
+namespace VuFindConsole\Controller;
 use VuFind\Config\Reader as ConfigReader, VuFind\Harvester\NAF, VuFind\Harvester\OAI,
     Zend\Console\Console;
 

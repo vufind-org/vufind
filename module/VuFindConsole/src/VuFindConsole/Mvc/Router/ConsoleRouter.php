@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-namespace VuFind\Mvc\Router;
+namespace VuFindConsole\Mvc\Router;
 use Zend\Mvc\Router\Http\RouteMatch, Zend\Mvc\Router\RouteStackInterface,
     Zend\Stdlib\RequestInterface as Request;
 
