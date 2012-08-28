@@ -2,10 +2,10 @@
 // Convert Summon formats to EndNote formats:
 $formats = $this->driver->getFormats();
 foreach ($formats as $i => $format) {
-    $formats[$i] = \VuFind\Summon::getEndnoteFormat($format);
+    $formats[$i] = $this->summon()->getEndnoteFormat($format);
 }
 
 // Use the default template, but override the formats:
 $this->overrideFormats = $formats;
-echo $this->render('RecordDriver/Base/export-endnote.phtml');
+echo $this->render('RecordDriver/AbstractBase/export-endnote.phtml');
 ?>

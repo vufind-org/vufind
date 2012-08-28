@@ -2,10 +2,10 @@
 // Convert Summon formats to RefWorks formats:
 $formats = $this->driver->getFormats();
 foreach ($formats as $i => $format) {
-    $formats[$i] = \VuFind\Summon::getRefWorksFormat($format);
+    $formats[$i] = $this->summon()->getRefWorksFormat($format);
 }
 
 // Use the default template, but override the formats:
 $this->overrideFormats = $formats;
-echo $this->render('RecordDriver/Base/export-refworks.phtml');
+echo $this->render('RecordDriver/AbstractBase/export-refworks.phtml');
 ?>
