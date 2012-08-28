@@ -103,6 +103,7 @@ $config = array(
     'service_manager' => array(
         'invokables' => array(
             'authmanager' => 'VuFind\Auth\Manager',
+            'cart' => 'VuFind\Cart',
             'sessionmanager' => 'Zend\Session\SessionManager',
         )
     ),

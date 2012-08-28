@@ -42,7 +42,6 @@ use VuFind\Record;
  */
 class Cart
 {
-    protected static $singleton;
     protected $items;
     protected $maxSize = 100;
     protected $active = false;
@@ -52,9 +51,9 @@ class Cart
     const CART_COOKIE_DELIM = "\t";
 
     /**
-     * Protected constructor to ensure singleton pattern.
+     * Constructor
      */
-    protected function __construct()
+    public function __construct()
     {
         $config = ConfigReader::getConfig();
         if (isset($config->Site->showBookBag)) {
@@ -67,20 +66,6 @@ class Cart
 
         // Initialize contents
         $this->init();
-    }
-
-    /**
-     * Get the current instance of the user's cart, if
-     * it is not initialized, then one will be initialized.
-     *
-     * @return Cart_Model
-     */
-    static function getInstance()
-    {
-        if (!self::$singleton) {
-            self::$singleton = new Cart();
-        }
-        return self::$singleton;
     }
 
     /**

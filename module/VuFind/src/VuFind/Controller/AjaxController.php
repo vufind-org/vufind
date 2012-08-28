@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Controller;
-use VuFind\Cart, VuFind\Config\Reader as ConfigReader,
+use VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
     VuFind\Db\Table\Comments as CommentsTable,
     VuFind\Db\Table\Resource as ResourceTable, VuFind\Db\Table\Tags as TagsTable,
@@ -1168,14 +1168,14 @@ class AjaxController extends AbstractBase
     protected function removeItemsCart()
     {
         // Without IDs, we can't continue
-        $ids = $this->params()->fromQuery('ids');
+        $ids = $this->params()->fromPost('ids');
         if (empty($ids)) {
             return $this->output(
                 array('result'=>Translator::translate('bulk_error_missing')),
                 self::STATUS_ERROR
             );
         }
-        Cart::getInstance()->removeItems($ids);
+        $this->getServiceLocator()->get('Cart')->removeItems($ids);
         return $this->output(array('delete' => true), self::STATUS_OK);
     }
 
