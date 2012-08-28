@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Cart, VuFind\Exception\Mail as MailException, VuFind\Export,
+use VuFind\Exception\Mail as MailException, VuFind\Export,
     VuFind\Mailer, VuFind\Record, VuFind\Translator\Translator,
     Zend\Session\Container as SessionContainer;
 
@@ -51,6 +51,16 @@ class CartController extends AbstractBase
     {
         parent::__construct();
         $this->session = new SessionContainer('cart_followup');
+    }
+
+    /**
+     * Get the cart object.
+     *
+     * @return \VuFind\Cart
+     */
+    protected function getCart()
+    {
+        return $this->getServiceLocator()->get('Cart');
     }
 
     /**
@@ -92,18 +102,18 @@ class CartController extends AbstractBase
 
         // Add items if necessary:
         if (strlen($this->params()->fromPost('empty', '')) > 0) {
-            Cart::getInstance()->emptyCart();
+            $this->getCart()->emptyCart();
         } else if (strlen($this->params()->fromPost('delete', '')) > 0) {
             if (empty($ids)) {
                 return $this->redirectToSource('error', 'bulk_noitems_advice');
             } else {
-                Cart::getInstance()->removeItems($ids);
+                $this->getCart()->removeItems($ids);
             }
         } else if (strlen($this->params()->fromPost('add', '')) > 0) {
             if (empty($ids)) {
                 return $this->redirectToSource('error', 'bulk_noitems_advice');
             } else {
-                $addItems = Cart::getInstance()->addItems($ids);
+                $addItems = $this->getCart()->addItems($ids);
                 if (!$addItems['success']) {
                     $msg = Translator::translate('bookbag_full_msg') . ". "
                         . $addItems['notAdded'] . " "

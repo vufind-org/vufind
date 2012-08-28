@@ -25,7 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-namespace VuFind;
+namespace VuFind\Theme\Root\Helper;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * Summon support functions.
@@ -36,7 +37,7 @@ namespace VuFind;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Summon
+class Summon extends AbstractHelper
 {
     /**
      * Export support function to convert Summon format to EndNote format.
@@ -45,7 +46,7 @@ class Summon
      *
      * @return string
      */
-    public static function getEndnoteFormat($format)
+    public function getEndnoteFormat($format)
     {
         switch ($format) {
         case 'Journal Article':
@@ -70,7 +71,7 @@ class Summon
      *
      * @return string
      */
-    public static function getRefWorksFormat($format)
+    public function getRefWorksFormat($format)
     {
         switch ($format) {
         case 'Book Chapter':

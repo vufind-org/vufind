@@ -1,7 +1,7 @@
 <?php
 
-namespace VuFind\CLI;
-use VuFind\Mvc\Router\ConsoleRouter,
+namespace VuFindConsole;
+use VuFindConsole\Mvc\Router\ConsoleRouter,
     Zend\ModuleManager\ModuleManager, Zend\Mvc\MvcEvent;
 
 class Module
@@ -13,10 +13,13 @@ class Module
 
     public function getAutoloaderConfig()
     {
-        // No extra configuration necessary; since this module uses a subset of the
-        // VuFind namespace, its library code is in the main src area of the VuFind
-        // module.
-        return array();
+        return array(
+            'Zend\Loader\StandardAutoloader' => array(
+                'namespaces' => array(
+                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
+                ),
+            ),
+        );
     }
 
     public function init(ModuleManager $m)

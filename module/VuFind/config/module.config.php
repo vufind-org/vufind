@@ -100,6 +100,13 @@ $config = array(
             'result-scroller' => 'VuFind\Controller\Plugin\ResultScroller',
         )
     ),
+    'service_manager' => array(
+        'invokables' => array(
+            'authmanager' => 'VuFind\Auth\Manager',
+            'cart' => 'VuFind\Cart',
+            'sessionmanager' => 'Zend\Session\SessionManager',
+        )
+    ),
     'translator' => array(),
     'view_manager' => array(
         'display_not_found_reason' => APPLICATION_ENV == 'development',

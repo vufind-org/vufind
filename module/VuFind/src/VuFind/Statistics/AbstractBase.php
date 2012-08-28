@@ -55,12 +55,25 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
         $this->drivers = self::getDriversForSource($source);
     }
     
-    // Set it
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator) {
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return Manager
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
         $this->serviceLocator = $serviceLocator;
     }
-    // Get it
-    public function getServiceLocator() {
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
         return $this->serviceLocator;
     }
 
@@ -156,19 +169,21 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
      */
     protected function getUserData($request)
     {
-        $agent = $request->getServer()->get('HTTP_USER_AGENT');
+        $server = $request->getServer();
+        $agent = $server->get('HTTP_USER_AGENT');
         list($browser, $version) = explode(' ', static::getBrowser($agent));
         return array(
             'id'               => uniqid('', true),
             'datestamp'        => substr(date('c', strtotime('now')), 0, -6) . 'Z',
             'browser'          => $browser,
             'browserVersion'   => $version,
-            'ipaddress'        => $request->getServer()->get('REMOTE_ADDR'),
-            'referrer'         => ($request->getServer()->get('HTTP_REFERER') == null)
+            'ipaddress'        => $server->get('REMOTE_ADDR'),
+            'referrer'         => ($server->get('HTTP_REFERER') == null)
                 ? 'Manual'
-                : $request->getServer()->get('HTTP_REFERER'),
-            'url'              => $request->getServer()->get('REQUEST_URI'),
-            'session'          => $this->getServiceLocator()->get('SessionManager')->getId()
+                : $server->get('HTTP_REFERER'),
+            'url'              => $server->get('REQUEST_URI'),
+            'session'          =>
+                $this->getServiceLocator()->get('SessionManager')->getId()
         );
     }
 
