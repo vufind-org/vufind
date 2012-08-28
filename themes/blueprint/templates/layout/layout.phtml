@@ -22,7 +22,7 @@
         $this->headScript()->prependScript("path = '" . rtrim($this->url('home'), '/') . "';");
 
         // Deal with cart stuff:
-        $cart = \VuFind\Cart::getInstance();
+        $cart = $this->cart();
         if ($cart->isActive()) {
             $this->headScript()->appendFile("jquery.cookie.js");
             $this->headScript()->appendFile("cart.js");
