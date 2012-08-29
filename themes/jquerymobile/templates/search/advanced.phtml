@@ -17,15 +17,6 @@
 <div data-role="page" id="Search-home">
   <?=$this->mobileMenu()->header(array('hideSearchLink' => true))?>
   <div data-role="content">
-    <? if (\VuFind\Connection\Manager::connectToCatalog()->getOfflineMode() == "ils-offline"): ?>
-      <div class="sysInfo">
-        <h2><?=$this->transEsc('ils_offline_title')?></h2>
-        <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
-        <p><?=$this->transEsc('ils_offline_home_message')?></p>
-        <? $supportEmail = $this->escapeHtml($this->systemEmail()); ?>
-        <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
-      </div>
-    <? endif; ?>
     <!-- SEARCH BOXES -->
     <form method="get" action="<?=$this->url($basicSearch)?>" data-ajax="false">
       <fieldset class="ui-grid-a">
