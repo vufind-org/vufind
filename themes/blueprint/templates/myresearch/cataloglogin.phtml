@@ -8,7 +8,7 @@
         . $this->transEsc('Login') . '</em>';
 
     // Convenience variable:
-    $offlineMode = \VuFind\Connection\Manager::connectToCatalog()->getOfflineMode();
+    $offlineMode = $this->ils()->getOfflineMode();
 ?>
 <? if ($offlineMode == "ils-offline"): ?>
   <div class="sysInfo">

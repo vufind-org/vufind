@@ -3,7 +3,7 @@
     $user = $this->layout()->account->isLoggedIn();
     $holdings = $this->driver->getRealTimeHoldings($this->layout()->account);
     $openUrl = $this->driver->openURLActive('holdings') ? $this->driver->getOpenURL() : false;
-    $offlineMode = \VuFind\Connection\Manager::connectToCatalog()->getOfflineMode();
+    $offlineMode = $this->ils()->getOfflineMode();
     // Account for replace_other_urls setting
     $urls = ($openUrl && $this->driver->replaceURLsWithOpenURL()) ? array() : $this->record($this->driver)->getLinkDetails();
 

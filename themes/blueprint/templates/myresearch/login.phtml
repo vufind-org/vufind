@@ -15,7 +15,7 @@
     // Convenience variables:
     $account = $this->layout()->account;
     $hideLogin = !(is_object($account) && $account->loginEnabled());
-    $offlineMode = \VuFind\Connection\Manager::connectToCatalog()->getOfflineMode();
+    $offlineMode = $this->ils()->getOfflineMode();
 ?>
 
 <? if ($offlineMode == "ils-offline"): ?>
