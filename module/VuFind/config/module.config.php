@@ -107,6 +107,20 @@ $config = array(
             'sessionmanager' => 'Zend\Session\SessionManager',
         )
     ),
+    'session_handler_manager' => array(
+        'abstract_factories' => array('VuFind\Session\PluginFactory'),
+        'invokables' => array(
+            'database' => 'VuFind\Session\Database',
+            'file' => 'VuFind\Session\File',
+            'memcache' => 'VuFind\Session\Memcache',
+        ),
+        'aliases' => array(
+            // for legacy 1.x compatibility
+            'filesession' => 'File',
+            'memcachesession' => 'Memcache',
+            'mysqlsession' => 'Database',
+        ),
+    ),
     'translator' => array(),
     'view_manager' => array(
         'display_not_found_reason' => APPLICATION_ENV == 'development',

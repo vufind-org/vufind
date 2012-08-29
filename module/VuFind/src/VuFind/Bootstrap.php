@@ -84,25 +84,14 @@ class Bootstrap
      */
     protected function initPluginManagers()
     {
-        $serviceManager = $this->event->getApplication()->getServiceManager();
-        $config = new ServiceManagerConfig(
-            array(
-                'abstract_factories' => array('VuFind\Session\PluginFactory'),
-                'invokables' => array(
-                    'database' => 'VuFind\Session\Database',
-                    'file' => 'VuFind\Session\File',
-                    'memcache' => 'VuFind\Session\Memcache',
-                ),
-                'aliases' => array(
-                    // for legacy 1.x compatibility
-                    'filesession' => 'File',
-                    'memcachesession' => 'Memcache',
-                    'mysqlsession' => 'Database',
-                ),
-            )
-        );
+        $app = $this->event->getApplication();
+        $serviceManager = $app->getServiceManager();
+        $config = $app->getConfig();
+
         $serviceManager->setService(
-            'SessionHandlerManager', new \VuFind\Session\PluginManager($config)
+            'SessionHandlerManager', new \VuFind\Session\PluginManager(
+                new ServiceManagerConfig($config['session_handler_manager'])
+            )
         );
     }
 
