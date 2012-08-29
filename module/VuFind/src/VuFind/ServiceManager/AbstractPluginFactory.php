@@ -45,10 +45,10 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
     /**
      * Get the name of a class for a given plugin name.
      *
-     * @param string $name           Name of service
-     * @param string $requestedName  Unfiltered name of service
+     * @param string $name          Name of service
+     * @param string $requestedName Unfiltered name of service
      *
-     * @return string                Fully qualified class name
+     * @return string               Fully qualified class name
      */
     protected function getClassName($name, $requestedName)
     {
