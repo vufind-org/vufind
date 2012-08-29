@@ -31,7 +31,8 @@ use VuFind\Config\Reader as ConfigReader,
     VuFind\Theme\Initializer as ThemeInitializer,
     VuFind\Translator\Translator, Zend\Console\Console,
     Zend\Db\TableGateway\Feature\GlobalAdapterFeature as DbGlobalAdapter,
-    Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch;
+    Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch,
+    Zend\ServiceManager\Config as ServiceManagerConfig;
 
 /**
  * VuFind Bootstrapper
@@ -77,7 +78,36 @@ class Bootstrap
     }
 
     /**
-     * Set up the default database adapter.  Do this first since the session handler
+     * Set up plugin managers.
+     *
+     * @return void
+     */
+    protected function initPluginManagers()
+    {
+        $serviceManager = $this->event->getApplication()->getServiceManager();
+        $config = new ServiceManagerConfig(
+            array(
+                'abstract_factories' => array('VuFind\Session\PluginFactory'),
+                'invokables' => array(
+                    'database' => 'VuFind\Session\Database',
+                    'file' => 'VuFind\Session\File',
+                    'memcache' => 'VuFind\Session\Memcache',
+                ),
+                'aliases' => array(
+                    // for legacy 1.x compatibility
+                    'filesession' => 'File',
+                    'memcachesession' => 'Memcache',
+                    'mysqlsession' => 'Database',
+                ),
+            )
+        );
+        $serviceManager->setService(
+            'SessionHandlerManager', new \VuFind\Session\PluginManager($config)
+        );
+    }
+
+    /**
+     * Set up the default database adapter.  Do this early since the session handler
      * may depend on database access.
      *
      * @return void
@@ -105,21 +135,14 @@ class Bootstrap
             throw new \Exception('Cannot initialize session; configuration missing');
         }
 
-        // Register a session manager in the service manager:
+        // Set up the session handler by retrieving all the pieces from the service
+        // manager and injecting appropriate dependencies:
         $serviceManager = $this->event->getApplication()->getServiceManager();
         $sessionManager = $serviceManager->get('SessionManager');
-
-        // Set up session handler (after manipulating the type setting for legacy
-        // compatibility -- VuFind 1.x used MySQL instead of Database and had
-        // "Session" as part of the configuration string):
-        $type = ucwords(
-            str_replace('session', '', strtolower($this->config->Session->type))
-        );
-        if ($type == 'Mysql') {
-            $type = 'Database';
-        }
-        $class = 'VuFind\Session\\' . $type;
-        $sessionManager->setSaveHandler(new $class($this->config->Session));
+        $sessionHandlerManager = $serviceManager->get('SessionHandlerManager');
+        $sessionHandler = $sessionHandlerManager->get($this->config->Session->type);
+        $sessionHandler->setConfig($this->config->Session);
+        $sessionManager->setSaveHandler($sessionHandler);
 
         // Start up the session:
         $sessionManager->start();

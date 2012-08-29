@@ -41,32 +41,34 @@ namespace VuFind\Session;
  */
 class Memcache extends AbstractBase
 {
-    protected $connection;
+    protected $connection = false;
 
     /**
-     * Constructor.
+     * Get connection to Memcache
      *
-     * @param \Zend\Config\Config $config Session configuration ([Session] section of
-     * config.ini)
+     * @throws \Exception
+     * @return \Memcache
      */
-    public function __construct($config)
+    public function getConnection()
     {
-        // Set defaults if nothing set in config file.
-        $host = isset($config->memcache_host) ? $config->memcache_host : 'localhost';
-        $port = isset($config->memcache_port) ? $config->memcache_port : 11211;
-        $timeout = isset($config->memcache_connection_timeout)
-            ? $config->memcache_connection_timeout : 1;
+        if (!$this->connection) {
+            // Set defaults if nothing set in config file.
+            $host = isset($this->config->memcache_host)
+                ? $this->config->memcache_host : 'localhost';
+            $port = isset($this->config->memcache_port)
+                ? $this->config->memcache_port : 11211;
+            $timeout = isset($this->config->memcache_connection_timeout)
+                ? $this->config->memcache_connection_timeout : 1;
 
-        // Connect to Memcache:
-        $this->connection = new \Memcache();
-        if (!@$this->connection->connect($host, $port, $timeout)) {
-            throw new \Exception(
-                "Could not connect to Memcache (host = {$host}, port = {$port})."
-            );
+            // Connect to Memcache:
+            $this->connection = new \Memcache();
+            if (!$this->connection->connect($host, $port, $timeout)) {
+                throw new \Exception(
+                    "Could not connect to Memcache (host = {$host}, port = {$port})."
+                );
+            }
         }
-
-        // Call standard session initialization from this point.
-        parent::__construct($config);
+        return $this->connection;
     }
 
     /**
@@ -79,7 +81,7 @@ class Memcache extends AbstractBase
      */
     public function read($sess_id)
     {
-        return $this->connection->get("vufind_sessions/{$sess_id}");
+        return $this->getConnection()->get("vufind_sessions/{$sess_id}");
     }
 
     /**
@@ -92,7 +94,7 @@ class Memcache extends AbstractBase
      */
     public function write($sess_id, $data)
     {
-        return $this->connection->set(
+        return $this->getConnection()->set(
             "vufind_sessions/{$sess_id}", $data, 0, $this->lifetime
         );
     }
@@ -111,6 +113,6 @@ class Memcache extends AbstractBase
         parent::destroy($sess_id);
 
         // Perform Memcache-specific cleanup:
-        return $this->connection->delete("vufind_sessions/{$sess_id}");
+        return $this->getConnection()->delete("vufind_sessions/{$sess_id}");
     }
 }

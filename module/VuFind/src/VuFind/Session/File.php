@@ -38,36 +38,37 @@ namespace VuFind\Session;
  */
 class File extends AbstractBase
 {
-    protected $path;
+    protected $path = false;
 
     /**
-     * Constructor.
+     * Get the file path for writing sessions.
      *
-     * @param \Zend\Config\Config $config Session configuration ([Session] section of
-     * config.ini)
+     * @throws \Exception
+     * @return string
      */
-    public function __construct($config)
+    protected function getPath()
     {
-        // Set defaults if nothing set in config file.
-        if (isset($config->file_save_path)) {
-            $this->path = $config->file_save_path;
-        } else {
-            $tempdir = function_exists('sys_get_temp_dir')
-                ? sys_get_temp_dir() : DIRECTORY_SEPARATOR . 'tmp';
-            $this->path = $tempdir . DIRECTORY_SEPARATOR . 'vufind_sessions';
-        }
+        if (!$this->path) {
+            // Set defaults if nothing set in config file.
+            if (isset($this->config->file_save_path)) {
+                $this->path = $this->config->file_save_path;
+            } else {
+                $tempdir = function_exists('sys_get_temp_dir')
+                    ? sys_get_temp_dir() : DIRECTORY_SEPARATOR . 'tmp';
+                $this->path = $tempdir . DIRECTORY_SEPARATOR . 'vufind_sessions';
+            }
 
-        // Die if the session directory does not exist and cannot be created.
-        if (!file_exists($this->path) || !is_dir($this->path)) {
-            if (!@mkdir($this->path)) {
-                throw new \Exception(
-                    "Cannot access session save path: " . $this->path
-                );
+            // Die if the session directory does not exist and cannot be created.
+            if (!file_exists($this->path) || !is_dir($this->path)) {
+                if (!mkdir($this->path)) {
+                    throw new \Exception(
+                        "Cannot access session save path: " . $this->path
+                    );
+                }
             }
         }
 
-        // Call standard session initialization from this point.
-        parent::__construct($config);
+        return $this->path;
     }
 
     /**
@@ -80,7 +81,7 @@ class File extends AbstractBase
      */
     public function read($sess_id)
     {
-        $sess_file = $this->path . '/sess_' . $sess_id;
+        $sess_file = $this->getPath() . '/sess_' . $sess_id;
         if (!file_exists($sess_file)) {
             return '';
         }
@@ -91,7 +92,7 @@ class File extends AbstractBase
             return '';
         }
 
-        return (string)@file_get_contents($sess_file);
+        return (string)file_get_contents($sess_file);
     }
 
     /**
@@ -104,8 +105,8 @@ class File extends AbstractBase
      */
     public function write($sess_id, $data)
     {
-        $sess_file = $this->path . '/sess_' . $sess_id;
-        if ($fp = @fopen($sess_file, "w")) {
+        $sess_file = $this->getPath() . '/sess_' . $sess_id;
+        if ($fp = fopen($sess_file, "w")) {
             $return = fwrite($fp, $data);
             fclose($fp);
             if ($return !== false) {
@@ -133,8 +134,8 @@ class File extends AbstractBase
         parent::destroy($sess_id);
 
         // Perform file-specific cleanup:
-        $sess_file = $this->path . '/sess_' . $sess_id;
-        return(@unlink($sess_file));
+        $sess_file = $this->getPath() . '/sess_' . $sess_id;
+        return(unlink($sess_file));
     }
 
     /**
@@ -147,9 +148,9 @@ class File extends AbstractBase
      */
     public function gc($maxlifetime)
     {
-        foreach (glob($this->path . "/sess_*") as $filename) {
+        foreach (glob($this->getPath() . "/sess_*") as $filename) {
             if (filemtime($filename) + $maxlifetime < time()) {
-                @unlink($filename);
+                unlink($filename);
             }
         }
         return true;

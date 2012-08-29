@@ -40,19 +40,23 @@ use VuFind\Db\Table\Search as SearchTable,
  */
 abstract class AbstractBase implements SaveHandlerInterface
 {
-    public $lifetime = 3600;
+    protected $lifetime = 3600;
+    protected $config = null;
 
     /**
-     * Constructor.
+     * Set configuration.
      *
      * @param \Zend\Config\Config $config Session configuration ([Session] section of
      * config.ini)
+     *
+     * @return void
      */
-    public function __construct($config)
+    public function setConfig($config)
     {
         if (isset($config->lifetime)) {
             $this->lifetime = $config->lifetime;
         }
+        $this->config = $config;
     }
 
     /**

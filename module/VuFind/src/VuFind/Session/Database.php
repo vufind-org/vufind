@@ -44,17 +44,11 @@ class Database extends AbstractBase
 
     /**
      * Constructor.
-     *
-     * @param \Zend\Config\Config $config Session configuration ([Session] section of
-     * config.ini)
      */
-    public function __construct($config)
+    public function __construct()
     {
         // Create database connection:
         $this->table = new SessionTable();
-
-        // Call standard session initialization from this point.
-        parent::__construct($config);
     }
 
     /**
