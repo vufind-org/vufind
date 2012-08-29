@@ -59,7 +59,7 @@ class Connection
      *
      * @var object
      */
-    protected $driver;
+    protected $driver = false;
 
     /**
      * Constructor
@@ -88,6 +88,7 @@ class Connection
             try {
                 $this->getDriver();
             } catch (\Exception $e) {
+                $this->driver = false;
                 $this->driverClass = 'VuFind\ILS\Driver\NoILS';
             }
         }
@@ -103,8 +104,27 @@ class Connection
     {
         if (!$this->driver) {
             $this->driver = new $this->driverClass;
+            $this->driver->setConfig($this->getDriverConfig());
+            $this->driver->init();
         }
         return $this->driver;
+    }
+
+    /**
+     * Get configuration for the ILS driver.  We will load an .ini file named
+     * after the driver class if it exists; otherwise we will return an empty
+     * array.
+     *
+     * @return array
+     */
+    public function getDriverConfig()
+    {
+        // Determine config file name based on class name:
+        $parts = explode('\\', $this->driverClass);
+        $configFile = end($parts) . '.ini';
+        $configFilePath = ConfigReader::getConfigPath($configFile);
+        return file_exists($configFilePath)
+            ? parse_ini_file($configFilePath, true) : array();
     }
 
     /**

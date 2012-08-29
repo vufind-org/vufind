@@ -38,33 +38,22 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
-class XCNCIP implements DriverInterface
+class XCNCIP extends AbstractBase
 {
     /**
-     * Values loaded from XCNCIP.ini.
+     * Initialize the driver.
      *
-     * @var array
-     */
-    protected $config;
-
-    /**
-     * Constructor
+     * Validate configuration and perform all resource-intensive tasks needed to
+     * make the driver active.
      *
-     * @param string $configFile The location of an alternative config file
+     * @throws ILSException
+     * @return void
      */
-    public function __construct($configFile = false)
+    public function init()
     {
-        // Load configuration file:
-        if (!$configFile) {
-            $configFile = 'XCNCIP.ini';
+        if (empty($this->config)) {
+            throw new ILSException('Configuration needs to be set.');
         }
-        $configFilePath = ConfigReader::getConfigPath($configFile);
-        if (!file_exists($configFilePath)) {
-            throw new ILSException(
-                'Cannot access config file - ' . $configFilePath
-            );
-        }
-        $this->config = parse_ini_file($configFilePath, true);
     }
 
     /**

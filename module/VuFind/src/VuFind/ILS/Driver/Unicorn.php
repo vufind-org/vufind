@@ -43,7 +43,7 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://code.google.com/p/vufind-unicorn/ vufind-unicorn project
  **/
-class Unicorn implements DriverInterface
+class Unicorn extends AbstractBase
 {
     protected $host;
     protected $port;
@@ -51,38 +51,33 @@ class Unicorn implements DriverInterface
     protected $url;
 
     protected $db;
-    protected $ilsConfigArray;
 
     /**
-     * Constructor
+     * Initialize the driver.
      *
-     * @param string $configFile The location of an alternative config file
+     * Validate configuration and perform all resource-intensive tasks needed to
+     * make the driver active.
+     *
+     * @throws ILSException
+     * @return void
      */
-    public function __construct($configFile = false)
+    public function init()
     {
-        // Load configuration file:
-        if (!$configFile) {
-            $configFile = 'Unicorn.ini';
+        if (empty($this->config)) {
+            throw new ILSException('Configuration needs to be set.');
         }
-        $configFilePath = ConfigReader::getConfigPath($configFile);
-        if (!file_exists($configFilePath)) {
-            throw new ILSException(
-                'Cannot access config file - ' . $configFilePath
-            );
-        }
-        $this->ilsConfigArray = parse_ini_file($configFilePath, true);
 
         // allow user to specify the full url to the Sirsi side perl script
-        $this->url = $this->ilsConfigArray['Catalog']['url'];
+        $this->url = $this->config['Catalog']['url'];
 
         // host/port/search_prog kept for backward compatibility
-        if (isset($this->ilsConfigArray['Catalog']['host'])
-            && isset($this->ilsConfigArray['Catalog']['port'])
-            && isset($this->ilsConfigArray['Catalog']['search_prog'])
+        if (isset($this->config['Catalog']['host'])
+            && isset($this->config['Catalog']['port'])
+            && isset($this->config['Catalog']['search_prog'])
         ) {
-            $this->host = $this->ilsConfigArray['Catalog']['host'];
-            $this->port = $this->ilsConfigArray['Catalog']['port'];
-            $this->search_prog = $this->ilsConfigArray['Catalog']['search_prog'];
+            $this->host = $this->config['Catalog']['host'];
+            $this->port = $this->config['Catalog']['port'];
+            $this->search_prog = $this->config['Catalog']['search_prog'];
         }
 
         $this->db = ConnectionManager::connectToIndex();
@@ -98,8 +93,8 @@ class Unicorn implements DriverInterface
      */
     public function getConfig($function)
     {
-        if (isset($this->ilsConfigArray[$function]) ) {
-            $functionConfig = $this->ilsConfigArray[$function];
+        if (isset($this->config[$function]) ) {
+            $functionConfig = $this->config[$function];
         } else {
             $functionConfig = false;
         }
@@ -161,7 +156,7 @@ class Unicorn implements DriverInterface
         if ($patron && isset($patron['library'])) {
             return $patron['library'];
         }
-        return $this->ilsConfigArray['Holds']['defaultPickupLocation'];
+        return $this->config['Holds']['defaultPickupLocation'];
     }
 
     /**
@@ -224,7 +219,7 @@ class Unicorn implements DriverInterface
                 } else {
                     $results[$chargeKey]['success'] = false;
                     $results[$chargeKey]['sysMessage']
-                        = $this->ilsConfigArray['ApiMessages'][$status];
+                        = $this->config['ApiMessages'][$status];
                 }
             }
             preg_match('/\^CI([^\^]+)\^/', $result, $matches);
@@ -387,7 +382,7 @@ class Unicorn implements DriverInterface
         $expire = $holdDetails['requiredBy'];
         $formatDate = new \VuFind\Date\Converter();
         $expire = $formatDate->convertFromDisplayDate(
-            $this->ilsConfigArray['Catalog']['server_date_format'],
+            $this->config['Catalog']['server_date_format'],
             $expire
         );
 
@@ -422,7 +417,7 @@ class Unicorn implements DriverInterface
             } else {
                 return array(
                   'success' => false,
-                  'sysMessage' => $this->ilsConfigArray['ApiMessages'][$status]);
+                  'sysMessage' => $this->config['ApiMessages'][$status]);
             }
         }
 
@@ -560,7 +555,7 @@ class Unicorn implements DriverInterface
 
             // the amount and balance are in cents, so we need to turn them into
             // dollars if configured
-            if (!$this->ilsConfigArray['Catalog']['leaveFinesAmountsInCents']) {
+            if (!$this->config['Catalog']['leaveFinesAmountsInCents']) {
                 $amount = (floatval($amount) / 100.00);
                 $balance = (floatval($balance) / 100.00);
             }
@@ -960,7 +955,7 @@ class Unicorn implements DriverInterface
         //query sirsi
         //  isset($lib)
         // ? $params = array('query' => 'newItems',
-        // 'lib' => array_search($lib, $ilsConfigArray['Libraries']))
+        // 'lib' => array_search($lib, $config['Libraries']))
         // : $params = array('query' => 'newItems');
         $params = array('query' => 'newitems', 'lib' => 'PPL');
         $response = $this->querySirsi($params);
@@ -1041,16 +1036,16 @@ class Unicorn implements DriverInterface
 
         // even though item is NOT checked out, it still may not be "Available"
         // the following are the special cases
-        if (isset($this->ilsConfigArray['UnavailableItemTypes'])
-            && isset($this->ilsConfigArray['UnavailableItemTypes'][$item_type])
+        if (isset($this->config['UnavailableItemTypes'])
+            && isset($this->config['UnavailableItemTypes'][$item_type])
         ) {
             $availability = 0;
-            $status = $this->ilsConfigArray['UnavailableItemTypes'][$item_type];
-        } else if (isset($this->ilsConfigArray['UnavailableLocations'])
-            && isset($this->ilsConfigArray['UnavailableLocations'][$currLocCode])
+            $status = $this->config['UnavailableItemTypes'][$item_type];
+        } else if (isset($this->config['UnavailableLocations'])
+            && isset($this->config['UnavailableLocations'][$currLocCode])
         ) {
             $availability = 0;
-            $status= $this->ilsConfigArray['UnavailableLocations'][$currLocCode];
+            $status= $this->config['UnavailableLocations'][$currLocCode];
         }
 
         $item = array (
@@ -1095,10 +1090,10 @@ class Unicorn implements DriverInterface
      */
     protected function mapLocation($code)
     {
-        if (isset($this->ilsConfigArray['Locations'])
-            && isset($this->ilsConfigArray['Locations'][$code])
+        if (isset($this->config['Locations'])
+            && isset($this->config['Locations'][$code])
         ) {
-            return $this->ilsConfigArray['Locations'][$code];
+            return $this->config['Locations'][$code];
         }
         return $code;
     }
@@ -1113,10 +1108,10 @@ class Unicorn implements DriverInterface
      */
     protected function mapLibrary($code)
     {
-        if (isset($this->ilsConfigArray['Libraries'])
-            && isset($this->ilsConfigArray['Libraries'][$code])
+        if (isset($this->config['Libraries'])
+            && isset($this->config['Libraries'][$code])
         ) {
-            return $this->ilsConfigArray['Libraries'][$code];
+            return $this->config['Libraries'][$code];
         }
         return $code;
     }

@@ -42,30 +42,26 @@ use DOMDocument, VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
-class DAIA implements DriverInterface
+class DAIA extends AbstractBase
 {
     protected $baseURL;
 
     /**
-     * Constructor
+     * Initialize the driver.
      *
-     * @param string $configFile The location of an alternative config file
+     * Validate configuration and perform all resource-intensive tasks needed to
+     * make the driver active.
+     *
+     * @throws ILSException
+     * @return void
      */
-    public function __construct($configFile = false)
+    public function init()
     {
-        // Load configuration file:
-        if (!$configFile) {
-            $configFile = 'DAIA.ini';
+        if (!isset($this->config['Global']['baseUrl'])) {
+            throw new ILSException('Global/baseUrl configuration needs to be set.');
         }
-        $configFilePath = ConfigReader::getConfigPath($configFile);
-        if (!file_exists($configFilePath)) {
-            throw new ILSException(
-                'Cannot access config file - ' . $configFilePath
-            );
-        }
-        $configArray = parse_ini_file($configFilePath, true);
 
-        $this->baseURL = $configArray['Global']['baseUrl'];
+        $this->baseURL = $this->config['Global']['baseUrl'];
     }
 
     /**

@@ -59,15 +59,17 @@ class VoyagerRestful extends Voyager
     protected $checkRenewalsUpFront;
 
     /**
-     * Constructor
+     * Initialize the driver.
      *
-     * @param string $configFile Name of configuration file to load (relative to
-     * web/conf folder; defaults to VoyagerRestful.ini).
+     * Validate configuration and perform all resource-intensive tasks needed to
+     * make the driver active.
+     *
+     * @throws ILSException
+     * @return void
      */
-    public function __construct($configFile = 'VoyagerRestful.ini')
+    public function init()
     {
-        // Call the parent's constructor...
-        parent::__construct($configFile);
+        parent::init();
 
         // Define Voyager Restful Settings
         $this->ws_host = $this->config['WebServices']['host'];

@@ -42,38 +42,34 @@ use PDO, PDOException, VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
-class Koha implements DriverInterface
+class Koha extends AbstractBase
 {
     protected $db;
     protected $ilsBaseUrl;
     protected $locCodes;
 
     /**
-     * Constructor
+     * Initialize the driver.
      *
-     * @param string $configFile The location of an alternative config file
+     * Validate configuration and perform all resource-intensive tasks needed to
+     * make the driver active.
+     *
+     * @throws ILSException
+     * @return void
      */
-    public function __construct($configFile = false)
+    public function init()
     {
-        // Load configuration file:
-        if (!$configFile) {
-            $configFile = 'Koha.ini';
+        if (empty($this->config)) {
+            throw new ILSException('Configuration needs to be set.');
         }
-        $configFilePath = ConfigReader::getConfigPath($configFile);
-        if (!file_exists($configFilePath)) {
-            throw new ILSException(
-                'Cannot access config file - ' . $configFilePath
-            );
-        }
-        $configArray = parse_ini_file($configFilePath, true);
 
         //Connect to MySQL
         $this->db = new PDO(
-            'mysql:host=' . $configArray['Catalog']['host'] .
-            ';port=' . $configArray['Catalog']['port'] .
-            ';dbname=' . $configArray['Catalog']['database'],
-            $configArray['Catalog']['username'],
-            $configArray['Catalog']['password']
+            'mysql:host=' . $this->config['Catalog']['host'] .
+            ';port=' . $this->config['Catalog']['port'] .
+            ';dbname=' . $this->config['Catalog']['database'],
+            $this->config['Catalog']['username'],
+            $this->config['Catalog']['password']
         );
         // Throw PDOExceptions if something goes wrong
         $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -81,11 +77,11 @@ class Koha implements DriverInterface
         $this->db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
         //Storing the base URL of ILS
-        $this->ilsBaseUrl = $configArray['Catalog']['url'];
+        $this->ilsBaseUrl = $this->config['Catalog']['url'];
 
         // Location codes are defined in 'Koha.ini' file according to current
         // version (3.02)
-        $this->locCodes = $configArray['Location_Codes'];
+        $this->locCodes = $this->config['Location_Codes'];
     }
 
     /**

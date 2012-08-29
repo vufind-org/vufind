@@ -47,7 +47,7 @@ use ArrayObject, VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
-class Demo implements DriverInterface
+class Demo extends AbstractBase
 {
     // Used when getting random bib ids from solr
     protected $db;
@@ -58,24 +58,18 @@ class Demo implements DriverInterface
     protected $idsInMyResearch = true;
 
     /**
-     * Constructor
+     * Initialize the driver.
      *
-     * @param string $configFile The location of an alternative config file
+     * Validate configuration and perform all resource-intensive tasks needed to
+     * make the driver active.
+     *
+     * @throws ILSException
+     * @return void
      */
-    public function __construct($configFile = false)
+    public function init()
     {
-        // Load configuration file in case user has special preferences (but don't
-        // worry if it's missing):
-        if (!$configFile) {
-            $configFile = 'Demo.ini';
-        }
-        $configFilePath = ConfigReader::getConfigPath($configFile);
-        if (file_exists($configFilePath)) {
-            $configArray = parse_ini_file($configFilePath, true);
-            if (isset($configArray['Catalog']['idsInMyResearch'])) {
-                $this->idsInMyResearch
-                    = $configArray['Catalog']['idsInMyResearch'];
-            }
+        if (isset($this->config['Catalog']['idsInMyResearch'])) {
+            $this->idsInMyResearch = $this->config['Catalog']['idsInMyResearch'];
         }
 
         // Establish a namespace in the session for persisting fake data (to save

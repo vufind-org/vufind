@@ -27,7 +27,7 @@
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use SoapFault, VuFind\Cache\Manager as CacheManager,
+use SoapClient, SoapFault, VuFind\Cache\Manager as CacheManager,
     VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException;
 
 /**
@@ -41,28 +41,22 @@ use SoapFault, VuFind\Cache\Manager as CacheManager,
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
 
-class Symphony implements DriverInterface
+class Symphony extends AbstractBase
 {
-    protected $config;
     protected $policyCache = false;
     protected $policies;
 
     /**
-     * Constructor
+     * Initialize the driver.
      *
-     * @param string $configFile The location of an alternative config file
+     * Validate configuration and perform all resource-intensive tasks needed to
+     * make the driver active.
+     *
+     * @throws ILSException
+     * @return void
      */
-    public function __construct($configFile = 'Symphony.ini')
+    public function init()
     {
-        // Find and load the configuration file if it exists.
-        $configFilePath = ConfigReader::getConfigPath($configFile);
-        if (file_exists($configFilePath)) {
-            $this->config = parse_ini_file($configFilePath, true);
-            if (!is_array($this->config)) {
-                throw new ILSException('Could not parse config file!');
-            }
-        }
-
         // Merge in defaults.
         $this->config += array(
             'WebServices' => array(),

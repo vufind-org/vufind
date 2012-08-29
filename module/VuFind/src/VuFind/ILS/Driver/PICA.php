@@ -56,30 +56,22 @@ class PICA extends DAIA
     protected $dbsid;
 
     /**
-     * Constructor
+     * Initialize the driver.
      *
-     * @param string $configFile The location of an alternative config file
+     * Validate configuration and perform all resource-intensive tasks needed to
+     * make the driver active.
+     *
+     * @throws ILSException
+     * @return void
      */
-    public function __construct($configFile = false)
+    public function init()
     {
-        parent::__construct();  // do not pass $configFile to parent
+        parent::init();
 
-        // Load configuration file:
-        if (!$configFile) {
-            $configFile = 'PICA.ini';
-        }
-        $configFilePath = ConfigReader::getConfigPath($configFile);
-        if (!file_exists($configFilePath)) {
-            throw new ILSException(
-                'Cannot access config file - ' . $configFilePath
-            );
-        }
-        $configArray = parse_ini_file($configFilePath, true);
-
-        $this->catalogHost = $configArray['Catalog']['Host'];
-        $this->renewalsScript = $configArray['Catalog']['renewalsScript'];
-        $this->dbsid = isset($configArray['Catalog']['DB'])
-            ? $configArray['Catalog']['DB'] : 1;
+        $this->catalogHost = $this->config['Catalog']['Host'];
+        $this->renewalsScript = $this->config['Catalog']['renewalsScript'];
+        $this->dbsid = isset($this->config['Catalog']['DB'])
+            ? $this->config['Catalog']['DB'] : 1;
     }
 
     // public functions implemented to satisfy Driver Interface

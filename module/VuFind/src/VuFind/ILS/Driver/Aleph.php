@@ -271,61 +271,72 @@ class AlephRestfulException extends \Exception
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
-class Aleph implements DriverInterface
+class Aleph extends AbstractBase
 {
+    protected $duedates = false;
     protected $translator = false;
 
     /**
-     * Constructor
+     * Initialize the driver.
      *
-     * @param string $configFile The location of an alternative config file
+     * Validate configuration and perform all resource-intensive tasks needed to
+     * make the driver active.
+     *
+     * @throws ILSException
+     * @return void
      */
-    public function __construct($configFile = false)
+    public function init()
     {
-        // Load configuration file:
-        if (!$configFile) {
-            $configFile = 'Aleph.ini';
+        // Validate config
+        $required = array(
+            'host', 'bib', 'useradm', 'admlib', 'dlfport', 'available_statuses'
+        );
+        foreach ($required as $current) {
+            if (!isset($this->config['Catalog'][$current])) {
+                throw new ILSException("Missing Catalog/{$current} config setting.");
+            }
         }
-        $configFilePath = ConfigReader::getConfigPath($configFile);
-        if (!file_exists($configFilePath)) {
-            throw new ILSException(
-                'Cannot access config file - ' . $configFilePath
-            );
+        if (!isset($this->config['sublibadm'])) {
+            throw new ILSException('Missing sublibadm config setting.');
         }
-        $configArray = parse_ini_file($configFilePath, true);
-        $this->host = $configArray['Catalog']['host'];
-        $this->bib = split(',', $configArray['Catalog']['bib']);
-        $this->useradm = $configArray['Catalog']['useradm'];
-        $this->admlib = $configArray['Catalog']['admlib'];
-        if (isset($configArray['Catalog']['wwwuser'])
-            && isset($configArray['Catalog']['wwwpasswd'])
+
+        // Process config
+        $this->host = $this->config['Catalog']['host'];
+        $this->bib = split(',', $this->config['Catalog']['bib']);
+        $this->useradm = $this->config['Catalog']['useradm'];
+        $this->admlib = $this->config['Catalog']['admlib'];
+        if (isset($this->config['Catalog']['wwwuser'])
+            && isset($this->config['Catalog']['wwwpasswd'])
         ) {
-            $this->wwwuser = $configArray['Catalog']['wwwuser'];
-            $this->wwwpasswd = $configArray['Catalog']['wwwpasswd'];
+            $this->wwwuser = $this->config['Catalog']['wwwuser'];
+            $this->wwwpasswd = $this->config['Catalog']['wwwpasswd'];
             $this->xserver_enabled = true;
         } else {
             $this->xserver_enabled = false;
         }
-        $this->dlfport = $configArray['Catalog']['dlfport'];
-        $this->sublibadm = $configArray['sublibadm'];
-        if (isset($configArray['duedates'])) {
-            $this->duedates = $configArray['duedates'];
+        $this->dlfport = $this->config['Catalog']['dlfport'];
+        $this->sublibadm = $this->config['sublibadm'];
+        if (isset($this->config['duedates'])) {
+            $this->duedates = $this->config['duedates'];
         }
         $this->available_statuses
-            = split(',', $configArray['Catalog']['available_statuses']);
-        $this->quick_availability = $configArray['Catalog']['quick_availability'];
-        $this->debug_enabled = $configArray['Catalog']['debug'];
-        if (isset($configArray['util']['tab40'])
-            && isset($configArray['util']['tab15'])
-            && isset($configArray['util']['tab_sub_library'])
+            = split(',', $this->config['Catalog']['available_statuses']);
+        $this->quick_availability
+            = isset($this->config['Catalog']['quick_availability'])
+            ? $this->config['Catalog']['quick_availability'] : false;
+        $this->debug_enabled = isset($this->config['Catalog']['debug'])
+            ? $this->config['Catalog']['debug'] : false;
+        if (isset($this->config['util']['tab40'])
+            && isset($this->config['util']['tab15'])
+            && isset($this->config['util']['tab_sub_library'])
         ) {
-            if (isset($configArray['Cache']['type'])) {
+            if (isset($this->config['Cache']['type'])) {
                 $manager = CacheManager::getInstance();
-                $cache = $manager->getCache($configArray['Cache']['type']);
+                $cache = $manager->getCache($this->config['Cache']['type']);
                 $this->translator = $cache->getItem('alephTranslator');
             }
             if ($this->translator == false) {
-                $this->translator = new AlephTranslator($configArray);
+                $this->translator = new AlephTranslator($this->config);
                 if (isset($cache)) {
                     $cache->setItem('alephTranslator', $this->translator);
                 }

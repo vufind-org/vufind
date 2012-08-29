@@ -42,14 +42,17 @@ use VuFind\Exception\ILS as ILSException, VuFind\Http\Client as HttpClient;
 class HorizonXMLAPI extends Horizon
 {
     /**
-     * Constructor
+     * Initialize the driver.
      *
-     * @param string $configFile An alternative config file name
+     * Validate configuration and perform all resource-intensive tasks needed to
+     * make the driver active.
+     *
+     * @throws ILSException
+     * @return void
      */
-    public function __construct($configFile = 'HorizonXMLAPI.ini')
+    public function init()
     {
-        // Call the parent's constructor...
-        parent::__construct($configFile);
+        parent::init();
 
         // Process Config
         $this->wsProfile = $this->config['Webservices']['profile'];

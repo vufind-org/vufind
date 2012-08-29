@@ -47,6 +47,28 @@ namespace VuFind\ILS\Driver;
 interface DriverInterface
 {
     /**
+     * Set configuration.
+     *
+     * Set the configuration for the driver.
+     *
+     * @param array $config Configuration array (usually loaded from a VuFind .ini
+     * file whose name corresponds with the driver class name).
+     *
+     * @return void
+     */
+    public function setConfig($config);
+
+    /**
+     * Initialize the driver.
+     *
+     * Validate configuration and perform all resource-intensive tasks needed to
+     * make the driver active.
+     *
+     * @return void
+     */
+    public function init();
+
+    /**
      * Get Status
      *
      * This is responsible for retrieving the status information of a certain
