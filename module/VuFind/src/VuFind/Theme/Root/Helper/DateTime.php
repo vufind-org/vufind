@@ -66,4 +66,23 @@ class DateTime extends AbstractHelper
             return false;
         }
     }
+
+    /**
+     * Builds an alphabetical help string based on the default display date format.
+     *
+     * @return string
+     */
+    public function getDisplayDateFormat()
+    {
+        $dueDateHelpString
+            = $this->converter->convertToDisplayDate("m-d-y", "11-22-3333");
+        $search = array("1", "2", "3");
+        $replace = array(
+            $this->view->translate("date_month_placeholder"),
+            $this->view->translate("date_day_placeholder"),
+            $this->view->translate("date_year_placeholder")
+        );
+
+        return str_replace($search, $replace, $dueDateHelpString);
+    }
 }

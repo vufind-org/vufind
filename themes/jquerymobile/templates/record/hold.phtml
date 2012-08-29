@@ -21,7 +21,7 @@
         <? if (in_array("requiredByDate", $this->extraHoldFields)): ?>
           <div>
           <strong><?=$this->transEsc("hold_required_by")?>: </strong>
-          <div id="requiredByHolder"><input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtml($this->gatheredDetails['requiredBy']) : $this->escapeHtml($this->defaultRequiredDate)?>" size="8" /> <strong>(<?=$this->displayDateFormat()?>)</strong></div>
+          <div id="requiredByHolder"><input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtml($this->gatheredDetails['requiredBy']) : $this->escapeHtml($this->defaultRequiredDate)?>" size="8" /> <strong>(<?=$this->dateTime()->getDisplayDateFormat()?>)</strong></div>
           </div>
         <? endif; ?>
 
