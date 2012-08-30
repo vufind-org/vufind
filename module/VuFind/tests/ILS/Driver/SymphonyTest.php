@@ -56,6 +56,11 @@ class SymphonyTest extends \VuFind\Tests\TestCase
      */
     public function testBadBaseUrl()
     {
+        // Without SOAP functionality, we can't proceed:
+        if (!class_exists('SoapClient')) {
+            $this->markTestSkipped();
+        }
+
         $this->driver->setConfig(
             array('WebServices' => array('baseURL' => 'invalid'))
         );
