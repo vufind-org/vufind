@@ -96,7 +96,7 @@ class AlephTranslator
                 $line = str_pad($line, 80);
                 $matches = "";
                 if (preg_match($rgxp, $line, $matches)) {
-                    call_user_func($callback, $matches, &$result, $this->charset);
+                    call_user_func($callback, $matches, $result, $this->charset);
                 }
             }
         }
@@ -169,7 +169,7 @@ class AlephTranslator
      *
      * @return void
      */
-    public static function tab15Callback($matches, $tab15, $charset)
+    public static function tab15Callback($matches, &$tab15, $charset)
     {
         $lib = $matches[1];
         $no1 = $matches[2];
@@ -200,7 +200,7 @@ class AlephTranslator
      *
      * @return void
      */
-    public static function tab40Callback($matches, $tab40, $charset)
+    public static function tab40Callback($matches, &$tab40, $charset)
     {
         $code = trim($matches[1]);
         $sub = trim($matches[2]);
@@ -219,7 +219,7 @@ class AlephTranslator
      *
      * @return void
      */
-    public static function tabSubLibraryCallback($matches, $tab_sub_library,
+    public static function tabSubLibraryCallback($matches, &$tab_sub_library,
         $charset
     ) {
         $sublib = trim($matches[1]);
@@ -706,12 +706,12 @@ class Aleph extends AbstractBase
             }
             $matches = array();
             if (preg_match(
-                "/([0-9]*\\/[a-zA-Z]*\\/[0-9]*);([a-zA-Z ]*)/", $status, &$matches
+                "/([0-9]*\\/[a-zA-Z]*\\/[0-9]*);([a-zA-Z ]*)/", $status, $matches
             )) {
                 $duedate = $this->parseDate($matches[1]);
                 $requested = (trim($matches[2]) == "Requested");
             } else if (preg_match(
-                "/([0-9]*\\/[a-zA-Z]*\\/[0-9]*)/", $status, &$matches
+                "/([0-9]*\\/[a-zA-Z]*\\/[0-9]*)/", $status, $matches
             )) {
                 $duedate = $this->parseDate($matches[1]);
             } else {
