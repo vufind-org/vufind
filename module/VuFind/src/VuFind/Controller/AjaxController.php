@@ -149,15 +149,17 @@ class AjaxController extends AbstractBase
      * Support method for getItemStatuses() -- filter suppressed locations from the
      * array of item information for a particular bib record.
      *
-     * @param array $record Information on items linked to a single bib record
+     * @param array                  $record  Information on items linked to a single
+     * bib record
+     * @param \VuFind\ILS\Connection $catalog ILS connection
      *
      * @return array        Filtered version of $record
      */
-    protected function filterSuppressedLocations($record)
+    protected function filterSuppressedLocations($record, $catalog)
     {
         static $hideHoldings = false;
         if ($hideHoldings === false) {
-            $logic = new \VuFind\ILS\Logic\Holds($this->getAuthManager());
+            $logic = new \VuFind\ILS\Logic\Holds($this->getAuthManager(), $catalog);
             $hideHoldings = $logic->getSuppressedLocations();
         }
 
@@ -221,7 +223,7 @@ class AjaxController extends AbstractBase
         $statuses = array();
         foreach ($results as $recordNumber=>$record) {
             // Filter out suppressed locations:
-            $record = $this->filterSuppressedLocations($record);
+            $record = $this->filterSuppressedLocations($record, $catalog);
 
             // Skip empty records:
             if (count($record)) {

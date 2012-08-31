@@ -797,7 +797,7 @@ class SolrMarc extends SolrDefault
      */
     public function getRealTimeHoldings($account)
     {
-        $holdLogic = new HoldLogic($account);
+        $holdLogic = new HoldLogic($account, ConnectionManager::connectToCatalog());
         return $holdLogic->getHoldings($this->getUniqueID());
     }
 
@@ -833,7 +833,9 @@ class SolrMarc extends SolrDefault
             || stristr("part", $biblioLevel)
         ) {
             if (ILSConnection::getTitleHoldsMode() != "disabled") {
-                $holdLogic = new TitleHoldLogic($account);
+                $holdLogic = new TitleHoldLogic(
+                    $account, ConnectionManager::connectToCatalog()
+                );
                 return $holdLogic->getHold($this->getUniqueID());
             }
         }

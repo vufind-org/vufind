@@ -28,7 +28,6 @@
  */
 namespace VuFind\ILS\Logic;
 use VuFind\Config\Reader as ConfigReader,
-    VuFind\Connection\Manager as ConnectionManager,
     VuFind\Crypt\HMAC,
     VuFind\ILS\Connection as ILSConnection;
 
@@ -55,7 +54,7 @@ class TitleHolds
      * @param \VuFind\Auth\Manager $account Auth manager object
      * @param ILSConnection        $catalog A catalog connection
      */
-    public function __construct($account, $catalog = false)
+    public function __construct($account, $catalog)
     {
         $this->account = $account;
         $this->config = ConfigReader::getConfig();
@@ -66,8 +65,7 @@ class TitleHolds
             }
         }
 
-        $this->catalog = ($catalog !== false)
-            ? $catalog : ConnectionManager::connectToCatalog();
+        $this->catalog = $catalog;
     }
 
     /**
