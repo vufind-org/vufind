@@ -124,7 +124,6 @@ class UserStatsFields extends Gateway
      */
     public function getCount($field, $value = null)
     {
-        // TODO
         $callback = function($select) use ($field, $value) {
             $select->columns(
                 array(
@@ -154,7 +153,6 @@ class UserStatsFields extends Gateway
      */
     public function getTop($field, $number)
     {
-        // TODO
         $callback = function($select) use ($field, $number) {
             $select->columns(
                 array(
