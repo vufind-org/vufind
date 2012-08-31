@@ -149,7 +149,7 @@ class AdminController extends AbstractBase
     public function statisticsAction()
     {
         $view = $this->createViewModel();
-        //todo
+
         $config = ConfigReader::getConfig();
         $statsFilled = array(
             'search' => false,
