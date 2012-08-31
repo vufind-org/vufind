@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
  */
 namespace VuFind\Session;
-use Zend\ServiceManager\ConfigInterface;
 
 /**
  * Session handler plugin manager
