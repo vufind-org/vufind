@@ -68,6 +68,7 @@ class Factory
             if (null !== $config) {
                 $obj->setConfig($config);
             }
+            return $obj;
         } else {
             throw new AuthException(
                 'Authentication handler ' . $authNHandler . ' does not exist!'
