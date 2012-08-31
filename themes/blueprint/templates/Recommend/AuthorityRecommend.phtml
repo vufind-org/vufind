@@ -5,7 +5,7 @@
       <? for ($i = 0; $i < count($data); $i++): ?>
         <?
             // Generate a new search URL that replaces the user's current term with the authority term:
-            $url = $this->url($this->results->getSearchAction())
+            $url = $this->url($this->results->getOptions()->getSearchAction())
                 . $this->results->getUrl()->replaceTerm($this->results->getDisplayQuery(), $data[$i]['heading']);
         ?>
         <a href="<?=$url?>"><?=$this->escapeHtml($data[$i]['heading'])?></a><? if ($i != count($data) - 1): ?>, <? endif; ?>

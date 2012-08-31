@@ -90,7 +90,7 @@ class Solr implements AutocompleteInterface
         // Build a new search object:
         $params = new \VuFind\Search\Solr\Params();
         $this->searchObject = new \VuFind\Search\Solr\Results($params);
-        $this->searchObject->spellcheckEnabled(false);
+        $this->searchObject->getOptions()->spellcheckEnabled(false);
     }
 
     /**

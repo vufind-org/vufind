@@ -68,6 +68,6 @@ class SolrReserves extends Solr
         // Build a new search object:
         $params = new \VuFind\Search\SolrReserves\Params();
         $this->searchObject = new \VuFind\Search\SolrReserves\Results($params);
-        $this->searchObject->spellcheckEnabled(false);
+        $this->searchObject->getOptions()->spellcheckEnabled(false);
     }
 }

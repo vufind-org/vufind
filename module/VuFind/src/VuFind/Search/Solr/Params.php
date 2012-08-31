@@ -98,7 +98,7 @@ class Params extends BaseParams
     public function getFilterSettings()
     {
         // Define Filter Query
-        $filterQuery = $this->getHiddenFilters();
+        $filterQuery = $this->getOptions()->getHiddenFilters();
         foreach ($this->filterList as $field => $filter) {
             foreach ($filter as $value) {
                 // Special case -- allow trailing wildcards and ranges:
@@ -300,15 +300,15 @@ class Params extends BaseParams
     public function getSpellingQuery()
     {
         // Build our spellcheck query
-        if ($this->options->spellcheckEnabled()) {
-            if ($this->options->usesSimpleSpelling()) {
-                $this->options->useBasicDictionary();
+        if ($this->getOptions()->spellcheckEnabled()) {
+            if ($this->getOptions()->usesSimpleSpelling()) {
+                $this->getOptions()->useBasicDictionary();
             }
             $spellcheck = $this->buildSpellingQuery();
 
             // If the spellcheck query is purely numeric, skip it if
             // the appropriate setting is turned on.
-            if ($this->options->shouldSkipNumericSpelling()
+            if ($this->getOptions()->shouldSkipNumericSpelling()
                 && is_numeric($spellcheck)
             ) {
                 return '';
@@ -368,7 +368,7 @@ class Params extends BaseParams
         $hidden = $request->get('hiddenFilters');
         if (!empty($hidden) && is_array($hidden)) {
             foreach ($hidden as $current) {
-                $this->addHiddenFilter($current);
+                $this->getOptions()->addHiddenFilter($current);
             }
         }
     }
@@ -384,7 +384,7 @@ class Params extends BaseParams
     public function setQueryIDs($ids)
     {
         // No need for spell checking on an ID query!
-        $this->options->spellcheckEnabled(false);
+        $this->getOptions()->spellcheckEnabled(false);
 
         // Special case -- no IDs to set:
         if (empty($ids)) {

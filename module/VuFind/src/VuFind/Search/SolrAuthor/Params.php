@@ -89,7 +89,7 @@ class Params extends SolrParams
     {
         // Load the necessary settings to determine the appropriate recommendations
         // module:
-        $ss = ConfigReader::getConfig($this->getSearchIni());
+        $ss = ConfigReader::getConfig($this->getOptions()->getSearchIni());
 
         // Load the AuthorModuleRecommendations configuration if available, use
         // standard defaults otherwise:

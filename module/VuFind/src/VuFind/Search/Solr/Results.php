@@ -107,8 +107,8 @@ class Results extends BaseResults
             'facet' => $this->params->getFacetSettings(),
             'filter' => $this->params->getFilterSettings(),
             'spell' => $this->params->getSpellingQuery(),
-            'dictionary' => $this->getSpellingDictionary(),
-            'highlight' => $this->highlightEnabled()
+            'dictionary' => $this->getOptions()->getSpellingDictionary(),
+            'highlight' => $this->getOptions()->highlightEnabled()
         );
 
         // Perform the search:
@@ -119,11 +119,11 @@ class Results extends BaseResults
             ? $this->rawResponse['response']['numFound'] : 0;
 
         // Process spelling suggestions if no index error resulted from the query
-        if ($this->spellcheckEnabled()) {
+        if ($this->getOptions()->spellcheckEnabled()) {
             // Shingle dictionary
             $this->processSpelling();
             // Make sure we don't endlessly loop
-            if ($this->getSpellingDictionary() == 'default') {
+            if ($this->getOptions()->getSpellingDictionary() == 'default') {
                 // Expand against the basic dictionary
                 $this->basicSpelling();
             }
@@ -158,7 +158,9 @@ class Results extends BaseResults
             $ourTerm = $suggestion[0];
 
             // Skip numeric terms if numeric suggestions are disabled
-            if ($this->shouldSkipNumericSpelling() && is_numeric($ourTerm)) {
+            if ($this->getOptions()->shouldSkipNumericSpelling()
+                && is_numeric($ourTerm)
+            ) {
                 continue;
             }
 
@@ -184,9 +186,9 @@ class Results extends BaseResults
             // Make sure it has suggestions and is valid
             if (count($newList) > 0 && $validTerm) {
                 // Did we get more suggestions then our limit?
-                if ($count > $this->getSpellingLimit()) {
+                if ($count > $this->getOptions()->getSpellingLimit()) {
                     // Cut the list at the limit
-                    array_splice($newList, $this->getSpellingLimit());
+                    array_splice($newList, $this->getOptions()->getSpellingLimit());
                 }
                 $suggestionList[$ourTerm]['freq'] = $ourHit;
                 // Format the list nicely
@@ -244,11 +246,11 @@ class Results extends BaseResults
         // Create a new search object
         $myClass = get_class($this);
         $newParams = clone($this->params);
-        $newParams->useBasicDictionary();
+        $newParams->getOptions()->useBasicDictionary();
 
         // Don't waste time loading facets or highlighting/retrieving results:
         $newParams->resetFacetConfig();
-        $newParams->disableHighlighting();
+        $newParams->getOptions()->disableHighlighting();
         $newParams->setLimit(0);
         $newParams->recommendationsEnabled(false);
 
@@ -421,7 +423,7 @@ class Results extends BaseResults
             // Build our array of values for this field
             $list[$field]['list']  = array();
             // Should we translate values for the current facet?
-            $translate = in_array($field, $this->params->getTranslatedFacets());
+            $translate = in_array($field, $this->getOptions()->getTranslatedFacets());
             // Loop through values:
             foreach ($data as $facet) {
                 // Initialize the array of data about the current facet:
@@ -509,7 +511,7 @@ class Results extends BaseResults
     public function getSimilarRecords($id)
     {
         $solr = static::getSolrConnection($this->getSelectedShards());
-        $filters = $this->getHiddenFilters();
+        $filters = $this->getOptions()->getHiddenFilters();
         $extras = empty($filters) ? array() : array('fq' => $filters);
         $rawResponse = $solr->getMoreLikeThis($id, $extras);
         $results = array();

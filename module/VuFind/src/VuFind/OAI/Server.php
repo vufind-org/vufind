@@ -560,8 +560,8 @@ class Server
         $paramsClass = 'VuFind\Search\\' . $this->searchClassId . '\Params';
         $params = new $paramsClass();
         $params->setLimit($limit);
-        $params->disableHighlighting();
-        $params->spellcheckEnabled(false);
+        $params->getOptions()->disableHighlighting();
+        $params->getOptions()->spellcheckEnabled(false);
         $params->setSort('last_indexed asc', true);
 
         // Construct a range query based on last indexed time:

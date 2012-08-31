@@ -120,7 +120,7 @@ class AbstractSearch extends AbstractBase
             // object, and it also prevents the user from ever landing on a
             // "?saved=xxxx" URL, which may not persist beyond the current session.
             // (We want all searches to be persistent and bookmarkable).
-            $details = $savedSearch->getSearchAction();
+            $details = $savedSearch->getOptions()->getSearchAction();
             $url = $this->url()->fromRoute($details);
             $url .= $savedSearch->getUrl()->getParams(false);
             return $this->redirect()->toUrl($url);
@@ -179,8 +179,9 @@ class AbstractSearch extends AbstractBase
             // search.
             $view->results = $results;
             if ($this->rememberSearch) {
-                $searchUrl = $this->url()->fromRoute($results->getSearchAction())
-                    . $results->getUrl()->getParams(false);
+                $searchUrl = $this->url()->fromRoute(
+                    $results->getOptions()->getSearchAction()
+                ) . $results->getUrl()->getParams(false);
                 Memory::rememberSearch($searchUrl);
             }
 

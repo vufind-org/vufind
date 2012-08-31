@@ -74,14 +74,38 @@ class Params
      */
     public function __construct($options = null)
     {
-        if (is_null($options)) {
+        if (null !== $options) {
+            $this->setOptions($options);
+        }
+    }
+
+    /**
+     * Get the search options object.
+     *
+     * @return \VuFind\Search\Base\Options
+     */
+    public function getOptions()
+    {
+        // If no options have been set, use defaults:
+        if (null === $this->options) {
             // Create a copy of the default configuration:
             $this->options = clone(
                 SearchOptions::getInstance($this->getSearchClassId())
             );
-        } else {
-            $this->options = $options;
         }
+        return $this->options;
+    }
+
+    /**
+     * Set the search options object.
+     *
+     * @param \VuFind\Search\Base\Options $options Options to use
+     *
+     * @return void
+     */
+    public function setOptions(Options $options)
+    {
+        $this->options = $options;
     }
 
     /**
@@ -91,7 +115,9 @@ class Params
      */
     public function __clone()
     {
-        $this->options = clone($this->options);
+        if (is_object($this->options)) {
+            $this->options = clone($this->options);
+        }
     }
 
     /**
@@ -103,25 +129,6 @@ class Params
     {
         return SearchOptions::extractSearchClassId(get_class($this));
     }
-
-    /**
-     * External method caller (proxies unrecognized methods to options object)
-     *
-     * @param string $methodName Name of function trying to be called
-     * @param Array  $params     Parameters to be sent to the function
-     *
-     * @return mixed
-     */
-    public function __call($methodName, $params)
-    {
-        // Proxy undefined methods to the options object:
-        $method = array($this->options, $methodName);
-        if (!is_callable($method)) {
-            throw new \Exception($methodName . ' cannot be called.');
-        }
-        return call_user_func_array($method, $params);
-    }
-
 
     /**
      * Pull the search parameters
@@ -152,8 +159,8 @@ class Params
         // Remember the user's settings for future reference (we only want to do
         // this in initFromRequest, since other code may call the set methods from
         // other contexts!):
-        $this->rememberLastLimit($this->getLimit());
-        $this->rememberLastSort($this->getSort());
+        $this->getOptions()->rememberLastLimit($this->getLimit());
+        $this->getOptions()->rememberLastSort($this->getSort());
     }
 
     /**
@@ -166,7 +173,7 @@ class Params
      */
     protected function initShards($request)
     {
-        $legalShards = array_keys($this->options->getShards());
+        $legalShards = array_keys($this->getOptions()->getShards());
         $requestShards = $request->get('shard', array());
         if (!is_array($requestShards)) {
             $requestShards = array($requestShards);
@@ -183,7 +190,7 @@ class Params
         // If we got this far and still have no selections established, revert to
         // defaults:
         if (empty($this->selectedShards)) {
-            $this->selectedShards = $this->options->getDefaultSelectedShards();
+            $this->selectedShards = $this->getOptions()->getDefaultSelectedShards();
         }
     }
 
@@ -198,10 +205,10 @@ class Params
     protected function initLimit($request)
     {
         // Check for a limit parameter in the url.
-        $defaultLimit = $this->options->getDefaultLimit();
+        $defaultLimit = $this->getOptions()->getDefaultLimit();
         if (($limit = $request->get('limit')) != $defaultLimit) {
             // make sure the url parameter is a valid limit
-            if (in_array($limit, $this->options->getLimitOptions())) {
+            if (in_array($limit, $this->getOptions()->getLimitOptions())) {
                 $this->limit = $limit;
                 return;
             }
@@ -306,7 +313,7 @@ class Params
         $this->searchType = 'basic';
 
         if (empty($handler)) {
-            $handler = $this->options->getDefaultHandler();
+            $handler = $this->getOptions()->getDefaultHandler();
         }
 
         $this->searchTerms = array(
@@ -344,7 +351,7 @@ class Params
                     if (isset($typeArr[$i]) && !empty($typeArr[$i])) {
                         $handler = $typeArr[$i];
                     } else {
-                        $handler = $this->options->getDefaultHandler();
+                        $handler = $this->getOptions()->getDefaultHandler();
                     }
 
                     // Add term to this group
@@ -400,20 +407,20 @@ class Params
     {
         // Check for a view parameter in the url.
         $view = $request->get('view');
-        $lastView = $this->getLastView();
+        $lastView = $this->getOptions()->getLastView();
         if (!empty($view)) {
             if ($view == 'rss') {
                 // we don't want to store rss in the Session
                 $this->setView('rss');
             } else {
                 // store non-rss views in Session for persistence
-                $validViews = $this->getViewOptions();
+                $validViews = $this->getOptions()->getViewOptions();
                 // make sure the url parameter is a valid view
                 if (in_array($view, array_keys($validViews))) {
                     $this->setView($view);
-                    $this->rememberLastView($view);
+                    $this->getOptions()->rememberLastView($view);
                 } else {
-                    $this->setView($this->getDefaultView());
+                    $this->setView($this->getOptions()->getDefaultView());
                 }
             }
         } else if (!empty($lastView)) {
@@ -421,7 +428,7 @@ class Params
             $this->setView($lastView);
         } else {
             // otherwise load the default
-            $this->setView($this->getDefaultView());
+            $this->setView($this->getOptions()->getDefaultView());
         }
     }
 
@@ -432,7 +439,8 @@ class Params
      */
     public function getDefaultSort()
     {
-        return $this->getDefaultSortByHandler($this->getSearchHandler());
+        return $this->getOptions()
+            ->getDefaultSortByHandler($this->getSearchHandler());
     }
 
     /**
@@ -507,7 +515,7 @@ class Params
         }
 
         // Validate and assign the sort value:
-        $valid = array_keys($this->getSortOptions());
+        $valid = array_keys($this->getOptions()->getSortOptions());
         if (!empty($sort) && in_array($sort, $valid)) {
             $this->sort = $sort;
         } else {
@@ -516,7 +524,7 @@ class Params
 
         // In RSS mode, we may want to adjust sort settings:
         if (!$this->skipRssSort && $this->getView() == 'rss') {
-            $this->sort = $this->getRssSort($this->sort);
+            $this->sort = $this->getOptions()->getRssSort($this->sort);
         }
     }
 
@@ -564,7 +572,8 @@ class Params
      */
     public function getView()
     {
-        return is_null($this->view) ? $this->getDefaultView() : $this->view;
+        return is_null($this->view)
+            ? $this->getOptions()->getDefaultView() : $this->view;
     }
 
     /**
@@ -598,8 +607,9 @@ class Params
             if (isset($search['group'])) {
                 foreach ($search['group'] as $group) {
                     // Build this group individually as a basic search
-                    $thisGroup[] = $this->getHumanReadableFieldName($group['field'])
-                        . ":{$group['lookfor']}";
+                    $thisGroup[] = $this->getOptions()->getHumanReadableFieldName(
+                        $group['field']
+                    ) . ":{$group['lookfor']}";
                 }
             }
             // Is this an exclusion (NOT) group or a normal group?
@@ -709,7 +719,8 @@ class Params
 
         // Load the necessary settings to determine the appropriate recommendations
         // module:
-        $searchSettings = ConfigReader::getConfig($this->getSearchIni());
+        $searchSettings
+            = ConfigReader::getConfig($this->getOptions()->getSearchIni());
 
         // If we have a search type set, save it so we can try to load a
         // type-specific recommendations module:
@@ -1032,7 +1043,7 @@ class Params
         // Loop through all the current filter fields
         foreach ($this->filterList as $field => $values) {
             // and each value currently used for that field
-            $translate = in_array($field, $this->getTranslatedFacets());
+            $translate = in_array($field, $this->getOptions()->getTranslatedFacets());
             foreach ($values as $value) {
                 // Add to the list unless it's in the list of fields to skip:
                 if (!isset($skipList[$field])
@@ -1313,7 +1324,7 @@ class Params
     public function getViewList()
     {
         $list = array();
-        foreach ($this->getViewOptions() as $key => $value) {
+        foreach ($this->getOptions()->getViewOptions() as $key => $value) {
             $list[$key] = array(
                 'desc' => $value,
                 'selected' => ($key == $this->getView())
@@ -1331,7 +1342,7 @@ class Params
     public function getLimitList()
     {
         // Loop through all the current limits
-        $valid = $this->getLimitOptions();
+        $valid = $this->getOptions()->getLimitOptions();
         $list = array();
         foreach ($valid as $limit) {
             $list[$limit] = array(
@@ -1351,7 +1362,7 @@ class Params
     public function getSortList()
     {
         // Loop through all the current filter fields
-        $valid = $this->getSortOptions();
+        $valid = $this->getOptions()->getSortOptions();
         $list = array();
         foreach ($valid as $sort => $desc) {
             $list[$sort] = array(

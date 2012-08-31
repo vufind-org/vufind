@@ -122,11 +122,15 @@ class UrlHelper
             $params['sort'] = $sort;
         }
         $limit = $this->results->getLimit();
-        if (!is_null($limit) && $limit != $this->results->getDefaultLimit()) {
+        if (!is_null($limit)
+            && $limit != $this->results->getOptions()->getDefaultLimit()
+        ) {
             $params['limit'] = $limit;
         }
         $view = $this->results->getView();
-        if (!is_null($view) && $view != $this->results->getDefaultView()) {
+        if (!is_null($view)
+            && $view != $this->results->getOptions()->getDefaultView()
+        ) {
             $params['view'] = $view;
         }
         if ($this->results->getPage() != 1) {
@@ -145,7 +149,8 @@ class UrlHelper
         if (!empty($shards)) {
             sort($shards);
             $key = implode(':::', $shards);
-            $defaultShards = $this->results->getDefaultSelectedShards();
+            $defaultShards
+                = $this->results->getOptions()->getDefaultSelectedShards();
             sort($defaultShards);
             if (implode(':::', $shards) != implode(':::', $defaultShards)) {
                 $params['shard'] = $shards;
@@ -313,7 +318,8 @@ class UrlHelper
     public function setHandler($handler, $escape = true)
     {
         return $this->updateQueryString(
-            'type', $handler, $this->results->getDefaultHandler(), $escape
+            'type', $handler, $this->results->getOptions()->getDefaultHandler(),
+            $escape
         );
     }
 
@@ -349,7 +355,7 @@ class UrlHelper
     public function setLimit($l, $escape = true)
     {
         return $this->updateQueryString(
-            'limit', $l, $this->results->getDefaultLimit(), $escape
+            'limit', $l, $this->results->getOptions()->getDefaultLimit(), $escape
         );
     }
 

@@ -70,7 +70,7 @@ abstract class Results
     public function __construct(Params $params)
     {
         // Save the parameters, then perform the search:
-        $this->params = $params;
+        $this->setParams($params);
     }
 
     /**
@@ -81,6 +81,38 @@ abstract class Results
     public function __clone()
     {
         $this->params = clone($this->params);
+    }
+
+    /**
+     * Get the search parameters object.
+     *
+     * @return \VuFind\Search\Base\Params
+     */
+    public function getParams()
+    {
+        return $this->params;
+    }
+
+    /**
+     * Set the search parameters object.
+     *
+     * @param \VuFind\Search\Base\Params $params Parameters to set
+     *
+     * @return void
+     */
+    public function setParams($params)
+    {
+        $this->params = $params;
+    }
+
+    /**
+     * Get the search options object.
+     *
+     * @return \VuFind\Search\Base\Options
+     */
+    public function getOptions()
+    {
+        return $this->getParams()->getOptions();
     }
 
     /**
@@ -385,7 +417,7 @@ abstract class Results
     {
         // If there is a limit on how many pages are accessible,
         // apply that limit now:
-        $max = $this->getVisibleSearchResultLimit();
+        $max = $this->getOptions()->getVisibleSearchResultLimit();
         $total = $this->getResultTotal();
         if ($max > 0 && $total > $max) {
             $total = $max;

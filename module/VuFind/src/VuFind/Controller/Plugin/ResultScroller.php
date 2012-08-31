@@ -349,7 +349,7 @@ class ResultScroller extends AbstractPlugin
     protected function rememberSearch($search)
     {
         $baseUrl = $this->getController()->url()->fromRoute(
-            $search->getSearchAction()
+            $search->getOptions()->getSearchAction()
         );
         Memory::rememberSearch(
             $baseUrl . $search->getUrl()->getParams(false)

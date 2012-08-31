@@ -1,6 +1,6 @@
 <? foreach (($this->showSaved ? array_reverse($this->saved) : array_reverse($this->unsaved)) as $iteration => $info): ?>
   <li>
-    <a rel="external" href="<?=$this->url($info->getSearchAction()) . $info->getUrl()->getParams()?>">
+    <a rel="external" href="<?=$this->url($info->getOptions()->getSearchAction()) . $info->getUrl()->getParams()?>">
     <div class="result">
     <h3><?
       $desc = $info->getDisplayQuery();

@@ -86,10 +86,10 @@ class Results extends BaseResults
                 'sort' => $finalSort,
                 'pageNumber' => $this->params->getPage(),
                 'pageSize' => $this->params->getLimit(),
-                'didYouMean' => $this->spellcheckEnabled()
+                'didYouMean' => $this->getOptions()->spellcheckEnabled()
             )
         );
-        if ($this->highlightEnabled()) {
+        if ($this->getOptions()->highlightEnabled()) {
             $query->setHighlight(true);
             $query->setHighlightStart('{{{{START_HILITE}}}}');
             $query->setHighlightEnd('{{{{END_HILITE}}}}');
@@ -115,7 +115,7 @@ class Results extends BaseResults
         }
 
         // Save spelling details if they exist.
-        if ($this->spellcheckEnabled()) {
+        if ($this->getOptions()->spellcheckEnabled()) {
             $this->processSpelling();
         }
 
@@ -213,7 +213,7 @@ class Results extends BaseResults
                 if (isset($filter[$field])) {
                     // Should we translate values for the current facet?
                     $translate
-                        = in_array($field, $this->params->getTranslatedFacets());
+                        = in_array($field, $this->getOptions()->getTranslatedFacets());
 
                     // Loop through all the facet values to see if any are applied.
                     foreach ($current['counts'] as $facetIndex => $facetDetails) {

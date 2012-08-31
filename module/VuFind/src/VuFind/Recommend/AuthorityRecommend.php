@@ -135,7 +135,7 @@ class AuthorityRecommend implements RecommendInterface
             $authParams = new SolrAuthParams();
             $authParams->initFromRequest($request);
             foreach ($this->filters as $filter) {
-                $authParams->addHiddenFilter($filter);
+                $authParams->getOptions()->addHiddenFilter($filter);
             }
             $authResults = new SolrAuthResults($authParams);
             $results = $authResults->getResults();
