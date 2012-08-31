@@ -1,4 +1,4 @@
-<? $filterList = $this->results->getFilterList(true); if (!empty($filterList)): ?>
+<? $filterList = $this->results->getParams()->getFilterList(true); if (!empty($filterList)): ?>
   <ul class="filters" data-role="listview" data-inset="true" data-dividertheme="e">
     <li data-role="list-divider"><?=$this->transEsc('adv_search_filters')?></li>
     <? $i = 0; foreach ($filterList as $field => $filters): ?>

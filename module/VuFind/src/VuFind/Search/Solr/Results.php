@@ -91,19 +91,21 @@ class Results extends BaseResults
      */
     protected function performSearch()
     {
-        $solr = static::getSolrConnection($this->getSelectedShards());
+        $solr = static::getSolrConnection($this->getParams()->getSelectedShards());
 
         // Collect the search parameters:
-        $overrideQuery = $this->getOverrideQuery();
+        $overrideQuery = $this->getParams()->getOverrideQuery();
         $params = array(
             'query' => !empty($overrideQuery)
-                ? $overrideQuery : $solr->buildQuery($this->getSearchTerms()),
-            'handler' => $this->getSearchHandler(),
+                ? $overrideQuery
+                : $solr->buildQuery($this->getParams()->getSearchTerms()),
+            'handler' => $this->getParams()->getSearchHandler(),
             // Account for reserved VuFind word 'relevance' (which really means
             // "no sort parameter in Solr"):
-            'sort' => $this->getSort() == 'relevance' ? null : $this->getSort(),
+            'sort' => $this->getParams()->getSort() == 'relevance'
+                ? null : $this->getParams()->getSort(),
             'start' => $this->getStartRecord() - 1,
-            'limit' => $this->getLimit(),
+            'limit' => $this->getParams()->getLimit(),
             'facet' => $this->getParams()->getFacetSettings(),
             'filter' => $this->getParams()->getFilterSettings(),
             'spell' => $this->getParams()->getSpellingQuery(),
@@ -173,7 +175,7 @@ class Results extends BaseResults
             // Make sure the suggestion is for a valid search term.
             // Sometimes shingling will have bridged two search fields (in
             // an advanced search) or skipped over a stopword.
-            if (!$this->findSearchTerm($ourTerm)) {
+            if (!$this->getParams()->findSearchTerm($ourTerm)) {
                 $validTerm = false;
             }
 
@@ -221,7 +223,7 @@ class Results extends BaseResults
         }
 
         foreach ($termList as $term) {
-            if (!$this->findSearchTerm($term['word'])) {
+            if (!$this->getParams()->findSearchTerm($term['word'])) {
                 $newList[] = $term;
             }
         }
@@ -350,7 +352,7 @@ class Results extends BaseResults
             }
             //  Do we need to show the whole, modified query?
             if ($config->Spelling->phrase) {
-                $label = $this->getDisplayQueryWithReplacedTerm(
+                $label = $this->getParams()->getDisplayQueryWithReplacedTerm(
                     $targetTerm, $replacement
                 );
             } else {
@@ -511,7 +513,7 @@ class Results extends BaseResults
      */
     public function getSimilarRecords($id)
     {
-        $solr = static::getSolrConnection($this->getSelectedShards());
+        $solr = static::getSolrConnection($this->getParams()->getSelectedShards());
         $filters = $this->getOptions()->getHiddenFilters();
         $extras = empty($filters) ? array() : array('fq' => $filters);
         $rawResponse = $solr->getMoreLikeThis($id, $extras);
@@ -568,14 +570,14 @@ class Results extends BaseResults
         $clone = clone($this);
 
         // Manipulate facet settings temporarily:
-        $clone->resetFacetConfig();
-        $clone->setFacetLimit(-1);
+        $clone->getParams()->resetFacetConfig();
+        $clone->getParams()->setFacetLimit(-1);
         foreach ($facetfields as $facetName) {
-            $clone->addFacet($facetName);
+            $clone->getParams()->addFacet($facetName);
 
             // Clear existing filters for the selected field if necessary:
             if ($removeFilter) {
-                $clone->removeAllFilters($facetName);
+                $clone->getParams()->removeAllFilters($facetName);
             }
         }
 

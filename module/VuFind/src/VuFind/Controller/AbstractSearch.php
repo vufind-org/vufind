@@ -225,7 +225,7 @@ class AbstractSearch extends AbstractBase
         }
 
         // Special case: If we're in RSS view, we need to render differently:
-        if ($view->results->getView() == 'rss') {
+        if ($view->results->getParams()->getView() == 'rss') {
             $response = $this->getResponse();
             $response->getHeaders()->addHeaderLine('Content-type', 'text/xml');
             $feed = $this->getViewRenderer()->plugin('resultfeed');
@@ -317,14 +317,14 @@ class AbstractSearch extends AbstractBase
         $savedSearch = $minSO->deminify();
 
         // Fail if this is not the right type of search:
-        if ($savedSearch->getSearchType() != 'advanced') {
+        if ($savedSearch->getParams()->getSearchType() != 'advanced') {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('advSearchError_notAdvanced');
             return false;
         }
 
         // Activate facets so we get appropriate descriptions in the filter list:
-        $savedSearch->activateAllFacets('Advanced');
+        $savedSearch->getParams()->activateAllFacets('Advanced');
 
         // Make the object available to the view:
         return $savedSearch;

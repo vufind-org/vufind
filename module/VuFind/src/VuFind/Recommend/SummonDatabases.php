@@ -96,7 +96,7 @@ class SummonDatabases implements RecommendInterface
         // If we received a Summon search object, we'll use that.  If not, we need
         // to create a new Summon search object using the specified request 
         // parameter for search terms.
-        if ($results->getSearchClassId() != 'Summon') {
+        if ($results->getParams()->getSearchClassId() != 'Summon') {
             $params = new SummonParams();
             $params->setBasicSearch($this->lookfor);
             $results = new SummonResults($params);

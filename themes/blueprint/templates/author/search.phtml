@@ -19,5 +19,5 @@
     $this->layout()->searchbox = $this->render('search/searchbox.phtml');
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<em>' . $this->translate('Author Results for') . ' ' . $this->results->getDisplayQuery() . '</em>';
+    $this->layout()->breadcrumbs = '<em>' . $this->translate('Author Results for') . ' ' . $this->results->getParams()->getDisplayQuery() . '</em>';
 ?>

@@ -71,14 +71,14 @@ class Results extends BaseResults
         // Collect the search parameters:
         $config = ConfigReader::getConfig();
         $wc = static::getWorldCatConnection();
-        $overrideQuery = $this->getOverrideQuery();
+        $overrideQuery = $this->getParams()->getOverrideQuery();
         $query = empty($overrideQuery)
-            ? $wc->buildQuery($this->getSearchTerms()) : $overrideQuery;
+            ? $wc->buildQuery($this->getParams()->getSearchTerms()) : $overrideQuery;
 
         // Perform the search:
         $this->rawResponse  = $wc->search(
-            $query, $config->WorldCat->OCLCCode, $this->getPage(), $this->getLimit(),
-            $this->getSort()
+            $query, $config->WorldCat->OCLCCode, $this->getParams()->getPage(),
+            $this->getParams()->getLimit(), $this->getParams()->getSort()
         );
 
         // How many results were there?

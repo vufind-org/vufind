@@ -48,11 +48,10 @@ class Search extends AbstractBase
      */
     public function log($data, $request)
     {
-        $configs = $data->getFacetConfig();
         $stat = array(
-            'phrase'       => $data->getDisplayQuery(),
-            'searchSource' => $data->getSearchClassId(),
-            'type'         => $data->getSearchHandler(),
+            'phrase'       => $data->getParams()->getDisplayQuery(),
+            'searchSource' => $data->getParams()->getSearchClassId(),
+            'type'         => $data->getParams()->getSearchHandler(),
             'resultCount'  => $data->getResultTotal(),
             'noresults'    => $data->getResultTotal() == 0
         );

@@ -10,8 +10,8 @@
 
     // Set up saved search details:
     if (isset($this->saved) && is_object($this->saved)) {
-        $searchDetails = $this->saved->getSearchTerms();
-        $searchFilters = $this->saved->getFilterList();
+        $searchDetails = $this->saved->getParams()->getSearchTerms();
+        $searchFilters = $this->saved->getParams()->getFilterList();
     } else {
         $searchDetails = $searchFilters = false;
     }

@@ -3,12 +3,12 @@
     <a rel="external" href="<?=$this->url($info->getOptions()->getSearchAction()) . $info->getUrl()->getParams()?>">
     <div class="result">
     <h3><?
-      $desc = $info->getDisplayQuery();
+      $desc = $info->getParams()->getDisplayQuery();
       echo empty($desc) ? $this->transEsc("history_empty_search") : $this->escapeHtml($desc);
     ?></h3>
     <span class="ui-li-count"><?=$this->escapeHtml(number_format($info->getResultTotal()))?></span>
     <p><strong><?=$this->transEsc("history_time")?></strong>: <?=$this->escapeHtml(date("g:ia, jS M y", $info->getStartTime()))?></p>
-    <? $info->activateAllFacets(); foreach ($info->getFilterList() as $field => $filters): ?>
+    <? $info->getParams()->activateAllFacets(); foreach ($info->getParams()->getFilterList() as $field => $filters): ?>
       <? foreach ($filters as $filter): ?>
         <p><strong><?=$this->transEsc($field)?></strong>: <?=$this->escapeHtml($filter['displayText'])?></p>
       <? endforeach; ?>

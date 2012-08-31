@@ -56,7 +56,7 @@ class SortFacetList extends AbstractHelper
     {
         $facets = array();
         // avoid limit on URL
-        $results->setLimit($results->getOptions()->getDefaultLimit());
+        $results->getParams()->setLimit($results->getOptions()->getDefaultLimit());
         $urlHelper = $this->getView()->plugin('url');
         foreach ($list as $value) {
             $url = $urlHelper($searchRoute)

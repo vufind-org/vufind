@@ -77,11 +77,11 @@ class Minified
         $this->i  = $searchObject->getStartTime();
         $this->s  = $searchObject->getQuerySpeed();
         $this->r  = $searchObject->getResultTotal();
-        $this->ty = $searchObject->getSearchType();
-        $this->cl = $searchObject->getSearchClassId();
+        $this->ty = $searchObject->getParams()->getSearchType();
+        $this->cl = $searchObject->getParams()->getSearchClassId();
 
         // Search terms, we'll shorten keys
-        $tempTerms = $searchObject->getSearchTerms();
+        $tempTerms = $searchObject->getParams()->getSearchTerms();
         foreach ($tempTerms as $term) {
             $newTerm = array();
             foreach ($term as $k => $v) {
@@ -122,7 +122,7 @@ class Minified
 
         // It would be nice to shorten filter fields too, but
         //      it would be a nightmare to maintain.
-        $this->f = $searchObject->getFilters();
+        $this->f = $searchObject->getParams()->getFilters();
     }
 
     /**

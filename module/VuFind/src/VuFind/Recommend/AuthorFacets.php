@@ -105,7 +105,7 @@ class AuthorFacets implements RecommendInterface
      */
     public function getSearchTerm()
     {
-        $search = $this->results->getSearchTerms();
+        $search = $this->results->getParams()->getSearchTerms();
         if (isset($search[0]['lookfor'])) {
             return $search[0]['lookfor'];
         }

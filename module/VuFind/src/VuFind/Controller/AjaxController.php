@@ -734,7 +734,7 @@ class AjaxController extends AbstractBase
         $params = new \VuFind\Search\Solr\Params();
         $params->initFromRequest($this->getRequest()->getQuery());
         $results = new \VuFind\Search\Solr\Results($params);
-        $filters = $results->getFilters();
+        $filters = $params->getFilters();
         $dateFacets = $this->params()->fromQuery('facetFields');
         $dateFacets = empty($dateFacets) ? array() : explode(':', $dateFacets);
         $fields = $this->processDateFacets($filters, $dateFacets, $results);
@@ -779,7 +779,7 @@ class AjaxController extends AbstractBase
             }
             $result[$current] = array($from, $to);
             $result[$current]['label']
-                = $results->getFacetLabel($current);
+                = $results->getParams()->getFacetLabel($current);
         }
         return $result;
     }

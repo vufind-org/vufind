@@ -22,7 +22,7 @@
   <? if (isset($sideFacetSet['tags']) && !empty($sideFacetSet['tags']['list'])): ?>
     <div class="sidegroup">
       <h4 class="tag"><?=$this->transEsc($sideFacetSet['tags']['label'])?></h4>
-      <? $filterList = $this->results->getFilterList(true);
+      <? $filterList = $this->results->getParams()->getFilterList(true);
          $tagFilterList = isset($filterList[$sideFacetSet['tags']['label']]) ? $filterList[$sideFacetSet['tags']['label']] : null;
          if (!empty($tagFilterList)): ?>
         <strong><?=$this->transEsc('Remove Filters')?></strong>

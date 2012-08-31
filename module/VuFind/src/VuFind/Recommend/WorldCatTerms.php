@@ -101,7 +101,7 @@ class WorldCatTerms implements RecommendInterface
     public function getTerms()
     {
         // Extract the first search term from the search object:
-        $search = $this->searchObject->getSearchTerms();
+        $search = $this->searchObject->getParams()->getSearchTerms();
         $lookfor = isset($search[0]['lookfor']) ? $search[0]['lookfor'] : '';
 
         // Get terminology information:

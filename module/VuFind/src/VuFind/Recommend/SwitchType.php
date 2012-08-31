@@ -95,7 +95,7 @@ class SwitchType implements RecommendInterface
      */
     public function process($results)
     {
-        $handler = $results->getSearchHandler();
+        $handler = $results->getParams()->getSearchHandler();
 
         // If the handler is null, we can't figure out a single handler, so this
         // is probably an advanced search.  In that case, we shouldn't try to change

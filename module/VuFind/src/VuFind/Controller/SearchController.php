@@ -140,14 +140,16 @@ class SearchController extends AbstractSearch
         // Find the selected value by analyzing facets -- if we find match, remove
         // the offending facet to avoid inappropriate items appearing in the
         // "applied filters" sidebar!
-        if ($savedSearch && $savedSearch->hasFilter('illustrated:Illustrated')) {
+        if ($savedSearch
+            && $savedSearch->getParams()->hasFilter('illustrated:Illustrated')
+        ) {
             $illYes['selected'] = true;
-            $savedSearch->removeFilter('illustrated:Illustrated');
+            $savedSearch->getParams()->removeFilter('illustrated:Illustrated');
         } else if ($savedSearch
-            && $savedSearch->hasFilter('illustrated:"Not Illustrated"')
+            && $savedSearch->getParams()->hasFilter('illustrated:"Not Illustrated"')
         ) {
             $illNo['selected'] = true;
-            $savedSearch->removeFilter('illustrated:"Not Illustrated"');
+            $savedSearch->getParams()->removeFilter('illustrated:"Not Illustrated"');
         } else {
             $illAny['selected'] = true;
         }
@@ -168,13 +170,14 @@ class SearchController extends AbstractSearch
 
         // Check to see if there is an existing range in the search object:
         if ($savedSearch) {
-            $filters = $savedSearch->getFilters();
+            $filters = $savedSearch->getParams()->getFilters();
             if (isset($filters['publishDate'])) {
                 foreach ($filters['publishDate'] as $current) {
                     if ($range = SolrUtils::parseRange($current)) {
                         $from = $range['from'] == '*' ? '' : $range['from'];
                         $to = $range['to'] == '*' ? '' : $range['to'];
-                        $savedSearch->removeFilter('publishDate:' . $current);
+                        $savedSearch->getParams()
+                            ->removeFilter('publishDate:' . $current);
                         break;
                     }
                 }
@@ -204,13 +207,15 @@ class SearchController extends AbstractSearch
                 // If we haven't already found a selected facet and the current
                 // facet has been applied to the search, we should store it as
                 // the selected facet for the current control.
-                if ($searchObject && $searchObject->hasFilter($fullFilter)) {
+                if ($searchObject
+                    && $searchObject->getParams()->hasFilter($fullFilter)
+                ) {
                     $facetList[$facet]['list'][$key]['selected'] = true;
                     // Remove the filter from the search object -- we don't want
                     // it to show up in the "applied filters" sidebar since it
                     // will already be accounted for by being selected in the
                     // filter select list!
-                    $searchObject->removeFilter($fullFilter);
+                    $searchObject->getParams()->removeFilter($fullFilter);
                 }
             }
         }

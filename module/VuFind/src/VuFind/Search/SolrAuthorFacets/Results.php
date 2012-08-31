@@ -52,8 +52,8 @@ class Results extends SolrResults
 
         // Collect the search parameters:
         $params = array(
-            'query' => $solr->buildQuery($this->getSearchTerms()),
-            'handler' => $this->getSearchHandler(),
+            'query' => $solr->buildQuery($this->getParams()->getSearchTerms()),
+            'handler' => $this->getParams()->getSearchHandler(),
             'limit' => 0,
             'facet' => $this->getParams()->getFacetSettings(),
         );
@@ -64,11 +64,12 @@ class Results extends SolrResults
         // Get the facets from which we will build our results:
         $facets = $this->getFacetList(array('authorStr' => null));
         if (isset($facets['authorStr'])) {
+            $params = $this->getParams();
             $this->resultTotal
-                = (($this->getPage() - 1) * $this->getLimit())
+                = (($params->getPage() - 1) * $params->getLimit())
                 + count($facets['authorStr']['list']);
             $this->results = array_slice(
-                $facets['authorStr']['list'], 0, $this->getLimit()
+                $facets['authorStr']['list'], 0, $params->getLimit()
             );
         }
     }

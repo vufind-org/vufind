@@ -81,7 +81,7 @@ class Results extends BaseResults
         // Perform the actual search
         $summon = self::getSummonConnection();
         $query = new SummonQuery(
-            $summon->buildQuery($this->getSearchTerms()),
+            $summon->buildQuery($this->getParams()->getSearchTerms()),
             array(
                 'sort' => $finalSort,
                 'pageNumber' => $this->getParams()->getPage(),

@@ -1,6 +1,6 @@
 <?
     // Set up page title:
-    $lookfor = $this->results->getDisplayQuery();
+    $lookfor = $this->results->getParams()->getDisplayQuery();
     if (isset($this->overrideTitle)) {
         $this->headTitle($this->overrideTitle);
     } else {
@@ -12,13 +12,13 @@
         'search/searchbox.phtml',
         array(
             'lookfor' => $lookfor,
-            'searchIndex' => $this->results->getSearchHandler(),
-            'searchType' => $this->results->getSearchType(),
+            'searchIndex' => $this->results->getParams()->getSearchHandler(),
+            'searchType' => $this->results->getParams()->getSearchType(),
             'searchId' => $this->results->getSearchId(),
-            'searchClassId' => $this->results->getsearchClassId(),
-            'checkboxFilters' => $this->results->getCheckboxFacets(),
-            'filterList' => $this->results->getFilters(),
-            'selectedShards' => $this->results->getSelectedShards()
+            'searchClassId' => $this->results->getParams()->getsearchClassId(),
+            'checkboxFilters' => $this->results->getParams()->getCheckboxFacets(),
+            'filterList' => $this->results->getParams()->getFilters(),
+            'selectedShards' => $this->results->getParams()->getSelectedShards()
         )
     );
 
@@ -51,7 +51,7 @@
         <? endif; ?>
         <? if (isset($this->overrideSearchHeading)): ?>
           <?=$this->overrideSearchHeading?>
-        <? elseif ($this->results->getSearchType() == 'basic'): ?>
+        <? elseif ($this->results->getParams()->getSearchType() == 'basic'): ?>
           <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($lookfor)?>'</strong>,
         <? endif; ?>
         <? if ($qtime = $this->results->getQuerySpeed()): ?>
@@ -95,7 +95,7 @@
   <? else: ?>
     <form method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>">
       <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
-      <?=$this->render('search/list-' . $this->results->getView() . '.phtml')?>
+      <?=$this->render('search/list-' . $this->results->getParams()->getView() . '.phtml')?>
       <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => 'bottom_'))?>
       <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
     </form>

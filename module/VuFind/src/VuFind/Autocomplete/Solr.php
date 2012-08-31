@@ -126,12 +126,12 @@ class Solr implements AutocompleteInterface
     public function getSuggestions($query)
     {
         try {
-            $this->searchObject->setBasicSearch(
+            $this->searchObject->getParams()->setBasicSearch(
                 $this->mungeQuery($query), $this->handler
             );
-            $this->searchObject->setSort($this->sortField);
+            $this->searchObject->getParams()->setSort($this->sortField);
             foreach ($this->filters as $current) {
-                $this->searchObject->addFilter($current);
+                $this->searchObject->getParams()->addFilter($current);
             }
 
             // Perform the search:

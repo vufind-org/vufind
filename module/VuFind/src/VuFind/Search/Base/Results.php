@@ -217,24 +217,6 @@ abstract class Results
     }
 
     /**
-     * Allow Results object to proxy methods of Params object.
-     *
-     * @param string $methodName Method to call
-     * @param array  $params     Method parameters
-     *
-     * @return mixed
-     */
-    public function __call($methodName, $params)
-    {
-        // Proxy undefined methods to the parameter object:
-        $method = array($this->getParams(), $methodName);
-        if (!is_callable($method)) {
-            throw new \Exception($methodName . ' cannot be called.');
-        }
-        return call_user_func_array($method, $params);
-    }
-
-    /**
      * Get spelling suggestion information.
      *
      * @return array
@@ -280,7 +262,8 @@ abstract class Results
         if (!is_null($this->startRecordOverride)) {
             return $this->startRecordOverride;
         }
-        return (($this->getPage() - 1) * $this->getLimit()) + 1;
+        $params = $this->getParams();
+        return (($params->getPage() - 1) * $params->getLimit()) + 1;
     }
 
     /**
@@ -291,8 +274,8 @@ abstract class Results
     public function getEndRecord()
     {
         $total = $this->getResultTotal();
-        $limit = $this->getLimit();
-        $page = $this->getPage();
+        $limit = $this->getParams()->getLimit();
+        $page = $this->getParams()->getPage();
         if ($page * $limit > $total) {
             // The end of the current page runs past the last record, use total
             // results
@@ -427,8 +410,8 @@ abstract class Results
 
         // Build the standard paginator control:
         return Paginator::factory($total)
-            ->setCurrentPageNumber($this->getPage())
-            ->setItemCountPerPage($this->getLimit())
+            ->setCurrentPageNumber($this->getParams()->getPage())
+            ->setItemCountPerPage($this->getParams()->getLimit())
             ->setPageRange(11);
     }
 
@@ -512,5 +495,22 @@ abstract class Results
         $this->queryStartTime = $minified->i;
         $this->queryTime = $minified->s;
         $this->resultTotal = $minified->r;
+    }
+
+    /**
+     * Get an array of recommendation objects for augmenting the results display.
+     *
+     * @param string $location Name of location to use as a filter (null to get
+     * associative array of all locations); legal non-null values: 'top', 'side'
+     *
+     * @return array
+     */
+    public function getRecommendations($location = 'top')
+    {
+        // Proxy the params object's getRecommendations call -- we need to set up
+        // the recommendations in the params object since they need to be
+        // query-aware, but from a caller's perspective, it makes more sense to
+        // pull them from the results object.
+        return $this->getParams()->getRecommendations($location);
     }
 }

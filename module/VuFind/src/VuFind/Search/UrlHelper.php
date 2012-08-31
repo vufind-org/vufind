@@ -87,8 +87,8 @@ class UrlHelper
         $params = $this->defaultParams;
 
         // Build all the URL parameters based on search object settings:
-        if ($this->results->getSearchType() == 'advanced') {
-            $terms = $this->results->getSearchTerms();
+        if ($this->results->getParams()->getSearchType() == 'advanced') {
+            $terms = $this->results->getParams()->getSearchTerms();
             if (isset($terms[0]['join'])) {
                 $params['join'] = $terms[0]['join'];
             }
@@ -108,35 +108,37 @@ class UrlHelper
                 }
             }
         } else {
-            $search = $this->results->getDisplayQuery();
+            $search = $this->results->getParams()->getDisplayQuery();
             if (!empty($search)) {
                 $params[$this->basicSearchParam] = $search;
             }
-            $type = $this->results->getSearchHandler();
+            $type = $this->results->getParams()->getSearchHandler();
             if (!empty($type)) {
                 $params['type'] = $type;
             }
         }
-        $sort = $this->results->getSort();
-        if (!is_null($sort) && $sort != $this->results->getDefaultSort()) {
+        $sort = $this->results->getParams()->getSort();
+        if (!is_null($sort)
+            && $sort != $this->results->getParams()->getDefaultSort()
+        ) {
             $params['sort'] = $sort;
         }
-        $limit = $this->results->getLimit();
+        $limit = $this->results->getParams()->getLimit();
         if (!is_null($limit)
             && $limit != $this->results->getOptions()->getDefaultLimit()
         ) {
             $params['limit'] = $limit;
         }
-        $view = $this->results->getView();
+        $view = $this->results->getParams()->getView();
         if (!is_null($view)
             && $view != $this->results->getOptions()->getDefaultView()
         ) {
             $params['view'] = $view;
         }
-        if ($this->results->getPage() != 1) {
-            $params['page'] = $this->results->getPage();
+        if ($this->results->getParams()->getPage() != 1) {
+            $params['page'] = $this->results->getParams()->getPage();
         }
-        $filters = $this->results->getFilters();
+        $filters = $this->results->getParams()->getFilters();
         if (!empty($filters)) {
             $params['filter'] = array();
             foreach ($filters as $field => $values) {
@@ -145,7 +147,7 @@ class UrlHelper
                 }
             }
         }
-        $shards = $this->results->getSelectedShards();
+        $shards = $this->results->getParams()->getSelectedShards();
         if (!empty($shards)) {
             sort($shards);
             $key = implode(':::', $shards);
@@ -171,7 +173,7 @@ class UrlHelper
     public function replaceTerm($from, $to)
     {
         $newResults = clone($this->results);
-        $newResults->replaceSearchTerm($from, $to);
+        $newResults->getParams()->replaceSearchTerm($from, $to);
         $myClass = get_class($this);
         $helper = new $myClass($newResults);
         return $helper->getParams();
@@ -244,7 +246,7 @@ class UrlHelper
         if (isset($params['filter']) && is_array($params['filter'])) {
             foreach ($params['filter'] as $current) {
                 list($currentField, $currentValue)
-                    = $this->results->parseFilter($current);
+                    = $this->results->getParams()->parseFilter($current);
                 if ($currentField != $field || $currentValue != $value) {
                     $newFilter[] = $current;
                 }
@@ -273,7 +275,7 @@ class UrlHelper
     public function removeFilter($filter, $escape = true)
     {
         // Treat this as a special case of removeFacet:
-        list($field, $value) = $this->results->parseFilter($filter);
+        list($field, $value) = $this->results->getParams()->parseFilter($filter);
         return $this->removeFacet($field, $value, $escape);
     }
 
@@ -302,7 +304,7 @@ class UrlHelper
     public function setSort($s, $escape = true)
     {
         return $this->updateQueryString(
-            'sort', $s, $this->results->getDefaultSort(), $escape
+            'sort', $s, $this->results->getParams()->getDefaultSort(), $escape
         );
     }
 

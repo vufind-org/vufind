@@ -367,7 +367,7 @@ class AuthorInfo implements RecommendInterface
      */
     protected function getAuthor()
     {
-        $search = $this->searchObject->getSearchTerms();
+        $search = $this->searchObject->getParams()->getSearchTerms();
         if (isset($search[0]['lookfor'])) {
             $author = $search[0]['lookfor'];
             // remove quotes

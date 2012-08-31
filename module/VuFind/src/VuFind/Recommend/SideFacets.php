@@ -142,7 +142,7 @@ class SideFacets implements RecommendInterface
      */
     public function getDateFacets()
     {
-        $filters = $this->results->getFilters();
+        $filters = $this->results->getParams()->getFilters();
         $result = array();
         foreach ($this->dateFacets as $current) {
             $from = $to = '';

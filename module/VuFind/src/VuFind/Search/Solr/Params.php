@@ -175,7 +175,7 @@ class Params extends BaseParams
      *
      * @return void
      */
-    public function initTagSearch()
+    protected function initTagSearch()
     {
         $table = new TagsTable();
         $tag = $table->getByText($this->getDisplayQuery());

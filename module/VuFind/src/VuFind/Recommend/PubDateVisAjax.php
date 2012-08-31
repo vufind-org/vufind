@@ -114,7 +114,7 @@ class PubDateVisAjax implements RecommendInterface
     public function getVisFacets()
     {
         return $this->processDateFacets(
-            $this->searchObject->getFilters()
+            $this->searchObject->getParams()->getFilters()
         );
     }
 
@@ -180,7 +180,7 @@ class PubDateVisAjax implements RecommendInterface
             }
             $result[$current] = array($from, $to);
             $result[$current]['label']
-                = $this->searchObject->getFacetLabel($current);
+                = $this->searchObject->getParams()->getFacetLabel($current);
         }
         return $result;
     }

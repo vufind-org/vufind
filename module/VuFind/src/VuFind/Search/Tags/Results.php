@@ -49,9 +49,9 @@ class Results extends BaseResults
     protected function performSearch()
     {
         $table = new TagsTable();
-        $tag = $table->getByText($this->getDisplayQuery());
+        $tag = $table->getByText($this->getParams()->getDisplayQuery());
         if (!empty($tag)) {
-            $rawResults = $tag->getResources(null, $this->getSort());
+            $rawResults = $tag->getResources(null, $this->getParams()->getSort());
         } else {
             $rawResults = array();
         }
@@ -60,10 +60,11 @@ class Results extends BaseResults
         $this->resultTotal = count($rawResults);
 
         // Apply offset and limit if necessary!
-        $limit = $this->getLimit();
+        $limit = $this->getParams()->getLimit();
         if ($this->resultTotal > $limit) {
             $rawResults = $tag->getResources(
-                null, $this->getSort(), $this->getStartRecord() - 1, $limit
+                null, $this->getParams()->getSort(), $this->getStartRecord() - 1,
+                $limit
             );
         }
 

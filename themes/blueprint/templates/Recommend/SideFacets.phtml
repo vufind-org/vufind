@@ -1,6 +1,6 @@
 <div class="sidegroup">
   <? if ($this->results->getResultTotal() > 0): ?><h4><?=$this->transEsc('Narrow Search')?></h4><? endif; ?>
-  <? $checkboxFilters = $this->results->getCheckboxFacets(); if (count($checkboxFilters) > 0): ?>
+  <? $checkboxFilters = $this->results->getParams()->getCheckboxFacets(); if (count($checkboxFilters) > 0): ?>
     <? foreach ($checkboxFilters as $current): ?>
         <div class="checkboxFilter<?=($this->results->getResultTotal() < 1 && !$current['selected'] && !$current['alwaysVisible']) ? ' hide' : ''?>">
           <input type="checkbox" name="filter[]" value="<?=$this->escapeHtml($current['filter'])?>"
@@ -10,7 +10,7 @@
         </div>
     <? endforeach; ?>
   <? endif; ?>
-  <? $filterList = $this->results->getFilterList(true); if (!empty($filterList)): ?>
+  <? $filterList = $this->results->getParams()->getFilterList(true); if (!empty($filterList)): ?>
     <strong><?=$this->transEsc('Remove Filters')?></strong>
     <ul class="filters">
     <? foreach ($filterList as $field => $filters): ?>
