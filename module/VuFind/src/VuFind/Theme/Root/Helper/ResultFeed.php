@@ -112,9 +112,11 @@ class ResultFeed extends AbstractHelper
             $translator('Results for') . ' '
             . $results->getParams()->getDisplayQuery()
         );
-        $feed->setLink($baseUrl . $results->getUrl()->setViewParam(null, false));
+        $feed->setLink(
+            $baseUrl . $results->getUrlQuery()->setViewParam(null, false)
+        );
         $feed->setFeedLink(
-            $baseUrl . $results->getUrl()->getParams(false),
+            $baseUrl . $results->getUrlQuery()->getParams(false),
             $results->getParams()->getView()
         );
 

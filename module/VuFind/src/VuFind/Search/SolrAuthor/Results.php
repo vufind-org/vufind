@@ -52,7 +52,7 @@ class Results extends SolrResults
         parent::__construct($params);
 
         // Set up URL helper to use appropriate search parameter:
-        $this->getUrl()->setBasicSearchParam('author');
+        $this->getUrlQuery()->setBasicSearchParam('author');
     }
 
     /**

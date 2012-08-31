@@ -162,8 +162,8 @@ class Search extends Gateway
             );
             $dupSearch = $minSO->deminify();
             // See if the classes and urls match
-            $oldUrl = $dupSearch->getUrl()->getParams();
-            $newUrl = $newSearch->getUrl()->getParams();
+            $oldUrl = $dupSearch->getUrlQuery()->getParams();
+            $newUrl = $newSearch->getUrlQuery()->getParams();
             if (get_class($dupSearch) == get_class($newSearch)
                 && $oldUrl == $newUrl
             ) {

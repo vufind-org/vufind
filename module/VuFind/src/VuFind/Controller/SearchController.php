@@ -385,7 +385,7 @@ class SearchController extends AbstractSearch
         $view = $this->resultsAction();
 
         // Customize the URL helper to make sure it builds proper reserves URLs:
-        $url = $view->results->getUrl();
+        $url = $view->results->getUrlQuery();
         $url->setDefaultParameter('range', $range);
         $url->setDefaultParameter('department', $dept);
 
@@ -481,7 +481,7 @@ class SearchController extends AbstractSearch
         }
 
         // Customize the URL helper to make sure it builds proper reserves URLs:
-        $url = $view->results->getUrl();
+        $url = $view->results->getUrlQuery();
         $url->setDefaultParameter('course', $course);
         $url->setDefaultParameter('inst', $inst);
         $url->setDefaultParameter('dept', $dept);

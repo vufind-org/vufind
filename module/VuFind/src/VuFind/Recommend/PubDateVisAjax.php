@@ -153,7 +153,7 @@ class PubDateVisAjax implements RecommendInterface
     public function getSearchParams()
     {
         // Get search parameters and return them minus the leading ?:
-        return substr($this->searchObject->getUrl()->getParams(false), 1);
+        return substr($this->searchObject->getUrlQuery()->getParams(false), 1);
     }
 
     /**

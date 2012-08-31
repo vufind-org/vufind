@@ -122,13 +122,13 @@ abstract class Results
      *
      * @return UrlHelper
      */
-    public function getUrl()
+    public function getUrlQuery()
     {
         // Set up URL helper:
-        if (!isset($this->helpers['url'])) {
-            $this->helpers['url'] = new UrlHelper($this);
+        if (!isset($this->helpers['urlQuery'])) {
+            $this->helpers['urlQuery'] = new UrlQueryHelper($this);
         }
-        return $this->helpers['url'];
+        return $this->helpers['urlQuery'];
     }
 
     /**

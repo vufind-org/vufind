@@ -122,7 +122,7 @@ class AbstractSearch extends AbstractBase
             // (We want all searches to be persistent and bookmarkable).
             $details = $savedSearch->getOptions()->getSearchAction();
             $url = $this->url()->fromRoute($details);
-            $url .= $savedSearch->getUrl()->getParams(false);
+            $url .= $savedSearch->getUrlQuery()->getParams(false);
             return $this->redirect()->toUrl($url);
         } else {
             // They don't
@@ -181,7 +181,7 @@ class AbstractSearch extends AbstractBase
             if ($this->rememberSearch) {
                 $searchUrl = $this->url()->fromRoute(
                     $results->getOptions()->getSearchAction()
-                ) . $results->getUrl()->getParams(false);
+                ) . $results->getUrlQuery()->getParams(false);
                 Memory::rememberSearch($searchUrl);
             }
 

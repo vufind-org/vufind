@@ -36,7 +36,7 @@ namespace VuFind\Search;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class UrlHelper
+class UrlQueryHelper
 {
     protected $results;
     protected $basicSearchParam = 'lookfor';

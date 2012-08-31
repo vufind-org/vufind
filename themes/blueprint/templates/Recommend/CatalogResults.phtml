@@ -35,6 +35,6 @@
     </li>
     <? endforeach; ?>
   </ul>
-  <p><a href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrl()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('More catalog results')?>...</a></p>
+  <p><a href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('More catalog results')?>...</a></p>
 </div>
 <? endif ?>

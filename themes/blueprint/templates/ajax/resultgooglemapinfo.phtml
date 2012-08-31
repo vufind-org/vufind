@@ -21,7 +21,7 @@
   </div>
   <? if ($this->recordCount > 5): ?>
     <div class="mapSeeAllDiv">
-      <a href="<?=$this->url('search-results') ?><?=$this->results->getUrl()->getParams() ?>"><?=$this->translate('see all') ?> <?=$this->escapeHtml($this->recordCount) ?>...</a>
+      <a href="<?=$this->url('search-results') ?><?=$this->results->getUrlQuery()->getParams() ?>"><?=$this->translate('see all') ?> <?=$this->escapeHtml($this->recordCount) ?>...</a>
     </div>
   <? endif; ?>
 </div>

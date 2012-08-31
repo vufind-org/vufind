@@ -356,7 +356,7 @@ class ResultScroller extends AbstractPlugin
             $search->getOptions()->getSearchAction()
         );
         Memory::rememberSearch(
-            $baseUrl . $search->getUrl()->getParams(false)
+            $baseUrl . $search->getUrlQuery()->getParams(false)
         );
     }
 }

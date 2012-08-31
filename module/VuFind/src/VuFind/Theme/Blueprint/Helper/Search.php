@@ -63,12 +63,12 @@ class Search extends AbstractHelper
                     $html .= ', ';
                 }
                 $html .= '<a href="'
-                    . $this->view->results->getUrl()
+                    . $this->view->results->getUrlQuery()
                         ->replaceTerm($term, $data['new_term'])
                     . '">' . $this->view->escapeHtml($word) . '</a>';
                 if (isset($data['expand_term']) && !empty($data['expand_term'])) {
                     $html .= '<a href="'
-                        . $this->view->results->getUrl()
+                        . $this->view->results->getUrlQuery()
                             ->replaceTerm($term, $data['expand_term'])
                         . '"><img src="' . $this->view->imageLink('silk/expand.png')
                         . '" alt="' . $this->view->transEsc('spell_expand_alt')

@@ -60,7 +60,7 @@ class SortFacetList extends AbstractHelper
         $urlHelper = $this->getView()->plugin('url');
         foreach ($list as $value) {
             $url = $urlHelper($searchRoute)
-                . $results->getUrl()->addFacet($field, $value['value']);
+                . $results->getUrlQuery()->addFacet($field, $value['value']);
             $facets[$url] = $value['displayText'];
         }
         natcasesort($facets);

@@ -714,7 +714,7 @@ class AjaxController extends AbstractBase
                 'results' => $results,
                 'recordSet' => $results->getResults(),
                 'recordCount' => $results->getResultTotal(),
-                'completeListUrl' => $results->getUrl()->getParams()
+                'completeListUrl' => $results->getUrlQuery()->getParams()
             )
         );
     }
@@ -743,7 +743,7 @@ class AjaxController extends AbstractBase
             $facets[$field]['min'] = $val[0] > 0 ? $val[0] : 0;
             $facets[$field]['max'] = $val[1] > 0 ? $val[1] : 0;
             $facets[$field]['removalURL']
-                = $results->getUrl()->removeFacet(
+                = $results->getUrlQuery()->removeFacet(
                     $field,
                     isset($filters[$field][0]) ? $filters[$field][0] : null,
                     false
