@@ -69,7 +69,9 @@ class ShibbolethTest extends \VuFind\Tests\DbTestCase
         if (null === $config) {
             $config = $this->getAuthConfig();
         }
-        return new Shibboleth($config);
+        $obj = new Shibboleth();
+        $obj->setConfig($config);
+        return $obj;
     }
 
     /**

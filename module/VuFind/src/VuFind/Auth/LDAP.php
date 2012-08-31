@@ -45,21 +45,9 @@ class LDAP extends AbstractBase
     protected $password;
 
     /**
-     * Constructor
-     *
-     * @param object $config Optional configuration object to pass through (loads
-     * default configuration if none specified).
-     *
-     * @throws AuthException
-     */
-    public function __construct($config = null)
-    {
-        parent::__construct($config);
-        $this->validateConfig();
-    }
-
-    /**
-     * Validate configuration parameters.
+     * Validate configuration parameters.  This is a support method for getConfig(),
+     * so the configuration MUST be accessed using $this->config; do not call
+     * $this->getConfig() from within this method!
      *
      * @throws AuthException
      * @return void
@@ -80,16 +68,16 @@ class LDAP extends AbstractBase
     }
 
     /**
-     * Get the requested configuration parameter (or blank string if unset).
+     * Get the requested configuration setting (or blank string if unset).
      *
      * @param string $name Name of parameter to retrieve.
      *
      * @return string
      */
-    protected function getConfig($name)
+    protected function getSetting($name)
     {
-        $value = isset($this->config->LDAP->$name)
-            ? $this->config->LDAP->$name : '';
+        $config = $this->getConfig();
+        $value = isset($config->LDAP->$name) ? $config->LDAP->$name : '';
 
         // Normalize all values to lowercase except for potentially case-sensitive
         // bind and basedn credentials.
@@ -129,7 +117,7 @@ class LDAP extends AbstractBase
         // is unavailable -- we need to check for bad return values again at search
         // time!
         $ldapConnection = @ldap_connect(
-            $this->getConfig('host'), $this->getConfig('port')
+            $this->getSetting('host'), $this->getSetting('port')
         );
         if (!$ldapConnection) {
             throw new AuthException('authentication_error_technical');
@@ -141,7 +129,7 @@ class LDAP extends AbstractBase
         // if the host parameter is not specified as ldaps://
         // then we need to initiate TLS so we
         // can have a secure connection over the standard LDAP port.
-        if (stripos($this->getConfig('host'), 'ldaps://') === false) {
+        if (stripos($this->getSetting('host'), 'ldaps://') === false) {
             if (!@ldap_start_tls($ldapConnection)) {
                 throw new AuthException('authentication_error_technical');
             }
@@ -150,12 +138,12 @@ class LDAP extends AbstractBase
         // If bind_username and bind_password were supplied in the config file, use
         // them to access LDAP before proceeding.  In some LDAP setups, these
         // settings can be excluded in order to skip this step.
-        if ($this->getConfig('bind_username') != ''
-            && $this->getConfig('bind_password') != ''
+        if ($this->getSetting('bind_username') != ''
+            && $this->getSetting('bind_password') != ''
         ) {
             $ldapBind = @ldap_bind(
-                $ldapConnection, $this->getConfig('bind_username'),
-                $this->getConfig('bind_password')
+                $ldapConnection, $this->getSetting('bind_username'),
+                $this->getSetting('bind_password')
             );
             if (!$ldapBind) {
                 throw new AuthException('authentication_error_technical');
@@ -163,9 +151,9 @@ class LDAP extends AbstractBase
         }
 
         // Search for username
-        $ldapFilter = $this->getConfig('username') . '=' . $this->username;
+        $ldapFilter = $this->getSetting('username') . '=' . $this->username;
         $ldapSearch = @ldap_search(
-            $ldapConnection, $this->getConfig('basedn'), $ldapFilter
+            $ldapConnection, $this->getSetting('basedn'), $ldapFilter
         );
         if (!$ldapSearch) {
             throw new AuthException('authentication_error_technical');
@@ -180,7 +168,7 @@ class LDAP extends AbstractBase
             if ($ldapBind) {
                 // If the bind was successful, we can look up the full user info:
                 $ldapSearch = ldap_search(
-                    $ldapConnection, $this->getConfig('basedn'), $ldapFilter
+                    $ldapConnection, $this->getSetting('basedn'), $ldapFilter
                 );
                 $data = ldap_get_entries($ldapConnection, $ldapSearch);
                 return $this->processLDAPUser($data);
@@ -214,7 +202,7 @@ class LDAP extends AbstractBase
         for ($i = 0; $i < $data["count"]; $i++) {
             for ($j = 0; $j < $data[$i]["count"]; $j++) {
                 foreach ($fields as $field) {
-                    $configValue = $this->getConfig($field);
+                    $configValue = $this->getSetting($field);
                     if ($data[$i][$j] == $configValue && !empty($configValue)) {
                         $user->$field = $data[$i][$data[$i][$j]][0];
                     }

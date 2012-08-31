@@ -42,17 +42,55 @@ use VuFind\Config\Reader as ConfigReader,
  */
 abstract class AbstractBase
 {
-    protected $config;
+    protected $configValidated = false;
+    protected $config = null;
 
     /**
-     * Constructor
+     * Get configuration (load automatically if not previously set).  Throw an
+     * exception if the configuration is invalid.
      *
-     * @param object $config Optional configuration object to pass through (loads
-     * default configuration if none specified).
+     * @throws AuthException
+     * @return \Zend\Config\Config
      */
-    public function __construct($config = null)
+    public function getConfig()
     {
-        $this->config = is_null($config) ? ConfigReader::getConfig() : $config;
+        // Load configuration if not already present:
+        if (is_null($this->config)) {
+            $this->setConfig(ConfigReader::getConfig());
+        }
+
+        // Validate configuration if not already validated:
+        if (!$this->configValidated) {
+            $this->validateConfig();
+        }
+
+        return $this->config;
+    }
+
+    /**
+     * Set configuration.
+     *
+     * @param \Zend\Config\Config $config Configuration to set
+     *
+     * @return void
+     */
+    public function setConfig($config)
+    {
+        $this->config = $config;
+        $this->configValidated = false;
+    }
+
+    /**
+     * Validate configuration parameters.  This is a support method for getConfig(),
+     * so the configuration MUST be accessed using $this->config; do not call
+     * $this->getConfig() from within this method!
+     *
+     * @throws AuthException
+     * @return void
+     */
+    protected function validateConfig()
+    {
+        // By default, do no checking.
     }
 
     /**

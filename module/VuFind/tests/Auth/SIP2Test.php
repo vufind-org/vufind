@@ -1,6 +1,6 @@
 <?php
 /**
- * LDAP authentication test class.
+ * SIP2 authentication test class.
  *
  * PHP version 5
  *
@@ -26,10 +26,10 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Tests\Auth;
-use VuFind\Auth\LDAP, Zend\Config\Config;
+use VuFind\Auth\SIP2, Zend\Config\Config;
 
 /**
- * LDAP authentication test class.
+ * SIP2 authentication test class.
  *
  * @category VuFind2
  * @package  Tests
@@ -37,7 +37,7 @@ use VuFind\Auth\LDAP, Zend\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class LDAPTest extends \VuFind\Tests\TestCase
+class SIP2Test extends \VuFind\Tests\TestCase
 {
     /**
      * Get an authentication object.
@@ -51,7 +51,7 @@ class LDAPTest extends \VuFind\Tests\TestCase
         if (null === $config) {
             $config = $this->getAuthConfig();
         }
-        $obj = new LDAP();
+        $obj = new SIP2();
         $obj->setConfig($config);
         return $obj;
     }
@@ -63,100 +63,13 @@ class LDAPTest extends \VuFind\Tests\TestCase
      */
     public function getAuthConfig()
     {
-        $ldapConfig = new Config(
+        $config = new Config(
             array(
-                'host' => 'localhost',
-                'port' => 1234,
-                'basedn' => 'basedn',
-                'username' => 'username'
+                'host' => 'my.fake.host',
+                'port' => '6002'
             ), true
         );
-        return new Config(array('LDAP' => $ldapConfig), true);
-    }
-
-    /**
-     * Verify that missing host causes failure.
-     *
-     * @return void
-     */
-    public function testWithMissingHost()
-    {
-        $this->setExpectedException('VuFind\Exception\Auth');
-        $config = $this->getAuthConfig();
-        unset($config->LDAP->host);
-        $this->getAuthObject($config)->getConfig();
-    }
-
-    /**
-     * Verify that missing port causes failure.
-     *
-     * @return void
-     */
-    public function testWithMissingPort()
-    {
-        $this->setExpectedException('VuFind\Exception\Auth');
-        $config = $this->getAuthConfig();
-        unset($config->LDAP->port);
-        $this->getAuthObject($config)->getConfig();
-    }
-
-    /**
-     * Verify that missing baseDN causes failure.
-     *
-     * @return void
-     */
-    public function testWithMissingBaseDN()
-    {
-        $this->setExpectedException('VuFind\Exception\Auth');
-        $config = $this->getAuthConfig();
-        unset($config->LDAP->basedn);
-        $this->getAuthObject($config)->getConfig();
-    }
-
-    /**
-     * Verify that missing UID causes failure.
-     *
-     * @return void
-     */
-    public function testWithMissingUid()
-    {
-        $this->setExpectedException('VuFind\Exception\Auth');
-        $config = $this->getAuthConfig();
-        unset($config->LDAP->username);
-        $this->getAuthObject($config)->getConfig();
-    }
-
-    /**
-     * Test case normalization of parameters.
-     *
-     * @return void
-     */
-    public function testCaseNormalization()
-    {
-        $config = $this->getAuthConfig();
-        $config->LDAP->username = 'UPPER';
-        $config->LDAP->basedn = 'MixedCase';
-        $auth = $this->getAuthObject($config);
-        // username should be lowercased:
-        $this->assertEquals(
-            'upper',
-            $this->callMethod($auth, 'getSetting', array('username'))
-        );
-        // basedn should not:
-        $this->assertEquals(
-            'MixedCase',
-            $this->callMethod($auth, 'getSetting', array('basedn'))
-        );
-    }
-
-    /**
-     * Test account creation is disallowed.
-     *
-     * @return void
-     */
-    public function testCreateIsDisallowed()
-    {
-        $this->assertFalse($this->getAuthObject()->supportsCreation());
+        return new Config(array('MultiAuth' => $config), true);
     }
 
     /**

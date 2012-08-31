@@ -42,6 +42,31 @@ use VuFind\Db\Table\User as UserTable, VuFind\Exception\Auth as AuthException;
 class Shibboleth extends AbstractBase
 {
     /**
+     * Validate configuration parameters.  This is a support method for getConfig(),
+     * so the configuration MUST be accessed using $this->config; do not call
+     * $this->getConfig() from within this method!
+     *
+     * @throws AuthException
+     * @return void
+     */
+    protected function validateConfig()
+    {
+        // Throw an exception if the required username setting is missing.
+        $shib = $this->config->Shibboleth;
+        if (!isset($shib->username) || empty($shib->username)) {
+            throw new AuthException(
+                "Shibboleth username is missing in your configuration file."
+            );
+        }
+
+        if (!isset($shib->login)) {
+            throw new AuthException(
+                'Shibboleth login configuration parameter is not set.'
+            );
+        }
+    }
+
+    /**
      * Attempt to authenticate the current user.  Throws exception if login fails.
      *
      * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
@@ -52,15 +77,8 @@ class Shibboleth extends AbstractBase
      */
     public function authenticate($request)
     {
-        // Throw an exception if the required username setting is missing.
-        $shib = $this->config->Shibboleth;
-        if (!isset($shib->username) || empty($shib->username)) {
-            throw new AuthException(
-                "Shibboleth username is missing in your configuration file."
-            );
-        }
-
         // Check if username is set.
+        $shib = $this->getConfig()->Shibboleth;
         $username = $request->getServer()->get($shib->username);
         if (empty($username)) {
             throw new AuthException('authentication_error_admin');
@@ -104,23 +122,18 @@ class Shibboleth extends AbstractBase
      */
     public function getSessionInitiator($target)
     {
-        if (!isset($this->config->Shibboleth->login)) {
-            throw new AuthException(
-                'Shibboleth login configuration parameter is not set.'
-            );
-        }
-
-        if (isset($this->config->Shibboleth->target)) {
-            $shibTarget = $this->config->Shibboleth->target;
+        $config = $this->getConfig();
+        if (isset($config->Shibboleth->target)) {
+            $shibTarget = $config->Shibboleth->target;
         } else {
             $shibTarget = $target;
         }
-        $sessionInitiator = $this->config->Shibboleth->login
+        $sessionInitiator = $config->Shibboleth->login
             . '?target=' . urlencode($shibTarget);
 
-        if (isset($this->config->Shibboleth->provider_id)) {
+        if (isset($config->Shibboleth->provider_id)) {
             $sessionInitiator = $sessionInitiator . '&providerId=' .
-                urlencode($this->config->Shibboleth->provider_id);
+                urlencode($config->Shibboleth->provider_id);
         }
 
         return $sessionInitiator;
@@ -133,14 +146,15 @@ class Shibboleth extends AbstractBase
      */
     public function isExpired()
     {
-        if (isset($this->config->Shibboleth->username)
-            && isset($this->config->Shibboleth->logout)
+        $config = $this->getConfig();
+        if (isset($config->Shibboleth->username)
+            && isset($config->Shibboleth->logout)
         ) {
             // It would be more proper to call getServer on a Zend request
             // object... except that the request object doesn't exist yet when
             // this routine gets called.
-            $username = isset($_SERVER[$this->config->Shibboleth->username])
-                ? $_SERVER[$this->config->Shibboleth->username] : null;
+            $username = isset($_SERVER[$config->Shibboleth->username])
+                ? $_SERVER[$config->Shibboleth->username] : null;
             return empty($username);
         }
         return false;
@@ -157,10 +171,11 @@ class Shibboleth extends AbstractBase
     public function logout($url)
     {
         // If single log-out is enabled, use a special URL:
-        if (isset($this->config->Shibboleth->logout)
-            && !empty($this->config->Shibboleth->logout)
+        $config = $this->getConfig();
+        if (isset($config->Shibboleth->logout)
+            && !empty($config->Shibboleth->logout)
         ) {
-            $url = $this->config->Shibboleth->logout . '?return=' . urlencode($url);
+            $url = $config->Shibboleth->logout . '?return=' . urlencode($url);
         }
 
         // Send back the redirect URL (possibly modified):
@@ -178,7 +193,7 @@ class Shibboleth extends AbstractBase
         $sortedUserAttributes = array();
 
         // Now extract user attribute values:
-        $shib = $this->config->Shibboleth;
+        $shib = $this->getConfig()->Shibboleth;
         foreach ($shib as $key => $value) {
             if (preg_match("/userattribute_[0-9]{1,}/", $key)) {
                 $valueKey = 'userattribute_value_' . substr($key, 14);

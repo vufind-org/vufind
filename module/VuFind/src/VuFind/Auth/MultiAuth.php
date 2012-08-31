@@ -64,33 +64,51 @@ use VuFind\Exception\Auth as AuthException;
 class MultiAuth extends AbstractBase
 {
     protected $filters = array();
-    protected $methods;
+    protected $methods = array();
     protected $username;
     protected $password;
 
     /**
-     * Constructor
+     * Validate configuration parameters.  This is a support method for getConfig(),
+     * so the configuration MUST be accessed using $this->config; do not call
+     * $this->getConfig() from within this method!
      *
-     * @param object $config Optional configuration object to pass through (loads
-     * default configuration if none specified).
+     * @throws AuthException
+     * @return void
      */
-    public function __construct($config = null)
+    protected function validateConfig()
     {
-        parent::__construct($config);
-
-        if (!isset($config->MultiAuth) || !isset($config->MultiAuth->method_order)
-            || !strlen($config->MultiAuth->method_order)
+        if (!isset($this->config->MultiAuth)
+            || !isset($this->config->MultiAuth->method_order)
+            || !strlen($this->config->MultiAuth->method_order)
         ) {
             throw new AuthException(
                 "One or more MultiAuth parameters are missing. " .
                 "Check your config.ini!"
             );
         }
-        $this->methods = explode(',', $config->MultiAuth->method_order);
+    }
+
+    /**
+     * Set configuration; throw an exception if it is invalid.
+     *
+     * @param \Zend\Config\Config $config Configuration to set
+     *
+     * @throws AuthException
+     * @return void
+     */
+    public function setConfig($config)
+    {
+        parent::setConfig($config);
+        $this->methods = array_map(
+            'trim', explode(',', $config->MultiAuth->method_order)
+        );
         if (isset($config->MultiAuth->filters)
             && strlen($config->MultiAuth->filters)
         ) {
-            $this->filters = explode(',', $config->MultiAuth->filters);
+            $this->filters = array_map(
+                'trim', explode(',', $config->MultiAuth->filters)
+            );
         }
     }
 
@@ -156,7 +174,7 @@ class MultiAuth extends AbstractBase
     {
         // Try authentication methods until we find one that works:
         foreach ($this->methods as $method) {
-            $authenticator = Factory::getAuth(trim($method), $this->config);
+            $authenticator = Factory::getAuth(trim($method), $this->getConfig());
             try {
                 $user = $authenticator->authenticate($request);
 

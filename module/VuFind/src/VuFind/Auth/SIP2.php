@@ -57,12 +57,13 @@ class SIP2 extends AbstractBase
         if ($username == '' || $password == '') {
             throw new AuthException('authentication_error_blank');
         }
-        
+
         // Attempt SIP2 Authentication
         $mysip = new \sip2();
-        if (isset($this->config->SIP2)) {
-            $mysip->hostname = $this->config->SIP2->host;
-            $mysip->port = $this->config->SIP2->port;
+        $config = $this->getConfig();
+        if (isset($config->SIP2)) {
+            $mysip->hostname = $config->SIP2->host;
+            $mysip->port = $config->SIP2->port;
         }
 
         if (!$mysip->connect()) {

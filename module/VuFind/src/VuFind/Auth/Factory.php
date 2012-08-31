@@ -64,7 +64,10 @@ class Factory
         // Load up the handler if a legal name has been supplied.
         $className = 'VuFind\Auth\\' . $authNHandler;
         if (class_exists($className)) {
-            return new $className($config);
+            $obj = new $className();
+            if (null !== $config) {
+                $obj->setConfig($config);
+            }
         } else {
             throw new AuthException(
                 'Authentication handler ' . $authNHandler . ' does not exist!'
