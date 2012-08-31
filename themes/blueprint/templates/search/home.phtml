@@ -16,7 +16,7 @@
     $advSearch = $options->getAdvancedSearchAction();
 ?>
 <div class="searchHomeContent">
-  <? if ($this->offlineMode() == "ils-offline"): ?>
+  <? if ($this->ils()->getOfflineMode() == "ils-offline"): ?>
     <div class="sysInfo">
       <h2><?=$this->transEsc('ils_offline_title')?></h2>
       <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
