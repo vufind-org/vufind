@@ -40,16 +40,13 @@ use Zend\ServiceManager\ConfigInterface;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
-     * Constructor
+     * Return the name of the base class or interface that plug-ins must conform
+     * to.
      *
-     * Add a default initializer to ensure the plugin is valid after instance
-     * creation.
-     *
-     * @param null|ConfigInterface $configuration Configuration
+     * @return string
      */
-    public function __construct(ConfigInterface $configuration = null)
+    protected function getExpectedInterface()
     {
-        $this->expectedInterface = 'Zend\Session\SaveHandler\SaveHandlerInterface';
-        parent::__construct($configuration);
+        return 'Zend\Session\SaveHandler\SaveHandlerInterface';
     }
 }

@@ -40,8 +40,6 @@ use Zend\ServiceManager\AbstractPluginManager as Base,
  */
 abstract class AbstractPluginManager extends Base
 {
-    protected $expectedInterface;
-
     /**
      * Validate the plugin
      *
@@ -55,11 +53,20 @@ abstract class AbstractPluginManager extends Base
      */
     public function validatePlugin($plugin)
     {
-        if (!($plugin instanceof $this->expectedInterface)) {
+        $expectedInterface = $this->getExpectedInterface();
+        if (!($plugin instanceof $expectedInterface)) {
             throw new ServiceManagerRuntimeException(
                 'Plugin ' . get_class($plugin) . ' does not belong to '
-                . $this->expectedInterface
+                . $expectedInterface
             );
         }
     }
+
+    /**
+     * Return the name of the base class or interface that plug-ins must conform
+     * to.
+     *
+     * @return string
+     */
+    abstract protected function getExpectedInterface();
 }
