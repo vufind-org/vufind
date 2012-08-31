@@ -55,7 +55,7 @@ class Results extends SolrResults
             'query' => $solr->buildQuery($this->getSearchTerms()),
             'handler' => $this->getSearchHandler(),
             'limit' => 0,
-            'facet' => $this->params->getFacetSettings(),
+            'facet' => $this->getParams()->getFacetSettings(),
         );
 
         // Perform the search:

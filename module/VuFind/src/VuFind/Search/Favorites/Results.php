@@ -64,7 +64,7 @@ class Results extends BaseResults
 
         // If there is no filter, we'll use all facets as the filter:
         if (is_null($filter)) {
-            $filter = $this->params->getFacetConfig();
+            $filter = $this->getParams()->getFacetConfig();
         }
 
         // Start building the facet list:
@@ -75,7 +75,7 @@ class Results extends BaseResults
         foreach ($validFields as $field) {
             if (!isset($this->facets[$field])) {
                 $this->facets[$field] = array(
-                    'label' => $this->params->getFacetLabel($field),
+                    'label' => $this->getParams()->getFacetLabel($field),
                     'list' => array()
                 );
                 switch ($field) {
@@ -87,7 +87,7 @@ class Results extends BaseResults
                             'displayText' => $list->title,
                             'count' => $list->cnt,
                             'isApplied' =>
-                                $this->params->hasFilter("$field:".$list->id)
+                                $this->getParams()->hasFilter("$field:".$list->id)
                         );
                     }
                     break;
@@ -103,7 +103,7 @@ class Results extends BaseResults
                             'displayText' => $tag->tag,
                             'count' => $tag->cnt,
                             'isApplied' =>
-                                $this->params->hasFilter("$field:".$tag->tag)
+                                $this->getParams()->hasFilter("$field:".$tag->tag)
                         );
                     }
                     break;
@@ -196,7 +196,7 @@ class Results extends BaseResults
      */
     protected function getTagFilters()
     {
-        $filters = $this->params->getFilters();
+        $filters = $this->getParams()->getFilters();
         return isset($filters['tags']) ? $filters['tags'] : array();
     }
 
@@ -212,7 +212,7 @@ class Results extends BaseResults
         if ($this->list === false) {
             // Check the filters for a list ID, and load the corresponding object
             // if one is found:
-            $filters = $this->params->getFilters();
+            $filters = $this->getParams()->getFilters();
             $listId = isset($filters['lists'][0]) ? $filters['lists'][0] : null;
             $this->list = is_null($listId)
                 ? null : UserListTable::getExisting($listId);

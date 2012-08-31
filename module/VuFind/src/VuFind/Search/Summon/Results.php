@@ -75,7 +75,7 @@ class Results extends BaseResults
     {
         // The "relevance" sort option is a VuFind reserved word; we need to make
         // this null in order to achieve the desired effect with Summon:
-        $sort = $this->params->getSort();
+        $sort = $this->getParams()->getSort();
         $finalSort = ($sort == 'relevance') ? null : $sort;
 
         // Perform the actual search
@@ -84,8 +84,8 @@ class Results extends BaseResults
             $summon->buildQuery($this->getSearchTerms()),
             array(
                 'sort' => $finalSort,
-                'pageNumber' => $this->params->getPage(),
-                'pageSize' => $this->params->getLimit(),
+                'pageNumber' => $this->getParams()->getPage(),
+                'pageSize' => $this->getParams()->getLimit(),
                 'didYouMean' => $this->getOptions()->spellcheckEnabled()
             )
         );
@@ -94,13 +94,13 @@ class Results extends BaseResults
             $query->setHighlightStart('{{{{START_HILITE}}}}');
             $query->setHighlightEnd('{{{{END_HILITE}}}}');
         }
-        $query->initFacets($this->params->getFullFacetSettings());
-        $query->initFilters($this->params->getFilterList());
+        $query->initFacets($this->getParams()->getFullFacetSettings());
+        $query->initFilters($this->getParams()->getFilterList());
         $this->rawResponse = $summon->query($query);
 
         // Add fake date facets if flagged earlier; this is necessary in order
         // to display the date range facet control in the interface.
-        $dateFacets = $this->params->getDateFacetSettings();
+        $dateFacets = $this->getParams()->getDateFacetSettings();
         if (!empty($dateFacets)) {
             if (!isset($this->rawResponse['facetFields'])) {
                 $this->rawResponse['facetFields'] = array();
@@ -174,7 +174,7 @@ class Results extends BaseResults
     {
         // If there is no filter, we'll use all facets as the filter:
         if (is_null($filter)) {
-            $filter = $this->params->getFacetConfig();
+            $filter = $this->getParams()->getFacetConfig();
         } else {
             // If there is a filter, make sure the field names are properly
             // stripped of extra parameters:
@@ -201,7 +201,7 @@ class Results extends BaseResults
             && is_array($this->rawResponse['facetFields'])
         ) {
             // Get the filter list -- we'll need to check it below:
-            $filterList = $this->params->getFilters();
+            $filterList = $this->getParams()->getFilters();
 
             foreach ($this->rawResponse['facetFields'] as $current) {
                 // The "displayName" value is actually the name of the field on

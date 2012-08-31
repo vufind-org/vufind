@@ -80,7 +80,9 @@ abstract class Results
      */
     public function __clone()
     {
-        $this->params = clone($this->params);
+        if (is_object($this->params)) {
+            $this->params = clone($this->params);
+        }
     }
 
     /**
@@ -148,7 +150,7 @@ abstract class Results
         $this->stopQueryTimer();
 
         // Process recommendations:
-        $recommendations = $this->params->getRecommendations(null);
+        $recommendations = $this->getParams()->getRecommendations(null);
         if (is_array($recommendations)) {
             foreach ($recommendations as $currentSet) {
                 foreach ($currentSet as $current) {
@@ -225,7 +227,7 @@ abstract class Results
     public function __call($methodName, $params)
     {
         // Proxy undefined methods to the parameter object:
-        $method = array($this->params, $methodName);
+        $method = array($this->getParams(), $methodName);
         if (!is_callable($method)) {
             throw new \Exception($methodName . ' cannot be called.');
         }

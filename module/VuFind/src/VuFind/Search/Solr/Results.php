@@ -104,9 +104,9 @@ class Results extends BaseResults
             'sort' => $this->getSort() == 'relevance' ? null : $this->getSort(),
             'start' => $this->getStartRecord() - 1,
             'limit' => $this->getLimit(),
-            'facet' => $this->params->getFacetSettings(),
-            'filter' => $this->params->getFilterSettings(),
-            'spell' => $this->params->getSpellingQuery(),
+            'facet' => $this->getParams()->getFacetSettings(),
+            'filter' => $this->getParams()->getFilterSettings(),
+            'spell' => $this->getParams()->getSpellingQuery(),
             'dictionary' => $this->getOptions()->getSpellingDictionary(),
             'highlight' => $this->getOptions()->highlightEnabled()
         );
@@ -245,7 +245,7 @@ class Results extends BaseResults
 
         // Create a new search object
         $myClass = get_class($this);
-        $newParams = clone($this->params);
+        $newParams = clone($this->getParams());
         $newParams->getOptions()->useBasicDictionary();
 
         // Don't waste time loading facets or highlighting/retrieving results:
@@ -292,7 +292,7 @@ class Results extends BaseResults
     {
         $returnArray = array();
         $suggestions = $this->getRawSuggestions();
-        $tokens = $this->spellingTokens($this->params->getSpellingQuery());
+        $tokens = $this->spellingTokens($this->getParams()->getSpellingQuery());
 
         foreach ($suggestions as $term => $details) {
             // Find out if our suggestion is part of a token
@@ -395,7 +395,7 @@ class Results extends BaseResults
 
         // If there is no filter, we'll use all facets as the filter:
         if (is_null($filter)) {
-            $filter = $this->params->getFacetConfig();
+            $filter = $this->getParams()->getFacetConfig();
         }
 
         // Start building the facet list:
@@ -433,7 +433,7 @@ class Results extends BaseResults
                     = $translate ? Translator::translate($facet[0]) : $facet[0];
                 $currentSettings['count'] = $facet[1];
                 $currentSettings['isApplied']
-                    = $this->params->hasFilter("$field:".$facet[0]);
+                    = $this->getParams()->hasFilter("$field:".$facet[0]);
 
                 // Store the collected values:
                 $list[$field]['list'][] = $currentSettings;
