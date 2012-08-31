@@ -26,7 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Base;
-use VuFind\Search\UrlHelper, Zend\Paginator\Paginator;
+use VuFind\Search\UrlQueryHelper, Zend\Paginator\Paginator;
 
 /**
  * Abstract results search model.
