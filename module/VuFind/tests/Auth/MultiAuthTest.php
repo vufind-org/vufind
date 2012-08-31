@@ -51,8 +51,16 @@ class MultiAuthTest extends \VuFind\Tests\TestCase
         if (null === $config) {
             $config = $this->getAuthConfig();
         }
+        $serviceLocator = new \VuFind\Auth\PluginManager(
+            new \Zend\ServiceManager\Config(
+                array(
+                    'abstract_factories' => array('VuFind\Auth\PluginFactory'),
+                )
+            )
+        );
         $obj = new MultiAuth();
         $obj->setConfig($config);
+        $obj->setServiceLocator($serviceLocator);
         return $obj;
     }
 
@@ -100,6 +108,24 @@ class MultiAuthTest extends \VuFind\Tests\TestCase
         $request = new \Zend\Http\Request();
         $request->setPost(new \Zend\Stdlib\Parameters($post));
         return $request;
+    }
+
+    /**
+     * Test login with handler configured to load a class which does not conform
+     * to the appropriate authentication interface.  (We'll use \VuFind\Cart as an
+     * arbitrary inappropriate class).
+     *
+     * @return void
+     */
+    public function testLoginWithBadClass()
+    {
+        $this
+            ->setExpectedException('Zend\ServiceManager\Exception\RuntimeException');
+        $config = $this->getAuthConfig();
+        $config->MultiAuth->method_order = 'VuFind\Cart,Database';
+
+        $request = $this->getLoginRequest();
+        $this->getAuthObject($config)->authenticate($request);
     }
 
     /**

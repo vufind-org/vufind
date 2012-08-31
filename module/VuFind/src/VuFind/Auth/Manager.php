@@ -44,7 +44,7 @@ use VuFind\Config\Reader as ConfigReader,
  */
 class Manager implements ServiceLocatorAwareInterface
 {
-    protected $auth;
+    protected $auth = false;
     protected $config;
     protected $session;
     protected $ilsAccount = false;
@@ -56,10 +56,22 @@ class Manager implements ServiceLocatorAwareInterface
     public function __construct()
     {
         $this->config = ConfigReader::getConfig();
-        $this->auth = Factory::getAuth(
-            $this->config->Authentication->method, $this->config
-        );
         $this->session = new SessionContainer('Account');
+    }
+
+    /**
+     * Get the authentication handler.
+     *
+     * @return AbstractBase
+     */
+    protected function getAuth()
+    {
+        if (!$this->auth) {
+            $manager = $this->getServiceLocator()->get('AuthHandlerManager');
+            $this->auth = $manager->get($this->config->Authentication->method);
+            $this->auth->setConfig($this->config);
+        }
+        return $this->auth;
     }
 
     /**
@@ -69,7 +81,7 @@ class Manager implements ServiceLocatorAwareInterface
      */
     public function supportsCreation()
     {
-        return $this->auth->supportsCreation();
+        return $this->getAuth()->supportsCreation();
     }
 
     /**
@@ -83,7 +95,7 @@ class Manager implements ServiceLocatorAwareInterface
      */
     public function getSessionInitiator($target)
     {
-        return $this->auth->getSessionInitiator($target);
+        return $this->getAuth()->getSessionInitiator($target);
     }
 
     /**
@@ -93,7 +105,7 @@ class Manager implements ServiceLocatorAwareInterface
      */
     public function getAuthClass()
     {
-        return get_class($this->auth);
+        return get_class($this->getAuth());
     }
 
     /**
@@ -134,7 +146,7 @@ class Manager implements ServiceLocatorAwareInterface
     {
         // Perform authentication-specific cleanup and modify redirect URL if
         // necessary.
-        $url = $this->auth->logout($url);
+        $url = $this->getAuth()->logout($url);
 
         // Clear out cached ILS connection.
         $this->ilsAccount = false;
@@ -173,7 +185,7 @@ class Manager implements ServiceLocatorAwareInterface
      */
     public function checkForExpiredCredentials()
     {
-        if ($this->isLoggedIn() && $this->auth->isExpired()) {
+        if ($this->isLoggedIn() && $this->getAuth()->isExpired()) {
             $this->logout(null, false);
             return true;
         }
@@ -203,7 +215,7 @@ class Manager implements ServiceLocatorAwareInterface
      */
     public function create($request)
     {
-        $user = $this->auth->create($request);
+        $user = $this->getAuth()->create($request);
         $this->updateSession($user);
         return $user;
     }
@@ -222,7 +234,7 @@ class Manager implements ServiceLocatorAwareInterface
     {
         // Perform authentication:
         try {
-            $user = $this->auth->authenticate($request);
+            $user = $this->getAuth()->authenticate($request);
         } catch (AuthException $e) {
             // Pass authentication exceptions through unmodified
             throw $e;

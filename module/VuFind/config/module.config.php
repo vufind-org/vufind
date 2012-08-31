@@ -60,6 +60,22 @@ $config = array(
             )
         ),
     ),
+    'auth_handler_manager' => array(
+        'abstract_factories' => array('VuFind\Auth\PluginFactory'),
+        'invokables' => array(
+            'database' => 'VuFind\Auth\Database',
+            'ils' => 'VuFind\Auth\ILS',
+            'ldap' => 'VuFind\Auth\LDAP',
+            'multiauth' => 'VuFind\Auth\MultiAuth',
+            'shibboleth' => 'VuFind\Auth\Shibboleth',
+            'sip2' => 'VuFind\Auth\SIP2',
+        ),
+        'aliases' => array(
+            // for legacy 1.x compatibility
+            'db' => 'Database',
+            'sip' => 'Sip2',
+        ),
+    ),
     'controllers' => array(
         'invokables' => array(
             'admin' => 'VuFind\Controller\AdminController',

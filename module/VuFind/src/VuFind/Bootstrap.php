@@ -89,6 +89,11 @@ class Bootstrap
         $config = $app->getConfig();
 
         $serviceManager->setService(
+            'AuthHandlerManager', new \VuFind\Auth\PluginManager(
+                new ServiceManagerConfig($config['auth_handler_manager'])
+            )
+        );
+        $serviceManager->setService(
             'SessionHandlerManager', new \VuFind\Session\PluginManager(
                 new ServiceManagerConfig($config['session_handler_manager'])
             )
