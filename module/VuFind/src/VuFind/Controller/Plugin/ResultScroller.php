@@ -76,8 +76,8 @@ class ResultScroller extends AbstractPlugin
 
         // Save the details of this search in the session
         $this->data->searchId = $searchObject->getSearchId();
-        $this->data->page = $searchObject->getPage();
-        $this->data->limit = $searchObject->getLimit();
+        $this->data->page = $searchObject->getParams()->getPage();
+        $this->data->limit = $searchObject->getParams()->getLimit();
         $this->data->total = $searchObject->getResultTotal();
 
         // save the IDs of records on the current page to the session
@@ -248,7 +248,7 @@ class ResultScroller extends AbstractPlugin
                             * $this->data->limit + $pos + 1;
 
                         // update the search URL in the session
-                        $lastSearch->setPage($this->data->page);
+                        $lastSearch->getParams()->setPage($this->data->page);
                         $this->rememberSearch($lastSearch);
 
                         // and we're done
@@ -286,7 +286,7 @@ class ResultScroller extends AbstractPlugin
                             * $this->data->limit + $pos + 1;
 
                         // update the search URL in the session
-                        $lastSearch->setPage($this->data->page);
+                        $lastSearch->getParams()->setPage($this->data->page);
                         $this->rememberSearch($lastSearch);
 
                         // and we're done
@@ -310,7 +310,7 @@ class ResultScroller extends AbstractPlugin
     protected function fetchPage($searchObject, $page = null)
     {
         if (!is_null($page)) {
-            $searchObject->setPage($page);
+            $searchObject->getParams()->setPage($page);
             $searchObject->performAndProcessSearch();
         }
 
@@ -333,7 +333,11 @@ class ResultScroller extends AbstractPlugin
             $row = $searchTable->getRowById($this->data->searchId, false);
             if (!empty($row)) {
                 $minSO = unserialize($row->search_object);
-                return $minSO->deminify();
+                $search = $minSO->deminify();
+                // The saved search does not remember its original limit;
+                // we should reapply it from the session data:
+                $search->getParams()->setLimit($this->data->limit);
+                return $search;
             }
         }
         return null;
