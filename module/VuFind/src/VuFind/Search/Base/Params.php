@@ -1043,7 +1043,8 @@ class Params
         // Loop through all the current filter fields
         foreach ($this->filterList as $field => $values) {
             // and each value currently used for that field
-            $translate = in_array($field, $this->getOptions()->getTranslatedFacets());
+            $translate
+                = in_array($field, $this->getOptions()->getTranslatedFacets());
             foreach ($values as $value) {
                 // Add to the list unless it's in the list of fields to skip:
                 if (!isset($skipList[$field])

@@ -212,8 +212,9 @@ class Results extends BaseResults
                 // Is this one of the fields we want to display?  If so, do work...
                 if (isset($filter[$field])) {
                     // Should we translate values for the current facet?
-                    $translate
-                        = in_array($field, $this->getOptions()->getTranslatedFacets());
+                    $translate = in_array(
+                        $field, $this->getOptions()->getTranslatedFacets()
+                    );
 
                     // Loop through all the facet values to see if any are applied.
                     foreach ($current['counts'] as $facetIndex => $facetDetails) {

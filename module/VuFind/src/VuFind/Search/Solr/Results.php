@@ -423,7 +423,8 @@ class Results extends BaseResults
             // Build our array of values for this field
             $list[$field]['list']  = array();
             // Should we translate values for the current facet?
-            $translate = in_array($field, $this->getOptions()->getTranslatedFacets());
+            $translate
+                = in_array($field, $this->getOptions()->getTranslatedFacets());
             // Loop through values:
             foreach ($data as $facet) {
                 // Initialize the array of data about the current facet:
