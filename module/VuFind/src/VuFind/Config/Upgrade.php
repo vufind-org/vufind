@@ -374,6 +374,14 @@ class Upgrade
         $this->checkTheme('theme', 'blueprint');
         $this->checkTheme('mobile_theme', 'jquerymobile');
 
+        // Translate legacy auth settings:
+        if (strtolower($newConfig['Authentication']['method']) == 'db') {
+            $newConfig['Authentication']['method'] = 'Database';
+        }
+        if (strtolower($newConfig['Authentication']['method']) == 'sip') {
+            $newConfig['Authentication']['method'] = 'SIP2';
+        }
+
         // Translate legacy session settings:
         $newConfig['Session']['type'] = ucwords(
             str_replace('session', '', strtolower($newConfig['Session']['type']))
