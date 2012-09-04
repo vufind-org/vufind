@@ -48,14 +48,18 @@ class Solr implements AutocompleteInterface
     protected $filters;
     protected $searchObject;
 
+
     /**
-     * Constructor
+     * setConfig
      *
-     * Establishes base settings for making autocomplete suggestions.
+     * Set parameters that affect the behavior of the autocomplete handler.
+     * These values normally come from the search configuration file.
      *
-     * @param string $params Additional settings from searches.ini.
+     * @param string $params Parameters to set
+     *
+     * @return void
      */
-    public function __construct($params)
+    public function setConfig($params)
     {
         // Save the basic parameters:
         $params = explode(':', $params);
@@ -125,6 +129,10 @@ class Solr implements AutocompleteInterface
      */
     public function getSuggestions($query)
     {
+        if (!is_object($this->searchObject)) {
+            throw new \Exception('Please set configuration first.');
+        }
+
         try {
             $this->searchObject->getParams()->setBasicSearch(
                 $this->mungeQuery($query), $this->handler

@@ -917,8 +917,10 @@ class AjaxController extends AbstractBase
     public function getACSuggestions()
     {
         $query = $this->getRequest()->getQuery();
+        $autocompleteManager = $this->getServiceLocator()
+            ->get('AutocompleteHandlerManager');
         return $this->output(
-            \VuFind\Autocomplete\Factory::getSuggestions($query), self::STATUS_OK
+            $autocompleteManager->getSuggestions($query), self::STATUS_OK
         );
     }
 

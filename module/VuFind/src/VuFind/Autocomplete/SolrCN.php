@@ -42,15 +42,19 @@ namespace VuFind\Autocomplete;
 class SolrCN extends Solr
 {
     /**
-     * Constructor
+     * setConfig
      *
-     * Establishes base settings for making autocomplete suggestions.
+     * Set parameters that affect the behavior of the autocomplete handler.
+     * These values normally come from the search configuration file.
      *
-     * @param string $params Additional settings from searches.ini.
+     * @param string $params Parameters to set
+     *
+     * @return void
      */
-    public function __construct($params)
+    public function setConfig($params)
     {
-        parent::__construct('CallNumber');
+        // Ignore incoming configuration and force CallNumber settings.
+        parent::setConfig('CallNumber');
     }
 
     /**

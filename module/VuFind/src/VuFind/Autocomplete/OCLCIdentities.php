@@ -41,20 +41,7 @@ namespace VuFind\Autocomplete;
  */
 class OCLCIdentities implements AutocompleteInterface
 {
-    protected $url;
-
-    /**
-     * Constructor
-     *
-     * Establishes base settings for making autocomplete suggestions.
-     *
-     * @param string $params Additional settings from searches.ini.
-     */
-    public function __construct($params)
-    {
-        // For now, incoming parameters are ignored and a hard-coded URL is used:
-        $this->url = 'http://worldcat.org/identities/AutoSuggest';
-    }
+    protected $url = 'http://worldcat.org/identities/AutoSuggest';
 
     /**
      * getSuggestions
@@ -88,5 +75,20 @@ class OCLCIdentities implements AutocompleteInterface
 
         // Send back results:
         return array_unique($results);
+    }
+
+    /**
+     * setConfig
+     *
+     * Set parameters that affect the behavior of the autocomplete handler.
+     * These values normally come from the search configuration file.
+     *
+     * @param string $params Parameters to set
+     *
+     * @return void
+     */
+    public function setConfig($params)
+    {
+        // For now, incoming parameters are ignored.
     }
 }

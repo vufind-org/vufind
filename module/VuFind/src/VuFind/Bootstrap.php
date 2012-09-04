@@ -94,6 +94,11 @@ class Bootstrap
             )
         );
         $serviceManager->setService(
+            'AutocompleteHandlerManager', new \VuFind\Autocomplete\PluginManager(
+                new ServiceManagerConfig($config['autocomplete_handler_manager'])
+            )
+        );
+        $serviceManager->setService(
             'SessionHandlerManager', new \VuFind\Session\PluginManager(
                 new ServiceManagerConfig($config['session_handler_manager'])
             )

@@ -42,18 +42,6 @@ namespace VuFind\Autocomplete;
 class None implements AutocompleteInterface
 {
     /**
-     * Constructor
-     *
-     * Establishes base settings for making autocomplete suggestions.
-     *
-     * @param string $params Additional settings from searches.ini.
-     */
-    public function __construct($params)
-    {
-        // No parameters
-    }
-
-    /**
      * getSuggestions
      *
      * This method returns an array of strings matching the user's query for
@@ -67,5 +55,20 @@ class None implements AutocompleteInterface
     {
         // No suggestions
         return array();
+    }
+
+    /**
+     * setConfig
+     *
+     * Set parameters that affect the behavior of the autocomplete handler.
+     * These values normally come from the search configuration file.
+     *
+     * @param string $params Parameters to set
+     *
+     * @return void
+     */
+    public function setConfig($params)
+    {
+        // Ignore all parameters
     }
 }

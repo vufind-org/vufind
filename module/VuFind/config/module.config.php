@@ -76,6 +76,28 @@ $config = array(
             'sip' => 'Sip2',
         ),
     ),
+    'autocomplete_handler_manager' => array(
+        'abstract_factories' => array('VuFind\Autocomplete\PluginFactory'),
+        'invokables' => array(
+            'none' => 'VuFind\Autocomplete\None',
+            'oclcidentities' => 'VuFind\Autocomplete\OCLCIdentities',
+            'solr' => 'VuFind\Autocomplete\Solr',
+            'solrauth' => 'VuFind\Autocomplete\SolrAuth',
+            'solrcn' => 'VuFind\Autocomplete\SolrCN',
+            'solrreserves' => 'VuFind\Autocomplete\SolrReserves',
+            'tag' => 'VuFind\Autocomplete\Tag',
+        ),
+        'aliases' => array(
+            // for legacy 1.x compatibility
+            'noautocomplete' => 'None',
+            'oclcidentitiesautocomplete' => 'OCLCIdentities',
+            'solrautocomplete' => 'Solr',
+            'solrauthautocomplete' => 'SolrAuth',
+            'solrcnautocomplete' => 'SolrCN',
+            'solrreservesautocomplete' => 'SolrReserves',
+            'tagautocomplete' => 'Tag',
+        ),
+    ),
     'controllers' => array(
         'invokables' => array(
             'admin' => 'VuFind\Controller\AdminController',

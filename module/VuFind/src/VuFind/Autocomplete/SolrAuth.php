@@ -43,16 +43,10 @@ class SolrAuth extends Solr
 {
     /**
      * Constructor
-     *
-     * Establishes base settings for making autocomplete suggestions.
-     *
-     * @param string $params Additional settings from searches.ini.
      */
-    public function __construct($params)
+    public function __construct()
     {
-        // Use a different default field; otherwise, behave the same as the parent:
         $this->defaultDisplayField = 'heading';
-        parent::__construct($params);
     }
 
     /**

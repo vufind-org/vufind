@@ -1,6 +1,6 @@
 <?php
 /**
- * Autocomplete Plug-In Interface
+ * Autocomplete handler plugin factory
  *
  * PHP version 5
  *
@@ -20,49 +20,29 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Autocomplete
+ * @package  Session_Handlers
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/autocomplete Wiki
+ * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
  */
 namespace VuFind\Autocomplete;
 
 /**
- * Autocomplete Plug-In Interface
- *
- * This interface class is the definition of the required methods for
- * generating autocomplete suggestions.
+ * Autocomplete handler plugin factory
  *
  * @category VuFind2
- * @package  Autocomplete
+ * @package  Session_Handlers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/autocomplete Wiki
+ * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
  */
-interface AutocompleteInterface
+class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {
     /**
-     * getSuggestions
-     *
-     * This method returns an array of strings matching the user's query for
-     * display in the autocomplete box.
-     *
-     * @param string $query The user query
-     *
-     * @return array        The suggestions for the provided query
+     * Constructor
      */
-    public function getSuggestions($query);
-
-    /**
-     * setConfig
-     *
-     * Set parameters that affect the behavior of the autocomplete handler.
-     * These values normally come from the search configuration file.
-     *
-     * @param string $params Parameters to set
-     *
-     * @return void
-     */
-    public function setConfig($params);
+    public function __construct()
+    {
+        $this->defaultNamespace = 'VuFind\Autocomplete';
+    }
 }
