@@ -27,7 +27,7 @@
  */
 namespace VuFind\Translator\Loader;
 use Zend\I18n\Translator\Loader\Exception\InvalidArgumentException,
-    Zend\I18n\Translator\Loader\LoaderInterface,
+    Zend\I18n\Translator\Loader\FileLoaderInterface,
     Zend\I18n\Translator\TextDomain;
 
 /**
@@ -39,7 +39,7 @@ use Zend\I18n\Translator\Loader\Exception\InvalidArgumentException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class ExtendedIni implements LoaderInterface
+class ExtendedIni implements FileLoaderInterface
 {
     protected $data;
 
