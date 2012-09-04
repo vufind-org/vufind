@@ -29,8 +29,7 @@ namespace VuFind\Controller;
 use VuFind\Db\Table\Comments as CommentsTable,
     VuFind\Db\Table\Resource as ResourceTable,
     VuFind\Exception\Mail as MailException, VuFind\Export, VuFind\Mailer,
-    VuFind\Mailer\SMS, VuFind\Record, VuFind\Search\ResultScroller,
-    Zend\Session\Container as SessionContainer;
+    VuFind\Mailer\SMS, VuFind\Record, Zend\Session\Container as SessionContainer;
 
 /**
  * VuFind Record Controller

@@ -27,8 +27,7 @@
  */
 namespace VuFind\Controller;
 use VuFind\Db\Table\Search as SearchTable, VuFind\Record, VuFind\Search\Memory,
-    VuFind\Search\Options as SearchOptions, VuFind\Search\ResultScroller,
-    Zend\Stdlib\Parameters;
+    VuFind\Search\Options as SearchOptions, Zend\Stdlib\Parameters;
 
 /**
  * VuFind Search Controller
