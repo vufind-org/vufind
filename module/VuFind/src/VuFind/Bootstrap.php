@@ -32,7 +32,8 @@ use VuFind\Config\Reader as ConfigReader,
     VuFind\Translator\Translator, Zend\Console\Console,
     Zend\Db\TableGateway\Feature\GlobalAdapterFeature as DbGlobalAdapter,
     Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch,
-    Zend\ServiceManager\Config as ServiceManagerConfig;
+    Zend\ServiceManager\Config as ServiceManagerConfig,
+    Zend\ServiceManager\ServiceLocatorAwareInterface;
 
 /**
  * VuFind Bootstrapper
@@ -88,21 +89,20 @@ class Bootstrap
         $serviceManager = $app->getServiceManager();
         $config = $app->getConfig();
 
-        $serviceManager->setService(
-            'AuthHandlerManager', new \VuFind\Auth\PluginManager(
-                new ServiceManagerConfig($config['auth_handler_manager'])
-            )
-        );
-        $serviceManager->setService(
-            'AutocompleteHandlerManager', new \VuFind\Autocomplete\PluginManager(
-                new ServiceManagerConfig($config['autocomplete_handler_manager'])
-            )
-        );
-        $serviceManager->setService(
-            'SessionHandlerManager', new \VuFind\Session\PluginManager(
-                new ServiceManagerConfig($config['session_handler_manager'])
-            )
-        );
+        // Use naming conventions to set up a bunch of services based on namespace:
+        $namespaces = array('Auth', 'Autocomplete', 'Session');
+        foreach ($namespaces as $ns) {
+            $serviceName = $ns . 'HandlerManager';
+            $className = 'VuFind\\' . $ns . '\PluginManager';
+            $configKey = strtolower($ns) . '_handler_manager';
+            $service = new $className(
+                new ServiceManagerConfig($config[$configKey])
+            );
+            if ($service instanceof ServiceLocatorAwareInterface) {
+                $service->setServiceLocator($serviceManager);
+            }
+            $serviceManager->setService($serviceName, $service);
+        }
     }
 
     /**
