@@ -1,6 +1,6 @@
 <?php
 /**
- * Cart view helper
+ * Base class for helpers that pull resources from the service locator.
  *
  * PHP version 5
  *
@@ -26,9 +26,12 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Theme\Root\Helper;
+use Zend\ServiceManager\ServiceLocatorInterface,
+    Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\View\Helper\AbstractHelper;
 
 /**
- * Cart view helper
+ * Base class for helpers that pull resources from the service locator.
  *
  * @category VuFind2
  * @package  View_Helpers
@@ -36,15 +39,33 @@ namespace VuFind\Theme\Root\Helper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class Cart extends AbstractServiceLocator
+abstract class AbstractServiceLocator extends AbstractHelper
+    implements ServiceLocatorAwareInterface
 {
+    protected $serviceLocator;
+
     /**
-     * Get the Cart object from the service manager.
+     * Set the service locator.
      *
-     * @return \VuFind\Cart
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return Manager
      */
-    public function __invoke()
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
     {
-        return $this->getServiceLocator()->get('Cart');
+        // The service locator passed in here is a Zend\View\HelperPluginManager;
+        // we want to pull out the main Zend\ServiceManager\ServiceManager.
+        $this->serviceLocator = $serviceLocator->getServiceLocator();
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
     }
 }
