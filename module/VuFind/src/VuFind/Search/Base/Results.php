@@ -409,10 +409,12 @@ abstract class Results
         }
 
         // Build the standard paginator control:
-        return Paginator::factory($total)
-            ->setCurrentPageNumber($this->getParams()->getPage())
+        $adapter = new \Zend\Paginator\Adapter\Null($total);
+        $paginator = new Paginator($adapter);
+        $paginator->setCurrentPageNumber($this->getParams()->getPage())
             ->setItemCountPerPage($this->getParams()->getLimit())
             ->setPageRange(11);
+        return $paginator;
     }
 
     /**
