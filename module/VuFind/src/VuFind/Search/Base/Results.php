@@ -409,8 +409,8 @@ abstract class Results
         }
 
         // Build the standard paginator control:
-        $adapter = new \Zend\Paginator\Adapter\Null($total);
-        $paginator = new Paginator($adapter);
+        $nullAdapter = "Zend\Paginator\Adapter\Null";
+        $paginator = new Paginator(new $nullAdapter($total));
         $paginator->setCurrentPageNumber($this->getParams()->getPage())
             ->setItemCountPerPage($this->getParams()->getLimit())
             ->setPageRange(11);
