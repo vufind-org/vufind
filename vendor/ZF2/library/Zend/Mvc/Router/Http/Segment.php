@@ -316,11 +316,9 @@ class Segment implements RouteInterface
         $path = $uri->getPath();
 
         if ($pathOffset !== null) {
-            $pattern = '/(\G' . str_replace('/', '\/', $this->regex) . ')/i';
-            $result = preg_match($pattern, $path, $matches, null, $pathOffset);
+            $result = preg_match('(\G' . $this->regex . ')', $path, $matches, null, $pathOffset);
         } else {
-            $pattern = '/(^' . str_replace('/', '\/', $this->regex) . '$)/i';
-            $result = preg_match('(^' . $pattern . '$)', $path, $matches);
+            $result = preg_match('(^' . $this->regex . '$)', $path, $matches);
         }
 
         if (!$result) {

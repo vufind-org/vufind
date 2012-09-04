@@ -51,7 +51,6 @@ class ChangeTrackerTest extends \VuFind\Tests\DbTestCase
      */
     public function testChangeTracker()
     {
-        /* TODO - uncomment this once ZF2 RowGateway supports compound primary keys
         $core = 'testCore';
         $tracker = new ChangeTracker();
 
@@ -104,6 +103,5 @@ class ChangeTrackerTest extends \VuFind\Tests\DbTestCase
 
         // Clean up after ourselves:
         $tracker->delete(array('core' => $core));
-         */
     }
 }

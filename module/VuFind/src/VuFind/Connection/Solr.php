@@ -1135,10 +1135,8 @@ class Solr
 
         // Record the deletions in our change tracker database:
         foreach ($idList as $id) {
-            /* TODO: test this when AbstractRowGateway supports multi-part keys:
             $tracker = new ChangeTrackerTable();
             $tracker->markDeleted($this->core, $id);
-             */
         }
 
         return $result;
