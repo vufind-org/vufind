@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Table;
-use VuFind\Record, Zend\Db\Sql\Expression;
+use VuFind\Record\Loader as RecordLoader, Zend\Db\Sql\Expression;
 
 /**
  * Table Definition for resource
@@ -79,7 +79,7 @@ class Resource extends Gateway
 
             // Load record if it was not provided:
             if (is_null($driver)) {
-                $driver = Record::load($id, $source);
+                $driver = RecordLoader::load($id, $source);
             }
 
             // Load metadata into the database for sorting/failback purposes:

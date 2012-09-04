@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Search\MixedList;
-use VuFind\Record, VuFind\Search\Base\Results as BaseResults;
+use VuFind\Record\Loader as RecordLoader, VuFind\Search\Base\Results as BaseResults;
 
 /**
  * Search Mixed List Results
@@ -62,7 +62,7 @@ class Results extends BaseResults
     protected function performSearch()
     {
         $recordsToRequest = $this->getParams()->getRecordsToRequest();
-        $this->results = Record::loadBatch($recordsToRequest);
+        $this->results = RecordLoader::loadBatch($recordsToRequest);
         $this->resultTotal = count($this->results);
     }
 

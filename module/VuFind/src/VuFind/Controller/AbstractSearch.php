@@ -26,8 +26,9 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller;
-use VuFind\Db\Table\Search as SearchTable, VuFind\Record, VuFind\Search\Memory,
-    VuFind\Search\Options as SearchOptions, Zend\Stdlib\Parameters;
+use VuFind\Db\Table\Search as SearchTable, VuFind\Record\Router as RecordRouter,
+    VuFind\Search\Memory, VuFind\Search\Options as SearchOptions,
+    Zend\Stdlib\Parameters;
 
 /**
  * VuFind Search Controller
@@ -259,7 +260,7 @@ class AbstractSearch extends AbstractBase
 
         // If we got this far, we have a valid parameter so we should redirect
         // and report success:
-        $details = Record::getTabRouteDetails($recordList[$jumpto - 1]);
+        $details = RecordRouter::getTabRouteDetails($recordList[$jumpto - 1]);
         return $this->redirect()->toRoute($details['route'], $details['params']);
     }
 

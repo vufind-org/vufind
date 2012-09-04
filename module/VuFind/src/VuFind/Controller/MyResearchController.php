@@ -34,7 +34,8 @@ use VuFind\Config\Reader as ConfigReader,
     VuFind\Exception\Auth as AuthException,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\Record, VuFind\Search\Solr\Results as SolrResults,
+    VuFind\Record\Loader as RecordLoader,
+    VuFind\Record\Router as RecordRouter, VuFind\Search\Solr\Results as SolrResults,
     Zend\Stdlib\Parameters;
 
 /**
@@ -319,7 +320,7 @@ class MyResearchController extends AbstractBase
                 'list' => empty($listID)
                     ? false : UserListTable::getExisting($listID),
                 'deleteIDS' => $ids,
-                'records' => Record::loadBatch($ids)
+                'records' => RecordLoader::loadBatch($ids)
             )
         );
     }
@@ -421,7 +422,7 @@ class MyResearchController extends AbstractBase
         $source = $this->params()->fromPost(
             'source', $this->params()->fromQuery('source', 'VuFind')
         );
-        $driver = Record::load($id, $source);
+        $driver = RecordLoader::load($id, $source);
         $listID = $this->params()->fromPost(
             'list_id', $this->params()->fromQuery('list_id', null)
         );
@@ -575,7 +576,7 @@ class MyResearchController extends AbstractBase
             $recordId = $this->params()->fromQuery('recordId');
             $recordSource = $this->params()->fromQuery('recordSource', 'VuFind');
             if (!empty($recordId)) {
-                $details = Record::getActionRouteDetails(
+                $details = RecordRouter::getActionRouteDetails(
                     $recordSource . '|' . $recordId, 'Save'
                 );
                 return $this->redirect()

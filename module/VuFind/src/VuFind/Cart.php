@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
 namespace VuFind;
-use VuFind\Config\Reader as ConfigReader;
-use VuFind\Record;
+use VuFind\Config\Reader as ConfigReader, VuFind\Record\Loader as RecordLoader;
 
 /**
  * Cart Class
@@ -268,6 +267,6 @@ class Cart
      */
     public function getRecordDetails()
     {
-        return Record::loadBatch($this->items);
+        return RecordLoader::loadBatch($this->items);
     }
 }

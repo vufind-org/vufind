@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-namespace VuFind;
+namespace VuFind\Record;
 
 /**
  * Record loader
@@ -36,7 +36,7 @@ namespace VuFind;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Record
+class Loader
 {
     /**
      * Given a record source, return the search class that can load that type of
@@ -65,83 +65,6 @@ class Record
         }
 
         return $class;
-    }
-
-    /**
-     * Get routing details for a controller action.
-     *
-     * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
-     * representing record to link to, or source|id pipe-delimited string
-     * @param string                                   $action Action to access
-     *
-     * @return array
-     */
-    public static function getActionRouteDetails($driver, $action)
-    {
-        return static::getRouteDetails($driver, '-' . strtolower($action));
-    }
-
-    /**
-     * Get routing details to display a particular tab.
-     *
-     * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
-     * representing record to link to, or source|id pipe-delimited string
-     * @param string                                   $tab    Action to access
-     *
-     * @return array
-     */
-    public static function getTabRouteDetails($driver, $tab = null)
-    {
-        return static::getRouteDetails(
-            $driver, '', empty($tab) ? array() : array('tab' => $tab)
-        );
-    }
-
-    /**
-     * Get routing details (route name and parameters array) to link to a record.
-     *
-     * @param \VuFind\RecordDriver\AbstractBase|string $driver      Record driver
-     * representing record to link to, or source|id pipe-delimited string
-     * @param string                                   $routeSuffix Suffix to add
-     * to route name
-     * @param array                                    $extraParams Extra parameters
-     * for route
-     *
-     * @return array
-     */
-    public static function getRouteDetails($driver, $routeSuffix,
-        $extraParams = array()
-    ) {
-        // Extract source and ID from driver or string:
-        if (is_object($driver)) {
-            $source = $driver->getResourceSource();
-            $id = $driver->getUniqueId();
-        } else {
-            $parts = explode('|', $driver, 2);
-            if (count($parts) < 2) {
-                $source = 'VuFind';
-                $id = $parts[0];
-            } else {
-                $source = $parts[0];
-                $id = $parts[1];
-            }
-        }
-
-        // Build URL parameters:
-        $params = $extraParams;
-        $params['id'] = $id;
-        if (!empty($action)) {
-            $params['action'] = $action;
-        }
-
-        // Determine route based on naming convention (default VuFind route is
-        // the exception to the rule):
-        $routeBase = ($source == 'VuFind')
-            ? 'record' : strtolower($source . 'record');
-
-        return array(
-            'params' => $params, 'route' => $routeBase . $routeSuffix
-        );
     }
 
     /**

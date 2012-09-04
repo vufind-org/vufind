@@ -29,7 +29,8 @@ namespace VuFind\Controller;
 use VuFind\Db\Table\Comments as CommentsTable,
     VuFind\Db\Table\Resource as ResourceTable,
     VuFind\Exception\Mail as MailException, VuFind\Export, VuFind\Mailer,
-    VuFind\Mailer\SMS, VuFind\Record, Zend\Session\Container as SessionContainer;
+    VuFind\Mailer\SMS, VuFind\Record\Router as RecordRouter,
+    Zend\Session\Container as SessionContainer;
 
 /**
  * VuFind Record Controller
@@ -477,7 +478,7 @@ class AbstractRecord extends AbstractBase
      */
     protected function redirectToRecord($params = '', $tab = null)
     {
-        $details = Record::getTabRouteDetails($this->loadRecord(), $tab);
+        $details = RecordRouter::getTabRouteDetails($this->loadRecord(), $tab);
         $target = $this->url()->fromRoute($details['route'], $details['params']);
         return $this->redirect()->toUrl($target . $params);
     }

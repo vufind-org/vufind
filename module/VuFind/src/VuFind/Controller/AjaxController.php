@@ -32,7 +32,8 @@ use VuFind\Config\Reader as ConfigReader,
     VuFind\Db\Table\Resource as ResourceTable, VuFind\Db\Table\Tags as TagsTable,
     VuFind\Db\Table\UserList as UserListTable,
     VuFind\Exception\Auth as AuthException, VuFind\Export, VuFind\Mailer,
-    VuFind\Mailer\SMS, VuFind\Record, VuFind\Translator\Translator;
+    VuFind\Mailer\SMS, VuFind\Record\Loader as RecordLoader,
+    VuFind\Translator\Translator;
 
 /**
  * This controller handles global AJAX functionality
@@ -606,7 +607,7 @@ class AjaxController extends AbstractBase
         }
         // empty tag
         try {
-            $driver = Record::load(
+            $driver = RecordLoader::load(
                 $this->params()->fromPost('id'),
                 $this->params()->fromPost('source', 'VuFind')
             );
@@ -826,7 +827,7 @@ class AjaxController extends AbstractBase
             );
         }
 
-        $driver = Record::load(
+        $driver = RecordLoader::load(
             $this->params()->fromPost('id'),
             $this->params()->fromPost('source', 'VuFind')
         );
@@ -933,7 +934,7 @@ class AjaxController extends AbstractBase
     {
         // Attempt to send the email:
         try {
-            $record = Record::load(
+            $record = RecordLoader::load(
                 $this->params()->fromPost('id'),
                 $this->params()->fromPost('source', 'VuFind')
             );
@@ -962,7 +963,7 @@ class AjaxController extends AbstractBase
     {
         // Attempt to send the email:
         try {
-            $record = Record::load(
+            $record = RecordLoader::load(
                 $this->params()->fromPost('id'),
                 $this->params()->fromPost('source', 'VuFind')
             );
@@ -1122,7 +1123,7 @@ class AjaxController extends AbstractBase
      */
     public function getRecordCommentsAsHTML()
     {
-        $driver = Record::load(
+        $driver = RecordLoader::load(
             $this->params()->fromQuery('id'),
             $this->params()->fromQuery('source', 'VuFind')
         );

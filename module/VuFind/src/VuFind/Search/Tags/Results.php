@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Search\Tags;
-use VuFind\Db\Table\Tags as TagsTable, VuFind\Record,
+use VuFind\Db\Table\Tags as TagsTable, VuFind\Record\Loader as RecordLoader,
     VuFind\Search\Base\Results as BaseResults;
 
 /**
@@ -74,7 +74,7 @@ class Results extends BaseResults
             $recordsToRequest[]
                 = array('id' => $row->record_id, 'source' => $row->source);
         }
-        $this->results = Record::loadBatch($recordsToRequest);
+        $this->results = RecordLoader::loadBatch($recordsToRequest);
     }
 
     /**

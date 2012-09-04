@@ -29,7 +29,7 @@ namespace VuFind\Search\Favorites;
 use VuFind\Db\Table\Resource as ResourceTable,
     VuFind\Db\Table\UserList as UserListTable,
     VuFind\Exception\ListPermission as ListPermissionException,
-    VuFind\Record,
+    VuFind\Record\Loader as RecordLoader,
     VuFind\Search\Base\Results as BaseResults,
     VuFind\Translator\Translator;
 
@@ -172,7 +172,7 @@ class Results extends BaseResults
                 )
             );
         }
-        $this->results = Record::loadBatch($recordsToRequest);
+        $this->results = RecordLoader::loadBatch($recordsToRequest);
     }
 
     /**

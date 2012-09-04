@@ -209,8 +209,8 @@ abstract class Results
             try {
                 $retVal[] = static::getRecord($id);
             } catch (\Exception $e) {
-                // Just omit missing records from the return array; calling code
-                // in the \VuFind\Record::loadBatch() method will deal with this.
+                // Just omit missing records from the return array; calling code in
+                // \VuFind\Record\Loader::loadBatch() will deal with this.
             }
         }
         return $retVal;

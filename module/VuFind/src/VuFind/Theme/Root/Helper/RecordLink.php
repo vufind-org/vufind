@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Theme\Root\Helper;
-use VuFind\Record as RecordTools, Zend\View\Helper\AbstractHelper;
+use VuFind\Record\Router as RecordRouter, Zend\View\Helper\AbstractHelper;
 
 /**
  * Record link view helper
@@ -82,7 +82,7 @@ class RecordLink extends AbstractHelper
     {
         // Build the URL:
         $urlHelper = $this->getView()->plugin('url');
-        $details = RecordTools::getActionRouteDetails($driver, $action);
+        $details = RecordRouter::getActionRouteDetails($driver, $action);
         return $urlHelper($details['route'], $details['params']);
     }
 
@@ -134,7 +134,7 @@ class RecordLink extends AbstractHelper
     {
         // Build the URL:
         $urlHelper = $this->getView()->plugin('url');
-        $details = RecordTools::getTabRouteDetails($driver, $tab);
+        $details = RecordRouter::getTabRouteDetails($driver, $tab);
         return $urlHelper($details['route'], $details['params']);
     }
 
