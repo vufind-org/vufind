@@ -85,7 +85,7 @@ class Favorites extends AbstractPlugin
             // Add the information to the user's account:
             $tags = isset($params['mytags'])
                 ? Tags::parse(trim($params['mytags']))
-                : '';
+                : array();
             $user->saveResource($resource, $list, $tags, '', false);
         }
     }

@@ -180,7 +180,8 @@ abstract class AbstractBase
         // Add the information to the user's account:
         $user->saveResource(
             $resource, $list,
-            isset($params['mytags']) ? Tags::parse(trim($params['mytags'])) : '',
+            isset($params['mytags'])
+                ? Tags::parse(trim($params['mytags'])) : array(),
             isset($params['notes']) ? $params['notes'] : ''
         );
     }
