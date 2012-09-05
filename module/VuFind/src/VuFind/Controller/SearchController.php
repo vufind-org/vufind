@@ -345,7 +345,8 @@ class SearchController extends AbstractSearch
             $resultPages = 10;
         }
         $catalog = ConnectionManager::connectToCatalog();
-        $params = new \VuFind\Search\Solr\Params();
+        $sm = $this->getSearchManager()->setSearchClassId('Solr');
+        $params = $sm->getParams();
         $perPage = $params->getLimit();
         $newItems = $catalog->getNewItems(1, $perPage * $resultPages, $range, $dept);
 
@@ -432,9 +433,10 @@ class SearchController extends AbstractSearch
      */
     public function reservessearchAction()
     {
-        $params = new \VuFind\Search\SolrReserves\Params();
+        $sm = $this->getSearchManager()->setSearchClassId('SolrReserves');
+        $params = $sm->getParams();
         $params->initFromRequest($this->getRequest()->getQuery());
-        $results = new \VuFind\Search\SolrReserves\Results($params);
+        $results = $sm->getResults($params);
         return $this->createViewModel(array('results' => $results));
     }
 
@@ -458,7 +460,8 @@ class SearchController extends AbstractSearch
         $bibIDs = array_unique(array_map($callback, $result));
 
         // Truncate the list if it is too long:
-        $params = new \VuFind\Search\Solr\Params();
+        $sm = $this->getSearchManager()->setSearchClassId('Solr');
+        $params = $sm->getParams();
         $limit = $params->getQueryIDLimit();
         if (count($bibIDs) > $limit) {
             $bibIDs = array_slice($bibIDs, 0, $limit);
