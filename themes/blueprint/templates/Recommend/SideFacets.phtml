@@ -1,22 +1,23 @@
+<? $results = $this->recommend->getResults(); ?>
 <div class="sidegroup">
-  <? if ($this->results->getResultTotal() > 0): ?><h4><?=$this->transEsc('Narrow Search')?></h4><? endif; ?>
-  <? $checkboxFilters = $this->results->getParams()->getCheckboxFacets(); if (count($checkboxFilters) > 0): ?>
+  <? if ($results->getResultTotal() > 0): ?><h4><?=$this->transEsc('Narrow Search')?></h4><? endif; ?>
+  <? $checkboxFilters = $results->getParams()->getCheckboxFacets(); if (count($checkboxFilters) > 0): ?>
     <? foreach ($checkboxFilters as $current): ?>
-        <div class="checkboxFilter<?=($this->results->getResultTotal() < 1 && !$current['selected'] && !$current['alwaysVisible']) ? ' hide' : ''?>">
+        <div class="checkboxFilter<?=($results->getResultTotal() < 1 && !$current['selected'] && !$current['alwaysVisible']) ? ' hide' : ''?>">
           <input type="checkbox" name="filter[]" value="<?=$this->escapeHtml($current['filter'])?>"
             <?=$current['selected'] ? 'checked="checked"' : ''?> id="<?=$this->escapeHtml(str_replace(' ', '', $current['desc']))?>"
-            onclick="document.location.href='<?=$current['selected'] ? $this->results->getUrlQuery()->removeFilter($current['filter']) : $this->results->getUrlQuery()->addFilter($current['filter'])?>';" />
+            onclick="document.location.href='<?=$current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter'])?>';" />
           <label for="<?=$this->escapeHtml(str_replace(' ', '', $current['desc']))?>"><?=$this->transEsc($current['desc'])?></label>
         </div>
     <? endforeach; ?>
   <? endif; ?>
-  <? $filterList = $this->results->getParams()->getFilterList(true); if (!empty($filterList)): ?>
+  <? $filterList = $results->getParams()->getFilterList(true); if (!empty($filterList)): ?>
     <strong><?=$this->transEsc('Remove Filters')?></strong>
     <ul class="filters">
     <? foreach ($filterList as $field => $filters): ?>
       <? foreach ($filters as $filter): ?>
         <?
-            $removeLink = $this->currentPath().$this->results->getUrlQuery()->removeFacet($filter['field'], $filter['value']);
+            $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($filter['field'], $filter['value']);
             if ($filter['displayText'] == '[* TO *]') $filter['displayText'] = $this->translate('filter_wildcard');
         ?>
         <li>
@@ -28,12 +29,12 @@
     </ul>
   <? endif; ?>
   <? $sideFacetSet = $this->recommend->getFacetSet(); $dateFacets = $this->recommend->getDateFacets(); ?>
-  <? if (!empty($sideFacetSet) && $this->results->getResultTotal() > 0): ?>
+  <? if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
     <? foreach ($sideFacetSet as $title => $cluster): ?>
       <? if (isset($dateFacets[$title])): ?>
         <? /* Load the publication date slider UI widget */ $this->headScript()->appendFile('pubdate_slider.js'); ?>
         <form action="" name="<?=$this->escapeHtml($title)?>Filter" id="<?=$this->escapeHtml($title)?>Filter">
-          <?=$this->results->getUrlQuery()->asHiddenFields(array('filter' => "/^{$title}:.*/"))?>
+          <?=$results->getUrlQuery()->asHiddenFields(array('filter' => "/^{$title}:.*/"))?>
           <input type="hidden" name="daterange[]" value="<?=$this->escapeHtml($title)?>"/>
           <fieldset class="publishDateLimit" id="<?=$this->escapeHtml($title)?>">
             <legend><?=$this->transEsc($cluster['label'])?></legend>
@@ -57,7 +58,7 @@
             <? if ($thisFacet['isApplied']): ?>
               <dd><?=$this->escapeHtml($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="Selected"/></dd>
             <? else: ?>
-              <dd><a href="<?=$this->currentPath().$this->results->getUrlQuery()->addFacet($title, $thisFacet['value'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> (<?=$this->escapeHtml($thisFacet['count'])?>)</dd>
+              <dd><a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> (<?=$this->escapeHtml($thisFacet['count'])?>)</dd>
             <? endif; ?>
           <? endforeach; ?>
           <? if ($i > 5): ?><dd><a href="#" onclick="lessFacets('<?=$this->escapeHtml($title)?>'); return false;"><?=$this->transEsc('less')?> ...</a></dd><? endif; ?>

@@ -1,3 +1,4 @@
+<? $results = $this->recommend->getResults(); ?>
 <div class="sidegroup">
   <? $sideFacetSet = $this->recommend->getFacetSet(); ?>
 
@@ -22,14 +23,14 @@
   <? if (isset($sideFacetSet['tags']) && !empty($sideFacetSet['tags']['list'])): ?>
     <div class="sidegroup">
       <h4 class="tag"><?=$this->transEsc($sideFacetSet['tags']['label'])?></h4>
-      <? $filterList = $this->results->getParams()->getFilterList(true);
+      <? $filterList = $results->getParams()->getFilterList(true);
          $tagFilterList = isset($filterList[$sideFacetSet['tags']['label']]) ? $filterList[$sideFacetSet['tags']['label']] : null;
          if (!empty($tagFilterList)): ?>
         <strong><?=$this->transEsc('Remove Filters')?></strong>
         <ul class="filters">
         <? $field = $sideFacetSet['tags']['label'];
            foreach ($tagFilterList as $filter): ?>
-          <? $removeLink = $this->currentPath().$this->results->getUrlQuery()->removeFacet($filter['field'], $filter['value']); ?>
+          <? $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($filter['field'], $filter['value']); ?>
           <li>
             <a href="<?=$removeLink?>"><img src="<?=$this->imageLink('silk/delete.png')?>" alt="<?=$this->transEsc('Delete') ?>"/></a>
             <a href="<?=$removeLink?>"><?=$this->transEsc($field)?>: <?=$this->escapeHtml($filter['displayText'])?></a>
@@ -43,7 +44,7 @@
           <? if ($thisFacet['isApplied']): ?>
             <?=$this->escapeHtml($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="<?=$this->transEsc('Selected') ?>"/>
           <? else: ?>
-            <a href="<?=$this->currentPath().$this->results->getUrlQuery()->addFacet('tags', $thisFacet['value'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> (<?=$this->escapeHtml($thisFacet['count'])?>)
+            <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet('tags', $thisFacet['value'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> (<?=$this->escapeHtml($thisFacet['count'])?>)
           <? endif; ?>
           </li>
         <? endforeach; ?>

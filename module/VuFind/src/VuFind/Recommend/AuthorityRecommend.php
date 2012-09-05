@@ -55,7 +55,8 @@ class AuthorityRecommend implements RecommendInterface
     protected $searchObject;
     protected $lookfor;
     protected $filters = array();
-    protected $results = array();
+    protected $results;
+    protected $recommendations = array();
 
     /**
      * setConfig
@@ -109,6 +110,8 @@ class AuthorityRecommend implements RecommendInterface
      */
     public function process($results)
     {
+        $this->results = $results;
+
         // function will return blank on Advanced Search
         if ($results->getParams()->getSearchType()== 'advanced') {
             return;
@@ -155,8 +158,8 @@ class AuthorityRecommend implements RecommendInterface
             );
 
             // check for duplicates before adding record to recordSet
-            if (!$this->inArrayR($recordArray['heading'], $this->results)) {
-                array_push($this->results, $recordArray);
+            if (!$this->inArrayR($recordArray['heading'], $this->recommendations)) {
+                array_push($this->recommendations, $recordArray);
             } else {
                 continue;
             }
@@ -164,9 +167,19 @@ class AuthorityRecommend implements RecommendInterface
     }
 
     /**
-     * Get results (for use in the view).
+     * Get recommendations (for use in the view).
      *
      * @return array
+     */
+    public function getRecommendations()
+    {
+        return $this->recommendations;
+    }
+
+    /**
+     * Get results stored in the object.
+     *
+     * @return \VuFind\Search\Base\Results
      */
     public function getResults()
     {
@@ -183,7 +196,7 @@ class AuthorityRecommend implements RecommendInterface
      *
      * @return bool
      */
-    public function inArrayR($needle, $haystack)
+    protected function inArrayR($needle, $haystack)
     {
         foreach ($haystack as $v) {
             if ($needle == $v) {

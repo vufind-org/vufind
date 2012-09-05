@@ -117,6 +117,16 @@ class TopFacets implements RecommendInterface
     }
 
     /**
+     * Get results stored in the object.
+     *
+     * @return \VuFind\Search\Base\Results
+     */
+    public function getResults()
+    {
+        return $this->results;
+    }
+
+    /**
      * Get facet information taken from the search.
      *
      * @return array

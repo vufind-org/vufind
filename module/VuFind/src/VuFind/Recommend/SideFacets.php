@@ -161,4 +161,14 @@ class SideFacets implements RecommendInterface
         }
         return $result;
     }
+
+    /**
+     * Get results stored in the object.
+     *
+     * @return \VuFind\Search\Base\Results
+     */
+    public function getResults()
+    {
+        return $this->results;
+    }
 }

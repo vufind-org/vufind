@@ -45,6 +45,7 @@ class SwitchType implements RecommendInterface
     protected $newHandler;      // search handler to try
     protected $newHandlerName;  // on-screen description of handler
     protected $active;          // is this module active?
+    protected $results;         // results object
 
     /**
      * setConfig
@@ -94,6 +95,7 @@ class SwitchType implements RecommendInterface
     public function process($results)
     {
         $handler = $results->getParams()->getSearchHandler();
+        $this->results = $results;
 
         // If the handler is null, we can't figure out a single handler, so this
         // is probably an advanced search.  In that case, we shouldn't try to change
@@ -101,6 +103,16 @@ class SwitchType implements RecommendInterface
         // being used and can determine that it is not the same as the new handler
         // that we want to recommend.
         $this->active = (!is_null($handler) && $handler != $this->newHandler);
+    }
+
+    /**
+     * Get results stored in the object.
+     *
+     * @return \VuFind\Search\Base\Results
+     */
+    public function getResults()
+    {
+        return $this->results;
     }
 
     /**
