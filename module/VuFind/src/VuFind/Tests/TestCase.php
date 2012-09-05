@@ -41,6 +41,7 @@ namespace VuFind\Tests;
 
 abstract class TestCase extends \PHPUnit_Framework_TestCase
 {
+    protected $searchManager = false;
 
     /**
      * Call protected or private method for side-effect and result.
@@ -99,5 +100,22 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         $reflectionProperty = new \ReflectionProperty($object, $property);
         $reflectionProperty->setAccessible(true);
         return $reflectionProperty->setValue($object, $value);
+    }
+
+    /**
+     * Get a search manager instance for testing search objects.
+     *
+     * @return \VuFind\Search\Manager
+     */
+    public function getSearchManager()
+    {
+        if (!$this->searchManager) {
+            $this->searchManager = new \VuFind\Search\Manager(
+                array('default_namespace' => 'VuFind\Search')
+            );
+            $serviceManager = new \Zend\ServiceManager\ServiceManager();
+            $this->searchManager->setServiceLocator($serviceManager);
+        }
+        return $this->searchManager;
     }
 }
