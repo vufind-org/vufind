@@ -47,19 +47,6 @@ class SolrAuth extends Solr
     public function __construct()
     {
         $this->defaultDisplayField = 'heading';
-    }
-
-    /**
-     * initSearchObject
-     *
-     * Initialize the search object used for finding recommendations.
-     *
-     * @return void
-     */
-    protected function initSearchObject()
-    {
-        // Build a new search object:
-        $params = new \VuFind\Search\SolrAuth\Params();
-        $this->searchObject = new \VuFind\Search\SolrAuth\Results($params);
+        $this->searchClassId = 'SolrAuth';
     }
 }

@@ -27,6 +27,8 @@
  * @link     http://vufind.org/wiki/autocomplete Wiki
  */
 namespace VuFind\Autocomplete;
+use Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Solr Autocomplete Module
@@ -39,13 +41,14 @@ namespace VuFind\Autocomplete;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/autocomplete Wiki
  */
-class Solr implements AutocompleteInterface
+class Solr implements AutocompleteInterface, ServiceLocatorAwareInterface
 {
     protected $handler;
     protected $displayField;
     protected $defaultDisplayField = 'title';
     protected $sortField;
     protected $filters;
+    protected $searchClassId = 'Solr';
     protected $searchObject;
 
 
@@ -91,10 +94,15 @@ class Solr implements AutocompleteInterface
      */
     protected function initSearchObject()
     {
+        // Get the search manager:
+        $sm = $this->getServiceLocator()->getServiceLocator()->get('SearchManager');
+        $sm->setSearchClassId($this->searchClassId);
+
         // Build a new search object:
-        $params = new \VuFind\Search\Solr\Params();
-        $this->searchObject = new \VuFind\Search\Solr\Results($params);
-        $this->searchObject->getOptions()->spellcheckEnabled(false);
+        $params = $sm->getParams();
+        $params->getOptions()->spellcheckEnabled(false);
+        $params->recommendationsEnabled(false);
+        $this->searchObject = $sm->getResults($params);
     }
 
     /**
@@ -279,4 +287,26 @@ class Solr implements AutocompleteInterface
         return true;
     }
 
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return Manager
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
+    }
 }
