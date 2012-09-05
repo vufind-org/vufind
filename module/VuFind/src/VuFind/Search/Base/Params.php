@@ -27,7 +27,9 @@
  */
 namespace VuFind\Search\Base;
 use VuFind\Config\Reader as ConfigReader, VuFind\Search\Options as SearchOptions,
-    VuFind\Translator\Translator;
+    VuFind\Translator\Translator,
+    Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Abstract parameters search model.
@@ -40,7 +42,7 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Search\Options as SearchOptions
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Params
+class Params implements ServiceLocatorAwareInterface
 {
     // Search terms
     protected $searchTerms = array();
@@ -65,6 +67,8 @@ class Params
     protected $facetConfig = array();
     protected $checkboxFacets = array();
     protected $filterList = array();
+    // Service locator
+    protected $serviceLocator;
 
     /**
      * Constructor
@@ -89,6 +93,11 @@ class Params
         // If no options have been set, use defaults:
         if (null === $this->options) {
             // Create a copy of the default configuration:
+            /* TODO: change after Search Manager refactoring
+            $default = $this->getSearchManager()
+                ->setSearchClassId($this->getSearchClassId())->getOptionsInstance();
+            $this->options = clone($default);
+             */
             $this->options = clone(
                 SearchOptions::getInstance($this->getSearchClassId())
             );
@@ -127,6 +136,9 @@ class Params
      */
     public function getSearchClassId()
     {
+        /* TODO: change this when Search Manager refactoring is done:
+        return $this->getSearchManager()->extractSearchClassId(get_class($this));
+         */
         return SearchOptions::extractSearchClassId(get_class($this));
     }
 
@@ -1483,5 +1495,42 @@ class Params
     public function getSelectedShards()
     {
         return $this->selectedShards;
+    }
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return Manager
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
+    }
+
+    /**
+     * Pull the search manager from the service locator.
+     *
+     * @return \VuFind\Search\Manager
+     */
+    protected function getSearchManager()
+    {
+        $sl = $this->getServiceLocator();
+        if (!is_object($sl)) {
+            throw new \Exception('Could not find service locator');
+        }
+        return $sl->get('SearchManager');
     }
 }
