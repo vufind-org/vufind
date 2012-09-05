@@ -794,6 +794,13 @@ class Params implements ServiceLocatorAwareInterface
             return;
         }
 
+        // Get the plugin manager (skip recommendations if it is unavailable):
+        $sm = $this->getServiceLocator();
+        if (!is_object($sm) || !$sm->has('RecommendHandlerManager')) {
+            return;
+        }
+        $manager = $sm->get('RecommendHandlerManager');
+
         // Process recommendations for each location:
         $this->recommend = array(
             'top' => array(), 'side' => array(), 'noresults' => array()
@@ -813,20 +820,20 @@ class Params implements ServiceLocatorAwareInterface
                 // Break apart the setting into module name and extra parameters:
                 $current = explode(':', $current);
                 $module = array_shift($current);
-                $class = 'VuFind\Recommend\\' . $module;
                 $params = implode(':', $current);
-
-                // Build a recommendation module with the provided settings.
-                if (class_exists($class)) {
-                    $obj = new $class();
-                    $obj->setConfig($params);
-                    $obj->init($this, $request);
-                    $this->recommend[$location][] = $obj;
-                } else {
+                if (!$manager->has($module)) {
                     throw new \Exception(
-                        'Could not load recommendation module: ' . $class
+                        'Could not load recommendation module: ' . $module
                     );
                 }
+
+                // Build a recommendation module with the provided settings.
+                // Create a clone in case the same module is used repeatedly with
+                // different settings.
+                $obj = clone($manager->get($module));
+                $obj->setConfig($params);
+                $obj->init($this, $request);
+                $this->recommend[$location][] = $obj;
             }
         }
     }

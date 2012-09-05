@@ -90,7 +90,7 @@ class Bootstrap
         $config = $app->getConfig();
 
         // Use naming conventions to set up a bunch of services based on namespace:
-        $namespaces = array('Auth', 'Autocomplete', 'Session');
+        $namespaces = array('Auth', 'Autocomplete', 'Recommend', 'Session');
         foreach ($namespaces as $ns) {
             $serviceName = $ns . 'HandlerManager';
             $className = 'VuFind\\' . $ns . '\PluginManager';

@@ -138,6 +138,30 @@ $config = array(
             'result-scroller' => 'VuFind\Controller\Plugin\ResultScroller',
         )
     ),
+    'recommend_handler_manager' => array(
+        'abstract_factories' => array('VuFind\Recommend\PluginFactory'),
+        'invokables' => array(
+            'authorfacets' => 'VuFind\Recommend\AuthorFacets',
+            'authorinfo' => 'VuFind\Recommend\AuthorInfo',
+            'authorityrecommend' => 'VuFind\Recommend\AuthorityRecommend',
+            'catalogresults' => 'VuFind\Recommend\CatalogResults',
+            'europeanaresults' => 'VuFind\Recommend\EuropeanaResults',
+            'europeanaresultsdeferred' => 'VuFind\Recommend\EuropeanaResultsDeferred',
+            'expandfacets' => 'VuFind\Recommend\ExpandFacets',
+            'favoritefacets' => 'VuFind\Recommend\FavoriteFacets',
+            'openlibrarysubjects' => 'VuFind\Recommend\OpenLibrarySubjects',
+            'openlibrarysubjectsdeferred' => 'VuFind\Recommend\OpenLibrarySubjectsDeferred',
+            'pubdatevisajax' => 'VuFind\Recommend\PubDateVisAjax',
+            'resultgooglemapajax' => 'VuFind\Recommend\ResultGoogleMapAjax',
+            'sidefacets' => 'VuFind\Recommend\SideFacets',
+            'summondatabases' => 'VuFind\Recommend\SummonDatabases',
+            'summonresults' => 'VuFind\Recommend\SummonResults',
+            'switchtype' => 'VuFind\Recommend\SwitchType',
+            'topfacets' => 'VuFind\Recommend\TopFacets',
+            'worldcatidentities' => 'VuFind\Recommend\WorldCatIdentities',
+            'worldcatterms' => 'VuFind\Recommend\WorldCatTerms',
+        ),
+    ),
     'search_manager' => array(
         'default_namespace' => 'VuFind\Search',
         'namespaces_by_id' => array(
