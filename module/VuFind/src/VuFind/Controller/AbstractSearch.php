@@ -27,8 +27,7 @@
  */
 namespace VuFind\Controller;
 use VuFind\Db\Table\Search as SearchTable, VuFind\Record\Router as RecordRouter,
-    VuFind\Search\Memory, VuFind\Search\Options as SearchOptions,
-    Zend\Stdlib\Parameters;
+    VuFind\Search\Memory, Zend\Stdlib\Parameters;
 
 /**
  * VuFind Search Controller
@@ -72,6 +71,16 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
+     * Get the search manager.
+     *
+     * @return \VuFind\Search\Manager
+     */
+    public function getSearchManager()
+    {
+        return $this->getServiceLocator()->get('SearchManager');
+    }
+
+    /**
      * Handle an advanced search
      *
      * @return \Zend\View\Model\ViewModel
@@ -79,7 +88,9 @@ class AbstractSearch extends AbstractBase
     public function advancedAction()
     {
         $view = $this->createViewModel();
-        $view->options = SearchOptions::getInstance($this->searchClassId);
+        $view->options = $this->getSearchManager()
+            ->setSearchClassId($this->searchClassId)
+            ->getOptionsInstance();
         if ($view->options->getAdvancedSearchAction() === false) {
             throw new \Exception('Advanced search not supported.');
         }
@@ -148,8 +159,8 @@ class AbstractSearch extends AbstractBase
             return $this->redirectToSavedSearch($savedId);
         }
 
-        $paramsClass = $this->getParamsClass();
-        $params = new $paramsClass();
+        $manager = $this->getSearchManager()->setSearchClassId($this->searchClassId);
+        $params = $manager->getParams();
         $params->recommendationsEnabled(true);
 
         // Send both GET and POST variables to search class:
@@ -163,8 +174,7 @@ class AbstractSearch extends AbstractBase
         // Attempt to perform the search; if there is a problem, inspect any Solr
         // exceptions to see if we should communicate to the user about them.
         try {
-            $resultsClass = $this->getResultsClass();
-            $results = new $resultsClass($params);
+            $results = $manager->getResults($params);
 
             // Explicitly execute search within controller -- this allows us to
             // catch exceptions more reliably:
@@ -262,26 +272,6 @@ class AbstractSearch extends AbstractBase
         // and report success:
         $details = RecordRouter::getTabRouteDetails($recordList[$jumpto - 1]);
         return $this->redirect()->toRoute($details['route'], $details['params']);
-    }
-
-    /**
-     * Get the name of the class used for setting search parameters.
-     *
-     * @return string
-     */
-    protected function getParamsClass()
-    {
-        return 'VuFind\Search\\' . $this->searchClassId . '\Params';
-    }
-
-    /**
-     * Get the name of the class used for retrieving search results.
-     *
-     * @return string
-     */
-    protected function getResultsClass()
-    {
-        return 'VuFind\Search\\' . $this->searchClassId . '\Results';
     }
 
     /**
