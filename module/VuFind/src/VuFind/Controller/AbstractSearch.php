@@ -221,7 +221,8 @@ class AbstractSearch extends AbstractBase
                 // We need to create and process an "empty results" object to
                 // ensure that recommendation modules and templates behave
                 // properly when displaying the error message.
-                $view->results = new \VuFind\Search\EmptySet\Results($params);
+                $view->results = $this->getSearchManager()
+                    ->setSearchClassId('EmptySet')->getResults($params);
                 $view->results->performAndProcessSearch();
             } else {
                 // Unexpected error -- let's throw this up to the next level.
