@@ -37,7 +37,7 @@ use VuFind\Config\Reader as ConfigReader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class ExpandFacets implements RecommendInterface
+class ExpandFacets extends AbstractSearchManagerAwareModule
 {
     protected $facets;
     protected $settings;
@@ -121,5 +121,16 @@ class ExpandFacets implements RecommendInterface
     public function getExpandedSet()
     {
         return $this->searchObject->getFacetList($this->facets);
+    }
+
+    /**
+     * Get an empty search object (the template uses this as the basis for URL
+     * generation).
+     *
+     * @return \VuFind\Search\Base\Results
+     */
+    public function getEmptyResults()
+    {
+        return $this->getSearchManager()->setSearchClassId('Solr')->getResults();
     }
 }
