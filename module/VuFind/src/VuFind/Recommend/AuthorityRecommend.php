@@ -30,8 +30,6 @@
  */
 namespace VuFind\Recommend;
 use VuFind\Exception\Solr as SolrException,
-    VuFind\Search\SolrAuth\Params as SolrAuthParams,
-    VuFind\Search\SolrAuth\Results as SolrAuthResults,
     Zend\Http\Request, Zend\StdLib\Parameters;
 
 /**
@@ -50,7 +48,7 @@ use VuFind\Exception\Solr as SolrException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class AuthorityRecommend implements RecommendInterface
+class AuthorityRecommend extends AbstractSearchManagerAwareModule
 {
     protected $searchObject;
     protected $lookfor;
@@ -137,12 +135,13 @@ class AuthorityRecommend implements RecommendInterface
         // Initialise and process search (ignore Solr errors -- no reason to fail
         // just because search syntax is not compatible with Authority core):
         try {
-            $authParams = new SolrAuthParams();
+            $sm = $this->getSearchManager()->setSearchClassId('SolrAuth');
+            $authParams = $sm->getParams();
             $authParams->initFromRequest($request);
             foreach ($this->filters as $filter) {
                 $authParams->getOptions()->addHiddenFilter($filter);
             }
-            $authResults = new SolrAuthResults($authParams);
+            $authResults = $sm->getResults($authParams);
             $results = $authResults->getResults();
         } catch (SolrException $e) {
             return;

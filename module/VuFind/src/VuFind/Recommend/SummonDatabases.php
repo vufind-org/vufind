@@ -26,8 +26,6 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Search\Summon\Params as SummonParams,
-    VuFind\Search\Summon\Results as SummonResults;
 
 /**
  * SummonDatabases Recommendations Module
@@ -40,7 +38,7 @@ use VuFind\Search\Summon\Params as SummonParams,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class SummonDatabases implements RecommendInterface
+class SummonDatabases extends AbstractSearchManagerAwareModule
 {
     protected $databases;
     protected $requestParam = 'lookfor';
@@ -99,9 +97,10 @@ class SummonDatabases implements RecommendInterface
         // to create a new Summon search object using the specified request 
         // parameter for search terms.
         if ($results->getParams()->getSearchClassId() != 'Summon') {
-            $params = new SummonParams();
+            $sm = $this->getSearchManager()->setSearchClassId('Summon');
+            $params = $sm->getParams();
             $params->setBasicSearch($this->lookfor);
-            $results = new SummonResults($params);
+            $results = $sm->getResults($params);
             $results->performAndProcessSearch();
         }
         $this->databases = $results->getDatabaseRecommendations();
