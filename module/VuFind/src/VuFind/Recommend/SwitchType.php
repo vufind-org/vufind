@@ -47,17 +47,15 @@ class SwitchType implements RecommendInterface
     protected $active;          // is this module active?
 
     /**
-     * Constructor
+     * setConfig
      *
-     * Establishes base settings for making recommendations.
+     * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
      *
-     * TopFacets:[ini section]:[ini name]
-     *      Display facets listed in the specified section of the specified ini file;
-     *      if [ini name] is left out, it defaults to "facets."
+     * @return void
      */
-    public function __construct($settings)
+    public function setConfig($settings)
     {
         $params = explode(':', $settings);
         $this->newHandler = !empty($params[0]) ? $params[0] : 'AllFields';

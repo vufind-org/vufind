@@ -818,7 +818,8 @@ class Params implements ServiceLocatorAwareInterface
 
                 // Build a recommendation module with the provided settings.
                 if (class_exists($class)) {
-                    $obj = new $class($params);
+                    $obj = new $class();
+                    $obj->setConfig($params);
                     $obj->init($this, $request);
                     $this->recommend[$location][] = $obj;
                 } else {

@@ -48,17 +48,19 @@ class TopFacets implements RecommendInterface
     protected $results;
 
     /**
-     * Constructor
+     * setConfig
      *
-     * Establishes base settings for making recommendations.
-     *
-     * @param string $settings Settings from searches.ini.
+     * Store the configuration of the recommendation module.
      *
      * TopFacets:[ini section]:[ini name]
      *      Display facets listed in the specified section of the specified ini file;
      *      if [ini name] is left out, it defaults to "facets."
+     *
+     * @param string $settings Settings from searches.ini.
+     *
+     * @return void
      */
-    public function __construct($settings)
+    public function setConfig($settings)
     {
         $settings = explode(':', $settings);
         $mainSection = empty($settings[0]) ? 'ResultsTop':$settings[0];

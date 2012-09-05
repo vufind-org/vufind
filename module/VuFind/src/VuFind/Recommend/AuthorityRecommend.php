@@ -58,13 +58,15 @@ class AuthorityRecommend implements RecommendInterface
     protected $results = array();
 
     /**
-     * Constructor
+     * setConfig
      *
-     * Establishes base settings for making recommendations.
+     * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
+     *
+     * @return void
      */
-    public function __construct($settings)
+    public function setConfig($settings)
     {
         $params = explode(':', $settings);
         for ($i = 0; $i < count($params); $i += 2) {

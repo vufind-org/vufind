@@ -48,13 +48,15 @@ class AuthorInfo implements RecommendInterface
     protected $lang;
 
     /**
-     * Constructor
+     * setConfig
      *
-     * Establishes base settings for making recommendations.
+     * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
+     *
+     * @return void
      */
-    public function __construct($settings)
+    public function setConfig($settings)
     {
         $translator = Translator::getTranslator();
         $this->lang = is_object($translator) ? $translator->getLocale() : 'en';

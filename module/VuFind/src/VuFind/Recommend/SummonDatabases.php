@@ -43,21 +43,23 @@ use VuFind\Search\Summon\Params as SummonParams,
 class SummonDatabases implements RecommendInterface
 {
     protected $databases;
-    protected $requestParam;
+    protected $requestParam = 'lookfor';
     protected $lookfor;
 
     /**
-     * Constructor
+     * setConfig
      *
-     * Establishes base settings for making recommendations.
+     * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
+     *
+     * @return void
      */
-    public function __construct($settings)
+    public function setConfig($settings)
     {
         // Only one setting -- HTTP request field containing search terms (ignored
         // if $searchObject is Summon type).
-        $this->requestParam = empty($settings) ? 'lookfor' : $settings;
+        $this->requestParam = empty($settings) ? $this->requestParam : $settings;
     }
 
     /**
