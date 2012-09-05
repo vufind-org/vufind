@@ -71,16 +71,6 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Get the search manager.
-     *
-     * @return \VuFind\Search\Manager
-     */
-    public function getSearchManager()
-    {
-        return $this->getServiceLocator()->get('SearchManager');
-    }
-
-    /**
      * Handle an advanced search
      *
      * @return \Zend\View\Model\ViewModel
