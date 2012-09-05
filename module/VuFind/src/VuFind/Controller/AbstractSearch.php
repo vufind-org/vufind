@@ -124,7 +124,7 @@ class AbstractSearch extends AbstractBase
         if ($search->session_id == $sessId || $search->user_id == $userId) {
             // They do, deminify it to a new object.
             $minSO = unserialize($search->search_object);
-            $savedSearch = $minSO->deminify();
+            $savedSearch = $minSO->deminify($this->getSearchManager());
 
             // Now redirect to the URL associated with the saved search; this
             // simplifies problems caused by mixing different classes of search
@@ -201,7 +201,8 @@ class AbstractSearch extends AbstractBase
                 $sessId = $this->getServiceLocator()->get('SessionManager')->getId();
                 $history = new SearchTable();
                 $history->saveSearch(
-                    $results, $sessId, $history->getSearches(
+                    $this->getSearchManager(), $results, $sessId,
+                    $history->getSearches(
                         $sessId, isset($user->id) ? $user->id : null
                     )
                 );
@@ -304,7 +305,7 @@ class AbstractSearch extends AbstractBase
 
         // Restore the full search object:
         $minSO = unserialize($search->search_object);
-        $savedSearch = $minSO->deminify();
+        $savedSearch = $minSO->deminify($this->getSearchManager());
 
         // Fail if this is not the right type of search:
         if ($savedSearch->getParams()->getSearchType() != 'advanced') {

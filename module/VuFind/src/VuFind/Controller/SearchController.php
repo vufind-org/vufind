@@ -251,7 +251,7 @@ class SearchController extends AbstractSearch
 
             // Saved searches
             if ($current->saved == 1) {
-                $saved[] = $minSO->deminify();
+                $saved[] = $minSO->deminify($this->getSearchManager());
             } else {
                 // All the others...
 
@@ -263,7 +263,7 @@ class SearchController extends AbstractSearch
                     Memory::forgetSearch();
                 } else {
                     // Otherwise add to the list
-                    $unsaved[] = $minSO->deminify();
+                    $unsaved[] = $minSO->deminify($this->getSearchManager());
                 }
             }
         }
