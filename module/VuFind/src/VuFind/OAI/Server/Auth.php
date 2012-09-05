@@ -44,12 +44,14 @@ class Auth extends Base
     /**
      * Constructor
      *
-     * @param string $baseURL The base URL for the OAI server
-     * @param array  $params  The incoming OAI-PMH parameters (i.e. $_GET)
+     * @param \VuFind\Search\Manager $sm      Search manager for retrieving records
+     * @param string                 $baseURL The base URL for the OAI server
+     * @param array                  $params  The incoming OAI-PMH parameters
+     * (i.e. $_GET)
      */
-    public function __construct($baseURL, $params)
+    public function __construct(\VuFind\Search\Manager $sm, $baseURL, $params)
     {
-        parent::__construct($baseURL, $params);
+        parent::__construct($sm, $baseURL, $params);
         $this->core = 'authority';
         $this->searchClassId = 'SolrAuth';
     }

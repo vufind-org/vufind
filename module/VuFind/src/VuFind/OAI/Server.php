@@ -63,14 +63,20 @@ class Server
     protected $earliestDatestamp = '2000-01-01T00:00:00Z';
     protected $adminEmail;
 
+    // Search manager:
+    protected $searchManager;
+
     /**
      * Constructor
      *
-     * @param string $baseURL The base URL for the OAI server
-     * @param array  $params  The incoming OAI-PMH parameters (i.e. $_GET)
+     * @param \VuFind\Search\Manager $sm      Search manager for retrieving records
+     * @param string                 $baseURL The base URL for the OAI server
+     * @param array                  $params  The incoming OAI-PMH parameters
+     * (i.e. $_GET)
      */
-    public function __construct($baseURL, $params)
+    public function __construct(\VuFind\Search\Manager $sm, $baseURL, $params)
     {
+        $this->searchManager = $sm;
         $this->baseURL = $baseURL;
         $this->params = isset($params) && is_array($params) ? $params : array();
         $this->initializeMetadataFormats(); // Load details on supported formats
@@ -501,10 +507,9 @@ class Server
         // we'll assume that this list is short enough to load in a single response;
         // it may be necessary to implement a resumption token mechanism if this
         // proves not to be the case:
-        $paramsClass = 'VuFind\Search\\' . $this->searchClassId . '\Params';
-        $params = new $paramsClass();
-        $resultsClass = 'VuFind\Search\\' . $this->searchClassId . '\Results';
-        $results = new $resultsClass($params);
+        $this->searchManager->setSearchClassId($this->searchClassId);
+        $params = $this->searchManager->getParams();
+        $results = $this->searchManager->getResults($params);
         try {
             $facets = $results->getFullFieldFacets(array($this->setField));
         } catch (\Exception $e) {
@@ -557,8 +562,8 @@ class Server
         $set = ''
     ) {
         // Set up search parameters:
-        $paramsClass = 'VuFind\Search\\' . $this->searchClassId . '\Params';
-        $params = new $paramsClass();
+        $this->searchManager->setSearchClassId($this->searchClassId);
+        $params = $this->searchManager->getParams();
         $params->setLimit($limit);
         $params->getOptions()->disableHighlighting();
         $params->getOptions()->spellcheckEnabled(false);
@@ -579,8 +584,7 @@ class Server
         }
 
         // Perform a Solr search:
-        $resultsClass = 'VuFind\Search\\' . $this->searchClassId . '\Results';
-        $results = new $resultsClass($params);
+        $results = $this->searchManager->getResults($params);
         $results->overrideStartRecord($offset + 1);
 
         // Return our results:
