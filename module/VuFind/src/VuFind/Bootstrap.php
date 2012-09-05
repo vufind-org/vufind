@@ -103,6 +103,12 @@ class Bootstrap
             }
             $serviceManager->setService($serviceName, $service);
         }
+
+        // Set up search manager a little differently -- it is a more complex class
+        // that doesn't work like the other standard plugin managers.
+        $manager = new  \VuFind\Search\Manager($config['search_manager']);
+        $manager->setServiceLocator($serviceManager);
+        $serviceManager->setService('SearchManager', $manager);
     }
 
     /**

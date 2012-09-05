@@ -138,6 +138,13 @@ $config = array(
             'result-scroller' => 'VuFind\Controller\Plugin\ResultScroller',
         )
     ),
+    'search_manager' => array(
+        'default_namespace' => 'VuFind\Search',
+        'namespaces_by_id' => array(
+        ),
+        'aliases' => array(
+        ),
+    ),
     'service_manager' => array(
         'invokables' => array(
             'authmanager' => 'VuFind\Auth\Manager',

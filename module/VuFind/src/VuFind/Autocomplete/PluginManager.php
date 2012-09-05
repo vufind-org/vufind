@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
  */
 namespace VuFind\Autocomplete;
-use VuFind\Config\Reader as ConfigReader, VuFind\Search\Options as SearchOptions;
+use VuFind\Config\Reader as ConfigReader;
 
 /**
  * Autocomplete handler plugin manager
@@ -73,7 +73,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 
         // get Autocomplete_Type config
         $searcher = $request->get('searcher', 'Solr');
-        $options = SearchOptions::getInstance($searcher);
+        $options = $this->getServiceLocator()->get('SearchManager')
+            ->setSearchClassId($searcher)->getOptionsInstance();
         $config = ConfigReader::getConfig($options->getSearchIni());
         $types = isset($config->Autocomplete_Types) ?
             $config->Autocomplete_Types->toArray() : array();
