@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Session_Handlers
+ * @package  Autocomplete
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
@@ -31,7 +31,7 @@ namespace VuFind\Autocomplete;
  * Autocomplete handler plugin factory
  *
  * @category VuFind2
- * @package  Session_Handlers
+ * @package  Autocomplete
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
