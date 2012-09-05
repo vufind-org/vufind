@@ -292,7 +292,7 @@ class Solr implements AutocompleteInterface, ServiceLocatorAwareInterface
      *
      * @param ServiceLocatorInterface $serviceLocator Locator to register
      *
-     * @return Manager
+     * @return Solr
      */
     public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
     {

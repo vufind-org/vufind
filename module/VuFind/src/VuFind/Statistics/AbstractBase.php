@@ -60,7 +60,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
      *
      * @param ServiceLocatorInterface $serviceLocator Locator to register
      *
-     * @return Manager
+     * @return AbstractBase
      */
     public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
     {

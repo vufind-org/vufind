@@ -50,7 +50,7 @@ abstract class AbstractSearchManagerAwareModule implements RecommendInterface,
      *
      * @param ServiceLocatorInterface $serviceLocator Locator to register
      *
-     * @return Manager
+     * @return AbstractSearchManagerAwareModule
      */
     public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
     {
