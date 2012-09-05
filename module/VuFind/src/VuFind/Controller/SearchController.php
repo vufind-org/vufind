@@ -30,9 +30,7 @@ namespace VuFind\Controller;
 use VuFind\Cache\Manager as CacheManager, VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
     VuFind\Db\Table\Search as SearchTable, VuFind\Exception\Mail as MailException,
-    VuFind\Mailer,
-    VuFind\Search\Memory, VuFind\Search\Solr\Params, VuFind\Search\Solr\Results,
-    VuFind\Solr\Utils as SolrUtils;
+    VuFind\Mailer, VuFind\Search\Memory, VuFind\Solr\Utils as SolrUtils;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -507,17 +505,25 @@ class SearchController extends AbstractSearch
             // we may want to make this more flexible later.  Also keep in mind that
             // the template is currently looking for certain hard-coded fields; this
             // should also be made smarter.
-            $params = new Params();
+            $sm = $this->getSearchManager()->setSearchClassId('Solr');
+            $params = $sm->getParams();
             $params->initAdvancedFacets();
 
             // We only care about facet lists, so don't get any results (this helps
             // prevent problems with serialized File_MARC objects in the cache):
             $params->setLimit(0);
 
-            $results = new Results($params);
+            $results = $sm->getResults($params);
             $results->getResults();                     // force processing for cache
+
+            // Temporarily remove the service manager so we can cache the
+            // results (otherwise we'll get errors about serializing closures):
+            $results->unsetServiceLocator();
             $cache->setItem('solrSearchHomeFacets', $results);
         }
+
+        // Restore the real service locator to the object:
+        $results->restoreServiceLocator($this->getServiceLocator());
         return $results;
     }
 

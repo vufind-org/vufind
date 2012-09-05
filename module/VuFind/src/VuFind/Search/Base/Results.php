@@ -525,11 +525,51 @@ abstract class Results implements ServiceLocatorAwareInterface
      *
      * @param ServiceLocatorInterface $serviceLocator Locator to register
      *
-     * @return Manager
+     * @return Results
      */
     public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
     {
         $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Restore the service locator (a cascading version of setServiceLocator()).
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return Results
+     */
+    public function restoreServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->setServiceLocator($serviceLocator);
+        $params = $this->getParams();
+        if (method_exists($params, 'setServiceLocator')) {
+            $params->setServiceLocator($serviceLocator);
+        }
+        $options = $this->getOptions();
+        if (method_exists($options, 'setServiceLocator')) {
+            $params->setServiceLocator($serviceLocator);
+        }
+        return $this;
+    }
+
+    /**
+     * Unset the service locator.
+     *
+     * @return Results
+     */
+    public function unsetServiceLocator()
+    {
+        $this->serviceLocator = null;
+        $params = $this->getParams();
+        if (method_exists($params, 'unsetServiceLocator')) {
+            $params->unsetServiceLocator();
+        }
+        $options = $this->getOptions();
+        if (method_exists($options, 'unsetServiceLocator')) {
+            $params->unsetServiceLocator();
+        }
         return $this;
     }
 

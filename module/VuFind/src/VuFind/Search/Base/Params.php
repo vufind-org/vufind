@@ -1506,11 +1506,26 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Unset the service locator.
+     *
+     * @return Params
+     */
+    public function unsetServiceLocator()
+    {
+        $this->serviceLocator = null;
+        $options = $this->getOptions();
+        if (method_exists($options, 'unsetServiceLocator')) {
+            $params->unsetServiceLocator();
+        }
+        return $this;
+    }
+
+    /**
      * Set the service locator.
      *
      * @param ServiceLocatorInterface $serviceLocator Locator to register
      *
-     * @return Manager
+     * @return Params
      */
     public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
     {
