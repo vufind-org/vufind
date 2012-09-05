@@ -26,9 +26,7 @@
  * @link     http://vufind.org/wiki/alphabetical_heading_browse Wiki
  */
 namespace VuFind\Controller;
-use VuFind\Config\Reader as ConfigReader, VuFind\Db\Table\Tags as TagsTable,
-    VuFind\Search\Solr\Params as SolrParams,
-    VuFind\Search\Solr\Results as SolrResults;
+use VuFind\Config\Reader as ConfigReader, VuFind\Db\Table\Tags as TagsTable;
 
 /**
  * BrowseController Class
@@ -561,7 +559,8 @@ class BrowseController extends AbstractBase
     protected function getFacetList($facet, $category = null,
         $sort = 'count', $query = '[* TO *]'
     ) {
-        $params = new SolrParams();
+        $sm = $this->getSearchManager()->setSearchClassId('Solr');
+        $params = $sm->getParams();
         $params->addFacet($facet);
         if ($category != null) {
             $query = $category . ':' . $query;
@@ -569,7 +568,7 @@ class BrowseController extends AbstractBase
             $query = $facet . ':' . $query;
         }
         $params->setOverrideQuery($query);
-        $searchObject = new SolrResults($params);
+        $searchObject = $sm->getResults($params);
         // Get limit from config
         $params->setFacetLimit($this->config->Browse->result_limit);
         $params->setLimit(0);
