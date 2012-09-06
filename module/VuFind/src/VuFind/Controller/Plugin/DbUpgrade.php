@@ -106,9 +106,13 @@ class DbUpgrade extends AbstractPlugin
      *
      * @return void
      */
-    public function query($sql)
-    {
-        $this->getAdapter()->query($sql, DbAdapter::QUERY_MODE_EXECUTE);
+    public function query($sql, $logsql)
+    {        
+        if($logsql) {
+            return $sql . ";\n";
+        } else {
+            $this->getAdapter()->query($sql, DbAdapter::QUERY_MODE_EXECUTE);
+        }
     }
 
     /**
@@ -189,11 +193,13 @@ class DbUpgrade extends AbstractPlugin
      * @throws \Exception
      * @return void
      */
-    public function createMissingTables($tables)
+    public function createMissingTables($tables, $logsql = false)
     {
+        $sqlcommands = '';
         foreach ($tables as $table) {
-            $this->query($this->dbCommands[$table][0]);
+            $sqlcommands .= $this->query($this->dbCommands[$table][0], $logsql);
         }
+        return $sqlcommands;
     }
 
     /**
@@ -203,10 +209,15 @@ class DbUpgrade extends AbstractPlugin
      * @throws \Exception
      * @return array
      */
-    public function getMissingColumns()
+    public function getMissingColumns($missing_tables = array())
     {
         $missing = array();
         foreach ($this->dbCommands as $table => $sql) {
+            // Skip missing tables if we're logging
+            if(in_array($table, $missing_tables)) {
+                continue;
+            }
+            
             // Parse column names out of the CREATE TABLE SQL, which will always be
             // the first entry in the array; we assume the standard mysqldump
             // formatting is used here.
@@ -281,10 +292,15 @@ class DbUpgrade extends AbstractPlugin
      * @throws \Exception
      * @return array
      */
-    public function getModifiedColumns()
+    public function getModifiedColumns($missingTables = array(), $missingColumns = array())
     {
         $missing = array();
         foreach ($this->dbCommands as $table => $sql) {
+            // Skip missing tables if we're logging
+            if(in_array($table, $missingTables)) {
+                continue;
+            }
+            
             // Parse column names out of the CREATE TABLE SQL, which will always be
             // the first entry in the array; we assume the standard mysqldump
             // formatting is used here.
@@ -308,6 +324,10 @@ class DbUpgrade extends AbstractPlugin
             // Now check for mismatched types:
             $actualColumns = $this->getTableColumns($table);
             foreach ($expectedColumns as $i => $column) {
+                // Skip column if we're logging and it's missing
+                if(in_array($column, $missingColumns)) {
+                    continue;
+                }
                 $currentColumn = $actualColumns[$column];
                 if (!$this->typeMatches($currentColumn, $expectedTypes[$i])) {
                     if (!isset($missing[$table])) {
@@ -328,13 +348,15 @@ class DbUpgrade extends AbstractPlugin
      * @throws \Exception
      * @return void
      */
-    public function createMissingColumns($columns)
+    public function createMissingColumns($columns, $logsql = false)
     {
+        $sqlcommands = '';
         foreach ($columns as $table => $sql) {
             foreach ($sql as $column) {
-                $this->query("ALTER TABLE `{$table}` ADD COLUMN {$column}");
+                $sqlcommands .= $this->query("ALTER TABLE `{$table}` ADD COLUMN {$column}", $logsql);
             }
         }
+        return $sqlcommands;
     }
 
     /**
@@ -345,12 +367,14 @@ class DbUpgrade extends AbstractPlugin
      * @throws \Exception
      * @return void
      */
-    public function updateModifiedColumns($columns)
+    public function updateModifiedColumns($columns, $logsql = false)
     {
+        $sqlcommands = '';
         foreach ($columns as $table => $sql) {
             foreach ($sql as $column) {
-                $this->query("ALTER TABLE `{$table}` MODIFY COLUMN {$column}");
+                $sqlcommands .= $this->query("ALTER TABLE `{$table}` MODIFY COLUMN {$column}", $logsql);
             }
         }
+        return $sqlcommands;
     }
 }

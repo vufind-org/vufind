@@ -49,6 +49,7 @@ class UpgradeController extends AbstractBase
 {
     protected $cookie;
     protected $session;
+    protected $logsql = false;
 
     /**
      * Constructor
@@ -183,6 +184,8 @@ class UpgradeController extends AbstractBase
      */
     public function fixdatabaseAction()
     {
+        $sql = '';
+    
         try {
             // Set up the helper with information from our SQL file:
             $this->dbUpgrade()
@@ -194,55 +197,69 @@ class UpgradeController extends AbstractBase
             // the missing tables will cause fatal errors during the column test.
             $missingTables = $this->dbUpgrade()->getMissingTables();
             if (!empty($missingTables)) {
-                if (!isset($this->session->dbRootUser)
-                    || !isset($this->session->dbRootPass)
-                ) {
-                    return $this->forwardTo('Upgrade', 'GetDbCredentials');
+                if(!$this->logsql) {
+                    if (!isset($this->session->dbRootUser)
+                        || !isset($this->session->dbRootPass)
+                    ) {
+                        return $this->forwardTo('Upgrade', 'GetDbCredentials');
+                    }
+                    $db = $this->getRootDbAdapter();
+                    $this->session->warnings->append(
+                        "Created missing table(s): " . implode(', ', $missingTables)
+                    );
+                    $this->dbUpgrade()->setAdapter($db)
+                        ->createMissingTables($missingTables);
+                } else {
+                    $sql .= $this->dbUpgrade()->createMissingTables($missingTables, true);
                 }
-                $db = $this->getRootDbAdapter();
-                $this->dbUpgrade()->setAdapter($db)
-                    ->createMissingTables($missingTables);
-                $this->session->warnings->append(
-                    "Created missing table(s): " . implode(', ', $missingTables)
-                );
             }
 
             // Check for missing columns.
-            $missingCols = $this->dbUpgrade()->getMissingColumns();
+            $mT = $this->logsql ? $missingTables : array();
+            $missingCols = $this->dbUpgrade()->getMissingColumns($mT);
             if (!empty($missingCols)) {
-                if (!isset($this->session->dbRootUser)
-                    || !isset($this->session->dbRootPass)
-                ) {
-                    return $this->forwardTo('Upgrade', 'GetDbCredentials');
+                if(!$this->logsql) {
+                    if (!isset($this->session->dbRootUser)
+                        || !isset($this->session->dbRootPass)
+                    ) {
+                        return $this->forwardTo('Upgrade', 'GetDbCredentials');
+                    }
+                    if (!isset($db)) {  // connect to DB if not already connected
+                        $db = $this->getRootDbAdapter();
+                    }
+                    $this->session->warnings->append(
+                        "Added column(s) to table(s): "
+                        . implode(', ', array_keys($missingCols))
+                    );
+                    $this->dbUpgrade()->setAdapter($db)
+                        ->createMissingColumns($missingCols);
+                } else {
+                    $sql .= $this->dbUpgrade()->createMissingColumns($missingCols, true);
                 }
-                if (!isset($db)) {  // connect to DB if not already connected
-                    $db = $this->getRootDbAdapter();
-                }
-                $this->dbUpgrade()->setAdapter($db)
-                    ->createMissingColumns($missingCols);
-                $this->session->warnings->append(
-                    "Added column(s) to table(s): "
-                    . implode(', ', array_keys($missingCols))
-                );
             }
-
+            
             // Check for modified columns.
-            $modifiedCols = $this->dbUpgrade()->getModifiedColumns();
+            $mC = $this->logsql ? $missingCols : array();
+            $modifiedCols = $this->dbUpgrade()->getModifiedColumns($mT, $mC);
             if (!empty($modifiedCols)) {
-                if (!isset($this->session->dbRootUser)
-                    || !isset($this->session->dbRootPass)
-                ) {
-                    return $this->forwardTo('Upgrade', 'GetDbCredentials');
+                if(!$this->logsql) {
+                    if (!isset($this->session->dbRootUser)
+                        || !isset($this->session->dbRootPass)
+                    ) {
+                        return $this->forwardTo('Upgrade', 'GetDbCredentials');
+                    }
+                    if (!isset($db)) {  // connect to DB if not already connected
+                        $db = $this->getRootDbAdapter();
+                    }
+                    $this->session->warnings->append(
+                        "Modified column(s) in table(s): "
+                        . implode(', ', array_keys($modifiedCols))
+                    );
+                    $this->dbUpgrade()->setAdapter($db)
+                        ->updateModifiedColumns($modifiedCols);
+                } else {
+                    $sql .= $this->dbUpgrade()->updateModifiedColumns($modifiedCols, true);
                 }
-                if (!isset($db)) {  // connect to DB if not already connected
-                    $db = $this->getRootDbAdapter();
-                }
-                $this->dbUpgrade()->setAdapter($db)
-                    ->updateModifiedColumns($modifiedCols);
-                $this->session->warnings->append(
-                    "Modified column(s) in table(s): "
-                    . implode(', ', array_keys($modifiedCols))
-                );
             }
 
             // Don't keep DB credentials in session longer than necessary:
@@ -263,7 +280,27 @@ class UpgradeController extends AbstractBase
         }
 
         $this->cookie->databaseOkay = true;
+        if($this->logsql) {
+            $this->session->sql = $sql;
+            return $this->forwardTo('Upgrade', 'ShowSql');
+        }
         return $this->forwardTo('Upgrade', 'Home');
+    }
+    
+    /**
+     * Prompt the user for database credentials.
+     *
+     * @return mixed
+     */
+    public function showsqlAction()
+    {
+        $continue = $this->params()->fromPost('continue', 'nope');
+        if($continue == 'Next') {
+            unset($this->session->sql);
+            return $this->forwardTo('Upgrade', 'Home');
+        }
+        
+        return $this->createViewModel(array('sql' => $this->session->sql));        
     }
 
     /**
@@ -273,24 +310,32 @@ class UpgradeController extends AbstractBase
      */
     public function getdbcredentialsAction()
     {
-        $dbrootuser = $this->params()->fromPost('dbrootuser', 'root');
+        $print = $this->params()->fromPost('printsql', 'nope');
+        if($print == 'Skip') {
+            $this->logsql = true;
+            $this->session->dbRootUser = '$$$$$$$';
+            $this->session->dbRootPass = '$$$$$$$';
+            return $this->forwardTo('Upgrade', 'FixDatabase');
+        } else {
+            $dbrootuser = $this->params()->fromPost('dbrootuser', 'root');
+            
+            // Process form submission:
+            if (strlen($this->params()->fromPost('submit', '')) > 0) {
+                $pass = $this->params()->fromPost('dbrootpass');
 
-        // Process form submission:
-        if (strlen($this->params()->fromPost('submit', '')) > 0) {
-            $pass = $this->params()->fromPost('dbrootpass');
-
-            // Test the connection:
-            try {
-                // Query a table known to exist
-                $db = AdapterFactory::getAdapter($dbrootuser, $pass);
-                $db->query("SELECT * FROM user;");
-                $this->session->dbRootUser = $dbrootuser;
-                $this->session->dbRootPass = $pass;
-                return $this->forwardTo('Upgrade', 'FixDatabase');
-            } catch (\Exception $e) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('Could not connect; please try again.');
-            }
+                // Test the connection:
+                try {
+                    // Query a table known to exist
+                    $db = AdapterFactory::getAdapter($dbrootuser, $pass);
+                    $db->query("SELECT * FROM user;");
+                    $this->session->dbRootUser = $dbrootuser;
+                    $this->session->dbRootPass = $pass;
+                    return $this->forwardTo('Upgrade', 'FixDatabase');
+                } catch (\Exception $e) {
+                    $this->flashMessenger()->setNamespace('error')
+                        ->addMessage('Could not connect; please try again.');
+                }
+            } 
         }
 
         return $this->createViewModel(array('dbrootuser' => $dbrootuser));
