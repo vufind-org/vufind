@@ -138,6 +138,31 @@ $config = array(
             'result-scroller' => 'VuFind\Controller\Plugin\ResultScroller',
         )
     ),
+    'ils_driver_plugin_manager' => array(
+        'abstract_factories' => array('VuFind\ILS\Driver\PluginFactory'),
+        'invokables' => array(
+            'aleph' => 'VuFind\ILS\Driver\Aleph',
+            'amicus' => 'VuFind\ILS\Driver\Amicus',
+            'daia' => 'VuFind\ILS\Driver\DAIA',
+            'demo' => 'VuFind\ILS\Driver\Demo',
+            'evergreen' => 'VuFind\ILS\Driver\Evergreen',
+            'horizon' => 'VuFind\ILS\Driver\Horizon',
+            'horizonxmlapi' => 'VuFind\ILS\Driver\HorizonXMLAPI',
+            'innovative' => 'VuFind\ILS\Driver\Innovative',
+            'koha' => 'VuFind\ILS\Driver\Koha',
+            'newgenlib' => 'VuFind\ILS\Driver\NewGenLib',
+            'noils' => 'VuFind\ILS\Driver\NoILS',
+            'pica' => 'VuFind\ILS\Driver\PICA',
+            'sample' => 'VuFind\ILS\Driver\Sample',
+            'symphony' => 'VuFind\ILS\Driver\Symphony',
+            'unicorn' => 'VuFind\ILS\Driver\Unicorn',
+            'virtua' => 'VuFind\ILS\Driver\Virtua',
+            'voyager' => 'VuFind\ILS\Driver\Voyager',
+            'voyagerrestful' => 'VuFind\ILS\Driver\VoyagerRestful',
+            'xcncip' => 'VuFind\ILS\Driver\XCNCIP',
+            'xcncip2' => 'VuFind\ILS\Driver\XCNCIP2',
+        ),
+    ),
     'recommend_plugin_manager' => array(
         'abstract_factories' => array('VuFind\Recommend\PluginFactory'),
         'invokables' => array(

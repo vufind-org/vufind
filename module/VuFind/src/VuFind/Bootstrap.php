@@ -90,11 +90,13 @@ class Bootstrap
         $config = $app->getConfig();
 
         // Use naming conventions to set up a bunch of services based on namespace:
-        $namespaces = array('Auth', 'Autocomplete', 'Recommend', 'Session');
+        $namespaces = array(
+            'Auth', 'Autocomplete', 'ILS\Driver', 'Recommend', 'Session'
+        );
         foreach ($namespaces as $ns) {
-            $serviceName = $ns . 'PluginManager';
+            $serviceName = str_replace('\\', '', $ns) . 'PluginManager';
             $className = 'VuFind\\' . $ns . '\PluginManager';
-            $configKey = strtolower($ns) . '_plugin_manager';
+            $configKey = strtolower(str_replace('\\', '_', $ns)) . '_plugin_manager';
             $service = new $className(
                 new ServiceManagerConfig($config[$configKey])
             );
@@ -109,6 +111,9 @@ class Bootstrap
         $manager = new \VuFind\Search\Manager($config['search_manager']);
         $manager->setServiceLocator($serviceManager);
         $serviceManager->setService('SearchManager', $manager);
+
+        // TODO: factor out static connection manager.
+        \VuFind\Connection\Manager::setServiceLocator($serviceManager);
     }
 
     /**
