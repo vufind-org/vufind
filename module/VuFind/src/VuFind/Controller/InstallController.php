@@ -427,7 +427,10 @@ class InstallController extends AbstractBase
             $dir
                 = opendir(APPLICATION_PATH . '/module/VuFind/src/VuFind/ILS/Driver');
             $drivers = array();
-            $blacklist = array('Sample.php', 'Demo.php', 'Interface.php');
+            $blacklist = array(
+                'Sample.php', 'Demo.php', 'DriverInterface.php', 'AbstractBase.php',
+                'PluginManager.php', 'PluginFactory.php'
+            );
             while ($line = readdir($dir)) {
                 if (stristr($line, '.php') && !in_array($line, $blacklist)) {
                     $drivers[] = str_replace('.php', '', $line);
