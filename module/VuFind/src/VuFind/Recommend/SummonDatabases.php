@@ -26,8 +26,6 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Search\Summon\Params as SummonParams,
-    VuFind\Search\Summon\Results as SummonResults;
 
 /**
  * SummonDatabases Recommendations Module
@@ -40,24 +38,26 @@ use VuFind\Search\Summon\Params as SummonParams,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class SummonDatabases implements RecommendInterface
+class SummonDatabases extends AbstractSearchManagerAwareModule
 {
     protected $databases;
-    protected $requestParam;
+    protected $requestParam = 'lookfor';
     protected $lookfor;
 
     /**
-     * Constructor
+     * setConfig
      *
-     * Establishes base settings for making recommendations.
+     * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
+     *
+     * @return void
      */
-    public function __construct($settings)
+    public function setConfig($settings)
     {
         // Only one setting -- HTTP request field containing search terms (ignored
         // if $searchObject is Summon type).
-        $this->requestParam = empty($settings) ? 'lookfor' : $settings;
+        $this->requestParam = empty($settings) ? $this->requestParam : $settings;
     }
 
     /**
@@ -97,9 +97,10 @@ class SummonDatabases implements RecommendInterface
         // to create a new Summon search object using the specified request 
         // parameter for search terms.
         if ($results->getParams()->getSearchClassId() != 'Summon') {
-            $params = new SummonParams();
+            $sm = $this->getSearchManager()->setSearchClassId('Summon');
+            $params = $sm->getParams();
             $params->setBasicSearch($this->lookfor);
-            $results = new SummonResults($params);
+            $results = $sm->getResults($params);
             $results->performAndProcessSearch();
         }
         $this->databases = $results->getDatabaseRecommendations();

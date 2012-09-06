@@ -30,9 +30,7 @@ namespace VuFind\Controller;
 use VuFind\Cache\Manager as CacheManager, VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
     VuFind\Db\Table\Search as SearchTable, VuFind\Exception\Mail as MailException,
-    VuFind\Mailer,
-    VuFind\Search\Memory, VuFind\Search\Solr\Params, VuFind\Search\Solr\Results,
-    VuFind\Solr\Utils as SolrUtils;
+    VuFind\Mailer, VuFind\Search\Memory, VuFind\Solr\Utils as SolrUtils;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -251,7 +249,7 @@ class SearchController extends AbstractSearch
 
             // Saved searches
             if ($current->saved == 1) {
-                $saved[] = $minSO->deminify();
+                $saved[] = $minSO->deminify($this->getSearchManager());
             } else {
                 // All the others...
 
@@ -263,7 +261,7 @@ class SearchController extends AbstractSearch
                     Memory::forgetSearch();
                 } else {
                     // Otherwise add to the list
-                    $unsaved[] = $minSO->deminify();
+                    $unsaved[] = $minSO->deminify($this->getSearchManager());
                 }
             }
         }
@@ -345,7 +343,8 @@ class SearchController extends AbstractSearch
             $resultPages = 10;
         }
         $catalog = ConnectionManager::connectToCatalog();
-        $params = new \VuFind\Search\Solr\Params();
+        $sm = $this->getSearchManager()->setSearchClassId('Solr');
+        $params = $sm->getParams();
         $perPage = $params->getLimit();
         $newItems = $catalog->getNewItems(1, $perPage * $resultPages, $range, $dept);
 
@@ -432,9 +431,10 @@ class SearchController extends AbstractSearch
      */
     public function reservessearchAction()
     {
-        $params = new \VuFind\Search\SolrReserves\Params();
+        $sm = $this->getSearchManager()->setSearchClassId('SolrReserves');
+        $params = $sm->getParams();
         $params->initFromRequest($this->getRequest()->getQuery());
-        $results = new \VuFind\Search\SolrReserves\Results($params);
+        $results = $sm->getResults($params);
         return $this->createViewModel(array('results' => $results));
     }
 
@@ -458,7 +458,8 @@ class SearchController extends AbstractSearch
         $bibIDs = array_unique(array_map($callback, $result));
 
         // Truncate the list if it is too long:
-        $params = new \VuFind\Search\Solr\Params();
+        $sm = $this->getSearchManager()->setSearchClassId('Solr');
+        $params = $sm->getParams();
         $limit = $params->getQueryIDLimit();
         if (count($bibIDs) > $limit) {
             $bibIDs = array_slice($bibIDs, 0, $limit);
@@ -504,17 +505,25 @@ class SearchController extends AbstractSearch
             // we may want to make this more flexible later.  Also keep in mind that
             // the template is currently looking for certain hard-coded fields; this
             // should also be made smarter.
-            $params = new Params();
+            $sm = $this->getSearchManager()->setSearchClassId('Solr');
+            $params = $sm->getParams();
             $params->initAdvancedFacets();
 
             // We only care about facet lists, so don't get any results (this helps
             // prevent problems with serialized File_MARC objects in the cache):
             $params->setLimit(0);
 
-            $results = new Results($params);
+            $results = $sm->getResults($params);
             $results->getResults();                     // force processing for cache
+
+            // Temporarily remove the service manager so we can cache the
+            // results (otherwise we'll get errors about serializing closures):
+            $results->unsetServiceLocator();
             $cache->setItem('solrSearchHomeFacets', $results);
         }
+
+        // Restore the real service locator to the object:
+        $results->restoreServiceLocator($this->getServiceLocator());
         return $results;
     }
 
@@ -560,7 +569,7 @@ class SearchController extends AbstractSearch
         // Get suggestions and make sure they are an array (we don't want to JSON
         // encode them into an object):
         $autocompleteManager = $this->getServiceLocator()
-            ->get('AutocompleteHandlerManager');
+            ->get('AutocompletePluginManager');
         $suggestions = $autocompleteManager->getSuggestions(
             $query, 'type', 'lookfor'
         );

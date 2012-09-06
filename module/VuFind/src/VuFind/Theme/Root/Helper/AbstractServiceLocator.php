@@ -49,7 +49,7 @@ abstract class AbstractServiceLocator extends AbstractHelper
      *
      * @param ServiceLocatorInterface $serviceLocator Locator to register
      *
-     * @return Manager
+     * @return AbstractServiceLocator
      */
     public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
     {

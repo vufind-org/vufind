@@ -181,7 +181,7 @@ abstract class AbstractBase
         $user->saveResource(
             $resource, $list,
             isset($params['mytags'])
-                ? Tags::parse(trim($params['mytags'])) : array(),
+            ? Tags::parse(trim($params['mytags'])) : array(),
             isset($params['notes']) ? $params['notes'] : ''
         );
     }

@@ -27,7 +27,9 @@
  */
 namespace VuFind\Search\Base;
 use VuFind\Config\Reader as ConfigReader, VuFind\Search\Options as SearchOptions,
-    VuFind\Translator\Translator;
+    VuFind\Translator\Translator,
+    Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Abstract parameters search model.
@@ -40,7 +42,7 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Search\Options as SearchOptions
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Params
+class Params implements ServiceLocatorAwareInterface
 {
     // Search terms
     protected $searchTerms = array();
@@ -65,6 +67,8 @@ class Params
     protected $facetConfig = array();
     protected $checkboxFacets = array();
     protected $filterList = array();
+    // Service locator
+    protected $serviceLocator;
 
     /**
      * Constructor
@@ -89,6 +93,11 @@ class Params
         // If no options have been set, use defaults:
         if (null === $this->options) {
             // Create a copy of the default configuration:
+            /* TODO: change after Search Manager refactoring
+            $default = $this->getSearchManager()
+                ->setSearchClassId($this->getSearchClassId())->getOptionsInstance();
+            $this->options = clone($default);
+             */
             $this->options = clone(
                 SearchOptions::getInstance($this->getSearchClassId())
             );
@@ -127,6 +136,9 @@ class Params
      */
     public function getSearchClassId()
     {
+        /* TODO: change this when Search Manager refactoring is done:
+        return $this->getSearchManager()->extractSearchClassId(get_class($this));
+         */
         return SearchOptions::extractSearchClassId(get_class($this));
     }
 
@@ -782,6 +794,13 @@ class Params
             return;
         }
 
+        // Get the plugin manager (skip recommendations if it is unavailable):
+        $sm = $this->getServiceLocator();
+        if (!is_object($sm) || !$sm->has('RecommendPluginManager')) {
+            return;
+        }
+        $manager = $sm->get('RecommendPluginManager');
+
         // Process recommendations for each location:
         $this->recommend = array(
             'top' => array(), 'side' => array(), 'noresults' => array()
@@ -801,19 +820,20 @@ class Params
                 // Break apart the setting into module name and extra parameters:
                 $current = explode(':', $current);
                 $module = array_shift($current);
-                $class = 'VuFind\Recommend\\' . $module;
                 $params = implode(':', $current);
-
-                // Build a recommendation module with the provided settings.
-                if (class_exists($class)) {
-                    $obj = new $class($params);
-                    $obj->init($this, $request);
-                    $this->recommend[$location][] = $obj;
-                } else {
+                if (!$manager->has($module)) {
                     throw new \Exception(
-                        'Could not load recommendation module: ' . $class
+                        'Could not load recommendation module: ' . $module
                     );
                 }
+
+                // Build a recommendation module with the provided settings.
+                // Create a clone in case the same module is used repeatedly with
+                // different settings.
+                $obj = clone($manager->get($module));
+                $obj->setConfig($params);
+                $obj->init($this, $request);
+                $this->recommend[$location][] = $obj;
             }
         }
     }
@@ -1483,5 +1503,57 @@ class Params
     public function getSelectedShards()
     {
         return $this->selectedShards;
+    }
+
+    /**
+     * Unset the service locator.
+     *
+     * @return Params
+     */
+    public function unsetServiceLocator()
+    {
+        $this->serviceLocator = null;
+        $options = $this->getOptions();
+        if (method_exists($options, 'unsetServiceLocator')) {
+            $params->unsetServiceLocator();
+        }
+        return $this;
+    }
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return Params
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
+    }
+
+    /**
+     * Pull the search manager from the service locator.
+     *
+     * @return \VuFind\Search\Manager
+     */
+    protected function getSearchManager()
+    {
+        $sl = $this->getServiceLocator();
+        if (!is_object($sl)) {
+            throw new \Exception('Could not find service locator');
+        }
+        return $sl->get('SearchManager');
     }
 }

@@ -27,10 +27,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Search\SolrAuthorFacets\Options as SolrAuthorFacetsOptions,
-    VuFind\Search\SolrAuthorFacets\Params as SolrAuthorFacetsParams,
-    VuFind\Search\SolrAuthorFacets\Results as SolrAuthorFacetsResults,
-    Zend\Http\Request, Zend\StdLib\Parameters;
+use Zend\Http\Request, Zend\StdLib\Parameters;
 
 /**
  * AuthorFacets Recommendations Module
@@ -45,19 +42,21 @@ use VuFind\Search\SolrAuthorFacets\Options as SolrAuthorFacetsOptions,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class AuthorFacets implements RecommendInterface
+class AuthorFacets extends AbstractSearchManagerAwareModule
 {
     protected $settings;
     protected $searchObject;
 
     /**
-     * Constructor
+     * setConfig
      *
-     * Establishes base settings for making recommendations.
+     * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
+     *
+     * @return void
      */
-    public function __construct($settings)
+    public function setConfig($settings)
     {
         // Save the basic parameters:
         $this->settings = $settings;
@@ -99,6 +98,16 @@ class AuthorFacets implements RecommendInterface
     }
 
     /**
+     * Get results stored in the object.
+     *
+     * @return \VuFind\Search\Base\Results
+     */
+    public function getResults()
+    {
+        return $this->results;
+    }
+
+    /**
      * Returns search term.
      *
      * @return string
@@ -126,16 +135,17 @@ class AuthorFacets implements RecommendInterface
         }
 
         // Set up a special limit for the AuthorFacets search object:
-        $options = new SolrAuthorFacetsOptions();
+        $sm = $this->getSearchManager()->setSearchClassId('SolrAuthorFacets');
+        $options = $sm->getOptionsInstance();
         $options->setLimitOptions(array(10));
 
         // Initialize an AuthorFacets search object using parameters from the
         // current Solr search object.
-        $params = new SolrAuthorFacetsParams($options);
+        $params = $sm->getParams($options);
         $params->initFromRequest(new Parameters(array('lookfor' => $lookfor)));
 
         // Send back the results:
-        $results = new SolrAuthorFacetsResults($params);
+        $results = $sm->getResults($params);
         return array(
             // Total authors (currently there is no way to calculate this without
             // risking out-of-memory errors or slow results, so we set this to

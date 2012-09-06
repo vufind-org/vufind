@@ -47,13 +47,15 @@ class SideFacets implements RecommendInterface
     protected $results;
 
     /**
-     * Constructor
+     * setConfig
      *
-     * Establishes base settings for making recommendations.
+     * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
+     *
+     * @return void
      */
-    public function __construct($settings)
+    public function setConfig($settings)
     {
         // Parse the additional settings:
         $settings = explode(':', $settings);
@@ -158,5 +160,15 @@ class SideFacets implements RecommendInterface
             $result[$current] = array($from, $to);
         }
         return $result;
+    }
+
+    /**
+     * Get results stored in the object.
+     *
+     * @return \VuFind\Search\Base\Results
+     */
+    public function getResults()
+    {
+        return $this->results;
     }
 }

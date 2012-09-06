@@ -30,8 +30,6 @@
  */
 namespace VuFind\Recommend;
 use VuFind\Exception\Solr as SolrException,
-    VuFind\Search\SolrAuth\Params as SolrAuthParams,
-    VuFind\Search\SolrAuth\Results as SolrAuthResults,
     Zend\Http\Request, Zend\StdLib\Parameters;
 
 /**
@@ -50,21 +48,24 @@ use VuFind\Exception\Solr as SolrException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class AuthorityRecommend implements RecommendInterface
+class AuthorityRecommend extends AbstractSearchManagerAwareModule
 {
     protected $searchObject;
     protected $lookfor;
     protected $filters = array();
-    protected $results = array();
+    protected $results;
+    protected $recommendations = array();
 
     /**
-     * Constructor
+     * setConfig
      *
-     * Establishes base settings for making recommendations.
+     * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
+     *
+     * @return void
      */
-    public function __construct($settings)
+    public function setConfig($settings)
     {
         $params = explode(':', $settings);
         for ($i = 0; $i < count($params); $i += 2) {
@@ -107,6 +108,8 @@ class AuthorityRecommend implements RecommendInterface
      */
     public function process($results)
     {
+        $this->results = $results;
+
         // function will return blank on Advanced Search
         if ($results->getParams()->getSearchType()== 'advanced') {
             return;
@@ -132,12 +135,13 @@ class AuthorityRecommend implements RecommendInterface
         // Initialise and process search (ignore Solr errors -- no reason to fail
         // just because search syntax is not compatible with Authority core):
         try {
-            $authParams = new SolrAuthParams();
+            $sm = $this->getSearchManager()->setSearchClassId('SolrAuth');
+            $authParams = $sm->getParams();
             $authParams->initFromRequest($request);
             foreach ($this->filters as $filter) {
                 $authParams->getOptions()->addHiddenFilter($filter);
             }
-            $authResults = new SolrAuthResults($authParams);
+            $authResults = $sm->getResults($authParams);
             $results = $authResults->getResults();
         } catch (SolrException $e) {
             return;
@@ -153,8 +157,8 @@ class AuthorityRecommend implements RecommendInterface
             );
 
             // check for duplicates before adding record to recordSet
-            if (!$this->inArrayR($recordArray['heading'], $this->results)) {
-                array_push($this->results, $recordArray);
+            if (!$this->inArrayR($recordArray['heading'], $this->recommendations)) {
+                array_push($this->recommendations, $recordArray);
             } else {
                 continue;
             }
@@ -162,9 +166,19 @@ class AuthorityRecommend implements RecommendInterface
     }
 
     /**
-     * Get results (for use in the view).
+     * Get recommendations (for use in the view).
      *
      * @return array
+     */
+    public function getRecommendations()
+    {
+        return $this->recommendations;
+    }
+
+    /**
+     * Get results stored in the object.
+     *
+     * @return \VuFind\Search\Base\Results
      */
     public function getResults()
     {
@@ -181,7 +195,7 @@ class AuthorityRecommend implements RecommendInterface
      *
      * @return bool
      */
-    public function inArrayR($needle, $haystack)
+    protected function inArrayR($needle, $haystack)
     {
         foreach ($haystack as $v) {
             if ($needle == $v) {

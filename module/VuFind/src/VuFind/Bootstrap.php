@@ -90,11 +90,13 @@ class Bootstrap
         $config = $app->getConfig();
 
         // Use naming conventions to set up a bunch of services based on namespace:
-        $namespaces = array('Auth', 'Autocomplete', 'Session');
+        $namespaces = array(
+            'Auth', 'Autocomplete', 'ILS\Driver', 'Recommend', 'Session'
+        );
         foreach ($namespaces as $ns) {
-            $serviceName = $ns . 'HandlerManager';
+            $serviceName = str_replace('\\', '', $ns) . 'PluginManager';
             $className = 'VuFind\\' . $ns . '\PluginManager';
-            $configKey = strtolower($ns) . '_handler_manager';
+            $configKey = strtolower(str_replace('\\', '_', $ns)) . '_plugin_manager';
             $service = new $className(
                 new ServiceManagerConfig($config[$configKey])
             );
@@ -103,6 +105,15 @@ class Bootstrap
             }
             $serviceManager->setService($serviceName, $service);
         }
+
+        // Set up search manager a little differently -- it is a more complex class
+        // that doesn't work like the other standard plugin managers.
+        $manager = new \VuFind\Search\Manager($config['search_manager']);
+        $manager->setServiceLocator($serviceManager);
+        $serviceManager->setService('SearchManager', $manager);
+
+        // TODO: factor out static connection manager.
+        \VuFind\Connection\Manager::setServiceLocator($serviceManager);
     }
 
     /**
@@ -138,8 +149,8 @@ class Bootstrap
         // manager and injecting appropriate dependencies:
         $serviceManager = $this->event->getApplication()->getServiceManager();
         $sessionManager = $serviceManager->get('SessionManager');
-        $sessionHandlerManager = $serviceManager->get('SessionHandlerManager');
-        $sessionHandler = $sessionHandlerManager->get($this->config->Session->type);
+        $sessionPluginManager = $serviceManager->get('SessionPluginManager');
+        $sessionHandler = $sessionPluginManager->get($this->config->Session->type);
         $sessionHandler->setConfig($this->config->Session);
         $sessionManager->setSaveHandler($sessionHandler);
 

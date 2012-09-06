@@ -38,20 +38,22 @@ namespace VuFind\Recommend;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-abstract class SearchObject implements RecommendInterface
+abstract class SearchObject extends AbstractSearchManagerAwareModule
 {
     protected $results;
     protected $limit;
     protected $requestParam;
 
     /**
-     * Constructor
+     * setConfig
      *
-     * Establishes base settings for making recommendations.
+     * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
+     *
+     * @return void
      */
-    public function __construct($settings)
+    public function setConfig($settings)
     {
         $settings = explode(':', $settings);
         $this->requestParam = empty($settings[0]) ? 'lookfor' : $settings[0];
@@ -77,15 +79,13 @@ abstract class SearchObject implements RecommendInterface
     public function init($params, $request)
     {
         // Build a search parameters object:
-        $id = $this->getSearchClassId();
-        $paramsClass = 'VuFind\Search\\' . $id . '\Params';
-        $params = new $paramsClass();
+        $sm = $this->getSearchManager()->setSearchClassId($this->getSearchClassId());
+        $params = $sm->getParams();
         $params->setLimit($this->limit);
         $params->setBasicSearch($request->get($this->requestParam));
 
         // Perform the search:
-        $resultsClass = 'VuFind\Search\\' . $id . '\Results';
-        $this->results = new $resultsClass($params);
+        $this->results = $sm->getResults($params);
         $this->results->performAndProcessSearch();
     }
 

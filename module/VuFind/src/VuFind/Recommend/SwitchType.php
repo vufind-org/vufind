@@ -45,19 +45,18 @@ class SwitchType implements RecommendInterface
     protected $newHandler;      // search handler to try
     protected $newHandlerName;  // on-screen description of handler
     protected $active;          // is this module active?
+    protected $results;         // results object
 
     /**
-     * Constructor
+     * setConfig
      *
-     * Establishes base settings for making recommendations.
+     * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
      *
-     * TopFacets:[ini section]:[ini name]
-     *      Display facets listed in the specified section of the specified ini file;
-     *      if [ini name] is left out, it defaults to "facets."
+     * @return void
      */
-    public function __construct($settings)
+    public function setConfig($settings)
     {
         $params = explode(':', $settings);
         $this->newHandler = !empty($params[0]) ? $params[0] : 'AllFields';
@@ -96,6 +95,7 @@ class SwitchType implements RecommendInterface
     public function process($results)
     {
         $handler = $results->getParams()->getSearchHandler();
+        $this->results = $results;
 
         // If the handler is null, we can't figure out a single handler, so this
         // is probably an advanced search.  In that case, we shouldn't try to change
@@ -103,6 +103,16 @@ class SwitchType implements RecommendInterface
         // being used and can determine that it is not the same as the new handler
         // that we want to recommend.
         $this->active = (!is_null($handler) && $handler != $this->newHandler);
+    }
+
+    /**
+     * Get results stored in the object.
+     *
+     * @return \VuFind\Search\Base\Results
+     */
+    public function getResults()
+    {
+        return $this->results;
     }
 
     /**

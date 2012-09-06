@@ -67,7 +67,7 @@ class Manager implements ServiceLocatorAwareInterface
     protected function getAuth()
     {
         if (!$this->auth) {
-            $manager = $this->getServiceLocator()->get('AuthHandlerManager');
+            $manager = $this->getServiceLocator()->get('AuthPluginManager');
             $this->auth = $manager->get($this->config->Authentication->method);
             $this->auth->setConfig($this->config);
         }

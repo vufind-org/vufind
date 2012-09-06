@@ -1,4 +1,4 @@
-<? if ($this->results->getResultTotal() > 0): ?>
+<? if ($this->recommend->getResults()->getResultTotal() > 0): ?>
   <? $similarAuthors = $this->recommend->getSimilarAuthors(); ?>
   <? if (!empty($similarAuthors['list'])): ?>
     <div class="authorbox">

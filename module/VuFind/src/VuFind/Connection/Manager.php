@@ -27,7 +27,8 @@
  */
 namespace VuFind\Connection;
 
-use VuFind\Config\Reader as ConfigReader, VuFind\ILS\Connection as ILSConnection;
+use VuFind\Config\Reader as ConfigReader, VuFind\ILS\Connection as ILSConnection,
+    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Central class for connecting to resources used by VuFind.
@@ -40,6 +41,20 @@ use VuFind\Config\Reader as ConfigReader, VuFind\ILS\Connection as ILSConnection
  */
 class Manager
 {
+    protected static $serviceLocator;
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return void
+     */
+    public static function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        self::$serviceLocator = $serviceLocator;
+    }
+
     /**
      * Connect to the catalog.
      *
@@ -52,7 +67,10 @@ class Manager
         // remember the old connection and return that instead of starting over.
         static $catalog = false;
         if ($catalog === false) {
+            $config = ConfigReader::getConfig();
             $catalog = new ILSConnection();
+            $catalog->setServiceLocator(self::$serviceLocator);
+            $catalog->setConfig($config->Catalog);
         }
 
         return $catalog;

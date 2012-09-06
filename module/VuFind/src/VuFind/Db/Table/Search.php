@@ -140,6 +140,7 @@ class Search extends Gateway
     /**
      * Add a search into the search table (history)
      *
+     * @param \VuFind\Search\Manager      $manager       Search manager
      * @param \VuFind\Search\Base\Results $newSearch     Search to save
      * @param string                      $sessionId     Current session ID
      * @param array                       $searchHistory Existing saved searches (for
@@ -147,8 +148,9 @@ class Search extends Gateway
      *
      * @return void
      */
-    public function saveSearch($newSearch, $sessionId, $searchHistory = array())
-    {
+    public function saveSearch($manager, $newSearch, $sessionId,
+        $searchHistory = array()
+    ) {
         // Duplicate elimination
         $dupSaved  = false;
         foreach ($searchHistory as $oldSearch) {
@@ -160,7 +162,7 @@ class Search extends Gateway
                 ? stream_get_contents($oldSearch->search_object)
                 : $oldSearch->search_object
             );
-            $dupSearch = $minSO->deminify();
+            $dupSearch = $minSO->deminify($manager);
             // See if the classes and urls match
             $oldUrl = $dupSearch->getUrlQuery()->getParams();
             $newUrl = $newSearch->getUrlQuery()->getParams();

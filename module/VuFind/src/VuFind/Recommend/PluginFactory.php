@@ -1,6 +1,6 @@
 <?php
 /**
- * Autocomplete handler plugin factory
+ * Recommendation module plugin factory
  *
  * PHP version 5
  *
@@ -20,18 +20,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Autocomplete
+ * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
  */
-namespace VuFind\Autocomplete;
+namespace VuFind\Recommend;
 
 /**
- * Autocomplete handler plugin factory
+ * Recommendation module plugin factory
  *
  * @category VuFind2
- * @package  Autocomplete
+ * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
@@ -43,6 +43,6 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
      */
     public function __construct()
     {
-        $this->defaultNamespace = 'VuFind\Autocomplete';
+        $this->defaultNamespace = 'VuFind\Recommend';
     }
 }

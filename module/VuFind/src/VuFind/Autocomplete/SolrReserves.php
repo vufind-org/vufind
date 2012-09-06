@@ -47,20 +47,6 @@ class SolrReserves extends Solr
     public function __construct()
     {
         $this->defaultDisplayField = 'course';
-    }
-
-    /**
-     * initSearchObject
-     *
-     * Initialize the search object used for finding recommendations.
-     *
-     * @return void
-     */
-    protected function initSearchObject()
-    {
-        // Build a new search object:
-        $params = new \VuFind\Search\SolrReserves\Params();
-        $this->searchObject = new \VuFind\Search\SolrReserves\Results($params);
-        $this->searchObject->getOptions()->spellcheckEnabled(false);
+        $this->searchClassId = 'SolrReserves';
     }
 }

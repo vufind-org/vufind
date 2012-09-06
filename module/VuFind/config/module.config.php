@@ -60,7 +60,7 @@ $config = array(
             )
         ),
     ),
-    'auth_handler_manager' => array(
+    'auth_plugin_manager' => array(
         'abstract_factories' => array('VuFind\Auth\PluginFactory'),
         'invokables' => array(
             'database' => 'VuFind\Auth\Database',
@@ -76,7 +76,7 @@ $config = array(
             'sip' => 'Sip2',
         ),
     ),
-    'autocomplete_handler_manager' => array(
+    'autocomplete_plugin_manager' => array(
         'abstract_factories' => array('VuFind\Autocomplete\PluginFactory'),
         'invokables' => array(
             'none' => 'VuFind\Autocomplete\None',
@@ -138,6 +138,62 @@ $config = array(
             'result-scroller' => 'VuFind\Controller\Plugin\ResultScroller',
         )
     ),
+    'ils_driver_plugin_manager' => array(
+        'abstract_factories' => array('VuFind\ILS\Driver\PluginFactory'),
+        'invokables' => array(
+            'aleph' => 'VuFind\ILS\Driver\Aleph',
+            'amicus' => 'VuFind\ILS\Driver\Amicus',
+            'daia' => 'VuFind\ILS\Driver\DAIA',
+            'demo' => 'VuFind\ILS\Driver\Demo',
+            'evergreen' => 'VuFind\ILS\Driver\Evergreen',
+            'horizon' => 'VuFind\ILS\Driver\Horizon',
+            'horizonxmlapi' => 'VuFind\ILS\Driver\HorizonXMLAPI',
+            'innovative' => 'VuFind\ILS\Driver\Innovative',
+            'koha' => 'VuFind\ILS\Driver\Koha',
+            'newgenlib' => 'VuFind\ILS\Driver\NewGenLib',
+            'noils' => 'VuFind\ILS\Driver\NoILS',
+            'pica' => 'VuFind\ILS\Driver\PICA',
+            'sample' => 'VuFind\ILS\Driver\Sample',
+            'symphony' => 'VuFind\ILS\Driver\Symphony',
+            'unicorn' => 'VuFind\ILS\Driver\Unicorn',
+            'virtua' => 'VuFind\ILS\Driver\Virtua',
+            'voyager' => 'VuFind\ILS\Driver\Voyager',
+            'voyagerrestful' => 'VuFind\ILS\Driver\VoyagerRestful',
+            'xcncip' => 'VuFind\ILS\Driver\XCNCIP',
+            'xcncip2' => 'VuFind\ILS\Driver\XCNCIP2',
+        ),
+    ),
+    'recommend_plugin_manager' => array(
+        'abstract_factories' => array('VuFind\Recommend\PluginFactory'),
+        'invokables' => array(
+            'authorfacets' => 'VuFind\Recommend\AuthorFacets',
+            'authorinfo' => 'VuFind\Recommend\AuthorInfo',
+            'authorityrecommend' => 'VuFind\Recommend\AuthorityRecommend',
+            'catalogresults' => 'VuFind\Recommend\CatalogResults',
+            'europeanaresults' => 'VuFind\Recommend\EuropeanaResults',
+            'europeanaresultsdeferred' => 'VuFind\Recommend\EuropeanaResultsDeferred',
+            'expandfacets' => 'VuFind\Recommend\ExpandFacets',
+            'favoritefacets' => 'VuFind\Recommend\FavoriteFacets',
+            'openlibrarysubjects' => 'VuFind\Recommend\OpenLibrarySubjects',
+            'openlibrarysubjectsdeferred' => 'VuFind\Recommend\OpenLibrarySubjectsDeferred',
+            'pubdatevisajax' => 'VuFind\Recommend\PubDateVisAjax',
+            'resultgooglemapajax' => 'VuFind\Recommend\ResultGoogleMapAjax',
+            'sidefacets' => 'VuFind\Recommend\SideFacets',
+            'summondatabases' => 'VuFind\Recommend\SummonDatabases',
+            'summonresults' => 'VuFind\Recommend\SummonResults',
+            'switchtype' => 'VuFind\Recommend\SwitchType',
+            'topfacets' => 'VuFind\Recommend\TopFacets',
+            'worldcatidentities' => 'VuFind\Recommend\WorldCatIdentities',
+            'worldcatterms' => 'VuFind\Recommend\WorldCatTerms',
+        ),
+    ),
+    'search_manager' => array(
+        'default_namespace' => 'VuFind\Search',
+        'namespaces_by_id' => array(
+        ),
+        'aliases' => array(
+        ),
+    ),
     'service_manager' => array(
         'invokables' => array(
             'authmanager' => 'VuFind\Auth\Manager',
@@ -145,7 +201,7 @@ $config = array(
             'sessionmanager' => 'Zend\Session\SessionManager',
         )
     ),
-    'session_handler_manager' => array(
+    'session_plugin_manager' => array(
         'abstract_factories' => array('VuFind\Session\PluginFactory'),
         'invokables' => array(
             'database' => 'VuFind\Session\Database',

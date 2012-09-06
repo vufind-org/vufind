@@ -1,6 +1,6 @@
 <?php
 /**
- * FavoriteFacets Recommendations Module
+ * Abstract base class for accessing the search manager for recommendation purposes.
  *
  * PHP version 5
  *
@@ -22,35 +22,59 @@
  * @category VuFind2
  * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Recommend;
+use Zend\ServiceManager\ServiceLocatorInterface,
+    Zend\ServiceManager\ServiceLocatorAwareInterface;
 
 /**
- * FavoriteFacets Recommendations Module
- *
- * This class provides special facets for the Favorites area (tags/lists)
+ * Abstract base class for accessing the search manager for recommendation purposes.
  *
  * @category VuFind2
  * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class FavoriteFacets extends SideFacets
+abstract class AbstractSearchManagerAwareModule implements RecommendInterface,
+    ServiceLocatorAwareInterface
 {
+    protected $serviceLocator;
+
     /**
-     * setConfig
+     * Set the service locator.
      *
-     * Store the configuration of the recommendation module.
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
      *
-     * @param string $settings Settings from searches.ini.
-     *
-     * @return void
+     * @return AbstractSearchManagerAwareModule
      */
-    public function setConfig($settings)
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
     {
-        $this->mainFacets = array('lists' => 'Your Lists', 'tags' => 'Your Tags');
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
+    }
+
+    /**
+     * Get the search manager.
+     *
+     * @return \VuFind\Search\Manager
+     */
+    public function getSearchManager()
+    {
+        return $this->getServiceLocator()->getServiceLocator()->get('SearchManager');
     }
 }

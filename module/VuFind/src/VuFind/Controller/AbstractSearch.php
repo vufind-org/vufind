@@ -27,8 +27,7 @@
  */
 namespace VuFind\Controller;
 use VuFind\Db\Table\Search as SearchTable, VuFind\Record\Router as RecordRouter,
-    VuFind\Search\Memory, VuFind\Search\Options as SearchOptions,
-    Zend\Stdlib\Parameters;
+    VuFind\Search\Memory, Zend\Stdlib\Parameters;
 
 /**
  * VuFind Search Controller
@@ -79,7 +78,9 @@ class AbstractSearch extends AbstractBase
     public function advancedAction()
     {
         $view = $this->createViewModel();
-        $view->options = SearchOptions::getInstance($this->searchClassId);
+        $view->options = $this->getSearchManager()
+            ->setSearchClassId($this->searchClassId)
+            ->getOptionsInstance();
         if ($view->options->getAdvancedSearchAction() === false) {
             throw new \Exception('Advanced search not supported.');
         }
@@ -113,7 +114,7 @@ class AbstractSearch extends AbstractBase
         if ($search->session_id == $sessId || $search->user_id == $userId) {
             // They do, deminify it to a new object.
             $minSO = unserialize($search->search_object);
-            $savedSearch = $minSO->deminify();
+            $savedSearch = $minSO->deminify($this->getSearchManager());
 
             // Now redirect to the URL associated with the saved search; this
             // simplifies problems caused by mixing different classes of search
@@ -148,8 +149,8 @@ class AbstractSearch extends AbstractBase
             return $this->redirectToSavedSearch($savedId);
         }
 
-        $paramsClass = $this->getParamsClass();
-        $params = new $paramsClass();
+        $manager = $this->getSearchManager()->setSearchClassId($this->searchClassId);
+        $params = $manager->getParams();
         $params->recommendationsEnabled(true);
 
         // Send both GET and POST variables to search class:
@@ -163,8 +164,7 @@ class AbstractSearch extends AbstractBase
         // Attempt to perform the search; if there is a problem, inspect any Solr
         // exceptions to see if we should communicate to the user about them.
         try {
-            $resultsClass = $this->getResultsClass();
-            $results = new $resultsClass($params);
+            $results = $manager->getResults($params);
 
             // Explicitly execute search within controller -- this allows us to
             // catch exceptions more reliably:
@@ -191,7 +191,8 @@ class AbstractSearch extends AbstractBase
                 $sessId = $this->getServiceLocator()->get('SessionManager')->getId();
                 $history = new SearchTable();
                 $history->saveSearch(
-                    $results, $sessId, $history->getSearches(
+                    $this->getSearchManager(), $results, $sessId,
+                    $history->getSearches(
                         $sessId, isset($user->id) ? $user->id : null
                     )
                 );
@@ -210,7 +211,8 @@ class AbstractSearch extends AbstractBase
                 // We need to create and process an "empty results" object to
                 // ensure that recommendation modules and templates behave
                 // properly when displaying the error message.
-                $view->results = new \VuFind\Search\EmptySet\Results($params);
+                $view->results = $this->getSearchManager()
+                    ->setSearchClassId('EmptySet')->getResults($params);
                 $view->results->performAndProcessSearch();
             } else {
                 // Unexpected error -- let's throw this up to the next level.
@@ -265,26 +267,6 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
-     * Get the name of the class used for setting search parameters.
-     *
-     * @return string
-     */
-    protected function getParamsClass()
-    {
-        return 'VuFind\Search\\' . $this->searchClassId . '\Params';
-    }
-
-    /**
-     * Get the name of the class used for retrieving search results.
-     *
-     * @return string
-     */
-    protected function getResultsClass()
-    {
-        return 'VuFind\Search\\' . $this->searchClassId . '\Results';
-    }
-
-    /**
      * Either assign the requested search object to the view or display a flash
      * message indicating why the operation failed.
      *
@@ -314,7 +296,7 @@ class AbstractSearch extends AbstractBase
 
         // Restore the full search object:
         $minSO = unserialize($search->search_object);
-        $savedSearch = $minSO->deminify();
+        $savedSearch = $minSO->deminify($this->getSearchManager());
 
         // Fail if this is not the right type of search:
         if ($savedSearch->getParams()->getSearchType() != 'advanced') {

@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Translator\Loader;
-use Zend\I18n\Translator\Loader\Exception\InvalidArgumentException,
+use Zend\I18n\Exception\InvalidArgumentException,
     Zend\I18n\Translator\Loader\FileLoaderInterface,
     Zend\I18n\Translator\TextDomain;
 
@@ -46,13 +46,13 @@ class ExtendedIni implements FileLoaderInterface
     /**
      * load(): defined by LoaderInterface.
      *
-     * @param string $filename Language file to read
      * @param string $locale   Locale to read from language file
+     * @param string $filename Language file to read
      *
      * @return TextDomain
      * @throws InvalidArgumentException
      */
-    public function load($filename, $locale)
+    public function load($locale, $filename)
     {
         $this->data = new TextDomain();
         if (!file_exists($filename)) {

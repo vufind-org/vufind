@@ -26,7 +26,9 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Base;
-use VuFind\Search\UrlQueryHelper, Zend\Paginator\Paginator;
+use VuFind\Search\UrlQueryHelper, Zend\Paginator\Paginator,
+    Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Abstract results search model.
@@ -39,7 +41,7 @@ use VuFind\Search\UrlQueryHelper, Zend\Paginator\Paginator;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-abstract class Results
+abstract class Results implements ServiceLocatorAwareInterface
 {
     protected $params;
     // Total number of results available
@@ -60,6 +62,8 @@ abstract class Results
     protected $helpers = array();
     // Spelling
     protected $suggestions = null;
+    // Service locator
+    protected $serviceLocator;
 
     /**
      * Constructor
@@ -514,5 +518,82 @@ abstract class Results
         // query-aware, but from a caller's perspective, it makes more sense to
         // pull them from the results object.
         return $this->getParams()->getRecommendations($location);
+    }
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return Results
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Restore the service locator (a cascading version of setServiceLocator()).
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return Results
+     */
+    public function restoreServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->setServiceLocator($serviceLocator);
+        $params = $this->getParams();
+        if (method_exists($params, 'setServiceLocator')) {
+            $params->setServiceLocator($serviceLocator);
+        }
+        $options = $this->getOptions();
+        if (method_exists($options, 'setServiceLocator')) {
+            $params->setServiceLocator($serviceLocator);
+        }
+        return $this;
+    }
+
+    /**
+     * Unset the service locator.
+     *
+     * @return Results
+     */
+    public function unsetServiceLocator()
+    {
+        $this->serviceLocator = null;
+        $params = $this->getParams();
+        if (method_exists($params, 'unsetServiceLocator')) {
+            $params->unsetServiceLocator();
+        }
+        $options = $this->getOptions();
+        if (method_exists($options, 'unsetServiceLocator')) {
+            $params->unsetServiceLocator();
+        }
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
+    }
+
+    /**
+     * Pull the search manager from the service locator.
+     *
+     * @return \VuFind\Search\Manager
+     */
+    protected function getSearchManager()
+    {
+        $sl = $this->getServiceLocator();
+        if (!is_object($sl)) {
+            throw new \Exception('Could not find service locator');
+        }
+        return $sl->get('SearchManager');
     }
 }

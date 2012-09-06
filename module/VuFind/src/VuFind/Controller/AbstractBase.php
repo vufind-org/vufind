@@ -192,6 +192,16 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Get the search manager.
+     *
+     * @return \VuFind\Search\Manager
+     */
+    public function getSearchManager()
+    {
+        return $this->getServiceLocator()->get('SearchManager');
+    }
+
+    /**
      * Get the full URL to one of VuFind's routes.
      *
      * @param bool|string $route Boolean true for current URL, otherwise name of

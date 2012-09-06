@@ -28,27 +28,21 @@
 namespace VuFind\Search;
 
 /**
- * A minified search object used exclusively for trimming
- *  a search object down to it's barest minimum size
- *  before storage in a cookie or database.
+ * A minified search object used exclusively for trimming a search object down to its
+ * barest minimum size before storage in a cookie or database.
  *
- * It's still contains enough data granularity to
- *  programmatically recreate search urls.
+ * It still contains enough data granularity to programmatically recreate search
+ * URLs.
  *
- * This class isn't intended for general use, but simply
- *  a way of storing/retrieving data from a search object:
+ * This class isn't intended for general use, but simply a way of storing/retrieving
+ * data from a search object:
  *
  * eg. Store
  * $searchHistory[] = serialize($this->minify());
  *
  * eg. Retrieve
- * $searchObject  = SearchObjectFactory::initSearchObject();
- * $searchObject->deminify(unserialize($search));
- *
- * Note: codingStandardsIgnore settings within this class are used to suppress
- *       warnings related to the name not meeting PEAR standards; since there
- *       are serialized versions of this class stored in databases in the wild,
- *       it is too late to easily rename it for standards compliance.
+ * $searchObject = unserialize($search);
+ * $searchObject->deminify($manager);
  *
  * @category VuFind2
  * @package  Search
@@ -128,17 +122,20 @@ class Minified
     /**
      * Turn the current object into search results.
      *
+     * @param \VuFind\Search\Manager $manager Search manager
+     *
      * @return \VuFind\Search\Base\Results
      */
-    public function deminify()
+    public function deminify(\VuFind\Search\Manager $manager)
     {
         // Figure out the parameter and result classes based on the search class ID:
         $this->populateClassNames();
 
         // Deminify everything:
-        $params = new $this->pc();
+        $manager->setSearchClassId($this->cl);
+        $params = $manager->getParams();
         $params->deminify($this);
-        $results = new $this->rc($params);
+        $results = $manager->getResults($params);
         $results->deminify($this);
 
         return $results;
@@ -152,46 +149,34 @@ class Minified
      */
     protected function populateClassNames()
     {
-        // Simple case -- this is a recently-built object which has a search class ID
-        // populated:
-        if (isset($this->cl)) {
-            $this->pc = 'VuFind\Search\\' . $this->cl . '\Params';
-            $this->rc = 'VuFind\Search\\' . $this->cl . '\Results';
-            return;
-        }
+        // If this is a legacy entry from VuFind 1.x, we need to figure out the
+        // search class ID for the object we're about to construct:
+        if (!isset($this->cl)) {
+            $fixType = true;    // by default, assume we need to fix type
+            switch($this->ty) {
+            case 'Summon':
+            case 'SummonAdvanced':
+                $this->cl = 'Summon';
+                break;
+            case 'WorldCat':
+            case 'WorldCatAdvanced':
+                $this->cl = 'WorldCat';
+                break;
+            case 'Authority':
+            case 'AuthorityAdvanced':
+                $this->cl = 'SolrAuth';
+                break;
+            default:
+                $this->cl = 'Solr';
+                $fixType = false;
+                break;
+            }
 
-        // If we got this far, it's a legacy entry from VuFind 1.x.  We need to
-        // figure out the engine type for the object we're about to construct:
-        switch($this->ty) {
-        case 'Summon':
-        case 'SummonAdvanced':
-            $this->pc = 'VuFind\Search\Summon\Params';
-            $this->rc = 'VuFind\Search\Summon\Results';
-            $fixType = true;
-            break;
-        case 'WorldCat':
-        case 'WorldCatAdvanced':
-            $this->pc = 'VuFind\Search\WorldCat\Params';
-            $this->rc = 'VuFind\Search\WorldCat\Results';
-            $fixType = true;
-            break;
-        case 'Authority':
-        case 'AuthorityAdvanced':
-            $this->pc = 'VuFind\Search\SolrAuth\Params';
-            $this->rc = 'VuFind\Search\SolrAuth\Results';
-            $fixType = true;
-            break;
-        default:
-            $this->pc = 'VuFind\Search\Solr\Params';
-            $this->rc = 'VuFind\Search\Solr\Results';
-            $fixType = false;
-            break;
-        }
-
-        // Now rewrite the type if necessary (only needed for legacy objects):
-        if ($fixType) {
-            $this->ty = (substr($this->ty, -8) == 'Advanced')
-                ? 'advanced' : 'basic';
+            // Now rewrite the type if necessary (only needed for legacy objects):
+            if ($fixType) {
+                $this->ty = (substr($this->ty, -8) == 'Advanced')
+                    ? 'advanced' : 'basic';
+            }
         }
     }
 }

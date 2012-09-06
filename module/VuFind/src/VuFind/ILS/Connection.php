@@ -30,7 +30,9 @@
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
 namespace VuFind\ILS;
-use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException;
+use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException,
+    Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Catalog Connection Class
@@ -48,50 +50,76 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException;
 class Connection
 {
     /**
-     * The class of the appropriate driver.
+     * Has the driver been initialized yet?
      *
-     * @var string
+     * @var bool
      */
-    protected $driverClass;
+    protected $driverInitialized = false;
 
     /**
      * The object of the appropriate driver.
      *
      * @var object
      */
-    protected $driver = false;
+    protected $driver;
 
     /**
-     * Constructor
+     * The service locator
      *
-     * @throws ILSException
+     * @var ServiceLocatorInterface
      */
-    public function __construct()
+    protected $serviceLocator;
+
+    /**
+     * ILS configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $config;
+
+    /**
+     * Set the configuration of the connection.
+     *
+     * @param \Zend\Config\Config $config Configuration representing the [Catalog]
+     * section of config.ini
+     *
+     * @return void
+     */
+    public function setConfig($config)
     {
-        $config = ConfigReader::getConfig();
-        if (!isset($config->Catalog->driver)) {
+        $this->config = $config;
+
+        if (!isset($config->driver)) {
             throw new ILSException('ILS driver setting missing.');
         }
-        $class = 'VuFind\ILS\Driver\\' . $config->Catalog->driver;
-        if (!class_exists($class)) {
+        $driverManager = $this->getServiceLocator()->get('ILSDriverPluginManager');
+        $service = $config->driver;
+        if (!$driverManager->has($service)) {
             // Don't throw ILSException here -- we don't want this to be
             // treated as a login problem; it's more serious than that!
-            throw new \Exception('ILS driver missing: ' . $class);
+            throw new \Exception('ILS driver missing: ' . $service);
         }
-        $this->driverClass = $class;
+        $this->driver = $driverManager->get($service);
 
         // If we're configured to fail over to the NoILS driver, we need
         // to test if the main driver is working.
-        if (isset($config->Catalog->loadNoILSOnFailure)
-            && $config->Catalog->loadNoILSOnFailure
-        ) {
+        if (isset($config->loadNoILSOnFailure) && $config->loadNoILSOnFailure) {
             try {
                 $this->getDriver();
             } catch (\Exception $e) {
-                $this->driver = false;
-                $this->driverClass = 'VuFind\ILS\Driver\NoILS';
+                $this->driver = $driverManager->get('NoILS');
             }
         }
+    }
+
+    /**
+     * Get class name of the driver object.
+     *
+     * @return string
+     */
+    public function getDriverClass()
+    {
+        return get_class($this->driver);
     }
 
     /**
@@ -102,10 +130,10 @@ class Connection
      */
     public function getDriver()
     {
-        if (!$this->driver) {
-            $this->driver = new $this->driverClass;
+        if (!$this->driverInitialized) {
             $this->driver->setConfig($this->getDriverConfig());
             $this->driver->init();
+            $this->driverInitialized = true;
         }
         return $this->driver;
     }
@@ -120,7 +148,7 @@ class Connection
     public function getDriverConfig()
     {
         // Determine config file name based on class name:
-        $parts = explode('\\', $this->driverClass);
+        $parts = explode('\\', $this->getDriverClass());
         $configFile = end($parts) . '.ini';
         $configFilePath = ConfigReader::getConfigPath($configFile);
         return file_exists($configFilePath)
@@ -141,7 +169,7 @@ class Connection
     public function checkFunction($function)
     {
         // Extract the configuration from the driver if available:
-        $functionConfig = method_exists($this->driverClass, 'getConfig')
+        $functionConfig = method_exists($this->getDriverClass(), 'getConfig')
             ? $this->getDriver()->getConfig($function) : false;
 
         // See if we have a corresponding check method to analyze the response:
@@ -170,7 +198,7 @@ class Connection
         $response = false;
 
         if ($this->getHoldsMode() != "none"
-            && method_exists($this->driverClass, 'placeHold')
+            && method_exists($this->getDriverClass(), 'placeHold')
             && isset($functionConfig['HMACKeys'])
         ) {
             $response = array('function' => "placeHold");
@@ -182,7 +210,7 @@ class Connection
             if (isset($functionConfig['extraHoldFields'])) {
                 $response['extraHoldFields'] = $functionConfig['extraHoldFields'];
             }
-        } else if (method_exists($this->driverClass, 'getHoldLink')) {
+        } else if (method_exists($this->getDriverClass(), 'getHoldLink')) {
             $response = array('function' => "getHoldLink");
         }
         return $response;
@@ -203,14 +231,13 @@ class Connection
     protected function checkMethodcancelHolds($functionConfig)
     {
         $response = false;
-        $config = ConfigReader::getConfig();
 
-        if ($config->Catalog->cancel_holds_enabled == true
-            && method_exists($this->driverClass, 'cancelHolds')
+        if ($this->config->cancel_holds_enabled == true
+            && method_exists($this->getDriverClass(), 'cancelHolds')
         ) {
             $response = array('function' => "cancelHolds");
-        } else if ($config->Catalog->cancel_holds_enabled == true
-            && method_exists($this->driverClass, 'getCancelHoldLink')
+        } else if ($this->config->cancel_holds_enabled == true
+            && method_exists($this->getDriverClass(), 'getCancelHoldLink')
         ) {
             $response = array('function' => "getCancelHoldLink");
         }
@@ -231,14 +258,13 @@ class Connection
     protected function checkMethodRenewals($functionConfig)
     {
         $response = false;
-        $config = ConfigReader::getConfig();
 
-        if ($config->Catalog->renewals_enabled == true
-            && method_exists($this->driverClass, 'renewMyItems')
+        if ($this->config->renewals_enabled == true
+            && method_exists($this->getDriverClass(), 'renewMyItems')
         ) {
             $response = array('function' => "renewMyItems");
-        } else if ($config->Catalog->renewals_enabled == true
-            && method_exists($this->driverClass, 'renewMyItemsLink')
+        } else if ($this->config->renewals_enabled == true
+            && method_exists($this->getDriverClass(), 'renewMyItemsLink')
         ) {
             $response = array('function' => "renewMyItemsLink");
         }
@@ -259,7 +285,7 @@ class Connection
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
-        $method = array($this->driverClass, 'checkRequestIsValid');
+        $method = array($this->getDriverClass(), 'checkRequestIsValid');
         if (is_callable($method)) {
             return $this->getDriver()->checkRequestIsValid($id, $data, $patron);
         }
@@ -294,8 +320,8 @@ class Connection
     public function getOfflineMode()
     {
         // Graceful degradation -- return false if no method supported.
-        return method_exists($this->driverClass, 'getOfflineMode') ?
-            $this->getDriver()->getOfflineMode() : false;
+        return method_exists($this->getDriverClass(), 'getOfflineMode')
+            ? $this->getDriver()->getOfflineMode() : false;
     }
 
     /**
@@ -324,8 +350,8 @@ class Connection
     public function hasHoldings($id)
     {
         // Graceful degradation -- return true if no method supported.
-        return method_exists($this->driverClass, 'hasHoldings') ?
-            $this->getDriver()->hasHoldings($id) : true;
+        return method_exists($this->getDriverClass(), 'hasHoldings')
+            ? $this->getDriver()->hasHoldings($id) : true;
     }
 
     /**
@@ -338,8 +364,8 @@ class Connection
     public function loginIsHidden()
     {
         // Graceful degradation -- return false if no method supported.
-        return method_exists($this->driverClass, 'loginIsHidden') ?
-            $this->getDriver()->loginIsHidden() : false;
+        return method_exists($this->getDriverClass(), 'loginIsHidden')
+            ? $this->getDriver()->loginIsHidden() : false;
     }
 
     /**
@@ -354,11 +380,34 @@ class Connection
      */
     public function __call($methodName, $params)
     {
-        if (is_callable(array($this->driverClass, $methodName))) {
+        if (is_callable(array($this->getDriverClass(), $methodName))) {
             return call_user_func_array(
                 array($this->getDriver(), $methodName), $params
             );
         }
         throw new ILSException('Cannot call method: ' . $methodName);
+    }
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return Connection
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
     }
 }

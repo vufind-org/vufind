@@ -47,13 +47,15 @@ class ResultGoogleMapAjax implements RecommendInterface
     protected $searchObject;
 
     /**
-     * Constructor
+     * setConfig
      *
-     * Establishes base settings for making recommendations.
+     * Store the configuration of the recommendation module.
      *
      * @param string $settings Settings from searches.ini.
+     *
+     * @return void
      */
-    public function __construct($settings)
+    public function setConfig($settings)
     {
         // No special settings
     }

@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Theme\Root\Helper;
-use VuFind\Search\Options, Zend\View\Helper\AbstractHelper;
 
 /**
  * "Retrieve search options" view helper
@@ -37,10 +36,10 @@ use VuFind\Search\Options, Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class SearchOptions extends AbstractHelper
+class SearchOptions extends AbstractServiceLocator
 {
     /**
-     * Wrapper function to the \VuFind\Search\Options getInstance function
+     * Wrapper to the search manager's getOptionsInstance method
      *
      * @param string $type The search type of the object to retrieve
      *
@@ -48,6 +47,7 @@ class SearchOptions extends AbstractHelper
      */
     public function __invoke($type = 'Solr')
     {
-        return Options::getInstance($type);
+        return $this->getServiceLocator()->get('SearchManager')
+            ->setSearchClassId($type)->getOptionsInstance();
     }
 }

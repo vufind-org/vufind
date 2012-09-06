@@ -211,7 +211,7 @@ class MultiAuth extends AbstractBase implements ServiceLocatorAwareInterface
      *
      * @param ServiceLocatorInterface $serviceLocator Locator to register
      *
-     * @return Manager
+     * @return MultiAuth
      */
     public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
     {

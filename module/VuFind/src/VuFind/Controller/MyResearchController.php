@@ -530,7 +530,8 @@ class MyResearchController extends AbstractBase
 
         // If we got this far, we just need to display the favorites:
         try {
-            $params = new \VuFind\Search\Favorites\Params();
+            $sm = $this->getSearchManager()->setSearchClassId('Favorites');
+            $params = $sm->getParams();
             $params->setAuthManager($this->getAuthManager());
 
             // We want to merge together GET, POST and route parameters to
@@ -543,7 +544,7 @@ class MyResearchController extends AbstractBase
                 )
             );
 
-            $results = new \VuFind\Search\Favorites\Results($params);
+            $results = $sm->getResults($params);
             $results->performAndProcessSearch();
             return $this->createViewModel(array('results' => $results));
         } catch (ListPermissionException $e) {
