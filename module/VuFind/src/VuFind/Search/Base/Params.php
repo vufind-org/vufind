@@ -796,10 +796,10 @@ class Params implements ServiceLocatorAwareInterface
 
         // Get the plugin manager (skip recommendations if it is unavailable):
         $sm = $this->getServiceLocator();
-        if (!is_object($sm) || !$sm->has('RecommendHandlerManager')) {
+        if (!is_object($sm) || !$sm->has('RecommendPluginManager')) {
             return;
         }
-        $manager = $sm->get('RecommendHandlerManager');
+        $manager = $sm->get('RecommendPluginManager');
 
         // Process recommendations for each location:
         $this->recommend = array(

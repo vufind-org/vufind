@@ -108,7 +108,7 @@ class AjaxController extends AbstractBase
         // since deferred recommendations work best for modules that don't care about
         // the details of the search objects anyway:
         $sm = $this->getSearchManager()->setSearchClassId('Solr');
-        $rm = $this->getServiceLocator()->get('RecommendHandlerManager');
+        $rm = $this->getServiceLocator()->get('RecommendPluginManager');
         $module = clone($rm->get($this->params()->fromQuery('mod')));
         $module->setConfig($this->params()->fromQuery('params'));
         $params = $sm->getParams();
@@ -924,7 +924,7 @@ class AjaxController extends AbstractBase
     {
         $query = $this->getRequest()->getQuery();
         $autocompleteManager = $this->getServiceLocator()
-            ->get('AutocompleteHandlerManager');
+            ->get('AutocompletePluginManager');
         return $this->output(
             $autocompleteManager->getSuggestions($query), self::STATUS_OK
         );

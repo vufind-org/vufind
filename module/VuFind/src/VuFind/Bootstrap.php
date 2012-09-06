@@ -92,9 +92,9 @@ class Bootstrap
         // Use naming conventions to set up a bunch of services based on namespace:
         $namespaces = array('Auth', 'Autocomplete', 'Recommend', 'Session');
         foreach ($namespaces as $ns) {
-            $serviceName = $ns . 'HandlerManager';
+            $serviceName = $ns . 'PluginManager';
             $className = 'VuFind\\' . $ns . '\PluginManager';
-            $configKey = strtolower($ns) . '_handler_manager';
+            $configKey = strtolower($ns) . '_plugin_manager';
             $service = new $className(
                 new ServiceManagerConfig($config[$configKey])
             );
@@ -144,8 +144,8 @@ class Bootstrap
         // manager and injecting appropriate dependencies:
         $serviceManager = $this->event->getApplication()->getServiceManager();
         $sessionManager = $serviceManager->get('SessionManager');
-        $sessionHandlerManager = $serviceManager->get('SessionHandlerManager');
-        $sessionHandler = $sessionHandlerManager->get($this->config->Session->type);
+        $sessionPluginManager = $serviceManager->get('SessionPluginManager');
+        $sessionHandler = $sessionPluginManager->get($this->config->Session->type);
         $sessionHandler->setConfig($this->config->Session);
         $sessionManager->setSaveHandler($sessionHandler);
 

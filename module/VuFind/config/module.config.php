@@ -60,7 +60,7 @@ $config = array(
             )
         ),
     ),
-    'auth_handler_manager' => array(
+    'auth_plugin_manager' => array(
         'abstract_factories' => array('VuFind\Auth\PluginFactory'),
         'invokables' => array(
             'database' => 'VuFind\Auth\Database',
@@ -76,7 +76,7 @@ $config = array(
             'sip' => 'Sip2',
         ),
     ),
-    'autocomplete_handler_manager' => array(
+    'autocomplete_plugin_manager' => array(
         'abstract_factories' => array('VuFind\Autocomplete\PluginFactory'),
         'invokables' => array(
             'none' => 'VuFind\Autocomplete\None',
@@ -138,7 +138,7 @@ $config = array(
             'result-scroller' => 'VuFind\Controller\Plugin\ResultScroller',
         )
     ),
-    'recommend_handler_manager' => array(
+    'recommend_plugin_manager' => array(
         'abstract_factories' => array('VuFind\Recommend\PluginFactory'),
         'invokables' => array(
             'authorfacets' => 'VuFind\Recommend\AuthorFacets',
@@ -176,7 +176,7 @@ $config = array(
             'sessionmanager' => 'Zend\Session\SessionManager',
         )
     ),
-    'session_handler_manager' => array(
+    'session_plugin_manager' => array(
         'abstract_factories' => array('VuFind\Session\PluginFactory'),
         'invokables' => array(
             'database' => 'VuFind\Session\Database',
