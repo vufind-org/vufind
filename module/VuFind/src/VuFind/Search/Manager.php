@@ -141,7 +141,6 @@ class Manager implements ServiceLocatorAwareInterface
      */
     public function getOptionsInstance()
     {
-        /* TODO -- uncomment this when \VuFind\Search\Options has been factored out
         if (!isset($this->optionsStore[$this->classId])) {
             $class = $this->getOptionsClass();
             $this->optionsStore[$this->classId] = new $class();
@@ -151,8 +150,6 @@ class Manager implements ServiceLocatorAwareInterface
             $this->injectDependencies($this->optionsStore[$this->classId]);
         }
         return $this->optionsStore[$this->classId];
-         */
-        return Options::getInstance($this->classId);
     }
 
     /**

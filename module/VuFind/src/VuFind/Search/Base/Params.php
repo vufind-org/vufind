@@ -26,8 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Base;
-use VuFind\Config\Reader as ConfigReader, VuFind\Search\Options as SearchOptions,
-    VuFind\Translator\Translator,
+use VuFind\Config\Reader as ConfigReader, VuFind\Translator\Translator,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -93,14 +92,9 @@ class Params implements ServiceLocatorAwareInterface
         // If no options have been set, use defaults:
         if (null === $this->options) {
             // Create a copy of the default configuration:
-            /* TODO: change after Search Manager refactoring
             $default = $this->getSearchManager()
                 ->setSearchClassId($this->getSearchClassId())->getOptionsInstance();
             $this->options = clone($default);
-             */
-            $this->options = clone(
-                SearchOptions::getInstance($this->getSearchClassId())
-            );
         }
         return $this->options;
     }
@@ -136,10 +130,7 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function getSearchClassId()
     {
-        /* TODO: change this when Search Manager refactoring is done:
         return $this->getSearchManager()->extractSearchClassId(get_class($this));
-         */
-        return SearchOptions::extractSearchClassId(get_class($this));
     }
 
     /**

@@ -30,7 +30,6 @@ use VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
     VuFind\Exception\RecordMissing as RecordMissingException,
     VuFind\Search\Base\Results as BaseResults,
-    VuFind\Search\Options as SearchOptions,
     VuFind\Translator\Translator;
 
 /**
@@ -62,7 +61,8 @@ class Results extends BaseResults
         // Turn on all shards by default if none are specified (we need to be sure
         // that any given ID will yield results, even if not all shards are on by
         // default).
-        $options = SearchOptions::getInstance($index);
+        $sm = $this->getSearchManager();
+        $options = $sm->setSearchClassId($index)->getOptionsInstance();
         $allShards = $options->getShards();
         if (is_null($shards)) {
             $shards = array_keys($allShards);
@@ -246,7 +246,6 @@ class Results extends BaseResults
         //   submitting a second search for this.
 
         // Create a new search object
-        $myClass = get_class($this);
         $newParams = clone($this->getParams());
         $newParams->getOptions()->useBasicDictionary();
 
@@ -256,7 +255,9 @@ class Results extends BaseResults
         $newParams->setLimit(0);
         $newParams->recommendationsEnabled(false);
 
-        $newSearch = new $myClass($newParams);
+        $sm = $this->getSearchManager();
+        $sm->setSearchClassId($sm->extractSearchClassId(get_class($this)));
+        $newSearch = $sm->getResults($newParams);
 
         // Get the spelling results
         $newList = $newSearch->getRawSuggestions();
@@ -458,9 +459,9 @@ class Results extends BaseResults
         $solr = $this->getSolrConnection();
 
         // Check if we need to apply hidden filters:
-        $options = SearchOptions::getInstance(
-            SearchOptions::extractSearchClassId(get_called_class())
-        );
+        $sm = $this->getSearchManager();
+        $sm->setSearchClassId($sm->extractSearchClassId(get_class($this)));
+        $options = $sm->getOptionsInstance();
         $filters = $options->getHiddenFilters();
         $extras = empty($filters) ? array() : array('fq' => $filters);
 
@@ -484,7 +485,7 @@ class Results extends BaseResults
     {
         // Figure out how many records to retrieve at the same time --
         // we'll use either 100 or the ID request limit, whichever is smaller.
-        $sm = $this->getServiceLocator()->get('SearchManager');
+        $sm = $this->getSearchManager();
         $params = $sm->setSearchClassId('Solr')->getParams();
         $pageSize = $params->getQueryIDLimit();
         if ($pageSize < 1 || $pageSize > 100) {
