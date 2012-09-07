@@ -85,7 +85,8 @@ abstract class SearchObject extends AbstractSearchManagerAwareModule
         $params->setBasicSearch($request->get($this->requestParam));
 
         // Perform the search:
-        $this->results = $sm->getResults($params);
+        $this->results = $sm->setSearchClassId($this->getSearchClassId())
+            ->getResults($params);
         $this->results->performAndProcessSearch();
     }
 

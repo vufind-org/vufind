@@ -343,8 +343,8 @@ class SearchController extends AbstractSearch
             $resultPages = 10;
         }
         $catalog = ConnectionManager::connectToCatalog();
-        $sm = $this->getSearchManager()->setSearchClassId('Solr');
-        $params = $sm->getParams();
+        $sm = $this->getSearchManager();
+        $params = $sm->setSearchClassId('Solr')->getParams();
         $perPage = $params->getLimit();
         $newItems = $catalog->getNewItems(1, $perPage * $resultPages, $range, $dept);
 
@@ -431,10 +431,10 @@ class SearchController extends AbstractSearch
      */
     public function reservessearchAction()
     {
-        $sm = $this->getSearchManager()->setSearchClassId('SolrReserves');
-        $params = $sm->getParams();
+        $sm = $this->getSearchManager();
+        $params = $sm->setSearchClassId('SolrReserves')->getParams();
         $params->initFromRequest($this->getRequest()->getQuery());
-        $results = $sm->getResults($params);
+        $results = $sm->setSearchClassId('SolrReserves')->getResults($params);
         return $this->createViewModel(array('results' => $results));
     }
 
@@ -458,8 +458,8 @@ class SearchController extends AbstractSearch
         $bibIDs = array_unique(array_map($callback, $result));
 
         // Truncate the list if it is too long:
-        $sm = $this->getSearchManager()->setSearchClassId('Solr');
-        $params = $sm->getParams();
+        $sm = $this->getSearchManager();
+        $params = $sm->setSearchClassId('Solr')->getParams();
         $limit = $params->getQueryIDLimit();
         if (count($bibIDs) > $limit) {
             $bibIDs = array_slice($bibIDs, 0, $limit);
@@ -505,15 +505,15 @@ class SearchController extends AbstractSearch
             // we may want to make this more flexible later.  Also keep in mind that
             // the template is currently looking for certain hard-coded fields; this
             // should also be made smarter.
-            $sm = $this->getSearchManager()->setSearchClassId('Solr');
-            $params = $sm->getParams();
+            $sm = $this->getSearchManager();
+            $params = $sm->setSearchClassId('Solr')->getParams();
             $params->initAdvancedFacets();
 
             // We only care about facet lists, so don't get any results (this helps
             // prevent problems with serialized File_MARC objects in the cache):
             $params->setLimit(0);
 
-            $results = $sm->getResults($params);
+            $results = $sm->setSearchClassId('Solr')->getResults($params);
             $results->getResults();                     // force processing for cache
 
             // Temporarily remove the service manager so we can cache the

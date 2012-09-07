@@ -127,16 +127,17 @@ class SummonController extends AbstractSearch
         // Check if we have facet results cached, and build them if we don't.
         $cache = CacheManager::getInstance()->getCache('object');
         if (!($results = $cache->getItem('summonSearchHomeFacets'))) {
-            $sm = $this->getSearchManager()->setSearchClassId('Summon');
-            $params = $sm->getParams();
+            $sm = $this->getSearchManager();
+            $params = $sm->setSearchClassId('Summon')->getParams();
             $params->addFacet('Language,or,1,20');
             $params->addFacet('ContentType,or,1,20', 'Format');
 
             // We only care about facet lists, so don't get any results:
             $params->setLimit(0);
 
-            $results = $sm->getResults($params);
-            $results->getResults();                     // force processing for cache
+            $results = $sm->setSearchClassId('Summon')->getResults($params);
+            // force processing for cache
+            $results->getResults();
 
             // Temporarily remove the service manager so we can cache the
             // results (otherwise we'll get errors about serializing closures):

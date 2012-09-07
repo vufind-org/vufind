@@ -96,13 +96,13 @@ class Solr implements AutocompleteInterface, ServiceLocatorAwareInterface
     {
         // Get the search manager:
         $sm = $this->getServiceLocator()->getServiceLocator()->get('SearchManager');
-        $sm->setSearchClassId($this->searchClassId);
 
         // Build a new search object:
-        $params = $sm->getParams();
+        $params = $sm->setSearchClassId($this->searchClassId)->getParams();
         $params->getOptions()->spellcheckEnabled(false);
         $params->recommendationsEnabled(false);
-        $this->searchObject = $sm->getResults($params);
+        $this->searchObject = $sm->setSearchClassId($this->searchClassId)
+            ->getResults($params);
     }
 
     /**
@@ -181,7 +181,7 @@ class Solr implements AutocompleteInterface, ServiceLocatorAwareInterface
     {
         $results = array();
         foreach ($searchResults as $object) {
-            $current = $object->getAllFields();
+            $current = $object->getRawData();
             foreach ($this->displayField as $field) {
                 if (isset($current[$field])) {
                     $bestMatch = $this->pickBestMatch(

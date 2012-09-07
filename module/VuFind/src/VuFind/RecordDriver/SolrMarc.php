@@ -48,16 +48,19 @@ class SolrMarc extends SolrDefault
     protected $marcRecord;
 
     /**
-     * Constructor.
+     * Set raw data to initialize the object.
      *
-     * @param array $data Raw data from the Solr index representing the record;
-     * Solr Record Model objects are normally constructed by Solr Record Driver
-     * objects using data passed in from a Solr Search Results object.
+     * @param mixed $data Raw data representing the record; Record Model
+     * objects are normally constructed by Record Driver objects using data
+     * passed in from a Search Results object.  In this case, $data is a Solr record
+     * array containing MARC data in the 'fullrecord' field.
+     *
+     * @return void
      */
-    public function __construct($data)
+    public function setRawData($data)
     {
-        // Call the parent's constructor...
-        parent::__construct($data);
+        // Call the parent's set method...
+        parent::setRawData($data);
 
         // Also process the MARC record:
         $marc = trim($data['fullrecord']);

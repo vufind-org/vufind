@@ -559,8 +559,8 @@ class BrowseController extends AbstractBase
     protected function getFacetList($facet, $category = null,
         $sort = 'count', $query = '[* TO *]'
     ) {
-        $sm = $this->getSearchManager()->setSearchClassId('Solr');
-        $params = $sm->getParams();
+        $sm = $this->getSearchManager();
+        $params = $sm->setSearchClassId('Solr')->getParams();
         $params->addFacet($facet);
         if ($category != null) {
             $query = $category . ':' . $query;
@@ -568,7 +568,10 @@ class BrowseController extends AbstractBase
             $query = $facet . ':' . $query;
         }
         $params->setOverrideQuery($query);
-        $searchObject = $sm->getResults($params);
+        $params->getOptions()->disableHighlighting();
+        $params->getOptions()->spellcheckEnabled(false);
+        $params->recommendationsEnabled(false);
+        $searchObject = $sm->setSearchClassId('Solr')->getResults($params);
         // Get limit from config
         $params->setFacetLimit($this->config->Browse->result_limit);
         $params->setLimit(0);

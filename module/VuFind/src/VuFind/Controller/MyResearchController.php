@@ -530,8 +530,8 @@ class MyResearchController extends AbstractBase
 
         // If we got this far, we just need to display the favorites:
         try {
-            $sm = $this->getSearchManager()->setSearchClassId('Favorites');
-            $params = $sm->getParams();
+            $sm = $this->getSearchManager();
+            $params = $sm->setSearchClassId('Favorites')->getParams();
             $params->setAuthManager($this->getAuthManager());
 
             // We want to merge together GET, POST and route parameters to
@@ -544,7 +544,7 @@ class MyResearchController extends AbstractBase
                 )
             );
 
-            $results = $sm->getResults($params);
+            $results = $sm->setSearchClassId('Favorites')->getResults($params);
             $results->performAndProcessSearch();
             return $this->createViewModel(array('results' => $results));
         } catch (ListPermissionException $e) {
@@ -732,7 +732,8 @@ class MyResearchController extends AbstractBase
             }
             $record = SolrResults::getRecord($current['id']);
         } catch (RecordMissingException $e) {
-            $record = new \VuFind\RecordDriver\Missing(
+            $record = new \VuFind\RecordDriver\Missing();
+            $record->setRawData(
                 array('id' => isset($current['id']) ? $current['id'] : null)
             );
         }

@@ -43,8 +43,6 @@ use VuFind\Code\ISBN, VuFind\Config\Reader as ConfigReader;
  */
 class SolrDefault extends AbstractBase
 {
-    protected $fields;
-
     /**
      * These Solr fields should be used for snippets if available (listed in order
      * of preference).
@@ -93,15 +91,9 @@ class SolrDefault extends AbstractBase
 
     /**
      * Constructor.
-     *
-     * @param array $data Raw data from the Solr index representing the record;
-     * Solr Record Model objects are normally constructed by Solr Record Driver
-     * objects using data passed in from a Solr Search Results object.
      */
-    public function __construct($data)
+    public function __construct()
     {
-        $this->fields = $data;
-
         // Turn on highlighting/snippets as needed:
         $searchSettings = ConfigReader::getConfig('searches');
         $this->highlight = !isset($searchSettings->General->highlighting)
@@ -182,17 +174,6 @@ class SolrDefault extends AbstractBase
     public function getAllRecordLinks()
     {
         return null;
-    }
-
-    /**
-     * Get an associative array of all fields (primarily for use in staff view and
-     * autocomplete; avoid using whenever possible).
-     *
-     * @return array
-     */
-    public function getAllFields()
-    {
-        return $this->fields;
     }
 
     /**
@@ -1050,6 +1031,9 @@ class SolrDefault extends AbstractBase
      */
     public function getUniqueID()
     {
+        if (!isset($this->fields['id'])) {
+            throw new \Exception('ID not set!');
+        }
         return $this->fields['id'];
     }
 

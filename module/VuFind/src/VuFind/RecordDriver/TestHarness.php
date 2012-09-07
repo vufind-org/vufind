@@ -38,18 +38,6 @@ namespace VuFind\RecordDriver;
  */
 class TestHarness extends AbstractBase
 {
-    protected $fields;
-
-    /**
-     * Constructor.
-     *
-     * @param array $data Raw test data.
-     */
-    public function __construct($data = array())
-    {
-        $this->fields = $data;
-    }
-
     /**
      * Magic method to set/retrieve fields.
      *

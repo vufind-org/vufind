@@ -149,8 +149,8 @@ class AbstractSearch extends AbstractBase
             return $this->redirectToSavedSearch($savedId);
         }
 
-        $manager = $this->getSearchManager()->setSearchClassId($this->searchClassId);
-        $params = $manager->getParams();
+        $manager = $this->getSearchManager();
+        $params = $manager->setSearchClassId($this->searchClassId)->getParams();
         $params->recommendationsEnabled(true);
 
         // Send both GET and POST variables to search class:
@@ -164,7 +164,11 @@ class AbstractSearch extends AbstractBase
         // Attempt to perform the search; if there is a problem, inspect any Solr
         // exceptions to see if we should communicate to the user about them.
         try {
-            $results = $manager->getResults($params);
+            // We need to reset the searchClassId here because it may have been
+            // changed if recommendation modules initialized by the params object
+            // manipulated the shared search manager object.
+            $results = $manager->setSearchClassId($this->searchClassId)
+                ->getResults($params);
 
             // Explicitly execute search within controller -- this allows us to
             // catch exceptions more reliably:

@@ -132,10 +132,9 @@ class Minified
         $this->populateClassNames();
 
         // Deminify everything:
-        $manager->setSearchClassId($this->cl);
-        $params = $manager->getParams();
+        $params = $manager->setSearchClassId($this->cl)->getParams();
         $params->deminify($this);
-        $results = $manager->getResults($params);
+        $results = $manager->setSearchClassId($this->cl)->getResults($params);
         $results->deminify($this);
 
         return $results;

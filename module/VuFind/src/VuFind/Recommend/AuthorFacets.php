@@ -141,11 +141,11 @@ class AuthorFacets extends AbstractSearchManagerAwareModule
 
         // Initialize an AuthorFacets search object using parameters from the
         // current Solr search object.
-        $params = $sm->getParams($options);
+        $params = $sm->setSearchClassId('SolrAuthorFacets')->getParams($options);
         $params->initFromRequest(new Parameters(array('lookfor' => $lookfor)));
 
         // Send back the results:
-        $results = $sm->getResults($params);
+        $results = $sm->setSearchClassId('SolrAuthorFacets')->getResults($params);
         return array(
             // Total authors (currently there is no way to calculate this without
             // risking out-of-memory errors or slow results, so we set this to

@@ -550,7 +550,9 @@ class Results extends BaseResults
 
         // Build the object:
         if (class_exists($driver)) {
-            return new $driver($data);
+            $obj = new $driver();
+            $obj->setRawData($data);
+            return $obj;
         }
 
         throw new \Exception('Cannot find record driver -- ' . $driver);

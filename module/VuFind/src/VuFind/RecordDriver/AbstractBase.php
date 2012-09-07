@@ -52,18 +52,34 @@ abstract class AbstractBase
     protected $resourceSource = 'VuFind';   // Used for identifying database records
     protected $extraDetails = array();      // For storing extra data with record
     protected $recordIni = null;            // ini file for record settings
+    protected $fields = array();
 
     /**
-     * Constructor.
+     * Set raw data to initialize the object.
      *
-     * @param array|object $data Raw data representing the record; Record Model
+     * @param mixed $data Raw data representing the record; Record Model
      * objects are normally constructed by Record Driver objects using data
      * passed in from a Search Results object.  The exact nature of the data may
      * vary depending on the data source -- the important thing is that the
-     * Record Model + Record Driver + Search Results objects work together
-     * correctly.
+     * Record Driver + Search Results objects work together correctly.
+     *
+     * @return void
      */
-    abstract public function __construct($data);
+    public function setRawData($data)
+    {
+        $this->fields = $data;
+    }
+
+    /**
+     * Retrieve raw data from object (primarily for use in staff view and
+     * autocomplete; avoid using whenever possible).
+     *
+     * @return mixed
+     */
+    public function getRawData()
+    {
+        return $this->fields;
+    }
 
     /**
      * Get text that can be displayed to represent this record in breadcrumbs.

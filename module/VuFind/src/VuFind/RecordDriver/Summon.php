@@ -43,13 +43,9 @@ class Summon extends SolrDefault
 {
     /**
      * Constructor.
-     *
-     * @param array $data Raw data from the Summon index representing the record.
      */
-    public function __construct($data)
+    public function __construct()
     {
-        $this->fields = $data;
-
         // Turn on highlighting as needed:
         $searchSettings = ConfigReader::getConfig('Summon');
         $this->highlight = !isset($searchSettings->General->highlighting)

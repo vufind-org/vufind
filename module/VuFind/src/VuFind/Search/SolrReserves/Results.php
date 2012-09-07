@@ -27,8 +27,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\SolrReserves;
-use VuFind\RecordDriver\SolrReserves as SolrReservesRecord,
-    VuFind\Search\Base\Params as BaseParams,
+use VuFind\Search\Base\Params as BaseParams,
     VuFind\Search\Solr\Results as SolrResults;
 
 /**
@@ -80,6 +79,8 @@ class Results extends SolrResults
      */
     protected static function initRecordDriver($data)
     {
-        return new SolrReservesRecord($data);
+        $driver = new \VuFind\RecordDriver\SolrReserves();
+        $driver->setRawData($data);
+        return $driver;
     }
 }

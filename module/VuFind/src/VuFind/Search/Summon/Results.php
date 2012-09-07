@@ -30,7 +30,6 @@ use VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Summon as SummonConnection,
     VuFind\Connection\Summon\Query as SummonQuery,
     VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\RecordDriver\Summon as SummonRecord,
     VuFind\Search\Base\Results as BaseResults,
     VuFind\Translator\Translator;
 
@@ -159,7 +158,9 @@ class Results extends BaseResults
      */
     protected static function initRecordDriver($data)
     {
-        return new SummonRecord($data);
+        $driver = new \VuFind\RecordDriver\Summon();
+        $driver->setRawData($data);
+        return $driver;
     }
 
     /**

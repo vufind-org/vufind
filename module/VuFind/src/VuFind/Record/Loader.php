@@ -133,8 +133,8 @@ class Loader
                 $fields = isset($details['extra_fields'])
                     ? $details['extra_fields'] : array();
                 $fields['id'] = $details['id'];
-                $retVal[$i]
-                    = new \VuFind\RecordDriver\Missing($fields);
+                $retVal[$i] = new \VuFind\RecordDriver\Missing();
+                $retVal[$i]->setRawData($fields);
             }
         }
 

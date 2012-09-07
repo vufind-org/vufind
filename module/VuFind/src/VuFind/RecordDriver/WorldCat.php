@@ -42,11 +42,29 @@ class WorldCat extends SolrMarc
     protected $marcRecord;
 
     /**
-     * Constructor.
-     *
-     * @param array $data Raw data from WorldCat representing the record.
+     * Constructor
      */
-    public function __construct($data)
+    public function __construct()
+    {
+        // Set the correct resource source for database entries:
+        $this->resourceSource = 'WorldCat';
+
+        // Use the WorldCat.ini file instead of config.ini for loading record
+        // settings (i.e. "related" record handlers):
+        $this->recordIni = 'WorldCat';
+    }
+
+    /**
+     * Set raw data to initialize the object.
+     *
+     * @param mixed $data Raw data representing the record; Record Model
+     * objects are normally constructed by Record Driver objects using data
+     * passed in from a Search Results object.  In this case, $data is a MARCXML
+     * document.
+     *
+     * @return void
+     */
+    public function setRawData($data)
     {
         // Make sure the XML has an appropriate header:
         if (strlen($data) > 2 && substr($data, 0, 2) != '<?') {
@@ -55,14 +73,7 @@ class WorldCat extends SolrMarc
 
         // Map the WorldCat response into a format that the parent Solr-based
         // record driver can understand.
-        parent::__construct(array('fullrecord' => $data));
-
-        // Set the correct resource source for database entries:
-        $this->resourceSource = 'WorldCat';
-
-        // Use the WorldCat.ini file instead of config.ini for loading record
-        // settings (i.e. "related" record handlers):
-        $this->recordIni = 'WorldCat';
+        parent::setRawData(array('fullrecord' => $data));
     }
 
     /**

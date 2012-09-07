@@ -26,8 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\SolrAuth;
-use VuFind\RecordDriver\SolrAuth as SolrAuthRecord,
-    VuFind\Search\Base\Params as BaseParams,
+use VuFind\Search\Base\Params as BaseParams,
     VuFind\Search\Solr\Results as SolrResults;
 
 /**
@@ -77,6 +76,8 @@ class Results extends SolrResults
      */
     protected static function initRecordDriver($data)
     {
-        return new SolrAuthRecord($data);
+        $driver = new \VuFind\RecordDriver\SolrAuth();
+        $driver->setRawData($data);
+        return $driver;
     }
 }

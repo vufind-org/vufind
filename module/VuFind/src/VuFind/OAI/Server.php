@@ -183,7 +183,7 @@ class Server
         }
 
         // Check for sets:
-        $fields = $record->getAllFields();
+        $fields = $record->getRawData();
         if (!is_null($this->setField) && !empty($fields[$this->setField])) {
             $sets = $fields[$this->setField];
         } else {
@@ -507,9 +507,10 @@ class Server
         // we'll assume that this list is short enough to load in a single response;
         // it may be necessary to implement a resumption token mechanism if this
         // proves not to be the case:
-        $this->searchManager->setSearchClassId($this->searchClassId);
-        $params = $this->searchManager->getParams();
-        $results = $this->searchManager->getResults($params);
+        $params = $this->searchManager->setSearchClassId($this->searchClassId)
+            ->getParams();
+        $results = $this->searchManager->setSearchClassId($this->searchClassId)
+            ->getResults($params);
         try {
             $facets = $results->getFullFieldFacets(array($this->setField));
         } catch (\Exception $e) {

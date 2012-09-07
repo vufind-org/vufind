@@ -29,7 +29,6 @@ namespace VuFind\Search\WorldCat;
 use VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\WorldCat as WorldCatConnection,
     VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\RecordDriver\WorldCat as WorldCatRecord,
     VuFind\Search\Base\Results as BaseResults;
 
 /**
@@ -128,7 +127,9 @@ class Results extends BaseResults
      */
     protected static function initRecordDriver($data)
     {
-        return new WorldCatRecord($data);
+        $driver = new \VuFind\RecordDriver\WorldCat();
+        $driver->setRawData($data);
+        return $driver;
     }
 
     /**

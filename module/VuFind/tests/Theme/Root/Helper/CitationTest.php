@@ -285,8 +285,9 @@ class CitationTest extends \VuFind\Tests\ViewHelperTestCase
     {
         $citation = new Citation();
         $citation->setView($this->getPhpRenderer());
+        $driver = new \VuFind\RecordDriver\TestHarness();
         foreach ($this->citations as $current) {
-            $driver = new \VuFind\RecordDriver\TestHarness($current['raw']);
+            $driver->setRawData($current['raw']);
             $cb = $citation->__invoke($driver);
 
             // Normalize whitespace:

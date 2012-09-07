@@ -97,10 +97,10 @@ class SummonDatabases extends AbstractSearchManagerAwareModule
         // to create a new Summon search object using the specified request 
         // parameter for search terms.
         if ($results->getParams()->getSearchClassId() != 'Summon') {
-            $sm = $this->getSearchManager()->setSearchClassId('Summon');
-            $params = $sm->getParams();
+            $sm = $this->getSearchManager();
+            $params = $sm->setSearchClassId('Summon')->getParams();
             $params->setBasicSearch($this->lookfor);
-            $results = $sm->getResults($params);
+            $results = $sm->setSearchClassId('Summon')->getResults($params);
             $results->performAndProcessSearch();
         }
         $this->databases = $results->getDatabaseRecommendations();

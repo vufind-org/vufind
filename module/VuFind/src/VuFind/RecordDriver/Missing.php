@@ -42,17 +42,10 @@ class Missing extends SolrDefault
 {
     /**
      * Constructor.
-     *
-     * @param array $data Raw data from the Solr index representing the record;
-     * Solr Record Model objects are normally constructed by Solr Record Driver
-     * objects using data passed in from a Solr Search Results object.
      */
-    public function __construct($data = null)
+    public function __construct()
     {
-        if (!is_array($data)) {
-            $data = array();
-        }
-        parent::__construct($data);
         $this->resourceSource = 'missing';
+        parent::__construct();
     }
 }

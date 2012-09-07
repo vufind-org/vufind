@@ -107,13 +107,13 @@ class AjaxController extends AbstractBase
         // Process recommendations -- for now, we assume Solr-based search objects,
         // since deferred recommendations work best for modules that don't care about
         // the details of the search objects anyway:
-        $sm = $this->getSearchManager()->setSearchClassId('Solr');
+        $sm = $this->getSearchManager();
         $rm = $this->getServiceLocator()->get('RecommendPluginManager');
         $module = clone($rm->get($this->params()->fromQuery('mod')));
         $module->setConfig($this->params()->fromQuery('params'));
-        $params = $sm->getParams();
+        $params = $sm->setSearchClassId('Solr')->getParams();
         $module->init($params, $this->getRequest()->getQuery());
-        $results = $sm->getResults($params);
+        $results = $sm->setSearchClassId('Solr')->getResults($params);
         $module->process($results);
 
         // Set headers:
@@ -669,10 +669,10 @@ class AjaxController extends AbstractBase
      */
     public function getMapData($fields = array('long_lat'))
     {
-        $sm = $this->getSearchManager()->setSearchClassId('Solr');
-        $params = $sm->getParams();
+        $sm = $this->getSearchManager();
+        $params = $sm->setSearchClassId('Solr')->getParams();
         $params->initFromRequest($this->getRequest()->getQuery());
-        $results = $sm->getResults($params);
+        $results = $sm->setSearchClassId('Solr')->getResults($params);
 
         $facets = $results->getFullFieldFacets($fields, false);
 
@@ -709,10 +709,10 @@ class AjaxController extends AbstractBase
         // Set layout to render the page inside a lightbox:
         $this->layout()->setTemplate('layout/lightbox');
 
-        $sm = $this->getSearchManager()->setSearchClassId('Solr');
-        $params = $sm->getParams();
+        $sm = $this->getSearchManager();
+        $params = $sm->setSearchClassId('Solr')->getParams();
         $params->initFromRequest($this->getRequest()->getQuery());
-        $results = $sm->getResults($params);
+        $results = $sm->setSearchClassId('Solr')->getResults($params);
 
         return $this->createViewModel(
             array(
@@ -736,10 +736,10 @@ class AjaxController extends AbstractBase
      */
     public function getVisData($fields = array('publishDate'))
     {
-        $sm = $this->getSearchManager()->setSearchClassId('Solr');
-        $params = $sm->getParams();
+        $sm = $this->getSearchManager();
+        $params = $sm->setSearchClassId('Solr')->getParams();
         $params->initFromRequest($this->getRequest()->getQuery());
-        $results = $sm->getResults($params);
+        $results = $sm->setSearchClassId('Solr')->getResults($params);
         $filters = $params->getFilters();
         $dateFacets = $this->params()->fromQuery('facetFields');
         $dateFacets = empty($dateFacets) ? array() : explode(':', $dateFacets);

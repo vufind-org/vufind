@@ -135,13 +135,13 @@ class AuthorityRecommend extends AbstractSearchManagerAwareModule
         // Initialise and process search (ignore Solr errors -- no reason to fail
         // just because search syntax is not compatible with Authority core):
         try {
-            $sm = $this->getSearchManager()->setSearchClassId('SolrAuth');
-            $authParams = $sm->getParams();
+            $sm = $this->getSearchManager();
+            $authParams = $sm->setSearchClassId('SolrAuth')->getParams();
             $authParams->initFromRequest($request);
             foreach ($this->filters as $filter) {
                 $authParams->getOptions()->addHiddenFilter($filter);
             }
-            $authResults = $sm->getResults($authParams);
+            $authResults = $sm->setSearchClassId('SolrAuth')->getResults($authParams);
             $results = $authResults->getResults();
         } catch (SolrException $e) {
             return;
