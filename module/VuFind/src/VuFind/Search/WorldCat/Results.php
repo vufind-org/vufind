@@ -50,7 +50,7 @@ class Results extends BaseResults
      *
      * @return WorldCatConnection
      */
-    public static function getWorldCatConnection()
+    public function getWorldCatConnection()
     {
         static $wc = false;
         if (!$wc) {
@@ -69,7 +69,7 @@ class Results extends BaseResults
     {
         // Collect the search parameters:
         $config = ConfigReader::getConfig();
-        $wc = static::getWorldCatConnection();
+        $wc = $this->getWorldCatConnection();
         $overrideQuery = $this->getParams()->getOverrideQuery();
         $query = empty($overrideQuery)
             ? $wc->buildQuery($this->getParams()->getSearchTerms()) : $overrideQuery;
@@ -107,7 +107,7 @@ class Results extends BaseResults
      */
     public function getRecord($id)
     {
-        $wc = static::getWorldCatConnection();
+        $wc = $this->getWorldCatConnection();
         $record = $wc->getRecord($id);
         if (empty($record)) {
             throw new RecordMissingException(

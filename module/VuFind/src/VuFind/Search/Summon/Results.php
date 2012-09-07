@@ -52,7 +52,7 @@ class Results extends BaseResults
      *
      * @return SummonConnection
      */
-    public static function getSummonConnection()
+    public function getSummonConnection()
     {
         static $conn = false;
         if (!$conn) {
@@ -78,7 +78,7 @@ class Results extends BaseResults
         $finalSort = ($sort == 'relevance') ? null : $sort;
 
         // Perform the actual search
-        $summon = self::getSummonConnection();
+        $summon = $this->getSummonConnection();
         $query = new SummonQuery(
             $summon->buildQuery($this->getParams()->getSearchTerms()),
             array(
@@ -138,7 +138,7 @@ class Results extends BaseResults
      */
     public function getRecord($id)
     {
-        $summon = static::getSummonConnection();
+        $summon = $this->getSummonConnection();
         $record = $summon->getRecord($id);
         if (empty($record) || !isset($record['documents'][0])) {
             throw new RecordMissingException(
