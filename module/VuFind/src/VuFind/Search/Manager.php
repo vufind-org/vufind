@@ -87,7 +87,7 @@ class Manager implements ServiceLocatorAwareInterface
         // Use default namespace if we got this far:
         $ns = isset($this->config['default_namespace'])
             ? $this->config['default_namespace'] : 'VuFind\Search';
-        return $ns . '\\' . $this->classId;
+        return $ns . '\\' . $key;
     }
 
     /**
