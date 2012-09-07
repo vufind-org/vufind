@@ -76,7 +76,8 @@ class Results extends SolrResults
      */
     protected function initRecordDriver($data)
     {
-        $driver = new \VuFind\RecordDriver\SolrAuth();
+        $factory = $this->getServiceLocator()->get('RecordDriverPluginManager');
+        $driver = clone($factory->get('SolrAuth'));
         $driver->setRawData($data);
         return $driver;
     }

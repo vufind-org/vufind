@@ -484,7 +484,8 @@ class Results extends BaseResults
     {
         // Figure out how many records to retrieve at the same time --
         // we'll use either 100 or the ID request limit, whichever is smaller.
-        $params = new Params();
+        $sm = $this->getServiceLocator()->get('SearchManager');
+        $params = $sm->setSearchClassId('Solr')->getParams();
         $pageSize = $params->getQueryIDLimit();
         if ($pageSize < 1 || $pageSize > 100) {
             $pageSize = 100;
@@ -496,7 +497,7 @@ class Results extends BaseResults
             $currentPage = array_splice($ids, 0, $pageSize, array());
             $params->setQueryIDs($currentPage);
             $params->setLimit($pageSize);
-            $results = new Results($params);
+            $results = $sm->setSearchClassId('Solr')->getResults($params);
             $retVal = array_merge($retVal, $results->getResults());
         }
 
@@ -536,26 +537,15 @@ class Results extends BaseResults
      */
     protected function initRecordDriver($data)
     {
-        // Remember bad classes to prevent unnecessary file accesses.
-        static $badClasses = array();
+        $factory = $this->getServiceLocator()->get('RecordDriverPluginManager');
 
-        // Determine driver path based on record type:
-        $driver = 'VuFind\RecordDriver\Solr' . ucwords($data['recordtype']);
-
-        // If we can't load the driver, fall back to the default, index-based one:
-        if (isset($badClasses[$driver]) || !@class_exists($driver)) {
-            $badClasses[$driver] = 1;
-            $driver = 'VuFind\RecordDriver\SolrDefault';
-        }
+        $key = 'Solr' . ucwords($data['recordtype']);
+        $recordType = $factory->has($key) ? $key : 'SolrDefault';
 
         // Build the object:
-        if (class_exists($driver)) {
-            $obj = new $driver();
-            $obj->setRawData($data);
-            return $obj;
-        }
-
-        throw new \Exception('Cannot find record driver -- ' . $driver);
+        $driver = clone($factory->get($recordType));
+        $driver->setRawData($data);
+        return $driver;
     }
     
     /**

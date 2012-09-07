@@ -127,7 +127,8 @@ class Results extends BaseResults
      */
     protected function initRecordDriver($data)
     {
-        $driver = new \VuFind\RecordDriver\WorldCat();
+        $factory = $this->getServiceLocator()->get('RecordDriverPluginManager');
+        $driver = clone($factory->get('WorldCat'));
         $driver->setRawData($data);
         return $driver;
     }

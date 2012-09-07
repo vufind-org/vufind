@@ -65,7 +65,8 @@ class Results extends \VuFind\Search\Solr\Results
      */
     protected function initRecordDriver($data)
     {
-        $driver = new \VuFind\RecordDriver\SolrReserves();
+        $factory = $this->getServiceLocator()->get('RecordDriverPluginManager');
+        $driver = clone($factory->get('SolrReserves'));
         $driver->setRawData($data);
         return $driver;
     }

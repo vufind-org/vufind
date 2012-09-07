@@ -140,7 +140,9 @@ class Loader implements ServiceLocatorAwareInterface
                 $fields = isset($details['extra_fields'])
                     ? $details['extra_fields'] : array();
                 $fields['id'] = $details['id'];
-                $retVal[$i] = new \VuFind\RecordDriver\Missing();
+                $factory = $this->getServiceLocator()
+                    ->get('RecordDriverPluginManager');
+                $retVal[$i] = clone($factory->get('Missing'));
                 $retVal[$i]->setRawData($fields);
             }
         }

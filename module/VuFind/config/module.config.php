@@ -187,6 +187,19 @@ $config = array(
             'worldcatterms' => 'VuFind\Recommend\WorldCatTerms',
         ),
     ),
+    'recorddriver_plugin_manager' => array(
+        'abstract_factories' => array('VuFind\RecordDriver\PluginFactory'),
+        'invokables' => array(
+            'missing' => 'VuFind\RecordDriver\Missing',
+            'solrauth' => 'VuFind\RecordDriver\SolrAuth',
+            'solrdefault' => 'VuFind\RecordDriver\SolrDefault',
+            'solrmarc' => 'VuFind\RecordDriver\SolrMarc',
+            'solrreserves' => 'VuFind\RecordDriver\SolrReserves',
+            'solrvudl' => 'VuFind\RecordDriver\SolrVudl',
+            'summon' => 'VuFind\RecordDriver\Summon',
+            'worldcat' => 'VuFind\RecordDriver\WorldCat',
+        ),
+    ),
     'search_manager' => array(
         'default_namespace' => 'VuFind\Search',
         'namespaces_by_id' => array(
