@@ -292,6 +292,27 @@ class DbUpgrade extends AbstractPlugin
     }
 
     /**
+     * Support method for getModifiedColumns() -- check if the current column is
+     * in the missing column list so we can avoid modifying something that does
+     * not exist.
+     *
+     * @param string $column  Column to check
+     * @param string $missing Missing column list for column's table.
+     *
+     * @return bool
+     */
+    public function columnIsMissing($column, $missing)
+    {
+        foreach ($missing as $current) {
+            preg_match('/^\s*`([^`]*)`.*$/', $current, $matches);
+            if ($column == $matches[1]) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Get a list of changed columns in the database tables (associative array,
      * key = table name, value = array of column name => new data type).
      *
@@ -335,7 +356,9 @@ class DbUpgrade extends AbstractPlugin
             $actualColumns = $this->getTableColumns($table);
             foreach ($expectedColumns as $i => $column) {
                 // Skip column if we're logging and it's missing
-                if (in_array($column, $missingColumns)) {
+                if (isset($missingColumns[$table])
+                    && $this->columnIsMissing($column, $missingColumns[$table])
+                ) {
                     continue;
                 }
                 $currentColumn = $actualColumns[$column];
