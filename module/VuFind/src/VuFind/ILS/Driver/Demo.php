@@ -34,8 +34,7 @@ use ArrayObject, VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
     VuFind\Date\Converter as DateConverter,
     VuFind\Exception\Date as DateException,
-    VuFind\Exception\ILS as ILSException,
-    VuFind\Search\Solr\Results as SolrResults, VuFind\Translator\Translator,
+    VuFind\Exception\ILS as ILSException, VuFind\Translator\Translator,
     Zend\Session\Container as SessionContainer;
 
 /**
