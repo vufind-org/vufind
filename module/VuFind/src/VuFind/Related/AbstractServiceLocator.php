@@ -1,10 +1,10 @@
 <?php
 /**
- * Related Records: Solr-based similarity
+ * Base class for helpers that pull resources from the service locator.
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2009.
+ * Copyright (C) Villanova University 2010.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -26,48 +26,55 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Related;
+use Zend\ServiceManager\ServiceLocatorInterface,
+    Zend\ServiceManager\ServiceLocatorAwareInterface;
 
 /**
- * Related Records: Solr-based similarity
+ * Base class for helpers that pull resources from the service locator.
  *
  * @category VuFind2
- * @package  Related_Records
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class Similar extends AbstractServiceLocator
+abstract class AbstractServiceLocator implements RelatedInterface,
+    ServiceLocatorAwareInterface
 {
-    protected $results;
+    protected $serviceLocator;
 
     /**
-     * init
+     * Get the search manager.
      *
-     * Establishes base settings for making recommendations.
-     *
-     * @param string                            $settings Settings from config.ini
-     * @param \VuFind\RecordDriver\AbstractBase $driver   Record driver object
-     *
-     * @return void
+     * @return \VuFind\Search\Manager
      */
-    public function init($settings, $driver)
+    public function getSearchManager()
     {
-        $sm = $this->getSearchManager();
-        $params = $sm->setSearchClassId('Solr')->getParams();
-        $searcher = $sm->setSearchClassId('Solr')->getResults($params);
-        $this->results = $searcher->getSimilarRecords($driver->getUniqueId());
+        return $this->getServiceLocator()->get('SearchManager');
     }
 
     /**
-     * getResults
+     * Set the service locator.
      *
-     * Get an array of Record Driver objects representing items similar to the one
-     * passed to the constructor.
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
      *
-     * @return array
+     * @return AbstractServiceLocator
      */
-    public function getResults()
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
     {
-        return $this->results;
+        // The service locator passed in here is a VuFind\Related\PluginManager;
+        // we want to pull out the main Zend\ServiceManager\ServiceManager.
+        $this->serviceLocator = $serviceLocator->getServiceLocator();
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
     }
 }

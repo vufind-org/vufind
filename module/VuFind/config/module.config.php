@@ -200,6 +200,15 @@ $config = array(
             'worldcat' => 'VuFind\RecordDriver\WorldCat',
         ),
     ),
+    'related_plugin_manager' => array(
+        'abstract_factories' => array('VuFind\Related\PluginFactory'),
+        'invokables' => array(
+            'editions' => 'VuFind\Related\Editions',
+            'similar' => 'VuFind\Related\Similar',
+            'worldcateditions' => 'VuFind\Related\WorldCatEditions',
+            'worldcatsimilar' => 'VuFind\Related\WorldCatSimilar',
+        ),
+    ),
     'search_manager' => array(
         'default_namespace' => 'VuFind\Search',
         'namespaces_by_id' => array(
