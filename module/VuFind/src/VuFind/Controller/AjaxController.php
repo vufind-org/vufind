@@ -609,7 +609,7 @@ class AjaxController extends AbstractBase
         }
         // empty tag
         try {
-            $driver = RecordLoader::load(
+            $driver = RecordLoader::getInstance()->load(
                 $this->params()->fromPost('id'),
                 $this->params()->fromPost('source', 'VuFind')
             );
@@ -832,7 +832,7 @@ class AjaxController extends AbstractBase
             );
         }
 
-        $driver = RecordLoader::load(
+        $driver = RecordLoader::getInstance()->load(
             $this->params()->fromPost('id'),
             $this->params()->fromPost('source', 'VuFind')
         );
@@ -939,7 +939,7 @@ class AjaxController extends AbstractBase
     {
         // Attempt to send the email:
         try {
-            $record = RecordLoader::load(
+            $record = RecordLoader::getInstance()->load(
                 $this->params()->fromPost('id'),
                 $this->params()->fromPost('source', 'VuFind')
             );
@@ -968,7 +968,7 @@ class AjaxController extends AbstractBase
     {
         // Attempt to send the email:
         try {
-            $record = RecordLoader::load(
+            $record = RecordLoader::getInstance()->load(
                 $this->params()->fromPost('id'),
                 $this->params()->fromPost('source', 'VuFind')
             );
@@ -1128,7 +1128,7 @@ class AjaxController extends AbstractBase
      */
     public function getRecordCommentsAsHTML()
     {
-        $driver = RecordLoader::load(
+        $driver = RecordLoader::getInstance()->load(
             $this->params()->fromQuery('id'),
             $this->params()->fromQuery('source', 'VuFind')
         );

@@ -267,6 +267,6 @@ class Cart
      */
     public function getRecordDetails()
     {
-        return RecordLoader::loadBatch($this->items);
+        return RecordLoader::getInstance()->loadBatch($this->items);
     }
 }

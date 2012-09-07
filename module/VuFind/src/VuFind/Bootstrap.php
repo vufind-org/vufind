@@ -112,8 +112,9 @@ class Bootstrap
         $manager->setServiceLocator($serviceManager);
         $serviceManager->setService('SearchManager', $manager);
 
-        // TODO: factor out static connection manager.
+        // TODO: factor out static connection manager and record loader.
         \VuFind\Connection\Manager::setServiceLocator($serviceManager);
+        \VuFind\Record\Loader::getInstance()->setServiceLocator($serviceManager);
     }
 
     /**

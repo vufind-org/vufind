@@ -26,6 +26,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Record;
+use Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Record loader
@@ -36,8 +38,23 @@ namespace VuFind\Record;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Loader
+class Loader implements ServiceLocatorAwareInterface
 {
+    /**
+     * Temporary method to get instance of object -- TODO: eliminate in place of
+     * service manager after further refactoring.
+     *
+     * @return Loader
+     */
+    public function getInstance()
+    {
+        static $instance = false;
+        if (!$instance) {
+            $instance = new Loader();
+        }
+        return $instance;
+    }
+
     /**
      * Given a record source, return the search class that can load that type of
      * record.
@@ -47,7 +64,7 @@ class Loader
      * @throws \Exception
      * @return string
      */
-    protected static function getClassForSource($source)
+    protected function getClassForSource($source)
     {
         // Special case -- the VuFind record source actually maps to Solr classes;
         // this is a legacy issue related to values inserted into the database by
@@ -76,10 +93,10 @@ class Loader
      * @throws \Exception
      * @return \VuFind\RecordDriver\AbstractBase
      */
-    public static function load($id, $source = 'VuFind')
+    public function load($id, $source = 'VuFind')
     {
         // Load the record:
-        $class = self::getClassForSource($source);
+        $class = $this->getClassForSource($source);
         return call_user_func(array($class, 'getRecord'), $id);
     }
 
@@ -97,7 +114,7 @@ class Loader
      * @throws \Exception
      * @return array     Array of record drivers
      */
-    public static function loadBatch($ids)
+    public function loadBatch($ids)
     {
         // Sort the IDs by source -- we'll create an associative array indexed by
         // source and record ID which points to the desired position of the indexed
@@ -117,7 +134,7 @@ class Loader
         // Retrieve the records and put them back in order:
         $retVal = array();
         foreach ($idBySource as $source => $details) {
-            $class = self::getClassForSource($source);
+            $class = $this->getClassForSource($source);
             $records
                 = call_user_func(array($class, 'getRecords'), array_keys($details));
             foreach ($records as $current) {
@@ -141,5 +158,28 @@ class Loader
         // Send back the final array, with the keys in proper order:
         ksort($retVal);
         return $retVal;
+    }
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return Manager
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
     }
 }

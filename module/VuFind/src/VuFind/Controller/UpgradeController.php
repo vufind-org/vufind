@@ -413,8 +413,8 @@ class UpgradeController extends AbstractBase
         if (strlen($this->params()->fromPost('submit', '')) > 0) {
             foreach ($problems as $problem) {
                 try {
-                    $driver
-                        = RecordLoader::load($problem->record_id, $problem->source);
+                    $driver = RecordLoader::getInstance()
+                        ->load($problem->record_id, $problem->source);
                     $problem->assignMetadata($driver)->save();
                 } catch (RecordMissingException $e) {
                     $this->session->warnings->append(

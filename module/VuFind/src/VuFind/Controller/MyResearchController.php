@@ -320,7 +320,7 @@ class MyResearchController extends AbstractBase
                 'list' => empty($listID)
                     ? false : UserListTable::getExisting($listID),
                 'deleteIDS' => $ids,
-                'records' => RecordLoader::loadBatch($ids)
+                'records' => RecordLoader::getInstance()->loadBatch($ids)
             )
         );
     }
@@ -422,7 +422,7 @@ class MyResearchController extends AbstractBase
         $source = $this->params()->fromPost(
             'source', $this->params()->fromQuery('source', 'VuFind')
         );
-        $driver = RecordLoader::load($id, $source);
+        $driver = RecordLoader::getInstance()->load($id, $source);
         $listID = $this->params()->fromPost(
             'list_id', $this->params()->fromQuery('list_id', null)
         );

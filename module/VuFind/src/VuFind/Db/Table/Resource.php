@@ -79,7 +79,7 @@ class Resource extends Gateway
 
             // Load record if it was not provided:
             if (is_null($driver)) {
-                $driver = RecordLoader::load($id, $source);
+                $driver = RecordLoader::getInstance()->load($id, $source);
             }
 
             // Load metadata into the database for sorting/failback purposes:

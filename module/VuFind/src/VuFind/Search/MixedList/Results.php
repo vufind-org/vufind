@@ -62,7 +62,7 @@ class Results extends BaseResults
     protected function performSearch()
     {
         $recordsToRequest = $this->getParams()->getRecordsToRequest();
-        $this->results = RecordLoader::loadBatch($recordsToRequest);
+        $this->results = RecordLoader::getInstance()->loadBatch($recordsToRequest);
         $this->resultTotal = count($this->results);
     }
 

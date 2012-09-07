@@ -172,7 +172,7 @@ class Results extends BaseResults
                 )
             );
         }
-        $this->results = RecordLoader::loadBatch($recordsToRequest);
+        $this->results = RecordLoader::getInstance()->loadBatch($recordsToRequest);
     }
 
     /**

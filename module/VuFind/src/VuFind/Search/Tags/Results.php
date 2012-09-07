@@ -74,7 +74,7 @@ class Results extends BaseResults
             $recordsToRequest[]
                 = array('id' => $row->record_id, 'source' => $row->source);
         }
-        $this->results = RecordLoader::loadBatch($recordsToRequest);
+        $this->results = RecordLoader::getInstance()->loadBatch($recordsToRequest);
     }
 
     /**
