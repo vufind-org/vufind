@@ -26,9 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Cache\Manager as CacheManager,
-    VuFind\Search\Summon\Params as SummonParams,
-    VuFind\Search\Summon\Results as SummonResults, Zend\Mvc\MvcEvent;
+use VuFind\Cache\Manager as CacheManager, Zend\Mvc\MvcEvent;
 
 /**
  * Summon Controller
@@ -122,24 +120,32 @@ class SummonController extends AbstractSearch
      * data may come from the cache, and it is currently shared between the Home
      * page and the Advanced search screen.
      *
-     * @return SummonResults
+     * @return \VuFind\Search\Summon\Results
      */
     protected function getAdvancedFacets()
     {
         // Check if we have facet results cached, and build them if we don't.
         $cache = CacheManager::getInstance()->getCache('object');
         if (!($results = $cache->getItem('summonSearchHomeFacets'))) {
-            $params = new SummonParams();
+            $sm = $this->getSearchManager()->setSearchClassId('Summon');
+            $params = $sm->getParams();
             $params->addFacet('Language,or,1,20');
             $params->addFacet('ContentType,or,1,20', 'Format');
 
             // We only care about facet lists, so don't get any results:
             $params->setLimit(0);
 
-            $results = new SummonResults($params);
+            $results = $sm->getResults($params);
             $results->getResults();                     // force processing for cache
+
+            // Temporarily remove the service manager so we can cache the
+            // results (otherwise we'll get errors about serializing closures):
+            $results->unsetServiceLocator();
             $cache->setItem('summonSearchHomeFacets', $results);
         }
+
+        // Restore the real service locator to the object:
+        $results->restoreServiceLocator($this->getServiceLocator());
         return $results;
     }
 
