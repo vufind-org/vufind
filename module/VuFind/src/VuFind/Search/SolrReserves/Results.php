@@ -27,8 +27,6 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\SolrReserves;
-use VuFind\Search\Base\Params as BaseParams,
-    VuFind\Search\Solr\Results as SolrResults;
 
 /**
  * Solr Reserves Search Parameters
@@ -40,19 +38,8 @@ use VuFind\Search\Base\Params as BaseParams,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Results extends SolrResults
+class Results extends \VuFind\Search\Solr\Results
 {
-    /**
-     * Constructor
-     *
-     * @param BaseParams $params Object representing user search
-     * parameters.
-     */
-    public function __construct(BaseParams $params)
-    {
-        parent::__construct($params);
-    }
-
     /**
      * Get a connection to the Solr index.
      *
