@@ -90,7 +90,7 @@ class Results extends BaseResults
             && count($this->rawResponse->records->record) > 0
         ) {
             foreach ($this->rawResponse->records->record as $current) {
-                $this->results[] = static::initRecordDriver(
+                $this->results[] = $this->initRecordDriver(
                     $current->recordData->record->asXML()
                 );
             }
@@ -114,18 +114,18 @@ class Results extends BaseResults
                 'Record ' . $id . ' does not exist.'
             );
         }
-        return static::initRecordDriver($record);
+        return $this->initRecordDriver($record);
     }
 
     /**
-     * Support method for _performSearch(): given an array of Solr response data,
+     * Support method for performSearch(): given a WorldCat MARC record,
      * construct an appropriate record driver object.
      *
-     * @param array $data Raw record data
+     * @param string $data Raw record data
      *
      * @return \VuFind\RecordDriver\Base
      */
-    protected static function initRecordDriver($data)
+    protected function initRecordDriver($data)
     {
         $driver = new \VuFind\RecordDriver\WorldCat();
         $driver->setRawData($data);

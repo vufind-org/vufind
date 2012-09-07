@@ -67,14 +67,14 @@ class Results extends SolrResults
     }
 
     /**
-     * Support method for _performSearch(): given an array of Solr response data,
+     * Support method for performSearch(): given an array of Solr response data,
      * construct an appropriate record driver object.
      *
      * @param array $data Solr data
      *
      * @return \VuFind\RecordDriver\AbstractBase
      */
-    protected static function initRecordDriver($data)
+    protected function initRecordDriver($data)
     {
         $driver = new \VuFind\RecordDriver\SolrAuth();
         $driver->setRawData($data);

@@ -134,7 +134,7 @@ class Results extends BaseResults
         // Construct record drivers for all the items in the response:
         $this->results = array();
         for ($x = 0; $x < count($this->rawResponse['response']['docs']); $x++) {
-            $this->results[] = static::initRecordDriver(
+            $this->results[] = $this->initRecordDriver(
                 $this->rawResponse['response']['docs'][$x]
             );
         }
@@ -470,7 +470,7 @@ class Results extends BaseResults
                 'Record ' . $id . ' does not exist.'
             );
         }
-        return static::initRecordDriver($record);
+        return $this->initRecordDriver($record);
     }
 
     /**
@@ -519,7 +519,7 @@ class Results extends BaseResults
         $rawResponse = $solr->getMoreLikeThis($id, $extras);
         $results = array();
         for ($x = 0; $x < count($rawResponse['response']['docs']); $x++) {
-            $results[] = static::initRecordDriver(
+            $results[] = $this->initRecordDriver(
                 $rawResponse['response']['docs'][$x]
             );
         }
@@ -527,14 +527,14 @@ class Results extends BaseResults
     }
 
     /**
-     * Support method for _performSearch(): given an array of Solr response data,
+     * Support method for performSearch(): given an array of Solr response data,
      * construct an appropriate record driver object.
      *
      * @param array $data Solr data
      *
      * @return \VuFind\RecordDriver\Base
      */
-    protected static function initRecordDriver($data)
+    protected function initRecordDriver($data)
     {
         // Remember bad classes to prevent unnecessary file accesses.
         static $badClasses = array();

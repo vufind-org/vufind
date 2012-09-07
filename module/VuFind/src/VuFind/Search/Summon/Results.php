@@ -124,7 +124,7 @@ class Results extends BaseResults
         // Construct record drivers for all the items in the response:
         $this->results = array();
         foreach ($this->rawResponse['documents'] as $current) {
-            $this->results[] = self::initRecordDriver($current);
+            $this->results[] = $this->initRecordDriver($current);
         }
     }
 
@@ -145,18 +145,18 @@ class Results extends BaseResults
                 'Record ' . $id . ' does not exist.'
             );
         }
-        return static::initRecordDriver($record['documents'][0]);
+        return $this->initRecordDriver($record['documents'][0]);
     }
 
     /**
-     * Support method for _performSearch(): given an array of Solr response data,
+     * Support method for performSearch(): given an array of Summon response data,
      * construct an appropriate record driver object.
      *
      * @param array $data Raw record data
      *
      * @return \VuFind\RecordDriver\Base
      */
-    protected static function initRecordDriver($data)
+    protected function initRecordDriver($data)
     {
         $driver = new \VuFind\RecordDriver\Summon();
         $driver->setRawData($data);
