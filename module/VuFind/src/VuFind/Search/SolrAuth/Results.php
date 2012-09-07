@@ -61,7 +61,7 @@ class Results extends SolrResults
      *
      * @return \VuFind\Connection\Solr
      */
-    public static function getSolrConnection($shards = null, $index = 'SolrAuth')
+    public function getSolrConnection($shards = null, $index = 'SolrAuth')
     {
         return parent::getSolrConnection($shards, $index);
     }

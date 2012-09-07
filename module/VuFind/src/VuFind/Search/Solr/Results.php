@@ -57,7 +57,7 @@ class Results extends BaseResults
      *
      * @return \VuFind\Connection\Solr
      */
-    public static function getSolrConnection($shards = null, $index = 'Solr')
+    public function getSolrConnection($shards = null, $index = 'Solr')
     {
         // Turn on all shards by default if none are specified (we need to be sure
         // that any given ID will yield results, even if not all shards are on by
@@ -91,7 +91,7 @@ class Results extends BaseResults
      */
     protected function performSearch()
     {
-        $solr = static::getSolrConnection($this->getParams()->getSelectedShards());
+        $solr = $this->getSolrConnection($this->getParams()->getSelectedShards());
 
         // Collect the search parameters:
         $overrideQuery = $this->getParams()->getOverrideQuery();
@@ -455,7 +455,7 @@ class Results extends BaseResults
      */
     public function getRecord($id)
     {
-        $solr = static::getSolrConnection();
+        $solr = $this->getSolrConnection();
 
         // Check if we need to apply hidden filters:
         $options = SearchOptions::getInstance(
@@ -513,7 +513,7 @@ class Results extends BaseResults
      */
     public function getSimilarRecords($id)
     {
-        $solr = static::getSolrConnection($this->getParams()->getSelectedShards());
+        $solr = $this->getSolrConnection($this->getParams()->getSelectedShards());
         $filters = $this->getOptions()->getHiddenFilters();
         $extras = empty($filters) ? array() : array('fq' => $filters);
         $rawResponse = $solr->getMoreLikeThis($id, $extras);

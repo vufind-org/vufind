@@ -50,9 +50,8 @@ class Results extends \VuFind\Search\Solr\Results
      *
      * @return \VuFind\Connection\Solr
      */
-    public static function getSolrConnection($shards = null,
-        $index = 'SolrReserves'
-    ) {
+    public function getSolrConnection($shards = null, $index = 'SolrReserves')
+    {
         return parent::getSolrConnection($shards, $index);
     }
 
