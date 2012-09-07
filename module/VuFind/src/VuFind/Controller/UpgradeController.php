@@ -172,9 +172,26 @@ class UpgradeController extends AbstractBase
      */
     protected function getRootDbAdapter()
     {
-        return AdapterFactory::getAdapter(
-            $this->session->dbRootUser, $this->session->dbRootPass
-        );
+        // Use static cache to avoid loading adapter more than once on
+        // subsequent calls.
+        static $adapter = false;
+        if (!$adapter) {
+            $adapter = AdapterFactory::getAdapter(
+                $this->session->dbRootUser, $this->session->dbRootPass
+            );
+        }
+        return $adapter;
+    }
+
+    /**
+     * Do we have root DB credentials stored?
+     *
+     * @return bool
+     */
+    protected function hasDatabaseRootCredentials()
+    {
+        return isset($this->session->dbRootUser)
+            && isset($this->session->dbRootPass);
     }
 
     /**
@@ -197,72 +214,56 @@ class UpgradeController extends AbstractBase
             // the missing tables will cause fatal errors during the column test.
             $missingTables = $this->dbUpgrade()->getMissingTables();
             if (!empty($missingTables)) {
+                // Only manipulate DB if we're not in logging mode:
                 if (!$this->logsql) {
-                    if (!isset($this->session->dbRootUser)
-                        || !isset($this->session->dbRootPass)
-                    ) {
+                    if (!$this->hasDatabaseRootCredentials()) {
                         return $this->forwardTo('Upgrade', 'GetDbCredentials');
                     }
-                    $db = $this->getRootDbAdapter();
+                    $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                     $this->session->warnings->append(
                         "Created missing table(s): " . implode(', ', $missingTables)
                     );
-                    $this->dbUpgrade()->setAdapter($db)
-                        ->createMissingTables($missingTables);
-                } else {
-                    $sql .= $this->dbUpgrade()
-                        ->createMissingTables($missingTables, true);
                 }
+                $sql .= $this->dbUpgrade()
+                    ->createMissingTables($missingTables, $this->logsql);
             }
 
             // Check for missing columns.
             $mT = $this->logsql ? $missingTables : array();
             $missingCols = $this->dbUpgrade()->getMissingColumns($mT);
             if (!empty($missingCols)) {
+                // Only manipulate DB if we're not in logging mode:
                 if (!$this->logsql) {
-                    if (!isset($this->session->dbRootUser)
-                        || !isset($this->session->dbRootPass)
-                    ) {
+                    if (!$this->hasDatabaseRootCredentials()) {
                         return $this->forwardTo('Upgrade', 'GetDbCredentials');
                     }
-                    if (!isset($db)) {  // connect to DB if not already connected
-                        $db = $this->getRootDbAdapter();
-                    }
+                    $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                     $this->session->warnings->append(
                         "Added column(s) to table(s): "
                         . implode(', ', array_keys($missingCols))
                     );
-                    $this->dbUpgrade()->setAdapter($db)
-                        ->createMissingColumns($missingCols);
-                } else {
-                    $sql .= $this->dbUpgrade()
-                        ->createMissingColumns($missingCols, true);
                 }
+                $sql .= $this->dbUpgrade()
+                    ->createMissingColumns($missingCols, $this->logsql);
             }
             
             // Check for modified columns.
             $mC = $this->logsql ? $missingCols : array();
             $modifiedCols = $this->dbUpgrade()->getModifiedColumns($mT, $mC);
             if (!empty($modifiedCols)) {
+                // Only manipulate DB if we're not in logging mode:
                 if (!$this->logsql) {
-                    if (!isset($this->session->dbRootUser)
-                        || !isset($this->session->dbRootPass)
-                    ) {
+                    if (!$this->hasDatabaseRootCredentials()) {
                         return $this->forwardTo('Upgrade', 'GetDbCredentials');
                     }
-                    if (!isset($db)) {  // connect to DB if not already connected
-                        $db = $this->getRootDbAdapter();
-                    }
+                    $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
                     $this->session->warnings->append(
                         "Modified column(s) in table(s): "
                         . implode(', ', array_keys($modifiedCols))
                     );
-                    $this->dbUpgrade()->setAdapter($db)
-                        ->updateModifiedColumns($modifiedCols);
-                } else {
-                    $sql .= $this->dbUpgrade()
-                        ->updateModifiedColumns($modifiedCols, true);
                 }
+                $sql .= $this->dbUpgrade()
+                    ->updateModifiedColumns($modifiedCols, $this->logsql);
             }
 
             // Don't keep DB credentials in session longer than necessary:
@@ -316,8 +317,6 @@ class UpgradeController extends AbstractBase
         $print = $this->params()->fromPost('printsql', 'nope');
         if ($print == 'Skip') {
             $this->logsql = true;
-            $this->session->dbRootUser = '$$$$$$$';
-            $this->session->dbRootPass = '$$$$$$$';
             return $this->forwardTo('Upgrade', 'FixDatabase');
         } else {
             $dbrootuser = $this->params()->fromPost('dbrootuser', 'root');
