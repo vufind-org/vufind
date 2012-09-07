@@ -46,19 +46,9 @@ class AbstractRecord extends AbstractBase
     protected $defaultTab = 'Holdings';
     protected $account;
     protected $searchClassId = 'Solr';
-    protected $searchObject;
     protected $useResultScroller = true;
     protected $logStatistics = true;
     protected $driver = null;
-
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        // Set up search class ID-related settings:
-        $this->searchObject = 'VuFind\Search\\' . $this->searchClassId . '\Results';
-    }
 
     /**
      * Create a new ViewModel.
@@ -217,7 +207,7 @@ class AbstractRecord extends AbstractBase
         $driver->saveToFavorites($this->getRequest()->getPost()->toArray(), $user);
 
         // Grab the followup namespace so we know where to send the user next:
-        $followup = new SessionContainer($this->searchObject . 'SaveFollowup');
+        $followup = new SessionContainer($this->searchClassId . 'SaveFollowup');
         $url = isset($followup->url) ? (string)$followup->url : false;
         if (!empty($url)) {
             // Display a success status message:
@@ -257,7 +247,7 @@ class AbstractRecord extends AbstractBase
         // ProcessSave action (to get back to where we came from after saving).
         // We only save if we don't already have a saved URL; otherwise we
         // might accidentally redirect to the "create new list" screen!
-        $followup = new SessionContainer($this->searchObject . 'SaveFollowup');
+        $followup = new SessionContainer($this->searchClassId . 'SaveFollowup');
         $followup->url = (isset($followup->url) && !empty($followup->url))
             ? $followup->url : $this->getRequest()->getServer()->get('HTTP_REFERER');
 
@@ -460,8 +450,9 @@ class AbstractRecord extends AbstractBase
         // common scenario) and the GET parameters (a fallback used by some
         // legacy routes).
         if (!is_object($this->driver)) {
-            $this->driver = call_user_func(
-                array($this->searchObject, 'getRecord'),
+            $sm = $this->getServiceLocator()->get('SearchManager');
+            $results = $sm->setSearchClassId($this->searchClassId)->getResults();
+            $this->driver = $results->getRecord(
                 $this->params()->fromRoute('id', $this->params()->fromQuery('id'))
             );
         }

@@ -65,14 +65,14 @@ class Results extends BaseResults
     }
 
     /**
-     * Static method to retrieve a record by ID.  Returns a record driver object.
+     * Method to retrieve a record by ID.  Returns a record driver object.
      *
      * @param string $id Unique identifier of record
      *
      * @throws \Exception
      * @return \VuFind\RecordDriver\AbstractBase
      */
-    public static function getRecord($id)
+    public function getRecord($id)
     {
         throw new \Exception('Cannot get record from empty set.');
     }

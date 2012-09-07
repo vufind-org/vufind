@@ -59,9 +59,9 @@ class Results extends BaseResults
      */
     public static function getSolrConnection($shards = null, $index = 'Solr')
     {
-        // Turn on all shards by default if none are specified (since we may get
-        // called in a static context by getRecord(), we need to be sure that any
-        // given ID will yield results, even if not all shards are on by default).
+        // Turn on all shards by default if none are specified (we need to be sure
+        // that any given ID will yield results, even if not all shards are on by
+        // default).
         $options = SearchOptions::getInstance($index);
         $allShards = $options->getShards();
         if (is_null($shards)) {
@@ -446,14 +446,14 @@ class Results extends BaseResults
     }
 
     /**
-     * Static method to retrieve a record by ID.  Returns a record driver object.
+     * Method to retrieve a record by ID.  Returns a record driver object.
      *
      * @param string $id Unique identifier of record
      *
      * @throws RecordMissingException
      * @return \VuFind\RecordDriver\Base
      */
-    public static function getRecord($id)
+    public function getRecord($id)
     {
         $solr = static::getSolrConnection();
 
@@ -474,13 +474,13 @@ class Results extends BaseResults
     }
 
     /**
-     * Static method to retrieve an array of records by ID.
+     * Method to retrieve an array of records by ID.
      *
      * @param array $ids Array of unique record identifiers.
      *
      * @return array
      */
-    public static function getRecords($ids)
+    public function getRecords($ids)
     {
         // Figure out how many records to retrieve at the same time --
         // we'll use either 100 or the ID request limit, whichever is smaller.

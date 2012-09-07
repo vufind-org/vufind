@@ -687,9 +687,9 @@ class Server
         // Strip the ID prefix, if necessary:
         $id = $this->stripID($id);
         if ($id !== false) {
-            $resultsClass = 'VuFind\Search\\' . $this->searchClassId . '\Results';
             try {
-                return $resultsClass::getRecord($id);
+                return $this->searchManager->setSearchClassId($this->searchClassId)
+                    ->getResults()->getRecord($id);
             } catch (RecordMissingException $e) {
                 return false;
             }

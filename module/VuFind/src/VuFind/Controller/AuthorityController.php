@@ -26,7 +26,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Search\SolrAuth\Results;
 
 /**
  * Authority Controller
@@ -69,7 +68,8 @@ class AuthorityController extends AbstractSearch
     {
         return $this->createViewModel(
             array(
-                'driver' => Results::getRecord($this->params()->fromQuery('id'))
+                'driver' => $this->getSearchManager()->setSearchClassId('SolrAuth')
+                    ->getResults()->getRecord($this->params()->fromQuery('id'))
             )
         );
     }

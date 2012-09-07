@@ -34,8 +34,7 @@ use VuFind\Config\Reader as ConfigReader,
     VuFind\Exception\Auth as AuthException,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\Record\Loader as RecordLoader,
-    VuFind\Record\Router as RecordRouter, VuFind\Search\Solr\Results as SolrResults,
+    VuFind\Record\Loader as RecordLoader, VuFind\Record\Router as RecordRouter,
     Zend\Stdlib\Parameters;
 
 /**
@@ -730,7 +729,8 @@ class MyResearchController extends AbstractBase
             if (!isset($current['id'])) {
                 throw new RecordMissingException();
             }
-            $record = SolrResults::getRecord($current['id']);
+            $record = $this->getSearchManager()->setSearchClassId('Solr')
+                ->getResults()->getRecord($current['id']);
         } catch (RecordMissingException $e) {
             $record = new \VuFind\RecordDriver\Missing();
             $record->setRawData(
@@ -868,7 +868,8 @@ class MyResearchController extends AbstractBase
                 if (!isset($row['id']) || empty($row['id'])) {
                     throw new \Exception();
                 }
-                $record = SolrResults::getRecord($row['id']);
+                $record = $this->getSearchManager()->setSearchClassId('Solr')
+                    ->getResults()->getRecord($row['id']);
                 $row['title'] = $record->getShortTitle();
             } catch (\Exception $e) {
                 if (!isset($row['title'])) {

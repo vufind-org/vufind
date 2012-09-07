@@ -48,7 +48,8 @@ class SolrMarcTest extends \VuFind\Tests\TestCase
      */
     public function testBug2()
     {
-        $record = \VuFind\Search\Solr\Results::getRecord('testbug2');
+        $record = $this->getSearchManager()->setSearchClassId('Solr')
+            ->getResults()->getRecord('testbug2');
         $this->assertEquals(
             $record->getPrimaryAuthor(),
             'Vico, Giambattista, 1668-1744.'

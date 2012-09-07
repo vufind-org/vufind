@@ -56,25 +56,24 @@ class Loader implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Given a record source, return the search class that can load that type of
+     * Given a record source, return the search object that can load that type of
      * record.
      *
      * @param string $source Record source
      *
      * @throws \Exception
-     * @return string
+     * @return \VuFind\Search\Base\Results
      */
     protected function getClassForSource($source)
     {
         $sm = $this->getServiceLocator()->get('SearchManager');
-        $class = $sm->setSearchClassId($source)->getResultsClass();
 
         // Throw an error if we can't find a loader class:
-        if (!class_exists($class)) {
+        try {
+            return $sm->setSearchClassId($source)->getResults();
+        } catch (\Exception $e) {
             throw new \Exception('Unrecognized data source: ' . $source);
         }
-
-        return $class;
     }
 
     /**
@@ -89,8 +88,7 @@ class Loader implements ServiceLocatorAwareInterface
     public function load($id, $source = 'VuFind')
     {
         // Load the record:
-        $class = $this->getClassForSource($source);
-        return call_user_func(array($class, 'getRecord'), $id);
+        return $this->getClassForSource($source)->getRecord($id);
     }
 
     /**
@@ -127,9 +125,8 @@ class Loader implements ServiceLocatorAwareInterface
         // Retrieve the records and put them back in order:
         $retVal = array();
         foreach ($idBySource as $source => $details) {
-            $class = $this->getClassForSource($source);
-            $records
-                = call_user_func(array($class, 'getRecords'), array_keys($details));
+            $records = $this->getClassForSource($source)
+                ->getRecords(array_keys($details));
             foreach ($records as $current) {
                 $id = $current->getUniqueId();
                 $retVal[$details[$id]] = $current;

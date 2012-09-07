@@ -28,7 +28,9 @@
  */
 namespace VuFind\ILS\Driver;
 use SoapClient, SoapFault, VuFind\Cache\Manager as CacheManager,
-    VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException;
+    VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException,
+    Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Symphony Web Services (symws) ILS Driver
@@ -41,7 +43,7 @@ use SoapClient, SoapFault, VuFind\Cache\Manager as CacheManager,
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
 
-class Symphony extends AbstractBase
+class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
 {
     protected $policyCache = false;
     protected $policies;
@@ -301,7 +303,10 @@ class Symphony extends AbstractBase
 
         $entryNumber = $this->config['999Holdings']['entry_number'];
 
-        foreach (\VuFind\Search\Solr\Results::getRecords($ids) as $record) {
+        $records = $this->getServiceLocator()->getServiceLocator()
+            ->get('SearchManager')->setSearchClassId('Solr')->getResults()
+            ->getRecords($ids);
+        foreach ($records as $record) {
             $results = $record->getFormattedMarcDetails($entryNumber, $marcMap);
             foreach ($results as $result) {
                 $library  = $this->translatePolicyID('LIBR', $result['library']);
@@ -1479,5 +1484,28 @@ class Symphony extends AbstractBase
             $libraries = $this->getPickUpLocations();
             return $libraries[0]['locationID'];
         }
+    }
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return Symphony
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
     }
 }

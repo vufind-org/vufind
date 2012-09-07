@@ -98,14 +98,14 @@ class Results extends BaseResults
     }
 
     /**
-     * Static method to retrieve a record by ID.  Returns a record driver object.
+     * Method to retrieve a record by ID.  Returns a record driver object.
      *
      * @param string $id Unique identifier of record
      *
      * @throws RecordMissingException
      * @return \VuFind\RecordDriver\Base
      */
-    public static function getRecord($id)
+    public function getRecord($id)
     {
         $wc = static::getWorldCatConnection();
         $record = $wc->getRecord($id);

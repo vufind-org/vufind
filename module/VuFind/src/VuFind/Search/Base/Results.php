@@ -184,26 +184,26 @@ abstract class Results implements ServiceLocatorAwareInterface
     abstract protected function performSearch();
 
     /**
-     * Static method to retrieve a record by ID.  Returns a record driver object.
+     * Method to retrieve a record by ID.  Returns a record driver object.
      *
      * @param string $id Unique identifier of record
      *
      * @return \VuFind\RecordDriver\AbstractBase
      */
-    public static function getRecord($id)
+    public function getRecord($id)
     {
         // This needs to be defined in subclasses:
         throw new \Exception('getRecord needs to be defined.');
     }
 
     /**
-     * Static method to retrieve an array of records by ID.
+     * Method to retrieve an array of records by ID.
      *
      * @param array $ids Array of unique record identifiers.
      *
      * @return array
      */
-    public static function getRecords($ids)
+    public function getRecords($ids)
     {
         // This is the default, dumb behavior for retrieving multiple records --
         // just call getRecord() repeatedly.  For efficiency, this method should
@@ -211,7 +211,7 @@ abstract class Results implements ServiceLocatorAwareInterface
         $retVal = array();
         foreach ($ids as $id) {
             try {
-                $retVal[] = static::getRecord($id);
+                $retVal[] = $this->getRecord($id);
             } catch (\Exception $e) {
                 // Just omit missing records from the return array; calling code in
                 // \VuFind\Record\Loader::loadBatch() will deal with this.

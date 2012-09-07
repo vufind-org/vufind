@@ -28,7 +28,8 @@
  */
 namespace VuFind\ILS\Driver;
 use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException,
-    VuFind\Search\Solr\Results as SolrResults, VuFind\Translator\Translator;
+    VuFind\Translator\Translator, Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Driver for offline/missing ILS.
@@ -40,7 +41,7 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
-class NoILS extends AbstractBase
+class NoILS extends AbstractBase implements ServiceLocatorAwareInterface
 {
     /**
      * Initialize the driver.
@@ -67,6 +68,19 @@ class NoILS extends AbstractBase
     public function getConfig($function)
     {
         return isset($this->config[$function]) ? $this->config[$function] : false;
+    }
+
+    /**
+     * Get a Solr record.
+     *
+     * @param string $id ID of record to retrieve
+     *
+     * @return \VuFind\RecordDriver\AbstractBase
+     */
+    public function getSolrRecord($id)
+    {
+        return $this->getServiceLocator()->getServiceLocator()->get('SearchManager')
+            ->setSearchClassId('Solr')->getResults()->getRecord($id);
     }
 
     /**
@@ -106,7 +120,7 @@ class NoILS extends AbstractBase
             );
         } else if ($useStatus == "marc") {
             // Retrieve record from index:
-            $recordDriver = SolrResults::getRecord($id);
+            $recordDriver = $this->getSolrRecord($id);
             return $this->getFormattedMarcDetails($recordDriver, 'MarcStatus');
         }
         return array();
@@ -185,7 +199,7 @@ class NoILS extends AbstractBase
             );
         } elseif ($useHoldings == "marc") {
             // Retrieve record from index:
-            $recordDriver = SolrResults::getRecord($id);
+            $recordDriver = $this->getSolrRecord($id);
             return $this->getFormattedMarcDetails($recordDriver, 'MarcHoldings');
         }
 
@@ -315,5 +329,28 @@ class NoILS extends AbstractBase
     {
         // Block authentication:
         return null;
+    }
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return NoILS
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
     }
 }
