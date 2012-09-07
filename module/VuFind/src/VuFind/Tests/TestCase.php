@@ -125,6 +125,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             $serviceManager->setService(
                 'RecordDriverPluginManager', $recordDriverFactory
             );
+            $serviceManager->setService('SearchManager', $this->searchManager);
             $this->searchManager->setServiceLocator($serviceManager);
         }
         return $this->searchManager;
