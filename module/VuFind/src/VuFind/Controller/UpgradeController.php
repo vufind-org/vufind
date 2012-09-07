@@ -197,7 +197,7 @@ class UpgradeController extends AbstractBase
             // the missing tables will cause fatal errors during the column test.
             $missingTables = $this->dbUpgrade()->getMissingTables();
             if (!empty($missingTables)) {
-                if(!$this->logsql) {
+                if (!$this->logsql) {
                     if (!isset($this->session->dbRootUser)
                         || !isset($this->session->dbRootPass)
                     ) {
@@ -210,7 +210,8 @@ class UpgradeController extends AbstractBase
                     $this->dbUpgrade()->setAdapter($db)
                         ->createMissingTables($missingTables);
                 } else {
-                    $sql .= $this->dbUpgrade()->createMissingTables($missingTables, true);
+                    $sql .= $this->dbUpgrade()
+                        ->createMissingTables($missingTables, true);
                 }
             }
 
@@ -218,7 +219,7 @@ class UpgradeController extends AbstractBase
             $mT = $this->logsql ? $missingTables : array();
             $missingCols = $this->dbUpgrade()->getMissingColumns($mT);
             if (!empty($missingCols)) {
-                if(!$this->logsql) {
+                if (!$this->logsql) {
                     if (!isset($this->session->dbRootUser)
                         || !isset($this->session->dbRootPass)
                     ) {
@@ -234,7 +235,8 @@ class UpgradeController extends AbstractBase
                     $this->dbUpgrade()->setAdapter($db)
                         ->createMissingColumns($missingCols);
                 } else {
-                    $sql .= $this->dbUpgrade()->createMissingColumns($missingCols, true);
+                    $sql .= $this->dbUpgrade()
+                        ->createMissingColumns($missingCols, true);
                 }
             }
             
@@ -242,7 +244,7 @@ class UpgradeController extends AbstractBase
             $mC = $this->logsql ? $missingCols : array();
             $modifiedCols = $this->dbUpgrade()->getModifiedColumns($mT, $mC);
             if (!empty($modifiedCols)) {
-                if(!$this->logsql) {
+                if (!$this->logsql) {
                     if (!isset($this->session->dbRootUser)
                         || !isset($this->session->dbRootPass)
                     ) {
@@ -258,7 +260,8 @@ class UpgradeController extends AbstractBase
                     $this->dbUpgrade()->setAdapter($db)
                         ->updateModifiedColumns($modifiedCols);
                 } else {
-                    $sql .= $this->dbUpgrade()->updateModifiedColumns($modifiedCols, true);
+                    $sql .= $this->dbUpgrade()
+                        ->updateModifiedColumns($modifiedCols, true);
                 }
             }
 
@@ -280,7 +283,7 @@ class UpgradeController extends AbstractBase
         }
 
         $this->cookie->databaseOkay = true;
-        if($this->logsql) {
+        if ($this->logsql) {
             $this->session->sql = $sql;
             return $this->forwardTo('Upgrade', 'ShowSql');
         }
@@ -295,7 +298,7 @@ class UpgradeController extends AbstractBase
     public function showsqlAction()
     {
         $continue = $this->params()->fromPost('continue', 'nope');
-        if($continue == 'Next') {
+        if ($continue == 'Next') {
             unset($this->session->sql);
             return $this->forwardTo('Upgrade', 'Home');
         }
@@ -311,7 +314,7 @@ class UpgradeController extends AbstractBase
     public function getdbcredentialsAction()
     {
         $print = $this->params()->fromPost('printsql', 'nope');
-        if($print == 'Skip') {
+        if ($print == 'Skip') {
             $this->logsql = true;
             $this->session->dbRootUser = '$$$$$$$';
             $this->session->dbRootPass = '$$$$$$$';

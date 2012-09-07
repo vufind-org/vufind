@@ -102,13 +102,15 @@ class DbUpgrade extends AbstractPlugin
     /**
      * Execute a query.
      *
-     * @param string $sql SQL to run
+     * @param string $sql    SQL to run
+     * @param bool   $logsql Should we return the SQL as a string rather than
+     * execute it?
      *
-     * @return void
+     * @return string        SQL if $logsql is true, empty string otherwise
      */
     public function query($sql, $logsql)
-    {        
-        if($logsql) {
+    {
+        if ($logsql) {
             return $sql . ";\n";
         } else {
             $this->getAdapter()->query($sql, DbAdapter::QUERY_MODE_EXECUTE);
@@ -189,9 +191,11 @@ class DbUpgrade extends AbstractPlugin
      * Create missing tables based on the output of getMissingTables().
      *
      * @param array $tables Output of getMissingTables()
+     * @param bool  $logsql Should we return the SQL as a string rather than
+     * execute it?
      *
      * @throws \Exception
-     * @return void
+     * @return string       SQL if $logsql is true, empty string otherwise
      */
     public function createMissingTables($tables, $logsql = false)
     {
@@ -206,18 +210,20 @@ class DbUpgrade extends AbstractPlugin
      * Get a list of missing columns in the database tables (associative array,
      * key = table name, value = array of missing column definitions).
      *
+     * @param array $missingTables List of missing tables
+     *
      * @throws \Exception
      * @return array
      */
-    public function getMissingColumns($missing_tables = array())
+    public function getMissingColumns($missingTables = array())
     {
         $missing = array();
         foreach ($this->dbCommands as $table => $sql) {
             // Skip missing tables if we're logging
-            if(in_array($table, $missing_tables)) {
+            if (in_array($table, $missingTables)) {
                 continue;
             }
-            
+
             // Parse column names out of the CREATE TABLE SQL, which will always be
             // the first entry in the array; we assume the standard mysqldump
             // formatting is used here.
@@ -289,18 +295,22 @@ class DbUpgrade extends AbstractPlugin
      * Get a list of changed columns in the database tables (associative array,
      * key = table name, value = array of column name => new data type).
      *
+     * @param array $missingTables  List of missing tables
+     * @param array $missingColumns List of missing columns
+     *
      * @throws \Exception
      * @return array
      */
-    public function getModifiedColumns($missingTables = array(), $missingColumns = array())
-    {
+    public function getModifiedColumns($missingTables = array(),
+        $missingColumns = array()
+    ) {
         $missing = array();
         foreach ($this->dbCommands as $table => $sql) {
             // Skip missing tables if we're logging
-            if(in_array($table, $missingTables)) {
+            if (in_array($table, $missingTables)) {
                 continue;
             }
-            
+
             // Parse column names out of the CREATE TABLE SQL, which will always be
             // the first entry in the array; we assume the standard mysqldump
             // formatting is used here.
@@ -325,7 +335,7 @@ class DbUpgrade extends AbstractPlugin
             $actualColumns = $this->getTableColumns($table);
             foreach ($expectedColumns as $i => $column) {
                 // Skip column if we're logging and it's missing
-                if(in_array($column, $missingColumns)) {
+                if (in_array($column, $missingColumns)) {
                     continue;
                 }
                 $currentColumn = $actualColumns[$column];
@@ -344,16 +354,20 @@ class DbUpgrade extends AbstractPlugin
      * Create missing columns based on the output of getMissingColumns().
      *
      * @param array $columns Output of getMissingColumns()
+     * @param bool  $logsql  Should we return the SQL as a string rather than
+     * execute it?
      *
      * @throws \Exception
-     * @return void
+     * @return string        SQL if $logsql is true, empty string otherwise
      */
     public function createMissingColumns($columns, $logsql = false)
     {
         $sqlcommands = '';
         foreach ($columns as $table => $sql) {
             foreach ($sql as $column) {
-                $sqlcommands .= $this->query("ALTER TABLE `{$table}` ADD COLUMN {$column}", $logsql);
+                $sqlcommands .= $this->query(
+                    "ALTER TABLE `{$table}` ADD COLUMN {$column}", $logsql
+                );
             }
         }
         return $sqlcommands;
@@ -363,16 +377,20 @@ class DbUpgrade extends AbstractPlugin
      * Modify columns based on the output of getModifiedColumns().
      *
      * @param array $columns Output of getModifiedColumns()
+     * @param bool  $logsql  Should we return the SQL as a string rather than
+     * execute it?
      *
      * @throws \Exception
-     * @return void
+     * @return string        SQL if $logsql is true, empty string otherwise
      */
     public function updateModifiedColumns($columns, $logsql = false)
     {
         $sqlcommands = '';
         foreach ($columns as $table => $sql) {
             foreach ($sql as $column) {
-                $sqlcommands .= $this->query("ALTER TABLE `{$table}` MODIFY COLUMN {$column}", $logsql);
+                $sqlcommands .= $this->query(
+                    "ALTER TABLE `{$table}` MODIFY COLUMN {$column}", $logsql
+                );
             }
         }
         return $sqlcommands;
