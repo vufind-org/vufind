@@ -192,6 +192,9 @@ $config = array(
         'namespaces_by_id' => array(
         ),
         'aliases' => array(
+            // Alias to account for "source" field in resource table,
+            // which uses "VuFind" for records from Solr index.
+            'VuFind' => 'Solr'
         ),
     ),
     'service_manager' => array(

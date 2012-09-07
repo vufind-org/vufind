@@ -66,15 +66,8 @@ class Loader implements ServiceLocatorAwareInterface
      */
     protected function getClassForSource($source)
     {
-        // Special case -- the VuFind record source actually maps to Solr classes;
-        // this is a legacy issue related to values inserted into the database by
-        // VuFind 1.x:
-        if ($source == 'VuFind') {
-            $source = 'Solr';
-        }
-
-        // Use the appropriate Search class to load the requested record:
-        $class = 'VuFind\Search\\' . $source . '\Results';
+        $sm = $this->getServiceLocator()->get('SearchManager');
+        $class = $sm->setSearchClassId($source)->getResultsClass();
 
         // Throw an error if we can't find a loader class:
         if (!class_exists($class)) {
