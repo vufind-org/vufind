@@ -212,6 +212,17 @@ $config = array(
     'search_manager' => array(
         'default_namespace' => 'VuFind\Search',
         'namespaces_by_id' => array(
+            'EmptySet' => 'VuFind\Search\EmptySet',
+            'Favorites' => 'VuFind\Search\Favorites',
+            'MixedList' => 'VuFind\Search\MixedList',
+            'Solr' => 'VuFind\Search\Solr',
+            'SolrAuth' => 'VuFind\Search\SolrAuth',
+            'SolrAuthor' => 'VuFind\Search\SolrAuthor',
+            'SolrAuthorFacets' => 'VuFind\Search\SolrAuthorFacets',
+            'SolrReserves' => 'VuFind\Search\SolrReserves',
+            'Summon' => 'VuFind\Search\Summon',
+            'Tags' => 'VuFind\Search\Tags',
+            'WorldCat' => 'VuFind\Search\WorldCat',
         ),
         'aliases' => array(
             // Alias to account for "source" field in resource table,
