@@ -52,7 +52,7 @@
       <fileset dir=".">
         <include name="module/VuFind/src/**/*.php" />
       </fileset>
-    </phpdoc>
+    </phpdoc2>
 
   </target>
 
