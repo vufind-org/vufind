@@ -39,6 +39,7 @@
     <!-- Create dirs -->
     <mkdir dir="${builddir}/reports"/>
     <mkdir dir="${builddir}/reports/coverage"/>
+    <mkdir dir="${builddir}/apidocs"/>
 
     <!-- PHP CodeSniffer -->
     <exec command="phpcs --standard=PEAR --extensions=php --report=checkstyle ${srcdir}/module/VuFind/src &gt; ${builddir}/reports/checkstyle.xml" escape="false" />
@@ -51,6 +52,8 @@
       destdir="${builddir}/apidocs">
       <fileset dir=".">
         <include name="module/VuFind/src/**/*.php" />
+        <!-- This file breaks phpdoc2; exclude until we can figure out why: -->
+        <exclude name="module/VuFind/src/VuFind/Log/Writer/Stream.php" />
       </fileset>
     </phpdoc2>
 
