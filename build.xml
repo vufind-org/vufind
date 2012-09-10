@@ -47,11 +47,8 @@
     <exec dir="${srcdir}/tests" command="VUFIND_LOCAL_DIR=${srcdir}/local phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/" passthru="true" checkreturn="true" />
 
     <!-- PHP API Documentation -->
-    <phpdoc title="API Documentation"
-      destdir="${builddir}/apidocs"
-      sourcecode="yes"
-      defaultpackagename="VuFind"
-      output="HTML:Smarty:PHP">
+    <phpdoc2 title="VuFind API Documentation"
+      destdir="${builddir}/apidocs">
       <fileset dir=".">
         <include name="module/VuFind/src/**/*.php" />
       </fileset>
