@@ -173,11 +173,7 @@ function resizePreview() {
 
 var currTab = 2;
 $(document).ready(function() {  // -- document ready -- //
-
-  //$.get('page-data?file='+fileName,function(response) {
- //   pages = $.extend(pages,JSON.parse(response)); // LOTS OF PAGE DATA GO!
-    loadingThumbs = false;
- // });
+  loadingThumbs = false;
 	
 	$('.page_list').css({'height':window.innerHeight-$('.page_link').offset().top-50});
 	$('.zoomFrame').css({

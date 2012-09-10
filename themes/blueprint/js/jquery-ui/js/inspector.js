@@ -12,16 +12,6 @@
  * Version 2.0   : 18 October 2011 // Major rewrite of bounding code :)
  */
  
-/* Full Changelog on Bottom */
-
-/**
- * KNOWN BUGS
- *  - Inital pane location off-center
- *  - Scrolling while zooming causes the drag handle to misplace
- *  - IE: refreshing does not re-render image. At this point, blaming IE because it doesn't make sense
- *  - IE: zooming all the way in while the image is rotated, sets the image back to unrotated, but not the drag-master
- */
- 
 (function($){
   var methods = {
     init : function(elem) {
@@ -54,9 +44,13 @@
         .appendTo(elem).hide();
       $('<button>%</button>').appendTo('.zoom-set',elem);
       // ROTATE LEFT ARROW
-      $('<div>').addClass('turn_left').html('&nbsp;').appendTo(elem);
+      $('<div>').addClass('turn_left')
+        .html('<img src="http://upload.wikimedia.org/wikipedia/commons/f/f7/Farm-Fresh_arrow_rotate_anticlockwise.png">')
+        .appendTo(elem);
       // ROTATE RIGHT ARROW
-      $('<div>').addClass('turn_right').html('&nbsp;').appendTo(elem);
+      $('<div>').addClass('turn_right')
+        .html('<img src="http://upload.wikimedia.org/wikipedia/commons/1/1b/Farm-Fresh_arrow_rotate_clockwise.png">')
+        .appendTo(elem);
       // MAP
       $('<div>').addClass('doc_map')
         .html('<img src=""><div class="pane">&nbsp;</div>')
@@ -70,7 +64,7 @@
         });
       $(window)
         .unbind('load resize scroll')
-				.load(function() {
+        .load(function() {
           methods.setDrag($('.doc',elem),$(elem),state);
         })
         .resize(function() {
@@ -96,7 +90,7 @@
         });
       $('.turn_left',elem)
         .unbind('click') 
-				.click(function() {           // rotate image counter-clockwise
+        .click(function() {           // rotate image counter-clockwise
           state.angle -= 90;
           $(elem).find('.doc,.doc_map img').rotate(state.angle);
           // center
@@ -105,7 +99,7 @@
         })
       $('.turn_right',elem)
         .unbind('click') 
-				.click(function() {          // rotate image clockwise
+        .click(function() {          // rotate image clockwise
           state.angle += 90;
           $(elem).find('.doc,.doc_map img').rotate(state.angle);
           // center
@@ -129,16 +123,24 @@
           }
         });
       }
-      $('.zoom-set button',elem).click(function () {    // zoom to typed level
+      $('.zoom-set button',elem)
+        .unbind('click') 
+        .click(function () {    // zoom to typed level
           methods.setZoom(elem,$('#new-zoom-level').val()/100,state);
         });
-      $('.zoom_level span',elem).click(function() {          // clicking the percent opens zoom bubble
+      $('.zoom_level span',elem)
+        .unbind('click') 
+        .click(function() {          // clicking the percent opens zoom bubble
           $('.zoom-set',elem).toggle();
         });
-      $('.zoom_level .plus',elem).click(function() {         // zoom in button
+      $('.zoom_level .plus',elem)
+        .unbind('click') 
+        .click(function() {         // zoom in button
           methods.setZoom(elem,state.zoom*1.5,state);
         })
-      $('.zoom_level .minus',elem).click(function() {        // zoom out button
+      $('.zoom_level .minus',elem)
+        .unbind('click') 
+        .click(function() {        // zoom out button
           methods.setZoom(elem,state.zoom*.5,state);
         })
     },
@@ -371,9 +373,9 @@
         miHeight = mapImg.width();
         picWidth = picHeight;
         picHeight = $(pic).width();
-				var diff = Math.abs(miWidth-miHeight)/2;
-				miOffset.left += diff;
-				miOffset.top  -= diff;
+        var diff = Math.abs(miWidth-miHeight)/2;
+        miOffset.left += diff;
+        miOffset.top  -= diff;
       }
       
       // position and width percents
@@ -450,25 +452,3 @@
     return this;
   }
 })(jQuery);
-
-/* CHANGELOG
- * ---------
- * Version 1.4          : 18 October 2011   // Bug fixes
- * Version 1.3          :  6 October 2011   // Map dragging
- * Version 1.2          :  6 October 2011   // IE rotation bug fixed
- * Version 1.1          :  5 October 2011   // Position map
- * Version 1.0          : 29 September 2011 // Now fully IE compatible.
- > - Release Candidate - 
- * Version 0.5   (rc7)  : 28 September 2011 // Now IE compatible.
- * Version 0.4.2 (rc6)  : 27 September 2011 // can no longer select zoom_level,
-                                               can no longer scroll with dragging
- * Version 0.4.1 (rc5)  : 27 September 2011 // fixed loading error while rotated
- * Version 0.4   (rc4)  : 27 September 2011 // fixed multiple call bug
- * Version 0.3.2 (rc3)  : 27 September 2011 // added zoom buttons
- * Version 0.3.1 (rc2)  : 27 September 2011 // fixed zooming bug
- * Version 0.3   (rc1)  : 22 September 2011 // zooming bubble
- > - Beta -
- * Version 0.2          : 18 September 2011 // added rotation
- > - Alpha -
- * Version 0.1          : 12 September 2011 // initial design
- */
