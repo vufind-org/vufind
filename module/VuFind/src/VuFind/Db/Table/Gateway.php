@@ -28,7 +28,9 @@
 namespace VuFind\Db\Table;
 use Zend\Db\TableGateway\AbstractTableGateway,
     Zend\Db\TableGateway\Feature\FeatureSet,
-    Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
+    Zend\Db\TableGateway\Feature\GlobalAdapterFeature,
+    Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Generic VuFind table gateway.
@@ -39,8 +41,10 @@ use Zend\Db\TableGateway\AbstractTableGateway,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Gateway extends AbstractTableGateway
+class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterface
 {
+    protected $rowClass = null;
+
     /**
      * Constructor
      *
@@ -51,13 +55,30 @@ class Gateway extends AbstractTableGateway
     public function __construct($table, $rowClass = null)
     {
         $this->table = $table;
+        $this->rowClass = $rowClass;
         $this->featureSet = new FeatureSet();
         $this->featureSet->addFeature(new GlobalAdapterFeature());
         $this->initialize();
-        if (!is_null($rowClass)) {
+    }
+
+    /**
+     * Initialize
+     *
+     * @return void
+     */
+    public function initialize()
+    {
+        if ($this->isInitialized) {
+            return;
+        }
+        parent::initialize();
+        if (null !== $this->rowClass) {
             $resultSetPrototype = $this->getResultSetPrototype();
-            $resultSetPrototype
-                ->setArrayObjectPrototype(new $rowClass($this->getAdapter()));
+            $prototype = new $this->rowClass($this->getAdapter());
+            if ($prototype instanceof ServiceLocatorAwareInterface) {
+                $prototype->setServiceLocator($this->getServiceLocator());
+            }
+            $resultSetPrototype->setArrayObjectPrototype($prototype);
         }
     }
 
@@ -69,5 +90,28 @@ class Gateway extends AbstractTableGateway
     public function createRow()
     {
         return clone($this->getResultSetPrototype()->getArrayObjectPrototype());
+    }
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return Gateway
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
     }
 }
