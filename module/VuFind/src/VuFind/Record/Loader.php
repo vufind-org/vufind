@@ -46,7 +46,7 @@ class Loader implements ServiceLocatorAwareInterface
      *
      * @return Loader
      */
-    public function getInstance()
+    static public function getInstance()
     {
         static $instance = false;
         if (!$instance) {

@@ -323,39 +323,46 @@ class InstallController extends AbstractBase
                     $connection . '/mysql'
                 );
                 try {
+                    $skip = $this->params()->fromPost('printdb', 'nope');
+                    // Get SQL together
                     $query = 'CREATE DATABASE ' . $view->dbname;
-                    $db->query($query, $db::QUERY_MODE_EXECUTE);
                     $grant = "GRANT SELECT,INSERT,UPDATE,DELETE ON "
                         . $view->dbname
                         . ".* TO '{$view->dbuser}'@'{$view->dbhost}' "
                         . "IDENTIFIED BY " . $db->getPlatform()->quoteValue($newpass)
                         . " WITH GRANT OPTION";
-                    $db->query($grant, $db::QUERY_MODE_EXECUTE);
-                    $db->query('FLUSH PRIVILEGES', $db::QUERY_MODE_EXECUTE);
-                    $db = AdapterFactory::getAdapterFromConnectionString(
-                        $connection . '/' . $view->dbname
-                    );
                     $sql = file_get_contents(
                         APPLICATION_PATH . '/module/VuFind/sql/mysql.sql'
                     );
-                    $statements = explode(';', $sql);
-                    foreach ($statements as $current) {
-                        // Skip empty sections:
-                        if (strlen(trim($current)) == 0) {
-                            continue;
+                    if($skip == 'Skip') {
+                        $omnisql = $query .';'. $grant .';FLUSH PRIVILEGES;'. $sql;
+                        echo $omnisql;
+                    } else {
+                        $db->query($query, $db::QUERY_MODE_EXECUTE);
+                        $db->query($grant, $db::QUERY_MODE_EXECUTE);
+                        $db->query('FLUSH PRIVILEGES', $db::QUERY_MODE_EXECUTE);
+                        $db = AdapterFactory::getAdapterFromConnectionString(
+                            $connection . '/' . $view->dbname
+                        );
+                        $statements = explode(';', $sql);
+                        foreach ($statements as $current) {
+                            // Skip empty sections:
+                            if (strlen(trim($current)) == 0) {
+                                continue;
+                            }
+                            $db->query($current, $db::QUERY_MODE_EXECUTE);
                         }
-                        $db->query($current, $db::QUERY_MODE_EXECUTE);
-                    }
-                    // If we made it this far, we can update the config file and
-                    // forward back to the home action!
-                    $string = "mysql://{$view->dbuser}:{$newpass}@"
-                        . $view->dbhost . '/' . $view->dbname;
-                    $config
-                        = ConfigReader::getLocalConfigPath('config.ini', null, true);
-                    $writer = new ConfigWriter($config);
-                    $writer->set('Database', 'database', $string);
-                    if (!$writer->save()) {
-                        return $this->forwardTo('Install', 'fixbasicconfig');
+                        // If we made it this far, we can update the config file and
+                        // forward back to the home action!
+                        $string = "mysql://{$view->dbuser}:{$newpass}@"
+                            . $view->dbhost . '/' . $view->dbname;
+                        $config
+                            = ConfigReader::getLocalConfigPath('config.ini', null, true);
+                        $writer = new ConfigWriter($config);
+                        $writer->set('Database', 'database', $string);
+                        if (!$writer->save()) {
+                            return $this->forwardTo('Install', 'fixbasicconfig');
+                        }
                     }
                     return $this->redirect()->toRoute('install-home');
                 } catch (\Exception $e) {

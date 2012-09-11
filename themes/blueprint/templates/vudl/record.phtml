@@ -15,10 +15,7 @@
   // TRUNCATE PAGES TO FIRST PAGES
   $this->firstPages = array_slice($this->pages, 0, 6);
 ?>
-<script>
-  var documentID = '<?=$this->id ?>';
-  var fileName = '<?=$this->file ?>';
-</script>
+<script>var documentID = '<?=$this->id ?>'</script>
 <div class="inspector_container">
   <div class="side_nav">
     <a href="javascript:showPages()" class="top"><?=$this->transEsc('vudl_tab_pages') ?></a>
