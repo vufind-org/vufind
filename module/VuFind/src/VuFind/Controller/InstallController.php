@@ -298,20 +298,22 @@ class InstallController extends AbstractBase
         $view->dbuser = $this->params()->fromPost('dbuser', 'vufind');
         $view->dbhost = $this->params()->fromPost('dbhost', 'localhost');
         $view->dbrootuser = $this->params()->fromPost('dbrootuser', 'root');
+        
+        $skip = $this->params()->fromPost('printsql', 'nope') == 'Skip';
 
-        if (!preg_match('/^\w*$/', $view->dbname)) {
+        if (!$skip && !preg_match('/^\w*$/', $view->dbname)) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('Database name must be alphanumeric.');
-        } else if (!preg_match('/^\w*$/', $view->dbuser)) {
+        } else if (!$skip && !preg_match('/^\w*$/', $view->dbuser)) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('Database user must be alphanumeric.');
-        } else if (strlen($this->params()->fromPost('submit', '')) > 0) {
+        } else if ($skip || strlen($this->params()->fromPost('submit', '')) > 0) {
             $newpass = $this->params()->fromPost('dbpass');
             $newpassConf = $this->params()->fromPost('dbpassconfirm');
-            if (empty($newpass) || empty($newpassConf)) {
+            if (!$skip && (empty($newpass) || empty($newpassConf))) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('Password fields must not be blank.');
-            } else if ($newpass != $newpassConf) {
+            } else if (!$skip && $newpass != $newpassConf) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('Password fields must match.');
             } else {
@@ -323,39 +325,46 @@ class InstallController extends AbstractBase
                     $connection . '/mysql'
                 );
                 try {
+                    // Get SQL together
                     $query = 'CREATE DATABASE ' . $view->dbname;
-                    $db->query($query, $db::QUERY_MODE_EXECUTE);
                     $grant = "GRANT SELECT,INSERT,UPDATE,DELETE ON "
                         . $view->dbname
                         . ".* TO '{$view->dbuser}'@'{$view->dbhost}' "
                         . "IDENTIFIED BY " . $db->getPlatform()->quoteValue($newpass)
                         . " WITH GRANT OPTION";
-                    $db->query($grant, $db::QUERY_MODE_EXECUTE);
-                    $db->query('FLUSH PRIVILEGES', $db::QUERY_MODE_EXECUTE);
-                    $db = AdapterFactory::getAdapterFromConnectionString(
-                        $connection . '/' . $view->dbname
-                    );
                     $sql = file_get_contents(
                         APPLICATION_PATH . '/module/VuFind/sql/mysql.sql'
                     );
-                    $statements = explode(';', $sql);
-                    foreach ($statements as $current) {
-                        // Skip empty sections:
-                        if (strlen(trim($current)) == 0) {
-                            continue;
+                    if($skip == 'Skip') {
+                        $omnisql = $query .";\n". $grant .";\nFLUSH PRIVILEGES;\n\n". $sql;
+                        $this->getRequest()->getQuery()->set('sql', $omnisql);
+                        return $this->forwardTo('Install', 'showsql');
+                    } else {
+                        $db->query($query, $db::QUERY_MODE_EXECUTE);
+                        $db->query($grant, $db::QUERY_MODE_EXECUTE);
+                        $db->query('FLUSH PRIVILEGES', $db::QUERY_MODE_EXECUTE);
+                        $db = AdapterFactory::getAdapterFromConnectionString(
+                            $connection . '/' . $view->dbname
+                        );
+                        $statements = explode(';', $sql);
+                        foreach ($statements as $current) {
+                            // Skip empty sections:
+                            if (strlen(trim($current)) == 0) {
+                                continue;
+                            }
+                            $db->query($current, $db::QUERY_MODE_EXECUTE);
                         }
-                        $db->query($current, $db::QUERY_MODE_EXECUTE);
-                    }
-                    // If we made it this far, we can update the config file and
-                    // forward back to the home action!
-                    $string = "mysql://{$view->dbuser}:{$newpass}@"
-                        . $view->dbhost . '/' . $view->dbname;
-                    $config
-                        = ConfigReader::getLocalConfigPath('config.ini', null, true);
-                    $writer = new ConfigWriter($config);
-                    $writer->set('Database', 'database', $string);
-                    if (!$writer->save()) {
-                        return $this->forwardTo('Install', 'fixbasicconfig');
+                        // If we made it this far, we can update the config file and
+                        // forward back to the home action!
+                        $string = "mysql://{$view->dbuser}:{$newpass}@"
+                            . $view->dbhost . '/' . $view->dbname;
+                        $config
+                            = ConfigReader::getLocalConfigPath('config.ini', null, true);
+                        $writer = new ConfigWriter($config);
+                        $writer->set('Database', 'database', $string);
+                        if (!$writer->save()) {
+                            return $this->forwardTo('Install', 'fixbasicconfig');
+                        }
                     }
                     return $this->redirect()->toRoute('install-home');
                 } catch (\Exception $e) {
@@ -364,6 +373,16 @@ class InstallController extends AbstractBase
                 }
             }
         }
+        return $view;
+    }
+    
+    protected function showsqlAction() {
+        $continue = $this->params()->fromPost('continue', 'nope');
+        if ($continue == 'Next') {
+            return $this->redirect()->toRoute('install-home');
+        }
+        
+        return $this->createViewModel(array('sql' => $this->params()->fromQuery('sql')));
         return $view;
     }
 

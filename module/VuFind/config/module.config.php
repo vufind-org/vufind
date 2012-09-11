@@ -398,7 +398,7 @@ $staticRoutes = array(
     'Cover/Show', 'Cover/Unavailable', 'Error/Unavailable', 'Help/Home',
     'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',
     'Install/FixDatabase', 'Install/FixDependencies', 'Install/FixILS',
-    'Install/FixSolr', 'Install/Home',
+    'Install/FixSolr', 'Install/Home', 'Install/ShowSQL',
     'MyResearch/Account', 'MyResearch/CheckedOut', 'MyResearch/Delete',
     'MyResearch/DeleteList', 'MyResearch/Edit', 'MyResearch/Email',
     'MyResearch/Export', 'MyResearch/Favorites', 'MyResearch/Fines',
@@ -412,7 +412,8 @@ $staticRoutes = array(
     'Tag/Home',
     'Upgrade/Home', 'Upgrade/FixAnonymousTags', 'Upgrade/FixConfig',
     'Upgrade/FixDatabase', 'Upgrade/FixMetadata', 'Upgrade/GetDBCredentials',
-    'Upgrade/GetSourceDir', 'Upgrade/Reset', 'Upgrade/ShowSQL', 'VuDL/Record',
+    'Upgrade/GetSourceDir', 'Upgrade/Reset', 'Upgrade/ShowSQL',
+    'VuDL/Browse', 'VuDL/DSRecord', 'VuDL/Record',
     'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search'
 );
 

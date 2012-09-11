@@ -8,7 +8,7 @@
     // Set up styles:
     $this->headstyle()->appendStyle(
         "pre {\n"
-        . "  padding:8px; margin:1em 2em; background:#EEE; border:1px dashed #CCC;\n"
+        . "  white-space:pre-line; width:90%; overflow-y:visible; padding:8px; margin:1em 2em; background:#EEE; border:1px dashed #CCC;\n"
         . "}\n"
     );
 ?>
@@ -16,7 +16,7 @@
 <?=$this->flashmessages()?>
 <p>These SQL statements can be used to manually upgrade your database:</p>
 
-<pre><?=$this->escapeHtml(trim($this->sql))?></pre>
+<textarea class="pre" rows="20" readonly onClick="this.select()"><?=trim($this->sql) ?></textarea>
 
 <form method="post" action="<?=$this->url('upgrade-showsql')?>">
   <input type="submit" name="continue" value="Next" />
