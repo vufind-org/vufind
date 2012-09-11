@@ -314,8 +314,7 @@ $staticRoutes = array(
     'Tag/Home',
     'Upgrade/Home', 'Upgrade/FixAnonymousTags', 'Upgrade/FixConfig',
     'Upgrade/FixDatabase', 'Upgrade/FixMetadata', 'Upgrade/GetDBCredentials',
-    'Upgrade/GetSourceDir', 'Upgrade/Reset', 'Upgrade/ShowSQL',
-    'VuDL/Browse', 'VuDL/DSRecord', 'VuDL/Record',
+    'Upgrade/GetSourceDir', 'Upgrade/Reset', 'Upgrade/ShowSQL', 'VuDL/Record',
     'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search'
 );
 
