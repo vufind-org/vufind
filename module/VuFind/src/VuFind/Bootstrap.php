@@ -92,7 +92,7 @@ class Bootstrap
         // Use naming conventions to set up a bunch of services based on namespace:
         $namespaces = array(
             'Auth', 'Autocomplete', 'ILS\Driver', 'Recommend', 'RecordDriver',
-            'Related', 'Session'
+            'Related', 'Resolver\Driver', 'Session'
         );
         foreach ($namespaces as $ns) {
             $serviceName = str_replace('\\', '', $ns) . 'PluginManager';

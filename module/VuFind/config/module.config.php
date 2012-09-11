@@ -209,6 +209,17 @@ $config = array(
             'worldcatsimilar' => 'VuFind\Related\WorldCatSimilar',
         ),
     ),
+    'resolver_driver_plugin_manager' => array(
+        'abstract_factories' => array('VuFind\Resolver\Driver\PluginFactory'),
+        'invokables' => array(
+            '360link' => 'VuFind\Resolver\Driver\Threesixtylink',
+            'ezb' => 'VuFind\Resolver\Driver\Ezb',
+            'sfx' => 'VuFind\Resolver\Driver\Sfx',
+        ),
+        'aliases' => array(
+            'threesixtylink' => '360link',
+        ),
+    ),
     'search_manager' => array(
         'default_namespace' => 'VuFind\Search',
         'namespaces_by_id' => array(

@@ -1227,14 +1227,20 @@ class AjaxController extends AbstractBase
         $config = ConfigReader::getConfig();
         $resolverType = isset($config->OpenURL->resolver)
             ? $config->OpenURL->resolver : 'other';
-        $resolver = new \VuFind\Resolver\Connection($resolverType);
-        if (!$resolver->driverLoaded()) {
+        $pluginManager = $this->getServiceLocator()
+            ->get('ResolverDriverPluginManager');
+        if (!$pluginManager->has($resolverType)) {
             return $this->output(
                 Translator::translate("Could not load driver for $resolverType"),
                 self::STATUS_ERROR
             );
         }
-
+        $resolver = new \VuFind\Resolver\Connection(
+            $pluginManager->get($resolverType)
+        );
+        if (isset($config->OpenURL->resolver_cache)) {
+            $resolver->enableCache($config->OpenURL->resolver_cache);
+        }
         $result = $resolver->fetchLinks($openUrl);
 
         // Sort the returned links into categories based on service type:
