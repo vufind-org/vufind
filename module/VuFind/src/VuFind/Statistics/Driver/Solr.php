@@ -29,7 +29,7 @@ namespace VuFind\Statistics\Driver;
 use VuFind\Connection\Manager as ConnectionManager;
 
 /**
- * Writer to put statistics to the SOLR index
+ * Writer to put statistics to the Solr index
  *
  * @category VuFind2
  * @package  Statistics
@@ -39,18 +39,19 @@ use VuFind\Connection\Manager as ConnectionManager;
  */
 class Solr extends AbstractBase
 {
-    protected $solr;
+    protected $solr = null;
 
     /**
-     * Constructor
+     * Get Solr connection.
      *
-     * @param string $source Which class this writer belongs to
-     *
-     * @return void
+     * @return \VuFind\Connection\SolrStats
      */
-    public function __construct($source)
+    protected function getSolr()
     {
-        $this->solr = ConnectionManager::connectToIndex('SolrStats');
+        if (null === $this->solr) {
+            $this->solr = ConnectionManager::connectToIndex('SolrStats');
+        }
+        return $this->solr;
     }
 
     /**
@@ -66,8 +67,8 @@ class Solr extends AbstractBase
         if (isset($data['phrase']) && $data['phrase'] == '') {
             $data['phrase'] = '*:*';
         }
-        $this->solr->saveRecord(
-            $this->solr->getSaveXML(
+        $this->getSolr()->saveRecord(
+            $this->getSolr()->getSaveXML(
                 array_merge($data, $userData)
             )
         );
@@ -83,8 +84,8 @@ class Solr extends AbstractBase
      */
     public function getTopList($field, $listLength = 5)
     {
-        // Records saved in SOLR
-        $records = $this->solr->search(
+        // Records saved in Solr
+        $records = $this->getSolr()->search(
             array(
                 'facet' => array(
                     'field' => array($field),
@@ -121,7 +122,7 @@ class Solr extends AbstractBase
         $limit = 1000;
         $data = array();
         do {
-            $search = $this->solr->search(
+            $search = $this->getSolr()->search(
                 array(
                     'fields' => array($field),
                     'filter' => array($field.':'.$value['value']),
@@ -151,7 +152,7 @@ class Solr extends AbstractBase
         $limit = 1000;
         $hashes = array();
         do {
-            $result = $this->solr->search(
+            $result = $this->getSolr()->search(
                 array(
                     'field' => 'browser',
                     'group' => array('session'),

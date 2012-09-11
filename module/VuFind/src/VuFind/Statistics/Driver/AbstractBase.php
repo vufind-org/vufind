@@ -38,17 +38,28 @@ namespace VuFind\Statistics\Driver;
  */
 abstract class AbstractBase
 {
+    protected $source = null;
+
     /**
-     * Constructor
+     * Get the source that is using the statistics.
      *
-     * @param string $source Which class this writer belongs to
+     * @return string
+     */
+    public function getSource()
+    {
+        return $this->source;
+    }
+
+    /**
+     * Set the source that is using the statistics.
+     *
+     * @param string $source Name of source.
      *
      * @return void
      */
-    public function __construct($source)
+    public function setSource($source)
     {
-        // This doesn't currently do anything,
-        // just in case we need it here in the future.
+        $this->source = $source;
     }
 
     /**

@@ -119,7 +119,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
                 if (count($setting) > 1 && !$getAll) {
                     // If we only want global drivers, we don't want anything with
                     // limits.
-                    if (is_null($source)) {
+                    if (null === $source) {
                         continue;
                     }
 
@@ -137,7 +137,9 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
                 // When we construct the driver, we pass the name of the data source;
                 // we use the special value "global" to represent global writer
                 // requests (the special null case):
-                $drivers[] = new $class(is_null($source) ? 'global' : $source);
+                $newDriver = new $class();
+                $newDriver->setSource(null === $source ? 'global' : $source);
+                $drivers[] = $newDriver;
             }
         }
 

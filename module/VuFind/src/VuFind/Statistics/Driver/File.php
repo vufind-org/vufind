@@ -39,21 +39,20 @@ use VuFind\Config\Reader as ConfigReader;
  */
 class File extends AbstractBase
 {
-    protected $folder;
-    protected $file;
+    protected $folder = null;
 
     /**
-     * Constructor
+     * Get the name of the folder for storing statistics.
      *
-     * @param string $source Which class this writer belongs to
-     *
-     * @return void
+     * @return string
      */
-    public function __construct($source)
+    protected function getFolder()
     {
-        $configs = ConfigReader::getConfig();
-        $this->folder = $configs->Statistics->file;
-        $this->file = strtolower($source);
+        if (null === $this->folder) {
+            $configs = ConfigReader::getConfig();
+            $this->folder = $configs->Statistics->file;
+        }
+        return $this->folder;
     }
 
     /**
@@ -67,16 +66,17 @@ class File extends AbstractBase
     public function write($data, $userData)
     {
         $xml = $this->getSaveXML(array_merge($data, $userData), 1);
-        $filename = rtrim($this->folder, '/');
+        $filename = rtrim($this->getFolder(), '/');
         if (!file_exists($filename)) {
             mkdir($filename);
         }
-        $index = (strrpos($this->file, '.')) ? -1 : strlen($this->file);
-        $filename .= '/' . substr($this->file, 0, $index) . '.xml';
+        $file = strtolower($this->getSource());
+        $index = (strrpos($file, '.')) ? -1 : strlen($file);
+        $filename .= '/' . substr($file, 0, $index) . '.xml';
         if (file_exists($filename)) {
-            $this->file = file_get_contents($filename);
+            $file = file_get_contents($filename);
             // remove <xml .. >
-            $xml .= "\n" . substr($this->file, 39, strlen($this->file));
+            $xml .= "\n" . substr($file, 39, strlen($file));
         } else {
             $xml .= "\n</xml>";
         }
