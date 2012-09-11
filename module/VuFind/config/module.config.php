@@ -262,6 +262,17 @@ $config = array(
             'mysqlsession' => 'Database',
         ),
     ),
+    'statistics_driver_plugin_manager' => array(
+        'abstract_factories' => array('VuFind\Statistics\Driver\PluginFactory'),
+        'invokables' => array(
+            'db' => 'VuFind\Statistics\Driver\Db',
+            'file' => 'VuFind\Statistics\Driver\File',
+            'solr' => 'VuFind\Statistics\Driver\Solr',
+        ),
+        'aliases' => array(
+            'database' => 'db',
+        ),
+    ),
     'translator' => array(),
     'view_manager' => array(
         'display_not_found_reason' => APPLICATION_ENV == 'development',
