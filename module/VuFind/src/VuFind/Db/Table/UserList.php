@@ -58,15 +58,13 @@ class UserList extends Gateway
      * @return \VuFind\Db\Row\UserList
      * @throws LoginRequiredException
      */
-    public static function getNew($user)
+    public function getNew($user)
     {
         if (!$user) {
             throw new LoginRequiredException('Log in to create lists.');
         }
 
-        $class = get_called_class();
-        $table = new $class();
-        $row = clone($table->getResultSetPrototype()->getArrayObjectPrototype());
+        $row = clone($this->getResultSetPrototype()->getArrayObjectPrototype());
         $row->user_id = $user->id;
         return $row;
     }
@@ -79,11 +77,9 @@ class UserList extends Gateway
      * @return \VuFind\Db\Row\UserList
      * @throws RecordMissingException
      */
-    public static function getExisting($id)
+    public function getExisting($id)
     {
-        $class = get_called_class();
-        $table = new $class();
-        $result = $table->select(array('id' => $id))->current();
+        $result = $this->select(array('id' => $id))->current();
         if (empty($result)) {
             throw new RecordMissingException('Cannot load list ' . $id);
         }

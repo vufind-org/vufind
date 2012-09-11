@@ -321,10 +321,11 @@ class User extends RowGateway
     {
         // Remove all lists owned by the user:
         $lists = $this->getLists();
+        $table = new UserListTable();
         foreach ($lists as $current) {
             // The rows returned by getLists() are read-only, so we need to retrieve
             // a new object for each row in order to perform a delete operation:
-            $list = UserListTable::getExisting($current->id);
+            $list = $table->getExisting($current->id);
             $list->delete($this, true);
         }
 

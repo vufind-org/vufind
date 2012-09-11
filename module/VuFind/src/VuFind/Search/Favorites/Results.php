@@ -214,8 +214,12 @@ class Results extends BaseResults
             // if one is found:
             $filters = $this->getParams()->getFilters();
             $listId = isset($filters['lists'][0]) ? $filters['lists'][0] : null;
-            $this->list = is_null($listId)
-                ? null : UserListTable::getExisting($listId);
+            if (null === $listId) {
+                $this->list = null;
+            } else {
+                $table = new UserListTable();
+                $this->list = $table->getExisting($listId);
+            }
         }
         return $this->list;
     }

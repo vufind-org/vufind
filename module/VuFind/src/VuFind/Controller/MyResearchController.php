@@ -314,11 +314,15 @@ class MyResearchController extends AbstractBase
 
         // If we got this far, the operation has not been confirmed yet; show
         // the necessary dialog box:
+        if (empty($listID)) {
+            $list = false;
+        } else {
+            $table = new UserListTable();
+            $list = $table->getExisting($listID);
+        }
         return $this->createViewModel(
             array(
-                'list' => empty($listID)
-                    ? false : UserListTable::getExisting($listID),
-                'deleteIDS' => $ids,
+                'list' => $list, 'deleteIDS' => $ids,
                 'records' => RecordLoader::getInstance()->loadBatch($ids)
             )
         );
@@ -351,7 +355,8 @@ class MyResearchController extends AbstractBase
         // Perform delete and send appropriate flash message:
         if (!is_null($listID)) {
             // ...Specific List
-            $list = UserListTable::getExisting($listID);
+            $table = new UserListTable();
+            $list = $table->getExisting($listID);
             $list->removeResourcesById($user, array($id), $source);
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage('Item removed from list');
@@ -628,8 +633,8 @@ class MyResearchController extends AbstractBase
         // Is this a new list or an existing list?  Handle the special 'NEW' value
         // of the ID parameter:
         $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
-        $list = ($id == 'NEW')
-            ? UserListTable::getNew($user) : UserListTable::getExisting($id);
+        $table = new UserListTable();
+        $list = ($id == 'NEW') ? $table->getNew($user) : $table->getExisting($id);
 
         // Process form submission:
         if ($this->params()->fromPost('submit')) {
@@ -674,7 +679,8 @@ class MyResearchController extends AbstractBase
         // Have we confirmed this?
         if ($this->params()->fromPost('confirm')) {
             try {
-                $list = UserListTable::getExisting($listID);
+                $table = new UserListTable();
+                $list = $table->getExisting($listID);
                 $list->delete($this->getUser());
 
                 // Success Message

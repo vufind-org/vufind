@@ -892,7 +892,8 @@ class AjaxController extends AbstractBase
         $user = $this->getUser();
 
         try {
-            $list = UserListTable::getNew($user);
+            $table = new UserListTable();
+            $list = $table->getNew($user);
             $id = $list->updateFromRequest($user, $this->getRequest()->getPost());
         } catch (\Exception $e) {
             switch(get_class($e)) {

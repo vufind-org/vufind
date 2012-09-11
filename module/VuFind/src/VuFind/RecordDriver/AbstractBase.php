@@ -180,12 +180,13 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
 
         // Get or create a list object as needed:
         $listId = isset($params['list']) ? $params['list'] : '';
+        $table = new UserListTable();
         if (empty($listId) || $listId == 'NEW') {
-            $list = UserListTable::getNew($user);
+            $list = $table->getNew($user);
             $list->title = Translator::translate('My Favorites');
             $list->save($user);
         } else {
-            $list = UserListTable::getExisting($listId);
+            $list = $table->getExisting($listId);
             $list->rememberLastUsed(); // handled by save() in other case
         }
 

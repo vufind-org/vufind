@@ -64,12 +64,13 @@ class Favorites extends AbstractPlugin
 
         // Get or create a list object as needed:
         $listId = isset($params['list']) ? $params['list'] : '';
+        $table = new UserListTable();
         if (empty($listId) || $listId == 'NEW') {
-            $list = UserListTable::getNew($user);
+            $list = $table->getNew($user);
             $list->title = Translator::translate('My Favorites');
             $list->save($user);
         } else {
-            $list = UserListTable::getExisting($listId);
+            $list = $table->getExisting($listId);
             $list->rememberLastUsed(); // handled by save() in other case
         }
 
@@ -119,7 +120,8 @@ class Favorites extends AbstractPlugin
                 $user->removeResourcesById($ids, $source);
             }
         } else {
-            $list = UserListTable::getExisting($listID);
+            $table = new UserListTable();
+            $list = $table->getExisting($listID);
             foreach ($sorted as $source => $ids) {
                 $list->removeResourcesById($user, $ids, $source);
             }
