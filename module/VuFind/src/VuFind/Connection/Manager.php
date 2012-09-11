@@ -113,6 +113,9 @@ class Manager
             $index = new $class($url, $core);
         }
 
+        // Set the service locator:
+        $index->setServiceLocator(self::$serviceLocator);
+
         return $index;
     }
 }

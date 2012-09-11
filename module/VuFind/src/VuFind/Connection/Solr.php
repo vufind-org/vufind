@@ -29,10 +29,10 @@
 namespace VuFind\Connection;
 use VuFind\Config\Reader as ConfigReader,
     VuFind\Db\Table\ChangeTracker as ChangeTrackerTable,
-    VuFind\Exception\Solr as SolrException,
-    VuFind\Http\Client as HttpClient,
-    VuFind\Log\Logger,
-    VuFind\Solr\Utils as SolrUtils;
+    VuFind\Exception\Solr as SolrException, VuFind\Http\Client as HttpClient,
+    VuFind\Log\Logger, VuFind\Solr\Utils as SolrUtils,
+    Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Solr HTTP Interface
@@ -43,7 +43,7 @@ use VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes#index_interface Wiki
  */
-class Solr
+class Solr implements ServiceLocatorAwareInterface
 {
     /**
      * A boolean value determining whether to print debug information
@@ -127,6 +127,13 @@ class Solr
      * search() is called).
      */
     protected $solrSearchParams;
+
+    /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
 
     /**
      * Constructor
@@ -1711,5 +1718,28 @@ class Solr
     {
         $config = ConfigReader::getConfig();
         return isset($config->Index->timeout) ? $config->Index->timeout : 30;
+    }
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return Solr
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
     }
 }
