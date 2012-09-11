@@ -342,6 +342,10 @@ div.searchHomeForm div.searchform {
     padding:0;
 }
 
+#searchForm_type {
+    padding:2px;
+}
+
 /******** Result List ***/
 
 ul.recordSet {
