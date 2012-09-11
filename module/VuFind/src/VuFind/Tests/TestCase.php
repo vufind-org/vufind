@@ -127,6 +127,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             );
             $serviceManager->setService('SearchManager', $this->searchManager);
             $this->searchManager->setServiceLocator($serviceManager);
+            \VuFind\Connection\Manager::setServiceLocator($serviceManager);
         }
         return $this->searchManager;
     }
