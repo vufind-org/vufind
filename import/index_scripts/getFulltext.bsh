@@ -90,6 +90,7 @@ public String getAperturePath() {
         vufindHome = "";
     }
 
+    // TODO: update this to work with 2.0 config paths
     String fulltextIniFile = vufindHome + "/web/conf/fulltext.ini";
     File file = new File(fulltextIniFile);
     try {
