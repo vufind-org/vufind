@@ -1,6 +1,6 @@
 <?php
 /**
- * Instance store for obtaining default search options objects.
+ * Resolver driver plugin manager
  *
  * PHP version 5
  *
@@ -20,53 +20,32 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Search
+ * @package  Resolver_Drivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
  */
-namespace VuFind\Search;
+namespace VuFind\Resolver\Driver;
 
 /**
- * Instance store for obtaining default search options objects.
+ * Resolver driver plugin manager
  *
  * @category VuFind2
- * @package  Search
+ * @package  Resolver_Drivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
  */
-class Options
+class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
-     * Basic get
-     *
-     * @param string $type The search type of the object to retrieve
-     *
-     * @return \VuFind\Search\Base\Options
-     */
-    public static function getInstance($type)
-    {
-        static $store = array();
-
-        if (!isset($store[$type])) {
-            $class = 'VuFind\Search\\' . $type . '\Options';
-            $store[$type] = new $class();
-        }
-        return $store[$type];
-    }
-
-    /**
-     * Extract the name of the search class family from a class name.
-     *
-     * @param string $className Class name to examine.
+     * Return the name of the base class or interface that plug-ins must conform
+     * to.
      *
      * @return string
      */
-    public static function extractSearchClassId($className)
+    protected function getExpectedInterface()
     {
-        // Parse identifier out of class name of format VuFind\Search\[id]\Params:
-        $class = explode('\\', $className);
-        return $class[2];
+        return 'VuFind\Resolver\Driver\DriverInterface';
     }
 }

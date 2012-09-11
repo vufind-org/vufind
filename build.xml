@@ -39,6 +39,7 @@
     <!-- Create dirs -->
     <mkdir dir="${builddir}/reports"/>
     <mkdir dir="${builddir}/reports/coverage"/>
+    <mkdir dir="${builddir}/apidocs"/>
 
     <!-- PHP CodeSniffer -->
     <exec command="phpcs --standard=PEAR --extensions=php --report=checkstyle ${srcdir}/module/VuFind/src &gt; ${builddir}/reports/checkstyle.xml" escape="false" />
@@ -47,15 +48,14 @@
     <exec dir="${srcdir}/tests" command="VUFIND_LOCAL_DIR=${srcdir}/local phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/" passthru="true" checkreturn="true" />
 
     <!-- PHP API Documentation -->
-    <phpdoc title="API Documentation"
-      destdir="${builddir}/apidocs"
-      sourcecode="yes"
-      defaultpackagename="VuFind"
-      output="HTML:Smarty:PHP">
+    <phpdoc2 title="VuFind API Documentation"
+      destdir="${builddir}/apidocs">
       <fileset dir=".">
         <include name="module/VuFind/src/**/*.php" />
+        <!-- This file breaks phpdoc2; exclude until we can figure out why: -->
+        <exclude name="module/VuFind/src/VuFind/Log/Writer/Stream.php" />
       </fileset>
-    </phpdoc>
+    </phpdoc2>
 
   </target>
 

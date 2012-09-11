@@ -732,7 +732,8 @@ class MyResearchController extends AbstractBase
             $record = $this->getSearchManager()->setSearchClassId('Solr')
                 ->getResults()->getRecord($current['id']);
         } catch (RecordMissingException $e) {
-            $record = new \VuFind\RecordDriver\Missing();
+            $factory = $this->getServiceLocator()->get('RecordDriverPluginManager');
+            $record = clone($factory->get('Missing'));
             $record->setRawData(
                 array('id' => isset($current['id']) ? $current['id'] : null)
             );

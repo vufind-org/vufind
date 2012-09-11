@@ -158,7 +158,8 @@ class Results extends BaseResults
      */
     protected function initRecordDriver($data)
     {
-        $driver = new \VuFind\RecordDriver\Summon();
+        $factory = $this->getServiceLocator()->get('RecordDriverPluginManager');
+        $driver = clone($factory->get('Summon'));
         $driver->setRawData($data);
         return $driver;
     }

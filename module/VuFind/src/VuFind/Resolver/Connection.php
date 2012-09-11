@@ -49,14 +49,6 @@ use VuFind\Config\Reader as ConfigReader;
 class Connection
 {
     /**
-     * A boolean value that defines whether a connection has been successfully
-     * made.
-     *
-     * @var bool
-     */
-    public $status = false;
-
-    /**
      * The object of the appropriate driver.
      *
      * @var object
@@ -64,58 +56,49 @@ class Connection
     protected $driver = false;
 
     /**
-     * A boolean value that defines whether to cache the resolver results
-     *
-     * @var bool
-     */
-    protected $useCache = false;
-
-    /**
-     * The path to the resolver cache, if any
+     * The path to the resolver cache, if any (empty string for no caching)
      *
      * @var string
      */
-    protected $cachePath;
+    protected $cachePath = '';
 
     /**
      * Constructor
      *
      * This is responsible for instantiating the driver that has been specified.
      *
-     * @param string $driver The name of the driver to load.
+     * @param \VuFind\Resolver\Driver\DriverInterface $driver The driver to use
      */
-    public function __construct($driver)
+    public function __construct(\VuFind\Resolver\Driver\DriverInterface $driver)
     {
-        // Backward compatibility -- can't have class beginning with number:
-        if (strtolower($driver) == '360link') {
-            $driver = 'threesixtylink';
-        }
-        $class = 'VuFind\Resolver\Driver\\' . ucwords($driver);
-        if (class_exists($class)) {
-            $this->driver = new $class();
-            $this->status = true;
-            $config = ConfigReader::getConfig();
-            if (isset($config->OpenURL->resolver_cache)
-                && is_dir($config->OpenURL->resolver_cache)
-                && is_writable($config->OpenURL->resolver_cache)
-            ) {
-                $this->useCache = true;
-                $this->cachePath = $config->OpenURL->resolver_cache;
-                if (!(substr($this->cachePath, -1) == '/')) {
-                    $this->cachePath .= '/';
-                }
-            }
-        }
+        $this->driver = $driver;
     }
 
     /**
-     * Check if driver loaded successfully.
+     * Disable caching.
      *
-     * @return bool
+     * @return void
      */
-    public function driverLoaded()
+    public function disableCache()
     {
-        return is_object($this->driver);
+        $this->cachePath = '';
+    }
+
+    /**
+     * Enable caching.
+     *
+     * @param string $cacheDir Directory to use for cache.
+     *
+     * @return void
+     */
+    public function enableCache($cacheDir)
+    {
+        if (is_dir($cacheDir) && is_writable($cacheDir)) {
+            $this->cachePath = $cacheDir;
+            if (!(substr($this->cachePath, -1) == '/')) {
+                $this->cachePath .= '/';
+            }
+        }
     }
 
     /**
@@ -133,16 +116,13 @@ class Connection
      */
     public function fetchLinks($openURL)
     {
-        $cache_found = false;
-        if ($this->useCache) {
+        if (!empty($this->cachePath)) {
             $hashedURL = md5($openURL);
             if (file_exists($this->cachePath . $hashedURL)) {
                 $links = file_get_contents($this->cachePath . $hashedURL);
             } else {
                 $links = $this->driver->fetchLinks($openURL);
-                $fp = fopen($this->cachePath . $hashedURL, 'w');
-                fwrite($fp, $links);
-                fclose($fp);
+                file_put_contents($this->cachePath . $hashedURL, $links);
             }
         } else {
             $links = $this->driver->fetchLinks($openURL);

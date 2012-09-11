@@ -34,7 +34,9 @@ use VuFind\Config\Reader as ConfigReader,
     VuFind\Db\Table\UserResource as UserResourceTable,
     VuFind\Exception\LoginRequired as LoginRequiredException,
     VuFind\Tags, VuFind\Translator\Translator,
-    VuFind\XSLT\Import\VuFind as ArticleStripper;
+    VuFind\XSLT\Import\VuFind as ArticleStripper,
+    Zend\ServiceManager\ServiceLocatorInterface,
+    Zend\ServiceManager\ServiceLocatorAwareInterface;
 
 /**
  * Abstract base record model.
@@ -47,7 +49,7 @@ use VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-abstract class AbstractBase
+abstract class AbstractBase implements ServiceLocatorAwareInterface
 {
     protected $resourceSource = 'VuFind';   // Used for identifying database records
     protected $extraDetails = array();      // For storing extra data with record
@@ -274,11 +276,14 @@ abstract class AbstractBase
             $parts = explode(':', $current);
             $type = $parts[0];
             $params = isset($parts[1]) ? $parts[1] : null;
-            $class = 'VuFind\Related\\' . $type;
-            if (@class_exists($class)) {
-                $retVal[] = new $class($params, $this);
+            $factory = $this->getServiceLocator()->getServiceLocator()
+                ->get('RelatedPluginManager');
+            if ($factory->has($type)) {
+                $plugin = clone($factory->get($type));
+                $plugin->init($params, $this);
+                $retVal[] = $plugin;
             } else {
-                throw new \Exception("Class {$class} does not exist.");
+                throw new \Exception("Related module {$type} does not exist.");
             }
         }
         return $retVal;
@@ -426,5 +431,28 @@ abstract class AbstractBase
         return is_callable(array($this, $method))
             ? call_user_func_array(array($this, $method), $params)
             : null;
+    }
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return AbstractBase
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
     }
 }

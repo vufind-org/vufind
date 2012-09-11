@@ -141,7 +141,8 @@ class AuthorityRecommend extends AbstractSearchManagerAwareModule
             foreach ($this->filters as $filter) {
                 $authParams->getOptions()->addHiddenFilter($filter);
             }
-            $authResults = $sm->setSearchClassId('SolrAuth')->getResults($authParams);
+            $authResults = $sm->setSearchClassId('SolrAuth')
+                ->getResults($authParams);
             $results = $authResults->getResults();
         } catch (SolrException $e) {
             return;

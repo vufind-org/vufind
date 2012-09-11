@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Related;
-use VuFind\Connection\WorldCatUtils, VuFind\Search\Solr\Params,
-    VuFind\Search\Solr\Results;
+use VuFind\Connection\WorldCatUtils;
 
 /**
  * Related Records: WorldCat-based editions list (Solr results)
@@ -38,25 +37,28 @@ use VuFind\Connection\WorldCatUtils, VuFind\Search\Solr\Params,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class Editions implements RelatedInterface
+class Editions extends AbstractServiceLocator
 {
     protected $results = array();
 
     /**
-     * Constructor
+     * init
      *
      * Establishes base settings for making recommendations.
      *
      * @param string                            $settings Settings from config.ini
      * @param \VuFind\RecordDriver\AbstractBase $driver   Record driver object
+     *
+     * @return void
      */
-    public function __construct($settings, $driver)
+    public function init($settings, $driver)
     {
         // If we have query parts, we should try to find related records:
         $parts = $this->getQueryParts($driver);
         if (!empty($parts)) {
             // Limit the number of parts based on the boolean clause limit:
-            $params = new Params();
+            $sm = $this->getSearchManager();
+            $params = $sm->setSearchClassId('Solr')->getParams();
             $limit = $params->getQueryIDLimit();
             if (count($parts) > $limit) {
                 $parts = array_slice($parts, 0, $limit);
@@ -73,7 +75,7 @@ class Editions implements RelatedInterface
             // Perform the search and return either results or an error:
             $params->setLimit(5);
             $params->setOverrideQuery($query);
-            $result = new Results($params);
+            $result = $sm->setSearchClassId('Solr')->getResults($params);
             $this->results = $result->getResults();
         }
     }

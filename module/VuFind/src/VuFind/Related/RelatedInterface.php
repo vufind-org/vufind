@@ -48,7 +48,15 @@ namespace VuFind\Related;
  */
 interface RelatedInterface
 {
-    // This is just a marker interface for now.  VuFind expects constructors for
-    // Related Record Modules to accept a settings string and a record driver, but
-    // it is bad form to define a constructor in an interface.
+    /**
+     * init
+     *
+     * Establishes base settings for making recommendations.
+     *
+     * @param string                            $settings Settings from config.ini
+     * @param \VuFind\RecordDriver\AbstractBase $driver   Record driver object
+     *
+     * @return void
+     */
+    public function init($settings, $driver);
 }

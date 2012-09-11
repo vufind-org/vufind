@@ -40,19 +40,20 @@ use VuFind\Db\Table\UserStats as UserStatsTable,
  */
 class Db extends AbstractBase
 {
-    protected $statsTable;
-    
+    protected $statsTable = null;
+
     /**
-     * Constructor
+     * Get an object representing the statistics table.
      *
-     * @param string $source Which class this writer belongs to
-     *
-     * @return void
+     * @return \VuFind\Db\Table\UserStatsFields
      */
-    public function __construct($source)
+    protected function getStatsTable()
     {
-        // Create a table object
-        $this->statsTable = new UserStatsFieldsTable();
+        if (null === $this->statsTable) {
+            // Create a table object
+            $this->statsTable = new UserStatsFieldsTable();
+        }
+        return $this->statsTable;
     }
 
     /**
@@ -65,7 +66,7 @@ class Db extends AbstractBase
      */
     public function write($data, $userData)
     {
-        $this->statsTable->save($data, $userData);
+        $this->getStatsTable()->save($data, $userData);
     }
     
     /**
@@ -79,7 +80,7 @@ class Db extends AbstractBase
     public function getTopList($field, $listLength = 5)
     {
         // Use the model
-        return $this->statsTable->getTop($field, $listLength);
+        return $this->getStatsTable()->getTop($field, $listLength);
     }
     
     /**
@@ -93,7 +94,7 @@ class Db extends AbstractBase
     public function getFullList($field, $value = array())
     {
         // Use the model
-        return $this->statsTable->getFields($field, $value)->toArray();
+        return $this->getStatsTable()->getFields($field, $value)->toArray();
     }
     
     /**

@@ -41,7 +41,8 @@ use VuFind\Config\Reader as ConfigReader,
  */
 abstract class AbstractBase implements ServiceLocatorAwareInterface
 {
-    protected $drivers;
+    protected $drivers = null;
+    protected $source;
     protected $serviceLocator;
 
     /**
@@ -50,11 +51,23 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
     public function __construct()
     {
         // Source pulled from class name
-        $source = explode('_', get_class($this));
-        $source = end($source);
-        $this->drivers = self::getDriversForSource($source);
+        $source = explode('\\', get_class($this));
+        $this->source = end($source);
     }
     
+    /**
+     * Get the stat drivers.
+     *
+     * @return array
+     */
+    protected function getDrivers()
+    {
+        if (null === $this->drivers) {
+            $this->drivers = $this->getDriversForSource($this->source);
+        }
+        return $this->drivers;
+    }
+
     /**
      * Set the service locator.
      *
@@ -88,7 +101,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
      *
      * @return array
      */
-    public static function getDriversForSource($source, $getAll = false)
+    public function getDriversForSource($source, $getAll = false)
     {
         // Load configurations
         $configs = ConfigReader::getConfig();
@@ -106,7 +119,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
                 if (count($setting) > 1 && !$getAll) {
                     // If we only want global drivers, we don't want anything with
                     // limits.
-                    if (is_null($source)) {
+                    if (null === $source) {
                         continue;
                     }
 
@@ -124,7 +137,9 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
                 // When we construct the driver, we pass the name of the data source;
                 // we use the special value "global" to represent global writer
                 // requests (the special null case):
-                $drivers[] = new $class(is_null($source) ? 'global' : $source);
+                $newDriver = new $class();
+                $newDriver->setSource(null === $source ? 'global' : $source);
+                $drivers[] = $newDriver;
             }
         }
 
@@ -141,9 +156,10 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
      */
     protected function save($data, $request)
     {
-        if (!empty($this->drivers)) {
+        $drivers = $this->getDrivers();
+        if (!empty($drivers)) {
             $userData = $this->getUserData($request);
-            foreach ($this->drivers as $writer) {
+            foreach ($drivers as $writer) {
                 $writer->write($data, $userData);
             }
         }
@@ -152,13 +168,12 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
     /**
      * Returns a count and most used list
      *
-     * @param Configuration $drivers    Active drivers to use as sources
-     * to use to find where the data is being saved
-     * @param integer       $listLength Length of the top list
+     * @param integer $listLength How long the top list is
+     * @param bool    $bySource   Sort data by source?
      *
      * @return mixed
      */
-    abstract public function getStatsSummary($drivers, $listLength);
+    abstract public function getStatsSummary($listLength, $bySource);
 
     /**
      * Returns the common information available without data
@@ -171,7 +186,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
     {
         $server = $request->getServer();
         $agent = $server->get('HTTP_USER_AGENT');
-        list($browser, $version) = explode(' ', static::getBrowser($agent));
+        list($browser, $version) = explode(' ', $this->getBrowser($agent));
         return array(
             'id'               => uniqid('', true),
             'datestamp'        => substr(date('c', strtotime('now')), 0, -6) . 'Z',
@@ -194,7 +209,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
      *
      * @return string browser name and version
      */
-    public static function getBrowser($agent)
+    public function getBrowser($agent)
     {
         // Try to use browscap.ini if available:
         $browser = @get_browser($agent, true);

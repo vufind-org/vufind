@@ -187,9 +187,53 @@ $config = array(
             'worldcatterms' => 'VuFind\Recommend\WorldCatTerms',
         ),
     ),
+    'recorddriver_plugin_manager' => array(
+        'abstract_factories' => array('VuFind\RecordDriver\PluginFactory'),
+        'invokables' => array(
+            'missing' => 'VuFind\RecordDriver\Missing',
+            'solrauth' => 'VuFind\RecordDriver\SolrAuth',
+            'solrdefault' => 'VuFind\RecordDriver\SolrDefault',
+            'solrmarc' => 'VuFind\RecordDriver\SolrMarc',
+            'solrreserves' => 'VuFind\RecordDriver\SolrReserves',
+            'solrvudl' => 'VuFind\RecordDriver\SolrVudl',
+            'summon' => 'VuFind\RecordDriver\Summon',
+            'worldcat' => 'VuFind\RecordDriver\WorldCat',
+        ),
+    ),
+    'related_plugin_manager' => array(
+        'abstract_factories' => array('VuFind\Related\PluginFactory'),
+        'invokables' => array(
+            'editions' => 'VuFind\Related\Editions',
+            'similar' => 'VuFind\Related\Similar',
+            'worldcateditions' => 'VuFind\Related\WorldCatEditions',
+            'worldcatsimilar' => 'VuFind\Related\WorldCatSimilar',
+        ),
+    ),
+    'resolver_driver_plugin_manager' => array(
+        'abstract_factories' => array('VuFind\Resolver\Driver\PluginFactory'),
+        'invokables' => array(
+            '360link' => 'VuFind\Resolver\Driver\Threesixtylink',
+            'ezb' => 'VuFind\Resolver\Driver\Ezb',
+            'sfx' => 'VuFind\Resolver\Driver\Sfx',
+        ),
+        'aliases' => array(
+            'threesixtylink' => '360link',
+        ),
+    ),
     'search_manager' => array(
         'default_namespace' => 'VuFind\Search',
         'namespaces_by_id' => array(
+            'EmptySet' => 'VuFind\Search\EmptySet',
+            'Favorites' => 'VuFind\Search\Favorites',
+            'MixedList' => 'VuFind\Search\MixedList',
+            'Solr' => 'VuFind\Search\Solr',
+            'SolrAuth' => 'VuFind\Search\SolrAuth',
+            'SolrAuthor' => 'VuFind\Search\SolrAuthor',
+            'SolrAuthorFacets' => 'VuFind\Search\SolrAuthorFacets',
+            'SolrReserves' => 'VuFind\Search\SolrReserves',
+            'Summon' => 'VuFind\Search\Summon',
+            'Tags' => 'VuFind\Search\Tags',
+            'WorldCat' => 'VuFind\Search\WorldCat',
         ),
         'aliases' => array(
             // Alias to account for "source" field in resource table,

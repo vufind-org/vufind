@@ -113,7 +113,19 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             $this->searchManager = new \VuFind\Search\Manager(
                 array('default_namespace' => 'VuFind\Search')
             );
+            $recordDriverFactory = new \VuFind\RecordDriver\PluginManager(
+                new \Zend\ServiceManager\Config(
+                    array(
+                        'abstract_factories' =>
+                            array('VuFind\RecordDriver\PluginFactory')
+                    )
+                )
+            );
             $serviceManager = new \Zend\ServiceManager\ServiceManager();
+            $serviceManager->setService(
+                'RecordDriverPluginManager', $recordDriverFactory
+            );
+            $serviceManager->setService('SearchManager', $this->searchManager);
             $this->searchManager->setServiceLocator($serviceManager);
         }
         return $this->searchManager;

@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Related;
-use VuFind\Search\WorldCat\Params, VuFind\Search\WorldCat\Results;
 
 /**
  * Related Records: WorldCat-based similarity
@@ -40,14 +39,16 @@ use VuFind\Search\WorldCat\Params, VuFind\Search\WorldCat\Results;
 class WorldCatSimilar extends Similar
 {
     /**
-     * Constructor
+     * init
      *
      * Establishes base settings for making recommendations.
      *
      * @param string                            $settings Settings from config.ini
      * @param \VuFind\RecordDriver\AbstractBase $driver   Record driver object
+     *
+     * @return void
      */
-    public function __construct($settings, $driver)
+    public function init($settings, $driver)
     {
         // Create array of query parts:
         $parts = array();
@@ -91,10 +92,11 @@ class WorldCatSimilar extends Similar
         }
 
         // Perform the search and save results:
-        $params = new Params();
+        $sm = $this->getSearchManager();
+        $params = $sm->setSearchClassId('WorldCat')->getParams();
         $params->setLimit(5);
         $params->setOverrideQuery($query);
-        $result = new Results($params);
+        $result = $sm->setSearchClassId('WorldCat')->getResults($params);
         $this->results = $result->getResults();
     }
 }

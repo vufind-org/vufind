@@ -27,7 +27,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Search\Solr\Results as SolrResults;
 
 /**
  * This controller is for the viewing of the digital library files.

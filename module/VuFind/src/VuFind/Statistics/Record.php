@@ -61,15 +61,14 @@ class Record extends AbstractBase
      * Returns a set of basic statistics including total records
      * and most commonly viewed records.
      *
-     * @param Configuration $drivers    Drivers from the Statistics Controller
-     * @param integer       $listLength How long the top list is
-     * @param bool          $bySource   Sort record views by source?
+     * @param integer $listLength How long the top list is
+     * @param bool    $bySource   Sort record views by source?
      *
      * @return array
      */
-    public function getStatsSummary($drivers, $listLength = 5, $bySource = false)
+    public function getStatsSummary($listLength = 5, $bySource = false)
     {
-        foreach ($this->drivers as $driver) {
+        foreach ($this->getDrivers() as $driver) {
             $summary = $driver->getFullList('recordId');
             if (!empty($summary)) {
                 $sources = $driver->getFullList('recordSource');
