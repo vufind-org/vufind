@@ -62,15 +62,14 @@ class Search extends AbstractBase
      * Returns a set of basic statistics including total searches,
      * number of empty searches and most popular search terms.
      *
-     * @param Configuration $config     Configuration object to find sources
-     * @param integer       $listLength Number of top searches to return
-     * @param bool          $bySource   Separate searches by search source?
+     * @param integer $listLength Number of top searches to return
+     * @param bool    $bySource   Separate searches by search source?
      *
      * @return array
      */
-    public function getStatsSummary($config, $listLength = 5, $bySource = false)
+    public function getStatsSummary($listLength = 5, $bySource = false)
     {
-        foreach ($this->drivers as $driver) {
+        foreach ($this->getDrivers() as $driver) {
             $summary = $driver->getFullList('phrase');
             if (!empty($summary)) {
                 $sources = $driver->getFullList('searchSource');

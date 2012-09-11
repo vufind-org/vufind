@@ -28,8 +28,7 @@
 namespace VuFind\Controller;
 use VuFind\Config\Reader as ConfigReader, VuFind\Db\Table\Search as SearchTable,
     VuFind\Exception\Forbidden as ForbiddenException,
-    VuFind\Http\Client as HttpClient, Zend\Mvc\MvcEvent,
-    VuFind\Statistics\AbstractBase as Statistics;
+    VuFind\Http\Client as HttpClient, Zend\Mvc\MvcEvent;
 
 /**
  * Class controls VuFind administration.
@@ -157,11 +156,12 @@ class AdminController extends AbstractBase
         );
         // Search statistics
         $search = new \VuFind\Statistics\Search();
+        $search->setServiceLocator($this->getServiceLocator());
         $view->searchesBySource
             = $config->Statistics->searchesBySource
             ?: false;
         $searchSummary = $search->getStatsSummary(
-            $config, 7, $config->Statistics->searchesBySource
+            7, $config->Statistics->searchesBySource
         );
         $view->topSearches = isset($searchSummary['top'])
             ? $searchSummary['top'] : null;
@@ -172,9 +172,10 @@ class AdminController extends AbstractBase
 
         // Record statistics
         $records = new \VuFind\Statistics\Record();
+        $records->setServiceLocator($this->getServiceLocator());
         $view->recordsBySource = $config->Statistics->recordsBySource ?: false;
         $recordSummary = $records->getStatsSummary(
-            $config, 5, $config->Statistics->recordsBySource
+            5, $config->Statistics->recordsBySource
         );
         $view->topRecords = isset($recordSummary['top'])
             ? $recordSummary['top'] : null;
@@ -182,13 +183,13 @@ class AdminController extends AbstractBase
             ? $recordSummary['total'] : null;
 
         // Browser statistics
-        $view->currentBrowser = Statistics::getBrowser(
+        $view->currentBrowser = $search->getBrowser(
             $this->getRequest()->getServer('HTTP_USER_AGENT')
         );
 
         // Look for universal statistics recorder
         $matchFound = false;
-        foreach (Statistics::getDriversForSource(null) as $currentDriver) {
+        foreach ($search->getDriversForSource(null) as $currentDriver) {
             $browserStats = $currentDriver->getBrowserStats(false, 5);
             if (!empty($browserStats)) {
                 $matchFound = true;
@@ -198,7 +199,7 @@ class AdminController extends AbstractBase
 
         // If no full coverage mode found, take the first valid source
         if (!$matchFound) {
-            $drivers = Statistics::getDriversForSource(null, true);
+            $drivers = $search->getDriversForSource(null, true);
             foreach ($drivers as $currentDriver) {
                 $browserStats = $currentDriver->getBrowserStats(false, 5);
                 if (!empty($browserStats)) {
