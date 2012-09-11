@@ -28,7 +28,7 @@
  */
 namespace VuFind\Auth;
 use VuFind\Connection\Manager as ConnectionManager,
-    VuFind\Db\Table\User as UserTable, VuFind\Exception\Auth as AuthException;
+    VuFind\Exception\Auth as AuthException;
 
 /**
  * ILS authentication module.
@@ -123,8 +123,7 @@ class ILS extends AbstractBase
         }
 
         // Check to see if we already have an account for this user:
-        $table = new UserTable();
-        $user = $table->getByUsername($info[$usernameField]);
+        $user = $this->getUserTable()->getByUsername($info[$usernameField]);
 
         // No need to store the ILS password in VuFind's main password field:
         $user->password = "";

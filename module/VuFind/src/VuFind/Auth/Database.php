@@ -28,7 +28,7 @@
  * @link     http://vufind.org/wiki/building_an_authentication_handler Wiki
  */
 namespace VuFind\Auth;
-use VuFind\Db\Table\User as UserTable, VuFind\Exception\Auth as AuthException;
+use VuFind\Exception\Auth as AuthException;
 
 /**
  * Database authentication class
@@ -65,8 +65,7 @@ class Database extends AbstractBase
         }
 
         // Validate the credentials:
-        $table = new UserTable();
-        $user = $table->getByUsername($this->username, false);
+        $user = $this->getUserTable()->getByUsername($this->username, false);
         if (!is_object($user) || !$user->checkPassword($this->password)) {
             throw new AuthException('authentication_error_invalid');
         }
@@ -116,7 +115,7 @@ class Database extends AbstractBase
         }
 
         // Make sure we have a unique username
-        $table = new UserTable();
+        $table = $this->getUserTable();
         if ($table->getByUsername($params['username'], false)) {
             throw new AuthException('That username is already taken');
         }

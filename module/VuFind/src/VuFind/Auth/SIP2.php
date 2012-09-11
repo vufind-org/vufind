@@ -27,7 +27,7 @@
  * @link     http://vufind.org/wiki/building_an_authentication_handler Wiki
  */
 namespace VuFind\Auth;
-use VuFind\Db\Table\User as UserTable, VuFind\Exception\Auth as AuthException;
+use VuFind\Exception\Auth as AuthException;
 
 /**
  * SIP2 authentication module.
@@ -128,8 +128,7 @@ class SIP2 extends AbstractBase
      */
     protected function processSIP2User($info, $username, $password)
     {
-        $table = new UserTable();
-        $user = $table->getByUsername($info['variable']['AA'][0]);
+        $user = $this->getUserTable()->getByUsername($info['variable']['AA'][0]);
 
         // This could potentially be different depending on the ILS.  Name could be
         // Bob Wicksall or Wicksall, Bob. This is currently assuming Wicksall, Bob

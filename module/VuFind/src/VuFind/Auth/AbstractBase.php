@@ -28,7 +28,9 @@
  */
 namespace VuFind\Auth;
 use VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\Auth as AuthException;
+    VuFind\Exception\Auth as AuthException,
+    Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Abstract authentication base class
@@ -40,7 +42,7 @@ use VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-abstract class AbstractBase
+abstract class AbstractBase implements ServiceLocatorAwareInterface
 {
     protected $configValidated = false;
     protected $config = null;
@@ -168,5 +170,38 @@ abstract class AbstractBase
     {
         // By default, account creation is not supported.
         return false;
+    }
+
+    /**
+     * Get access to the user table.
+     *
+     * @return \VuFind\Db\Table\User
+     */
+    public function getUserTable()
+    {
+        return new \VuFind\Db\Table\User();
+    }
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return AbstractBase
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
     }
 }

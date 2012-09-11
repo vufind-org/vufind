@@ -27,7 +27,7 @@
  * @link     http://vufind.org/wiki/building_an_authentication_handler Wiki
  */
 namespace VuFind\Auth;
-use VuFind\Db\Table\User as UserTable, VuFind\Exception\Auth as AuthException;
+use VuFind\Exception\Auth as AuthException;
 
 /**
  * LDAP authentication class
@@ -194,8 +194,7 @@ class LDAP extends AbstractBase
         );
 
         // User object to populate from LDAP:
-        $table = new UserTable();
-        $user = $table->getByUsername($this->username);
+        $user = $this->getUserTable()->getByUsername($this->username);
 
         // Loop through LDAP response and map fields to database object based
         // on configuration settings:

@@ -27,7 +27,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Auth;
-use VuFind\Db\Table\User as UserTable, VuFind\Exception\Auth as AuthException;
+use VuFind\Exception\Auth as AuthException;
 
 /**
  * Shibboleth authentication module.
@@ -92,8 +92,7 @@ class Shibboleth extends AbstractBase
         }
 
         // If we made it this far, we should log in the user!
-        $table = new UserTable();
-        $user = $table->getByUsername($username);
+        $user = $this->getUserTable()->getByUsername($username);
 
         // Has the user configured attributes to use for populating the user table?
         $attribsToCheck = array(
