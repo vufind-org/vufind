@@ -51,6 +51,12 @@ class Solr implements AutocompleteInterface, ServiceLocatorAwareInterface
     protected $searchClassId = 'Solr';
     protected $searchObject;
 
+    /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
 
     /**
      * setConfig
