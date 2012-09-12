@@ -44,6 +44,13 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException,
 class NoILS extends AbstractBase implements ServiceLocatorAwareInterface
 {
     /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
+
+    /**
      * Initialize the driver.
      *
      * Validate configuration and perform all resource-intensive tasks needed to

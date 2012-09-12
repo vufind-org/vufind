@@ -49,6 +49,13 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
     protected $policies;
 
     /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
+
+    /**
      * Initialize the driver.
      *
      * Validate configuration and perform all resource-intensive tasks needed to
