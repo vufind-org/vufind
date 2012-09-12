@@ -261,32 +261,6 @@ class Solr implements ServiceLocatorAwareInterface
         return $result;
     }
 
-    /**
-     * Get spelling suggestions based on input phrase.
-     *
-     * @param string $phrase The input phrase
-     *
-     * @return array         An array of spelling suggestions
-     */
-    public function checkSpelling($phrase)
-    {
-        if ($this->logger) {
-            $this->logger->debug('Spell Check: '.$phrase);
-        }
-
-        // Query String Parameters
-        $options = array(
-            'q'          => $phrase,
-            'rows'       => 0,
-            'start'      => 1,
-            'indent'     => 'yes',
-            'spellcheck' => 'true'
-        );
-
-        $result = $this->select('GET', $options);
-        return $result;
-    }
-
      /**
       * Internal method to build query string from search parameters
       *
