@@ -240,10 +240,8 @@ class Results extends BaseResults
      */
     protected function basicSpelling()
     {
-        // TODO: There might be a way to run the
-        //   search against both dictionaries from
-        //   inside solr. Investigate. Currently
-        //   submitting a second search for this.
+        // TODO: There might be a way to run the search against both dictionaries
+        // from inside Solr. Investigate. Currently submitting a second search.
 
         // Create a new search object
         $newParams = clone($this->getParams());
@@ -302,8 +300,8 @@ class Results extends BaseResults
             $inToken = false;
             $targetTerm = "";
             foreach ($tokens as $token) {
-                // TODO - Do we need stricter matching here?
-                //   Similar to that in replaceSearchTerm()?
+                // TODO - Do we need stricter matching here, similar to that in
+                // \VuFind\Search\Base\Params::replaceSearchTerm()?
                 if (stripos($token, $term) !== false) {
                     $inToken = true;
                     // We need to replace the whole token
