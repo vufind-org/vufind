@@ -29,8 +29,7 @@ namespace VuFind\Controller;
 use VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
     VuFind\Exception\Auth as AuthException, VuFind\Export, VuFind\Mailer,
-    VuFind\Mailer\SMS, VuFind\Record\Loader as RecordLoader,
-    VuFind\Translator\Translator;
+    VuFind\Mailer\SMS, VuFind\Translator\Translator;
 
 /**
  * This controller handles global AJAX functionality
@@ -606,7 +605,7 @@ class AjaxController extends AbstractBase
         }
         // empty tag
         try {
-            $driver = RecordLoader::getInstance()->load(
+            $driver = $this->getRecordLoader()->load(
                 $this->params()->fromPost('id'),
                 $this->params()->fromPost('source', 'VuFind')
             );
@@ -829,7 +828,7 @@ class AjaxController extends AbstractBase
             );
         }
 
-        $driver = RecordLoader::getInstance()->load(
+        $driver = $this->getRecordLoader()->load(
             $this->params()->fromPost('id'),
             $this->params()->fromPost('source', 'VuFind')
         );
@@ -937,7 +936,7 @@ class AjaxController extends AbstractBase
     {
         // Attempt to send the email:
         try {
-            $record = RecordLoader::getInstance()->load(
+            $record = $this->getRecordLoader()->load(
                 $this->params()->fromPost('id'),
                 $this->params()->fromPost('source', 'VuFind')
             );
@@ -966,7 +965,7 @@ class AjaxController extends AbstractBase
     {
         // Attempt to send the email:
         try {
-            $record = RecordLoader::getInstance()->load(
+            $record = $this->getRecordLoader()->load(
                 $this->params()->fromPost('id'),
                 $this->params()->fromPost('source', 'VuFind')
             );
@@ -1126,7 +1125,7 @@ class AjaxController extends AbstractBase
      */
     public function getRecordCommentsAsHTML()
     {
-        $driver = RecordLoader::getInstance()->load(
+        $driver = $this->getRecordLoader()->load(
             $this->params()->fromQuery('id'),
             $this->params()->fromQuery('source', 'VuFind')
         );

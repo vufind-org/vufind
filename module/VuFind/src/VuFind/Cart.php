@@ -26,7 +26,9 @@
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
 namespace VuFind;
-use VuFind\Config\Reader as ConfigReader, VuFind\Record\Loader as RecordLoader;
+use VuFind\Config\Reader as ConfigReader,
+    Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Cart Class
@@ -39,11 +41,35 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Record\Loader as RecordLoader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
-class Cart
+class Cart implements ServiceLocatorAwareInterface
 {
+    /**
+     * Cart contents.
+     *
+     * @var array
+     */
     protected $items;
+
+    /**
+     * Maximum number of items allowed in cart.
+     *
+     * @var int
+     */
     protected $maxSize = 100;
+
+    /**
+     * Is the cart currently activated?
+     *
+     * @var bool
+     */
     protected $active = false;
+
+    /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
 
     const CART_COOKIE =  'vufind_cart';
     const CART_COOKIE_SOURCES = 'vufind_cart_src';
@@ -267,6 +293,30 @@ class Cart
      */
     public function getRecordDetails()
     {
-        return RecordLoader::getInstance()->loadBatch($this->items);
+        return $this->getServiceLocator()
+            ->get('RecordLoader')->loadBatch($this->items);
+    }
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return Manager
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
     }
 }

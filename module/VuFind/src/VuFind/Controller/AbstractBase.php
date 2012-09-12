@@ -190,6 +190,16 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Get the record loader
+     *
+     * @return \VuFind\Record\Loader
+     */
+    protected function getRecordLoader()
+    {
+        return $this->getServiceLocator()->get('RecordLoader');
+    }
+
+    /**
      * Get the search manager.
      *
      * @return \VuFind\Search\Manager

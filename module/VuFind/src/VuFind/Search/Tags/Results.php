@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Search\Tags;
-use VuFind\Record\Loader as RecordLoader, VuFind\Search\Base\Results as BaseResults;
+use VuFind\Search\Base\Results as BaseResults;
 
 /**
  * Search Tags Results
@@ -73,7 +73,8 @@ class Results extends BaseResults
             $recordsToRequest[]
                 = array('id' => $row->record_id, 'source' => $row->source);
         }
-        $this->results = RecordLoader::getInstance()->loadBatch($recordsToRequest);
+        $this->results = $this->getServiceLocator()->get('RecordLoader')
+            ->loadBatch($recordsToRequest);
     }
 
     /**

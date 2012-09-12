@@ -48,21 +48,6 @@ class Loader implements ServiceLocatorAwareInterface
     protected $serviceLocator;
 
     /**
-     * Temporary method to get instance of object -- TODO: eliminate in place of
-     * service manager after further refactoring.
-     *
-     * @return Loader
-     */
-    static public function getInstance()
-    {
-        static $instance = false;
-        if (!$instance) {
-            $instance = new Loader();
-        }
-        return $instance;
-    }
-
-    /**
      * Given a record source, return the search object that can load that type of
      * record.
      *

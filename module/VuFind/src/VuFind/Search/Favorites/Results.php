@@ -27,7 +27,6 @@
  */
 namespace VuFind\Search\Favorites;
 use VuFind\Exception\ListPermission as ListPermissionException,
-    VuFind\Record\Loader as RecordLoader,
     VuFind\Search\Base\Results as BaseResults,
     VuFind\Translator\Translator;
 
@@ -170,7 +169,8 @@ class Results extends BaseResults
                 )
             );
         }
-        $this->results = RecordLoader::getInstance()->loadBatch($recordsToRequest);
+        $this->results = $this->getServiceLocator()->get('RecordLoader')
+            ->loadBatch($recordsToRequest);
     }
 
     /**

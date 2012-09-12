@@ -30,7 +30,6 @@ use ArrayObject, VuFind\Cache\Manager as CacheManager,
     VuFind\Config\Reader as ConfigReader, VuFind\Cookie\Container as CookieContainer,
     VuFind\Db\AdapterFactory,
     VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\Record\Loader as RecordLoader,
     Zend\Db\TableGateway\Feature\GlobalAdapterFeature as DbGlobalAdapter,
     Zend\Session\Container as SessionContainer;
 
@@ -411,7 +410,7 @@ class UpgradeController extends AbstractBase
         if (strlen($this->params()->fromPost('submit', '')) > 0) {
             foreach ($problems as $problem) {
                 try {
-                    $driver = RecordLoader::getInstance()
+                    $driver = $this->getRecordLoader()
                         ->load($problem->record_id, $problem->source);
                     $problem->assignMetadata($driver)->save();
                 } catch (RecordMissingException $e) {

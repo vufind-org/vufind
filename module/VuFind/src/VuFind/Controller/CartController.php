@@ -27,7 +27,6 @@
  */
 namespace VuFind\Controller;
 use VuFind\Exception\Mail as MailException, VuFind\Export, VuFind\Mailer,
-    VuFind\Record\Loader as RecordLoader,
     VuFind\Translator\Translator, Zend\Session\Container as SessionContainer;
 
 /**
@@ -174,7 +173,7 @@ class CartController extends AbstractBase
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
         $view = $this->createViewModel();
-        $view->records = RecordLoader::getInstance()->loadBatch($ids);
+        $view->records = $this->getRecordLoader()->loadBatch($ids);
 
         // Process form submission:
         if ($this->params()->fromPost('submit')) {
@@ -258,7 +257,7 @@ class CartController extends AbstractBase
 
         // Load the records:
         $view = $this->createViewModel();
-        $view->records = RecordLoader::getInstance()->loadBatch($ids);
+        $view->records = $this->getRecordLoader()->loadBatch($ids);
 
         // Assign the list of legal export options.  We'll filter them down based
         // on what the selected records actually support.
@@ -305,7 +304,7 @@ class CartController extends AbstractBase
 
 
         // Actually export the records
-        $records = RecordLoader::getInstance()->loadBatch($ids);
+        $records = $this->getRecordLoader()->loadBatch($ids);
         $recordHelper = $this->getViewRenderer()->plugin('record');
         $parts = array();
         foreach ($records as $record) {
@@ -356,7 +355,7 @@ class CartController extends AbstractBase
         // Pass record and list information to view:
         return $this->createViewModel(
             array(
-                'records' => RecordLoader::getInstance()->loadBatch($ids),
+                'records' => $this->getRecordLoader()->loadBatch($ids),
                 'lists' => $user->getLists()
             )
         );

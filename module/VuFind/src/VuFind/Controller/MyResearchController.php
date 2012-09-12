@@ -32,8 +32,7 @@ use VuFind\Config\Reader as ConfigReader,
     VuFind\Exception\Auth as AuthException,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\Record\Loader as RecordLoader, VuFind\Record\Router as RecordRouter,
-    Zend\Stdlib\Parameters;
+    VuFind\Record\Router as RecordRouter, Zend\Stdlib\Parameters;
 
 /**
  * Controller for the user account area.
@@ -321,7 +320,7 @@ class MyResearchController extends AbstractBase
         return $this->createViewModel(
             array(
                 'list' => $list, 'deleteIDS' => $ids,
-                'records' => RecordLoader::getInstance()->loadBatch($ids)
+                'records' => $this->getRecordLoader()->loadBatch($ids)
             )
         );
     }
@@ -424,7 +423,7 @@ class MyResearchController extends AbstractBase
         $source = $this->params()->fromPost(
             'source', $this->params()->fromQuery('source', 'VuFind')
         );
-        $driver = RecordLoader::getInstance()->load($id, $source);
+        $driver = $this->getRecordLoader()->load($id, $source);
         $listID = $this->params()->fromPost(
             'list_id', $this->params()->fromQuery('list_id', null)
         );
