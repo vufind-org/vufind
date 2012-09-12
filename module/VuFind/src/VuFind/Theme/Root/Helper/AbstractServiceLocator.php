@@ -42,6 +42,11 @@ use Zend\ServiceManager\ServiceLocatorInterface,
 abstract class AbstractServiceLocator extends AbstractHelper
     implements ServiceLocatorAwareInterface
 {
+    /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
     protected $serviceLocator;
 
     /**
