@@ -43,6 +43,12 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
 {
     protected $drivers = null;
     protected $source;
+
+    /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
     protected $serviceLocator;
 
     /**
