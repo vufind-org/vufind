@@ -38,7 +38,7 @@ use VuFind\Db\Table\Resource as ResourceTable, Zend\Db\RowGateway\RowGateway,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Tags extends RowGateway
+class Tags extends ServiceLocatorAwareGateway
 {
     /**
      * Constructor
@@ -98,7 +98,7 @@ class Tags extends RowGateway
             }
         };
 
-        $table = new ResourceTable();
+        $table = $this->getDbTable('Resource');
         return $table->select($callback);
     }
 }

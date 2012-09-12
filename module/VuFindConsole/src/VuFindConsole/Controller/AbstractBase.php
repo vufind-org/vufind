@@ -99,4 +99,16 @@ class AbstractBase extends AbstractActionController
     {
         return $this->getResponse()->setErrorLevel(0);
     }
+
+    /**
+     * Get a database table object.
+     *
+     * @param string $table Name of table to retrieve
+     *
+     * @return \VuFind\Db\Table\Gateway
+     */
+    public function getTable($table)
+    {
+        return $this->getServiceLocator()->get('DbTablePluginManager')->get($table);
+    }
 }

@@ -26,8 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Search\Tags;
-use VuFind\Db\Table\Tags as TagsTable, VuFind\Record\Loader as RecordLoader,
-    VuFind\Search\Base\Results as BaseResults;
+use VuFind\Record\Loader as RecordLoader, VuFind\Search\Base\Results as BaseResults;
 
 /**
  * Search Tags Results
@@ -48,7 +47,7 @@ class Results extends BaseResults
      */
     protected function performSearch()
     {
-        $table = new TagsTable();
+        $table = $this->getTable('Tags');
         $tag = $table->getByText($this->getParams()->getDisplayQuery());
         if (!empty($tag)) {
             $rawResults = $tag->getResources(null, $this->getParams()->getSort());

@@ -28,7 +28,9 @@
 namespace VuFind\XSLT;
 use DOMDocument, VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
-    XSLTProcessor, Zend\Console\Console;
+    XSLTProcessor, Zend\Console\Console,
+    Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * VuFind XSLT importer
@@ -39,8 +41,15 @@ use DOMDocument, VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/ Wiki
  */
-class Importer
+class Importer implements ServiceLocatorAwareInterface
 {
+    /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
+
     /**
      * Save an XML file to the Solr index using the specified configuration.
      *
@@ -52,11 +61,11 @@ class Importer
      * @throws \Exception
      * @return void
      */
-    public static function save($xmlFile, $properties, $index = 'Solr',
+    public function save($xmlFile, $properties, $index = 'Solr',
         $testMode = false
     ) {
         // Process the file:
-        $xml = self::generateXML($xmlFile, $properties);
+        $xml = $this->generateXML($xmlFile, $properties);
 
         // Save the results (or just display them, if in test mode):
         if (!$testMode) {
@@ -76,7 +85,7 @@ class Importer
      * @throws \Exception
      * @return mixed             Transformed XML.
      */
-    protected static function generateXML($xmlFile, $properties)
+    protected function generateXML($xmlFile, $properties)
     {
         // Load properties file:
         $properties = ConfigReader::getConfigPath($properties, 'import');
@@ -96,7 +105,7 @@ class Importer
         );
 
         // Initialize the XSL processor:
-        $xsl = self::initProcessor($options);
+        $xsl = $this->initProcessor($options);
 
         // Load up the style sheet
         $style = new DOMDocument;
@@ -128,7 +137,7 @@ class Importer
      * @throws \Exception
      * @return object        XSLT processor.
      */
-    protected static function initProcessor($options)
+    protected function initProcessor($options)
     {
         // Prepare an XSLT processor and pass it some variables
         $xsl = new XSLTProcessor();
@@ -153,6 +162,9 @@ class Importer
                 $class = preg_replace('/[^A-Za-z0-9_]/', '', $class);
                 eval("class $class extends \\VuFind\\XSLT\\Import\\$class { }");
                 $methods = get_class_methods($class);
+                if (method_exists($class, 'setServiceLocator')) {
+                    $class::setServiceLocator($this->getServiceLocator());
+                }
                 foreach ($methods as $method) {
                     $xsl->registerPHPFunctions($class . '::' . $method);
                 }
@@ -165,5 +177,28 @@ class Importer
         }
 
         return $xsl;
+    }
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return Manager
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
     }
 }

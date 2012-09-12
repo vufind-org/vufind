@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Config\Reader as ConfigReader, VuFind\Db\Table\Search as SearchTable,
+use VuFind\Config\Reader as ConfigReader,
     VuFind\Exception\Forbidden as ForbiddenException,
     VuFind\Http\Client as HttpClient, Zend\Mvc\MvcEvent;
 
@@ -289,7 +289,7 @@ class AdminController extends AbstractBase
             // Delete the expired searches--this cleans up any junk left in the
             // database from old search histories that were not caught by the
             // session garbage collector.
-            $search = new SearchTable();
+            $search = $this->getTable('Search');
             $query = $search->getExpiredQuery($daysOld);
             if (($count = count($search->select($query))) == 0) {
                 $msg = "No expired searches to delete.";

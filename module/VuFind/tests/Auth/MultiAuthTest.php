@@ -58,7 +58,7 @@ class MultiAuthTest extends \VuFind\Tests\TestCase
                 )
             )
         );
-        $obj = new MultiAuth();
+        $obj = clone($this->getAuthManager()->get('MultiAuth'));
         $obj->setConfig($config);
         $obj->setServiceLocator($serviceLocator);
         return $obj;

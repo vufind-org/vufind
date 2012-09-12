@@ -26,9 +26,7 @@
  * @link     http://vufind.org/wiki/building_an_authentication_handler Wiki
  */
 namespace VuFind\Auth;
-use VuFind\Exception\Auth as AuthException,
-    Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+use VuFind\Exception\Auth as AuthException;
 
 /**
  * MultiAuth Authentication plugin
@@ -63,7 +61,7 @@ use VuFind\Exception\Auth as AuthException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_an_authentication_handler Wiki
  */
-class MultiAuth extends AbstractBase implements ServiceLocatorAwareInterface
+class MultiAuth extends AbstractBase
 {
     protected $filters = array();
     protected $methods = array();
@@ -204,28 +202,5 @@ class MultiAuth extends AbstractBase implements ServiceLocatorAwareInterface
             }
         }
         return $user;
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return MultiAuth
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 }

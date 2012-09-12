@@ -70,42 +70,18 @@ class Tags extends Gateway
     /**
      * Get the tags the match a string
      *
-     * @param string $text Tag to look up.
+     * @param string $text  Tag to look up.
+     * @param string $sort  Sort/search parameter
+     * @param int    $limit Maximum number of tags
      *
      * @return array Array of \VuFind\Db\Row\Tags objects
      */
-    public function matchText($text)
+    public function matchText($text, $sort = 'alphabetical', $limit = 100)
     {
         $callback = function ($select) use ($text) {
             $select->where->literal('lower(tag) like lower(?)', array($text . '%'));
-            $select->order('tag');
         };
-        return $this->select($callback);
-    }
-
-    /**
-     * Get count of usage for a tag by id
-     *
-     * @param int $tag_id tag id
-     *
-     * @return int count
-     */
-    public function getCount($tag_id)
-    {
-        $resourceTagTable = new ResourceTags();
-        $callback = function ($select) use ($tag_id) {
-            $select->columns(
-                array(
-                    'cnt' => new Expression(
-                        'COUNT(DISTINCT(?))', array('resource_id'),
-                        array(Expression::TYPE_IDENTIFIER)
-                    )
-                )
-            );
-            $select->where->equalTo('tag_id', $tag_id);
-        };
-        $count = $resourceTagTable->select($callback)->current();
-        return isset($count['cnt']) ? $count['cnt'] : 0;
+        return $this->getTagList($sort, $limit, $callback);
     }
 
     /**
@@ -173,17 +149,18 @@ class Tags extends Gateway
     /**
      * Get a list of tags based on a sort method ($sort)
      *
-     * @param string $sort  Sort/search parameter
-     * @param int    $limit Maximum number of tags
+     * @param string   $sort        Sort/search parameter
+     * @param int      $limit       Maximum number of tags
+     * @param callback $extra_where Extra code to modify $select (null for none)
      *
      * @return array Tag details.
      */
-    public function getTagList($sort, $limit = 100)
+    public function getTagList($sort, $limit = 100, $extra_where = null)
     {
-        $callback = function($select) use ($sort, $limit) {
+        $callback = function($select) use ($sort, $limit, $extra_where) {
             $select->columns(
                 array(
-                    'tag',
+                    'id', 'tag',
                     'cnt' => new Expression(
                         'COUNT(DISTINCT(?))', array('resource_tags.resource_id'),
                         array(Expression::TYPE_IDENTIFIER)
@@ -197,8 +174,8 @@ class Tags extends Gateway
             $select->join(
                 'resource_tags', 'tags.id = resource_tags.tag_id', array()
             );
-            if (strlen($extra_where) > 0) {
-                $select->where($extra_where);
+            if (is_callable($extra_where)) {
+                $extra_where($select);
             }
             $select->group('tags.tag');
             switch ($sort) {

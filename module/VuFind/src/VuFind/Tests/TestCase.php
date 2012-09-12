@@ -41,7 +41,7 @@ namespace VuFind\Tests;
 
 abstract class TestCase extends \PHPUnit_Framework_TestCase
 {
-    protected $searchManager = false;
+    protected $serviceManager = false;
 
     /**
      * Call protected or private method for side-effect and result.
@@ -103,16 +103,13 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Get a search manager instance for testing search objects.
+     * Get a service manager.
      *
-     * @return \VuFind\Search\Manager
+     * @return \Zend\ServiceManager\ServiceManager
      */
-    public function getSearchManager()
+    public function getServiceManager()
     {
-        if (!$this->searchManager) {
-            $this->searchManager = new \VuFind\Search\Manager(
-                array('default_namespace' => 'VuFind\Search')
-            );
+        if (!$this->serviceManager) {
             $recordDriverFactory = new \VuFind\RecordDriver\PluginManager(
                 new \Zend\ServiceManager\Config(
                     array(
@@ -121,14 +118,53 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                     )
                 )
             );
-            $serviceManager = new \Zend\ServiceManager\ServiceManager();
-            $serviceManager->setService(
+            $this->serviceManager = new \Zend\ServiceManager\ServiceManager();
+            $this->serviceManager->setService(
                 'RecordDriverPluginManager', $recordDriverFactory
             );
-            $serviceManager->setService('SearchManager', $this->searchManager);
-            $this->searchManager->setServiceLocator($serviceManager);
-            \VuFind\Connection\Manager::setServiceLocator($serviceManager);
+            \VuFind\Connection\Manager::setServiceLocator($this->serviceManager);
         }
-        return $this->searchManager;
+        return $this->serviceManager;
+    }
+
+    /**
+     * Get an auth manager instance.
+     *
+     * @return \VuFind\Auth\PluginManager
+     */
+    public function getAuthManager()
+    {
+        $sm = $this->getServiceManager();
+        if (!$sm->has('AuthPluginManager')) {
+            $authManager = new \VuFind\Auth\PluginManager(
+                new \Zend\ServiceManager\Config(
+                    array(
+                        'abstract_factories' =>
+                            array('VuFind\Auth\PluginFactory')
+                    )
+                )
+            );
+            $authManager->setServiceLocator($sm);
+            $sm->setService('AuthPluginManager', $authManager);
+        }
+        return $sm->get('AuthPluginManager');
+    }
+
+    /**
+     * Get a search manager instance for testing search objects.
+     *
+     * @return \VuFind\Search\Manager
+     */
+    public function getSearchManager()
+    {
+        $sm = $this->getServiceManager();
+        if (!$sm->has('SearchManager')) {
+            $searchManager = new \VuFind\Search\Manager(
+                array('default_namespace' => 'VuFind\Search')
+            );
+            $searchManager->setServiceLocator($sm);
+            $sm->setService('SearchManager', $searchManager);
+        }
+        return $sm->get('SearchManager');
     }
 }

@@ -27,7 +27,7 @@
  */
 namespace VuFindConsole\Controller;
 use File_MARC, File_MARCXML, VuFind\Connection\Manager as ConnectionManager,
-    VuFind\Db\Table\Search as SearchTable, VuFind\Sitemap, Zend\Console\Console;
+    VuFind\Sitemap, Zend\Console\Console;
 
 /**
  * This controller handles various command-line tools
@@ -236,7 +236,7 @@ class UtilController extends AbstractBase
         // Delete the expired searches--this cleans up any junk left in the database
         // from old search histories that were not
         // caught by the session garbage collector.
-        $search = new SearchTable();
+        $search = $this->getTable('Search');
         $query = $search->getExpiredQuery($daysOld);
         if (($count = count($search->select($query))) == 0) {
             Console::writeLine("No expired searches to delete.");

@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
  */
 namespace VuFind\Session;
-use VuFind\Db\Table\Session as SessionTable,
-    VuFind\Exception\SessionExpired as SessionExpiredException;
+use VuFind\Exception\SessionExpired as SessionExpiredException;
 
 /**
  * Database session handler
@@ -40,17 +39,6 @@ use VuFind\Db\Table\Session as SessionTable,
  */
 class Database extends AbstractBase
 {
-    protected $table;
-
-    /**
-     * Constructor.
-     */
-    public function __construct()
-    {
-        // Create database connection:
-        $this->table = new SessionTable();
-    }
-
     /**
      * Read function must return string value always to make save handler work as
      * expected. Return empty string if there is no data to read.
@@ -63,7 +51,8 @@ class Database extends AbstractBase
     {
         // Try to read the session, but destroy it if it has expired:
         try {
-            return $this->table->readSession($sess_id, $this->lifetime);
+            return $this->getTable('Session')
+                ->readSession($sess_id, $this->lifetime);
         } catch (SessionExpiredException $e) {
             $this->destroy($sess_id);
             return;
@@ -80,7 +69,7 @@ class Database extends AbstractBase
      */
     public function write($sess_id, $data)
     {
-        $this->table->writeSession($sess_id, $data);
+        $this->getTable('Session')->writeSession($sess_id, $data);
     }
 
     /**
@@ -97,7 +86,7 @@ class Database extends AbstractBase
         parent::destroy($sess_id);
 
         // Now do database-specific destruction:
-        $this->table->destroySession($sess_id);
+        $this->getTable('Session')->destroySession($sess_id);
     }
 
     /**
@@ -110,6 +99,6 @@ class Database extends AbstractBase
      */
     public function gc($sess_maxlifetime)
     {
-        $this->table->garbageCollect($sess_maxlifetime);
+        $this->getTable('Session')->garbageCollect($sess_maxlifetime);
     }
 }

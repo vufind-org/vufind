@@ -48,6 +48,12 @@ class Manager implements ServiceLocatorAwareInterface
     protected $config;
     protected $session;
     protected $ilsAccount = false;
+
+    /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
     protected $serviceLocator;
 
     /**
@@ -175,7 +181,17 @@ class Manager implements ServiceLocatorAwareInterface
      */
     public function isLoggedIn()
     {
-        return isset($this->session->user) ? $this->session->user : false;
+        $user = isset($this->session->user) ? $this->session->user : false;
+
+        // User may have been serialized into session; if so, we may need to
+        // restore its service locator, since SL's can't be serialized:
+        if ($user && null === $user->getServiceLocator()) {
+            $user->setServiceLocator(
+                $this->getServiceLocator()->get('DbTablePluginManager')
+            );
+        }
+
+        return $user;
     }
 
     /**

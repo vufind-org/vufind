@@ -27,8 +27,6 @@
  */
 namespace VuFind\OAI;
 use SimpleXMLElement, VuFind\Config\Reader as ConfigReader,
-    VuFind\Db\Table\ChangeTracker as ChangeTrackerTable,
-    VuFind\Db\Table\OaiResumption as OaiResumptionTable,
     VuFind\Exception\RecordMissing as RecordMissingException, VuFind\SimpleXML;
 
 /**
@@ -66,6 +64,9 @@ class Server
     // Search manager:
     protected $searchManager;
 
+    // Table manager:
+    protected $tableManager;
+
     /**
      * Constructor
      *
@@ -77,6 +78,7 @@ class Server
     public function __construct(\VuFind\Search\Manager $sm, $baseURL, $params)
     {
         $this->searchManager = $sm;
+        $this->tableManager = $sm->getServiceLocator()->get('DbTablePluginManager');
         $this->baseURL = $baseURL;
         $this->params = isset($params) && is_array($params) ? $params : array();
         $this->initializeMetadataFormats(); // Load details on supported formats
@@ -115,7 +117,7 @@ class Server
      * Assign necessary interface variables to display a deleted record.
      *
      * @param SimpleXMLElement $xml        XML to update
-     * @param object           $tracker    A change_tracker DB row object
+     * @param array            $tracker    Array representing a change_tracker row
      * @param bool             $headerOnly Only attach the header?
      *
      * @return void
@@ -127,8 +129,8 @@ class Server
         // <record> tag wrapping the header.
         $record = $headerOnly ? $xml : $xml->addChild('record');
         $this->attachRecordHeader(
-            $record, $this->prefixID($tracker->id),
-            date($this->iso8601, $this->normalizeDate($tracker->deleted)),
+            $record, $this->prefixID($tracker['id']),
+            date($this->iso8601, $this->normalizeDate($tracker['deleted'])),
             array(),
             'deleted'
         );
@@ -239,12 +241,12 @@ class Server
             }
         } else {
             // No record in index -- is this deleted?
-            $tracker = new ChangeTrackerTable();
+            $tracker = $this->tableManager->get('ChangeTracker');
             $row = $tracker->retrieve(
                 $this->core, $this->stripID($this->params['identifier'])
             );
             if (!empty($row) && !empty($row->deleted)) {
-                $this->attachDeleted($xml, $row);
+                $this->attachDeleted($xml, $row->toArray());
             } else {
                 // Not deleted and not found in index -- error!
                 return $this->showError('idDoesNotExist', 'Unknown Record');
@@ -436,14 +438,13 @@ class Server
         $headersOnly = ($verb != 'ListRecords');
 
         // Get deleted records in the requested range (if applicable):
-        $deleted = $this->listRecordsGetDeleted($from, $until);
+        $deleted = $this->listRecordsGetDeleted($from, $until)->toArray();
         $deletedCount = count($deleted);
         if ($currentCursor < $deletedCount) {
             $limit = $currentCursor + $this->pageSize;
             $limit = $limit > $deletedCount ? $deletedCount : $limit;
             for ($i = $currentCursor; $i < $limit; $i++) {
-                $deleted->seek($i);
-                $this->attachDeleted($xml, $deleted->current(), $headersOnly);
+                $this->attachDeleted($xml, $deleted[$i], $headersOnly);
                 $currentCursor++;
             }
         }
@@ -542,7 +543,7 @@ class Server
      */
     protected function listRecordsGetDeleted($from, $until)
     {
-        $tracker = new ChangeTrackerTable();
+        $tracker = $this->tableManager->get('ChangeTracker');
         return $tracker->retrieveDeleted(
             $this->core, date('Y-m-d H:i:s', $from), date('Y-m-d H:i:s', $until)
         );
@@ -707,7 +708,7 @@ class Server
     protected function loadResumptionToken($token)
     {
         // Create object for loading tokens:
-        $search = new OaiResumptionTable();
+        $search = $this->tableManager->get('OaiResumption');
 
         // Clean up expired records before doing our search:
         $search->removeExpired();
@@ -771,7 +772,7 @@ class Server
         $params['cursor'] = $currentCursor;
 
         // Save everything to the database:
-        $search = new OaiResumptionTable();
+        $search = $this->tableManager->get('OaiResumption');
         $expire = time() + 24 * 60 * 60;
         $token = $search->saveToken($params, $expire);
 

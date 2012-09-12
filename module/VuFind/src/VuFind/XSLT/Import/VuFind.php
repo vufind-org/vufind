@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/importing_records Wiki
  */
 namespace VuFind\XSLT\Import;
-use DOMDocument, VuFind\Config\Reader as ConfigReader,
-    VuFind\Db\Table\ChangeTracker as ChangeTrackerTable;
+use DOMDocument, VuFind\Config\Reader as ConfigReader;
 
 /**
  * XSLT support class -- all methods of this class must be public and static;
@@ -42,6 +41,31 @@ use DOMDocument, VuFind\Config\Reader as ConfigReader,
  */
 class VuFind
 {
+    protected static $serviceLocator;
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return void
+     */
+    public static function setServiceLocator($serviceLocator)
+    {
+        static::$serviceLocator = $serviceLocator;
+    }
+
+    /**
+     * Get the change tracker table object.
+     *
+     * @return \VuFind\Db\Table\ChangeTracker
+     */
+    public static function getChangeTracker()
+    {
+        return static::$serviceLocator->get('DbTablePluginManager')
+            ->get('ChangeTracker');
+    }
+
     /**
      * Get the date/time of the first time this record was indexed.
      *
@@ -54,13 +78,10 @@ class VuFind
      */
     public static function getFirstIndexed($core, $id, $date)
     {
-        /* TODO: test this when AbstractRowGateway supports multi-part keys:
         $date = strtotime($date);
-        $tracker = new ChangeTrackerTable();
-        $row = $tracker->index($core, $id, $date);
+        $row = static::getChangeTracker()->index($core, $id, $date);
         $iso8601 = 'Y-m-d\TH:i:s\Z';
         return date($iso8601, strtotime($row->first_indexed));
-         */
     }
 
     /**
@@ -75,13 +96,10 @@ class VuFind
      */
     public static function getLastIndexed($core, $id, $date)
     {
-        /* TODO: test this when AbstractRowGateway supports multi-part keys:
         $date = strtotime($date);
-        $tracker = new ChangeTrackerTable();
-        $row = $tracker->index($core, $id, $date);
+        $row = static::getChangeTracker()->index($core, $id, $date);
         $iso8601 = 'Y-m-d\TH:i:s\Z';
         return date($iso8601, strtotime($row->last_indexed));
-         */
     }
 
     /**

@@ -48,6 +48,13 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
     protected $config = null;
 
     /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
+
+    /**
      * Get configuration (load automatically if not previously set).  Throw an
      * exception if the configuration is invalid.
      *
@@ -179,7 +186,8 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
      */
     public function getUserTable()
     {
-        return new \VuFind\Db\Table\User();
+        return $this->getServiceLocator()->getServiceLocator()
+            ->get('DbTablePluginManager')->get('User');
     }
 
     /**

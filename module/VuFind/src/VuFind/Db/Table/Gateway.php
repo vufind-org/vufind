@@ -44,6 +44,13 @@ use Zend\Db\TableGateway\AbstractTableGateway,
 class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterface
 {
     protected $rowClass = null;
+    
+    /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
 
     /**
      * Constructor
@@ -58,7 +65,6 @@ class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterfa
         $this->rowClass = $rowClass;
         $this->featureSet = new FeatureSet();
         $this->featureSet->addFeature(new GlobalAdapterFeature());
-        $this->initialize();
     }
 
     /**
@@ -90,6 +96,18 @@ class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterfa
     public function createRow()
     {
         return clone($this->getResultSetPrototype()->getArrayObjectPrototype());
+    }
+
+    /**
+     * Get access to another table.
+     *
+     * @param string $table Table name
+     *
+     * @return Gateway
+     */
+    public function getDbTable($table)
+    {
+        return $this->getServiceLocator()->get($table);
     }
 
     /**

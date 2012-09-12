@@ -51,7 +51,8 @@ class ShibbolethTest extends \VuFind\Tests\DbTestCase
 
         // Fail if there are already users in the database (we don't want to run this
         // on a real system -- it's only meant for the continuous integration server)
-        $userTable = new User();
+        $test = new ShibbolethTest();
+        $userTable = $test->getTable('User');
         if (count($userTable->select()) > 0) {
             throw new \Exception('Test cannot run with pre-existing user data!');
         }
@@ -69,7 +70,7 @@ class ShibbolethTest extends \VuFind\Tests\DbTestCase
         if (null === $config) {
             $config = $this->getAuthConfig();
         }
-        $obj = new Shibboleth();
+        $obj = clone($this->getAuthManager()->get('Shibboleth'));
         $obj->setConfig($config);
         return $obj;
     }
@@ -218,7 +219,8 @@ class ShibbolethTest extends \VuFind\Tests\DbTestCase
     public static function tearDownAfterClass()
     {
         // Delete test user
-        $userTable = new User();
+        $test = new ShibbolethTest();
+        $userTable = $test->getTable('User');
         $user = $userTable->getByUsername('testuser', false);
         if (empty($user)) {
             throw new \Exception('Problem deleting expected user.');

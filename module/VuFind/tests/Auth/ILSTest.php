@@ -48,7 +48,7 @@ class ILSTest extends \VuFind\Tests\DbTestCase
     public function __construct()
     {
         $this->driver = $this->getMock('VuFind\ILS\Driver\Demo');
-        $this->auth = new ILS();
+        $this->auth = $this->getAuthManager()->get('ILS');
         $this->auth->setCatalog($this->driver);
     }
 
@@ -64,7 +64,8 @@ class ILSTest extends \VuFind\Tests\DbTestCase
 
         // Fail if there are already users in the database (we don't want to run this
         // on a real system -- it's only meant for the continuous integration server)
-        $userTable = new User();
+        $test = new ILSTest();
+        $userTable = $test->getTable('User');
         if (count($userTable->select()) > 0) {
             throw new \Exception('Test cannot run with pre-existing user data!');
         }
@@ -166,7 +167,8 @@ class ILSTest extends \VuFind\Tests\DbTestCase
     public static function tearDownAfterClass()
     {
         // Delete test user
-        $userTable = new User();
+        $test = new ILSTest();
+        $userTable = $test->getTable('User');
         $user = $userTable->getByUsername('testuser', false);
         if (empty($user)) {
             throw new \Exception('Problem deleting expected user.');

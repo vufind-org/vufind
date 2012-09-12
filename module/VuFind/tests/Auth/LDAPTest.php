@@ -51,7 +51,7 @@ class LDAPTest extends \VuFind\Tests\TestCase
         if (null === $config) {
             $config = $this->getAuthConfig();
         }
-        $obj = new LDAP();
+        $obj = clone($this->getAuthManager()->get('LDAP'));
         $obj->setConfig($config);
         return $obj;
     }

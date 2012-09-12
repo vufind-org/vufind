@@ -29,8 +29,8 @@ namespace VuFind\Controller;
 
 use VuFind\Cache\Manager as CacheManager, VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
-    VuFind\Db\Table\Search as SearchTable, VuFind\Exception\Mail as MailException,
-    VuFind\Mailer, VuFind\Search\Memory, VuFind\Solr\Utils as SolrUtils;
+    VuFind\Exception\Mail as MailException, VuFind\Mailer, VuFind\Search\Memory,
+    VuFind\Solr\Utils as SolrUtils;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -234,7 +234,7 @@ class SearchController extends AbstractSearch
         }
 
         // Retrieve search history
-        $search = new SearchTable();
+        $search = $this->getTable('Search');
         $searchHistory = $search->getSearches(
             $this->getServiceLocator()->get('SessionManager')->getId(),
             is_object($user) ? $user->id : null

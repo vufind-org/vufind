@@ -26,11 +26,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Row;
-use VuFind\Db\Table\Resource as ResourceTable, VuFind\Db\Table\User as UserTable,
-    VuFind\Db\Table\UserResource as UserResourceTable,
-    VuFind\Exception\ListPermission as ListPermissionException,
+use VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\MissingField as MissingFieldException,
-    Zend\Db\RowGateway\RowGateway,
     Zend\Session\Container as SessionContainer;
 
 /**
@@ -42,7 +39,7 @@ use VuFind\Db\Table\Resource as ResourceTable, VuFind\Db\Table\User as UserTable
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class UserList extends RowGateway
+class UserList extends ServiceLocatorAwareGateway
 {
     /**
      * Constructor
@@ -76,7 +73,7 @@ class UserList extends RowGateway
      */
     public function getTags()
     {
-        $table = new UserTable();
+        $table = $this->getDbTable('User');
         $user = $table->select(array('id' => $this->user_id))->current();
         if (empty($user)) {
             return array();
@@ -170,7 +167,7 @@ class UserList extends RowGateway
         }
 
         // Retrieve a list of resource IDs:
-        $resourceTable = new ResourceTable();
+        $resourceTable = $this->getDbTable('Resource');
         $resources = $resourceTable->findResources($ids, $source);
 
         $resourceIDs = array();
@@ -179,7 +176,7 @@ class UserList extends RowGateway
         }
 
         // Remove Resource (related tags are also removed implicitly)
-        $userResourceTable = new UserResourceTable();
+        $userResourceTable = $this->getDbTable('UserResource');
         $userResourceTable->destroyLinks($resourceIDs, $this->user_id, $this->id);
     }
 
@@ -209,7 +206,7 @@ class UserList extends RowGateway
         }
 
         // Remove user_resource and resource_tags rows:
-        $userResource = new UserResourceTable();
+        $userResource = $this->getDbTable('UserResource');
         $userResource->destroyLinks(null, $this->user_id, $this->id);
 
         // Remove the list itself:

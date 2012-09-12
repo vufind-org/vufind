@@ -28,9 +28,7 @@
 namespace VuFind\Controller;
 use ArrayObject, VuFind\Cache\Manager as CacheManager,
     VuFind\Config\Reader as ConfigReader, VuFind\Cookie\Container as CookieContainer,
-    VuFind\Db\AdapterFactory, VuFind\Db\Table\Resource as ResourceTable,
-    VuFind\Db\Table\ResourceTags as ResourceTagsTable,
-    VuFind\Db\Table\User as UserTable,
+    VuFind\Db\AdapterFactory,
     VuFind\Exception\RecordMissing as RecordMissingException,
     VuFind\Record\Loader as RecordLoader,
     Zend\Db\TableGateway\Feature\GlobalAdapterFeature as DbGlobalAdapter,
@@ -271,7 +269,7 @@ class UpgradeController extends AbstractBase
             unset($this->session->dbRootPass);
 
             // Check for legacy "anonymous tag" bug:
-            $resourceTagsTable = new ResourceTagsTable();
+            $resourceTagsTable = $this->getTable('ResourceTags');
             $anonymousTags = $resourceTagsTable->getAnonymousCount();
             if ($anonymousTags > 0 && !isset($this->cookie->skipAnonymousTags)) {
                 $this->getRequest()->getQuery()->set('anonymousCnt', $anonymousTags);
@@ -363,13 +361,13 @@ class UpgradeController extends AbstractBase
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('Username must not be empty.');
             } else {
-                $userTable = new UserTable();
+                $userTable = $this->getTable('User');
                 $user = $userTable->getByUsername($user, false);
                 if (empty($user) || !is_object($user) || !isset($user->id)) {
                     $this->flashMessenger()->setNamespace('error')
                         ->addMessage("User {$user} not found.");
                 } else {
-                    $table = new ResourceTagsTable();
+                    $table = $this->getTable('ResourceTags');
                     $table->assignAnonymousTags($user->id);
                     $this->session->warnings->append(
                         "Assigned all anonymous tags to {$user->username}."
@@ -400,7 +398,7 @@ class UpgradeController extends AbstractBase
         }
 
         // Check for problems:
-        $table = new ResourceTable();
+        $table = $this->getTable('Resource');
         $problems = $table->findMissingMetadata();
 
         // No problems?  We're done here!

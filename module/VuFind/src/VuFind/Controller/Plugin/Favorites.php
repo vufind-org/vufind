@@ -26,9 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller\Plugin;
-use VuFind\Db\Table\Resource as ResourceTable,
-    VuFind\Db\Table\UserList as UserListTable,
-    VuFind\Exception\LoginRequired as LoginRequiredException, VuFind\Tags,
+use VuFind\Exception\LoginRequired as LoginRequiredException, VuFind\Tags,
     VuFind\Translator\Translator, Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
@@ -64,7 +62,7 @@ class Favorites extends AbstractPlugin
 
         // Get or create a list object as needed:
         $listId = isset($params['list']) ? $params['list'] : '';
-        $table = new UserListTable();
+        $table = $this->getController()->getTable('UserList');
         if (empty($listId) || $listId == 'NEW') {
             $list = $table->getNew($user);
             $list->title = Translator::translate('My Favorites');
@@ -80,7 +78,7 @@ class Favorites extends AbstractPlugin
             list($source, $id) = explode('|', $current, 2);
 
             // Get or create a resource object as needed:
-            $resourceTable = new ResourceTable();
+            $resourceTable = $this->getController()->getTable('Resource');
             $resource = $resourceTable->findResource($id, $source);
 
             // Add the information to the user's account:
@@ -120,7 +118,7 @@ class Favorites extends AbstractPlugin
                 $user->removeResourcesById($ids, $source);
             }
         } else {
-            $table = new UserListTable();
+            $table = $this->getController()->getTable('UserList');
             $list = $table->getExisting($listID);
             foreach ($sorted as $source => $ids) {
                 $list->removeResourcesById($user, $ids, $source);

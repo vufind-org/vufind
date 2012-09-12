@@ -27,11 +27,8 @@
  */
 namespace VuFind\Db\Row;
 use VuFind\Date\Converter as DateConverter,
-    VuFind\Db\Table\Comments as CommentsTable, VuFind\Db\Table\Tags as TagsTable,
-    VuFind\Db\Table\ResourceTags as ResourceTagsTable,
     VuFind\Exception\Date as DateException,
-    VuFind\Exception\LoginRequired as LoginRequiredException,
-    Zend\Db\RowGateway\RowGateway;
+    VuFind\Exception\LoginRequired as LoginRequiredException;
 
 /**
  * Row Definition for resource
@@ -42,7 +39,7 @@ use VuFind\Date\Converter as DateConverter,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Resource extends RowGateway
+class Resource extends ServiceLocatorAwareGateway
 {
     /**
      * Constructor
@@ -65,7 +62,7 @@ class Resource extends RowGateway
      */
     public function deleteTags($user, $list_id = null)
     {
-        $unlinker = new ResourceTagsTable();
+        $unlinker = $this->getDbTable('ResourceTags');
         $unlinker->destroyLinks($this->id, $user->id, $list_id);
     }
 
@@ -83,10 +80,10 @@ class Resource extends RowGateway
     {
         $tagText = trim($tagText);
         if (!empty($tagText)) {
-            $tags = new TagsTable();
+            $tags = $this->getDbTable('Tags');
             $tag = $tags->getByText($tagText);
 
-            $linker = new ResourceTagsTable();
+            $linker = $this->getDbTable('ResourceTags');
             $linker->createLink(
                 $this->id, $tag->id, is_object($user) ? $user->id : null, $list_id
             );
@@ -110,7 +107,7 @@ class Resource extends RowGateway
             );
         }
 
-        $table = new CommentsTable();
+        $table = $this->getDbTable('Comments');
         $row = $table->createRow();
         $row->user_id = $user->id;
         $row->resource_id = $this->id;

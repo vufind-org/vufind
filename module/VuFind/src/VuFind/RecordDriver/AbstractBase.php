@@ -27,11 +27,6 @@
  */
 namespace VuFind\RecordDriver;
 use VuFind\Config\Reader as ConfigReader,
-    VuFind\Db\Table\Comments as CommentsTable,
-    VuFind\Db\Table\Resource as ResourceTable,
-    VuFind\Db\Table\Tags as TagsTable,
-    VuFind\Db\Table\UserList as UserListTable,
-    VuFind\Db\Table\UserResource as UserResourceTable,
     VuFind\Exception\LoginRequired as LoginRequiredException,
     VuFind\Tags, VuFind\Translator\Translator,
     VuFind\XSLT\Import\VuFind as ArticleStripper,
@@ -55,6 +50,13 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
     protected $extraDetails = array();      // For storing extra data with record
     protected $recordIni = null;            // ini file for record settings
     protected $fields = array();
+
+    /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
 
     /**
      * Set raw data to initialize the object.
@@ -105,7 +107,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
      */
     public function getComments()
     {
-        $table = new CommentsTable();
+        $table = $this->getDbTable('Comments');
         return $table->getForResource($this->getUniqueId(), $this->resourceSource);
     }
 
@@ -134,7 +136,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
      */
     public function getTags($list_id = null, $user_id = null, $sort = 'count')
     {
-        $tags = new TagsTable();
+        $tags = $this->getDbTable('Tags');
         return $tags->getForResource(
             $this->getUniqueId(), $this->resourceSource, 0, $list_id, $user_id, $sort
         );
@@ -150,7 +152,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
      */
     public function addTags($user, $tags)
     {
-        $resources = new ResourceTable();
+        $resources = $this->getDbTable('Resource');
         $resource
             = $resources->findResource($this->getUniqueId(), $this->resourceSource);
         foreach (Tags::parse($tags) as $tag) {
@@ -180,7 +182,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
 
         // Get or create a list object as needed:
         $listId = isset($params['list']) ? $params['list'] : '';
-        $table = new UserListTable();
+        $table = $this->getDbTable('UserList');
         if (empty($listId) || $listId == 'NEW') {
             $list = $table->getNew($user);
             $list->title = Translator::translate('My Favorites');
@@ -191,7 +193,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
         }
 
         // Get or create a resource object as needed:
-        $resourceTable = new ResourceTable();
+        $resourceTable = $this->getDbTable('Resource');
         $resource = $resourceTable->findResource(
             $this->getUniqueId(), $this->resourceSource, true, $this
         );
@@ -215,7 +217,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
      */
     public function getListNotes($list_id = null, $user_id = null)
     {
-        $db = new UserResourceTable();
+        $db = $this->getDbTable('UserResource');
         $data = $db->getSavedData(
             $this->getUniqueId(), $this->resourceSource, $list_id, $user_id
         );
@@ -237,7 +239,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
      */
     public function getContainingLists($user_id = null)
     {
-        $table = new UserListTable();
+        $table = $this->getDbTable('UserList');
         return $table->getListsContainingResource(
             $this->getUniqueId(), $this->resourceSource, $user_id
         );
@@ -455,5 +457,18 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
     public function getServiceLocator()
     {
         return $this->serviceLocator;
+    }
+
+    /**
+     * Get a database table object.
+     *
+     * @param string $table Name of table to retrieve
+     *
+     * @return \VuFind\Db\Table\Gateway
+     */
+    protected function getDbTable($table)
+    {
+        return $this->getServiceLocator()->getServiceLocator()
+            ->get('DbTablePluginManager')->get($table);
     }
 }

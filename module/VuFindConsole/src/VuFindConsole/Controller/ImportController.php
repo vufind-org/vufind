@@ -96,7 +96,9 @@ class ImportController extends AbstractBase
 
         // Try to import the document if successful:
         try {
-            Importer::save($argv[0], $argv[1], $index, $testMode);
+            $importer = new Importer();
+            $importer->setServiceLocator($this->getServiceLocator());
+            $importer->save($argv[0], $argv[1], $index, $testMode);
         } catch (\Exception $e) {
             Console::writeLine("Fatal error: " . $e->getMessage());
             return $this->getFailureResponse();

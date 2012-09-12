@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/alphabetical_heading_browse Wiki
  */
 namespace VuFind\Controller;
-use VuFind\Config\Reader as ConfigReader, VuFind\Db\Table\Tags as TagsTable;
+use VuFind\Config\Reader as ConfigReader;
 
 /**
  * BrowseController Class
@@ -272,7 +272,7 @@ class BrowseController extends AbstractBase
 
         if ($this->params()->fromQuery('findby')) {
             $params = $this->getRequest()->getQuery()->toArray();
-            $tagTable = new TagsTable();
+            $tagTable = $this->getTable('Tags');
             // Special case -- display alphabet selection if necessary:
             if ($params['findby'] == 'alphabetical') {
                 $legalLetters = $this->getAlphabetList();
@@ -285,11 +285,10 @@ class BrowseController extends AbstractBase
                     $tags = $tagTable->matchText($params['query']);
                     $tagList = array();
                     foreach ($tags as $tag) {
-                        $count = $tagTable->getCount($tag['id']);
-                        if ($count > 0) {
+                        if ($tag['cnt'] > 0) {
                             $tagList[] = array(
                                 'result' => $tag['tag'],
-                                'count' => $count
+                                'count' => $tag['cnt']
                             );
                         }
                     }

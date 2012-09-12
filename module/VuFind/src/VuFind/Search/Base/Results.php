@@ -62,7 +62,12 @@ abstract class Results implements ServiceLocatorAwareInterface
     protected $helpers = array();
     // Spelling
     protected $suggestions = null;
-    // Service locator
+
+    /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
     protected $serviceLocator;
 
     /**
@@ -595,5 +600,17 @@ abstract class Results implements ServiceLocatorAwareInterface
             throw new \Exception('Could not find service locator');
         }
         return $sl->get('SearchManager');
+    }
+
+    /**
+     * Get a database table object.
+     *
+     * @param string $table Name of table to retrieve
+     *
+     * @return \VuFind\Db\Table\Gateway
+     */
+    public function getTable($table)
+    {
+        return $this->getServiceLocator()->get('DbTablePluginManager')->get($table);
     }
 }

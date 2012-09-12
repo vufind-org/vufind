@@ -217,7 +217,7 @@ class ResourceTags extends Gateway
             }
             $checkResults = $this->checkForTags(array_unique($ids));
             if (count($checkResults['missing']) > 0) {
-                $tagTable = new Tags();
+                $tagTable = $this->getDbTable('Tags');
                 $tagTable->deleteByIdArray($checkResults['missing']);
             }
         }

@@ -66,7 +66,12 @@ class Params implements ServiceLocatorAwareInterface
     protected $facetConfig = array();
     protected $checkboxFacets = array();
     protected $filterList = array();
-    // Service locator
+
+    /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
     protected $serviceLocator;
 
     /**
@@ -1546,5 +1551,17 @@ class Params implements ServiceLocatorAwareInterface
             throw new \Exception('Could not find service locator');
         }
         return $sl->get('SearchManager');
+    }
+
+    /**
+     * Get a database table object.
+     *
+     * @param string $table Name of table to retrieve
+     *
+     * @return \VuFind\Db\Table\Gateway
+     */
+    public function getTable($table)
+    {
+        return $this->getServiceLocator()->get('DbTablePluginManager')->get($table);
     }
 }

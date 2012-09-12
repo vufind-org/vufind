@@ -26,9 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Controller;
-use VuFind\Db\Table\Comments as CommentsTable,
-    VuFind\Db\Table\Resource as ResourceTable,
-    VuFind\Exception\Mail as MailException, VuFind\Export, VuFind\Mailer,
+use VuFind\Exception\Mail as MailException, VuFind\Export, VuFind\Mailer,
     VuFind\Mailer\SMS, VuFind\Record\Router as RecordRouter,
     Zend\Session\Container as SessionContainer;
 
@@ -100,7 +98,7 @@ class AbstractRecord extends AbstractBase
         // something has gone wrong (or user submitted blank form) and we
         // should do nothing:
         if (!empty($comment)) {
-            $table = new ResourceTable();
+            $table = $this->getTable('Resource');
             $resource = $table->findResource(
                 $driver->getUniqueId(), $driver->getResourceSource(), true, $driver
             );
@@ -127,7 +125,7 @@ class AbstractRecord extends AbstractBase
             return $this->forceLogin();
         }
         $id = $this->params()->fromQuery('delete');
-        $table = new CommentsTable();
+        $table = $this->getTable('Comments');
         if (!is_null($id) && $table->deleteIfOwnedByUser($id, $user)) {
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage('delete_comment_success');

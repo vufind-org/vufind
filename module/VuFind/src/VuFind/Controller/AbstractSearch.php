@@ -26,8 +26,8 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller;
-use VuFind\Db\Table\Search as SearchTable, VuFind\Record\Router as RecordRouter,
-    VuFind\Search\Memory, Zend\Stdlib\Parameters;
+use VuFind\Record\Router as RecordRouter, VuFind\Search\Memory,
+    Zend\Stdlib\Parameters;
 
 /**
  * VuFind Search Controller
@@ -104,7 +104,7 @@ class AbstractSearch extends AbstractBase
      */
     protected function redirectToSavedSearch($id)
     {
-        $table = new SearchTable();
+        $table = $this->getTable('Search');
         $search = $table->getRowById($id);
 
         // Found, make sure the user has the rights to view this search
@@ -193,7 +193,7 @@ class AbstractSearch extends AbstractBase
             if ($this->saveToHistory) {
                 $user = $this->getUser();
                 $sessId = $this->getServiceLocator()->get('SessionManager')->getId();
-                $history = new SearchTable();
+                $history = $this->getTable('Search');
                 $history->saveSearch(
                     $this->getSearchManager(), $results, $sessId,
                     $history->getSearches(
@@ -281,7 +281,7 @@ class AbstractSearch extends AbstractBase
     protected function restoreAdvancedSearch($searchId)
     {
         // Look up search in database and fail if it is not found:
-        $searchTable = new SearchTable();
+        $searchTable = $this->getTable('Search');
         $search = $searchTable->select(array('id' => $searchId))->current();
         if (empty($search)) {
             $this->flashMessenger()->setNamespace('error')

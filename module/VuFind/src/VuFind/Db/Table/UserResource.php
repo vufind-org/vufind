@@ -26,7 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Db\Table;
-use VuFind\Db\Table\ResourceTags as ResourceTagsTable, Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Expression;
 
 /**
  * Table Definition for user_resource
@@ -142,7 +142,7 @@ class UserResource extends Gateway
         // Remove any tags associated with the links we are removing; we don't
         // want to leave orphaned tags in the resource_tags table after we have
         // cleared out favorites in user_resource!
-        $resourceTags = new ResourceTagsTable();
+        $resourceTags = $this->getDbTable('ResourceTags');
         $resourceTags->destroyLinks($resource_id, $user_id, $list_id);
 
         // Now build the where clause to figure out which rows to remove:

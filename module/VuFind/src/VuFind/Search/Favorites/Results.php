@@ -26,9 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Search\Favorites;
-use VuFind\Db\Table\Resource as ResourceTable,
-    VuFind\Db\Table\UserList as UserListTable,
-    VuFind\Exception\ListPermission as ListPermissionException,
+use VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Record\Loader as RecordLoader,
     VuFind\Search\Base\Results as BaseResults,
     VuFind\Translator\Translator;
@@ -145,7 +143,7 @@ class Results extends BaseResults
         }
 
         // How many results were there?
-        $resource = new ResourceTable();
+        $resource = $this->getTable('Resource');
         $userId = is_null($list) ? $this->user->id : $list->user_id;
         $listId = is_null($list) ? null : $list->id;
         $rawResults = $resource->getFavorites(
@@ -217,7 +215,7 @@ class Results extends BaseResults
             if (null === $listId) {
                 $this->list = null;
             } else {
-                $table = new UserListTable();
+                $table = $this->getTable('UserList');
                 $this->list = $table->getExisting($listId);
             }
         }

@@ -28,7 +28,6 @@
  */
 namespace VuFind\Connection;
 use VuFind\Config\Reader as ConfigReader,
-    VuFind\Db\Table\ChangeTracker as ChangeTrackerTable,
     VuFind\Exception\Solr as SolrException, VuFind\Http\Client as HttpClient,
     VuFind\Log\Logger, VuFind\Solr\Utils as SolrUtils,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
@@ -1116,7 +1115,8 @@ class Solr implements ServiceLocatorAwareInterface
 
         // Record the deletions in our change tracker database:
         foreach ($idList as $id) {
-            $tracker = new ChangeTrackerTable();
+            $tracker = $this->getServiceLocator()->get('DbTablePluginManager')
+                ->get('ChangeTracker');
             $tracker->markDeleted($this->core, $id);
         }
 

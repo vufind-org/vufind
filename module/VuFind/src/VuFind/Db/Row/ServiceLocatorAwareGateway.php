@@ -1,6 +1,6 @@
 <?php
 /**
- * Tag Autocomplete Module
+ * Abstract base class for rows that need access to the service locator.
  *
  * PHP version 5
  *
@@ -20,27 +20,27 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Autocomplete
+ * @package  Db_Row
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/autocomplete Wiki
+ * @link     http://vufind.org   Main Site
  */
-namespace VuFind\Autocomplete;
-use Zend\ServiceManager\ServiceLocatorAwareInterface,
+namespace VuFind\Db\Row;
+use Zend\Db\RowGateway\RowGateway,
+    Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Tag Autocomplete Module
- *
- * This class provides suggestions by using the local tag database.
+ * Abstract base class for rows that need access to the service locator.
  *
  * @category VuFind2
- * @package  Autocomplete
+ * @package  Db_Row
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/autocomplete Wiki
+ * @link     http://vufind.org   Main Site
  */
-class Tag implements AutocompleteInterface, ServiceLocatorAwareInterface
+class ServiceLocatorAwareGateway extends RowGateway
+    implements ServiceLocatorAwareInterface
 {
     /**
      * Service locator
@@ -50,52 +50,15 @@ class Tag implements AutocompleteInterface, ServiceLocatorAwareInterface
     protected $serviceLocator;
 
     /**
-     * getSuggestions
+     * Get access to another table.
      *
-     * This method returns an array of strings matching the user's query for
-     * display in the autocomplete box.
+     * @param string $table Table name
      *
-     * @param string $query The user query
-     *
-     * @return array        The suggestions for the provided query
+     * @return \VuFind\Db\Table\Gateway
      */
-    public function getSuggestions($query)
+    public function getDbTable($table)
     {
-        $tagList = array();
-        $tagTable = $this->getTagsTable();
-        $tags = $tagTable->matchText($query);
-        if ($tags) {
-            foreach ($tags as $i=>$tag) {
-                $tagList[] = $tag['tag'];
-            }
-        }
-        return $tagList;
-    }
-
-    /**
-     * setConfig
-     *
-     * Set parameters that affect the behavior of the autocomplete handler.
-     * These values normally come from the search configuration file.
-     *
-     * @param string $params Parameters to set
-     *
-     * @return void
-     */
-    public function setConfig($params)
-    {
-        // Ignore all parameters
-    }
-
-    /**
-     * Get access to the user table.
-     *
-     * @return \VuFind\Db\Table\Tags
-     */
-    public function getTagsTable()
-    {
-        return $this->getServiceLocator()->getServiceLocator()
-            ->get('DbTablePluginManager')->get('Tags');
+        return $this->getServiceLocator()->get($table);
     }
 
     /**
@@ -103,7 +66,7 @@ class Tag implements AutocompleteInterface, ServiceLocatorAwareInterface
      *
      * @param ServiceLocatorInterface $serviceLocator Locator to register
      *
-     * @return Tag
+     * @return ServiceLocatorAwareGateway
      */
     public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
     {

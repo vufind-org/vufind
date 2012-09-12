@@ -26,8 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Solr;
-use VuFind\Config\Reader as ConfigReader, VuFind\Db\Table\Tags as TagsTable,
-    VuFind\Search\Base\Params as BaseParams;
+use VuFind\Config\Reader as ConfigReader, VuFind\Search\Base\Params as BaseParams;
 
 /**
  * Solr Search Parameters
@@ -177,7 +176,7 @@ class Params extends BaseParams
      */
     protected function initTagSearch()
     {
-        $table = new TagsTable();
+        $table = $this->getTable('Tags');
         $tag = $table->getByText($this->getDisplayQuery());
         if (!empty($tag)) {
             $rawResults = $tag->getResources('VuFind');

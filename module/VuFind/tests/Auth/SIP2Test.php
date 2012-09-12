@@ -51,7 +51,7 @@ class SIP2Test extends \VuFind\Tests\TestCase
         if (null === $config) {
             $config = $this->getAuthConfig();
         }
-        $obj = new SIP2();
+        $obj = clone($this->getAuthManager()->get('SIP2'));
         $obj->setConfig($config);
         return $obj;
     }

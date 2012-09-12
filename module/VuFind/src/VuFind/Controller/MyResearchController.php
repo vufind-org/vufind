@@ -29,8 +29,6 @@ namespace VuFind\Controller;
 
 use VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
-    VuFind\Db\Table\Search as SearchTable,
-    VuFind\Db\Table\UserList as UserListTable,
     VuFind\Exception\Auth as AuthException,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\RecordMissing as RecordMissingException,
@@ -185,7 +183,7 @@ class MyResearchController extends AbstractBase
         }
 
         // Check for the save / delete parameters and process them appropriately:
-        $search = new SearchTable();
+        $search = $this->getTable('Search');
         if (($id = $this->params()->fromQuery('save', false)) !== false) {
             $search->setSavedFlag($id, true, $user->id);
             $this->flashMessenger()->setNamespace('info')
@@ -317,7 +315,7 @@ class MyResearchController extends AbstractBase
         if (empty($listID)) {
             $list = false;
         } else {
-            $table = new UserListTable();
+            $table = $this->getTable('UserList');
             $list = $table->getExisting($listID);
         }
         return $this->createViewModel(
@@ -355,7 +353,7 @@ class MyResearchController extends AbstractBase
         // Perform delete and send appropriate flash message:
         if (!is_null($listID)) {
             // ...Specific List
-            $table = new UserListTable();
+            $table = $this->getTable('UserList');
             $list = $table->getExisting($listID);
             $list->removeResourcesById($user, array($id), $source);
             $this->flashMessenger()->setNamespace('info')
@@ -633,7 +631,7 @@ class MyResearchController extends AbstractBase
         // Is this a new list or an existing list?  Handle the special 'NEW' value
         // of the ID parameter:
         $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
-        $table = new UserListTable();
+        $table = $this->getTable('UserList');
         $list = ($id == 'NEW') ? $table->getNew($user) : $table->getExisting($id);
 
         // Process form submission:
@@ -679,7 +677,7 @@ class MyResearchController extends AbstractBase
         // Have we confirmed this?
         if ($this->params()->fromPost('confirm')) {
             try {
-                $table = new UserListTable();
+                $table = $this->getTable('UserList');
                 $list = $table->getExisting($listID);
                 $list->delete($this->getUser());
 

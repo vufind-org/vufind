@@ -26,7 +26,8 @@
  * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
  */
 namespace VuFind\Session;
-use VuFind\Db\Table\Search as SearchTable,
+use Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorInterface,
     Zend\Session\SaveHandler\SaveHandlerInterface;
 
 /**
@@ -38,10 +39,18 @@ use VuFind\Db\Table\Search as SearchTable,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
  */
-abstract class AbstractBase implements SaveHandlerInterface
+abstract class AbstractBase implements SaveHandlerInterface,
+    ServiceLocatorAwareInterface
 {
     protected $lifetime = 3600;
     protected $config = null;
+
+    /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
 
     /**
      * Set configuration.
@@ -122,7 +131,7 @@ abstract class AbstractBase implements SaveHandlerInterface
      */
     public function destroy($sess_id)
     {
-        $table = new SearchTable();
+        $table = $this->getTable('Search');
         $table->destroySession($sess_id);
     }
 
@@ -147,5 +156,41 @@ abstract class AbstractBase implements SaveHandlerInterface
         // Anecdotal testing Today and Yesterday seems to indicate destroy()
         //   is called by the garbage collector and everything is good.
         // Something to keep in mind though.
+    }
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return AbstractBase
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
+    }
+
+    /**
+     * Get a database table object.
+     *
+     * @param string $table Name of table to retrieve
+     *
+     * @return \VuFind\Db\Table\Gateway
+     */
+    protected function getTable($table)
+    {
+        return $this->getServiceLocator()->getServiceLocator()
+            ->get('DbTablePluginManager')->get($table);
     }
 }

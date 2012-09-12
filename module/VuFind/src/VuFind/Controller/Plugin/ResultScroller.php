@@ -26,8 +26,8 @@
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
 namespace VuFind\Controller\Plugin;
-use VuFind\Config\Reader as ConfigReader, VuFind\Db\Table\Search as SearchTable,
-    VuFind\Search\Memory, Zend\Mvc\Controller\Plugin\AbstractPlugin,
+use VuFind\Config\Reader as ConfigReader, VuFind\Search\Memory,
+    Zend\Mvc\Controller\Plugin\AbstractPlugin,
     Zend\Session\Container as SessionContainer;
 
 /**
@@ -329,7 +329,7 @@ class ResultScroller extends AbstractPlugin
     protected function restoreLastSearch()
     {
         if (isset($this->data->searchId)) {
-            $searchTable = new SearchTable();
+            $searchTable = $this->getController()->getTable('Search');
             $row = $searchTable->getRowById($this->data->searchId, false);
             if (!empty($row)) {
                 $minSO = unserialize($row->search_object);

@@ -26,8 +26,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Statistics\Driver;
-use VuFind\Db\Table\UserStats as UserStatsTable,
-    VuFind\Db\Table\UserStatsFields as UserStatsFieldsTable;
+use Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Writer to put statistics into the DB
@@ -38,23 +38,14 @@ use VuFind\Db\Table\UserStats as UserStatsTable,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Db extends AbstractBase
+class Db extends AbstractBase implements ServiceLocatorAwareInterface
 {
-    protected $statsTable = null;
-
     /**
-     * Get an object representing the statistics table.
+     * Service locator
      *
-     * @return \VuFind\Db\Table\UserStatsFields
+     * @var ServiceLocatorInterface
      */
-    protected function getStatsTable()
-    {
-        if (null === $this->statsTable) {
-            // Create a table object
-            $this->statsTable = new UserStatsFieldsTable();
-        }
-        return $this->statsTable;
-    }
+    protected $serviceLocator;
 
     /**
      * Write a message to the log.
@@ -66,7 +57,7 @@ class Db extends AbstractBase
      */
     public function write($data, $userData)
     {
-        $this->getStatsTable()->save($data, $userData);
+        $this->getTable('UserStatsFields')->save($data, $userData);
     }
     
     /**
@@ -80,7 +71,7 @@ class Db extends AbstractBase
     public function getTopList($field, $listLength = 5)
     {
         // Use the model
-        return $this->getStatsTable()->getTop($field, $listLength);
+        return $this->getTable('UserStatsFields')->getTop($field, $listLength);
     }
     
     /**
@@ -94,7 +85,8 @@ class Db extends AbstractBase
     public function getFullList($field, $value = array())
     {
         // Use the model
-        return $this->getStatsTable()->getFields($field, $value)->toArray();
+        return $this->getTable('UserStatsFields')->getFields($field, $value)
+            ->toArray();
     }
     
     /**
@@ -107,7 +99,43 @@ class Db extends AbstractBase
      */
     public function getBrowserStats($version, $limit)
     {
-        $userStats = new UserStatsTable();
+        $userStats = $this->getTable('UserStats');
         return $userStats->getBrowserStats($version, $limit);
+    }
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return AbstractBase
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
+    }
+
+    /**
+     * Get a database table object.
+     *
+     * @param string $table Name of table to retrieve
+     *
+     * @return \VuFind\Db\Table\Gateway
+     */
+    protected function getTable($table)
+    {
+        return $this->getServiceLocator()->getServiceLocator()
+            ->get('DbTablePluginManager')->get($table);
     }
 }

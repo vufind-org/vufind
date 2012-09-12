@@ -73,7 +73,7 @@ class UserStatsFields extends Gateway
             );
         }
         // User data
-        $userStats = new \VuFind\Db\Table\UserStats();
+        $userStats = $this->getDbTable('UserStats');
         $userStats->insert($userData);
     }
 
@@ -112,35 +112,6 @@ class UserStatsFields extends Gateway
         };
         
         return $this->select($callback);
-    }
-
-    /**
-     * Get the number of hits for a field
-     *
-     * @param string  $field name of the field we want
-     * @param integer $value a specific value to count
-     *
-     * @return integer
-     */
-    public function getCount($field, $value = null)
-    {
-        $callback = function($select) use ($field, $value) {
-            $select->columns(
-                array(
-                    'count' => new Expression(
-                        'COUNT(?)',
-                        array('value'),
-                        array(Expression::TYPE_IDENTIFIER)
-                    )
-                )
-            );
-            $select->where->equalTo('field', $field);
-            if ($value != null) {
-                $select->where->equalTo('value', $value);
-            }
-        };
-        
-        return $this->select($callback)->current()->count;
     }
 
     /**

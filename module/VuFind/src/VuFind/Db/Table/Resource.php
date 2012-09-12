@@ -156,7 +156,7 @@ class Resource extends Gateway
 
             // Adjust for tags if necessary:
             if (!empty($tags)) {
-                $linkingTable = new ResourceTags();
+                $linkingTable = $this->getDbTable('ResourceTags');
                 foreach ($tags as $tag) {
                     $matches = $linkingTable
                         ->getResourcesForTag($tag, $userId, $listId)->toArray();

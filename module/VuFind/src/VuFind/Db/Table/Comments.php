@@ -56,7 +56,7 @@ class Comments extends Gateway
      */
     public function getForResource($id, $source = 'VuFind')
     {
-        $resourceTable = new Resource();
+        $resourceTable = $this->getDbTable('Resource');
         $resource = $resourceTable->findResource($id, $source, false);
         if (empty($resource)) {
             return array();

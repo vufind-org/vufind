@@ -28,9 +28,6 @@
 namespace VuFind\Controller;
 use VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
-    VuFind\Db\Table\Comments as CommentsTable,
-    VuFind\Db\Table\Resource as ResourceTable, VuFind\Db\Table\Tags as TagsTable,
-    VuFind\Db\Table\UserList as UserListTable,
     VuFind\Exception\Auth as AuthException, VuFind\Export, VuFind\Mailer,
     VuFind\Mailer\SMS, VuFind\Record\Loader as RecordLoader,
     VuFind\Translator\Translator;
@@ -635,7 +632,7 @@ class AjaxController extends AbstractBase
     protected function getRecordTags()
     {
         // Retrieve from database:
-        $tagTable = new TagsTable();
+        $tagTable = $this->getTable('Tags');
         $tags = $tagTable->getForResource(
             $this->params()->fromQuery('id'),
             $this->params()->fromQuery('source', 'VuFind')
@@ -892,7 +889,7 @@ class AjaxController extends AbstractBase
         $user = $this->getUser();
 
         try {
-            $table = new UserListTable();
+            $table = $this->getTable('UserList');
             $list = $table->getNew($user);
             $id = $list->updateFromRequest($user, $this->getRequest()->getPost());
         } catch (\Exception $e) {
@@ -1087,7 +1084,7 @@ class AjaxController extends AbstractBase
             );
         }
 
-        $table = new ResourceTable();
+        $table = $this->getTable('Resource');
         $resource = $table->findResource(
             $id, $this->params()->fromPost('source', 'VuFind')
         );
@@ -1112,7 +1109,7 @@ class AjaxController extends AbstractBase
         }
 
         $id = $this->params()->fromQuery('id');
-        $table = new CommentsTable();
+        $table = $this->getTable('Comments');
         if (empty($id) || !$table->deleteIfOwnedByUser($id, $user)) {
             return $this->output(
                 Translator::translate('An error has occurred'), self::STATUS_ERROR

@@ -55,4 +55,43 @@ abstract class DbTestCase extends TestCase
             DbGlobalAdapter::setStaticAdapter(DbAdapterFactory::getAdapter());
         }
     }
+
+    /**
+     * Get a service manager.
+     *
+     * @return \Zend\ServiceManager\ServiceManager
+     */
+    public function getServiceManager()
+    {
+        // Get parent service manager:
+        $sm = parent::getServiceManager();
+
+        // Add database service:
+        if (!$sm->has('DbTablePluginManager')) {
+            $factory = new \VuFind\Db\Table\PluginManager(
+                new \Zend\ServiceManager\Config(
+                    array(
+                        'abstract_factories' =>
+                            array('VuFind\Db\Table\PluginFactory')
+                    )
+                )
+            );
+            $factory->setServiceLocator($sm);
+            $sm->setService('DbTablePluginManager', $factory);
+        }
+        return $sm;
+    }
+
+    /**
+     * Get a table object.
+     *
+     * @param string $table Name of table to load
+     *
+     * @return \VuFind\Db\Table\Gateway
+     */
+    public function getTable($table)
+    {
+        $sm = $this->getServiceManager();
+        return $sm->get('DbTablePluginManager')->get($table);
+    }
 }

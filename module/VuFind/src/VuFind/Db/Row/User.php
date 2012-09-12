@@ -26,11 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Row;
-use VuFind\Db\Table\Resource as ResourceTable, VuFind\Db\Table\Tags as TagsTable,
-    VuFind\Db\Table\UserList as UserListTable,
-    VuFind\Db\Table\UserResource as UserResourceTable,
-    Zend\Db\RowGateway\RowGateway, Zend\Db\Sql\Expression,
-    Zend\Db\Sql\Predicate\Predicate, Zend\Db\Sql\Sql,
+use Zend\Db\Sql\Expression, Zend\Db\Sql\Predicate\Predicate, Zend\Db\Sql\Sql,
     Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
 
 /**
@@ -42,7 +38,7 @@ use VuFind\Db\Table\Resource as ResourceTable, VuFind\Db\Table\Tags as TagsTable
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class User extends RowGateway
+class User extends ServiceLocatorAwareGateway
 {
     /**
      * Constructor
@@ -52,6 +48,22 @@ class User extends RowGateway
     public function __construct($adapter)
     {
         parent::__construct('id', 'user', $adapter);
+    }
+
+    /**
+     * Sleep magic method -- the service locator can't be serialized, so we need to
+     * exclude it from serialization.  Since we can't obtain a new locator in the
+     * __wakeup() method, it needs to be re-injected by the \VuFind\Auth\Manager
+     * (see the isLoggedIn() method of that class).
+     *
+     * @return array
+     */
+    public function __sleep()
+    {
+        $vars = get_object_vars($this);
+        unset($vars['serviceLocator']);
+        $vars = array_keys($vars);
+        return $vars;
     }
 
     /**
@@ -158,7 +170,7 @@ class User extends RowGateway
             }
         };
 
-        $table = new TagsTable();
+        $table = $this->getDbTable('Tags');
         return $table->select($callback);
     }
 
@@ -220,7 +232,7 @@ class User extends RowGateway
             $select->order(array('title'));
         };
 
-        $table = new UserListTable();
+        $table = $this->getDbTable('UserList');
         return $table->select($callback);
     }
 
@@ -236,7 +248,7 @@ class User extends RowGateway
      */
     public function getSavedData($resourceId, $listId = null, $source = 'VuFind')
     {
-        $table = new UserResourceTable();
+        $table = $this->getDbTable('UserResource');
         return $table->getSavedData($resourceId, $source, $listId, $this->id);
     }
 
@@ -273,7 +285,7 @@ class User extends RowGateway
     ) {
         // Create the resource link if it doesn't exist and update the notes in any
         // case:
-        $linkTable = new UserResourceTable();
+        $linkTable = $this->getDbTable('UserResource');
         $linkTable->createOrUpdateLink($resource->id, $this->id, $list->id, $notes);
 
         // If we're replacing existing tags, delete the old ones before adding the
@@ -299,7 +311,7 @@ class User extends RowGateway
     public function removeResourcesById($ids, $source = 'VuFind')
     {
         // Retrieve a list of resource IDs:
-        $resourceTable = new ResourceTable();
+        $resourceTable = $this->getDbTable('Resource');
         $resources = $resourceTable->findResources($ids, $source);
 
         $resourceIDs = array();
@@ -308,7 +320,7 @@ class User extends RowGateway
         }
 
         // Remove Resource (related tags are also removed implicitly)
-        $userResourceTable = new UserResourceTable();
+        $userResourceTable = $this->getDbTable('UserResource');
         $userResourceTable->destroyLinks($resourceIDs, $this->id);
     }
 
@@ -321,7 +333,7 @@ class User extends RowGateway
     {
         // Remove all lists owned by the user:
         $lists = $this->getLists();
-        $table = new UserListTable();
+        $table = $this->getDbTable('UserList');
         foreach ($lists as $current) {
             // The rows returned by getLists() are read-only, so we need to retrieve
             // a new object for each row in order to perform a delete operation:

@@ -138,6 +138,23 @@ $config = array(
             'result-scroller' => 'VuFind\Controller\Plugin\ResultScroller',
         )
     ),
+    'db_table_plugin_manager' => array(
+        'abstract_factories' => array('VuFind\Db\Table\PluginFactory'),
+        'invokables' => array(
+            'changetracker' => 'VuFind\Db\Table\ChangeTracker',
+            'comments' => 'VuFind\Db\Table\Comments',
+            'resource' => 'VuFind\Db\Table\Resource',
+            'resourcetags' => 'VuFind\Db\Table\ResourceTags',
+            'search' => 'VuFind\Db\Table\Search',
+            'session' => 'VuFind\Db\Table\Session',
+            'tags' => 'VuFind\Db\Table\Tags',
+            'user' => 'VuFind\Db\Table\User',
+            'userlist' => 'VuFind\Db\Table\UserList',
+            'userresource' => 'VuFind\Db\Table\UserResource',
+            'userstats' => 'VuFind\Db\Table\UserStats',
+            'userstatsfields' => 'VuFind\Db\Table\UserStatsFields',
+        ),
+    ),
     'ils_driver_plugin_manager' => array(
         'abstract_factories' => array('VuFind\ILS\Driver\PluginFactory'),
         'invokables' => array(

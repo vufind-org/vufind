@@ -27,9 +27,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Controller;
-use Zend\Mvc\Controller\AbstractActionController,
-    Zend\ServiceManager\ServiceLocatorInterface,
-    Zend\ServiceManager\ServiceLocatorAwareInterface, Zend\View\Model\ViewModel;
+use Zend\Mvc\Controller\AbstractActionController, Zend\View\Model\ViewModel;
 
 /**
  * VuFind controller base class (defines some methods that can be shared by other
@@ -199,6 +197,18 @@ class AbstractBase extends AbstractActionController
     public function getSearchManager()
     {
         return $this->getServiceLocator()->get('SearchManager');
+    }
+
+    /**
+     * Get a database table object.
+     *
+     * @param string $table Name of table to retrieve
+     *
+     * @return \VuFind\Db\Table\Gateway
+     */
+    public function getTable($table)
+    {
+        return $this->getServiceLocator()->get('DbTablePluginManager')->get($table);
     }
 
     /**

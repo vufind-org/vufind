@@ -26,7 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Tests\Auth;
-use VuFind\Auth\Database, VuFind\Db\Table\User;
+use VuFind\Auth\Database;
 
 /**
  * Database authentication test class.
@@ -46,7 +46,7 @@ class DatabaseTest extends \VuFind\Tests\DbTestCase
      */
     public function __construct()
     {
-        $this->auth = new Database();
+        $this->auth = $this->getAuthManager()->get('Database');
     }
 
     /**
@@ -61,7 +61,8 @@ class DatabaseTest extends \VuFind\Tests\DbTestCase
 
         // Fail if there are already users in the database (we don't want to run this
         // on a real system -- it's only meant for the continuous integration server)
-        $userTable = new User();
+        $test = new DatabaseTest();
+        $userTable = $test->getTable('User');
         if (count($userTable->select()) > 0) {
             throw new \Exception('Test cannot run with pre-existing user data!');
         }
@@ -277,7 +278,8 @@ class DatabaseTest extends \VuFind\Tests\DbTestCase
     public static function tearDownAfterClass()
     {
         // Delete test user
-        $userTable = new User();
+        $test = new DatabaseTest();
+        $userTable = $test->getTable('User');
         $user = $userTable->getByUsername('testuser', false);
         if (empty($user)) {
             throw new \Exception('Problem deleting expected user.');
