@@ -45,6 +45,13 @@ class Manager implements ServiceLocatorAwareInterface
     protected $optionsStore = array();
 
     /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
+
+    /**
      * Constructor
      *
      * @param array $config Configuration from VuFind module
