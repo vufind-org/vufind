@@ -26,10 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Config;
-use Horde_Yaml as Yaml,
-    VuFind\Cache\Manager as CacheManager,
-    Zend\Config\Config,
-    Zend\Config\Reader\Ini as IniReader;
+use Zend\Config\Config, Zend\Config\Reader\Ini as IniReader;
 
 /**
  * Class to digest VuFind configuration settings
@@ -43,7 +40,6 @@ use Horde_Yaml as Yaml,
 class Reader
 {
     protected static $configs = array();
-    protected static $searchSpecs = array();
 
     /**
      * Load the proper config file
@@ -200,50 +196,6 @@ class Reader
         }
 
         return $config;
-    }
-
-    /**
-     * Return search specs
-     *
-     * @param string $filename config file name
-     *
-     * @return array
-     */
-    public static function getSearchSpecs($filename)
-    {
-        // Load data if it is not already in the object's static cache:
-        if (!isset(self::$searchSpecs[$filename])) {
-            // Connect to searchspecs cache:
-            $cache = CacheManager::getInstance()->getCache('searchspecs');
-
-            // Determine full configuration file path:
-            $fullpath = self::getBaseConfigPath($filename);
-            $local = self::getLocalConfigPath($filename);
-
-            // Generate cache key:
-            $key = $filename . '-' . filemtime($fullpath);
-            if (!empty($local)) {
-                $key .= '-local-' . filemtime($local);
-            }
-            $key = md5($key);
-
-            // Generate data if not found in cache:
-            if (!$cache || !($results = $cache->getItem($key))) {
-                $results = Yaml::load(file_get_contents($fullpath));
-                if (!empty($local)) {
-                    $localResults = Yaml::load(file_get_contents($local));
-                    foreach ($localResults as $key => $value) {
-                        $results[$key] = $value;
-                    }
-                }
-                if ($cache) {
-                    $cache->setItem($key, $results);
-                }
-            }
-            self::$searchSpecs[$filename] = $results;
-        }
-
-        return self::$searchSpecs[$filename];
     }
 
     /**

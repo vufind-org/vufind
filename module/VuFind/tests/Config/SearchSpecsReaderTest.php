@@ -1,6 +1,6 @@
 <?php
 /**
- * Config Reader Test Class
+ * Config SearchSpecsReader Test Class
  *
  * PHP version 5
  *
@@ -26,10 +26,10 @@
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
 namespace VuFind\Tests\Config;
-use VuFind\Config\Reader;
+use VuFind\Config\SearchSpecsReader;
 
 /**
- * Config Reader Test Class
+ * Config SearchSpecsReader Test Class
  *
  * @category VuFind2
  * @package  Tests
@@ -38,30 +38,22 @@ use VuFind\Config\Reader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
-class ReaderTest extends \VuFind\Tests\TestCase
+class SearchSpecsReaderTest extends \VuFind\Tests\TestCase
 {
     /**
-     * Test basic config.ini loading.
+     * Test loading of a YAML file.
      *
      * @return void
      */
-    public function testBasicRead()
+    public function testSearchSpecsRead()
     {
-        // This should retrieve config.ini, which should have "Library Catalog"
-        // set as the default system title.
-        $config = Reader::getConfig();
-        $this->assertEquals('Library Catalog', $config->Site->title);
-    }
-
-    /**
-     * Test loading of a custom .ini file.
-     *
-     * @return void
-     */
-    public function testCustomRead()
-    {
-        // This should retrieve sms.ini, which should include a Carriers array.
-        $config = Reader::getConfig('sms');
-        $this->assertTrue(isset($config->Carriers) && count($config->Carriers) > 0);
+        // The searchspecs.yaml file should define author dismax fields (among many
+        // other things).
+        $reader = $this->getServiceManager()->get('SearchSpecsReader');
+        $specs = $reader->get('searchspecs.yaml');
+        $this->assertTrue(
+            isset($specs['Author']['DismaxFields'])
+            && !empty($specs['Author']['DismaxFields'])
+        );
     }
 }

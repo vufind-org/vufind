@@ -186,8 +186,8 @@ class Solr implements ServiceLocatorAwareInterface
     {
         // Only load specs once:
         if ($this->searchSpecs === false) {
-            $this->searchSpecs
-                = ConfigReader::getSearchSpecs($this->searchSpecsFile);
+            $this->searchSpecs = $this->getServiceLocator()->get('SearchSpecsReader')
+                ->get($this->searchSpecsFile);
         }
 
         // Special case -- null $handler means we want all search specs.

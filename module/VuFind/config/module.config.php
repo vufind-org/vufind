@@ -263,6 +263,7 @@ $config = array(
             'authmanager' => 'VuFind\Auth\Manager',
             'cart' => 'VuFind\Cart',
             'recordloader' => 'VuFind\Record\Loader',
+            'searchspecsreader' => 'VuFind\Config\SearchSpecsReader',
             'sessionmanager' => 'Zend\Session\SessionManager',
         )
     ),
