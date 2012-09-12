@@ -27,7 +27,7 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Cache\Manager as CacheManager, VuFind\Config\Reader as ConfigReader,
+use VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
     VuFind\Exception\Mail as MailException, VuFind\Mailer, VuFind\Search\Memory,
     VuFind\Solr\Utils as SolrUtils;
@@ -499,7 +499,7 @@ class SearchController extends AbstractSearch
     protected function getAdvancedFacets()
     {
         // Check if we have facet results cached, and build them if we don't.
-        $cache = CacheManager::getInstance()->getCache('object');
+        $cache = $this->getServiceLocator()->get('CacheManager')->getCache('object');
         if (!($results = $cache->getItem('solrSearchHomeFacets'))) {
             // Use advanced facet settings to get summary facets on the front page;
             // we may want to make this more flexible later.  Also keep in mind that

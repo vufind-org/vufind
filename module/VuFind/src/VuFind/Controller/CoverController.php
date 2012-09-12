@@ -26,8 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller;
-use VuFind\Cache\Manager as CacheManager, VuFind\Config\Reader as ConfigReader,
-    VuFind\Cover\Loader;
+use VuFind\Config\Reader as ConfigReader, VuFind\Cover\Loader;
 
 /**
  * Generates covers for book entries
@@ -40,18 +39,23 @@ use VuFind\Cache\Manager as CacheManager, VuFind\Config\Reader as ConfigReader,
  */
 class CoverController extends AbstractBase
 {
-    protected $loader;
+    protected $loader = false;
 
     /**
-     * Constructor
+     * Get the cover loader object
+     *
+     * @return Loader
      */
-    public function __construct()
+    protected function getLoader()
     {
-        // Construct object for loading cover images:
-        $this->loader = new Loader(
-            ConfigReader::getConfig(), CacheManager::getInstance()->getCacheDir()
-        );
-        parent::__construct();
+        // Construct object for loading cover images if it does not already exist:
+        if (!$this->loader) {
+            $this->loader = new Loader(
+                ConfigReader::getConfig(),
+                $this->getServiceLocator()->get('CacheManager')->getCacheDir()
+            );
+        }
+        return $this->loader;
     }
 
     /**
@@ -61,7 +65,7 @@ class CoverController extends AbstractBase
      */
     public function showAction()
     {
-        $this->loader->loadImage(
+        $this->getLoader()->loadImage(
             $this->params()->fromQuery('isn'),
             $this->params()->fromQuery('size'),
             $this->params()->fromQuery('contenttype')
@@ -76,7 +80,7 @@ class CoverController extends AbstractBase
      */
     public function unavailableAction()
     {
-        $this->loader->loadUnavailable();
+        $this->getLoader()->loadUnavailable();
         return $this->displayImage();
     }
 
@@ -91,9 +95,9 @@ class CoverController extends AbstractBase
         $response = $this->getResponse();
         $headers = $response->getHeaders();
         $headers->addHeaderLine(
-            'Content-type', $this->loader->getContentType()
+            'Content-type', $this->getLoader()->getContentType()
         );
-        $response->setContent($this->loader->getImage());
+        $response->setContent($this->getLoader()->getImage());
         return $response;
     }
 }

@@ -36,8 +36,9 @@
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use VuFind\Cache\Manager as CacheManager, VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\ILS as ILSException;
+use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException,
+    Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Aleph Translator Class
@@ -271,10 +272,17 @@ class AlephRestfulException extends \Exception
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
-class Aleph extends AbstractBase
+class Aleph extends AbstractBase implements ServiceLocatorAwareInterface
 {
     protected $duedates = false;
     protected $translator = false;
+
+    /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
 
     /**
      * Initialize the driver.
@@ -330,8 +338,11 @@ class Aleph extends AbstractBase
             && isset($this->config['util']['tab15'])
             && isset($this->config['util']['tab_sub_library'])
         ) {
-            if (isset($this->config['Cache']['type'])) {
-                $manager = CacheManager::getInstance();
+            $serviceManager = $this->getServiceLocator()->getServiceLocator();
+            if (isset($this->config['Cache']['type'])
+                && $serviceManager->has('CacheManager')
+            ) {
+                $manager = $serviceManager->get('CacheManager');
                 $cache = $manager->getCache($this->config['Cache']['type']);
                 $this->translator = $cache->getItem('alephTranslator');
             }
@@ -1631,5 +1642,28 @@ class Aleph extends AbstractBase
     {
         // TODO
         return array();
+    }
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return Aleph
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
     }
 }

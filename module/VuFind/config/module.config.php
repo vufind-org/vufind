@@ -262,6 +262,7 @@ $config = array(
         'invokables' => array(
             'authmanager' => 'VuFind\Auth\Manager',
             'cart' => 'VuFind\Cart',
+            'cachemanager' => 'VuFind\Cache\Manager',
             'recordloader' => 'VuFind\Record\Loader',
             'searchspecsreader' => 'VuFind\Config\SearchSpecsReader',
             'sessionmanager' => 'Zend\Session\SessionManager',

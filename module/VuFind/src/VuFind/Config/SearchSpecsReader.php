@@ -26,8 +26,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Config;
-use Horde_Yaml as Yaml,
-    VuFind\Cache\Manager as CacheManager;
+use Horde_Yaml as Yaml, Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * VuFind SearchSpecs Configuration Reader
@@ -38,8 +38,15 @@ use Horde_Yaml as Yaml,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class SearchSpecsReader
+class SearchSpecsReader implements ServiceLocatorAwareInterface
 {
+    /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
+
     /**
      * Cache of loaded search specs.
      *
@@ -59,7 +66,9 @@ class SearchSpecsReader
         // Load data if it is not already in the object's cache:
         if (!isset($this->searchSpecs[$filename])) {
             // Connect to searchspecs cache:
-            $cache = CacheManager::getInstance()->getCache('searchspecs');
+            $sm = $this->getServiceLocator();
+            $cache = (is_object($sm) && $sm->has('CacheManager'))
+                ? $sm->get('CacheManager')->getCache('searchspecs') : false;
 
             // Determine full configuration file path:
             $fullpath = Reader::getBaseConfigPath($filename);
@@ -89,5 +98,28 @@ class SearchSpecsReader
         }
 
         return $this->searchSpecs[$filename];
+    }
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return SearchSpecsReader
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
     }
 }

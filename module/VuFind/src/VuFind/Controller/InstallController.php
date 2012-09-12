@@ -163,7 +163,7 @@ class InstallController extends AbstractBase
      */
     protected function checkCache()
     {
-        $cache = \VuFind\Cache\Manager::getInstance();
+        $cache = $this->getServiceLocator()->get('CacheManager');
         return array(
             'title' => 'Cache',
             'status' => !$cache->hasDirectoryCreationError(),
@@ -178,7 +178,7 @@ class InstallController extends AbstractBase
      */
     public function fixcacheAction()
     {
-        $cache = \VuFind\Cache\Manager::getInstance();
+        $cache = $this->getServiceLocator()->get('CacheManager');
         $view = $this->createViewModel();
         $view->cacheDir = $cache->getCacheDir();
         if (function_exists('posix_getpwuid') && function_exists('posix_geteuid')) {

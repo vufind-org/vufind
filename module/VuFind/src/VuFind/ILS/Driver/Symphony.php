@@ -27,8 +27,8 @@
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use SoapClient, SoapFault, VuFind\Cache\Manager as CacheManager,
-    VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException,
+use SoapClient, SoapFault, VuFind\Config\Reader as ConfigReader,
+    VuFind\Exception\ILS as ILSException,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -113,9 +113,12 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
 
         // Initialize cache manager.
         if (isset($configArray['PolicyCache']['type'])) {
-            $manager = CacheManager::getInstance();
-            $this->policyCache
-                = $manager->getCache($configArray['PolicyCache']['type']);
+            $serviceManager = $this->getServiceLocator()->getServiceLocator();
+            if ($serviceManager->has('CacheManager')) {
+                $manager = $serviceManager->get('CacheManager');
+                $this->policyCache
+                    = $manager->getCache($configArray['PolicyCache']['type']);
+            }
         }
     }
 

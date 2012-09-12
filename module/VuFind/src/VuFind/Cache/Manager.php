@@ -41,21 +41,32 @@ use VuFind\Config\Reader as ConfigReader, Zend\Cache\StorageFactory;
  */
 class Manager
 {
+    /**
+     * Was there a problem building cache directories?
+     *
+     * @var bool
+     */
     protected $directoryCreationError = false;
+
+    /**
+     * Settings used to generate cache objects.
+     *
+     * @var array
+     */
     protected $cacheSettings = array();
+
+    /**
+     * Actual cache objects generated from settings.
+     *
+     * @var array
+     */
     protected $caches = array();
 
     /**
-     * Constructor (protected to enforce use of getInstance).
+     * Constructor
      */
-    protected function __construct()
+    public function __construct()
     {
-        // If we have a parent constructor, call it (none exists at the time of
-        // this writing, but this is just in case Zend Framework changes later).
-        if (is_callable($this, 'parent::__construct')) {
-            parent::__construct();
-        }
-
         // Get base cache directory.
         $cacheBase = $this->getCacheDir();
 
@@ -160,19 +171,5 @@ class Manager
             'adapter' => 'APC',
             'plugins' => array('serializer')
         );
-    }
-
-    /**
-     * Get the current instance of the class.
-     *
-     * @return Manager
-     */
-    public static function getInstance()
-    {
-        static $instance = false;
-        if (!$instance) {
-            $instance = new Manager();
-        }
-        return $instance;
     }
 }

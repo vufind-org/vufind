@@ -26,9 +26,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use ArrayObject, VuFind\Cache\Manager as CacheManager,
-    VuFind\Config\Reader as ConfigReader, VuFind\Cookie\Container as CookieContainer,
-    VuFind\Db\AdapterFactory,
+use ArrayObject, VuFind\Config\Reader as ConfigReader,
+    VuFind\Cookie\Container as CookieContainer, VuFind\Db\AdapterFactory,
     VuFind\Exception\RecordMissing as RecordMissingException,
     Zend\Db\TableGateway\Feature\GlobalAdapterFeature as DbGlobalAdapter,
     Zend\Session\Container as SessionContainer;
@@ -463,7 +462,7 @@ class UpgradeController extends AbstractBase
     {
         // If the cache is messed up, nothing is going to work right -- check that
         // first:
-        $cache = CacheManager::getInstance();
+        $cache = $this->getServiceLocator()->get('CacheManager');
         if ($cache->hasDirectoryCreationError()) {
             return $this->redirect()->toRoute('install-fixcache');
         }

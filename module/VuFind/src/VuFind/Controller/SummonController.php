@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Cache\Manager as CacheManager, Zend\Mvc\MvcEvent;
+use Zend\Mvc\MvcEvent;
 
 /**
  * Summon Controller
@@ -125,7 +125,7 @@ class SummonController extends AbstractSearch
     protected function getAdvancedFacets()
     {
         // Check if we have facet results cached, and build them if we don't.
-        $cache = CacheManager::getInstance()->getCache('object');
+        $cache = $this->getServiceLocator()->get('CacheManager')->getCache('object');
         if (!($results = $cache->getItem('summonSearchHomeFacets'))) {
             $sm = $this->getSearchManager();
             $params = $sm->setSearchClassId('Summon')->getParams();
