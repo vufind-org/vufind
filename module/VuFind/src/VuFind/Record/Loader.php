@@ -41,6 +41,13 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface,
 class Loader implements ServiceLocatorAwareInterface
 {
     /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
+
+    /**
      * Temporary method to get instance of object -- TODO: eliminate in place of
      * service manager after further refactoring.
      *

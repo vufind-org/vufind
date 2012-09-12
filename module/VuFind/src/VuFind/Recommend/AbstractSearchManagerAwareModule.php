@@ -43,6 +43,11 @@ use Zend\ServiceManager\ServiceLocatorInterface,
 abstract class AbstractSearchManagerAwareModule implements RecommendInterface,
     ServiceLocatorAwareInterface
 {
+    /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
     protected $serviceLocator;
 
     /**
