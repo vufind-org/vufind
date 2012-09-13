@@ -29,7 +29,7 @@
 namespace VuFind\Connection;
 use VuFind\Config\Reader as ConfigReader,
     VuFind\Exception\Solr as SolrException, VuFind\Http\Client as HttpClient,
-    VuFind\Log\Logger, VuFind\Solr\Utils as SolrUtils,
+    VuFind\Solr\Utils as SolrUtils, Zend\Log\Logger,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -45,11 +45,12 @@ use VuFind\Config\Reader as ConfigReader,
 class Solr implements ServiceLocatorAwareInterface
 {
     /**
-     * A boolean value determining whether to print debug information
-     * @var boolean
+     * Logger object for debug info (or false for no debugging).
+     *
+     * @var Logger|bool
      */
-    protected $logger;
-    
+    protected $logger = false;
+
     /**
      * The host to connect to
      * @var string
@@ -147,10 +148,50 @@ class Solr implements ServiceLocatorAwareInterface
         $this->client = new HttpClient(
             null, array('timeout' => $this->getHttpTimeout())
         );
+    }
 
-        // Don't waste time generating debug messages if nobody is listening:
-        $logger = Logger::getInstance();
-        $this->logger = $logger->debugNeeded() ? $logger : false;
+    /**
+     * Set the logger
+     *
+     * @param Logger $logger Logger to use.
+     *
+     * @return void
+     */
+    public function setLogger(Logger $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * Does the current logger require debug messages?
+     *
+     * @return bool
+     */
+    protected function debugNeeded()
+    {
+        // There are three situations we need to worry about:
+        // - Logger not set -- no debug needed
+        // - Logger set but does not support debugNeeded() method -- assume debug
+        // - Logger has debugNeeded() method -- defer to that
+        if (!$this->logger) {
+            return false;
+        }
+        return !method_exists($this->logger, 'debugNeeded')
+            || $this->logger->debugNeeded();
+    }
+
+    /**
+     * Log a debug message.
+     *
+     * @param string $msg Message to log.
+     *
+     * @return void
+     */
+    protected function debug($msg)
+    {
+        if ($this->logger) {
+            $this->logger->debug($msg);
+        }
     }
 
     /**
@@ -224,8 +265,8 @@ class Solr implements ServiceLocatorAwareInterface
      */
     public function getRecord($id, $extras = array())
     {
-        if ($this->logger) {
-            $this->logger->debug('Get Record: '.$id);
+        if ($this->debugNeeded()) {
+            $this->debug('Get Record: '.$id);
         }
 
         // Query String Parameters
@@ -990,9 +1031,9 @@ class Solr implements ServiceLocatorAwareInterface
         $this->initSearchParams($options);
 
         // debug
-        if ($this->logger) {
+        if ($this->debugNeeded()) {
             $debugMsg = 'Search options: ' . print_r($this->solrSearchParams, true);
-            $this->logger->debug($debugMsg);
+            $this->debug($debugMsg);
         }
 
         return $this->select(
@@ -1051,8 +1092,8 @@ class Solr implements ServiceLocatorAwareInterface
      */
     public function saveRecord($xml)
     {
-        if ($this->logger) {
-            $this->logger->debug('Add Record');
+        if ($this->debugNeeded()) {
+            $this->debug('Add Record');
         }
 
         return $this->update($xml);
@@ -1065,8 +1106,8 @@ class Solr implements ServiceLocatorAwareInterface
      */
     public function deleteAll()
     {
-        if ($this->logger) {
-            $this->logger->debug('Delete ALL records from index');
+        if ($this->debugNeeded()) {
+            $this->debug('Delete ALL records from index');
         }
 
         // Build the delete XML
@@ -1099,8 +1140,8 @@ class Solr implements ServiceLocatorAwareInterface
      */
     public function deleteRecords($idList)
     {
-        if ($this->logger) {
-            $this->logger->debug('Delete Record List');
+        if ($this->debugNeeded()) {
+            $this->debug('Delete Record List');
         }
 
         // Build the delete XML
@@ -1131,8 +1172,8 @@ class Solr implements ServiceLocatorAwareInterface
      */
     public function commit()
     {
-        if ($this->logger) {
-            $this->logger->debug('Commit');
+        if ($this->debugNeeded()) {
+            $this->debug('Commit');
         }
 
         return $this->update('<commit/>', array('timeout' => 600000));
@@ -1146,8 +1187,8 @@ class Solr implements ServiceLocatorAwareInterface
      */
     public function optimize()
     {
-        if ($this->logger) {
-            $this->logger->debug('Optimize');
+        if ($this->debugNeeded()) {
+            $this->debug('Optimize');
         }
 
         return $this->update('<optimize/>', array('timeout' => 600000));
@@ -1287,8 +1328,8 @@ class Solr implements ServiceLocatorAwareInterface
         $queryString = implode('&', $query);
 
         // debug
-        if ($this->logger) {
-            $this->logger->debug(
+        if ($this->debugNeeded()) {
+            $this->debug(
                 $method . ' '
                 . print_r($this->host . "/select/?" . $queryString, true)
             );
@@ -1326,8 +1367,8 @@ class Solr implements ServiceLocatorAwareInterface
         $this->client->setUri($this->host . "/update/");
 
         // debug
-        if ($this->logger) {
-            $this->logger->debug(
+        if ($this->debugNeeded()) {
+            $this->debug(
                 'POST: ' . print_r($this->host . "/update/", true)
                 . 'XML' . print_r($xml, true)
             );
