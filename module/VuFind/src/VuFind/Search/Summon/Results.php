@@ -60,6 +60,7 @@ class Results extends BaseResults
             $id = isset($config->Summon->apiId) ? $config->Summon->apiId : null;
             $key = isset($config->Summon->apiKey) ? $config->Summon->apiKey : null;
             $conn = new SummonConnection($id, $key);
+            $conn->setLogger(\VuFind\Log\Logger::getInstance());
         }
         return $conn;
     }

@@ -28,10 +28,8 @@
  */
 namespace VuFind\Connection;
 use SerialsSolutions\Summon\Zend2 as BaseSummon,
-    VuFind\Config\Reader as ConfigReader,
-    VuFind\Http\Client as HttpClient,
-    VuFind\Log\Logger,
-    VuFind\Solr\Utils as SolrUtils;
+    VuFind\Config\Reader as ConfigReader, VuFind\Http\Client as HttpClient,
+    VuFind\Solr\Utils as SolrUtils, Zend\Log\Logger;
 
 /**
  * Summon Search API Interface (VuFind implementation)
@@ -48,14 +46,24 @@ class Summon extends BaseSummon
     /**
      * Should boolean operators in the search string be treated as
      * case-insensitive (false), or must they be ALL UPPERCASE (true)?
+     *
+     * @var bool
      */
     protected $caseSensitiveBooleans = true;
 
     /**
      * Will we include snippets in responses?
+     *
      * @var bool
      */
     protected $snippets = false;
+
+    /**
+     * Logger object for debug info (or false for no debugging).
+     *
+     * @var Logger|bool
+     */
+    protected $logger = false;
 
     /**
      * Constructor
@@ -91,12 +99,6 @@ class Summon extends BaseSummon
             $this->snippets = $config->General->snippets;
         }
 
-        // Set default debug behavior:
-        $this->logger = Logger::getInstance();
-        if (!isset($options['debug'])) {
-            $options['debug'] = $this->logger->debugNeeded();
-        }
-
         $timeout = isset($config->General->timeout)
             ? $config->General->timeout : 30;
         parent::__construct(
@@ -104,6 +106,21 @@ class Summon extends BaseSummon
                 null, array('timeout' => $timeout)
             )
         );
+    }
+
+    /**
+     * Set the logger
+     *
+     * @param Logger $logger Logger to use.
+     *
+     * @return void
+     */
+    public function setLogger(Logger $logger)
+    {
+        // Adjust debug property based on logger settings:
+        $this->debug = method_exists($logger, 'debugNeeded')
+            ? $logger->debugNeeded() : true;
+        $this->logger = $logger;
     }
 
     /**
@@ -115,8 +132,8 @@ class Summon extends BaseSummon
      */
     protected function debugPrint($msg)
     {
-        if ($this->debug) {
-            $this->logger->debug("<pre>{$msg}</pre>\n");
+        if ($this->debug && $this->logger) {
+            $this->logger->debug("$msg\n");
         }
     }
 
