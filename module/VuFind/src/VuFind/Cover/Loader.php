@@ -28,8 +28,7 @@
  */
 namespace VuFind\Cover;
 use VuFind\Code\ISBN, VuFind\Http\Client as HttpClient,
-    VuFind\Log\Logger, VuFind\Theme\Tools as ThemeTools,
-    ZendService\Amazon\Amazon;
+    VuFind\Theme\Tools as ThemeTools, Zend\Log\Logger, ZendService\Amazon\Amazon;
 
 /**
  * Book Cover Generator
@@ -43,26 +42,75 @@ use VuFind\Code\ISBN, VuFind\Http\Client as HttpClient,
  */
 class Loader
 {
-    // property to hold filename constructed from ISBN
+    /**
+     * filename constructed from ISBN
+     *
+     * @var string
+     */
     protected $localFile = '';
 
-    // property to hold root directory of VuFind
+    /**
+     * valid image sizes to request
+     *
+     * @var array
+     */
     protected $validSizes = array('small', 'medium', 'large');
 
-    // property to hold VuFind configuration settings
+    /**
+     * property to hold VuFind configuration settings
+     *
+     * @var \Zend\Config\Config
+     */
     protected $config;
 
-    // directory to store downloaded images
+    /**
+     * directory to store downloaded images
+     *
+     * @var string
+     */
     protected $baseDir;
 
-    // current user parameters:
+    /**
+     * User ISN parameter
+     *
+     * @var string
+     */
     protected $isn;
+
+    /**
+     * User size parameter
+     *
+     * @var string
+     */
     protected $size;
+
+    /**
+     * User type parameter
+     *
+     * @var string
+     */
     protected $type;
 
-    // properties populated by calling loadImage or loadUnavailable:
+    /**
+     * Property for storing raw image data; may be null if image is unavailable
+     *
+     * @var string
+     */
     protected $image = null;
+
+    /**
+     * Content type of data in $image property
+     *
+     * @var string
+     */
     protected $contentType = null;
+
+    /**
+     * Logger (or false for none)
+     *
+     * @var Logger|bool
+     */
+    protected $logger = false;
 
     /**
      * Constructor
@@ -77,6 +125,32 @@ class Loader
         $this->baseDir = rtrim(
             is_null($baseDir) ? sys_get_temp_dir() : $baseDir, '\\/'
         );
+    }
+
+    /**
+     * Set the logger
+     *
+     * @param Logger $logger Logger to use.
+     *
+     * @return void
+     */
+    public function setLogger(Logger $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * Log a debug message.
+     *
+     * @param string $msg Message to log.
+     *
+     * @return void
+     */
+    protected function debug($msg)
+    {
+        if ($this->logger) {
+            $this->logger->debug($msg);
+        }
     }
 
     /**
@@ -278,7 +352,7 @@ class Loader
 
         // If file defined but does not exist, log error and display default:
         if (!file_exists($noCoverImage) || !is_readable($noCoverImage)) {
-            Logger::getInstance()->debug("Cannot access file: '$noCoverImage'");
+            $this->debug("Cannot access file: '$noCoverImage'");
             return $this->loadDefaultFailImage();
         }
 
@@ -295,7 +369,7 @@ class Loader
         $parts = explode('.', $noCoverImage);
         $fileExtension = strtolower(end($parts));
         if (!array_key_exists($fileExtension, $allowedFileExtensions)) {
-            Logger::getInstance()->debug(
+            $this->debug(
                 "Illegal file-extension '$fileExtension' for image '$noCoverImage'"
             );
             return $this->loadDefaultFailImage();
