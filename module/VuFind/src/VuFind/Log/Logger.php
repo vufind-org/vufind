@@ -205,20 +205,6 @@ class Logger extends BaseLogger
     }
 
     /**
-     * Get the logger instance.
-     *
-     * @return Logger
-     */
-    public static function getInstance()
-    {
-        static $instance;
-        if (!$instance) {
-            $instance = new Logger();
-        }
-        return $instance;
-    }
-
-    /**
      * Is one of the log writers listening for debug messages?  (This is useful to
      * know, since some code can save time that would be otherwise wasted generating
      * debug messages if we know that no one is listening).

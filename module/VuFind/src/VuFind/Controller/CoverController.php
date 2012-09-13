@@ -54,7 +54,7 @@ class CoverController extends AbstractBase
                 ConfigReader::getConfig(),
                 $this->getServiceLocator()->get('CacheManager')->getCacheDir()
             );
-            $this->loader->setLogger(\VuFind\Log\Logger::getInstance());
+            $this->loader->setLogger($this->getServiceLocator()->get('Logger'));
         }
         return $this->loader;
     }
