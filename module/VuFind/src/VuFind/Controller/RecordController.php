@@ -74,7 +74,7 @@ class RecordController extends AbstractRecord
     public function holdAction()
     {
         // If we're not supposed to be here, give up now!
-        $catalog = ConnectionManager::connectToCatalog();
+        $catalog = $this->getILS();
         $checkHolds = $catalog->checkFunction("Holds");
         if (!$checkHolds) {
             return $this->forwardTo('Record', 'Home');

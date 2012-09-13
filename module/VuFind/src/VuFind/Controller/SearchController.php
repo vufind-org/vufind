@@ -312,7 +312,7 @@ class SearchController extends AbstractSearch
             $ranges = array(1, 5, 30);
         }
 
-        $catalog = ConnectionManager::connectToCatalog();
+        $catalog = $this->getILS();
         return $this->createViewModel(
             array('fundList' => $catalog->getFunds(), 'ranges' => $ranges)
         );
@@ -342,7 +342,7 @@ class SearchController extends AbstractSearch
         } else {
             $resultPages = 10;
         }
-        $catalog = ConnectionManager::connectToCatalog();
+        $catalog = $this->getILS();
         $sm = $this->getSearchManager();
         $params = $sm->setSearchClassId('Solr')->getParams();
         $perPage = $params->getLimit();
@@ -414,7 +414,7 @@ class SearchController extends AbstractSearch
 
         // If we got this far, we're using driver-based searching and need to
         // send options to the view:
-        $catalog = ConnectionManager::connectToCatalog();
+        $catalog = $this->getILS();
         return $this->createViewModel(
             array(
                 'deptList' => $catalog->getDepartments(),

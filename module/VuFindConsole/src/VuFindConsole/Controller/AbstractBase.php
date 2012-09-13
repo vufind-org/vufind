@@ -101,6 +101,16 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Get the ILS connection.
+     *
+     * @return \VuFind\ILS\Connection
+     */
+    public function getILS()
+    {
+        return $this->getServiceLocator()->get('ILSConnection');
+    }
+
+    /**
      * Get a database table object.
      *
      * @param string $table Name of table to retrieve

@@ -234,7 +234,7 @@ class MyResearchController extends AbstractBase
         $view = $this->createViewModel();
 
         // Obtain user information from ILS:
-        $catalog = ConnectionManager::connectToCatalog();
+        $catalog = $this->getILS();
         $profile = $catalog->getMyProfile($patron);
         $profile['home_library'] = $user->home_library;
         $view->profile = $profile;
@@ -758,7 +758,7 @@ class MyResearchController extends AbstractBase
         }
 
         // Connect to the ILS:
-        $catalog = ConnectionManager::connectToCatalog();
+        $catalog = $this->getILS();
 
         // Process cancel requests if necessary:
         $cancelStatus = $catalog->checkFunction('cancelHolds');
@@ -808,7 +808,7 @@ class MyResearchController extends AbstractBase
         }
 
         // Connect to the ILS:
-        $catalog = ConnectionManager::connectToCatalog();
+        $catalog = $this->getILS();
 
         // Get the current renewal status and process renewal form, if necessary:
         $renewStatus = $catalog->checkFunction('Renewals');
@@ -861,7 +861,7 @@ class MyResearchController extends AbstractBase
         }
 
         // Connect to the ILS:
-        $catalog = ConnectionManager::connectToCatalog();
+        $catalog = $this->getILS();
 
         // Get fine details:
         $result = $catalog->getMyFines($patron);

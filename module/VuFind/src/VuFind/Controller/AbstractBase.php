@@ -190,11 +190,21 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Get the ILS connection.
+     *
+     * @return \VuFind\ILS\Connection
+     */
+    public function getILS()
+    {
+        return $this->getServiceLocator()->get('ILSConnection');
+    }
+
+    /**
      * Get the record loader
      *
      * @return \VuFind\Record\Loader
      */
-    protected function getRecordLoader()
+    public function getRecordLoader()
     {
         return $this->getServiceLocator()->get('RecordLoader');
     }

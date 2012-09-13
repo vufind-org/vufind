@@ -260,6 +260,13 @@ $config = array(
     ),
     'service_manager' => array(
         'factories' => array(
+            'ilsconnection' => function ($sm) {
+                $config = \VuFind\Config\Reader::getConfig();
+                $catalog = new \VuFind\ILS\Connection();
+                $catalog->setServiceLocator($sm);
+                $catalog->setConfig($config->Catalog);
+                return $catalog;
+            },
             'worldcatconnection' => function ($sm) {
                 $wc = new \VuFind\Connection\WorldCat();
                 $wc->setLogger($sm->get('Logger'));

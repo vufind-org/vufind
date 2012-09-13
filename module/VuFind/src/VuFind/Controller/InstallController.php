@@ -379,7 +379,7 @@ class InstallController extends AbstractBase
             $status = false;
         } else {
             try {
-                $catalog = ConnectionManager::connectToCatalog();
+                $catalog = $this->getILS();
                 $catalog->getStatus('1');
                 $status = true;
             } catch (\Exception $e) {

@@ -183,7 +183,7 @@ class AjaxController extends AbstractBase
      */
     public function getItemStatuses()
     {
-        $catalog = ConnectionManager::connectToCatalog();
+        $catalog = $this->getILS();
         $ids = $this->params()->fromQuery('id');
         $results = $catalog->getStatuses($ids);
 
@@ -1038,7 +1038,7 @@ class AjaxController extends AbstractBase
             }
 
             try {
-                $catalog = ConnectionManager::connectToCatalog();
+                $catalog = $this->getILS();
                 $patron = $this->getAuthManager()->storedCatalogLogin();
                 if ($patron) {
                     $results = $catalog->checkRequestIsValid($id, $data, $patron);

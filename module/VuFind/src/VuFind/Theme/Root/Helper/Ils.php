@@ -37,7 +37,7 @@ use Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class Ils extends AbstractHelper
+class Ils extends AbstractServiceLocator
 {
     /**
      * Get the ILS connection object.
@@ -46,6 +46,6 @@ class Ils extends AbstractHelper
      */
     public function __invoke()
     {
-        return \VuFind\Connection\Manager::connectToCatalog();
+        return $this->getServiceLocator()->get('ILSConnection');
     }
 }

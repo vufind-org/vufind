@@ -56,27 +56,6 @@ class Manager
     }
 
     /**
-     * Connect to the catalog.
-     *
-     * @return mixed CatalogConnection object on success, boolean false on error
-     */
-    public static function connectToCatalog()
-    {
-        // Use a static variable for the connection -- we never want more than one
-        // connection open at a time, so if we have previously connected, we will
-        // remember the old connection and return that instead of starting over.
-        static $catalog = false;
-        if ($catalog === false) {
-            $config = ConfigReader::getConfig();
-            $catalog = new ILSConnection();
-            $catalog->setServiceLocator(self::$serviceLocator);
-            $catalog->setConfig($config->Catalog);
-        }
-
-        return $catalog;
-    }
-
-    /**
      * Connect to the index.
      *
      * @param string $type Index type to connect to (null for standard Solr).

@@ -791,6 +791,16 @@ class SolrMarc extends SolrDefault
     }
 
     /**
+     * Get the ILS connection.
+     *
+     * @return \VuFind\ILS\Connection
+     */
+    protected function getILS()
+    {
+        return $this->getServiceLocator()->getServiceLocator()->get('ILSConnection');
+    }
+
+    /**
      * Get an array of information about record holdings, obtained in real-time
      * from the ILS.
      *
@@ -800,7 +810,7 @@ class SolrMarc extends SolrDefault
      */
     public function getRealTimeHoldings($account)
     {
-        $holdLogic = new HoldLogic($account, ConnectionManager::connectToCatalog());
+        $holdLogic = new HoldLogic($account, $this->getILS());
         return $holdLogic->getHoldings($this->getUniqueID());
     }
 
@@ -814,9 +824,7 @@ class SolrMarc extends SolrDefault
     {
         // Get Acquisitions Data
         try {
-            return ConnectionManager::connectToCatalog()->getPurchaseHistory(
-                $this->getUniqueID()
-            );
+            return $this->getILS()->getPurchaseHistory($this->getUniqueID());
         } catch (ILSException $e) {
             return array();
         }
@@ -836,9 +844,7 @@ class SolrMarc extends SolrDefault
             || stristr("part", $biblioLevel)
         ) {
             if (ILSConnection::getTitleHoldsMode() != "disabled") {
-                $holdLogic = new TitleHoldLogic(
-                    $account, ConnectionManager::connectToCatalog()
-                );
+                $holdLogic = new TitleHoldLogic($account, $this->getILS());
                 return $holdLogic->getHold($this->getUniqueID());
             }
         }
@@ -861,7 +867,7 @@ class SolrMarc extends SolrDefault
             if (isset($config->Site->hideHoldingsTabWhenEmpty)
                 && $config->Site->hideHoldingsTabWhenEmpty
             ) {
-                $catalog = ConnectionManager::connectToCatalog();
+                $catalog = $this->getILS();
                 if (!$catalog->hasHoldings($this->getUniqueID())) {
                     unset($tabs['Holdings']);
                 }

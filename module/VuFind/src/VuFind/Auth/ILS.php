@@ -27,8 +27,7 @@
  * @link     http://vufind.org/wiki/building_an_authentication_handler Wiki
  */
 namespace VuFind\Auth;
-use VuFind\Connection\Manager as ConnectionManager,
-    VuFind\Exception\Auth as AuthException;
+use VuFind\Exception\Auth as AuthException;
 
 /**
  * ILS authentication module.
@@ -46,14 +45,15 @@ class ILS extends AbstractBase
 
     /**
      * Get the ILS driver associated with this object (or load the default from
-     * the connection manager.
+     * the service manager.
      *
      * @return \VuFind\ILS\Driver\DriverInterface
      */
     public function getCatalog()
     {
         if (null === $this->catalog) {
-            $this->catalog = ConnectionManager::connectToCatalog();
+            $this->catalog = $this->getServiceLocator()->getServiceLocator()
+                ->get('ILSConnection');
         }
         return $this->catalog;
     }

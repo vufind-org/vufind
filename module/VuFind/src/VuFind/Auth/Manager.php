@@ -27,7 +27,6 @@
  */
 namespace VuFind\Auth;
 use VuFind\Config\Reader as ConfigReader,
-    VuFind\Connection\Manager as ConnectionManager,
     VuFind\Exception\Auth as AuthException, VuFind\Exception\ILS as ILSException,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface,
@@ -63,6 +62,16 @@ class Manager implements ServiceLocatorAwareInterface
     {
         $this->config = ConfigReader::getConfig();
         $this->session = new SessionContainer('Account');
+    }
+
+    /**
+     * Get the ILS connection.
+     *
+     * @return \VuFind\ILS\Connection
+     */
+    protected function getILS()
+    {
+        return $this->getServiceLocator()->get('ILSConnection');
     }
 
     /**
@@ -127,7 +136,7 @@ class Manager implements ServiceLocatorAwareInterface
             return false;
         }
         try {
-            $catalog = ConnectionManager::connectToCatalog();
+            $catalog = $this->getILS();
         } catch (\Exception $e) {
             // If we can't connect to the catalog, assume that no special
             // ILS-related login settings exist -- this prevents ILS errors
@@ -281,7 +290,7 @@ class Manager implements ServiceLocatorAwareInterface
         }
 
         try {
-            $catalog = ConnectionManager::connectToCatalog();
+            $catalog = $this->getILS();
         } catch (ILSException $e) {
             return false;
         }
@@ -326,7 +335,7 @@ class Manager implements ServiceLocatorAwareInterface
     public function newCatalogLogin($username, $password)
     {
         try {
-            $catalog = ConnectionManager::connectToCatalog();
+            $catalog = $this->getILS();
             $result = $catalog->patronLogin($username, $password);
         } catch (ILSException $e) {
             return false;

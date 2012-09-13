@@ -87,7 +87,7 @@ class Reserves extends AbstractPlugin
         }
 
         // Default case -- find reserves info from the catalog
-        $catalog = ConnectionManager::connectToCatalog();
+        $catalog = $this->getController()->getILS();
         return $catalog->findReserves($course, $inst, $dept);
     }
 }

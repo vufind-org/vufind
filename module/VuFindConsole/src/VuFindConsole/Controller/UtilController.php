@@ -54,7 +54,7 @@ class UtilController extends AbstractBase
         $solr = ConnectionManager::connectToIndex('SolrReserves');
 
         // Connect to ILS
-        $catalog = ConnectionManager::connectToCatalog();
+        $catalog = $this->getILS();
 
         // Records to index
         $index = array();
@@ -268,7 +268,7 @@ class UtilController extends AbstractBase
 
         // Make ILS Connection
         try {
-            $catalog = ConnectionManager::connectToCatalog();
+            $catalog = $this->getILS();
             if ($core == 'authority') {
                 $result = $catalog->getSuppressedAuthorityRecords();
             } else {
