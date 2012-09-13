@@ -26,8 +26,8 @@
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
 namespace VuFind\Connection;
-use VuFind\Config\Reader as ConfigReader, VuFind\Log\Logger,
-    VuFind\XSLT\Processor as XSLTProcessor;
+use File_MARCXML, VuFind\Config\Reader as ConfigReader,
+    VuFind\XSLT\Processor as XSLTProcessor, Zend\Log\Logger;
 
 /**
  * World Cat Utilities
@@ -42,6 +42,39 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Log\Logger,
  */
 class WorldCatUtils
 {
+    /**
+     * Logger (or false for none)
+     *
+     * @var Logger|bool
+     */
+    protected $logger = false;
+
+    /**
+     * Set the logger
+     *
+     * @param Logger $logger Logger to use.
+     *
+     * @return void
+     */
+    public function setLogger(Logger $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * Log a debug message.
+     *
+     * @param string $msg Message to log.
+     *
+     * @return void
+     */
+    protected function debug($msg)
+    {
+        if ($this->logger) {
+            $this->logger->debug($msg);
+        }
+    }
+
     /**
      * Get the WorldCat ID from the config file.
      *
@@ -76,7 +109,7 @@ class WorldCatUtils
         }
 
         // Print Debug code
-        Logger::getInstance()->debug("XISBN: $url");
+        $this->debug("XISBN: $url");
 
         // Fetch results
         $isbns = array();
@@ -114,7 +147,7 @@ class WorldCatUtils
         }
 
         // Print Debug code
-        Logger::getInstance()->debug("XOCLCNUM: $url");
+        $this->debug("XOCLCNUM: $url");
 
         // Fetch results
         $results = array();
@@ -153,7 +186,7 @@ class WorldCatUtils
         }
 
         // Print Debug code
-        Logger::getInstance()->debug("XISSN: $url");
+        $this->debug("XISSN: $url");
 
         // Fetch results
         $issns = array();

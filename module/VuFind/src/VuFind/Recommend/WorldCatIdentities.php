@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Connection\WorldCatUtils;
 
 /**
  * WorldCatIdentities Recommendations Module
@@ -39,7 +38,7 @@ use VuFind\Connection\WorldCatUtils;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class WorldCatIdentities implements RecommendInterface
+class WorldCatIdentities extends AbstractSearchManagerAwareModule
 {
     protected $searchObject;
     protected $settings;
@@ -106,7 +105,7 @@ class WorldCatIdentities implements RecommendInterface
         $lookfor = isset($search[0]['lookfor']) ? $search[0]['lookfor'] : '';
 
         // Get terminology information:
-        $wc = new WorldCatUtils();
-        return $wc->getRelatedIdentities($lookfor);
+        return $this->getServiceLocator()->getServiceLocator()->get('WorldCatUtils')
+            ->getRelatedIdentities($lookfor);
     }
 }

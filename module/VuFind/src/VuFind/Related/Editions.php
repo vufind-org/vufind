@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Related;
-use VuFind\Connection\WorldCatUtils;
 
 /**
  * Related Records: WorldCat-based editions list (Solr results)
@@ -103,7 +102,7 @@ class Editions extends AbstractServiceLocator
      */
     protected function getQueryParts($driver)
     {
-        $wc = new WorldCatUtils();
+        $wc = $this->getServiceLocator()->get('WorldCatUtils');
         $parts = array();
         if (method_exists($driver, 'getCleanOCLCNum')) {
             $oclcNum = $driver->getCleanOCLCNum();

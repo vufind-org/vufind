@@ -259,6 +259,13 @@ $config = array(
         ),
     ),
     'service_manager' => array(
+        'factories' => array(
+            'worldcatutils' => function ($sm) {
+                $wcu = new \VuFind\Connection\WorldCatUtils();
+                $wcu->setLogger(\VuFind\Log\Logger::getInstance());
+                return $wcu;
+            },
+        ),
         'invokables' => array(
             'authmanager' => 'VuFind\Auth\Manager',
             'cart' => 'VuFind\Cart',

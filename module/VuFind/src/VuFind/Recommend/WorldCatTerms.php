@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Connection\WorldCatUtils;
 
 /**
  * WorldCatTerms Recommendations Module
@@ -39,7 +38,7 @@ use VuFind\Connection\WorldCatUtils;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class WorldCatTerms implements RecommendInterface
+class WorldCatTerms extends AbstractSearchManagerAwareModule
 {
     protected $searchObject;
     protected $vocab = 'lcsh';
@@ -107,7 +106,7 @@ class WorldCatTerms implements RecommendInterface
         $lookfor = isset($search[0]['lookfor']) ? $search[0]['lookfor'] : '';
 
         // Get terminology information:
-        $wc = new WorldCatUtils();
+        $wc = $this->getServiceLocator()->getServiceLocator()->get('WorldCatUtils');
         $terms = $wc->getRelatedTerms($lookfor, $this->vocab);
 
         // Wipe out any empty or unexpected sections of the related terms array;

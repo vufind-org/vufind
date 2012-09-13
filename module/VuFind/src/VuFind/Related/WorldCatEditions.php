@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Related;
-use VuFind\Connection\WorldCatUtils;
 
 /**
  * Related Records: WorldCat-based editions list (WorldCat results)
@@ -81,7 +80,7 @@ class WorldCatEditions extends Editions
      */
     protected function getQueryParts($driver)
     {
-        $wc = new WorldCatUtils();
+        $wc = $this->getServiceLocator()->get('WorldCatUtils');
         $parts = array();
         if (method_exists($driver, 'getCleanISBN')) {
             $isbn = $driver->getCleanISBN();
