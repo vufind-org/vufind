@@ -27,7 +27,7 @@
  */
 namespace VuFind;
 use VuFind\Config\Reader as ConfigReader,
-    VuFind\Db\AdapterFactory as DbAdapterFactory, VuFind\Logger,
+    VuFind\Db\AdapterFactory as DbAdapterFactory,
     VuFind\Theme\Initializer as ThemeInitializer,
     VuFind\Translator\Translator, Zend\Console\Console,
     Zend\Db\TableGateway\Feature\GlobalAdapterFeature as DbGlobalAdapter,
