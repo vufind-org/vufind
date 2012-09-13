@@ -39,13 +39,26 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Search\Base\Params as BaseParam
  */
 class Params extends BaseParams
 {
-    // Facets
+    /**
+     * Facet result limit
+     */
     protected $facetLimit = 30;
+    /**
+     * Offset for facet results
+     */
     protected $facetOffset = null;
+    /**
+     * Prefix for facet searching
+     */
     protected $facetPrefix = null;
+    /**
+     * Sorting order for facet search results
+     */
     protected $facetSort = null;
 
-    // Override Query
+    /**
+     * Override Query
+     */
     protected $overrideQuery = false;
 
     /**

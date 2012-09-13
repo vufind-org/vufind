@@ -39,6 +39,9 @@ use VuFind\Search\Base\Params as BaseParams;
  */
 class Params extends BaseParams
 {
+    /**
+     * Array of target record ids
+     */
     protected $recordsToRequest;
 
     /**

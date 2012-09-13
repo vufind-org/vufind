@@ -40,6 +40,9 @@ use VuFind\Config\Reader as ConfigReader,
  */
 class Options extends BaseOptions
 {
+    /**
+     * Maximum number of results
+     */
     protected $resultLimit = 400;
 
     /**

@@ -42,7 +42,9 @@ use VuFind\Config\Reader as ConfigReader,
  */
 class Results extends BaseResults
 {
-    // Raw Solr search response:
+    /**
+     * Raw Solr search response:
+     */
     protected $rawResponse = null;
 
     /**

@@ -52,8 +52,17 @@ namespace VuFind\Search;
  */
 class Minified
 {
+    /**
+     * Search terms
+     */
     public $t = array();
+    /**
+     * Filters
+     */
     public $f = array();
+    /**
+     * ID, start tIme, query Speed, Result total, search TYpe, search CLass id
+     */
     public $id, $i, $s, $r, $ty, $pc, $rc;
 
     /**

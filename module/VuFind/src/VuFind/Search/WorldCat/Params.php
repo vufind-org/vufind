@@ -39,7 +39,9 @@ use VuFind\Search\Base\Params as BaseParams;
  */
 class Params extends BaseParams
 {
-    // Override Query
+    /**
+     * Override Query
+     */
     protected $overrideQuery = false;
 
     /**

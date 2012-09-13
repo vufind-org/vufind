@@ -39,7 +39,13 @@ use VuFind\Search\Base\Params as BaseParams;
  */
 class Params extends BaseParams
 {
+    /**
+     * Settings for all the facets
+     */
     protected $fullFacetSettings = array();
+    /**
+     * Settings for the date facet only
+     */
     protected $dateFacetSettings = array();
 
     /**

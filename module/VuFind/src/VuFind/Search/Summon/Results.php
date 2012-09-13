@@ -43,7 +43,9 @@ use VuFind\Config\Reader as ConfigReader,
  */
 class Results extends BaseResults
 {
-    // Raw search response:
+    /**
+     * Raw search response:
+     */
     protected $rawResponse = null;
 
     /**

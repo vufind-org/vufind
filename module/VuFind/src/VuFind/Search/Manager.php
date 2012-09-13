@@ -40,8 +40,17 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface,
  */
 class Manager implements ServiceLocatorAwareInterface
 {
+    /**
+     * Scoped copy of the config array
+     */
     protected $config;
+    /**
+     * Search class id
+     */
     protected $classId = 'Solr';
+    /**
+     * An array of all the current options
+     */
     protected $optionsStore = array();
 
     /**

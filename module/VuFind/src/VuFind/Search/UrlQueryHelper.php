@@ -38,8 +38,17 @@ namespace VuFind\Search;
  */
 class UrlQueryHelper
 {
+    /**
+     * Results object
+     */
     protected $results;
+    /**
+     * URL search param
+     */
     protected $basicSearchParam = 'lookfor';
+    /**
+     * Base parameters for every search
+     */
     protected $defaultParams = array();
 
     /**
