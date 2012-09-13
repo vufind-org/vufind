@@ -40,7 +40,18 @@ use VuFind\Config\Reader as ConfigReader;
  */
 class WorldCat extends SRU
 {
+    /**
+     * OCLC API key
+     *
+     * @var string
+     */
     protected $wskey;
+
+    /**
+     * OCLC codes for limiting search results
+     *
+     * @var string
+     */
     protected $limitCodes;
 
     /**
@@ -72,8 +83,8 @@ class WorldCat extends SRU
         $uri = "http://www.worldcat.org/webservices/catalog/content/libraries/{$id}";
         $uri .= "?wskey={$this->wskey}&servicelevel=full";
         $this->client->setUri($uri);
-        if ($this->logger) {
-            $this->logger->debug('Connect: ' . $uri);
+        if ($this->debugNeeded()) {
+            $this->debug('Connect: ' . $uri);
         }
         $result = $this->client->setMethod('POST')->send();
         $this->checkForHttpError($result);
@@ -95,8 +106,8 @@ class WorldCat extends SRU
         $uri = 'http://www.worldcat.org/webservices/catalog/content/' . $id;
         $uri .= "?wskey={$this->wskey}&servicelevel=full";
         $this->client->setUri($uri);
-        if ($this->logger) {
-            $this->logger->debug('Connect: ' . $uri);
+        if ($this->debugNeeded()) {
+            $this->debug('Connect: ' . $uri);
         }
         $result = $this->client->setMethod('POST')->send();
         $this->checkForHttpError($result);

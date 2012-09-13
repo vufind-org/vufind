@@ -27,7 +27,6 @@
  */
 namespace VuFind\Search\WorldCat;
 use VuFind\Config\Reader as ConfigReader,
-    VuFind\Connection\WorldCat as WorldCatConnection,
     VuFind\Exception\RecordMissing as RecordMissingException,
     VuFind\Search\Base\Results as BaseResults;
 
@@ -48,15 +47,11 @@ class Results extends BaseResults
     /**
      * Get a connection to the WorldCat API.
      *
-     * @return WorldCatConnection
+     * @return \VuFind\Connection\WorldCat
      */
     public function getWorldCatConnection()
     {
-        static $wc = false;
-        if (!$wc) {
-            $wc = new WorldCatConnection();
-        }
-        return $wc;
+        return $this->getServiceLocator()->get('WorldCatConnection');
     }
 
     /**

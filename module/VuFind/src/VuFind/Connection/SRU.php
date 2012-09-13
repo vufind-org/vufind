@@ -26,8 +26,8 @@
  * @link     http://vufind.org/wiki/system_classes#searching Wiki
  */
 namespace VuFind\Connection;
-use VuFind\Http\Client as HttpClient, VuFind\Log\Logger,
-    VuFind\XSLT\Processor as XSLTProcessor;
+use VuFind\Http\Client as HttpClient, VuFind\XSLT\Processor as XSLTProcessor,
+    Zend\Log\Logger;
 
 /**
  * SRU Search Interface
@@ -42,29 +42,35 @@ class SRU
 {
     /**
      * Logger object for debug info (or false for no debugging).
+     *
+     * @var Logger|bool
      */
-    protected $logger;
+    protected $logger = false;
 
     /**
      * Whether to Serialize to a PHP Array or not.
+     *
      * @var bool
      */
     protected $raw = false;
 
     /**
      * The HTTP_Request object used for REST transactions
-     * @var object HTTP_Request
+     *
+     * @var HttpClient
      */
     protected $client;
 
     /**
      * The host to connect to
+     *
      * @var string
      */
     protected $host;
 
     /**
      * The version to specify in the URL
+     *
      * @var string
      */
     protected $sruVersion = '1.1';
@@ -81,10 +87,50 @@ class SRU
         // Initialize properties needed for HTTP connection:
         $this->host = $host;
         $this->client = new HttpClient();
+    }
 
-        // Don't waste time generating debug messages if nobody is listening:
-        $logger = Logger::getInstance();
-        $this->logger = $logger->debugNeeded() ? $logger : false;
+    /**
+     * Set the logger
+     *
+     * @param Logger $logger Logger to use.
+     *
+     * @return void
+     */
+    public function setLogger(Logger $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * Does the current logger require debug messages?
+     *
+     * @return bool
+     */
+    protected function debugNeeded()
+    {
+        // There are three situations we need to worry about:
+        // - Logger not set -- no debug needed
+        // - Logger set but does not support debugNeeded() method -- assume debug
+        // - Logger has debugNeeded() method -- defer to that
+        if (!$this->logger) {
+            return false;
+        }
+        return !method_exists($this->logger, 'debugNeeded')
+            || $this->logger->debugNeeded();
+    }
+
+    /**
+     * Log a debug message.
+     *
+     * @param string $msg Message to log.
+     *
+     * @return void
+     */
+    protected function debug($msg)
+    {
+        if ($this->logger) {
+            $this->logger->debug($msg);
+        }
     }
 
     /**
@@ -190,8 +236,8 @@ class SRU
                          'startRecord' => 1,
                          'recordSchema' => 'marcxml');
 
-        if ($this->logger) {
-            $this->logger->debug('More Like This Query: ' . print_r($query, true));
+        if ($this->debugNeeded()) {
+            $this->debug('More Like This Query: ' . print_r($query, true));
         }
 
         return $this->call('GET', $options);
@@ -236,8 +282,8 @@ class SRU
     public function search($query, $start = 1, $limit = null, $sortBy = null,
         $schema = 'marcxml', $process = true
     ) {
-        if ($this->logger) {
-            $this->logger->debug('Query: ' . print_r($query, true));
+        if ($this->debugNeeded()) {
+            $this->debug('Query: ' . print_r($query, true));
         }
 
         // Query String Parameters
@@ -297,8 +343,8 @@ class SRU
             $queryString = implode('&', $query);
         }
 
-        if ($this->logger) {
-            $this->logger->debug(
+        if ($this->debugNeeded()) {
+            $this->debug(
                 'Connect: ' . print_r($this->host . '?' . $queryString, true)
             );
         }

@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/other_than_marc Wiki
  */
 namespace VuFind\RecordDriver;
-use VuFind\Connection\WorldCat as WorldCatConnection;
 
 /**
  * Model for MARC records in WorldCat.
@@ -312,7 +311,8 @@ class WorldCat extends SolrMarc
      */
     public function getWorldCatHoldings()
     {
-        $wc = new WorldCatConnection();
+        $wc = $this->getServiceLocator()->getServiceLocator()
+            ->get('WorldCatConnection');
         return $wc->getHoldings($this->getUniqueId());
     }
 }

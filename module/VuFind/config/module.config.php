@@ -260,6 +260,11 @@ $config = array(
     ),
     'service_manager' => array(
         'factories' => array(
+            'worldcatconnection' => function ($sm) {
+                $wc = new \VuFind\Connection\WorldCat();
+                $wc->setLogger(\VuFind\Log\Logger::getInstance());
+                return $wc;
+            },
             'worldcatutils' => function ($sm) {
                 $wcu = new \VuFind\Connection\WorldCatUtils();
                 $wcu->setLogger(\VuFind\Log\Logger::getInstance());
