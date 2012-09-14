@@ -68,7 +68,7 @@ class SMS extends Mailer
     public function __construct($transport = null, $config = null)
     {
         // Set up parent object first:
-        parent::__construct();
+        parent::__construct($transport, $config);
 
         // if using sms.ini, then load the carriers from it
         // otherwise, fall back to the default list of US carriers
