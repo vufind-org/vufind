@@ -1,4 +1,4 @@
-<? $user = $this->layout()->account->isLoggedIn(); ?>
+<? $user = $this->auth()->isLoggedIn(); ?>
 <div class="bulkActionButtons">
   <input type="checkbox" class="selectAllCheckboxes floatleft" name="selectAll" id="<?=$this->idPrefix?>addFormCheckboxSelectAll"/> <label class="floatleft" for="addFormCheckboxSelectAll"><?=$this->transEsc('select_page')?></label>
   <span class="floatleft">|</span>

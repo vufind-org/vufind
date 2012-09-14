@@ -2,11 +2,14 @@
     // Grab list object from search results (if applicable):
     $list = $this->results->getListObject();
 
+    // Grab current user (if any):
+    $user = $this->auth()->isLoggedIn();
+
     // Set up page title:
     $this->headTitle(isset($list) ? $list->title : $this->translate('Favorites'));
 
     // Set up extra button for header:
-    $extraButton = isset($list)
+    $extraButton = (isset($list) && $list->editAllowed($user))
         ? '<a rel="external" href="'
             . $this->url('editList', array('id' => $list->id))
             . '" data-icon="gear" class="ui-btn-left">'
@@ -40,7 +43,7 @@
       <ul class="results mylist" data-role="listview" data-split-icon="minus" data-split-theme="d" data-inset="false">
         <? $i = 0; foreach ($this->results->getResults() as $current): ?>
           <li>
-            <?=$this->record($current)->getListEntry($list, $this->layout()->account->isLoggedIn())?>
+            <?=$this->record($current)->getListEntry($list, $user)?>
           </li>
         <? endforeach; ?>
       </ul>

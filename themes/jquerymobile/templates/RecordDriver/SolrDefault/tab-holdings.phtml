@@ -1,7 +1,8 @@
 <?
     // Set up convenience variables:
-    $user = $this->layout()->account->isLoggedIn();
-    $holdings = $this->driver->getRealTimeHoldings($this->layout()->account);
+    $account = $this->auth()->getManager();
+    $user = $account->isLoggedIn();
+    $holdings = $this->driver->getRealTimeHoldings($account);
     $offlineMode = $this->ils()->getOfflineMode();
 
     // Set page title.
@@ -17,7 +18,7 @@
   </div>
 <? endif; ?>
 <? if ((\VuFind\ILS\Connection::getHoldsMode() == 'driver' && !empty($holdings)) || \VuFind\ILS\Connection::getTitleHoldsMode() == 'driver'): ?>
-  <? if ($this->layout()->account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
+  <? if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
     <? if (!$user): ?>
       <div class="info">
         <a href="<?=$this->currentPath()?>?login=true&catalogLogin=true"><?=$this->transEsc("Login")?></a> <?=$this->transEsc("hold_login")?>
@@ -29,7 +30,7 @@
     <? endif; ?>
   <? endif; ?>
 <? endif; ?>
-<? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold', array($this->layout()->account)); if (!empty($holdingTitleHold)): ?>
+<? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold', array($account)); if (!empty($holdingTitleHold)): ?>
     <a rel="external" class="holdPlace" href="<?=$this->recordLink()->getHoldUrl($holdingTitleHold, false)?>"><?=$this->transEsc('title_hold_place')?></a>
 <? endif; ?>
 <? foreach ($holdings as $location => $holding): ?>

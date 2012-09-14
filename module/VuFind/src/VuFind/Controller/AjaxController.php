@@ -1129,7 +1129,6 @@ class AjaxController extends AbstractBase
             $this->params()->fromQuery('id'),
             $this->params()->fromQuery('source', 'VuFind')
         );
-        $this->layout()->account = $this->getAuthManager();
         $html = $this->getViewRenderer()
             ->render('record/comments-list.phtml', array('driver' => $driver));
         return $this->output($html, self::STATUS_OK);

@@ -163,6 +163,9 @@ class Bootstrap
         // registered as a shutdown function when using an object as a session
         // handler: http://us.php.net/manual/en/function.session-set-save-handler.php
         register_shutdown_function(array($sessionManager, 'writeClose'));
+
+        // Make sure account credentials haven't expired:
+        $serviceManager->get('AuthManager')->checkForExpiredCredentials();
     }
 
     /**
@@ -202,29 +205,6 @@ class Bootstrap
             array("{$this->config->Site->locale}.UTF-8", $this->config->Site->locale)
         );
         date_default_timezone_set($this->config->Site->timezone);
-    }
-
-    /**
-     * Make account manager available to service manager and views.
-     *
-     * @return void
-     */
-    protected function initAccount()
-    {
-        // Retrieve from service manager:
-        $serviceManager = $this->event->getApplication()->getServiceManager();
-        $authManager = $serviceManager->get('AuthManager');
-
-        // Make sure credentials haven't expired:
-        $authManager->checkForExpiredCredentials();
-
-        // Register in view:
-        $callback = function($event) use ($authManager) {
-            $serviceManager = $event->getApplication()->getServiceManager();
-            $viewModel = $serviceManager->get('viewmanager')->getViewModel();
-            $viewModel->setVariable('account', $authManager);
-        };
-        $this->events->attach('dispatch', $callback);
     }
 
     /**

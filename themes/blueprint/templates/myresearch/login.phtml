@@ -13,7 +13,7 @@
     }
 
     // Convenience variables:
-    $account = $this->layout()->account;
+    $account = $this->auth()->getManager();
     $hideLogin = !(is_object($account) && $account->loginEnabled());
     $offlineMode = $this->ils()->getOfflineMode();
 ?>

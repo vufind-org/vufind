@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Theme\Root\Helper;
-use Zend\View\Exception\RuntimeException, Zend\View\Helper\AbstractHelper;
+use Zend\View\Exception\RuntimeException;
 
 /**
  * Authentication view helper
@@ -37,7 +37,7 @@ use Zend\View\Exception\RuntimeException, Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class Auth extends AbstractHelper
+class Auth extends AbstractServiceLocator
 {
     /**
      * Render a template within an auth module folder.
@@ -56,8 +56,7 @@ class Auth extends AbstractHelper
         // Get the current auth module's class name, then start a loop
         // in case we need to use a parent class' name to find the appropriate
         // template.
-        $layout = $this->getView()->plugin('layout');
-        $className = $layout()->account->getAuthClass();
+        $className = $this->getManager()->getAuthClass();
         $topClassName = $className; // for error message
         while (true) {
             // Guess the template name for the current class:
@@ -81,6 +80,27 @@ class Auth extends AbstractHelper
                 }
             }
         }
+    }
+
+    /**
+     * Get manager
+     *
+     * @return \VuFind\Auth\Manager
+     */
+    public function getManager()
+    {
+        return $this->getServiceLocator()->get('AuthManager');
+    }
+
+    /**
+     * Checks whether the user is logged in.
+     *
+     * @return \VuFind\Db\Row\User|bool Object if user is logged in, false
+     * otherwise.
+     */
+    public function isLoggedIn()
+    {
+        return $this->getManager()->isLoggedIn();
     }
 
     /**

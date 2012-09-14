@@ -1,4 +1,4 @@
-<? $account = $this->layout()->account; ?>
+<? $account = $this->auth()->getManager(); ?>
 <div data-role="navbar">
   <ul>
     <li><a data-rel="dialog" href="#Language-dialog" data-transition="pop"><?=$this->transEsc('Language')?></a></li>

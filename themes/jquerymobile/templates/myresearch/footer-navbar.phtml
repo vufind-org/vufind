@@ -1,4 +1,4 @@
-<? if ($this->layout()->account->isLoggedIn()): ?>
+<? if ($this->auth()->isLoggedIn()): ?>
   <div data-role="navbar">
     <ul>
       <li><a rel="external" <?=$this->layout()->templateName=="mylist" ? ' class="ui-btn-active"' : ''?> href="<?=$this->url('myresearch-favorites')?>"><?=$this->transEsc('Favorites')?></a></li>

@@ -1,4 +1,4 @@
-<? $account = $this->layout()->account; ?>
+<? $account = $this->auth()->getManager(); ?>
 <a id="logo" href="<?=$this->url('home')?>"></a>
 <div id="headerRight">
   <? $cart = $this->cart(); if ($cart->isActive()): ?>

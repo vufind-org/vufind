@@ -7,7 +7,7 @@
     <div class="posted">
       <?=$this->transEsc('Posted by')?> <strong><?=$this->escapeHtml(trim($comment->firstname . ' ' . $comment->lastname))?></strong>
       <?=$this->transEsc('posted_on')?> <?=$this->escapeHtml($comment->created)?>
-      <? if (($user = $this->layout()->account->isLoggedIn()) && $comment->user_id == $user->id): ?>
+      <? if (($user = $this->auth()->isLoggedIn()) && $comment->user_id == $user->id): ?>
         <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'DeleteComment')?>?delete=<?=urlencode($comment->id)?>" id="recordComment<?=$this->escapeHtml($comment->id)?>" class="delete tool deleteRecordComment source<?=$this->escapeHtml($this->driver->getResourceSource())?>"><?=$this->transEsc('Delete')?></a>
       <? endif; ?>
     </div>
