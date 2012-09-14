@@ -34,7 +34,7 @@ use ArrayObject, VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
     VuFind\Date\Converter as DateConverter,
     VuFind\Exception\Date as DateException,
-    VuFind\Exception\ILS as ILSException, VuFind\Translator\Translator,
+    VuFind\Exception\ILS as ILSException,
     Zend\Session\Container as SessionContainer;
 
 /**
@@ -48,12 +48,32 @@ use ArrayObject, VuFind\Config\Reader as ConfigReader,
  */
 class Demo extends AbstractBase
 {
-    // Used when getting random bib ids from solr
+    /**
+     * Connection used when getting random bib ids from Solr
+     *
+     * @var object
+     */
     protected $db;
+
+    /**
+     * Total count of records in the Solr index (used for random bib lookup)
+     *
+     * @var int
+     */
     protected $totalRecords;
+
+    /**
+     * Container for storing persistent simulated ILS data.
+     *
+     * @var SessionContainer
+     */
     protected $session;
 
-    // Should we return bib IDs in MyResearch responses?
+    /**
+     * Should we return bib IDs in MyResearch responses?
+     *
+     * @var bool
+     */
     protected $idsInMyResearch = true;
 
     /**
