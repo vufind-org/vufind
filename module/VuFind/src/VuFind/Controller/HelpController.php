@@ -28,7 +28,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Config\Reader as ConfigReader, VuFind\Translator\Translator;
+use VuFind\Config\Reader as ConfigReader;
 
 /**
  * Home action for Help module
@@ -62,8 +62,8 @@ class HelpController extends AbstractBase
         // Construct two possible template names -- the help screen in the
         // current selected language and help in English (most likely to exist).
         // The code will attempt to display the most appropriate existing help screen
-        $translator = Translator::getTranslator();
-        $language = is_object($translator) ? $translator->getLocale() : 'en';
+        $language = $this->getServiceLocator()->has('Translator')
+            ? $this->getServiceLocator()->get('Translator')->getLocale() : 'en';
 
         $tpl_lang = 'HelpTranslations/' . $language
             . '/' . $safe_topic . '.phtml';

@@ -28,8 +28,7 @@
 namespace VuFind;
 use VuFind\Config\Reader as ConfigReader,
     VuFind\Db\AdapterFactory as DbAdapterFactory,
-    VuFind\Theme\Initializer as ThemeInitializer,
-    VuFind\Translator\Translator, Zend\Console\Console,
+    VuFind\Theme\Initializer as ThemeInitializer, Zend\Console\Console,
     Zend\Db\TableGateway\Feature\GlobalAdapterFeature as DbGlobalAdapter,
     Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch,
     Zend\ServiceManager\Config as ServiceManagerConfig,
@@ -276,19 +275,18 @@ class Bootstrap
                     : $config->Site->language;
             }
             // Make sure language code is valid, reset to default if bad:
-            $validLanguages = array();
-            foreach ($config->Languages as $key => $value) {
-                $validLanguages[] = $key;
-            }
-            if (!in_array($language, $validLanguages)) {
+            if (!in_array($language, array_keys($config->Languages->toArray()))) {
                 $language = $config->Site->language;
             }
 
-            Translator::init($event, $language);
+            $sm = $event->getApplication()->getServiceManager();
+            $langFile = APPLICATION_PATH  . '/languages/' . $language . '.ini';
+            $sm->get('Translator')
+                ->addTranslationFile('ExtendedIni', $langFile, 'default', $language)
+                ->setLocale($language);
 
             // Send key values to view:
-            $viewModel = $event->getApplication()->getServiceManager()
-                ->get('viewmanager')->getViewModel();
+            $viewModel = $sm->get('viewmanager')->getViewModel();
             $viewModel->setVariable('userLang', $language);
             $viewModel->setVariable('allLangs', $config->Languages);
         };

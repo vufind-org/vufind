@@ -26,7 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Base;
-use VuFind\Config\Reader as ConfigReader, VuFind\Translator\Translator,
+use VuFind\Config\Reader as ConfigReader,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -625,10 +625,10 @@ class Params implements ServiceLocatorAwareInterface
                 && $search['group'][0]['bool'] == 'NOT'
             ) {
                 $excludes[]
-                    = join(' ' . Translator::translate('OR') . ' ', $thisGroup);
+                    = join(' ' . $this->translate('OR') . ' ', $thisGroup);
             } else if (isset($search['group'][0]['bool'])) {
                 $groups[] = join(
-                    " " . Translator::translate($search['group'][0]['bool'])." ",
+                    " " . $this->translate($search['group'][0]['bool'])." ",
                     $thisGroup
                 );
             }
@@ -640,7 +640,7 @@ class Params implements ServiceLocatorAwareInterface
             $output .= "(" .
                 join(
                     ") " .
-                    Translator::translate($this->searchTerms[0]['join']) . " (",
+                    $this->translate($this->searchTerms[0]['join']) . " (",
                     $groups
                 ) .
                 ")";
@@ -649,8 +649,8 @@ class Params implements ServiceLocatorAwareInterface
         // Concatenate exclusion after that
         if (count($excludes) > 0) {
             $output .= ' ' .
-                Translator::translate('NOT') . ' ((' .
-                join(') ' . Translator::translate('OR') . ' (', $excludes) . "))";
+                $this->translate('NOT') . ' ((' .
+                join(') ' . $this->translate('OR') . ' (', $excludes) . "))";
         }
 
         return $output;
@@ -1070,7 +1070,7 @@ class Params implements ServiceLocatorAwareInterface
                     $list[$facetLabel][] = array(
                         'value'       => $value,
                         'displayText' =>
-                            $translate ? Translator::translate($value) : $value,
+                            $translate ? $this->translate($value) : $value,
                         'field'       => $field
                     );
                 }
@@ -1563,5 +1563,18 @@ class Params implements ServiceLocatorAwareInterface
     public function getTable($table)
     {
         return $this->getServiceLocator()->get('DbTablePluginManager')->get($table);
+    }
+
+    /**
+     * Translate a string if a translator is available.
+     *
+     * @param string $msg Message to translate
+     *
+     * @return string
+     */
+    public function translate($msg)
+    {
+        return $this->getServiceLocator()->has('Translator')
+            ? $this->getServiceLocator()->get('Translator')->translate($msg) : $msg;
     }
 }

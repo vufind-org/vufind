@@ -30,8 +30,7 @@ use VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Summon as SummonConnection,
     VuFind\Connection\Summon\Query as SummonQuery,
     VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\Search\Base\Results as BaseResults,
-    VuFind\Translator\Translator;
+    VuFind\Search\Base\Results as BaseResults;
 
 /**
  * Summon Search Parameters
@@ -243,7 +242,7 @@ class Results extends BaseResults
 
                         // Create display value:
                         $current['counts'][$facetIndex]['displayText'] = $translate
-                            ? Translator::translate($facetDetails['value'])
+                            ? $this->translate($facetDetails['value'])
                             : $facetDetails['value'];
                     }
 

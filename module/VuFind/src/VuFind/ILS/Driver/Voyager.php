@@ -29,7 +29,9 @@
 namespace VuFind\ILS\Driver;
 use File_MARC, PDO, PDOException, VuFind\Config\Reader as ConfigReader,
     VuFind\Date\Converter as DateConverter, VuFind\Exception\Date as DateException,
-    VuFind\Exception\ILS as ILSException, VuFind\Translator\Translator,
+    VuFind\Exception\ILS as ILSException,
+    Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorInterface,
     Zend\Validator\EmailAddress as EmailAddressValidator;
 
 /**
@@ -42,11 +44,42 @@ use File_MARC, PDO, PDOException, VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
-class Voyager extends AbstractBase
+class Voyager extends AbstractBase implements ServiceLocatorAwareInterface
 {
+    /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
+
+    /**
+     * Database connection
+     *
+     * @var PDO
+     */
     protected $db;
+
+    /**
+     * Name of database
+     *
+     * @var string
+     */
     protected $dbName;
-    protected $statusRankings = false;        // used by pickStatus() method
+
+    /**
+     * Stored status rankings from the database; initialized to false but populated
+     * by the pickStatus() method.
+     *
+     * @var array|bool
+     */
+    protected $statusRankings = false;
+
+    /**
+     * Date formatting object
+     *
+     * @var DateConverter
+     */
     protected $dateFormat;
 
     /**
@@ -1173,7 +1206,7 @@ class Voyager extends AbstractBase
      */
     protected function processFinesData($sqlRow)
     {
-        $dueDate = Translator::translate("not_applicable");
+        $dueDate = $this->translate("not_applicable");
         // Convert Voyager Format to display format
         if (!empty($sqlRow['DUEDATE'])) {
             $dueDate = $this->dateFormat->convertToDisplayDate(
@@ -1181,7 +1214,7 @@ class Voyager extends AbstractBase
             );
         }
 
-        $createDate = Translator::translate("not_applicable");
+        $createDate = $this->translate("not_applicable");
         // Convert Voyager Format to display format
         if (!empty($sqlRow['CREATEDATE'])) {
             $createDate = $this->dateFormat->convertToDisplayDate(
@@ -1189,7 +1222,7 @@ class Voyager extends AbstractBase
             );
         }
 
-        $chargeDate = Translator::translate("not_applicable");
+        $chargeDate = $this->translate("not_applicable");
         // Convert Voyager Format to display format
         if (!empty($sqlRow['CHARGEDATE'])) {
             $chargeDate = $this->dateFormat->convertToDisplayDate(
@@ -1309,7 +1342,7 @@ class Voyager extends AbstractBase
     protected function processMyHoldsData($sqlRow)
     {
         $available = ($sqlRow['HOLD_RECALL_STATUS'] == 2) ? true : false;
-        $expireDate = Translator::translate("Unknown");
+        $expireDate = $this->translate("Unknown");
         // Convert Voyager Format to display format
         if (!empty($sqlRow['EXPIRE_DATE'])) {
             $expireDate = $this->dateFormat->convertToDisplayDate(
@@ -1317,7 +1350,7 @@ class Voyager extends AbstractBase
             );
         }
 
-        $createDate = Translator::translate("Unknown");
+        $createDate = $this->translate("Unknown");
         // Convert Voyager Format to display format
         if (!empty($sqlRow['CREATE_DATE'])) {
             $createDate = $this->dateFormat->convertToDisplayDate(
@@ -1946,5 +1979,42 @@ class Voyager extends AbstractBase
         }
 
         return $list;
+    }
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return Amicus
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
+    }
+
+    /**
+     * Translate a string if a translator is available.
+     *
+     * @param string $msg Message to translate
+     *
+     * @return string
+     */
+    protected function translate($msg)
+    {
+        $sm = $this->getServiceLocator()->getServiceLocator();
+        return $sm->has('Translator')
+            ? $sm->get('Translator')->translate($msg) : $msg;
     }
 }

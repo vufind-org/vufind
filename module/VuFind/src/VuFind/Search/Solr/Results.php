@@ -29,8 +29,7 @@ namespace VuFind\Search\Solr;
 use VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
     VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\Search\Base\Results as BaseResults,
-    VuFind\Translator\Translator;
+    VuFind\Search\Base\Results as BaseResults;
 
 /**
  * Solr Search Parameters
@@ -432,7 +431,7 @@ class Results extends BaseResults
                 $currentSettings = array();
                 $currentSettings['value'] = $facet[0];
                 $currentSettings['displayText']
-                    = $translate ? Translator::translate($facet[0]) : $facet[0];
+                    = $translate ? $this->translate($facet[0]) : $facet[0];
                 $currentSettings['count'] = $facet[1];
                 $currentSettings['isApplied']
                     = $this->getParams()->hasFilter("$field:".$facet[0]);

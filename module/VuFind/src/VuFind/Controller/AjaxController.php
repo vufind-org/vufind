@@ -28,8 +28,7 @@
 namespace VuFind\Controller;
 use VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
-    VuFind\Exception\Auth as AuthException, VuFind\Export,
-    VuFind\Translator\Translator;
+    VuFind\Exception\Auth as AuthException, VuFind\Export;
 
 /**
  * This controller handles global AJAX functionality
@@ -82,13 +81,13 @@ class AjaxController extends AbstractBase
                 $debugMsg = ('development' == APPLICATION_ENV)
                     ? ': ' . $e->getMessage() : '';
                 return $this->output(
-                    Translator::translate('An error has occurred') . $debugMsg,
+                    $this->translate('An error has occurred') . $debugMsg,
                     self::STATUS_ERROR
                 );
             }
         } else {
             return $this->output(
-                Translator::translate('Invalid Method'), self::STATUS_ERROR
+                $this->translate('Invalid Method'), self::STATUS_ERROR
             );
         }
     }
@@ -255,10 +254,10 @@ class AjaxController extends AbstractBase
                 'id'                   => $missingId,
                 'availability'         => 'false',
                 'availability_message' => $messages['unavailable'],
-                'location'             => Translator::translate('Unknown'),
+                'location'             => $this->translate('Unknown'),
                 'locationList'         => false,
                 'reserve'              => 'false',
-                'reserve_message'      => Translator::translate('Not On Reserve'),
+                'reserve_message'      => $this->translate('Not On Reserve'),
                 'callnumber'           => '',
                 'missing_data'         => true,
                 'record_number'        => $recordNumber
@@ -297,7 +296,7 @@ class AjaxController extends AbstractBase
         } else {
             // Message mode?  Return the specified message, translated to the
             // appropriate language.
-            return Translator::translate($msg);
+            return $this->translate($msg);
         }
     }
 
@@ -362,8 +361,8 @@ class AjaxController extends AbstractBase
             'reserve' =>
                 ($record[0]['reserve'] == 'Y' ? 'true' : 'false'),
             'reserve_message' => $record[0]['reserve'] == 'Y'
-                ? Translator::translate('on_reserve')
-                : Translator::translate('Not On Reserve'),
+                ? $this->translate('on_reserve')
+                : $this->translate('Not On Reserve'),
             'callnumber' => htmlentities($callNumber, ENT_COMPAT, 'UTF-8')
         );
     }
@@ -433,8 +432,8 @@ class AjaxController extends AbstractBase
             'reserve' =>
                 ($record[0]['reserve'] == 'Y' ? 'true' : 'false'),
             'reserve_message' => $record[0]['reserve'] == 'Y'
-                ? Translator::translate('on_reserve')
-                : Translator::translate('Not On Reserve'),
+                ? $this->translate('on_reserve')
+                : $this->translate('Not On Reserve'),
             'callnumber' => false
         );
     }
@@ -450,7 +449,7 @@ class AjaxController extends AbstractBase
         $user = $this->getUser();
         if (!$user) {
             return $this->output(
-                Translator::translate('You must be logged in first'),
+                $this->translate('You must be logged in first'),
                 self::STATUS_NEED_AUTH
             );
         }
@@ -461,7 +460,7 @@ class AjaxController extends AbstractBase
         $sources = $this->params()->fromQuery('source', array());
         if (!is_array($ids) || !is_array($sources)) {
             return $this->output(
-                Translator::translate('Argument must be array.'),
+                $this->translate('Argument must be array.'),
                 self::STATUS_ERROR
             );
         }
@@ -581,7 +580,7 @@ class AjaxController extends AbstractBase
             $this->getAuthManager()->login($this->getRequest());
         } catch (AuthException $e) {
             return $this->output(
-                Translator::translate($e->getMessage()),
+                $this->translate($e->getMessage()),
                 self::STATUS_ERROR
             );
         }
@@ -599,7 +598,7 @@ class AjaxController extends AbstractBase
         $user = $this->getUser();
         if ($user === false) {
             return $this->output(
-                Translator::translate('You must be logged in first'),
+                $this->translate('You must be logged in first'),
                 self::STATUS_NEED_AUTH
             );
         }
@@ -615,12 +614,12 @@ class AjaxController extends AbstractBase
             }
         } catch (\Exception $e) {
             return $this->output(
-                Translator::translate('Failed'),
+                $this->translate('Failed'),
                 self::STATUS_ERROR
             );
         }
 
-        return $this->output(Translator::translate('Done'), self::STATUS_OK);
+        return $this->output($this->translate('Done'), self::STATUS_OK);
     }
 
     /**
@@ -645,8 +644,8 @@ class AjaxController extends AbstractBase
 
         // If we don't have any tags, provide a user-appropriate message:
         if (empty($tagList)) {
-            $msg = Translator::translate('No Tags') . ', ' .
-                Translator::translate('Be the first to tag this record') . '!';
+            $msg = $this->translate('No Tags') . ', ' .
+                $this->translate('Be the first to tag this record') . '!';
             return $this->output($msg, self::STATUS_ERROR);
         }
 
@@ -823,7 +822,7 @@ class AjaxController extends AbstractBase
         $user = $this->getUser();
         if (!$user) {
             return $this->output(
-                Translator::translate('You must be logged in first'),
+                $this->translate('You must be logged in first'),
                 self::STATUS_NEED_AUTH
             );
         }
@@ -847,7 +846,7 @@ class AjaxController extends AbstractBase
         $ids = $this->params()->fromPost('ids', array());
         if (empty($ids)) {
             return $this->output(
-                array('result'=>Translator::translate('bulk_error_missing')),
+                array('result'=>$this->translate('bulk_error_missing')),
                 self::STATUS_ERROR
             );
         }
@@ -855,7 +854,7 @@ class AjaxController extends AbstractBase
         $user = $this->getUser();
         if (!$user) {
             return $this->output(
-                Translator::translate('You must be logged in first'),
+                $this->translate('You must be logged in first'),
                 self::STATUS_NEED_AUTH
             );
         }
@@ -867,12 +866,12 @@ class AjaxController extends AbstractBase
             return $this->output(
                 array(
                     'result' => array('list' => $this->params()->fromPost('list')),
-                    'info' => Translator::translate("bulk_save_success")
+                    'info' => $this->translate("bulk_save_success")
                 ), self::STATUS_OK
             );
         } catch (\Exception $e) {
             return $this->output(
-                array('info' => Translator::translate('bulk_save_error')),
+                array('info' => $this->translate('bulk_save_error')),
                 self::STATUS_ERROR
             );
         }
@@ -895,14 +894,14 @@ class AjaxController extends AbstractBase
             switch(get_class($e)) {
             case 'VuFind\Exception\LoginRequired':
                 return $this->output(
-                    Translator::translate('You must be logged in first'),
+                    $this->translate('You must be logged in first'),
                     self::STATUS_NEED_AUTH
                 );
                 break;
             case 'VuFind\Exception\ListPermission':
             case 'VuFind\Exception\MissingField':
                 return $this->output(
-                    Translator::translate($e->getMessage()), self::STATUS_ERROR
+                    $this->translate($e->getMessage()), self::STATUS_ERROR
                 );
             default:
                 throw $e;
@@ -945,11 +944,11 @@ class AjaxController extends AbstractBase
                 $this->params()->fromPost('to'), $record, $this->getViewRenderer()
             );
             return $this->output(
-                Translator::translate('sms_success'), self::STATUS_OK
+                $this->translate('sms_success'), self::STATUS_OK
             );
         } catch (\Exception $e) {
             return $this->output(
-                Translator::translate($e->getMessage()), self::STATUS_ERROR
+                $this->translate($e->getMessage()), self::STATUS_ERROR
             );
         }
     }
@@ -974,11 +973,11 @@ class AjaxController extends AbstractBase
                 $this->getViewRenderer()
             );
             return $this->output(
-                Translator::translate('email_success'), self::STATUS_OK
+                $this->translate('email_success'), self::STATUS_OK
             );
         } catch (\Exception $e) {
             return $this->output(
-                Translator::translate($e->getMessage()), self::STATUS_ERROR
+                $this->translate($e->getMessage()), self::STATUS_ERROR
             );
         }
     }
@@ -1006,11 +1005,11 @@ class AjaxController extends AbstractBase
                 $url, $this->getViewRenderer(), $this->params()->fromPost('subject')
             );
             return $this->output(
-                Translator::translate('email_success'), self::STATUS_OK
+                $this->translate('email_success'), self::STATUS_OK
             );
         } catch (\Exception $e) {
             return $this->output(
-                Translator::translate($e->getMessage()), self::STATUS_ERROR
+                $this->translate($e->getMessage()), self::STATUS_ERROR
             );
         }
     }
@@ -1029,7 +1028,7 @@ class AjaxController extends AbstractBase
             $user = $this->getUser();
             if (!$user) {
                 return $this->output(
-                    Translator::translate('You must be logged in first'),
+                    $this->translate('You must be logged in first'),
                     self::STATUS_NEED_AUTH
                 );
             }
@@ -1041,8 +1040,8 @@ class AjaxController extends AbstractBase
                     $results = $catalog->checkRequestIsValid($id, $data, $patron);
 
                     $msg = $results
-                        ? Translator::translate('request_place_text')
-                        : Translator::translate('hold_error_blocked');
+                        ? $this->translate('request_place_text')
+                        : $this->translate('hold_error_blocked');
                     return $this->output(
                         array('status' => $results, 'msg' => $msg), self::STATUS_OK
                     );
@@ -1053,7 +1052,7 @@ class AjaxController extends AbstractBase
         }
 
         return $this->output(
-            Translator::translate('An error has occurred'), self::STATUS_ERROR
+            $this->translate('An error has occurred'), self::STATUS_ERROR
         );
     }
 
@@ -1067,7 +1066,7 @@ class AjaxController extends AbstractBase
         $user = $this->getUser();
         if ($user === false) {
             return $this->output(
-                Translator::translate('You must be logged in first'),
+                $this->translate('You must be logged in first'),
                 self::STATUS_NEED_AUTH
             );
         }
@@ -1076,7 +1075,7 @@ class AjaxController extends AbstractBase
         $comment = $this->params()->fromPost('comment');
         if (empty($id) || empty($comment)) {
             return $this->output(
-                Translator::translate('An error has occurred'), self::STATUS_ERROR
+                $this->translate('An error has occurred'), self::STATUS_ERROR
             );
         }
 
@@ -1099,7 +1098,7 @@ class AjaxController extends AbstractBase
         $user = $this->getUser();
         if ($user === false) {
             return $this->output(
-                Translator::translate('You must be logged in first'),
+                $this->translate('You must be logged in first'),
                 self::STATUS_NEED_AUTH
             );
         }
@@ -1108,11 +1107,11 @@ class AjaxController extends AbstractBase
         $table = $this->getTable('Comments');
         if (empty($id) || !$table->deleteIfOwnedByUser($id, $user)) {
             return $this->output(
-                Translator::translate('An error has occurred'), self::STATUS_ERROR
+                $this->translate('An error has occurred'), self::STATUS_ERROR
             );
         }
 
-        return $this->output(Translator::translate('Done'), self::STATUS_OK);
+        return $this->output($this->translate('Done'), self::STATUS_OK);
     }
 
     /**
@@ -1141,7 +1140,7 @@ class AjaxController extends AbstractBase
         $user = $this->getUser();
         if ($user === false) {
             return $this->output(
-                Translator::translate('You must be logged in first'),
+                $this->translate('You must be logged in first'),
                 self::STATUS_NEED_AUTH
             );
         }
@@ -1151,14 +1150,14 @@ class AjaxController extends AbstractBase
 
         if (!is_array($ids)) {
             return $this->output(
-                Translator::translate('delete_missing'),
+                $this->translate('delete_missing'),
                 self::STATUS_ERROR
             );
         }
 
         $this->favorites()->delete($ids, $listID, $user);
         return $this->output(
-            array('result' => Translator::translate('fav_delete_success')),
+            array('result' => $this->translate('fav_delete_success')),
             self::STATUS_OK
         );
     }
@@ -1174,7 +1173,7 @@ class AjaxController extends AbstractBase
         $ids = $this->params()->fromPost('ids');
         if (empty($ids)) {
             return $this->output(
-                array('result'=>Translator::translate('bulk_error_missing')),
+                array('result'=>$this->translate('bulk_error_missing')),
                 self::STATUS_ERROR
             );
         }
@@ -1200,7 +1199,7 @@ class AjaxController extends AbstractBase
         );
         return $this->output(
             array(
-                'result' => Translator::translate('Done'),
+                'result' => $this->translate('Done'),
                 'result_additional' => $html
             ), self::STATUS_OK
         );
@@ -1224,7 +1223,7 @@ class AjaxController extends AbstractBase
             ->get('ResolverDriverPluginManager');
         if (!$pluginManager->has($resolverType)) {
             return $this->output(
-                Translator::translate("Could not load driver for $resolverType"),
+                $this->translate("Could not load driver for $resolverType"),
                 self::STATUS_ERROR
             );
         }
@@ -1248,7 +1247,7 @@ class AjaxController extends AbstractBase
                 break;
             case 'getDOI':
                 // Special case -- modify DOI text for special display:
-                $link['title'] = Translator::translate('Get full text');
+                $link['title'] = $this->translate('Get full text');
                 $link['coverage'] = '';
             case 'getFullTxt':
             default:

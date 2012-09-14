@@ -26,7 +26,9 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Base;
-use VuFind\Translator\Translator, Zend\Session\Container as SessionContainer;
+use Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorInterface,
+    Zend\Session\Container as SessionContainer;
 
 /**
  * Abstract options search model.
@@ -39,7 +41,7 @@ use VuFind\Translator\Translator, Zend\Session\Container as SessionContainer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-abstract class Options
+abstract class Options implements ServiceLocatorAwareInterface
 {
     // Available sort options
     protected $sortOptions = array();
@@ -62,10 +64,18 @@ abstract class Options
     protected $defaultView = 'list';
     protected $viewOptions = array();
 
-    // Facet settings
+    /**
+     * Facet settings
+     *
+     * @var array
+     */
     protected $translatedFacets = array();
 
-    // Spelling
+    /**
+     * Spelling setting
+     *
+     * @var bool
+     */
     protected $spellcheck = true;
 
     // Shard settings
@@ -73,15 +83,40 @@ abstract class Options
     protected $defaultSelectedShards = array();
     protected $visibleShardCheckboxes = false;
 
-    // Highlighting
+    /**
+     * Highlighting setting
+     *
+     * @var bool
+     */
     protected $highlight = false;
 
-    // Autocomplete setting
+    /**
+     * Autocomplete setting
+     *
+     * @var bool
+     */
     protected $autocompleteEnabled = false;
 
-    // Configuration files to read search settings from
+    /**
+     * Configuration file to read search settings from
+     *
+     * @var string
+     */
     protected $searchIni = 'searches';
+
+    /**
+     * Configuration file to read facet settings from
+     *
+     * @var string
+     */
     protected $facetsIni = 'facets';
+
+    /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
 
     /**
      * Constructor
@@ -308,9 +343,9 @@ abstract class Options
     public function getHumanReadableFieldName($field)
     {
         if (isset($this->basicHandlers[$field])) {
-            return Translator::translate($this->basicHandlers[$field]);
+            return $this->translate($this->basicHandlers[$field]);
         } else if (isset($this->advancedHandlers[$field])) {
-            return Translator::translate($this->advancedHandlers[$field]);
+            return $this->translate($this->advancedHandlers[$field]);
         } else {
             return $field;
         }
@@ -509,5 +544,41 @@ abstract class Options
     {
         // No limit by default:
         return -1;
+    }
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return Params
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
+    }
+
+    /**
+     * Translate a string if a translator is available.
+     *
+     * @param string $msg Message to translate
+     *
+     * @return string
+     */
+    public function translate($msg)
+    {
+        return $this->getServiceLocator()->has('Translator')
+            ? $this->getServiceLocator()->get('Translator')->translate($msg) : $msg;
     }
 }

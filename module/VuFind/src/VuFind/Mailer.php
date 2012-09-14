@@ -27,8 +27,7 @@
  */
 namespace VuFind;
 use VuFind\Config\Reader as ConfigReader, VuFind\Exception\Mail as MailException,
-    VuFind\Translator\Translator, Zend\Mail\Message, Zend\Mail\Transport\Smtp,
-    Zend\Mail\Transport\SmtpOptions;
+    Zend\Mail\Message, Zend\Mail\Transport\Smtp, Zend\Mail\Transport\SmtpOptions;
 
 /**
  * VuFind Mailer Class
@@ -41,8 +40,26 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Exception\Mail as MailException
  */
 class Mailer
 {
+    /**
+     * Configuration
+     *
+     * @var \Zend\Config\Config
+     */
     protected $config;
+
+    /**
+     * Mail transport
+     *
+     * @var \Zend\Mail\Transport\TransportInterface
+     */
     protected $transport;
+
+    /**
+     * Translator (or null if unavailable)
+     *
+     * @var \Zend\I18n\Translator\Translator
+     */
+    protected $translator = null;
 
     /**
      * Constructor
@@ -58,6 +75,31 @@ class Mailer
             $this->setTransport($transport);
         }
         $this->config = is_null($config) ? ConfigReader::getConfig() : $config;
+    }
+
+    /**
+     * Translate a string if a translator is provided.
+     *
+     * @param string $msg Message to translate
+     *
+     * @return string
+     */
+    public function translate($msg)
+    {
+        return (null !== $this->translator)
+            ? $this->translator->translate($msg) : $msg;
+    }
+
+    /**
+     * Set a translator
+     *
+     * @param \Zend\I18n\Translator\Translator $translator Translator
+     *
+     * @return void
+     */
+    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
+    {
+        $this->translator = $translator;
     }
 
     /**
@@ -174,7 +216,7 @@ class Mailer
         if (is_null($subject)) {
             $subject = 'Library Catalog Search Result';
         }
-        $subject = Translator::translate($subject);
+        $subject = $this->translate($subject);
         $body = $view->partial(
             'Email/share-link.phtml',
             array(
@@ -200,7 +242,7 @@ class Mailer
      */
     public function sendRecord($to, $from, $msg, $record, $view)
     {
-        $subject = Translator::translate('Library Catalog Record') . ': '
+        $subject = $this->translate('Library Catalog Record') . ': '
             . $record->getBreadcrumb();
         $body = $view->partial(
             'Email/record.phtml',

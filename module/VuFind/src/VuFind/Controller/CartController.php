@@ -27,7 +27,7 @@
  */
 namespace VuFind\Controller;
 use VuFind\Exception\Mail as MailException, VuFind\Export,
-    VuFind\Translator\Translator, Zend\Session\Container as SessionContainer;
+    Zend\Session\Container as SessionContainer;
 
 /**
  * Book Bag / Bulk Action Controller
@@ -114,9 +114,9 @@ class CartController extends AbstractBase
             } else {
                 $addItems = $this->getCart()->addItems($ids);
                 if (!$addItems['success']) {
-                    $msg = Translator::translate('bookbag_full_msg') . ". "
+                    $msg = $this->translate('bookbag_full_msg') . ". "
                         . $addItems['notAdded'] . " "
-                        . Translator::translate('items_already_in_bookbag') . ".";
+                        . $this->translate('items_already_in_bookbag') . ".";
                     $this->flashMessenger()->setNamespace('info')
                         ->addMessage($msg);
                 }

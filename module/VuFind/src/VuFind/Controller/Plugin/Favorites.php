@@ -27,7 +27,7 @@
  */
 namespace VuFind\Controller\Plugin;
 use VuFind\Exception\LoginRequired as LoginRequiredException, VuFind\Tags,
-    VuFind\Translator\Translator, Zend\Mvc\Controller\Plugin\AbstractPlugin;
+    Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
  * Zend action helper to perform favorites-related actions
@@ -65,7 +65,7 @@ class Favorites extends AbstractPlugin
         $table = $this->getController()->getTable('UserList');
         if (empty($listId) || $listId == 'NEW') {
             $list = $table->getNew($user);
-            $list->title = Translator::translate('My Favorites');
+            $list->title = $this->getController()->translate('My Favorites');
             $list->save($user);
         } else {
             $list = $table->getExisting($listId);

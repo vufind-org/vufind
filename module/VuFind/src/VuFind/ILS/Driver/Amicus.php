@@ -27,7 +27,9 @@
  */
 namespace VuFind\ILS\Driver;
 use PDO, PDOException, VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\ILS as ILSException, VuFind\Translator\Translator;
+    VuFind\Exception\ILS as ILSException,
+    Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Amicus ILS Driver
@@ -38,10 +40,29 @@ use PDO, PDOException, VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
-class Amicus extends AbstractBase
+class Amicus extends AbstractBase implements ServiceLocatorAwareInterface
 {
+    /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
+
+    /**
+     * Database connection
+     *
+     * @var PDO
+     */
     protected $db;
-    protected $statusRankings = false;        // used by _pickStatus() method
+
+    /**
+     * Stored status rankings from the database; initialized to false but populated
+     * by the pickStatus() method.
+     *
+     * @var array|bool
+     */
+    protected $statusRankings = false;
 
     /**
      * Initialize the driver.
@@ -304,6 +325,7 @@ class Amicus extends AbstractBase
         $prestados = 0;
         $reservados = 0;
         $possibleQueries = array($items);
+
         // Loop through the possible queries and try each in turn -- the first one
         // that yields results will cause the function to return.
         foreach ($possibleQueries as $sql) {
@@ -323,9 +345,9 @@ class Amicus extends AbstractBase
                 $reservados = $this->sacaReservas($row['CPY_ID_NBR']);
                 if (!isset($data[$row['BIB_ITM_NBR']])) {
                     if ($multiple != 1 ) {
-                        $multiple = Translator::translate("Multiple Locations");
-                        $textoLoc = Translator::translate("Multiple");
-                        $textoSign = Translator::translate("Multiple Locations");
+                        $multiple = $this->translate("Multiple Locations");
+                        $textoLoc = $this->translate("Multiple");
+                        $textoSign = $this->translate("Multiple Locations");
                         $data[$row['BIB_ITM_NBR']] = array(
                             'id' => $id,
                             'status' => $prestados,
@@ -365,9 +387,9 @@ class Amicus extends AbstractBase
                     'id' => $id,
                     'status' => $prestados,
                     'status_array' => array($prestados),
-                    'location' => Translator::translate("No copies"),
+                    'location' => $this->translate("No copies"),
                     'reserve' => $reservados,
-                    'callnumber' => Translator::translate("No copies")
+                    'callnumber' => $this->translate("No copies")
                 );
                 break;
             }
@@ -955,5 +977,42 @@ class Amicus extends AbstractBase
         }
 
         return $list;
+    }
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return Amicus
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
+    }
+
+    /**
+     * Translate a string if a translator is available.
+     *
+     * @param string $msg Message to translate
+     *
+     * @return string
+     */
+    protected function translate($msg)
+    {
+        $sm = $this->getServiceLocator()->getServiceLocator();
+        return $sm->has('Translator')
+            ? $sm->get('Translator')->translate($msg) : $msg;
     }
 }

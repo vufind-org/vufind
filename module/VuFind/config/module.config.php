@@ -273,6 +273,32 @@ $config = array(
                 $logger->setConfig(\VuFind\Config\Reader::getConfig());
                 return $logger;
             },
+            'mailer' => function ($sm) {
+                $mailer = new \VuFind\Mailer();
+                $mailer->setTranslator($sm->get('Translator'));
+                return $mailer;
+            },
+            'sms' => function ($sm) {
+                $sms = new \VuFind\Mailer\SMS();
+                $sms->setTranslator($sm->get('Translator'));
+                return $sms;
+            },
+            'translator' => function ($sm) {
+                $factory = new \Zend\I18n\Translator\TranslatorServiceFactory();
+                $translator = $factory->createService($sm);
+
+                // Set up the ExtendedIni plugin:
+                $translator->getPluginManager()->setService(
+                    'extendedini', new \VuFind\I18n\Translator\Loader\ExtendedIni()
+                );
+
+                // Set up language caching for better performance:
+                $translator->setCache(
+                    $sm->get('CacheManager')->getCache('language')
+                );
+
+                return $translator;
+            },
             'worldcatconnection' => function ($sm) {
                 $wc = new \VuFind\Connection\WorldCat();
                 $wc->setLogger($sm->get('Logger'));
@@ -288,11 +314,9 @@ $config = array(
             'authmanager' => 'VuFind\Auth\Manager',
             'cart' => 'VuFind\Cart',
             'cachemanager' => 'VuFind\Cache\Manager',
-            'mailer' => 'VuFind\Mailer',
             'recordloader' => 'VuFind\Record\Loader',
             'searchspecsreader' => 'VuFind\Config\SearchSpecsReader',
             'sessionmanager' => 'Zend\Session\SessionManager',
-            'sms' => 'VuFind\Mailer\SMS',
         )
     ),
     'session_plugin_manager' => array(

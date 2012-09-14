@@ -613,4 +613,17 @@ abstract class Results implements ServiceLocatorAwareInterface
     {
         return $this->getServiceLocator()->get('DbTablePluginManager')->get($table);
     }
+
+    /**
+     * Translate a string if a translator is available.
+     *
+     * @param string $msg Message to translate
+     *
+     * @return string
+     */
+    public function translate($msg)
+    {
+        return $this->getServiceLocator()->has('Translator')
+            ? $this->getServiceLocator()->get('Translator')->translate($msg) : $msg;
+    }
 }

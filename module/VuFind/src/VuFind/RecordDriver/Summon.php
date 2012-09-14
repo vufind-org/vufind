@@ -26,9 +26,7 @@
  * @link     http://vufind.org/wiki/other_than_marc Wiki
  */
 namespace VuFind\RecordDriver;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Date\Converter as DateConverter,
-    VuFind\Translator\Translator;
+use VuFind\Config\Reader as ConfigReader, VuFind\Date\Converter as DateConverter;
 
 /**
  * Model for Summon records.
@@ -464,7 +462,7 @@ class Summon extends SolrDefault
             return array(
                 array(
                     'url' => $this->fields['link'],
-                    'desc' => Translator::translate('Get full text')
+                    'desc' => $this->translate('Get full text')
                 )
             );
         }
@@ -560,7 +558,7 @@ class Summon extends SolrDefault
         $str = '';
         $vol = $this->getContainerVolume();
         if (!empty($vol)) {
-            $str .= Translator::translate('citation_volume_abbrev')
+            $str .= $this->translate('citation_volume_abbrev')
                 . ' ' . $vol;
         }
         $no = $this->getContainerIssue();
@@ -568,7 +566,7 @@ class Summon extends SolrDefault
             if (strlen($str) > 0) {
                 $str .= '; ';
             }
-            $str .= Translator::translate('citation_issue_abbrev')
+            $str .= $this->translate('citation_issue_abbrev')
                 . ' ' . $no;
         }
         $start = $this->getContainerStartPage();
@@ -578,10 +576,10 @@ class Summon extends SolrDefault
             }
             $end = $this->getContainerEndPage();
             if ($start == $end) {
-                $str .= Translator::translate('citation_singlepage_abbrev')
+                $str .= $this->translate('citation_singlepage_abbrev')
                     . ' ' . $start;
             } else {
-                $str .= Translator::translate('citation_multipage_abbrev')
+                $str .= $this->translate('citation_multipage_abbrev')
                     . ' ' . $start . ' - ' . $end;
             }
         }

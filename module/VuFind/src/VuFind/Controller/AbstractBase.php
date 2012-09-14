@@ -248,6 +248,19 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Translate a string if a translator is available.
+     *
+     * @param string $msg Message to translate
+     *
+     * @return string
+     */
+    public function translate($msg)
+    {
+        return $this->getServiceLocator()->has('Translator')
+            ? $this->getServiceLocator()->get('Translator')->translate($msg) : $msg;
+    }
+
+    /**
      * Convenience method to make invocation of forward() helper less verbose.
      *
      * @param string $controller Controller to invoke

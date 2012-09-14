@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-namespace VuFind\Translator\Loader;
+namespace VuFind\I18n\Translator\Loader;
 use Zend\I18n\Exception\InvalidArgumentException,
     Zend\I18n\Translator\Loader\FileLoaderInterface,
     Zend\I18n\Translator\TextDomain;

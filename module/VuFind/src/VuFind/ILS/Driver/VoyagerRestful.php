@@ -28,12 +28,10 @@
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use PDOException, VuFind\Date\Converter as DateConverter,
-    VuFind\Exception\Date as DateException,
+use PDOException, VuFind\Exception\Date as DateException,
     VuFind\Exception\ILS as ILSException,
     VuFind\Http\Client as HttpClient,
-    VuFind\ILS\Connection as ILSConnection,
-    VuFind\Translator\Translator;
+    VuFind\ILS\Connection as ILSConnection;
 
 /**
  * Voyager Restful ILS Driver

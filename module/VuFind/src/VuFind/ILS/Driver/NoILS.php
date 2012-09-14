@@ -28,7 +28,7 @@
  */
 namespace VuFind\ILS\Driver;
 use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException,
-    VuFind\Translator\Translator, Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -107,7 +107,7 @@ class NoILS extends AbstractBase implements ServiceLocatorAwareInterface
         $useStatus = isset($this->config['settings']['useStatus'])
             ? $this->config['settings']['useStatus'] : 'none';
         if ($useStatus == "custom") {
-            $status = Translator::translate($this->config['Status']['status']);
+            $status = $this->translate($this->config['Status']['status']);
             return array(
                 array(
                     'id' => $id,
@@ -116,11 +116,11 @@ class NoILS extends AbstractBase implements ServiceLocatorAwareInterface
                     'use_unknown_message' =>
                         $this->config['Status']['use_unknown_message'],
                     'status_array' => array($status),
-                    'location' => Translator::translate(
+                    'location' => $this->translate(
                         $this->config['Status']['location']
                     ),
                     'reserve' => $this->config['Status']['reserve'],
-                    'callnumber' => Translator::translate(
+                    'callnumber' => $this->translate(
                         $this->config['Status']['callnumber']
                     )
                 )
@@ -181,20 +181,20 @@ class NoILS extends AbstractBase implements ServiceLocatorAwareInterface
             return array(
                 array(
                     'id' => $id,
-                    'number' => Translator::translate(
+                    'number' => $this->translate(
                         $this->config['Holdings']['number']
                     ),
                     'availability' => $this->config['Holdings']['availability'],
-                    'status' => Translator::translate(
+                    'status' => $this->translate(
                         $this->config['Holdings']['status']
                     ),
                     'use_unknown_message' =>
                         $this->config['Holdings']['use_unknown_message'],
-                    'location' => Translator::translate(
+                    'location' => $this->translate(
                         $this->config['Holdings']['location']
                     ),
                     'reserve' => $this->config['Holdings']['reserve'],
-                    'callnumber' => Translator::translate(
+                    'callnumber' => $this->translate(
                         $this->config['Holdings']['callnumber']
                     ),
                     'barcode' => $this->config['Holdings']['barcode'],
@@ -359,5 +359,19 @@ class NoILS extends AbstractBase implements ServiceLocatorAwareInterface
     public function getServiceLocator()
     {
         return $this->serviceLocator;
+    }
+
+    /**
+     * Translate a string if a translator is available.
+     *
+     * @param string $msg Message to translate
+     *
+     * @return string
+     */
+    protected function translate($msg)
+    {
+        $sm = $this->getServiceLocator()->getServiceLocator();
+        return $sm->has('Translator')
+            ? $sm->get('Translator')->translate($msg) : $msg;
     }
 }

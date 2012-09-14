@@ -27,8 +27,7 @@
  */
 namespace VuFind\Search\Favorites;
 use VuFind\Exception\ListPermission as ListPermissionException,
-    VuFind\Search\Base\Results as BaseResults,
-    VuFind\Translator\Translator;
+    VuFind\Search\Base\Results as BaseResults;
 
 /**
  * Search Favorites Results
@@ -137,7 +136,7 @@ class Results extends BaseResults
             && (!$this->user || $list->user_id != $this->user->id)
         ) {
             throw new ListPermissionException(
-                Translator::translate('list_access_denied')
+                $this->translate('list_access_denied')
             );
         }
 

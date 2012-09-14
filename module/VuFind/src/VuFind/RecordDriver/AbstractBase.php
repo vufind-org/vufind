@@ -28,8 +28,7 @@
 namespace VuFind\RecordDriver;
 use VuFind\Config\Reader as ConfigReader,
     VuFind\Exception\LoginRequired as LoginRequiredException,
-    VuFind\Tags, VuFind\Translator\Translator,
-    VuFind\XSLT\Import\VuFind as ArticleStripper,
+    VuFind\Tags, VuFind\XSLT\Import\VuFind as ArticleStripper,
     Zend\ServiceManager\ServiceLocatorInterface,
     Zend\ServiceManager\ServiceLocatorAwareInterface;
 
@@ -185,7 +184,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
         $table = $this->getDbTable('UserList');
         if (empty($listId) || $listId == 'NEW') {
             $list = $table->getNew($user);
-            $list->title = Translator::translate('My Favorites');
+            $list->title = $this->translate('My Favorites');
             $list->save($user);
         } else {
             $list = $table->getExisting($listId);
@@ -470,5 +469,19 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
     {
         return $this->getServiceLocator()->getServiceLocator()
             ->get('DbTablePluginManager')->get($table);
+    }
+
+    /**
+     * Translate a string if a translator is available.
+     *
+     * @param string $msg Message to translate
+     *
+     * @return string
+     */
+    public function translate($msg)
+    {
+        $sm = $this->getServiceLocator()->getServiceLocator();
+        return $sm->has('Translator')
+            ? $sm->get('Translator')->translate($msg) : $msg;
     }
 }

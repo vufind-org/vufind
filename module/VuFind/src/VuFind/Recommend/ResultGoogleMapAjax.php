@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Translator\Translator;
 
 /**
  * AuthorInfo Recommendations Module
@@ -42,8 +41,13 @@ use VuFind\Translator\Translator;
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  * @view     AuthorInfoFacets.phtml
  */
-class ResultGoogleMapAjax implements RecommendInterface
+class ResultGoogleMapAjax extends AbstractSearchManagerAwareModule
 {
+    /**
+     * Saved search results
+     *
+     * @var \VuFind\Search\Base\Results
+     */
     protected $searchObject;
 
     /**
@@ -96,13 +100,24 @@ class ResultGoogleMapAjax implements RecommendInterface
     }
 
     /**
+     * Get translator object.
+     *
+     * @return \Zend\I18n\Translator\Translator
+     */
+    public function getTranslator()
+    {
+        $sm = $this->getServiceLocator()->getServiceLocator();
+        return $sm->has('Translator') ? $sm->get('Translator') : null;
+    }
+
+    /**
      * getUserLang
      *
      * @return string of lang
      */
     public function userLang()
     {
-        $translator = Translator::getTranslator();
+        $translator = $this->getTranslator();
         return is_object($translator) ? $translator->getLocale() : 'en';
     }
 

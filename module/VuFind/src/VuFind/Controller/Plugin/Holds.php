@@ -27,8 +27,7 @@
  */
 namespace VuFind\Controller\Plugin;
 use VuFind\Crypt\HMAC, VuFind\Date\Converter as DateConverter,
-    VuFind\Translator\Translator, Zend\Mvc\Controller\Plugin\AbstractPlugin,
-    Zend\Session\Container;
+    Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Session\Container;
 
 /**
  * Zend action helper to perform renewal-related actions
@@ -163,9 +162,10 @@ class Holds extends AbstractPlugin
                 if ($cancelResults['count'] > 0) {
                     // TODO : add a mechanism for inserting tokens into translated
                     // messages so we can avoid a double translation here.
+                    $msg = $this->getController()
+                        ->translate('hold_cancel_success_items');
                     $flashMsg->setNamespace('info')->addMessage(
-                        $cancelResults['count'] . ' ' .
-                        Translator::translate('hold_cancel_success_items')
+                        $cancelResults['count'] . ' ' . $msg
                     );
                 }
                 return $cancelResults;

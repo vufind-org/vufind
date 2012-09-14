@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Config\Reader as ConfigReader, VuFind\Http\Client as HttpClient,
-    VuFind\Translator\Translator;
+use VuFind\Config\Reader as ConfigReader, VuFind\Http\Client as HttpClient;
 
 /**
  * AuthorInfo Recommendations Module
@@ -42,9 +41,20 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Http\Client as HttpClient,
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  * @view     AuthorInfoFacets.phtml
  */
-class AuthorInfo implements RecommendInterface
+class AuthorInfo extends AbstractSearchManagerAwareModule
 {
+    /**
+     * Saved search results
+     *
+     * @var \VuFind\Search\Base\Results
+     */
     protected $searchObject;
+
+    /**
+     * Selected language
+     *
+     * @var string
+     */
     protected $lang;
 
     /**
@@ -58,8 +68,19 @@ class AuthorInfo implements RecommendInterface
      */
     public function setConfig($settings)
     {
-        $translator = Translator::getTranslator();
+        $translator = $this->getTranslator();
         $this->lang = is_object($translator) ? $translator->getLocale() : 'en';
+    }
+
+    /**
+     * Get translator object.
+     *
+     * @return \Zend\I18n\Translator\Translator
+     */
+    public function getTranslator()
+    {
+        $sm = $this->getServiceLocator()->getServiceLocator();
+        return $sm->has('Translator') ? $sm->get('Translator') : null;
     }
 
     /**
@@ -315,7 +336,7 @@ class AuthorInfo implements RecommendInterface
 
         // Fix pronunciation guides
         $pattern[] = '/({{)pron-en\|([^}]*)(}})/Us';
-        $replacement[] = Translator::translate("pronounced") . " /$2/";
+        $replacement[] = $this->getTranslator()->translate("pronounced") . " /$2/";
 
         // Fix dashes
         $pattern[] = '/{{ndash}}/';

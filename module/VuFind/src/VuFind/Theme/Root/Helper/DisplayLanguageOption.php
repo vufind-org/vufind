@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Theme\Root\Helper;
-use VuFind\Translator\Translator, Zend\View\Helper\AbstractHelper;
 
 /**
  * DisplayLanguageOption view helper
@@ -37,22 +36,32 @@ use VuFind\Translator\Translator, Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class DisplayLanguageOption extends AbstractHelper
+class DisplayLanguageOption extends AbstractServiceLocator
 {
-    protected $translator;
+    /**
+     * Translator (or null if unavailable)
+     *
+     * @var \Zend\I18n\Translator\Translator
+     */
+    protected $translator = null;
 
     /**
-     * Constructor
+     * Get translator object.
+     *
+     * @return \Zend\I18n\Translator\Translator
      */
-    public function __construct()
+    public function getTranslator()
     {
-        $this->translator = clone(Translator::getTranslator());
-        $this->translator->addTranslationFile(
-            'ExtendedIni',
-            APPLICATION_PATH  . '/languages/native.ini',
-            'default', 'native'
-        );
-        $this->translator->setLocale('native');
+        if (null === $this->translator) {
+            $this->translator = clone($this->getServiceLocator()->get('Translator'));
+            $this->translator->addTranslationFile(
+                'ExtendedIni',
+                APPLICATION_PATH  . '/languages/native.ini',
+                'default', 'native'
+            );
+            $this->translator->setLocale('native');
+        }
+        return $this->translator;
     }
 
     /**
@@ -64,6 +73,6 @@ class DisplayLanguageOption extends AbstractHelper
      */
     public function __invoke($str)
     {
-        return $this->view->escapeHtml($this->translator->translate($str));
+        return $this->view->escapeHtml($this->getTranslator()->translate($str));
     }
 }
