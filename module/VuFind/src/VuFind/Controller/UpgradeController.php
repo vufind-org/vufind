@@ -198,7 +198,7 @@ class UpgradeController extends AbstractBase
     public function fixdatabaseAction()
     {
         $sql = '';
-    
+
         try {
             // Set up the helper with information from our SQL file:
             $this->dbUpgrade()
@@ -242,7 +242,7 @@ class UpgradeController extends AbstractBase
                 $sql .= $this->dbUpgrade()
                     ->createMissingColumns($missingCols, $this->logsql);
             }
-            
+
             // Check for modified columns.
             $mC = $this->logsql ? $missingCols : array();
             $modifiedCols = $this->dbUpgrade()->getModifiedColumns($mT, $mC);
@@ -286,7 +286,7 @@ class UpgradeController extends AbstractBase
         }
         return $this->forwardTo('Upgrade', 'Home');
     }
-    
+
     /**
      * Prompt the user for database credentials.
      *
@@ -299,8 +299,8 @@ class UpgradeController extends AbstractBase
             unset($this->session->sql);
             return $this->forwardTo('Upgrade', 'Home');
         }
-        
-        return $this->createViewModel(array('sql' => $this->session->sql));        
+
+        return $this->createViewModel(array('sql' => $this->session->sql));
     }
 
     /**
@@ -316,7 +316,7 @@ class UpgradeController extends AbstractBase
             return $this->forwardTo('Upgrade', 'FixDatabase');
         } else {
             $dbrootuser = $this->params()->fromPost('dbrootuser', 'root');
-            
+
             // Process form submission:
             if (strlen($this->params()->fromPost('submit', '')) > 0) {
                 $pass = $this->params()->fromPost('dbrootpass');
@@ -333,7 +333,7 @@ class UpgradeController extends AbstractBase
                     $this->flashMessenger()->setNamespace('error')
                         ->addMessage('Could not connect; please try again.');
                 }
-            } 
+            }
         }
 
         return $this->createViewModel(array('dbrootuser' => $dbrootuser));
