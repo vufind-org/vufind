@@ -288,9 +288,11 @@ $config = array(
             'authmanager' => 'VuFind\Auth\Manager',
             'cart' => 'VuFind\Cart',
             'cachemanager' => 'VuFind\Cache\Manager',
+            'mailer' => 'VuFind\Mailer',
             'recordloader' => 'VuFind\Record\Loader',
             'searchspecsreader' => 'VuFind\Config\SearchSpecsReader',
             'sessionmanager' => 'Zend\Session\SessionManager',
+            'sms' => 'VuFind\Mailer\SMS',
         )
     ),
     'session_plugin_manager' => array(

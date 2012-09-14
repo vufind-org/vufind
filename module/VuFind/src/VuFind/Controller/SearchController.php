@@ -29,7 +29,7 @@ namespace VuFind\Controller;
 
 use VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
-    VuFind\Exception\Mail as MailException, VuFind\Mailer, VuFind\Search\Memory,
+    VuFind\Exception\Mail as MailException, VuFind\Search\Memory,
     VuFind\Solr\Utils as SolrUtils;
 
 /**
@@ -100,8 +100,7 @@ class SearchController extends AbstractSearch
             // Attempt to send the email and show an appropriate flash message:
             try {
                 // If we got this far, we're ready to send the email:
-                $mailer = new Mailer();
-                $mailer->sendLink(
+                $this->getServiceLocator()->get('Mailer')->sendLink(
                     $view->to, $view->from, $view->message,
                     $view->url, $this->getViewRenderer()
                 );

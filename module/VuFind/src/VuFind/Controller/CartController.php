@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Exception\Mail as MailException, VuFind\Export, VuFind\Mailer,
+use VuFind\Exception\Mail as MailException, VuFind\Export,
     VuFind\Translator\Translator, Zend\Session\Container as SessionContainer;
 
 /**
@@ -192,8 +192,7 @@ class CartController extends AbstractBase
             // Attempt to send the email and show an appropriate flash message:
             try {
                 // If we got this far, we're ready to send the email:
-                $mailer = new Mailer();
-                $mailer->sendLink(
+                $this->getServiceLocator()->get('Mailer')->sendLink(
                     $view->to, $view->from, $view->message,
                     $url, $this->getViewRenderer(), 'bulk_email_title'
                 );

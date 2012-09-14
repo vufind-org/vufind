@@ -28,8 +28,8 @@
 namespace VuFind\Controller;
 use VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
-    VuFind\Exception\Auth as AuthException, VuFind\Export, VuFind\Mailer,
-    VuFind\Mailer\SMS, VuFind\Translator\Translator;
+    VuFind\Exception\Auth as AuthException, VuFind\Export,
+    VuFind\Translator\Translator;
 
 /**
  * This controller handles global AJAX functionality
@@ -940,8 +940,7 @@ class AjaxController extends AbstractBase
                 $this->params()->fromPost('id'),
                 $this->params()->fromPost('source', 'VuFind')
             );
-            $mailer = new SMS();
-            $mailer->textRecord(
+            $this->getServiceLocator()->get('SMS')->textRecord(
                 $this->params()->fromPost('provider'),
                 $this->params()->fromPost('to'), $record, $this->getViewRenderer()
             );
@@ -969,8 +968,7 @@ class AjaxController extends AbstractBase
                 $this->params()->fromPost('id'),
                 $this->params()->fromPost('source', 'VuFind')
             );
-            $mailer = new Mailer();
-            $mailer->sendRecord(
+            $this->getServiceLocator()->get('Mailer')->sendRecord(
                 $this->params()->fromPost('to'), $this->params()->fromPost('from'),
                 $this->params()->fromPost('message'), $record,
                 $this->getViewRenderer()
@@ -1002,8 +1000,7 @@ class AjaxController extends AbstractBase
 
         // Attempt to send the email:
         try {
-            $mailer = new Mailer();
-            $mailer->sendLink(
+            $this->getServiceLocator()->get('Mailer')->sendLink(
                 $this->params()->fromPost('to'), $this->params()->fromPost('from'),
                 $this->params()->fromPost('message'),
                 $url, $this->getViewRenderer(), $this->params()->fromPost('subject')

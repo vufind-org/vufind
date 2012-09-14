@@ -26,8 +26,8 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Controller;
-use VuFind\Exception\Mail as MailException, VuFind\Export, VuFind\Mailer,
-    VuFind\Mailer\SMS, VuFind\Record\Router as RecordRouter,
+use VuFind\Exception\Mail as MailException, VuFind\Export,
+    VuFind\Record\Router as RecordRouter,
     Zend\Session\Container as SessionContainer;
 
 /**
@@ -307,8 +307,7 @@ class AbstractRecord extends AbstractBase
 
             // Attempt to send the email and show an appropriate flash message:
             try {
-                $mailer = new Mailer();
-                $mailer->sendRecord(
+                $this->getServiceLocator()->get('Mailer')->sendRecord(
                     $view->to, $view->from, $view->message, $driver,
                     $this->getViewRenderer()
                 );
@@ -337,9 +336,9 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Load the SMS carrier list:
-        $mailer = new SMS();
+        $sms = $this->getServiceLocator()->get('SMS');
         $view = $this->createViewModel();
-        $view->carriers = $mailer->getCarriers();
+        $view->carriers = $sms->getCarriers();
 
         // Process form submission:
         if ($this->params()->fromPost('submit')) {
@@ -349,7 +348,7 @@ class AbstractRecord extends AbstractBase
 
             // Attempt to send the email and show an appropriate flash message:
             try {
-                $mailer->textRecord(
+                $sms->textRecord(
                     $view->provider, $view->to, $driver, $this->getViewRenderer()
                 );
                 $this->flashMessenger()->setNamespace('info')

@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
 namespace VuFind\Mailer;
-use VuFind\Config\Reader as ConfigReader, VuFind\Exception\Mail as MailException,
-    VuFind\Mailer;
+use VuFind\Config\Reader as ConfigReader, VuFind\Exception\Mail as MailException;
 
 /**
  * VuFind Mailer Class for SMS messages
@@ -38,7 +37,7 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Exception\Mail as MailException
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
-class SMS extends Mailer
+class SMS extends \VuFind\Mailer
 {
     // Defaults, usually overridden by contents of sms.ini:
     protected $carriers = array(

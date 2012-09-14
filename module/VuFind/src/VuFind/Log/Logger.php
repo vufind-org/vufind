@@ -26,8 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Log;
-use VuFind\Mailer,
-    Zend\Db\TableGateway\Feature\GlobalAdapterFeature as DbGlobalAdapter,
+use Zend\Db\TableGateway\Feature\GlobalAdapterFeature as DbGlobalAdapter,
     Zend\Log\Logger as BaseLogger,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
@@ -123,7 +122,7 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
             $error_types = isset($parts[1]) ? $parts[1] : '';
 
             // use smtp
-            $mailer = new Mailer(null, $config);
+            $mailer = $this->getServiceLocator()->get('Mailer');
             $msg = $mailer->getNewMessage()
                 ->addFrom($config->Site->email)
                 ->addTo($email)
