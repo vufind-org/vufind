@@ -7,8 +7,8 @@
     <?$this->headThemeResources()?>
     <?=$this->headMeta()?>
     <?=$this->headTitle()?>
-    <?=$this->headStyle()?>
     <?=$this->headLink()?>
+    <?=$this->headStyle()?>
     <?
         // Set global path for Javascript code:
         $this->headScript()->prependScript("path = '" . rtrim($this->url('home'), '/') . "';");
