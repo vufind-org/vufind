@@ -267,6 +267,12 @@ $config = array(
                 $catalog->setConfig($config->Catalog);
                 return $catalog;
             },
+            'logger' => function ($sm) {
+                $logger = new \VuFind\Log\Logger();
+                $logger->setServiceLocator($sm);
+                $logger->setConfig(\VuFind\Config\Reader::getConfig());
+                return $logger;
+            },
             'worldcatconnection' => function ($sm) {
                 $wc = new \VuFind\Connection\WorldCat();
                 $wc->setLogger($sm->get('Logger'));
@@ -282,7 +288,6 @@ $config = array(
             'authmanager' => 'VuFind\Auth\Manager',
             'cart' => 'VuFind\Cart',
             'cachemanager' => 'VuFind\Cache\Manager',
-            'logger' => 'VuFind\Log\Logger',
             'recordloader' => 'VuFind\Record\Loader',
             'searchspecsreader' => 'VuFind\Config\SearchSpecsReader',
             'sessionmanager' => 'Zend\Session\SessionManager',

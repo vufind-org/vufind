@@ -26,9 +26,11 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Log;
-use VuFind\Config\Reader as ConfigReader, VuFind\Mailer,
+use VuFind\Mailer,
     Zend\Db\TableGateway\Feature\GlobalAdapterFeature as DbGlobalAdapter,
-    Zend\Log\Logger as BaseLogger;
+    Zend\Log\Logger as BaseLogger,
+    Zend\ServiceManager\ServiceLocatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * This class wraps the BaseLogger class to allow for log verbosity
@@ -39,19 +41,31 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Mailer,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Logger extends BaseLogger
+class Logger extends BaseLogger implements ServiceLocatorAwareInterface
 {
+    /**
+     * Is debug logging enabled?
+     *
+     * @var bool
+     */
     protected $debugNeeded = false;
 
     /**
-     * Constructor
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
      */
-    public function __construct()
+    protected $serviceLocator;
+
+    /**
+     * Set configuration
+     *
+     * @param \Zend\Config\Config $config VuFind configuration
+     *
+     * @return void
+     */
+    public function setConfig($config)
     {
-        parent::__construct();
-
-        $config = ConfigReader::getConfig();
-
         // DEBUGGER
         if (!$config->System->debug == false) {
             $writer = new Writer\Stream('php://output');
@@ -214,5 +228,28 @@ class Logger extends BaseLogger
     public function debugNeeded()
     {
         return $this->debugNeeded;
+    }
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return Logger
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        $this->serviceLocator = $serviceLocator;
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
     }
 }
