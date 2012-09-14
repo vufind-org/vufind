@@ -15,8 +15,8 @@
     // Set up page title:
     $this->headTitle($this->translate('Author Browse'));
 
-    // Set up empty search box:
-    $this->layout()->searchbox = $this->render('search/searchbox.phtml');
+    // Set up empty search box pointing at Solr module:
+    $this->layout()->searchbox = $this->context($this)->renderInContext('search/searchbox.phtml', array('searchClassId' => 'Solr'));
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<em>' . $this->translate('Author Results for') . ' ' . $this->results->getParams()->getDisplayQuery() . '</em>';
