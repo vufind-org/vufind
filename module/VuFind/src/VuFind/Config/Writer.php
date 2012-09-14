@@ -146,6 +146,20 @@ class Writer
      */
     public function save()
     {
+        // Create parent directory structure if necessary:
+        $stack = array();
+        $dirname = dirname($this->filename);
+        while (!empty($dirname) && !is_dir($dirname)) {
+            $stack[] = $dirname;
+            $dirname = dirname($dirname);
+        }
+        foreach (array_reverse($stack) as $dir) {
+            if (!mkdir($dir)) {
+                return false;
+            }
+        }
+
+        // Write the file:
         return file_put_contents($this->filename, $this->getContent());
     }
 
