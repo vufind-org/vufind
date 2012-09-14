@@ -58,7 +58,7 @@ class AbstractRecord extends AbstractBase
     protected function createViewModel($params = null)
     {
         $view = parent::createViewModel($params);
-        $view->searchClassId = $this->searchClassId;
+        $this->layout()->searchClassId = $view->searchClassId = $this->searchClassId;
         if (!is_null($this->driver)) {
             $view->driver = $this->driver;
         }
