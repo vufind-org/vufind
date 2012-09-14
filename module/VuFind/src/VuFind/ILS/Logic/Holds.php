@@ -27,8 +27,7 @@
  * @link     http://vufind.org/wiki/system_classes#index_interface Wiki
  */
 namespace VuFind\ILS\Logic;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Crypt\HMAC,
+use VuFind\Config\Reader as ConfigReader, VuFind\Crypt\HMAC,
     VuFind\ILS\Connection as ILSConnection;
 
 /**
@@ -52,9 +51,9 @@ class Holds
      * Constructor
      *
      * @param \VuFind\Auth\Manager $account Auth manager object
-     * @param ILSConnection        $catalog A catalog connection
+     * @param ILSConnection        $ils     A catalog connection
      */
-    public function __construct($account, $catalog)
+    public function __construct(\VuFind\Auth\Manager $account, ILSConnection $ils)
     {
         $this->account = $account;
         $this->config = ConfigReader::getConfig();
@@ -65,7 +64,7 @@ class Holds
             }
         }
 
-        $this->catalog = $catalog;
+        $this->catalog = $ils;
     }
 
     /**

@@ -808,7 +808,7 @@ class SolrMarc extends SolrDefault
      *
      * @return array
      */
-    public function getRealTimeHoldings($account)
+    public function getRealTimeHoldings(\VuFind\Auth\Manager $account)
     {
         $holdLogic = new HoldLogic($account, $this->getILS());
         return $holdLogic->getHoldings($this->getUniqueID());
@@ -837,7 +837,7 @@ class SolrMarc extends SolrDefault
      *
      * @return mixed A url if a hold is possible, boolean false if not
      */
-    public function getRealTimeTitleHold($account)
+    public function getRealTimeTitleHold(\VuFind\Auth\Manager $account)
     {
         $biblioLevel = $this->getBibliographicLevel();
         if ("monograph" == strtolower($biblioLevel)

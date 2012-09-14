@@ -83,7 +83,7 @@ class WorldCat extends SolrMarc
      *
      * @return array
      */
-    public function getRealTimeHoldings($account)
+    public function getRealTimeHoldings(\VuFind\Auth\Manager $account)
     {
         // Not supported here:
         return array();

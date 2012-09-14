@@ -828,7 +828,7 @@ class SolrDefault extends AbstractBase
      *
      * @return array
      */
-    public function getRealTimeHoldings($account)
+    public function getRealTimeHoldings(\VuFind\Auth\Manager $account)
     {
         // Not supported by the Solr index -- implement in child classes.
         return array();
