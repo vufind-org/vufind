@@ -7,8 +7,7 @@ use Zend\Mvc\Service\ServiceManagerConfig;
 define('VUFIND_PHPUNIT_RUNNING', 1);
 
 // Define path to application directory
-defined('APPLICATION_PATH')
-    || define('APPLICATION_PATH', dirname(__DIR__));
+defined('APPLICATION_PATH') || define('APPLICATION_PATH', realpath(dirname(__DIR__) . '/../../..'));
 
 // Define application environment
 defined('APPLICATION_ENV')
