@@ -18,6 +18,19 @@ $config = array(
                     ),
                 ),
             ),
+            // TODO: can we address all three default route situations (install, install/, install/home) with
+            // a single route definition?  Currently, we need this case to address trailing slash + missing action.
+            'default-without-action' => array(
+                'type'    => 'Zend\Mvc\Router\Http\Regex',
+                'options' => array(
+                    'regex'    => '/(?<controller>[a-zA-Z][a-zA-Z0-9_-]*)(/?)',
+                    'defaults' => array(
+                        'controller' => 'index',
+                        'action'     => 'Home',
+                    ),
+                    'spec' => '/%controller%',
+                ),
+            ),
             'legacy-alphabrowse-results' => array(
                 'type' => 'Zend\Mvc\Router\Http\Literal',
                 'options' => array(
