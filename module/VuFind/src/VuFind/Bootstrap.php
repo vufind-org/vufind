@@ -327,9 +327,21 @@ class Bootstrap
      *
      * @return void
      */
-    protected function initLog()
+    protected function initErrorLogging()
     {
-        // TODO: We need to figure out how to capture exceptions to the log -- the
-        // logic found in 2.0alpha's ErrorController needs a new home in 2.0beta.
+        $callback = function($event) {
+            $sm = $event->getApplication()->getServiceManager();
+            if ($sm->has('Logger')) {
+                $log = $sm->get('Logger');
+                if (is_callable(array($log, 'logException'))) {
+                    $exception = $event->getParam('exception');
+                    $server = $event->getRequest()->getServer();
+                    if (!empty($exception)) {
+                        $log->logException($exception, $server);
+                    }
+                }
+            }
+        };
+        $this->events->attach('dispatch.error', $callback);
     }
 }
