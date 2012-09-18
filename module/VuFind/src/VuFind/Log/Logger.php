@@ -268,13 +268,15 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
         if (is_array($message)) {
             $timestamp = new \DateTime();
             foreach ($this->writers->toArray() as $writer) {
-                $writer->write(array(
-                    'timestamp'    => $timestamp,
-                    'priority'     => (int) $priority,
-                    'priorityName' => $this->priorities[$priority],
-                    'message'      => $message,
-                    'extra'        => $extra
-                ));
+                $writer->write(
+                    array(
+                        'timestamp'    => $timestamp,
+                        'priority'     => (int) $priority,
+                        'priorityName' => $this->priorities[$priority],
+                        'message'      => $message,
+                        'extra'        => $extra
+                    )
+                );
             }
             return $this;
         }
