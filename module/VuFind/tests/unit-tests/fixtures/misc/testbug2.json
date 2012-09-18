@@ -1,0 +1,74 @@
+{
+  "responseHeader":{
+    "status":0,
+    "QTime":0,
+    "params":{
+      "indent":"on",
+      "start":"0",
+      "q":"id:testbug2",
+      "wt":"json",
+      "version":"2.2",
+      "rows":"10"}},
+  "response":{"numFound":1,"start":0,"docs":[
+      {
+        "edition":"Fictional edition.",
+        "illustrated":"Illustrated",
+        "callnumber-first-code":"D",
+        "callnumber-a":"DG848.15",
+        "id":"testbug2",
+        "author":"Vico, Giambattista, 1668-1744.",
+        "title":"La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) /",
+        "callnumber-subject-code":"DG",
+        "spelling":"Vico, Giambattista, 1668-1744. Principum Neapolitanorum coniurationis anni MDCCI historia. Italian & Latin La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) / Giambattista Vico ; a cura di Claudia Pandolfi. Fictional edition. Morano : Centro di Studi Vichiani, 1992. 296 p. : ill. ; 24 cm. Opere di Giambattista Vico ; 2/1 Italian and Latin. Includes bibliographical references (p. [277]-281) and index. Sample abstract. April11phi Naples (Kingdom) History Spanish rule, 1442-1707 Sources. Pandolfi, Claudia. Vico, Giambattista, 1668-1744. Works. 1982 ; 2, pt. 1. http://fictional.com/sample/url",
+        "title_sub":"(prima e seconda stesura) /",
+        "callnumber-label":"DG848",
+        "recordtype":"marc",
+        "callnumber-first":"D - World History",
+        "title_auth":"La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) /",
+        "callnumber-subject":"DG - Italy, Malta",
+        "callnumber":"DG848.15.V531992",
+        "title_sort":"congiura dei principi napoletani 1701 :(prima e seconda stesura)",
+        "title_short":"La congiura dei Principi Napoletani 1701 :",
+        "fullrecord":"01234cam a2200337Ma 4500001000900000005001700009008004100026020001500067035002300082040002500105041001800130043001200148050002400160049000900184100003600193240008100229245012500310250002300435260004700458300002900505490003800534500002300572504006600595520002100661590001500682651006500697700002300762800006300785856003600848994001200884\u001etestbug2\u001e20110419140028.0\u001e110214s1992    it a     b    001 0 ita d\u001e  \u001fa8820737493\u001e  \u001fa(OCoLC)ocm30585539\u001e  \u001faRBN\u001fcRBN\u001fdOCLCG\u001fdPVU\u001e1 \u001faita\u001falat\u001fhlat\u001e  \u001fae-it---\u001e14\u001faDG848.15\u001fb.V53 1992\u001e  \u001faPVUM\u001e1 \u001faVico, Giambattista,\u001fd1668-1744.\u001e10\u001faPrincipum Neapolitanorum coniurationis anni MDCCI historia.\u001flItalian & Latin\u001e13\u001faLa congiura dei Principi Napoletani 1701 :\u001fb(prima e seconda stesura) /\u001fcGiambattista Vico ; a cura di Claudia Pandolfi.\u001e  \u001faFictional edition.\u001e  \u001faMorano :\u001fbCentro di Studi Vichiani,\u001fc1992.\u001e  \u001fa296 p. :\u001fbill. ;\u001fc24 cm.\u001e1 \u001faOpere di Giambattista Vico ;\u001fv2/1\u001e  \u001faItalian and Latin.\u001e  \u001faIncludes bibliographical references (p. [277]-281) and index.\u001e3 \u001faSample abstract.\u001e  \u001faApril11phi\u001e 0\u001faNaples (Kingdom)\u001fxHistory\u001fySpanish rule, 1442-1707\u001fvSources.\u001e1 \u001faPandolfi, Claudia.\u001e1 \u001faVico, Giambattista,\u001fd1668-1744.\u001ftWorks.\u001ff1982 ;\u001fv2, pt. 1.\u001e40\u001fuhttp://fictional.com/sample/url\u001e  \u001faC0\u001fbPVU\u001e\u001d",
+        "author-letter":"Vico, Giambattista,",
+        "title_full":"La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) / Giambattista Vico ; a cura di Claudia Pandolfi.",
+        "title_fullStr":"La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) / Giambattista Vico ; a cura di Claudia Pandolfi.",
+        "title_full_unstemmed":"La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) / Giambattista Vico ; a cura di Claudia Pandolfi.",
+        "oclc_num":["30585539"],
+        "series":[
+          "Vico, Giambattista, 1668-1744. Works. 1982 ;"],
+        "geographic":[
+          "Naples (Kingdom) History Spanish rule, 1442-1707 Sources"],
+        "building":["testbug2.mrc"],
+        "physical":["296 p. : ill. ; 24 cm."],
+        "geographic_facet":[
+          "Naples (Kingdom)"],
+        "topic_facet":[
+          "History"],
+        "format":["Book"],
+        "collection":["Catalog"],
+        "url":["http://fictional.com/sample/url"],
+        "title_alt":[
+          "Principum Neapolitanorum coniurationis anni MDCCI historia."],
+        "series2":[
+          "Opere di Giambattista Vico ;"],
+        "publisher":[
+          "Centro di Studi Vichiani,"],
+        "ctrlnum":["(OCoLC)ocm30585539"],
+        "spellingShingle":[
+          "Vico, Giambattista, 1668-1744. Works. 1982 ;",
+          "Vico, Giambattista, 1668-1744.",
+          "La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) /"],
+        "isbn":[
+          "8820737493"],
+        "author2Str":["Pandolfi, Claudia."],
+        "author2":[
+          "Pandolfi, Claudia."],
+        "language":["Italian","Latin"],
+        "era_facet":[
+          "Spanish rule, 1442-1707"],
+        "genre_facet":[
+          "Sources."],
+        "publishDate":["1992"],
+        "institution":["MyInstitution"]}]
+  }}

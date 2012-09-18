@@ -34,6 +34,7 @@ namespace VuFind\Test\RecordDriver;
  * @category VuFind2
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   David Maus <maus@hab.de>
  * @author   Preetha Rao <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
@@ -48,20 +49,30 @@ class SolrMarcTest extends \VuFind\Tests\TestCase
      */
     public function testBug2()
     {
-        $record = $this->getSearchManager()->setSearchClassId('Solr')
-            ->getResults()->getRecord('testbug2');
-        $this->assertEquals(
-            $record->getPrimaryAuthor(),
-            'Vico, Giambattista, 1668-1744.'
-        );
-        $secondary = $record->getSecondaryAuthors();
-        $this->assertEquals(count($secondary), 1);
-        $this->assertTrue(in_array('Pandolfi, Claudia.', $secondary));
-        $series = $record->getSeries();
-        $this->assertEquals(count($series), 1);
-        $this->assertEquals(
-            'Vico, Giambattista, 1668-1744. Works. 1982 ;', $series[0]['name']
-        );
-        $this->assertEquals('2, pt. 1.', $series[0]['number']);
+    $fixture = json_decode(
+        file_get_contents(
+        realpath(
+            VUFIND_PHPUNIT_MODULE_PATH . '/fixtures/misc/testbug2.json'
+        )
+        ),
+        true
+    );
+
+    $record = new \VuFind\RecordDriver\SolrMarc();
+    $record->setRawData($fixture['response']['docs'][0]);
+
+    $this->assertEquals(
+        $record->getPrimaryAuthor(),
+        'Vico, Giambattista, 1668-1744.'
+    );
+    $secondary = $record->getSecondaryAuthors();
+    $this->assertEquals(count($secondary), 1);
+    $this->assertTrue(in_array('Pandolfi, Claudia.', $secondary));
+    $series = $record->getSeries();
+    $this->assertEquals(count($series), 1);
+    $this->assertEquals(
+        'Vico, Giambattista, 1668-1744. Works. 1982 ;', $series[0]['name']
+    );
+    $this->assertEquals('2, pt. 1.', $series[0]['number']);
     }
 }

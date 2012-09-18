@@ -6,6 +6,9 @@ use Zend\Mvc\Service\ServiceManagerConfig;
 // Set flag that we're in test mode
 define('VUFIND_PHPUNIT_RUNNING', 1);
 
+// Set path to this module
+define('VUFIND_PHPUNIT_MODULE_PATH', __DIR__);
+
 // Define path to application directory
 defined('APPLICATION_PATH') || define('APPLICATION_PATH', realpath(dirname(__DIR__) . '/../../..'));
 
