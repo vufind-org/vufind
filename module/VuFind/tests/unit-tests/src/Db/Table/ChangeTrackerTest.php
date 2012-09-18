@@ -39,11 +39,6 @@ use VuFind\Db\Table\ChangeTracker;
  */
 class ChangeTrackerTest extends \VuFind\Tests\DbTestCase
 {
-    public static function setUpBeforeClass()
-    {
-        static::prepareAdapter();
-    }
-
     /**
      * Test change tracking
      *
@@ -52,7 +47,7 @@ class ChangeTrackerTest extends \VuFind\Tests\DbTestCase
     public function testChangeTracker()
     {
         $core = 'testCore';
-        $tracker = new ChangeTracker();
+        $tracker = $this->getTable('ChangeTracker');
 
         // Create a new row:
         $tracker->index($core, 'test1', 1326833170);

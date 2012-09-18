@@ -27,8 +27,6 @@
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
 namespace VuFind\Tests;
-use VuFind\Db\AdapterFactory as DbAdapterFactory,
-    Zend\Db\TableGateway\Feature\GlobalAdapterFeature as DbGlobalAdapter;
 
 /**
  * Abstract base class for PHPUnit database test cases.
@@ -43,20 +41,6 @@ use VuFind\Db\AdapterFactory as DbAdapterFactory,
 abstract class DbTestCase extends TestCase
 {
     /**
-     * Setup method -- make sure static adapter is available for testing.
-     *
-     * @return void
-     */
-    public static function prepareAdapter()
-    {
-        try {
-            DbGlobalAdapter::getStaticAdapter();
-        } catch (\Zend\Db\TableGateway\Exception\RuntimeException $e) {
-            DbGlobalAdapter::setStaticAdapter(DbAdapterFactory::getAdapter());
-        }
-    }
-
-    /**
      * Get a service manager.
      *
      * @return \Zend\ServiceManager\ServiceManager
@@ -68,6 +52,7 @@ abstract class DbTestCase extends TestCase
 
         // Add database service:
         if (!$sm->has('DbTablePluginManager')) {
+            $sm->setService('DBAdapter', \VuFind\Db\AdapterFactory::getAdapter());
             $factory = new \VuFind\Db\Table\PluginManager(
                 new \Zend\ServiceManager\Config(
                     array(

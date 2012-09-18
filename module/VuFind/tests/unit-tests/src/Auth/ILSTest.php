@@ -59,9 +59,6 @@ class ILSTest extends \VuFind\Tests\DbTestCase
      */
     public static function setUpBeforeClass()
     {
-        // Set up database adapter:
-        static::prepareAdapter();
-
         // Fail if there are already users in the database (we don't want to run this
         // on a real system -- it's only meant for the continuous integration server)
         $test = new ILSTest();

@@ -273,6 +273,9 @@ $config = array(
     ),
     'service_manager' => array(
         'factories' => array(
+            'dbadapter' => function ($sm) {
+                return \VuFind\Db\AdapterFactory::getAdapter();
+            },
             'ilsconnection' => function ($sm) {
                 $config = \VuFind\Config\Reader::getConfig();
                 $catalog = new \VuFind\ILS\Connection();

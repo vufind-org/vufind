@@ -29,7 +29,6 @@ namespace VuFind\Controller;
 use ArrayObject, VuFind\Config\Reader as ConfigReader,
     VuFind\Cookie\Container as CookieContainer, VuFind\Db\AdapterFactory,
     VuFind\Exception\RecordMissing as RecordMissingException,
-    Zend\Db\TableGateway\Feature\GlobalAdapterFeature as DbGlobalAdapter,
     Zend\Session\Container as SessionContainer;
 
 /**
@@ -202,7 +201,7 @@ class UpgradeController extends AbstractBase
         try {
             // Set up the helper with information from our SQL file:
             $this->dbUpgrade()
-                ->setAdapter(DbGlobalAdapter::getStaticAdapter())
+                ->setAdapter($this->getServiceLocator()->get('DBAdapter'))
                 ->loadSql(APPLICATION_PATH . '/module/VuFind/sql/mysql.sql');
 
             // Check for missing tables.  Note that we need to finish dealing with

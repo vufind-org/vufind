@@ -26,8 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Log;
-use Zend\Db\TableGateway\Feature\GlobalAdapterFeature as DbGlobalAdapter,
-    Zend\Log\Logger as BaseLogger,
+use Zend\Log\Logger as BaseLogger,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -95,7 +94,7 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
             // Make Writers
             $filters = explode(',', $error_types);
             $writer = new Writer\Db(
-                DbGlobalAdapter::getStaticAdapter(),
+                $this->getServiceLocator()->get('DBAdapter'),
                 $table_name, $columnMapping
             );
             $this->addWriters($writer, $filters);

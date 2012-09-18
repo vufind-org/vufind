@@ -27,8 +27,6 @@
  */
 namespace VuFind\Db\Table;
 use Zend\Db\TableGateway\AbstractTableGateway,
-    Zend\Db\TableGateway\Feature\FeatureSet,
-    Zend\Db\TableGateway\Feature\GlobalAdapterFeature,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -63,8 +61,6 @@ class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterfa
     {
         $this->table = $table;
         $this->rowClass = $rowClass;
-        $this->featureSet = new FeatureSet();
-        $this->featureSet->addFeature(new GlobalAdapterFeature());
     }
 
     /**
@@ -77,6 +73,8 @@ class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterfa
         if ($this->isInitialized) {
             return;
         }
+        $this->adapter = $this->getServiceLocator()->getServiceLocator()
+            ->get('DBAdapter');
         parent::initialize();
         if (null !== $this->rowClass) {
             $resultSetPrototype = $this->getResultSetPrototype();

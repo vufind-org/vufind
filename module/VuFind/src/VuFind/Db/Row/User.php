@@ -26,8 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Row;
-use Zend\Db\Sql\Expression, Zend\Db\Sql\Predicate\Predicate, Zend\Db\Sql\Sql,
-    Zend\Db\TableGateway\Feature\GlobalAdapterFeature;
+use Zend\Db\Sql\Expression, Zend\Db\Sql\Predicate\Predicate, Zend\Db\Sql\Sql;
 
 /**
  * Row Definition for user
@@ -80,7 +79,10 @@ class User extends ServiceLocatorAwareGateway
         // Since this object is frequently stored in the session, we should
         // reconnect to the database as part of the save action to prevent
         // exceptions:
-        $this->sql = new Sql(GlobalAdapterFeature::getStaticAdapter(), $this->table);
+        $this->sql = new Sql(
+            $this->getServiceLocator()->getServiceLocator()->get('DBAdapter'),
+            $this->table
+        );
         return parent::save();
     }
 

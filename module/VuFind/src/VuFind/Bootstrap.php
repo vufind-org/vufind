@@ -27,9 +27,7 @@
  */
 namespace VuFind;
 use VuFind\Config\Reader as ConfigReader,
-    VuFind\Db\AdapterFactory as DbAdapterFactory,
     VuFind\Theme\Initializer as ThemeInitializer, Zend\Console\Console,
-    Zend\Db\TableGateway\Feature\GlobalAdapterFeature as DbGlobalAdapter,
     Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch,
     Zend\ServiceManager\Config as ServiceManagerConfig,
     Zend\ServiceManager\ServiceLocatorAwareInterface;
@@ -115,17 +113,6 @@ class Bootstrap
 
         // TODO: factor out static connection manager.
         \VuFind\Connection\Manager::setServiceLocator($serviceManager);
-    }
-
-    /**
-     * Set up the default database adapter.  Do this early since the session handler
-     * may depend on database access.
-     *
-     * @return void
-     */
-    protected function initDatabase()
-    {
-        DbGlobalAdapter::setStaticAdapter(DbAdapterFactory::getAdapter());
     }
 
     /**
