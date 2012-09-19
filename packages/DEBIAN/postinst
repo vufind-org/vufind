@@ -27,7 +27,7 @@ sudo chown -R www-data:www-data $VUFIND_LOCAL_DIR/cache
 sudo chown -R www-data:www-data $VUFIND_LOCAL_DIR/config
  
 # set up Apache for VuFind and reload configuration
-sudo ln -s $VUFIND_LOCAL_DIR/httpd-vufind.conf /etc/apache2/conf.d/vufind
+sudo ln -s $VUFIND_LOCAL_DIR/httpd-vufind.conf /etc/apache2/conf.d/vufind2
 sudo /etc/init.d/apache2 force-reload
  
 # Finalize the installation 
