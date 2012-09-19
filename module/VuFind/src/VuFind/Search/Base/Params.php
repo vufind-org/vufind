@@ -1511,7 +1511,7 @@ class Params implements ServiceLocatorAwareInterface
         $this->serviceLocator = null;
         $options = $this->getOptions();
         if (method_exists($options, 'unsetServiceLocator')) {
-            $params->unsetServiceLocator();
+            $options->unsetServiceLocator();
         }
         return $this;
     }

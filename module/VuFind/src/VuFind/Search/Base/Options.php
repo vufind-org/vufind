@@ -560,6 +560,17 @@ abstract class Options implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Unset the service locator.
+     *
+     * @return Params
+     */
+    public function unsetServiceLocator()
+    {
+        $this->serviceLocator = null;
+        return $this;
+    }
+
+    /**
      * Get the service locator.
      *
      * @return \Zend\ServiceManager\ServiceLocatorInterface
