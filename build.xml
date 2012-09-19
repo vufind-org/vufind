@@ -23,11 +23,11 @@
     <phingcall target="startup" />
     <trycatch property="exceptionmsg">
       <try>
-	<phingcall target="ci-tasks" />
+        <phingcall target="ci-tasks" />
       </try>
       <catch>
-	<phingcall target="shutdown" />
-	<fail>Unexpected error during continuous integration tasks -- ${exceptionmsg}</fail>
+        <phingcall target="shutdown" />
+        <fail>Unexpected error during continuous integration tasks -- ${exceptionmsg}</fail>
       </catch>
     </trycatch>
     <phingcall target="shutdown" />
@@ -51,9 +51,9 @@
     <phpdoc2 title="VuFind API Documentation"
       destdir="${builddir}/apidocs">
       <fileset dir=".">
-	<include name="module/VuFind/src/**/*.php" />
-	<!-- This file breaks phpdoc2; exclude until we can figure out why: -->
-	<exclude name="module/VuFind/src/VuFind/Log/Writer/Stream.php" />
+        <include name="module/VuFind/src/**/*.php" />
+        <!-- This file breaks phpdoc2; exclude until we can figure out why: -->
+        <exclude name="module/VuFind/src/VuFind/Log/Writer/Stream.php" />
       </fileset>
     </phpdoc2>
 
@@ -78,28 +78,28 @@
     <if>
       <equals arg1="${dbtype}" arg2="pgsql" />
       <then>
-	<!-- build database -->
-	<exec command="sudo su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
-	<exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
-	<exec command="sudo su -c &quot;psql -c \&quot;CREATE DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
-	<exec command="sudo su -c &quot;psql -c \&quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
-	<exec command="sudo su -c &quot;psql -c \&quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
-	<!--<exec command="sudo su -c &quot;psql -c \&quot;select 'grant SELECT,INSERT,UPDATE,DELETE on '||schemaname||'.'||tablename||' to ${vufinddbuser};' from pg_tables where schemaname in ('${vufinddb}') order by schemaname, tablename;\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />-->
-	<exec command="PGPASSWORD=${vufinddbpass} psql -U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/postgres.sql ${vufinddb}" checkreturn="true" />
+        <!-- build database -->
+        <exec command="sudo su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" />
+        <exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" />
+        <exec command="sudo su -c &quot;psql -c \&quot;CREATE DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+        <exec command="sudo su -c &quot;psql -c \&quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+        <exec command="sudo su -c &quot;psql -c \&quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+        <!--<exec command="sudo su -c &quot;psql -c \&quot;select 'grant SELECT,INSERT,UPDATE,DELETE on '||schemaname||'.'||tablename||' to ${vufinddbuser};' from pg_tables where schemaname in ('${vufinddb}') order by schemaname, tablename;\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />-->
+        <exec command="PGPASSWORD=${vufinddbpass} psql -U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/postgres.sql ${vufinddb}" checkreturn="true" />
 
-	<!-- configure VuFind -->
-	<exec command="sed -e &quot;s!mysql://root@localhost/vufind!pgsql://${vufinddbuser}:${vufinddbpass}@${pgsqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini" />
+        <!-- configure VuFind -->
+        <exec command="sed -e &quot;s!mysql://root@localhost/vufind!pgsql://${vufinddbuser}:${vufinddbpass}@${pgsqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini" />
       </then>
       <else>
-	<!-- build database -->
-	<exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} drop ${vufinddb}" />
-	<exec command="mysqladmin -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} create ${vufinddb}" checkreturn="true" />
-	<exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'${mysqlhost}' IDENTIFIED BY '${vufinddbpass}' WITH GRANT OPTION&quot;" checkreturn="true" />
-	<exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} -e &quot;FLUSH PRIVILEGES&quot;" checkreturn="true" />
-	<exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
+        <!-- build database -->
+        <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} drop ${vufinddb}" />
+        <exec command="mysqladmin -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} create ${vufinddb}" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'${mysqlhost}' IDENTIFIED BY '${vufinddbpass}' WITH GRANT OPTION&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} -e &quot;FLUSH PRIVILEGES&quot;" checkreturn="true" />
+        <exec command="mysql -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" checkreturn="true" />
 
-	<!-- configure VuFind -->
-	<exec command="sed -e &quot;s!mysql://root@localhost/vufind!mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini" />
+        <!-- configure VuFind -->
+        <exec command="sed -e &quot;s!mysql://root@localhost/vufind!mysql://${vufinddbuser}:${vufinddbpass}@${mysqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini" />
       </else>
     </if>
 
@@ -123,11 +123,11 @@
     <if>
       <equals arg1="${dbtype}" arg2="pgsql" />
       <then>
-	<exec command="sudo su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
-	<exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+        <exec command="sudo su -c &quot;psql -c \&quot;DROP DATABASE ${vufinddb};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
+        <exec command="sudo su -c &quot;psql -c \&quot;DROP USER ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
       </then>
       <else>
-	<exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} drop ${vufinddb}" />
+        <exec command="mysqladmin -f -h ${mysqlhost} -u ${mysqlrootuser} -p${mysqlrootpass} drop ${vufinddb}" />
       </else>
     </if>
 
@@ -143,7 +143,7 @@
     <delete dir="${srcdir}/solr/biblio/spellShingle" includeemptydirs="true" failonerror="true" />
     <delete failonerror="false">
       <fileset dir="${srcdir}/solr/jetty/logs">
-	<include name="*.log" />
+        <include name="*.log" />
       </fileset>
     </delete>
     <delete dir="${srcdir}/local" includeemptydirs="true" failonerror="true" />
@@ -168,20 +168,20 @@
     <if>
     <istrue value="${filename}"/>       <!-- To ignore the last token, as find command output list has ',' after last filename -->
       <then>
-	<exec command="basename ${filename}" outputProperty="BASENAME" />
+        <exec command="basename ${filename}" outputProperty="BASENAME" />
 
-	<!-- create custom import configurations to load the MARC filename into the building facet to help
-	     test cases to limit searches to within specific collections of test records. -->
-	<exec command="echo building=\&quot;${BASENAME}\&quot; &gt; ${srcdir}/import/marc-${BASENAME}.properties" />
-	<exec command="sed -e &quot;s!marc_local.properties!marc-${BASENAME}.properties!&quot; ${srcdir}/local/import/import.properties &gt; ${srcdir}/local/import/import-${BASENAME}.properties" />
+        <!-- create custom import configurations to load the MARC filename into the building facet to help
+             test cases to limit searches to within specific collections of test records. -->
+        <exec command="echo building=\&quot;${BASENAME}\&quot; &gt; ${srcdir}/import/marc-${BASENAME}.properties" />
+        <exec command="sed -e &quot;s!marc_local.properties!marc-${BASENAME}.properties!&quot; ${srcdir}/local/import/import.properties &gt; ${srcdir}/local/import/import-${BASENAME}.properties" />
 
-	<!-- perform the import -->
-	<exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local ${srcdir}/import-marc.sh -p ${srcdir}/local/import/import-${BASENAME}.properties ${filename}" outputProperty="LASTOUTPUT" />
-	<echo message="${LASTOUTPUT}" />
+        <!-- perform the import -->
+        <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local ${srcdir}/import-marc.sh -p ${srcdir}/local/import/import-${BASENAME}.properties ${filename}" outputProperty="LASTOUTPUT" />
+        <echo message="${LASTOUTPUT}" />
 
-	<!-- clean up temp files -->
-	<delete file="${srcdir}/import/marc-${BASENAME}.properties" />
-	<delete file="${srcdir}/import/import-${BASENAME}.properties" />
+        <!-- clean up temp files -->
+        <delete file="${srcdir}/import/marc-${BASENAME}.properties" />
+        <delete file="${srcdir}/import/import-${BASENAME}.properties" />
       </then>
     </if>
   </target>
