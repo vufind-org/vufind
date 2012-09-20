@@ -310,6 +310,31 @@ class Bootstrap
     }
 
     /**
+     * Set up custom 404 status based on exception type.
+     *
+     * @return void
+     */
+    protected function initExceptionBased404s()
+    {
+        $callback = function($e) {
+            $exception = $e->getParam('exception');
+            if (is_object($exception)) {
+                if ($exception instanceof \VuFind\Exception\RecordMissing) {
+                    // TODO: it might be better to solve this problem by using a
+                    // custom RouteNotFoundStrategy.
+                    $response = $e->getResponse();
+                    if (!$response) {
+                        $response = new HttpResponse();
+                        $e->setResponse($response);
+                    }
+                    $response->setStatusCode(404);
+                }
+            }
+        };
+        $this->events->attach('dispatch.error', $callback);
+    }
+
+    /**
      * Set up logging.
      *
      * @return void
