@@ -48,4 +48,58 @@ class Missing extends SolrDefault
         $this->resourceSource = 'missing';
         parent::__construct();
     }
+
+    /**
+     * Set the resource source of the missing record.  This is a special function
+     * of the missing record driver and normally should NOT be attempted.
+     *
+     * @param string $source Resource source
+     *
+     * @return void
+     */
+    public function setResourceSource($source)
+    {
+        $this->resourceSource = $source;
+    }
+
+    /**
+     * Format the missing title.
+     *
+     * @return string
+     */
+    public function determineMissingTitle()
+    {
+        // If available, load title from database:
+        $table = $this->getDbTable('Resource');
+        $resource = $table
+            ->findResource($this->getUniqueId(), $this->getResourceSource(), false);
+        if (!empty($resource) && !empty($resource->title)) {
+            return $resource->title;
+        }
+
+        // Default -- message about missing title:
+        return $this->translate('Title not available');
+    }
+
+    /**
+     * Get the short title of the record.
+     *
+     * @return string
+     */
+    public function getShortTitle()
+    {
+        $title = parent::getShortTitle();
+        return empty($title) ? $this->determineMissingTitle() : $title;
+    }
+
+    /**
+     * Get the full title of the record.
+     *
+     * @return string
+     */
+    public function getTitle()
+    {
+        $title = parent::getShortTitle();
+        return empty($title) ? $this->determineMissingTitle() : $title;
+    }
 }
