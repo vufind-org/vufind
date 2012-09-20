@@ -42,6 +42,13 @@ use VuFind\Config\Reader as ConfigReader, Zend\Cache\StorageFactory;
 class Manager
 {
     /**
+     * Default configuration settings.
+     *
+     * @var array
+     */
+    protected $defaults;
+
+    /**
      * Was there a problem building cache directories?
      *
      * @var bool
@@ -67,6 +74,17 @@ class Manager
      */
     public function __construct()
     {
+        // Get global cache options
+        $config = ConfigReader::getConfig('config');
+
+        // $config and $config->Cache are Zend\Config\Config objects
+        // $cache is created immutable, so get the array, it will be modified
+        // downstream.
+        // Zend\Config\Config can be created mutable or cloned and merged, useful
+        // for future cache-specific overrides.
+        $cacheConfig = isset($config->Cache) ? $config->Cache : false;
+        $this->defaults = $cacheConfig ? $cacheConfig->toArray() : false;
+
         // Get base cache directory.
         $cacheBase = $this->getCacheDir();
 
@@ -78,8 +96,9 @@ class Manager
 
         // Set up search specs cache based on config settings:
         $config = ConfigReader::getConfig('searches');
-        $cacheSetting = isset($config->Cache->type) ? $config->Cache->type : false;
-        switch ($cacheSetting) {
+        $searchCacheType = isset($config->Cache->type)
+            ? $config->Cache->type : false;
+        switch ($searchCacheType) {
         case 'APC':
             $this->createAPCCache('searchspecs');
             break;
@@ -118,6 +137,14 @@ class Manager
      */
     public function getCacheDir()
     {
+        if ($this->defaults && isset($this->defaults['cache_dir'])) {
+            $dir = $this->defaults['cache_dir'];
+            // ensure trailing slash:
+            if (substr($dir, -1) != '/') {
+                $dir .= '/';
+            }
+            return $dir;
+        }
         if (strlen(LOCAL_OVERRIDE_DIR) > 0) {
             return LOCAL_OVERRIDE_DIR . '/cache/';
         }
@@ -144,16 +171,42 @@ class Manager
      */
     protected function createFileCache($cacheName, $dirName)
     {
+        $opts = $this->defaults;    // copy defaults -- we'll modify them below
         if (!is_dir($dirName)) {
-            if (!@mkdir($dirName)) {
+            if (isset($opts['umask'])) {
+                // convert umask from string
+                $umask = octdec($opts['umask']);
+                // validate
+                if ($umask & 0700) {
+                    throw new \Exception(
+                        'Invalid umask: ' . $opts['umask']
+                        . '; need permission to execute, read and write by owner'
+                    );
+                }
+                umask($umask);
+            }
+            if (isset($opts['dir_permission'])) {
+                $dir_perm = octdec($opts['dir_permission']);
+            } else {
+                // 0777 is chmod default, use if dir_permission is not explicitly set
+                $dir_perm = 0777;
+            }
+            if (!@mkdir($dirName, $dir_perm)) {
                 $this->directoryCreationError = true;
             }
         }
+        if (empty($opts)) {
+            $opts = array('cache_dir' => $dirName);
+        } elseif (is_array($opts)) {
+            // If cache_dir was set in config.ini, the cache-specific name should
+            // have been appended to the path to create the value $dirName.
+            $opts['cache_dir'] = $dirName;
+        } else {
+            // Dryrot
+            throw new \Exception('$opts is neither array nor false');
+        }
         $this->cacheSettings[$cacheName] = array(
-            'adapter' => array(
-                'name' => 'filesystem',
-                'options' => array('cache_dir' => $dirName)
-            ),
+            'adapter' => array('name' => 'filesystem', 'options' => $opts),
             'plugins' => array('serializer')
         );
     }
