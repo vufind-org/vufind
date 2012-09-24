@@ -37,7 +37,7 @@ use VuFind\ILS\Driver\DAIA;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class DAIATest extends \VuFindTest\TestCase
+class DAIATest extends \VuFindTest\Unit\TestCase
 {
     protected $driver;
 

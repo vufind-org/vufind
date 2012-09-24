@@ -37,7 +37,7 @@ use VuFind\Auth\MultiAuth, Zend\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class MultiAuthTest extends \VuFindTest\TestCase
+class MultiAuthTest extends \VuFindTest\Unit\TestCase
 {
     /**
      * Get an authentication object.

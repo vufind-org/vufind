@@ -37,7 +37,7 @@ use VuFind\ILS\Driver\Unicorn;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class UnicornTest extends \VuFindTest\TestCase
+class UnicornTest extends \VuFindTest\Unit\TestCase
 {
     protected $driver;
 

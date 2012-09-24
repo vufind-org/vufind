@@ -37,7 +37,7 @@ use VuFind\Solr\Utils;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
-class UtilsTest extends \VuFindTest\TestCase
+class UtilsTest extends \VuFindTest\Unit\TestCase
 {
     /**
      * Test capitalizeBooleans functionality.

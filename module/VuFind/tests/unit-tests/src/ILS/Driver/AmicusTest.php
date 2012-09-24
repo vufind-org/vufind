@@ -37,7 +37,7 @@ use VuFind\ILS\Driver\Amicus;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class AmicusTest extends \VuFindTest\TestCase
+class AmicusTest extends \VuFindTest\Unit\TestCase
 {
     protected $driver;
 

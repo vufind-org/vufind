@@ -37,7 +37,7 @@ use VuFind\Auth\Database;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class DatabaseTest extends \VuFindTest\DbTestCase
+class DatabaseTest extends \VuFindTest\Unit\DbTestCase
 {
     protected $auth;
 

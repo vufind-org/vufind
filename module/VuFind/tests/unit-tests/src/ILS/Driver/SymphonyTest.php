@@ -37,7 +37,7 @@ use VuFind\ILS\Driver\Symphony;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class SymphonyTest extends \VuFindTest\TestCase
+class SymphonyTest extends \VuFindTest\Unit\TestCase
 {
     protected $driver;
 

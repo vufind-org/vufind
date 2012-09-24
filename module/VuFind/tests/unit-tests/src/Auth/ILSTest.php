@@ -37,7 +37,7 @@ use VuFind\Auth\ILS, VuFind\Db\Table\User;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class ILSTest extends \VuFindTest\DbTestCase
+class ILSTest extends \VuFindTest\Unit\DbTestCase
 {
     protected $auth;
     protected $driver;

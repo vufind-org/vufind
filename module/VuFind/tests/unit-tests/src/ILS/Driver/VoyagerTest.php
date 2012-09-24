@@ -37,7 +37,7 @@ use VuFind\ILS\Driver\Voyager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class VoyagerTest extends \VuFindTest\TestCase
+class VoyagerTest extends \VuFindTest\Unit\TestCase
 {
     protected $driver;
 

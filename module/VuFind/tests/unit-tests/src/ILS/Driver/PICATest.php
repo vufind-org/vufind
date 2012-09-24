@@ -37,7 +37,7 @@ use VuFind\ILS\Driver\PICA;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class PICATest extends \VuFindTest\TestCase
+class PICATest extends \VuFindTest\Unit\TestCase
 {
     protected $driver;
 

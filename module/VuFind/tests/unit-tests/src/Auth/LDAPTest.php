@@ -37,7 +37,7 @@ use VuFind\Auth\LDAP, Zend\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class LDAPTest extends \VuFindTest\TestCase
+class LDAPTest extends \VuFindTest\Unit\TestCase
 {
     /**
      * Get an authentication object.

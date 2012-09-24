@@ -37,7 +37,7 @@ use VuFind\Auth\Shibboleth, VuFind\Db\Table\User, Zend\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class ShibbolethTest extends \VuFindTest\DbTestCase
+class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
 {
     /**
      * Standard setup method.

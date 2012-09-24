@@ -37,7 +37,7 @@ use VuFind\Auth\SIP2, Zend\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class SIP2Test extends \VuFindTest\TestCase
+class SIP2Test extends \VuFindTest\Unit\TestCase
 {
     /**
      * Get an authentication object.

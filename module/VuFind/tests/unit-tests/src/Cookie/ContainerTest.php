@@ -37,7 +37,7 @@ use VuFind\Cookie\Container;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
-class ContainerTest extends \VuFindTest\TestCase
+class ContainerTest extends \VuFindTest\Unit\TestCase
 {
     protected $ns;
 

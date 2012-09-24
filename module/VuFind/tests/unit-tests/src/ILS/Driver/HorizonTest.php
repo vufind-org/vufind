@@ -37,7 +37,7 @@ use VuFind\ILS\Driver\Horizon;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class HorizonTest extends \VuFindTest\TestCase
+class HorizonTest extends \VuFindTest\Unit\TestCase
 {
     protected $driver;
 

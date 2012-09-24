@@ -37,7 +37,7 @@ use VuFind\ILS\Driver\XCNCIP;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class XCNCIPTest extends \VuFindTest\TestCase
+class XCNCIPTest extends \VuFindTest\Unit\TestCase
 {
     protected $driver;
 

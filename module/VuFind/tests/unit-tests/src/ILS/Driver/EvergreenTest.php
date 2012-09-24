@@ -37,7 +37,7 @@ use VuFind\ILS\Driver\Evergreen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class EvergreenTest extends \VuFindTest\TestCase
+class EvergreenTest extends \VuFindTest\Unit\TestCase
 {
     protected $driver;
 

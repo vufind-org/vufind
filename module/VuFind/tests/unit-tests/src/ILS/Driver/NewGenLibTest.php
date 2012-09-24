@@ -37,7 +37,7 @@ use VuFind\ILS\Driver\NewGenLib;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class NewGenLibTest extends \VuFindTest\TestCase
+class NewGenLibTest extends \VuFindTest\Unit\TestCase
 {
     protected $driver;
 

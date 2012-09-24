@@ -37,7 +37,7 @@ use VuFind\ILS\Driver\Koha;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class KohaTest extends \VuFindTest\TestCase
+class KohaTest extends \VuFindTest\Unit\TestCase
 {
     protected $driver;
 

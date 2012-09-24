@@ -26,7 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
-namespace VuFindTest;
+namespace VuFindTest\Unit;
 
 /**
  * Abstract base class for PHPUnit database test cases.
@@ -38,49 +38,45 @@ namespace VuFindTest;
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
 
-abstract class ViewHelperTestCase extends TestCase
+abstract class DbTestCase extends TestCase
 {
     /**
-     * Get a working renderer.
+     * Get a service manager.
      *
-     * @param array  $plugins Custom VuFind plug-ins to register
-     * @param string $theme   Theme directory to load from
-     *
-     * @return \Zend\View\Renderer\PhpRenderer
+     * @return \Zend\ServiceManager\ServiceManager
      */
-    protected function getPhpRenderer($plugins = array(), $theme = 'blueprint')
+    public function getServiceManager()
     {
-        $resolver = new \Zend\View\Resolver\TemplatePathStack();
+        // Get parent service manager:
+        $sm = parent::getServiceManager();
 
-        // This assumes that all themes will be testing inherit directly
-        // from root with no intermediate themes.  Probably safe for most
-        // test situations, though other scenarios are possible.
-        $resolver->setPaths(
-            array(
-                $this->getPathForTheme('root'),
-                $this->getPathForTheme($theme)
-            )
-        );
-        $renderer = new \Zend\View\Renderer\PhpRenderer();
-        $renderer->setResolver($resolver);
-        if (!empty($plugins)) {
-            $pluginManager = $renderer->getHelperPluginManager();
-            foreach ($plugins as $key => $value) {
-                $pluginManager->setService($key, $value);
-            }
+        // Add database service:
+        if (!$sm->has('DbTablePluginManager')) {
+            $sm->setService('DBAdapter', \VuFind\Db\AdapterFactory::getAdapter());
+            $factory = new \VuFind\Db\Table\PluginManager(
+                new \Zend\ServiceManager\Config(
+                    array(
+                        'abstract_factories' =>
+                            array('VuFind\Db\Table\PluginFactory')
+                    )
+                )
+            );
+            $factory->setServiceLocator($sm);
+            $sm->setService('DbTablePluginManager', $factory);
         }
-        return $renderer;
+        return $sm;
     }
 
     /**
-     * Get the directory for a given theme.
+     * Get a table object.
      *
-     * @param string $theme Theme directory name
+     * @param string $table Name of table to load
      *
-     * @return string
+     * @return \VuFind\Db\Table\Gateway
      */
-    protected function getPathForTheme($theme)
+    public function getTable($table)
     {
-        return APPLICATION_PATH . '/themes/' . $theme . '/templates';
+        $sm = $this->getServiceManager();
+        return $sm->get('DbTablePluginManager')->get($table);
     }
 }

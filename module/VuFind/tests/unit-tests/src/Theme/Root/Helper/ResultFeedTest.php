@@ -37,7 +37,7 @@ use VuFind\Theme\Root\Helper\ResultFeed;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
-class ResultFeedTest extends \VuFindTest\ViewHelperTestCase
+class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
 {
     /**
      * Get plugins to register to support view helper being tested

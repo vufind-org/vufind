@@ -38,7 +38,7 @@ namespace VuFindTest\Search\Base;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
-class ParamsTest extends \VuFindTest\TestCase
+class ParamsTest extends \VuFindTest\Unit\TestCase
 {
     /**
      * Test a record that used to be known to cause problems because of the way

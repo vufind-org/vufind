@@ -38,7 +38,7 @@ use VuFind\Date\Converter, VuFind\Exception\Date as DateException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class ConverterTest extends \VuFindTest\TestCase
+class ConverterTest extends \VuFindTest\Unit\TestCase
 {
     protected $savedDateFormat = null;
     protected $savedTimeFormat = null;

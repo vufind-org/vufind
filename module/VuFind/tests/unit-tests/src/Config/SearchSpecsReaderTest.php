@@ -38,7 +38,7 @@ use VuFind\Config\SearchSpecsReader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
-class SearchSpecsReaderTest extends \VuFindTest\TestCase
+class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
 {
     /**
      * Test loading of a YAML file.
