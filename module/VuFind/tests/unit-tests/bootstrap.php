@@ -47,5 +47,11 @@ $serviceManager = new ServiceManager(new ServiceManagerConfig($configuration['se
 $serviceManager->setService('ApplicationConfig', $configuration);
 $serviceManager->get('ModuleManager')->loadModules();
 
+// Setup autoloader for VuFindTest classes
+$loader = Zend\Loader\AutoloaderFactory::getRegisteredAutoloader(
+    Zend\Loader\AutoloaderFactory::STANDARD_AUTOLOADER
+);
+$loader->registerNamespace('VuFindTest', __DIR__ . '/../../src/VuFindTest');
+
 // Use output buffering -- some tests involve HTTP headers and will fail if there is output.
 ob_start();
