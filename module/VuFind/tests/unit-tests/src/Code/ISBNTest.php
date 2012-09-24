@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
-namespace VuFind\Tests\Code;
+namespace VuFindTest\Code;
 use VuFind\Code\ISBN;
 
 /**
@@ -38,7 +38,7 @@ use VuFind\Code\ISBN;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
-class ISBNTest extends \VuFind\Tests\TestCase
+class ISBNTest extends \VuFindTest\TestCase
 {
     /**
      * Test Valid ISBN-10.

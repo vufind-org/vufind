@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-namespace VuFind\Tests\Auth;
+namespace VuFindTest\Auth;
 use VuFind\Auth\Shibboleth, VuFind\Db\Table\User, Zend\Config\Config;
 
 /**
@@ -37,7 +37,7 @@ use VuFind\Auth\Shibboleth, VuFind\Db\Table\User, Zend\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class ShibbolethTest extends \VuFind\Tests\DbTestCase
+class ShibbolethTest extends \VuFindTest\DbTestCase
 {
     /**
      * Standard setup method.

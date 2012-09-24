@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
-namespace VuFind\Tests\Cookie;
+namespace VuFindTest\Cookie;
 use VuFind\Cookie\Container;
 
 /**
@@ -37,7 +37,7 @@ use VuFind\Cookie\Container;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
-class ContainerTest extends \VuFind\Tests\TestCase
+class ContainerTest extends \VuFindTest\TestCase
 {
     protected $ns;
 

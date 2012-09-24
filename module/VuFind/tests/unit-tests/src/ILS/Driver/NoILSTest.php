@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-namespace VuFind\Tests\ILS\Driver;
+namespace VuFindTest\ILS\Driver;
 use VuFind\ILS\Driver\NoILS;
 
 /**
@@ -37,7 +37,7 @@ use VuFind\ILS\Driver\NoILS;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class NoILSTest extends \VuFind\Tests\TestCase
+class NoILSTest extends \VuFindTest\TestCase
 {
     protected $driver;
 

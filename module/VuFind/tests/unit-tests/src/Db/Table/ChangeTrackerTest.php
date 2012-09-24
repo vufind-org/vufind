@@ -37,7 +37,7 @@ use VuFind\Db\Table\ChangeTracker;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
-class ChangeTrackerTest extends \VuFind\Tests\DbTestCase
+class ChangeTrackerTest extends \VuFindTest\DbTestCase
 {
     /**
      * Test change tracking

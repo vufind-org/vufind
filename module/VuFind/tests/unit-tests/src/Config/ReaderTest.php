@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
-namespace VuFind\Tests\Config;
+namespace VuFindTest\Config;
 use VuFind\Config\Reader;
 
 /**
@@ -38,7 +38,7 @@ use VuFind\Config\Reader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
-class ReaderTest extends \VuFind\Tests\TestCase
+class ReaderTest extends \VuFindTest\TestCase
 {
     /**
      * Test basic config.ini loading.

@@ -37,7 +37,7 @@ use VuFind\Theme\Root\Helper\Citation;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
-class CitationTest extends \VuFind\Tests\ViewHelperTestCase
+class CitationTest extends \VuFindTest\ViewHelperTestCase
 {
     /** Sample citations -- each element of this array contains three elements --
      * the raw input data and the expected apa/mla output citations.
@@ -285,7 +285,7 @@ class CitationTest extends \VuFind\Tests\ViewHelperTestCase
     {
         $citation = new Citation();
         $citation->setView($this->getPhpRenderer());
-        $driver = new \VuFind\RecordDriver\TestHarness();
+        $driver = new \VuFindTest\RecordDriver\TestHarness();
         foreach ($this->citations as $current) {
             $driver->setRawData($current['raw']);
             $cb = $citation->__invoke($driver);

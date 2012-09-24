@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-namespace VuFind\Tests\Date;
+namespace VuFindTest\Date;
 use VuFind\Date\Converter, VuFind\Exception\Date as DateException,
     Zend\Config\Config;
 
@@ -38,7 +38,7 @@ use VuFind\Date\Converter, VuFind\Exception\Date as DateException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class ConverterTest extends \VuFind\Tests\TestCase
+class ConverterTest extends \VuFindTest\TestCase
 {
     protected $savedDateFormat = null;
     protected $savedTimeFormat = null;

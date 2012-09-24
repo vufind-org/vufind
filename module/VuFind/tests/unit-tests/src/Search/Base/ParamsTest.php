@@ -26,7 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
-namespace VuFind\Tests\Search\Base;
+namespace VuFindTest\Search\Base;
 
 /**
  * Base Search Object Parameters Test
@@ -38,7 +38,7 @@ namespace VuFind\Tests\Search\Base;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
-class ParamsTest extends \VuFind\Tests\TestCase
+class ParamsTest extends \VuFindTest\TestCase
 {
     /**
      * Test a record that used to be known to cause problems because of the way

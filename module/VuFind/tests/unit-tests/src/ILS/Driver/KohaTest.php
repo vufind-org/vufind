@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-namespace VuFind\Tests\ILS\Driver;
+namespace VuFindTest\ILS\Driver;
 use VuFind\ILS\Driver\Koha;
 
 /**
@@ -37,7 +37,7 @@ use VuFind\ILS\Driver\Koha;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class KohaTest extends \VuFind\Tests\TestCase
+class KohaTest extends \VuFindTest\TestCase
 {
     protected $driver;
 

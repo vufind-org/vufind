@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-namespace VuFind\Tests\Auth;
+namespace VuFindTest\Auth;
 use VuFind\Auth\ILS, VuFind\Db\Table\User;
 
 /**
@@ -37,7 +37,7 @@ use VuFind\Auth\ILS, VuFind\Db\Table\User;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class ILSTest extends \VuFind\Tests\DbTestCase
+class ILSTest extends \VuFindTest\DbTestCase
 {
     protected $auth;
     protected $driver;

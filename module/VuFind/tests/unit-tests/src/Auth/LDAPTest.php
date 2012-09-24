@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-namespace VuFind\Tests\Auth;
+namespace VuFindTest\Auth;
 use VuFind\Auth\LDAP, Zend\Config\Config;
 
 /**
@@ -37,7 +37,7 @@ use VuFind\Auth\LDAP, Zend\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class LDAPTest extends \VuFind\Tests\TestCase
+class LDAPTest extends \VuFindTest\TestCase
 {
     /**
      * Get an authentication object.
