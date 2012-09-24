@@ -298,22 +298,22 @@ class InstallController extends AbstractBase
         $view->dbuser = $this->params()->fromPost('dbuser', 'vufind');
         $view->dbhost = $this->params()->fromPost('dbhost', 'localhost');
         $view->dbrootuser = $this->params()->fromPost('dbrootuser', 'root');
-        
+
         $skip = $this->params()->fromPost('printsql', 'nope') == 'Skip';
 
-        if (!$skip && !preg_match('/^\w*$/', $view->dbname)) {
+        if (!preg_match('/^\w*$/', $view->dbname)) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('Database name must be alphanumeric.');
-        } else if (!$skip && !preg_match('/^\w*$/', $view->dbuser)) {
+        } else if (!preg_match('/^\w*$/', $view->dbuser)) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('Database user must be alphanumeric.');
         } else if ($skip || strlen($this->params()->fromPost('submit', '')) > 0) {
             $newpass = $this->params()->fromPost('dbpass');
             $newpassConf = $this->params()->fromPost('dbpassconfirm');
-            if (!$skip && (empty($newpass) || empty($newpassConf))) {
+            if ((empty($newpass) || empty($newpassConf))) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('Password fields must not be blank.');
-            } else if (!$skip && $newpass != $newpassConf) {
+            } else if ($newpass != $newpassConf) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('Password fields must match.');
             } else {
@@ -335,8 +335,9 @@ class InstallController extends AbstractBase
                     $sql = file_get_contents(
                         APPLICATION_PATH . '/module/VuFind/sql/mysql.sql'
                     );
-                    if($skip == 'Skip') {
-                        $omnisql = $query .";\n". $grant .";\nFLUSH PRIVILEGES;\n\n". $sql;
+                    if ($skip == 'Skip') {
+                        $omnisql = $query . ";\n". $grant
+                            . ";\nFLUSH PRIVILEGES;\n\n" . $sql;
                         $this->getRequest()->getQuery()->set('sql', $omnisql);
                         return $this->forwardTo('Install', 'showsql');
                     } else {
@@ -358,8 +359,9 @@ class InstallController extends AbstractBase
                         // forward back to the home action!
                         $string = "mysql://{$view->dbuser}:{$newpass}@"
                             . $view->dbhost . '/' . $view->dbname;
-                        $config
-                            = ConfigReader::getLocalConfigPath('config.ini', null, true);
+                        $config = ConfigReader::getLocalConfigPath(
+                            'config.ini', null, true
+                        );
                         $writer = new ConfigWriter($config);
                         $writer->set('Database', 'database', $string);
                         if (!$writer->save()) {
@@ -375,15 +377,22 @@ class InstallController extends AbstractBase
         }
         return $view;
     }
-    
-    protected function showsqlAction() {
+
+    /**
+     * Display captured SQL commands for database action.
+     *
+     * @return mixed
+     */
+    protected function showsqlAction()
+    {
         $continue = $this->params()->fromPost('continue', 'nope');
         if ($continue == 'Next') {
             return $this->redirect()->toRoute('install-home');
         }
-        
-        return $this->createViewModel(array('sql' => $this->params()->fromQuery('sql')));
-        return $view;
+
+        return $this->createViewModel(
+            array('sql' => $this->params()->fromQuery('sql'))
+        );
     }
 
     /**
