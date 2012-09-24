@@ -40,16 +40,46 @@ use VuFind\Config\Reader as ConfigReader,
  */
 class Options extends BaseOptions
 {
-    // Spelling
+    /**
+     * Spelling limit
+     *
+     * @var int
+     */
     protected $spellingLimit = 3;
+
+    /**
+     * Selected spelling dictionary
+     *
+     * @var string
+     */
     protected $dictionary = 'default';
+
+    /**
+     * Level of spelling correction sophistication
+     *
+     * @var bool
+     */
     protected $spellSimple = false;
+
+    /**
+     * Spell check words with numbers in them?
+     *
+     * @var bool
+     */
     protected $spellSkipNumeric = true;
 
-    // Pre-assigned filters
+    /**
+     * Pre-assigned filters
+     *
+     * @var array
+     */
     protected $hiddenFilters = array();
 
-    // Shard fields to strip
+    /**
+     * Shard fields to strip
+     *
+     * @var array
+     */
     protected $solrShardsFieldsToStrip = array();
 
     /**

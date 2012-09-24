@@ -41,6 +41,11 @@ namespace VuFindTest\Unit;
 
 abstract class TestCase extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * The service manager instance
+     *
+     * @var \Zend\ServiceManager\ServiceManager
+     */
     protected $serviceManager = false;
 
     /**
