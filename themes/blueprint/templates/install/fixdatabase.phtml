@@ -11,7 +11,7 @@
 
 <p>To create a new database for VuFind, please fill in this form:</p>
 
-<form method="post">
+<form action="" method="post">
   <table>
     <tbody>
       <tr><td>New database name: </td><td><input type="text" name="dbname" value="<?=$this->escapeHtml($this->dbname)?>"/></td></tr>
@@ -22,7 +22,7 @@
       <tr><td>MySQL Root User: </td><td><input type="text" name="dbrootuser" value="<?=$this->escapeHtml($this->dbrootuser)?>"/></td></tr>
       <tr><td>MySQL Root Password: </td><td><input type="password" name="dbrootpass" value=""/></td></tr>
       <tr><td width="50%"></td><td><input type="submit" name="submit" value="<?=$this->transEsc('Submit') ?>" /></td></tr>
-      <tr><td>If you don't have the credentials or you wish to print the SQL out :</td><td>Click here to <input type="submit" name="printsql" value="Skip"> credentials.</td></tr>
+      <tr><td>If you don't have the credentials or you wish to print the SQL out :</td><td>Click here to <input type="submit" name="printsql" value="Skip" /> credentials.</td></tr>
     </tbody>
   </table>
    
