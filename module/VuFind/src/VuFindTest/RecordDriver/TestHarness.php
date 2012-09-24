@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/other_than_marc Wiki
  */
-namespace VuFind\RecordDriver;
+namespace VuFindTest\RecordDriver;
 
 /**
  * Test harness for simulating record drivers (ignore outside of test suite!)
@@ -36,7 +36,7 @@ namespace VuFind\RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/other_than_marc Wiki
  */
-class TestHarness extends AbstractBase
+class TestHarness extends \VuFind\RecordDriver\AbstractBase
 {
     /**
      * Magic method to set/retrieve fields.

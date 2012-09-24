@@ -27,7 +27,7 @@
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
 
-namespace VuFind\Tests;
+namespace VuFindTest;
 
 /**
  * Abstract base class for PHPUnit test cases.

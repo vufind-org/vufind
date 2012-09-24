@@ -26,7 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
-namespace VuFind\Tests;
+namespace VuFindTest;
 
 /**
  * Abstract base class for PHPUnit database test cases.
@@ -38,45 +38,49 @@ namespace VuFind\Tests;
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
 
-abstract class DbTestCase extends TestCase
+abstract class ViewHelperTestCase extends TestCase
 {
     /**
-     * Get a service manager.
+     * Get a working renderer.
      *
-     * @return \Zend\ServiceManager\ServiceManager
+     * @param array  $plugins Custom VuFind plug-ins to register
+     * @param string $theme   Theme directory to load from
+     *
+     * @return \Zend\View\Renderer\PhpRenderer
      */
-    public function getServiceManager()
+    protected function getPhpRenderer($plugins = array(), $theme = 'blueprint')
     {
-        // Get parent service manager:
-        $sm = parent::getServiceManager();
+        $resolver = new \Zend\View\Resolver\TemplatePathStack();
 
-        // Add database service:
-        if (!$sm->has('DbTablePluginManager')) {
-            $sm->setService('DBAdapter', \VuFind\Db\AdapterFactory::getAdapter());
-            $factory = new \VuFind\Db\Table\PluginManager(
-                new \Zend\ServiceManager\Config(
-                    array(
-                        'abstract_factories' =>
-                            array('VuFind\Db\Table\PluginFactory')
-                    )
-                )
-            );
-            $factory->setServiceLocator($sm);
-            $sm->setService('DbTablePluginManager', $factory);
+        // This assumes that all themes will be testing inherit directly
+        // from root with no intermediate themes.  Probably safe for most
+        // test situations, though other scenarios are possible.
+        $resolver->setPaths(
+            array(
+                $this->getPathForTheme('root'),
+                $this->getPathForTheme($theme)
+            )
+        );
+        $renderer = new \Zend\View\Renderer\PhpRenderer();
+        $renderer->setResolver($resolver);
+        if (!empty($plugins)) {
+            $pluginManager = $renderer->getHelperPluginManager();
+            foreach ($plugins as $key => $value) {
+                $pluginManager->setService($key, $value);
+            }
         }
-        return $sm;
+        return $renderer;
     }
 
     /**
-     * Get a table object.
+     * Get the directory for a given theme.
      *
-     * @param string $table Name of table to load
+     * @param string $theme Theme directory name
      *
-     * @return \VuFind\Db\Table\Gateway
+     * @return string
      */
-    public function getTable($table)
+    protected function getPathForTheme($theme)
     {
-        $sm = $this->getServiceManager();
-        return $sm->get('DbTablePluginManager')->get($table);
+        return APPLICATION_PATH . '/themes/' . $theme . '/templates';
     }
 }
