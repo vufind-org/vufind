@@ -27,7 +27,7 @@
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use SoapClient, SoapFault, VuFind\Config\Reader as ConfigReader,
+use SoapClient, SoapFault, SoapHeader, VuFind\Config\Reader as ConfigReader,
     VuFind\Exception\ILS as ILSException,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
