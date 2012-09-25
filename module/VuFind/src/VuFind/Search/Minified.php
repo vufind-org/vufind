@@ -54,16 +54,22 @@ class Minified
 {
     /**
      * Search terms
+     *
+     * @var array
      */
     public $t = array();
+
     /**
      * Filters
+     *
+     * @var array
      */
     public $f = array();
+
     /**
      * ID, start tIme, query Speed, Result total, search TYpe, search CLass id
      */
-    public $id, $i, $s, $r, $ty, $pc, $rc;
+    public $id, $i, $s, $r, $ty, $cl;
 
     /**
      * Constructor. Building minified object from the
