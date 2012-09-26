@@ -347,7 +347,11 @@ class Bootstrap
                 $log = $sm->get('Logger');
                 if (is_callable(array($log, 'logException'))) {
                     $exception = $event->getParam('exception');
-                    $server = $event->getRequest()->getServer();
+                    // Console request does not include server,
+                    // so use a dummy in that case.
+                    $server = Console::isConsole()
+                        ? new \Zend\Stdlib\Parameters(array('env' => 'console'))
+                        : $event->getRequest()->getServer();
                     if (!empty($exception)) {
                         $log->logException($exception, $server);
                     }
