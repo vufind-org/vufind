@@ -17,7 +17,7 @@ then
     exit $E_BADARGS
 fi
 
-java -Dsolrmarc.main.class="org.solrmarc.marc.MarcSorter" -jar $scriptdir/SolrMarc.jar $1 $2
+java -Dsolrmarc.main.class="org.solrmarc.marc.MarcSorter" -jar $scriptdir/SolrMarc.jar $1 $2 $3
 
 exit 0
 

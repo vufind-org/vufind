@@ -20,6 +20,7 @@ if "%1"=="" GOTO doit
     echo "      or : cat file_with_hathi_ids | hathifetch.bat [-s NumToSkip] [-n NumToReturn]"
     echo "      other options  -d = debug     retrieve and print the recordURL strings only"
     echo "                     -v = verbose   fetch records and print them out as Ascii Marc"
+    echo "                     -856 = add856   add 856 fields to the records based on the 974 fields"
     echo "      Note: file_with_ids can be Hathi Record numbers only (one per line), or Hathi Data listings"
     echo "            like the following line where the Hathi Record number is one of several entries on a line."
     echo "      Note also that the program supports reading gzipped input files."
@@ -27,6 +28,6 @@ GOTO done
 
 :doit
 
-java -Dsolrmarc.main.class="org.solrmarc.marc.MarcPrinter" -jar %scriptdir%SolrMarc.jar index %1 %2 %3
+java -Dsolrmarc.main.class="org.solrmarc.tools.HathiPlunderer" -jar %scriptdir%SolrMarc.jar %1 %2 %3 %4 %5 %6 %7 %8 %9
 
 :done

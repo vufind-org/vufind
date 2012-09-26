@@ -1,8 +1,7 @@
 #! /bin/bash
-# indextest.sh
-# Diagnostic program to show how a set of marc records would be indexed,
-# without actually adding any records to Solr.
-# $Id: indextest.sh 
+# deletefields
+# delete specified fields or subfields from records
+# $Id: deletefields
 
 E_BADARGS=65
 
@@ -19,11 +18,13 @@ then
     echo "    Usage: `basename $0` [config.properties] ./path/to/marc.mrc "
     echo "      Note that if the config.properties file is not specified the Jarfile will be searched for"
     echo "      a file whose name ends with \"config.properties\""
+    echo "    Usage: cat /path/to/big/marcfile.mrc | `basename $0` 'fieldspec/search_string'"
+    echo "      would get the records in the file that have search_string in the fieldspec  (e.g. '245a/Jefferson')" 
     exit $E_BADARGS
   fi
 fi
 
-java -Dsolrmarc.main.class="org.solrmarc.marc.MarcPrinter" -jar $scriptdir/SolrMarc.jar index $1 $2 $3 $4 $5 $6
+java -Dsolrmarc.main.class="org.solrmarc.marc.MarcPrinter" -Dmarc.delete_subfields="$1" -Dmarc.combine_records="" -jar $scriptdir/SolrMarc.jar translate $2 $3 
 
 exit 0
 
