@@ -9,6 +9,10 @@ $config = array(
             'util' => 'VuFindConsole\Controller\UtilController',
         ),
     ),
+    'view_manager' => array(
+        // CLI tools are admin-oriented, so we should always output full errors:
+        'display_exceptions' => true,
+    ),
 );
 
 return $config;
