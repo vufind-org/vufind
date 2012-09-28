@@ -32,106 +32,27 @@ $basePath = '/vufind';
 
 echo "VuFind has been found in {$baseDir}.\n\n";
 
+// Load user settings if we are not forcing defaults:
 if (!isset($argv[1]) || !in_array('--use-defaults', $argv)) {
-    // Get override directory path:
-    while (true) {
-        $overrideDirInput = getInput(
-            "Where would you like to store your local settings? [{$overrideDir}] "
-        );
-        if (!empty($overrideDirInput)) {
-            if (!is_dir($overrideDirInput) && !@mkdir($overrideDirInput)) {
-                echo "Error: Cannot create directory '$overrideDirInput'.\n\n";
-            } else {
-                $overrideDir = str_replace('\\', '/', realpath($overrideDirInput));
-                break;
-            }
-        } else {
-            break;
-        }
-    }
-    
-    // Get custom module name:
-    echo "\nVuFind supports use of a custom module for storing local code ";
-    echo "changes.\nIf you do not plan to customize the code, you can ";
-    echo "skip this step.\nIf you decide to use a custom module, the name ";
-    echo "you choose will be used for\nthe module's directory name and its ";
-    echo "PHP namespace.\n";
-    while (true) {
-        $moduleInput = trim(
-            getInput(
-                "\nWhat module name would you like to use? [blank for none] "
-            )
-        );
-        $regex = '/[a-zA-Z][0-9a-zA-Z_]*/';
-        $illegalModules = array('VuFind', 'VuFindConsole', 'VuFindTest');
-        if (in_array($moduleInput, $illegalModules)) {
-            echo "\n{$moduleInput} is a reserved name; please try another.\n";
-        } else if (empty($moduleInput) || preg_match($regex, $moduleInput)) {
-            $module = $moduleInput;
-            break;
-        } else {
-            echo "\nIllegal name: {$moduleInput}; please use alphanumeric text.\n";
-        }
-    }
-
-    // Get VuFind base path:
-    while (true) {
-        $basePathInput = getInput(
-            "What base path should be used in VuFind's URL? [{$basePath}] "
-        );
-        if (!empty($basePathInput)) {
-            if (!preg_match('/^\/\w*$/', $basePathInput)) {
-                echo "Error: Base path must be alphanumeric and start with a "
-                    . "slash.\n\n";
-            } else {
-                $basePath = $basePathInput;
-                break;
-            }
-        } else {
-            break;
-        }
-    }
+    $overrideDir = getOverrideDir($overrideDir);
+    $module = getModule();
+    $basePath = getBasePath($basePath);
 }
 
 // Build the Windows start file in case we need it:
-$batch = "@set VUFIND_HOME={$baseDir}\n" .
-    "@set VUFIND_LOCAL_DIR={$overrideDir}\n" .
-    (empty($module) ? '' : "@set VUFIND_LOCAL_MODULES={$module}\n") .
-    "@call run_vufind.bat %1 %2 %3 %4 %5 %6 %7 %8 %9";
-if (!@file_put_contents($baseDir . '/vufind.bat', $batch)) {
-    die("Problem writing {$baseDir}/vufind.bat.\n\n");
-}
+buildWindowsConfig($baseDir, $overrideDir, $module);
 
 // Build the import configuration:
-build_import_config($baseDir, $overrideDir, 'import.properties');
-build_import_config($baseDir, $overrideDir, 'import_auth.properties');
+buildImportConfig($baseDir, $overrideDir, 'import.properties');
+buildImportConfig($baseDir, $overrideDir, 'import_auth.properties');
 
 // Build the custom module, if necessary:
 if (!empty($module)) {
-    build_module($baseDir, $module);
+    buildModule($baseDir, $module);
 }
 
 // Build the final configuration:
-$baseConfig = $baseDir . '/config/vufind/httpd-vufind.conf';
-$config = @file_get_contents($baseConfig);
-if (empty($config)) {
-    die("Problem reading {$baseConfig}.\n\n");
-}
-$config = str_replace("/usr/local/vufind/local", "%override-dir%", $config);
-$config = str_replace("/usr/local/vufind", "%base-dir%", $config);
-$config = str_replace("/vufind", "%base-path%", $config);
-$config = str_replace("%override-dir%", $overrideDir, $config);
-$config = str_replace("%base-dir%", $baseDir, $config);
-$config = str_replace("%base-path%", $basePath, $config);
-if (!empty($module)) {
-    $config = str_replace(
-        "#SetEnv VUFIND_LOCAL_MODULES VuFindLocalTemplate",
-        "SetEnv VUFIND_LOCAL_MODULES {$module}", $config
-    );
-}
-if (!@file_put_contents($overrideDir . '/httpd-vufind.conf', $config)) {
-    die("Problem writing {$overrideDir}/httpd-vufind.conf.\n\n");
-}
+buildApacheConfig($baseDir, $overrideDir, $basePath, $module);
 
 // Report success:
 echo "Apache configuration written to {$overrideDir}/httpd-vufind.conf.\n\n";
@@ -154,6 +75,90 @@ if (empty($module)) {
     echo "VUFIND_HOME, VUFIND_LOCAL_MODULES and VUFIND_LOCAL_DIR environment\n";
     echo "variables are set to {$baseDir}, {$module} and {$overrideDir} ";
     echo "respectively.\n\n";
+}
+
+/**
+ * Get a base path from the user (or return a default).
+ *
+ * @param string $basePath Default value
+ *
+ * @return string
+ */
+function getBasePath($basePath)
+{
+    // Get VuFind base path:
+    while (true) {
+        $basePathInput = getInput(
+            "What base path should be used in VuFind's URL? [{$basePath}] "
+        );
+        if (!empty($basePathInput)) {
+            if (!preg_match('/^\/\w*$/', $basePathInput)) {
+                echo "Error: Base path must be alphanumeric and start with a "
+                    . "slash.\n\n";
+            } else {
+                return $basePathInput;
+            }
+        } else {
+            return $basePath;
+        }
+    }
+}
+
+/**
+ * Get an override directory from the user (or return a default).
+ *
+ * @param string $overrideDir Default value
+ *
+ * @return string
+ */
+function getOverrideDir($overrideDir)
+{
+    // Get override directory path:
+    while (true) {
+        $overrideDirInput = getInput(
+            "Where would you like to store your local settings? [{$overrideDir}] "
+        );
+        if (!empty($overrideDirInput)) {
+            if (!is_dir($overrideDirInput) && !@mkdir($overrideDirInput)) {
+                echo "Error: Cannot create directory '$overrideDirInput'.\n\n";
+            } else {
+                return str_replace('\\', '/', realpath($overrideDirInput));
+            }
+        } else {
+            return $overrideDir;
+        }
+    }
+}
+
+/**
+ * Get the custom module name from the user (or blank for none).
+ *
+ * @return string
+ */
+function getModule()
+{
+    // Get custom module name:
+    echo "\nVuFind supports use of a custom module for storing local code ";
+    echo "changes.\nIf you do not plan to customize the code, you can ";
+    echo "skip this step.\nIf you decide to use a custom module, the name ";
+    echo "you choose will be used for\nthe module's directory name and its ";
+    echo "PHP namespace.\n";
+    while (true) {
+        $moduleInput = trim(
+            getInput(
+                "\nWhat module name would you like to use? [blank for none] "
+            )
+        );
+        $regex = '/[a-zA-Z][0-9a-zA-Z_]*/';
+        $illegalModules = array('VuFind', 'VuFindConsole', 'VuFindTest');
+        if (in_array($moduleInput, $illegalModules)) {
+            echo "\n{$moduleInput} is a reserved name; please try another.\n";
+        } else if (empty($moduleInput) || preg_match($regex, $moduleInput)) {
+            return $moduleInput;
+        } else {
+            echo "\nIllegal name: {$moduleInput}; please use alphanumeric text.\n";
+        }
+    }
 }
 
 /**
@@ -181,6 +186,60 @@ function getInput($prompt)
 }
 
 /**
+ * Generate the Apache configuration.
+ *
+ * @param string $baseDir     The VuFind base directory
+ * @param string $overrideDir The VuFind override directory
+ * @param string $basePath    The VuFind URL base path
+ * @param string $module      The VuFind custom module name (or empty for none)
+ *
+ * @return void
+ */
+function buildApacheConfig($baseDir, $overrideDir, $basePath, $module)
+{
+    $baseConfig = $baseDir . '/config/vufind/httpd-vufind.conf';
+    $config = @file_get_contents($baseConfig);
+    if (empty($config)) {
+        die("Problem reading {$baseConfig}.\n\n");
+    }
+    $config = str_replace("/usr/local/vufind/local", "%override-dir%", $config);
+    $config = str_replace("/usr/local/vufind", "%base-dir%", $config);
+    $config = str_replace("/vufind", "%base-path%", $config);
+    $config = str_replace("%override-dir%", $overrideDir, $config);
+    $config = str_replace("%base-dir%", $baseDir, $config);
+    $config = str_replace("%base-path%", $basePath, $config);
+    if (!empty($module)) {
+        $config = str_replace(
+            "#SetEnv VUFIND_LOCAL_MODULES VuFindLocalTemplate",
+            "SetEnv VUFIND_LOCAL_MODULES {$module}", $config
+        );
+    }
+    if (!@file_put_contents($overrideDir . '/httpd-vufind.conf', $config)) {
+        die("Problem writing {$overrideDir}/httpd-vufind.conf.\n\n");
+    }
+}
+
+/**
+ * Build the Windows-specific startup configuration.
+ *
+ * @param string $baseDir     The VuFind base directory
+ * @param string $overrideDir The VuFind override directory
+ * @param string $module      The VuFind custom module name (or empty for none)
+ *
+ * @return void
+ */
+function buildWindowsConfig($baseDir, $overrideDir, $module)
+{
+    $batch = "@set VUFIND_HOME={$baseDir}\n" .
+        "@set VUFIND_LOCAL_DIR={$overrideDir}\n" .
+        (empty($module) ? '' : "@set VUFIND_LOCAL_MODULES={$module}\n") .
+        "@call run_vufind.bat %1 %2 %3 %4 %5 %6 %7 %8 %9";
+    if (!@file_put_contents($baseDir . '/vufind.bat', $batch)) {
+        die("Problem writing {$baseDir}/vufind.bat.\n\n");
+    }
+}
+
+/**
  * Configure a SolrMarc properties file.
  *
  * @param string $baseDir     The VuFind base directory
@@ -189,7 +248,7 @@ function getInput($prompt)
  *
  * @return void
  */
-function build_import_config($baseDir, $overrideDir, $filename)
+function buildImportConfig($baseDir, $overrideDir, $filename)
 {
     $import = @file_get_contents($baseDir . '/import/' . $filename);
     $import = str_replace("/usr/local/vufind", $baseDir, $import);
@@ -215,7 +274,7 @@ function build_import_config($baseDir, $overrideDir, $filename)
  *
  * @return void
  */
-function build_module($baseDir, $module)
+function buildModule($baseDir, $module)
 {
     // Create directories:
     $moduleDir = $baseDir . '/module/' . $module;
