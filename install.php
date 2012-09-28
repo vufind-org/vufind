@@ -25,9 +25,14 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/automation Wiki
  */
+define('MULTISITE_NONE', 0);
+define('MULTISITE_DIR_BASED', 1);
+define('MULTISITE_HOST_BASED', 2);
+
 $baseDir = str_replace('\\', '/', dirname(__FILE__));
 $overrideDir = $baseDir . '/local';
-$module = '';
+$host = $module = '';
+$multisiteMode = MULTISITE_NONE;
 $basePath = '/vufind';
 
 echo "VuFind has been found in {$baseDir}.\n\n";
@@ -37,6 +42,14 @@ if (!isset($argv[1]) || !in_array('--use-defaults', $argv)) {
     $overrideDir = getOverrideDir($overrideDir);
     $module = getModule();
     $basePath = getBasePath($basePath);
+
+    // We assume "single site" mode unless the --multisite switch is set:
+    if (isset($argv[1]) && in_array('--multisite', $argv)) {
+        $multisiteMode = getMultisiteMode();
+    }
+    if ($multisiteMode == MULTISITE_HOST_BASED) {
+        $host = getHost();
+    }
 } else {
     // In interactive mode, we initialize the directory as part of the input
     // process; in defaults mode, we need to do it here:
@@ -58,7 +71,7 @@ if (!empty($module)) {
 }
 
 // Build the final configuration:
-buildApacheConfig($baseDir, $overrideDir, $basePath, $module);
+buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multisiteMode, $host);
 
 // Report success:
 echo "Apache configuration written to {$overrideDir}/httpd-vufind.conf.\n\n";
@@ -71,6 +84,11 @@ echo "       ln -s {$overrideDir}/httpd-vufind.conf "
     . "/etc/apache2/conf.d/vufind\n\n";
 echo "Option b is preferable if your platform supports it (paths may vary),\n";
 echo "but option a is more certain to be supported.\n\n";
+if (!empty($host)) {
+    echo "Since you are using a host-based multisite configuration, you will also" .
+        "\nneed to do some virtual host configuration. See\n" .
+        "     http://httpd.apache.org/docs/2.2/vhosts/\n\n";
+}
 echo "Once the configuration is linked, restart Apache.  You should now be able\n";
 echo "to access VuFind at http://localhost{$basePath}\n\n";
 echo "For proper use of command line tools, you should also ensure that your\n";
@@ -189,6 +207,52 @@ function getModule()
 }
 
 /**
+ * Get the user's preferred multisite mode.
+ *
+ * @return int
+ */
+function getMultisiteMode()
+{
+    echo "\nWhen running multiple VuFind sites against a single installation, you"
+        . "need\nto decide how to distinguish between instances.  Choose an option:"
+        . "\n\n" . MULTISITE_DIR_BASED
+        . ".) Directory-based (i.e. http://server/vufind1 vs. http://server/vufind2)"
+        . "\n" . MULTISITE_HOST_BASED
+        . ".) Host-based (i.e. http://vufind1.server vs. http://vufind2.server)"
+        . "\n\nor enter " . MULTISITE_NONE . " to disable multisite mode.\n";
+    $legal = array(MULTISITE_NONE, MULTISITE_DIR_BASED, MULTISITE_HOST_BASED);
+    while (true) {
+        $input = getInput("\nWhich option do you want? ");
+        if (!is_numeric($input) || !in_array(intval($input), $legal)) {
+            echo "Invalid selection.";
+        } else {
+            return intval($input);
+        }
+    }
+}
+
+/**
+ * Get the user's hostname preference.
+ *
+ * @return string
+ */
+function getHost()
+{
+    // From http://stackoverflow.com/questions/106179/
+    //             regular-expression-to-match-hostname-or-ip-address
+    $valid = "/^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*"
+        . "([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$/";
+    while (true) {
+        $input = getInput("\nPlease enter the hostname for your site: ");
+        if (preg_match($valid, $input)) {
+            return $input;
+        } else {
+            echo "Invalid hostname.\n";
+        }
+    }
+}
+
+/**
  * readline() does not exist on Windows.  This is a simple wrapper for portability.
  *
  * @param string $prompt Prompt to display to the user.
@@ -219,10 +283,12 @@ function getInput($prompt)
  * @param string $overrideDir The VuFind override directory
  * @param string $basePath    The VuFind URL base path
  * @param string $module      The VuFind custom module name (or empty for none)
+ * @param int    $multi       Multisite mode preference
+ * @param string $host        Virtual host name (or empty for none)
  *
  * @return void
  */
-function buildApacheConfig($baseDir, $overrideDir, $basePath, $module)
+function buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multi, $host)
 {
     $baseConfig = $baseDir . '/config/vufind/httpd-vufind.conf';
     $config = @file_get_contents($baseConfig);
@@ -241,6 +307,25 @@ function buildApacheConfig($baseDir, $overrideDir, $basePath, $module)
             "SetEnv VUFIND_LOCAL_MODULES {$module}", $config
         );
     }
+
+    // In multisite mode, we need to make environment variables conditional:
+    switch ($multi) {
+    case MULTISITE_DIR_BASED:
+        $config = preg_replace(
+            '/SetEnv\s+(\w+)\s+(.*)/',
+            'SetEnvIf Request_URI "^' . $basePath . '" $1=$2',
+            $config
+        );
+        break;
+    case MULTISITE_HOST_BASED:
+        $config = preg_replace(
+            '/SetEnv\s+(\w+)\s+(.*)/',
+            'SetEnvIfNoCase Host ' . str_replace('.', '\.', $host) . ' $1=$2',
+            $config
+        );
+        break;
+    }
+
     if (!@file_put_contents($overrideDir . '/httpd-vufind.conf', $config)) {
         die("Problem writing {$overrideDir}/httpd-vufind.conf.\n\n");
     }
