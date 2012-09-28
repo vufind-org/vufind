@@ -32,7 +32,7 @@ $basePath = '/vufind';
 
 echo "VuFind has been found in {$baseDir}.\n\n";
 
-if (!isset($argv[1]) || $argv[1] != '--use-defaults') {
+if (!isset($argv[1]) || !in_array('--use-defaults', $argv)) {
     // Get override directory path:
     while (true) {
         $overrideDirInput = getInput(
