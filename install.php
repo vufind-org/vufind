@@ -37,6 +37,12 @@ if (!isset($argv[1]) || !in_array('--use-defaults', $argv)) {
     $overrideDir = getOverrideDir($overrideDir);
     $module = getModule();
     $basePath = getBasePath($basePath);
+} else {
+    // In interactive mode, we initialize the directory as part of the input
+    // process; in defaults mode, we need to do it here:
+    if (!initializeOverrideDir($overrideDir)) {
+        die("Cannot initialize local override directory: {$overrideDir}\n");
+    }
 }
 
 // Build the Windows start file in case we need it:
@@ -105,6 +111,27 @@ function getBasePath($basePath)
 }
 
 /**
+ * Initialize the override directory and report success or failure.
+ *
+ * @param string $dir Path to attempt to initialize
+ *
+ * @return void
+ */
+function initializeOverrideDir($dir)
+{
+    $dirStatus = buildDirs(
+        array(
+            $dir,
+            $dir . '/cache',
+            $dir . '/config',
+            $dir . '/harvest',
+            $dir . '/import'
+        )
+    );
+    return $dirStatus === true;
+}
+
+/**
  * Get an override directory from the user (or return a default).
  *
  * @param string $overrideDir Default value
@@ -119,8 +146,8 @@ function getOverrideDir($overrideDir)
             "Where would you like to store your local settings? [{$overrideDir}] "
         );
         if (!empty($overrideDirInput)) {
-            if (!is_dir($overrideDirInput) && !@mkdir($overrideDirInput)) {
-                echo "Error: Cannot create directory '$overrideDirInput'.\n\n";
+            if (!initializeOverrideDir($overrideDirInput)) {
+                echo "Error: Cannot initialize settings in '$overrideDirInput'.\n\n";
             } else {
                 return str_replace('\\', '/', realpath($overrideDirInput));
             }
@@ -256,14 +283,26 @@ function buildImportConfig($baseDir, $overrideDir, $filename)
         "/^\s*solrmarc.path\s*=.*$/m",
         "solrmarc.path = {$overrideDir}/import|{$baseDir}/import", $import
     );
-    if (!is_dir($overrideDir . '/import')) {
-        if (!@mkdir($overrideDir . '/import')) {
-            die("Problem creating {$overrideDir}/import directory.\n\n");
-        }
-    }
     if (!@file_put_contents($overrideDir . '/import/' . $filename, $import)) {
         die("Problem writing {$overrideDir}/import/{$filename}.\n\n");
     }
+}
+
+/**
+ * Build a set of directories.
+ *
+ * @param array $dirs Directories to build
+ *
+ * @return bool|string True on success, name of problem directory on failure
+ */
+function buildDirs($dirs)
+{
+    foreach ($dirs as $dir) {
+        if (!is_dir($dir) && !@mkdir($dir)) {
+            return $dir;
+        }
+    }
+    return true;
 }
 
 /**
@@ -278,16 +317,16 @@ function buildModule($baseDir, $module)
 {
     // Create directories:
     $moduleDir = $baseDir . '/module/' . $module;
-    $dirsToCreate = array(
-        $moduleDir,
-        $moduleDir . '/config',
-        $moduleDir . '/src',
-        $moduleDir . '/src/' . $module
+    $dirStatus = buildDirs(
+        array(
+            $moduleDir,
+            $moduleDir . '/config',
+            $moduleDir . '/src',
+            $moduleDir . '/src/' . $module
+        )
     );
-    foreach ($dirsToCreate as $dir) {
-        if (!is_dir($dir) && !@mkdir($dir)) {
-            die("Problem creating {$dir}.\n");
-        }
+    if ($dirStatus !== true) {
+        die("Problem creating {$dirStatus}.\n");
     }
 
     // Copy configuration:
