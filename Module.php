@@ -47,7 +47,7 @@ class Module
      *
      * @var string
      */
-    protected $configPath = '/conf/proxy.conf.php';
+    protected $configPath = '/config/proxy.conf.php';
 
     /**
      * Return autoloader configuration.
