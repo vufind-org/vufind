@@ -8,4 +8,7 @@
   <logging>
     <log type="coverage-html" target="../../review/coverage"/>
   </logging>
+  <php>
+    <includePath>../../vendor/zf2/library</includePath>
+  </php>
 </phpunit>
