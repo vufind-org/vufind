@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Proxy servce PHPUnit bootstrap.
+ * Proxy service PHPUnit bootstrap.
  *
  * @author    David Maus <maus@hab.de>
  * @license   http://opensource.org/licenses/gpl-2.0.php GNU General Public License
