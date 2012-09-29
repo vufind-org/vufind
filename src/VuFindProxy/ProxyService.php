@@ -203,8 +203,10 @@ class ProxyService
      *
      * @param \Zend\Http\Client $client HTTP client to use
      *
+     * @throws Exception\RuntimeException
      * @return \Zend\Http\Response
      *
+     * @todo Catch more exceptions, maybe?
      * @todo Check for potential problems re-using the client
      * @todo Check if we need to clone() the default adapter
      */
@@ -212,7 +214,16 @@ class ProxyService
     {
         $client->setAdapter($this->adapter);
         $client = $this->proxify($client);
-        return $client->send();
+        try {
+            $response = $client->send();
+        } catch (\Zend\Http\Client\Exception\RuntimeException $e) {
+            throw new Exception\RuntimeException(
+                sprintf('Zend HTTP Client exception: %s', $e),
+                -1,
+                $e
+            );
+        }
+        return $response;
     }
 
     /**

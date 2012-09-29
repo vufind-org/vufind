@@ -208,4 +208,18 @@ class ProxyServiceTest extends \PHPUnit_Framework_TestCase
             );
         }
     }
+
+    /**
+     * Test for runtime exception.
+     *
+     * @expectedException \VuFindProxy\Exception\RuntimeException
+     *
+     * @return void
+     */
+    public function testRuntimeException ()
+    {
+        $service = new Service();
+        $service->get('http://example.tld');
+    }
+
 }
