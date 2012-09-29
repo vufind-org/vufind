@@ -60,7 +60,7 @@ class ProxyService
      *
      * @var string|\Zend\Http\Client\Adapter\AdapterInterface
      */
-    protected $adapter = 'Zend\Http\Client\Adapter\Proxy';
+    protected $adapter = 'Zend\Http\Client\Adapter\Socket';
 
     /**
      * Proxy configuration.
