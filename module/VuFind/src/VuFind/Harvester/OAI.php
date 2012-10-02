@@ -139,6 +139,13 @@ class OAI
     protected $injectDate = false;
 
     /**
+     * List of header elements to copy into body
+     *
+     * @var array
+     */
+    protected $injectHeaderElements = array();
+
+    /**
      * Associative array of setSpec => setName
      *
      * @var array
@@ -220,6 +227,12 @@ class OAI
         }
         if (isset($settings['injectDate'])) {
             $this->injectDate = $settings['injectDate'];
+        }
+        if (isset($settings['injectHeaderElements'])) {
+            $this->injectHeaderElements
+                = is_array($settings['injectHeaderElements'])
+                    ? $settings['injectHeaderElements']
+                    : array($settings['injectHeaderElements']);
         }
         if (isset($settings['dateGranularity'])) {
             $this->granularity = $settings['dateGranularity'];
@@ -500,6 +513,13 @@ class OAI
                     $insert .= "<{$this->injectSetName}>" .
                         htmlspecialchars($name) .
                         "</{$this->injectSetName}>";
+                }
+            }
+        }
+        if (!empty($this->injectHeaderElements)) {
+            foreach ($this->injectHeaderElements as $element) {
+                if (isset($record->header->$element)) {
+                    $insert .= $record->header->$element->asXML();
                 }
             }
         }
