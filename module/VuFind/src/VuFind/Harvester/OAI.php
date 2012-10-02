@@ -41,26 +41,130 @@ use VuFind\Http\Client, Zend\Console\Console;
  */
 class OAI
 {
-    protected $baseURL;               // URL to harvest from
-    protected $set = null;            // Target set to harvest (null for all records)
-    protected $metadata = 'oai_dc';   // Metadata type to harvest
-    protected $idPrefix = '';         // OAI prefix to strip from ID values
-    protected $idSearch = array();    // Regular expression searches
-    protected $idReplace = array();   // Replacements for regular expression matches
-    protected $basePath;              // Directory for storing harvested files
-    protected $lastHarvestFile;       // File for tracking last harvest date
-    protected $startDate = null;      // Harvest start date (null for all records)
-    protected $granularity = 'auto';  // Date granularity
-    protected $injectId = false;      // Tag to use for injecting IDs into XML
-    protected $injectSetSpec = false; // Tag to use for injecting setSpecs
-    protected $injectSetName = false; // Tag to use for injecting set names
-    protected $injectDate = false;    // Tag to use for injecting datestamp
-    protected $setNames = array();    // Associative array of setSpec => setName
-    protected $harvestedIdLog = false;// Filename for logging harvested IDs.
-    protected $verbose = false;       // Should we display debug output?
+    /**
+     * URL to harvest from
+     *
+     * @var string
+     */
+    protected $baseURL;
+    /**
+     * Target set to harvest (null for all records)
+     *
+     * @var string
+     */
+    protected $set = null;
 
-    // As we harvest records, we want to track the most recent date encountered
-    // so we can set a start point for the next harvest.
+    /**
+     * Metadata type to harvest
+     *
+     * @var string
+     */
+    protected $metadata = 'oai_dc';
+
+    /**
+     * OAI prefix to strip from ID values
+     *
+     * @var string
+     */
+    protected $idPrefix = '';
+
+    /**
+     * Regular expression searches
+     *
+     * @var array
+     */
+    protected $idSearch = array();
+
+    /**
+     * Replacements for regular expression matches
+     *
+     * @var array
+     */
+    protected $idReplace = array();
+
+    /**
+     * Directory for storing harvested files
+     *
+     * @var string
+     */
+    protected $basePath;
+
+    /**
+     * File for tracking last harvest date
+     *
+     * @var string
+     */
+    protected $lastHarvestFile;
+
+    /**
+     * Harvest start date (null for all records)
+     *
+     * @var string
+     */
+    protected $startDate = null;
+
+    /**
+     * Date granularity ('auto' to autodetect)
+     *
+     * @var string
+     */
+    protected $granularity = 'auto';
+
+    /**
+     * Tag to use for injecting IDs into XML (false for none)
+     *
+     * @var string|bool
+     */
+    protected $injectId = false;
+
+    /**
+     * Tag to use for injecting setSpecs (false for none)
+     *
+     * @var string|bool
+     */
+    protected $injectSetSpec = false;
+
+    /**
+     * Tag to use for injecting set names (false for none)
+     *
+     * @var string|bool
+     */
+    protected $injectSetName = false;
+
+    /**
+     * Tag to use for injecting datestamp (false for none)
+     *
+     * @var string|bool
+     */
+    protected $injectDate = false;
+
+    /**
+     * Associative array of setSpec => setName
+     *
+     * @var array
+     */
+    protected $setNames = array();
+
+    /**
+     * Filename for logging harvested IDs (false for none)
+     *
+     * @var string|bool
+     */
+    protected $harvestedIdLog = false;
+
+    /**
+     * Should we display debug output?
+     *
+     * @var bool
+     */
+    protected $verbose = false;
+
+    /**
+     * As we harvest records, we want to track the most recent date encountered
+     * so we can set a start point for the next harvest.  (Unix timestamp format)
+     *
+     * @var int
+     */
     protected $endDate = 0;
 
     /**
