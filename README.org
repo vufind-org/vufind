@@ -81,7 +81,7 @@ The proxy service does not provide any extensions points.
 
 * Service identifier
 
-The proxy service registers under the name `Service\Prody' in the web application's top level
+The proxy service registers under the name `Service\Proxy' in the web application's top level
 service manager.
 
 * Implementation
