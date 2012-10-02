@@ -91,8 +91,13 @@ A first implementation of this specification can be found at [VF2 PROXY].
 * References
 
 [BUILDQUERY] : http://php.net/manual/de/function.http-build-query.php
+
 [MARKER INTERFACE] : Marker interface pattern, http://en.wikipedia.org/wiki/Marker_interface_pattern
+
 [MIMETYPES] : MIME Media Types, http://www.iana.org/assignments/media-types/index.html
+
 [RFC2119] : Key words for use in RFCs to Indicate Requirement Levels, http://www.ietf.org/rfc/rfc2119.txt
+
 [VF2 PROXY] : https://github.com/dmj/vf2-proxy
+
 [ZEND ADAPTER] : Zend_Http_Client - Connection Adapters, http://packages.zendframework.com/docs/latest/manual/en/modules/zend.http.client.adapters.html
