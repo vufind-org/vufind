@@ -278,7 +278,7 @@ class SearchController extends AbstractSearch
     public function homeAction()
     {
         return $this->createViewModel(
-            array('results' => $this->getAdvancedFacets())
+            array('results' => $this->getHomePageFacets())
         );
     }
 
@@ -489,24 +489,26 @@ class SearchController extends AbstractSearch
     }
 
     /**
-     * Return a Search Results object containing advanced facet information.  This
-     * data may come from the cache, and it is currently shared between the Home
-     * page and the Advanced search screen.
+     * Return a Search Results object containing requested facet information.  This
+     * data may come from the cache.
+     *
+     * @param string $initMethod Name of params method to use to request facets
+     * @param string $cacheName  Cache key for facet data
      *
      * @return \VuFind\Search\Solr\Results
      */
-    protected function getAdvancedFacets()
+    protected function getFacetResults($initMethod, $cacheName)
     {
         // Check if we have facet results cached, and build them if we don't.
         $cache = $this->getServiceLocator()->get('CacheManager')->getCache('object');
-        if (!($results = $cache->getItem('solrSearchHomeFacets'))) {
+        if (!($results = $cache->getItem($cacheName))) {
             // Use advanced facet settings to get summary facets on the front page;
             // we may want to make this more flexible later.  Also keep in mind that
             // the template is currently looking for certain hard-coded fields; this
             // should also be made smarter.
             $sm = $this->getSearchManager();
             $params = $sm->setSearchClassId('Solr')->getParams();
-            $params->initAdvancedFacets();
+            $params->$initMethod();
 
             // We only care about facet lists, so don't get any results (this helps
             // prevent problems with serialized File_MARC objects in the cache):
@@ -518,12 +520,34 @@ class SearchController extends AbstractSearch
             // Temporarily remove the service manager so we can cache the
             // results (otherwise we'll get errors about serializing closures):
             $results->unsetServiceLocator();
-            $cache->setItem('solrSearchHomeFacets', $results);
+            $cache->setItem($cacheName, $results);
         }
 
         // Restore the real service locator to the object:
         $results->restoreServiceLocator($this->getServiceLocator());
         return $results;
+    }
+
+    /**
+     * Return a Search Results object containing advanced facet information.  This
+     * data may come from the cache.
+     *
+     * @return \VuFind\Search\Solr\Results
+     */
+    protected function getAdvancedFacets()
+    {
+        return $this->getFacetResults('initAdvancedFacets', 'solrSearchAdvancedFacets');
+    }
+
+    /**
+     * Return a Search Results object containing homepage facet information.  This
+     * data may come from the cache.
+     *
+     * @return \VuFind\Search\Solr\Results
+     */
+    protected function getHomePageFacets()
+    {
+        return $this->getFacetResults('initHomePageFacets', 'solrSearchHomeFacets');
     }
 
     /**

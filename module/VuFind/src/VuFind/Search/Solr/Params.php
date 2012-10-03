@@ -252,22 +252,50 @@ class Params extends BaseParams
     }
 
     /**
+     * Initialize facet settings for the specified configuration sections.
+     *
+     * @param $facetList     Config section containing fields to activate
+     * @param $facetSettings Config section containing related settings
+     *
+     * @return bool          True if facets set, false if no settings found
+     */
+    protected function initFacetList($facetList, $facetSettings)
+    {
+        $config = ConfigReader::getConfig('facets');
+        if (!isset($config->$facetList)) {
+            return false;
+        }
+        foreach ($config->$facetList as $key => $value) {
+            $this->addFacet($key, $value);
+        }
+        if (isset($config->$facetSettings->facet_limit)
+            && is_numeric($config->$facetSettings->facet_limit)
+        ) {
+            $this->setFacetLimit($config->$facetSettings->facet_limit);
+        }
+        return true;
+    }
+
+    /**
      * Initialize facet settings for the advanced search screen.
      *
      * @return void
      */
     public function initAdvancedFacets()
     {
-        $config = ConfigReader::getConfig('facets');
-        if (isset($config->Advanced)) {
-            foreach ($config->Advanced as $key => $value) {
-                $this->addFacet($key, $value);
-            }
-        }
-        if (isset($config->Advanced_Settings->facet_limit)
-            && is_numeric($config->Advanced_Settings->facet_limit)
-        ) {
-            $this->setFacetLimit($config->Advanced_Settings->facet_limit);
+        $this->initFacetList('Advanced', 'Advanced_Settings');
+    }
+
+    /**
+     * Initialize facet settings for the home page.
+     *
+     * @return void
+     */
+    public function initHomePageFacets()
+    {
+        // Load Advanced settings if HomePage settings are missing (legacy support):
+        if (!$this->initFacetList('HomePage', 'HomePage_Settings')) {
+            $this->initAdvancedFacets();
         }
     }
 
@@ -346,9 +374,11 @@ class Params extends BaseParams
         // Based on preference, change the order of initialization to make sure
         // that preferred facet labels come in last.
         if ($preferredSection == 'Advanced') {
+            $this->initHomePageFacets();
             $this->initBasicFacets();
             $this->initAdvancedFacets();
         } else {
+            $this->initHomePageFacets();
             $this->initAdvancedFacets();
             $this->initBasicFacets();
         }
