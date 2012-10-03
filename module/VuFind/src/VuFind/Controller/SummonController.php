@@ -101,7 +101,7 @@ class SummonController extends AbstractSearch
     public function homeAction()
     {
         return $this->createViewModel(
-            array('results' => $this->getAdvancedFacets())
+            array('results' => $this->getHomePageFacets())
         );
     }
 
@@ -117,8 +117,7 @@ class SummonController extends AbstractSearch
 
     /**
      * Return a Search Results object containing advanced facet information.  This
-     * data may come from the cache, and it is currently shared between the Home
-     * page and the Advanced search screen.
+     * data may come from the cache.
      *
      * @return \VuFind\Search\Summon\Results
      */
@@ -126,7 +125,7 @@ class SummonController extends AbstractSearch
     {
         // Check if we have facet results cached, and build them if we don't.
         $cache = $this->getServiceLocator()->get('CacheManager')->getCache('object');
-        if (!($results = $cache->getItem('summonSearchHomeFacets'))) {
+        if (!($results = $cache->getItem('summonSearchAdvancedFacets'))) {
             $sm = $this->getSearchManager();
             $params = $sm->setSearchClassId('Summon')->getParams();
             $params->addFacet('Language,or,1,20');
@@ -142,12 +141,24 @@ class SummonController extends AbstractSearch
             // Temporarily remove the service manager so we can cache the
             // results (otherwise we'll get errors about serializing closures):
             $results->unsetServiceLocator();
-            $cache->setItem('summonSearchHomeFacets', $results);
+            $cache->setItem('summonSearchAdvancedFacets', $results);
         }
 
         // Restore the real service locator to the object:
         $results->restoreServiceLocator($this->getServiceLocator());
         return $results;
+    }
+
+    /**
+     * Return a Search Results object containing homepage facet information.  This
+     * data may come from the cache.
+     *
+     * @return \VuFind\Search\Summon\Results
+     */
+    protected function getHomePageFacets()
+    {
+        // For now, we'll use the same fields as the advanced search screen.
+        return $this->getAdvancedFacets();
     }
 
     /**
