@@ -39,6 +39,26 @@ namespace VuFind\Db\Table;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
+     * Constructor
+     *
+     * Make sure table gateways are properly initialized.
+     *
+     * @param  null|ConfigInterface $configuration
+     */
+    public function __construct(
+        \Zend\ServiceManager\ConfigInterface $configuration = null
+    ) {
+        parent::__construct($configuration);
+        $self = $this;
+        $initializer = function ($instance) use ($self) {
+            $instance->setAdapter($self->getServiceLocator()->get('DBAdapter'));
+            $instance->initialize();
+        };
+        $this->addInitializer($initializer);
+    }
+
+
+    /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.
      *
@@ -47,29 +67,5 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected function getExpectedInterface()
     {
         return 'VuFind\Db\Table\Gateway';
-    }
-
-    /**
-     * Retrieve a service from the manager by name
-     *
-     * Allows passing an array of options to use when creating the instance.
-     * createFromInvokable() will use these and pass them to the instance
-     * constructor if not null and a non-empty array.
-     *
-     * @param string $name                      Service name
-     * @param array  $options                   Options array
-     * @param bool   $usePeeringServiceManagers Use peering service managers switch
-     *
-     * @return object
-     */
-    public function get($name, $options = array(), $usePeeringServiceManagers = true)
-    {
-        // Obtain the object from the parent:
-        $obj = parent::get($name, $options, $usePeeringServiceManagers);
-
-        // Make sure it is properly initialized:
-        $obj->initialize();
-
-        return $obj;
     }
 }

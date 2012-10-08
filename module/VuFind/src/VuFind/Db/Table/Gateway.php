@@ -64,6 +64,18 @@ class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterfa
     }
 
     /**
+     * Set database adapter
+     *
+     * @param \Zend\Db\Adapter\Adapter $adapter Database adapter
+     *
+     * @return void
+     */
+    public function setAdapter(\Zend\Db\Adapter\Adapter $adapter)
+    {
+        $this->adapter = $adapter;
+    }
+
+    /**
      * Initialize
      *
      * @return void
@@ -73,8 +85,6 @@ class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterfa
         if ($this->isInitialized) {
             return;
         }
-        $this->adapter = $this->getServiceLocator()->getServiceLocator()
-            ->get('DBAdapter');
         parent::initialize();
         if (null !== $this->rowClass) {
             $resultSetPrototype = $this->getResultSetPrototype();
