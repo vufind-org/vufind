@@ -254,10 +254,10 @@ class Params extends BaseParams
     /**
      * Initialize facet settings for the specified configuration sections.
      *
-     * @param $facetList     Config section containing fields to activate
-     * @param $facetSettings Config section containing related settings
+     * @param string $facetList     Config section containing fields to activate
+     * @param string $facetSettings Config section containing related settings
      *
-     * @return bool          True if facets set, false if no settings found
+     * @return bool                 True if facets set, false if no settings found
      */
     protected function initFacetList($facetList, $facetSettings)
     {

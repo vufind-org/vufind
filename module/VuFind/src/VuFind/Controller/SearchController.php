@@ -536,7 +536,9 @@ class SearchController extends AbstractSearch
      */
     protected function getAdvancedFacets()
     {
-        return $this->getFacetResults('initAdvancedFacets', 'solrSearchAdvancedFacets');
+        return $this->getFacetResults(
+            'initAdvancedFacets', 'solrSearchAdvancedFacets'
+        );
     }
 
     /**
