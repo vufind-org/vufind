@@ -49,12 +49,11 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         \Zend\ServiceManager\ConfigInterface $configuration = null
     ) {
         parent::__construct($configuration);
-        $self = $this;
-        $initializer = function ($instance) use ($self) {
-            $instance->setAdapter($self->getServiceLocator()->get('DBAdapter'));
+        $initializer = function ($instance, $manager) {
+            $instance->setAdapter($manager->getServiceLocator()->get('DBAdapter'));
             $instance->initialize();
         };
-        $this->addInitializer($initializer);
+        $this->addInitializer($initializer, false);
     }
 
 
