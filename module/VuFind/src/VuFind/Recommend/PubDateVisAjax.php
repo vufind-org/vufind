@@ -115,6 +115,10 @@ class PubDateVisAjax implements RecommendInterface
      */
     public function getVisFacets()
     {
+        // Don't bother processing if the result set is empty:
+        if ($this->searchObject->getResultTotal() == 0) {
+            return array();
+        }
         return $this->processDateFacets(
             $this->searchObject->getParams()->getFilters()
         );
