@@ -143,7 +143,7 @@
                         <xsl:value-of select="php:function('VuFind::harvestTextFile', string(./@xlink:href))"/>
                     </xsl:for-each>
                     <xsl:for-each select="//METS:fileGrp[@USE=&quot;TRANSCRIPTION&quot;]/METS:file/METS:FLocat">
-                        <xsl:value-of select="php:function('VuFind::harvestWithAperture', string(./@xlink:href))"/>
+                        <xsl:value-of select="php:function('VuFind::harvestWithParser', string(./@xlink:href))"/>
                     </xsl:for-each>
                 </field>
             </doc>

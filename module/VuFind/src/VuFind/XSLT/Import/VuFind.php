@@ -74,7 +74,6 @@ class VuFind
      * @param string $date Date record was last modified.
      *
      * @return string      First index date/time.
-     * @access public
      */
     public static function getFirstIndexed($core, $id, $date)
     {
@@ -92,7 +91,6 @@ class VuFind
      * @param string $date Date record was last modified.
      *
      * @return string      Latest index date/time.
-     * @access public
      */
     public static function getLastIndexed($core, $id, $date)
     {
@@ -108,7 +106,6 @@ class VuFind
      * @param string $url URL of file to retrieve.
      *
      * @return string     file contents.
-     * @access public
      */
     public static function harvestTextFile($url)
     {
@@ -125,30 +122,105 @@ class VuFind
     }
 
     /**
-     * Harvest the contents of a document file (PDF, Word, etc.) using Aperture.
-     * This method will only work if Aperture is properly configured in the
-     * fulltext.ini file.  Without proper configuration, this will simply return
-     * an empty string.
+     * Read parser method from fulltext.ini
      *
-     * @param string $url URL of file to retrieve.
-     *
-     * @return string     text contents of file.
-     * @access public
+     * @return string Name of parser to use (i.e. Aperture or Tika)
      */
-    public static function harvestWithAperture($url)
+    public static function getParser()
     {
-        // Determine the base Aperture command (or fail if it is not configured):
+        $settings = ConfigReader::getConfig('fulltext');
+
+        // Is user preference explicitly set?
+        if (isset($settings->General->parser)) {
+            return $settings->General->parser;
+        }
+
+        // Is Aperture enabled?
+        if (isset($settings->Aperture->webcrawler)) {
+            return 'Aperture';
+        }
+
+        // Is Tika enabled?
+        if (isset($settings->Tika->path)) {
+            return 'Tika';
+        }
+
+        // If we got this far, no parser is available:
+        return 'None';
+    }
+
+    /**
+     * Call parsing method based on parser setting in fulltext.ini
+     *
+     * @param string $url URL to harvest
+     *
+     * @return string     Text contents of URL
+     */
+    public static function harvestWithParser($url)
+    {
+        $parser = self::getParser();
+        switch (strtolower($parser)) {
+        case 'aperture':
+            return self::harvestWithAperture($url);
+        case 'tika':
+            return self::harvestWithTika($url);
+        default:
+            // Ignore unrecognized parser option:
+            return '';
+        }
+    }
+
+    /**
+     * Generic method for building Aperture Command
+     *
+     * @param string $input  name of input file | url
+     * @param string $output name of output file
+     * @param string $method webcrawler | filecrawler
+     *
+     * @return string        command to be executed
+     */
+    public static function getApertureCommand($input, $output,
+        $method = "webcrawler"
+    ) {
+        // get the path to our sh/bat from the config
         $settings = ConfigReader::getConfig('fulltext');
         if (!isset($settings->Aperture->webcrawler)) {
             return '';
         }
         $cmd = $settings->Aperture->webcrawler;
 
+        // if we're using another method - substitute that into the path
+        $cmd = ($method != "webcrawler")
+            ? str_replace('webcrawler', $method, $cmd) : $cmd;
+
+        // return the full command
+        return "{$cmd} -o {$output} -x {$input}";
+    }
+
+    /**
+     * Harvest the contents of a document file (PDF, Word, etc.) using Aperture.
+     * This method will only work if Aperture is properly configured in the
+     * fulltext.ini file.  Without proper configuration, this will simply return an
+     * empty string.
+     *
+     * @param string $url    URL of file to retrieve.
+     * @param string $method webcrawler | filecrawler
+     *
+     * @return string        text contents of file.
+     */
+    public static function harvestWithAperture($url, $method = "webcrawler")
+    {
         // Build a filename for temporary XML storage:
         $xmlFile = tempnam('/tmp', 'apt');
 
+        // Determine the base Aperture command (or fail if it is not configured):
+        $aptCmd = self::getApertureCommand($url, $xmlFile, $method);
+        if (empty($aptCmd)) {
+            return '';
+        }
+
         // Call Aperture:
-        exec("$cmd -o $xmlFile -x $url");
+        exec($aptCmd);
 
         // If we failed to process the file, give up now:
         if (!file_exists($xmlFile)) {
@@ -169,13 +241,72 @@ class VuFind
     }
 
     /**
+     * Generic method for building Tika command
+     *
+     * @param string $input  url | fileresource
+     * @param string $output name of output file
+     * @param string $arg    optional Tika arguments
+     *
+     * @return array         Parameters for proc_open command
+     */
+    public static function getTikaCommand($input, $output, $arg)
+    {
+        $settings = ConfigReader::getConfig('fulltext');
+        if (!isset($settings->Tika->path)) {
+            return '';
+        }
+        $tika = $settings->Tika->path;
+
+        // We need to use this method to get the output from STDOUT into the file
+        $descriptorspec = array(
+            0 => array('pipe', 'r'),
+            1 => array('file', $output, 'w'),
+            2 => array('pipe', 'w')
+        );
+        return array(
+            "java -jar $tika $arg -eUTF8 $input", $descriptorspec, array()
+        );
+    }
+
+    /**
+     * Harvest the contents of a document file (PDF, Word, etc.) using Tika.
+     * This method will only work if Tika is properly configured in the
+     * fulltext.ini file.  Without proper configuration, this will simply return an
+     * empty string.
+     *
+     * @param string $url URL of file to retrieve.
+     * @param string $arg optional argument(s) for Tika
+     *
+     * @return string     text contents of file.
+     */
+    public static function harvestWithTika($url, $arg = "--text")
+    {
+        // Build a filename for temporary XML storage:
+        $outputFile = tempnam('/tmp', 'tika');
+
+        // Determine the base Tika command and execute
+        $tikaCommand = self::getTikaCommand($url, $outputFile, $arg);
+        proc_close(proc_open($tikaCommand[0], $tikaCommand[1], $tikaCommand[2]));
+
+        // If we failed to process the file, give up now:
+        if (!file_exists($outputFile)) {
+            return '';
+        }
+
+        // Extract and decode the full text from the XML:
+        $txt = file_get_contents($outputFile);
+        @unlink($outputFile);
+
+        return $txt;
+    }
+
+    /**
      * Map string using a config file from the translation_maps folder.
      *
      * @param string $in       string to map.
      * @param string $filename filename of map file
      *
      * @return string          mapped text.
-     * @access public
      */
     public static function mapString($in, $filename)
     {
@@ -201,7 +332,6 @@ class VuFind
      * @param string $in title to process.
      *
      * @return string    article-stripped text.
-     * @access public
      */
     public static function stripArticles($in)
     {
@@ -226,7 +356,6 @@ class VuFind
      * @param array $in array of DOMElement objects.
      *
      * @return string   XML as string
-     * @access public
      */
     public static function xmlAsText($in)
     {
@@ -261,7 +390,6 @@ class VuFind
      * @param string $tag name of tag to remove
      *
      * @return string     XML as string
-     * @access public
      */
     public static function removeTagAndReturnXMLasText($in, $tag)
     {
@@ -287,7 +415,6 @@ class VuFind
      * @param string $string    String to split
      *
      * @return DOMDocument
-     * @access public
      */
     public static function explode($delimiter, $string)
     {

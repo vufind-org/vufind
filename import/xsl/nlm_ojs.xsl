@@ -206,7 +206,7 @@
                     <xsl:otherwise>
                         <xsl:for-each select="//nlm:self-uri[@content-type=&quot;application/pdf&quot;]">
                             <field name="fulltext">
-                                <xsl:value-of select="php:function('VuFind::harvestWithAperture', string(./@xlink:href))"/>
+                                <xsl:value-of select="php:function('VuFind::harvestWithParser', string(./@xlink:href))"/>
                             </field>
                         </xsl:for-each>
                     </xsl:otherwise>
