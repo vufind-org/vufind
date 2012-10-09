@@ -43,7 +43,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      *
      * Make sure table gateways are properly initialized.
      *
-     * @param  null|ConfigInterface $configuration
+     * @param null|ConfigInterface $configuration Configuration settings (optional)
      */
     public function __construct(
         \Zend\ServiceManager\ConfigInterface $configuration = null
