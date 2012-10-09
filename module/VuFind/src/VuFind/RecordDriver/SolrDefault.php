@@ -1014,7 +1014,7 @@ class SolrDefault extends AbstractBase
         // If non-empty, map internal URL array to expected return format;
         // otherwise, return empty array:
         if (isset($this->fields['url']) && is_array($this->fields['url'])) {
-            $filter = function($url) {
+            $filter = function ($url) {
                 return array('url' => $url);
             };
             return array_map($filter, $this->fields['url']);

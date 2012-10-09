@@ -433,7 +433,7 @@ class Params extends BaseParams
             return $this->setOverrideQuery('NOT *:*');
         }
 
-        $callback = function($i) {
+        $callback = function ($i) {
             return '"' . addcslashes($i, '"') . '"';
         };
         $ids = array_map($callback, $ids);

@@ -157,7 +157,7 @@ class Tags extends Gateway
      */
     public function getTagList($sort, $limit = 100, $extra_where = null)
     {
-        $callback = function($select) use ($sort, $limit, $extra_where) {
+        $callback = function ($select) use ($sort, $limit, $extra_where) {
             $select->columns(
                 array(
                     'id', 'tag',

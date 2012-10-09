@@ -165,7 +165,7 @@ class Bootstrap
         if (isset($this->config->System->available)
             && !$this->config->System->available
         ) {
-            $callback = function($e) {
+            $callback = function ($e) {
                 $routeMatch = new RouteMatch(
                     array('controller' => 'Error', 'action' => 'Unavailable'), 1
                 );
@@ -200,7 +200,7 @@ class Bootstrap
      */
     protected function initContext()
     {
-        $callback = function($event) {
+        $callback = function ($event) {
             $serviceManager = $event->getApplication()->getServiceManager();
             $viewModel = $serviceManager->get('viewmanager')->getViewModel();
 
@@ -225,7 +225,7 @@ class Bootstrap
      */
     protected function initHeadTitle()
     {
-        $callback = function($event) {
+        $callback = function ($event) {
             $serviceManager = $event->getApplication()->getServiceManager();
             $renderer = $serviceManager->get('viewmanager')->getRenderer();
             $headTitle = $renderer->plugin('headtitle');
@@ -249,7 +249,7 @@ class Bootstrap
         }
 
         $config =& $this->config;
-        $callback = function($event) use ($config) {
+        $callback = function ($event) use ($config) {
             // Setup Translator
             $request = $event->getRequest();
             if (($language = $request->getPost()->get('mylang', false))
@@ -301,7 +301,7 @@ class Bootstrap
         // Attach remaining theme configuration to the dispatch event at high
         // priority (TODO: use priority constant once defined by framework):
         $config =& $this->config;
-        $callback = function($event) use ($config) {
+        $callback = function ($event) use ($config) {
             $theme = new ThemeInitializer($config, $event);
             $theme->init();
         };
@@ -316,7 +316,7 @@ class Bootstrap
      */
     protected function initExceptionBased404s()
     {
-        $callback = function($e) {
+        $callback = function ($e) {
             $exception = $e->getParam('exception');
             if (is_object($exception)) {
                 if ($exception instanceof \VuFind\Exception\RecordMissing) {
@@ -341,7 +341,7 @@ class Bootstrap
      */
     protected function initErrorLogging()
     {
-        $callback = function($event) {
+        $callback = function ($event) {
             $sm = $event->getApplication()->getServiceManager();
             if ($sm->has('Logger')) {
                 $log = $sm->get('Logger');

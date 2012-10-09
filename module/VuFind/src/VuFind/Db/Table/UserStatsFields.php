@@ -93,7 +93,7 @@ class UserStatsFields extends Gateway
         if (!is_array($fields)) {
             $fields = array($fields);
         }
-        $callback = function($select) use ($fields, $values) {
+        $callback = function ($select) use ($fields, $values) {
             $select->columns(
                 array($fields[0] => 'value')
             );
@@ -124,7 +124,7 @@ class UserStatsFields extends Gateway
      */
     public function getTop($field, $number)
     {
-        $callback = function($select) use ($field, $number) {
+        $callback = function ($select) use ($field, $number) {
             $select->columns(
                 array(
                     'value',

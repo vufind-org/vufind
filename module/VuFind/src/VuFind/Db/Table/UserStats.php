@@ -59,7 +59,7 @@ class UserStats extends Gateway
      */
     public function getBrowserStats($withVersions = false, $limit = 5)
     {
-        $callback = function($select) use ($withVersions, $limit) {
+        $callback = function ($select) use ($withVersions, $limit) {
             if ($withVersions) {
                 $select->columns(
                     array(
