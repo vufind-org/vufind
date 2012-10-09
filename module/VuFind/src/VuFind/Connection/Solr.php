@@ -1692,7 +1692,6 @@ class Solr implements ServiceLocatorAwareInterface
      * response; meat of the response is in the ['terms'] element, which contains
      * an index named for the requested term, which in turn contains an associative
      * array of term => count in index.
-     * @access public
      */
     public function getTerms($field, $start, $limit)
     {

@@ -59,7 +59,6 @@ class Tags extends ServiceLocatorAwareGateway
      * @param int    $limit  Limit for results (null for none)
      *
      * @return array
-     * @access public
      */
     public function getResources($source = null, $sort = null, $offset = 0,
         $limit = null

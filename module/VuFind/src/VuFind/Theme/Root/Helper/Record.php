@@ -140,7 +140,6 @@ class Record extends AbstractHelper
      * "EndNote", "MARC", "RDF".
      *
      * @return array Strings representing export formats.
-     * @access public
      */
     public function getExportFormats()
     {

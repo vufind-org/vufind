@@ -156,7 +156,6 @@ class OpenLibrarySubjects implements RecommendInterface
      * request.
      *
      * @return string
-     * @access protected
      */
     protected function getPublishedDates($field, $params, $request)
     {

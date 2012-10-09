@@ -470,7 +470,6 @@ class Oracle
      * Clear out internal error tracking details.
      *
      * @return void
-     * @access private
      */
     protected function clearError()
     {
@@ -488,7 +487,6 @@ class Oracle
      * @param string $sql   SQL statement that caused error
      *
      * @return void
-     * @access private
      */
     protected function handleError($type, $error, $sql = '')
     {
