@@ -50,28 +50,25 @@ class ResourceTags extends Gateway
     /**
      * Look up a row for the specified resource.
      *
-     * @param string $resource_id ID of resource to link up
-     * @param string $tag_id      ID of tag to link up
-     * @param string $user_id     ID of user creating link (optional but recommended)
-     * @param string $list_id     ID of list to link up (optional)
+     * @param string $resource ID of resource to link up
+     * @param string $tag      ID of tag to link up
+     * @param string $user     ID of user creating link (optional but recommended)
+     * @param string $list     ID of list to link up (optional)
      *
      * @return void
      */
-    public function createLink($resource_id, $tag_id, $user_id = null,
-        $list_id = null
-    ) {
-        $callback = function ($select) use ($resource_id, $tag_id, $user_id,
-            $list_id
-        ) {
-            $select->where->equalTo('resource_id', $resource_id)
-                ->equalTo('tag_id', $tag_id);
-            if (!is_null($list_id)) {
-                $select->where->equalTo('list_id', $list_id);
+    public function createLink($resource, $tag, $user = null, $list = null)
+    {
+        $callback = function ($select) use ($resource, $tag, $user, $list) {
+            $select->where->equalTo('resource_id', $resource)
+                ->equalTo('tag_id', $tag);
+            if (!is_null($list)) {
+                $select->where->equalTo('list_id', $list);
             } else {
                 $select->where->isNull('list_id');
             }
-            if (!is_null($user_id)) {
-                $select->where->equalTo('user_id', $user_id);
+            if (!is_null($user)) {
+                $select->where->equalTo('user_id', $user);
             } else {
                 $select->where->isNull('user_id');
             }
@@ -81,13 +78,13 @@ class ResourceTags extends Gateway
         // Only create row if it does not already exist:
         if (empty($result)) {
             $result = $this->createRow();
-            $result->resource_id = $resource_id;
-            $result->tag_id = $tag_id;
-            if (!is_null($list_id)) {
-                $result->list_id = $list_id;
+            $result->resource_id = $resource;
+            $result->tag_id = $tag;
+            if (!is_null($list)) {
+                $result->list_id = $list;
             }
-            if (!is_null($user_id)) {
-                $result->user_id = $user_id;
+            if (!is_null($user)) {
+                $result->user_id = $user;
             }
             $result->save();
         }
@@ -164,40 +161,37 @@ class ResourceTags extends Gateway
     /**
      * Unlink rows for the specified resource.
      *
-     * @param string|array $resource_id ID (or array of IDs) of resource(s) to
+     * @param string|array $resource ID (or array of IDs) of resource(s) to
      *                                  unlink (null for ALL matching resources)
-     * @param string       $user_id     ID of user removing links
-     * @param string       $list_id     ID of list to unlink (null for ALL matching
+     * @param string       $user     ID of user removing links
+     * @param string       $list     ID of list to unlink (null for ALL matching
      *                                  lists, 'none' for tags not in a list)
-     * @param string       $tag_id      ID of tag to unlink (null for ALL matching
+     * @param string       $tag      ID of tag to unlink (null for ALL matching
      *                                  tags)
      *
      * @return void
      */
-    public function destroyLinks($resource_id, $user_id, $list_id = null,
-        $tag_id = null
-    ) {
-        $callback = function ($select) use ($resource_id, $user_id, $list_id,
-            $tag_id
-        ) {
-            $select->where->equalTo('user_id', $user_id);
-            if (!is_null($resource_id)) {
-                if (!is_array($resource_id)) {
-                    $resource_id = array($resource_id);
+    public function destroyLinks($resource, $user, $list = null, $tag = null)
+    {
+        $callback = function ($select) use ($resource, $user, $list, $tag) {
+            $select->where->equalTo('user_id', $user);
+            if (!is_null($resource)) {
+                if (!is_array($resource)) {
+                    $resource = array($resource);
                 }
-                $select->where->in('resource_id', $resource_id);
+                $select->where->in('resource_id', $resource);
             }
-            if (!is_null($list_id)) {
-                if ($list_id != 'none') {
-                    $select->where->equalTo('list_id', $list_id);
+            if (!is_null($list)) {
+                if ($list != 'none') {
+                    $select->where->equalTo('list_id', $list);
                 } else {
-                    // special case -- if $list_id is set to the string "none", we
+                    // special case -- if $list is set to the string "none", we
                     // want to delete tags that are not associated with lists.
                     $select->where->isNull('list_id');
                 }
             }
-            if (!is_null($tag_id)) {
-                $select->where->equalTo('tag_id', $tag_id);
+            if (!is_null($tag)) {
+                $select->where->equalTo('tag_id', $tag);
             }
         };
 

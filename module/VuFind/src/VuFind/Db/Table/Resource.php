@@ -112,8 +112,8 @@ class Resource extends Gateway
     /**
      * Get a set of records from the requested favorite list.
      *
-     * @param string $userId ID of user owning favorite list
-     * @param string $listId ID of list to retrieve (null for all favorites)
+     * @param string $user   ID of user owning favorite list
+     * @param string $list   ID of list to retrieve (null for all favorites)
      * @param array  $tags   Tags to use for limiting results
      * @param string $sort   Resource table field to use for sorting (null for
      * no particular sort).
@@ -122,59 +122,58 @@ class Resource extends Gateway
      *
      * @return \Zend\Db\ResultSet\AbstractResultSet
      */
-    public function getFavorites($userId, $listId = null, $tags = array(),
+    public function getFavorites($user, $list = null, $tags = array(),
         $sort = null, $offset = 0, $limit = null
     ) {
         // Set up base query:
-        $callback = function ($select) use ($userId, $listId, $tags, $sort, $offset,
-            $limit
-        ) {
-            $select->columns(
-                array(
-                    new Expression(
-                        'DISTINCT(?)', array('resource.id'),
-                        array(Expression::TYPE_IDENTIFIER)
-                    ), '*'
-                )
-            );
-            $select->join(
-                array('ur' => 'user_resource'), 'resource.id = ur.resource_id',
-                array()
-            );
-            $select->where->equalTo('ur.user_id', $userId);
+        return $this->select(
+            function ($select) use ($user, $list, $tags, $sort, $offset, $limit) {
+                $select->columns(
+                    array(
+                        new Expression(
+                            'DISTINCT(?)', array('resource.id'),
+                            array(Expression::TYPE_IDENTIFIER)
+                        ), '*'
+                    )
+                );
+                $select->join(
+                    array('ur' => 'user_resource'), 'resource.id = ur.resource_id',
+                    array()
+                );
+                $select->where->equalTo('ur.user_id', $user);
 
-            // Adjust for list if necessary:
-            if (!is_null($listId)) {
-                $select->where->equalTo('ur.list_id', $listId);
-            }
+                // Adjust for list if necessary:
+                if (!is_null($list)) {
+                    $select->where->equalTo('ur.list_id', $list);
+                }
 
-            if ($offset > 0) {
-                $select->offset($offset);
-            }
-            if (!is_null($limit)) {
-                $select->limit($limit);
-            }
+                if ($offset > 0) {
+                    $select->offset($offset);
+                }
+                if (!is_null($limit)) {
+                    $select->limit($limit);
+                }
 
-            // Adjust for tags if necessary:
-            if (!empty($tags)) {
-                $linkingTable = $this->getDbTable('ResourceTags');
-                foreach ($tags as $tag) {
-                    $matches = $linkingTable
-                        ->getResourcesForTag($tag, $userId, $listId)->toArray();
-                    $getId = function ($i) {
-                        return $i['resource_id'];
-                    };
-                    $select->where->in('resource.id', array_map($getId, $matches));
+                // Adjust for tags if necessary:
+                if (!empty($tags)) {
+                    $linkingTable = $this->getDbTable('ResourceTags');
+                    foreach ($tags as $tag) {
+                        $matches = $linkingTable
+                            ->getResourcesForTag($tag, $user, $list)->toArray();
+                        $getId = function ($i) {
+                            return $i['resource_id'];
+                        };
+                        $select->where
+                            ->in('resource.id', array_map($getId, $matches));
+                    }
+                }
+
+                // Apply sorting, if necessary:
+                if (!empty($sort)) {
+                    Resource::applySort($select, $sort);
                 }
             }
-
-            // Apply sorting, if necessary:
-            if (!empty($sort)) {
-                Resource::applySort($select, $sort);
-            }
-        };
-
-        return $this->select($callback);
+        );
     }
 
     /**
