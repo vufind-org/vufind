@@ -49,13 +49,6 @@ class ProxyService
     const LOCAL_ADDRESS_RE = '@^(localhost|127(\.\d+){3}|\[::1\])@';
 
     /**
-     * HTTP client.
-     *
-     * @var \Zend\Http\Client
-     */
-    protected $client;
-
-    /**
      * Default adapter.
      *
      * @var string|\Zend\Http\Client\Adapter\AdapterInterface
@@ -81,7 +74,6 @@ class ProxyService
     public function __construct (array $config = array())
     {
         $this->config = $config;
-        $this->client = new \Zend\Http\Client();
     }
 
     /**
