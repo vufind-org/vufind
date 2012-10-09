@@ -18,9 +18,9 @@ proxy access.
 
 The proxy service implements the following public methods:
 
-** get(string URL[, array PARAMS[, array HEADERS]))
+** get(string URL[, array PARAMS[, float TIMEOUT]])
 
-Performs a GET request to URL using optional PARAMS and optional HEADERS and returns the response.
+Performs a GET request to URL using optional PARAMS and TIMEOUT, and returns the response.
 
 PARAMS is an array of request parameters. It can either be an associative array of parameter names
 and associated values or a numeric array with properly URL-encoded name-value pairs in the form
@@ -30,22 +30,28 @@ In the first case the query string is created with PHP's built-in http_build_que
 ([BUILDQUERY]), in the latter case the name-value pairs are simply concatenated to form the query
 string.
 
-** postForm(string URL[, array PARAMS[, array HEADERS]])
+TIMEOUT is a float with the request timeout in seconds.
+
+** postForm(string URL[, array PARAMS[, float TIMEOUT]])
 
 Performs a POST request of regular form data to URL using optional PARAMS and optional
 HEADERS. PARAMS is converted to a query string using the same rules as in get() and send inside a
-POST request body with a content type of `application/x-www-form-urlencoded'. A content type set in
-HEADERS will be overwritten.
+POST request body with a content type of `application/x-www-form-urlencoded'.
 
-** post(string URL[, mixed BODY[, array HEADERS]])
+TIMEOUT is a float with the request timeout in seconds.
 
-Performs a POST request of optional BODY to URL using optional HEADERS and returns the repose.
+** post(string URL[, mixed BODY[, string TYPE[, float TIMEOUT]]])
+
+Performs a POST request of optional BODY of TYPE to URL and returns the repose.
 
 BODY is casted to string.
 
-A component using the service SHOULD provide an appropriate Content-Type header for the POST
-request body in accordance with [MIMETYPES]. The proxy service does not consider it an error if
-the Content-Type header is missing and does not try to set a Content-Type header by itself. 
+A component using the service SHOULD provide an appropriate Content-Type header for the POST request
+body in accordance with [MIMETYPES]. The default MIME type is `application/octet-stream'. The proxy
+service calculates the Content-Length request header value by performing `strlen()' on the request
+body.
+
+TIMEOUT is a float with the request timeout in seconds.
 
 ** proxify(Zend\Http\Client CLIENT[, array OPTIONS])
 
