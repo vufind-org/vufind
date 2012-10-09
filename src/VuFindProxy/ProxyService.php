@@ -113,11 +113,11 @@ class ProxyService
      *
      * @param string $url     Request URL
      * @param array  $params  Request parameters
-     * @param string $headers Request headers
+     * @param float  $timeout Request timeout in seconds
      *
      * @return \Zend\Http\Response
      */
-    public function get ($url, array $params = array(), array $headers = array())
+    public function get ($url, array $params = array(), $timeout = null)
     {
         if ($params) {
             $query = $this->createQueryString($params);
@@ -127,9 +127,13 @@ class ProxyService
                 $url .= '?' . $query;
             }
         }
-        $client = $this->client;
+        $client = new \Zend\Http\Client();
         $client->setMethod(\Zend\Http\Request::METHOD_GET);
         $client->setUri($url);
+        $client->setAdapter($this->adapter);
+        if ($timeout) {
+            $client->setOptions(array('timeout' => $timeout));
+        }
         return $this->send($client);
     }
 
@@ -138,17 +142,22 @@ class ProxyService
      *
      * @param string $url     Request URL
      * @param mixed  $body    Request body document
-     * @param array  $headers Request headers
+     * @param string $type    Request body content type
+     * @param float  $timeout Request timeout in seconds
      *
      * @return \Zend\Http\Response
      */
-    public function post ($url, $body = null, array $headers = array())
+    public function post ($url, $body = null, $type = 'application/octet-stream', $timeout = null)
     {
-        $client = $this->client;
+        $client = new \Zend\Http\Client();
         $client->setMethod(\Zend\Http\Request::METHOD_POST);
         $client->setUri($url);
+        $client->setAdapter($this->adapter);
+        if ($timeout) {
+            $client->setOptions(array('timeout' => $timeout));
+        }
         $client->setRawBody($body);
-        $client->setHeaders($headers);
+        $client->setHeaders(array('Content-Type' => $type, 'Content-Length' => strlen($body)));
         return $this->send($client);
     }
 
@@ -157,15 +166,14 @@ class ProxyService
      *
      * @param string $url     Request URL
      * @param array  $params  Form data
-     * @param array  $headers Addition request headers
+     * @param float  $timeout Request timeout in seconds
      *
      * @return \Zend\Http\Response
      */
-    public function postForm ($url, array $params = array(), array $headers = array())
+    public function postForm ($url, array $params = array(), $timeout = null)
     {
-        $headers['Content-Type'] = \Zend\Http\Client::ENC_URLENCODED;
         $body = $this->createQueryString($params);
-        return $this->post($url, $body, $headers);
+        return $this->post($url, $body, \Zend\Http\Client::ENC_URLENCODED, $timeout);
     }
 
     /**
