@@ -64,6 +64,11 @@
     <exec dir="${srcdir}/module/VuFind/tests/unit-tests" command="VUFIND_LOCAL_DIR=${srcdir}/local phpunit -dzend.enable_gc=0 --log-junit ${builddir}/reports/phpunit.xml --coverage-clover ${builddir}/reports/coverage/clover.xml --coverage-html ${builddir}/reports/coverage/" passthru="true" checkreturn="true" />
   </target>
 
+  <!-- PHPUnit without logging output -->
+  <target name="phpunitfast" description="Run unit tests">
+    <exec dir="${srcdir}/module/VuFind/tests/unit-tests" command="VUFIND_LOCAL_DIR=${srcdir}/local phpunit -dzend.enable_gc=0" passthru="true" checkreturn="true" />
+  </target>
+
   <!-- Install and Activate VuFind -->
   <target name="startup" description="install and activate demo">
     <!-- set up appropriate read/write permissions for Apache -->
