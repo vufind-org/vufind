@@ -63,10 +63,40 @@ use VuFind\Exception\Auth as AuthException;
  */
 class MultiAuth extends AbstractBase
 {
+    /**
+     * Filter configuration for credentials
+     *
+     * @var array
+     */
     protected $filters = array();
+
+    /**
+     * Authentication methods to try
+     *
+     * @var array
+     */
     protected $methods = array();
+
+    /**
+     * Username input
+     *
+     * @var string
+     */
     protected $username;
+
+    /**
+     * Password input
+     *
+     * @var string
+     */
     protected $password;
+
+    /**
+     * Plugin manager for obtaining other authentication objects
+     *
+     * @var PluginManager
+     */
+    protected $manager;
 
     /**
      * Validate configuration parameters.  This is a support method for getConfig(),
@@ -172,7 +202,7 @@ class MultiAuth extends AbstractBase
      */
     protected function authUser($request)
     {
-        $manager = $this->getServiceLocator();
+        $manager = $this->getPluginManager();
 
         // Try authentication methods until we find one that works:
         foreach ($this->methods as $method) {
@@ -202,5 +232,31 @@ class MultiAuth extends AbstractBase
             }
         }
         return $user;
+    }
+
+    /**
+     * Set the manager for loading other authentication plugins.
+     *
+     * @param PluginManager $manager Plugin manager
+     *
+     * @return void
+     */
+    public function setPluginManager(PluginManager $manager)
+    {
+        $this->manager = $manager;
+    }
+
+    /**
+     * Get the manager for loading other authentication plugins.
+     *
+     * @throws \Exception
+     * @return PluginManager
+     */
+    public function getPluginManager()
+    {
+        if (null === $this->manager) {
+            throw new \Exception('Plugin manager missing.');
+        }
+        return $this->manager;
     }
 }

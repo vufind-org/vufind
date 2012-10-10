@@ -28,9 +28,7 @@
  */
 namespace VuFind\Auth;
 use VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\Auth as AuthException,
-    Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+    VuFind\Exception\Auth as AuthException;
 
 /**
  * Abstract authentication base class
@@ -42,17 +40,28 @@ use VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-abstract class AbstractBase implements ServiceLocatorAwareInterface
+abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
 {
+    /**
+     * Has the configuration been validated?
+     *
+     * @param bool
+     */
     protected $configValidated = false;
+
+    /**
+     * Configuration settings
+     *
+     * @param \Zend\Config\Config
+     */
     protected $config = null;
 
     /**
-     * Service locator
+     * Database table plugin manager
      *
-     * @var ServiceLocatorInterface
+     * @var \VuFind\Db\Table\PluginManager
      */
-    protected $serviceLocator;
+    protected $tableManager;
 
     /**
      * Get configuration (load automatically if not previously set).  Throw an
@@ -186,30 +195,32 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
      */
     public function getUserTable()
     {
-        return $this->getServiceLocator()->getServiceLocator()
-            ->get('DbTablePluginManager')->get('User');
+        return $this->getDbTableManager()->get('User');
     }
 
     /**
-     * Set the service locator.
+     * Get the table plugin manager.  Throw an exception if it is missing.
      *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return AbstractBase
+     * @throws \Exception
+     * @return \VuFind\Db\Table\PluginManager\PluginManager
      */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    public function getDbTableManager()
     {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
+        if (null === $this->tableManager) {
+            throw new \Exception('DB table manager missing.');
+        }
+        return $this->tableManager;
     }
 
     /**
-     * Get the service locator.
+     * Set the table plugin manager.
      *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     * @param \VuFind\Db\Table\PluginManagerPluginManager $manager Plugin manager
+     *
+     * @return void
      */
-    public function getServiceLocator()
+    public function setDbTableManager(\VuFind\Db\Table\PluginManager $manager)
     {
-        return $this->serviceLocator;
+        $this->tableManager = $manager;
     }
 }

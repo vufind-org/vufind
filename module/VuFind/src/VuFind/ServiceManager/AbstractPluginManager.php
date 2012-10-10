@@ -41,6 +41,30 @@ use Zend\ServiceManager\AbstractPluginManager as Base,
 abstract class AbstractPluginManager extends Base
 {
     /**
+     * Constructor
+     *
+     * Make sure table gateways are properly initialized.
+     *
+     * @param null|ConfigInterface $configuration Configuration settings (optional)
+     */
+    public function __construct(
+        \Zend\ServiceManager\ConfigInterface $configuration = null
+    ) {
+        parent::__construct($configuration);
+        $initializer = function ($instance, $manager) {
+            if ($instance instanceof \VuFind\Db\Table\DbTableAwareInterface) {
+                $instance->setDbTableManager(
+                    $manager->getServiceLocator()->get('DbTablePluginManager')
+                );
+            }
+            if (method_exists($instance, 'setPluginManager')) {
+                $instance->setPluginManager($manager);
+            }
+        };
+        $this->addInitializer($initializer, false);
+    }
+
+    /**
      * Validate the plugin
      *
      * Checks that the filter loaded is either a valid callback or an instance

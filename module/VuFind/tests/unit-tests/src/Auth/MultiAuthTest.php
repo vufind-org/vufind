@@ -37,7 +37,7 @@ use VuFind\Auth\MultiAuth, Zend\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class MultiAuthTest extends \VuFindTest\Unit\TestCase
+class MultiAuthTest extends \VuFindTest\Unit\DbTestCase
 {
     /**
      * Get an authentication object.
@@ -60,7 +60,6 @@ class MultiAuthTest extends \VuFindTest\Unit\TestCase
         );
         $obj = clone($this->getAuthManager()->get('MultiAuth'));
         $obj->setConfig($config);
-        $obj->setServiceLocator($serviceLocator);
         return $obj;
     }
 
