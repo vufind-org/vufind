@@ -277,11 +277,10 @@ $config = array(
                 return \VuFind\Db\AdapterFactory::getAdapter();
             },
             'ilsconnection' => function ($sm) {
-                $config = \VuFind\Config\Reader::getConfig();
                 $catalog = new \VuFind\ILS\Connection();
-                $catalog->setServiceLocator($sm);
-                $catalog->setConfig($config->Catalog);
-                return $catalog;
+                return $catalog
+                    ->setConfig(\VuFind\Config\Reader::getConfig()->Catalog)
+                    ->initWithDriverManager($sm->get('ILSDriverPluginManager'));
             },
             'logger' => function ($sm) {
                 $logger = new \VuFind\Log\Logger();

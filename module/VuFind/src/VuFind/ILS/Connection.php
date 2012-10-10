@@ -31,8 +31,7 @@
  */
 namespace VuFind\ILS;
 use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException,
-    Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+    VuFind\ILS\Driver\DriverInterface;
 
 /**
  * Catalog Connection Class
@@ -64,13 +63,6 @@ class Connection
     protected $driver;
 
     /**
-     * The service locator
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
-
-    /**
      * ILS configuration
      *
      * @var \Zend\Config\Config
@@ -83,33 +75,46 @@ class Connection
      * @param \Zend\Config\Config $config Configuration representing the [Catalog]
      * section of config.ini
      *
-     * @return void
+     * @return Connection
      */
     public function setConfig($config)
     {
         $this->config = $config;
+        return $this;
+    }
 
-        if (!isset($config->driver)) {
-            throw new ILSException('ILS driver setting missing.');
+    /**
+     * Initialize the driver using the ILS driver plugin manager.
+     *
+     * @param \VuFind\ILS\Driver\PluginManager $driverManager Driver plugin manager
+     *
+     * @throws Exception
+     * @return Connection
+     */
+    public function initWithDriverManager(
+        \VuFind\ILS\Driver\PluginManager $driverManager
+    ) {
+        if (!isset($this->config->driver)) {
+            throw new \Exception('ILS driver setting missing.');
         }
-        $driverManager = $this->getServiceLocator()->get('ILSDriverPluginManager');
-        $service = $config->driver;
+        $service = $this->config->driver;
         if (!$driverManager->has($service)) {
-            // Don't throw ILSException here -- we don't want this to be
-            // treated as a login problem; it's more serious than that!
             throw new \Exception('ILS driver missing: ' . $service);
         }
-        $this->driver = $driverManager->get($service);
+        $this->setDriver($driverManager->get($service));
 
         // If we're configured to fail over to the NoILS driver, we need
         // to test if the main driver is working.
-        if (isset($config->loadNoILSOnFailure) && $config->loadNoILSOnFailure) {
+        if (isset($this->config->loadNoILSOnFailure)
+            && $this->config->loadNoILSOnFailure
+        ) {
             try {
                 $this->getDriver();
             } catch (\Exception $e) {
-                $this->driver = $driverManager->get('NoILS');
+                $this->setDriver($driverManager->get('NoILS'));
             }
         }
+        return $this;
     }
 
     /**
@@ -125,17 +130,34 @@ class Connection
     /**
      * Get access to the driver object.
      *
-     * @throws ILSException
+     * @throws Exception
      * @return object
      */
     public function getDriver()
     {
         if (!$this->driverInitialized) {
+            if (!is_object($this->driver)) {
+                throw new \Exception('ILS driver missing.');
+            }
             $this->driver->setConfig($this->getDriverConfig());
             $this->driver->init();
             $this->driverInitialized = true;
         }
         return $this->driver;
+    }
+
+    /**
+     * Set a driver object.
+     *
+     * @param DriverInterface $driver      Driver to set.
+     * @param bool            $initialized Is this driver already initialized?
+     *
+     * @return void
+     */
+    public function setDriver(DriverInterface $driver, $initialized = false)
+    {
+        $this->driverInitialized = $initialized;
+        $this->driver = $driver;
     }
 
     /**
@@ -232,11 +254,13 @@ class Connection
     {
         $response = false;
 
-        if ($this->config->cancel_holds_enabled == true
+        if (isset($this->config->cancel_holds_enabled)
+            && $this->config->cancel_holds_enabled == true
             && method_exists($this->getDriverClass(), 'cancelHolds')
         ) {
             $response = array('function' => "cancelHolds");
-        } else if ($this->config->cancel_holds_enabled == true
+        } else if (isset($this->config->cancel_holds_enabled)
+            && $this->config->cancel_holds_enabled == true
             && method_exists($this->getDriverClass(), 'getCancelHoldLink')
         ) {
             $response = array('function' => "getCancelHoldLink");
@@ -259,11 +283,13 @@ class Connection
     {
         $response = false;
 
-        if ($this->config->renewals_enabled == true
+        if (isset($this->config->renewals_enabled)
+            && $this->config->renewals_enabled == true
             && method_exists($this->getDriverClass(), 'renewMyItems')
         ) {
             $response = array('function' => "renewMyItems");
-        } else if ($this->config->renewals_enabled == true
+        } else if (isset($this->config->renewals_enabled)
+            && $this->config->renewals_enabled == true
             && method_exists($this->getDriverClass(), 'renewMyItemsLink')
         ) {
             $response = array('function' => "renewMyItemsLink");
@@ -376,6 +402,7 @@ class Connection
      * @param string $methodName The name of the called method.
      * @param array  $params     Array of passed parameters.
      *
+     * @throws ILSException
      * @return mixed             Varies by method (false if undefined method)
      */
     public function __call($methodName, $params)
@@ -386,28 +413,5 @@ class Connection
             );
         }
         throw new ILSException('Cannot call method: ' . $methodName);
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Connection
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 }
