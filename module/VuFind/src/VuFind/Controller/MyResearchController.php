@@ -66,6 +66,10 @@ class MyResearchController extends AbstractBase
 
         // Not logged in?  Force user to log in:
         if (!$this->getAuthManager()->isLoggedIn()) {
+            $this->followup()->store(
+                array(),
+                $this->getRequest()->getServer()->get('HTTP_REFERER')
+            );
             return $this->forwardTo('MyResearch', 'Login');
         }
 
@@ -165,8 +169,13 @@ class MyResearchController extends AbstractBase
      */
     public function logoutAction()
     {
+        $logoutTarget = $this->getRequest()->getServer()->get('HTTP_REFERER');
+        if (empty($logoutTarget)) {
+            $logoutTarget = $this->getServerUrl('home');
+        }
+
         return $this->redirect()
-            ->toUrl($this->getAuthManager()->logout($this->getServerUrl('home')));
+            ->toUrl($this->getAuthManager()->logout($logoutTarget));
     }
 
     /**

@@ -64,14 +64,17 @@ class Followup extends AbstractPlugin
      * Store the current URL (and optional additional information) in the session
      * for use following a successful login.
      *
-     * @param array $extras Associative array of extra fields to store.
+     * @param array  $extras      Associative array of extra fields to store.
+     * @param string $overrideUrl URL to store in place of current server URL (null
+     * for no override)
      *
      * @return void
      */
-    public function store($extras = array())
+    public function store($extras = array(), $overrideUrl = null)
     {
         // Store the current URL:
-        $this->session->url = $this->getController()->getServerUrl();
+        $this->session->url = !empty($overrideUrl)
+            ? $overrideUrl : $this->getController()->getServerUrl();
 
         // Store the extra parameters:
         foreach ($extras as $key => $value) {
