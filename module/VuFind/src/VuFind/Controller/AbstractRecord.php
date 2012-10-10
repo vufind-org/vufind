@@ -495,7 +495,7 @@ class AbstractRecord extends AbstractBase
 
         $driver = $this->loadRecord();
         $view = $this->createViewModel();
-        $view->tab = strtolower($tab);
+        $view->activeTab = strtolower($tab);
         $view->defaultTab = strtolower($this->defaultTab);
 
         // Set up next/previous record links (if appropriate)

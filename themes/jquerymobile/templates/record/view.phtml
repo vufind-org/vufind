@@ -1,13 +1,13 @@
 <?
     // Grab tab contents up front -- this will set the page title, which we need to
     // do before we display the page header below.
-    $tab = $this->record($this->driver)->getTab($this->tab);
+    $tab = $this->record($this->driver)->getTab($this->activeTab);
 ?>
 <div data-role="page" id="Record-view">
   <?=$this->mobileMenu()->header(array('searchLink' => $this->searchOptions($this->searchClassId)->getSearchHomeAction()))?>
   <div class="record" data-role="content" data-record-id="<?=$this->escapeHtml($this->driver->getUniqueId())?>">
     <?=$this->flashmessages()?>
-    <? if ($this->tab == $this->defaultTab): ?>
+    <? if ($this->activeTab == $this->defaultTab): ?>
       <?=$this->record($this->driver)->getCoreMetadata()?>
     <? else: ?>
       <h3><?=$this->escapeHtml($this->driver->getBreadcrumb())?></h3>

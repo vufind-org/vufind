@@ -86,7 +86,7 @@
     <ul>
       <? foreach ($tabs as $tab => $desc): ?>
       <? // add current tab to breadcrumbs if applicable:
-         $isCurrent = (strtolower($this->tab) == strtolower($tab));
+         $isCurrent = (strtolower($this->activeTab) == strtolower($tab));
          if ($isCurrent) {
              $this->layout()->breadcrumbs .= '<span>&gt;</span><em>' . $this->transEsc($desc) . '</em>';
          }
@@ -102,7 +102,7 @@
 
 
   <div class="recordsubcontent">
-    <?=$this->record($this->driver)->getTab($this->tab)?>
+    <?=$this->record($this->driver)->getTab($this->activeTab)?>
   </div>
 
   <span class="Z3988" title="<?=$this->escapeHtml($this->driver->getOpenURL())?>"></span>
