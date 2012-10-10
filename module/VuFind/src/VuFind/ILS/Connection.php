@@ -88,7 +88,7 @@ class Connection
      *
      * @param \VuFind\ILS\Driver\PluginManager $driverManager Driver plugin manager
      *
-     * @throws Exception
+     * @throws \Exception
      * @return Connection
      */
     public function initWithDriverManager(
@@ -130,7 +130,7 @@ class Connection
     /**
      * Get access to the driver object.
      *
-     * @throws Exception
+     * @throws \Exception
      * @return object
      */
     public function getDriver()
