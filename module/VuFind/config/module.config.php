@@ -379,7 +379,7 @@ $recordRoutes = array(
 );
 $nonTabRecordActions = array(
     'AddComment', 'DeleteComment', 'AddTag', 'Save', 'Email', 'SMS', 'Cite',
-    'Export', 'RDF', 'Hold', 'BlockedHold'
+    'Export', 'RDF', 'Hold', 'BlockedHold', 'Home'
 );
 
 // Define list-related routes -- route name => MyResearch action
