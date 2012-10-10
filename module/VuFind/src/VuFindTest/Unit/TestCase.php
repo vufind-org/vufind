@@ -151,7 +151,14 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                 new \Zend\ServiceManager\Config(
                     array(
                         'abstract_factories' =>
-                            array('VuFind\Auth\PluginFactory')
+                            array('VuFind\Auth\PluginFactory'),
+                        'factories' => array(
+                            'ils' => function ($sm) {
+                                return new \VuFind\Auth\ILS(
+                                    new \VuFind\ILS\Connection()
+                                );
+                            },
+                        ),
                     )
                 )
             );

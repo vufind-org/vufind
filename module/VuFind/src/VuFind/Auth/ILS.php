@@ -44,6 +44,16 @@ class ILS extends AbstractBase
     protected $catalog = null;
 
     /**
+     * Set the ILS connection for this object.
+     *
+     * @param \VuFind\ILS\Connection $connection ILS connection to set
+     */
+    public function __construct(\VuFind\ILS\Connection $connection)
+    {
+        $this->setCatalog($connection);
+    }
+
+    /**
      * Get the ILS driver associated with this object (or load the default from
      * the service manager.
      *
@@ -51,23 +61,19 @@ class ILS extends AbstractBase
      */
     public function getCatalog()
     {
-        if (null === $this->catalog) {
-            $this->catalog = $this->getServiceLocator()->getServiceLocator()
-                ->get('ILSConnection');
-        }
         return $this->catalog;
     }
 
     /**
-     * Set the ILS driver associated with this object.
+     * Set the ILS connection for this object.
      *
-     * @param \VuFind\ILS\Driver\DriverInterface $driver Driver to set
+     * @param \VuFind\ILS\Connection $connection ILS connection to set
      *
      * @return void
      */
-    public function setCatalog(\VuFind\ILS\Driver\DriverInterface $driver)
+    public function setCatalog(\VuFind\ILS\Connection $connection)
     {
-        $this->catalog = $driver;
+        $this->catalog = $connection;
     }
 
     /**

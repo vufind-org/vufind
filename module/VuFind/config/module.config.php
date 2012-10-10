@@ -75,9 +75,15 @@ $config = array(
     ),
     'auth_plugin_manager' => array(
         'abstract_factories' => array('VuFind\Auth\PluginFactory'),
+        'factories' => array(
+            'ils' => function ($sm) {
+                return new \VuFind\Auth\ILS(
+                    $sm->getServiceLocator()->get('ILSConnection')
+                );
+            },
+        ),
         'invokables' => array(
             'database' => 'VuFind\Auth\Database',
-            'ils' => 'VuFind\Auth\ILS',
             'ldap' => 'VuFind\Auth\LDAP',
             'multiauth' => 'VuFind\Auth\MultiAuth',
             'shibboleth' => 'VuFind\Auth\Shibboleth',
