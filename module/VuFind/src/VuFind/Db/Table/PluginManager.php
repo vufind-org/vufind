@@ -56,7 +56,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         $this->addInitializer($initializer, false);
     }
 
-
     /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.
