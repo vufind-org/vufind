@@ -236,11 +236,12 @@ class ProxyService
     public static function isAssocParams (array $array)
     {
         foreach ($array as $key => $value) {
-            return !is_numeric($key);
-            // @codeCoverageIgnoreStart
+            if (!is_numeric($key)) {
+                return true;
+            }
         }
+        return false;
     }
-    // @codeCoverageIgnoreEnd
 
     /**
      * Return TRUE if argument refers to localhost.
