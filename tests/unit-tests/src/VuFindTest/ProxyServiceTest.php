@@ -222,4 +222,17 @@ class ProxyServiceTest extends \PHPUnit_Framework_TestCase
         $service->get('http://example.tld');
     }
 
+    /**
+     * Test isAssocArray with mixed keys.
+     *
+     * @return void
+     */
+    public function testIsAssocArrayWithMixedKeys ()
+    {
+        $arr = array();
+        $arr[] = 'foo';
+        $arr['foo'] = 'bar';
+        $this->assertTrue(Service::isAssocParams($arr));
+    }
+
 }
