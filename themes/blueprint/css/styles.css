@@ -5,7 +5,7 @@
 body {
     margin: 1.5em 0;
     /*background:url("../images/bg_body.jpg") no-repeat scroll center top;*/
-    background-color: #619144;
+    background: #619144;
 }
 
 .ui-widget {
