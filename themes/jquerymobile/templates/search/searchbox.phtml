@@ -7,9 +7,6 @@
   // Load search actions and settings (if any):
   $options = $this->searchOptions($this->searchClassId);
   $basicSearch = $options->getSearchAction();
-  $searchHome = $basicSearch;
-  $searchHome['action'] = 'Home';
-  $advSearch = $options->getAdvancedSearchAction();
   $lastSort = $options->getLastSort();
   $lastLimit = $options->getLastLimit();
 ?>
@@ -20,11 +17,13 @@
   <input type="search" placeholder="<?=$this->transEsc("Search")?>" name="lookfor" id="searchForm_lookfor" value="<?=$this->escapeHtml($this->lookfor)?>"/>
   
   <label class="offscreen" for="searchForm_type"><?=$this->transEsc("Search Type")?></label>
+  <? if (count($options->getBasicHandlers()) > 0): ?>
   <select id="searchForm_type" name="type" data-native-menu="false">
     <? foreach ($options->getBasicHandlers() as $searchVal => $searchDesc): ?>
       <option value="<?=$this->escapeHtml($searchVal)?>"<?=$this->searchIndex == $searchVal ? ' selected="selected"' : ''?>><?=$this->transEsc($searchDesc)?></option>
     <? endforeach; ?>
   </select>
+  <? endif; ?>
   <div data-role="fieldcontain">
     <input type="submit" data-theme="b" name="submit" value="<?=$this->transEsc("Find")?>"/>
   </div>
