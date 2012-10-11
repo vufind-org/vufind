@@ -182,7 +182,7 @@ abstract class Results implements ServiceLocatorAwareInterface
     /**
      * Abstract support method for performAndProcessSearch -- perform a search based
      * on the parameters passed to the object.  This method is responsible for
-     * filling in all of the key class properties: _results, _resultTotal, etc.
+     * filling in all of the key class properties: results, resultTotal, etc.
      *
      * @return void
      */
