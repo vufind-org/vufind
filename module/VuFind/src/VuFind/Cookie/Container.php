@@ -94,8 +94,12 @@ class Container
     {
         $_COOKIE[$this->groupName . $var] = $value;
         if (is_array($value)) {
+            $i = 0;
             foreach ($value as $curr) {
-                setcookie($this->groupName . $var . '[]', $curr, null, '/');
+                setcookie(
+                    $this->groupName . $var . '[' . $i . ']', $curr, null, '/'
+                );
+                $i++;
             }
         } else {
             setcookie($this->groupName . $var, $value, null, '/');
@@ -125,7 +129,19 @@ class Container
      */
     public function __unset($var)
     {
+        $isArray = is_array($_COOKIE[$this->groupName . $var]);
+        if ($isArray) {
+            $count = count($_COOKIE[$this->groupName . $var]);
+        }
         unset($_COOKIE[$this->groupName . $var]);
-        setcookie($this->groupName . $var, '', time() - 3600, '/');
+        if ($isArray) {
+            for ($i = 0; $i < $count; $i++) {
+                setcookie(
+                    $this->groupName . $var . '[' . $i . ']', '', time() - 3600, '/'
+                );
+            }
+        } else {
+            setcookie($this->groupName . $var, '', time() - 3600, '/');
+        }
     }
 }
