@@ -110,6 +110,18 @@ class Upgrade
     }
 
     /**
+     * Add a warning message.
+     *
+     * @param string $msg Warning message.
+     *
+     * @return void
+     */
+    protected function addWarning($msg)
+    {
+        $this->warnings[] = $msg;
+    }
+
+    /**
      * Support function -- merge the contents of two arrays parsed from ini files.
      *
      * @param string $config_ini The base config array.
@@ -313,10 +325,12 @@ class Upgrade
         if (!file_exists(APPLICATION_PATH . '/themes/' . $theme)
             || !is_dir(APPLICATION_PATH . '/themes/' . $theme)
         ) {
-            $this->warnings[] = "WARNING: This version of VuFind does not support "
+            $this->addWarning(
+                "WARNING: This version of VuFind does not support "
                 . "the {$theme} theme.  Your config.ini [Site] {$setting} setting "
                 . "has been reset to the default: {$default}.  You may need to "
-                . "reimplement your custom theme.";
+                . "reimplement your custom theme."
+            );
             $this->newConfigs['config.ini']['Site'][$setting] = $default;
         }
     }
@@ -357,17 +371,28 @@ class Upgrade
             && stristr($newConfig['Content']['coverimages'], 'amazon');
         if ($hasAmazonReview || $hasAmazonCover) {
             if (!isset($newConfig['Content']['amazonsecret'])) {
-                $this->warnings[]
-                    = 'WARNING: You have Amazon content enabled but are missing '
+                $this->addWarning(
+                    'WARNING: You have Amazon content enabled but are missing '
                     . 'the required amazonsecret setting in the [Content] section '
-                    . 'of config.ini';
+                    . 'of config.ini'
+                );
             }
             if (!isset($newConfig['Content']['amazonassociate'])) {
-                $this->warnings[]
-                    = 'WARNING: You have Amazon content enabled but are missing '
+                $this->addWarning(
+                    'WARNING: You have Amazon content enabled but are missing '
                     . 'the required amazonassociate setting in the [Content] section'
-                    . ' of config.ini';
+                    . ' of config.ini'
+                );
             }
+        }
+
+        // Warn the user if they have enabled a deprecated Google API:
+        if (isset($newConfig['GoogleSearch'])) {
+            unset($newConfig['GoogleSearch']);
+            $this->addWarning(
+                'The [GoogleSearch] section of config.ini is no '
+                . 'longer supported due to changes in Google APIs.'
+            );
         }
 
         // Warn the user if they are using an unsupported theme:
@@ -684,10 +709,12 @@ class Upgrade
         $driver = isset($this->newConfigs['config.ini']['Catalog']['driver'])
             ? $this->newConfigs['config.ini']['Catalog']['driver'] : '';
         if (empty($driver)) {
-            $this->warnings[] = "WARNING: Could not find ILS driver setting.";
+            $this->addWarning("WARNING: Could not find ILS driver setting.");
         } else if (!file_exists($this->oldDir . '/' . $driver . '.ini')) {
-            $this->warnings[] = "WARNING: Could not find {$driver}.ini file; "
-                . "check your ILS driver configuration.";
+            $this->addWarning(
+                "WARNING: Could not find {$driver}.ini file; "
+                . "check your ILS driver configuration."
+            );
         } else {
             $this->saveUnmodifiedConfig($driver . '.ini');
         }
