@@ -233,7 +233,7 @@ class ProxyService
      *
      * @return boolean
      */
-    protected function isAssocParams (array $array)
+    public static function isAssocParams (array $array)
     {
         foreach ($array as $key => $value) {
             return !is_numeric($key);
