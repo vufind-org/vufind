@@ -119,13 +119,7 @@ class ProxyService
                 $url .= '?' . $query;
             }
         }
-        $client = new \Zend\Http\Client();
-        $client->setMethod(\Zend\Http\Request::METHOD_GET);
-        $client->setUri($url);
-        $client->setAdapter($this->adapter);
-        if ($timeout) {
-            $client->setOptions(array('timeout' => $timeout));
-        }
+        $client = $this->createClient($url, \Zend\Http\Request::METHOD_GET, $timeout);
         return $this->send($client);
     }
 
@@ -141,13 +135,7 @@ class ProxyService
      */
     public function post ($url, $body = null, $type = 'application/octet-stream', $timeout = null)
     {
-        $client = new \Zend\Http\Client();
-        $client->setMethod(\Zend\Http\Request::METHOD_POST);
-        $client->setUri($url);
-        $client->setAdapter($this->adapter);
-        if ($timeout) {
-            $client->setOptions(array('timeout' => $timeout));
-        }
+        $client = $this->createClient($url, \Zend\Http\Request::METHOD_POST, $timeout);
         $client->setRawBody($body);
         $client->setHeaders(array('Content-Type' => $type, 'Content-Length' => strlen($body)));
         return $this->send($client);
@@ -178,6 +166,28 @@ class ProxyService
     public function setDefaultAdapter ($adapter)
     {
         $this->adapter = $adapter;
+    }
+
+    /**
+     * Return a new proxy client.
+     *
+     * @param string $url     Target URL
+     * @param string $method  Request method
+     * @param float  $timeout Request timeout in seconds
+     *
+     * @return \Zend\Http\Client
+     */
+    public function createClient ($url, $method = \Zend\Http\Request::METHOD_GET, $timeout = null)
+    {
+        $client = new \Zend\Http\Client();
+        $client->setMethod($method);
+        $client->setUri($url);
+        $client->setAdapter($this->adapter);
+        if ($timeout) {
+            $client->setOptions(array('timeout' => $timeout));
+        }
+        $this->proxify($client);
+        return $client;
     }
 
     /// Internal API
@@ -212,8 +222,6 @@ class ProxyService
      */
     protected function send (\Zend\Http\Client $client)
     {
-        $client->setAdapter($this->adapter);
-        $client = $this->proxify($client);
         try {
             $response = $client->send();
         } catch (\Zend\Http\Client\Exception\RuntimeException $e) {
