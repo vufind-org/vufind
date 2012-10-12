@@ -8,13 +8,40 @@
     // at the top!
     if ($this->driver->supportsAjaxStatus()) {
         $holdings = $this->driver->getRealTimeHoldings($this->auth()->getManager());
-        $locations = array_keys($holdings);
-        if (isset($locations[0])) {
-            if (isset($holdings[$locations[0]]['items'][0]['callnumber'])) {
-                echo $this->translate('callnumber_abbrev') . ': '
-                    . $holdings[$locations[0]]['items'][0]['callnumber'] . "\n";
+
+        // Figure out which call number/location to display.  We'll try to find
+        // a location with an available item that has a call number.  Failing that,
+        // we'll take a location with an available item.  Failing that, we'll use
+        // the last location encountered.
+        $callno = $location = $backupLocation = false;
+        $useBackupLocation = true;
+        foreach ($holdings as $location => $details) {
+            foreach ($details['items'] as $item) {
+                $callno = isset($item['callnumber']) ? $item['callnumber'] : false;
+                if ($item['availability']) {
+                    if ($callno) {
+                        // Best case scenario -- available item with call number!
+                        // Exit loop in this situation.
+                        $useBackupLocation = false;
+                        break 2;
+                    } else if (!$backupLocation) {
+                        // Save first "available" location without call # as backup
+                        // (better than an unavailable location if no call #'s found)
+                        $backupLocation = $location;
+                    }
+                }
             }
-            echo $this->translate('Location') . ': ' . trim($locations[0]) . "\n";
+        }
+        // Use backup location if no available call number was found:
+        if ($useBackupLocation && $backupLocation) {
+            $location = $backupLocation;
+        }
+
+        if ($callno) {
+            echo $this->translate('callnumber_abbrev') . ': ' . trim($callno) . "\n";
+        }
+        if ($location) {
+            echo $this->translate('Location') . ': ' . trim($location) . "\n";
         }
         echo $this->driver->getBreadcrumb() . "\n";
         echo $this->serverUrl($this->recordLink()->getUrl($this->driver)) . "\n";
