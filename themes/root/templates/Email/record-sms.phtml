@@ -35,6 +35,7 @@
         // Use backup location if no available call number was found:
         if ($useBackupLocation && $backupLocation) {
             $location = $backupLocation;
+            $callno = false;
         }
 
         if ($callno) {
