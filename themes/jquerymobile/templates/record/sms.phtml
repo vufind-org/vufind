@@ -12,13 +12,18 @@
       <div data-role="fieldcontain">
         <label for="sms_to"><?=$this->transEsc('Number')?>:</label>
         <input id="sms_to" type="text" name="to" value="<?=isset($this->to) ? $this->to : ''?>" />
-        <label for="sms_provider"><?=$this->transEsc('Provider')?>:</label>
-        <select id="sms_provider" name="provider" class="<?=$this->jqueryValidation(array('required'=>'This field is required'))?>">
-          <option selected="selected" value=""><?=$this->transEsc('Select your carrier')?></option>
-          <? foreach ($this->carriers as $val => $details): ?>
-            <option<?=(isset($this->provider) && $val == $this->provider) ? ' selected="selected"' : ''?> value="<?=$this->escapeHtml($val)?>"><?=$this->escapeHtml($details['name'])?></option>
-          <? endforeach; ?>
-        </select>
+        <? if (is_array($this->carriers) && count($this->carriers) > 1): ?>
+          <label for="sms_provider"><?=$this->transEsc('Provider')?>:</label>
+          <select id="sms_provider" name="provider" class="<?=$this->jqueryValidation(array('required'=>'This field is required'))?>">
+            <option selected="selected" value=""><?=$this->transEsc('Select your carrier')?></option>
+            <? foreach ($this->carriers as $val => $details): ?>
+              <option<?=(isset($this->provider) && $val == $this->provider) ? ' selected="selected"' : ''?> value="<?=$this->escapeHtml($val)?>"><?=$this->escapeHtml($details['name'])?></option>
+            <? endforeach; ?>
+          </select>
+        <? else: ?>
+          <? $keys = is_array($this->carriers) ? array_keys($this->carriers) : array(); ?>
+          <input type="hidden" name="provider" value="<?=isset($keys[0]) ? $keys[0] : ''?>" />
+        <? endif; ?>
       </div>
       <div data-role="fieldcontain">
         <input class="button" type="submit" name="submit" value="<?=$this->transEsc('Send')?>"/>

@@ -16,13 +16,18 @@
         onblur="if (this.value=='') this.value='<?=$this->transEsc('sms_phone_number')?>'"
         class="<?=$this->jqueryValidation(array('required'=>'This field is required', 'phoneUS'=>'Invalid phone number.'))?>"/>
   <br/>
-  <label class="span-2" for="sms_provider"><?=$this->transEsc('Provider')?>:</label>
-  <select id="sms_provider" name="provider" class="<?=$this->jqueryValidation(array('required'=>'This field is required'))?>">
-    <option selected="selected" value=""><?=$this->transEsc('Select your carrier')?></option>
-    <? foreach ($this->carriers as $val => $details): ?>
-      <option<?=(isset($this->provider) && $val == $this->provider) ? ' selected="selected"' : ''?> value="<?=$this->escapeHtml($val)?>"><?=$this->escapeHtml($details['name'])?></option>
-    <? endforeach; ?>
-  </select>
-  <br/>
+  <? if (is_array($this->carriers) && count($this->carriers) > 1): ?>
+    <label class="span-2" for="sms_provider"><?=$this->transEsc('Provider')?>:</label>
+    <select id="sms_provider" name="provider" class="<?=$this->jqueryValidation(array('required'=>'This field is required'))?>">
+      <option selected="selected" value=""><?=$this->transEsc('Select your carrier')?></option>
+      <? foreach ($this->carriers as $val => $details): ?>
+        <option<?=(isset($this->provider) && $val == $this->provider) ? ' selected="selected"' : ''?> value="<?=$this->escapeHtml($val)?>"><?=$this->escapeHtml($details['name'])?></option>
+      <? endforeach; ?>
+    </select>
+    <br/>
+  <? else: ?>
+    <? $keys = is_array($this->carriers) ? array_keys($this->carriers) : array(); ?>
+    <input type="hidden" name="provider" value="<?=isset($keys[0]) ? $keys[0] : ''?>" />
+  <? endif; ?>
   <input class="button" type="submit" name="submit" value="<?=$this->transEsc('Send')?>"/>
 </form>
