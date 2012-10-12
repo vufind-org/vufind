@@ -139,7 +139,7 @@ class NAF
             throw new \Exception('Problem opening file: ' . $localListFile . ".");
         }
         $id = '';
-        $solr = ConnectionManager::connectToIndex('SolrAuth');
+        $solr = \VuFind\Connection\Manager::connectToIndex('SolrAuth');
         do {
             Console::writeLine("Reading IDs starting with '{$id}'...");
             $list = $solr->getTerms('id', $id, 10000);

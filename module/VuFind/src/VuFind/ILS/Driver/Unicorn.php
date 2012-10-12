@@ -80,7 +80,7 @@ class Unicorn extends AbstractBase
             $this->search_prog = $this->config['Catalog']['search_prog'];
         }
 
-        $this->db = ConnectionManager::connectToIndex();
+        $this->db = \VuFind\Connection\Manager::connectToIndex();
     }
 
     /**
