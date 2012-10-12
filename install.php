@@ -53,9 +53,7 @@ if (!isset($argv[1]) || !in_array('--use-defaults', $argv)) {
 } else {
     // In interactive mode, we initialize the directory as part of the input
     // process; in defaults mode, we need to do it here:
-    if (!initializeOverrideDir($overrideDir)) {
-        die("Cannot initialize local override directory: {$overrideDir}\n");
-    }
+    initializeOverrideDir($overrideDir, true);
 }
 
 // Build the Windows start file in case we need it:
@@ -131,11 +129,12 @@ function getBasePath($basePath)
 /**
  * Initialize the override directory and report success or failure.
  *
- * @param string $dir Path to attempt to initialize
+ * @param string $dir        Path to attempt to initialize
+ * @param bool   $dieOnError Should we die outright if we fail?
  *
  * @return void
  */
-function initializeOverrideDir($dir)
+function initializeOverrideDir($dir, $dieOnError = false)
 {
     $dirStatus = buildDirs(
         array(
@@ -146,6 +145,9 @@ function initializeOverrideDir($dir)
             $dir . '/import'
         )
     );
+    if ($dieOnError && ($dirStatus !== true)) {
+        die("Cannot initialize local override directory: {$dir}\n");
+    }
     return $dirStatus === true;
 }
 
@@ -170,6 +172,7 @@ function getOverrideDir($overrideDir)
                 return str_replace('\\', '/', realpath($overrideDirInput));
             }
         } else {
+            initializeOverrideDir($overrideDir, true);
             return $overrideDir;
         }
     }
