@@ -27,7 +27,6 @@
  */
 namespace VuFind\Controller;
 use VuFind\Config\Reader as ConfigReader,
-    VuFind\Connection\Manager as ConnectionManager,
     VuFind\Exception\Auth as AuthException, VuFind\Export;
 
 /**

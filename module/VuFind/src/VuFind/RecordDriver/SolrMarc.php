@@ -27,7 +27,6 @@
  */
 namespace VuFind\RecordDriver;
 use VuFind\Config\Reader as ConfigReader,
-    VuFind\Connection\Manager as ConnectionManager,
     VuFind\Exception\ILS as ILSException,
     VuFind\ILS\Connection as ILSConnection,
     VuFind\ILS\Logic\Holds as HoldLogic,

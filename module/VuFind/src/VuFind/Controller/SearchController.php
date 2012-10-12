@@ -28,7 +28,6 @@
 namespace VuFind\Controller;
 
 use VuFind\Config\Reader as ConfigReader,
-    VuFind\Connection\Manager as ConnectionManager,
     VuFind\Exception\Mail as MailException, VuFind\Search\Memory,
     VuFind\Solr\Utils as SolrUtils;
 
