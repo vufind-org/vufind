@@ -169,13 +169,8 @@
     <exec command="git archive master --format=zip --prefix=vufind-${version}/ -o ${builddir}/packages/vufind-${version}.zip" />
 
     <!-- build the DEB package -->
-    <mkdir dir="${builddir}/export/vufind/usr/local" />
-    <copy todir="${builddir}/export/vufind/usr/local/vufind2">
-      <fileset dir="${srcdir}">
-        <include name="**" />
-        <exclude name=".git" />
-      </fileset>
-    </copy>
+    <mkdir dir="${builddir}/export/vufind/usr/local/vufind2" />
+    <exec command="git archive master --format=tar | tar -x -C ${builddir}/export/vufind/usr/local/vufind2" />
     <move file="${builddir}/export/vufind/usr/local/vufind2/packages/DEBIAN" todir="${builddir}/export/vufind" includeemptydirs="true"/>
     <exec command="chmod 0775 ${builddir}/export/vufind/DEBIAN/postinst" />
     <exec command="dpkg-deb -b ${builddir}/export/vufind ${builddir}/packages/vufind_${version}.deb" />
