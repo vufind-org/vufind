@@ -24,19 +24,19 @@
  * @package  Service
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://github.com/dmj/vf2-search-subsystem
+ * @link     https://github.com/dmj/vf2-proxy
  */
 
-namespace VuFindProxy;
+namespace VuFindHttp;
 
 /**
- * ZF2 module definition for the VF2 search service.
+ * ZF2 module definition for the VF2 HTTP service.
  *
  * @category Proxy
  * @package  Service
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://github.com/dmj/vf2-search-subsystem
+ * @link     https://github.com/dmj/vf2-proxy
  */
 
 class Module
@@ -47,7 +47,7 @@ class Module
      *
      * @var string
      */
-    protected $configPath = '/config/proxy.conf.php';
+    protected $configPath = 'config/http.conf.php';
 
     /**
      * Return autoloader configuration.
@@ -83,12 +83,6 @@ class Module
     public function init ()
     {
         $this->configPath = realpath(__DIR__ . $this->configPath);
-        if (!file_exists($this->configPath)) {
-            throw new \RuntimeException(sprintf('Missing proxy service configuration: %s', $this->configPath));
-        }
-        if (!is_readable($this->configPath)) {
-            throw new \RuntimeException(sprintf('Unable to read proxy configuration: %s', $this->configPath));
-        }
     }
 
     /**
@@ -106,15 +100,13 @@ class Module
     }
 
     /**
-     * Return configured search service to superior service manager.
-     *
-     * @param \Zend\ServiceManager\ServiceManager $sm Service manager
+     * Return configured http service to superior service manager.
      *
      * @return \VuFind\Service\Search
      */
-    public function setup (\Zend\ServiceManager\ServiceManager $sm)
+    public function setup ()
     {
-        $config = include $this->configPath;
+        $config = include realpath(__DIR__ . '/' . $this->configPath);
 
         $di = new \Zend\Di\Di();
         $di->configure(new \Zend\Di\Config($config));
