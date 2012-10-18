@@ -100,7 +100,7 @@ class Module
     {
         return array(
             'factories' => array(
-                'Service\Proxy' => array($this, 'setup'),
+                'Service\Http' => array($this, 'setup'),
             )
         );
     }

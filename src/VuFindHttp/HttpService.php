@@ -49,13 +49,6 @@ class HttpService
     const LOCAL_ADDRESS_RE = '@^(localhost|127(\.\d+){3}|\[::1\])@';
 
     /**
-     * HTTP client.
-     *
-     * @var \Zend\Http\Client
-     */
-    protected $client;
-
-    /**
      * Default adapter.
      *
      * @var string|\Zend\Http\Client\Adapter\AdapterInterface
@@ -81,7 +74,6 @@ class HttpService
     public function __construct (array $config = array())
     {
         $this->config = $config;
-        $this->client = new \Zend\Http\Client();
     }
 
     /**
@@ -113,11 +105,11 @@ class HttpService
      *
      * @param string $url     Request URL
      * @param array  $params  Request parameters
-     * @param string $headers Request headers
+     * @param float  $timeout Request timeout in seconds
      *
      * @return \Zend\Http\Response
      */
-    public function get ($url, array $params = array(), array $headers = array())
+    public function get ($url, array $params = array(), $timeout = null)
     {
         if ($params) {
             $query = $this->createQueryString($params);
@@ -127,9 +119,7 @@ class HttpService
                 $url .= '?' . $query;
             }
         }
-        $client = $this->client;
-        $client->setMethod(\Zend\Http\Request::METHOD_GET);
-        $client->setUri($url);
+        $client = $this->createClient($url, \Zend\Http\Request::METHOD_GET, $timeout);
         return $this->send($client);
     }
 
@@ -138,17 +128,16 @@ class HttpService
      *
      * @param string $url     Request URL
      * @param mixed  $body    Request body document
-     * @param array  $headers Request headers
+     * @param string $type    Request body content type
+     * @param float  $timeout Request timeout in seconds
      *
      * @return \Zend\Http\Response
      */
-    public function post ($url, $body = null, array $headers = array())
+    public function post ($url, $body = null, $type = 'application/octet-stream', $timeout = null)
     {
-        $client = $this->client;
-        $client->setMethod(\Zend\Http\Request::METHOD_POST);
-        $client->setUri($url);
+        $client = $this->createClient($url, \Zend\Http\Request::METHOD_POST, $timeout);
         $client->setRawBody($body);
-        $client->setHeaders($headers);
+        $client->setHeaders(array('Content-Type' => $type, 'Content-Length' => strlen($body)));
         return $this->send($client);
     }
 
@@ -157,15 +146,14 @@ class HttpService
      *
      * @param string $url     Request URL
      * @param array  $params  Form data
-     * @param array  $headers Addition request headers
+     * @param float  $timeout Request timeout in seconds
      *
      * @return \Zend\Http\Response
      */
-    public function postForm ($url, array $params = array(), array $headers = array())
+    public function postForm ($url, array $params = array(), $timeout = null)
     {
-        $headers['Content-Type'] = \Zend\Http\Client::ENC_URLENCODED;
         $body = $this->createQueryString($params);
-        return $this->post($url, $body, $headers);
+        return $this->post($url, $body, \Zend\Http\Client::ENC_URLENCODED, $timeout);
     }
 
     /**
@@ -178,6 +166,28 @@ class HttpService
     public function setDefaultAdapter ($adapter)
     {
         $this->adapter = $adapter;
+    }
+
+    /**
+     * Return a new proxy client.
+     *
+     * @param string $url     Target URL
+     * @param string $method  Request method
+     * @param float  $timeout Request timeout in seconds
+     *
+     * @return \Zend\Http\Client
+     */
+    public function createClient ($url, $method = \Zend\Http\Request::METHOD_GET, $timeout = null)
+    {
+        $client = new \Zend\Http\Client();
+        $client->setMethod($method);
+        $client->setUri($url);
+        $client->setAdapter($this->adapter);
+        if ($timeout) {
+            $client->setOptions(array('timeout' => $timeout));
+        }
+        $this->proxify($client);
+        return $client;
     }
 
     /// Internal API
@@ -212,8 +222,6 @@ class HttpService
      */
     protected function send (\Zend\Http\Client $client)
     {
-        $client->setAdapter($this->adapter);
-        $client = $this->proxify($client);
         try {
             $response = $client->send();
         } catch (\Zend\Http\Client\Exception\RuntimeException $e) {
@@ -233,14 +241,15 @@ class HttpService
      *
      * @return boolean
      */
-    protected function isAssocParams (array $array)
+    public static function isAssocParams (array $array)
     {
         foreach ($array as $key => $value) {
-            return !is_numeric($key);
-            // @codeCoverageIgnoreStart
+            if (!is_numeric($key)) {
+                return true;
+            }
         }
+        return false;
     }
-    // @codeCoverageIgnoreEnd
 
     /**
      * Return TRUE if argument refers to localhost.
