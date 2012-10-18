@@ -118,7 +118,7 @@ class Module
 
         $di = new \Zend\Di\Di();
         $di->configure(new \Zend\Di\Config($config));
-        return $di->get('VuFindProxy\ProxyService');
+        return $di->get('VuFindHttp\HttpService');
     }
 
 }
