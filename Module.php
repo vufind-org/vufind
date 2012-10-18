@@ -115,11 +115,10 @@ class Module
     public function setup (\Zend\ServiceManager\ServiceManager $sm)
     {
         $config = include $this->configPath;
-        $service = new ProxyService($config['proxy']);
-        if (isset($config['adapter']) && $config['adapter']) {
-            $service->setDefaultAdapter($adapter);
-        }
-        return $service;
+
+        $di = new \Zend\Di\Di();
+        $di->configure(new \Zend\Di\Config($config));
+        return $di->get('VuFindProxy\ProxyService');
     }
 
 }
