@@ -29,7 +29,7 @@
 
 namespace VuFindTest;
 
-use VuFindProxy\ProxyService as Service;
+use VuFindHttp\HttpService as Service;
 
 /**
  * Proxy service unit test.
@@ -212,7 +212,7 @@ class ProxyServiceTest extends \PHPUnit_Framework_TestCase
     /**
      * Test for runtime exception.
      *
-     * @expectedException \VuFindProxy\Exception\RuntimeException
+     * @expectedException \VuFindHttp\Exception\RuntimeException
      *
      * @return void
      */

@@ -20,19 +20,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category Proxy
+ * @category Http
  * @package  Exception
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://github.com/dmj/vf2-proxy
  */
 
-namespace VuFindProxy\Exception;
+namespace VuFindHttp\Exception;
 
 /**
  * Proxy system exception marker interface.
  *
- * @category Proxy
+ * @category Http
  * @package  Exception
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License

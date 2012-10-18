@@ -14,7 +14,7 @@ require_once('Zend/Loader/AutoloaderFactory.php');
     array(
         'Zend\Loader\StandardAutoloader' => array(
             'namespaces' => array(
-                'VuFindProxy' => realpath(__DIR__ . '/../../src/VuFindProxy'),
+                'VuFindHttp' => realpath(__DIR__ . '/../../src/VuFindHttp'),
                 'VuFindTest' => realpath(__DIR__ . '/src/VuFindTest'),
             ),
             'autoregister_zf' => true
