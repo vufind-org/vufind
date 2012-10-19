@@ -52,8 +52,8 @@ class UserList extends Gateway
     /**
      * Create a new list object.
      *
-     * @param \VuFind\Db\Row\UserList $user User object representing owner of new
-     * list
+     * @param \VuFind\Db\Row\UserList|bool $user User object representing owner of
+     * new list (or false if not logged in)
      *
      * @return \VuFind\Db\Row\UserList
      * @throws LoginRequiredException
@@ -64,7 +64,7 @@ class UserList extends Gateway
             throw new LoginRequiredException('Log in to create lists.');
         }
 
-        $row = clone($this->getResultSetPrototype()->getArrayObjectPrototype());
+        $row = $this->createRow();
         $row->user_id = $user->id;
         return $row;
     }
