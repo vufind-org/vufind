@@ -153,11 +153,12 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                         'abstract_factories' =>
                             array('VuFind\Auth\PluginFactory'),
                         'factories' => array(
-                            'ils' => function ($sm) {
-                                return new \VuFind\Auth\ILS(
-                                    new \VuFind\ILS\Connection()
-                                );
-                            },
+                            'ils' => 
+                                function ($sm) {
+                                    return new \VuFind\Auth\ILS(
+                                        new \VuFind\ILS\Connection()
+                                    );
+                                },
                         ),
                     )
                 )
