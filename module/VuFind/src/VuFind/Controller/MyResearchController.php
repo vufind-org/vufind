@@ -744,7 +744,7 @@ class MyResearchController extends AbstractBase
                 ->getResults()->getRecord($current['id']);
         } catch (RecordMissingException $e) {
             $factory = $this->getServiceLocator()->get('RecordDriverPluginManager');
-            $record = clone($factory->get('Missing'));
+            $record = $factory->get('Missing');
             $record->setRawData(
                 array('id' => isset($current['id']) ? $current['id'] : null)
             );

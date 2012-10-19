@@ -134,7 +134,7 @@ class Loader implements ServiceLocatorAwareInterface
                 $fields['id'] = $details['id'];
                 $factory = $this->getServiceLocator()
                     ->get('RecordDriverPluginManager');
-                $retVal[$i] = clone($factory->get('Missing'));
+                $retVal[$i] = $factory->get('Missing');
                 $retVal[$i]->setRawData($fields);
                 $retVal[$i]->setResourceSource($details['source']);
             }

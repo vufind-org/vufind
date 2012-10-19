@@ -543,7 +543,7 @@ class Results extends BaseResults
         $recordType = $factory->has($key) ? $key : 'SolrDefault';
 
         // Build the object:
-        $driver = clone($factory->get($recordType));
+        $driver = $factory->get($recordType);
         $driver->setRawData($data);
         return $driver;
     }

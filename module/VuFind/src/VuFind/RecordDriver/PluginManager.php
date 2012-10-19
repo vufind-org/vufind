@@ -39,6 +39,23 @@ namespace VuFind\RecordDriver;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
+     * Constructor
+     *
+     * Make sure table gateways are properly initialized.
+     *
+     * @param null|ConfigInterface $configuration Configuration settings (optional)
+     */
+    public function __construct(
+        \Zend\ServiceManager\ConfigInterface $configuration = null
+    ) {
+        parent::__construct($configuration);
+
+        // Record drivers are not meant to be shared -- every time we retrieve one,
+        // we are building a brand new object.
+        $this->setShareByDefault(false);
+    }
+
+    /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.
      *

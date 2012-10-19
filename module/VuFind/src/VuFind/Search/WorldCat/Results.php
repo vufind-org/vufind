@@ -125,7 +125,7 @@ class Results extends BaseResults
     protected function initRecordDriver($data)
     {
         $factory = $this->getServiceLocator()->get('RecordDriverPluginManager');
-        $driver = clone($factory->get('WorldCat'));
+        $driver = $factory->get('WorldCat');
         $driver->setRawData($data);
         return $driver;
     }
