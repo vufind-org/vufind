@@ -74,10 +74,13 @@
     <!-- set up appropriate read/write permissions for Apache -->
     <exec command="chmod -R a+w ${srcdir}/local/cache" />
 
-    <!-- activate Apache -->
+    <!-- Generate basic configuration -->
     <exec command="php ${srcdir}/install.php --use-defaults" />
+
+    <!-- Activate Apache (currently disabled; not necessary unless we start using Selenium again)
     <copy file="${srcdir}/local/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest" />
     <exec command="${apachectl} restart" />
+     -->
 
     <!-- build and configure the requested database type -->
     <if>
@@ -120,9 +123,10 @@
   <!-- Uninstall and Deactivate VuFind -->
   <target name="shutdown" description="deactivate and uninstall demo">
 
-    <!-- remove Apache settings -->
+    <!-- Remove Apache settings (disabled until corresponding lines in startup are also uncommented)
     <exec command="rm ${apacheconfdir}/vufindtest" />
     <exec command="${apachectl} restart" />
+     -->
 
     <!-- drop database -->
     <if>
