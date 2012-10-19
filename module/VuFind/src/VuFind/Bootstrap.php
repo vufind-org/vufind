@@ -94,22 +94,23 @@ class Bootstrap
         );
         foreach ($namespaces as $ns) {
             $serviceName = 'VuFind\\' . str_replace('\\', '', $ns) . 'PluginManager';
-            $className = 'VuFind\\' . $ns . '\PluginManager';
-            $configKey = strtolower(str_replace('\\', '_', $ns)) . '_plugin_manager';
-            $service = new $className(
-                new ServiceManagerConfig($config[$configKey])
-            );
-            if ($service instanceof ServiceLocatorAwareInterface) {
-                $service->setServiceLocator($serviceManager);
-            }
-            $serviceManager->setService($serviceName, $service);
+            $factory = function ($sm) use ($config, $ns) {
+                $className = 'VuFind\\' . $ns . '\PluginManager';
+                $configKey = strtolower(str_replace('\\', '_', $ns))
+                    . '_plugin_manager';
+                return new $className(
+                    new ServiceManagerConfig($config[$configKey])
+                );
+            };
+            $serviceManager->setFactory($serviceName, $factory);
         }
 
         // Set up search manager a little differently -- it is a more complex class
         // that doesn't work like the other standard plugin managers.
-        $manager = new \VuFind\Search\Manager($config['search_manager']);
-        $manager->setServiceLocator($serviceManager);
-        $serviceManager->setService('SearchManager', $manager);
+        $factory = function ($sm) use ($config) {
+            return new \VuFind\Search\Manager($config['search_manager']);
+        };
+        $serviceManager->setFactory('SearchManager', $factory);
 
         // TODO: factor out static connection manager.
         \VuFind\Connection\Manager::setServiceLocator($serviceManager);
