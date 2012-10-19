@@ -26,8 +26,6 @@
  * @link     http://vufind.org/wiki/autocomplete Wiki
  */
 namespace VuFind\Autocomplete;
-use Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Tag Autocomplete Module
@@ -40,14 +38,14 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/autocomplete Wiki
  */
-class Tag implements AutocompleteInterface, ServiceLocatorAwareInterface
+class Tag implements AutocompleteInterface, \VuFind\Db\Table\DbTableAwareInterface
 {
     /**
-     * Service locator
+     * Database table plugin manager
      *
-     * @var ServiceLocatorInterface
+     * @var \VuFind\Db\Table\PluginManager
      */
-    protected $serviceLocator;
+    protected $tableManager;
 
     /**
      * getSuggestions
@@ -94,30 +92,32 @@ class Tag implements AutocompleteInterface, ServiceLocatorAwareInterface
      */
     public function getTagsTable()
     {
-        return $this->getServiceLocator()->getServiceLocator()
-            ->get('DbTablePluginManager')->get('Tags');
+        return $this->getDbTableManager()->get('Tags');
     }
 
     /**
-     * Set the service locator.
+     * Get the table plugin manager.  Throw an exception if it is missing.
      *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Tag
+     * @throws \Exception
+     * @return \VuFind\Db\Table\PluginManager
      */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    public function getDbTableManager()
     {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
+        if (null === $this->tableManager) {
+            throw new \Exception('DB table manager missing.');
+        }
+        return $this->tableManager;
     }
 
     /**
-     * Get the service locator.
+     * Set the table plugin manager.
      *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     * @param \VuFind\Db\Table\PluginManager $manager Plugin manager
+     *
+     * @return void
      */
-    public function getServiceLocator()
+    public function setDbTableManager(\VuFind\Db\Table\PluginManager $manager)
     {
-        return $this->serviceLocator;
+        $this->tableManager = $manager;
     }
 }
