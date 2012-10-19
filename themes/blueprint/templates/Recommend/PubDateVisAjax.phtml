@@ -15,8 +15,11 @@
       <div id="clearButtonText" style="display: none"><?=$this->translate('Clear') ?></div>  
     </div>
   <? endforeach; ?>
-  <script type="text/javascript">
-    loadVis('<?=$this->recommend->getFacetFields() ?>', '<?=$this->recommend->getSearchParams() ?>', path, <?=$this->recommend->getZooming() ?>);
-  </script>
+  <?
+    $js = "loadVis('" . $this->recommend->getFacetFields() . "', '"
+        . $this->recommend->getSearchParams() . "', path, "
+        . $this->recommend->getZooming() . ");";
+    echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $js);
+  ?>
 
 <? endif; ?>
