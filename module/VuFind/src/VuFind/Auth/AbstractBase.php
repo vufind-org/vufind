@@ -202,7 +202,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
      * Get the table plugin manager.  Throw an exception if it is missing.
      *
      * @throws \Exception
-     * @return \VuFind\Db\Table\PluginManager\PluginManager
+     * @return \VuFind\Db\Table\PluginManager
      */
     public function getDbTableManager()
     {
@@ -215,7 +215,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
     /**
      * Set the table plugin manager.
      *
-     * @param \VuFind\Db\Table\PluginManagerPluginManager $manager Plugin manager
+     * @param \VuFind\Db\Table\PluginManager $manager Plugin manager
      *
      * @return void
      */
