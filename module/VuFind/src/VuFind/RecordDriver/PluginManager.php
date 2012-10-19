@@ -41,8 +41,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     /**
      * Constructor
      *
-     * Make sure table gateways are properly initialized.
-     *
      * @param null|ConfigInterface $configuration Configuration settings (optional)
      */
     public function __construct(
