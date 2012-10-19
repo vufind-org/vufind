@@ -26,8 +26,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Statistics\Driver;
-use Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Writer to put statistics into the DB
@@ -38,14 +36,14 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Db extends AbstractBase implements ServiceLocatorAwareInterface
+class Db extends AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
 {
     /**
-     * Service locator
+     * Database table plugin manager
      *
-     * @var ServiceLocatorInterface
+     * @var \VuFind\Db\Table\PluginManager
      */
-    protected $serviceLocator;
+    protected $tableManager;
 
     /**
      * Write a message to the log.
@@ -104,26 +102,29 @@ class Db extends AbstractBase implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Set the service locator.
+     * Get the table plugin manager.  Throw an exception if it is missing.
      *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return AbstractBase
+     * @throws \Exception
+     * @return \VuFind\Db\Table\PluginManager
      */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    public function getDbTableManager()
     {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
+        if (null === $this->tableManager) {
+            throw new \Exception('DB table manager missing.');
+        }
+        return $this->tableManager;
     }
 
     /**
-     * Get the service locator.
+     * Set the table plugin manager.
      *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     * @param \VuFind\Db\Table\PluginManager $manager Plugin manager
+     *
+     * @return void
      */
-    public function getServiceLocator()
+    public function setDbTableManager(\VuFind\Db\Table\PluginManager $manager)
     {
-        return $this->serviceLocator;
+        $this->tableManager = $manager;
     }
 
     /**
@@ -135,7 +136,6 @@ class Db extends AbstractBase implements ServiceLocatorAwareInterface
      */
     protected function getTable($table)
     {
-        return $this->getServiceLocator()->getServiceLocator()
-            ->get('DbTablePluginManager')->get($table);
+        return $this->tableManager->get($table);
     }
 }
