@@ -53,6 +53,8 @@ class DisplayLanguageOption extends AbstractServiceLocator
     public function getTranslator()
     {
         if (null === $this->translator) {
+            // Clone the translator; we need to switch language for the purposes
+            // of this plugin, but we don't want that change to happen globally.
             $this->translator = clone($this->getServiceLocator()->get('Translator'));
             $this->translator->addTranslationFile(
                 'ExtendedIni',
