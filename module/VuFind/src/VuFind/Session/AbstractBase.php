@@ -204,6 +204,6 @@ abstract class AbstractBase implements SaveHandlerInterface,
      */
     protected function getTable($table)
     {
-        return $this->tableManager->get($table);
+        return $this->getDbTableManager()->get($table);
     }
 }

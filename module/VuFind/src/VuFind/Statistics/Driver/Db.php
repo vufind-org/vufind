@@ -136,6 +136,6 @@ class Db extends AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
      */
     protected function getTable($table)
     {
-        return $this->tableManager->get($table);
+        return $this->getDbTableManager()->get($table);
     }
 }
