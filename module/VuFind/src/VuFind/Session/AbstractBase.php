@@ -40,17 +40,28 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface,
  * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
  */
 abstract class AbstractBase implements SaveHandlerInterface,
-    ServiceLocatorAwareInterface
+    \VuFind\Db\Table\DbTableAwareInterface
 {
+    /**
+     * Session lifetime in seconds
+     *
+     * @var int
+     */
     protected $lifetime = 3600;
+
+    /**
+     * Session configuration settings
+     *
+     * @var \Zend\Config\Config
+     */
     protected $config = null;
 
     /**
-     * Service locator
+     * Database table plugin manager
      *
-     * @var ServiceLocatorInterface
+     * @var \VuFind\Db\Table\PluginManager
      */
-    protected $serviceLocator;
+    protected $tableManager;
 
     /**
      * Set configuration.
@@ -159,26 +170,29 @@ abstract class AbstractBase implements SaveHandlerInterface,
     }
 
     /**
-     * Set the service locator.
+     * Get the table plugin manager.  Throw an exception if it is missing.
      *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return AbstractBase
+     * @throws \Exception
+     * @return \VuFind\Db\Table\PluginManager
      */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    public function getDbTableManager()
     {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
+        if (null === $this->tableManager) {
+            throw new \Exception('DB table manager missing.');
+        }
+        return $this->tableManager;
     }
 
     /**
-     * Get the service locator.
+     * Set the table plugin manager.
      *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     * @param \VuFind\Db\Table\PluginManager $manager Plugin manager
+     *
+     * @return void
      */
-    public function getServiceLocator()
+    public function setDbTableManager(\VuFind\Db\Table\PluginManager $manager)
     {
-        return $this->serviceLocator;
+        $this->tableManager = $manager;
     }
 
     /**
@@ -190,7 +204,6 @@ abstract class AbstractBase implements SaveHandlerInterface,
      */
     protected function getTable($table)
     {
-        return $this->getServiceLocator()->getServiceLocator()
-            ->get('DbTablePluginManager')->get($table);
+        return $this->tableManager->get($table);
     }
 }
