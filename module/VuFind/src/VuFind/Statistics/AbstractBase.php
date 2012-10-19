@@ -140,7 +140,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
                 // If we got this far, we want the current option!  Build the driver:
                 $loader = $this->getServiceLocator()
                     ->get('StatisticsDriverPluginManager');
-                $newDriver = clone($loader->get($setting[0]));
+                $newDriver = $loader->get($setting[0]);
 
                 // Set the name of the data source;  we use the special value
                 // "global" to represent global writer requests (the special null

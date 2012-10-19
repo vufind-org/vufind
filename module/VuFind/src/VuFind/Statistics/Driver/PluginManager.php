@@ -39,6 +39,21 @@ namespace VuFind\Statistics\Driver;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
+     * Constructor
+     *
+     * @param null|ConfigInterface $configuration Configuration settings (optional)
+     */
+    public function __construct(
+        \Zend\ServiceManager\ConfigInterface $configuration = null
+    ) {
+        parent::__construct($configuration);
+
+        // Stats drivers are not meant to be shared -- every time we retrieve one,
+        // we are building a brand new object.
+        $this->setShareByDefault(false);
+    }
+
+    /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.
      *
