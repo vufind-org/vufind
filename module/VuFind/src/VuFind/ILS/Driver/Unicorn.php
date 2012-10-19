@@ -25,8 +25,8 @@
  * @link     http://code.google.com/p/vufind-unicorn/ vufind-unicorn project
  */
 namespace VuFind\ILS\Driver;
-use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException,
-    VuFind\Http\Client as HttpClient;
+use File_MARC, VuFind\Config\Reader as ConfigReader,
+    VuFind\Exception\ILS as ILSException, VuFind\Http\Client as HttpClient;
 
 /**
  * SirsiDynix Unicorn ILS Driver (VuFind side)
