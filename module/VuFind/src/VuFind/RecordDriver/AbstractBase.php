@@ -281,7 +281,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
             $factory = $this->getServiceLocator()->getServiceLocator()
                 ->get('RelatedPluginManager');
             if ($factory->has($type)) {
-                $plugin = clone($factory->get($type));
+                $plugin = $factory->get($type);
                 $plugin->init($params, $this);
                 $retVal[] = $plugin;
             } else {

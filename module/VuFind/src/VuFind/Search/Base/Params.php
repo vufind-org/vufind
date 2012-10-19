@@ -824,9 +824,7 @@ class Params implements ServiceLocatorAwareInterface
                 }
 
                 // Build a recommendation module with the provided settings.
-                // Create a clone in case the same module is used repeatedly with
-                // different settings.
-                $obj = clone($manager->get($module));
+                $obj = $manager->get($module);
                 $obj->setConfig($params);
                 $obj->init($this, $request);
                 $this->recommend[$location][] = $obj;

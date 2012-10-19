@@ -103,7 +103,7 @@ class AjaxController extends AbstractBase
         // the details of the search objects anyway:
         $sm = $this->getSearchManager();
         $rm = $this->getServiceLocator()->get('RecommendPluginManager');
-        $module = clone($rm->get($this->params()->fromQuery('mod')));
+        $module = $rm->get($this->params()->fromQuery('mod'));
         $module->setConfig($this->params()->fromQuery('params'));
         $params = $sm->setSearchClassId('Solr')->getParams();
         $module->init($params, $this->getRequest()->getQuery());

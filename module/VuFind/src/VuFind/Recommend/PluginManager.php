@@ -39,6 +39,22 @@ namespace VuFind\Recommend;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
+     * Constructor
+     *
+     * @param null|ConfigInterface $configuration Configuration settings (optional)
+     */
+    public function __construct(
+        \Zend\ServiceManager\ConfigInterface $configuration = null
+    ) {
+        parent::__construct($configuration);
+
+        // These plugins are not meant to be shared -- the same module may be used
+        // multiple times with different configurations, so we need to build a new
+        // copy each time the plugin is retrieved.
+        $this->setShareByDefault(false);
+    }
+
+    /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.
      *
