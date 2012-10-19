@@ -160,7 +160,8 @@ class Results extends BaseResults
      */
     protected function initRecordDriver($data)
     {
-        $factory = $this->getServiceLocator()->get('RecordDriverPluginManager');
+        $factory = $this->getServiceLocator()
+            ->get('VuFind\RecordDriverPluginManager');
         $driver = $factory->get('Summon');
         $driver->setRawData($data);
         return $driver;

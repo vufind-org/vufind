@@ -133,7 +133,7 @@ class Loader implements ServiceLocatorAwareInterface
                     ? $details['extra_fields'] : array();
                 $fields['id'] = $details['id'];
                 $factory = $this->getServiceLocator()
-                    ->get('RecordDriverPluginManager');
+                    ->get('VuFind\RecordDriverPluginManager');
                 $retVal[$i] = $factory->get('Missing');
                 $retVal[$i]->setRawData($fields);
                 $retVal[$i]->setResourceSource($details['source']);

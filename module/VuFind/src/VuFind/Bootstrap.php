@@ -93,7 +93,7 @@ class Bootstrap
             'Statistics\Driver'
         );
         foreach ($namespaces as $ns) {
-            $serviceName = str_replace('\\', '', $ns) . 'PluginManager';
+            $serviceName = 'VuFind\\' . str_replace('\\', '', $ns) . 'PluginManager';
             $className = 'VuFind\\' . $ns . '\PluginManager';
             $configKey = strtolower(str_replace('\\', '_', $ns)) . '_plugin_manager';
             $service = new $className(
@@ -137,7 +137,7 @@ class Bootstrap
         // manager and injecting appropriate dependencies:
         $serviceManager = $this->event->getApplication()->getServiceManager();
         $sessionManager = $serviceManager->get('SessionManager');
-        $sessionPluginManager = $serviceManager->get('SessionPluginManager');
+        $sessionPluginManager = $serviceManager->get('VuFind\SessionPluginManager');
         $sessionHandler = $sessionPluginManager->get($this->config->Session->type);
         $sessionHandler->setConfig($this->config->Session);
         $sessionManager->setSaveHandler($sessionHandler);

@@ -286,7 +286,9 @@ $config = array(
                 $catalog = new \VuFind\ILS\Connection();
                 return $catalog
                     ->setConfig(\VuFind\Config\Reader::getConfig()->Catalog)
-                    ->initWithDriverManager($sm->get('ILSDriverPluginManager'));
+                    ->initWithDriverManager(
+                        $sm->get('VuFind\ILSDriverPluginManager')
+                    );
             },
             'logger' => function ($sm) {
                 $logger = new \VuFind\Log\Logger();

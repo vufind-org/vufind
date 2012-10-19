@@ -82,7 +82,7 @@ class Manager implements ServiceLocatorAwareInterface
     protected function getAuth()
     {
         if (!$this->auth) {
-            $manager = $this->getServiceLocator()->get('AuthPluginManager');
+            $manager = $this->getServiceLocator()->get('VuFind\AuthPluginManager');
             $this->auth = $manager->get($this->config->Authentication->method);
             $this->auth->setConfig($this->config);
         }
@@ -196,7 +196,7 @@ class Manager implements ServiceLocatorAwareInterface
         // restore its service locator, since SL's can't be serialized:
         if ($user && null === $user->getServiceLocator()) {
             $user->setServiceLocator(
-                $this->getServiceLocator()->get('DbTablePluginManager')
+                $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
             );
         }
 

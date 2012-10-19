@@ -102,7 +102,7 @@ class AjaxController extends AbstractBase
         // since deferred recommendations work best for modules that don't care about
         // the details of the search objects anyway:
         $sm = $this->getSearchManager();
-        $rm = $this->getServiceLocator()->get('RecommendPluginManager');
+        $rm = $this->getServiceLocator()->get('VuFind\RecommendPluginManager');
         $module = $rm->get($this->params()->fromQuery('mod'));
         $module->setConfig($this->params()->fromQuery('params'));
         $params = $sm->setSearchClassId('Solr')->getParams();
@@ -919,7 +919,7 @@ class AjaxController extends AbstractBase
     {
         $query = $this->getRequest()->getQuery();
         $autocompleteManager = $this->getServiceLocator()
-            ->get('AutocompletePluginManager');
+            ->get('VuFind\AutocompletePluginManager');
         return $this->output(
             $autocompleteManager->getSuggestions($query), self::STATUS_OK
         );
@@ -1219,7 +1219,7 @@ class AjaxController extends AbstractBase
         $resolverType = isset($config->OpenURL->resolver)
             ? $config->OpenURL->resolver : 'other';
         $pluginManager = $this->getServiceLocator()
-            ->get('ResolverDriverPluginManager');
+            ->get('VuFind\ResolverDriverPluginManager');
         if (!$pluginManager->has($resolverType)) {
             return $this->output(
                 $this->translate("Could not load driver for $resolverType"),

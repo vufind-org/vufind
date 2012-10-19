@@ -279,7 +279,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
             $type = $parts[0];
             $params = isset($parts[1]) ? $parts[1] : null;
             $factory = $this->getServiceLocator()->getServiceLocator()
-                ->get('RelatedPluginManager');
+                ->get('VuFind\RelatedPluginManager');
             if ($factory->has($type)) {
                 $plugin = $factory->get($type);
                 $plugin->init($params, $this);
@@ -468,7 +468,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
     protected function getDbTable($table)
     {
         return $this->getServiceLocator()->getServiceLocator()
-            ->get('DbTablePluginManager')->get($table);
+            ->get('VuFind\DbTablePluginManager')->get($table);
     }
 
     /**

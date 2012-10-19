@@ -593,7 +593,7 @@ class SearchController extends AbstractSearch
         // Get suggestions and make sure they are an array (we don't want to JSON
         // encode them into an object):
         $autocompleteManager = $this->getServiceLocator()
-            ->get('AutocompletePluginManager');
+            ->get('VuFind\AutocompletePluginManager');
         $suggestions = $autocompleteManager->getSuggestions(
             $query, 'type', 'lookfor'
         );

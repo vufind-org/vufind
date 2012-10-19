@@ -1156,7 +1156,7 @@ class Solr implements ServiceLocatorAwareInterface
 
         // Record the deletions in our change tracker database:
         foreach ($idList as $id) {
-            $tracker = $this->getServiceLocator()->get('DbTablePluginManager')
+            $tracker = $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
                 ->get('ChangeTracker');
             $tracker->markDeleted($this->core, $id);
         }

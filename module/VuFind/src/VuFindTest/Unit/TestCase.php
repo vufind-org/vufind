@@ -125,7 +125,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             );
             $this->serviceManager = new \Zend\ServiceManager\ServiceManager();
             $this->serviceManager->setService(
-                'RecordDriverPluginManager', $recordDriverFactory
+                'VuFind\RecordDriverPluginManager', $recordDriverFactory
             );
             $this->serviceManager->setService(
                 'SearchSpecsReader', new \VuFind\Config\SearchSpecsReader()
@@ -146,7 +146,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     public function getAuthManager()
     {
         $sm = $this->getServiceManager();
-        if (!$sm->has('AuthPluginManager')) {
+        if (!$sm->has('VuFind\AuthPluginManager')) {
             $authManager = new \VuFind\Auth\PluginManager(
                 new \Zend\ServiceManager\Config(
                     array(
@@ -164,9 +164,9 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                 )
             );
             $authManager->setServiceLocator($sm);
-            $sm->setService('AuthPluginManager', $authManager);
+            $sm->setService('VuFind\AuthPluginManager', $authManager);
         }
-        return $sm->get('AuthPluginManager');
+        return $sm->get('VuFind\AuthPluginManager');
     }
 
     /**

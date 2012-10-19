@@ -62,7 +62,7 @@ class VuFind
      */
     public static function getChangeTracker()
     {
-        return static::$serviceLocator->get('DbTablePluginManager')
+        return static::$serviceLocator->get('VuFind\DbTablePluginManager')
             ->get('ChangeTracker');
     }
 

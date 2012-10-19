@@ -611,7 +611,8 @@ abstract class Results implements ServiceLocatorAwareInterface
      */
     public function getTable($table)
     {
-        return $this->getServiceLocator()->get('DbTablePluginManager')->get($table);
+        return $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
+            ->get($table);
     }
 
     /**

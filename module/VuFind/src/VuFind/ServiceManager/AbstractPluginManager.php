@@ -54,7 +54,7 @@ abstract class AbstractPluginManager extends Base
         $initializer = function ($instance, $manager) {
             if ($instance instanceof \VuFind\Db\Table\DbTableAwareInterface) {
                 $instance->setDbTableManager(
-                    $manager->getServiceLocator()->get('DbTablePluginManager')
+                    $manager->getServiceLocator()->get('VuFind\DbTablePluginManager')
                 );
             }
             if (method_exists($instance, 'setPluginManager')) {

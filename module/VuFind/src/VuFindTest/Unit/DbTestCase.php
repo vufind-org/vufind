@@ -51,7 +51,7 @@ abstract class DbTestCase extends TestCase
         $sm = parent::getServiceManager();
 
         // Add database service:
-        if (!$sm->has('DbTablePluginManager')) {
+        if (!$sm->has('VuFind\DbTablePluginManager')) {
             $sm->setService('DBAdapter', \VuFind\Db\AdapterFactory::getAdapter());
             $factory = new \VuFind\Db\Table\PluginManager(
                 new \Zend\ServiceManager\Config(
@@ -62,7 +62,7 @@ abstract class DbTestCase extends TestCase
                 )
             );
             $factory->setServiceLocator($sm);
-            $sm->setService('DbTablePluginManager', $factory);
+            $sm->setService('VuFind\DbTablePluginManager', $factory);
         }
         return $sm;
     }
@@ -77,6 +77,6 @@ abstract class DbTestCase extends TestCase
     public function getTable($table)
     {
         $sm = $this->getServiceManager();
-        return $sm->get('DbTablePluginManager')->get($table);
+        return $sm->get('VuFind\DbTablePluginManager')->get($table);
     }
 }

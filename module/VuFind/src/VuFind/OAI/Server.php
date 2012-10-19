@@ -78,7 +78,8 @@ class Server
     public function __construct(\VuFind\Search\Manager $sm, $baseURL, $params)
     {
         $this->searchManager = $sm;
-        $this->tableManager = $sm->getServiceLocator()->get('DbTablePluginManager');
+        $this->tableManager = $sm->getServiceLocator()
+            ->get('VuFind\DbTablePluginManager');
         $this->baseURL = $baseURL;
         $this->params = isset($params) && is_array($params) ? $params : array();
         $this->initializeMetadataFormats(); // Load details on supported formats

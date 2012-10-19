@@ -792,10 +792,10 @@ class Params implements ServiceLocatorAwareInterface
 
         // Get the plugin manager (skip recommendations if it is unavailable):
         $sm = $this->getServiceLocator();
-        if (!is_object($sm) || !$sm->has('RecommendPluginManager')) {
+        if (!is_object($sm) || !$sm->has('VuFind\RecommendPluginManager')) {
             return;
         }
-        $manager = $sm->get('RecommendPluginManager');
+        $manager = $sm->get('VuFind\RecommendPluginManager');
 
         // Process recommendations for each location:
         $this->recommend = array(
@@ -1560,7 +1560,8 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function getTable($table)
     {
-        return $this->getServiceLocator()->get('DbTablePluginManager')->get($table);
+        return $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
+            ->get($table);
     }
 
     /**
