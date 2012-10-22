@@ -323,7 +323,7 @@ $config = array(
             'VuFind\SessionManager' => 'Zend\Session\SessionManager',
             'VuFind\SMS' => 'VuFind\Mailer\SMS',
             'VuFind\WorldCatConnection' => 'VuFind\Connection\WorldCat',
-            'worldcatutils' => 'VuFind\Connection\WorldCatUtils',
+            'VuFind\WorldCatUtils' => 'VuFind\Connection\WorldCatUtils',
         ),
         'initializers' => array(
             array('VuFind\ServiceManager\Initializer', 'initInstance'),

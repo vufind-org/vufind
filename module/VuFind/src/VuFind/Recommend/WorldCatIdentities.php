@@ -105,7 +105,8 @@ class WorldCatIdentities extends AbstractSearchManagerAwareModule
         $lookfor = isset($search[0]['lookfor']) ? $search[0]['lookfor'] : '';
 
         // Get terminology information:
-        return $this->getServiceLocator()->getServiceLocator()->get('WorldCatUtils')
+        return $this->getServiceLocator()->getServiceLocator()
+            ->get('VuFind\WorldCatUtils')
             ->getRelatedIdentities($lookfor);
     }
 }

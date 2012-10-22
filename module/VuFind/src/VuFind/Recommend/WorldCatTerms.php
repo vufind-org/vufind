@@ -106,7 +106,8 @@ class WorldCatTerms extends AbstractSearchManagerAwareModule
         $lookfor = isset($search[0]['lookfor']) ? $search[0]['lookfor'] : '';
 
         // Get terminology information:
-        $wc = $this->getServiceLocator()->getServiceLocator()->get('WorldCatUtils');
+        $wc = $this->getServiceLocator()->getServiceLocator()
+            ->get('VuFind\WorldCatUtils');
         $terms = $wc->getRelatedTerms($lookfor, $this->vocab);
 
         // Wipe out any empty or unexpected sections of the related terms array;

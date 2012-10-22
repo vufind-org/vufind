@@ -102,7 +102,7 @@ class Editions extends AbstractServiceLocator
      */
     protected function getQueryParts($driver)
     {
-        $wc = $this->getServiceLocator()->get('WorldCatUtils');
+        $wc = $this->getServiceLocator()->get('VuFind\WorldCatUtils');
         $parts = array();
         if (method_exists($driver, 'getCleanOCLCNum')) {
             $oclcNum = $driver->getCleanOCLCNum();
