@@ -171,7 +171,7 @@ class Manager implements ServiceLocatorAwareInterface
 
         // Destroy the session for good measure, if requested.
         if ($destroy) {
-            $this->getServiceLocator()->get('SessionManager')->destroy();
+            $this->getServiceLocator()->get('VuFind\SessionManager')->destroy();
         } else {
             // If we don't want to destroy the session, we still need to empty it.
             // There should be a way to do this through Zend\Session, but there

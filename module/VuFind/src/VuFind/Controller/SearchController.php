@@ -234,7 +234,7 @@ class SearchController extends AbstractSearch
         // Retrieve search history
         $search = $this->getTable('Search');
         $searchHistory = $search->getSearches(
-            $this->getServiceLocator()->get('SessionManager')->getId(),
+            $this->getServiceLocator()->get('VuFind\SessionManager')->getId(),
             is_object($user) ? $user->id : null
         );
 

@@ -137,7 +137,7 @@ class Bootstrap
         // Set up the session handler by retrieving all the pieces from the service
         // manager and injecting appropriate dependencies:
         $serviceManager = $this->event->getApplication()->getServiceManager();
-        $sessionManager = $serviceManager->get('SessionManager');
+        $sessionManager = $serviceManager->get('VuFind\SessionManager');
         $sessionPluginManager = $serviceManager->get('VuFind\SessionPluginManager');
         $sessionHandler = $sessionPluginManager->get($this->config->Session->type);
         $sessionHandler->setConfig($this->config->Session);

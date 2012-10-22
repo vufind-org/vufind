@@ -108,7 +108,7 @@ class AbstractSearch extends AbstractBase
         $search = $table->getRowById($id);
 
         // Found, make sure the user has the rights to view this search
-        $sessId = $this->getServiceLocator()->get('SessionManager')->getId();
+        $sessId = $this->getServiceLocator()->get('VuFind\SessionManager')->getId();
         $user = $this->getUser();
         $userId = $user ? $user->id : false;
         if ($search->session_id == $sessId || $search->user_id == $userId) {
@@ -192,7 +192,8 @@ class AbstractSearch extends AbstractBase
             // Add to search history:
             if ($this->saveToHistory) {
                 $user = $this->getUser();
-                $sessId = $this->getServiceLocator()->get('SessionManager')->getId();
+                $sessId = $this->getServiceLocator()->get('VuFind\SessionManager')
+                    ->getId();
                 $history = $this->getTable('Search');
                 $history->saveSearch(
                     $this->getSearchManager(), $results, $sessId,
@@ -291,7 +292,7 @@ class AbstractSearch extends AbstractBase
 
         // Fail if user has no permission to view this search:
         $user = $this->getUser();
-        $sessId = $this->getServiceLocator()->get('SessionManager')->getId();
+        $sessId = $this->getServiceLocator()->get('VuFind\SessionManager')->getId();
         if ($search->session_id != $sessId && $search->user_id != $user->id) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('advSearchError_noRights');

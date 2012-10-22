@@ -205,7 +205,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
                 : $server->get('HTTP_REFERER'),
             'url'              => $server->get('REQUEST_URI'),
             'session'          =>
-                $this->getServiceLocator()->get('SessionManager')->getId()
+                $this->getServiceLocator()->get('VuFind\SessionManager')->getId()
         );
     }
 
