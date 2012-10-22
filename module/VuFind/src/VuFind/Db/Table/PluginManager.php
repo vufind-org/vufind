@@ -50,7 +50,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     ) {
         parent::__construct($configuration);
         $initializer = function ($instance, $manager) {
-            $instance->setAdapter($manager->getServiceLocator()->get('DBAdapter'));
+            $instance
+                ->setAdapter($manager->getServiceLocator()->get('VuFind\DbAdapter'));
             $instance->initialize();
         };
         $this->addInitializer($initializer, false);

@@ -80,7 +80,7 @@ class User extends ServiceLocatorAwareGateway
         // reconnect to the database as part of the save action to prevent
         // exceptions:
         $this->sql = new Sql(
-            $this->getServiceLocator()->getServiceLocator()->get('DBAdapter'),
+            $this->getServiceLocator()->getServiceLocator()->get('VuFind\DbAdapter'),
             $this->table
         );
         return parent::save();

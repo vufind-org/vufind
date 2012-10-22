@@ -94,7 +94,7 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
             // Make Writers
             $filters = explode(',', $error_types);
             $writer = new Writer\Db(
-                $this->getServiceLocator()->get('DBAdapter'),
+                $this->getServiceLocator()->get('VuFind\DbAdapter'),
                 $table_name, $columnMapping
             );
             $this->addWriters($writer, $filters);

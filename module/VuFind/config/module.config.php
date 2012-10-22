@@ -279,7 +279,7 @@ $config = array(
     ),
     'service_manager' => array(
         'factories' => array(
-            'dbadapter' => function ($sm) {
+            'VuFind\DbAdapter' => function ($sm) {
                 return \VuFind\Db\AdapterFactory::getAdapter();
             },
             'ilsconnection' => function ($sm) {

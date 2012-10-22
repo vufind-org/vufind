@@ -201,7 +201,7 @@ class UpgradeController extends AbstractBase
         try {
             // Set up the helper with information from our SQL file:
             $this->dbUpgrade()
-                ->setAdapter($this->getServiceLocator()->get('DBAdapter'))
+                ->setAdapter($this->getServiceLocator()->get('VuFind\DbAdapter'))
                 ->loadSql(APPLICATION_PATH . '/module/VuFind/sql/mysql.sql');
 
             // Check for missing tables.  Note that we need to finish dealing with
