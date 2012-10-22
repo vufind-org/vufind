@@ -49,7 +49,7 @@ class SearchSpecsReaderTest extends \VuFindTest\Unit\TestCase
     {
         // The searchspecs.yaml file should define author dismax fields (among many
         // other things).
-        $reader = $this->getServiceManager()->get('SearchSpecsReader');
+        $reader = $this->getServiceManager()->get('VuFind\SearchSpecsReader');
         $specs = $reader->get('searchspecs.yaml');
         $this->assertTrue(
             isset($specs['Author']['DismaxFields'])

@@ -128,7 +128,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                 'VuFind\RecordDriverPluginManager', $recordDriverFactory
             );
             $this->serviceManager->setService(
-                'SearchSpecsReader', new \VuFind\Config\SearchSpecsReader()
+                'VuFind\SearchSpecsReader', new \VuFind\Config\SearchSpecsReader()
             );
             $this->serviceManager->setService(
                 'VuFind\Logger', new \VuFind\Log\Logger()

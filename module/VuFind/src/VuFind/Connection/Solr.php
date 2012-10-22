@@ -227,8 +227,8 @@ class Solr implements ServiceLocatorAwareInterface, \Zend\Log\LoggerAwareInterfa
     {
         // Only load specs once:
         if ($this->searchSpecs === false) {
-            $this->searchSpecs = $this->getServiceLocator()->get('SearchSpecsReader')
-                ->get($this->searchSpecsFile);
+            $this->searchSpecs = $this->getServiceLocator()
+                ->get('VuFind\SearchSpecsReader')->get($this->searchSpecsFile);
         }
 
         // Special case -- null $handler means we want all search specs.
