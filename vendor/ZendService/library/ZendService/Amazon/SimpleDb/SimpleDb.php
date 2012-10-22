@@ -366,7 +366,7 @@ class SimpleDb extends \ZendService\Amazon\AbstractAmazon
             }
         }
 
-        $nextToken = (string)$xml->NextToken;
+        $nextToken = (string)$xml->SelectResult->NextToken;
 
         return new Page($attributes, $nextToken);
     }

@@ -101,7 +101,7 @@ abstract class AbstractEc2 extends Amazon\AbstractAmazon
     public static function setRegion($region)
     {
         if(in_array(strtolower($region), self::$_validEc2Regions, true)) {
-            self::$_defaultRegion = $region;
+            self::$_region = $region;
         } else {
             throw new Exception\InvalidArgumentException('Invalid Amazon Ec2 Region');
         }
