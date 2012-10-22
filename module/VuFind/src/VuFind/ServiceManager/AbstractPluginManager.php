@@ -51,17 +51,9 @@ abstract class AbstractPluginManager extends Base
         \Zend\ServiceManager\ConfigInterface $configuration = null
     ) {
         parent::__construct($configuration);
-        $initializer = function ($instance, $manager) {
-            if ($instance instanceof \VuFind\Db\Table\DbTableAwareInterface) {
-                $instance->setDbTableManager(
-                    $manager->getServiceLocator()->get('VuFind\DbTablePluginManager')
-                );
-            }
-            if (method_exists($instance, 'setPluginManager')) {
-                $instance->setPluginManager($manager);
-            }
-        };
-        $this->addInitializer($initializer, false);
+        $this->addInitializer(
+            array('VuFind\ServiceManager\Initializer', 'initPlugin'), false
+        );
     }
 
     /**
