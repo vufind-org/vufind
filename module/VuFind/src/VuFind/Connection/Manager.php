@@ -95,10 +95,12 @@ class Manager
         // Set the service locator:
         $index->setServiceLocator(self::$serviceLocator);
 
-        // Set the logger:
-        \VuFind\ServiceManager\Initializer::initInstance(
-            $index, self::$serviceLocator
-        );
+        // Inject dependencies with the standard initializer:
+        if (null !== self::$serviceLocator) {
+            \VuFind\ServiceManager\Initializer::initInstance(
+                $index, self::$serviceLocator
+            );
+        }
 
         return $index;
     }

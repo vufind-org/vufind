@@ -68,7 +68,10 @@ class Initializer
      */
     public static function initPlugin($instance, AbstractPluginManager $manager)
     {
-        static::initInstance($instance, $manager->getServiceLocator());
+        $sm = $manager->getServiceLocator();
+        if (null !== $sm) {
+            static::initInstance($instance, $sm);
+        }
         if (method_exists($instance, 'setPluginManager')) {
             $instance->setPluginManager($manager);
         }
