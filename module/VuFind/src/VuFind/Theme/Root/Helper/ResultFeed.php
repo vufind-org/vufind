@@ -47,7 +47,7 @@ class ResultFeed extends AbstractHelper
      *
      * @return object
      */
-    public function getTranslator()
+    public function getTranslatorHelper()
     {
         if (!$this->translator) {
             $this->translator = $this->getView()->plugin('translate');
@@ -62,7 +62,7 @@ class ResultFeed extends AbstractHelper
      *
      * @return void
      */
-    public function setTranslator($translator)
+    public function setTranslatorHelper($translator)
     {
         $this->translator = $translator;
     }
@@ -107,7 +107,7 @@ class ResultFeed extends AbstractHelper
 
         // Create the parent feed
         $feed = new Feed();
-        $translator = $this->getTranslator();
+        $translator = $this->getTranslatorHelper();
         $feed->setTitle(
             $translator('Results for') . ' '
             . $results->getParams()->getDisplayQuery()

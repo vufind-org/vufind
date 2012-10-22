@@ -80,7 +80,7 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
         $mockTranslator = function ($str) {
             return $str;
         };
-        $helper->setTranslator($mockTranslator);
+        $helper->setTranslatorHelper($mockTranslator);
         $feed = $helper->__invoke($results, '/test/path');
         $this->assertTrue(is_object($feed));
         $rss = $feed->export('rss');
