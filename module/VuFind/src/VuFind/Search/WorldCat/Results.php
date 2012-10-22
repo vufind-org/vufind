@@ -53,7 +53,7 @@ class Results extends BaseResults
      */
     public function getWorldCatConnection()
     {
-        return $this->getServiceLocator()->get('WorldCatConnection');
+        return $this->getServiceLocator()->get('VuFind\WorldCatConnection');
     }
 
     /**

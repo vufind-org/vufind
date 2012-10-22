@@ -322,7 +322,7 @@ $config = array(
             'VuFind\SearchSpecsReader' => 'VuFind\Config\SearchSpecsReader',
             'VuFind\SessionManager' => 'Zend\Session\SessionManager',
             'VuFind\SMS' => 'VuFind\Mailer\SMS',
-            'worldcatconnection' => 'VuFind\Connection\WorldCat',
+            'VuFind\WorldCatConnection' => 'VuFind\Connection\WorldCat',
             'worldcatutils' => 'VuFind\Connection\WorldCatUtils',
         ),
         'initializers' => array(

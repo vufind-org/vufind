@@ -312,7 +312,7 @@ class WorldCat extends SolrMarc
     public function getWorldCatHoldings()
     {
         $wc = $this->getServiceLocator()->getServiceLocator()
-            ->get('WorldCatConnection');
+            ->get('VuFind\WorldCatConnection');
         return $wc->getHoldings($this->getUniqueId());
     }
 }
