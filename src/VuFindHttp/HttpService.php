@@ -49,13 +49,6 @@ class HttpService implements HttpServiceInterface
     const LOCAL_ADDRESS_RE = '@^(localhost|127(\.\d+){3}|\[::1\])@';
 
     /**
-     * Default adapter.
-     *
-     * @var string|\Zend\Http\Client\Adapter\AdapterInterface
-     */
-    protected $adapter = 'Zend\Http\Client\Adapter\Socket';
-
-    /**
      * Proxy configuration.
      *
      * @see \Zend\Http\Client\Adapter\Proxy::$config
@@ -157,18 +150,6 @@ class HttpService implements HttpServiceInterface
     }
 
     /**
-     * Set the default adapter.
-     *
-     * @param mixed $adapter Default adapter
-     *
-     * @return void
-     */
-    public function setDefaultAdapter ($adapter)
-    {
-        $this->adapter = $adapter;
-    }
-
-    /**
      * Return a new HTTP client.
      *
      * @param string $url     Target URL
@@ -182,7 +163,6 @@ class HttpService implements HttpServiceInterface
         $client = new \Zend\Http\Client();
         $client->setMethod($method);
         $client->setUri($url);
-        $client->setAdapter($this->adapter);
         if ($timeout) {
             $client->setOptions(array('timeout' => $timeout));
         }
@@ -217,8 +197,6 @@ class HttpService implements HttpServiceInterface
      * @return \Zend\Http\Response
      *
      * @todo Catch more exceptions, maybe?
-     * @todo Check for potential problems re-using the client
-     * @todo Check if we need to clone() the default adapter
      */
     protected function send (\Zend\Http\Client $client)
     {
