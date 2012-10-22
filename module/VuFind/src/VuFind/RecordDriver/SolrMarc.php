@@ -796,7 +796,8 @@ class SolrMarc extends SolrDefault
      */
     protected function getILS()
     {
-        return $this->getServiceLocator()->getServiceLocator()->get('ILSConnection');
+        return $this->getServiceLocator()->getServiceLocator()
+            ->get('VuFind\ILSConnection');
     }
 
     /**

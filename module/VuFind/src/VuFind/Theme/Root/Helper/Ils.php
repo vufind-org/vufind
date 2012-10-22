@@ -46,6 +46,6 @@ class Ils extends AbstractServiceLocator
      */
     public function __invoke()
     {
-        return $this->getServiceLocator()->get('ILSConnection');
+        return $this->getServiceLocator()->get('VuFind\ILSConnection');
     }
 }

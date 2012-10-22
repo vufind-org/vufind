@@ -78,7 +78,7 @@ $config = array(
         'factories' => array(
             'ils' => function ($sm) {
                 return new \VuFind\Auth\ILS(
-                    $sm->getServiceLocator()->get('ILSConnection')
+                    $sm->getServiceLocator()->get('VuFind\ILSConnection')
                 );
             },
         ),
@@ -282,7 +282,7 @@ $config = array(
             'VuFind\DbAdapter' => function ($sm) {
                 return \VuFind\Db\AdapterFactory::getAdapter();
             },
-            'ilsconnection' => function ($sm) {
+            'VuFind\ILSConnection' => function ($sm) {
                 $catalog = new \VuFind\ILS\Connection();
                 return $catalog
                     ->setConfig(\VuFind\Config\Reader::getConfig()->Catalog)
