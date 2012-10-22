@@ -938,7 +938,7 @@ class AjaxController extends AbstractBase
                 $this->params()->fromPost('id'),
                 $this->params()->fromPost('source', 'VuFind')
             );
-            $this->getServiceLocator()->get('SMS')->textRecord(
+            $this->getServiceLocator()->get('VuFind\SMS')->textRecord(
                 $this->params()->fromPost('provider'),
                 $this->params()->fromPost('to'), $record, $this->getViewRenderer()
             );
