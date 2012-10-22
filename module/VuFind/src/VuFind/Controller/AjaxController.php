@@ -1176,7 +1176,7 @@ class AjaxController extends AbstractBase
                 self::STATUS_ERROR
             );
         }
-        $this->getServiceLocator()->get('Cart')->removeItems($ids);
+        $this->getServiceLocator()->get('VuFind\Cart')->removeItems($ids);
         return $this->output(array('delete' => true), self::STATUS_OK);
     }
 

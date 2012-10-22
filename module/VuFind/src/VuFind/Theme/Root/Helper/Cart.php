@@ -45,6 +45,6 @@ class Cart extends AbstractServiceLocator
      */
     public function __invoke()
     {
-        return $this->getServiceLocator()->get('Cart');
+        return $this->getServiceLocator()->get('VuFind\Cart');
     }
 }

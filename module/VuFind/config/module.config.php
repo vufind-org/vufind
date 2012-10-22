@@ -315,7 +315,7 @@ $config = array(
         ),
         'invokables' => array(
             'VuFind\AuthManager' => 'VuFind\Auth\Manager',
-            'cart' => 'VuFind\Cart',
+            'VuFind\Cart' => 'VuFind\Cart',
             'cachemanager' => 'VuFind\Cache\Manager',
             'mailer' => 'VuFind\Mailer',
             'recordloader' => 'VuFind\Record\Loader',

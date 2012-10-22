@@ -59,7 +59,7 @@ class CartController extends AbstractBase
      */
     protected function getCart()
     {
-        return $this->getServiceLocator()->get('Cart');
+        return $this->getServiceLocator()->get('VuFind\Cart');
     }
 
     /**
