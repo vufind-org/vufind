@@ -294,7 +294,7 @@ class Cart implements ServiceLocatorAwareInterface
     public function getRecordDetails()
     {
         return $this->getServiceLocator()
-            ->get('RecordLoader')->loadBatch($this->items);
+            ->get('VuFind\RecordLoader')->loadBatch($this->items);
     }
 
     /**

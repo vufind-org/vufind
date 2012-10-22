@@ -73,7 +73,7 @@ class Results extends BaseResults
             $recordsToRequest[]
                 = array('id' => $row->record_id, 'source' => $row->source);
         }
-        $this->results = $this->getServiceLocator()->get('RecordLoader')
+        $this->results = $this->getServiceLocator()->get('VuFind\RecordLoader')
             ->loadBatch($recordsToRequest);
     }
 

@@ -206,7 +206,7 @@ class AbstractBase extends AbstractActionController
      */
     public function getRecordLoader()
     {
-        return $this->getServiceLocator()->get('RecordLoader');
+        return $this->getServiceLocator()->get('VuFind\RecordLoader');
     }
 
     /**

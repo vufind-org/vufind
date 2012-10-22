@@ -80,7 +80,7 @@ class Resource extends Gateway
             // Load record if it was not provided:
             if (is_null($driver)) {
                 $driver = $this->getServiceLocator()->getServiceLocator()
-                    ->get('RecordLoader')->load($id, $source);
+                    ->get('VuFind\RecordLoader')->load($id, $source);
             }
 
             // Load metadata into the database for sorting/failback purposes:

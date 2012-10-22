@@ -168,7 +168,7 @@ class Results extends BaseResults
                 )
             );
         }
-        $this->results = $this->getServiceLocator()->get('RecordLoader')
+        $this->results = $this->getServiceLocator()->get('VuFind\RecordLoader')
             ->loadBatch($recordsToRequest);
     }
 

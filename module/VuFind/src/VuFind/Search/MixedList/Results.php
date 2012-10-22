@@ -62,7 +62,7 @@ class Results extends BaseResults
     protected function performSearch()
     {
         $recordsToRequest = $this->getParams()->getRecordsToRequest();
-        $this->results = $this->getServiceLocator()->get('RecordLoader')
+        $this->results = $this->getServiceLocator()->get('VuFind\RecordLoader')
             ->loadBatch($recordsToRequest);
         $this->resultTotal = count($this->results);
     }
