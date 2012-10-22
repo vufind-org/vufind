@@ -589,7 +589,8 @@ abstract class Options implements ServiceLocatorAwareInterface
      */
     public function translate($msg)
     {
-        return $this->getServiceLocator()->has('Translator')
-            ? $this->getServiceLocator()->get('Translator')->translate($msg) : $msg;
+        return $this->getServiceLocator()->has('VuFind\Translator')
+            ? $this->getServiceLocator()->get('VuFind\Translator')->translate($msg)
+            : $msg;
     }
 }

@@ -26,7 +26,8 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Config\Reader as ConfigReader, VuFind\Http\Client as HttpClient;
+use VuFind\Config\Reader as ConfigReader, VuFind\Http\Client as HttpClient,
+    VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
  * AuthorInfo Recommendations Module
@@ -41,8 +42,15 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Http\Client as HttpClient;
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  * @view     AuthorInfoFacets.phtml
  */
-class AuthorInfo extends AbstractSearchManagerAwareModule
+class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
 {
+    /**
+     * Translator (or null if unavailable)
+     *
+     * @var \Zend\I18n\Translator\Translator
+     */
+    protected $translator = null;
+
     /**
      * Saved search results
      *
@@ -73,14 +81,26 @@ class AuthorInfo extends AbstractSearchManagerAwareModule
     }
 
     /**
+     * Set a translator
+     *
+     * @param \Zend\I18n\Translator\Translator $translator Translator
+     *
+     * @return AuthorInfo
+     */
+    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
+    {
+        $this->translator = $translator;
+        return $this;
+    }
+
+    /**
      * Get translator object.
      *
      * @return \Zend\I18n\Translator\Translator
      */
     public function getTranslator()
     {
-        $sm = $this->getServiceLocator()->getServiceLocator();
-        return $sm->has('Translator') ? $sm->get('Translator') : null;
+        return $this->translator;
     }
 
     /**

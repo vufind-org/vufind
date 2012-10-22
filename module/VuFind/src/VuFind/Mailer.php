@@ -38,7 +38,7 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Exception\Mail as MailException
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
-class Mailer
+class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     /**
      * Configuration
@@ -95,11 +95,12 @@ class Mailer
      *
      * @param \Zend\I18n\Translator\Translator $translator Translator
      *
-     * @return void
+     * @return Mailer
      */
     public function setTranslator(\Zend\I18n\Translator\Translator $translator)
     {
         $this->translator = $translator;
+        return $this;
     }
 
     /**

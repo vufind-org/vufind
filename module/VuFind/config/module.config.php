@@ -296,17 +296,7 @@ $config = array(
                 $logger->setConfig(\VuFind\Config\Reader::getConfig());
                 return $logger;
             },
-            'mailer' => function ($sm) {
-                $mailer = new \VuFind\Mailer();
-                $mailer->setTranslator($sm->get('Translator'));
-                return $mailer;
-            },
-            'sms' => function ($sm) {
-                $sms = new \VuFind\Mailer\SMS();
-                $sms->setTranslator($sm->get('Translator'));
-                return $sms;
-            },
-            'translator' => function ($sm) {
+            'VuFind\Translator' => function ($sm) {
                 $factory = new \Zend\I18n\Translator\TranslatorServiceFactory();
                 $translator = $factory->createService($sm);
 
@@ -327,14 +317,19 @@ $config = array(
             'authmanager' => 'VuFind\Auth\Manager',
             'cart' => 'VuFind\Cart',
             'cachemanager' => 'VuFind\Cache\Manager',
+            'mailer' => 'VuFind\Mailer',
             'recordloader' => 'VuFind\Record\Loader',
             'searchspecsreader' => 'VuFind\Config\SearchSpecsReader',
             'sessionmanager' => 'Zend\Session\SessionManager',
+            'sms' => 'VuFind\Mailer\SMS',
             'worldcatconnection' => 'VuFind\Connection\WorldCat',
             'worldcatutils' => 'VuFind\Connection\WorldCatUtils',
         ),
         'initializers' => array(
             array('VuFind\ServiceManager\Initializer', 'initInstance'),
+        ),
+        'aliases' => array(
+            'translator' => 'VuFind\Translator',
         ),
     ),
     'session_plugin_manager' => array(

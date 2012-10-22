@@ -55,7 +55,8 @@ class DisplayLanguageOption extends AbstractServiceLocator
         if (null === $this->translator) {
             // Clone the translator; we need to switch language for the purposes
             // of this plugin, but we don't want that change to happen globally.
-            $this->translator = clone($this->getServiceLocator()->get('Translator'));
+            $this->translator
+                = clone($this->getServiceLocator()->get('VuFind\Translator'));
             $this->translator->addTranslationFile(
                 'ExtendedIni',
                 APPLICATION_PATH  . '/languages/native.ini',

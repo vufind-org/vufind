@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Recommend;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
  * AuthorInfo Recommendations Module
@@ -41,8 +42,15 @@ namespace VuFind\Recommend;
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  * @view     AuthorInfoFacets.phtml
  */
-class ResultGoogleMapAjax extends AbstractSearchManagerAwareModule
+class ResultGoogleMapAjax implements RecommendInterface, TranslatorAwareInterface
 {
+    /**
+     * Translator (or null if unavailable)
+     *
+     * @var \Zend\I18n\Translator\Translator
+     */
+    protected $translator = null;
+
     /**
      * Saved search results
      *
@@ -100,14 +108,26 @@ class ResultGoogleMapAjax extends AbstractSearchManagerAwareModule
     }
 
     /**
+     * Set a translator
+     *
+     * @param \Zend\I18n\Translator\Translator $translator Translator
+     *
+     * @return ResultGoogleMapAjax
+     */
+    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
+    {
+        $this->translator = $translator;
+        return $this;
+    }
+
+    /**
      * Get translator object.
      *
      * @return \Zend\I18n\Translator\Translator
      */
     public function getTranslator()
     {
-        $sm = $this->getServiceLocator()->getServiceLocator();
-        return $sm->has('Translator') ? $sm->get('Translator') : null;
+        return $this->translator;
     }
 
     /**

@@ -55,6 +55,9 @@ class Initializer
         if ($instance instanceof \Zend\Log\LoggerAwareInterface) {
             $instance->setLogger($sm->get('VuFind\Logger'));
         }
+        if ($instance instanceof \VuFind\I18n\Translator\TranslatorAwareInterface) {
+            $instance->setTranslator($sm->get('VuFind\Translator'));
+        }
         return $instance;
     }
 

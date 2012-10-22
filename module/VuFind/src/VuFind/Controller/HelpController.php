@@ -62,8 +62,9 @@ class HelpController extends AbstractBase
         // Construct two possible template names -- the help screen in the
         // current selected language and help in English (most likely to exist).
         // The code will attempt to display the most appropriate existing help screen
-        $language = $this->getServiceLocator()->has('Translator')
-            ? $this->getServiceLocator()->get('Translator')->getLocale() : 'en';
+        $language = $this->getServiceLocator()->has('VuFind\Translator')
+            ? $this->getServiceLocator()->get('VuFind\Translator')->getLocale()
+            : 'en';
 
         $tpl_lang = 'HelpTranslations/' . $language
             . '/' . $safe_topic . '.phtml';

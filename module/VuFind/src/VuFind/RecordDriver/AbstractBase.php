@@ -43,11 +43,35 @@ use VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-abstract class AbstractBase implements ServiceLocatorAwareInterface
+abstract class AbstractBase implements ServiceLocatorAwareInterface,
+    \VuFind\I18n\Translator\TranslatorAwareInterface
 {
-    protected $resourceSource = 'VuFind';   // Used for identifying database records
-    protected $extraDetails = array();      // For storing extra data with record
-    protected $recordIni = null;            // ini file for record settings
+    /**
+     * Used for identifying database records
+     *
+     * @var string
+     */
+    protected $resourceSource = 'VuFind';
+
+    /**
+     * For storing extra data with record
+     *
+     * @var array
+     */
+    protected $extraDetails = array();
+
+    /**
+     * ini file for record settings
+     *
+     * @var string
+     */
+    protected $recordIni = null;
+
+    /**
+     * Raw data
+     *
+     * @var array
+     */
     protected $fields = array();
 
     /**
@@ -56,6 +80,13 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
      * @var ServiceLocatorInterface
      */
     protected $serviceLocator;
+
+    /**
+     * Translator (or null if unavailable)
+     *
+     * @var \Zend\I18n\Translator\Translator
+     */
+    protected $translator = null;
 
     /**
      * Set raw data to initialize the object.
@@ -472,6 +503,19 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Set a translator
+     *
+     * @param \Zend\I18n\Translator\Translator $translator Translator
+     *
+     * @return AbstractBase
+     */
+    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
+    {
+        $this->translator = $translator;
+        return $this;
+    }
+
+    /**
      * Translate a string if a translator is available.
      *
      * @param string $msg Message to translate
@@ -480,8 +524,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
      */
     public function translate($msg)
     {
-        $sm = $this->getServiceLocator()->getServiceLocator();
-        return $sm->has('Translator')
-            ? $sm->get('Translator')->translate($msg) : $msg;
+        return null !== $this->translator
+            ? $this->translator->translate($msg) : $msg;
     }
 }

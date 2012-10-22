@@ -28,6 +28,7 @@
  */
 namespace VuFind\ILS\Driver;
 use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException,
+    VuFind\I18n\Translator\TranslatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -41,7 +42,8 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
-class NoILS extends AbstractBase implements ServiceLocatorAwareInterface
+class NoILS extends AbstractBase implements ServiceLocatorAwareInterface,
+    TranslatorAwareInterface
 {
     /**
      * Service locator
@@ -49,6 +51,13 @@ class NoILS extends AbstractBase implements ServiceLocatorAwareInterface
      * @var ServiceLocatorInterface
      */
     protected $serviceLocator;
+
+    /**
+     * Translator (or null if unavailable)
+     *
+     * @var \Zend\I18n\Translator\Translator
+     */
+    protected $translator = null;
 
     /**
      * Initialize the driver.
@@ -362,6 +371,19 @@ class NoILS extends AbstractBase implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Set a translator
+     *
+     * @param \Zend\I18n\Translator\Translator $translator Translator
+     *
+     * @return NoILS
+     */
+    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
+    {
+        $this->translator = $translator;
+        return $this;
+    }
+
+    /**
      * Translate a string if a translator is available.
      *
      * @param string $msg Message to translate
@@ -370,8 +392,7 @@ class NoILS extends AbstractBase implements ServiceLocatorAwareInterface
      */
     protected function translate($msg)
     {
-        $sm = $this->getServiceLocator()->getServiceLocator();
-        return $sm->has('Translator')
-            ? $sm->get('Translator')->translate($msg) : $msg;
+        return null !== $this->translator
+            ? $this->translator->translate($msg) : $msg;
     }
 }

@@ -30,8 +30,7 @@ namespace VuFind\ILS\Driver;
 use File_MARC, PDO, PDOException, VuFind\Config\Reader as ConfigReader,
     VuFind\Date\Converter as DateConverter, VuFind\Exception\Date as DateException,
     VuFind\Exception\ILS as ILSException,
-    Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface,
+    VuFind\I18n\Translator\TranslatorAwareInterface,
     Zend\Validator\EmailAddress as EmailAddressValidator;
 
 /**
@@ -44,14 +43,14 @@ use File_MARC, PDO, PDOException, VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
-class Voyager extends AbstractBase implements ServiceLocatorAwareInterface
+class Voyager extends AbstractBase implements TranslatorAwareInterface
 {
     /**
-     * Service locator
+     * Translator (or null if unavailable)
      *
-     * @var ServiceLocatorInterface
+     * @var \Zend\I18n\Translator\Translator
      */
-    protected $serviceLocator;
+    protected $translator = null;
 
     /**
      * Database connection
@@ -1982,26 +1981,16 @@ class Voyager extends AbstractBase implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Set the service locator.
+     * Set a translator
      *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     * @param \Zend\I18n\Translator\Translator $translator Translator
      *
-     * @return Amicus
+     * @return Voyager
      */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
     {
-        $this->serviceLocator = $serviceLocator;
+        $this->translator = $translator;
         return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 
     /**
@@ -2013,8 +2002,7 @@ class Voyager extends AbstractBase implements ServiceLocatorAwareInterface
      */
     protected function translate($msg)
     {
-        $sm = $this->getServiceLocator()->getServiceLocator();
-        return $sm->has('Translator')
-            ? $sm->get('Translator')->translate($msg) : $msg;
+        return null !== $this->translator
+            ? $this->translator->translate($msg) : $msg;
     }
 }

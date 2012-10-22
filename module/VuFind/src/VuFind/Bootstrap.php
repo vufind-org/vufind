@@ -269,7 +269,7 @@ class Bootstrap
 
             $sm = $event->getApplication()->getServiceManager();
             $langFile = APPLICATION_PATH  . '/languages/' . $language . '.ini';
-            $sm->get('Translator')
+            $sm->get('VuFind\Translator')
                 ->addTranslationFile('ExtendedIni', $langFile, 'default', $language)
                 ->setLocale($language);
 
