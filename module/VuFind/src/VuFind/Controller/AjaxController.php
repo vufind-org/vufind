@@ -966,7 +966,7 @@ class AjaxController extends AbstractBase
                 $this->params()->fromPost('id'),
                 $this->params()->fromPost('source', 'VuFind')
             );
-            $this->getServiceLocator()->get('Mailer')->sendRecord(
+            $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
                 $this->params()->fromPost('to'), $this->params()->fromPost('from'),
                 $this->params()->fromPost('message'), $record,
                 $this->getViewRenderer()
@@ -998,7 +998,7 @@ class AjaxController extends AbstractBase
 
         // Attempt to send the email:
         try {
-            $this->getServiceLocator()->get('Mailer')->sendLink(
+            $this->getServiceLocator()->get('VuFind\Mailer')->sendLink(
                 $this->params()->fromPost('to'), $this->params()->fromPost('from'),
                 $this->params()->fromPost('message'),
                 $url, $this->getViewRenderer(), $this->params()->fromPost('subject')

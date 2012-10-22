@@ -121,7 +121,7 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
             $error_types = isset($parts[1]) ? $parts[1] : '';
 
             // use smtp
-            $mailer = $this->getServiceLocator()->get('Mailer');
+            $mailer = $this->getServiceLocator()->get('VuFind\Mailer');
             $msg = $mailer->getNewMessage()
                 ->addFrom($config->Site->email)
                 ->addTo($email)

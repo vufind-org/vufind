@@ -192,7 +192,7 @@ class CartController extends AbstractBase
             // Attempt to send the email and show an appropriate flash message:
             try {
                 // If we got this far, we're ready to send the email:
-                $this->getServiceLocator()->get('Mailer')->sendLink(
+                $this->getServiceLocator()->get('VuFind\Mailer')->sendLink(
                     $view->to, $view->from, $view->message,
                     $url, $this->getViewRenderer(), 'bulk_email_title'
                 );

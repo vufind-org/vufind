@@ -307,7 +307,7 @@ class AbstractRecord extends AbstractBase
 
             // Attempt to send the email and show an appropriate flash message:
             try {
-                $this->getServiceLocator()->get('Mailer')->sendRecord(
+                $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
                     $view->to, $view->from, $view->message, $driver,
                     $this->getViewRenderer()
                 );
