@@ -1,7 +1,7 @@
 <?php
 
 /**
- * VuFind proxy service class file.
+ * VuFind HTTP service class file.
  *
  * PHP version 5
  *
@@ -24,13 +24,13 @@
  * @package  Service
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://github.com/dmj/vf2-proxy
+ * @link     https://github.com/dmj/vf2-HTTP
  */
 
 namespace VuFindHttp;
 
 /**
- * VuFind proxy service.
+ * VuFind HTTP service.
  *
  * @category Http
  * @package  Service
@@ -62,22 +62,22 @@ class HttpService
      *
      * @var array
      */
-    protected $config;
+    protected $proxyConfig;
 
     /**
      * Constructor.
      *
-     * @param array $config Proxy configuration
+     * @param array $proxyConfig Proxy configuration
      *
      * @return void
      */
-    public function __construct (array $config = array())
+    public function __construct (array $proxyConfig = array())
     {
-        $this->config = $config;
+        $this->proxyConfig = $proxyConfig;
     }
 
     /**
-     * Proxy a request of an existing client.
+     * Proxify an existing client.
      *
      * Returns the client given as argument with appropriate proxy setup.
      *
@@ -88,11 +88,11 @@ class HttpService
      */
     public function proxify (\Zend\Http\Client $client, array $options = array())
     {
-        if ($this->config) {
+        if ($this->proxyConfig) {
             $host = $client->getUri()->getHost();
             if (!$this->isLocal($host)) {
                 $adapter = new \Zend\Http\Client\Adapter\Proxy();
-                $options = array_replace($this->config, $options);
+                $options = array_replace($this->proxyConfig, $options);
                 $adapter->setOptions($options);
                 $client->setAdapter($adapter);
             }
@@ -169,7 +169,7 @@ class HttpService
     }
 
     /**
-     * Return a new proxy client.
+     * Return a new HTTP client.
      *
      * @param string $url     Target URL
      * @param string $method  Request method
