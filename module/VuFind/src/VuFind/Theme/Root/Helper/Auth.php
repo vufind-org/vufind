@@ -89,7 +89,7 @@ class Auth extends AbstractServiceLocator
      */
     public function getManager()
     {
-        return $this->getServiceLocator()->get('AuthManager');
+        return $this->getServiceLocator()->get('VuFind\AuthManager');
     }
 
     /**

@@ -152,7 +152,7 @@ class Bootstrap
         register_shutdown_function(array($sessionManager, 'writeClose'));
 
         // Make sure account credentials haven't expired:
-        $serviceManager->get('AuthManager')->checkForExpiredCredentials();
+        $serviceManager->get('VuFind\AuthManager')->checkForExpiredCredentials();
     }
 
     /**
