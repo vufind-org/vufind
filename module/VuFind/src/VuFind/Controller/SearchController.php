@@ -499,7 +499,8 @@ class SearchController extends AbstractSearch
     protected function getFacetResults($initMethod, $cacheName)
     {
         // Check if we have facet results cached, and build them if we don't.
-        $cache = $this->getServiceLocator()->get('CacheManager')->getCache('object');
+        $cache = $this->getServiceLocator()->get('VuFind\CacheManager')
+            ->getCache('object');
         if (!($results = $cache->getItem($cacheName))) {
             // Use advanced facet settings to get summary facets on the front page;
             // we may want to make this more flexible later.  Also keep in mind that

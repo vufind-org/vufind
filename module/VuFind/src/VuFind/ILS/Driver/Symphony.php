@@ -114,8 +114,8 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
         // Initialize cache manager.
         if (isset($configArray['PolicyCache']['type'])) {
             $serviceManager = $this->getServiceLocator()->getServiceLocator();
-            if ($serviceManager->has('CacheManager')) {
-                $manager = $serviceManager->get('CacheManager');
+            if ($serviceManager->has('VuFind\CacheManager')) {
+                $manager = $serviceManager->get('VuFind\CacheManager');
                 $this->policyCache
                     = $manager->getCache($configArray['PolicyCache']['type']);
             }

@@ -124,7 +124,8 @@ class SummonController extends AbstractSearch
     protected function getAdvancedFacets()
     {
         // Check if we have facet results cached, and build them if we don't.
-        $cache = $this->getServiceLocator()->get('CacheManager')->getCache('object');
+        $cache = $this->getServiceLocator()->get('VuFind\CacheManager')
+            ->getCache('object');
         if (!($results = $cache->getItem('summonSearchAdvancedFacets'))) {
             $sm = $this->getSearchManager();
             $params = $sm->setSearchClassId('Summon')->getParams();

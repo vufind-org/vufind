@@ -307,7 +307,7 @@ $config = array(
 
                 // Set up language caching for better performance:
                 $translator->setCache(
-                    $sm->get('CacheManager')->getCache('language')
+                    $sm->get('VuFind\CacheManager')->getCache('language')
                 );
 
                 return $translator;
@@ -316,7 +316,7 @@ $config = array(
         'invokables' => array(
             'VuFind\AuthManager' => 'VuFind\Auth\Manager',
             'VuFind\Cart' => 'VuFind\Cart',
-            'cachemanager' => 'VuFind\Cache\Manager',
+            'VuFind\CacheManager' => 'VuFind\Cache\Manager',
             'mailer' => 'VuFind\Mailer',
             'recordloader' => 'VuFind\Record\Loader',
             'searchspecsreader' => 'VuFind\Config\SearchSpecsReader',

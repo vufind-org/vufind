@@ -340,9 +340,9 @@ class Aleph extends AbstractBase implements ServiceLocatorAwareInterface
         ) {
             $serviceManager = $this->getServiceLocator()->getServiceLocator();
             if (isset($this->config['Cache']['type'])
-                && $serviceManager->has('CacheManager')
+                && $serviceManager->has('VuFind\CacheManager')
             ) {
-                $manager = $serviceManager->get('CacheManager');
+                $manager = $serviceManager->get('VuFind\CacheManager');
                 $cache = $manager->getCache($this->config['Cache']['type']);
                 $this->translator = $cache->getItem('alephTranslator');
             }

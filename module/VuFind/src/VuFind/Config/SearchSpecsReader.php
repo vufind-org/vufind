@@ -67,8 +67,8 @@ class SearchSpecsReader implements ServiceLocatorAwareInterface
         if (!isset($this->searchSpecs[$filename])) {
             // Connect to searchspecs cache:
             $sm = $this->getServiceLocator();
-            $cache = (is_object($sm) && $sm->has('CacheManager'))
-                ? $sm->get('CacheManager')->getCache('searchspecs') : false;
+            $cache = (is_object($sm) && $sm->has('VuFind\CacheManager'))
+                ? $sm->get('VuFind\CacheManager')->getCache('searchspecs') : false;
 
             // Determine full configuration file path:
             $fullpath = Reader::getBaseConfigPath($filename);

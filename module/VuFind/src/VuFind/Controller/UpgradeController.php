@@ -461,7 +461,7 @@ class UpgradeController extends AbstractBase
     {
         // If the cache is messed up, nothing is going to work right -- check that
         // first:
-        $cache = $this->getServiceLocator()->get('CacheManager');
+        $cache = $this->getServiceLocator()->get('VuFind\CacheManager');
         if ($cache->hasDirectoryCreationError()) {
             return $this->redirect()->toRoute('install-fixcache');
         }
