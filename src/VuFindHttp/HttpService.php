@@ -38,7 +38,7 @@ namespace VuFindHttp;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://github.com/dmj/vf2-search-subsystem
  */
-class HttpService
+class HttpService implements HttpServiceInterface
 {
 
     /**
