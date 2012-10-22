@@ -82,7 +82,6 @@ class Module
      */
     public function init ()
     {
-        $this->configPath = realpath(__DIR__ . $this->configPath);
     }
 
     /**
@@ -94,7 +93,7 @@ class Module
     {
         return array(
             'factories' => array(
-                'Service\Http' => array($this, 'setup'),
+                'VuFind\Http' => array($this, 'setup'),
             )
         );
     }
