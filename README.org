@@ -62,6 +62,11 @@ a Zend Framework HTTP proxy adapter. OPTIONS is an array of Zend HTTP proxy opti
 used in addition to the service's proxy configuration. The proxy service proxy configuration is
 superior to the ones supplied via OPTIONS.
 
+** createClient(string URL[, string METHOD, [float TIMEOUT]])
+
+Return new Zend HTTP client to access URI by optional METHOD with optional TIMEOUT. CLIENT is
+proxified using the service's proxify() function.
+
 * Error handling
 
 The proxy service uses a marker interface [MARKER INTERFACE] to mark its exception. The proxy
@@ -87,7 +92,7 @@ The proxy service does not provide any extensions points.
 
 * Service identifier
 
-The proxy service registers under the name `Service\Http' in the web application's top level
+The proxy service registers under the name `VuFind\Http' in the web application's top level
 service manager.
 
 * Implementation
