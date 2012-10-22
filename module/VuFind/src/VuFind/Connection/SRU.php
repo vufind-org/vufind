@@ -27,7 +27,7 @@
  */
 namespace VuFind\Connection;
 use VuFind\Http\Client as HttpClient, VuFind\XSLT\Processor as XSLTProcessor,
-    Zend\Log\Logger;
+    Zend\Log\LoggerInterface;
 
 /**
  * SRU Search Interface
@@ -38,12 +38,12 @@ use VuFind\Http\Client as HttpClient, VuFind\XSLT\Processor as XSLTProcessor,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes#searching Wiki
  */
-class SRU
+class SRU implements \Zend\Log\LoggerAwareInterface
 {
     /**
      * Logger object for debug info (or false for no debugging).
      *
-     * @var Logger|bool
+     * @var LoggerInterface|bool
      */
     protected $logger = false;
 
@@ -92,11 +92,11 @@ class SRU
     /**
      * Set the logger
      *
-     * @param Logger $logger Logger to use.
+     * @param LoggerInterface $logger Logger to use.
      *
      * @return void
      */
-    public function setLogger(Logger $logger)
+    public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }

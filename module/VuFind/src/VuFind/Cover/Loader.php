@@ -28,7 +28,8 @@
  */
 namespace VuFind\Cover;
 use VuFind\Code\ISBN, VuFind\Http\Client as HttpClient,
-    VuFind\Theme\Tools as ThemeTools, Zend\Log\Logger, ZendService\Amazon\Amazon;
+    VuFind\Theme\Tools as ThemeTools, Zend\Log\LoggerInterface,
+    ZendService\Amazon\Amazon;
 
 /**
  * Book Cover Generator
@@ -40,7 +41,7 @@ use VuFind\Code\ISBN, VuFind\Http\Client as HttpClient,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/use_of_external_content Wiki
  */
-class Loader
+class Loader implements \Zend\Log\LoggerAwareInterface
 {
     /**
      * filename constructed from ISBN
@@ -108,7 +109,7 @@ class Loader
     /**
      * Logger (or false for none)
      *
-     * @var Logger|bool
+     * @var LoggerInterface|bool
      */
     protected $logger = false;
 
@@ -130,11 +131,11 @@ class Loader
     /**
      * Set the logger
      *
-     * @param Logger $logger Logger to use.
+     * @param LoggerInterface $logger Logger to use.
      *
      * @return void
      */
-    public function setLogger(Logger $logger)
+    public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }

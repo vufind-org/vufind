@@ -344,8 +344,8 @@ class Bootstrap
     {
         $callback = function ($event) {
             $sm = $event->getApplication()->getServiceManager();
-            if ($sm->has('Logger')) {
-                $log = $sm->get('Logger');
+            if ($sm->has('VuFind\Logger')) {
+                $log = $sm->get('VuFind\Logger');
                 if (is_callable(array($log, 'logException'))) {
                     $exception = $event->getParam('exception');
                     // Console request does not include server,

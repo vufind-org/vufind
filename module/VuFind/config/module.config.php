@@ -290,7 +290,7 @@ $config = array(
                         $sm->get('VuFind\ILSDriverPluginManager')
                     );
             },
-            'logger' => function ($sm) {
+            'VuFind\Logger' => function ($sm) {
                 $logger = new \VuFind\Log\Logger();
                 $logger->setServiceLocator($sm);
                 $logger->setConfig(\VuFind\Config\Reader::getConfig());
@@ -322,16 +322,6 @@ $config = array(
 
                 return $translator;
             },
-            'worldcatconnection' => function ($sm) {
-                $wc = new \VuFind\Connection\WorldCat();
-                $wc->setLogger($sm->get('Logger'));
-                return $wc;
-            },
-            'worldcatutils' => function ($sm) {
-                $wcu = new \VuFind\Connection\WorldCatUtils();
-                $wcu->setLogger($sm->get('Logger'));
-                return $wcu;
-            },
         ),
         'invokables' => array(
             'authmanager' => 'VuFind\Auth\Manager',
@@ -340,7 +330,12 @@ $config = array(
             'recordloader' => 'VuFind\Record\Loader',
             'searchspecsreader' => 'VuFind\Config\SearchSpecsReader',
             'sessionmanager' => 'Zend\Session\SessionManager',
-        )
+            'worldcatconnection' => 'VuFind\Connection\WorldCat',
+            'worldcatutils' => 'VuFind\Connection\WorldCatUtils',
+        ),
+        'initializers' => array(
+            array('VuFind\ServiceManager\Initializer', 'initInstance'),
+        ),
     ),
     'session_plugin_manager' => array(
         'abstract_factories' => array('VuFind\Session\PluginFactory'),

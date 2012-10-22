@@ -27,7 +27,7 @@
  */
 namespace VuFind\Connection;
 use File_MARCXML, VuFind\Config\Reader as ConfigReader,
-    VuFind\XSLT\Processor as XSLTProcessor, Zend\Log\Logger;
+    VuFind\XSLT\Processor as XSLTProcessor, Zend\Log\LoggerInterface;
 
 /**
  * World Cat Utilities
@@ -40,23 +40,23 @@ use File_MARCXML, VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
-class WorldCatUtils
+class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
 {
     /**
      * Logger (or false for none)
      *
-     * @var Logger|bool
+     * @var LoggerInterface|bool
      */
     protected $logger = false;
 
     /**
      * Set the logger
      *
-     * @param Logger $logger Logger to use.
+     * @param LoggerInterface $logger Logger to use.
      *
      * @return void
      */
-    public function setLogger(Logger $logger)
+    public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }

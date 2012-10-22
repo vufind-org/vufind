@@ -29,7 +29,7 @@
 namespace VuFind\Connection;
 use VuFind\Config\Reader as ConfigReader,
     VuFind\Exception\Solr as SolrException, VuFind\Http\Client as HttpClient,
-    VuFind\Solr\Utils as SolrUtils, Zend\Log\Logger,
+    VuFind\Solr\Utils as SolrUtils, Zend\Log\LoggerInterface,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -42,12 +42,12 @@ use VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes#index_interface Wiki
  */
-class Solr implements ServiceLocatorAwareInterface
+class Solr implements ServiceLocatorAwareInterface, \Zend\Log\LoggerAwareInterface
 {
     /**
      * Logger object for debug info (or false for no debugging).
      *
-     * @var Logger|bool
+     * @var LoggerInterface|bool
      */
     protected $logger = false;
 
@@ -153,11 +153,11 @@ class Solr implements ServiceLocatorAwareInterface
     /**
      * Set the logger
      *
-     * @param Logger $logger Logger to use.
+     * @param LoggerInterface $logger Logger to use.
      *
      * @return void
      */
-    public function setLogger(Logger $logger)
+    public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }

@@ -29,7 +29,7 @@
 namespace VuFind\Connection;
 use SerialsSolutions\Summon\Zend2 as BaseSummon,
     VuFind\Config\Reader as ConfigReader, VuFind\Http\Client as HttpClient,
-    VuFind\Solr\Utils as SolrUtils, Zend\Log\Logger;
+    VuFind\Solr\Utils as SolrUtils, Zend\Log\LoggerInterface;
 
 /**
  * Summon Search API Interface (VuFind implementation)
@@ -41,7 +41,7 @@ use SerialsSolutions\Summon\Zend2 as BaseSummon,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://api.summon.serialssolutions.com/help/api/ API Documentation
  */
-class Summon extends BaseSummon
+class Summon extends BaseSummon implements \Zend\Log\LoggerAwareInterface
 {
     /**
      * Should boolean operators in the search string be treated as
@@ -61,7 +61,7 @@ class Summon extends BaseSummon
     /**
      * Logger object for debug info (or false for no debugging).
      *
-     * @var Logger|bool
+     * @var LoggerInterface|bool
      */
     protected $logger = false;
 
@@ -111,11 +111,11 @@ class Summon extends BaseSummon
     /**
      * Set the logger
      *
-     * @param Logger $logger Logger to use.
+     * @param LoggerInterface $logger Logger to use.
      *
      * @return void
      */
-    public function setLogger(Logger $logger)
+    public function setLogger(LoggerInterface $logger)
     {
         // Adjust debug property based on logger settings:
         $this->debug = method_exists($logger, 'debugNeeded')

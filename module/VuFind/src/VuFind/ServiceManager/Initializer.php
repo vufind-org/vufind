@@ -52,6 +52,9 @@ class Initializer
         if ($instance instanceof \VuFind\Db\Table\DbTableAwareInterface) {
             $instance->setDbTableManager($sm->get('VuFind\DbTablePluginManager'));
         }
+        if ($instance instanceof \Zend\Log\LoggerAwareInterface) {
+            $instance->setLogger($sm->get('VuFind\Logger'));
+        }
         return $instance;
     }
 

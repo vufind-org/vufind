@@ -96,7 +96,9 @@ class Manager
         $index->setServiceLocator(self::$serviceLocator);
 
         // Set the logger:
-        $index->setLogger(self::$serviceLocator->get('Logger'));
+        \VuFind\ServiceManager\Initializer::initInstance(
+            $index, self::$serviceLocator
+        );
 
         return $index;
     }
