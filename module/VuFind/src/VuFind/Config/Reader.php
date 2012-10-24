@@ -161,7 +161,8 @@ class Reader
         // Retrieve and parse at least one configuration file, and possibly a whole
         // chain of them if the Parent_Config setting is used:
         do {
-            $configs[] = new Config(static::getIniReader()->fromFile($fullpath));
+            $configs[]
+                = new Config(static::getIniReader()->fromFile($fullpath), true);
 
             $i = count($configs) - 1;
             $fullpath = isset($configs[$i]->Parent_Config->path)
@@ -195,6 +196,7 @@ class Reader
             }
         }
 
+        $config->setReadOnly();
         return $config;
     }
 
