@@ -411,11 +411,12 @@ class Results extends BaseResults
         }
 
         // Loop through every field returned by the result set
-        $validFields = array_keys($filter);
-        foreach ($this->rawResponse['facet_counts']['facet_fields']
-                 as $field => $data) {
-            // Skip filtered fields and empty arrays:
-            if (!in_array($field, $validFields) || count($data) < 1) {
+        foreach (array_keys($filter) as $field) {
+            $data = isset($this->rawResponse['facet_counts']['facet_fields'][$field])
+                ? $this->rawResponse['facet_counts']['facet_fields'][$field]
+                : array();
+            // Skip empty arrays:
+            if (count($data) < 1) {
                 continue;
             }
             // Initialize the settings for the current field
