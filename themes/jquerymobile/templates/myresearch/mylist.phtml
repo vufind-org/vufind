@@ -8,6 +8,9 @@
     // Set up page title:
     $this->headTitle(isset($list) ? $list->title : $this->translate('Favorites'));
 
+    // Load Javascript dependencies into header:
+    $this->headScript()->appendFile("check_item_statuses.js");
+
     // Set up extra button for header:
     $extraButton = (isset($list) && $list->editAllowed($user))
         ? '<a rel="external" href="'
@@ -18,7 +21,7 @@
         : '';
 ?>
 
-<div data-role="page" id="MyResearch-list">
+<div data-role="page" id="MyResearch-list" class="results-page">
   <?=$this->mobileMenu()->header(array('extraButtons'=>array($extraButton)))?>
   <div data-role="content">
     <? foreach ($this->results->getRecommendations('side') as $current): ?>

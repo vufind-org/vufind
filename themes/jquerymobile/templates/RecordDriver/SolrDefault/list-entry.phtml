@@ -11,7 +11,8 @@
     }
 ?>
 <a rel="external" href="<?=$this->recordLink()->getUrl($this->driver)?>">
-  <div class="result">
+  <div class="result source<?=$this->escapeHtml($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
+    <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueID())?>" class="hiddenId" />
     <h3>
       <?
         $listTitle = $this->driver->getTitle();
@@ -44,7 +45,22 @@
       <? endforeach; ?>
     <? endif; ?>
 
+    <? if ($this->driver->supportsAjaxStatus()): ?>
+      <p class="callnumAndLocation">
+        <strong><?=$this->transEsc('Call Number')?>:</strong>
+        <span class="callnumber ajax_availability hide"><?=$this->transEsc('Loading')?>...</span><br />
+        <strong><?=$this->transEsc('Located')?>:</strong>
+        <span class="location ajax_availability hide"><?=$this->transEsc('Loading')?>...</span>
+      </p>
+    <? else: ?>
+      <? $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
+        <p><strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?></p>
+      <? endif; ?>
+    <? endif; ?>
     <?=$this->record($this->driver)->getFormatList()?>
+    <? if ($this->driver->supportsAjaxStatus()): ?>
+      <p><span class="ajax_availability hide status"><?=$this->transEsc('Loading')?>...</span></p>
+    <? endif; ?>
   </div>
 </a>
 <? // Allow editing if a list is selected and edit is allowed OR if no list is selected

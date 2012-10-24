@@ -10,7 +10,8 @@
         $user_id = $this->user ? $this->user->id : null;
     }
 ?>
-<div class="listentry recordId source<?=$this->escapeHtml($source)?>" id="record<?=$this->escapeHtml($id)?>">
+<div class="listentry recordId source<?=$this->escapeHtml($source)?><?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>" id="record<?=$this->escapeHtml($id)?>">
+  <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueID())?>" class="hiddenId" />
   <div class="span-2">
     <? if ($listThumb = $this->record($this->driver)->getThumbnail()): ?>
       <img src="<?=$this->escapeHtml($listThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
@@ -58,7 +59,27 @@
         <br/>
     <? endif; ?>
 
+    <div class="callnumAndLocation">
+      <? if ($this->driver->supportsAjaxStatus()): ?>
+        <strong class="hideIfDetailed"><?=$this->transEsc('Call Number')?>:</strong>
+        <span class="callnumber ajax_availability hide">
+          <?=$this->transEsc('Loading')?>...
+        </span><br class="hideIfDetailed"/>
+        <strong><?=$this->transEsc('Located')?>:</strong>
+        <span class="location ajax_availability hide">
+          <?=$this->transEsc('Loading')?>...
+        </span>
+        <div class="locationDetails hide"></div>
+      <? else: ?>
+        <? $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
+          <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
+        <? endif; ?>
+      <? endif; ?>
+    </div>
     <?=$this->record($this->driver)->getFormatList()?>
+    <? if ($this->driver->supportsAjaxStatus()): ?>
+      <div class="status ajax_availability hide"><?=$this->transEsc('Loading')?>...</div>
+    <? endif; ?>
   </div>
 
   <? // Allow editing if a list is selected and edit is allowed OR if no list is selected
