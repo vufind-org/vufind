@@ -201,6 +201,18 @@ $config = array(
     ),
     'recommend_plugin_manager' => array(
         'abstract_factories' => array('VuFind\Recommend\PluginFactory'),
+        'factories' => array(
+            'worldcatidentities' => function ($sm) {
+                return new \VuFind\Recommend\WorldCatIdentities(
+                    $sm->getServiceLocator()->get('VuFind\WorldCatUtils')
+                );
+            },
+            'worldcatterms' => function ($sm) {
+                return new \VuFind\Recommend\WorldCatTerms(
+                    $sm->getServiceLocator()->get('VuFind\WorldCatUtils')
+                );
+            },
+        ),
         'invokables' => array(
             'authorfacets' => 'VuFind\Recommend\AuthorFacets',
             'authorinfo' => 'VuFind\Recommend\AuthorInfo',
@@ -219,8 +231,6 @@ $config = array(
             'summonresults' => 'VuFind\Recommend\SummonResults',
             'switchtype' => 'VuFind\Recommend\SwitchType',
             'topfacets' => 'VuFind\Recommend\TopFacets',
-            'worldcatidentities' => 'VuFind\Recommend\WorldCatIdentities',
-            'worldcatterms' => 'VuFind\Recommend\WorldCatTerms',
         ),
     ),
     'recorddriver_plugin_manager' => array(

@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Recommend;
+use VuFind\Connection\WorldCatUtils;
 
 /**
  * WorldCatIdentities Recommendations Module
@@ -38,10 +39,38 @@ namespace VuFind\Recommend;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class WorldCatIdentities extends AbstractSearchManagerAwareModule
+class WorldCatIdentities implements RecommendInterface
 {
+    /**
+     * Search results object
+     *
+     * @var \VuFind\Search\Base\Results
+     */
     protected $searchObject;
+
+    /**
+     * Configuration settings
+     *
+     * @var array
+     */
     protected $settings;
+
+    /**
+     * WorldCat utilities wrapper object.
+     *
+     * @var WorldCatUtils
+     */
+    protected $worldCatUtils;
+
+    /**
+     * Constructor
+     *
+     * @param WorldCatUtils $wcu WorldCat utilities object
+     */
+    public function __construct(WorldCatUtils $wcu)
+    {
+        $this->worldCatUtils = $wcu;
+    }
 
     /**
      * setConfig
@@ -105,8 +134,6 @@ class WorldCatIdentities extends AbstractSearchManagerAwareModule
         $lookfor = isset($search[0]['lookfor']) ? $search[0]['lookfor'] : '';
 
         // Get terminology information:
-        return $this->getServiceLocator()->getServiceLocator()
-            ->get('VuFind\WorldCatUtils')
-            ->getRelatedIdentities($lookfor);
+        return $this->worldCatUtils->getRelatedIdentities($lookfor);
     }
 }

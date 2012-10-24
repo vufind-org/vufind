@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Recommend;
+use VuFind\Connection\WorldCatUtils;
 
 /**
  * WorldCatTerms Recommendations Module
@@ -38,10 +39,38 @@ namespace VuFind\Recommend;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class WorldCatTerms extends AbstractSearchManagerAwareModule
+class WorldCatTerms implements RecommendInterface
 {
+    /**
+     * Search results object
+     *
+     * @var \VuFind\Search\Base\Results
+     */
     protected $searchObject;
+
+    /**
+     * Vocabulary to use.
+     *
+     * @var string
+     */
     protected $vocab = 'lcsh';
+
+    /**
+     * WorldCat utilities wrapper object.
+     *
+     * @var WorldCatUtils
+     */
+    protected $worldCatUtils;
+
+    /**
+     * Constructor
+     *
+     * @param WorldCatUtils $wcu WorldCat utilities object
+     */
+    public function __construct(WorldCatUtils $wcu)
+    {
+        $this->worldCatUtils = $wcu;
+    }
 
     /**
      * setConfig
@@ -106,9 +135,7 @@ class WorldCatTerms extends AbstractSearchManagerAwareModule
         $lookfor = isset($search[0]['lookfor']) ? $search[0]['lookfor'] : '';
 
         // Get terminology information:
-        $wc = $this->getServiceLocator()->getServiceLocator()
-            ->get('VuFind\WorldCatUtils');
-        $terms = $wc->getRelatedTerms($lookfor, $this->vocab);
+        $terms = $this->worldCatUtils->getRelatedTerms($lookfor, $this->vocab);
 
         // Wipe out any empty or unexpected sections of the related terms array;
         // this will make it easier to only display content in the template if
