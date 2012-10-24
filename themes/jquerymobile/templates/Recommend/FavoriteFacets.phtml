@@ -8,7 +8,7 @@
           <? if ($current['isApplied']): ?>
             <?=$this->escapeHtml($current['displayText'])?>
           <? else: ?>
-            <a href="<?=$this->url('userList', array('id' => $current['value']))?>"><?=$this->escapeHtml($current['displayText'])?></a>
+            <a data-ajax="false" href="<?=$this->url('userList', array('id' => $current['value']))?>"><?=$this->escapeHtml($current['displayText'])?></a>
           <? endif; ?>
           <span class="ui-li-count"><?=$this->escapeHtml($current['count'])?></span>
         </li>
