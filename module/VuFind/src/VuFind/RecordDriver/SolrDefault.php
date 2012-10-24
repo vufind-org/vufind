@@ -1004,8 +1004,16 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Return an associative array of URLs associated with this record (key = URL,
-     * value = description).
+     * Return an array of associative URL arrays with one or more of the following
+     * keys:
+     *
+     * <li>
+     *   <ul>desc: URL description text to display (optional)</ul>
+     *   <ul>url: fully-formed URL (required if 'route' is absent)</ul>
+     *   <ul>route: VuFind route to build URL with (required if 'url' is absent)</ul>
+     *   <ul>routeParams: Parameters for route (optional)</ul>
+     *   <ul>queryString: Query params to append after building route (optional)</ul>
+     * </li>
      *
      * @return array
      */
