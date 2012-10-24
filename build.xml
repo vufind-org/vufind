@@ -151,7 +151,7 @@
     <echo message="${LASTOUTPUT}" />
 
     <!-- delete the configuration, sample index, logs and cache data -->
-    <delete dir="${srcdir}/solr/alphabetic_browse" includeemptydirs="true" failonerror="true" />
+    <delete dir="${srcdir}/solr/alphabetical_browse" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/stats/index" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/authority/index" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/biblio/index" includeemptydirs="true" failonerror="true" />
