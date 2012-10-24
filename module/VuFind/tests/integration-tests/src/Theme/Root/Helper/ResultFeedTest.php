@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/unit_tests Wiki
  */
-namespace VuFind\Test\Theme\Root\Helper;
+namespace VuFind\IntegrationTest\Theme\Root\Helper;
 use VuFind\Theme\Root\Helper\ResultFeed;
 
 /**

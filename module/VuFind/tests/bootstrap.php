@@ -10,7 +10,7 @@ define('VUFIND_PHPUNIT_RUNNING', 1);
 define('VUFIND_PHPUNIT_MODULE_PATH', __DIR__);
 
 // Define path to application directory
-defined('APPLICATION_PATH') || define('APPLICATION_PATH', realpath(dirname(__DIR__) . '/../../..'));
+defined('APPLICATION_PATH') || define('APPLICATION_PATH', realpath(dirname(__DIR__) . '/../..'));
 
 // Define application environment
 defined('APPLICATION_ENV')
@@ -51,7 +51,7 @@ $serviceManager->get('ModuleManager')->loadModules();
 $loader = Zend\Loader\AutoloaderFactory::getRegisteredAutoloader(
     Zend\Loader\AutoloaderFactory::STANDARD_AUTOLOADER
 );
-$loader->registerNamespace('VuFindTest', __DIR__ . '/../../src/VuFindTest');
+$loader->registerNamespace('VuFindTest', __DIR__ . '/../src/VuFindTest');
 
 // Use output buffering -- some tests involve HTTP headers and will fail if there is output.
 ob_start();

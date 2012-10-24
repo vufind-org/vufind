@@ -1,0 +1,16 @@
+<phpunit bootstrap="./bootstrap.php" backupGlobals="false">
+  <testsuites>
+    <testsuite name="VuFindUnit">
+      <directory>unit-tests/src</directory>
+    </testsuite>
+    <testsuite name="VuFindIntegration">
+      <directory>integration-tests/src</directory>
+    </testsuite>
+  </testsuites>
+
+  <filter>
+    <whitelist addUncoveredFilesFromWhitelist="true">
+      <directory suffix=".php">../src</directory>
+    </whitelist>
+  </filter>
+</phpunit>
