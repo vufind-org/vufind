@@ -114,6 +114,12 @@
     <!-- import marc test records into vufind index (note: the marc test records have prefix "testsample#") -->
     <exec command="find ${srcdir}/tests/data -name *.mrc -printf %p," outputProperty="buglist" />
     <foreach list="${buglist}" param="filename" delimiter="," target="importrec" />
+    <exec command="find ${srcdir}/tests/data/authority -name *.mrc -printf %p," outputProperty="authlist" />
+    <foreach list="${authlist}" param="filename" delimiter="," target="importauthrec" />
+
+    <!-- build alphabrowse index -->
+    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local ${srcdir}/index-alphabetic-browse.sh" outputProperty="LASTOUTPUT" />
+    <echo message="${LASTOUTPUT}" />
 
     <!-- start Solr (use restart in case of old PID files) -->
     <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local JETTY_PID=${tmp}/vufindtest.pid JETTY_CONSOLE=/dev/null ${srcdir}/vufind.sh restart" outputProperty="LASTOUTPUT" />
@@ -145,6 +151,7 @@
     <echo message="${LASTOUTPUT}" />
 
     <!-- delete the configuration, sample index, logs and cache data -->
+    <delete dir="${srcdir}/solr/alphabetic_browse" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/stats/index" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/authority/index" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/biblio/index" includeemptydirs="true" failonerror="true" />
@@ -186,7 +193,20 @@
     <echo message="Packages successfully generated in ${builddir}/packages" />
   </target>
 
-  <target name="importrec" description="import each of the bug marc test record">
+  <target name="importauthrec" description="import each of the MARC authority test records">
+    <if>
+    <istrue value="${filename}"/>       <!-- To ignore the last token, as find command output list has ',' after last filename -->
+      <then>
+        <exec command="basename ${filename}" outputProperty="BASENAME" />
+
+        <!-- perform the import -->
+        <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local ${srcdir}/import-marc-auth.sh ${filename} marc_auth_ils.properties" outputProperty="LASTOUTPUT" />
+        <echo message="${LASTOUTPUT}" />
+      </then>
+    </if>
+  </target>
+
+  <target name="importrec" description="import each of the MARC bibliographic test records">
     <if>
     <istrue value="${filename}"/>       <!-- To ignore the last token, as find command output list has ',' after last filename -->
       <then>
