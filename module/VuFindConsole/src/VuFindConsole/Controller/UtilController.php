@@ -41,39 +41,121 @@ use File_MARC, File_MARCXML, VuFind\Connection\Manager as ConnectionManager,
 class UtilController extends AbstractBase
 {
     /**
+     * Display help for the index reserves action.
+     *
+     * @param string $msg Extra message to display
+     *
+     * @return \Zend\Console\Response
+     */
+    protected function indexReservesHelp($msg = '')
+    {
+        if (!empty($msg)) {
+            foreach (explode("\n", $msg) as $line) {
+                Console::writeLine($line);
+            }
+            Console::writeLine('');
+        }
+
+        Console::writeLine('Course reserves index builder');
+        Console::writeLine('');
+        Console::writeLine(
+            'If run with no options, this will attempt to load data from your ILS.'
+        );
+        Console::writeLine('');
+        Console::writeLine(
+            'Switches may be used to index from delimited files instead:'
+        );
+        Console::writeLine('');
+        Console::writeLine(
+            ' -f [filename] loads a file (may be repeated for multiple files)'
+        );
+        Console::writeLine(
+            ' -d [delimiter] specifies a delimiter (comma is default)'
+        );
+        Console::writeLine(
+            ' -t [template] provides a template showing where important values'
+        );
+        Console::writeLine(
+            '     can be found within the file.  The template is a comma-'
+        );
+        Console::writeLine('     separated list of values.  Choose from:');
+        Console::writeLine('          BIB_ID     - bibliographic ID');
+        Console::writeLine('          COURSE     - course name');
+        Console::writeLine('          DEPARTMENT - department name');
+        Console::writeLine('          INSTRUCTOR - instructor name');
+        Console::writeLine('          SKIP       - ignore data in this position');
+        Console::writeLine(
+            '     Default template is BIB_ID,COURSE,INSTRUCTOR,DEPARTMENT'
+        );
+        Console::writeLine(' -h or -? display this help information.');
+
+        return $this->getFailureResponse();
+    }
+
+    /**
      * Build the Reserves index.
      *
-     * @return void
+     * @return \Zend\Console\Response
      */
     public function indexreservesAction()
     {
         ini_set('memory_limit', '50M');
         ini_set('max_execution_time', '3600');
 
-        // Setup Solr Connection
-        $solr = ConnectionManager::connectToIndex('SolrReserves');
+        $this->consoleOpts->setOptions(
+            array(\Zend\Console\Getopt::CONFIG_CUMULATIVE_PARAMETERS => true)
+        );
+        $this->consoleOpts->addRules(
+            array(
+                'h|help' => 'Get help',
+                'd-s' => 'Delimiter',
+                't-s' => 'Template',
+                'f-s' => 'File',
+            )
+        );
 
-        // Connect to ILS
-        $catalog = $this->getILS();
+        if ($this->consoleOpts->getOption('h')
+            || $this->consoleOpts->getOption('help')
+        ) {
+            return $this->indexReservesHelp();
+        } elseif ($file = $this->consoleOpts->getOption('f')) {
+            try {
+                $delimiter = ($d = $this->consoleOpts->getOption('d')) ? $d : ',';
+                $template = ($t = $this->consoleOpts->getOption('t')) ? $t : null;
+                $reader = new \VuFind\Reserves\CsvReader(
+                    $file, $delimiter, $template
+                );
+                $instructors = $reader->getInstructors();
+                $courses = $reader->getCourses();
+                $departments = $reader->getDepartments();
+                $reserves = $reader->getReserves();
+            } catch (\Exception $e) {
+                return $this->indexReservesHelp($e->getMessage());
+            }
+        } elseif ($this->consoleOpts->getOption('d')) {
+            return $this->indexReservesHelp('-d is meaningless without -f');
+        } elseif ($this->consoleOpts->getOption('t')) {
+            return $this->indexReservesHelp('-t is meaningless without -f');
+        } else {
+            try {
+                // Connect to ILS and load data:
+                $catalog = $this->getILS();
+                $instructors = $catalog->getInstructors();
+                $courses = $catalog->getCourses();
+                $departments = $catalog->getDepartments();
+                $reserves = $catalog->findReserves('', '', '');
+            } catch (\Exception $e) {
+                return $this->indexReservesHelp($e->getMessage());
+            }
+        }
 
-        // Records to index
-        $index = array();
-
-        // Get instructors
-        $instructors = $catalog->getInstructors();
-
-        // Get Courses
-        $courses = $catalog->getCourses();
-
-        // Get Departments
-        $departments = $catalog->getDepartments();
-
-        // Get all reserve records
-        $reserves = $catalog->findReserves('', '', '');
-
-        if (!empty($instructors) && !empty($courses) && !empty($departments)
+        // Make sure we have reserves and at least one of: instructors, courses, departments:
+        if ((!empty($instructors) || !empty($courses) || !empty($departments))
             && !empty($reserves)
         ) {
+            // Setup Solr Connection
+            $solr = ConnectionManager::connectToIndex('SolrReserves');
+
             // Delete existing records
             $solr->deleteAll();
 
@@ -83,14 +165,17 @@ class UtilController extends AbstractBase
             // Commit and Optimize the Solr Index
             $solr->commit();
             $solr->optimize();
+
+            Console::writeLine('Successfully loaded ' . count($reserves) . ' rows.');
+            return $this->getSuccessResponse();
         }
-        return $this->getSuccessResponse();
+        return $this->indexReservesHelp('Unable to load data.');
     }
 
     /**
      * Optimize the Solr index.
      *
-     * @return void
+     * @return \Zend\Console\Response
      */
     public function optimizeAction()
     {
@@ -113,7 +198,7 @@ class UtilController extends AbstractBase
     /**
      * Generate a Sitemap
      *
-     * @return void
+     * @return \Zend\Console\Response
      */
     public function sitemapAction()
     {
@@ -129,7 +214,7 @@ class UtilController extends AbstractBase
     /**
      * Command-line tool to batch-delete records from the Solr index.
      *
-     * @return void
+     * @return \Zend\Console\Response
      */
     public function deletesAction()
     {
@@ -217,7 +302,7 @@ class UtilController extends AbstractBase
      * Command-line tool to clear unwanted entries
      * from search history database table.
      *
-     * @return void
+     * @return \Zend\Console\Response
      */
     public function expiresearchesAction()
     {
@@ -250,7 +335,7 @@ class UtilController extends AbstractBase
     /**
      * Command-line tool to delete suppressed records from the index.
      *
-     * @return void
+     * @return \Zend\Console\Response
      */
     public function suppressedAction()
     {
