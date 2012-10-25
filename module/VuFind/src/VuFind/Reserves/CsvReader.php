@@ -139,7 +139,7 @@ class CsvReader
     /**
      * Load data from a single file.
      *
-     * @param string $fn       Filename
+     * @param string $fn Filename
      *
      * @return void
      * @throws \Exception
