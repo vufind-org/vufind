@@ -431,7 +431,12 @@ class SearchController extends AbstractSearch
     {
         $sm = $this->getSearchManager();
         $params = $sm->setSearchClassId('SolrReserves')->getParams();
-        $params->initFromRequest($this->getRequest()->getQuery());
+        $params->initFromRequest(
+            new \Zend\Stdlib\Parameters(
+                $this->getRequest()->getQuery()->toArray()
+                + $this->getRequest()->getPost()->toArray()
+            )
+        );
         $results = $sm->setSearchClassId('SolrReserves')->getResults($params);
         return $this->createViewModel(array('results' => $results));
     }
