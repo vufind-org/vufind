@@ -412,6 +412,8 @@ class Connection
                 array($this->getDriver(), $methodName), $params
             );
         }
-        throw new ILSException('Cannot call method: ' . $methodName);
+        throw new ILSException(
+            'Cannot call method: ' . $this->getDriverClass() . '::' . $methodName
+        );
     }
 }
