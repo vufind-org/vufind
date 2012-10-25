@@ -56,6 +56,13 @@ class AbstractBase extends AbstractActionController
 
         // Get access to information about the CLI request.
         $this->consoleOpts = new Getopt(array());
+
+        // Switch the context back to the original working directory so that
+        // relative paths work as expected.  (This constant is set in
+        // public/index.php)
+        if (defined('ORIGINAL_WORKING_DIRECTORY')) {
+            chdir(ORIGINAL_WORKING_DIRECTORY);
+        }
     }
 
     /**

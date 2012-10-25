@@ -23,6 +23,9 @@ defined('APPLICATION_ENV')
 defined('LOCAL_OVERRIDE_DIR')
     || define('LOCAL_OVERRIDE_DIR', (getenv('VUFIND_LOCAL_DIR') ? getenv('VUFIND_LOCAL_DIR') : ''));
 
+// Save original working directory in case we need to remember our context, then
+// switch to the application directory for convenience:
+define('ORIGINAL_WORKING_DIRECTORY', getcwd());
 chdir(APPLICATION_PATH);
 
 // Ensure vendor/ is on include_path; some PEAR components may not load correctly
