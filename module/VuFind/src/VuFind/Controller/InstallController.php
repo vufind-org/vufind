@@ -321,9 +321,19 @@ class InstallController extends AbstractBase
                 $connection = 'mysql://' . $view->dbrootuser . ':'
                     . $this->params()->fromPost('dbrootpass') . '@'
                     . $view->dbhost;
-                $db = AdapterFactory::getAdapterFromConnectionString(
-                    $connection . '/mysql'
-                );
+                try {
+                    $db = AdapterFactory::getAdapterFromConnectionString(
+                        $connection . '/mysql'
+                    );
+                } catch (\Exception $e) {
+                    $this->flashMessenger()->setNamespace('error')
+                        ->addMessage(
+                            'Problem initializing database adapter; '
+                            . 'check for missing Mysqli library.  Details: '
+                            . $e->getMessage()
+                        );
+                    return $view;
+                }
                 try {
                     // Get SQL together
                     $query = 'CREATE DATABASE ' . $view->dbname;
