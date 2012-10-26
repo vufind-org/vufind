@@ -281,7 +281,7 @@ class BrowseController extends AbstractBase
                 if (isset($params['query'])) {
                     // Note -- this does not need to be escaped because
                     // $params['query'] has already been validated against
-                    // the _getAlphabetList() method below!
+                    // the getAlphabetList() method below!
                     $tags = $tagTable->matchText($params['query']);
                     $tagList = array();
                     foreach ($tags as $tag) {
@@ -504,7 +504,7 @@ class BrowseController extends AbstractBase
         $category = $this->getCategory();
         switch($facet) {
         case 'alphabetical':
-            return $this->getAlphabetList();
+            return array('', $this->getAlphabetList());
         case 'dewey':
             return array(
                 'dewey-tens', $this->quoteValues(
@@ -643,31 +643,25 @@ class BrowseController extends AbstractBase
      */
     protected function getAlphabetList()
     {
+        // Get base alphabet:
+        $chars = isset($this->config->Browse->alphabet_letters)
+            ? $this->config->Browse->alphabet_letters
+            : 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+        // Put numbers in the front for Era since years are important:
+        if ($this->getCurrentAction() == 'Era') {
+            $chars = '0123456789' . $chars;
+        } else {
+            $chars .= '0123456789';
+        }
+
         // ALPHABET TO ['value','displayText']
-        $alphabet = str_split('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789');
-        foreach ($alphabet as $index=>$letter) {
-            $alphabet[$index] = array(
-                'value'       => $letter,
-                'displayText' => $letter
-            );
-        }
-        if ($this->getCurrentAction() == 'Tag') {
-            return $alphabet;
-        }
-        // ADD ASTERISK FOR THOSE THAT NEED IT
-        foreach ($alphabet as $index=>$letter) {
-            $letter['value'] .= '*';
-            $alphabet[$index] = $letter;
-        }
-        if ($this->getCurrentAction() != 'Era') {
-            return $alphabet;
-        }
-        // PUT NUMBERS FIRST FOR YEARS
-        array_unshift($alphabet, $alphabet[count($alphabet)-10]);
-        unset($alphabet[count($alphabet)-10]);
-        for ($i=0;$i<9;$i++) {
-            array_unshift($alphabet, array_pop($alphabet));
-        }
-        return $alphabet;
+        // (value has asterix appended for Solr, but is unmodified for tags)
+        $suffix = $this->getCurrentAction() == 'Tag' ? '' : '*';
+        $callback = function ($letter) use ($suffix) {
+            return array('value' => $letter . $suffix, 'displayText' => $letter);
+        };
+        preg_match_all('/(.)/u', $chars, $matches);
+        return array_map($callback, $matches[1]);
     }
 }
