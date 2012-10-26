@@ -246,6 +246,51 @@ $config = array(
             'worldcat' => 'VuFind\RecordDriver\WorldCat',
         ),
     ),
+    // This section controls which tabs are used for which record driver classes.
+    // Each sub-array is a map from a tab name (as used in a record URL) to a tab
+    // service (found in recordtab_plugin_manager, below).  If a particular record
+    // driver is not defined here, it will inherit configuration from a configured
+    // parent class.
+    'recorddriver_tabs' => array(
+        'VuFind\RecordDriver\SolrDefault' => array(
+            'Holdings' => 'HoldingsILS', 'Description' => 'Description',
+            'TOC' => 'TOC', 'UserComments' => 'UserComments',
+            'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+            'Details' => 'StaffViewArray',
+        ),
+        'VuFind\RecordDriver\SolrMarc' => array(
+            'Holdings' => 'HoldingsILS', 'Description' => 'Description',
+            'TOC' => 'TOC', 'UserComments' => 'UserComments',
+            'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+            'Details' => 'StaffViewMARC',
+        ),
+        'VuFind\RecordDriver\Summon' => array(
+            'Description' => 'Description',
+            'TOC' => 'TOC', 'UserComments' => 'UserComments',
+            'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+            'Details' => 'StaffViewArray',
+        ),
+        'VuFind\RecordDriver\WorldCat' => array(
+            'Holdings' => 'HoldingsWorldCat', 'Description' => 'Description',
+            'TOC' => 'TOC', 'UserComments' => 'UserComments',
+            'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+            'Details' => 'StaffViewMARC',
+        ),
+    ),
+    'recordtab_plugin_manager' => array(
+        'abstract_factories' => array('VuFind\RecordTab\PluginFactory'),
+        'invokables' => array(
+            'description' => 'VuFind\RecordTab\Description',
+            'excerpt' => 'VuFind\RecordTab\Excerpt',
+            'holdingsils' => 'VuFind\RecordTab\HoldingsILS',
+            'holdingsworldcat' => 'VuFind\RecordTab\HoldingsWorldCat',
+            'reviews' => 'VuFind\RecordTab\Reviews',
+            'staffviewarray' => 'VuFind\RecordTab\StaffViewArray',
+            'staffviewmarc' => 'VuFind\RecordTab\StaffViewMARC',
+            'toc' => 'VuFind\RecordTab\TOC',
+            'usercomments' => 'VuFind\RecordTab\UserComments',
+        ),
+    ),
     'related_plugin_manager' => array(
         'abstract_factories' => array('VuFind\Related\PluginFactory'),
         'invokables' => array(

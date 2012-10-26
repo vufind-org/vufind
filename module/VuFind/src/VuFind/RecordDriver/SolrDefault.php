@@ -1102,49 +1102,6 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Returns an associative array (action => description) of record tabs supported
-     * by the data.
-     *
-     * @return array
-     */
-    public function getTabs()
-    {
-        // Turn on all tabs by default:
-        $allTabs = array(
-            'Holdings' => 'Holdings',
-            'Description' => 'Description',
-            'TOC' => 'Table of Contents',
-            'UserComments' => 'Comments',
-            'Reviews' => 'Reviews',
-            'Excerpt' => 'Excerpt',
-            'Details' => 'Staff View'
-        );
-
-        // No reviews or excerpts without ISBNs/appropriate configuration:
-        $isbns = $this->getISBNs();
-        if (empty($isbns)) {
-            unset($allTabs['Reviews']);
-            unset($allTabs['Excerpt']);
-        } else {
-            $config = ConfigReader::getConfig();
-            if (!isset($config->Content->reviews)) {
-                unset($allTabs['Reviews']);
-            }
-            if (!isset($config->Content->excerpts)) {
-                unset($allTabs['Excerpt']);
-            }
-        }
-
-        // No Table of Contents tab if no data available:
-        $toc = $this->getTOC();
-        if (empty($toc)) {
-            unset($allTabs['TOC']);
-        }
-
-        return $allTabs;
-    }
-
-    /**
      * Does the OpenURL configuration indicate that we should display OpenURLs in
      * the specified context?
      *

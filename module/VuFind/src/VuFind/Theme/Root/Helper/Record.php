@@ -269,14 +269,19 @@ class Record extends AbstractHelper
     /**
      * Render the contents of the specified record tab.
      *
-     * @param string $tab Tab to display
+     * @param \VuFind\RecordTab\TabInterface $tab Tab to display
      *
      * @return string
      */
-    public function getTab($tab)
+    public function getTab(\VuFind\RecordTab\TabInterface $tab)
     {
-        // Maintain full view context rather than default driver/data-only context:
-        return $this->renderTemplate('tab-' . $tab . '.phtml', array());
+        $context = array('driver' => $this->driver, 'tab' => $tab);
+        $classParts = explode('\\', get_class($tab));
+        $template = 'RecordTab/' . strtolower(array_pop($classParts)) . '.phtml';
+        $oldContext = $this->contextHelper->apply($context);
+        $html = $this->view->render($template);
+        $this->contextHelper->restore($oldContext);
+        return $html;
     }
 
     /**

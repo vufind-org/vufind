@@ -41,11 +41,46 @@ use VuFind\Exception\Mail as MailException, VuFind\Export,
  */
 class AbstractRecord extends AbstractBase
 {
+    /**
+     * Array of available tab options
+     *
+     * @var array
+     */
+    protected $allTabs = null;
+
+    /**
+     * Default tab to display
+     *
+     * @var string
+     */
     protected $defaultTab = 'Holdings';
-    protected $account;
+
+    /**
+     * Type of record to display
+     *
+     * @var string
+     */
     protected $searchClassId = 'Solr';
+
+    /**
+     * Should we use the result scroller?
+     *
+     * @var bool
+     */
     protected $useResultScroller = true;
+
+    /**
+     * Should we log statistics?
+     *
+     * @var bool
+     */
     protected $logStatistics = true;
+
+    /**
+     * Record driver
+     *
+     * @var \VuFind\RecordDriver\AbstractBase
+     */
     protected $driver = null;
 
     /**
@@ -170,19 +205,18 @@ class AbstractRecord extends AbstractBase
      */
     public function homeAction()
     {
-        // Forward to default tab (first fixing it if it is invalid):
-        $driver = $this->loadRecord();
-        $tabs = $driver->getTabs();
+        // Set up default tab (first fixing it if it is invalid):
+        $tabs = $this->getAllTabs();
         if (!isset($tabs[$this->defaultTab])) {
             $keys = array_keys($tabs);
-            $this->defaultTab = $keys[0];
+            $this->defaultTab = isset($keys[0]) ? $keys[0] : null;
         }
 
         // Save statistics:
         if ($this->logStatistics) {
             $statController = new \VuFind\Statistics\Record();
             $statController->setServiceLocator($this->getServiceLocator());
-            $statController->log($driver, $this->getRequest());
+            $statController->log($this->loadRecord(), $this->getRequest());
         }
 
         return $this->showTab($this->params()->fromRoute('tab', $this->defaultTab));
@@ -472,6 +506,22 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
+     * Get all tab information for a given driver.
+     *
+     * @return array
+     */
+    protected function getAllTabs()
+    {
+        if (null === $this->allTabs) {
+            $cfg = $this->getServiceLocator()->get('Config');
+            $this->allTabs = $this->getServiceLocator()
+                ->get('VuFind\RecordTabPluginManager')
+                ->getTabsForRecord($this->loadRecord(), $cfg['recorddriver_tabs']);
+        }
+        return $this->allTabs;
+    }
+
+    /**
      * Display a particular tab.
      *
      * @param string $tab Name of tab to display
@@ -493,13 +543,14 @@ class AbstractRecord extends AbstractBase
             return $patron;
         }
 
-        $driver = $this->loadRecord();
         $view = $this->createViewModel();
+        $view->tabs = $this->getAllTabs();
         $view->activeTab = strtolower($tab);
         $view->defaultTab = strtolower($this->defaultTab);
 
         // Set up next/previous record links (if appropriate)
         if ($this->useResultScroller) {
+            $driver = $this->loadRecord();
             $view->scrollData = $this->resultScroller()->getScrollData($driver);
         }
 

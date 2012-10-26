@@ -587,20 +587,6 @@ class Summon extends SolrDefault
     }
 
     /**
-     * Returns an associative array (action => description) of record tabs supported
-     * by the data.
-     *
-     * @return array
-     */
-    public function getTabs()
-    {
-        // No Holdings tab in Summon module:
-        $tabs = parent::getTabs();
-        unset($tabs['Holdings']);
-        return $tabs;
-    }
-
-    /**
      * Does the OpenURL configuration indicate that we should display OpenURLs in
      * the specified context?
      *

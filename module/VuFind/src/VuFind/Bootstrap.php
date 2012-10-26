@@ -89,7 +89,7 @@ class Bootstrap
         // Use naming conventions to set up a bunch of services based on namespace:
         $namespaces = array(
             'Auth', 'Autocomplete', 'Db\Table', 'ILS\Driver', 'Recommend',
-            'RecordDriver', 'Related', 'Resolver\Driver', 'Session',
+            'RecordDriver', 'RecordTab', 'Related', 'Resolver\Driver', 'Session',
             'Statistics\Driver'
         );
         foreach ($namespaces as $ns) {

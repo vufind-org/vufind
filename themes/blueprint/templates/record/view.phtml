@@ -9,7 +9,6 @@
     $this->headScript()->appendFile("check_save_statuses.js");
 
     // Set up some variables for convenience:
-    $tabs = $this->driver->getTabs();   // supported tabs
     $id = $this->driver->getUniqueId();
     $controllerClass = 'controller' . $this->record($this->driver)->getController();
     $cart = $this->cart();
@@ -81,14 +80,16 @@
     <?=$this->record($this->driver)->getCoreMetadata()?>
   </div>
 
-  <? if (count($tabs) > 0): ?>
+  <? if (count($this->tabs) > 0): ?>
   <div id="tabnav">
     <ul>
-      <? foreach ($tabs as $tab => $desc): ?>
+      <? foreach ($this->tabs as $tab => $obj): ?>
       <? // add current tab to breadcrumbs if applicable:
+         $desc = $obj->getDescription();
          $isCurrent = (strtolower($this->activeTab) == strtolower($tab));
          if ($isCurrent) {
              $this->layout()->breadcrumbs .= '<span>&gt;</span><em>' . $this->transEsc($desc) . '</em>';
+             $activeTabObj = $obj;
          }
       ?>
       <li<?=$isCurrent ? ' class="active"' : ''?>>
@@ -102,7 +103,7 @@
 
 
   <div class="recordsubcontent">
-    <?=$this->record($this->driver)->getTab($this->activeTab)?>
+    <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
   </div>
 
   <span class="Z3988" title="<?=$this->escapeHtml($this->driver->getOpenURL())?>"></span>

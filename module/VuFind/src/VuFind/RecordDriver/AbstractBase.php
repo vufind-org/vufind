@@ -323,17 +323,6 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface,
     }
 
     /**
-     * Returns an associative array (action => description) of record tabs supported
-     * by the data.
-     *
-     * @return array
-     */
-    public function getTabs()
-    {
-        return array();
-    }
-
-    /**
      * Does the OpenURL configuration indicate that we should display OpenURLs in
      * the specified context?
      *

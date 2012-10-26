@@ -861,30 +861,6 @@ class SolrMarc extends SolrDefault
     }
 
     /**
-     * Returns an associative array (action => description) of record tabs supported
-     * by the data.
-     *
-     * @return array
-     */
-    public function getTabs()
-    {
-        $tabs = parent::getTabs();
-        // Check if we need to disable the holdings tab:
-        if (isset($tabs['Holdings'])) {
-            $config = ConfigReader::getConfig();
-            if (isset($config->Site->hideHoldingsTabWhenEmpty)
-                && $config->Site->hideHoldingsTabWhenEmpty
-            ) {
-                $catalog = $this->getILS();
-                if (!$catalog->hasHoldings($this->getUniqueID())) {
-                    unset($tabs['Holdings']);
-                }
-            }
-        }
-        return $tabs;
-    }
-
-    /**
      * Returns true if the record supports real-time AJAX status lookups.
      *
      * @return bool
