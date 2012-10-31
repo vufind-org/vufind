@@ -1160,7 +1160,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface
             "FINE_FEE_TYPE.FINE_FEE_DESC",
             "PATRON.PATRON_ID", "FINE_FEE.FINE_FEE_AMOUNT",
             "FINE_FEE.FINE_FEE_BALANCE",
-            "to_char(FINE_FEE.CREATE_DATE, 'MM-DD-YY') as CREATEDATE",
+            "to_char(FINE_FEE.CREATE_DATE, 'MM-DD-YY HH:MI:SS') as CREATEDATE",
             "to_char(FINE_FEE.ORIG_CHARGE_DATE, 'MM-DD-YY') as CHARGEDATE",
             "to_char(FINE_FEE.DUE_DATE, 'MM-DD-YY') as DUEDATE",
             "BIB_ITEM.BIB_ID"
