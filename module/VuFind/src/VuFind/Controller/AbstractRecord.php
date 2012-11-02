@@ -373,6 +373,7 @@ class AbstractRecord extends AbstractBase
         $sms = $this->getServiceLocator()->get('VuFind\SMS');
         $view = $this->createViewModel();
         $view->carriers = $sms->getCarriers();
+        $view->validation = $sms->getValidationType();
 
         // Process form submission:
         if ($this->params()->fromPost('submit')) {
@@ -382,9 +383,11 @@ class AbstractRecord extends AbstractBase
 
             // Attempt to send the email and show an appropriate flash message:
             try {
-                $sms->textRecord(
-                    $view->provider, $view->to, $driver, $this->getViewRenderer()
+                $body = $this->getViewRenderer()->partial(
+                    'Email/record-sms.phtml',
+                    array('driver' => $driver, 'to' => $view->to)
                 );
+                $sms->text($view->provider, $view->to, null, $body);
                 $this->flashMessenger()->setNamespace('info')
                     ->addMessage('sms_success');
                 return $this->redirectToRecord();

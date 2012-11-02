@@ -20,26 +20,29 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Mailer
+ * @package  SMS
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
-namespace VuFind\Mailer;
-use VuFind\Config\Reader as ConfigReader, VuFind\Exception\Mail as MailException;
+namespace VuFind\SMS;
 
 /**
  * VuFind Mailer Class for SMS messages
  *
  * @category VuFind2
- * @package  Mailer
+ * @package  SMS
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
-class SMS extends \VuFind\Mailer
+class Mailer extends AbstractBase
 {
-    // Defaults, usually overridden by contents of sms.ini:
+    /**
+     * Default carriers, usually overridden by contents of web/conf/sms.ini.
+     *
+     * @var array
+     */
     protected $carriers = array(
         'virgin' => array('name' => 'Virgin Mobile', 'domain' => 'vmobl.com'),
         'att' => array('name' => 'AT&T', 'domain' => 'txt.att.net'),
@@ -51,38 +54,53 @@ class SMS extends \VuFind\Mailer
         'Cricket' => array('name' => 'Cricket', 'domain' => 'mms.mycricket.com')
     );
 
-    // Default "from" address:
+    /**
+     * Default "from" address
+     *
+     * @var string
+     */
     protected $defaultFrom;
+
+    /**
+     * VuFind Mailer object
+     *
+     * @var \VuFind\Mailer
+     */
+    protected $mailer;
 
     /**
      * Constructor
      *
-     * Sets up SMS carriers and other settings from sms.ini.
-     *
-     * @param \Zend\Mail\Transport\TransportInterface $transport Mail transport
-     * object (we'll build our own if none is provided).
-     * @param \Zend\Config\Config                     $config    VuFind configuration
-     * object (we'll auto-load if none is provided).
+     * @param \Zend\Config\Config $config  SMS configuration
+     * @param array               $options Additional options: defaultFrom (optional)
+     * and mailer (must be a \VuFind\Mailer object)
      */
-    public function __construct($transport = null, $config = null)
+    public function __construct(\Zend\Config\Config $config, $options = array())
     {
         // Set up parent object first:
-        parent::__construct($transport, $config);
+        parent::__construct($config, $options);
 
-        // if using sms.ini, then load the carriers from it
-        // otherwise, fall back to the default list of US carriers
-        $smsConfig = ConfigReader::getConfig('sms');
-        if (isset($smsConfig->Carriers) && count($smsConfig->Carriers) > 0) {
+        // If found, use carriers from SMS configuration; otherwise, fall back to the
+        // default list of US carriers.
+        if (isset($config->Carriers) && count($config->Carriers) > 0) {
             $this->carriers = array();
-            foreach ($smsConfig->Carriers as $id=>$settings) {
+            foreach ($config->Carriers as $id=>$settings) {
                 list($domain, $name) = explode(':', $settings, 2);
                 $this->carriers[$id] = array('name'=>$name, 'domain'=>$domain);
             }
         }
 
         // Load default "from" address:
-        $this->defaultFrom = isset($this->config->Site->email)
-            ? $this->config->Site->email : '';
+        $this->defaultFrom
+            = isset($options['defaultFrom']) ? $options['defaultFrom'] : '';
+
+        // Make sure mailer dependency has been injected:
+        if (!isset($options['mailer'])
+            || !($options['mailer'] instanceof \VuFind\Mailer)
+        ) {
+            throw new \Exception('$options["mailer"] must be a \VuFind\Mailer');
+        }
+        $this->mailer = $options['mailer'];
     }
 
     /**
@@ -105,8 +123,8 @@ class SMS extends \VuFind\Mailer
      * @param string $from     The email address to use as sender
      * @param string $message  The message to send
      *
-     * @throws MailException
-     * @return mixed           PEAR error on error, boolean true otherwise
+     * @throws \VuFind\Exception\Mail
+     * @return void
      */
     public function text($provider, $to, $from, $message)
     {
@@ -115,31 +133,10 @@ class SMS extends \VuFind\Mailer
             throw new MailException('Unknown Carrier');
         }
 
-        $badChars = array('-', '.', '(', ')', ' ');
-        $to = str_replace($badChars, '', $to);
-        $to = $to . '@' . $this->carriers[$provider]['domain'];
+        $to = $this->filterPhoneNumber($to)
+            . '@' . $this->carriers[$provider]['domain'];
         $from = empty($from) ? $this->defaultFrom : $from;
         $subject = '';
-        return $this->send($to, $from, $subject, $message);
-    }
-
-    /**
-     * Send a text message representing a record.
-     *
-     * @param string                                $provider Target SMS provider
-     * @param string                                $to       Recipient phone number
-     * @param \VuFind\RecordDriver\AbstractBase     $record   Record being emailed
-     * @param \Zend\View\Renderer\RendererInterface $view     View object (used to
-     * render email templates)
-     *
-     * @throws MailException
-     * @return void
-     */
-    public function textRecord($provider, $to, $record, $view)
-    {
-        $body = $view->partial(
-            'Email/record-sms.phtml', array('driver' => $record, 'to' => $to)
-        );
-        return $this->text($provider, $to, null, $body);
+        return $this->mailer->send($to, $from, $subject, $message);
     }
 }

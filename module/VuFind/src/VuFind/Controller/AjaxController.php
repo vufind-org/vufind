@@ -938,9 +938,12 @@ class AjaxController extends AbstractBase
                 $this->params()->fromPost('id'),
                 $this->params()->fromPost('source', 'VuFind')
             );
-            $this->getServiceLocator()->get('VuFind\SMS')->textRecord(
-                $this->params()->fromPost('provider'),
-                $this->params()->fromPost('to'), $record, $this->getViewRenderer()
+            $to = $this->params()->fromPost('to');
+            $body = $this->getViewRenderer()->partial(
+                'Email/record-sms.phtml', array('driver' => $record, 'to' => $to)
+            );
+            $this->getServiceLocator()->get('VuFind\SMS')->text(
+                $this->params()->fromPost('provider'), $to, null, $body
             );
             return $this->output(
                 $this->translate('sms_success'), self::STATUS_OK
