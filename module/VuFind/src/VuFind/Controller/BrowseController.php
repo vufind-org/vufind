@@ -583,7 +583,8 @@ class BrowseController extends AbstractBase
         if (isset($result[$facet])) {
             // Sort facets alphabetically if configured to do so:
             if (isset($this->config->Browse->alphabetical_order)
-                && $this->config->Browse->alphabetical_order) {
+                && $this->config->Browse->alphabetical_order
+            ) {
                 if (isset($this->config->Site->locale)) {
                     setlocale(LC_ALL, $this->config->Site->locale . ".utf8");
                     $callback = function ($a, $b) {
