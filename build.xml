@@ -52,8 +52,9 @@
       destdir="${builddir}/apidocs">
       <fileset dir=".">
         <include name="module/VuFind/src/**/*.php" />
-        <!-- This file breaks phpdoc2; exclude until we can figure out why: -->
+        <!-- These files break phpdoc2; exclude until we can figure out why: -->
         <exclude name="module/VuFind/src/VuFind/Log/Writer/Stream.php" />
+        <exclude name="module/VuFind/src/VuFind/SMS/*.php" />
       </fileset>
     </phpdoc2>
 
