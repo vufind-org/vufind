@@ -42,12 +42,13 @@ class Processor
     /**
      * Perform an XSLT transformation and return the results.
      *
-     * @param string $xslt Name of stylesheet (in application/xsl directory)
-     * @param string $xml  XML to transform with stylesheet
+     * @param string $xslt   Name of stylesheet (in application/xsl directory)
+     * @param string $xml    XML to transform with stylesheet
+     * @param string $params Associative array of XSLT parameters
      *
      * @return string      Transformed XML
      */
-    public static function process($xslt, $xml)
+    public static function process($xslt, $xml, $params = array())
     {
         $style = new DOMDocument();
         // TODO: support local overrides
@@ -56,6 +57,9 @@ class Processor
         $xsl->importStyleSheet($style);
         $doc = new DOMDocument();
         if ($doc->loadXML($xml)) {
+            foreach ($params as $key => $value) {
+                $xsl->setParameter('', $key, $value);
+            }
             return $xsl->transformToXML($doc);
         }
         return '';
