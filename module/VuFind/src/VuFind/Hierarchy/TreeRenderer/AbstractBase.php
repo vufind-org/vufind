@@ -96,7 +96,9 @@ abstract class AbstractBase
             $hierarchyDriver = $this->getRecordDriver()
                 ->tryMethod('getHierarchyDriver');
             if (!is_object($hierarchyDriver)) {
-                throw new \Exception('Cannot load hierarchy driver from record driver.');
+                throw new \Exception(
+                    'Cannot load hierarchy driver from record driver.'
+                );
             }
             $this->dataSource = $hierarchyDriver->getTreeSource();
         }
