@@ -90,6 +90,20 @@ class SolrDefault extends AbstractBase
     protected $snippet = false;
 
     /**
+     * Hierarchy driver plugin manager
+     *
+     * @var \VuFind\Hierarchy\Driver\PluginManager
+     */
+    protected $hierarchyDriverManager = null;
+
+    /**
+     * Hierarchy driver for current object
+     *
+     * @var \VuFind\Hierarchy\Driver\AbstractBase
+     */
+    protected $hierarchyDriver = null;
+
+    /**
      * Constructor.
      */
     public function __construct()
@@ -1028,6 +1042,99 @@ class SolrDefault extends AbstractBase
             return array_map($filter, $this->fields['url']);
         }
         return array();
+    }
+
+    /**
+     * Get a hierarchy driver appropriate to the current object.  (May be false if
+     * disabled/unavailable).
+     *
+     * @return \VuFind\Hierarchy\Driver\AbstractBase|bool
+     */
+    public function getHierarchyDriver()
+    {
+        if (null === $this->hierarchyDriver
+            && null !== $this->hierarchyDriverManager
+        ) {
+            $type = $this->getHierarchyType();
+            $this->hierarchyDriver = $type
+                ? $this->hierarchyDriverManager->get($type) : false;
+        }
+        return $this->hierarchyDriver;
+    }
+
+    /**
+     * Inject a hierarchy driver plugin manager.
+     *
+     * @param \VuFind\Hierarchy\Driver\PluginManager $pm Hierarchy driver manager
+     *
+     * @return SolrDefault
+     */
+    public function setHierarchyDriverManager(
+        \VuFind\Hierarchy\Driver\PluginManager $pm
+    ) {
+        $this->hierarchyDriverManager = $pm;
+        return $this;
+    }
+
+    /**
+     * Get the hierarchy_top_id(s) associated with this item (empty if none).
+     *
+     * @return array
+     */
+    public function getHierarchyTopID()
+    {
+        return isset($this->fields['hierarchy_top_id'])
+            ? $this->fields['hierarchy_top_id'] : array();
+    }
+
+    /**
+     * Get the absolute parent title(s) associated with this item
+     * (empty if none).
+     *
+     * @return array
+     */
+    public function getHierarchyTopTitle()
+    {
+        return isset($this->fields['hierarchy_top_title'])
+            ? $this->fields['hierarchy_top_title'] : array();
+    }
+
+    /**
+     * Get a list of hierarchy trees containing this record.
+     *
+     * @param string $hierarchyID The hierarchy to get the tree for
+     *
+     * @return mixed An associative array of hierachy trees on success (id => title),
+     * false if no hierarchies found
+     */
+    public function getHierarchyTrees($hierarchyID = false)
+    {
+        $hierarchyDriver = $this->getHierarchyDriver();
+        if ($hierarchyDriver && $hierarchyDriver->showTree()) {
+            return $hierarchyDriver->getTreeRenderer($this)
+                ->getTreeList($hierarchyID);
+        }
+        return false;
+    }
+
+    /**
+     * Get the Hierarchy Type (false if none)
+     *
+     * @return string|bool
+     */
+    public function getHierarchyType()
+    {
+        if (isset($this->fields['hierarchy_top_id'])) {
+            $hierarchyType = isset($this->fields['hierarchytype'])
+                ? $this->fields['hierarchytype'] : false;
+            if (!$hierarchyType) {
+                $config = ConfigReader::getConfig();
+                $hierarchyType = isset($config->Hierarchy->driver)
+                    ? $config->Hierarchy->driver : false;
+            }
+            return $hierarchyType;
+        }
+        return false;
     }
 
     /**

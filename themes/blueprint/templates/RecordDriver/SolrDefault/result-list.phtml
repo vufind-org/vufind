@@ -107,6 +107,17 @@
     <div class="savedLists info hide">
       <strong><?=$this->transEsc("Saved in")?>:</strong>
     </div>
+
+    <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
+      <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
+        <div class="hierarchyTreeLink">
+          <input type="hidden" value="<?=$this->escapeHtml($hierarchyID)?>" class="hiddenHierarchyId" />
+          <a class="hierarchyTreeLinkText" href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchyID)?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>">
+            <?=$this->transEsc('hierarchy_view_context')?><? if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><? endif; ?>
+          </a>
+        </div>
+      <? endforeach; ?>
+    <? endif; ?>
   </div>
 
   <div class="clear"></div>

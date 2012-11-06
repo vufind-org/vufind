@@ -174,6 +174,34 @@ $config = array(
             'userstatsfields' => 'VuFind\Db\Table\UserStatsFields',
         ),
     ),
+    'hierarchy_driver_plugin_manager' => array(
+        'factories' => array(
+            'default' => function ($sm) {
+                return \VuFind\Hierarchy\Driver\Factory::get($sm->getServiceLocator(), 'HierarchyDefault');
+            },
+            'flat' => function ($sm) {
+                return \VuFind\Hierarchy\Driver\Factory::get($sm->getServiceLocator(), 'HierarchyFlat');
+            },
+        )
+    ),
+    'hierarchy_treedatasource_plugin_manager' => array(
+        'factories' => array(
+            'solr' => function ($sm) {
+                $cacheDir = $sm->getServiceLocator()->get('VuFind\CacheManager')->getCacheDir();
+                return new \VuFind\Hierarchy\TreeDataSource\Solr(
+                    rtrim($cacheDir, '/') . '/hierarchy'
+                );
+            },
+        ),
+        'invokables' => array(
+            'xmlfile' => 'VuFind\Hierarchy\TreeDataSource\XMLFile',
+        ),
+    ),
+    'hierarchy_treerenderer_plugin_manager' => array(
+        'invokables' => array(
+            'jstree' => 'VuFind\Hierarchy\TreeRenderer\JSTree',
+        )
+    ),
     'ils_driver_plugin_manager' => array(
         'abstract_factories' => array('VuFind\ILS\Driver\PluginFactory'),
         'invokables' => array(
@@ -256,13 +284,13 @@ $config = array(
             'Holdings' => 'HoldingsILS', 'Description' => 'Description',
             'TOC' => 'TOC', 'UserComments' => 'UserComments',
             'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
-            'Details' => 'StaffViewArray',
+            'HierarchyTree' => 'HierarchyTree', 'Details' => 'StaffViewArray',
         ),
         'VuFind\RecordDriver\SolrMarc' => array(
             'Holdings' => 'HoldingsILS', 'Description' => 'Description',
             'TOC' => 'TOC', 'UserComments' => 'UserComments',
             'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
-            'Details' => 'StaffViewMARC',
+            'HierarchyTree' => 'HierarchyTree', 'Details' => 'StaffViewMARC',
         ),
         'VuFind\RecordDriver\Summon' => array(
             'Description' => 'Description',
@@ -282,6 +310,7 @@ $config = array(
         'invokables' => array(
             'description' => 'VuFind\RecordTab\Description',
             'excerpt' => 'VuFind\RecordTab\Excerpt',
+            'hierarchytree' => 'VuFind\RecordTab\HierarchyTree',
             'holdingsils' => 'VuFind\RecordTab\HoldingsILS',
             'holdingsworldcat' => 'VuFind\RecordTab\HoldingsWorldCat',
             'reviews' => 'VuFind\RecordTab\Reviews',

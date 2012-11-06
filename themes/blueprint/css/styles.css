@@ -1736,3 +1736,11 @@ div#closeContextHelp:active {
 .Z3988 {
     display: none;
 }
+
+.currentTree, .hierarchyTreeLinkText {
+    background-image:url(../images/fugue/treeCurrent.png);
+    background-repeat:no-repeat;
+    background-position: left;
+    padding:.5em .5em .5em 20px;
+    margin-right:1em;
+}

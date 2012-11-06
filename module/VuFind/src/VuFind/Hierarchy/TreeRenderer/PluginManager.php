@@ -1,6 +1,6 @@
 <?php
 /**
- * Record driver plugin manager
+ * Hierarchy tree renderer plugin manager
  *
  * PHP version 5
  *
@@ -20,55 +20,24 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  RecordDrivers
+ * @package  HierarchyTree_Renderer
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
  */
-namespace VuFind\RecordDriver;
+namespace VuFind\Hierarchy\TreeRenderer;
 
 /**
- * Record driver plugin manager
+ * Hierarchy tree renderer plugin manager
  *
  * @category VuFind2
- * @package  RecordDrivers
+ * @package  HierarchyTree_Renderer
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
-    /**
-     * Constructor
-     *
-     * @param null|ConfigInterface $configuration Configuration settings (optional)
-     */
-    public function __construct(
-        \Zend\ServiceManager\ConfigInterface $configuration = null
-    ) {
-        parent::__construct($configuration);
-
-        // Add an initializer for setting up hierarchies
-        $initializer = function ($instance, $manager) {
-            $hasHierarchyType = is_callable(array($instance, 'getHierarchyType'));
-            if ($hasHierarchyType
-                && is_callable(array($instance, 'setHierarchyDriverManager'))
-            ) {
-                $sm = $manager->getServiceLocator();
-                if ($sm->has('VuFind\HierarchyDriverPluginManager')) {
-                    $instance->setHierarchyDriverManager(
-                        $sm->get('VuFind\HierarchyDriverPluginManager')
-                    );
-                }
-            }
-        };
-        $this->addInitializer($initializer, false);
-
-        // Record drivers are not meant to be shared -- every time we retrieve one,
-        // we are building a brand new object.
-        $this->setShareByDefault(false);
-    }
-
     /**
      * Return the name of the base class or interface that plug-ins must conform
      * to.
@@ -77,6 +46,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return 'VuFind\RecordDriver\AbstractBase';
+        return 'VuFind\Hierarchy\TreeRenderer\AbstractBase';
     }
 }

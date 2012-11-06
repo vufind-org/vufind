@@ -88,9 +88,10 @@ class Bootstrap
 
         // Use naming conventions to set up a bunch of services based on namespace:
         $namespaces = array(
-            'Auth', 'Autocomplete', 'Db\Table', 'ILS\Driver', 'Recommend',
-            'RecordDriver', 'RecordTab', 'Related', 'Resolver\Driver', 'Session',
-            'Statistics\Driver'
+            'Auth', 'Autocomplete', 'Db\Table', 'Hierarchy\Driver',
+            'Hierarchy\TreeDataSource', 'Hierarchy\TreeRenderer', 'ILS\Driver',
+            'Recommend', 'RecordDriver', 'RecordTab', 'Related', 'Resolver\Driver',
+            'Session', 'Statistics\Driver'
         );
         foreach ($namespaces as $ns) {
             $serviceName = 'VuFind\\' . str_replace('\\', '', $ns) . 'PluginManager';
