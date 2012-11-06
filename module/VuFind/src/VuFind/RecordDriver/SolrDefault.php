@@ -1320,4 +1320,15 @@ class SolrDefault extends AbstractBase
         return isset($this->fields['title_sort'])
             ? $this->fields['title_sort'] : parent::getSortTitle();
     }
+
+    /**
+     * Get longitude/latitude text (or false if not available).
+     *
+     * @return string|bool
+     */
+    public function getLongLat()
+    {
+        return isset($this->fields['long_lat'])
+            ? $this->fields['long_lat'] : false;
+    }
 }
