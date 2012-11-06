@@ -46,6 +46,13 @@ abstract class AbstractBase implements TabInterface
     protected $driver = null;
 
     /**
+     * User request associated with the tab (false for none)
+     *
+     * @var \Zend\Http\Request|bool
+     */
+    protected $request = false;
+
+    /**
      * Is this tab active?
      *
      * @return bool
@@ -81,5 +88,28 @@ abstract class AbstractBase implements TabInterface
             throw new \Exception('Record driver not set.');
         }
         return $this->driver;
+    }
+
+    /**
+     * Set the user request
+     *
+     * @param \Zend\Http\Request $request Request
+     *
+     * @return AbstractBase
+     */
+    public function setRequest(\Zend\Http\Request $request)
+    {
+        $this->request = $request;
+        return $this;
+    }
+
+    /**
+     * Get the user request (or false if unavailable)
+     *
+     * @return \Zend\Http\Request|bool
+     */
+    protected function getRequest()
+    {
+        return $this->request;
     }
 }

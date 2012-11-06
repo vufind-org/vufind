@@ -516,10 +516,12 @@ class AbstractRecord extends AbstractBase
     protected function getAllTabs()
     {
         if (null === $this->allTabs) {
+            $driver = $this->loadRecord();
             $cfg = $this->getServiceLocator()->get('Config');
+            $request = $this->getRequest();
             $this->allTabs = $this->getServiceLocator()
                 ->get('VuFind\RecordTabPluginManager')
-                ->getTabsForRecord($this->loadRecord(), $cfg['recorddriver_tabs']);
+                ->getTabsForRecord($driver, $cfg['recorddriver_tabs'], $request);
         }
         return $this->allTabs;
     }

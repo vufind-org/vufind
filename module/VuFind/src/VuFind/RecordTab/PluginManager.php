@@ -81,14 +81,15 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     /**
      * Get an array of valid tabs for the provided record driver.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
-     * @param array                             $config Tab configuration (map of
+     * @param \VuFind\RecordDriver\AbstractBase $driver  Record driver
+     * @param array                             $config  Tab configuration (map of
      * driver class => tab service name
+     * @param \Zend\Http\Request                $request User request (optional)
      *
      * @return array                                    service name => tab object
      */
     public function getTabsForRecord(\VuFind\RecordDriver\AbstractBase $driver,
-        array $config
+        array $config, $request = null
     ) {
         $tabs = array();
         foreach ($this->getTabServiceNames($driver, $config) as $tabKey => $svc) {
@@ -98,6 +99,11 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             $newTab = $this->get($svc);
             if (method_exists($newTab, 'setRecordDriver')) {
                 $newTab->setRecordDriver($driver);
+            }
+            if ($request instanceof \Zend\Http\Request
+                && method_exists($newTab, 'setRequest')
+            ) {
+                $newTab->setRequest($request);
             }
             if ($newTab->isActive()) {
                 $tabs[$tabKey] = $newTab;
