@@ -15,7 +15,7 @@
   <? if ($activeTree): ?>
     <div id="hierarchyTreeHolder">
       <div id="hierarchyTree">
-        <?=$this->tab->renderTree($this->url('home'))?>
+        <?=str_replace(' href="', ' data-ajax="false" href="', $this->tab->renderTree($this->url('home')))?>
       </div>
     </div>
   <? endif; ?>
