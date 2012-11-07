@@ -1737,10 +1737,57 @@ div#closeContextHelp:active {
     display: none;
 }
 
+#hierarchyTreeHolder {
+    background-color: #FFF;
+    border: 1px solid #DCDCDC;
+    padding: 0.5em;
+}
+
+#hierarchyTree {
+    padding: 0.5em 0.5em 0.5em 0;
+    max-height:375px;
+    min-height:375px;
+    overflow: hidden;
+    overflow-y: auto;
+}
+
+#hierarchyTree ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.tree {
+    background-image:url(../images/fugue/tree.png);
+    background-repeat:no-repeat;
+    background-position: left;
+    padding:.5em .5em .5em 20px;
+    margin-right:1em;
+}
+
 .currentTree, .hierarchyTreeLinkText {
     background-image:url(../images/fugue/treeCurrent.png);
     background-repeat:no-repeat;
     background-position: left;
     padding:.5em .5em .5em 20px;
     margin-right:1em;
+}
+
+#hierarchyTree #treeList li {
+    background-image:url(../images/fugue/treeItem.png);
+    background-repeat: no-repeat;
+    padding: 0.25em 0 0 23px;
+    background-position: 0 0.25em;
+}
+
+#hierarchyTree #treeList li.currentRecord {
+    background-image:url(../images/fugue/treeItemCurrent.png);
+    background-repeat: no-repeat;
+    padding: 0.25em 0 0 23px;
+    background-position: 0 0.25em;
+}
+
+#hierarchyTree #treeList li.currentHierarchy > a, #hierarchyTree #treeList li.currentRecord > a {
+    color: #000;
+    font-weight: bold;
 }
