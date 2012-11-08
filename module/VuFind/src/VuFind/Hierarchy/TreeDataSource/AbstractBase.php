@@ -113,10 +113,11 @@ abstract class AbstractBase implements \Zend\Log\LoggerAwareInterface
      * Get XML for the specified hierarchy ID.
      *
      * @param string $id Hierarchy ID.
+     * @param array  $options Additional options for XML generation.
      *
      * @return string
      */
-    abstract public function getXML($id);
+    abstract public function getXML($id, $options = array());
 
     /**
      * Does this data source support the specified hierarchy ID?

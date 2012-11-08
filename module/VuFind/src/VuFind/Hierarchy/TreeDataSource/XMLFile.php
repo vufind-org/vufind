@@ -78,10 +78,11 @@ class XMLFile extends AbstractBase
      * Get XML for the specified hierarchy ID.
      *
      * @param string $id Hierarchy ID.
+     * @param array  $options Additional options for XML generation (unused here).
      *
      * @return string
      */
-    public function getXML($id)
+    public function getXML($id, $options = array())
     {
         return file_get_contents($this->getFilename($id));
     }

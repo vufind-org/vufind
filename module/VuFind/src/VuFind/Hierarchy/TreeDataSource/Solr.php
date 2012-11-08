@@ -71,23 +71,24 @@ class Solr extends AbstractBase
      *
      * Build the XML file from the Solr fields
      *
-     * TODO: this should return false if it fails.
-     *
-     * @param string $id Hierarchy ID.
+     * @param string $id      Hierarchy ID.
+     * @param array  $options Additional options for XML generation.  (Currently one
+     * option is supported: 'refresh' may be set to true to bypass caching).
      *
      * @return string
      */
-    public function getXML($id)
+    public function getXML($id, $options = array())
     {
         $top = $this->db->getRecord($id);
         $cacheFile = (null !== $this->cacheDir)
             ? $this->cacheDir . '/hierarchyTree_' . urlencode($id) . '.xml'
             : false;
 
+        $useCache = isset($options['refresh']) ? !$options['refresh'] : true;
         $cacheTime = $this->getHierarchyDriver()->getTreeCacheTime();
 
-        if ($cacheFile && file_exists($cacheFile)
-            && filemtime($cacheFile) > (time() - $cacheTime)
+        if ($useCache && file_exists($cacheFile)
+            && ($cacheTime < 0 || filemtime($cacheFile) > (time() - $cacheTime))
         ) {
             $this->debug("Using cached data from $cacheFile");
             $xml = file_get_contents($cacheFile);

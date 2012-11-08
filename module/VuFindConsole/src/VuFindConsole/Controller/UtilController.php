@@ -385,4 +385,25 @@ class UtilController extends AbstractBase
         }
         return $this->getSuccessResponse();
     }
+
+    /**
+     * Tool to auto-fill hierarchy cache.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function createhierarchytreesAction()
+    {
+        $solr = $this->getSearchManager()->setSearchClassId('Solr')->getResults();
+        $hierarchies = $solr->getFullFieldFacets(array('hierarchy_top_id'));
+        foreach ($hierarchies['hierarchy_top_id']['data']['list'] as $hierarchy) {
+            Console::writeLine("Building tree for {$hierarchy['value']}...");
+            $driver = $solr->getRecord($hierarchy['value']);
+            if ($driver->getHierarchyType()) {
+                // Only do this if the record is actually a hierarchy type record
+                $driver->getHierarchyDriver()->getTreeSource()
+                    ->getXML($hierarchy['value'], array('refresh' => true));
+            }
+        }
+        return $this->getSuccessResponse();
+    }
 }
