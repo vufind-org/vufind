@@ -318,6 +318,11 @@ class Bootstrap
      */
     protected function initExceptionBased404s()
     {
+        // 404s not needed in console mode:
+        if (Console::isConsole()) {
+            return;
+        }
+
         $callback = function ($e) {
             $exception = $e->getParam('exception');
             if (is_object($exception)) {
