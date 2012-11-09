@@ -59,6 +59,8 @@ class Factory implements \Zend\ServiceManager\FactoryInterface
 
         // Initialize object based on requested type:
         switch (strtolower($type)) {
+        case 'clickatell':
+            return new Clickatell($smsConfig);
         case 'mailer':
             $options = array('mailer' => $sm->get('VuFind\Mailer'));
             if (isset($mainConfig->Site->email)) {
