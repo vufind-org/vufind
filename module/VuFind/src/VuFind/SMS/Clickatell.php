@@ -67,6 +67,10 @@ class Clickatell extends AbstractBase
         if (!function_exists('iconv')) {
             throw new MailException('Clickatell requires iconv PHP extension.');
         }
+        // Normalize UTF-8 if intl extension is installed:
+        if (class_exists('Normalizer')) {
+            $message = \Normalizer::normalize($message);
+        }
         $message = iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $message);
 
         // We need to trim to 160 bytes (note that we need to use substr and not
