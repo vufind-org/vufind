@@ -47,7 +47,7 @@ class Map extends AbstractBase
      */
     protected $translator = null;
 
-   /**
+    /**
      * Get the on-screen description for this tab.
      *
      * @return string

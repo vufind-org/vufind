@@ -112,7 +112,7 @@ abstract class AbstractBase implements \Zend\Log\LoggerAwareInterface
     /**
      * Get XML for the specified hierarchy ID.
      *
-     * @param string $id Hierarchy ID.
+     * @param string $id      Hierarchy ID.
      * @param array  $options Additional options for XML generation.
      *
      * @return string

@@ -106,7 +106,7 @@ class Clickatell extends AbstractBase
      * associative arrays indexed by carrier ID and containing "name" and "domain"
      * keys.
      *
-     * @access public
+     * @return array
      */
     public function getCarriers()
     {

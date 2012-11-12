@@ -77,7 +77,7 @@ class XMLFile extends AbstractBase
     /**
      * Get XML for the specified hierarchy ID.
      *
-     * @param string $id Hierarchy ID.
+     * @param string $id      Hierarchy ID.
      * @param array  $options Additional options for XML generation (unused here).
      *
      * @return string
