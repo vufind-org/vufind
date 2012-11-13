@@ -223,6 +223,19 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
+     * AJAX tab action -- render a tab without surrounding context.
+     *
+     * @return mixed
+     */
+    public function ajaxtabAction()
+    {
+        $this->loadRecord();
+        return $this->showTab(
+            $this->params()->fromPost('tab', $this->defaultTab), true
+        );
+    }
+
+    /**
      * ProcessSave -- store the results of the Save action.
      *
      * @return mixed
@@ -529,11 +542,12 @@ class AbstractRecord extends AbstractBase
     /**
      * Display a particular tab.
      *
-     * @param string $tab Name of tab to display
+     * @param string $tab  Name of tab to display
+     * @param bool   $ajax Are we in AJAX mode?
      *
      * @return mixed
      */
-    protected function showTab($tab)
+    protected function showTab($tab, $ajax = false)
     {
         // Special case -- handle login request (currently needed for holdings
         // tab when driver-based holds mode is enabled, but may also be useful
@@ -559,7 +573,7 @@ class AbstractRecord extends AbstractBase
             $view->scrollData = $this->resultScroller()->getScrollData($driver);
         }
 
-        $view->setTemplate('record/view');
+        $view->setTemplate($ajax ? 'record/ajaxtab' : 'record/view');
         return $view;
     }
 }
