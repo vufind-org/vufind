@@ -3,6 +3,19 @@
     $this->headTitle($this->translate('hierarchy_tree') . ': ' . $this->driver->getBreadcrumb());
     $hierarchyTreeList = $this->tab->getTreeList();
     $activeTree = $this->tab->getActiveTree();
+
+    $this->inlineScript(
+        \Zend\View\Helper\HeadScript::SCRIPT,
+        "var hierarchySettings = {\n"
+        . "    lightboxMode: " . ($this->layout()->getTemplate() == 'layout/lightbox' ? 'true' : 'false') . ",\n"
+        . "    fullHierarchy: " . ($this->tab->getFullHierarchySetting() ? 'true' : 'false') . "\n"
+        . "};\n"
+        . "vufindString.showTree = \"" . $this->transEsc('hierarchy_show_tree') . "\";\n"
+        . "vufindString.hideTree = \"" . $this->transEsc('hierarchy_hide_tree') . "\";\n"
+    );
+    $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'jsTree/jquery.jstree.js');
+    $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'hierarchyTree_JSTree.js');
+    echo $this->inlineScript();
 ?>
 <div>
   <? if (count($hierarchyTreeList) > 1): ?>
@@ -15,7 +28,12 @@
   <? if ($activeTree): ?>
     <div id="hierarchyTreeHolder">
       <div id="hierarchyTree">
-        <?=$this->tab->renderTree($this->url('home'))?>
+        <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>" class="hiddenRecordId" />
+        <input type="hidden" value="<?=$this->escapeHtml($activeTree)?>" class="hiddenHierarchyId" />
+        <input type="hidden" value="Record" class="hiddenContext" />
+        <noscript>
+          <?=$this->tab->renderTree($this->url('home'))?>
+        </noscript>
       </div>
     </div>
   <? endif; ?>

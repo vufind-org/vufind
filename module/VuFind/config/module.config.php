@@ -129,6 +129,7 @@ $config = array(
             'cover' => 'VuFind\Controller\CoverController',
             'error' => 'VuFind\Controller\ErrorController',
             'help' => 'VuFind\Controller\HelpController',
+            'hierarchy' => 'VuFind\Controller\HierarchyController',
             'index' => 'VuFind\Controller\IndexController',
             'install' => 'VuFind\Controller\InstallController',
             'missingrecord' => 'VuFind\Controller\MissingrecordController',

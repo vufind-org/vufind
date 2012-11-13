@@ -75,13 +75,14 @@ class HierarchyTree extends AbstractBase
     public function getActiveTree()
     {
         $treeList = $this->getTreeList();
-        if (count($treeList) == 1) {
+        $hierarchySetting = ($request = $this->getRequest())
+            ? $request->getPost('hierarchy', $request->getQuery('hierarchy', false))
+            : false;
+        if (count($treeList) == 1 || !$hierarchySetting) {
             $keys = array_keys($treeList);
             return $keys[0];
         } else {
-            return ($request = $this->getRequest())
-                ? $request->getQuery('hierarchy', false)
-                : false;
+            return $hierarchySetting;
         }
     }
 
@@ -100,6 +101,37 @@ class HierarchyTree extends AbstractBase
             }
         }
         return $this->treeList;
+    }
+
+    /**
+     * Should we display the full tree, or just a partial tree?
+     *
+     * @return bool
+     */
+    public function getFullHierarchySetting()
+    {
+        // Get hierarchy driver:
+        $recordDriver = $this->getRecordDriver();
+        $hierarchyDriver = $recordDriver->tryMethod('getHierarchyDriver');
+
+        // We need a driver to proceed:
+        if (is_object($hierarchyDriver)) {
+            // No setting, or true setting -- use default setting:
+            $settings = $hierarchyDriver->getTreeSettings();
+            if (!isset($settings['fullHierarchyRecordView'])
+                || $settings['fullHierarchyRecordView']
+            ) {
+                return true;
+            }
+        }
+
+        // Currently displaying top of tree?  Disable partial hierarchy:
+        if ($this->getActiveTree() == $recordDriver->getUniqueId()) {
+            return true;
+        }
+
+        // Only if we got this far is it appropriate to use a partial hierarchy:
+        return false;
     }
 
     /**

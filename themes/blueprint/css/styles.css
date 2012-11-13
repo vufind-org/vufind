@@ -1751,6 +1751,13 @@ div#closeContextHelp:active {
     overflow-y: auto;
 }
 
+#modalDialog #hierarchyTree {
+    max-height: 100%;
+    min-height: 100%;
+    overflow: auto;
+    overflow-y: auto;
+}
+
 #hierarchyTree ul {
     list-style-type: none;
     margin: 0;
@@ -1789,5 +1796,27 @@ div#closeContextHelp:active {
 
 #hierarchyTree #treeList li.currentHierarchy > a, #hierarchyTree #treeList li.currentRecord > a {
     color: #000;
+    font-weight: bold;
+}
+
+#toggleTree {
+    background-image:url(../images/fugue/treeCurrent.png);
+    background-repeat: no-repeat;
+    padding: 0.25em 0 0 23px;
+    background-position: 0 0.25em;
+}
+
+#treeSelector {
+    background-color: #FAFAFA;
+    border: 1px solid #DCDCDC;
+    border-bottom: 0 none;
+    padding: 0.25em;
+}
+
+#treeSelector a {
+    margin-right: 1em;
+}
+
+.jstree-highlight {
     font-weight: bold;
 }

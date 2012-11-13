@@ -109,6 +109,7 @@
     </div>
 
     <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
+      <? $this->headScript()->appendFile('search_hierarchyTree.js'); ?>
       <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
         <div class="hierarchyTreeLink">
           <input type="hidden" value="<?=$this->escapeHtml($hierarchyID)?>" class="hiddenHierarchyId" />
