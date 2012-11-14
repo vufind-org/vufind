@@ -62,7 +62,7 @@ $(document).ready(function() {
                 "url" : path + '/Hierarchy/GetTree?' + $.param({'hierarchyID': hierarchyID, 'id': recordID, 'context': context, mode: "Tree"}),
                 success: function(data) {
                     // Necessary as data is a string
-                    var dataAsXML = parseXml(data);
+                    var dataAsXML = $.parseXML(data);
                     if(dataAsXML) {
                         var error = $(dataAsXML).find("error");
                         if (error.length > 0) {
@@ -89,25 +89,6 @@ $(document).ready(function() {
         $(data.args[0]).find("li").show();
     });
 });
-
-// Parse XML (Feature not available in JQuery 1.4)
-if (typeof window.DOMParser != "undefined") {
-    parseXml = function(xmlStr) {
-        return ( new window.DOMParser() ).parseFromString(xmlStr, "text/xml");
-    };
-} else if (typeof window.ActiveXObject != "undefined" &&
-    new window.ActiveXObject("Microsoft.XMLDOM")) {
-    parseXml = function(xmlStr) {
-        var xmlDoc = new window.ActiveXObject("Microsoft.XMLDOM");
-        xmlDoc.async = "false";
-        xmlDoc.loadXML(xmlStr);
-        return xmlDoc;
-    };
-} else {
-    parseXml = function(xmlStr) {
-        return false;
-    };
-}
 
 function showTreeError(msg) {
     $("#hierarchyTreeHolder").html('<p class="error">' + msg + '</p>');
