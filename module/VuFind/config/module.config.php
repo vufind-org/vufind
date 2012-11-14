@@ -250,6 +250,7 @@ $config = array(
             'europeanaresults' => 'VuFind\Recommend\EuropeanaResults',
             'europeanaresultsdeferred' => 'VuFind\Recommend\EuropeanaResultsDeferred',
             'expandfacets' => 'VuFind\Recommend\ExpandFacets',
+            'facetcloud' => 'VuFind\Recommend\FacetCloud',
             'favoritefacets' => 'VuFind\Recommend\FavoriteFacets',
             'openlibrarysubjects' => 'VuFind\Recommend\OpenLibrarySubjects',
             'openlibrarysubjectsdeferred' => 'VuFind\Recommend\OpenLibrarySubjectsDeferred',
