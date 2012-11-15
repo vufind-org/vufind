@@ -47,6 +47,26 @@ class HierarchyTree extends AbstractBase
     protected $treeList = null;
 
     /**
+     * Configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $config = null;
+
+    /**
+     * Get the VuFind configuration.
+     *
+     * @return \Zend\Config\Config
+     */
+    protected function getConfig()
+    {
+        if (null === $this->config) {
+            $this->config = ConfigReader::getConfig();
+        }
+        return $this->config;
+    }
+
+    /**
      * Get the on-screen description for this tab.
      *
      * @return string
@@ -154,5 +174,28 @@ class HierarchyTree extends AbstractBase
             );
         }
         return '';
+    }
+
+    /**
+     * Is tree searching active?
+     *
+     * @return bool
+     */
+    public function searchActive()
+    {
+        $config = $this->getConfig();
+        return (!isset($config->Hierarchy->search) || $config->Hierarchy->search);
+    }
+
+    /**
+     * Get the tree search result limit.
+     *
+     * @return int
+     */
+    public function getSearchLimit()
+    {
+        $config = $this->getConfig();
+        return isset($config->Hierarchy->treeSearchLimit)
+            ? $config->Hierarchy->treeSearchLimit : -1;
     }
 }

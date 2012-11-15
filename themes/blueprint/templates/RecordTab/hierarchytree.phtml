@@ -27,6 +27,19 @@
   <? endif; ?>
   <? if ($activeTree): ?>
     <div id="hierarchyTreeHolder">
+      <? if ($this->tab->searchActive()): ?>
+        <div id="treeSearch">
+          <span id="treeSearchNoResults"><?=$this->transEsc('nohit_heading')?></span>
+          <input id="search" type="button" value="search" />
+          <select id="treeSearchType" name="type">
+            <option value="AllFields"><?=$this->transEsc('All Fields')?></option>
+            <option value="Title"><?=$this->transEsc('Title')?></option>
+          </select>
+          <input id="treeSearchText" type="text" value="" />
+          <span id="treeSearchLoadingImg"><img src="<?=$this->imageLink('loading.gif')?>"/></span>
+        </div>
+        <div id="treeSearchLimitReached"><?=$this->translate('tree_search_limit_reached_html', array('%%url%%' => $this->url('search-results'), '%%limit%%' => $this->tab->getSearchLimit()))?></div>
+      <? endif; ?>
       <div id="hierarchyTree">
         <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>" class="hiddenRecordId" />
         <input type="hidden" value="<?=$this->escapeHtml($activeTree)?>" class="hiddenHierarchyId" />
