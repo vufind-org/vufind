@@ -803,7 +803,7 @@ class AjaxController extends AbstractBase
                 // Only retain numeric values!
                 if (preg_match("/^[0-9]+$/", $current['value'])) {
                     $newValues['data'][]
-                        = array($current['value'],$current['count']);
+                        = array($current['value'], $current['count']);
                 }
             }
             $retVal[$field] = $newValues;
