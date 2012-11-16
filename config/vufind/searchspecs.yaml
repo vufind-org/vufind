@@ -37,17 +37,18 @@
 #        - [howToMunge, weight]
 #    # The optional FilterQuery section allows you to AND a static query to the
 #    #     dynamic query generated using the QueryFields; see JournalTitle below
-#    #     for an example.  This is applied whether we use DismaxFields or 
+#    #     for an example.  This is applied whether we use DismaxFields or
 #    #     QueryFields.
 #    FilterQuery: (optional Lucene filter query)
-# 
+#
 # ...etc.
 #
 #-----------------------------------------------------------------------------------
 #
-# Within the QueryFields area, fields are OR'd together, unless they're in an 
-# anonymous array, in which case the first element is a two-value array that tells 
-# us what the type (AND or OR) and weight of the whole group should be.
+# Within the QueryFields area, fields are OR'd together, unless they're in an
+# anonymous array with a numeric instead of alphanumeric key, in which case the
+# first element is a two-value array that tells us what the type (AND or OR) and
+# weight of the whole group should be.
 #
 # So, given:
 #
@@ -57,30 +58,30 @@
 #       - [onephrase, 500]
 #       - [and, 200]
 #     - B:
-#       - [and, 100]   
-#       - [or, 50]  
-#     # Start an anonymous array to group; first element indicates AND grouping 
+#       - [and, 100]
+#       - [or, 50]
+#     # Start an anonymous array to group; first element indicates AND grouping
 #     #     and a weight of 50
-#     -
-#       - [AND, 50]                 
+#     0:
+#       - [AND, 50]
 #       - C:
 #         - [onephrase, 200]
 #       - D:
 #         - [onephrase, 300]
-#       # Note the "not" attached to the field name as a minus, and the use of ~ 
+#       # Note the "not" attached to the field name as a minus, and the use of ~
 #       #     to mean null ("no special weight")
 #       - -E:
 #         - [or, ~]
 #     - D:
 #       - [or, 100]
-# 
-#  ...and the search string 
+#
+#  ...and the search string
 #
 #      test "one two"
 #
 #  ...we'd get
-#   
-#   (A:"test one two"^500 OR 
+#
+#   (A:"test one two"^500 OR
 #    A:(test AND "one two")^ 200 OR
 #    B:(test AND "one two")^100 OR
 #    B:(test OR "one two")^50
@@ -96,7 +97,7 @@
 #
 # Munge types are based on the original Solr.php code, and consist of:
 #
-# onephrase: eliminate all quotes and do it as a single phrase. 
+# onephrase: eliminate all quotes and do it as a single phrase.
 #   testing "one two"
 #    ...becomes ("testing one two")
 #
@@ -227,7 +228,7 @@ JournalTitle:
     - title_new:
       - [and, 100]
     - title_old:
-      - [and, ~]  
+      - [and, ~]
     - series:
       - [onephrase, 100]
       - [and, 50]
@@ -263,7 +264,7 @@ Title:
     - title_new:
       - [and, 100]
     - title_old:
-      - [and, ~]  
+      - [and, ~]
     - series:
       - [onephrase, 100]
       - [and, 50]
@@ -307,7 +308,7 @@ AllFields:
     - allfields
     - fulltext
   QueryFields:
-    - 
+    0:
       - [OR, 50]
       - title_short:
         - [onephrase, 750]
