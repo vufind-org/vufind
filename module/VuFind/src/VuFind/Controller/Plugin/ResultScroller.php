@@ -203,7 +203,9 @@ class ResultScroller extends AbstractPlugin
 
                     // if there is something on the next page, then the next
                     // record is the first record on the next page
-                    if (!empty($this->data->nextIds)) {
+                    if (is_array($this->data->nextIds)
+                        && count($this->data->nextIds) > 0
+                    ) {
                         $retVal['nextRecord'] = $this->data->nextIds[0];
                     }
 
