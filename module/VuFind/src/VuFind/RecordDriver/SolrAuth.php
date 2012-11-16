@@ -89,4 +89,24 @@ class SolrAuth extends SolrMarc
             && is_array($this->fields['use_for'])
             ? $this->fields['use_for'] : array();
     }
+
+    /**
+     * Get a raw LCCN (not normalized).  Returns false if none available.
+     *
+     * @return string|bool
+     */
+    public function getRawLCCN()
+    {
+        $lccn = $this->getFirstFieldValue('010');
+        if (!empty($lccn)) {
+            return $lccn;
+        }
+        $lccns = $this->getFieldArray('700', array('0'));
+        foreach ($lccns as $lccn) {
+            if (substr($lccn, 0, '5') == '(DLC)') {
+                return substr($lccn, 5);
+            }
+        }
+        return false;
+    }
 }

@@ -66,6 +66,30 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     protected $lang;
 
     /**
+     * Search manager
+     *
+     * @var \VuFind\Search\Manager
+     */
+    protected $searchManager;
+
+    /**
+     * Should we use VIAF for authorized names?
+     *
+     * @var bool
+     */
+    protected $useViaf = false;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Search\Manager $searchManager Search manager
+     */
+    public function __construct(\VuFind\Search\Manager $searchManager)
+    {
+        $this->searchManager = $searchManager;
+    }
+
+    /**
      * setConfig
      *
      * Store the configuration of the recommendation module.
@@ -78,6 +102,13 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     {
         $translator = $this->getTranslator();
         $this->lang = is_object($translator) ? $translator->getLocale() : 'en';
+
+        $parts = explode(':', $settings);
+        if (isset($parts[0]) && !empty($parts[0])
+            && strtolower(trim($parts[0])) !== 'false'
+        ) {
+            $this->useViaf = true;
+        }
     }
 
     /**
@@ -404,6 +435,81 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
+     * Normalize an author name using internal logic.
+     *
+     * @param string $author Author name
+     *
+     * @return string
+     */
+    protected function normalizeName($author)
+    {
+        // remove dates
+        $author = preg_replace('/[0-9]+-[0-9]*/', '', $author);
+        // if name is rearranged by commas
+        $author = trim($author, ', .');
+        $nameParts = explode(', ', $author);
+        $last = $nameParts[0];
+        // - move all names up an index, move last name to last
+        // - Last, First M. -> First M. Last
+        for ($i=1;$i<count($nameParts);$i++) {
+            $nameParts[$i-1] = $nameParts[$i];
+        }
+        $nameParts[count($nameParts)-1] = $last;
+        $author = implode($nameParts, ' ');
+        return $author;
+    }
+
+    /**
+     * Translate an LCCN to a Wikipedia name through the VIAF web service.  Returns
+     * false if no value can be found.
+     *
+     * @param string $lccn LCCN
+     *
+     * @return string|bool
+     */
+    protected function getWikipediaNameFromViaf($lccn)
+    {
+        $param = urlencode("LC|$lccn");
+        $url = "http://viaf.org/viaf/sourceID/{$param}/justlinks.json";
+        $client = new \VuFind\Http\Client();
+        $result = $client->setUri($url)->setMethod('GET')->send();
+        if (!$result->isSuccess()) {
+            return false;
+        }
+        $details = json_decode($result->getBody());
+        return isset($details->WKP[0]) ? $details->WKP[0] : false;
+    }
+
+    /**
+     * Normalize an author name using VIAF.
+     *
+     * @param string $author Author name
+     *
+     * @return string
+     */
+    protected function normalizeNameWithViaf($author)
+    {
+        // Do authority search:
+        $auth = $this->searchManager->setSearchClassId('SolrAuth')->getResults();
+        $auth->getParams()->setBasicSearch('"' . $author . '"', 'MainHeading');
+        $results = $auth->getResults();
+
+        // Find first useful LCCN:
+        foreach ($results as $i => $current) {
+            $lccn = $current->tryMethod('getRawLCCN');
+            if (!empty($lccn)) {
+                $name = $this->getWikipediaNameFromViaf($lccn);
+                if (!empty($name)) {
+                    return $name;
+                }
+            }
+        }
+
+        // No LCCN found?  Use the default normalization routine:
+        return $this->normalizeName($author);
+    }
+
+    /**
      * Takes the search term and extracts a normal name from it
      *
      * @return string
@@ -415,21 +521,9 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
             $author = $search[0]['lookfor'];
             // remove quotes
             $author = str_replace('"', '', $author);
-            // remove dates
-            $author = preg_replace('/[0-9]+-[0-9]*/', '', $author);
-            // if name is rearranged by commas
-            $author = trim($author, ', .');
-            $nameParts = explode(', ', $author);
-            $last = $nameParts[0];
-            // - move all names up an index, move last name to last
-            // - Last, First M. -> First M. Last
-            for ($i=1;$i<count($nameParts);$i++) {
-                $nameParts[$i-1] = $nameParts[$i];
-            }
-            $nameParts[count($nameParts)-1] = $last;
-            $author = implode($nameParts, ' ');
-            // remove punctuation
-            return $author;
+            return $this->useViaf
+                ? $this->normalizeNameWithViaf($author)
+                : $this->normalizeName($author);
         }
         return '';
     }

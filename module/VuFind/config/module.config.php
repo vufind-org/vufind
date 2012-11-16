@@ -231,6 +231,11 @@ $config = array(
     'recommend_plugin_manager' => array(
         'abstract_factories' => array('VuFind\Recommend\PluginFactory'),
         'factories' => array(
+            'authorinfo' => function ($sm) {
+                return new \VuFind\Recommend\AuthorInfo(
+                    $sm->getServiceLocator()->get('SearchManager')
+                );
+            },
             'worldcatidentities' => function ($sm) {
                 return new \VuFind\Recommend\WorldCatIdentities(
                     $sm->getServiceLocator()->get('VuFind\WorldCatUtils')
@@ -244,7 +249,6 @@ $config = array(
         ),
         'invokables' => array(
             'authorfacets' => 'VuFind\Recommend\AuthorFacets',
-            'authorinfo' => 'VuFind\Recommend\AuthorInfo',
             'authorityrecommend' => 'VuFind\Recommend\AuthorityRecommend',
             'catalogresults' => 'VuFind\Recommend\CatalogResults',
             'europeanaresults' => 'VuFind\Recommend\EuropeanaResults',
