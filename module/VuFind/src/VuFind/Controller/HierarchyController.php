@@ -74,8 +74,7 @@ class HierarchyController extends AbstractBase
      * Search the tree and echo a json result of items that
      * matched the keywords.
      *
-     * @return void
-     * @access public
+     * @return \Zend\Http\Response
      */
     public function searchtreeAction()
     {

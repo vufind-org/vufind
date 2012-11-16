@@ -73,7 +73,6 @@ abstract class AbstractBase implements \Zend\Log\LoggerAwareInterface
      * @param string $msg Message to display
      *
      * @return void
-     * @access protected
      */
     protected function debug($msg)
     {
