@@ -643,31 +643,56 @@ class SolrMarc extends SolrDefault
      */
     public function getAllRecordLinks()
     {
+        // Load configurations:
         $config = ConfigReader::getConfig();
-
         $fieldsNames = isset($config->Record->marc_links)
             ? explode(',', $config->Record->marc_links) : array();
+        $useVisibilityIndicator
+            = isset($config->Record->marc_links_use_visibility_indicator)
+            ? $config->Record->marc_links_use_visibility_indicator : true;
+
         $retVal = array();
         foreach ($fieldsNames as $value) {
             $value = trim($value);
             $fields = $this->marcRecord->getFields($value);
             if (!empty($fields)) {
                 foreach ($fields as $field) {
-                    $indicator = $field->getIndicator('2');
+                    // Check to see if we should display at all
+                    if ($useVisibilityIndicator) {
+                        $visibilityIndicator = $field->getIndicator('1');
+                        if ($visibilityIndicator == '1') {
+                            continue;
+                        }
+                    }
+                    // The relationship type is one of the following and there is a
+                    // 580 field, the 580 field should be shown instead see:
+                    //     http://www.loc.gov/marc/bibliographic/bd580.html
+                    $has580 = $this->marcRecord->getFields('580');
+
+                    $relationshipIndicator = $field->getIndicator('2');
+                    if ($has580
+                        && (($value == '780') && ($relationshipIndicator == '4'))
+                        || (($value == '785') && (($relationshipIndicator == '6')
+                        || ($relationshipIndicator =='7')))
+                    ) {
+                        continue;
+                    }
+
+                    // Assign notes based on the relationship type
                     switch ($value) {
                     case '780':
-                        if ($indicator == '0' || $indicator == '1'
-                            || $indicator == '5'
-                        ) {
-                            $value .= '_' . $indicator;
+                        if (in_array($relationshipIndicator, range('0', '7'))) {
+                            $value .= '_' . $relationshipIndicator;
                         }
                         break;
                     case '785':
-                        if ($indicator == '0' || $indicator == '7') {
-                            $value .= '_' . $indicator;
+                        if (in_array($relationshipIndicator, range('0', '8'))) {
+                            $value .= '_' . $relationshipIndicator;
                         }
                         break;
                     }
+
+                    // Get data for field
                     $tmp = $this->getFieldData($field, $value);
                     if (is_array($tmp)) {
                         $retVal[] = $tmp;
@@ -692,42 +717,102 @@ class SolrMarc extends SolrDefault
      */
     protected function getFieldData($field, $value)
     {
-        // There are two possible ways we may want to link to a record -- either
-        // we will have a raw bibliographic record in subfield w, or else we will
-        // have an OCLC number prefixed by (OCoLC).  If we have both, we want to
-        // favor the bib number over the OCLC number.  If we have an unrecognized
-        // parenthetical prefix to the number, we should simply ignore it.
-        $bib = $oclc = '';
+        // Make sure that there is a t field to be displayed:
+        if ($title = $field->getSubfield('t')) {
+            $title = $title->getData();
+        } else {
+            return;
+        }
+
+        $config = ConfigReader::getConfig();
+        $linkTypeSetting = isset($config->Record->marc_links_link_types)
+            ? $config->Record->marc_links_link_types : 'id,oclc,dlc,isbn,issn,title';
+        $linkTypes = explode(',', $linkTypeSetting);
         $linkFields = $field->getSubfields('w');
-        foreach ($linkFields as $current) {
-            $text = $current->getData();
-            // Extract parenthetical prefixes:
-            if (preg_match('/\(([^)]+)\)(.+)/', $text, $matches)) {
-                // Is it an OCLC number?
-                if ($matches[1] == 'OCoLC') {
-                    $oclc = $matches[2];
+
+        // Run through the link types specified in the config.
+        // For each type, check field for reference
+        // If reference found, exit loop and go straight to end
+        // If no reference found, check the next link type instead
+        foreach ($linkTypes as $linkType) {
+            switch (trim($linkType)){
+            case 'oclc':
+                foreach ($linkFields as $current) {
+                    if ($oclc = $this->getIdFromLinkingField($current, 'OCoLC')) {
+                        $link = array('type' => 'oclc', 'value' => $oclc);
+                    }
                 }
-            } else {
-                // No parenthetical prefix found -- assume raw bib number:
-                $bib = $text;
+                break;
+            case 'dlc':
+                foreach ($linkFields as $current) {
+                    if ($dlc = $this->getIdFromLinkingField($current, 'DLC', true)) {
+                        $link = array('type' => 'dlc', 'value' => $dlc);
+                    }
+                }
+                break;
+            case 'id':
+                foreach ($linkFields as $current) {
+                    if ($bibLink = $this->getIdFromLinkingField($current)) {
+                        $link = array('type' => 'bib', 'value' => $bibLink);
+                    }
+                }
+                break;
+            case 'isbn':
+                if ($isbn = $field->getSubfield('z')) {
+                    $link = array(
+                        'type' => 'isn', 'value' => trim($isbn->getData()),
+                        'exclude' => $this->getUniqueId()
+                    );
+                }
+                break;
+            case 'issn':
+                if ($issn = $field->getSubfield('x')) {
+                    $link = array(
+                        'type' => 'isn', 'value' => trim($issn->getData()),
+                        'exclude' => $this->getUniqueId()
+                    );
+                }
+                break;
+            case 'title':
+                $link = array('type' => 'title', 'value' => $title);
+                break;
+            }
+            // Exit loop if we have a link
+            if (isset($link)) {
+                break;
             }
         }
-
-        // Check which link type we found in the code above... and fail if we
-        // found nothing!
-        if (!empty($bib)) {
-            $link = array('type' => 'bib', 'value' => $bib);
-        } else if (!empty($oclc)) {
-            $link = array('type' => 'oclc', 'value' => $oclc);
-        } else {
-            return false;
-        }
-
-        $titleField = $field->getSubfield('t');
-        $title = $titleField ? $titleField->getData() : false;
-        return $title
+        // Make sure we have something to display:
+        return isset($link)
             ? array('title' => 'note_' . $value, 'value' => $title, 'link'  => $link)
             : false;
+    }
+
+    /**
+     * Returns an id extracted from the identifier subfield passed in
+     *
+     * @param \File_MARC_Subfield $idField MARC field containing id information
+     * @param string              $prefix  Prefix to search for in id field
+     * @param bool                $raw     Return raw match, or normalize?
+     *
+     * @return string|bool                 ID on success, false on failure
+     */
+    protected function getIdFromLinkingField($idField, $prefix = null, $raw = false)
+    {
+        $text = $idField->getData();
+        if (preg_match('/\(([^)]+)\)(.+)/', $text, $matches)) {
+            // If prefix matches, return ID:
+            if ($matches[1] == $prefix) {
+                // Special case -- LCCN should not be stripped:
+                return $raw
+                    ? $matches[2]
+                    : trim(str_replace(range('a', 'z'), '', ($matches[2])));
+            }
+        } else if ($prefix == null) {
+            // If no prefix was given or found, we presume it is a raw bib record
+            return $text;
+        }
+        return false;
     }
 
     /**

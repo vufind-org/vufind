@@ -158,6 +158,18 @@
     </dd>
   <? endif; ?>
 
+  <? $recordLinks = $this->driver->getAllRecordLinks(); if (!empty($recordLinks)): ?>
+    <dt><?=$this->transEsc('Related Items')?></dt>
+    <dd>
+      <? foreach ($recordLinks as $recordLink): ?>
+        <p>
+          <?=$this->transEsc($recordLink['title'])?>: 
+          <a href="<?=$this->recordLink()->related($recordLink['link'])?>"><?=$this->escapeHtml($recordLink['value'])?></a>
+        </p>
+      <? endforeach; ?>
+    </dd>
+  <? endif; ?>
+
   <? $tagList = $this->driver->getTags(); ?>
   <? if (count($tagList) > 0): ?>
     <dt><?=$this->transEsc('Tags')?>: </dt>

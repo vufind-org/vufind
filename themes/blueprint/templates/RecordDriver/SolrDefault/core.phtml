@@ -179,12 +179,15 @@
     <? endif; ?>
 
     <? $recordLinks = $this->driver->getAllRecordLinks(); if (!empty($recordLinks)): ?>
-      <? foreach ($recordLinks as $recordLink): ?>
-        <tr valign="top">
-          <th><?=$this->transEsc($recordLink['title'])?>: </th>
-          <td><a href="<?=$this->recordLink()->related($recordLink['link'])?>"><?=$this->escapeHtml($recordLink['value'])?></a></td>
-        </tr>
-      <? endforeach; ?>
+      <tr valign="top">
+        <th><?=$this->transEsc('Related Items')?></th>
+        <td>
+          <? foreach ($recordLinks as $recordLink): ?>
+            <?=$this->transEsc($recordLink['title'])?>: 
+            <a href="<?=$this->recordLink()->related($recordLink['link'])?>"><?=$this->escapeHtml($recordLink['value'])?></a><br />
+          <? endforeach; ?>
+        </td>
+      </tr>
     <? endif; ?>
 
     <? $tagList = $this->driver->getTags(); ?>

@@ -53,12 +53,30 @@ class RecordLink extends AbstractHelper
         $urlHelper = $this->getView()->plugin('url');
         switch ($link['type']) {
         case 'bib':
-            $url = $urlHelper('record', array('id' => $link['value']));
+            $url = $urlHelper('search-results')
+                . '?lookfor=' . urlencode($link['value'])
+                . '&type=id&jumpto=1';
+            break;
+        case 'dlc':
+            $url = $urlHelper('search-results')
+                . '?lookfor=' . urlencode('"' . $link['value'] . '"')
+                . '&type=lccn&jumpto=1';
+            break;
+        case 'isn':
+            $url = $urlHelper('search-results')
+                . '?join=AND&bool0[]=AND&lookfor0[]='
+                . urlencode($link['value']) . '&type0[]=isn&bool1[]=NOT&lookfor1[]='
+                . urlencode($link['exclude']) . '&type1[]=id&sort=title&view=list';
             break;
         case 'oclc':
             $url = $urlHelper('search-results')
                 . '?lookfor=' . urlencode($link['value'])
                 . '&type=oclc_num&jumpto=1';
+            break;
+        case 'title':
+            $url = $urlHelper('search-results')
+                . '?lookfor=' . urlencode($link['value'])
+                . '&type=title';
             break;
         default:
             throw new \Exception('Unexpected link type: ' . $link['type']);
