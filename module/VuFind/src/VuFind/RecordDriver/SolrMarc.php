@@ -281,6 +281,20 @@ class SolrMarc extends SolrDefault
     }
 
     /**
+     * Get an array of newer titles for the record.
+     *
+     * @return array
+     */
+    public function getNewerTitles()
+    {
+        // If the MARC links are being used, return blank array
+        $config = ConfigReader::getConfig();
+        $fieldsNames = isset($config->Record->marc_links)
+            ? array_map('trim', explode(',', $config->Record->marc_links)) : array();
+        return in_array('785', $fieldsNames) ? array() : parent::getNewerTitles();
+    }
+
+    /**
      * Get the item's places of publication.
      *
      * @return array
@@ -307,6 +321,20 @@ class SolrMarc extends SolrDefault
         }
 
         return $times;
+    }
+
+    /**
+     * Get an array of previous titles for the record.
+     *
+     * @return array
+     */
+    public function getPreviousTitles()
+    {
+        // If the MARC links are being used, return blank array
+        $config = ConfigReader::getConfig();
+        $fieldsNames = isset($config->Record->marc_links)
+            ? array_map('trim', explode(',', $config->Record->marc_links)) : array();
+        return in_array('780', $fieldsNames) ? array() : parent::getPreviousTitles();
     }
 
     /**
@@ -664,8 +692,6 @@ class SolrMarc extends SolrDefault
      */
     protected function getFieldData($field, $value)
     {
-        $labelPrfx   = 'note_';
-
         // There are two possible ways we may want to link to a record -- either
         // we will have a raw bibliographic record in subfield w, or else we will
         // have an OCLC number prefixed by (OCoLC).  If we have both, we want to
@@ -697,11 +723,11 @@ class SolrMarc extends SolrDefault
             return false;
         }
 
-        return array(
-            'title' => $labelPrfx.$value,
-            'value' => $field->getSubfield('t')->getData(),
-            'link'  => $link
-        );
+        $titleField = $field->getSubfield('t');
+        $title = $titleField ? $titleField->getData() : false;
+        return $title
+            ? array('title' => 'note_' . $value, 'value' => $title, 'link'  => $link)
+            : false;
     }
 
     /**
