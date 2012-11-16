@@ -282,6 +282,9 @@ $config = array(
     // driver is not defined here, it will inherit configuration from a configured
     // parent class.
     'recorddriver_tabs' => array(
+        'VuFind\RecordDriver\SolrAuth' => array(
+            'Details' => 'StaffViewMARC',
+        ),
         'VuFind\RecordDriver\SolrDefault' => array(
             'Holdings' => 'HoldingsILS', 'Description' => 'Description',
             'TOC' => 'TOC', 'UserComments' => 'UserComments',
@@ -470,6 +473,7 @@ $config = array(
 $recordRoutes = array(
     'record' => 'Record',
     'missingrecord' => 'MissingRecord',
+    'solrauthrecord' => 'Authority',
     'summonrecord' => 'SummonRecord',
     'worldcatrecord' => 'WorldcatRecord'
 );

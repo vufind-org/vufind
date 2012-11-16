@@ -55,6 +55,12 @@ class AuthorityController extends AbstractSearch
      */
     public function homeAction()
     {
+        // If we came in with a record ID, forward to the record action:
+        if ($id = $this->params()->fromRoute('id', false)) {
+            $this->getRequest()->getQuery()->set('id', $id);
+            return $this->forwardTo('Authority', 'Record');
+        }
+
         // Do nothing -- just display template
         return $this->createViewModel();
     }
@@ -66,12 +72,15 @@ class AuthorityController extends AbstractSearch
      */
     public function recordAction()
     {
-        return $this->createViewModel(
-            array(
-                'driver' => $this->getSearchManager()->setSearchClassId('SolrAuth')
-                    ->getResults()->getRecord($this->params()->fromQuery('id'))
-            )
-        );
+        $id = $this->params()->fromQuery('id');
+        $cfg = $this->getServiceLocator()->get('Config');
+        $driver = $this->getSearchManager()->setSearchClassId('SolrAuth')
+            ->getResults()->getRecord($id);
+        $request = $this->getRequest();
+        $tabs = $this->getServiceLocator()
+            ->get('VuFind\RecordTabPluginManager')
+            ->getTabsForRecord($driver, $cfg['recorddriver_tabs'], $request);
+        return $this->createViewModel(array('driver' => $driver, 'tabs' => $tabs));
     }
 
     /**
