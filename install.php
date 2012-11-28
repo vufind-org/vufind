@@ -74,14 +74,7 @@ buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multisiteMode, $h
 // Report success:
 echo "Apache configuration written to {$overrideDir}/httpd-vufind.conf.\n\n";
 echo "You now need to load this configuration into Apache.\n";
-echo "You can do it in either of two ways:\n\n";
-echo "    a) Add this line to your httpd.conf file:\n";
-echo "       Include {$overrideDir}/httpd-vufind.conf\n\n";
-echo "    b) Link the configuration to Apache's conf.d directory like this:\n";
-echo "       ln -s {$overrideDir}/httpd-vufind.conf "
-    . "/etc/apache2/conf.d/vufind\n\n";
-echo "Option b is preferable if your platform supports it (paths may vary),\n";
-echo "but option a is more certain to be supported.\n\n";
+getApacheLocation($overrideDir);
 if (!empty($host)) {
     echo "Since you are using a host-based multisite configuration, you will also" .
         "\nneed to do some virtual host configuration. See\n" .
@@ -97,6 +90,56 @@ if (empty($module)) {
     echo "VUFIND_HOME, VUFIND_LOCAL_MODULES and VUFIND_LOCAL_DIR environment\n";
     echo "variables are set to {$baseDir}, {$module} and {$overrideDir} ";
     echo "respectively.\n\n";
+}
+
+/**
+ * Display system-specific information for where configuration files are found and/or
+ * symbolic links should be created.
+ *
+ * @return void
+ */
+function getApacheLocation($overrideDir)
+{
+    // There is one special case for Windows, and a variety of different
+    // Unix-flavored possibilities that all work similarly.
+    if (strtoupper(substr(php_uname('s'), 0, 3)) === 'WIN') {   // Windows
+        echo "Go to Start -> Apache HTTP Server -> Edit the Apache httpd.conf\n";
+        echo "and add this line to your httpd.conf file: \n";
+        echo "     Include {$overrideDir}/httpd-vufind.conf\n\n";
+        echo "If you are using a bundle like XAMPP and do not have this start\n";
+        echo "menu option, you should find and edit your httpd.conf file manually\n";
+        echo "(usually in a location like c:\\xampp\\apache\\conf).\n\n";
+    } else {
+        if (is_dir('/etc/httpd/conf.d')) {                      // Mandriva / RedHat
+            $confD = '/etc/httpd/conf.d';
+            $httpdConf = '/etc/httpd/conf/httpd.conf';
+        } else if (is_dir('/etc/apache2/2.2/conf.d')) {         // Solaris
+            $confD = '/etc/apache2/2.2/conf.d';
+            $httpdConf = '/etc/apache2/2.2/httpd.conf';
+        } else if (is_dir('/etc/apache2/conf.d')) {             // Ubuntu / OpenSUSE
+            $confD = '/etc/apache2/conf.d';
+            $httpdConf = '/etc/apache2/httpd.conf';
+        } else if (is_dir('/opt/local/apache2/conf/extra')) {   // Mac with Mac Ports
+            $confD = '/opt/local/apache2/conf/extra';
+            $httpdConf = '/opt/local/apache2/conf/httpd.conf';
+        } else {
+            $confD = '/path/to/apache/conf.d';
+            $httpdConf = false;
+        }
+
+        // Check if httpd.conf really exists before recommending a specific path;
+        // if missing, just use the generic name:
+        $httpdConf = ($httpdConf && file_exists($httpdConf))
+            ? $httpdConf : 'httpd.conf';
+
+        echo "You can do it in either of two ways:\n\n";
+        echo "    a) Add this line to your {$httpdConf} file:\n";
+        echo "       Include {$overrideDir}/httpd-vufind.conf\n\n";
+        echo "    b) Link the configuration to Apache's conf.d directory like this:";
+        echo "\n       ln -s {$overrideDir}/httpd-vufind.conf {$confD}/vufind\n\n";
+        echo "Option b is preferable if your platform supports it,\n";
+        echo "but option a is more certain to be supported.\n\n";
+    }
 }
 
 /**
