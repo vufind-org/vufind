@@ -96,6 +96,8 @@ if (empty($module)) {
  * Display system-specific information for where configuration files are found and/or
  * symbolic links should be created.
  *
+ * @param string $overrideDir Path to VuFind's local override directory
+ *
  * @return void
  */
 function getApacheLocation($overrideDir)
