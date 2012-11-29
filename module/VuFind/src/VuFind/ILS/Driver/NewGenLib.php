@@ -552,7 +552,7 @@ class NewGenLib extends AbstractBase
             "p.membership_expiry_date as membership_expiry_date, p.email as " .
             "email from patron p where p.patron_id='" . $PatId .
             "' and p.user_password='" . $psswrd . "' and p.membership_start_date " .
-            "<= current_date and p.membership_expiry_date < current_date";
+            "<= current_date and p.membership_expiry_date > current_date";
 
         try {
             $sqlStmt = $this->db->prepare($sql);
