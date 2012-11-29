@@ -40,8 +40,12 @@ use PDO, PDOException, VuFind\Config\Reader as ConfigReader,
  */
 class NewGenLib extends AbstractBase
 {
+    /**
+     * Database connection
+     *
+     * @var PDO
+     */
     protected $db;
-    protected $dbName;
 
     /**
      * Initialize the driver.
@@ -57,9 +61,6 @@ class NewGenLib extends AbstractBase
         if (empty($this->config)) {
             throw new ILSException('Configuration needs to be set.');
         }
-
-        // Define Database Name
-        $this->dbName = $this->config['Catalog']['database'];
 
         try {
             $connectStr = 'pgsql:host=' . $this->config['Catalog']['hostname'] .
