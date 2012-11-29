@@ -98,6 +98,7 @@ class AjaxController extends AbstractBase
      */
     public function recommendAction()
     {
+        $this->writeSession();  // avoid session write timing bug
         // Process recommendations -- for now, we assume Solr-based search objects,
         // since deferred recommendations work best for modules that don't care about
         // the details of the search objects anyway:
@@ -181,6 +182,7 @@ class AjaxController extends AbstractBase
      */
     public function getItemStatuses()
     {
+        $this->writeSession();  // avoid session write timing bug
         $catalog = $this->getILS();
         $ids = $this->params()->fromQuery('id');
         $results = $catalog->getStatuses($ids);
@@ -444,6 +446,7 @@ class AjaxController extends AbstractBase
      */
     protected function getSaveStatuses()
     {
+        $this->writeSession();  // avoid session write timing bug
         // check if user is logged in
         $user = $this->getUser();
         if (!$user) {
@@ -663,6 +666,7 @@ class AjaxController extends AbstractBase
      */
     public function getMapData($fields = array('long_lat'))
     {
+        $this->writeSession();  // avoid session write timing bug
         $sm = $this->getSearchManager();
         $params = $sm->setSearchClassId('Solr')->getParams();
         $params->initFromRequest($this->getRequest()->getQuery());
@@ -700,6 +704,7 @@ class AjaxController extends AbstractBase
      */
     public function resultgooglemapinfoAction($fields = array('long_lat'))
     {
+        $this->writeSession();  // avoid session write timing bug
         // Set layout to render the page inside a lightbox:
         $this->layout()->setTemplate('layout/lightbox');
 
@@ -730,6 +735,7 @@ class AjaxController extends AbstractBase
      */
     public function getVisData($fields = array('publishDate'))
     {
+        $this->writeSession();  // avoid session write timing bug
         $sm = $this->getSearchManager();
         $params = $sm->setSearchClassId('Solr')->getParams();
         $params->initFromRequest($this->getRequest()->getQuery());
@@ -917,6 +923,7 @@ class AjaxController extends AbstractBase
      */
     public function getACSuggestions()
     {
+        $this->writeSession();  // avoid session write timing bug
         $query = $this->getRequest()->getQuery();
         $autocompleteManager = $this->getServiceLocator()
             ->get('VuFind\AutocompletePluginManager');
@@ -932,6 +939,7 @@ class AjaxController extends AbstractBase
      */
     public function smsRecord()
     {
+        $this->writeSession();  // avoid session write timing bug
         // Attempt to send the email:
         try {
             $record = $this->getRecordLoader()->load(
@@ -963,6 +971,7 @@ class AjaxController extends AbstractBase
      */
     public function emailRecord()
     {
+        $this->writeSession();  // avoid session write timing bug
         // Attempt to send the email:
         try {
             $record = $this->getRecordLoader()->load(
@@ -991,6 +1000,7 @@ class AjaxController extends AbstractBase
      */
     public function emailSearch()
     {
+        $this->writeSession();  // avoid session write timing bug
         // Make sure URL is properly formatted -- if no protocol is specified, run it
         // through the serverurl helper:
         $url = $this->params()->fromPost('url');
@@ -1023,6 +1033,7 @@ class AjaxController extends AbstractBase
      */
     public function checkRequestIsValid()
     {
+        $this->writeSession();  // avoid session write timing bug
         $id = $this->params()->fromQuery('id');
         $data = $this->params()->fromQuery('data');
         if (!empty($id) && !empty($data)) {
@@ -1216,6 +1227,7 @@ class AjaxController extends AbstractBase
      */
     protected function getResolverLinks()
     {
+        $this->writeSession();  // avoid session write timing bug
         $openUrl = $this->params()->fromQuery('openurl', '');
 
         $config = ConfigReader::getConfig();

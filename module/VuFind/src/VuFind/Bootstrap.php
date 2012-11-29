@@ -150,7 +150,14 @@ class Bootstrap
         // According to the PHP manual, session_write_close should always be
         // registered as a shutdown function when using an object as a session
         // handler: http://us.php.net/manual/en/function.session-set-save-handler.php
-        register_shutdown_function(array($sessionManager, 'writeClose'));
+        register_shutdown_function(
+            function () use ($sessionManager) {
+                // If storage is immutable, the session is already closed:
+                if (!$sessionManager->getStorage()->isImmutable()) {
+                    $sessionManager->writeClose();
+                }
+            }
+        );
 
         // Make sure account credentials haven't expired:
         $serviceManager->get('VuFind\AuthManager')->checkForExpiredCredentials();

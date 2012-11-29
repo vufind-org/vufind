@@ -281,4 +281,17 @@ class AbstractBase extends AbstractActionController
         // Dispatch the requested controller/action:
         return $this->forward()->dispatch($controller, $params);
     }
+
+    /**
+     * Write the session -- this is designed to be called prior to time-consuming
+     * AJAX operations.  This should help reduce the odds of a timing-related bug
+     * that causes the wrong version of session data to be written to disk (see
+     * VUFIND-716 for more details).
+     *
+     * @return void
+     */
+    protected function writeSession()
+    {
+        $this->getServiceLocator()->get('VuFind\SessionManager')->writeClose();
+    }
 }

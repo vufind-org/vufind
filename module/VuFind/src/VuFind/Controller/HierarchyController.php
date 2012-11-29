@@ -78,6 +78,7 @@ class HierarchyController extends AbstractBase
      */
     public function searchtreeAction()
     {
+        $this->writeSession();  // avoid session write timing bug
         $config = \VuFind\Config\Reader::getConfig();
         $limit = isset($config->Hierarchy->treeSearchLimit)
             ? $config->Hierarchy->treeSearchLimit : -1;
@@ -113,6 +114,7 @@ class HierarchyController extends AbstractBase
      */
     public function gettreeAction()
     {
+        $this->writeSession();  // avoid session write timing bug
         // Retrieve the record from the index
         $id = $this->params()->fromQuery('id');
         $results = $this->getSearchManager()->setSearchClassId('Solr')->getResults();

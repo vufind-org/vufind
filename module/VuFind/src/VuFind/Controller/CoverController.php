@@ -68,6 +68,7 @@ class CoverController extends AbstractBase
      */
     public function showAction()
     {
+        $this->writeSession();  // avoid session write timing bug
         $this->getLoader()->loadImage(
             $this->params()->fromQuery('isn'),
             $this->params()->fromQuery('size'),
@@ -83,6 +84,7 @@ class CoverController extends AbstractBase
      */
     public function unavailableAction()
     {
+        $this->writeSession();  // avoid session write timing bug
         $this->getLoader()->loadUnavailable();
         return $this->displayImage();
     }
