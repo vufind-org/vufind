@@ -1,18 +1,7 @@
 <?
-    $addThis = $this->addThis();
-    if (!empty($addThis)) {
-        $this->headScript()->appendFile('https://s7.addthis.com/js/250/addthis_widget.js?pub=' . urlencode($addThis));
-    }
-
     // Set up standard record scripts:
     $this->headScript()->appendFile("record.js");
     $this->headScript()->appendFile("check_save_statuses.js");
-
-    // Set up some variables for convenience:
-    $id = $this->driver->getUniqueId();
-    $controllerClass = 'controller' . $this->record($this->driver)->getController();
-    $cart = $this->cart();
-    $cartId = $this->driver->getResourceSource() . '|' . $id;
 
     // Add RDF header link if applicable:
     if ($this->driver->supportsExport('RDF')) {
@@ -24,51 +13,10 @@
         $this->recordLink()->getBreadcrumb($this->driver);
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <div class="toolbar">
-    <ul>
-      <? if (count($this->driver->getCitationFormats()) > 0): ?>
-        <li><a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Cite')?>" class="citeRecord cite <?=$controllerClass?>" id="citeRecord" title="<?=$this->transEsc('Cite this')?>"><?=$this->transEsc('Cite this')?></a></li>
-      <? endif; ?>
-      <li><a href="<?=$this->recordLink()->getActionUrl($this->driver, 'SMS')?>" class="smsRecord sms <?=$controllerClass?>" id="smsRecord" title="<?=$this->transEsc('Text this')?>"><?=$this->transEsc('Text this')?></a></li>
-      <li><a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Email')?>" class="mailRecord mail <?=$controllerClass?>" id="mailRecord" title="<?=$this->transEsc('Email this')?>"><?=$this->transEsc('Email this')?></a></li>
-      <? $exportFormats = $this->record($this->driver)->getExportFormats(); if (count($exportFormats) > 0): ?>
-      <li>
-        <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>" class="export exportMenu"><?=$this->transEsc('Export Record')?></a>
-        <ul class="menu offscreen" id="exportMenu">
-        <? foreach ($exportFormats as $exportFormat): ?>
-          <li><a <? if (\VuFind\Export::needsRedirect($exportFormat)): ?>target="<?=$this->escapeHtml($exportFormat)?>Main" <? endif; ?>href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>?style=<?=$this->escapeHtml($exportFormat)?>"><?=$this->transEsc('Export to')?> <?=$this->escapeHtml($exportFormat)?></a></li>
-        <? endforeach; ?>
-        </ul>
-      </li>
-      <? endif; ?>
-      <li id="saveLink"><a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="saveRecord fav <?=$controllerClass?>" id="saveRecord" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a></li>
-      <? if (!empty($addThis)): ?>
-      <li id="addThis"><a class="addThis addthis_button" href="https://www.addthis.com/bookmark.php?v=250&amp;pub=<?=urlencode($addThis)?>"><?=$this->transEsc('Bookmark')?></a></li>
-      <? endif; ?>
-      <? if ($cart->isActive()): ?>
-        <li><a id="recordCart" class="<?=$cart->contains($cartId) ? 'bookbagDelete' : 'bookbagAdd'?> offscreen" href="#"><?=$this->transEsc('Add to Book Bag')?></a></li>
-      <? endif; ?>
-    </ul>
-    <? if ($cart->isActive()): ?>
-      <div class="cartSummary">
-        <form method="post" name="addForm" action="<?=$this->url('cart-home')?>">
-          <input id="cartId" type="hidden" name="ids[]" value="<?=$this->escapeHtml($cartId)?>" />
-          <noscript>
-            <? if ($cart->contains($cartId)): ?>
-              <input id="cartId" type="hidden" name="ids[]" value="<?=$this->escapeHtml($cartId)?>" />
-              <input type="submit" class="button cart bookbagDelete" name="delete" value="<?=$this->transEsc('Remove from Book Bag')?>"/>
-            <? else: ?>
-              <input type="submit" class="button bookbagAdd" name="add" value="<?=$this->transEsc('Add to Book Bag')?>"/>
-            <? endif; ?>
-          </noscript>
-        </form>
-      </div>
-    <? endif; ?>
-    <div class="clear"></div>
-  </div>
+  <?=$this->record($this->driver)->getToolbar()?>
 
   <div class="record recordId source<?=$this->escapeHtml($this->driver->getResourceSource())?>" id="record">
-    <input type="hidden" value="<?=$this->escapeHtml($id)?>" class="hiddenId" id="record_id" />
+    <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
     <?=$this->flashmessages()?>
     <? if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
       <div class="resultscroller">

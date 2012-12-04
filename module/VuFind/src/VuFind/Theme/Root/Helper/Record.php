@@ -285,6 +285,16 @@ class Record extends AbstractHelper
     }
 
     /**
+     * Render a toolbar for use on the record view.
+     *
+     * @return string
+     */
+    public function getToolbar()
+    {
+        return $this->renderTemplate('toolbar.phtml');
+    }
+
+    /**
      * Render a search result for the specified view mode.
      *
      * @param string $view View mode to use.

@@ -19,13 +19,7 @@
       <h3><?=$this->escapeHtml($this->driver->getBreadcrumb())?></h3>
     <? endif; ?>
     <?=$tab?>
-    <div data-role="controlgroup">
-      <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" data-role="button" rel="external"><?=$this->transEsc("Add to favorites")?></a>
-      <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'AddTag')?>" data-role="button" rel="external"><?=$this->transEsc("Add Tag")?></a>
-      <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Cite')?>" data-role="button" rel="external"><?=$this->transEsc("Cite this")?></a>
-      <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Email')?>" data-role="button" rel="external"><?=$this->transEsc("Email this")?></a>
-      <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'SMS')?>" data-role="button" rel="external"><?=$this->transEsc("Text this")?></a>
-    </div>
+    <?=$this->record($this->driver)->getToolbar()?>
   </div>
   <?=$this->mobileMenu()->footer()?>
 </div>
