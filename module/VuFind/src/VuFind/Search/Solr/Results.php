@@ -556,22 +556,31 @@ class Results extends BaseResults
      * @param array $facetfields  name of the Solr fields to return facets for
      * @param bool  $removeFilter Clear existing filters from selected fields (true)
      * or retain them (false)?
+     * @param int    $limit        A limit for the number of facets returned, this
+     * may be useful for very large amounts of facets that can break the JSON parse
+     * method because of PHP out of memory exceptions (default = -1, no limit).
+     * @param string $facetSort    A facet sort value to use (null to retain current)
      *
      * @return array an array with the facet values for each index field
      */
-    public function getFullFieldFacets($facetfields, $removeFilter = true)
-    {
+    public function getFullFieldFacets($facetfields, $removeFilter = true, $limit = -1,
+        $facetSort = null
+    ) {
         $clone = clone($this);
+        $params = $clone->getParams();
 
         // Manipulate facet settings temporarily:
-        $clone->getParams()->resetFacetConfig();
-        $clone->getParams()->setFacetLimit(-1);
+        $params->resetFacetConfig();
+        $params->setFacetLimit($limit);
+        if (null !== $facetSort) {
+            $params->setFacetSort($facetSort);
+        }
         foreach ($facetfields as $facetName) {
-            $clone->getParams()->addFacet($facetName);
+            $params->addFacet($facetName);
 
             // Clear existing filters for the selected field if necessary:
             if ($removeFilter) {
-                $clone->getParams()->removeAllFilters($facetName);
+                $params->removeAllFilters($facetName);
             }
         }
 
@@ -579,7 +588,6 @@ class Results extends BaseResults
         $result = $clone->getFacetList();
 
         // Reformat into a hash:
-        //$returnFacets = $result['facet_counts']['facet_fields'];
         foreach ($result as $key => $value) {
             unset($result[$key]);
             $result[$key]['data'] = $value;
