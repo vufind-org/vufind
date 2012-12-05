@@ -322,6 +322,36 @@ class SolrDefault extends AbstractBase
     }
 
     /**
+     * Deduplicate author information into associative array with main/corporate/
+     * secondary keys.
+     *
+     * @return array
+     */
+    public function getDeduplicatedAuthors()
+    {
+        $authors = array(
+            'main' => $this->getPrimaryAuthor(),
+            'corporate' => $this->getCorporateAuthor(),
+            'secondary' => $this->getSecondaryAuthors()
+        );
+
+        // The secondary author array may contain a corporate or primary author;
+        // let's be sure we filter out duplicate values.
+        $duplicates = array();
+        if (!empty($authors['main'])) {
+            $duplicates[] = $authors['main'];
+        }
+        if (!empty($authors['corporate'])) {
+            $duplicates[] = $authors['corporate'];
+        }
+        if (!empty($duplicates)) {
+            $authors['secondary'] = array_diff($authors['secondary'], $duplicates);
+        }
+
+        return $authors;
+    }
+
+    /**
      * Get the edition of the current record.
      *
      * @return string

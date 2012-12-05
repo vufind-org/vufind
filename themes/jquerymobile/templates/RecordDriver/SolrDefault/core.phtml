@@ -41,26 +41,10 @@
     </dd>
   <? endif; ?>
 
-  <?
-      // The secondary author array may contain a corporate or primary author;
-      // let's be sure we filter out duplicate values.
-      $mainAuthor = $this->driver->getPrimaryAuthor();
-      $corpAuthor = $this->driver->getCorporateAuthor();
-      $secondaryAuthors = $this->driver->getSecondaryAuthors();
-      $duplicates = array();
-      if (!empty($mainAuthor)) {
-          $duplicates[] = $mainAuthor;
-      }
-      if (!empty($corpAuthor)) {
-          $duplicates[] = $corpAuthor;
-      }
-      if (!empty($duplicates)) {
-          $secondaryAuthors = array_diff($secondaryAuthors, $duplicates);
-      }
-  ?>
-  <? if (!empty($mainAuthor)): ?>
+  <? $authors = $this->driver->getDeduplicatedAuthors(); ?>
+  <? if (isset($authors['main']) && !empty($authors['main'])): ?>
     <dt><?=$this->transEsc('Main Author')?>: </dt>
-    <dd><a rel="external" href="<?=$this->record($this->driver)->getLink('author', $mainAuthor)?>"><?=$this->escapeHtml($mainAuthor)?></a></dd>
+    <dd><a rel="external" href="<?=$this->record($this->driver)->getLink('author', $authors['main'])?>"><?=$this->escapeHtml($authors['main'])?></a></dd>
   <? endif; ?>
 
   <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
@@ -105,15 +89,15 @@
   </tr>
   <? endif; ?>
 
-  <? if (!empty($corpAuthor)): ?>
+  <? if (isset($authors['corporate']) && !empty($authors['corporate'])): ?>
     <dt><?=$this->transEsc('Corporate Author')?>: </dt>
-    <dd><p><a rel="external" href="<?=$this->record($this->driver)->getLink('author', $corpAuthor)?>"><?=$this->escapeHtml($corpAuthor)?></a></p></dd>
+    <dd><p><a rel="external" href="<?=$this->record($this->driver)->getLink('author', $authors['corporate'])?>"><?=$this->escapeHtml($authors['corporate'])?></a></p></dd>
   <? endif; ?>
 
-  <? if (!empty($secondaryAuthors)): ?>
+  <? if (isset($authors['secondary']) && !empty($authors['secondary'])): ?>
     <dt><?=$this->transEsc('Other Authors')?>: </dt>
     <dd>
-      <p><? $i = 0; foreach ($secondaryAuthors as $field): ?><?=($i++ == 0)?'':', '?><a rel="external" href="<?=$this->record($this->driver)->getLink('author', $field)?>"><?=$this->escapeHtml($field)?></a><? endforeach; ?></p>
+      <p><? $i = 0; foreach ($authors['secondary'] as $field): ?><?=($i++ == 0)?'':', '?><a rel="external" href="<?=$this->record($this->driver)->getLink('author', $field)?>"><?=$this->escapeHtml($field)?></a><? endforeach; ?></p>
     </dd>
   <? endif; ?>
 
