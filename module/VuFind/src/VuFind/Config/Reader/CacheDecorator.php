@@ -81,8 +81,9 @@ class CacheDecorator implements ReaderInterface
      */
     public function fromFile ($filename)
     {
-        $mtime = @filemtime(realpath($filename));
-        $key = $this->generateKey($mtime . $filename);
+        $absFilename = realpath($filename);
+        $mtime = @filemtime($absFilename);
+        $key = $this->generateKey($mtime . $absFilename);
         if ($this->storage->hasItem($key)) {
             return $this->storage->getItem($key);
         }
