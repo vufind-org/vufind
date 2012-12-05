@@ -39,6 +39,25 @@ namespace VuFind\RecordTab;
 class HoldingsILS extends AbstractBase
 {
     /**
+     * ILS connection (or false if not applicable)
+     *
+     * @param \VuFind\ILS\Connection|bool
+     */
+    protected $catalog;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\ILS\Connection|bool $catalog ILS connection to use to check
+     * for holdings before displaying the tab; set to false if no check is needed
+     */
+    public function __construct($catalog)
+    {
+        $this->catalog = ($catalog && $catalog instanceof \VuFind\ILS\Connection)
+            ? $catalog : false;
+    }
+
+    /**
      * Get the on-screen description for this tab.
      *
      * @return string
@@ -46,5 +65,18 @@ class HoldingsILS extends AbstractBase
     public function getDescription()
     {
         return 'Holdings';
+    }
+
+    /**
+     * Is this tab active?
+     *
+     * @return bool
+     */
+    public function isActive()
+    {
+        if ($this->catalog) {
+            return $this->catalog->hasHoldings($this->driver->getUniqueID());
+        }
+        return true;
     }
 }

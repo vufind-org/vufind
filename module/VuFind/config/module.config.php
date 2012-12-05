@@ -318,11 +318,26 @@ $config = array(
     ),
     'recordtab_plugin_manager' => array(
         'abstract_factories' => array('VuFind\RecordTab\PluginFactory'),
+        'factories' => array(
+            'holdingsils' => function ($sm) {
+                // If VuFind is configured to suppress the holdings tab when the
+                // ILS driver specifies no holdings, we need to pass in a connection
+                // object:
+                $config = \VuFind\Config\Reader::getConfig();
+                if (isset($config->Site->hideHoldingsTabWhenEmpty)
+                    && $config->Site->hideHoldingsTabWhenEmpty
+                ) {
+                    $catalog = $sm->getServiceLocator()->get('VuFind\ILSConnection');
+                } else {
+                    $catalog = false;
+                }
+                return new \VuFind\RecordTab\HoldingsILS($catalog);
+            },
+        ),
         'invokables' => array(
             'description' => 'VuFind\RecordTab\Description',
             'excerpt' => 'VuFind\RecordTab\Excerpt',
             'hierarchytree' => 'VuFind\RecordTab\HierarchyTree',
-            'holdingsils' => 'VuFind\RecordTab\HoldingsILS',
             'holdingsworldcat' => 'VuFind\RecordTab\HoldingsWorldCat',
             'map' => 'VuFind\RecordTab\Map',
             'reviews' => 'VuFind\RecordTab\Reviews',
