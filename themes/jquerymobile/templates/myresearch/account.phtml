@@ -6,7 +6,7 @@
   <?=$this->mobileMenu()->header()?>
   <div data-role="content">
     <?=$this->flashmessages();?>
-    <form method="post" name="accountForm" id="accountForm">
+    <form method="post" name="accountForm" id="accountForm" data-ajax="false">
       <div data-role="fieldcontain">
         <?=$this->auth()->getCreateFields()?>
       </div>
