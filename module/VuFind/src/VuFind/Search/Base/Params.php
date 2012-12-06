@@ -917,9 +917,9 @@ class Params implements ServiceLocatorAwareInterface
             $rebuildArray = false;
 
             // Loop through all filters on the field
-            for ($i = 0; $i < count($this->filterList[$field]); $i++) {
+            foreach ($this->filterList[$field] as $i => $currentFilter) {
                 // Does it contain the value we don't want?
-                if ($this->filterList[$field][$i] == $value) {
+                if ($currentFilter == $value) {
                     // If so remove it.
                     unset($this->filterList[$field][$i]);
 
