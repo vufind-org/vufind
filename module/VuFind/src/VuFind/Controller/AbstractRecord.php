@@ -341,6 +341,14 @@ class AbstractRecord extends AbstractBase
      */
     public function emailAction()
     {
+        // Force login if necessary:
+        $config = \VuFind\Config\Reader::getConfig();
+        if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
+            && !$this->getUser()
+        ) {
+            return $this->forceLogin();
+        }
+
         // Retrieve the record driver:
         $driver = $this->loadRecord();
 

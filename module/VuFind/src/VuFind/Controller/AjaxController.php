@@ -972,6 +972,18 @@ class AjaxController extends AbstractBase
     public function emailRecord()
     {
         $this->writeSession();  // avoid session write timing bug
+
+        // Force login if necessary:
+        $config = \VuFind\Config\Reader::getConfig();
+        if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
+            && !$this->getUser()
+        ) {
+            return $this->output(
+                $this->translate('You must be logged in first'),
+                self::STATUS_NEED_AUTH
+            );
+        }
+
         // Attempt to send the email:
         try {
             $record = $this->getRecordLoader()->load(
@@ -1001,6 +1013,18 @@ class AjaxController extends AbstractBase
     public function emailSearch()
     {
         $this->writeSession();  // avoid session write timing bug
+
+        // Force login if necessary:
+        $config = \VuFind\Config\Reader::getConfig();
+        if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
+            && !$this->getUser()
+        ) {
+            return $this->output(
+                $this->translate('You must be logged in first'),
+                self::STATUS_NEED_AUTH
+            );
+        }
+
         // Make sure URL is properly formatted -- if no protocol is specified, run it
         // through the serverurl helper:
         $url = $this->params()->fromPost('url');

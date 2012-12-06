@@ -166,6 +166,14 @@ class CartController extends AbstractBase
      */
     public function emailAction()
     {
+        // Force login if necessary:
+        $config = \VuFind\Config\Reader::getConfig();
+        if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
+            && !$this->getUser()
+        ) {
+            return $this->forceLogin();
+        }
+
         $ids = is_null($this->params()->fromPost('selectAll'))
             ? $this->params()->fromPost('ids')
             : $this->params()->fromPost('idsAll');

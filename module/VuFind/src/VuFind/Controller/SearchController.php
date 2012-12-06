@@ -84,6 +84,21 @@ class SearchController extends AbstractSearch
             )
         );
 
+        // Force login if necessary:
+        $config = \VuFind\Config\Reader::getConfig();
+        if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
+            && !$this->getUser()
+        ) {
+            return $this->forceLogin(null, array('emailurl' => $view->url));
+        }
+
+        // Check if we have a URL in login followup data:
+        $followup = $this->followup()->retrieve();
+        if (isset($followup->emailurl)) {
+            $view->url = $followup->emailurl;
+            unset($followup->emailurl);
+        }
+
         // Fail if we can't figure out a URL to share:
         if (empty($view->url)) {
             throw new \Exception('Cannot determine URL to share.');

@@ -26,7 +26,7 @@ $(document).ready(function(){
     });
     $('a.mailRecord').click(function() {
         var controller = extractController(this);
-        var $dialog = getLightbox(controller, 'Email', id, null, this.title);
+        var $dialog = getLightbox(controller, 'Email', id, null, this.title, controller, 'Email', id);
         return false;
     });
     $('a.tagRecord').click(function() {

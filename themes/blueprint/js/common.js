@@ -45,7 +45,7 @@ $(document).ready(function(){
     // assign click event to "email search" links
     $('a.mailSearch').click(function() {
         var id = this.id.substr('mailSearch'.length);
-        var $dialog = getLightbox('Search', 'Email', id, null, this.title);
+        var $dialog = getLightbox('Search', 'Email', id, null, this.title, 'Search', 'Email', id);
         return false;
     });
 
