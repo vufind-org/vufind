@@ -12,19 +12,19 @@ AllFields:
   DismaxParams:
     - [bq, (record_type:"Personal Name" OR record_type:"Corporate Name")^500]
   QueryFields:
-    - heading_keywords:
+    heading_keywords:
       - [onephrase, 1000]
       - [and, 750]
       - [or, 10]
-    - use_for_keywords:
+    use_for_keywords:
       - [onephrase, 500]
       - [and, 400]
       - [or, 5]
-    - see_also_keywords:
+    see_also_keywords:
       - [onephrase, 130]
       - [and, 100]
       - [or, 2]
-    - allfields:
+    allfields:
       - [onephrase, 50]
       - [and, 10]
       - [or, ~]
@@ -37,15 +37,15 @@ Heading:
   DismaxParams:
     - [bq, (record_type:"Personal Name" OR record_type:"Corporate Name")^500]
   QueryFields:
-    - heading_keywords:
+    heading_keywords:
       - [onephrase, 1000]
       - [and, 750]
       - [or, 10]
-    - use_for_keywords:
+    use_for_keywords:
       - [onephrase, 500]
       - [and, 400]
       - [or, 5]
-    - see_also_keywords:
+    see_also_keywords:
       - [onephrase, 130]
       - [and, 100]
       - [or, 2]
@@ -56,7 +56,7 @@ MainHeading:
   DismaxParams:
     - [bq, (record_type:"Personal Name" OR record_type:"Corporate Name")^500]
   QueryFields:
-    - heading_keywords:
+    heading_keywords:
       - [onephrase, 1000]
       - [and, 750]
       - [or, 10]

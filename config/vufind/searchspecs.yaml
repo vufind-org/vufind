@@ -30,10 +30,10 @@
 #      - [param3_name, param3_value]
 #    # QueryFields define the fields we are searching when not using Dismax
 #    QueryFields:
-#      - SolrField:
+#      SolrField:
 #        - [howToMungeSearchstring, weight]
 #        - [differentMunge, weight]
-#      - DifferentSolrField:
+#      DifferentSolrField:
 #        - [howToMunge, weight]
 #    # The optional FilterQuery section allows you to AND a static query to the
 #    #     dynamic query generated using the QueryFields; see JournalTitle below
@@ -54,25 +54,27 @@
 #
 # test:
 #   QueryFields:
-#     - A:
+#     A:
 #       - [onephrase, 500]
 #       - [and, 200]
-#     - B:
+#     B:
 #       - [and, 100]
 #       - [or, 50]
 #     # Start an anonymous array to group; first element indicates AND grouping
 #     #     and a weight of 50
 #     0:
-#       - [AND, 50]
-#       - C:
+#       0:
+#         - AND
+#         - 50
+#       C:
 #         - [onephrase, 200]
-#       - D:
+#       D:
 #         - [onephrase, 300]
 #       # Note the "not" attached to the field name as a minus, and the use of ~
 #       #     to mean null ("no special weight")
-#       - -E:
+#       -E:
 #         - [or, ~]
-#     - D:
+#     D:
 #       - [or, 100]
 #
 #  ...and the search string
@@ -135,19 +137,19 @@ Author:
     - author2
     - author_additional
   QueryFields:
-    - author:
+    author:
       - [onephrase, 350]
       - [and, 200]
       - [or, 100]
-    - author_fuller:
+    author_fuller:
       - [onephrase, 200]
       - [and, 100]
       - [or, 50]
-    - author2:
+    author2:
       - [onephrase, 100]
       - [and, 50]
       - [or, ~]
-    - author_additional:
+    author_additional:
       - [onephrase, 100]
       - [and, 50]
       - [or, ~]
@@ -157,10 +159,10 @@ ISN:
     - isbn
     - issn
   QueryFields:
-    - issn:
+    issn:
       - [and, 100]
       - [or, ~]
-    - isbn:
+    isbn:
       - [and, 100]
       - [or, ~]
 
@@ -172,23 +174,23 @@ Subject:
     - genre^50
     - era
   QueryFields:
-    - topic_unstemmed:
+    topic_unstemmed:
       - [onephrase, 350]
       - [and, 150]
       - [or, ~]
-    - topic:
+    topic:
       - [onephrase, 300]
       - [and, 100]
       - [or, ~]
-    - geographic:
+    geographic:
       - [onephrase, 300]
       - [and, 100]
       - [or, ~]
-    - genre:
+    genre:
       - [onephrase, 300]
       - [and, 100]
       - [or, ~]
-    - era:
+    era:
       - [and, 100]
       - [or, ~]
 
@@ -210,29 +212,29 @@ JournalTitle:
     - series^100
     - series2
   QueryFields:
-    - title_short:
+    title_short:
       - [onephrase, 500]
-    - title_full_unstemmed:
+    title_full_unstemmed:
       - [onephrase, 450]
       - [and, 400]
-    - title_full:
+    title_full:
       - [onephrase, 400]
-    - title:
+    title:
       - [onephrase, 300]
       - [and, 250]
-    - container_title:
+    container_title:
       - [onephrase, 275]
       - [and, 225]
-    - title_alt:
+    title_alt:
       - [and, 200]
-    - title_new:
+    title_new:
       - [and, 100]
-    - title_old:
+    title_old:
       - [and, ~]
-    - series:
+    series:
       - [onephrase, 100]
       - [and, 50]
-    - series2:
+    series2:
       - [onephrase, 50]
       - [and , ~]
   FilterQuery: "format:Journal OR format:Article"
@@ -249,26 +251,26 @@ Title:
     - series^100
     - series2
   QueryFields:
-    - title_short:
+    title_short:
       - [onephrase, 500]
-    - title_full_unstemmed:
+    title_full_unstemmed:
       - [onephrase, 450]
       - [and, 400]
-    - title_full:
+    title_full:
       - [onephrase, 400]
-    - title:
+    title:
       - [onephrase, 300]
       - [and, 250]
-    - title_alt:
+    title_alt:
       - [and, 200]
-    - title_new:
+    title_new:
       - [and, 100]
-    - title_old:
+    title_old:
       - [and, ~]
-    - series:
+    series:
       - [onephrase, 100]
       - [and, 50]
-    - series2:
+    series2:
       - [onephrase, 50]
       - [and , ~]
 
@@ -277,11 +279,11 @@ Series:
     - series^100
     - series2
   QueryFields:
-    - series:
+    series:
       - [onephrase, 500]
       - [and, 200]
       - [or, 100]
-    - series2:
+    series2:
       - [onephrase, 50]
       - [and, 50]
       - [or, ~]
@@ -309,20 +311,22 @@ AllFields:
     - fulltext
   QueryFields:
     0:
-      - [OR, 50]
-      - title_short:
+      0:
+        - OR
+        - 50
+      title_short:
         - [onephrase, 750]
-      - title_full_unstemmed:
+      title_full_unstemmed:
         - [onephrase, 600]
         - [and, 500]
-      - title_full:
+      title_full:
         - [onephrase, 400]
-      - title:
+      title:
         - [onephrase, 300]
         - [and, 250]
-      - title_alt:
+      title_alt:
         - [and, 200]
-      - title_new:
+      title_new:
         - [and, 100]
     series:
       - [and, 50]
@@ -361,38 +365,38 @@ AllFields:
 # These are advanced searches that never use Dismax:
 id:
   QueryFields:
-    - id:
+    id:
       - [onephrase, ~]
 
 # Fields for exact matches originating from alphabetic browse
 ids:
   QueryFields:
-    - id:
+    id:
       - [or, ~]
 
 TopicBrowse:
   QueryFields:
-    - topic_browse:
+    topic_browse:
       - [onephrase, ~]
 
 AuthorBrowse:
   QueryFields:
-    - author_browse:
+    author_browse:
       - [onephrase, ~]
 
 TitleBrowse:
   QueryFields:
-    - title_full:
+    title_full:
       - [onephrase, ~]
 
 DeweyBrowse:
   QueryFields:
-    - dewey-raw:
+    dewey-raw:
       - [onephrase, ~]
 
 LccBrowse:
   QueryFields:
-    - callnumber-a:
+    callnumber-a:
       - [onephrase, ~]
 
 CallNumber:
@@ -405,7 +409,7 @@ CallNumber:
       # Strip whitespace and quotes:
       - [preg_replace, '/[ "]/', ""]
       # Escape colons (unescape first to avoid double-escapes):
-      - [preg_replace, '/(\\\:)/', ':']
+      - [preg_replace, "/(\\\:)/", ':']
       - [preg_replace, '/:/', '\:']
       # Strip pre-existing trailing asterisks:
       - [preg_replace, "/\*+$/", ""]
@@ -414,7 +418,7 @@ CallNumber:
       # Strip whitespace and quotes:
       - [preg_replace, '/[ "]/', ""]
       # Escape colons (unescape first to avoid double-escapes):
-      - [preg_replace, '/(\\\:)/', ':']
+      - [preg_replace, "/(\\\:)/", ':']
       - [preg_replace, '/:/', '\:']
       # Strip pre-existing trailing asterisks:
       - [preg_replace, "/\*+$/", ""]
@@ -423,10 +427,10 @@ CallNumber:
       #     Horde::YAML parsing glitch -- see VUFIND-160 in JIRA for details.
       - [append, "* "]
   QueryFields:
-    - callnumber:
+    callnumber:
       - [callnumber_exact, 1000]
       - [callnumber_fuzzy, ~]
-    - dewey-full:
+    dewey-full:
       - [callnumber_exact, 1000]
       - [callnumber_fuzzy, ~]
 
@@ -434,7 +438,7 @@ publisher:
   DismaxFields:
     - publisher^100
   QueryFields:
-    - publisher:
+    publisher:
       - [and, 100]
       - [or, ~]
 
@@ -442,47 +446,47 @@ year:
   DismaxFields:
     - publishDate^100
   QueryFields:
-    - publishDate:
+    publishDate:
       - [and, 100]
       - [or, ~]
 
 language:
   QueryFields:
-    - language:
+    language:
       - [and, ~]
 
 toc:
   DismaxFields:
     - contents^100
   QueryFields:
-    - contents:
+    contents:
       - [and, 100]
       - [or, ~]
 
 topic:
   QueryFields:
-    - topic:
+    topic:
       - [and, 50]
-    - topic_facet:
+    topic_facet:
       - [and, ~]
 
 geographic:
   QueryFields:
-    - geographic:
+    geographic:
       - [and, 50]
-    - geographic_facet:
+    geographic_facet:
       - [and ~]
 
 genre:
   QueryFields:
-    - genre:
+    genre:
       - [and, 50]
-    - genre_facet:
+    genre_facet:
       - [and, ~]
 
 era:
   QueryFields:
-    - era:
+    era:
       - [and, ~]
 
 oclc_num:
@@ -492,5 +496,5 @@ oclc_num:
       # trim leading zeroes:
       - [preg_replace, "/^0*/", ""]
   QueryFields:
-    - oclc_num:
+    oclc_num:
       - [oclc_num, ~]
