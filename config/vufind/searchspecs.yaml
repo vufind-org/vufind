@@ -420,12 +420,9 @@ CallNumber:
       # Escape colons (unescape first to avoid double-escapes):
       - [preg_replace, "/(\\\:)/", ':']
       - [preg_replace, '/:/', '\:']
-      # Strip pre-existing trailing asterisks:
+      # Strip pre-existing trailing asterisks, then add a new one:
       - [preg_replace, "/\*+$/", ""]
-      # Ensure we have just one trailing asterisk.  The trailing space inside
-      #     the quotes has no effect on searching; it is a workaround for a
-      #     Horde::YAML parsing glitch -- see VUFIND-160 in JIRA for details.
-      - [append, "* "]
+      - [append, "*"]
   QueryFields:
     callnumber:
       - [callnumber_exact, 1000]
