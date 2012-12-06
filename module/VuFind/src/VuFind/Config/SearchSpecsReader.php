@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Config;
-use Horde_Yaml as Yaml, Zend\ServiceManager\ServiceLocatorAwareInterface,
+use Symfony\Component\Yaml\Yaml, Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -83,9 +83,9 @@ class SearchSpecsReader implements ServiceLocatorAwareInterface
 
             // Generate data if not found in cache:
             if (!$cache || !($results = $cache->getItem($key))) {
-                $results = Yaml::load(file_get_contents($fullpath));
+                $results = Yaml::parse($fullpath);
                 if (!empty($local)) {
-                    $localResults = Yaml::load(file_get_contents($local));
+                    $localResults = Yaml::parse($local);
                     foreach ($localResults as $key => $value) {
                         $results[$key] = $value;
                     }
