@@ -530,6 +530,17 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
+     * Get the tab configuration for this controller.
+     *
+     * @return array
+     */
+    protected function getTabConfiguration()
+    {
+        $cfg = $this->getServiceLocator()->get('Config');
+        return $cfg['recorddriver_tabs'];
+    }
+
+    /**
      * Get all tab information for a given driver.
      *
      * @return array
@@ -538,11 +549,10 @@ class AbstractRecord extends AbstractBase
     {
         if (null === $this->allTabs) {
             $driver = $this->loadRecord();
-            $cfg = $this->getServiceLocator()->get('Config');
             $request = $this->getRequest();
             $this->allTabs = $this->getServiceLocator()
                 ->get('VuFind\RecordTabPluginManager')
-                ->getTabsForRecord($driver, $cfg['recorddriver_tabs'], $request);
+                ->getTabsForRecord($driver, $this->getTabConfiguration(), $request);
         }
         return $this->allTabs;
     }
