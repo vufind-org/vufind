@@ -125,7 +125,7 @@ class TitleHolds
      *
      * @param string $id   A Bib ID
      * @param string $type The holds mode to be applied from:
-     * (all, holds, recalls, availability)
+     * (disabled, always, availability, driver)
      *
      * @return mixed A url on success, boolean false on failure
      */
