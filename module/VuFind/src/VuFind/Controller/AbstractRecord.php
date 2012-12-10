@@ -251,14 +251,14 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
         $driver->saveToFavorites($this->getRequest()->getPost()->toArray(), $user);
 
+        // Display a success status message:
+        $this->flashMessenger()->setNamespace('info')
+            ->addMessage('bulk_save_success');
+
         // Grab the followup namespace so we know where to send the user next:
         $followup = new SessionContainer($this->searchClassId . 'SaveFollowup');
         $url = isset($followup->url) ? (string)$followup->url : false;
         if (!empty($url)) {
-            // Display a success status message:
-            $this->flashMessenger()->setNamespace('info')
-                ->addMessage('bulk_save_success');
-
             // Clear followup URL in session -- we're done with it now:
             unset($followup->url);
 
@@ -290,11 +290,16 @@ class AbstractRecord extends AbstractBase
 
         // If we got this far, we should save the referer for later use by the
         // ProcessSave action (to get back to where we came from after saving).
-        // We only save if we don't already have a saved URL; otherwise we
-        // might accidentally redirect to the "create new list" screen!
+        // We shouldn't save follow-up information if it points to the Save
+        // screen or the "create list" screen, as this causes confusing workflows;
+        // in these cases, we will simply default to pushing the user to record view.
         $followup = new SessionContainer($this->searchClassId . 'SaveFollowup');
-        $followup->url = (isset($followup->url) && !empty($followup->url))
-            ? $followup->url : $this->getRequest()->getServer()->get('HTTP_REFERER');
+        $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
+        if (substr($referer, -5) != '/Save'
+            && stripos($referer, 'MyResearch/EditList/NEW') === false
+        ) {
+            $followup->url = $referer;
+        }
 
         // Retrieve the record driver:
         $driver = $this->loadRecord();
