@@ -121,6 +121,16 @@ class Record extends AbstractHelper
     }
 
     /**
+     * Render the core metadata area of the collection view.
+     *
+     * @return string
+     */
+    public function getCollectionMetadata()
+    {
+        return $this->renderTemplate('collection-info.phtml');
+    }
+
+    /**
      * Export the record in the requested format.  For legal values, see
      * getExportFormats().
      *

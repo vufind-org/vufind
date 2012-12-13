@@ -14,7 +14,7 @@
   <div class="record" data-role="content" data-record-id="<?=$this->escapeHtml($this->driver->getUniqueId())?>">
     <?=$this->flashmessages()?>
     <? if ($this->activeTab == $this->defaultTab): ?>
-      <?=$this->record($this->driver)->getCoreMetadata()?>
+      <?=$this->record($this->driver)->getCollectionMetadata()?>
     <? else: ?>
       <h3><?=$this->escapeHtml($this->driver->getBreadcrumb())?></h3>
     <? endif; ?>

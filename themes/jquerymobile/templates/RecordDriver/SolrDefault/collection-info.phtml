@@ -1,0 +1,4 @@
+<h1><?=$this->escapeHtml($this->driver->getShortTitle())?></h1>
+<? $summ = $this->driver->getSummary(); if (!empty($summ)): ?>
+  <p><?=$this->escapeHtml($summ[0])?></p>
+<? endif; ?>
