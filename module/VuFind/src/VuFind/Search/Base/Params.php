@@ -144,7 +144,7 @@ class Params implements ServiceLocatorAwareInterface
      * @param \Zend\StdLib\Parameters $request Parameter object representing user
      * request.
      *
-     * @return string
+     * @return void
      */
     public function initFromRequest($request)
     {
