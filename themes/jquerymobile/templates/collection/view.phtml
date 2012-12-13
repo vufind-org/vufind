@@ -10,7 +10,7 @@
     $tab = $activeTab ? $this->record($this->driver)->getTab($this->tabs[$activeTab]) : '';
 ?>
 <div data-role="page" id="Record-view">
-  <?=$this->mobileMenu()->header(array('searchLink' => $this->searchOptions($this->searchClassId)->getSearchHomeAction()))?>
+  <?=$this->mobileMenu()->header()?>
   <div class="record" data-role="content" data-record-id="<?=$this->escapeHtml($this->driver->getUniqueId())?>">
     <?=$this->flashmessages()?>
     <? if ($this->activeTab == $this->defaultTab): ?>

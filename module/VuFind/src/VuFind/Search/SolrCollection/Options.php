@@ -1,6 +1,6 @@
 <?php
 /**
- * Collection Controller
+ * Solr Collection aspect of the Search Multi-class (Options)
  *
  * PHP version 5
  *
@@ -20,63 +20,48 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Controller
+ * @package  Search_SolrAuthor
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-namespace VuFind\Controller;
+namespace VuFind\Search\SolrCollection;
+use VuFind\Config\Reader as ConfigReader;
 
 /**
- * Collection Controller
+ * Solr Collection Search Options
  *
  * @category VuFind2
- * @package  Controller
+ * @package  Search_SolrAuthor
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class CollectionController extends AbstractRecord
+class Options extends \VuFind\Search\Solr\Options
 {
     /**
      * Constructor
+     *
+     * @return void
      */
     public function __construct()
     {
-        // Call standard record controller initialization:
         parent::__construct();
 
-        // TODO: set appropriate default tab
-    }
-
-    /**
-     * Get the tab configuration for this controller.
-     *
-     * @return array
-     */
-    protected function getTabConfiguration()
-    {
-        // TODO: fill in
-        return array(
-            'VuFind\RecordDriver\AbstractBase'
-                => array('CollectionList' => 'CollectionList')
-        );
-    }
-
-    /**
-     * Display a particular tab.
-     *
-     * @param string $tab  Name of tab to display
-     * @param bool   $ajax Are we in AJAX mode?
-     *
-     * @return mixed
-     */
-    protected function showTab($tab, $ajax = false)
-    {
-        $result = parent::showTab($tab, $ajax);
-        if (!$ajax && $result instanceof \Zend\View\Model\ViewModel) {
-            $result->setTemplate('collection/view');
+        // Load sort preferences (or defaults if none in .ini file):
+        $searchSettings = ConfigReader::getConfig('Collection');
+        if (isset($searchSettings->Sorting)) {
+            $this->sortOptions = array();
+            foreach ($searchSettings->Sorting as $key => $value) {
+                $this->sortOptions[$key] = $value;
+            }
+        } else {
+            $this->sortOptions = array(
+                'title' => 'sort_title',
+                'year' => 'sort_year', 'year asc' => 'sort_year asc',
+                'author' => 'sort_author'
+            );
         }
-        return $result;
+        $this->defaultSort = key($this->sortOptions);
     }
 }

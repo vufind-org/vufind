@@ -124,4 +124,14 @@ class ConfigurationBased extends AbstractBase
         return isset($this->config->HierarchyTree)
             ? $this->config->HierarchyTree->toArray() : array();
     }
+    /**
+     * Get Collection Link Type from the config file
+     *
+     * @return string
+     */
+    public function getCollectionLinkType()
+    {
+        return isset($this->config->Collections->link_type)
+            ? ucwords(strtolower($this->config->Collections->link_type)) : 'All';
+    }
 }

@@ -1,0 +1,31 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Collection Items') . ': ' . $this->driver->getBreadcrumb());
+
+    // Get search results
+    $results = $this->tab->getResults();
+?>
+<? if (($recordTotal = $results->getResultTotal()) > 0): // only display these at very top if we have results ?>
+  <? foreach ($results->getRecommendations('top') as $current): ?>
+    <?=$this->recommend($current)?>
+  <? endforeach; ?>
+  <?=$this->transEsc("Showing")?>
+  <strong><?=$results->getStartRecord()?></strong> - <strong><?=$results->getEndRecord()?></strong>
+  <? if (!isset($this->skipTotalCount)): ?>
+    <?=$this->transEsc('of')?> <strong><?=$recordTotal?></strong> <?=$this->transEsc('Items')?>
+  <? endif; ?>
+  <?=$this->render('search/controls/sort.phtml', array('results' => $results))?>
+  <?=$this->render('search/controls/view.phtml', array('results' => $results))?>
+  <div class="paginationTop">
+    <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $results))?>
+  </div>
+  <div class="clearer"></div>
+  <form method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>">
+    <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('results' => $results, 'idPrefix' => ''))?>
+    <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', array('results' => $results))?>
+    <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('results' => $results, 'idPrefix' => 'bottom_'))?>
+    <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $results))?>
+  </form>
+<? else: ?>
+  <?=$this->transEsc('collection_empty')?>
+<? endif; ?>

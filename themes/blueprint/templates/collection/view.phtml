@@ -50,7 +50,7 @@
   <? endif; ?>
 
 
-  <div class="recordsubcontent">
+  <div class="collectionDetails">
     <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
   </div>
 
@@ -58,9 +58,11 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>">
-  <? foreach ($this->driver->getRelated() as $current): ?>
-    <?=$this->related($current)?>
-  <? endforeach; ?>
+  <? if (is_callable(array($activeTabObj, 'getSideRecommendations'))): ?>
+    <? foreach ($activeTabObj->getSideRecommendations() as $current): ?>
+      <?=$this->recommend($current)?>
+    <? endforeach; ?>
+  <? endif; ?>
 </div>
 
 <div class="clear"></div>

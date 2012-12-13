@@ -320,6 +320,12 @@ $config = array(
     'recordtab_plugin_manager' => array(
         'abstract_factories' => array('VuFind\RecordTab\PluginFactory'),
         'factories' => array(
+            'collectionlist' => function ($sm) {
+                $searchManager = $sm->getServiceLocator()->get('SearchManager');
+                return new \VuFind\RecordTab\CollectionList(
+                    $searchManager->setSearchClassId('SolrCollection')->getResults()
+                );
+            },
             'holdingsils' => function ($sm) {
                 // If VuFind is configured to suppress the holdings tab when the
                 // ILS driver specifies no holdings, we need to pass in a connection

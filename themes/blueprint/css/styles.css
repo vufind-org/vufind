@@ -1451,6 +1451,72 @@ tr:nth-child(even) td.gridMouseOver {
     display: none;
 }
 
+/************************* COLLECTIONS PAGE ************************/
+.collectionDetails {
+    background-color: #FFF;
+    padding:20px 1em 1em 1em;
+    border: 2px solid #EEEEEE;
+    margin-top: -2px;
+    margin-bottom: 20px;
+}
+
+.collectionDetails form {
+    border: 1px solid #EEEEEE;
+}
+
+.collectionDetails .sortSelector {
+    border: 0px solid #FFF;
+    float: right;
+}
+
+.collectionDetails li.result {
+    background-color: #EEEEEE;
+    margin-bottom: 0px;
+}
+
+.collectionDetails li.result.alt {
+    background-color: #FFF;
+    margin-bottom: 0px;
+}
+
+.collectionDetails .pagination span {
+    border: 1px solid #EEEEEE;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.collectionDetails .paginationTop .pagination {
+    text-align: center;
+    margin-top: 5px;
+    margin-bottom: 8px;
+    padding-bottom: 0;
+    padding-top: 0;
+}
+
+.collectionDetails .paginationTop .pagination span {
+    border: 1px solid #EEEEEE;
+    font-weight: bold;
+    padding-left: 4px;
+    padding-right: 4px;
+    margin-left: 3px;
+}
+
+.collectionDetails .paginationTop .pagination a:hover {
+    border: 1px solid #EEEEEE;
+}
+
+.collectionDetails .paginationTop .pagination a {
+    border: 1px solid #FFF;
+    padding-left: 4px;
+    padding-right: 4px;
+    margin-left: 3px;
+}
+
+.collectionDetails .viewButtons {
+    float:right;
+    margin-right:10px;
+}
+
 /* Rss Recommendations */
 div.suggestionHeader {
     min-height:30px;
