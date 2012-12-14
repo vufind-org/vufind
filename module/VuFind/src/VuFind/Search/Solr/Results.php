@@ -538,16 +538,9 @@ class Results extends BaseResults
      */
     protected function initRecordDriver($data)
     {
-        $factory = $this->getServiceLocator()
-            ->get('VuFind\RecordDriverPluginManager');
-
-        $key = 'Solr' . ucwords($data['recordtype']);
-        $recordType = $factory->has($key) ? $key : 'SolrDefault';
-
-        // Build the object:
-        $driver = $factory->get($recordType);
-        $driver->setRawData($data);
-        return $driver;
+        return $this->getServiceLocator()
+            ->get('VuFind\RecordDriverPluginManager')
+            ->getSolrRecord($data);
     }
     
     /**

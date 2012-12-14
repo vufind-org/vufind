@@ -79,4 +79,22 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     {
         return 'VuFind\RecordDriver\AbstractBase';
     }
+
+    /**
+     * Convenience method to retrieve a populated Solr record driver.
+     *
+     * @param array $data Raw Solr data
+     *
+     * @return AbstractBase
+     */
+    public function getSolrRecord($data)
+    {
+        $key = 'Solr' . ucwords($data['recordtype']);
+        $recordType = $this->has($key) ? $key : 'SolrDefault';
+
+        // Build the object:
+        $driver = $this->get($recordType);
+        $driver->setRawData($data);
+        return $driver;
+    }
 }
