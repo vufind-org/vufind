@@ -58,7 +58,7 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>">
-  <? if (is_callable(array($activeTabObj, 'getSideRecommendations'))): ?>
+  <? if (isset($activeTabObj) && is_callable(array($activeTabObj, 'getSideRecommendations'))): ?>
     <? foreach ($activeTabObj->getSideRecommendations() as $current): ?>
       <?=$this->recommend($current)?>
     <? endforeach; ?>
