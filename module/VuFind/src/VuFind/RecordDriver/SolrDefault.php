@@ -1130,6 +1130,23 @@ class SolrDefault extends AbstractBase
     }
 
     /**
+     * Get the positions of this item within parent collections.  Returns an array
+     * of parent ID => sequence number.
+     *
+     * @return array
+     */
+    public function getHierarchyPositionsInParents()
+    {
+        $retVal = array();
+        if (isset($this->fields['hierarchy_parent_id'])) {
+            foreach ($this->fields['hierarchy_parent_id'] as $key => $val) {
+                $retVal[$val] = $this->fields['hierarchy_sequence'][$key];
+            }
+        }
+        return $retVal;
+    }
+
+    /**
      * Get a list of hierarchy trees containing this record.
      *
      * @param string $hierarchyID The hierarchy to get the tree for

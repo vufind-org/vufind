@@ -191,6 +191,8 @@ $config = array(
             'solr' => function ($sm) {
                 $cacheDir = $sm->getServiceLocator()->get('VuFind\CacheManager')->getCacheDir();
                 return new \VuFind\Hierarchy\TreeDataSource\Solr(
+                    \VuFind\Connection\Manager::connectToIndex(),
+                    $sm->getServiceLocator()->get('VuFind\RecordDriverPluginManager'),
                     rtrim($cacheDir, '/') . '/hierarchy'
                 );
             },

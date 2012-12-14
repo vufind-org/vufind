@@ -44,9 +44,16 @@ class Solr extends AbstractBase
     /**
      * Solr connection
      *
-     * @var object
+     * @var \VuFind\Connection\Solr
      */
-    protected $db;
+    protected $solr;
+
+    /**
+     * Record driver plugin manager
+     *
+     * @var \VuFind\RecordDriver\PluginManager
+     */
+    protected $driverFactory;
 
     /**
      * Cache directory
@@ -58,11 +65,16 @@ class Solr extends AbstractBase
     /**
      * Constructor.
      *
-     * @param string $cacheDir Directory to use for caching results (optional)
+     * @param \VuFind\Connection\Solr            $solr     Solr connection
+     * @param \VuFind\RecordDriver\PluginManager $factory  Record driver manager
+     * @param string                             $cacheDir Directory to hold cache
+     * results (optional)
      */
-    public function __construct($cacheDir = null)
-    {
-        $this->db = ConnectionManager::connectToIndex();
+    public function __construct(\VuFind\Connection\Solr $solr,
+        \VuFind\RecordDriver\PluginManager $factory, $cacheDir = null
+    ) {
+        $this->solr = $solr;
+        $this->driverFactory = $factory;
         $this->cacheDir = rtrim($cacheDir, '/');
     }
 
@@ -79,7 +91,7 @@ class Solr extends AbstractBase
      */
     public function getXML($id, $options = array())
     {
-        $top = $this->db->getRecord($id);
+        $top = $this->driverFactory->getSolrRecord($this->solr->getRecord($id));
         $cacheFile = (null !== $this->cacheDir)
             ? $this->cacheDir . '/hierarchyTree_' . urlencode($id) . '.xml'
             : false;
@@ -97,7 +109,7 @@ class Solr extends AbstractBase
             $xml = '<root><item id="' .
                 htmlspecialchars($id) .
                 '">' .
-                '<content><name>' . htmlspecialchars($top['title']) .
+                '<content><name>' . htmlspecialchars($top->getTitle()) .
                 '</name></content>';
             $count = 0;
             $xml .= $this->getChildren($id, $count);
@@ -129,7 +141,7 @@ class Solr extends AbstractBase
     protected function getChildren($parentID, &$count)
     {
         $query = 'hierarchy_parent_id:"' . addcslashes($parentID, '"') . '"';
-        $results = $this->db->search(array('query' => $query, 'limit' => 10000));
+        $results = $this->solr->search(array('query' => $query, 'limit' => 10000));
         if ($results === false) {
             return '';
         }
@@ -137,23 +149,23 @@ class Solr extends AbstractBase
         $sorting = $this->getHierarchyDriver()->treeSorting();
 
         foreach ($results['response']['docs'] as $doc) {
+            $current = $this->driverFactory->getSolrRecord($doc);
             ++$count;
             if ($sorting) {
-                foreach ($doc['hierarchy_parent_id'] as $key => $val) {
-                    if ($val == $parentID) {
-                        $sequence = $doc['hierarchy_sequence'][$key];
-                    }
+                $positions = $current->getHierarchyPositionsInParents();
+                if (isset($positions[$parentID])) {
+                    $sequence = $positions[$parentID];
                 }
             }
 
-            $this->debug("$parentID: " . $doc['id']);
+            $this->debug("$parentID: " . $current->getUniqueID());
             $xmlNode = '';
-            $xmlNode .= '<item id="' . htmlspecialchars($doc['id']) .
+            $xmlNode .= '<item id="' . htmlspecialchars($current->getUniqueID()) .
                 '"><content><name>' .
-                htmlspecialchars($doc['title_full']) . '</name></content>';
-            $xmlNode .= $this->getChildren($doc['id'], $count);
+                htmlspecialchars($current->getTitle()) . '</name></content>';
+            $xmlNode .= $this->getChildren($current->getUniqueID(), $count);
             $xmlNode .= '</item>';
-            array_push($xml, array((isset($sequence)?$sequence: 0),$xmlNode));
+            array_push($xml, array((isset($sequence) ? $sequence : 0), $xmlNode));
         }
 
         if ($sorting) {
