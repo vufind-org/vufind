@@ -88,10 +88,62 @@ class TitleHolds
                 }
                 return $this->driverHold($id, $patron);
             } else {
+                $mode = $this->checkOverrideMode($id, $mode);
                 return $this->generateHold($id, $mode);
             }
         }
         return false;
+    }
+
+    /**
+     * Get holdings for a particular record.
+     *
+     * @param string $id ID to retrieve
+     *
+     * @return array
+     */
+    protected function getHoldings($id)
+    {
+        // Cache results in a static array since the same holdings may be requested
+        // multiple times during a run through the class:
+        static $holdings = array();
+
+        if (!isset($holdings[$id])) {
+            $holdings[$id] = $this->catalog->getHolding($id);
+        }
+        return $holdings[$id];
+    }
+
+    /**
+     * Support method for getHold to determine if we should override the configured
+     * holds mode.
+     *
+     * @param string $id   Record ID to check
+     * @param string $mode Current mode
+     *
+     * @return string
+     */
+    protected function checkOverrideMode($id, $mode)
+    {
+        if (isset($this->config->Catalog->allow_holds_override)
+            && $this->config->Catalog->allow_holds_override
+        ) {
+            $holdings = $this->getHoldings($id);
+
+            // For title holds, the most important override feature to handle
+            // is to prevent displaying a link if all items are disabled.  We
+            // may eventually want to address other scenarios as well.
+            $allDisabled = true;
+            foreach ($holdings as $holding) {
+                if (!isset($holding['holdOverride'])
+                    || "disabled" != $holding['holdOverride']
+                ) {
+                    $allDisabled = false;
+                }
+            }
+            $mode = (true == $allDisabled) ? "disabled" : $mode;
+        }
+        return $mode;
     }
 
     /**
@@ -143,12 +195,11 @@ class TitleHolds
         $checkHolds = $this->catalog->checkFunction("Holds");
 
         if ($checkHolds != false) {
-
             if ($type == "always") {
                  $addlink = true;
             } elseif ($type == "availability") {
 
-                $holdings = $this->catalog->getHolding($id);
+                $holdings = $this->getHoldings($id);
                 foreach ($holdings as $holding) {
                     if ($holding['availability']
                         && !in_array($holding['location'], $this->hideHoldings)
@@ -161,10 +212,10 @@ class TitleHolds
 
             if ($addlink) {
                 if ($checkHolds['function'] == "getHoldLink") {
-                    /* Return opac link */
+                    // Return opac link
                     return $this->catalog->getHoldLink($id, $data);
                 } else {
-                    /* Return non-opac link */
+                    // Return non-opac link
                     return $this->getHoldDetails($data, $checkHolds['HMACKeys']);
                 }
             }
