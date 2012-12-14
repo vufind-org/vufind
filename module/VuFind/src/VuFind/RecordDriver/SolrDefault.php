@@ -1130,6 +1130,93 @@ class SolrDefault extends AbstractBase
     }
 
     /**
+     * Get an associative array (id => title) of collections containing this record.
+     *
+     * @return array
+     */
+    public function getContainingCollections()
+    {
+        // If collections are disabled or this record is not part of a hierarchy, go
+        // no further....
+        $config = ConfigReader::getConfig();
+        if (!isset($config->Collections->collections)
+            || !$config->Collections->collections
+            || !($hierarchyDriver = $this->getHierarchyDriver())
+        ) {
+            return false;
+        }
+
+        // Initialize some variables needed within the switch below:
+        $isCollection = $this->isCollection();
+        $titles = $ids = array();
+
+        // Check config setting for what constitutes a collection, act accordingly:
+        switch ($hierarchyDriver->getCollectionLinkType()) {
+        case 'All':
+            if (isset($this->fields['hierarchy_parent_title'])
+                && isset($this->fields['hierarchy_parent_id'])
+            ) {
+                $titles = $this->fields['hierarchy_parent_title'];
+                $ids = $this->fields['hierarchy_parent_id'];
+            }
+            break;
+        case 'Top':
+            if (isset($this->fields['hierarchy_top_title'])
+                && isset($this->fields['hierarchy_top_id'])
+            ) {
+                foreach ($this->fields['hierarchy_top_id'] as $i => $topId) {
+                    // Don't mark an item as its own parent -- filter out parent
+                    // collections whose IDs match that of the current collection.
+                    if (!$isCollection
+                        || $topId !== $this->fields['is_hierarchy_id']
+                    ) {
+                        $ids[] = $topId;
+                        $titles[] = $this->fields['hierarchy_top_title'][$i];
+                    }
+                }
+            }
+            break;
+        }
+
+        // Map the titles and IDs to a useful format:
+        $c = count($ids);
+        $retVal = array();
+        for ($i = 0; $i < $c; $i++) {
+            $retVal[$ids[$i]] = $titles[$i];
+        }
+        return $retVal;
+    }
+
+    /**
+     * Get the value of whether or not this is a collection level record
+     *
+     * @return bool
+     */
+    public function isCollection()
+    {
+        if (!($hierarchyDriver = $this->getHierarchyDriver())) {
+            // Not a hierarchy type record
+            return false;
+        }
+
+        // Check config setting for what constitutes a collection
+        switch ($hierarchyDriver->getCollectionLinkType()) {
+        case 'All':
+            return (isset($this->fields['is_hierarchy_id']));
+        case 'Top':
+            return isset($this->fields['is_hierarchy_title'])
+                && isset($this->fields['is_hierarchy_id'])
+                && in_array(
+                    $this->fields['is_hierarchy_id'],
+                    $this->fields['hierarchy_top_id']
+                );
+        default:
+            // Default to not be a collection level record
+            return false;
+        }
+    }
+
+    /**
      * Get the positions of this item within parent collections.  Returns an array
      * of parent ID => sequence number.
      *

@@ -63,9 +63,27 @@ class Router
      */
     public static function getTabRouteDetails($driver, $tab = null)
     {
-        return static::getRouteDetails(
+        $route = static::getRouteDetails(
             $driver, '', empty($tab) ? array() : array('tab' => $tab)
         );
+
+        // If collections are active and the record route was selected, we need
+        // to check if the driver is actually a collection; if so, we should switch
+        // routes.
+        if ('record' == $route['route']) {
+            $config = \VuFind\Config\Reader::getConfig();
+            if (isset($config->Collections->collections)
+                && $config->Collections->collections
+            ) {
+                if (is_object($driver)
+                    && true === $driver->tryMethod('isCollection')
+                ) {
+                    $route['route'] = 'collection';
+                }
+                // TODO: make routing work correctly in non-object $driver case
+            }
+        }
+        return $route;
     }
 
     /**

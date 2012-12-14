@@ -42,6 +42,16 @@
         <?=!empty($summAuthor) ? '<br />' : ''?>
         <?=$this->transEsc('Published') . ' ' . $this->escapeHtml($summDate[0])?>
       <? endif; ?>
+      <? $summInCollection = $this->driver->getContainingCollections(); if (!empty($summInCollection)): ?>
+        <? foreach ($summInCollection as $collId => $collText): ?>
+          <div>
+            <b><?=$this->transEsc("in_collection_label")?></b>
+            <a class="collectionLinkText" href="<?=$this->url('collection', array('id' => $collId))?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
+               <?=$this->escapeHtml($collText)?>
+            </a>
+          </div>
+        <? endforeach; ?>
+      <? endif; ?>
     </div>
 
     <div class="last">

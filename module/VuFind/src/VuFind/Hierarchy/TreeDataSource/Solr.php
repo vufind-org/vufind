@@ -106,9 +106,10 @@ class Solr extends AbstractBase
             $xml = file_get_contents($cacheFile);
         } else {
             $starttime = microtime(true);
+            $isCollection = $top->isCollection() ? "true" : "false";
             $xml = '<root><item id="' .
                 htmlspecialchars($id) .
-                '">' .
+                '" isCollection="' . $isCollection . '">' .
                 '<content><name>' . htmlspecialchars($top->getTitle()) .
                 '</name></content>';
             $count = 0;
@@ -160,8 +161,9 @@ class Solr extends AbstractBase
 
             $this->debug("$parentID: " . $current->getUniqueID());
             $xmlNode = '';
+            $isCollection = $current->isCollection() ? "true" : "false";
             $xmlNode .= '<item id="' . htmlspecialchars($current->getUniqueID()) .
-                '"><content><name>' .
+                '" isCollection="' . $isCollection . '"><content><name>' .
                 htmlspecialchars($current->getTitle()) . '</name></content>';
             $xmlNode .= $this->getChildren($current->getUniqueID(), $count);
             $xmlNode .= '</item>';
