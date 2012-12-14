@@ -39,6 +39,23 @@ namespace VuFind\Record;
 class Router
 {
     /**
+     * Record loader
+     *
+     * @var \VuFind\Record\Loader
+     */
+    protected $loader;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Record\Loader $loader Record loader
+     */
+    public function __construct(\VuFind\Record\Loader $loader)
+    {
+        $this->loader = $loader;
+    }
+
+    /**
      * Get routing details for a controller action.
      *
      * @param \VuFind\RecordDriver\AbstractBase|string $driver Record driver
@@ -75,12 +92,13 @@ class Router
             if (isset($config->Collections->collections)
                 && $config->Collections->collections
             ) {
-                if (is_object($driver)
-                    && true === $driver->tryMethod('isCollection')
-                ) {
+                if (!is_object($driver)) {
+                    list($source, $id) = explode('|', $driver, 2);
+                    $driver = $this->loader->load($id, $source);
+                }
+                if (true === $driver->tryMethod('isCollection')) {
                     $route['route'] = 'collection';
                 }
-                // TODO: make routing work correctly in non-object $driver case
             }
         }
         return $route;
