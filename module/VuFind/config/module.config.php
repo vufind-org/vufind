@@ -450,6 +450,7 @@ $config = array(
             'VuFind\CacheManager' => 'VuFind\Cache\Manager',
             'VuFind\Mailer' => 'VuFind\Mailer',
             'VuFind\RecordLoader' => 'VuFind\Record\Loader',
+            'VuFind\RecordRouter' => 'VuFind\Record\Router',
             'VuFind\SearchSpecsReader' => 'VuFind\Config\SearchSpecsReader',
             'VuFind\SessionManager' => 'Zend\Session\SessionManager',
             'VuFind\WorldCatConnection' => 'VuFind\Connection\WorldCat',

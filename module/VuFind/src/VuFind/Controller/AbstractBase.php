@@ -210,6 +210,16 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Get the record router.
+     *
+     * @return \VuFind\Record\Router
+     */
+    public function getRecordRouter()
+    {
+        return $this->getServiceLocator()->get('VuFind\RecordRouter');
+    }
+
+    /**
      * Get the search manager.
      *
      * @return \VuFind\Search\Manager

@@ -47,9 +47,9 @@ class Router
      *
      * @return array
      */
-    public static function getActionRouteDetails($driver, $action)
+    public function getActionRouteDetails($driver, $action)
     {
-        return static::getRouteDetails($driver, '-' . strtolower($action));
+        return $this->getRouteDetails($driver, '-' . strtolower($action));
     }
 
     /**
@@ -61,9 +61,9 @@ class Router
      *
      * @return array
      */
-    public static function getTabRouteDetails($driver, $tab = null)
+    public function getTabRouteDetails($driver, $tab = null)
     {
-        $route = static::getRouteDetails(
+        $route = $this->getRouteDetails(
             $driver, '', empty($tab) ? array() : array('tab' => $tab)
         );
 
@@ -98,7 +98,7 @@ class Router
      *
      * @return array
      */
-    public static function getRouteDetails($driver, $routeSuffix,
+    public function getRouteDetails($driver, $routeSuffix,
         $extraParams = array()
     ) {
         // Extract source and ID from driver or string:

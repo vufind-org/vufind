@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Theme\Root\Helper;
-use VuFind\Record\Router as RecordRouter, Zend\View\Helper\AbstractHelper;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * Record link view helper
@@ -37,8 +37,18 @@ use VuFind\Record\Router as RecordRouter, Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class RecordLink extends AbstractHelper
+class RecordLink extends AbstractServiceLocator
 {
+    /**
+     * Get the record router.
+     *
+     * @return \VuFind\Record\Router
+     */
+    protected function getRecordRouter()
+    {
+        return $this->getServiceLocator()->get('VuFind\RecordRouter');
+    }
+
     /**
      * Given an array representing a related record (which may be a bib ID or OCLC
      * number), this helper renders a URL linking to that record.
@@ -100,7 +110,7 @@ class RecordLink extends AbstractHelper
     {
         // Build the URL:
         $urlHelper = $this->getView()->plugin('url');
-        $details = RecordRouter::getActionRouteDetails($driver, $action);
+        $details = $this->getRecordRouter()->getActionRouteDetails($driver, $action);
         return $urlHelper($details['route'], $details['params']);
     }
 
@@ -152,7 +162,7 @@ class RecordLink extends AbstractHelper
     {
         // Build the URL:
         $urlHelper = $this->getView()->plugin('url');
-        $details = RecordRouter::getTabRouteDetails($driver, $tab);
+        $details = $this->getRecordRouter()->getTabRouteDetails($driver, $tab);
         return $urlHelper($details['route'], $details['params']);
     }
 

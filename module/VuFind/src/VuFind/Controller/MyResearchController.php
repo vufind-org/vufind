@@ -31,7 +31,7 @@ use VuFind\Config\Reader as ConfigReader,
     VuFind\Exception\Auth as AuthException,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\Record\Router as RecordRouter, Zend\Stdlib\Parameters;
+    Zend\Stdlib\Parameters;
 
 /**
  * Controller for the user account area.
@@ -586,7 +586,7 @@ class MyResearchController extends AbstractBase
             $recordId = $this->params()->fromQuery('recordId');
             $recordSource = $this->params()->fromQuery('recordSource', 'VuFind');
             if (!empty($recordId)) {
-                $details = RecordRouter::getActionRouteDetails(
+                $details = $this->getRecordRouter()->getActionRouteDetails(
                     $recordSource . '|' . $recordId, 'Save'
                 );
                 return $this->redirect()

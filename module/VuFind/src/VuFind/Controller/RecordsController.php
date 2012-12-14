@@ -26,7 +26,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Record\Router as RecordRouter;
 
 /**
  * Records Controller
@@ -59,7 +58,7 @@ class RecordsController extends AbstractSearch
         // If there is exactly one record, send the user directly there:
         $ids = $this->params()->fromQuery('id', array());
         if (count($ids) == 1) {
-            $details = RecordRouter::getTabRouteDetails($ids[0]);
+            $details = $this->getRecordRouter()->getTabRouteDetails($ids[0]);
             $target = $this->url()->fromRoute($details['route'], $details['params']);
             // forward print param, if necessary:
             $print = $this->params()->fromQuery('print');
