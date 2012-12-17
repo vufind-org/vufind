@@ -546,8 +546,8 @@ class Results extends BaseResults
     /**
      * Get complete facet counts for several index fields
      *
-     * @param array $facetfields  name of the Solr fields to return facets for
-     * @param bool  $removeFilter Clear existing filters from selected fields (true)
+     * @param array  $facetfields  name of the Solr fields to return facets for
+     * @param bool   $removeFilter Clear existing filters from selected fields (true)
      * or retain them (false)?
      * @param int    $limit        A limit for the number of facets returned, this
      * may be useful for very large amounts of facets that can break the JSON parse
@@ -556,8 +556,8 @@ class Results extends BaseResults
      *
      * @return array an array with the facet values for each index field
      */
-    public function getFullFieldFacets($facetfields, $removeFilter = true, $limit = -1,
-        $facetSort = null
+    public function getFullFieldFacets($facetfields, $removeFilter = true,
+        $limit = -1, $facetSort = null
     ) {
         $clone = clone($this);
         $params = $clone->getParams();
