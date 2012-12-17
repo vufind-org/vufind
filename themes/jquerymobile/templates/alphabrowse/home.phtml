@@ -32,12 +32,12 @@
       <div class="ui-grid-a">
         <div class="ui-block-a">
           <? if (isset($this->prevpage)): ?>
-            <a data-role="button" data-mini="true" data-icon="arrow-l" href="<?=$this->url('alphabrowse-home')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($this->from)?>&amp;page=<?=urlencode($this->prevpage)?>">Prev</a>
+            <a data-role="button" data-mini="true" data-icon="arrow-l" href="<?=$this->url('alphabrowse-home')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($this->from)?>&amp;page=<?=urlencode($this->prevpage)?>"><?=$this->transEsc('Prev')?></a>
           <? endif; ?>
         </div>
         <div class="ui-block-b">
           <? if (isset($this->nextpage)): ?>
-            <a data-role="button" data-mini="true" data-icon="arrow-r" data-iconpos="right" href="<?=$this->url('alphabrowse-home')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($this->from)?>&amp;page=<?=urlencode($this->nextpage)?>">Next</a>
+            <a data-role="button" data-mini="true" data-icon="arrow-r" data-iconpos="right" href="<?=$this->url('alphabrowse-home')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($this->from)?>&amp;page=<?=urlencode($this->nextpage)?>"><?=$this->transEsc('Next')?></a>
           <? endif; ?>
         </div>
       </div>
