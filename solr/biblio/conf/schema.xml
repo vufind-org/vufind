@@ -9,6 +9,12 @@
         <filter class="solr.PatternReplaceFilterFactory" pattern="(?&lt;!\b[A-Z])[.\s]*$" replacement="" replace="first"/>
       </analyzer>
     </fieldType>
+    <fieldType name="textFacetRaw" class="solr.TextField" sortMissingLast="true" omitNorms="true">
+      <analyzer>
+        <tokenizer class="solr.KeywordTokenizerFactory"/>
+        <!-- this is just like textFacet but without punctuation stripping. -->
+      </analyzer>
+    </fieldType>
     <fieldType name="text" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
         <tokenizer class="solr.ICUTokenizerFactory"/>
@@ -185,6 +191,7 @@
    <field name="hierarchy_sequence" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="is_hierarchy_id" type="string" indexed="true" stored="true" multiValued="false"/>
    <field name="is_hierarchy_title" type="string" indexed="true" stored="true" multiValued="false"/>
+   <field name="hierarchy_browse" type="textFacetRaw" indexed="true" stored="false" multiValued="true"/>
    <!-- Used for loading correct record driver -->
    <field name="recordtype" type="string" indexed="false" stored="true"/>
    <!-- Tracking fields to keep track of oldest and most recent index times -->

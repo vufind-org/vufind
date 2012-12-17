@@ -469,7 +469,7 @@
     <str name="scopeNoteField">scope_note</str>
 
 
-    <str name="sources">topic,author,title,lcc,dewey</str>
+    <str name="sources">topic,author,title,lcc,dewey,hierarchy</str>
 
     <lst name="topic">
       <str name="DBpath">${solr.solr.home:./solr}/alphabetical_browse/topic_browse.db</str>
@@ -497,6 +497,10 @@
       <str name="ignoreDiacritics">yes</str>
     </lst>
 
+    <lst name="hierarchy">
+      <str name="DBpath">${solr.solr.home:./solr}/alphabetical_browse/hierarchy_browse.db</str>
+      <str name="field">hierarchy_browse</str>
+    </lst>
   </requestHandler>
 
   <searchComponent name="spellcheck" class="org.apache.solr.handler.component.SpellCheckComponent">

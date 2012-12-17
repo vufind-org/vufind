@@ -59,6 +59,7 @@ if exist %index_dir% goto nomakeindexdir
 mkdir "%index_dir%"
 :nomakeindexdir
 
+call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse hierarchy hierarchy_browse
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse title title_fullStr 1 "-Dbibleech=StoredFieldLeech -Dsortfield=title_sort -Dvaluefield=title_fullStr"
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse topic topic_browse
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse author author_browse
