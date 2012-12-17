@@ -10,6 +10,7 @@
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = $this->getLastSearchLink($this->transEsc('Search'), '', '<span>&gt;</span>') .
+        '<a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a><span>&gt;</span>' .
         $this->recordLink()->getBreadcrumb($this->driver);
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">

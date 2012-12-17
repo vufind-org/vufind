@@ -1,0 +1,22 @@
+<? $this->layout()->breadcrumbs = '<a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a>'; ?>
+<div id="bd">
+  <div id="yui-main" class="content">
+    <div class="disambiguationDiv" >
+      <? if (empty($collections)): ?>
+        <h1><?=$this->transEsc('collection_empty')?></h1>
+        <? $this->headTitle($this->translate('collection_empty')); ?>
+      <? else: ?>
+        <h1><?=$this->transEsc('collection_disambiguation')?></h1>
+        <? $this->headTitle($this->translate('collection_disambiguation')); ?>
+        <div id="disambiguationItemsDiv">
+          <? foreach ($collections as $i => $collection): ?>
+           <div class="disambiguationItem <?=$i % 2 ? 'alt ' : ''?>record<?=$i?>">
+             <a href="<?=$this->url('collection', array('id' => $collection['id']))?>"><?=$this->escapeHtml($collection['title'])?></a>
+             <p><?=$this->escapeHtml($collection['description'])?></p>
+           </div>
+          <? endforeach; ?>
+        </div>
+      <? endif; ?>
+    </div>
+  </div>
+</div>

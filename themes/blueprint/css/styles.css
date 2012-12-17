@@ -250,6 +250,18 @@ ul.cartContent {
     margin-left: 4em;
 }
 
+.browseAlphabetSelectorItem {
+    float: left;
+    margin-right:5px;
+    margin-left:5px;
+}
+
+.browseJumpTo {
+    float: right;
+    margin-right:5px;
+    margin-left:5px;
+}
+
 /** Autocomplete */
 .ui-autocomplete {
     max-width: 500px;
@@ -1452,6 +1464,28 @@ tr:nth-child(even) td.gridMouseOver {
 }
 
 /************************* COLLECTIONS PAGE ************************/
+.disambiguationDiv {
+    background-color: #FFF;
+    padding: 20px;
+}
+
+.disambiguationDiv h1 {
+    font-size: 2em;
+}
+
+#disambiguationItemsDiv {
+    padding: 5px;
+    margin-bottom: 30px;
+}
+
+.disambiguationItem {
+     background-color: #EEEEEE;
+}
+
+.disambiguationItem.alt {
+     background-color: #FFF;
+}
+
 .collectionDetails {
     background-color: #FFF;
     padding:20px 1em 1em 1em;
@@ -1515,6 +1549,26 @@ tr:nth-child(even) td.gridMouseOver {
 .collectionDetails .viewButtons {
     float:right;
     margin-right:10px;
+}
+
+.collectionBrowseResult {
+    padding: 0 0.5em 0.5em;
+    border-top: solid 1px #EEEEEE;
+}
+
+.collectionBrowseEntry.listBrowse.alt {
+    background-color:#EEEEEE;
+}
+
+.collectionBrowseHeading {
+    float: left;
+    width: 80%;
+    padding: 0.5em;
+}
+
+.collectionBrowseCount {
+    padding: 0.5em;
+    float: right;
 }
 
 /* Rss Recommendations */

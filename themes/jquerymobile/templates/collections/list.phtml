@@ -1,0 +1,12 @@
+<ul class="ui-listview" data-role="listview">
+  <? foreach ($result as $i => $item): ?>
+    <li class="ui-li-has-count">
+      <a class="ui-link-inherit" data-ajax="false" href="<?=$this->url('collection', array('id' => $item['value']))?>">
+        <div class="ui-btn-text"><?=$this->escapeHtml($item['displayText'])?></div>
+        <? /* subtract one from the number of items to exclude the record representing the collection itself. */ ?>
+        <span class="ui-li-count ui-btn-up-c ui-btn-corner-all"><b><?=$item['count'] - 1?></b> <?=$this->transEsc('items')?></span>
+        <span class="ui-icon ui-icon-arrow-r ui-icon-shadow"></span>
+      </a>
+    </li>
+  <? endforeach; ?>
+</ul>

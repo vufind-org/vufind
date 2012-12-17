@@ -1,0 +1,30 @@
+<?
+    $this->headTitle($this->translate('Collection Browse'));
+?>
+<? ob_start(); ?>
+  <div class="ui-grid-a">
+    <? if (isset($prevpage)): ?>
+      <div class="ui-block-a">
+        <a rel="external" data-role="button" data-mini="true" data-icon="arrow-l" href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($prevpage)?><?=$this->escapeHtml($filterString)?>">&laquo; <?=$this->transEsc('Prev')?></a>
+      </div>
+    <? endif; ?>
+    <? if (isset($nextpage)): ?>
+      <div class="ui-block-b">
+        <a rel="external" data-role="button" data-mini="true" data-icon="arrow-r" href="<?=$this->url('collections-home')?>?from=<?=urlencode($from)?>&amp;page=<?=urlencode($nextpage)?><?=$this->escapeHtml($filterString)?>"><?=$this->transEsc('Next')?> &raquo;</a>
+      </div>
+    <? endif; ?>
+  </div>
+<? $pageLinks = ob_get_contents(); ?>
+<? ob_end_clean(); ?>
+
+<h2><?=$this->transEsc('Collection Browse')?></h2>
+
+<div data-role="page" id="Search-list" class="results-page">
+  <?=$this->mobileMenu()->header()?>
+  <?=$pageLinks?>
+  <div data-role="content">
+    <?=$this->render('collections/list.phtml')?>
+  </div>
+  <?=$pageLinks?>
+  <?=$this->mobileMenu()->footer()?>
+</div>
