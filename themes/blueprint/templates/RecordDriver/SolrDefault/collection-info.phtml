@@ -1,3 +1,4 @@
+<? $this->headScript()->appendFile('collection_record.js'); ?>
 <? /* Display thumbnail if appropriate: */ ?>
 <? $mediumThumb = $this->record($this->driver)->getThumbnail('medium'); $largeThumb = $this->record($this->driver)->getThumbnail('large'); ?>
 <? if ($mediumThumb): ?>
@@ -11,6 +12,7 @@
 <? $summ = $this->driver->getSummary(); if (!empty($summ)): ?>
   <p><?=$this->escapeHtml($summ[0])?></p>
 <? endif; ?>
+<a id="moreInfoToggle" href="#" style="display:none"><?=$this->transEsc('more_info_toggle')?></a>
 <div id="collectionInfo" class="collectionInfo">
 <table cellpadding="2" cellspacing="0" border="0" class="citation" summary="{translate text='Bibliographic Details'}">
   <? $authors = $this->driver->getDeduplicatedAuthors(); ?>
