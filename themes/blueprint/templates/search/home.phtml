@@ -49,6 +49,16 @@
             <ul class="span-5">
           <? endif; ?>
         <? endforeach; ?>
+      <? /* Special case: collections */ ?>
+      <? elseif ($field == 'hierarchy_top_title'): ?>
+        <? $i = 0; foreach ($sortedList as $url => $value): ?>
+          <? if (++$i > 12): ?>
+            <li><a href="<?=$this->url('collections-home')?>"><strong><?=$this->transEsc("More options")?>...</strong></a></li>
+            <? break; ?>
+          <? else: ?>
+            <li><a href="<?=$this->url('collections-bytitle')?>?title=<?=urlencode($value)?>"><?=$this->escapeHtml($value)?></a></li>
+          <? endif; ?>
+        <? endforeach; ?>
       <? else: ?>
         <? $i = 0; foreach ($sortedList as $url => $value): ?>
           <? if (++$i > 12): ?>
