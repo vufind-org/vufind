@@ -255,6 +255,7 @@ $config = array(
             'authorfacets' => 'VuFind\Recommend\AuthorFacets',
             'authorityrecommend' => 'VuFind\Recommend\AuthorityRecommend',
             'catalogresults' => 'VuFind\Recommend\CatalogResults',
+            'collectionsidefacets' => 'VuFind\Recommend\CollectionSideFacets',
             'europeanaresults' => 'VuFind\Recommend\EuropeanaResults',
             'europeanaresultsdeferred' => 'VuFind\Recommend\EuropeanaResultsDeferred',
             'expandfacets' => 'VuFind\Recommend\ExpandFacets',

@@ -122,6 +122,6 @@ class Params extends \VuFind\Search\Solr\Params
         $searchSettings = \VuFind\Config\Reader::getConfig('Collection');
         return isset($searchSettings->Recommend)
             ? $searchSettings->Recommend->toArray()
-            : array();
+            : array('side' => array('CollectionSideFacets:Facets::Collection:true'));
     }
 }

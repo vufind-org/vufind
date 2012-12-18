@@ -1,6 +1,6 @@
 <? $results = $this->recommend->getResults(); ?>
 <div class="sidegroup">
-  <? if ($results->getResultTotal() > 0): ?><h4><?=$this->transEsc('Narrow Search')?></h4><? endif; ?>
+  <? if ($results->getResultTotal() > 0): ?><h4><?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?></h4><? endif; ?>
   <? $checkboxFilters = $results->getParams()->getCheckboxFacets(); if (count($checkboxFilters) > 0): ?>
     <? foreach ($checkboxFilters as $current): ?>
         <div class="checkboxFilter<?=($results->getResultTotal() < 1 && !$current['selected'] && !$current['alwaysVisible']) ? ' hide' : ''?>">
@@ -11,13 +11,18 @@
         </div>
     <? endforeach; ?>
   <? endif; ?>
-  <? $filterList = $results->getParams()->getFilterList(true); if (!empty($filterList)): ?>
+  <? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : array(); ?>
+  <? $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); if (!empty($filterList)): ?>
     <strong><?=$this->transEsc('Remove Filters')?></strong>
     <ul class="filters">
     <? foreach ($filterList as $field => $filters): ?>
       <? foreach ($filters as $filter): ?>
         <?
-            $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($filter['field'], $filter['value']);
+            if (isset($filter['specialType']) && $filter['specialType'] == 'keyword') {
+                $removeLink = $this->currentPath().$results->getUrlQuery()->replaceTerm($filter['value'], '');
+            } else {
+                $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($filter['field'], $filter['value']);
+            }
             if ($filter['displayText'] == '[* TO *]') $filter['displayText'] = $this->translate('filter_wildcard');
         ?>
         <li>
@@ -28,6 +33,7 @@
     <? endforeach; ?>
     </ul>
   <? endif; ?>
+  <?= isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
   <? $sideFacetSet = $this->recommend->getFacetSet(); $dateFacets = $this->recommend->getDateFacets(); ?>
   <? if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
     <? foreach ($sideFacetSet as $title => $cluster): ?>
