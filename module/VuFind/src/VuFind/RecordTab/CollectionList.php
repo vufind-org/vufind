@@ -87,6 +87,7 @@ class CollectionList extends AbstractBase
             $this->results->getParams()->initFromRecordDriver(
                 $this->getRecordDriver(), $params
             );
+            $this->results->getParams()->recommendationsEnabled(true);
             $this->processed = true;
         }
         return $this->results;
