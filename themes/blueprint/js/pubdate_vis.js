@@ -23,7 +23,12 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
     $.getJSON(url, function (data) {
         if (data.status == 'OK') {
             $.each(data['data'], function(key, val) {
-                //console.log(val);
+                //check if there is data to display, if there isn't hide the box
+                if (val['data'].length == 0){
+                    $("#datevis" + key + "xWrapper").hide();
+                    return;
+                }
+
                 // plot graph
                 var placeholder = $("#datevis" + key + "x");
 
