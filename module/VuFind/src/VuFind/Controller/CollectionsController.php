@@ -275,7 +275,8 @@ class CollectionsController extends AbstractBase
     /**
      * Function to normalize the names so they sort properly
      *
-     * @param array &$result Array to sort (passed by reference to use less memory)
+     * @param array &$result Array to sort (passed by reference to use less
+     * memory)
      *
      * @return array $resultOut
      */
