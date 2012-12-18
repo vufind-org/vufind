@@ -284,7 +284,8 @@ class CollectionsController extends AbstractBase
     {
         $valuesSorted = array();
         foreach ($result as $resKey => $resVal) {
-            $valuesSorted[$resKey] = $this->normalizeForBrowse($resVal['displayText']);
+            $valuesSorted[$resKey]
+                = $this->normalizeForBrowse($resVal['displayText']);
         }
         asort($valuesSorted);
 
