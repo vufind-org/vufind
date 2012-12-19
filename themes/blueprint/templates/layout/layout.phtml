@@ -23,11 +23,11 @@
 
         // Deal with cart stuff:
         $cart = $this->cart();
+        $script = 'var vufindString = {};';
         if ($cart->isActive()) {
             $this->headScript()->appendFile("jquery.cookie.js");
             $this->headScript()->appendFile("cart.js");
-            $script = 'var vufindString = {};'
-                . 'vufindString.bulk_noitems_advice = "' . $this->transEsc('bulk_noitems_advice') . '";'
+            $script .= 'vufindString.bulk_noitems_advice = "' . $this->transEsc('bulk_noitems_advice') . '";'
                 . 'vufindString.confirmEmpty = "' . $this->transEsc('bookbag_confirm_empty') . '";'
                 . 'vufindString.viewBookBag = "' . $this->transEsc('View Book Bag') . '";'
                 . 'vufindString.addBookBag = "' . $this->transEsc('Add to Book Bag') . '";'
@@ -37,8 +37,8 @@
                 . 'vufindString.bookbagMax = "' . $cart->getMaxSize() . '";'
                 . 'vufindString.bookbagFull = "' . $this->transEsc('bookbag_full_msg') . '";'
                 . 'vufindString.bookbagStatusFull = "' . $this->transEsc('bookbag_full') . '";';
-            $this->headScript()->appendScript($script);
         }
+        $this->headScript()->appendScript($script);
     ?>
     <?=$this->headScript()?>
   </head>
