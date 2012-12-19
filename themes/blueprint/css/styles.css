@@ -467,6 +467,9 @@ dl.narrowList a:hover {
 dl.narrowList a {
     text-decoration: none;
 }
+.keywordFilterForm {
+    margin: 5px 0px 5px 0px;
+}
 .navmenu dd {
     padding: 0.1em 0 0.1em 0.4em;
     list-style-type: none;
