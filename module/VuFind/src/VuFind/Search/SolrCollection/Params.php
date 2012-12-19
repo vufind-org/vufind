@@ -103,9 +103,9 @@ class Params extends \VuFind\Search\Solr\Params
         $options->spellcheckEnabled(false);
 
         // Prepare the search
-        $options
-            ->addHiddenFilter($this->collectionField . ":" . $this->collectionID);
-        $options->addHiddenFilter("!id:" . $this->collectionID);
+        $safeId = addcslashes($this->collectionID, '"');
+        $options->addHiddenFilter($this->collectionField . ':"' . $safeId . '"');
+        $options->addHiddenFilter('!id:"' . $safeId . '"');
     }
 
     /**
