@@ -426,7 +426,10 @@ abstract class Options implements ServiceLocatorAwareInterface
      */
     public function rememberLastSort($last)
     {
-        $this->getSession()->lastSort = $last;
+        $session = $this->getSession();
+        if (!$session->getManager()->getStorage()->isImmutable()) {
+            $session->lastSort = $last;
+        }
     }
 
     /**
@@ -449,7 +452,10 @@ abstract class Options implements ServiceLocatorAwareInterface
      */
     public function rememberLastLimit($last)
     {
-        $this->getSession()->lastLimit = $last;
+        $session = $this->getSession();
+        if (!$session->getManager()->getStorage()->isImmutable()) {
+            $session->lastLimit = $last;
+        }
     }
 
     /**
@@ -472,7 +478,10 @@ abstract class Options implements ServiceLocatorAwareInterface
      */
     public function rememberLastView($last)
     {
-        $this->getSession()->lastView = $last;
+        $session = $this->getSession();
+        if (!$session->getManager()->getStorage()->isImmutable()) {
+            $session->lastView = $last;
+        }
     }
 
     /**
