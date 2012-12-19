@@ -324,6 +324,11 @@ $config = array(
     'recordtab_plugin_manager' => array(
         'abstract_factories' => array('VuFind\RecordTab\PluginFactory'),
         'factories' => array(
+            'collectionhierarchytree' => function ($sm) {
+                return new \VuFind\RecordTab\CollectionHierarchyTree(
+                    $sm->getServiceLocator()->get('VuFind\RecordLoader')
+                );
+            },
             'collectionlist' => function ($sm) {
                 $searchManager = $sm->getServiceLocator()->get('SearchManager');
                 return new \VuFind\RecordTab\CollectionList(

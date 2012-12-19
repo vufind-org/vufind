@@ -46,7 +46,11 @@ class CollectionController extends AbstractRecord
         // Call standard record controller initialization:
         parent::__construct();
 
-        // TODO: set appropriate default tab
+        // Set default tab, if specified:
+        $config = \VuFind\Config\Reader::getConfig();
+        if (isset($config->Collections->defaultTab)) {
+            $this->defaultTab = $config->Collections->defaultTab;
+        }
     }
 
     /**
@@ -56,10 +60,12 @@ class CollectionController extends AbstractRecord
      */
     protected function getTabConfiguration()
     {
-        // TODO: fill in
         return array(
             'VuFind\RecordDriver\AbstractBase'
-                => array('CollectionList' => 'CollectionList')
+                => array(
+                    'CollectionList' => 'CollectionList',
+                    'HierarchyTree' => 'CollectionHierarchyTree',
+                )
         );
     }
 

@@ -1857,18 +1857,33 @@ div#closeContextHelp:active {
     display: none;
 }
 
-#hierarchyTreeHolder {
+#hierarchyTreeHolder, #hierarchyRecordHolder {
     background-color: #FFF;
-    border: 1px solid #DCDCDC;
     padding: 0.5em;
 }
 
-#hierarchyTree {
+#hierarchyTreeHolder {
+    border: 1px solid #DCDCDC;
+}
+
+.collectionDetailsTree #hierarchyTreeHolder, .collectionDetailsTree #hierarchyRecordHolder {
+    border-top: 0;
+}
+
+#hierarchyTree, #hierarchyRecord {
     padding: 0.5em 0.5em 0.5em 0;
     max-height:375px;
     min-height:375px;
     overflow: hidden;
     overflow-y: auto;
+}
+
+#hierarchyRecord {
+    overflow: auto;
+}
+
+#hierarchyRecord th {
+   width: 12em;
 }
 
 #treeSearch {
@@ -1988,6 +2003,13 @@ div#closeContextHelp:active {
     background-color: #FAFAFA;
     border: 1px solid #DCDCDC;
     border-bottom: 0 none;
+    padding: 0.25em;
+}
+
+.collectionDetailsTree #treeSelector {
+    background-color: #FAFAFA;
+    border: 1px solid #DCDCDC;
+    border-top: 0 none;
     padding: 0.25em;
 }
 

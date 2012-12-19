@@ -121,6 +121,16 @@ class Record extends AbstractHelper
     }
 
     /**
+     * Render the a brief record for use in collection mode.
+     *
+     * @return string
+     */
+    public function getCollectionBriefRecord()
+    {
+        return $this->renderTemplate('collection-record.phtml');
+    }
+
+    /**
      * Render the core metadata area of the collection view.
      *
      * @return string

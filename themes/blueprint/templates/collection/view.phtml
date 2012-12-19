@@ -8,12 +8,15 @@
         $this->headLink()->appendAlternate($this->recordLink()->getActionUrl($this->driver, 'RDF'), 'application/rdf+xml', 'RDF Representation');
     }
 
+    // Set flag for special cases relating to full-width hierarchy tree tab:
+    $tree = (strtolower($this->activeTab) == 'hierarchytree');
+    
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = $this->getLastSearchLink($this->transEsc('Search'), '', '<span>&gt;</span>') .
         '<a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a><span>&gt;</span>' .
         $this->recordLink()->getBreadcrumb($this->driver);
 ?>
-<div class="<?=$this->layoutClass('mainbody')?>">
+<div class="<?=$tree ? 'span-23' : $this->layoutClass('mainbody')?>">
   <?=$this->record($this->driver)->getToolbar()?>
 
   <div class="record recordId source<?=$this->escapeHtml($this->driver->getResourceSource())?>" id="record">
@@ -51,19 +54,21 @@
   <? endif; ?>
 
 
-  <div class="collectionDetails">
+  <div class="collectionDetails<?=$tree ? 'Tree' : ''?>">
     <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
   </div>
 
   <span class="Z3988" title="<?=$this->escapeHtml($this->driver->getOpenURL())?>"></span>
 </div>
 
-<div class="<?=$this->layoutClass('sidebar')?>">
-  <? if (isset($activeTabObj) && is_callable(array($activeTabObj, 'getSideRecommendations'))): ?>
-    <? foreach ($activeTabObj->getSideRecommendations() as $current): ?>
-      <?=$this->recommend($current)?>
-    <? endforeach; ?>
-  <? endif; ?>
-</div>
+<? if (!$tree): ?>
+  <div class="<?=$this->layoutClass('sidebar')?>">
+    <? if (isset($activeTabObj) && is_callable(array($activeTabObj, 'getSideRecommendations'))): ?>
+      <? foreach ($activeTabObj->getSideRecommendations() as $current): ?>
+        <?=$this->recommend($current)?>
+      <? endforeach; ?>
+    <? endif; ?>
+  </div>
+<? endif; ?>
 
 <div class="clear"></div>

@@ -30,6 +30,21 @@ $(document).ready(function()
             $(this).remove();
         });
 
+        $(".Collection").each(function()
+        {
+            var id = $(this).attr("value");
+            $(this).next("a").click(function(e)
+            {
+                e.preventDefault();
+                $("#hierarchyTree a").removeClass("jstree-clicked");
+                $(this).addClass("jstree-clicked");
+                // Open this node
+                $(this).parent().removeClass("jstree-closed").addClass("jstree-open");
+                getRecord(id);
+                return false;
+            });
+        });
+
         $("#hierarchyTree a").click(function(e)
         {
             e.preventDefault();
@@ -111,6 +126,25 @@ $(document).ready(function()
 function showTreeError(msg)
 {
     $("#hierarchyTreeHolder").html('<p class="error">' + msg + '</p>');
+}
+
+function getRecord(recordID)
+{
+    $.ajax({
+      url: path + '/Hierarchy/GetRecord?' + $.param({id: recordID}),
+      dataType: 'html',
+      success: function(response) {
+        if (response) {
+            $('#hierarchyRecord').html(response);
+            // Remove the old path highlighting
+            $('#hierarchyTree a').removeClass("jstree-highlight");
+            // Add Current path highlighting
+            var jsTreeNode = $(":input[value='"+recordID+"']").parent();
+            jsTreeNode.children("a").addClass("jstree-highlight");
+            jsTreeNode.parents("li").children("a").addClass("jstree-highlight");
+        }
+      }
+    });
 }
 
 function scroll(scroller, mode)
@@ -200,6 +234,13 @@ function doTreeSearch()
                 $(this).show();
             });
         });
+        if (results["results"].length == 1) {
+            $("#hierarchyTree .jstree-clicked").removeClass("jstree-clicked");
+            // only do this for collection pages
+            if ($(".Collection").length != 0) {
+                getRecord(results["results"][0]);
+            }
+        }
         $("#treeSearchLoadingImg").hide();
     });
 }

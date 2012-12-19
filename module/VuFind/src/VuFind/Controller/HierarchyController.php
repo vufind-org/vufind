@@ -110,7 +110,7 @@ class HierarchyController extends AbstractBase
     /**
      * Gets a Hierarchy Tree
      *
-     * @return void
+     * @return mixed
      */
     public function gettreeAction()
     {
@@ -142,5 +142,27 @@ class HierarchyController extends AbstractBase
         return $this->output(
             "<error>" . $this->translate("hierarchy_tree_error") . "</error>"
         );
+    }
+
+    /**
+     * Get a record for display within a tree
+     *
+     * @return mixed
+     */
+    public function getrecordAction()
+    {
+        $id = $this->params()->fromQuery('id');
+        $loader = $this->getServiceLocator()->get('VuFind\RecordLoader');
+        try {
+            $record = $loader->load($id);
+            $result = $this->getViewRenderer()->record($record)
+                ->getCollectionBriefRecord();
+        } catch (\VuFind\Exception\RecordMissing $e) {
+            $result = $this->getViewRenderer()
+                ->render('collection/collection-record-error.phtml');
+        }
+        $response = $this->getResponse();
+        $response->setContent($result);
+        return $response;
     }
 }

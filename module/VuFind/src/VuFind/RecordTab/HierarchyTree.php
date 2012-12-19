@@ -159,16 +159,17 @@ class HierarchyTree extends AbstractBase
      *
      * @param string $baseUrl Base URL to use in links within tree
      * @param string $id      Hierarchy ID (omit to use active tree)
+     * @param string $context Context for use by renderer
      *
      * @return string
      */
-    public function renderTree($baseUrl, $id = null)
+    public function renderTree($baseUrl, $id = null, $context = 'Record')
     {
         $id = (null === $id) ? $this->getActiveTree() : $id;
         $recordDriver = $this->getRecordDriver();
         $hierarchyDriver = $recordDriver->tryMethod('getHierarchyDriver');
         if (is_object($hierarchyDriver)) {
-            $tree = $hierarchyDriver->render($recordDriver, 'Record', 'List', $id);
+            $tree = $hierarchyDriver->render($recordDriver, $context, 'List', $id);
             return str_replace(
                 '%%%%VUFIND-BASE-URL%%%%', rtrim($baseUrl, '/'), $tree
             );

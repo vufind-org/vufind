@@ -17,7 +17,7 @@
     $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'hierarchyTree_JSTree.js');
     echo $this->inlineScript();
 ?>
-<div>
+<div<?=isset($this->mainTreeClass) ? ' class="' . $this->mainTreeClass . '"' : ''?>>
   <? if (count($hierarchyTreeList) > 1): ?>
     <div id="treeSelector">
       <? foreach ($hierarchyTreeList as $hierarchy => $hierarchyTitle): ?>
@@ -43,7 +43,7 @@
       <div id="hierarchyTree">
         <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>" class="hiddenRecordId" />
         <input type="hidden" value="<?=$this->escapeHtml($activeTree)?>" class="hiddenHierarchyId" />
-        <input type="hidden" value="Record" class="hiddenContext" />
+        <input type="hidden" value="<?=isset($this->treeContext) ? $this->treeContext : 'Record'?>" class="hiddenContext" />
         <noscript>
           <?=$this->tab->renderTree($this->url('home'))?>
         </noscript>
