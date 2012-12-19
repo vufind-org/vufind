@@ -44,9 +44,11 @@
         <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>" class="hiddenRecordId" />
         <input type="hidden" value="<?=$this->escapeHtml($activeTree)?>" class="hiddenHierarchyId" />
         <input type="hidden" value="<?=isset($this->treeContext) ? $this->treeContext : 'Record'?>" class="hiddenContext" />
-        <noscript>
-          <?=$this->tab->renderTree($this->url('home'))?>
-        </noscript>
+        <? if ($this->layout()->getTemplate() != 'layout/lightbox'): ?>
+          <noscript>
+            <?=$this->tab->renderTree($this->url('home'))?>
+          </noscript>
+        <? endif; ?>
       </div>
     </div>
   <? endif; ?>
