@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<phpunit bootstrap="bootstrap.php">
+  <testsuites>
+    <testsuite name="core-proxy">
+      <directory>src</directory>
+    </testsuite>
+  </testsuites>
+  <logging>
+    <log type="coverage-html" target="../../review/coverage"/>
+  </logging>
+  <php>
+    <includePath>../../vendor/zf2/library</includePath>
+  </php>
+</phpunit>
