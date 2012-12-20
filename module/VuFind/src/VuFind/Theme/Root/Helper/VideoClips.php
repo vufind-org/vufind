@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Theme\Root\Helper;
-use DOMDocument, VuFind\Config\Reader as ConfigReader, VuFind\Code\ISBN,
-    VuFind\Http\Client as HttpClient, Zend\View\Helper\AbstractHelper;
+use DOMDocument;
 
 /**
  * Video clip view helper
@@ -38,11 +37,8 @@ use DOMDocument, VuFind\Config\Reader as ConfigReader, VuFind\Code\ISBN,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class VideoClips extends AbstractHelper
+class VideoClips extends AbstractSyndetics
 {
-    protected $config;
-    protected $isbn;
-
     /**
      * Do the actual work of loading the clips.
      *
@@ -52,13 +48,10 @@ class VideoClips extends AbstractHelper
      */
     public function __invoke($isbn)
     {
-        // We can't proceed without an ISBN:
-        if (empty($isbn)) {
+        if (!$this->setIsbn($isbn)) {
             return array();
         }
 
-        $this->config = ConfigReader::getConfig();
-        $this->isbn = new ISBN($isbn);
         $results = array();
 
         // Fetch from provider
@@ -84,21 +77,6 @@ class VideoClips extends AbstractHelper
         }
 
         return $results;
-    }
-
-    /**
-     * Attempt to get an ISBN-10; revert to ISBN-13 only when ISBN-10 representation
-     * is impossible.
-     *
-     * @return string
-     */
-    protected function getIsbn10()
-    {
-        $isbn = $this->isbn->get10();
-        if (!$isbn) {
-            $isbn = $this->isbn->get13();
-        }
-        return $isbn;
     }
 
     /**
@@ -139,7 +117,7 @@ class VideoClips extends AbstractHelper
         $vclips = array();
 
         //find out if there are any clips
-        $client = new HttpClient();
+        $client = $this->getHttpClient();
         $client->setUri($url);
         $result = $client->setMethod('GET')->send();
         if (!$result->isSuccess()) {
@@ -212,18 +190,5 @@ class VideoClips extends AbstractHelper
         }
 
         return $vclips;
-    }
-
-    /**
-     * Wrapper around syndetics to provide Syndetics Plus functionality.
-     *
-     * @param string $id Client access key
-     *
-     * @throws \Exception
-     * @return array     Returns array with auth notes data.
-     */
-    protected function loadSyndeticsplus($id) 
-    {
-        return $this->loadSyndetics($id, true);
     }
 }
