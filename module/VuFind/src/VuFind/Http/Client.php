@@ -104,7 +104,7 @@ class Client extends BaseClient
             if (isset($config->Proxy->port)) {
                 $options['proxy_port'] = $config->Proxy->port;
             }
-            $this->setConfig($options);
+            $this->setOptions($options);
         } else {
             // Default if no proxy settings found:
             $this->setAdapter('Zend\Http\Client\Adapter\Socket');
