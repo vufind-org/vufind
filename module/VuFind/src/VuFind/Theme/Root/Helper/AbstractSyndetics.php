@@ -103,6 +103,44 @@ abstract class AbstractSyndetics extends AbstractHelper
     }
 
     /**
+     * Retrieve results for the providers specified.
+     *
+     * @param string $isbn      ISBN to use for lookup
+     * @param string $providers Provider configuration
+     *
+     * @return array
+     */
+    protected function getResults($isbn, $providers)
+    {
+        $results = array();
+        if (!$this->setIsbn($isbn)) {
+            return $results;
+        }
+
+        // Fetch from provider
+        $providers = explode(',', $providers);
+        foreach ($providers as $provider) {
+            $parts = explode(':', trim($provider));
+            $provider = strtolower($parts[0]);
+            $func = 'load' . ucwords($provider);
+            $key = $parts[1];
+            try {
+                $results[$provider] = method_exists($this, $func)
+                    ? $this->$func($key) : false;
+                // If the current provider had no valid data, store nothing:
+                if (empty($results[$provider])) {
+                    unset($results[$provider]);
+                }
+            } catch (\Exception $e) {
+                // Ignore exceptions:
+                unset($results[$provider]);
+            }
+        }
+
+        return $results;
+    }
+
+    /**
      * Get an HTTP client
      *
      * @param string $url URL for client to use

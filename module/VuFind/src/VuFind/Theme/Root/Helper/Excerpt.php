@@ -48,35 +48,9 @@ class Excerpt extends AbstractSyndetics
      */
     public function __invoke($isbn)
     {
-        if (!$this->setIsbn($isbn)) {
-            return array();
-        }
-
-        $results = array();
-
-        // Fetch from provider
-        if (isset($this->config->Content->excerpts)) {
-            $providers = explode(',', $this->config->Content->excerpts);
-            foreach ($providers as $provider) {
-                $parts = explode(':', trim($provider));
-                $provider = strtolower($parts[0]);
-                $func = 'load' . ucwords($provider);
-                $key = $parts[1];
-                try {
-                    $results[$provider] = method_exists($this, $func) ?
-                        $this->$func($key) : false;
-                    // If the current provider had no valid excerpts, store nothing:
-                    if (empty($results[$provider])) {
-                        unset($results[$provider]);
-                    }
-                } catch (\Exception $e) {
-                    // Ignore exceptions:
-                    unset($results[$provider]);
-                }
-            }
-        }
-
-        return $results;
+        $providers = isset($this->config->Content->excerpts)
+            ? $this->config->Content->excerpts : '';
+        return $this->getResults($isbn, $providers);
     }
 
     /**
