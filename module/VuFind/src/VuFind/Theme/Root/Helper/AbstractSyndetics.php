@@ -38,6 +38,7 @@ use Zend\View\Helper\AbstractHelper;
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 abstract class AbstractSyndetics extends AbstractHelper
+    implements \VuFindHttp\HttpServiceAwareInterface
 {
     /**
      * VuFind configuration
@@ -52,6 +53,13 @@ abstract class AbstractSyndetics extends AbstractHelper
      * @var \VuFind\Code\ISBN
      */
     protected $isbn;
+
+    /**
+     * HTTP service
+     *
+     * @var \VuFindHttp\HttpServiceInterface
+     */
+    protected $httpService = null;
 
     /**
      * Constructor
@@ -97,11 +105,28 @@ abstract class AbstractSyndetics extends AbstractHelper
     /**
      * Get an HTTP client
      *
+     * @param string $url URL for client to use
+     *
      * @return \Zend\Http\Client
      */
-    protected function getHttpClient()
+    protected function getHttpClient($url)
     {
-        return new \VuFind\Http\Client();
+        if (null === $this->httpService) {
+            throw new \Exception('HTTP service missing.');
+        }
+        return $this->httpService->createClient($url);
+    }
+
+    /**
+     * Set the HTTP service to be used for HTTP requests.
+     *
+     * @param HttpServiceInterface $service HTTP service
+     *
+     * @return void
+     */
+    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
+    {
+        $this->httpService = $service;
     }
 
     /**

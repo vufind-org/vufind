@@ -129,9 +129,7 @@ class Reviews extends AbstractSyndetics
         $url = 'http://' . $endpoint . $requestURI . '?' . $encodedParams
             . '&Signature=' . rawurlencode(base64_encode($hmacHash));
 
-        $client = $this->getHttpClient();
-        $client->setUri($url);
-        $result = $client->setMethod('GET')->send();
+        $result = $this->getHttpClient($url)->send();
 
         $data = !$result->isSuccess()
             ? false : simplexml_load_string($result->getBody());
@@ -292,9 +290,7 @@ class Reviews extends AbstractSyndetics
         $review = array();
 
         //find out if there are any reviews
-        $client = $this->getHttpClient();
-        $client->setUri($url);
-        $result = $client->setMethod('GET')->send();
+        $result = $this->getHttpClient($url)->send();
         if (!$result->isSuccess()) {
             return $review;
         }
@@ -311,8 +307,7 @@ class Reviews extends AbstractSyndetics
                 // Load reviews
                 $url = $baseUrl . '/index.aspx?isbn=' . $this->getIsbn10() . '/' .
                        $sourceInfo['file'] . '&client=' . $id . '&type=rw12,hw7';
-                $client->setUri($url);
-                $result2 = $client->send();
+                $result2 = $this->getHttpClient($url)->send();
                 if (!$result2->isSuccess()) {
                     continue;
                 }
@@ -399,9 +394,7 @@ class Reviews extends AbstractSyndetics
         }
 
         //find out if there are any reviews
-        $client = $this->getHttpClient();
-        $client->setUri($url);
-        $result = $client->setMethod('GET')->send();
+        $result = $this->getHttpClient($url)->send();
 
         // Was the request successful?
         if ($result->isSuccess()) {

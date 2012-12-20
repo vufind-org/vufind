@@ -118,9 +118,7 @@ class Excerpt extends AbstractSyndetics
         $review = array();
 
         //find out if there are any excerpts
-        $client = $this->getHttpClient();
-        $client->setUri($url);
-        $result = $client->setMethod('GET')->send();
+        $result = $this->getHttpClient($url)->send();
         if (!$result->isSuccess()) {
             return $review;
         }
@@ -138,8 +136,7 @@ class Excerpt extends AbstractSyndetics
                 $url = $baseUrl . '/index.aspx?isbn=' . $this->getIsbn10() . '/' .
                        $sourceInfo['file'] . '&client=' . $id . '&type=rw12,hw7';
 
-                $client->setUri($url);
-                $result2 = $client->send();
+                $result2 = $this->getHttpClient($url)->send();
                 if (!$result2->isSuccess()) {
                     continue;
                 }
