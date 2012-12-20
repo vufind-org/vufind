@@ -27,7 +27,8 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Config\Reader as ConfigReader, Zend\Feed\Reader\Reader as FeedReader;
+use VuFind\Config\Reader as ConfigReader, Zend\Feed\Reader\Reader as FeedReader,
+    Zend\Log\LoggerInterface;
 
 /**
  * EuropeanaResults Recommendations Module
@@ -41,18 +42,130 @@ use VuFind\Config\Reader as ConfigReader, Zend\Feed\Reader\Reader as FeedReader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class EuropeanaResults implements RecommendInterface
+class EuropeanaResults implements RecommendInterface,
+    \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
 {
+    /**
+     * Request parameter for searching
+     *
+     * @var string
+     */
     protected $requestParam;
+
+    /**
+     * Result limit
+     *
+     * @var int
+     */
     protected $limit;
+
+    /**
+     * Europeana base URL
+     *
+     * @var string
+     */
     protected $baseUrl;
+
+    /**
+     * Fully constructed API URL
+     *
+     * @var string
+     */
     protected $targetUrl;
+
+    /**
+     * Providers to exclude
+     *
+     * @var array
+     */
     protected $excludeProviders;
+
+    /**
+     * Site to search
+     *
+     * @var string
+     */
     protected $searchSite;
+
+    /**
+     * Link for more results
+     *
+     * @var string
+     */
     protected $sitePath;
+
+    /**
+     * API key
+     *
+     * @var string
+     */
     protected $key;
+
+    /**
+     * Search string
+     *
+     * @var string
+     */
     protected $lookfor;
+
+    /**
+     * Search results
+     *
+     * @var array
+     */
     protected $results;
+
+    /**
+     * Logger (or false for none)
+     *
+     * @var LoggerInterface|bool
+     */
+    protected $logger = false;
+
+    /**
+     * HTTP service
+     *
+     * @var \VuFindHttp\HttpServiceInterface
+     */
+    protected $httpService = null;
+
+    /**
+     * Set the HTTP service to be used for HTTP requests.
+     *
+     * @param HttpServiceInterface $service HTTP service
+     *
+     * @return void
+     */
+    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
+    {
+        $this->httpService = $service;
+    }
+
+    /**
+     * Set the logger
+     *
+     * @param LoggerInterface $logger Logger to use.
+     *
+     * @return void
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * Log a debug message.
+     *
+     * @param string $msg Message to log.
+     *
+     * @return void
+     */
+    protected function debug($msg)
+    {
+        if ($this->logger) {
+            $this->logger->debug($msg);
+        }
+    }
 
     /**
      * setConfig
@@ -157,7 +270,12 @@ class EuropeanaResults implements RecommendInterface
      */
     public function process($results)
     {
-        FeedReader::setHttpClient(new \VuFind\Http\Client());
+        $this->debug('Pulling feed from ' . $this->targetUrl);
+        if (null !== $this->httpService) {
+            FeedReader::setHttpClient(
+                $this->httpService->createClient($this->targetUrl)
+            );
+        }
         $parsedFeed = FeedReader::import($this->targetUrl);
         $resultsProcessed = array();
         foreach ($parsedFeed as $key => $value) {
