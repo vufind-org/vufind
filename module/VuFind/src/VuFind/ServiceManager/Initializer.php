@@ -58,6 +58,28 @@ class Initializer
         if ($instance instanceof \VuFind\I18n\Translator\TranslatorAwareInterface) {
             $instance->setTranslator($sm->get('VuFind\Translator'));
         }
+        if ($instance instanceof \VuFindHttp\HttpServiceAwareInterface) {
+            $instance->setHttpService($sm->get('VuFind\Http'));
+        }
+        return $instance;
+    }
+
+    /**
+     * Given a Zend Framework Plugin Manager, initialize the instance.
+     *
+     * @param object                                     $instance Instance to
+     * initialize
+     * @param \Zend\ServiceManager\AbstractPluginManager $manager  Plugin manager
+     *
+     * @return object
+     */
+    public static function initZendPlugin($instance,
+        \Zend\ServiceManager\AbstractPluginManager $manager
+    ) {
+        $sm = $manager->getServiceLocator();
+        if (null !== $sm) {
+            static::initInstance($instance, $sm);
+        }
         return $instance;
     }
 
@@ -71,10 +93,7 @@ class Initializer
      */
     public static function initPlugin($instance, AbstractPluginManager $manager)
     {
-        $sm = $manager->getServiceLocator();
-        if (null !== $sm) {
-            static::initInstance($instance, $sm);
-        }
+        static::initZendPlugin($instance, $manager);
         if (method_exists($instance, 'setPluginManager')) {
             $instance->setPluginManager($manager);
         }

@@ -409,6 +409,17 @@ $config = array(
             'VuFind\DbAdapter' => function ($sm) {
                 return \VuFind\Db\AdapterFactory::getAdapter();
             },
+            'VuFind\Http' => function ($sm) {
+                $config = \VuFind\Config\Reader::getConfig();
+                $options = array();
+                if (isset($config->Proxy->host)) {
+                    $options['proxy_host'] = $config->Proxy->host;
+                    if (isset($config->Proxy->port)) {
+                        $options['proxy_port'] = $config->Proxy->port;
+                    }
+                }
+                return new \VuFindHttp\HttpService($options);
+            },
             'VuFind\ILSConnection' => function ($sm) {
                 $catalog = new \VuFind\ILS\Connection();
                 return $catalog
@@ -498,6 +509,11 @@ $config = array(
         ),
     ),
     'translator' => array(),
+    'view_helpers' => array(
+        'initializers' => array(
+            array('VuFind\ServiceManager\Initializer', 'initZendPlugin'),
+        ),
+    ),
     'view_manager' => array(
         'display_not_found_reason' => APPLICATION_ENV == 'development',
         'display_exceptions'       => APPLICATION_ENV == 'development',
