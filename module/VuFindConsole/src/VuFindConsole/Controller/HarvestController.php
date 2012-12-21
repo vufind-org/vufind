@@ -52,7 +52,9 @@ class HarvestController extends AbstractBase
         // Perform the harvest. Note that first command line parameter
         // may be used to start at a particular date.
         try {
-            $harvest = new NAF();
+            $harvest = new NAF(
+                $this->getServiceLocator()->get('VuFind\Http')->createClient()
+            );
             $argv = $this->consoleOpts->getRemainingArgs();
             if (isset($argv[0])) {
                 $harvest->setStartDate($argv[0]);

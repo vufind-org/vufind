@@ -464,6 +464,11 @@ $config = array(
 
                 return $translator;
             },
+            'VuFind\WorldCatConnection' => function ($sm) {
+                return new \VuFind\Connection\WorldCat(
+                    $sm->get('VuFind\Http')->createClient()
+                );
+            },
         ),
         'invokables' => array(
             'VuFind\AuthManager' => 'VuFind\Auth\Manager',
@@ -473,7 +478,6 @@ $config = array(
             'VuFind\RecordLoader' => 'VuFind\Record\Loader',
             'VuFind\SearchSpecsReader' => 'VuFind\Config\SearchSpecsReader',
             'VuFind\SessionManager' => 'Zend\Session\SessionManager',
-            'VuFind\WorldCatConnection' => 'VuFind\Connection\WorldCat',
             'VuFind\WorldCatUtils' => 'VuFind\Connection\WorldCatUtils',
         ),
         'initializers' => array(

@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/system_classes#searching Wiki
  */
 namespace VuFind\Connection;
-use VuFind\Http\Client as HttpClient, VuFind\XSLT\Processor as XSLTProcessor,
-    Zend\Log\LoggerInterface;
+use VuFind\XSLT\Processor as XSLTProcessor, Zend\Log\LoggerInterface;
 
 /**
  * SRU Search Interface
@@ -57,7 +56,7 @@ class SRU implements \Zend\Log\LoggerAwareInterface
     /**
      * The HTTP_Request object used for REST transactions
      *
-     * @var HttpClient
+     * @var \Zend\Http\Client
      */
     protected $client;
 
@@ -80,13 +79,14 @@ class SRU implements \Zend\Log\LoggerAwareInterface
      *
      * Sets up the SOAP Client
      *
-     * @param string $host The URL of the eXist Server
+     * @param string            $host   The URL of the SRU Server
+     * @param \Zend\Http\Client $client An HTTP client object
      */
-    public function __construct($host)
+    public function __construct($host, \Zend\Http\Client $client)
     {
         // Initialize properties needed for HTTP connection:
         $this->host = $host;
-        $this->client = new HttpClient();
+        $this->client = $client;
     }
 
     /**

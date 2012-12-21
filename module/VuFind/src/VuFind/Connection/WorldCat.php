@@ -56,11 +56,13 @@ class WorldCat extends SRU
 
     /**
      * Constructor
+     *
+     * @param \Zend\Http\Client $client An HTTP client object
      */
-    public function __construct()
+    public function __construct(\Zend\Http\Client $client)
     {
         parent::__construct(
-            'http://www.worldcat.org/webservices/catalog/search/sru'
+            'http://www.worldcat.org/webservices/catalog/search/sru', $client
         );
         $config = ConfigReader::getConfig();
         $this->wskey = isset($config->WorldCat->apiKey)

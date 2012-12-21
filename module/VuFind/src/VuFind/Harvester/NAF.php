@@ -52,8 +52,10 @@ class NAF
 
     /**
      * Constructor.
+     *
+     * @param \Zend\Http\Client $client An HTTP client object
      */
-    public function __construct()
+    public function __construct(\Zend\Http\Client $client)
     {
         // Don't time out during harvest!!
         set_time_limit(0);
@@ -78,7 +80,7 @@ class NAF
         $this->loadLastHarvestedDate();
 
         // Set up SRU connection:
-        $this->sru = new SRU('http://alcme.oclc.org/srw/search/lcnaf');
+        $this->sru = new SRU('http://alcme.oclc.org/srw/search/lcnaf', $client);
     }
 
     /**
