@@ -70,9 +70,10 @@ class Summon extends BaseSummon implements \Zend\Log\LoggerAwareInterface
      *
      * Sets up the Summon API Client
      *
-     * @param string $apiId   Summon API ID
-     * @param string $apiKey  Summon API Key
-     * @param array  $options Associative array of additional options; legal keys:
+     * @param string            $apiId   Summon API ID
+     * @param string            $apiKey  Summon API Key
+     * @param array             $options Associative array of additional options;
+     * legal keys:
      *    <ul>
      *      <li>authedUser - is the end-user authenticated?</li>
      *      <li>debug - boolean to control debug mode</li>
