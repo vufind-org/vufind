@@ -49,6 +49,8 @@ class OpenLibrary
 
     /**
      * Constructor
+     *
+     * @param \Zend\Http\Client $client HTTP client
      */
     public function __construct(\Zend\Http\Client $client)
     {
