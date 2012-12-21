@@ -52,6 +52,7 @@ class CoverController extends AbstractBase
         if (!$this->loader) {
             $this->loader = new Loader(
                 ConfigReader::getConfig(),
+                $this->getServiceLocator()->get('VuFind\Http')->createClient(),
                 $this->getServiceLocator()->get('VuFind\CacheManager')->getCacheDir()
             );
             \VuFind\ServiceManager\Initializer::initInstance(

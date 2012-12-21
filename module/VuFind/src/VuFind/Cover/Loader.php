@@ -27,8 +27,7 @@
  * @link     http://vufind.org/wiki/use_of_external_content Wiki
  */
 namespace VuFind\Cover;
-use VuFind\Code\ISBN, VuFind\Http\Client as HttpClient,
-    VuFind\Theme\Tools as ThemeTools, Zend\Log\LoggerInterface,
+use VuFind\Code\ISBN, VuFind\Theme\Tools as ThemeTools, Zend\Log\LoggerInterface,
     ZendService\Amazon\Amazon;
 
 /**
@@ -63,6 +62,13 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      * @var \Zend\Config\Config
      */
     protected $config;
+
+    /**
+     * HTTP client
+     *
+     * @var \Zend\Http\Client
+     */
+    protected $client;
 
     /**
      * directory to store downloaded images
@@ -117,12 +123,14 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      * Constructor
      *
      * @param \Zend\Config\Config $config  VuFind configuration
+     * @param \Zend\Http\Client   $client  HTTP client
      * @param string              $baseDir Directory to store downloaded images
      * (set to system temp dir if not otherwise specified)
      */
-    public function __construct($config, $baseDir = null)
+    public function __construct($config, \Zend\Http\Client $client, $baseDir = null)
     {
         $this->config = $config;
+        $this->client = $client;
         $this->baseDir = rtrim(
             is_null($baseDir) ? sys_get_temp_dir() : $baseDir, '\\/'
         );
@@ -405,9 +413,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     protected function processImageURL($url, $cache = true)
     {
         // Attempt to pull down the image:
-        $client = new HttpClient();
-        $client->setUri($url);
-        $result = $client->send();
+        $result = $this->client->setUri($url)->send();
         if ($result->isSuccess()) {
             $image = $result->getBody();
 
@@ -579,9 +585,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
                    'bibkeys=ISBN:' . $this->isn . '&callback=addTheCover';
 
             // Make the HTTP request:
-            $client = new HttpClient();
-            $client->setUri($url);
-            $result = $client->setMethod('GET')->send();
+            $result = $this->client->setUri($url)->send();
 
             // Was the request successful?
             if ($result->isSuccess()) {
