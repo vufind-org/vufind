@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException,
-    VuFind\Http\Client as HttpClient;
+use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException;
 
 /**
  * XC NCIP Toolkit ILS Driver
@@ -38,8 +37,27 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
-class XCNCIP extends AbstractBase
+class XCNCIP extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
+    /**
+     * HTTP service
+     *
+     * @var \VuFindHttp\HttpServiceInterface
+     */
+    protected $httpService = null;
+
+    /**
+     * Set the HTTP service to be used for HTTP requests.
+     *
+     * @param HttpServiceInterface $service HTTP service
+     *
+     * @return void
+     */
+    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
+    {
+        $this->httpService = $service;
+    }
+
     /**
      * Initialize the driver.
      *
@@ -67,8 +85,8 @@ class XCNCIP extends AbstractBase
     {
         // Make the NCIP request:
         try {
-            $client = new HttpClient();
-            $client->setUri($this->config['Catalog']['url']);
+            $client = $this->httpService
+                ->createClient($this->config['Catalog']['url']);
             $client->setParameterPost(array('NCIP' => $xml));
             $result = $client->setMethod('POST')->send();
         } catch (\Exception $e) {

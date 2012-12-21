@@ -26,7 +26,7 @@
  */
 namespace VuFind\ILS\Driver;
 use File_MARC, VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\ILS as ILSException, VuFind\Http\Client as HttpClient;
+    VuFind\Exception\ILS as ILSException;
 
 /**
  * SirsiDynix Unicorn ILS Driver (VuFind side)
@@ -43,7 +43,7 @@ use File_MARC, VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://code.google.com/p/vufind-unicorn/ vufind-unicorn project
  **/
-class Unicorn extends AbstractBase
+class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
     protected $host;
     protected $port;
@@ -51,6 +51,25 @@ class Unicorn extends AbstractBase
     protected $url;
 
     protected $db;
+
+    /**
+     * HTTP service
+     *
+     * @var \VuFindHttp\HttpServiceInterface
+     */
+    protected $httpService = null;
+
+    /**
+     * Set the HTTP service to be used for HTTP requests.
+     *
+     * @param HttpServiceInterface $service HTTP service
+     *
+     * @return void
+     */
+    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
+    {
+        $this->httpService = $service;
+    }
 
     /**
      * Initialize the driver.
@@ -1144,9 +1163,7 @@ class Unicorn extends AbstractBase
             }
         }
 
-        $httpClient = new HttpClient();
-        $httpClient->setMethod('POST');
-        $httpClient->setUri($url);
+        $httpClient = $this->httpService->createClient($url, 'POST');
         $httpClient->setRawBody(http_build_query($params));
         $httpClient->setEncType('application/x-www-form-urlencoded');
         // use HTTP POST so parameters like user id and PIN are NOT logged by web

@@ -27,7 +27,7 @@
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use VuFind\Exception\ILS as ILSException, VuFind\Http\Client as HttpClient;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * Horizon ILS Driver (w/ XML API support)
@@ -39,8 +39,27 @@ use VuFind\Exception\ILS as ILSException, VuFind\Http\Client as HttpClient;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
-class HorizonXMLAPI extends Horizon
+class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInterface
 {
+    /**
+     * HTTP service
+     *
+     * @var \VuFindHttp\HttpServiceInterface
+     */
+    protected $httpService = null;
+
+    /**
+     * Set the HTTP service to be used for HTTP requests.
+     *
+     * @param HttpServiceInterface $service HTTP service
+     *
+     * @return void
+     */
+    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
+    {
+        $this->httpService = $service;
+    }
+
     /**
      * Initialize the driver.
      *
@@ -251,11 +270,10 @@ class HorizonXMLAPI extends Horizon
         $urlParams .= "?" . implode("&", $queryString);
 
         // Create Proxy Request
-        $client = new HttpClient();
-        $client->setUri($urlParams);
+        $client = $this->httpService->createClient($urlParams, $mode);
 
         // Send Request and Retrieve Response
-        $result = $client->setMethod($mode)->send();
+        $result = $client->send();
         if (!$result->isSuccess()) {
             throw new ILSException('Problem with XML API.');
         }

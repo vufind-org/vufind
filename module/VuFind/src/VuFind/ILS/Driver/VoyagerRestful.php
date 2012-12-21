@@ -29,9 +29,7 @@
  */
 namespace VuFind\ILS\Driver;
 use PDOException, VuFind\Exception\Date as DateException,
-    VuFind\Exception\ILS as ILSException,
-    VuFind\Http\Client as HttpClient,
-    VuFind\ILS\Connection as ILSConnection;
+    VuFind\Exception\ILS as ILSException, VuFind\ILS\Connection as ILSConnection;
 
 /**
  * Voyager Restful ILS Driver
@@ -44,7 +42,7 @@ use PDOException, VuFind\Exception\Date as DateException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
-class VoyagerRestful extends Voyager
+class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInterface
 {
     protected $ws_host;
     protected $ws_port;
@@ -55,6 +53,25 @@ class VoyagerRestful extends Voyager
     protected $defaultPickUpLocation;
     protected $holdCheckLimit;
     protected $checkRenewalsUpFront;
+
+    /**
+     * HTTP service
+     *
+     * @var \VuFindHttp\HttpServiceInterface
+     */
+    protected $httpService = null;
+
+    /**
+     * Set the HTTP service to be used for HTTP requests.
+     *
+     * @param HttpServiceInterface $service HTTP service
+     *
+     * @return void
+     */
+    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
+    {
+        $this->httpService = $service;
+    }
 
     /**
      * Initialize the driver.
@@ -453,8 +470,7 @@ class VoyagerRestful extends Voyager
         $urlParams .= "?" . implode("&", $queryString);
 
         // Create Proxy Request
-        $client = new HttpClient();
-        $client->setUri($urlParams);
+        $client = $this->httpService->createClient($urlParams);
 
         // Attach XML if necessary
         if ($xml !== false) {

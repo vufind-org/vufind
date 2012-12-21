@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException,
-    VuFind\Http\Client as HttpClient;
+use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException;
 
 /**
  * VTLS Virtua Driver
@@ -38,9 +37,33 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
-class Virtua extends AbstractBase
+class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
+    /**
+     * Oracle connection
+     *
+     * @var \VuFind\Connection\Oracle
+     */
     protected $db;
+
+    /**
+     * HTTP service
+     *
+     * @var \VuFindHttp\HttpServiceInterface
+     */
+    protected $httpService = null;
+
+    /**
+     * Set the HTTP service to be used for HTTP requests.
+     *
+     * @param HttpServiceInterface $service HTTP service
+     *
+     * @return void
+     */
+    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
+    {
+        $this->httpService = $service;
+    }
 
     /**
      * Initialize the driver.
@@ -1856,8 +1879,7 @@ class Virtua extends AbstractBase
         $method = (is_null($postParams) && is_null($rawPost)) ? 'GET' : 'POST';
 
         try {
-            $client = new HttpClient();
-            $client->setUri($url);
+            $client = $this->httpService->createClient($url);
             if (is_array($postParams)) {
                 $client->setParameterPost($postParams);
             }
