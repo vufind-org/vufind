@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
 namespace VuFind\Connection;
-use VuFind\Http\Client as HttpClient;
 
 /**
  * Open Library Utilities
@@ -41,6 +40,21 @@ use VuFind\Http\Client as HttpClient;
  */
 class OpenLibrary
 {
+    /**
+     * HTTP client
+     *
+     * @var \Zend\Http\Client
+     */
+    protected $client;
+
+    /**
+     * Constructor
+     */
+    public function __construct(\Zend\Http\Client $client)
+    {
+        $this->client = $client;
+    }
+
     /**
      * Returns an array of elements for each work matching the
      *    parameters. An API call will be made for each subjectType until
@@ -111,11 +125,8 @@ class OpenLibrary
         // empty array to hold the result
         $result = array();
 
-        //find out if there are any reviews
-        $client = new HttpClient();
-        $client->setUri($url);
-        
-        $response = $client->setMethod('GET')->send();
+        // find out if there are any reviews
+        $response = $this->client->setUri($url)->setMethod('GET')->send();
         // Was the request successful?
         if ($response->isSuccess()) {
             // grab the response:

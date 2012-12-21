@@ -42,15 +42,76 @@ use VuFind\Connection\OpenLibrary, VuFind\Solr\Utils as SolrUtils;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class OpenLibrarySubjects implements RecommendInterface
+class OpenLibrarySubjects implements RecommendInterface,
+    \VuFindHttp\HttpServiceAwareInterface
 {
+    /**
+     * Parameter to use for search terms
+     *
+     * @var string
+     */
     protected $requestParam;
+
+    /**
+     * Search limit
+     *
+     * @var int
+     */
     protected $limit;
+
+    /**
+     * Field to use for date filtering
+     *
+     * @var string
+     */
     protected $pubFilter;
+
+    /**
+     * Date filter to apply
+     *
+     * @var string
+     */
     protected $publishedIn = '';
+
+    /**
+     * Subject to search for
+     *
+     * @var string
+     */
     protected $subject;
+
+    /**
+     * Subject types to use
+     *
+     * @var array
+     */
     protected $subjectTypes;
+
+    /**
+     * Result of search (false if none)
+     *
+     * @var array|bool
+     */
     protected $result = false;
+
+    /**
+     * HTTP service
+     *
+     * @var \VuFindHttp\HttpServiceInterface
+     */
+    protected $httpService = null;
+
+    /**
+     * Set the HTTP service to be used for HTTP requests.
+     *
+     * @param HttpServiceInterface $service HTTP service
+     *
+     * @return void
+     */
+    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
+    {
+        $this->httpService = $service;
+    }
 
     /**
      * setConfig
@@ -131,7 +192,7 @@ class OpenLibrarySubjects implements RecommendInterface
         // Only proceed if we have a request parameter value
         if (!empty($this->subject)) {
             $result = array();
-            $ol = new OpenLibrary();
+            $ol = new OpenLibrary($this->httpService->createClient());
             $result = $ol->getSubjects(
                 $this->subject, $this->publishedIn, $this->subjectTypes, true, false,
                 $this->limit, null, true
