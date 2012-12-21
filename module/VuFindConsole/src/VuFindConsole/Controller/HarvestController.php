@@ -102,7 +102,9 @@ class HarvestController extends AbstractBase
             if (!empty($target) && !empty($settings)) {
                 Console::writeLine("Processing {$target}...");
                 try {
-                    $harvest = new OAI($target, $settings);
+                    $client = $this->getServiceLocator()->get('VuFind\Http')
+                        ->createClient();
+                    $harvest = new OAI($target, $settings, $client);
                     $harvest->launch();
                 } catch (\Exception $e) {
                     Console::writeLine($e->getMessage());

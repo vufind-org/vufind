@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/importing_records#oai-pmh_harvesting Wiki
  */
 namespace VuFind\Harvester;
-use VuFind\Http\Client, Zend\Console\Console;
+use Zend\Console\Console;
 
 /**
  * OAI Class
@@ -42,11 +42,19 @@ use VuFind\Http\Client, Zend\Console\Console;
 class OAI
 {
     /**
+     * HTTP client
+     *
+     * @var \Zend\Http\Client
+     */
+    protected $client;
+
+    /**
      * URL to harvest from
      *
      * @var string
      */
     protected $baseURL;
+
     /**
      * Target set to harvest (null for all records)
      *
@@ -177,11 +185,15 @@ class OAI
     /**
      * Constructor.
      *
-     * @param string $target   Target directory for harvest.
-     * @param array  $settings OAI-PMH settings from oai.ini.
+     * @param string            $target   Target directory for harvest.
+     * @param array             $settings OAI-PMH settings from oai.ini.
+     * @param \Zend\Http\Client $client   HTTP client
      */
-    public function __construct($target, $settings)
+    public function __construct($target, $settings, \Zend\Http\Client $client)
     {
+        // Store client:
+        $this->client = $client;
+
         // Don't time out during harvest!!
         set_time_limit(0);
 
@@ -371,20 +383,20 @@ class OAI
         // Set up retry loop:
         while (true) {
             // Set up the request:
-            $request = new Client(
-                null, array('timeout' => 60)    // TODO: make timeout configurable
-            );
-            $request->setUri($this->baseURL);
+            $this->client->resetParameters();
+            $this->client->setUri($this->baseURL);
+            // TODO: make timeout configurable
+            $this->client->setOptions(array('timeout' => 60));
 
             // Load request parameters:
-            $query = $request->getRequest()->getQuery();
+            $query = $this->client->getRequest()->getQuery();
             $query->set('verb', $verb);
             foreach ($params as $key => $value) {
                 $query->set($key, $value);
             }
 
             // Perform request and die on error:
-            $result = $request->setMethod('GET')->send();
+            $result = $this->client->setMethod('GET')->send();
             if ($result->getStatusCode() == 503) {
                 $delayHeader = $result->getHeaders()->get('Retry-After');
                 $delay = is_object($delayHeader)
