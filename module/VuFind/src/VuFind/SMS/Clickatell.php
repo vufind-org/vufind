@@ -40,6 +40,27 @@ use VuFind\Exception\Mail as MailException;
 class Clickatell extends AbstractBase
 {
     /**
+     * HTTP client
+     *
+     * @var \Zend\Http\Client
+     */
+    protected $client;
+
+    /**
+     * Constructor
+     *
+     * @param \Zend\Config\Config $config  SMS configuration
+     * @param array               $options Additional options (client may be an HTTP
+     * client object)
+     */
+    public function __construct(\Zend\Config\Config $config, $options = array())
+    {
+        parent::__construct($config, $options);
+        $this->client = isset($options['client'])
+            ? $options['client'] : new \Zend\Http\Client();
+    }
+
+    /**
      * Send a text message to the specified provider.
      *
      * @param string $provider The provider ID to send to
@@ -86,8 +107,7 @@ class Clickatell extends AbstractBase
         $url .= "&text=" . urlencode($message);
 
         try {
-            $client = new \VuFind\Http\Client();
-            $result = $client->setMethod('GET')->setUri($url)->send();
+            $result = $this->client->setMethod('GET')->setUri($url)->send();
         } catch (\Exception $e) {
             throw new MailException($e->getMessage());
         }
