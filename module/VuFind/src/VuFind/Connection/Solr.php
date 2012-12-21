@@ -172,7 +172,7 @@ class Solr implements ServiceLocatorAwareInterface,
         // We don't actually need to save the HTTP service; let's just use it to
         // create a client.
         $this->client = $service->createClient(
-            null, \Zend\Http\Request::METHOD_GET, $this->getHttpTimeout()
+            $this->host, \Zend\Http\Request::METHOD_GET, $this->getHttpTimeout()
         );
     }
 
