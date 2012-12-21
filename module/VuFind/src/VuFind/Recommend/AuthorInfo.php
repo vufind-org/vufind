@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Config\Reader as ConfigReader, VuFind\Http\Client as HttpClient,
+use VuFind\Config\Reader as ConfigReader,
     VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
@@ -44,6 +44,13 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Http\Client as HttpClient,
  */
 class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
 {
+    /**
+     * HTTP client
+     *
+     * @var \Zend\Http\Client
+     */
+    protected $client;
+
     /**
      * Translator (or null if unavailable)
      *
@@ -83,10 +90,13 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      * Constructor
      *
      * @param \VuFind\Search\Manager $searchManager Search manager
+     * @param \Zend\Http\Client      $client        HTTP client
      */
-    public function __construct(\VuFind\Search\Manager $searchManager)
-    {
+    public function __construct(\VuFind\Search\Manager $searchManager,
+        \Zend\Http\Client $client
+    ) {
         $this->searchManager = $searchManager;
+        $this->client = $client;
     }
 
     /**
@@ -213,10 +223,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
                '?action=query&prop=revisions&rvprop=content&format=php' .
                '&list=allpages&titles=' . urlencode($author);
 
-        $client = new HttpClient();
-        $client->setUri($uri);
-        $response = $client->setMethod('GET')->send();
-
+        $response = $this->client->setUri($uri)->setMethod('GET')->send();
         if ($response->isSuccess()) {
             return $this->parseWikipedia(unserialize($response->getBody()));
         }
@@ -471,8 +478,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     {
         $param = urlencode("LC|$lccn");
         $url = "http://viaf.org/viaf/sourceID/{$param}/justlinks.json";
-        $client = new \VuFind\Http\Client();
-        $result = $client->setUri($url)->setMethod('GET')->send();
+        $result = $this->client->setUri($url)->setMethod('GET')->send();
         if (!$result->isSuccess()) {
             return false;
         }
@@ -541,10 +547,8 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
                '?prop=imageinfo&action=query&iiprop=url&iiurlwidth=150&format=php' .
                '&titles=Image:' . urlencode($imageName);
 
-        $client = new HttpClient();
         try {
-            $client->setUri($url);
-            $result = $client->setMethod('GET')->send();
+            $result = $this->client->setUri($url)->setMethod('GET')->send();
         } catch (\Exception $e) {
             return false;
         }

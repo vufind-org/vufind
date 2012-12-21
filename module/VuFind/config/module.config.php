@@ -237,7 +237,8 @@ $config = array(
         'factories' => array(
             'authorinfo' => function ($sm) {
                 return new \VuFind\Recommend\AuthorInfo(
-                    $sm->getServiceLocator()->get('SearchManager')
+                    $sm->getServiceLocator()->get('SearchManager'),
+                    $sm->getServiceLocator()->get('VuFind\Http')->createClient()
                 );
             },
             'worldcatidentities' => function ($sm) {
