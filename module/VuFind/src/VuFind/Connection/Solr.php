@@ -27,8 +27,7 @@
  * @link     http://vufind.org/wiki/system_classes#index_interface Wiki
  */
 namespace VuFind\Connection;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\Solr as SolrException, VuFind\Http\Client as HttpClient,
+use VuFind\Config\Reader as ConfigReader, VuFind\Exception\Solr as SolrException,
     VuFind\Solr\Utils as SolrUtils, Zend\Log\LoggerInterface,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
@@ -42,7 +41,8 @@ use VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes#index_interface Wiki
  */
-class Solr implements ServiceLocatorAwareInterface, \Zend\Log\LoggerAwareInterface
+class Solr implements ServiceLocatorAwareInterface,
+    \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface
 {
     /**
      * Logger object for debug info (or false for no debugging).
@@ -53,40 +53,51 @@ class Solr implements ServiceLocatorAwareInterface, \Zend\Log\LoggerAwareInterfa
 
     /**
      * The host to connect to
+     *
      * @var string
      */
     protected $host;
 
     /**
      * The core being used on the host
+     *
      * @var string
      */
     protected $core;
 
     /**
      * The HTTP request object used for REST transactions
-     * @var object \VuFind\Http\Client
+     *
+     * @var \Zend\Http\Client
      */
     protected $client;
 
     /**
      * An array of characters that are illegal in search strings
+     *
+     * @var array
      */
     protected $illegal = array('!', ':', ';', '[', ']', '{', '}');
 
     /**
      * The path to the YAML file specifying available search types:
+     *
+     * @var string
      */
     protected $searchSpecsFile = 'searchspecs.yaml';
 
     /**
      * An array of search specs pulled from $searchSpecsFile (above)
+     *
+     * @var array
      */
     protected $searchSpecs = false;
 
     /**
      * Should boolean operators in the search string be treated as
      * case-insensitive (false), or must they be ALL UPPERCASE (true)?
+     *
+     * @var bool
      */
     protected $caseSensitiveBooleans = true;
 
@@ -96,6 +107,8 @@ class Solr implements ServiceLocatorAwareInterface, \Zend\Log\LoggerAwareInterfa
      * making this setting case insensitive not only changes the word "TO" to
      * uppercase but also inserts OR clauses to check for case insensitive matches
      * against the edges of the range...  i.e. ([a TO b] OR [A TO B]).
+     *
+     * @var bool
      */
     protected $caseSensitiveRanges = true;
 
@@ -145,8 +158,21 @@ class Solr implements ServiceLocatorAwareInterface, \Zend\Log\LoggerAwareInterfa
     {
         $this->core = $core;
         $this->host = $base . (empty($this->core) ? '' : ('/' . $this->core));
-        $this->client = new HttpClient(
-            null, array('timeout' => $this->getHttpTimeout())
+    }
+
+    /**
+     * Set the HTTP service to be used for HTTP requests.
+     *
+     * @param HttpServiceInterface $service HTTP service
+     *
+     * @return void
+     */
+    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
+    {
+        // We don't actually need to save the HTTP service; let's just use it to
+        // create a client.
+        $this->client = $service->createClient(
+            null, \Zend\Http\Request::METHOD_GET, $this->getHttpTimeout()
         );
     }
 
