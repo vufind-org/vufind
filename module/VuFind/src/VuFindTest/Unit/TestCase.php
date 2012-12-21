@@ -133,6 +133,9 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             $this->serviceManager->setService(
                 'VuFind\Logger', new \VuFind\Log\Logger()
             );
+            $this->serviceManager->setService(
+                'VuFind\Http', new \VuFindHttp\HttpService()
+            );
             \VuFind\Connection\Manager::setServiceLocator($this->serviceManager);
         }
         return $this->serviceManager;
