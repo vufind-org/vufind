@@ -435,7 +435,7 @@ class Socket implements HttpAdapter, StreamInterface
                     $line  = fgets($this->socket);
                     $this->_checkSocketReadTimeout();
 
-                    $chunk = '';
+                    $chunk = $line;
 
                     // Figure out the next chunk size
                     $chunksize = trim($line);
