@@ -28,8 +28,8 @@
  */
 namespace VuFind\Connection;
 use SerialsSolutions\Summon\Zend2 as BaseSummon,
-    VuFind\Config\Reader as ConfigReader, VuFind\Http\Client as HttpClient,
-    VuFind\Solr\Utils as SolrUtils, Zend\Log\LoggerInterface;
+    VuFind\Config\Reader as ConfigReader, VuFind\Solr\Utils as SolrUtils,
+    Zend\Log\LoggerInterface;
 
 /**
  * Summon Search API Interface (VuFind implementation)
@@ -80,9 +80,11 @@ class Summon extends BaseSummon implements \Zend\Log\LoggerAwareInterface
      *      <li>sessionId - Summon session ID to apply</li>
      *      <li>version - API version to use</li>
      *    </ul>
+     * @param \Zend\Http\Client $client HTTP client
      */
-    public function __construct($apiId, $apiKey, $options = array())
-    {
+    public function __construct($apiId, $apiKey, $options = array(),
+        \Zend\Http\Client $client = null
+    ) {
         $config = ConfigReader::getConfig('Summon');
 
         // Store preferred boolean behavior:
@@ -99,13 +101,12 @@ class Summon extends BaseSummon implements \Zend\Log\LoggerAwareInterface
             $this->snippets = $config->General->snippets;
         }
 
-        $timeout = isset($config->General->timeout)
-            ? $config->General->timeout : 30;
-        parent::__construct(
-            $apiId, $apiKey, $options, new HttpClient(
-                null, array('timeout' => $timeout)
-            )
-        );
+        if (null !== $client) {
+            $timeout = isset($config->General->timeout)
+                ? $config->General->timeout : 30;
+            $client->setOptions(array('timeout' => $timeout));
+        }
+        parent::__construct($apiId, $apiKey, $options, $client);
     }
 
     /**

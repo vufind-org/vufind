@@ -60,7 +60,8 @@ class Results extends BaseResults
             $config = ConfigReader::getConfig();
             $id = isset($config->Summon->apiId) ? $config->Summon->apiId : null;
             $key = isset($config->Summon->apiKey) ? $config->Summon->apiKey : null;
-            $conn = new SummonConnection($id, $key);
+            $client = $this->getServiceLocator()->get('VuFind\Http')->createClient();
+            $conn = new SummonConnection($id, $key, array(), $client);
             \VuFind\ServiceManager\Initializer::initInstance(
                 $conn, $this->getServiceLocator()
             );
