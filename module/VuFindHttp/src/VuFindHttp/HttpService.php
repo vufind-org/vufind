@@ -158,11 +158,13 @@ class HttpService implements HttpServiceInterface
      *
      * @return \Zend\Http\Client
      */
-    public function createClient ($url, $method = \Zend\Http\Request::METHOD_GET, $timeout = null)
+    public function createClient ($url = null, $method = \Zend\Http\Request::METHOD_GET, $timeout = null)
     {
         $client = new \Zend\Http\Client();
         $client->setMethod($method);
-        $client->setUri($url);
+        if (null !== $url) {
+            $client->setUri($url);
+        }
         if ($timeout) {
             $client->setOptions(array('timeout' => $timeout));
         }
