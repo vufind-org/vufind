@@ -27,7 +27,7 @@
  * @link     http://api.summon.serialssolutions.com/help/api/ API Documentation
  */
 namespace SerialsSolutions\Summon;
-use Zend\Http\Client as HttpClient;
+use SerialsSolutions_Summon_Exception, Zend\Http\Client as HttpClient;
 
 /**
  * Summon Search API Interface (Zend Framework 2 implementation)
@@ -43,7 +43,7 @@ class Zend2 extends \SerialsSolutions_Summon_Base
 {
     /**
      * The HTTP_Request object used for API transactions
-     * @var object HTTP_Request
+     * @var HttpClient
      */
     protected $client;
 
@@ -52,9 +52,9 @@ class Zend2 extends \SerialsSolutions_Summon_Base
      *
      * Sets up the Summon API Client
      *
-     * @param string           $apiId   Summon API ID
-     * @param string           $apiKey  Summon API Key
-     * @param array            $options Associative array of additional options;
+     * @param string     $apiId   Summon API ID
+     * @param string     $apiKey  Summon API Key
+     * @param array      $options Associative array of additional options;
      * legal keys:
      *    <ul>
      *      <li>authedUser - is the end-user authenticated?</li>
@@ -63,7 +63,7 @@ class Zend2 extends \SerialsSolutions_Summon_Base
      *      <li>sessionId - Summon session ID to apply</li>
      *      <li>version - API version to use</li>
      *    </ul>
-     * @param Zend_Http_Client $client  HTTP client object (optional)
+     * @param HttpClient $client  HTTP client object (optional)
      */
     public function __construct($apiId, $apiKey, $options = array(), $client = null)
     {
