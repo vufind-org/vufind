@@ -27,8 +27,7 @@
  */
 namespace VuFind\Controller;
 use VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\Forbidden as ForbiddenException,
-    VuFind\Http\Client as HttpClient, Zend\Mvc\MvcEvent;
+    VuFind\Exception\Forbidden as ForbiddenException, Zend\Mvc\MvcEvent;
 
 /**
  * Class controls VuFind administration.
@@ -131,8 +130,8 @@ class AdminController extends AbstractBase
         $config = ConfigReader::getConfig();
         $xml = false;
         if (isset($config->Index->url)) {
-            $client = new HttpClient($config->Index->url . '/admin/multicore');
-            $response = $client->setMethod('GET')->send();
+            $response = $this->getServiceLocator()->get('VuFind\Http')
+                ->get($config->Index->url . '/admin/multicore');
             $xml = $response->isSuccess() ? $response->getBody() : false;
         }
         $view = $this->createViewModel();
