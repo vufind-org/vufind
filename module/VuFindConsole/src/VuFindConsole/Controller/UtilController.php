@@ -149,7 +149,8 @@ class UtilController extends AbstractBase
             }
         }
 
-        // Make sure we have reserves and at least one of: instructors, courses, departments:
+        // Make sure we have reserves and at least one of: instructors, courses,
+        // departments:
         if ((!empty($instructors) || !empty($courses) || !empty($departments))
             && !empty($reserves)
         ) {
