@@ -194,6 +194,11 @@ class OAI
         // Store client:
         $this->client = $client;
 
+        // Disable SSL verification if requested:
+        if (isset($settings['sslverifypeer']) && !$settings['sslverifypeer']) {
+            $this->client->setOptions(array('sslverifypeer' => false));
+        }
+
         // Don't time out during harvest!!
         set_time_limit(0);
 
