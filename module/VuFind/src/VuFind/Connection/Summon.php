@@ -81,7 +81,7 @@ class Summon extends BaseSummon implements \Zend\Log\LoggerAwareInterface
      *      <li>sessionId - Summon session ID to apply</li>
      *      <li>version - API version to use</li>
      *    </ul>
-     * @param \Zend\Http\Client $client HTTP client
+     * @param \Zend\Http\Client $client  HTTP client
      */
     public function __construct($apiId, $apiKey, $options = array(),
         \Zend\Http\Client $client = null
