@@ -43,7 +43,7 @@ class HarvestController extends AbstractBase
     /**
      * Harvest the LC Name Authority File.
      *
-     * @return void
+     * @return \Zend\Console\Response
      */
     public function harvestnafAction()
     {
@@ -70,7 +70,7 @@ class HarvestController extends AbstractBase
     /**
      * Harvest OAI-PMH records.
      *
-     * @return void
+     * @return \Zend\Console\Response
      */
     public function harvestoaiAction()
     {
@@ -119,5 +119,50 @@ class HarvestController extends AbstractBase
             "Completed without errors -- {$processed} source(s) processed."
         );
         return $this->getSuccessResponse();
+    }
+
+    /**
+     * Merge harvested MARC records into a single <collection>
+     *
+     * @return \Zend\Console\Response
+     * @author Thomas Schwaerzler <thomas.schwaerzler@uibk.ac.at>
+     */
+    public function mergemarcAction()
+    {
+        $this->checkLocalSetting();
+
+        $argv = $this->consoleOpts->getRemainingArgs();
+        $dir = isset($argv[0]) ? rtrim($argv[0], '/') : '';
+        if (empty($dir)) {
+            $scriptName = $this->getRequest()->getScriptName();
+            Console::writeLine('Merge MARC XML files into a single <collection>;');
+            Console::writeLine('writes to stdout.');
+            Console::writeLine('');
+            Console::writeLine('Usage: ' . $scriptName . ' <path_to_directory>');
+            Console::writeLine(
+                '<path_to_directory>: a directory containing MARC XML files to merge'
+            );
+            return $this->getFailureResponse();
+        }
+
+        if (!($handle = opendir($dir))) {
+            Console::writeLine("Cannot open directory: {$dir}");
+            return $this->getFailureResponse();
+        }
+
+        Console::writeLine('<collection>');
+        while (false !== ($file = readdir($handle))) {
+            // Only operate on XML files:
+            if (pathinfo($file, PATHINFO_EXTENSION) === "xml" ) {
+                // get file content
+                $filePath = $dir . '/' . $file;
+                $fileContent = file_get_contents($filePath);
+
+                // output content:
+                Console::writeLine("<!-- $filePath -->");
+                Console::write($fileContent);
+            }
+        }
+        Console::writeLine('</collection>');
     }
 }
