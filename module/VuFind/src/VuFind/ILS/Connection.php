@@ -191,7 +191,7 @@ class Connection
     public function checkFunction($function)
     {
         // Extract the configuration from the driver if available:
-        $functionConfig = method_exists($this->getDriverClass(), 'getConfig')
+        $functionConfig = $this->checkCapability('getConfig')
             ? $this->getDriver()->getConfig($function) : false;
 
         // See if we have a corresponding check method to analyze the response:
@@ -220,7 +220,7 @@ class Connection
         $response = false;
 
         if ($this->getHoldsMode() != "none"
-            && method_exists($this->getDriverClass(), 'placeHold')
+            && $this->checkCapability('placeHold')
             && isset($functionConfig['HMACKeys'])
         ) {
             $response = array('function' => "placeHold");
@@ -232,7 +232,7 @@ class Connection
             if (isset($functionConfig['extraHoldFields'])) {
                 $response['extraHoldFields'] = $functionConfig['extraHoldFields'];
             }
-        } else if (method_exists($this->getDriverClass(), 'getHoldLink')) {
+        } else if ($this->checkCapability('getHoldLink')) {
             $response = array('function' => "getHoldLink");
         }
         return $response;
@@ -256,12 +256,12 @@ class Connection
 
         if (isset($this->config->cancel_holds_enabled)
             && $this->config->cancel_holds_enabled == true
-            && method_exists($this->getDriverClass(), 'cancelHolds')
+            && $this->checkCapability('cancelHolds')
         ) {
             $response = array('function' => "cancelHolds");
         } else if (isset($this->config->cancel_holds_enabled)
             && $this->config->cancel_holds_enabled == true
-            && method_exists($this->getDriverClass(), 'getCancelHoldLink')
+            && $this->checkCapability('getCancelHoldLink')
         ) {
             $response = array('function' => "getCancelHoldLink");
         }
@@ -285,12 +285,12 @@ class Connection
 
         if (isset($this->config->renewals_enabled)
             && $this->config->renewals_enabled == true
-            && method_exists($this->getDriverClass(), 'renewMyItems')
+            && $this->checkCapability('renewMyItems')
         ) {
             $response = array('function' => "renewMyItems");
         } else if (isset($this->config->renewals_enabled)
             && $this->config->renewals_enabled == true
-            && method_exists($this->getDriverClass(), 'renewMyItemsLink')
+            && $this->checkCapability('renewMyItemsLink')
         ) {
             $response = array('function' => "renewMyItemsLink");
         }
@@ -311,8 +311,7 @@ class Connection
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
-        $method = array($this->getDriverClass(), 'checkRequestIsValid');
-        if (is_callable($method)) {
+        if ($this->checkCapability('checkRequestIsValid')) {
             return $this->getDriver()->checkRequestIsValid($id, $data, $patron);
         }
         // If the driver has no checkRequestIsValid method, we will assume that
@@ -346,7 +345,7 @@ class Connection
     public function getOfflineMode()
     {
         // Graceful degradation -- return false if no method supported.
-        return method_exists($this->getDriverClass(), 'getOfflineMode')
+        return $this->checkCapability('getOfflineMode')
             ? $this->getDriver()->getOfflineMode() : false;
     }
 
@@ -376,7 +375,7 @@ class Connection
     public function hasHoldings($id)
     {
         // Graceful degradation -- return true if no method supported.
-        return method_exists($this->getDriverClass(), 'hasHoldings')
+        return $this->checkCapability('hasHoldings')
             ? $this->getDriver()->hasHoldings($id) : true;
     }
 
@@ -390,10 +389,25 @@ class Connection
     public function loginIsHidden()
     {
         // Graceful degradation -- return false if no method supported.
-        return method_exists($this->getDriverClass(), 'loginIsHidden')
+        return $this->checkCapability('loginIsHidden')
             ? $this->getDriver()->loginIsHidden() : false;
     }
 
+    /**
+     * Check driver capability -- return true if the driver supports the specified
+     * method; false otherwise.
+     *
+     * @param string $method Method to check
+     *
+     * @return bool
+     */
+    public function checkCapability($method)
+    {
+        if (is_callable(array($this->getDriverClass(), $method))) {
+            return true;
+        }
+        return false;
+    }
     /**
      * Default method -- pass along calls to the driver if available; return
      * false otherwise.  This allows custom functions to be implemented in
@@ -407,7 +421,7 @@ class Connection
      */
     public function __call($methodName, $params)
     {
-        if (is_callable(array($this->getDriverClass(), $methodName))) {
+        if ($this->checkCapability($methodName)) {
             return call_user_func_array(
                 array($this->getDriver(), $methodName), $params
             );
