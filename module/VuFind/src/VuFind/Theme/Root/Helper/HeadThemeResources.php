@@ -40,13 +40,13 @@ use Zend\View\Helper\AbstractHelper;
 class HeadThemeResources extends AbstractServiceLocator
 {
     /**
-     * Get the theme tools.
+     * Get the theme resource container.
      *
-     * @return \VuFind\Theme\Tools
+     * @return \VuFind\Theme\ResourceContainer
      */
-    public function getThemeTools()
+    public function getThemeResourceContainer()
     {
-        return $this->getServiceLocator()->get('VuFindTheme\Tools');
+        return $this->getServiceLocator()->get('VuFindTheme\ResourceContainer');
     }
 
     /**
@@ -56,7 +56,7 @@ class HeadThemeResources extends AbstractServiceLocator
      */
     public function __invoke()
     {
-        $resourceContainer = $this->getThemeTools()->getResourceContainer();
+        $resourceContainer = $this->getThemeResourceContainer();
 
         // Set up encoding:
         $headMeta = $this->getView()->plugin('headmeta');

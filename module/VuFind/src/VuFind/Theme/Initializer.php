@@ -58,13 +58,6 @@ class Initializer
     protected $event;
 
     /**
-     * Theme resource container
-     *
-     * @var ResourceContainer
-     */
-    protected $resourceContainer;
-
-    /**
      * Top-level service manager
      *
      * @var \Zend\ServiceManager\ServiceManager
@@ -96,9 +89,6 @@ class Initializer
         // Get base directory from tools object:
         $this->tools = $this->serviceManager->get('VuFindTheme\Tools');
         $this->baseDir = $this->tools->getBaseDir();
-
-        // Grab the resource manager for tracking CSS, JS, etc.:
-        $this->resourceContainer = $this->tools->getResourceContainer();
     }
 
     /**
@@ -315,6 +305,9 @@ class Initializer
     {
         $templatePathStack = array();
 
+        // Grab the resource manager for tracking CSS, JS, etc.:
+        $resources = $this->serviceManager->get('VuFindTheme\ResourceContainer');
+
         // Apply the loaded theme settings in reverse for proper inheritance:
         foreach ($themes as $key=>$currentThemeInfo) {
             if ($helperNS = $currentThemeInfo->get('helper_namespace')) {
@@ -328,20 +321,20 @@ class Initializer
 
             // Add CSS and JS dependencies:
             if ($css = $currentThemeInfo->get('css')) {
-                $this->resourceContainer->addCss($css);
+                $resources->addCss($css);
             }
             if ($js = $currentThemeInfo->get('js')) {
-                $this->resourceContainer->addJs($js);
+                $resources->addJs($js);
             }
 
             // Select encoding:
             if ($encoding = $currentThemeInfo->get('encoding')) {
-                $this->resourceContainer->setEncoding($encoding);
+                $resources->setEncoding($encoding);
             }
 
             // Select favicon:
             if ($favicon = $currentThemeInfo->get('favicon')) {
-                $this->resourceContainer->setFavicon($favicon);
+                $resources->setFavicon($favicon);
             }
         }
 

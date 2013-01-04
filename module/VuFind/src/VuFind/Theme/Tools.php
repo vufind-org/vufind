@@ -61,13 +61,6 @@ class Tools
     protected $safeTheme;
 
     /**
-     * Resource container
-     *
-     * @var ResourceContainer
-     */
-    protected $resourceContainer;
-
-    /**
      * Theme configuration
      *
      * @var array
@@ -83,7 +76,6 @@ class Tools
     {
         $this->baseDir = $baseDir;
         $this->currentTheme = $this->safeTheme = $safeTheme;
-        $this->resourceContainer = new ResourceContainer();
     }
 
     /**
@@ -94,17 +86,6 @@ class Tools
     public function getBaseDir()
     {
         return $this->baseDir;
-    }
-
-    /**
-     * Get the container used for handling public resources for themes
-     * (CSS, JS, etc.)
-     *
-     * @return ResourceContainer
-     */
-    public function getResourceContainer()
-    {
-        return $this->resourceContainer;
     }
 
     /**
