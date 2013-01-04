@@ -22,8 +22,8 @@ return array(
     'favicon' => 'vufind-favicon.ico',
     'helpers' => array(
         'invokables' => array(
-            'layoutclass' => 'VuFind\Theme\Blueprint\Helper\LayoutClass',
-            'search' => 'VuFind\Theme\Blueprint\Helper\Search',
+            'layoutclass' => 'VuFind\View\Helper\Blueprint\LayoutClass',
+            'search' => 'VuFind\View\Helper\Blueprint\Search',
         )
     )
 );

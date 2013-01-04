@@ -18,7 +18,7 @@ return array(
     'favicon' => 'vufind-favicon.ico',
     'helpers' => array(
         'invokables' => array(
-            'mobilemenu' => 'VuFind\Theme\jQueryMobile\Helper\MobileMenu'
+            'mobilemenu' => 'VuFind\View\Helper\jQueryMobile\MobileMenu'
         )
     ),
 );
