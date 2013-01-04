@@ -26,9 +26,6 @@
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
 namespace VuFind;
-use VuFind\Config\Reader as ConfigReader,
-    Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Cart Class
@@ -41,7 +38,7 @@ use VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
-class Cart implements ServiceLocatorAwareInterface
+class Cart
 {
     /**
      * Cart contents.
@@ -55,21 +52,21 @@ class Cart implements ServiceLocatorAwareInterface
      *
      * @var int
      */
-    protected $maxSize = 100;
+    protected $maxSize;
 
     /**
      * Is the cart currently activated?
      *
      * @var bool
      */
-    protected $active = false;
+    protected $active;
 
     /**
-     * Service locator
+     * Record loader
      *
-     * @var ServiceLocatorInterface
+     * @var \VuFind\Record\Loader
      */
-    protected $serviceLocator;
+    protected $recordLoader;
 
     const CART_COOKIE =  'vufind_cart';
     const CART_COOKIE_SOURCES = 'vufind_cart_src';
@@ -77,17 +74,17 @@ class Cart implements ServiceLocatorAwareInterface
 
     /**
      * Constructor
+     *
+     * @param \VuFind\Record\Loader $loader  Object for loading records
+     * @param int                   $maxSize Maximum size of cart contents
+     * @param bool                  $active  Is cart enabled?
      */
-    public function __construct()
-    {
-        $config = ConfigReader::getConfig();
-        if (isset($config->Site->showBookBag)) {
-            $this->active = (bool)$config->Site->showBookBag;
-        }
-        if (isset($config->Site->bookBagMaxSize)) {
-            $this->maxSize = $config->Site->bookBagMaxSize;
-        }
-        $this->items = array();
+    public function __construct(\VuFind\Record\Loader $loader,
+        $maxSize = 100, $active = true
+    ) {
+        $this->recordLoader = $loader;
+        $this->maxSize = $maxSize;
+        $this->active = $active;
 
         // Initialize contents
         $this->init();
@@ -293,30 +290,6 @@ class Cart implements ServiceLocatorAwareInterface
      */
     public function getRecordDetails()
     {
-        return $this->getServiceLocator()
-            ->get('VuFind\RecordLoader')->loadBatch($this->items);
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Manager
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
+        return $this->recordLoader->loadBatch($this->items);
     }
 }

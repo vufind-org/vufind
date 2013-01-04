@@ -407,6 +407,16 @@ $config = array(
     ),
     'service_manager' => array(
         'factories' => array(
+            'VuFind\Cart' => function ($sm) {
+                $config = \VuFind\Config\Reader::getConfig();
+                $active = isset($config->Site->showBookBag)
+                    ? (bool)$config->Site->showBookBag : false;
+                $size = isset($config->Site->bookBagMaxSize)
+                    ? $config->Site->bookBagMaxSize : 100;
+                return new \VuFind\Cart(
+                    $sm->get('VuFind\RecordLoader'), $size, $active
+                );
+            },
             'VuFind\DbAdapter' => function ($sm) {
                 return \VuFind\Db\AdapterFactory::getAdapter();
             },
@@ -473,7 +483,6 @@ $config = array(
         ),
         'invokables' => array(
             'VuFind\AuthManager' => 'VuFind\Auth\Manager',
-            'VuFind\Cart' => 'VuFind\Cart',
             'VuFind\CacheManager' => 'VuFind\Cache\Manager',
             'VuFind\Mailer' => 'VuFind\Mailer',
             'VuFind\RecordLoader' => 'VuFind\Record\Loader',
