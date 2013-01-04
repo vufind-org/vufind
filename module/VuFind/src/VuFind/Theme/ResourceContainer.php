@@ -47,7 +47,7 @@ class ResourceContainer
      * Add a CSS file.
      *
      * @param array|string $css CSS file (or array of CSS files) to add (possibly
-     * with extra settings from theme.ini appended to each filename string).
+     * with extra settings from theme config appended to each filename string).
      *
      * @return void
      */
@@ -65,7 +65,7 @@ class ResourceContainer
      * Add a Javascript file.
      *
      * @param array|string $js Javascript file (or array of files) to add (possibly
-     * with extra settings from theme.ini appended to each filename string).
+     * with extra settings from theme config appended to each filename string).
      *
      * @return void
      */
