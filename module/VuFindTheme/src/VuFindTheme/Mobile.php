@@ -26,19 +26,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Mobile
+ * @package  Theme
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://code.google.com/p/mobileesp/ MobileESP Project
  */
-namespace VuFind;
-use VuFind\Config\Reader as ConfigReader;
+namespace VuFindTheme;
 
 /**
  * Mobile Device Detection Wrapper
  *
  * @category VuFind2
- * @package  Mobile
+ * @package  Theme
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://code.google.com/p/mobileesp/ MobileESP Project
@@ -46,11 +45,18 @@ use VuFind\Config\Reader as ConfigReader;
 class Mobile
 {
     /**
+     * Are mobile themes enabled?
+     *
+     * @var bool
+     */
+    protected $enabled = false;
+
+    /**
      * Function to detect if a mobile device is being used.
      *
      * @return bool
      */
-    public static function detect()
+    public function detect()
     {
         // Do the most exhaustive device detection possible; other method calls
         // may be used instead of DetectMobileLong if you want to target a narrower
@@ -60,13 +66,22 @@ class Mobile
     }
 
     /**
+     * Function to set enabled status of mobile themes.
+     *
+     * @param bool $enabled Are mobile themes enabled?
+     */
+    public function enable($enabled = true)
+    {
+        $this->enabled = $enabled;
+    }
+
+    /**
      * Function to check whether mobile theme is configured.
      *
      * @return bool
      */
-    public static function enabled()
+    public function enabled()
     {
-        $config = ConfigReader::getConfig();
-        return isset($config->Site->mobile_theme);
+        return $this->enabled;
     }
 }

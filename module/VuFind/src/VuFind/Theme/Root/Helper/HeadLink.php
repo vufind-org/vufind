@@ -76,7 +76,7 @@ class HeadLink extends \Zend\View\Helper\HeadLink
     /**
      * Get the theme tools.
      *
-     * @return \VuFind\Theme\ThemeInfo
+     * @return \VuFindTheme\ThemeInfo
      */
     public function getThemeInfo()
     {

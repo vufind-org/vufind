@@ -301,14 +301,14 @@ class Bootstrap
 
         // Attach template injection configuration to the route event:
         $this->events->attach(
-            'route', array('VuFind\Theme\Initializer', 'configureTemplateInjection')
+            'route', array('VuFindTheme\Initializer', 'configureTemplateInjection')
         );
 
         // Attach remaining theme configuration to the dispatch event at high
         // priority (TODO: use priority constant once defined by framework):
         $config = $this->config->Site;
         $callback = function ($event) use ($config) {
-            $theme = new \VuFind\Theme\Initializer($config, $event);
+            $theme = new \VuFindTheme\Initializer($config, $event);
             $theme->init();
         };
         $this->events->attach('dispatch.error', $callback, 10000);

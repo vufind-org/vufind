@@ -42,7 +42,7 @@ class HeadThemeResources extends AbstractServiceLocator
     /**
      * Get the theme resource container.
      *
-     * @return \VuFind\Theme\ResourceContainer
+     * @return \VuFindTheme\ResourceContainer
      */
     public function getThemeResourceContainer()
     {

@@ -480,11 +480,6 @@ $config = array(
                     $sm->get('VuFind\Http')->createClient()
                 );
             },
-            'VuFindTheme\ThemeInfo' => function ($sm) {
-                return new \VuFind\Theme\ThemeInfo(
-                    realpath(__DIR__ . '/../../../themes'), 'blueprint'
-                );
-            }
         ),
         'invokables' => array(
             'VuFind\AuthManager' => 'VuFind\Auth\Manager',
@@ -494,7 +489,6 @@ $config = array(
             'VuFind\SearchSpecsReader' => 'VuFind\Config\SearchSpecsReader',
             'VuFind\SessionManager' => 'Zend\Session\SessionManager',
             'VuFind\WorldCatUtils' => 'VuFind\Connection\WorldCatUtils',
-            'VuFindTheme\ResourceContainer' => 'VuFind\Theme\ResourceContainer',
         ),
         'initializers' => array(
             array('VuFind\ServiceManager\Initializer', 'initInstance'),

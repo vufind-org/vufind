@@ -76,7 +76,7 @@ class HeadScript extends \Zend\View\Helper\HeadScript
     /**
      * Get the theme tools.
      *
-     * @return \VuFind\Theme\ThemeInfo
+     * @return \VuFindTheme\ThemeInfo
      */
     public function getThemeInfo()
     {

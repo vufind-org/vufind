@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-namespace VuFind\Mvc\View\Http;
+namespace VuFindTheme;
 
 /**
  * VuFind "Inject Template" Listener -- this extends the core ZF2 class to adjust

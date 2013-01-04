@@ -25,10 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-namespace VuFind\Theme;
-use VuFind\Mobile,
-    VuFind\Mvc\View\Http\InjectTemplateListener,
-    Zend\Config\Config,
+namespace VuFindTheme;
+use Zend\Config\Config,
     Zend\Mvc\MvcEvent,
     Zend\Stdlib\RequestInterface as Request;
 
@@ -67,9 +65,16 @@ class Initializer
     /**
      * Theme tools object
      *
-     * @var \VuFind\Theme\ThemeInfo
+     * @var \VuFindTheme\ThemeInfo
      */
     protected $tools;
+
+    /**
+     * Mobile interface detector
+     *
+     * @var \VuFindTheme\Mobile
+     */
+    protected $mobile;
 
     /**
      * Constructor
@@ -100,6 +105,10 @@ class Initializer
 
         // Get base directory from tools object:
         $this->tools = $this->serviceManager->get('VuFindTheme\ThemeInfo');
+
+        // Set up mobile device detector:
+        $this->mobile = $this->serviceManager->get('VuFindTheme\Mobile');
+        $this->mobile->enable(isset($this->config->mobile_theme));
     }
 
     /**
@@ -193,7 +202,7 @@ class Initializer
     {
         // Load standard configuration options:
         $standardTheme = $this->config->theme;
-        $mobileTheme = isset($this->config->mobile_theme)
+        $mobileTheme = $this->mobile->enabled()
             ? $this->config->mobile_theme : false;
 
         // Find out if the user has a saved preference in the POST, URL or cookies:
@@ -204,7 +213,7 @@ class Initializer
             )
         );
         if (empty($selectedUI)) {
-            $selectedUI = ($mobileTheme && Mobile::detect())
+            $selectedUI = ($mobileTheme && $this->mobile->detect())
                 ? 'mobile' : 'standard';
         }
 

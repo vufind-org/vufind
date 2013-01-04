@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-namespace VuFind\Theme;
+namespace VuFindTheme;
 
 /**
  * Class to represent currently-selected theme and related information.

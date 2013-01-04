@@ -42,7 +42,7 @@ class ImageLink extends AbstractServiceLocator
     /**
      * Get the theme tools.
      *
-     * @return \VuFind\Theme\ThemeInfo
+     * @return \VuFindTheme\ThemeInfo
      */
     public function getThemeInfo()
     {

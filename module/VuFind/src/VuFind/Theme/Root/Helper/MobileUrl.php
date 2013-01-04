@@ -26,8 +26,6 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Theme\Root\Helper;
-use VuFind\Mobile,
-    Zend\View\Helper\AbstractHelper;
 
 /**
  * Mobile URL view helper
@@ -38,7 +36,7 @@ use VuFind\Mobile,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class MobileUrl extends AbstractHelper
+class MobileUrl extends AbstractServiceLocator
 {
     /**
      * Return the mobile version of the current URL if the user is on a mobile device
@@ -48,9 +46,11 @@ class MobileUrl extends AbstractHelper
      */
     public function __invoke()
     {
+        $mobile = $this->getServiceLocator()->get('VuFindTheme\Mobile');
+
         // Do nothing special if we're not on a mobile device or no mobile theme is
         // enabled:
-        if (!Mobile::enabled() || !Mobile::detect()) {
+        if (!$mobile->enabled() || !$mobile->detect()) {
             return false;
         }
 

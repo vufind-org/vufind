@@ -1,7 +1,7 @@
 <?php
 $config = array(
     'modules' => array(
-        'VuFindHttp', 'VuFind',
+        'VuFindHttp', 'VuFindTheme', 'VuFind',
     ),
     'module_listener_options' => array( 
         'config_glob_paths'    => array(

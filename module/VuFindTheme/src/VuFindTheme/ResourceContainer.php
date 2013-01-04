@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-namespace VuFind\Theme;
+namespace VuFindTheme;
 
 /**
  * VuFind Theme Public Resource Handler (for CSS, JS, etc.)
@@ -38,9 +38,32 @@ namespace VuFind\Theme;
  */
 class ResourceContainer
 {
+    /**
+     * CSS files
+     *
+     * @var array
+     */
     protected $css = array();
+
+    /**
+     * Javascript files
+     *
+     * @var array
+     */
     protected $js = array();
+
+    /**
+     * Favicon
+     *
+     * @var string
+     */
     protected $favicon = null;
+
+    /**
+     * Encoding type
+     *
+     * @var string
+     */
     protected $encoding = 'UTF-8';
 
     /**
@@ -53,7 +76,7 @@ class ResourceContainer
      */
     public function addCss($css)
     {
-        if (!is_array($css) && !is_a($css, '\Traversable')) {
+        if (!is_array($css) && !is_a($css, 'Traversable')) {
             $css = array($css);
         }
         foreach ($css as $current) {
@@ -71,7 +94,7 @@ class ResourceContainer
      */
     public function addJs($js)
     {
-        if (!is_array($js) && !is_a($js, '\Traversable')) {
+        if (!is_array($js) && !is_a($js, 'Traversable')) {
             $js = array($js);
         }
         foreach ($js as $current) {
