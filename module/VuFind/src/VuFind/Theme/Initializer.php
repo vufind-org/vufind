@@ -272,26 +272,18 @@ class Initializer
     /**
      * Support method for setUpThemes -- register view helpers.
      *
-     * @param string $theme     Name of theme
-     * @param string $namespace Namespace for view helpers
-     * @param array  $helpers   Helpers to register
+     * @param array $helpers Helper settings
      *
      * @return void
      */
-    protected function setUpThemeViewHelpers($theme, $namespace, $helpers)
+    protected function setUpThemeViewHelpers($helpers)
     {
-        // Ignore null helper array:
-        if (is_null($helpers)) {
-            return;
-        }
-
         // Grab the helper loader from the view manager:
         $loader = $this->serviceManager->get('viewmanager')->getHelperManager();
 
         // Register all the helpers:
-        foreach ($helpers as $helper) {
-            $loader->setInvokableClass(strtolower($helper), "$namespace\\$helper");
-        }
+        $config = new \Zend\ServiceManager\Config($helpers);
+        $config->configureServiceManager($loader);
     }
 
     /**
@@ -310,31 +302,29 @@ class Initializer
 
         // Apply the loaded theme settings in reverse for proper inheritance:
         foreach ($themes as $key=>$currentThemeInfo) {
-            if ($helperNS = $currentThemeInfo->get('helper_namespace')) {
-                $this->setUpThemeViewHelpers(
-                    $key, $helperNS, $currentThemeInfo->get('helpers_to_register')
-                );
+            if (isset($currentThemeInfo['helpers'])) {
+                $this->setUpThemeViewHelpers($currentThemeInfo['helpers']);
             }
 
             // Add template path:
             $templatePathStack[] = $this->baseDir . "/$key/templates";
 
             // Add CSS and JS dependencies:
-            if ($css = $currentThemeInfo->get('css')) {
-                $resources->addCss($css);
+            if (isset($currentThemeInfo['css'])) {
+                $resources->addCss($currentThemeInfo['css']);
             }
-            if ($js = $currentThemeInfo->get('js')) {
-                $resources->addJs($js);
+            if (isset($currentThemeInfo['js'])) {
+                $resources->addJs($currentThemeInfo['js']);
             }
 
             // Select encoding:
-            if ($encoding = $currentThemeInfo->get('encoding')) {
-                $resources->setEncoding($encoding);
+            if (isset($currentThemeInfo['encoding'])) {
+                $resources->setEncoding($currentThemeInfo['encoding']);
             }
 
             // Select favicon:
-            if ($favicon = $currentThemeInfo->get('favicon')) {
-                $resources->setFavicon($favicon);
+            if (isset($currentThemeInfo['favicon'])) {
+                $resources->setFavicon($currentThemeInfo['favicon']);
             }
         }
 

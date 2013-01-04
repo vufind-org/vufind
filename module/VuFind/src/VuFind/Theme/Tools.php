@@ -97,7 +97,7 @@ class Tools
      */
     protected function getThemeConfig($theme)
     {
-        return $this->baseDir . "/$theme/theme.ini";
+        return $this->baseDir . "/$theme/theme.config.php";
     }
 
     /**
@@ -145,11 +145,9 @@ class Tools
             $this->allThemeInfo = array();
             $currentTheme = $this->getTheme();
             do {
-                $iniReader = new \Zend\Config\Reader\Ini();
-                $this->allThemeInfo[$currentTheme] = new \Zend\Config\Config(
-                    $iniReader->fromFile($this->getThemeConfig($currentTheme))
-                );
-                $currentTheme = $this->allThemeInfo[$currentTheme]->extends;
+                $this->allThemeInfo[$currentTheme]
+                    = include $this->getThemeConfig($currentTheme);
+                $currentTheme = $this->allThemeInfo[$currentTheme]['extends'];
             } while ($currentTheme);
         }
 
@@ -183,7 +181,7 @@ class Tools
                     return $returnFile ? $file : $currentTheme;
                 }
             }
-            $currentTheme = $allThemeInfo[$currentTheme]->extends;
+            $currentTheme = $allThemeInfo[$currentTheme]['extends'];
         }
 
         return null;
