@@ -27,8 +27,7 @@
  */
 namespace VuFind;
 use VuFind\Config\Reader as ConfigReader,
-    VuFind\Theme\Initializer as ThemeInitializer, Zend\Console\Console,
-    Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch;
+    Zend\Console\Console, Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch;
 
 /**
  * VuFind Bootstrapper
@@ -309,7 +308,7 @@ class Bootstrap
         // priority (TODO: use priority constant once defined by framework):
         $config =& $this->config;
         $callback = function ($event) use ($config) {
-            $theme = new ThemeInitializer($config, $event);
+            $theme = new \VuFind\Theme\Initializer($config, $event);
             $theme->init();
         };
         $this->events->attach('dispatch.error', $callback, 10000);
