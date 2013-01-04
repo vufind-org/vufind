@@ -29,7 +29,6 @@ namespace VuFind\Theme;
 use VuFind\Mobile,
     VuFind\Mvc\View\Http\InjectTemplateListener,
     Zend\Config\Config,
-    Zend\Config\Reader\Ini as IniReader,
     Zend\Mvc\MvcEvent,
     Zend\Stdlib\RequestInterface as Request;
 
@@ -44,11 +43,40 @@ use VuFind\Mobile,
  */
 class Initializer
 {
+    /**
+     * Theme configuration object
+     *
+     * @var Config
+     */
     protected $config;
+
+    /**
+     * Zend MVC Event
+     *
+     * @var MvcEvent
+     */
     protected $event;
+
+    /**
+     * Theme resource container
+     *
+     * @var ResourceContainer
+     */
     protected $resourceContainer;
+
+    /**
+     * Top-level service manager
+     *
+     * @var \Zend\ServiceManager\ServiceManager
+     */
     protected $serviceManager;
-    protected $session;
+
+    /**
+     * Theme tools object
+     *
+     * @var \VuFind\Theme\Tools
+     */
+    protected $tools;
 
     /**
      * Constructor
@@ -66,14 +94,11 @@ class Initializer
         $this->serviceManager = $this->event->getApplication()->getServiceManager();
 
         // Get base directory from tools object:
-        $tools = $this->serviceManager->get('VuFindTheme\Tools');
-        $this->baseDir = $tools->getBaseDir();
+        $this->tools = $this->serviceManager->get('VuFindTheme\Tools');
+        $this->baseDir = $this->tools->getBaseDir();
 
         // Grab the resource manager for tracking CSS, JS, etc.:
-        $this->resourceContainer = $tools->getResourceContainer();
-
-        // Set up a session namespace for storing theme settings:
-        $this->session = $tools->getPersistenceContainer();
+        $this->resourceContainer = $this->tools->getResourceContainer();
     }
 
     /**
@@ -136,65 +161,24 @@ class Initializer
         // Determine theme options:
         $this->sendThemeOptionsToView();
 
-        // Make sure theme details are available in the session:
-        $error = $this->loadThemeDetails($currentTheme);
+        // Make sure the current theme is set correctly in the tools object:
+        try {
+            $this->tools->setTheme($currentTheme);
+        } catch (\Exception $error) {
+            // If an illegal value is passed in, the setter may throw an exception.
+            // We should ignore it for now and throw it after we have set up the
+            // theme (the setter will use a safe value instead of the illegal one).
+        }
 
         // Using the settings we initialized above, actually configure the themes; we
         // need to do this even if there is an error, since we need a theme in order
         // to display an error message!
-        $this->setUpThemes(array_reverse($this->session->allThemeInfo));
+        $this->setUpThemes(array_reverse($this->tools->getThemeInfo()));
 
         // If we encountered an error loading theme settings, fail now.
-        if (!empty($error)) {
-            throw new \Exception($error);
+        if (isset($error)) {
+            throw new \Exception($error->getMessage());
         }
-    }
-
-    /**
-     * Support method for init() -- load all of the theme details from either the
-     * session or disk (as needed).
-     *
-     * @param string $currentTheme The name of the user-selected theme.
-     *
-     * @return string Error message on problem, empty string on success.
-     */
-    protected function loadThemeDetails($currentTheme)
-    {
-        // Fill in the session if it is not already populated:
-        if (!isset($this->session->currentTheme)
-            || $this->session->currentTheme !== $currentTheme
-        ) {
-            // If the configured theme setting is illegal, switch it to "blueprint"
-            // and set a flag so we can throw an Exception once everything is set
-            // up:
-            if (!file_exists($this->baseDir . "/$currentTheme/theme.ini")) {
-                $themeLoadError = 'Cannot load theme: ' . $currentTheme;
-                $currentTheme = 'blueprint';
-            }
-
-            // Remember the top-level theme setting:
-            $this->session->currentTheme = $currentTheme;
-
-            // Build an array of theme information by inheriting up the theme tree:
-            $allThemeInfo = array();
-            do {
-                $iniReader = new IniReader();
-                $currentThemeInfo = new Config(
-                    $iniReader->fromFile(
-                        $this->baseDir . "/$currentTheme/theme.ini"
-                    )
-                );
-
-                $allThemeInfo[$currentTheme] = $currentThemeInfo;
-
-                $currentTheme = $currentThemeInfo->extends;
-            } while ($currentTheme);
-
-            $this->session->allThemeInfo = $allThemeInfo;
-        }
-
-        // Report success or failure:
-        return isset($themeLoadError) ? $themeLoadError : '';
     }
 
     /**

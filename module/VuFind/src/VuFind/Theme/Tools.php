@@ -26,7 +26,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Theme;
-use Zend\Session\Container as SessionContainer;
 
 /**
  * VuFind Theme Support Methods
@@ -47,6 +46,21 @@ class Tools
     protected $baseDir;
 
     /**
+     * Current selected theme
+     *
+     * @var string
+     */
+    protected $currentTheme;
+
+    /**
+     * A safe theme (guaranteed to exist) that can be loaded if an invalid
+     * configuration is passed in
+     *
+     * @var string
+     */
+    protected $safeTheme;
+
+    /**
      * Resource container
      *
      * @var ResourceContainer
@@ -54,22 +68,22 @@ class Tools
     protected $resourceContainer;
 
     /**
-     * Session (persistence) container
+     * Theme configuration
      *
-     * @var SessionContainer
+     * @var array
      */
-    protected $sessionContainer;
+    protected $allThemeInfo = null;
 
     /**
      * Constructor
      *
      * @param string $baseDir Base directory for theme files.
      */
-    public function __construct($baseDir)
+    public function __construct($baseDir, $safeTheme)
     {
         $this->baseDir = $baseDir;
+        $this->currentTheme = $this->safeTheme = $safeTheme;
         $this->resourceContainer = new ResourceContainer();
-        $this->sessionContainer = new SessionContainer('Theme');
     }
 
     /**
@@ -94,14 +108,71 @@ class Tools
     }
 
     /**
-     * Get the container used for persisting theme-related settings from
-     * page to page.
+     * Get the configuration file for the specified theme.
      *
-     * @return SessionContainer
+     * @param string $theme Theme name
+     *
+     * @return string
      */
-    public function getPersistenceContainer()
+    protected function getThemeConfig($theme)
     {
-        return $this->sessionContainer;
+        return $this->baseDir . "/$theme/theme.ini";
+    }
+
+    /**
+     * Set the current theme.
+     *
+     * @param string $theme Theme to set.
+     *
+     * @return void
+     * @throws \Exception
+     */
+    public function setTheme($theme)
+    {
+        // If the configured theme setting is illegal, throw an exception without
+        // making any changes.
+        if (!file_exists($this->getThemeConfig($theme))) {
+            throw new \Exception('Cannot load theme: ' . $theme);
+        }
+        if ($theme != $this->currentTheme) {
+            // Clear any cached theme information when we change themes:
+            $this->allThemeInfo = null;
+            $this->currentTheme = $theme;
+        }
+    }
+
+    /**
+     * Get the current theme.
+     *
+     * @return string
+     */
+    public function getTheme()
+    {
+        return $this->currentTheme;
+    }
+
+    /**
+     * Get all the configuration details related to the current theme.
+     *
+     * @return array
+     */
+    public function getThemeInfo()
+    {
+        // Fill in the theme info cache if it is not already populated:
+        if (null === $this->allThemeInfo) {
+            // Build an array of theme information by inheriting up the theme tree:
+            $this->allThemeInfo = array();
+            $currentTheme = $this->getTheme();
+            do {
+                $iniReader = new \Zend\Config\Reader\Ini();
+                $this->allThemeInfo[$currentTheme] = new \Zend\Config\Config(
+                    $iniReader->fromFile($this->getThemeConfig($currentTheme))
+                );
+                $currentTheme = $this->allThemeInfo[$currentTheme]->extends;
+            } while ($currentTheme);
+        }
+
+        return $this->allThemeInfo;
     }
 
     /**
@@ -117,12 +188,12 @@ class Tools
      */
     public function findContainingTheme($relativePath, $returnFile = false)
     {
-        $session = $this->getPersistenceContainer();
         $basePath = $this->getBaseDir();
         $allPaths = is_array($relativePath)
             ? $relativePath : array($relativePath);
 
-        $currentTheme = $session->currentTheme;
+        $currentTheme = $this->getTheme();
+        $allThemeInfo = $this->getThemeInfo();
 
         while (!empty($currentTheme)) {
             foreach ($allPaths as $currentPath) {
@@ -131,7 +202,7 @@ class Tools
                     return $returnFile ? $file : $currentTheme;
                 }
             }
-            $currentTheme = $session->allThemeInfo[$currentTheme]->extends;
+            $currentTheme = $allThemeInfo[$currentTheme]->extends;
         }
 
         return null;

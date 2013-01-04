@@ -482,7 +482,7 @@ $config = array(
             },
             'VuFindTheme\Tools' => function ($sm) {
                 return new \VuFind\Theme\Tools(
-                    realpath(__DIR__ . '/../../../themes')
+                    realpath(__DIR__ . '/../../../themes'), 'blueprint'
                 );
             }
         ),
