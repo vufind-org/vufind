@@ -40,28 +40,57 @@ use Zend\Session\Container as SessionContainer;
 class Tools
 {
     /**
+     * Base directory for theme files
+     *
+     * @var string
+     */
+    protected $baseDir;
+
+    /**
+     * Resource container
+     *
+     * @var ResourceContainer
+     */
+    protected $resourceContainer;
+
+    /**
+     * Session (persistence) container
+     *
+     * @var SessionContainer
+     */
+    protected $sessionContainer;
+
+    /**
+     * Constructor
+     *
+     * @param string $baseDir Base directory for theme files.
+     */
+    public function __construct($baseDir)
+    {
+        $this->baseDir = $baseDir;
+        $this->resourceContainer = new ResourceContainer();
+        $this->sessionContainer = new SessionContainer('Theme');
+    }
+
+    /**
      * Get the base directory for themes.
      *
      * @return string
      */
-    public static function getBaseDir()
+    public function getBaseDir()
     {
-        return APPLICATION_PATH . '/themes';
+        return $this->baseDir;
     }
 
     /**
      * Get the container used for handling public resources for themes
      * (CSS, JS, etc.)
      *
-     * @return Context
+     * @return ResourceContainer
      */
-    public static function getResourceContainer()
+    public function getResourceContainer()
     {
-        static $container = false;
-        if (!$container) {
-            $container = new ResourceContainer();
-        }
-        return $container;
+        return $this->resourceContainer;
     }
 
     /**
@@ -70,13 +99,9 @@ class Tools
      *
      * @return SessionContainer
      */
-    public static function getPersistenceContainer()
+    public function getPersistenceContainer()
     {
-        static $container = false;
-        if (!$container) {
-            $container = new SessionContainer('Theme');
-        }
-        return $container;
+        return $this->sessionContainer;
     }
 
     /**
@@ -90,10 +115,10 @@ class Tools
      *
      * @return string
      */
-    public static function findContainingTheme($relativePath, $returnFile = false)
+    public function findContainingTheme($relativePath, $returnFile = false)
     {
-        $session = static::getPersistenceContainer();
-        $basePath = static::getBaseDir();
+        $session = $this->getPersistenceContainer();
+        $basePath = $this->getBaseDir();
         $allPaths = is_array($relativePath)
             ? $relativePath : array($relativePath);
 

@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Theme\Root\Helper;
-use VuFind\Theme\Tools as ThemeTools,
-    Zend\View\Helper\AbstractHelper;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * View helper for loading theme-related resources in the header.
@@ -38,8 +37,18 @@ use VuFind\Theme\Tools as ThemeTools,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class HeadThemeResources extends AbstractHelper
+class HeadThemeResources extends AbstractServiceLocator
 {
+    /**
+     * Get the theme tools.
+     *
+     * @return \VuFind\Theme\Tools
+     */
+    public function getThemeTools()
+    {
+        return $this->getServiceLocator()->get('VuFindTheme\Tools');
+    }
+
     /**
      * Set up header items based on contents of theme resource container.
      *
@@ -47,7 +56,7 @@ class HeadThemeResources extends AbstractHelper
      */
     public function __invoke()
     {
-        $resourceContainer = ThemeTools::getResourceContainer();
+        $resourceContainer = $this->getThemeTools()->getResourceContainer();
 
         // Set up encoding:
         $headMeta = $this->getView()->plugin('headmeta');

@@ -26,8 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Theme\Root\Helper;
-use VuFind\Theme\Tools as ThemeTools,
-    Zend\View\Helper\AbstractHelper;
+use Zend\View\Helper\AbstractHelper;
 
 /**
  * Image link view helper (extended for VuFind's theme system)
@@ -38,8 +37,18 @@ use VuFind\Theme\Tools as ThemeTools,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class ImageLink extends AbstractHelper
+class ImageLink extends AbstractServiceLocator
 {
+    /**
+     * Get the theme tools.
+     *
+     * @return \VuFind\Theme\Tools
+     */
+    public function getThemeTools()
+    {
+        return $this->getServiceLocator()->get('VuFindTheme\Tools');
+    }
+
     /**
      * Returns an image path according the configured theme
      *
@@ -51,7 +60,7 @@ class ImageLink extends AbstractHelper
     {
         // Normalize href to account for themes:
         $relPath = 'images/' . $image;
-        $currentTheme = ThemeTools::findContainingTheme($relPath);
+        $currentTheme = $this->getThemeTools()->findContainingTheme($relPath);
 
         if (is_null($currentTheme)) {
             return null;

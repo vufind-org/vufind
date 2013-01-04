@@ -26,7 +26,8 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\Theme\Root\Helper;
-use VuFind\Theme\Tools as ThemeTools;
+use Zend\ServiceManager\ServiceLocatorInterface,
+    Zend\ServiceManager\ServiceLocatorAwareInterface;
 
 /**
  * Head script view helper (extended for VuFind's theme system)
@@ -38,7 +39,50 @@ use VuFind\Theme\Tools as ThemeTools;
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 class HeadScript extends \Zend\View\Helper\HeadScript
+    implements ServiceLocatorAwareInterface
 {
+    /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
+    protected $serviceLocator;
+
+    /**
+     * Set the service locator.
+     *
+     * @param ServiceLocatorInterface $serviceLocator Locator to register
+     *
+     * @return AbstractServiceLocator
+     */
+    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    {
+        // The service locator passed in here is a Zend\View\HelperPluginManager;
+        // we want to pull out the main Zend\ServiceManager\ServiceManager.
+        $this->serviceLocator = $serviceLocator->getServiceLocator();
+        return $this;
+    }
+
+    /**
+     * Get the service locator.
+     *
+     * @return \Zend\ServiceManager\ServiceLocatorInterface
+     */
+    public function getServiceLocator()
+    {
+        return $this->serviceLocator;
+    }
+
+    /**
+     * Get the theme tools.
+     *
+     * @return \VuFind\Theme\Tools
+     */
+    public function getThemeTools()
+    {
+        return $this->getServiceLocator()->get('VuFindTheme\Tools');
+    }
+
     /**
      * Create script HTML
      *
@@ -54,7 +98,7 @@ class HeadScript extends \Zend\View\Helper\HeadScript
         // Normalize href to account for themes:
         if (!empty($item->attributes['src'])) {
             $relPath = 'js/' . $item->attributes['src'];
-            $currentTheme = ThemeTools::findContainingTheme($relPath);
+            $currentTheme = $this->getThemeTools()->findContainingTheme($relPath);
 
             if (!empty($currentTheme)) {
                 $urlHelper = $this->getView()->plugin('url');

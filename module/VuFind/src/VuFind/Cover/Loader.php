@@ -27,8 +27,7 @@
  * @link     http://vufind.org/wiki/use_of_external_content Wiki
  */
 namespace VuFind\Cover;
-use VuFind\Code\ISBN, VuFind\Theme\Tools as ThemeTools, Zend\Log\LoggerInterface,
-    ZendService\Amazon\Amazon;
+use VuFind\Code\ISBN, Zend\Log\LoggerInterface, ZendService\Amazon\Amazon;
 
 /**
  * Book Cover Generator
@@ -120,16 +119,26 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     protected $logger = false;
 
     /**
+     * Theme tools
+     *
+     * @var \VuFind\Theme\Tools
+     */
+    protected $themeTools;
+
+    /**
      * Constructor
      *
      * @param \Zend\Config\Config $config  VuFind configuration
+     * @param \VuFind\Theme\Tools $theme   VuFind theme tools
      * @param \Zend\Http\Client   $client  HTTP client
      * @param string              $baseDir Directory to store downloaded images
      * (set to system temp dir if not otherwise specified)
      */
-    public function __construct($config, \Zend\Http\Client $client, $baseDir = null)
-    {
+    public function __construct($config, \VuFind\Theme\Tools $theme,
+        \Zend\Http\Client $client, $baseDir = null
+    ) {
         $this->config = $config;
+        $this->themeTools = $theme;
         $this->client = $client;
         $this->baseDir = rtrim(
             is_null($baseDir) ? sys_get_temp_dir() : $baseDir, '\\/'
@@ -335,7 +344,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         foreach ($formats as $format) {
             $filenames[] =  $path . $format;
         }
-        $fileMatch = ThemeTools::findContainingTheme($filenames, true);
+        $fileMatch = $this->themeTools->findContainingTheme($filenames, true);
         return empty($fileMatch) ? false : $fileMatch;
     }
 

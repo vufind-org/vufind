@@ -480,6 +480,11 @@ $config = array(
                     $sm->get('VuFind\Http')->createClient()
                 );
             },
+            'VuFindTheme\Tools' => function ($sm) {
+                return new \VuFind\Theme\Tools(
+                    realpath(__DIR__ . '/../../../themes')
+                );
+            }
         ),
         'invokables' => array(
             'VuFind\AuthManager' => 'VuFind\Auth\Manager',

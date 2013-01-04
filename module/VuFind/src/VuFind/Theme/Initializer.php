@@ -55,29 +55,25 @@ class Initializer
      *
      * @param Config   $config Configuration object
      * @param MvcEvent $event  Zend MVC Event object
-     * @param string   $tools  Name of Tools class
      */
-    public function __construct(Config $config, MvcEvent $event,
-        string $tools = null
-    ) {
-        // If no tools class name was passed in, use a default:
-        if (is_null($tools)) {
-            $tools = 'VuFind\Theme\Tools';
-        }
-
+    public function __construct(Config $config, MvcEvent $event)
+    {
+        // Store parameters:
         $this->config = $config;
         $this->event = $event;
-        $this->baseDir = call_user_func(array($tools, 'getBaseDir'));
 
         // Grab the service manager for convenience:
         $this->serviceManager = $this->event->getApplication()->getServiceManager();
 
+        // Get base directory from tools object:
+        $tools = $this->serviceManager->get('VuFindTheme\Tools');
+        $this->baseDir = $tools->getBaseDir();
+
         // Grab the resource manager for tracking CSS, JS, etc.:
-        $this->resourceContainer
-            = call_user_func(array($tools, 'getResourceContainer'));
+        $this->resourceContainer = $tools->getResourceContainer();
 
         // Set up a session namespace for storing theme settings:
-        $this->session = call_user_func(array($tools, 'getPersistenceContainer'));
+        $this->session = $tools->getPersistenceContainer();
     }
 
     /**
