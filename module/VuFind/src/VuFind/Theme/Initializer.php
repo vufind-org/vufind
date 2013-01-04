@@ -74,7 +74,19 @@ class Initializer
     /**
      * Constructor
      *
-     * @param Config   $config Configuration object
+     * @param Config   $config Configuration object containing these keys:
+     * <ul>
+     *   <li>theme - the name of the default theme for non-mobile devices</li>
+     *   <li>mobile_theme - the name of the default theme for mobile devices
+     * (omit to disable mobile support)</li>
+     *   <li>alternate_themes - a comma-separated list of alternate themes that
+     * can be accessed via the ui GET parameter; each entry is a colon-separated
+     * parameter-value:theme-name pair.</li>
+     *   <li>selectable_themes - a comma-separated list of themes that may be
+     * selected through the user interface; each entry is a colon-separated
+     * name:description pair, where name may be 'standard,' 'mobile,' or one of
+     * the parameter-values from the alternate_themes array.</li>
+     * </ul>
      * @param MvcEvent $event  Zend MVC Event object
      */
     public function __construct(Config $config, MvcEvent $event)
@@ -181,9 +193,9 @@ class Initializer
     protected function pickTheme(Request $request)
     {
         // Load standard configuration options:
-        $standardTheme = $this->config->Site->theme;
-        $mobileTheme = isset($this->config->Site->mobile_theme)
-            ? $this->config->Site->mobile_theme : false;
+        $standardTheme = $this->config->theme;
+        $mobileTheme = isset($this->config->mobile_theme)
+            ? $this->config->mobile_theme : false;
 
         // Find out if the user has a saved preference in the POST, URL or cookies:
         $selectedUI = $request->getPost()->get(
@@ -208,10 +220,10 @@ class Initializer
 
         // Do we have a non-standard selection?
         if ($selectedUI != 'standard'
-            && isset($this->config->Site->alternate_themes)
+            && isset($this->config->alternate_themes)
         ) {
             // Check the alternate theme settings for a match:
-            $parts = explode(',', $this->config->Site->alternate_themes);
+            $parts = explode(',', $this->config->alternate_themes);
             foreach ($parts as $part) {
                 $subparts = explode(':', $part);
                 if ((trim($subparts[0]) == trim($selectedUI))
@@ -251,8 +263,8 @@ class Initializer
     protected function getThemeOptions()
     {
         $options = array();
-        if (isset($this->config->Site->selectable_themes)) {
-            $parts = explode(',', $this->config->Site->selectable_themes);
+        if (isset($this->config->selectable_themes)) {
+            $parts = explode(',', $this->config->selectable_themes);
             foreach ($parts as $part) {
                 $subparts = explode(':', $part);
                 $name = trim($subparts[0]);

@@ -306,7 +306,7 @@ class Bootstrap
 
         // Attach remaining theme configuration to the dispatch event at high
         // priority (TODO: use priority constant once defined by framework):
-        $config =& $this->config;
+        $config = $this->config->Site;
         $callback = function ($event) use ($config) {
             $theme = new \VuFind\Theme\Initializer($config, $event);
             $theme->init();
