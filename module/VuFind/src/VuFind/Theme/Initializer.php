@@ -67,7 +67,7 @@ class Initializer
     /**
      * Theme tools object
      *
-     * @var \VuFind\Theme\Tools
+     * @var \VuFind\Theme\ThemeInfo
      */
     protected $tools;
 
@@ -99,8 +99,7 @@ class Initializer
         $this->serviceManager = $this->event->getApplication()->getServiceManager();
 
         // Get base directory from tools object:
-        $this->tools = $this->serviceManager->get('VuFindTheme\Tools');
-        $this->baseDir = $this->tools->getBaseDir();
+        $this->tools = $this->serviceManager->get('VuFindTheme\ThemeInfo');
     }
 
     /**
@@ -319,7 +318,7 @@ class Initializer
             }
 
             // Add template path:
-            $templatePathStack[] = $this->baseDir . "/$key/templates";
+            $templatePathStack[] = $this->tools->getBaseDir() . "/$key/templates";
 
             // Add CSS and JS dependencies:
             if (isset($currentThemeInfo['css'])) {

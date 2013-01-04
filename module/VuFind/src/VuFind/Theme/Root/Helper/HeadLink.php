@@ -76,11 +76,11 @@ class HeadLink extends \Zend\View\Helper\HeadLink
     /**
      * Get the theme tools.
      *
-     * @return \VuFind\Theme\Tools
+     * @return \VuFind\Theme\ThemeInfo
      */
-    public function getThemeTools()
+    public function getThemeInfo()
     {
-        return $this->getServiceLocator()->get('VuFindTheme\Tools');
+        return $this->getServiceLocator()->get('VuFindTheme\ThemeInfo');
     }
 
     /**
@@ -94,7 +94,7 @@ class HeadLink extends \Zend\View\Helper\HeadLink
     {
         // Normalize href to account for themes, then call the parent class:
         $relPath = 'css/' . $item->href;
-        $currentTheme = $this->getThemeTools()->findContainingTheme($relPath);
+        $currentTheme = $this->getThemeInfo()->findContainingTheme($relPath);
 
         if (!empty($currentTheme)) {
             $urlHelper = $this->getView()->plugin('url');

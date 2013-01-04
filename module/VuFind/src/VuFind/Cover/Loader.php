@@ -121,20 +121,20 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     /**
      * Theme tools
      *
-     * @var \VuFind\Theme\Tools
+     * @var \VuFind\Theme\ThemeInfo
      */
     protected $themeTools;
 
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config  VuFind configuration
-     * @param \VuFind\Theme\Tools $theme   VuFind theme tools
-     * @param \Zend\Http\Client   $client  HTTP client
-     * @param string              $baseDir Directory to store downloaded images
+     * @param \Zend\Config\Config     $config  VuFind configuration
+     * @param \VuFind\Theme\ThemeInfo $theme   VuFind theme tools
+     * @param \Zend\Http\Client       $client  HTTP client
+     * @param string                  $baseDir Directory to store downloaded images
      * (set to system temp dir if not otherwise specified)
      */
-    public function __construct($config, \VuFind\Theme\Tools $theme,
+    public function __construct($config, \VuFind\Theme\ThemeInfo $theme,
         \Zend\Http\Client $client, $baseDir = null
     ) {
         $this->config = $config;

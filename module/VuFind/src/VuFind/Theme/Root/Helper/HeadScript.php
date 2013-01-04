@@ -76,11 +76,11 @@ class HeadScript extends \Zend\View\Helper\HeadScript
     /**
      * Get the theme tools.
      *
-     * @return \VuFind\Theme\Tools
+     * @return \VuFind\Theme\ThemeInfo
      */
-    public function getThemeTools()
+    public function getThemeInfo()
     {
-        return $this->getServiceLocator()->get('VuFindTheme\Tools');
+        return $this->getServiceLocator()->get('VuFindTheme\ThemeInfo');
     }
 
     /**
@@ -98,7 +98,7 @@ class HeadScript extends \Zend\View\Helper\HeadScript
         // Normalize href to account for themes:
         if (!empty($item->attributes['src'])) {
             $relPath = 'js/' . $item->attributes['src'];
-            $currentTheme = $this->getThemeTools()->findContainingTheme($relPath);
+            $currentTheme = $this->getThemeInfo()->findContainingTheme($relPath);
 
             if (!empty($currentTheme)) {
                 $urlHelper = $this->getView()->plugin('url');

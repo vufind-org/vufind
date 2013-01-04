@@ -1,6 +1,6 @@
 <?php
 /**
- * VuFind Theme Support Methods
+ * Class to represent currently-selected theme and related information.
  *
  * PHP version 5
  *
@@ -28,7 +28,7 @@
 namespace VuFind\Theme;
 
 /**
- * VuFind Theme Support Methods
+ * Class to represent currently-selected theme and related information.
  *
  * @category VuFind2
  * @package  Theme
@@ -36,7 +36,7 @@ namespace VuFind\Theme;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Tools
+class ThemeInfo
 {
     /**
      * Base directory for theme files

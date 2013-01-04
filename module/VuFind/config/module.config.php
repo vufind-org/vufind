@@ -480,8 +480,8 @@ $config = array(
                     $sm->get('VuFind\Http')->createClient()
                 );
             },
-            'VuFindTheme\Tools' => function ($sm) {
-                return new \VuFind\Theme\Tools(
+            'VuFindTheme\ThemeInfo' => function ($sm) {
+                return new \VuFind\Theme\ThemeInfo(
                     realpath(__DIR__ . '/../../../themes'), 'blueprint'
                 );
             }

@@ -42,11 +42,11 @@ class ImageLink extends AbstractServiceLocator
     /**
      * Get the theme tools.
      *
-     * @return \VuFind\Theme\Tools
+     * @return \VuFind\Theme\ThemeInfo
      */
-    public function getThemeTools()
+    public function getThemeInfo()
     {
-        return $this->getServiceLocator()->get('VuFindTheme\Tools');
+        return $this->getServiceLocator()->get('VuFindTheme\ThemeInfo');
     }
 
     /**
@@ -60,7 +60,7 @@ class ImageLink extends AbstractServiceLocator
     {
         // Normalize href to account for themes:
         $relPath = 'images/' . $image;
-        $currentTheme = $this->getThemeTools()->findContainingTheme($relPath);
+        $currentTheme = $this->getThemeInfo()->findContainingTheme($relPath);
 
         if (is_null($currentTheme)) {
             return null;
