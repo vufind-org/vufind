@@ -28,9 +28,7 @@
 namespace VuFind;
 use VuFind\Config\Reader as ConfigReader,
     VuFind\Theme\Initializer as ThemeInitializer, Zend\Console\Console,
-    Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch,
-    Zend\ServiceManager\Config as ServiceManagerConfig,
-    Zend\ServiceManager\ServiceLocatorAwareInterface;
+    Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch;
 
 /**
  * VuFind Bootstrapper
@@ -100,7 +98,7 @@ class Bootstrap
                 $configKey = strtolower(str_replace('\\', '_', $ns))
                     . '_plugin_manager';
                 return new $className(
-                    new ServiceManagerConfig($config[$configKey])
+                    new \Zend\ServiceManager\Config($config[$configKey])
                 );
             };
             $serviceManager->setFactory($serviceName, $factory);
