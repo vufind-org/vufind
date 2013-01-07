@@ -36,7 +36,7 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class DisplayLanguageOption extends AbstractServiceLocator
+class DisplayLanguageOption extends \Zend\View\Helper\AbstractHelper
 {
     /**
      * Translator (or null if unavailable)
@@ -46,25 +46,21 @@ class DisplayLanguageOption extends AbstractServiceLocator
     protected $translator = null;
 
     /**
-     * Get translator object.
+     * Constructor
      *
-     * @return \Zend\I18n\Translator\Translator
+     * @param \Zend\I18n\Translator\Translator $translator Main VuFind translator
      */
-    public function getTranslator()
+    public function __construct(\Zend\I18n\Translator\Translator $translator)
     {
-        if (null === $this->translator) {
-            // Clone the translator; we need to switch language for the purposes
-            // of this plugin, but we don't want that change to happen globally.
-            $this->translator
-                = clone($this->getServiceLocator()->get('VuFind\Translator'));
-            $this->translator->addTranslationFile(
-                'ExtendedIni',
-                APPLICATION_PATH  . '/languages/native.ini',
-                'default', 'native'
-            );
-            $this->translator->setLocale('native');
-        }
-        return $this->translator;
+        // Clone the translator; we need to switch language for the purposes
+        // of this plugin, but we don't want that change to happen globally.
+        $this->translator = clone($translator);
+        $this->translator->addTranslationFile(
+            'ExtendedIni',
+            APPLICATION_PATH  . '/languages/native.ini',
+            'default', 'native'
+        );
+        $this->translator->setLocale('native');
     }
 
     /**
@@ -76,6 +72,6 @@ class DisplayLanguageOption extends AbstractServiceLocator
      */
     public function __invoke($str)
     {
-        return $this->view->escapeHtml($this->getTranslator()->translate($str));
+        return $this->view->escapeHtml($this->translator->translate($str));
     }
 }

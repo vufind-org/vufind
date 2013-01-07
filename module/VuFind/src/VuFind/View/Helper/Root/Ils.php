@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 namespace VuFind\View\Helper\Root;
-use Zend\View\Helper\AbstractHelper;
 
 /**
  * ILS (integrated library system) view helper
@@ -37,8 +36,25 @@ use Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class Ils extends AbstractServiceLocator
+class Ils extends \Zend\View\Helper\AbstractHelper
 {
+    /**
+     * ILS connection
+     *
+     * @var \VuFind\ILS\Connection
+     */
+    protected $connection;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\ILS\Connection $connection ILS connection
+     */
+    public function __construct(\VuFind\ILS\Connection $connection)
+    {
+        $this->connection = $connection;
+    }
+
     /**
      * Get the ILS connection object.
      *
@@ -46,6 +62,6 @@ class Ils extends AbstractServiceLocator
      */
     public function __invoke()
     {
-        return $this->getServiceLocator()->get('VuFind\ILSConnection');
+        return $this->connection;
     }
 }

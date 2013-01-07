@@ -36,8 +36,25 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class SearchOptions extends AbstractServiceLocator
+class SearchOptions extends \Zend\View\Helper\AbstractHelper
 {
+    /**
+     * Search manager
+     *
+     * @var \VuFind\Search\Manager
+     */
+    protected $manager;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Search\Manager $manager Search manager
+     */
+    public function __construct(\VuFind\Search\Manager $manager)
+    {
+        $this->manager = $manager;
+    }
+
     /**
      * Wrapper to the search manager's getOptionsInstance method
      *
@@ -47,7 +64,6 @@ class SearchOptions extends AbstractServiceLocator
      */
     public function __invoke($type = 'Solr')
     {
-        return $this->getServiceLocator()->get('SearchManager')
-            ->setSearchClassId($type)->getOptionsInstance();
+        return $this->manager->setSearchClassId($type)->getOptionsInstance();
     }
 }

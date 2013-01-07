@@ -36,8 +36,25 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class Cart extends AbstractServiceLocator
+class Cart extends \Zend\View\Helper\AbstractHelper
 {
+    /**
+     * VuFind Cart Model
+     *
+     * @var \VuFind\Cart
+     */
+    protected $cart;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Cart $cart Cart model
+     */
+    public function __construct(\VuFind\Cart $cart)
+    {
+        $this->cart = $cart;
+    }
+
     /**
      * Get the Cart object from the service manager.
      *
@@ -45,6 +62,6 @@ class Cart extends AbstractServiceLocator
      */
     public function __invoke()
     {
-        return $this->getServiceLocator()->get('VuFind\Cart');
+        return $this->cart;
     }
 }

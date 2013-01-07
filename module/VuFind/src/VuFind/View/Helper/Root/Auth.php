@@ -37,8 +37,25 @@ use Zend\View\Exception\RuntimeException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class Auth extends AbstractServiceLocator
+class Auth extends \Zend\View\Helper\AbstractHelper
 {
+    /**
+     * Authentication manager
+     *
+     * @var \VuFind\Auth\Manager
+     */
+    protected $manager;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Auth\Manager $manager Authentication manager
+     */
+    public function __construct(\VuFind\Auth\Manager $manager)
+    {
+        $this->manager = $manager;
+    }
+
     /**
      * Render a template within an auth module folder.
      *
@@ -89,7 +106,7 @@ class Auth extends AbstractServiceLocator
      */
     public function getManager()
     {
-        return $this->getServiceLocator()->get('VuFind\AuthManager');
+        return $this->manager;
     }
 
     /**
