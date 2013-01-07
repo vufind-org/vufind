@@ -147,9 +147,9 @@ class Database extends AbstractBase
      *
      * @return bool
      */
-    protected function checkPassword($input_password, $userRow)
+    protected function checkPassword($password, $userRow)
     {
-        return $input_password == $userRow->password;
+        return $password == $userRow->password;
     }
 
 
