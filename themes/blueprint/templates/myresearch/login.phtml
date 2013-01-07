@@ -9,7 +9,7 @@
 
     // If we're in AJAX mode, load some extra Javascript inline:
     if ($this->layout()->getTemplate() == 'layout/lightbox') {
-        echo $this->inlineScript()->appendFile("rc4.js");
+        $this->inlineScript()->appendFile("rc4.js");
     }
 
     // Convenience variables:
