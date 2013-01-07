@@ -66,7 +66,7 @@ class Database extends AbstractBase
 
         // Validate the credentials:
         $user = $this->getUserTable()->getByUsername($this->username, false);
-        if (!is_object($user) || !$user->checkPassword($this->password)) {
+        if (!is_object($user) || !$this->checkPassword($this->password, $user)) {
             throw new AuthException('authentication_error_invalid');
         }
 
@@ -138,6 +138,20 @@ class Database extends AbstractBase
         $table->insert($data);
         return $table->getByUsername($params['username'], false);
     }
+
+    /**
+     * Check that the user's password matches the provided value.
+     *
+     * @param string $password Password to check.
+     * @param object $userRow  The user row.
+     *
+     * @return bool
+     */
+    protected function checkPassword($input_password, $userRow)
+    {
+        return $input_password == $userRow->password;
+    }
+
 
     /**
      * Does this authentication method support account creation?

@@ -137,11 +137,7 @@ class SIP2 extends AbstractBase
         $user->lastname = trim(substr($ae, 0, strripos($ae, ',')));
         // I'm inserting the sip username and password since the ILS is the source.
         // Should revisit this.
-        $user->cat_username = $username;
-        $user->cat_password = $password;
-
-        // Update the user in the database, then return it to the caller:
-        $user->save();
+        $user->saveCredentials($username, $password);
         return $user;
     }
 }

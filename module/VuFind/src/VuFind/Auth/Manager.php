@@ -301,8 +301,7 @@ class Manager implements ServiceLocatorAwareInterface
         if ($user && isset($user->cat_username) && !empty($user->cat_username)) {
             try {
                 $patron = $catalog->patronLogin(
-                    $user->cat_username,
-                    isset($user->cat_password) ? $user->cat_password : null
+                    $user->cat_username, $user->getCatPassword()
                 );
             } catch (ILSException $e) {
                 $patron = null;
@@ -311,8 +310,7 @@ class Manager implements ServiceLocatorAwareInterface
                 // Problem logging in -- clear user credentials so they can be
                 // prompted again; perhaps their password has changed in the
                 // system!
-                $user->cat_username = null;
-                $user->cat_password = null;
+                $user->clearCredentials();
             } else {
                 $this->ilsAccount = $patron;    // cache for future use
                 return $patron;

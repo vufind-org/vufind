@@ -172,7 +172,7 @@ class PICA extends DAIA
             "ACT" => "UI_DATA",
             "LNG" => "DU",
             "BOR_U" => $_SESSION['picauser']->username,
-            "BOR_PW" => $_SESSION['picauser']->cat_password
+            "BOR_PW" => $_SESSION['picauser']->getCatPassword()
         );
         $postit = $this->postit($URL, $POST);
         // How many messages are there?
@@ -211,7 +211,7 @@ class PICA extends DAIA
             "ACT" => "UI_LOL",
             "LNG" => "DU",
             "BOR_U" => $_SESSION['picauser']->username,
-            "BOR_PW" => $_SESSION['picauser']->cat_password
+            "BOR_PW" => $_SESSION['picauser']->getCatPassword()
         );
         $postit = $this->postit($URL, $POST);
         // How many items are there?
@@ -384,7 +384,7 @@ class PICA extends DAIA
         $POST = array(
             "ACT" => "UI_RENEWLOAN",
             "BOR_U" => $_SESSION['picauser']->username,
-            "BOR_PW" => $_SESSION['picauser']->cat_password
+            "BOR_PW" => $_SESSION['picauser']->getCatPassword()
         );
         if (is_array($recordId) === true) {
             foreach ($recordId as $rid) {
@@ -417,7 +417,7 @@ class PICA extends DAIA
         $POST = array(
             "ACT" => "UI_LOC",
             "BOR_U" => $_SESSION['picauser']->username,
-            "BOR_PW" => $_SESSION['picauser']->cat_password
+            "BOR_PW" => $_SESSION['picauser']->getCatPassword()
         );
         $postit = $this->postit($URL, $POST);
 
@@ -483,7 +483,7 @@ class PICA extends DAIA
         $POST = array(
             "ACT" => "UI_LOR",
             "BOR_U" => $_SESSION['picauser']->username,
-            "BOR_PW" => $_SESSION['picauser']->cat_password
+            "BOR_PW" => $_SESSION['picauser']->getCatPassword()
         );
         $postit = $this->postit($URL, $POST);
 
@@ -549,7 +549,7 @@ class PICA extends DAIA
         $POST_LOL = array(
             "ACT" => "UI_LOL",
             "BOR_U" => $_SESSION['picauser']->username,
-            "BOR_PW" => $_SESSION['picauser']->cat_password
+            "BOR_PW" => $_SESSION['picauser']->getCatPassword()
         );
         $postit_lol = $this->postit($URL, $POST_LOL);
 

@@ -87,6 +87,17 @@ class User extends ServiceLocatorAwareGateway
     }
 
     /**
+     * Reset ILS login credentials.
+     *
+     * @return void
+     */
+    public function clearCredentials()
+    {
+        $this->cat_username = null;
+        $this->cat_password = null;
+    }
+
+    /**
      * Save ILS login credentials.
      *
      * @param string $username Username to save
@@ -99,6 +110,17 @@ class User extends ServiceLocatorAwareGateway
         $this->cat_username = $username;
         $this->cat_password = $password;
         return $this->save();
+    }
+
+    /**
+     *  This is a getter for the Catalog Password. It will return a plaintext version
+     *  of the password.
+     *
+     *  @return string The Catalog password in plain text
+     */
+    public function getCatPassword()
+    {
+        return isset($this->cat_password) ? $this->cat_password : null;
     }
 
     /**
@@ -254,20 +276,7 @@ class User extends ServiceLocatorAwareGateway
         return $table->getSavedData($resourceId, $source, $listId, $this->id);
     }
 
-    /**
-     * Check that the user's password matches the provided value.
-     *
-     * @param string $password Password to check.
-     *
-     * @return bool
-     */
-    public function checkPassword($password)
-    {
-        // Simple check for now since we store passwords in the database; we may
-        // eventually want to replace this with some kind of hash mechanism for
-        // better security.
-        return $this->password == $password;
-    }
+
     /**
      * Add/update a resource in the user's account.
      *
