@@ -1,6 +1,6 @@
 <?php
 /**
- * Image link view helper (extended for VuFind's theme system)
+ * Inline script view helper (extended for VuFind's theme system)
  *
  * PHP version 5
  *
@@ -23,50 +23,44 @@
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     http://vufind.org   Main Site
  */
-namespace VuFind\View\Helper\Root;
-use Zend\View\Helper\AbstractHelper;
+namespace VuFindTheme\View\Helper;
 
 /**
- * Image link view helper (extended for VuFind's theme system)
+ * Inline script view helper (extended for VuFind's theme system)
  *
  * @category VuFind2
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     http://vufind.org   Main Site
  */
-class ImageLink extends AbstractServiceLocator
+class InlineScript extends HeadScript
 {
     /**
-     * Get the theme tools.
-     *
-     * @return \VuFindTheme\ThemeInfo
+     * Registry key for placeholder
+     * @var string
      */
-    public function getThemeInfo()
-    {
-        return $this->getServiceLocator()->get('VuFindTheme\ThemeInfo');
-    }
+    protected $regKey = 'Zend_View_Helper_InlineScript';
 
     /**
-     * Returns an image path according the configured theme
+     * Return InlineScript object
      *
-     * @param string $image image name/path
+     * Returns InlineScript helper object; optionally, allows specifying a
+     * script or script file to include.
      *
-     * @return string path, null if image not found
+     * @param string $mode      Script or file
+     * @param string $spec      Script/url
+     * @param string $placement Append, prepend, or set
+     * @param array  $attrs     Array of script attributes
+     * @param string $type      Script type and/or array of script attributes
+     *
+     * @return InlineScript
      */
-    public function __invoke($image)
-    {
-        // Normalize href to account for themes:
-        $relPath = 'images/' . $image;
-        $currentTheme = $this->getThemeInfo()->findContainingTheme($relPath);
-
-        if (is_null($currentTheme)) {
-            return null;
-        }
-
-        $urlHelper = $this->getView()->plugin('url');
-        return $urlHelper('home') . "themes/$currentTheme/" . $relPath;
+    public function __invoke($mode = HeadScript::FILE, $spec = null,
+        $placement = 'APPEND', array $attrs = array(), $type = 'text/javascript'
+    ) {
+        return parent::__invoke($mode, $spec, $placement, $attrs, $type);
     }
 }

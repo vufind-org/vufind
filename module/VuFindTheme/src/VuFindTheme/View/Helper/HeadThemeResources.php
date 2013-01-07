@@ -25,8 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-namespace VuFind\View\Helper\Root;
-use Zend\View\Helper\AbstractHelper;
+namespace VuFindTheme\View\Helper;
 
 /**
  * View helper for loading theme-related resources in the header.
@@ -37,16 +36,23 @@ use Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class HeadThemeResources extends AbstractServiceLocator
+class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
 {
     /**
-     * Get the theme resource container.
+     * Theme resource container
      *
-     * @return \VuFindTheme\ResourceContainer
+     * @var \VuFindTheme\ResourceContainer
      */
-    public function getThemeResourceContainer()
+    protected $container;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFindTheme\ResourceContainer $container Theme resource container
+     */
+    public function __construct(\VuFindTheme\ResourceContainer $container)
     {
-        return $this->getServiceLocator()->get('VuFindTheme\ResourceContainer');
+        $this->container = $container;
     }
 
     /**
@@ -56,18 +62,16 @@ class HeadThemeResources extends AbstractServiceLocator
      */
     public function __invoke()
     {
-        $resourceContainer = $this->getThemeResourceContainer();
-
         // Set up encoding:
         $headMeta = $this->getView()->plugin('headmeta');
         $headMeta()->appendHttpEquiv(
-            'Content-Type', 'text/html; charset=' . $resourceContainer->getEncoding()
+            'Content-Type', 'text/html; charset=' . $this->container->getEncoding()
         );
 
         // Load CSS (make sure we prepend them in the appropriate order; theme
         // resources should load before extras added by individual templates):
         $headLink = $this->getView()->plugin('headlink');
-        foreach (array_reverse($resourceContainer->getCss()) as $current) {
+        foreach (array_reverse($this->container->getCss()) as $current) {
             $parts = explode(':', $current);
             $headLink()->prependStylesheet(
                 trim($parts[0]),
@@ -78,7 +82,7 @@ class HeadThemeResources extends AbstractServiceLocator
 
         // Load Javascript (same ordering considerations as CSS, above):
         $headScript = $this->getView()->plugin('headscript');
-        foreach (array_reverse($resourceContainer->getJs()) as $current) {
+        foreach (array_reverse($this->container->getJs()) as $current) {
             $parts =  explode(':', $current);
             $headScript()->prependFile(
                 trim($parts[0]),
@@ -89,7 +93,7 @@ class HeadThemeResources extends AbstractServiceLocator
         }
 
         // If we have a favicon, load it now:
-        $favicon = $resourceContainer->getFavicon();
+        $favicon = $this->container->getFavicon();
         if (!empty($favicon)) {
             $imageLink = $this->getView()->plugin('imagelink');
             $headLink(array(

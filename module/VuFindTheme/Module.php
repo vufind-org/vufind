@@ -83,7 +83,40 @@ class Module
      */
     public function getViewHelperConfig()
     {
-        return array();
+        return array(
+            'factories' => array(
+                'headlink' => function ($sm) {
+                    return new \VuFindTheme\View\Helper\HeadLink(
+                        $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
+                    );
+                },
+                'headscript' => function ($sm) {
+                    return new \VuFindTheme\View\Helper\HeadScript(
+                        $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
+                    );
+                },
+                'headthemeresources' => function ($sm) {
+                    return new \VuFindTheme\View\Helper\HeadThemeResources(
+                        $sm->getServiceLocator()->get('VuFindTheme\ResourceContainer')
+                    );
+                },
+                'imagelink' => function ($sm) {
+                    return new \VuFindTheme\View\Helper\ImageLink(
+                        $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
+                    );
+                },
+                'inlinescript' => function ($sm) {
+                    return new \VuFindTheme\View\Helper\InlineScript(
+                        $sm->getServiceLocator()->get('VuFindTheme\ThemeInfo')
+                    );
+                },
+                'mobileurl' => function ($sm) {
+                    return new \VuFindTheme\View\Helper\MobileUrl(
+                        $sm->getServiceLocator()->get('VuFindTheme\Mobile')
+                    );
+                },
+            ),
+        );
     }
 
     /**

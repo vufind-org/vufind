@@ -25,9 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-namespace VuFind\View\Helper\Root;
-use Zend\ServiceManager\ServiceLocatorInterface,
-    Zend\ServiceManager\ServiceLocatorAwareInterface;
+namespace VuFindTheme\View\Helper;
 
 /**
  * Head script view helper (extended for VuFind's theme system)
@@ -39,48 +37,23 @@ use Zend\ServiceManager\ServiceLocatorInterface,
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
 class HeadScript extends \Zend\View\Helper\HeadScript
-    implements ServiceLocatorAwareInterface
 {
     /**
-     * Service locator
+     * Theme information service
      *
-     * @var ServiceLocatorInterface
+     * @var \VuFindTheme\ThemeInfo
      */
-    protected $serviceLocator;
+    protected $themeInfo;
 
     /**
-     * Set the service locator.
+     * Constructor
      *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return AbstractServiceLocator
+     * @param \VuFindTheme\ThemeInfo $themeInfo Theme information service
      */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
+    public function __construct(\VuFindTheme\ThemeInfo $themeInfo)
     {
-        // The service locator passed in here is a Zend\View\HelperPluginManager;
-        // we want to pull out the main Zend\ServiceManager\ServiceManager.
-        $this->serviceLocator = $serviceLocator->getServiceLocator();
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
-    }
-
-    /**
-     * Get the theme tools.
-     *
-     * @return \VuFindTheme\ThemeInfo
-     */
-    public function getThemeInfo()
-    {
-        return $this->getServiceLocator()->get('VuFindTheme\ThemeInfo');
+        parent::__construct();
+        $this->themeInfo = $themeInfo;
     }
 
     /**
@@ -98,7 +71,7 @@ class HeadScript extends \Zend\View\Helper\HeadScript
         // Normalize href to account for themes:
         if (!empty($item->attributes['src'])) {
             $relPath = 'js/' . $item->attributes['src'];
-            $currentTheme = $this->getThemeInfo()->findContainingTheme($relPath);
+            $currentTheme = $this->themeInfo->findContainingTheme($relPath);
 
             if (!empty($currentTheme)) {
                 $urlHelper = $this->getView()->plugin('url');

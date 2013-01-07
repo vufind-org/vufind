@@ -1,6 +1,6 @@
 <?php
 /**
- * Mobile URL view helper
+ * Head link view helper (extended for VuFind's theme system)
  *
  * PHP version 5
  *
@@ -25,10 +25,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-namespace VuFind\View\Helper\Root;
+namespace VuFindTheme\View\Helper;
 
 /**
- * Mobile URL view helper
+ * Head link view helper (extended for VuFind's theme system)
  *
  * @category VuFind2
  * @package  View_Helpers
@@ -36,27 +36,44 @@ namespace VuFind\View\Helper\Root;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
  */
-class MobileUrl extends AbstractServiceLocator
+class HeadLink extends \Zend\View\Helper\HeadLink
 {
     /**
-     * Return the mobile version of the current URL if the user is on a mobile device
-     * and might want to switch over.  Return false when not on a mobile device.
+     * Theme information service
+     *
+     * @var \VuFindTheme\ThemeInfo
+     */
+    protected $themeInfo;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFindTheme\ThemeInfo $themeInfo Theme information service
+     */
+    public function __construct(\VuFindTheme\ThemeInfo $themeInfo)
+    {
+        parent::__construct();
+        $this->themeInfo = $themeInfo;
+    }
+
+    /**
+     * Create HTML link element from data item
+     *
+     * @param stdClass $item data item
      *
      * @return string
      */
-    public function __invoke()
+    public function itemToString(\stdClass $item)
     {
-        $mobile = $this->getServiceLocator()->get('VuFindTheme\Mobile');
+        // Normalize href to account for themes, then call the parent class:
+        $relPath = 'css/' . $item->href;
+        $currentTheme = $this->themeInfo->findContainingTheme($relPath);
 
-        // Do nothing special if we're not on a mobile device or no mobile theme is
-        // enabled:
-        if (!$mobile->enabled() || !$mobile->detect()) {
-            return false;
+        if (!empty($currentTheme)) {
+            $urlHelper = $this->getView()->plugin('url');
+            $item->href = $urlHelper('home') . "themes/$currentTheme/" . $relPath;
         }
 
-        $urlHelper = $this->getView()->plugin('serverurl');
-        $currentUrl = rtrim($urlHelper(true), '?');
-        $currentUrl .= strstr($currentUrl, '?') ? '&' : '?';
-        return $currentUrl .= 'ui=mobile';
+        return parent::itemToString($item);
     }
 }
