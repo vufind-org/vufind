@@ -46,7 +46,10 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
      */
     protected function getPlugins()
     {
-        $recordLink = $this->getMock('VuFind\View\Helper\Root\RecordLink');
+        $recordLink = $this->getMock(
+            'VuFind\View\Helper\Root\RecordLink', array(),
+            array(new \VuFind\Record\Router(new \VuFind\Record\Loader()))
+        );
         $recordLink->expects($this->any())->method('getUrl')
             ->will($this->returnValue('test/url'));
         return array(
