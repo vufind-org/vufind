@@ -40,14 +40,15 @@
     <mkdir dir="${builddir}/reports"/>
     <mkdir dir="${builddir}/reports/coverage"/>
 
-    <!-- PHP CodeSniffer -->
-    <exec command="phpcs --standard=PEAR --extensions=php --report=checkstyle ${srcdir}/module/VuFind/src &gt; ${builddir}/reports/checkstyle.xml" escape="false" />
-
-    <!-- Run PHPUnit -->
+    <!-- Call standard tasks -->
+    <phingcall target="phpcs"/>
     <phingcall target="phpunit"/>
-
-    <!-- PHP API Documentation -->
     <phingcall target="phpdoc"/>
+  </target>
+
+  <!-- PHP CodeSniffer -->
+  <target name="phpcs">
+    <exec command="phpcs --standard=PEAR --ignore=*/config/*,*/tests/* --extensions=php --report=checkstyle ${srcdir}/module &gt; ${builddir}/reports/checkstyle.xml" escape="false" />
   </target>
 
   <!-- PHP API Documentation -->
