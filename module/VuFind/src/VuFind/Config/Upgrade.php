@@ -57,9 +57,10 @@ class Upgrade
      * @param string $to     Version we're upgrading to.
      * @param string $oldDir Directory containing old configurations.
      * @param string $rawDir Directory containing raw new configurations.
-     * @param string $newDir Directory to write updated new configurations into.
+     * @param string $newDir Directory to write updated new configurations into
+     * (leave null to disable writes -- used in test mode).
      */
-    public function __construct($from, $to, $oldDir, $rawDir, $newDir)
+    public function __construct($from, $to, $oldDir, $rawDir, $newDir = null)
     {
         $this->from = $from;
         $this->to = $to;
@@ -97,6 +98,16 @@ class Upgrade
         $this->upgradeSolrMarc();
         $this->upgradeSearchSpecs();
         $this->upgradeILS();
+    }
+
+    /**
+     * Get processed configurations (used by test routines).
+     *
+     * @return array
+     */
+    public function getNewConfigs()
+    {
+        return $this->newConfigs;
     }
 
     /**
@@ -206,7 +217,7 @@ class Upgrade
         // first so that getOldConfigPath can work properly!
         $configs = array(
             'config.ini', 'authority.ini', 'facets.ini', 'reserves.ini',
-            'searches.ini', 'Summon.ini', 'WorldCat.ini'
+            'searches.ini', 'Summon.ini', 'WorldCat.ini', 'sms.ini'
         );
         foreach ($configs as $config) {
             // Special case for config.ini, since we may need to overlay extra
@@ -214,8 +225,9 @@ class Upgrade
             if ($config == 'config.ini') {
                 $this->loadOldBaseConfig();
             } else {
-                $this->oldConfigs[$config]
-                    = parse_ini_file($this->getOldConfigPath($config), true);
+                $path = $this->getOldConfigPath($config);
+                $this->oldConfigs[$config] = file_exists($path)
+                    ? parse_ini_file($path, true) : array();
             }
             $this->newConfigs[$config]
                 = parse_ini_file($this->rawDir . '/' . $config, true);
@@ -261,6 +273,10 @@ class Upgrade
      */
     protected function saveModifiedConfig($filename)
     {
+        if (null === $this->newDir) {   // skip write if no destination
+            return;
+        }
+
         $outfile = $this->newDir . '/' . $filename;
         $writer = new ConfigWriter(
             $outfile, $this->newConfigs[$filename], $this->comments[$filename]
@@ -283,6 +299,10 @@ class Upgrade
      */
     protected function saveUnmodifiedConfig($filename)
     {
+        if (null === $this->newDir) {   // skip write if no destination
+            return;
+        }
+
         // Figure out directories for all versions of this config file:
         $src = $this->getOldConfigPath($filename);
         $raw = $this->rawDir . '/' . $filename;
@@ -355,12 +375,15 @@ class Upgrade
             unset($newConfig['Languages']['pt-br']);
         }
 
-        // If the [BulkExport] options setting is the old v1.2 default, update it to
-        // reflect the fact that we now support RefWorks.
-        if ($this->from == '1.2'
-            && $newConfig['BulkExport']['options'] == 'MARC:EndNote:BibTeX'
+        // If the [BulkExport] options setting is an old default, update it to
+        // reflect the fact that we now support more options.
+        $eo = $newConfig['BulkExport']['options'];
+        if (($this->from == '1.3' && $eo == 'MARC:EndNote:RefWorks:BibTeX')
+            || ($this->from == '1.2' && $eo == 'MARC:EndNote:BibTeX')
+            || ($this->from == '1.1' && $eo == 'MARC:EndNote')
         ) {
-            $newConfig['BulkExport']['options'] = 'MARC:EndNote:RefWorks:BibTeX';
+            $newConfig['BulkExport']['options']
+                = 'MARC:MARCXML:EndNote:RefWorks:BibTeX';
         }
 
         // Warn the user if they have Amazon enabled but do not have the appropriate
@@ -451,9 +474,16 @@ class Upgrade
         // we want to retain the old installation's various facet groups
         // exactly as-is
         $facetGroups = array(
-            'Results', 'ResultsTop', 'Advanced', 'Author', 'CheckboxFacets'
+            'Results', 'ResultsTop', 'Advanced', 'Author', 'CheckboxFacets',
+            'HomePage'
         );
         $this->applyOldSettings('facets.ini', $facetGroups);
+
+        // fill in home page facets with advanced facets if missing:
+        if (!isset($this->oldConfigs['facets.ini']['HomePage'])) {
+            $this->newConfigs['facets.ini']['HomePage']
+                = $this->newConfigs['facets.ini']['Advanced'];
+        }
 
         // save the file
         $this->saveModifiedConfig('facets.ini');
@@ -539,7 +569,8 @@ class Upgrade
      */
     protected function upgradeSms()
     {
-        $this->saveUnmodifiedConfig('sms.ini');
+        $this->applyOldSettings('sms.ini', array('Carriers'));
+        $this->saveModifiedConfig('sms.ini');
     }
 
     /**
@@ -644,6 +675,10 @@ class Upgrade
      */
     protected function upgradeSolrMarc()
     {
+        if (null === $this->newDir) {   // skip this step if no write destination
+            return;
+        }
+
         // Is there a marc_local.properties file?
         $src = realpath($this->oldDir . '/../../import/marc_local.properties');
         if (empty($src) || !file_exists($src)) {
@@ -681,6 +716,10 @@ class Upgrade
      */
     protected function upgradeSearchSpecs()
     {
+        if (null === $this->newDir) {   // skip this step if no write destination
+            return;
+        }
+
         // VuFind 1.x uses *_local.yaml files as overrides; VuFind 2.x uses files
         // with the same filename in the local directory.  Copy any old override
         // files into the new expected location:
