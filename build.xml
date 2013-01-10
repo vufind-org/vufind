@@ -57,11 +57,7 @@
     <phpdoc2 title="VuFind API Documentation"
       destdir="${builddir}/apidocs">
       <fileset dir=".">
-        <include name="module/VuFind/src/**/*.php" />
-        <!-- These files break phpdoc2; exclude until we can figure out why: -->
-        <exclude name="module/VuFind/src/VuFind/Hierarchy/**/*.php" />
-        <exclude name="module/VuFind/src/VuFind/Log/Writer/Stream.php" />
-        <exclude name="module/VuFind/src/VuFind/SMS/*.php" />
+        <include name="module/*/src/**/*.php" />
       </fileset>
     </phpdoc2>
   </target>
