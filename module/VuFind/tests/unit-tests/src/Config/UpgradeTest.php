@@ -56,7 +56,8 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
 
     /**
      * Perform standard tests for the specified version and return resulting configs
-     * so that further assertions can be performed by calling code if necessary.
+     * and warnings so that further assertions can be performed by calling code if
+     * necessary.
      *
      * @return array
      */
@@ -84,8 +85,24 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         // SMS configuration should contain general and carriers sections:
         $this->assertTrue(isset($results['sms.ini']['General']));
         $this->assertTrue(isset($results['sms.ini']['Carriers']));
+        $warnings = $upgrader->getWarnings();
 
-        return $results;
+        // Prior to 1.3, we expect exactly one warning about using a non-blueprint
+        // theme:
+        if ((float)$version < 1.3) {
+            $this->assertEquals(1, count($warnings));
+            $this->assertEquals(
+                "WARNING: This version of VuFind does not support "
+                . "the default theme.  Your config.ini [Site] theme setting "
+                . "has been reset to the default: blueprint.  You may need to "
+                . "reimplement your custom theme.",
+                $warnings[0]
+            );
+        } else {
+            $this->assertEquals(0, count($warnings));
+        }
+
+        return array('configs' => $results, 'warnings' => $warnings);
     }
 
     /**
