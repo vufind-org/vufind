@@ -69,6 +69,8 @@ class Mobile
      * Function to set enabled status of mobile themes.
      *
      * @param bool $enabled Are mobile themes enabled?
+     *
+     * @return bool
      */
     public function enable($enabled = true)
     {

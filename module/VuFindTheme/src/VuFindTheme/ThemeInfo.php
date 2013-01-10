@@ -70,7 +70,8 @@ class ThemeInfo
     /**
      * Constructor
      *
-     * @param string $baseDir Base directory for theme files.
+     * @param string $baseDir   Base directory for theme files.
+     * @param string $safeTheme Theme that should be guaranteed to exist.
      */
     public function __construct($baseDir, $safeTheme)
     {
