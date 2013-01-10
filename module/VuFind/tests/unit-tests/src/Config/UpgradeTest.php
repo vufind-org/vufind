@@ -1,0 +1,120 @@
+<?php
+/**
+ * Config Reader Test Class
+ *
+ * PHP version 5
+ *
+ * Copyright (C) Villanova University 2010.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @category VuFind2
+ * @package  Tests
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org/wiki/unit_tests Wiki
+ */
+namespace VuFindTest\Config;
+use VuFind\Config\Upgrade;
+
+/**
+ * Config Reader Test Class
+ *
+ * @category VuFind2
+ * @package  Tests
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Chris Hallberg <challber@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org/wiki/unit_tests Wiki
+ */
+class UpgradeTest extends \VuFindTest\Unit\TestCase
+{
+    /**
+     * Get an upgrade object for the specified source version:
+     *
+     * @param string $version Version
+     *
+     * @return Upgrade
+     */
+    protected function getUpgrader($version)
+    {
+        $oldDir = realpath(__DIR__ . '/../../../fixtures/configs/' . $version);
+        $rawDir = realpath(__DIR__ . '/../../../../../../config/vufind');
+        return new Upgrade($version, '2.0', $oldDir, $rawDir);
+    }
+
+    /**
+     * Perform standard tests for the specified version and return resulting configs
+     * so that further assertions can be performed by calling code if necessary.
+     *
+     * @return array
+     */
+    protected function checkVersion($version)
+    {
+        $upgrader = $this->getUpgrader($version);
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+
+        // We should always update BulkExport options to latest full set when
+        // upgrading a default configuration:
+        $this->assertEquals(
+            'MARC:MARCXML:EndNote:RefWorks:BibTeX',
+            $results['config.ini']['BulkExport']['options']
+        );
+
+        // Prior to 1.4, Advanced should always == HomePage after upgrade:
+        if ((float)$version < 1.4) {
+            $this->assertEquals(
+                print_r($results['facets.ini']['Advanced'], true),
+                print_r($results['facets.ini']['HomePage'], true)
+            );
+        }
+
+        // SMS configuration should contain general and carriers sections:
+        $this->assertTrue(isset($results['sms.ini']['General']));
+        $this->assertTrue(isset($results['sms.ini']['Carriers']));
+
+        return $results;
+    }
+
+    /**
+     * Test upgrading from 1.1.
+     *
+     * @return void
+     */
+    public function testUpgrade11()
+    {
+        $this->checkVersion('1.1');
+    }
+
+    /**
+     * Test upgrading from 1.2.
+     *
+     * @return void
+     */
+    public function testUpgrade12()
+    {
+        $this->checkVersion('1.2');
+    }
+
+    /**
+     * Test upgrading from 1.3.
+     *
+     * @return void
+     */
+    public function testUpgrade13()
+    {
+        $this->checkVersion('1.3');
+    }
+}

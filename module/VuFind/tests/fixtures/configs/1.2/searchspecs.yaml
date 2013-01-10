@@ -1,0 +1,473 @@
+---
+# Listing of search types and their component parts and weights.
+#
+# Format is:
+#  searchType:
+#    # CustomMunge is an optional section to define custom pre-processing of
+#    #     user input.  See below for details of munge actions.
+#    CustomMunge:
+#      MungeName1:
+#        - [action1, actionParams]
+#        - [action2, actionParams]
+#        - [action3, actionParams]
+#      MungeName2:
+#        - [action1, actionParams]
+#    # DismaxFields is optional and defines the fields sent to the Dismax handler
+#    #     when we are able to use it.  QueryFields will be used for advanced
+#    #     searches that Dismax cannot support.  QueryFields is always used if no
+#    #     DismaxFields section is defined.
+#    DismaxFields:
+#      - field1^boost
+#      - field2^boost
+#      - field3^boost
+#    # DismaxParams is optional and allows you to override default Dismax settings
+#    #     (i.e. mm / bf) on a search-by-search basis.  If you want global default
+#    #     values for these settings, you can edit the "dismax" search handler in
+#    #     solr/biblio/conf/solrconfig.xml.
+#    DismaxParams:
+#      - [param1_name, param1_value]
+#      - [param2_name, param2_value]
+#      - [param3_name, param3_value]
+#    # QueryFields define the fields we are searching when not using Dismax
+#    QueryFields:
+#      - SolrField:
+#        - [howToMungeSearchstring, weight]
+#        - [differentMunge, weight]
+#      - DifferentSolrField:
+#        - [howToMunge, weight]
+#    # The optional FilterQuery section allows you to AND a static query to the
+#    #     dynamic query generated using the QueryFields; see JournalTitle below
+#    #     for an example.  This is applied whether we use DismaxFields or 
+#    #     QueryFields.
+#    FilterQuery: (optional Lucene filter query)
+# 
+# ...etc.
+#
+#-----------------------------------------------------------------------------------
+#
+# Within the QueryFields area, fields are OR'd together, unless they're in an 
+# anonymous array, in which case the first element is a two-value array that tells 
+# us what the type (AND or OR) and weight of the whole group should be.
+#
+# So, given:
+#
+# test:
+#   QueryFields:
+#     - A:
+#       - [onephrase, 500]
+#       - [and, 200]
+#     - B:
+#       - [and, 100]   
+#       - [or, 50]  
+#     # Start an anonymous array to group; first element indicates AND grouping 
+#     #     and a weight of 50
+#     -
+#       - [AND, 50]                 
+#       - C:
+#         - [onephrase, 200]
+#       - D:
+#         - [onephrase, 300]
+#       # Note the "not" attached to the field name as a minus, and the use of ~ 
+#       #     to mean null ("no special weight")
+#       - -E:
+#         - [or, ~]
+#     - D:
+#       - [or, 100]
+# 
+#  ...and the search string 
+#
+#      test "one two"
+#
+#  ...we'd get
+#   
+#   (A:"test one two"^500 OR 
+#    A:(test AND "one two")^ 200 OR
+#    B:(test AND "one two")^100 OR
+#    B:(test OR "one two")^50
+#    (
+#      C:("test one two")^200 AND
+#      D:"test one two"^300 AND
+#      -E:(test OR "one two")
+#    )^50 OR
+#    D:(test OR "one two")^100
+#   )
+#
+#-----------------------------------------------------------------------------------
+#
+# Munge types are based on the original Solr.php code, and consist of:
+#
+# onephrase: eliminate all quotes and do it as a single phrase. 
+#   testing "one two"
+#    ...becomes ("testing one two")
+#
+# and: AND the terms together
+#  testing "one two"
+#   ...becomes (testing AND "one two")
+#
+# or: OR the terms together
+#  testing "one two"
+#   ...becomes (testing OR "one two")
+#
+# Additional Munge types can be defined in the CustomMunge section.  Each array
+# entry under CustomMunge defines a new named munge type.  Each array entry under
+# the name of the munge type specifies a string manipulation operation.  Operations
+# will be applied in the order listed, and different operations take different
+# numbers of parameters.
+#
+# Munge operations:
+#
+# [append, text] - Append text to the end of the user's search string
+# [lowercase] - Convert string to lowercase
+# [preg_replace, pattern, replacement] - Perform a regular expression replace
+#                                        using the preg_replace() PHP function
+# [uppercase] - Convert string to uppercase
+#
+# See the CallNumber search below for an example of custom munging in action.
+#-----------------------------------------------------------------------------------
+
+# These searches use Dismax when possible:
+Author:
+  DismaxFields:
+    - author^100
+    - author_fuller^50
+    - author2
+    - author_additional
+  QueryFields:
+    - author:
+      - [onephrase, 350]
+      - [and, 200]
+      - [or, 100]
+    - author_fuller:
+      - [onephrase, 200]
+      - [and, 100]
+      - [or, 50]
+    - author2:
+      - [onephrase, 100]
+      - [and, 50]
+      - [or, ~]
+    - author_additional:
+      - [onephrase, 100]
+      - [and, 50]
+      - [or, ~]
+
+ISN:
+  DismaxFields:
+    - isbn
+    - issn
+  QueryFields:
+    - issn:
+      - [and, 100]
+      - [or, ~]
+    - isbn:
+      - [and, 100]
+      - [or, ~]
+
+Subject:
+  DismaxFields:
+    - topic_unstemmed^150
+    - topic^100
+    - geographic^50
+    - genre^50
+    - era
+  QueryFields:
+    - topic_unstemmed:
+      - [onephrase, 350]
+      - [and, 150]
+      - [or, ~]
+    - topic:
+      - [onephrase, 300]
+      - [and, 100]
+      - [or, ~]
+    - geographic:
+      - [onephrase, 300]
+      - [and, 100]
+      - [or, ~]
+    - genre:
+      - [onephrase, 300]
+      - [and, 100]
+      - [or, ~]
+    - era:
+      - [and, 100]
+      - [or, ~]
+
+JournalTitle:
+  DismaxFields:
+    - title_short^500
+    - title_full_unstemmed^450
+    - title_full^400
+    - title^300
+    - title_alt^200
+    - title_new^100
+    - title_old
+    - series^100
+    - series2
+  QueryFields:
+    - title_short:
+      - [onephrase, 500]
+    - title_full_unstemmed:
+      - [onephrase, 450]
+      - [and, 400]
+    - title_full:
+      - [onephrase, 400]
+    - title:
+      - [onephrase, 300]
+      - [and, 250]
+    - title_alt:
+      - [and, 200]
+    - title_new:
+      - [and, 100]
+    - title_old:
+      - [and, ~]  
+    - series:
+      - [onephrase, 100]
+      - [and, 50]
+    - series2:
+      - [onephrase, 50]
+      - [and , ~]
+  FilterQuery: "format:Journal"
+
+Title:
+  DismaxFields:
+    - title_short^500
+    - title_full_unstemmed^450
+    - title_full^400
+    - title^300
+    - title_alt^200
+    - title_new^100
+    - title_old
+    - series^100
+    - series2
+  QueryFields:
+    - title_short:
+      - [onephrase, 500]
+    - title_full_unstemmed:
+      - [onephrase, 450]
+      - [and, 400]
+    - title_full:
+      - [onephrase, 400]
+    - title:
+      - [onephrase, 300]
+      - [and, 250]
+    - title_alt:
+      - [and, 200]
+    - title_new:
+      - [and, 100]
+    - title_old:
+      - [and, ~]  
+    - series:
+      - [onephrase, 100]
+      - [and, 50]
+    - series2:
+      - [onephrase, 50]
+      - [and , ~]
+
+Series:
+  DismaxFields:
+    - series^100
+    - series2
+  QueryFields:
+    - series:
+      - [onephrase, 500]
+      - [and, 200]
+      - [or, 100]
+    - series2:
+      - [onephrase, 50]
+      - [and, 50]
+      - [or, ~]
+
+AllFields:
+  DismaxFields:
+    - title_short^750
+    - title_full_unstemmed^600
+    - title_full^400
+    - title^500
+    - title_alt^200
+    - title_new^100
+    - series^50
+    - series2^30
+    - author^300
+    - author_fuller^150
+    - contents^10
+    - topic_unstemmed^550
+    - topic^500
+    - geographic^300
+    - genre^300
+    - allfields_unstemmed^10
+    - fulltext_unstemmed^10
+    - allfields
+    - fulltext
+  QueryFields:
+    - 
+      - [OR, 50]
+      - title_short:
+        - [onephrase, 750]
+      - title_full_unstemmed:
+        - [onephrase, 600]
+        - [and, 500]
+      - title_full:
+        - [onephrase, 400]
+      - title:
+        - [onephrase, 300]
+        - [and, 250]
+      - title_alt:
+        - [and, 200]
+      - title_new:
+        - [and, 100]
+    series:
+      - [and, 50]
+    series2:
+      - [and, 30]
+    author:
+      - [onephrase, 300]
+      - [and, 250]
+    author_fuller:
+      - [onephrase, 150]
+      - [and, 125]
+    author2:
+      - [and, 50]
+    author_additional:
+      - [and, 50]
+    contents:
+      - [and, 10]
+    topic_unstemmed:
+      - [onephrase, 550]
+      - [and, 500]
+    topic:
+      - [onephrase, 500]
+    geographic:
+      - [onephrase, 300]
+    genre:
+      - [onephrase, 300]
+    allfields_unstemmed:
+      - [or, 10]
+    fulltext_unstemmed:
+      - [or, 10]
+    allfields:
+      - [or, ~]
+    fulltext:
+      - [or, ~]
+
+# These are advanced searches that never use Dismax:
+id:
+  QueryFields:
+    - id:
+      - [onephrase, ~]
+
+# Fields for exact matches originating from alphabetic browse
+ids:
+  QueryFields:
+    - id:
+      - [or, ~]
+
+TopicBrowse:
+  QueryFields:
+    - topic_browse:
+      - [onephrase, ~]
+
+AuthorBrowse:
+  QueryFields:
+    - author_browse:
+      - [onephrase, ~]
+
+TitleBrowse:
+  QueryFields:
+    - title_full:
+      - [onephrase, ~]
+
+DeweyBrowse:
+  QueryFields:
+    - dewey-raw:
+      - [onephrase, ~]
+
+LccBrowse:
+  QueryFields:
+    - callnumber-a:
+      - [onephrase, ~]
+
+CallNumber:
+  # We use two similar munges here -- one for exact matches, which will get
+  # a very high boost factor, and one for left-anchored wildcard searches,
+  # which will return a larger number of hits at a lower boost.
+  CustomMunge:
+    callnumber_exact:
+      - [uppercase]
+      # Strip whitespace and quotes:
+      - [preg_replace, '/[ "]/', ""]
+      # Strip pre-existing trailing asterisks:
+      - [preg_replace, "/\*+$/", ""]
+    callnumber_fuzzy:
+      - [uppercase]
+      # Strip whitespace and quotes:
+      - [preg_replace, '/[ "]/', ""]
+      # Strip pre-existing trailing asterisks:
+      - [preg_replace, "/\*+$/", ""]
+      # Ensure we have just one trailing asterisk.  The trailing space inside
+      #     the quotes has no effect on searching; it is a workaround for a
+      #     Horde::YAML parsing glitch -- see VUFIND-160 in JIRA for details.
+      - [append, "* "]
+  QueryFields:
+    - callnumber:
+      - [callnumber_exact, 1000]
+      - [callnumber_fuzzy, ~]
+    - dewey-full:
+      - [callnumber_exact, 1000]
+      - [callnumber_fuzzy, ~]
+
+publisher:
+  QueryFields:
+    - publisher:
+      - [and, 100]
+      - [or, ~]
+
+year:
+  QueryFields:
+    - publishDate:
+      - [and, 100]
+      - [or, ~]
+
+language:
+  QueryFields:
+    - language:
+      - [and, ~]
+
+toc:
+  QueryFields:
+    - contents:
+      - [and, 100]
+      - [or, ~]
+
+topic:
+  QueryFields:
+    - topic:
+      - [and, 50]
+    - topic_facet:
+      - [and, ~]
+
+geographic:
+  QueryFields:
+    - geographic:
+      - [and, 50]
+    - geographic_facet:
+      - [and ~]
+
+genre:
+  QueryFields:
+    - genre:
+      - [and, 50]
+    - genre_facet:
+      - [and, ~]
+
+era:
+  QueryFields:
+    - era:
+      - [and, ~]
+
+oclc_num:
+  CustomMunge:
+    oclc_num:
+      - [preg_replace, "/[^0-9]/", ""]
+      # trim leading zeroes:
+      - [preg_replace, "/^0*/", ""]
+  QueryFields:
+    - oclc_num:
+      - [oclc_num, ~]
