@@ -75,6 +75,8 @@ class Module
     /**
      * Initialize the module
      *
+     * @param ModuleManager $m Module manager
+     *
      * @return void
      */
     public function init(ModuleManager $m)
@@ -83,6 +85,8 @@ class Module
 
     /**
      * Bootstrap the module
+     *
+     * @param MvcEvent $e Event
      *
      * @return void
      */
