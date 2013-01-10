@@ -20,8 +20,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category Http
- * @package  Service
+ * @category VuFind2
+ * @package  Http
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://github.com/dmj/vf2-proxy
@@ -32,8 +32,8 @@ namespace VuFindHttp;
 /**
  * VuFind HTTP service interface definition.
  *
- * @category Http
- * @package  Service
+ * @category VuFind2
+ * @package  Http
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://github.com/dmj/vf2-proxy
@@ -74,7 +74,9 @@ interface HttpServiceInterface
      *
      * @return \Zend\Http\Response
      */
-    public function post ($url, $body = null, $type = 'application/octet-stream', $timeout = null);
+    public function post ($url, $body = null, $type = 'application/octet-stream',
+        $timeout = null
+    );
 
     /**
      * Post form data.
@@ -96,6 +98,8 @@ interface HttpServiceInterface
      *
      * @return \Zend\Http\Client
      */
-    public function createClient ($url, $method = \Zend\Http\Request::METHOD_GET, $timeout = null);
+    public function createClient ($url, $method = \Zend\Http\Request::METHOD_GET,
+        $timeout = null
+    );
 
 }
