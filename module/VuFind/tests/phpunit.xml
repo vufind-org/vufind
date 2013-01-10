@@ -1,5 +1,8 @@
 <phpunit bootstrap="./bootstrap.php" backupGlobals="false">
   <testsuites>
+    <testsuite name="VuFindHttp">
+      <directory>../../VuFindHttp/tests/unit-tests/src</directory>
+    </testsuite>
     <testsuite name="VuFindUnit">
       <directory>unit-tests/src</directory>
     </testsuite>

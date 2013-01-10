@@ -58,6 +58,13 @@ class HttpService implements HttpServiceInterface
     protected $proxyConfig;
 
     /**
+     * Default adapter
+     *
+     * @var \Zend\Http\Client\Adapter\AdapterInterface
+     */
+    protected $defaultAdapter = null;
+
+    /**
      * Constructor.
      *
      * @param array $proxyConfig Proxy configuration
@@ -150,6 +157,18 @@ class HttpService implements HttpServiceInterface
     }
 
     /**
+     * Set a default HTTP adapter (primarily for testing purposes).
+     *
+     * @param \Zend\Http\Client\Adapter\AdapterInterface $adapter Adapter
+     *
+     * @return void
+     */
+    public function setDefaultAdapter(\Zend\Http\Client\Adapter\AdapterInterface $adapter)
+    {
+        $this->defaultAdapter = $adapter;
+    }
+
+    /**
      * Return a new HTTP client.
      *
      * @param string $url     Target URL
@@ -162,6 +181,9 @@ class HttpService implements HttpServiceInterface
     {
         $client = new \Zend\Http\Client();
         $client->setMethod($method);
+        if (null !== $this->defaultAdapter) {
+            $client->setAdapter($this->defaultAdapter);
+        }
         if (null !== $url) {
             $client->setUri($url);
         }
