@@ -40,14 +40,67 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Config\Writer as ConfigWriter,
  */
 class Upgrade
 {
+    /**
+     * Version we're upgrading from
+     *
+     * @var string
+     */
     protected $from;
+
+    /**
+     * Version we're upgrading to
+     *
+     * @var string
+     */
     protected $to;
+
+    /**
+     * Directory containing configurations to upgrade
+     *
+     * @var string
+     */
     protected $oldDir;
+
+    /**
+     * Directory containing unmodified new configurations
+     *
+     * @var string
+     */
     protected $rawDir;
+
+    /**
+     * Directory where new configurations should be written (null for test mode)
+     *
+     * @var string
+     */
     protected $newDir;
+
+    /**
+     * Parsed old configurations
+     *
+     * @var array
+     */
     protected $oldConfigs = array();
+
+    /**
+     * Processed new configurations
+     *
+     * @var array
+     */
     protected $newConfigs = array();
+
+    /**
+     * Comments parsed from configuration files
+     *
+     * @var array
+     */
     protected $comments = array();
+
+    /**
+     * Warnings generated during upgrade process
+     *
+     * @var array
+     */
     protected $warnings = array();
 
     /**
@@ -749,6 +802,8 @@ class Upgrade
             ? $this->newConfigs['config.ini']['Catalog']['driver'] : '';
         if (empty($driver)) {
             $this->addWarning("WARNING: Could not find ILS driver setting.");
+        } else if ('Sample' == $driver) {
+            // No configuration file for Sample driver
         } else if (!file_exists($this->oldDir . '/' . $driver . '.ini')) {
             $this->addWarning(
                 "WARNING: Could not find {$driver}.ini file; "
