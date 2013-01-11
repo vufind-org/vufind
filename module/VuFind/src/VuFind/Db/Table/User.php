@@ -79,4 +79,18 @@ class User extends Gateway
         return $row;
     }
 
+    /**
+     * Get user rows with insecure passwords and/or catalog passwords
+     *
+     * @return mixed
+     */
+    public function getInsecureRows()
+    {
+        $callback = function ($select) {
+            $select->where
+                ->notEqualTo('password', '')
+                ->OR->isNotNull('cat_password');
+        };
+        return $this->select($callback);
+    }
 }

@@ -576,7 +576,7 @@ $staticRoutes = array(
     'Cover/Show', 'Cover/Unavailable', 'Error/Unavailable', 'Help/Home',
     'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',
     'Install/FixDatabase', 'Install/FixDependencies', 'Install/FixILS',
-    'Install/FixSolr', 'Install/Home', 'Install/ShowSQL',
+    'Install/FixSolr', 'Install/Home', 'Install/ShowSQL', 'Install/FixSecurity',
     'MyResearch/Account', 'MyResearch/CheckedOut', 'MyResearch/Delete',
     'MyResearch/DeleteList', 'MyResearch/Edit', 'MyResearch/Email',
     'MyResearch/Export', 'MyResearch/Favorites', 'MyResearch/Fines',
