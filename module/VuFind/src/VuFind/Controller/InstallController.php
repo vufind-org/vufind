@@ -637,6 +637,33 @@ class InstallController extends AbstractBase
      */
     public function fixsecurityAction()
     {
+        // If the user doesn't want to proceed, abort now:
+        $userConfirmation = $this->params()->fromPost('fix-user-table', 'Unset');
+        if ($userConfirmation == 'No') {
+            $msg = 'Security upgrade aborted.';
+            $this->flashMessenger()->setNamespace('error')->addMessage($msg);
+            return $this->redirect()->toRoute('install-home');
+        }
+
+        // If we don't need to prompt the user, or if they confirmed, do the fix:
+        $rows = $this->getTable('user')->getInsecureRows();
+        if (count($rows) == 0 || $userConfirmation == 'Yes') {
+            return $this->forwardTo('Install', 'performsecurityfix');
+        }
+
+        // If we got this far, we need to ask permission to proceed:
+        $view = $this->createViewModel();
+        $view->confirmUserFix = true;
+        return $view;
+    }
+
+    /**
+     * Perform fix for Security problems.
+     *
+     * @return mixed
+     */
+    public function performsecurityfixAction()
+    {
         // First, set encryption/hashing to true, and set the key
         $config = ConfigReader::getConfig();
         $configPath = ConfigReader::getLocalConfigPath('config.ini', null, true);
@@ -648,13 +675,15 @@ class InstallController extends AbstractBase
             }
 
             // Success? Redirect to this action in order to reload the configuration:
-            return $this->redirect()->toRoute('install-fixsecurity');
+            return $this->redirect()->toRoute('install-performsecurityfix');
         }
 
         // Now we want to loop through the database and update passwords (if
         // necessary).
         $rows = $this->getTable('user')->getInsecureRows();
         if (count($rows) > 0) {
+            // If we got this far, the user POSTed their confirmation -- go ahead
+            // with the fix:
             $bcrypt = new Bcrypt();
             foreach ($rows as $row) {
                 if ($row->password != '') {
@@ -667,6 +696,8 @@ class InstallController extends AbstractBase
                     $row->save();
                 }
             }
+            $msg = count($rows) . ' user row(s) encrypted.';
+            $this->flashMessenger()->setNamespace('info')->addMessage($msg);
         }
         return $this->redirect()->toRoute('install-home');
     }

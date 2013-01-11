@@ -6,6 +6,7 @@
     $this->layout()->breadcrumbs = '<em>' . $this->transEsc('auto_configure_title') . '</em>';
 ?>
 <h1><?=$this->transEsc('auto_configure_title')?></h1>
+<?=$this->flashmessages()?>
 <ul>
   <? $errors = 0; foreach ($this->checks as $check): ?>
     <? if (!$check['status']) $errors++; ?>
