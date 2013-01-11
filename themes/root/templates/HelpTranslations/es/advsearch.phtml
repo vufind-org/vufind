@@ -1,0 +1,52 @@
+<h1>Búsqueda Avanzada</h1>
+
+<ul class="HelpMenu">
+  <li><a href="#Search Fields">Campos de Búsqueda</a></li>
+  <li><a href="#Search Groups">Grupos de Búsqueda</a></li>
+</ul>
+
+<dl class="Content">
+  <dt><a name="Search Fields"></a>Campos de Búsqueda</dt>
+  <dd>
+    <p>Visitando la Búsqueda Avanzada por primera vez, aparecen varios campos de búsqueda.
+       En cada campo puede introducir los términos de búsuqueda. Los <a href="Home?topic=search">Operadores de búsqueda</a> están permitidos.
+    </p>
+    <p>Cada campo va acompañado de un listado con el cual se puede especificar el tipo de datos (título, autor, etc.) que está buscando.
+       En búsqueda avanzada puede combinar y ajustar los tipos de búsqueda según desea.
+    </p>
+    <p>Con el parámetro "Coincide" puede especificar la relación entre los múltiples campos de búsqueda.
+    </p>
+    <ul>
+      <li>Conincide con TODOS los términos - La búsqueda devuelve sólo resultados que coinciden con todos los campos de búsqueda (corresponde al AND Booleano).</li>
+      <li>Coincide con CUALQUIER término - La búsqueda muestra cualquier resultado que contenga un campo de búsqueda como mínimo (corresponde al OR Booleano).</li>
+      <li>Coincide con NINGÚN término - La búsqueda devuelve todos los resultados EXCEPTO aquellos que contienen los términos introducidos en los campos de búsqueda (corresponde al NOT Booleano).
+      </li>
+    </ul>
+    <p>
+    Con el botón "Agregar Campos de Búsqueda" se añade más campos de búsqueda al formulario. Puede utilizar la cantidad de campos de búsqueda que requiere.
+    </p>
+  </dd>
+
+  <dt><a name="Search Groups"></a>Grupos de Búsqueda</dt>
+  <dd>
+    <p>
+       Para búsquedas complejas, un sólo conjunto de campos de búsqueda puede ser insuficiente.
+       Por ejemplo, asuma que desea buscar documentos sobre la historia de China o la India.
+       Utilizando el parámetro "TODOS los términos" con los términos China,
+       India e Historia, la búsqueda devuelve sólo fuentes sobre la historia de China y la India.
+       El parámetro "CUALQUIER término" devuelve documentos sobre historia o China o la India - no
+       necesariamente sobre la historia de China y la India.</p>
+    <p>La opción "Grupos de Búsqueda" permite realizar búsquedas de múltiples grupos de campos de búsqueda.
+       Añadiendo un Grupo de Búsqueda se abre un nuevo grupo de campos. Para eliminar grupos no deseados
+       pulsa el botón "Borar Grupo de Búsqueda". Además puede gestionar la coincidencia entre los grupos
+       de búsqueda con los parámetros CUALQUIER término, TODOS los términos o NINGÚN término.
+    </p>
+
+    <p>El ejemplo anteriormente mencionado puede solucionar de manera siguiente:</p>
+    <ul>
+      <li>Introduzca en el primer grupo de búsqueda las palabras "India" y "China" y seleccione el parámetro "CUALQUIER término".</li>
+      <li>Agregue otro grupo de búsqueda y introduzca el término "historia"</li>
+      <li>Seleccione el parámetro "TODOS los términos"</li>
+    </ul>
+  </dd>
+</dl>
