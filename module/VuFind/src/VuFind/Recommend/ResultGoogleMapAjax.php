@@ -23,7 +23,7 @@
  * @package  Recommendations
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -39,7 +39,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface;
  * @author   Lutz Biedinger <lutz.biedinger@gmail.com>
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  * @view     AuthorInfoFacets.phtml
  */
 class ResultGoogleMapAjax implements RecommendInterface, TranslatorAwareInterface

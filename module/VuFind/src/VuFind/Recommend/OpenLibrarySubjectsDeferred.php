@@ -24,7 +24,7 @@
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Eoghan Ó Carragáin <eoghan.ocarragain@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
 
@@ -39,7 +39,7 @@ namespace VuFind\Recommend;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Eoghan Ó Carragáin <eoghan.ocarragain@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 class OpenLibrarySubjectsDeferred extends OpenLibrarySubjects
 {

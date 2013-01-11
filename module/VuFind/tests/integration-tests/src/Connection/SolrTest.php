@@ -23,7 +23,7 @@
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/unit_tests Wiki
+ * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
 namespace VuFind\IntegrationTest\Connection;
 
@@ -34,7 +34,7 @@ namespace VuFind\IntegrationTest\Connection;
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/unit_tests Wiki
+ * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
 class SolrTest extends \VuFindTest\Unit\TestCase
 {

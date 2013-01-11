@@ -23,7 +23,7 @@
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/unit_tests Wiki
+ * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
 namespace VuFind\Test\View\Helper\Root;
 use VuFind\View\Helper\Root\Citation;
@@ -35,7 +35,7 @@ use VuFind\View\Helper\Root\Citation;
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/unit_tests Wiki
+ * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
 class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
 {

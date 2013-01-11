@@ -24,7 +24,7 @@
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/Date_And_Time_Functions Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Date;
 use DateTime, VuFind\Config\Reader as ConfigReader,
@@ -38,7 +38,7 @@ use DateTime, VuFind\Config\Reader as ConfigReader,
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/Date_And_Time_Functions Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 class Converter
 {

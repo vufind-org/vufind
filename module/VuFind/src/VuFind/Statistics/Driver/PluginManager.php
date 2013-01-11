@@ -23,7 +23,7 @@
  * @package  Statistics
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:statistics_drivers Wiki
  */
 namespace VuFind\Statistics\Driver;
 
@@ -34,7 +34,7 @@ namespace VuFind\Statistics\Driver;
  * @package  Statistics
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:statistics_drivers Wiki
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {

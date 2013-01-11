@@ -23,7 +23,7 @@
  * @package  Installer
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/automation Wiki
+ * @link     http://vufind.org/wiki/vufind2:installation_notes Wiki
  */
 define('MULTISITE_NONE', 0);
 define('MULTISITE_DIR_BASED', 1);

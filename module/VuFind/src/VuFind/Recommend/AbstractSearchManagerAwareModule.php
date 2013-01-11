@@ -24,7 +24,7 @@
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
 use Zend\ServiceManager\ServiceLocatorInterface,
@@ -38,7 +38,7 @@ use Zend\ServiceManager\ServiceLocatorInterface,
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 abstract class AbstractSearchManagerAwareModule implements RecommendInterface,
     ServiceLocatorAwareInterface

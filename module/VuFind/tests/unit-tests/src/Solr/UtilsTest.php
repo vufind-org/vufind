@@ -23,7 +23,7 @@
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/unit_tests Wiki
+ * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
 namespace VuFindTest\Solr;
 use VuFind\Solr\Utils;
@@ -35,7 +35,7 @@ use VuFind\Solr\Utils;
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/unit_tests Wiki
+ * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
 class UtilsTest extends \VuFindTest\Unit\TestCase
 {

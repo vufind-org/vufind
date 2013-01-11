@@ -23,7 +23,7 @@
  * @package  ILS_Drivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
 
@@ -34,7 +34,7 @@ namespace VuFind\ILS\Driver;
  * @package  ILS_Drivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {

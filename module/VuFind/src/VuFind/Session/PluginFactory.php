@@ -23,7 +23,7 @@
  * @package  Session_Handlers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:session_handlers Wiki
  */
 namespace VuFind\Session;
 
@@ -34,7 +34,7 @@ namespace VuFind\Session;
  * @package  Session_Handlers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:session_handlers Wiki
  */
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {

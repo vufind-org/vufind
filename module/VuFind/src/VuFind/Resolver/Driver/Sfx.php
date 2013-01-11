@@ -26,7 +26,7 @@
  * @package  Resolver_Drivers
  * @author   Graham Seaman <Graham.Seaman@rhul.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_link_resolver_driver Wiki
+ * @link     http://vufind.org/wiki/vufind2:link_resolver_drivers Wiki
  */
 namespace VuFind\Resolver\Driver;
 use VuFind\Config\Reader as ConfigReader;
@@ -38,7 +38,7 @@ use VuFind\Config\Reader as ConfigReader;
  * @package  Resolver_Drivers
  * @author   Graham Seaman <Graham.Seaman@rhul.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_link_resolver_driver Wiki
+ * @link     http://vufind.org/wiki/vufind2:link_resolver_drivers Wiki
  */
 class Sfx implements DriverInterface
 {

@@ -23,7 +23,7 @@
  * @package  Controller
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/alphabetical_heading_browse Wiki
+ * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
 namespace VuFind\Controller;
 use VuFind\Config\Reader as ConfigReader;
@@ -37,7 +37,7 @@ use VuFind\Config\Reader as ConfigReader;
  * @package  Controller
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/alphabetical_heading_browse Wiki
+ * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
 class BrowseController extends AbstractBase
 {

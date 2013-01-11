@@ -24,7 +24,7 @@
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/system_classes#index_interface Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Connection;
 
@@ -38,7 +38,7 @@ namespace VuFind\Connection;
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/system_classes#index_interface Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 class SolrStats extends Solr
 {

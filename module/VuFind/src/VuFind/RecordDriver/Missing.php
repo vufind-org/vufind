@@ -24,7 +24,7 @@
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/other_than_marc Wiki
+ * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
 
@@ -36,7 +36,7 @@ namespace VuFind\RecordDriver;
  * @package  RecordDrivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/other_than_marc Wiki
+ * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 class Missing extends SolrDefault
 {

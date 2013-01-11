@@ -23,7 +23,7 @@
  * @package  ILS_Drivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
+ * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
 use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException;
@@ -35,7 +35,7 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException;
  * @package  ILS_Drivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
+ * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 class XCNCIP extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {

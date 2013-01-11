@@ -23,7 +23,7 @@
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\View\Helper\Root;
 use VuFind\Config\Reader as ConfigReader, Zend\View\Helper\AbstractHelper;
@@ -35,7 +35,7 @@ use VuFind\Config\Reader as ConfigReader, Zend\View\Helper\AbstractHelper;
  * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 class OpenUrl extends AbstractHelper
 {

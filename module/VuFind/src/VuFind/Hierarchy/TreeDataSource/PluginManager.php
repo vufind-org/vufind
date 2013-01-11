@@ -23,7 +23,7 @@
  * @package  HierarchyTree_DataSource
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
 namespace VuFind\Hierarchy\TreeDataSource;
 
@@ -34,7 +34,7 @@ namespace VuFind\Hierarchy\TreeDataSource;
  * @package  HierarchyTree_DataSource
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {

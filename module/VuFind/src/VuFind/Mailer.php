@@ -23,7 +23,7 @@
  * @package  Mailer
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/system_classes Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind;
 use VuFind\Config\Reader as ConfigReader, VuFind\Exception\Mail as MailException,
@@ -36,7 +36,7 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Exception\Mail as MailException
  * @package  Mailer
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/system_classes Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {

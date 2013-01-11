@@ -24,7 +24,7 @@
  * @author   Altaf Mahmud, System Programmer <altaf.mahmud@gmail.com>
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
+ * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
 use PDO, PDOException, VuFind\Config\Reader as ConfigReader,
@@ -40,7 +40,7 @@ use PDO, PDOException, VuFind\Config\Reader as ConfigReader,
  * @author   Altaf Mahmud, System Programmer <altaf.mahmud@gmail.com>
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
+ * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 class Koha extends AbstractBase
 {

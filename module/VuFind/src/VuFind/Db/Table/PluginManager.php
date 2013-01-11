@@ -23,7 +23,7 @@
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:database_gateways Wiki
  */
 namespace VuFind\Db\Table;
 
@@ -34,7 +34,7 @@ namespace VuFind\Db\Table;
  * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:database_gateways Wiki
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {

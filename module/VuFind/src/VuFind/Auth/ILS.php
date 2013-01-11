@@ -24,7 +24,7 @@
  * @author   Franck Borel <franck.borel@gbv.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_authentication_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:authentication_handlers Wiki
  */
 namespace VuFind\Auth;
 use VuFind\Exception\Auth as AuthException;
@@ -37,7 +37,7 @@ use VuFind\Exception\Auth as AuthException;
  * @author   Franck Borel <franck.borel@gbv.de>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_authentication_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:authentication_handlers Wiki
  */
 class ILS extends AbstractBase
 {

@@ -23,7 +23,7 @@
  * @package  Resolver_Drivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:link_resolver_drivers Wiki
  */
 namespace VuFind\Resolver\Driver;
 
@@ -34,7 +34,7 @@ namespace VuFind\Resolver\Driver;
  * @package  Resolver_Drivers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:link_resolver_drivers Wiki
  */
 class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
 {

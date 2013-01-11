@@ -23,7 +23,7 @@
  * @package  HierarchyTree_Renderer
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_authentication_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
 namespace VuFind\Hierarchy\TreeRenderer;
 
@@ -36,7 +36,7 @@ namespace VuFind\Hierarchy\TreeRenderer;
  * @package  HierarchyTree_Renderer
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_authentication_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
 
 class JSTree extends AbstractBase

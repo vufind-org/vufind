@@ -23,7 +23,7 @@
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/unit_tests Wiki
+ * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
 namespace VuFindTest\Config;
 use VuFind\Config\Reader;
@@ -36,7 +36,7 @@ use VuFind\Config\Reader;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/unit_tests Wiki
+ * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
 class ReaderTest extends \VuFindTest\Unit\TestCase
 {

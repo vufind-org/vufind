@@ -23,7 +23,7 @@
  * @package  Related_Records
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:building_a_related_record_module Wiki
  */
 namespace VuFind\Related;
 
@@ -34,7 +34,7 @@ namespace VuFind\Related;
  * @package  Related_Records
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:building_a_related_record_module Wiki
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {

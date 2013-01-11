@@ -24,7 +24,7 @@
  * @author   Tuan Nguyen <tuan@yorku.ca>
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/autocomplete Wiki
+ * @link     http://vufind.org/wiki/vufind2:autosuggesters Wiki
  */
 namespace VuFind\Autocomplete;
 
@@ -37,7 +37,7 @@ namespace VuFind\Autocomplete;
  * @package  Autocomplete
  * @author   Tuan Nguyen <tuan@yorku.ca>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/autocomplete Wiki
+ * @link     http://vufind.org/wiki/vufind2:autosuggesters Wiki
  */
 class SolrReserves extends Solr
 {

@@ -24,7 +24,7 @@
  * @author   Steven Hild <sjhild@wm.edu>
  * @author   Michael Gillen <mlgillen@sfasu.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
+ * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
 use SoapClient, SoapFault, SoapHeader, VuFind\Config\Reader as ConfigReader,
@@ -40,7 +40,7 @@ use SoapClient, SoapFault, SoapHeader, VuFind\Config\Reader as ConfigReader,
  * @author   Steven Hild <sjhild@wm.edu>
  * @author   Michael Gillen <mlgillen@sfasu.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
+ * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 
 class Symphony extends AbstractBase implements ServiceLocatorAwareInterface

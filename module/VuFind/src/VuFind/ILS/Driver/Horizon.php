@@ -24,7 +24,7 @@
  * @author   Matt Mackey <vufind-tech@lists.sourceforge.net>
  * @author   Ray Cummins <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
+ * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
 use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException;
@@ -37,7 +37,7 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException;
  * @author   Matt Mackey <vufind-tech@lists.sourceforge.net>
  * @author   Ray Cummins <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
+ * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 class Horizon extends AbstractBase
 {

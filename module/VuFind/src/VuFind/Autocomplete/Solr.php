@@ -24,7 +24,7 @@
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/autocomplete Wiki
+ * @link     http://vufind.org/wiki/vufind2:autosuggesters Wiki
  */
 namespace VuFind\Autocomplete;
 use Zend\ServiceManager\ServiceLocatorAwareInterface,
@@ -39,7 +39,7 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface,
  * @package  Autocomplete
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/autocomplete Wiki
+ * @link     http://vufind.org/wiki/vufind2:autosuggesters Wiki
  */
 class Solr implements AutocompleteInterface, ServiceLocatorAwareInterface
 {

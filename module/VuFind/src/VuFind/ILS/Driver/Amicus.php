@@ -23,7 +23,7 @@
  * @package  ILS_Drivers
  * @author   Josu Moreno <jmoreno@scanbit.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
+ * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
 use PDO, PDOException, VuFind\Config\Reader as ConfigReader,
@@ -37,7 +37,7 @@ use PDO, PDOException, VuFind\Config\Reader as ConfigReader,
  * @package  ILS_Drivers
  * @author   Josu Moreno <jmoreno@scanbit.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
+ * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 class Amicus extends AbstractBase implements TranslatorAwareInterface
 {

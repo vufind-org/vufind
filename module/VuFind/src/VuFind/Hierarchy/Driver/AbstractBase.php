@@ -23,7 +23,7 @@
  * @package  Hierarchy
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_search_object Wiki
+ * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
 namespace VuFind\Hierarchy\Driver;
 use VuFind\Hierarchy\TreeDataSource\PluginManager as DataManager,
@@ -40,7 +40,7 @@ use VuFind\Hierarchy\TreeDataSource\PluginManager as DataManager,
  * @package  Hierarchy
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_search_object Wiki
+ * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
 abstract class AbstractBase
 {

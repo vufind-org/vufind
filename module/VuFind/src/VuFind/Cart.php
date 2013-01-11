@@ -23,7 +23,7 @@
  * @package  Cart
  * @author   Tuan Nguyen <tuan@yorku.ca>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/system_classes Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind;
 
@@ -36,7 +36,7 @@ namespace VuFind;
  * @package  Cart
  * @author   Tuan Nguyen <tuan@yorku.ca>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/system_classes Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 class Cart
 {

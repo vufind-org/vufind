@@ -23,7 +23,7 @@
  * @package  Feed_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Feed\Writer\Extension\DublinCore\Renderer;
 use DOMDocument, DOMElement,
@@ -36,7 +36,7 @@ use DOMDocument, DOMElement,
  * @package  Feed_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 class Entry extends ParentEntry
 {

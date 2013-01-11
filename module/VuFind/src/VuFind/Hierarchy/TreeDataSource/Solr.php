@@ -23,7 +23,7 @@
  * @package  HierarchyTree_DataSource
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_authentication_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
 namespace VuFind\Hierarchy\TreeDataSource;
 use VuFind\Connection\Manager as ConnectionManager;
@@ -37,7 +37,7 @@ use VuFind\Connection\Manager as ConnectionManager;
  * @package  HierarchyTree_DataSource
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_authentication_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
 class Solr extends AbstractBase
 {

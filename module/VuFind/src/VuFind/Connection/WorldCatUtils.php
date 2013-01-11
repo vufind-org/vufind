@@ -23,7 +23,7 @@
  * @package  WorldCat
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/system_classes Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Connection;
 use File_MARCXML, VuFind\Config\Reader as ConfigReader,
@@ -38,7 +38,7 @@ use File_MARCXML, VuFind\Config\Reader as ConfigReader,
  * @package  WorldCat
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/system_classes Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
 {

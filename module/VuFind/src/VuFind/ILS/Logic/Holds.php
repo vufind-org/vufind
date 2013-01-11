@@ -24,7 +24,7 @@
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/system_classes#index_interface Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\ILS\Logic;
 use VuFind\Config\Reader as ConfigReader, VuFind\Crypt\HMAC,
@@ -38,7 +38,7 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Crypt\HMAC,
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/system_classes#index_interface Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 class Holds
 {

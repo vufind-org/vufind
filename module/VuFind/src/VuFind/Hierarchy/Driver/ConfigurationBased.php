@@ -23,7 +23,7 @@
  * @package  Hierarchy_Drivers
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
+ * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
 namespace VuFind\Hierarchy\Driver;
 
@@ -34,7 +34,7 @@ namespace VuFind\Hierarchy\Driver;
  * @package  Hierarchy_Drivers
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
+ * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
 class ConfigurationBased extends AbstractBase
 {

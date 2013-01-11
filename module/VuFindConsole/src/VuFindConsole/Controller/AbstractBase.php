@@ -24,7 +24,7 @@
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
 namespace VuFindConsole\Controller;
 use Zend\Console\Console, Zend\Console\Getopt,
@@ -38,7 +38,7 @@ use Zend\Console\Console, Zend\Console\Getopt,
  * @package  Controller
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
 class AbstractBase extends AbstractActionController
 {

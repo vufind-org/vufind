@@ -24,7 +24,7 @@
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/system_classes#index_interface Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Connection;
 use VuFind\Config\Reader as ConfigReader, VuFind\Exception\Solr as SolrException,
@@ -39,7 +39,7 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Exception\Solr as SolrException
  * @package  Solr
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/system_classes#index_interface Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 class Solr implements ServiceLocatorAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface

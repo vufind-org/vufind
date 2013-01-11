@@ -23,7 +23,7 @@
  * @package  ServiceManager
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\ServiceManager;
 use Zend\ServiceManager\AbstractFactoryInterface,
@@ -36,7 +36,7 @@ use Zend\ServiceManager\AbstractFactoryInterface,
  * @package  ServiceManager
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_search_object Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 abstract class AbstractPluginFactory implements AbstractFactoryInterface
 {

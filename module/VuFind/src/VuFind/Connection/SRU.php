@@ -23,7 +23,7 @@
  * @package  SRU
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/system_classes#searching Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Connection;
 use VuFind\XSLT\Processor as XSLTProcessor, Zend\Log\LoggerInterface;
@@ -35,7 +35,7 @@ use VuFind\XSLT\Processor as XSLTProcessor, Zend\Log\LoggerInterface;
  * @package  SRU
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/system_classes#searching Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 class SRU implements \Zend\Log\LoggerAwareInterface
 {

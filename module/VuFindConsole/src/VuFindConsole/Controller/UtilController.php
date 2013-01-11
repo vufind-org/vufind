@@ -23,7 +23,7 @@
  * @package  Controller
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
 namespace VuFindConsole\Controller;
 use File_MARC, File_MARCXML, VuFind\Connection\Manager as ConnectionManager,
@@ -36,7 +36,7 @@ use File_MARC, File_MARCXML, VuFind\Connection\Manager as ConnectionManager,
  * @package  Controller
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
 class UtilController extends AbstractBase
 {

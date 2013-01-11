@@ -24,7 +24,7 @@
  * @author   Lutz Biedinger <lutz.biedinger@gmail.com>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
 use VuFind\Config\Reader as ConfigReader, Zend\Feed\Reader\Reader as FeedReader,
@@ -40,7 +40,7 @@ use VuFind\Config\Reader as ConfigReader, Zend\Feed\Reader\Reader as FeedReader,
  * @author   Lutz Biedinger <lutz.biedinger@gmail.com>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_recommendations_module Wiki
+ * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 class EuropeanaResults implements RecommendInterface,
     \VuFindHttp\HttpServiceAwareInterface, \Zend\Log\LoggerAwareInterface

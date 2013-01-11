@@ -24,7 +24,7 @@
  * @package  Tests
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/unit_tests Wiki
+ * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
 
 namespace VuFindTest\Unit;
@@ -36,7 +36,7 @@ namespace VuFindTest\Unit;
  * @package  Tests
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/unit_tests Wiki
+ * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
 
 abstract class TestCase extends \PHPUnit_Framework_TestCase

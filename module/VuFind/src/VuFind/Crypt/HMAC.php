@@ -23,7 +23,7 @@
  * @package  Crypt
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_module Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Crypt;
 use VuFind\Config\Reader as ConfigReader;
@@ -35,7 +35,7 @@ use VuFind\Config\Reader as ConfigReader;
  * @package  Crypt
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_a_module Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 class HMAC
 {

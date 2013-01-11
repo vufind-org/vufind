@@ -23,7 +23,7 @@
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/system_classes Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Controller\Plugin;
 use VuFind\Config\Reader as ConfigReader, VuFind\Search\Memory,
@@ -37,7 +37,7 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Search\Memory,
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/system_classes Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 class ResultScroller extends AbstractPlugin
 {

@@ -23,7 +23,7 @@
  * @package  RecordTabs
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
  */
 namespace VuFind\RecordTab;
 use VuFind\Config\Reader as ConfigReader;
@@ -35,7 +35,7 @@ use VuFind\Config\Reader as ConfigReader;
  * @package  RecordTabs
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/creating_a_session_handler Wiki
+ * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
  */
 class HierarchyTree extends AbstractBase
 {
