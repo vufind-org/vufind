@@ -94,10 +94,11 @@ class Bootstrap
             $serviceName = 'VuFind\\' . str_replace('\\', '', $ns) . 'PluginManager';
             $factory = function ($sm) use ($config, $ns) {
                 $className = 'VuFind\\' . $ns . '\PluginManager';
-                $configKey = strtolower(str_replace('\\', '_', $ns))
-                    . '_plugin_manager';
+                $configKey = strtolower(str_replace('\\', '_', $ns));
                 return new $className(
-                    new \Zend\ServiceManager\Config($config[$configKey])
+                    new \Zend\ServiceManager\Config(
+                        $config['vufind']['plugin_managers'][$configKey]
+                    )
                 );
             };
             $serviceManager->setFactory($serviceName, $factory);
@@ -106,7 +107,7 @@ class Bootstrap
         // Set up search manager a little differently -- it is a more complex class
         // that doesn't work like the other standard plugin managers.
         $factory = function ($sm) use ($config) {
-            return new \VuFind\Search\Manager($config['search_manager']);
+            return new \VuFind\Search\Manager($config['vufind']['search_manager']);
         };
         $serviceManager->setFactory('SearchManager', $factory);
 

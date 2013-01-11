@@ -74,12 +74,13 @@ class AuthorityController extends AbstractSearch
     {
         $id = $this->params()->fromQuery('id');
         $cfg = $this->getServiceLocator()->get('Config');
+        $tabConfig = $cfg['vufind']['recorddriver_tabs'];
         $driver = $this->getSearchManager()->setSearchClassId('SolrAuth')
             ->getResults()->getRecord($id);
         $request = $this->getRequest();
         $tabs = $this->getServiceLocator()
             ->get('VuFind\RecordTabPluginManager')
-            ->getTabsForRecord($driver, $cfg['recorddriver_tabs'], $request);
+            ->getTabsForRecord($driver, $tabConfig, $request);
         return $this->createViewModel(array('driver' => $driver, 'tabs' => $tabs));
     }
 

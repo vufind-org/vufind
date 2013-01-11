@@ -542,7 +542,7 @@ class AbstractRecord extends AbstractBase
     protected function getTabConfiguration()
     {
         $cfg = $this->getServiceLocator()->get('Config');
-        return $cfg['recorddriver_tabs'];
+        return $cfg['vufind']['recorddriver_tabs'];
     }
 
     /**
