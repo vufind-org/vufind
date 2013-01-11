@@ -263,6 +263,9 @@ class Manager implements ServiceLocatorAwareInterface
         } catch (AuthException $e) {
             // Pass authentication exceptions through unmodified
             throw $e;
+        } catch (\VuFind\Exception\PasswordSecurity $e) {
+            // Pass password security exceptions through unmodified
+            throw $e;
         } catch (\Exception $e) {
             // Catch other exceptions and treat them as technical difficulties
             throw new AuthException('authentication_error_technical');

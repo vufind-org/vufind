@@ -26,7 +26,13 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Row;
-use Zend\Db\Sql\Expression, Zend\Db\Sql\Predicate\Predicate, Zend\Db\Sql\Sql;
+use Zend\Db\Sql\Expression,
+    Zend\Db\Sql\Predicate\Predicate,
+    Zend\Db\Sql\Sql,
+    Zend\Crypt\Symmetric\Mcrypt,
+    Zend\Crypt\Password\Bcrypt,
+    Zend\Crypt\BlockCipher as BlockCipher,
+    VuFind\Config\Reader as ConfigReader;
 
 /**
  * Row Definition for user
@@ -40,6 +46,13 @@ use Zend\Db\Sql\Expression, Zend\Db\Sql\Predicate\Predicate, Zend\Db\Sql\Sql;
 class User extends ServiceLocatorAwareGateway
 {
     /**
+     * Encryption key used for catalog passwords (null if encryption disabled):
+     *
+     * @var string
+     */
+    protected $encryptionKey = null;
+
+    /**
      * Constructor
      *
      * @param \Zend\Db\Adapter\Adapter $adapter Database adapter
@@ -47,6 +60,19 @@ class User extends ServiceLocatorAwareGateway
     public function __construct($adapter)
     {
         parent::__construct('id', 'user', $adapter);
+        $config = ConfigReader::getConfig();
+        $encryption = isset($config->Authentication->encrypt_ils_password)
+            ? $config->Authentication->encrypt_ils_password : false;
+        if ($encryption) {
+            if (!isset($config->Authentication->ils_encryption_key)
+                || empty($config->Authentication->ils_encryption_key)
+            ) {
+                throw new \VuFind\Exception\PasswordSecurity(
+                    'ILS password encryption on, but no key set.'
+                );
+            }
+            $this->encryptionKey = $config->Authentication->ils_encryption_key;
+        }
     }
 
     /**
@@ -95,6 +121,7 @@ class User extends ServiceLocatorAwareGateway
     {
         $this->cat_username = null;
         $this->cat_password = null;
+        $this->cat_pass_enc = null;
     }
 
     /**
@@ -108,7 +135,13 @@ class User extends ServiceLocatorAwareGateway
     public function saveCredentials($username, $password)
     {
         $this->cat_username = $username;
-        $this->cat_password = $password;
+        if ($this->passwordEncryptionEnabled()) {
+            $this->cat_password = null;
+            $this->cat_pass_enc = $this->encryptOrDecrypt($password, true);
+        } else {
+            $this->cat_password = $password;
+            $this->cat_pass_enc = null;
+        }
         return $this->save();
     }
 
@@ -120,7 +153,36 @@ class User extends ServiceLocatorAwareGateway
      */
     public function getCatPassword()
     {
-        return isset($this->cat_password) ? $this->cat_password : null;
+        return $this->passwordEncryptionEnabled()
+            ? $this->encryptOrDecrypt($this->cat_pass_enc, false)
+            : (isset($this->cat_password) ? $this->cat_password : null);
+    }
+
+    /**
+     * Is ILS password encryption enabled?
+     *
+     * @var bool
+     */
+    protected function passwordEncryptionEnabled()
+    {
+        return null !== $this->encryptionKey;
+    }
+
+    /**
+     * This is a central function for encrypting and decrypting so that
+     * logic is all in one location
+     *
+     * @param string $text    The text to be encrypted or decrypted
+     * @param bool   $encrypt True if we wish to encrypt text, False if we wish to
+     * decrypt text.
+     *
+     * @return string|bool    The encrypted/decrypted string
+     */
+    protected function encryptOrDecrypt($text, $encrypt = true)
+    {
+        $cipher = new BlockCipher(new Mcrypt(array('algorithm' => 'blowfish')));
+        $cipher->setKey($this->encryptionKey);
+        return $encrypt ? $cipher->encrypt($text) : $cipher->decrypt($text);
     }
 
     /**
