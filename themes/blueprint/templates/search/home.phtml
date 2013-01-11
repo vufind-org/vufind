@@ -49,6 +49,8 @@
             <ul class="span-5">
           <? endif; ?>
         <? endforeach; ?>
+        <? /* Fill in empty column if we have too few values to spill over: */ ?>
+        <? if ($i < 10): ?></ul><ul class="span-5"><? endif; ?>
       <? /* Special case: collections */ ?>
       <? elseif ($field == 'hierarchy_top_title'): ?>
         <? $i = 0; foreach ($sortedList as $url => $value): ?>
