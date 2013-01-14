@@ -161,7 +161,7 @@ class User extends ServiceLocatorAwareGateway
     /**
      * Is ILS password encryption enabled?
      *
-     * @var bool
+     * @return bool
      */
     protected function passwordEncryptionEnabled()
     {
