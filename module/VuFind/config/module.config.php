@@ -159,6 +159,11 @@ $config = array(
             'VuFind\RecordRouter' => function ($sm) {
                 return new \VuFind\Record\Router($sm->get('VuFind\RecordLoader'));
             },
+            'VuFind\SearchSpecsReader' => function ($sm) {
+                return new \VuFind\Config\SearchSpecsReader(
+                    $sm->get('VuFind\CacheManager')
+                );
+            },
             'VuFind\SMS' => 'VuFind\SMS\Factory',
             'VuFind\Translator' => function ($sm) {
                 $factory = new \Zend\I18n\Translator\TranslatorServiceFactory();
@@ -197,7 +202,6 @@ $config = array(
             'VuFind\CacheManager' => 'VuFind\Cache\Manager',
             'VuFind\Mailer' => 'VuFind\Mailer',
             'VuFind\RecordLoader' => 'VuFind\Record\Loader',
-            'VuFind\SearchSpecsReader' => 'VuFind\Config\SearchSpecsReader',
             'VuFind\SessionManager' => 'Zend\Session\SessionManager',
             'VuFind\WorldCatUtils' => 'VuFind\Connection\WorldCatUtils',
         ),

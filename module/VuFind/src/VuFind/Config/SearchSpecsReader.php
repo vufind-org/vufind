@@ -26,8 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Config;
-use Symfony\Component\Yaml\Yaml, Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * VuFind SearchSpecs Configuration Reader
@@ -38,14 +37,14 @@ use Symfony\Component\Yaml\Yaml, Zend\ServiceManager\ServiceLocatorAwareInterfac
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class SearchSpecsReader implements ServiceLocatorAwareInterface
+class SearchSpecsReader
 {
     /**
-     * Service locator
+     * Cache manager
      *
-     * @var ServiceLocatorInterface
+     * @var \VuFind\Cache\Manager
      */
-    protected $serviceLocator;
+    protected $cacheManager;
 
     /**
      * Cache of loaded search specs.
@@ -53,6 +52,16 @@ class SearchSpecsReader implements ServiceLocatorAwareInterface
      * @var array
      */
     protected $searchSpecs = array();
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Cache\Manager $cacheManager Cache manager (optional)
+     */
+    public function __construct(\VuFind\Cache\Manager $cacheManager = null)
+    {
+        $this->cacheManager = $cacheManager;
+    }
 
     /**
      * Return search specs
@@ -66,9 +75,8 @@ class SearchSpecsReader implements ServiceLocatorAwareInterface
         // Load data if it is not already in the object's cache:
         if (!isset($this->searchSpecs[$filename])) {
             // Connect to searchspecs cache:
-            $sm = $this->getServiceLocator();
-            $cache = (is_object($sm) && $sm->has('VuFind\CacheManager'))
-                ? $sm->get('VuFind\CacheManager')->getCache('searchspecs') : false;
+            $cache = (null !== $this->cacheManager)
+                ? $this->cacheManager->getCache('searchspecs') : false;
 
             // Determine full configuration file path:
             $fullpath = Reader::getBaseConfigPath($filename);
@@ -98,28 +106,5 @@ class SearchSpecsReader implements ServiceLocatorAwareInterface
         }
 
         return $this->searchSpecs[$filename];
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return SearchSpecsReader
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 }
