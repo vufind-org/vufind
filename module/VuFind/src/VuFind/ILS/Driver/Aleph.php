@@ -36,9 +36,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException,
-    Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException;
 
 /**
  * Aleph Translator Class
@@ -272,17 +270,27 @@ class AlephRestfulException extends \Exception
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
-class Aleph extends AbstractBase implements ServiceLocatorAwareInterface
+class Aleph extends AbstractBase
 {
     protected $duedates = false;
     protected $translator = false;
 
     /**
-     * Service locator
+     * Cache manager
      *
-     * @var ServiceLocatorInterface
+     * @var \VuFind\Cache\Manager
      */
-    protected $serviceLocator;
+    protected $cacheManager;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Cache\Manager $cacheManager Cache manager (optional)
+     */
+    public function __construct(\VuFind\Cache\Manager $cacheManager = null)
+    {
+        $this->cacheManager = $cacheManager;
+    }
 
     /**
      * Initialize the driver.
@@ -338,12 +346,11 @@ class Aleph extends AbstractBase implements ServiceLocatorAwareInterface
             && isset($this->config['util']['tab15'])
             && isset($this->config['util']['tab_sub_library'])
         ) {
-            $serviceManager = $this->getServiceLocator()->getServiceLocator();
             if (isset($this->config['Cache']['type'])
-                && $serviceManager->has('VuFind\CacheManager')
+                && null !== $this->cacheManager
             ) {
-                $manager = $serviceManager->get('VuFind\CacheManager');
-                $cache = $manager->getCache($this->config['Cache']['type']);
+                $cache = $this->cacheManager
+                    ->getCache($this->config['Cache']['type']);
                 $this->translator = $cache->getItem('alephTranslator');
             }
             if ($this->translator == false) {
@@ -366,6 +373,11 @@ class Aleph extends AbstractBase implements ServiceLocatorAwareInterface
      */
     protected function doXRequest($op, $params, $auth=false)
     {
+        if (!$this->xserver_enabled) {
+            throw new \Exception(
+                'Call to doXRequest without X-Server configuration in Aleph.ini'
+            );
+        }
         $url = "http://$this->host/X?op=$op";
         $url = $this->appendQueryString($url, $params);
         if ($auth) {
@@ -1642,28 +1654,5 @@ class Aleph extends AbstractBase implements ServiceLocatorAwareInterface
     {
         // TODO
         return array();
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Aleph
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 }

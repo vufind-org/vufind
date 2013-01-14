@@ -324,8 +324,14 @@ $config = array(
             ),
             'ils_driver' => array(
                 'abstract_factories' => array('VuFind\ILS\Driver\PluginFactory'),
+                'factories' => array(
+                    'aleph' => function ($sm) {
+                        return new \VuFind\ILS\Driver\Aleph(
+                            $sm->getServiceLocator()->get('VuFind\CacheManager')
+                        );
+                    },
+                ),
                 'invokables' => array(
-                    'aleph' => 'VuFind\ILS\Driver\Aleph',
                     'amicus' => 'VuFind\ILS\Driver\Amicus',
                     'daia' => 'VuFind\ILS\Driver\DAIA',
                     'demo' => 'VuFind\ILS\Driver\Demo',
