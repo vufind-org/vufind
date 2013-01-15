@@ -111,10 +111,11 @@ class DbUpgrade extends AbstractPlugin
     public function query($sql, $logsql)
     {
         if ($logsql) {
-            return $sql . ";\n";
+            return rtrim($sql, ';') . ";\n";
         } else {
             $this->getAdapter()->query($sql, DbAdapter::QUERY_MODE_EXECUTE);
         }
+        return '';
     }
 
     /**
@@ -146,6 +147,116 @@ class DbUpgrade extends AbstractPlugin
     protected function getAllTables()
     {
         return array_keys($this->getTableInfo());
+    }
+
+    /**
+     * Support method for getEncodingProblems() -- get column details
+     *
+     * @param string $table Table to check
+     *
+     * @throws \Exception
+     * @return array
+     */
+    protected function getEncodingProblemsForTable($table)
+    {
+        // Get column summary:
+        $sql = "SHOW FULL COLUMNS FROM `{$table}`";
+        $results = $this->getAdapter()->query($sql, DbAdapter::QUERY_MODE_EXECUTE);
+
+        // Load details:
+        $retVal = array();
+        foreach ($results as $current) {
+            if (strtolower(substr($current->Collation, 0, 6)) == 'latin1') {
+                $retVal[$current->Field] = (array)$current;
+            }
+        }
+        return $retVal;
+    }
+
+    /**
+     * Get information on incorrectly encoded tables/columns.
+     *
+     * @throws \Exception
+     * @return array
+     */
+    public function getEncodingProblems()
+    {
+        // Get table summary:
+        $sql = "SHOW TABLE STATUS";
+        $results = $this->getAdapter()->query($sql, DbAdapter::QUERY_MODE_EXECUTE);
+
+        // Load details:
+        $retVal = array();
+        foreach ($results as $current) {
+            if (strtolower(substr($current->Collation, 0, 6)) == 'latin1') {
+                $retVal[$current->Name]
+                    = $this->getEncodingProblemsForTable($current->Name);
+            }
+        }
+
+        return $retVal;
+    }
+
+    /**
+     * Fix encoding problems based on the output of getEncodingProblems().
+     *
+     * @param array $tables Output of getEncodingProblems()
+     * @param bool  $logsql Should we return the SQL as a string rather than
+     * execute it?
+     *
+     * @throws \Exception
+     * @return string       SQL if $logsql is true, empty string otherwise
+     */
+    public function fixEncodingProblems($tables, $logsql = false)
+    {
+        $newCollation = "utf8_general_ci";
+        $sqlcommands = '';
+
+        // Database conversion routines inspired by:
+        //     https://github.com/nicjansma/mysql-convert-latin1-to-utf8
+        foreach ($tables as $table => $columns) {
+            foreach ($columns as $column => $details) {
+                $oldType = $details['Type'];
+                $parts = explode('(', $oldType);
+                switch ($parts[0]) {
+                case 'text':
+                    $newType = 'blob';
+                    break;
+                case 'varchar':
+                    $newType = 'varbinary(' . $parts[1];
+                    break;
+                default:
+                    throw new \Exception('Unexpected column type: ' . $parts[0]);
+                }
+                // Set up default:
+                if (null !== $details['Default']) {
+                    $safeDefault = mysql_real_escape_string($details['Default']);
+                    $currentDefault = " DEFAULT '{$safeDefault}'";
+                } else {
+                    $currentDefault = '';
+                }
+
+                // Change to binary equivalent:
+                $sql = "ALTER TABLE `$table` MODIFY `$column` $newType"
+                    . (strtoupper($details['Null']) == 'NO' ? ' NOT NULL' : '')
+                    . $currentDefault
+                    . ";";
+                $sqlcommands .= $this->query($sql, $logsql);
+
+                // Change back to appropriate character data with fixed encoding:
+                $sql = "ALTER TABLE `$table` MODIFY `$column` $oldType"
+                    . " COLLATE $newCollation"
+                    . (strtoupper($details['Null']) == 'NO' ? ' NOT NULL' : '')
+                    . $currentDefault
+                    . ";";
+                $sqlcommands .= $this->query($sql, $logsql);
+            }
+
+            // Adjust default table collation:
+            $sql = "ALTER TABLE `$table` DEFAULT COLLATE $newCollation;";
+            $sqlcommands .= $this->query($sql, $logsql);
+        }
+        return $sqlcommands;
     }
 
     /**

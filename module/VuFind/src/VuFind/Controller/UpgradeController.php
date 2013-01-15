@@ -190,6 +190,24 @@ class UpgradeController extends AbstractBase
     }
 
     /**
+     * Configure the database encoding.
+     *
+     * @param string $charset Encoding setting to use.
+     *
+     * @throws \Exception
+     * @return void
+     */
+    protected function setDbEncodingConfiguration($charset)
+    {
+        $config = ConfigReader::getLocalConfigPath('config.ini', null, true);
+        $writer = new \VuFind\Config\Writer($config);
+        $writer->set('Database', 'charset', $charset);
+        if (!$writer->save()) {
+            throw new \Exception('Problem writing DB encoding to config.ini');
+        }
+    }
+
+    /**
      * Upgrade the database.
      *
      * @return mixed
@@ -259,6 +277,34 @@ class UpgradeController extends AbstractBase
                 }
                 $sql .= $this->dbUpgrade()
                     ->updateModifiedColumns($modifiedCols, $this->logsql);
+            }
+
+            // Check for encoding problems.
+            $encProblems = $this->dbUpgrade()->getEncodingProblems();
+            if (!empty($encProblems)) {
+                if (!isset($this->session->dbChangeEncoding)) {
+                    return $this->forwardTo('Upgrade', 'GetDbEncodingPreference');
+                }
+
+                if ($this->session->dbChangeEncoding) {
+                    // Only manipulate DB if we're not in logging mode:
+                    if (!$this->logsql) {
+                        if (!$this->hasDatabaseRootCredentials()) {
+                            return $this->forwardTo('Upgrade', 'GetDbCredentials');
+                        }
+                        $this->dbUpgrade()->setAdapter($this->getRootDbAdapter());
+                        $this->session->warnings->append(
+                            "Modified encoding settings in table(s): "
+                            . implode(', ', array_keys($encProblems))
+                        );
+                    }
+                    $sql .= $this->dbUpgrade()
+                        ->fixEncodingProblems($encProblems, $this->logsql);
+                    $this->setDbEncodingConfiguration('utf8');
+                } else {
+                    // User has requested that we skip encoding conversion:
+                    $this->setDbEncodingConfiguration('latin1');
+                }
             }
 
             // Don't keep DB credentials in session longer than necessary:
@@ -336,6 +382,24 @@ class UpgradeController extends AbstractBase
         }
 
         return $this->createViewModel(array('dbrootuser' => $dbrootuser));
+    }
+
+    /**
+     * Prompt the user for action on encoding problems.
+     *
+     * @return mixed
+     */
+    public function getdbencodingpreferenceAction()
+    {
+        $action = $this->params()->fromPost('encodingaction', '');
+        if ($action == 'Change') {
+            $this->session->dbChangeEncoding = true;
+            return $this->forwardTo('Upgrade', 'FixDatabase');
+        } else if ($action == 'Keep') {
+            $this->session->dbChangeEncoding = false;
+            return $this->forwardTo('Upgrade', 'FixDatabase');
+        }
+        return $this->createViewModel();
     }
 
     /**
