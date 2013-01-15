@@ -65,6 +65,7 @@ class UserList extends Gateway
         }
 
         $row = $this->createRow();
+        $row->created = date('Y-m-d h:i:s');    // force creation date
         $row->user_id = $user->id;
         return $row;
     }
