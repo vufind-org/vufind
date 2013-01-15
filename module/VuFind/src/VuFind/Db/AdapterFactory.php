@@ -112,6 +112,9 @@ class AdapterFactory
         // Set up custom options by database type:
         switch (strtolower($type)) {
         case 'mysqli':
+            $config = ConfigReader::getConfig();
+            $options['charset'] = isset($config->Database->charset)
+                ? $config->Database->charset : 'utf8';
             $options['options'] = array('buffer_results' => true);
             break;
         }
