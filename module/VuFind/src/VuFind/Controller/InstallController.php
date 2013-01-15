@@ -585,8 +585,8 @@ class InstallController extends AbstractBase
             try {
                 $rows = $this->getTable('user')->getInsecureRows();
                 $status = (count($rows) == 0);
-            } catch (\VuFind\Exception\PasswordSecurity $e) {
-                // Any security exception means we have a problem!
+            } catch (\Exception $e) {
+                // Any exception means we have a problem!
                 $status = false;
             }
         }
