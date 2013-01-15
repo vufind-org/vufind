@@ -10,6 +10,24 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `change_tracker`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `change_tracker` (
+  `core` varchar(30) NOT NULL,                -- solr core containing record
+  `id` varchar(120) NOT NULL,                 -- ID of record within core
+  `first_indexed` datetime DEFAULT NULL,      -- first time added to index
+  `last_indexed` datetime DEFAULT NULL,       -- last time changed in index
+  `last_record_change` datetime DEFAULT NULL, -- last time original record was edited
+  `deleted` datetime DEFAULT NULL,            -- time record was removed from index
+  PRIMARY KEY (`core`,`id`),
+  KEY `deleted_index` (`deleted`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `comments`
 --
 
@@ -26,6 +44,20 @@ CREATE TABLE `comments` (
   KEY `resource_id` (`resource_id`),
   CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
   CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`resource_id`) REFERENCES `resource` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `oai_resumption`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `oai_resumption` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `params` text,
+  `expires` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -91,6 +123,24 @@ CREATE TABLE `search` (
   KEY `user_id` (`user_id`),
   KEY `folder_id` (`folder_id`),
   KEY `session_id` (`session_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `session`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `session` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `session_id` varchar(128) DEFAULT NULL,
+  `data` text,
+  `last_used` int(12) NOT NULL DEFAULT '0',
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `session_id` (`session_id`),
+  KEY `last_used` (`last_used`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -176,70 +226,6 @@ CREATE TABLE `user_resource` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `session`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `session` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `session_id` varchar(128) DEFAULT NULL,
-  `data` text,
-  `last_used` int(12) NOT NULL DEFAULT '0',
-  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `session_id` (`session_id`),
-  KEY `last_used` (`last_used`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `change_tracker`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `change_tracker` (
-  `core` varchar(30) NOT NULL,                -- solr core containing record
-  `id` varchar(120) NOT NULL,                 -- ID of record within core
-  `first_indexed` datetime DEFAULT NULL,      -- first time added to index
-  `last_indexed` datetime DEFAULT NULL,       -- last time changed in index
-  `last_record_change` datetime DEFAULT NULL, -- last time original record was edited
-  `deleted` datetime DEFAULT NULL,            -- time record was removed from index
-  PRIMARY KEY (`core`,`id`),
-  KEY `deleted_index` (`deleted`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `oai_resumption`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `oai_resumption` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `params` text,
-  `expires` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `user_stats_fields`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user_stats_fields` (
-  `id` varchar(24) NOT NULL,
-  `field` varchar(32) NOT NULL,
-  `value` varchar(1024) NOT NULL,
-  PRIMARY KEY (`id`,`field`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `user_stats`
 --
 
@@ -255,6 +241,20 @@ CREATE TABLE `user_stats` (
   `url` varchar(512) NOT NULL,
   `session` varchar(64) NOT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `user_stats_fields`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_stats_fields` (
+  `id` varchar(24) NOT NULL,
+  `field` varchar(32) NOT NULL,
+  `value` varchar(1024) NOT NULL,
+  PRIMARY KEY (`id`,`field`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
