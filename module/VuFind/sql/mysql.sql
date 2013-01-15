@@ -208,7 +208,7 @@ CREATE TABLE `user_stats_fields` (
   `field` varchar(32) NOT NULL,
   `value` varchar(1024) NOT NULL,
   PRIMARY KEY (`id`,`field`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -227,7 +227,7 @@ CREATE TABLE `user_stats` (
   `url` varchar(512) NOT NULL,
   `session` varchar(64) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
