@@ -44,6 +44,12 @@
     <phingcall target="phpcs"/>
     <phingcall target="phpunit"/>
     <phingcall target="phpdoc"/>
+    <phingcall target="phpcpd"/>
+  </target>
+
+  <!-- PHP copy-and-paste detection -->
+  <target name="phpcpd">
+    <exec command="phpcpd --log-pmd ${builddir}/reports/pmd-cpd.xml --exclude ${srcdir}/module/VuFind/tests/* ${srcdir}/module" />
   </target>
 
   <!-- PHP CodeSniffer -->
