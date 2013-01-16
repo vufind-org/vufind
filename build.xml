@@ -46,6 +46,12 @@
     <phingcall target="phpdoc"/>
     <phingcall target="phpcpd"/>
     <phingcall target="pdepend"/>
+    <phingcall target="phploc"/>
+  </target>
+
+  <!-- Measure project with phploc -->
+  <target name="phploc">
+    <exec command="phploc --log-csv ${builddir}/reports/phploc.csv ${srcdir}/module" />
   </target>
 
   <!-- PHP_Depend code analysis -->
