@@ -440,44 +440,33 @@ abstract class Results implements ServiceLocatorAwareInterface
      */
     public function spellingTokens($input)
     {
+        // Blacklist of useless tokens:
         $joins = array("AND", "OR", "NOT");
-        $paren = array("(" => "", ")" => "");
 
-        // Base of this algorithm comes straight from
-        // PHP doco examples & benighted at gmail dot com
-        // http://php.net/manual/en/function.strtok.php
+        // Strip out parentheses -- irrelevant for tokenization:
+        $paren = array("(" => " ", ")" => " ");
+        $input = trim(strtr($input, $paren));
+
+        // Base of this algorithm comes straight from PHP doc example by
+        // benighted at gmail dot com: http://php.net/manual/en/function.strtok.php
         $tokens = array();
-        $token = strtok($input, ' ');
-        while ($token) {
-            // find bracketed tokens
-            if ($token{0}=='(') {
-                $token .= ' '.strtok(')').')';
-            }
+        $token = strtok($input, " \t");
+        do {
             // find double quoted tokens
-            if ($token{0}=='"') {
+            if ($token{0}=='"' && substr($token, -1) != '"') {
                 $token .= ' '.strtok('"').'"';
             }
             // find single quoted tokens
-            if ($token{0}=="'") {
+            if ($token{0}=="'" && substr($token, -1) != "'") {
                 $token .= ' '.strtok("'")."'";
             }
-            $tokens[] = $token;
-            $token = strtok(' ');
-        }
-        // Some cleaning of tokens that are just boolean joins
-        //  and removal of brackets
-        $return = array();
-        foreach ($tokens as $token) {
-            // Ignore join
+            // skip boolean operators
             if (!in_array($token, $joins)) {
-                // And strip parentheses
-                $final = trim(strtr($token, $paren));
-                if ($final != "") {
-                    $return[] = $final;
-                }
+                $tokens[] = $token;
             }
-        }
-        return $return;
+        } while ($token = strtok(" \t"));
+
+        return $tokens;
     }
 
     /**
