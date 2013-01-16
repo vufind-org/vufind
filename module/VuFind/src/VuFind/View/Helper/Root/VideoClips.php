@@ -82,15 +82,11 @@ class VideoClips extends AbstractSyndetics
             )
         );
 
-        //first request url
-        $baseUrl = isset($this->config->Syndetics->url) ?
-            $this->config->Syndetics->url : 'http://syndetics.com';
-        $url = $baseUrl . '/index.aspx?isbn=' . $this->getIsbn10() .
-               '/index.xml&client=' . $id . '&type=rw12,hw7';
-
+        // Initialize return value:
         $vclips = array();
 
-        //find out if there are any clips
+        // Find out if there are any clips
+        $url = $this->getSyndeticsUrl($id);
         $result = $this->getHttpClient($url)->send();
         if (!$result->isSuccess()) {
             return $vclips;
@@ -106,9 +102,7 @@ class VideoClips extends AbstractSyndetics
             $nodes = $xmldoc->getElementsByTagName($source);
             if ($nodes->length) {
                 // Load clips
-                $url = $baseUrl . '/index.aspx?isbn=' . $this->getIsbn10() . '/' .
-                       $sourceInfo['file'] . '&client=' . $id . '&type=rw12,hw7';
-
+                $url = $this->getSyndeticsUrl($id, $sourceInfo['file']);
                 $result2 = $this->getHttpClient($url)->send();
                 if (!$result2->isSuccess()) {
                     continue;

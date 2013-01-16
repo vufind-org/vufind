@@ -218,7 +218,7 @@ class Reviews extends AbstractSyndetics
      */
     protected function loadSyndetics($id, $s_plus=false)
     {
-        //list of syndetic reviews
+        // List of syndetic reviews
         $sourceList = array(
             'CHREVIEW' => array('title' => 'Choice Review',
                                 'file' => 'CHREVIEW.XML',
@@ -255,15 +255,11 @@ class Reviews extends AbstractSyndetics
                                 'file' => 'CRITICASEREVIEW.XML')
         );
 
-        //first request url
-        $baseUrl = isset($this->config->Syndetics->url) ?
-            $this->config->Syndetics->url : 'http://syndetics.com';
-        $url = $baseUrl . '/index.aspx?isbn=' . $this->getIsbn10() . '/' .
-               'index.xml&client=' . $id . '&type=rw12,hw7';
-
+        // Initialize return value
         $review = array();
 
-        //find out if there are any reviews
+        // Find out if there are any reviews
+        $url = $this->getSyndeticsUrl($id);
         $result = $this->getHttpClient($url)->send();
         if (!$result->isSuccess()) {
             return $review;
@@ -279,8 +275,7 @@ class Reviews extends AbstractSyndetics
             $nodes = $xmldoc->getElementsByTagName($source);
             if ($nodes->length) {
                 // Load reviews
-                $url = $baseUrl . '/index.aspx?isbn=' . $this->getIsbn10() . '/' .
-                       $sourceInfo['file'] . '&client=' . $id . '&type=rw12,hw7';
+                $url = $this->getSyndeticsUrl($id, $sourceInfo['file']);
                 $result2 = $this->getHttpClient($url)->send();
                 if (!$result2->isSuccess()) {
                     continue;

@@ -88,6 +88,23 @@ abstract class AbstractSyndetics extends AbstractHelper
     }
 
     /**
+     * Get the Syndetics URL for making a request.
+     *
+     * @param string $id   Client ID
+     * @param string $file File to request
+     * @param string $type Type parameter
+     *
+     * @return string
+     */
+    protected function getSyndeticsUrl($id, $file = 'index.xml', $type = 'rw12,h7')
+    {
+        $baseUrl = isset($this->config->Syndetics->url)
+            ? $this->config->Syndetics->url : 'http://syndetics.com';
+        return $baseUrl . '/index.aspx?isbn=' . $this->getIsbn10()
+            . '/' . $file . '&client=' . $id . '&type=' . $type;
+    }
+
+    /**
      * Attempt to get an ISBN-10; revert to ISBN-13 only when ISBN-10 representation
      * is impossible.
      *
@@ -96,10 +113,7 @@ abstract class AbstractSyndetics extends AbstractHelper
     protected function getIsbn10()
     {
         $isbn = is_object($this->isbn) ? $this->isbn->get10() : false;
-        if (!$isbn) {
-            $isbn = $this->isbn->get13();
-        }
-        return $isbn;
+        return (!$isbn && is_object($this->isbn)) ? $this->isbn->get13() : $isbn;
     }
 
     /**

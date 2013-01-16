@@ -82,15 +82,11 @@ class AuthorNotes extends AbstractSyndetics
             )
         );
 
-        //first request url
-        $baseUrl = isset($this->config->Syndetics->url) ?
-            $this->config->Syndetics->url : 'http://syndetics.com';
-        $url = $baseUrl . '/index.aspx?isbn=' . $this->getIsbn10() .
-               '/index.xml&client=' . $id . '&type=rw12,hw7';
-
+        // Initialize return value
         $anotes = array();
 
-        //find out if there are any notes
+        // Find out if there are any notes
+        $url = $this->getSyndeticsUrl($id);
         $result = $this->getHttpClient($url)->send();
         if (!$result->isSuccess()) {
             return $anotes;
@@ -106,9 +102,7 @@ class AuthorNotes extends AbstractSyndetics
             $nodes = $xmldoc->getElementsByTagName($source);
             if ($nodes->length) {
                 // Load notes
-                $url = $baseUrl . '/index.aspx?isbn=' . $this->getIsbn10() . '/' .
-                       $sourceInfo['file'] . '&client=' . $id . '&type=rw12,hw7';
-
+                $url = $this->getSyndeticsUrl($id, $sourceInfo['file']);
                 $result2 = $this->getHttpClient($url)->send();
                 if (!$result2->isSuccess()) {
                     continue;

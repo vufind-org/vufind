@@ -74,7 +74,7 @@ class Excerpt extends AbstractSyndetics
      */
     protected function loadSyndetics($id, $s_plus=false)
     {
-        //list of syndetic excerpts
+        // List of syndetic excerpts
         $sourceList = array(
             'DBCHAPTER' => array(
                 'title' => 'First Chapter or Excerpt',
@@ -83,15 +83,11 @@ class Excerpt extends AbstractSyndetics
             )
         );
 
-        //first request url
-        $baseUrl = isset($this->config->Syndetics->url) ?
-            $this->config->Syndetics->url : 'http://syndetics.com';
-        $url = $baseUrl . '/index.aspx?isbn=' . $this->getIsbn10() .
-               '/index.xml&client=' . $id . '&type=rw12,hw7';
-
+        // Initialize return value:
         $review = array();
 
-        //find out if there are any excerpts
+        // Find out if there are any excerpts
+        $url = $this->getSyndeticsUrl($id);
         $result = $this->getHttpClient($url)->send();
         if (!$result->isSuccess()) {
             return $review;
@@ -107,9 +103,7 @@ class Excerpt extends AbstractSyndetics
             $nodes = $xmldoc->getElementsByTagName($source);
             if ($nodes->length) {
                 // Load excerpts
-                $url = $baseUrl . '/index.aspx?isbn=' . $this->getIsbn10() . '/' .
-                       $sourceInfo['file'] . '&client=' . $id . '&type=rw12,hw7';
-
+                $url = $this->getSyndeticsUrl($id, $sourceInfo['file']);
                 $result2 = $this->getHttpClient($url)->send();
                 if (!$result2->isSuccess()) {
                     continue;
