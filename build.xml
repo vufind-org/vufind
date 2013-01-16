@@ -45,8 +45,14 @@
     <phingcall target="phpunit"/>
     <phingcall target="phpdoc"/>
     <phingcall target="phpcpd"/>
+    <phingcall target="phpmd"/>
     <phingcall target="pdepend"/>
     <phingcall target="phploc"/>
+  </target>
+
+  <!-- Report rule violations with PHPMD (mess detector) -->
+  <target name="phpmd">
+    <exec command="phpmd ${srcdir}/module xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/module/VuFind/tests --reportfile ${builddir}/reports/phpmd.xml" />
   </target>
 
   <!-- Measure project with phploc -->
