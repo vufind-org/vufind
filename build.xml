@@ -45,6 +45,12 @@
     <phingcall target="phpunit"/>
     <phingcall target="phpdoc"/>
     <phingcall target="phpcpd"/>
+    <phingcall target="pdepend"/>
+  </target>
+
+  <!-- PHP_Depend code analysis -->
+  <target name="pdepend">
+    <exec command="pdepend --jdepend-xml=${builddir}/reports/jdepend.xml --jdepend-chart=${builddir}/reports/dependencies.svg --overview-pyramid=${builddir}/reports/pdepend-pyramid.svg ${srcdir}/module" />
   </target>
 
   <!-- PHP copy-and-paste detection -->
