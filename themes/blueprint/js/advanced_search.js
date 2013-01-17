@@ -1,5 +1,5 @@
 var nextGroupNumber = 0;
-var groupSearches = new Array();
+var groupSearches = [];
 
 function addSearch(group, term, field)
 {
@@ -21,7 +21,7 @@ function addSearch(group, term, field)
     // Field
     newSearch += '<div class="field"><label for="search_type' + group + '_' + groupSearches[group] + '">' + searchFieldLabel + '</label> ';
     newSearch += '<select id="search_type' + group + '_' + groupSearches[group] + '" name="type' + group + '[]">';
-    for (key in searchFields) {
+    for (var key in searchFields) {
         newSearch += '<option value="' + key + '"';
         if (key == field) {
             newSearch += ' selected="selected"';
@@ -54,7 +54,7 @@ function addGroup(firstTerm, firstField, join)
     // Boolean operator drop-down
     newGroup += '<div class="join"><label for="search_bool' + nextGroupNumber + '">' + searchMatch + ':</label> ';
     newGroup += '<select id="search_bool' + nextGroupNumber + '" name="bool' + nextGroupNumber + '[]">';
-    for (key in searchJoins) {
+    for (var key in searchJoins) {
         newGroup += '<option value="' + key + '"';
         if (key == join) {
             newGroup += ' selected="selected"';
