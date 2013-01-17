@@ -1,3 +1,5 @@
+/*global extractController, extractSource, getLightbox, path*/
+
 function checkSaveStatuses() {
     var data = $.map($('.recordId'), function(i) {
         return {'id':$(i).find('.hiddenId')[0].value, 'source':extractSource(i)};
