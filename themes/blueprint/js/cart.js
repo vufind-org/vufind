@@ -84,6 +84,18 @@ function getItemsFromCartCookie() {
     return [];
 }
 
+// return unique values from the given array
+function uniqueValues(array) {
+    var o = {}, i, l = array.length, r = [];
+    for(var i=0; i<l;i++) {
+        o[array[i]] = array[i];
+    }
+    for(var i in o) {
+        r.push(o[i]);
+    }
+    return r;
+}
+
 function addItemToCartCookie(item) {
     var items = getItemsFromCartCookie();
     if(items.length < vufindString.bookbagMax) {
