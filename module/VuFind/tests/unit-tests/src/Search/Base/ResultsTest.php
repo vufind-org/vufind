@@ -55,15 +55,19 @@ class ResultsTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals(array('apples', 'oranges'), $solr->spellingTokens('apples OR oranges'));
         $this->assertEquals(array('"word"'), $solr->spellingTokens('"word"'));
         $this->assertEquals(array('"word"', 'second'), $solr->spellingTokens('"word" second'));
-        $this->assertEquals(array("'word'"), $solr->spellingTokens("'word'"));
-        $this->assertEquals(array("'word'", 'second'), $solr->spellingTokens("'word' second"));
+        $this->assertEquals(array(), $solr->spellingTokens(''));
+        $this->assertEquals(array('0', 'is', 'zero'), $solr->spellingTokens('0 is zero'));
+        $this->assertEquals(array("'twas", 'successful'), $solr->spellingTokens("'twas successful"));
         $this->assertEquals(array('word'), $solr->spellingTokens('(word)'));
         $this->assertEquals(array('word', 'second'), $solr->spellingTokens('(word) second'));
         $this->assertEquals(array('apples', 'oranges', 'pears'), $solr->spellingTokens('(apples OR oranges) AND pears'));
         $this->assertEquals(array('two', 'terms'), $solr->spellingTokens("two\tterms"));
         $this->assertEquals(
-            array('"two words"', 'single', "'three word phrase'", 'single'),
-            $solr->spellingTokens('((("two words" OR single) NOT \'three word phrase\') AND single)')
+            array('"two words"', 'single', '"three word phrase"', 'single'),
+            $solr->spellingTokens('((("two words" OR single) NOT "three word phrase") AND single)')
         );
+        $this->assertEquals(array('"unfinished phrase'), $solr->spellingTokens('"unfinished phrase'));
+        $this->assertEquals(array('"'), $solr->spellingTokens('"'));
+        $this->assertEquals(array('""'), $solr->spellingTokens('""'));
     }
 }

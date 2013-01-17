@@ -451,21 +451,25 @@ abstract class Results implements ServiceLocatorAwareInterface
         // benighted at gmail dot com: http://php.net/manual/en/function.strtok.php
         $tokens = array();
         $token = strtok($input, " \t");
-        do {
+        while ($token !== false) {
             // find double quoted tokens
-            if ($token{0}=='"' && substr($token, -1) != '"') {
+            if (substr($token, 0, 1) == '"' && substr($token, -1) != '"') {
                 $token .= ' '.strtok('"').'"';
-            }
-            // find single quoted tokens
-            if ($token{0}=="'" && substr($token, -1) != "'") {
-                $token .= ' '.strtok("'")."'";
             }
             // skip boolean operators
             if (!in_array($token, $joins)) {
                 $tokens[] = $token;
             }
-        } while ($token = strtok(" \t"));
+            $token = strtok(" \t");
+        }
 
+        // If the last token ends in a double quote but the input string does not,
+        // the tokenization process added the quote, which will break spelling
+        // replacements.  We need to strip it back off again:
+        $last = count($tokens) > 0 ? $tokens[count($tokens) - 1] : null;
+        if ($last && substr($last, -1) == '"' && substr($input, -1) != '"') {
+            $tokens[count($tokens) - 1] = substr($last, 0, strlen($last) - 1);
+        }
         return $tokens;
     }
 
