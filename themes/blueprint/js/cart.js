@@ -2,31 +2,6 @@ var _CART_COOKIE = 'vufind_cart';
 var _CART_COOKIE_SOURCES = 'vufind_cart_src';
 var _CART_COOKIE_DELIM = "\t";
 
-$(document).ready(function() {
-
-    var cartRecordId = $('#cartId').val();
-    $('#cartItems').hide();
-    $('#viewCart, #updateCart, #bottom_updateCart').removeClass('offscreen');
-
-    // Record
-    $('#recordCart').removeClass('offscreen').click(function() {
-        if(cartRecordId != undefined) {
-            if ($(this).hasClass('bookbagAdd')) {
-                updateCartSummary(addItemToCartCookie(cartRecordId));
-                $(this).html(vufindString.removeBookBag).removeClass('bookbagAdd').addClass('bookbagDelete');
-            } else {
-                updateCartSummary(removeItemFromCartCookie(cartRecordId));
-                $(this).html(vufindString.addBookBag).removeClass('bookbagDelete').addClass('bookbagAdd');
-            }
-        }
-        return false;
-    });
-    redrawCartStatus()
-    var $form = $('form[name="bulkActionForm"]');
-    registerUpdateCart($form);
-
-});
-
 function registerUpdateCart($form) {
     if($form) {
         $("#updateCart, #bottom_updateCart").unbind('click').click(function(){
@@ -193,3 +168,26 @@ function removeCartCheckbox() {
      $(this).attr('checked', false);
  });
 }
+
+$(document).ready(function() {
+    var cartRecordId = $('#cartId').val();
+    $('#cartItems').hide();
+    $('#viewCart, #updateCart, #bottom_updateCart').removeClass('offscreen');
+
+    // Record
+    $('#recordCart').removeClass('offscreen').click(function() {
+        if(cartRecordId != undefined) {
+            if ($(this).hasClass('bookbagAdd')) {
+                updateCartSummary(addItemToCartCookie(cartRecordId));
+                $(this).html(vufindString.removeBookBag).removeClass('bookbagAdd').addClass('bookbagDelete');
+            } else {
+                updateCartSummary(removeItemFromCartCookie(cartRecordId));
+                $(this).html(vufindString.addBookBag).removeClass('bookbagDelete').addClass('bookbagAdd');
+            }
+        }
+        return false;
+    });
+    redrawCartStatus()
+    var $form = $('form[name="bulkActionForm"]');
+    registerUpdateCart($form);
+});
