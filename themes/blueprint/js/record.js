@@ -1,68 +1,6 @@
 /**
  * Functions and event handlers specific to record pages.
  */
-$(document).ready(function(){
-    // register the record comment form to be submitted via AJAX
-    registerAjaxCommentRecord();
-
-    // bind click action to export record menu
-    $('a.exportMenu').click(function(){
-        toggleMenu('exportMenu');
-        return false;
-    });
-
-    var id = document.getElementById('record_id').value;
-
-    // bind click action on toolbar links
-    $('a.citeRecord').click(function() {
-        var controller = extractController(this);
-        var $dialog = getLightbox(controller, 'Cite', id, null, this.title);
-        return false;
-    });
-    $('a.smsRecord').click(function() {
-        var controller = extractController(this);
-        var $dialog = getLightbox(controller, 'SMS', id, null, this.title);
-        return false;
-    });
-    $('a.mailRecord').click(function() {
-        var controller = extractController(this);
-        var $dialog = getLightbox(controller, 'Email', id, null, this.title, controller, 'Email', id);
-        return false;
-    });
-    $('a.tagRecord').click(function() {
-        var controller = extractController(this);
-        var $dialog = getLightbox(controller, 'AddTag', id, null, this.title, controller, 'AddTag', id);
-        return false;
-    });
-    $('a.deleteRecordComment').click(function() {
-        var commentId = this.id.substr('recordComment'.length);
-        var recordSource = extractSource(this);
-        deleteRecordComment(id, recordSource, commentId);
-        return false;
-    });
-
-    // add highlighting to subject headings when mouseover
-    $('a.subjectHeading').mouseover(function() {
-        var subjectHeadings = $(this).parent().children('a.subjectHeading');
-        for(var i = 0; i < subjectHeadings.length; i++) {
-            $(subjectHeadings[i]).addClass('highlight');
-            if ($(this).text() == $(subjectHeadings[i]).text()) {
-                break;
-            }
-        }
-    });
-    $('a.subjectHeading').mouseout(function() {
-        $('.subjectHeading').removeClass('highlight');
-    });
-
-    $('.checkRequest').each(function(i) {
-        if($(this).hasClass('checkRequest')) {
-            $(this).addClass('ajax_hold_availability');
-        }
-    });
-
-    setUpCheckRequest();
-});
 
 function setUpCheckRequest() {
     $('.checkRequest').each(function(i) {
@@ -170,3 +108,66 @@ function deleteRecordComment(recordId, recordSource, commentId) {
         }
     });
 }
+
+$(document).ready(function(){
+    // register the record comment form to be submitted via AJAX
+    registerAjaxCommentRecord();
+
+    // bind click action to export record menu
+    $('a.exportMenu').click(function(){
+        toggleMenu('exportMenu');
+        return false;
+    });
+
+    var id = document.getElementById('record_id').value;
+
+    // bind click action on toolbar links
+    $('a.citeRecord').click(function() {
+        var controller = extractController(this);
+        var $dialog = getLightbox(controller, 'Cite', id, null, this.title);
+        return false;
+    });
+    $('a.smsRecord').click(function() {
+        var controller = extractController(this);
+        var $dialog = getLightbox(controller, 'SMS', id, null, this.title);
+        return false;
+    });
+    $('a.mailRecord').click(function() {
+        var controller = extractController(this);
+        var $dialog = getLightbox(controller, 'Email', id, null, this.title, controller, 'Email', id);
+        return false;
+    });
+    $('a.tagRecord').click(function() {
+        var controller = extractController(this);
+        var $dialog = getLightbox(controller, 'AddTag', id, null, this.title, controller, 'AddTag', id);
+        return false;
+    });
+    $('a.deleteRecordComment').click(function() {
+        var commentId = this.id.substr('recordComment'.length);
+        var recordSource = extractSource(this);
+        deleteRecordComment(id, recordSource, commentId);
+        return false;
+    });
+
+    // add highlighting to subject headings when mouseover
+    $('a.subjectHeading').mouseover(function() {
+        var subjectHeadings = $(this).parent().children('a.subjectHeading');
+        for(var i = 0; i < subjectHeadings.length; i++) {
+            $(subjectHeadings[i]).addClass('highlight');
+            if ($(this).text() == $(subjectHeadings[i]).text()) {
+                break;
+            }
+        }
+    });
+    $('a.subjectHeading').mouseout(function() {
+        $('.subjectHeading').removeClass('highlight');
+    });
+
+    $('.checkRequest').each(function(i) {
+        if($(this).hasClass('checkRequest')) {
+            $(this).addClass('ajax_hold_availability');
+        }
+    });
+
+    setUpCheckRequest();
+});

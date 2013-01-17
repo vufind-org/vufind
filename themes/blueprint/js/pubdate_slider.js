@@ -1,12 +1,3 @@
-$(document).ready(function(){
-    // create the slider for the publish date facet
-    $('.dateSlider').each(function(i) {
-        var myId = $(this).attr('id');
-        var prefix = myId.substr(0, myId.length - 6);
-        makePublishDateSlider(prefix);
-    });
-});
-
 function makePublishDateSlider(prefix) {
     // create the slider widget
     $('#' + prefix + 'Slider').slider({
@@ -50,3 +41,12 @@ function updatePublishDateSlider(prefix) {
         min: min, max: max, values: [from, to]
     });
 }
+
+$(document).ready(function(){
+    // create the slider for the publish date facet
+    $('.dateSlider').each(function(i) {
+        var myId = $(this).attr('id');
+        var prefix = myId.substr(0, myId.length - 6);
+        makePublishDateSlider(prefix);
+    });
+});

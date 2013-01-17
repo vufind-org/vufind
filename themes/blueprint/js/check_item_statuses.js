@@ -1,7 +1,3 @@
-$(document).ready(function() {
-    checkItemStatuses();
-});
-
 function checkItemStatuses() {
     var id = $.map($('.ajaxItemId'), function(i) {
         return $(i).find('.hiddenId')[0].value;
@@ -77,3 +73,7 @@ function checkItemStatuses() {
         });
     }
 }
+
+$(document).ready(function() {
+    checkItemStatuses();
+});

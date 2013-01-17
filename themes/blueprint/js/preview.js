@@ -1,10 +1,3 @@
-$(document).ready(function() {
-    if (!Array.prototype.indexOf) {
-        setIndexOf();
-    }
-    getBookPreviews();
-});
-
 function getBookPreviews() {
     var skeys = '';
     $('.previewBibkeys').each(function(){
@@ -159,3 +152,10 @@ function setIndexOf() {
         return -1;
     }
 }
+
+$(document).ready(function() {
+    if (!Array.prototype.indexOf) {
+        setIndexOf();
+    }
+    getBookPreviews();
+});

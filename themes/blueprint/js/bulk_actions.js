@@ -1,7 +1,3 @@
-$(document).ready(function(){
-    registerBulkActions();
-});
-
 function registerBulkActions() {
     $('form[name="bulkActionForm"] input[type="submit"]').unbind('click').click(function(){
         var ids = $.map($(this.form).find('input.checkbox_ui:checked'), function(i) {
@@ -70,3 +66,7 @@ function registerBulkActions() {
         return false;
     });
 }
+
+$(document).ready(function(){
+    registerBulkActions();
+});

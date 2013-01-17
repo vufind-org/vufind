@@ -1,7 +1,3 @@
-$(document).ready(function() {
-    showMoreInfoToggle();
-});
-
 function showMoreInfoToggle() {
     toggleCollectionInfo();
     $("#moreInfoToggle").show();
@@ -14,3 +10,7 @@ function showMoreInfoToggle() {
 function toggleCollectionInfo() {
     $("#collectionInfo").toggle();
 }
+
+$(document).ready(function() {
+    showMoreInfoToggle();
+});

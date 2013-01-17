@@ -1,3 +1,21 @@
+function loadResolverLinks($target, openUrl) {
+    $target.addClass('ajax_availability');
+    var url = path + '/AJAX/JSON?' + $.param({method:'getResolverLinks',openurl:openUrl});
+    $.ajax({
+        dataType: 'json',
+        url: url,
+        success: function(response) {
+            if (response.status == 'OK') {
+                $target.removeClass('ajax_availability')
+                    .empty().append(response.data);
+            } else {
+                $target.removeClass('ajax_availability').addClass('error')
+                    .empty().append(response.data);
+            }
+        }
+    });
+}
+
 $(document).ready(function() {
     // assign action to the openUrlWindow link class
     $('a.openUrlWindow').click(function(){
@@ -16,21 +34,3 @@ $(document).ready(function() {
         return false;
     });
 });
-
-function loadResolverLinks($target, openUrl) {
-    $target.addClass('ajax_availability');
-    var url = path + '/AJAX/JSON?' + $.param({method:'getResolverLinks',openurl:openUrl});
-    $.ajax({
-        dataType: 'json',
-        url: url,
-        success: function(response) {
-            if (response.status == 'OK') {
-                $target.removeClass('ajax_availability')
-                    .empty().append(response.data);
-            } else {
-                $target.removeClass('ajax_availability').addClass('error')
-                    .empty().append(response.data);
-            }
-        }
-    });
-}

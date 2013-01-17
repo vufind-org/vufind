@@ -1,21 +1,3 @@
-$(document).ready(function() {
-    checkSaveStatuses();
-    // attach click event to the save record link
-    $('a.saveRecord').click(function() {
-        var id = $(this).parents('.recordId').find('.hiddenId');
-        if (id.length > 0) {
-            // search results:
-            id = id[0].value;
-        } else {
-            // record view:
-            id = document.getElementById('record_id').value;
-        }
-        var controller = extractController(this);
-        var $dialog = getLightbox(controller, 'Save', id, null, this.title, controller, 'Save', id);
-        return false;
-    });
-});
-
 function checkSaveStatuses() {
     var data = $.map($('.recordId'), function(i) {
         return {'id':$(i).find('.hiddenId')[0].value, 'source':extractSource(i)};
@@ -54,3 +36,21 @@ function checkSaveStatuses() {
         });
     }
 }
+
+$(document).ready(function() {
+    checkSaveStatuses();
+    // attach click event to the save record link
+    $('a.saveRecord').click(function() {
+        var id = $(this).parents('.recordId').find('.hiddenId');
+        if (id.length > 0) {
+            // search results:
+            id = id[0].value;
+        } else {
+            // record view:
+            id = document.getElementById('record_id').value;
+        }
+        var controller = extractController(this);
+        var $dialog = getLightbox(controller, 'Save', id, null, this.title, controller, 'Save', id);
+        return false;
+    });
+});
