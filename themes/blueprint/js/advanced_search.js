@@ -1,4 +1,4 @@
-/*global deleteSearchGroupString, searchFieldLabel, searchFields, searchJoins, searchLabel, searchMatch*/
+/*global addSearchString, deleteSearchGroupString, searchFieldLabel, searchFields, searchJoins, searchLabel, searchMatch*/
 
 var nextGroupNumber = 0;
 var groupSearches = [];
@@ -109,11 +109,6 @@ function reSortGroups()
         $("#groupJoin").show();
         $("#delete_link_0").show();
     }
-
-    // If the last group was removed, add an empty group
-    if (nextGroupNumber == 0) {
-        addGroup();
-    }
 }
 
 function addGroup(firstTerm, firstField, join)
@@ -171,6 +166,10 @@ function deleteGroup(group)
     $("#group" + group).remove();
     // And keep the page in order
     reSortGroups();
+    // If the last group was removed, add an empty group
+    if (nextGroupNumber == 0) {
+        addGroup();
+    }
 }
 
 // Fired by onclick event
