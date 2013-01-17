@@ -1,6 +1,4 @@
-$('.results-page').live('pageshow', function() {
-    checkItemStatuses();
-});
+/*global path*/
 
 function checkItemStatuses() {
     var id = $.map($('.ajaxItemId'), function(i) {
@@ -47,3 +45,7 @@ function checkItemStatuses() {
         });
     }
 }
+
+$('.results-page').live('pageshow', function() {
+    checkItemStatuses();
+});
