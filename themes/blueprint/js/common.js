@@ -8,79 +8,14 @@ $.ajaxSetup({cache: false});
 $.validator.setDefaults({
     errorClass: 'invalid'
 });
-    
-// add a modified version of the original phoneUS rule 
+
+// add a modified version of the original phoneUS rule
 // to accept only 10-digit phone numbers
 $.validator.addMethod("phoneUS", function(phone_number, element) {
-    phone_number = phone_number.replace(/[-\s().]+/g, ""); 
+    phone_number = phone_number.replace(/[-\s().]+/g, "");
     return this.optional(element) || phone_number.length > 9 &&
         phone_number.match(/^(\([2-9]\d{2}\)|[2-9]\d{2})[2-9]\d{2}\d{4}$/);
 }, 'Please specify a valid phone number');
-
-$(document).ready(function(){
-    // initialize autocomplete
-    initAutocomplete();    
-
-    // put focus on the "mainFocus" element
-    $('.mainFocus').each(function(){ $(this).focus(); } );
-
-    // support "jump menu" dropdown boxes
-    $('select.jumpMenu').change(function(){ $(this).parent('form').submit(); });
-
-    // attach click event to the "keep filters" checkbox
-    $('#searchFormKeepFilters').change(function() { filterAll(this); });
-
-    // attach click event to the search help links
-    $('a.searchHelp').click(function(){
-        window.open(path + '/Help/Home?topic=search', 'Help', 'width=625, height=510');
-        return false;
-    });
-
-    // attach click event to the advanced search help links
-    $('a.advsearchHelp').click(function(){
-        window.open(path + '/Help/Home?topic=advsearch', 'Help', 'width=625, height=510');
-        return false;
-    });
-
-    // assign click event to "email search" links
-    $('a.mailSearch').click(function() {
-        var id = this.id.substr('mailSearch'.length);
-        var $dialog = getLightbox('Search', 'Email', id, null, this.title, 'Search', 'Email', id);
-        return false;
-    });
-
-    // assign action to the "select all checkboxes" class
-    $('input[type="checkbox"].selectAllCheckboxes').change(function(){
-        $(this.form).find('input[type="checkbox"]').attr('checked', $(this).is(':checked'));
-    });
-    
-    // attach mouseover event to grid view records
-    $('.gridCellHover').mouseover(function() {
-        $(this).addClass('gridMouseOver')
-    });
-    
-    // attach mouseout event to grid view records
-    $('.gridCellHover').mouseout(function() {
-        $(this).removeClass('gridMouseOver')
-    });  
-    
-    // assign click event to "viewCart" links
-    $('a.viewCart').click(function() {
-        var $dialog = getLightbox('Cart', 'Home', null, null, this.title, '', '', '', {viewCart:"1"});
-        return false;
-    });
-    
-    // Print
-    var url = window.location.href;
-    if(url.indexOf('?' + 'print' + '=') != -1  || url.indexOf('&' + 'print' + '=') != -1) {
-        $("link[media='print']").attr("media", "all");
-        window.print();
-    }
-    
-    //ContextHelp
-    contextHelp.init();
-    contextHelp.contextHelpSys.load();
-});
 
 function toggleMenu(elemId) {
     var elem = $("#"+elemId);
@@ -143,7 +78,7 @@ function initAutocomplete() {
                 var type = params.type;
                 if (!type && params.typeSelector) {
                     type = $('#' + params.typeSelector).val();
-                } 
+                }
                 var searcher = params.searcher;
                 if (!searcher) {
                     searcher = 'Solr';
@@ -185,7 +120,7 @@ function printIDs(ids)
     }
     var parts = [];
         $(ids).each(function() {
-       parts[parts.length] = encodeURIComponent('id[]') + '=' + encodeURIComponent(this); 
+       parts[parts.length] = encodeURIComponent('id[]') + '=' + encodeURIComponent(this);
         });
     var url =  path + '/Records?print=true&' + parts.join('&');
     window.open(url);
@@ -193,12 +128,12 @@ function printIDs(ids)
 }
 
 var contextHelp = {
-        
+
     init: function() {
         $('body').append('<table cellspacing="0" cellpadding="0" id="contextHelp"><tbody><tr class="top"><td class="left"></td><td class="center"><div class="arrow up"></div></td><td class="right"></td></tr><tr class="middle"><td></td><td class="body"><div id="closeContextHelp"></div><div id="contextHelpContent"></div></td><td></td></tr><tr class="bottom"><td class="left"></td><td class="center"><div class="arrow down"></div></td><td class="right"></td></tr></tbody></table>');
     },
-    
-    hover: function(listenTo, widthOffset, heightOffset, direction, align, msgText) {     
+
+    hover: function(listenTo, widthOffset, heightOffset, direction, align, msgText) {
         $(listenTo).mouseenter(function() {
             contextHelp.contextHelpSys.setPosition(listenTo, widthOffset, heightOffset, direction, align, '', false);
             contextHelp.contextHelpSys.updateContents(msgText);
@@ -206,14 +141,14 @@ var contextHelp = {
         $(listenTo).mouseleave(function() {
             contextHelp.contextHelpSys.hideMessage();
         });
-    }, 
-    
+    },
+
     flash: function(id, widthOffset, heightOffset, direction, align, msgText, duration) {
         this.contextHelpSys.setPosition(id, widthOffset, heightOffset, direction, align);
         this.contextHelpSys.updateContents(msgText);
         setTimeout(this.contextHelpSys.hideMessage, duration);
     },
-    
+
     contextHelpSys: {
         CHTable:"#contextHelp",
         CHContent:"#contextHelpContent",
@@ -295,7 +230,7 @@ var contextHelp = {
             }
             $(contextHelp.contextHelpSys.CHTable).css("left",left + "px");
             $(contextHelp.contextHelpSys.CHTable).css("top",top + "px");},
-            
+
         updateContents:function(msg){
             contextHelp.contextHelpSys.isUp=true;
             $(contextHelp.contextHelpSys.CHContent).empty();
@@ -339,3 +274,68 @@ function extractSource(element)
     var x = extractDataByClassPrefix(element, 'source');
     return x.length == 0 ? 'VuFind' : x;
 }
+
+$(document).ready(function(){
+    // initialize autocomplete
+    initAutocomplete();
+
+    // put focus on the "mainFocus" element
+    $('.mainFocus').each(function(){ $(this).focus(); } );
+
+    // support "jump menu" dropdown boxes
+    $('select.jumpMenu').change(function(){ $(this).parent('form').submit(); });
+
+    // attach click event to the "keep filters" checkbox
+    $('#searchFormKeepFilters').change(function() { filterAll(this); });
+
+    // attach click event to the search help links
+    $('a.searchHelp').click(function(){
+        window.open(path + '/Help/Home?topic=search', 'Help', 'width=625, height=510');
+        return false;
+    });
+
+    // attach click event to the advanced search help links
+    $('a.advsearchHelp').click(function(){
+        window.open(path + '/Help/Home?topic=advsearch', 'Help', 'width=625, height=510');
+        return false;
+    });
+
+    // assign click event to "email search" links
+    $('a.mailSearch').click(function() {
+        var id = this.id.substr('mailSearch'.length);
+        var $dialog = getLightbox('Search', 'Email', id, null, this.title, 'Search', 'Email', id);
+        return false;
+    });
+
+    // assign action to the "select all checkboxes" class
+    $('input[type="checkbox"].selectAllCheckboxes').change(function(){
+        $(this.form).find('input[type="checkbox"]').attr('checked', $(this).is(':checked'));
+    });
+
+    // attach mouseover event to grid view records
+    $('.gridCellHover').mouseover(function() {
+        $(this).addClass('gridMouseOver')
+    });
+
+    // attach mouseout event to grid view records
+    $('.gridCellHover').mouseout(function() {
+        $(this).removeClass('gridMouseOver')
+    });
+
+    // assign click event to "viewCart" links
+    $('a.viewCart').click(function() {
+        var $dialog = getLightbox('Cart', 'Home', null, null, this.title, '', '', '', {viewCart:"1"});
+        return false;
+    });
+
+    // Print
+    var url = window.location.href;
+    if(url.indexOf('?' + 'print' + '=') != -1  || url.indexOf('&' + 'print' + '=') != -1) {
+        $("link[media='print']").attr("media", "all");
+        window.print();
+    }
+
+    //ContextHelp
+    contextHelp.init();
+    contextHelp.contextHelpSys.load();
+});
