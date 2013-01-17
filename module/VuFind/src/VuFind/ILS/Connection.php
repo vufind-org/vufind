@@ -171,10 +171,14 @@ class Connection
     {
         // Determine config file name based on class name:
         $parts = explode('\\', $this->getDriverClass());
-        $configFile = end($parts) . '.ini';
-        $configFilePath = ConfigReader::getConfigPath($configFile);
-        return file_exists($configFilePath)
-            ? parse_ini_file($configFilePath, true) : array();
+        try {
+            $config = ConfigReader::getConfig(end($parts));
+        } catch (\Zend\Config\Exception\RuntimeException $e) {
+            // Configuration loading failed; probably means file does not
+            // exist -- just return an empty array in that case:
+            return array();
+        }
+        return $config->toArray();
     }
 
     /**
