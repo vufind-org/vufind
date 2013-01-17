@@ -1,3 +1,5 @@
+/*global extractSource, getLightbox, printIDs*/
+
 function registerBulkActions() {
     $('form[name="bulkActionForm"] input[type="submit"]').unbind('click').click(function(){
         var ids = $.map($(this.form).find('input.checkbox_ui:checked'), function(i) {
@@ -11,9 +13,10 @@ function registerBulkActions() {
         var message = $(this).attr('title');
         var id = '';
         var module = "Cart";
+        var postParams;
         switch (action) {
         case 'export':
-            var postParams = {ids:ids, 'export':'1'};
+            postParams = {ids:ids, 'export':'1'};
             action = "MyResearchBulk";
             break;
         case 'delete':
@@ -23,19 +26,20 @@ function registerBulkActions() {
             id = (id.indexOf('bottom_delete_list_items_') != -1)
                 ? id.replace('bottom_delete_list_items_', '')
                 : id.replace('delete_list_items_', '');
-            var postParams = {ids:ids, 'delete':'1', 'listID':id};
+            postParams = {ids:ids, 'delete':'1', 'listID':id};
             break;
         case 'email':
             action = "MyResearchBulk";
-            var postParams = {ids:ids, email:'1'};
+            postParams = {ids:ids, email:'1'};
             break;
         case 'print':
-            var printing = printIDs(ids);
-            if(printing) {
+            if (printIDs(ids)) {
+                // IDs successfully printed -- we're done:
                 return false;
             } else {
+                // No selected IDs: show error
                 action = "MyResearchBulk";
-                var postParams = {error:'1'};
+                postParams = {error:'1'};
             }
             break;
         }
@@ -58,7 +62,9 @@ function registerBulkActions() {
         recordID = decodeURIComponent(recordID.split('&')[0]);
         var listID = this.href.substring(this.href.lastIndexOf('/')+1);
         listID = decodeURIComponent(listID.split('?')[0]);
-        if(listID == 'Favorites') listID = '';
+        if (listID == 'Favorites') {
+            listID = '';
+        }
         var message = $(this).attr('title');
         var postParams = {'delete': recordID, 'source': extractSource(this)};
         getLightbox('MyResearch', 'MyList', listID, '', message, 'MyResearch', 'MyList', listID, postParams);
