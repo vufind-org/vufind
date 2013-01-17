@@ -1,3 +1,5 @@
+/*global path*/
+
 // keep a handle to the current opened dialog so we can access it later
 var __dialogHandle = {dialog: null, processFollowup:false, followupModule: null, followupAction: null, recordId: null, postParams: null};
 
@@ -21,7 +23,7 @@ function getLightbox(module, action, id, lookfor, message, followupModule, follo
     };
 
     // create a new modal dialog
-    $dialog = $('<div id="modalDialog"><div class="dialogLoading">&nbsp;</div></div>')
+    var $dialog = $('<div id="modalDialog"><div class="dialogLoading">&nbsp;</div></div>')
         .load(path + '/AJAX/JSON?' + $.param(params), postParams)
             .dialog({
                 modal: true,
@@ -62,7 +64,7 @@ function hideLightbox() {
 }
 
 function displayLightboxFeedback($form, message, type) {
-    $container = $form.parent();
+    var $container = $form.parent();
     $container.empty();
     $container.append('<div class="' + type + '">' + message + '</div>');
 }
@@ -83,28 +85,6 @@ function showLoadingGraphic($form) {
 
 function hideLoadingGraphic($form) {
     $form.parent().parent().find('.dialogLoading').remove();
-}
-
-/**
- * This is called by the lightbox when it
- * finished loading the dialog content from the server
- * to register the form in the dialog for ajax submission.
- */
-function lightboxDocumentReady() {
-    registerAjaxLogin();
-    registerAjaxCart();
-    registerAjaxCartExport();
-    registerAjaxSaveRecord();
-    registerAjaxListEdit();
-    registerAjaxEmailRecord();
-    registerAjaxSMSRecord();
-    registerAjaxTagRecord();
-    registerAjaxEmailSearch();
-    registerAjaxBulkSave();
-    registerAjaxBulkEmail();
-    registerAjaxBulkExport();
-    registerAjaxBulkDelete();
-    $('.mainFocus').focus();
 }
 
 function registerAjaxLogin() {
@@ -588,4 +568,26 @@ function registerAjaxBulkDelete() {
         });
         return false;
     });
+}
+
+/**
+ * This is called by the lightbox when it
+ * finished loading the dialog content from the server
+ * to register the form in the dialog for ajax submission.
+ */
+function lightboxDocumentReady() {
+    registerAjaxLogin();
+    registerAjaxCart();
+    registerAjaxCartExport();
+    registerAjaxSaveRecord();
+    registerAjaxListEdit();
+    registerAjaxEmailRecord();
+    registerAjaxSMSRecord();
+    registerAjaxTagRecord();
+    registerAjaxEmailSearch();
+    registerAjaxBulkSave();
+    registerAjaxBulkEmail();
+    registerAjaxBulkExport();
+    registerAjaxBulkDelete();
+    $('.mainFocus').focus();
 }
