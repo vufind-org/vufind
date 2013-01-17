@@ -204,11 +204,6 @@ div.footer-text {
     color:#ff890f;
     padding-left:18px
 }
-.add_to_book_bag {
-    /* Hidden until fully implemented */
-    display: none;
-}
-
 .error, .alert, .info {
   text-align:center;
   padding:10px 0;

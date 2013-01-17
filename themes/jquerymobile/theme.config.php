@@ -11,8 +11,6 @@ return array(
         'common.js',
         'jquery.mobile-1.0rc2.min.js',
         'jquery.cookie.js',
-        'cart_cookie.js',
-        'cart.js',
         'scripts.js',
     ),
     'favicon' => 'vufind-favicon.ico',
