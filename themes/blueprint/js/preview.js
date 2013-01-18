@@ -9,7 +9,7 @@ function getBookPreviews() {
     // fetch Google preview if enabled
     if ($('.previewGBS').length > 0) {
         // checks if query string might break URI limit - if not, run as normal
-        if (!bibkeys.length > 150){
+        if (bibkeys.length <= 150){
             var script = 'https://encrypted.google.com/books?jscmd=viewapi&bibkeys='
                 + bibkeys.join(',') + '&callback=processGBSBookInfo';
             $.getScript(script);
