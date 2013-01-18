@@ -7,6 +7,7 @@
     <exclude name="EvalExpression" />
   </rule>
   <rule ref="rulesets/naming.xml">
+    <exclude name="LongVariable" />
     <exclude name="ShortVariable" />
     <exclude name="ShortMethodName" />
   </rule>
