@@ -1,3 +1,5 @@
+/*global vufindString*/
+
 var _CART_COOKIE = 'vufind_cart';
 var _CART_COOKIE_SOURCES = 'vufind_cart_src';
 var _CART_COOKIE_DELIM = "\t";
@@ -17,9 +19,10 @@ function registerUpdateCart($form) {
                 var msg = "";
                 var orig = getItemsFromCartCookie();
                 $(selected).each(function(i) {
-                    for (i in orig) {
-                        if (this == orig[i]) {
+                    for (var x in orig) {
+                        if (this == orig[x]) {
                             inCart++;
+                            return;
                         }
                     }
                     addItemToCartCookie(this);
