@@ -16,7 +16,9 @@ function showDocs() {
     $('.page_list').hide();
     $('.doc_list').show();
     var pL = $('.doc_list .page_link');
-    if(pL.length == 0) $('.doc_list').html('<br/><br/><br/>'+noHit+'<br/><br/><br/>');
+    if(pL.length == 0) {
+        $('.doc_list').html('<br/><br/><br/>'+noHit+'<br/><br/><br/>');
+    }
 }
 
 var currentPreview = "";
@@ -34,16 +36,17 @@ function showPreview(src,tab) {
             .load(function() {
                 tab.innerHTML = tText;
                 $('#preview').replaceWith(this);
-            })
+            });
     }
     $('.preview').show();
 }
 
 function showOriginal(src) {
-    if(src.length > 0)
+    if(src.length > 0) {
         $('.original').html('Please <a href="mailto:digitallibrary@villanova.edu?subject=Hi-Res%20Request%20for%20'+src+'">email</a> us for access to the Hi-Res image.');
-    else
+    } else {
         $('.original').html('Original Image File Does Not Exist');
+    }
     $('.information, .preview, .zoomFrame').hide();
     $('.original').show();
 }
@@ -72,8 +75,9 @@ function loadPage(page) {
             pages[page] = $.parseJSON(response);
             setTabs(pages[page]);
         });
+    } else {
+        setTabs(pages[page]);
     }
-    else setTabs(pages[page]);
 }
 function setPageLinkClicks() {
     $('.page_link').each(function (index) {
@@ -92,8 +96,8 @@ function setPageLinkClicks() {
         $('.page_list .page_link:first-child').addClass('selected');
     }
 }
-function firstPage() {selectPage(0)}
-function prevPage() {selectPage(Math.max(0,currentPage-1))}
+function firstPage() {selectPage(0);}
+function prevPage() {selectPage(Math.max(0,currentPage-1));}
 function nextPage() {
     var newpage = Math.min(pages.length-1,currentPage+1);
     if(!pages[newpage]) {
@@ -123,8 +127,9 @@ function selectPage(newPage) {
     selected.addClass('selected');
     pageList.scrollTop(selected[0].offsetTop-50);
     if(pageList[0].scrollHeight-pageList[0].scrollTop-pageList[0].offsetHeight < 50) {
-        if(!loadingThumbs)
+        if(!loadingThumbs) {
             createPageLinks();
+        }
     }
 }
 function setTabs(srcs) {
@@ -141,8 +146,9 @@ function setTabs(srcs) {
             $(this).addClass('selected');
             currTab = index;
         });
-        if(index == currTab)        // SET THE MIDDLE TAB (medium) TO THE ACTIVE ONE
+        if(index == currTab) {      // SET THE MIDDLE TAB (medium) TO THE ACTIVE ONE
             $(this).click();
+        }
     });
 }
 
@@ -152,15 +158,15 @@ function createPageLinks() {
     //console.log(currEnd);
     if(currEnd >= pages.length) {
         $('.side-loading').css({'display':'none'});
-    }
-    else if(pages[currEnd]) {
+    } else if(pages[currEnd]) {
         $('<div class="page_link new"><img src="'+pages[currEnd]['thumbnail']+'">'+pages[currEnd]['label']+'</div>').insertBefore('.side-loading');
         // Make sure we're clear so that this lock doesn't go balistic
         var pageList = $('.page_list');
-        if(pageList.scrollHeight-pageList.scrollTop-pageList.offsetHeight < 50)
+        if (pageList.scrollHeight-pageList.scrollTop-pageList.offsetHeight < 50) {
             createPageLinks();
-        else
+        } else {
             loadingThumbs = false;
+        }
     }
     setPageLinkClicks();
 }
