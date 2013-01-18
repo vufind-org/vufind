@@ -77,9 +77,9 @@ function setIndexOf() {
             throw new TypeError();
         }
         var t = Object(this);
-        /*jslint bitwise: true*/
-        var len = t.length >>> 0;
         /*jslint bitwise: false*/
+        var len = t.length >>> 0;
+        /*jslint bitwise: true*/
         if (len === 0) {
             return -1;
         }
