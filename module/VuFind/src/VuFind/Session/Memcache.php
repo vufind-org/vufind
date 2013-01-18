@@ -41,6 +41,11 @@ namespace VuFind\Session;
  */
 class Memcache extends AbstractBase
 {
+    /**
+     * Memcache connection
+     *
+     * @var \Memcache
+     */
     protected $connection = false;
 
     /**
