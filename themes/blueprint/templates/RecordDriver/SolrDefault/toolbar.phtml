@@ -41,7 +41,6 @@
         <input id="cartId" type="hidden" name="ids[]" value="<?=$this->escapeHtml($cartId)?>" />
         <noscript>
           <? if ($cart->contains($cartId)): ?>
-            <input id="cartId" type="hidden" name="ids[]" value="<?=$this->escapeHtml($cartId)?>" />
             <input type="submit" class="button cart bookbagDelete" name="delete" value="<?=$this->transEsc('Remove from Book Bag')?>"/>
           <? else: ?>
             <input type="submit" class="button bookbagAdd" name="add" value="<?=$this->transEsc('Add to Book Bag')?>"/>
