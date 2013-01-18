@@ -1,3 +1,5 @@
+/*global __dialogHandle, displayFormError, extractController, extractSource, getLightbox, path, toggleMenu*/
+
 /**
  * Functions and event handlers specific to record pages.
  */
@@ -19,7 +21,7 @@ function checkRequestIsValid(element, requestURL) {
     {
         hash = hashes[i].split('=');
         var x = hash[0];
-        var y = hash[1]
+        var y = hash[1];
         vars[x] = y;
     }
     vars['id'] = recordId;
@@ -58,7 +60,7 @@ function registerAjaxCommentRecord() {
                     refreshCommentList(id, recordSource);
                     $(form).resetForm();
                 } else if (response.status == 'NEED_AUTH') {
-                    $dialog = getLightbox('MyResearch', 'Login', id, null, 'Login');
+                    var $dialog = getLightbox('MyResearch', 'Login', id, null, 'Login');
                     $dialog.dialog({
                         close: function(event, ui) {
                             // login dialog is closed, check to see if we can proceed with followup
