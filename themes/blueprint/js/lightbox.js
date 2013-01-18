@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, confirm, extractSource, getItemsFromCartCookie, hexEncode, path, printIDs, rc4Encrypt, redrawCartStatus, refreshCommentList, removeRecordState, saveCartCookie, vufindString*/
+/*global checkSaveStatuses, confirm, extractController, extractSource, getItemsFromCartCookie, hexEncode, htmlEncode, path, printIDs, rc4Encrypt, redrawCartStatus, refreshCommentList, removeRecordState, saveCartCookie, vufindString*/
 
 // keep a handle to the current opened dialog so we can access it later
 var __dialogHandle = {dialog: null, processFollowup:false, followupModule: null, followupAction: null, recordId: null, postParams: null};
@@ -466,7 +466,7 @@ function registerAjaxBulkEmail() {
             success: function(response, statusText, xhr, $form) {
                 if (response.status == 'OK') {
                     displayLightboxFeedback($form, response.data, 'info');
-                    setTimeout("hideLightbox();", 3000);
+                    setTimeout(function() { hideLightbox(); }, 3000);
                 } else {
                     displayFormError($form, response.data);
                 }
@@ -562,7 +562,7 @@ function registerAjaxBulkDelete() {
             success: function(response, statusText, xhr, $form) {
                 if (response.status == 'OK') {
                     displayLightboxFeedback($form, response.data.result, 'info');
-                    setTimeout("hideLightbox(); window.location.reload();", 3000);
+                    setTimeout(function() { hideLightbox(); window.location.reload(); }, 3000);
                 } else {
                     displayFormError($form, response.data);
                 }
