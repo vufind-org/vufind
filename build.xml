@@ -67,7 +67,7 @@
 
   <!-- PHP copy-and-paste detection -->
   <target name="phpcpd">
-    <exec command="phpcpd --log-pmd ${builddir}/reports/pmd-cpd.xml --exclude ${srcdir}/module/VuFind/tests/* ${srcdir}/module" />
+    <exec command="phpcpd --log-pmd ${builddir}/reports/pmd-cpd.xml --exclude ${srcdir}/module/VuFind/tests/unit-tests/src/Auth ${srcdir}/module" />
   </target>
 
   <!-- PHP CodeSniffer -->
