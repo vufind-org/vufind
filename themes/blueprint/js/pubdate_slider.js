@@ -1,3 +1,30 @@
+function updatePublishDateSlider(prefix) {
+    var from = parseInt($('#' + prefix + 'from').val(), 10);
+    var to = parseInt($('#' + prefix + 'to').val(), 10);
+
+    // assuming our oldest item is published in the 15th century
+    var min = 1500;
+    if (!from || from < min) {
+        from = min;
+    }
+    // move the min 20 years away from the "from" value
+    if (from > min + 20) {
+        min = from - 20;
+    }
+    // and keep the max at 1 years from now
+    var max = (new Date()).getFullYear() + 1;
+    if (!to || to > max) {
+        to = max;
+    }
+    if (from > max) {
+        from = max;
+    }
+    // update the slider with the new min/max/values
+    $('#' + prefix + 'Slider').slider('option', {
+        min: min, max: max, values: [from, to]
+    });
+}
+
 function makePublishDateSlider(prefix) {
     // create the slider widget
     $('#' + prefix + 'Slider').slider({
@@ -16,29 +43,6 @@ function makePublishDateSlider(prefix) {
     // the slider needs to be updated too
     $('#' + prefix + 'from, #' + prefix + 'to').change(function(){
         updatePublishDateSlider(prefix);
-    });
-}
-
-function updatePublishDateSlider(prefix) {
-    var from = parseInt($('#' + prefix + 'from').val());
-    var to = parseInt($('#' + prefix + 'to').val());
-    // assuming our oldest item is published in the 15th century
-    var min = 1500;
-    if (!from || from < min) {
-        from = min;
-    }
-    // move the min 20 years away from the "from" value
-    if (from > min + 20) {
-        min = from - 20;
-    }
-    // and keep the max at 1 years from now
-    var max = (new Date()).getFullYear() + 1;
-    if (!to || to > max) {
-        to = max;
-    }
-    // update the slider with the new min/max/values
-    $('#' + prefix + 'Slider').slider('option', {
-        min: min, max: max, values: [from, to]
     });
 }
 
