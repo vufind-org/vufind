@@ -79,6 +79,19 @@ function registerAjaxCommentRecord() {
     });
 }
 
+function deleteRecordComment(element, recordId, recordSource, commentId) {
+    var url = path + '/AJAX/JSON?' + $.param({method:'deleteRecordComment',id:commentId});
+    $.ajax({
+        dataType: 'json',
+        url: url,
+        success: function(response) {
+            if (response.status == 'OK') {
+                $($(element).parents('li')[0]).remove();
+            }
+        }
+    });
+}
+
 function refreshCommentList(recordId, recordSource) {
     var url = path + '/AJAX/JSON?' + $.param({method:'getRecordCommentsAsHTML',id:recordId,'source':recordSource});
     $.ajax({
@@ -90,22 +103,9 @@ function refreshCommentList(recordId, recordSource) {
                 $('#commentList').append(response.data);
                 $('#commentList a.deleteRecordComment').unbind('click').click(function() {
                     var commentId = $(this).attr('id').substr('recordComment'.length);
-                    deleteRecordComment(recordId, recordSource, commentId);
+                    deleteRecordComment(this, recordId, recordSource, commentId);
                     return false;
                 });
-            }
-        }
-    });
-}
-
-function deleteRecordComment(recordId, recordSource, commentId) {
-    var url = path + '/AJAX/JSON?' + $.param({method:'deleteRecordComment',id:commentId});
-    $.ajax({
-        dataType: 'json',
-        url: url,
-        success: function(response) {
-            if (response.status == 'OK') {
-                refreshCommentList(recordId, recordSource);
             }
         }
     });
@@ -147,7 +147,7 @@ $(document).ready(function(){
     $('a.deleteRecordComment').click(function() {
         var commentId = this.id.substr('recordComment'.length);
         var recordSource = extractSource(this);
-        deleteRecordComment(id, recordSource, commentId);
+        deleteRecordComment(this, id, recordSource, commentId);
         return false;
     });
 
