@@ -1,3 +1,7 @@
+function toggleCollectionInfo() {
+    $("#collectionInfo").toggle();
+}
+
 function showMoreInfoToggle() {
     toggleCollectionInfo();
     $("#moreInfoToggle").show();
@@ -5,10 +9,6 @@ function showMoreInfoToggle() {
         e.preventDefault();
         toggleCollectionInfo();
     });
-}
-
-function toggleCollectionInfo() {
-    $("#collectionInfo").toggle();
 }
 
 $(document).ready(function() {
