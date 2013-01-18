@@ -59,6 +59,49 @@ class AdapterFactory
     }
 
     /**
+     * Translate the connection string protocol into a driver name.
+     *
+     * @param string $type Database type from connection string
+     *
+     * @return string
+     */
+    public static function getDriverName($type)
+    {
+        switch (strtolower($type)) {
+        case 'mysql':
+            return 'mysqli';
+        case 'oci8':
+            return 'Oracle';
+        case 'pgsql':
+            return 'Pdo_Pgsql';
+        }
+        return $type;
+    }
+
+    /**
+     * Obtain a Zend\DB connection using an option array.
+     *
+     * @param array $options Options for building adapter
+     *
+     * @return object
+     */
+    public static function getAdapterFromOptions($options)
+    {
+        // Set up custom options by database type:
+        switch (strtolower($options['driver'])) {
+        case 'mysqli':
+            $config = ConfigReader::getConfig();
+            $options['charset'] = isset($config->Database->charset)
+                ? $config->Database->charset : 'utf8';
+            $options['options'] = array('buffer_results' => true);
+            break;
+        }
+
+        // Set up database connection:
+        return new Adapter($options);
+    }
+
+    /**
      * Obtain a Zend\DB connection using a connection string.
      *
      * @param string $connectionString Connection string of the form
@@ -87,39 +130,15 @@ class AdapterFactory
         $username = !is_null($overrideUser) ? $overrideUser : $username;
         $password = !is_null($overridePass) ? $overridePass : $password;
 
-        // Translate database type for compatibility with legacy config files:
-        switch (strtolower($type)) {
-        case 'mysql':
-            $type = 'mysqli';
-            break;
-        case 'oci8':
-            $type = 'Oracle';
-            break;
-        case 'pgsql':
-            $type = 'Pdo_Pgsql';
-            break;
-        }
-
         // Set up default options:
         $options = array(
-            'driver' => $type,
+            'driver' => static::getDriverName($type),
             'hostname' => $host,
             'username' => $username,
             'password' => $password,
             'database' => $dbName
         );
 
-        // Set up custom options by database type:
-        switch (strtolower($type)) {
-        case 'mysqli':
-            $config = ConfigReader::getConfig();
-            $options['charset'] = isset($config->Database->charset)
-                ? $config->Database->charset : 'utf8';
-            $options['options'] = array('buffer_results' => true);
-            break;
-        }
-
-        // Set up database connection:
-        return new Adapter($options);
+        return static::getAdapterFromOptions($options);
     }
 }
