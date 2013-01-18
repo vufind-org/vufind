@@ -38,7 +38,7 @@ use VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Bootstrap
+class Bootstrapper
 {
     protected $config;
     protected $event;

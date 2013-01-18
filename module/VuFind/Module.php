@@ -26,8 +26,7 @@
  * @link     https://github.com/dmj/vf2-proxy
  */
 namespace VuFind;
-use VuFind\Bootstrap,
-    Zend\ModuleManager\ModuleManager,
+use Zend\ModuleManager\ModuleManager,
     Zend\Mvc\MvcEvent;
 
 /**
@@ -92,7 +91,7 @@ class Module
      */
     public function onBootstrap(MvcEvent $e)
     {
-        $bootstrapper = new Bootstrap($e);
+        $bootstrapper = new Bootstrapper($e);
         $bootstrapper->bootstrap();
     }
 }
