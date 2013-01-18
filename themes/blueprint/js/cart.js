@@ -1,4 +1,4 @@
-/*global vufindString*/
+/*global contextHelp, vufindString*/
 
 var _CART_COOKIE = 'vufind_cart';
 var _CART_COOKIE_SOURCES = 'vufind_cart_src';
@@ -14,16 +14,17 @@ function getItemsFromCartCookie() {
 
         var sources = $.cookie(_CART_COOKIE_SOURCES);
 
+        var i;
         if (!sources) {
             // Backward compatibility with VuFind 1.x -- if no source cookie, all
             // items come from the VuFind source:
-            for (var i = 0; i < cart.length; i++) {
+            for (i = 0; i < cart.length; i++) {
                 cart[i] = 'VuFind|' + cart[i];
             }
         } else {
             // Default case for VuFind 2.x carts -- decompress source data:
             sources = sources.split(_CART_COOKIE_DELIM);
-            for (var i = 0; i < cart.length; i++) {
+            for (i = 0; i < cart.length; i++) {
                 var sourceIndex = cart[i].charCodeAt(0) - 65;
                 cart[i] = sources[sourceIndex] + '|' + cart[i].substr(1);
             }
@@ -41,10 +42,10 @@ function cartHelp(msg, elId) {
 // return unique values from the given array
 function uniqueValues(array) {
     var o = {}, i, l = array.length, r = [];
-    for(var i=0; i<l;i++) {
+    for(i=0; i<l;i++) {
         o[array[i]] = array[i];
     }
-    for(var i in o) {
+    for(i in o) {
         r.push(o[i]);
     }
     return r;
@@ -202,7 +203,7 @@ $(document).ready(function() {
         }
         return false;
     });
-    redrawCartStatus()
+    redrawCartStatus();
     var $form = $('form[name="bulkActionForm"]');
     registerUpdateCart($form);
 });
