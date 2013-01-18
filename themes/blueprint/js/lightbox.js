@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, hexEncode, path, rc4Encrypt, refreshCommentList*/
+/*global checkSaveStatuses, confirm, extractSource, getItemsFromCartCookie, hexEncode, path, printIDs, rc4Encrypt, redrawCartStatus, refreshCommentList, removeRecordState, saveCartCookie, vufindString*/
 
 // keep a handle to the current opened dialog so we can access it later
 var __dialogHandle = {dialog: null, processFollowup:false, followupModule: null, followupAction: null, recordId: null, postParams: null};
@@ -162,7 +162,7 @@ function registerAjaxCart() {
             },
             showErrors: function(x) {
                 hideLoadingGraphic($form);
-                for (y in x) {
+                for (var y in x) {
                     if (y == 'ids[]') {
                         displayFormError($form, vufindString.bulk_noitems_advice);
                     }
@@ -231,7 +231,7 @@ function registerAjaxCart() {
                 success: function(response, statusText, xhr, $form) {
                     if (response.status == 'OK') {
                         var items = getItemsFromCartCookie();
-                        redrawCartStatus()
+                        redrawCartStatus();
                         hideLightbox();
                     }
                     var $dialog = getLightbox('Cart', 'Home', null, null, vufindString.viewBookBag, '', '', '', {viewCart:"1"});
@@ -259,6 +259,29 @@ function registerAjaxCart() {
     });
 }
 
+function refreshTagList(id, recordSource) {
+    var tagList = $('#tagList');
+    if (tagList.length > 0) {
+        tagList.empty();
+        var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:id,'source':recordSource});
+        $.ajax({
+            dataType: 'json',
+            url: url,
+            success: function(response) {
+                if (response.status == 'OK') {
+                    $.each(response.data, function(i, tag) {
+                        var href = path + '/Tag?' + $.param({lookfor:tag.tag});
+                        var html = (i>0 ? ', ' : ' ') + '<a href="' + htmlEncode(href) + '">' + htmlEncode(tag.tag) +'</a> (' + htmlEncode(tag.cnt) + ')';
+                        tagList.append(html);
+                    });
+                } else if (response.data && response.data.length > 0) {
+                    tagList.append(response.data);
+                }
+            }
+        });
+    }
+}
+
 function registerAjaxSaveRecord() {
     var saveForm = $('#modalDialog form[name="saveRecord"]');
     if (saveForm.length > 0) {
@@ -278,10 +301,8 @@ function registerAjaxSaveRecord() {
                         if (typeof(checkSaveStatuses) == 'function') {
                             checkSaveStatuses();
                         }
-                        // Update tag list if appropriate:
-                        if (typeof(refreshTagList) == 'function') {
-                            refreshTagList(recordId, recordSource);
-                        }
+                        // Update tag list:
+                        refreshTagList(recordId, recordSource);
                     } else {
                         displayFormError($form, response.data);
                     }
@@ -400,26 +421,6 @@ function registerAjaxTagRecord() {
             }
         });
         return false;
-    });
-}
-
-function refreshTagList(id, recordSource) {
-    $('#tagList').empty();
-    var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:id,'source':recordSource});
-    $.ajax({
-        dataType: 'json',
-        url: url,
-        success: function(response) {
-            if (response.status == 'OK') {
-                $.each(response.data, function(i, tag) {
-                    var href = path + '/Tag?' + $.param({lookfor:tag.tag});
-                    var html = (i>0 ? ', ' : ' ') + '<a href="' + htmlEncode(href) + '">' + htmlEncode(tag.tag) +'</a> (' + htmlEncode(tag.cnt) + ')';
-                    $('#tagList').append(html);
-                });
-            } else if (response.data && response.data.length > 0) {
-                $('#tagList').append(response.data);
-            }
-        }
     });
 }
 
