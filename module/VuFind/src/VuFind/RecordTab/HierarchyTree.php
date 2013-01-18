@@ -128,7 +128,7 @@ class HierarchyTree extends AbstractBase
      *
      * @return bool
      */
-    public function getFullHierarchySetting()
+    public function isFullHierarchyVisible()
     {
         // Get hierarchy driver:
         $recordDriver = $this->getRecordDriver();

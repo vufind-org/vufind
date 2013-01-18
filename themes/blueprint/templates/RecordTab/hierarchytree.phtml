@@ -8,7 +8,7 @@
         \Zend\View\Helper\HeadScript::SCRIPT,
         "var hierarchySettings = {\n"
         . "    lightboxMode: " . ($this->layout()->getTemplate() == 'layout/lightbox' ? 'true' : 'false') . ",\n"
-        . "    fullHierarchy: " . ($this->tab->getFullHierarchySetting() ? 'true' : 'false') . "\n"
+        . "    fullHierarchy: " . ($this->tab->isFullHierarchyVisible() ? 'true' : 'false') . "\n"
         . "};\n"
         . "vufindString.showTree = \"" . $this->transEsc('hierarchy_show_tree') . "\";\n"
         . "vufindString.hideTree = \"" . $this->transEsc('hierarchy_hide_tree') . "\";\n"
