@@ -1,3 +1,5 @@
+/*global documentID*/
+
 var currTab = 2;
 var loadingThumbs = true;
 var noHit;
@@ -68,6 +70,25 @@ function showInfo() {
 // --- PAGE LINK ACTIONS --- //
 var pages;
 var currentPage = 0;
+function setTabs(srcs) {
+    var tabs = '<a onClick="showOriginal(\''+srcs['original']+'\')">Original</a>'+
+                         '<a onClick="showPreview(\''+srcs['large']+'\',this)">Large</a>'+
+                         '<a onClick="showPreview(\''+srcs['medium']+'\',this)">Medium</a>'+
+                         '<a onClick="showZoom(\''+srcs['large']+'\',this)">Zoom</a>'+
+                         '<a onClick="showInfo()">Information</a>';
+    $(".view .navigation").html(tabs);
+    // - Re-assign the click event handlers
+    $('.view .navigation a').each(function (index) {
+        $(this).click(function () {
+            $('.view .navigation a.selected').removeClass('selected');
+            $(this).addClass('selected');
+            currTab = index;
+        });
+        if(index == currTab) {      // SET THE MIDDLE TAB (medium) TO THE ACTIVE ONE
+            $(this).click();
+        }
+    });
+}
 function loadPage(page) {
     currentPage = page;
     if(!pages[page]) {
@@ -96,6 +117,39 @@ function setPageLinkClicks() {
         $('.page_list .page_link:first-child').addClass('selected');
     }
 }
+function createPageLinks() {
+    loadingThumbs = true;
+    var currEnd = $('.page_list .page_link').size();
+    //console.log(currEnd);
+    if(currEnd >= pages.length) {
+        $('.side-loading').css({'display':'none'});
+    } else if(pages[currEnd]) {
+        $('<div class="page_link new"><img src="'+pages[currEnd]['thumbnail']+'">'+pages[currEnd]['label']+'</div>').insertBefore('.side-loading');
+        // Make sure we're clear so that this lock doesn't go balistic
+        var pageList = $('.page_list');
+        if (pageList.scrollHeight-pageList.scrollTop-pageList.offsetHeight < 50) {
+            createPageLinks();
+        } else {
+            loadingThumbs = false;
+        }
+    }
+    setPageLinkClicks();
+}
+function selectPage(newPage) {
+    currentPage = newPage;
+    loadPage(newPage);
+    var pageList = $('.page_list');
+    pageList.scrollTop(0);
+    pageList.find('.page_link.selected').removeClass('selected');
+    var selected = pageList.find('.page_link:nth-child('+(newPage+1)+')');
+    selected.addClass('selected');
+    pageList.scrollTop(selected[0].offsetTop-50);
+    if(pageList[0].scrollHeight-pageList[0].scrollTop-pageList[0].offsetHeight < 50) {
+        if(!loadingThumbs) {
+            createPageLinks();
+        }
+    }
+}
 function firstPage() {selectPage(0);}
 function prevPage() {selectPage(Math.max(0,currentPage-1));}
 function nextPage() {
@@ -115,60 +169,6 @@ function lastPage() {
     $('.side-loading').css({'display':'none'});
     setPageLinkClicks();
     selectPage(pages.length-1);
-}
-
-function selectPage(newPage) {
-    currentPage = newPage;
-    loadPage(newPage);
-    var pageList = $('.page_list');
-    pageList.scrollTop(0);
-    pageList.find('.page_link.selected').removeClass('selected');
-    var selected = pageList.find('.page_link:nth-child('+(newPage+1)+')');
-    selected.addClass('selected');
-    pageList.scrollTop(selected[0].offsetTop-50);
-    if(pageList[0].scrollHeight-pageList[0].scrollTop-pageList[0].offsetHeight < 50) {
-        if(!loadingThumbs) {
-            createPageLinks();
-        }
-    }
-}
-function setTabs(srcs) {
-    var tabs = '<a onClick="showOriginal(\''+srcs['original']+'\')">Original</a>'+
-                         '<a onClick="showPreview(\''+srcs['large']+'\',this)">Large</a>'+
-                         '<a onClick="showPreview(\''+srcs['medium']+'\',this)">Medium</a>'+
-                         '<a onClick="showZoom(\''+srcs['large']+'\',this)">Zoom</a>'+
-                         '<a onClick="showInfo()">Information</a>';
-    $(".view .navigation").html(tabs);
-    // - Re-assign the click event handlers
-    $('.view .navigation a').each(function (index) {
-        $(this).click(function () {
-            $('.view .navigation a.selected').removeClass('selected');
-            $(this).addClass('selected');
-            currTab = index;
-        });
-        if(index == currTab) {      // SET THE MIDDLE TAB (medium) TO THE ACTIVE ONE
-            $(this).click();
-        }
-    });
-}
-
-function createPageLinks() {
-    loadingThumbs = true;
-    var currEnd = $('.page_list .page_link').size();
-    //console.log(currEnd);
-    if(currEnd >= pages.length) {
-        $('.side-loading').css({'display':'none'});
-    } else if(pages[currEnd]) {
-        $('<div class="page_link new"><img src="'+pages[currEnd]['thumbnail']+'">'+pages[currEnd]['label']+'</div>').insertBefore('.side-loading');
-        // Make sure we're clear so that this lock doesn't go balistic
-        var pageList = $('.page_list');
-        if (pageList.scrollHeight-pageList.scrollTop-pageList.offsetHeight < 50) {
-            createPageLinks();
-        } else {
-            loadingThumbs = false;
-        }
-    }
-    setPageLinkClicks();
 }
 
 // fit preview to screen
