@@ -1,15 +1,12 @@
 // functions to get rights codes for previews
 function getHathiOptions() {
-    HathiOptions = $('[class*="hathiPreviewDiv"]').attr("class").split('__')[1].split(',');
-    return HathiOptions;
+    return $('[class*="hathiPreviewDiv"]').attr("class").split('__')[1].split(',');
 }
 function getGoogleOptions() {
-    GoogleOptions = $('[class*="googlePreviewDiv"]').attr("class").split('__')[1].split(',');
-    return GoogleOptions;
+    return $('[class*="googlePreviewDiv"]').attr("class").split('__')[1].split(',');
 }
 function getOLOptions() {
-    OlOptions = $('[class*="olPreviewDiv"]').attr("class").split('__')[1].split(',');
-    return OlOptions;
+    return $('[class*="olPreviewDiv"]').attr("class").split('__')[1].split(',');
 }
 
 function getHTPreviews(skeys) {
@@ -105,7 +102,7 @@ function setIndexOf() {
             }
         }
         return -1;
-    }
+    };
 }
 
 function getBookPreviews() {
