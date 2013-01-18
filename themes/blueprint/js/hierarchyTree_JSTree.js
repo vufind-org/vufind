@@ -27,6 +27,16 @@ function getRecord(recordID)
     });
 }
 
+function hideFullHierarchy(jsTreeNode)
+{
+    // Hide all nodes
+    $('#hierarchyTree li').hide();
+    // Show the nodes on the current path
+    $(jsTreeNode).show().parents().show();
+    // Show the nodes below the current path
+    $(jsTreeNode).find("li").show();
+}
+
 function scroll(scroller, mode)
 {
     // Get the currently cicked item
@@ -48,24 +58,22 @@ function scroll(scroller, mode)
     }
 }
 
-function hideFullHierarchy(jsTreeNode)
-{
-    // Hide all nodes
-    $('#hierarchyTree li').hide();
-    // Show the nodes on the current path
-    $(jsTreeNode).show().parents().show();
-    // Show the nodes below the current path
-    $(jsTreeNode).find("li").show();
-}
-
 function changeNoResultLabel(display)
 {
-    display ? $("#treeSearchNoResults").show() : $("#treeSearchNoResults").hide();
+    if (display) {
+        $("#treeSearchNoResults").show();
+    } else {
+        $("#treeSearchNoResults").hide();
+    }
 }
 
 function changeLimitReachedLabel(display)
 {
-    display ? $("#treeSearchLimitReached").show() : $("#treeSearchLimitReached").hide();
+    if (display) {
+        $("#treeSearchLimitReached").show();
+    } else {
+        $("#treeSearchLimitReached").hide();
+    }
 }
 
 function doTreeSearch()
@@ -129,12 +137,8 @@ $(function ()
 {
     $("#treeSearch input").click(function ()
     {
-        switch(this.id) {
-            case "search":
-                doTreeSearch();
-                break;
-            default:
-                break;
+        if (this.id == "search") {
+            doTreeSearch();
         }
     });
 });
@@ -153,7 +157,11 @@ $(document).ready(function()
         {
             e.preventDefault();
             $(this).toggleClass("open");
-            $(this).hasClass("open") ? scroll(scroller, "show") : scroll(scroller, "hide");
+            if ($(this).hasClass("open")) {
+                scroll(scroller, "show");
+            } else {
+                scroll(scroller, "hide");
+            }
             $("#hierarchyTree").jstree("toggle_dots");
         });
     }
