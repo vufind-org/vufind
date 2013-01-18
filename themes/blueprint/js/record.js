@@ -4,14 +4,6 @@
  * Functions and event handlers specific to record pages.
  */
 
-function setUpCheckRequest() {
-    $('.checkRequest').each(function(i) {
-        if($(this).hasClass('checkRequest')) {
-            var isValid = checkRequestIsValid(this, this.href);
-        }
-    });
-}
-
 function checkRequestIsValid(element, requestURL) {
     var recordId = requestURL.match(/\/Record\/([^\/]+)\//)[1];
     var vars = {}, hash;
@@ -41,6 +33,14 @@ function checkRequestIsValid(element, requestURL) {
             } else if (response.status == 'NEED_AUTH') {
                 $(element).replaceWith('<span class="holdBlocked">' + response.data.msg + '</span>');
             }
+        }
+    });
+}
+
+function setUpCheckRequest() {
+    $('.checkRequest').each(function(i) {
+        if($(this).hasClass('checkRequest')) {
+            var isValid = checkRequestIsValid(this, this.href);
         }
     });
 }
