@@ -1,3 +1,5 @@
+/*global hierarchySettings, path, vufindString*/
+
 var hierarchyID;
 var baseTreeSearchFullURL;
 
