@@ -117,7 +117,7 @@ class AlephTranslator
         $desc = $this->table40[$findme];
         if ($desc == null) {
             $findme = $collection . "|";
-            $desc = $table40[$findme];
+            $desc = $this->table40[$findme];
         }
         return $desc;
     }
@@ -180,9 +180,6 @@ class AlephTranslator
             $no2="";
         }
         $desc = iconv($charset, 'UTF-8', $matches[5]);
-        $loan = $matches[6];
-        $request = $matches[8];
-        $opac = $matches[10];
         $key = trim($lib) . "|" . trim($no1) . "|" . trim($no2);
         $tab15[trim($key)] = array(
             "desc" => trim($desc), "loan" => $matches[6], "request" => $matches[8],
@@ -479,7 +476,6 @@ class Aleph extends AbstractBase
         }
         $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         if ($http_code != 200) {
-            $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             $message = "Request failed with http code: $http_code, "
                 . "URL: '$url' method: $method";
             throw new ILSException($message);
@@ -581,7 +577,6 @@ class Aleph extends AbstractBase
                 $availability
                     = ($status[0] == 'available' || $status[0] == 'check_holdings');
                 $reserve = true;
-                $callnumber = $signature;
                 $temp[] = array(
                     'id' => $id,
                     'availability' => $availability,
@@ -821,7 +816,6 @@ class Aleph extends AbstractBase
         if ($history) {
             $params["type"] = "history";
         }
-        $count = 0;
         $xml = $this->doRestDLFRequest(
             array('patron', $userId, 'circulationActions', 'loans'), $params
         );
@@ -831,10 +825,10 @@ class Aleph extends AbstractBase
             $z30 = $item->z30;
             $group = $item->xpath('@href');
             $group = substr(strrchr($group[0], "/"), 1);
-            $renew = $item->xpath('@renew');
-            $docno = (string) $z36->{'z36-doc-number'};
-            $itemseq = (string) $z36->{'z36-item-sequence'};
-            $seq = (string) $z36->{'z36-sequence'};
+            //$renew = $item->xpath('@renew');
+            //$docno = (string) $z36->{'z36-doc-number'};
+            //$itemseq = (string) $z36->{'z36-item-sequence'};
+            //$seq = (string) $z36->{'z36-sequence'};
             $location = (string) $z36->{'z36_pickup_location'};
             $reqnum = (string) $z36->{'z36-doc-number'}
                 . (string) $z36->{'z36-item-sequence'}
@@ -846,7 +840,7 @@ class Aleph extends AbstractBase
             } else {
                 $due = (string) $z36->{'z36-due-date'};
             }
-            $loaned = (string) $z36->{'z36-loan-date'};
+            //$loaned = (string) $z36->{'z36-loan-date'};
             $title = (string) $z13->{'z13-title'};
             $author = (string) $z13->{'z13-author'};
             $isbn = (string) $z13->{'z13-isbn-issn'};
@@ -904,7 +898,7 @@ class Aleph extends AbstractBase
     {
         $patron = $details['patron'];
         foreach ($details['details'] as $id) {
-            $xml = $this->doRestDLFRequest(
+            $this->doRestDLFRequest(
                 array('patron', $patron['id'], 'circulationActions', 'loans', $id),
                 null, 'POST', null
             );
@@ -940,8 +934,8 @@ class Aleph extends AbstractBase
             $item_id = substr($href[0], strrpos($href[0], '/') + 1);
             if ((string) $z37->{'z37-request-type'} == "Hold Request" || true) {
                 $type = "hold";
-                $docno = (string) $z37->{'z37-doc-number'};
-                $itemseq = (string) $z37->{'z37-item-sequence'};
+                //$docno = (string) $z37->{'z37-doc-number'};
+                //$itemseq = (string) $z37->{'z37-item-sequence'};
                 $seq = (string) $z37->{'z37-sequence'};
                 $location = (string) $z37->{'z37-pickup-location'};
                 $reqnum = (string) $z37->{'z37-doc-number'}
@@ -1285,14 +1279,12 @@ class Aleph extends AbstractBase
             throw new ILSException($ex->getMessage());
         }
         $patron=array();
-        $firstName = "";
-        $lastName = "";
         $name = $xml->z303->{'z303-name'};
         if (strstr($name, ",")) {
-            list($lastName,$firstName) = split(",", $name);
+            list($lastName, $firstName) = split(",", $name);
         } else {
-            $lastname = $name;
-            $firstname = "";
+            $lastName = $name;
+            $firstName = "";
         }
         $email_addr = $xml->z304->{'z304-email-address'};
         $id = $xml->z303->{'z303-id'};
