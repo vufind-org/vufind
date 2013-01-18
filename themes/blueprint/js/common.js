@@ -1,4 +1,4 @@
-/*global path*/
+/*global getLightbox, path*/
 
 /**
  * Initialize common functions and event handlers.
@@ -14,7 +14,7 @@ $.validator.setDefaults({
 // add a modified version of the original phoneUS rule
 // to accept only 10-digit phone numbers
 $.validator.addMethod("phoneUS", function(phone_number, element) {
-    phone_number = phone_number.replace(/[-\s().]+/g, "");
+    phone_number = phone_number.replace(/[\-\s().]+/g, "");
     return this.optional(element) || phone_number.length > 9 &&
         phone_number.match(/^(\([2-9]\d{2}\)|[2-9]\d{2})[2-9]\d{2}\d{4}$/);
 }, 'Please specify a valid phone number');
@@ -170,10 +170,10 @@ var contextHelp = {
             contextHelp.contextHelpSys.curMaxWidth=maxWidth;
             contextHelp.contextHelpSys.showCloseButton=showCloseButton;},
         position:function(){
-            if(!contextHelp.contextHelpSys.isUp||!contextHelp.contextHelpSys.curElement.length){return}
+            if(!contextHelp.contextHelpSys.isUp||!contextHelp.contextHelpSys.curElement.length){return;}
             var offset=contextHelp.contextHelpSys.curElement.offset();
-            var left=parseInt(offset.left)+parseInt(contextHelp.contextHelpSys.curOffsetX);
-            var top=parseInt(offset.top)+parseInt(contextHelp.contextHelpSys.curOffsetY);
+            var left=parseInt(offset.left, 10)+parseInt(contextHelp.contextHelpSys.curOffsetX, 10);
+            var top=parseInt(offset.top, 10)+parseInt(contextHelp.contextHelpSys.curOffsetY, 10);
             var direction=contextHelp.contextHelpSys.curDirection;
             var align=contextHelp.contextHelpSys.curAlign;
             if(contextHelp.contextHelpSys.curMaxWidth){
@@ -182,25 +182,25 @@ var contextHelp = {
                 $(contextHelp.contextHelpSys.CHTable).css("width","auto");
             }
             if (direction=="auto") {
-                if (parseInt(top)-parseInt($(contextHelp.contextHelpSys.CHTable).height()<$(document).scrollTop())) {
+                if (parseInt(top, 10)-parseInt($(contextHelp.contextHelpSys.CHTable).height()<$(document).scrollTop(), 10)) {
                     direction="down";
                 } else {
                     direction="up";
                 }
             }
             if(direction=="up"){
-                top = parseInt(top) - parseInt($(contextHelp.contextHelpSys.CHTable).height());
+                top = parseInt(top, 10) - parseInt($(contextHelp.contextHelpSys.CHTable).height(), 10);
                 $(contextHelp.contextHelpSys.arrowUp).css("display","none");
                 $(contextHelp.contextHelpSys.arrowDown).css("display","block");
             } else {
                 if(direction=="down"){
-                    top = parseInt(top) + parseInt(contextHelp.contextHelpSys.curElement.height());
+                    top = parseInt(top, 10) + parseInt(contextHelp.contextHelpSys.curElement.height(), 10);
                     $(contextHelp.contextHelpSys.arrowUp).css("display","block");
                     $(contextHelp.contextHelpSys.arrowDown).css("display","none");
                 }
             }
             if(align=="auto"){
-                if(left+parseInt($(contextHelp.contextHelpSys.CHTable).width()>$(document).width())){
+                if(left+parseInt($(contextHelp.contextHelpSys.CHTable).width()>$(document).width(), 10)){
                     align="left";
                 } else {
                     align="right";
@@ -213,7 +213,7 @@ var contextHelp = {
             }
             else{
                 if(align=="left"){
-                    left-=parseInt($(contextHelp.contextHelpSys.CHTable).width());
+                    left-=parseInt($(contextHelp.contextHelpSys.CHTable).width(), 10);
                     left+=24;
                     $(contextHelp.contextHelpSys.arrowUp).css("background-position","100% 0");
                     $(contextHelp.contextHelpSys.arrowDown).css("background-position","100% -6px");
@@ -242,7 +242,7 @@ var contextHelp = {
             }
         }
     }
-}
+};
 
 function extractDataByClassPrefix(element, prefix)
 {
@@ -311,12 +311,12 @@ $(document).ready(function(){
 
     // attach mouseover event to grid view records
     $('.gridCellHover').mouseover(function() {
-        $(this).addClass('gridMouseOver')
+        $(this).addClass('gridMouseOver');
     });
 
     // attach mouseout event to grid view records
     $('.gridCellHover').mouseout(function() {
-        $(this).removeClass('gridMouseOver')
+        $(this).removeClass('gridMouseOver');
     });
 
     // assign click event to "viewCart" links
