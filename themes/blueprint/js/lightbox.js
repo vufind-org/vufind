@@ -1,4 +1,4 @@
-/*global path*/
+/*global checkSaveStatuses, hexEncode, path, rc4Encrypt, refreshCommentList*/
 
 // keep a handle to the current opened dialog so we can access it later
 var __dialogHandle = {dialog: null, processFollowup:false, followupModule: null, followupAction: null, recordId: null, postParams: null};
@@ -127,8 +127,9 @@ function registerAjaxLogin() {
 
                                 // refresh the comment list so the "Delete" links will show
                                 $('.commentList').each(function(){
-                                    recordId = $(this).attr('id').substr('commentList'.length);
-                                    refreshCommentList(recordId);
+                                    var recordId = $('#record_id').val();
+                                    var recordSource = extractSource($('#record'));
+                                    refreshCommentList(recordId, recordSource);
                                 });
 
                                 // if there is a followup action, then it should be processed
