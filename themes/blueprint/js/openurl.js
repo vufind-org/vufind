@@ -1,3 +1,5 @@
+/*global extractParams, path*/
+
 function loadResolverLinks($target, openUrl) {
     $target.addClass('ajax_availability');
     var url = path + '/AJAX/JSON?' + $.param({method:'getResolverLinks',openurl:openUrl});
