@@ -1,3 +1,22 @@
+/*global htmlEncode*/
+
+function PadDigits(n, totalDigits)
+{
+    if (n <= 0){
+        n= 1;
+    }
+    n = n.toString();
+    var pd = '';
+    if (totalDigits > n.length)
+    {
+        for (var i=0; i < (totalDigits-n.length); i++)
+        {
+            pd += '0';
+        }
+    }
+    return pd + n;
+}
+
 function loadVis(facetFields, searchParams, baseURL, zooming) {
     // options for the graph, TODO: make configurable
     var options = {
@@ -58,7 +77,7 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
                         val['data'].push([val['min'] - 5, -1]);
                     }
                     //check for values outside the selected range and remove them by setting them to null
-                    for (i=0; i<val['data'].length; i++) {
+                    for (var i=0; i<val['data'].length; i++) {
                         if (val['data'][i][0] < val['min'] -5 || val['data'][i][0] > parseInt(val['max'], 10) + 5) {
                             //remove this
                             val['data'].splice(i,1);
@@ -82,8 +101,8 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
                 }
                 // selection handler
                 placeholder.bind("plotselected", function (event, ranges) {
-                    from = Math.floor(ranges.xaxis.from);
-                    to = Math.ceil(ranges.xaxis.to);
+                    var from = Math.floor(ranges.xaxis.from);
+                    var to = Math.ceil(ranges.xaxis.to);
                     location.href = val['removalURL'] + '&daterange[]=' + key + '&' + key + 'to=' + PadDigits(to,4) + '&' + key + 'from=' + PadDigits(from,4);
                 });
 
@@ -98,21 +117,4 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
             });
         }
     });
-}
-
-function PadDigits(n, totalDigits) 
-{ 
-    if (n <= 0){
-        n= 1;
-    }
-    n = n.toString(); 
-    var pd = ''; 
-    if (totalDigits > n.length) 
-    { 
-        for (i=0; i < (totalDigits-n.length); i++) 
-        { 
-            pd += '0'; 
-        } 
-    } 
-    return pd + n; 
 }
