@@ -137,7 +137,7 @@ abstract class AbstractSyndetics extends AbstractHelper
             $parts = explode(':', trim($provider));
             $provider = strtolower($parts[0]);
             $func = 'load' . ucwords($provider);
-            $key = $parts[1];
+            $key = isset($parts[1]) ? $parts[1] : '';
             try {
                 $results[$provider] = method_exists($this, $func)
                     ? $this->$func($key) : false;
