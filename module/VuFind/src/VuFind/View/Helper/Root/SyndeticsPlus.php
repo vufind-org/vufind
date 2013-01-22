@@ -26,7 +26,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\View\Helper\Root;
-use VuFind\Config\Reader as ConfigReader, Zend\View\Helper\AbstractHelper;
 
 /**
  * SyndeticsPlus view helper
@@ -37,19 +36,26 @@ use VuFind\Config\Reader as ConfigReader, Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class SyndeticsPlus extends AbstractHelper
+class SyndeticsPlus extends \Zend\View\Helper\AbstractHelper
 {
+    /**
+     * Syndetics configuration
+     *
+     * \Zend\Config\Config
+     */
     protected $config;
 
     /**
-     * Provides access to other class methods.
+     * Constructor
      *
-     * @return SyndeticsPlus
+     * @param \Zend\Config\Config $config Syndetics configuration (should contain
+     * 'plus' boolean value (true if Syndetics Plus is enabled) and 'plus_id' string
+     * value (Syndetics Plus user ID).  If these values are absent, SyndeticsPlus
+     * will be disabled.
      */
-    public function __invoke()
+    public function __construct($config)
     {
-        $this->config = ConfigReader::getConfig();
-        return $this;
+        $this->config = $config;
     }
 
     /**
@@ -59,8 +65,8 @@ class SyndeticsPlus extends AbstractHelper
      */
     public function isActive()
     {
-        return isset($this->config->Syndetics->plus)
-            ? $this->config->Syndetics->plus : false;
+        return isset($this->config->plus)
+            ? $this->config->plus : false;
     }
 
     /**
@@ -70,10 +76,10 @@ class SyndeticsPlus extends AbstractHelper
      */
     public function getScript()
     {
-        // Determine whether to include script tag for syndetics plus
-        if (isset($this->config->Syndetics->plus_id)) {
+        // Determine whether to include script tag for SyndeticsPlus
+        if (isset($this->config->plus_id)) {
             return "http://plus.syndetics.com/widget.php?id="
-                . urlencode($this->config->Syndetics->plus_id);
+                . urlencode($this->config->plus_id);
         }
 
         return null;
