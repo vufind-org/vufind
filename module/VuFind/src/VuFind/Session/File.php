@@ -38,6 +38,11 @@ namespace VuFind\Session;
  */
 class File extends AbstractBase
 {
+    /**
+     * Path to session file (boolean false until set)
+     *
+     * @var string|bool
+     */
     protected $path = false;
 
     /**
