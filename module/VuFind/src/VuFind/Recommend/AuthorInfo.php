@@ -87,6 +87,13 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     protected $useViaf = false;
 
     /**
+     * Log of Wikipedia pages already retrieved
+     *
+     * @var array
+     */
+    protected $pagesRetrieved = array();
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Manager $searchManager Search manager
@@ -180,6 +187,23 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
+     * Check if a page has already been retrieved; if it hasn't, flag it as
+     * retrieved for future reference.
+     *
+     * @param string $author Author being retrieved
+     *
+     * @return bool
+     */
+    protected function alreadyRetrieved($author)
+    {
+        if (isset($this->pagesRetrieved[$author])) {
+            return true;
+        }
+        $this->pagesRetrieved[$author] = true;
+        return false;
+    }
+
+    /**
      * Returns info from Wikipedia to the view
      *
      * @reference _parseWikipedia : Home.php (VuFind 1)
@@ -218,6 +242,12 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      */
     protected function getWikipedia($author)
     {
+        // Don't retrieve the same page multiple times; this indicates a loop
+        // that needs to be broken!
+        if ($this->alreadyRetrieved($author)) {
+            return array();
+        }
+
         // Get information from Wikipedia API
         $uri = 'http://' . $this->lang . '.wikipedia.org/w/api.php' .
                '?action=query&prop=revisions&rvprop=content&format=php' .
@@ -248,18 +278,28 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
             return null;
         }
 
-        // Get the default page
-        $body = array_shift($body['query']['pages']);
-        $info = array('name' => $body['title'], 'wiki_lang' => $this->lang);
+        // Loop through the pages and find the first that isn't a redirect:
+        foreach ($body['query']['pages'] as $page) {
+            $info['name'] = $page['title'];
 
-        // Get the latest revision
-        $body = array_shift($body['revisions']);
-        // Check for redirection
-        $as_lines = explode("\n", $body['*']);
-        if (stristr($as_lines[0], '#REDIRECT')) {
-            preg_match('/\[\[(.*)\]\]/', $as_lines[0], $matches);
-            return $this->getWikipedia($matches[1]);
+            // Get the latest revision
+            $page = array_shift($page['revisions']);
+            // Check for redirection
+            $as_lines = explode("\n", $page['*']);
+            if (stristr($as_lines[0], '#REDIRECT')) {
+                preg_match('/\[\[(.*)\]\]/', $as_lines[0], $matches);
+                $redirectTo = $matches[1];
+            } else {
+                $redirectTo = false;
+                break;
+            }
         }
+
+        // Recurse if we only found redirects:
+        if ($redirectTo) {
+            return $this->getWikipedia($redirectTo);
+        }
+        $body = $page;
 
         /* Infobox */
 
