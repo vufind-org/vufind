@@ -35,9 +35,15 @@ namespace VuFind\ILS\Driver;
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
+ * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
 abstract class AbstractBase implements DriverInterface
 {
+    /**
+     * Driver configuration
+     *
+     * @var array
+     */
     protected $config = array();
 
     /**
