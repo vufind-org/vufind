@@ -84,7 +84,7 @@ class SideFacets implements RecommendInterface
         $this->checkboxFacets
             = ($checkboxSection && isset($config->$checkboxSection))
             ? $config->$checkboxSection->toArray() : array();
-        if ($flipCheckboxes) {
+        if (isset($flipCheckboxes) && $flipCheckboxes) {
             $this->checkboxFacets = array_flip($this->checkboxFacets);
         }
     }
