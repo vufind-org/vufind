@@ -59,17 +59,7 @@ class AbstractBase extends AbstractActionController
      */
     protected function createViewModel($params = null)
     {
-        // I would expect to be able to just pass $params to the ViewModel
-        // constructor, but as of beta5, that seems to make the resulting
-        // object unable to accept additional variables.
-        $view = new ViewModel();
-        if (!empty($params)) {
-            foreach ($params as $k => $v) {
-                $view->setVariable($k, $v);
-            }
-        }
-
-        return $view;
+        return new ViewModel($params);
     }
 
     /**
