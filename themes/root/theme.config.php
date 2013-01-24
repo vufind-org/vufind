@@ -18,6 +18,11 @@ return array(
                     $sm->getServiceLocator()->get('VuFind\Translator')
                 );
             },
+            'flashmessages' => function ($sm) {
+                $messenger = $sm->getServiceLocator()->get('ControllerPluginManager')
+                    ->get('FlashMessenger');
+                return new \VuFind\View\Helper\Root\Flashmessages($messenger);
+            },
             'ils' => function ($sm) {
                 return new \VuFind\View\Helper\Root\Ils(
                     $sm->getServiceLocator()->get('VuFind\ILSConnection')
@@ -50,7 +55,6 @@ return array(
             'currentpath' => 'VuFind\View\Helper\Root\CurrentPath',
             'datetime' => 'VuFind\View\Helper\Root\DateTime',
             'excerpt' => 'VuFind\View\Helper\Root\Excerpt',
-            'flashmessages' => 'VuFind\View\Helper\Root\Flashmessages',
             'getlastsearchlink' => 'VuFind\View\Helper\Root\GetLastSearchLink',
             'highlight' => 'VuFind\View\Helper\Root\Highlight',
             'jqueryvalidation' => 'VuFind\View\Helper\Root\JqueryValidation',

@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\View\Helper\Root;
-use Zend\View\Helper\AbstractHelper;
+use Zend\View\Helper\AbstractHelper, Zend\Mvc\Controller\Plugin\FlashMessenger;
 
 /**
  * Flash message view helper
@@ -40,6 +40,23 @@ use Zend\View\Helper\AbstractHelper;
 class Flashmessages extends AbstractHelper
 {
     /**
+     * Flash messenger controller helper
+     *
+     * @var FlashMessenger
+     */
+    protected $fm;
+
+    /**
+     * Constructor
+     *
+     * @param FlashMessenger $fm Flash messenger controller helper
+     */
+    public function __construct(FlashMessenger $fm)
+    {
+        $this->fm = $fm;
+    }
+
+    /**
      * Generate flash message <div>'s with appropriate classes based on message type.
      *
      * @return string $html
@@ -47,42 +64,40 @@ class Flashmessages extends AbstractHelper
     public function __invoke()
     {
         $html = '';
-        if (is_object($fm = $this->getView()->flashMessenger)) {
-            $namespaces = array('error', 'info');
-            foreach ($namespaces as $ns) {
-                $fm->setNamespace($ns);
-                $messages = array_merge(
-                    $fm->getMessages(), $fm->getCurrentMessages()
-                );
-                foreach ($messages as $msg) {
-                    $html .= '<div class="' . $ns . '">';
-                    // Advanced form:
-                    if (is_array($msg)) {
-                        // Use a different translate helper depending on whether
-                        // or not we're in HTML mode.
-                        if (!isset($msg['translate']) || $msg['translate']) {
-                            $helper = (isset($msg['html']) && $msg['html'])
-                                ? 'translate' : 'transEsc';
-                        } else {
-                            $helper = (isset($msg['html']) && $msg['html'])
-                                ? false : 'escapeHtml';
-                        }
-                        $helper = $helper
-                            ? $this->getView()->plugin($helper) : false;
-                        $tokens = isset($msg['tokens']) ? $msg['tokens'] : array();
-                        $default = isset($msg['default']) ? $msg['default'] : null;
-                        $html .= $helper
-                            ? $helper($msg['msg'], $tokens, $default) : $msg['msg'];
+        $namespaces = array('error', 'info');
+        foreach ($namespaces as $ns) {
+            $this->fm->setNamespace($ns);
+            $messages = array_merge(
+                $this->fm->getMessages(), $this->fm->getCurrentMessages()
+            );
+            foreach ($messages as $msg) {
+                $html .= '<div class="' . $ns . '">';
+                // Advanced form:
+                if (is_array($msg)) {
+                    // Use a different translate helper depending on whether
+                    // or not we're in HTML mode.
+                    if (!isset($msg['translate']) || $msg['translate']) {
+                        $helper = (isset($msg['html']) && $msg['html'])
+                            ? 'translate' : 'transEsc';
                     } else {
-                        // Basic default string:
-                        $transEsc = $this->getView()->plugin('transEsc');
-                        $html .= $transEsc($msg);
+                        $helper = (isset($msg['html']) && $msg['html'])
+                            ? false : 'escapeHtml';
                     }
-                    $html .= '</div>';
+                    $helper = $helper
+                        ? $this->getView()->plugin($helper) : false;
+                    $tokens = isset($msg['tokens']) ? $msg['tokens'] : array();
+                    $default = isset($msg['default']) ? $msg['default'] : null;
+                    $html .= $helper
+                        ? $helper($msg['msg'], $tokens, $default) : $msg['msg'];
+                } else {
+                    // Basic default string:
+                    $transEsc = $this->getView()->plugin('transEsc');
+                    $html .= $transEsc($msg);
                 }
-                $fm->clearMessages();
-                $fm->clearCurrentMessages();
+                $html .= '</div>';
             }
+            $this->fm->clearMessages();
+            $this->fm->clearCurrentMessages();
         }
         return $html;
     }

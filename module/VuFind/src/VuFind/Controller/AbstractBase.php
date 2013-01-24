@@ -69,9 +69,6 @@ class AbstractBase extends AbstractActionController
             }
         }
 
-        // Always make flash messenger available to view:
-        $view->flashMessenger = $this->flashMessenger();
-
         return $view;
     }
 
