@@ -77,9 +77,16 @@ class SideFacets implements RecommendInterface
         }
 
         // Checkbox facets:
+        if (substr($checkboxSection, 0, 1) == '~') {
+            $checkboxSection = substr($checkboxSection, 1);
+            $flipCheckboxes = true;
+        }
         $this->checkboxFacets
             = ($checkboxSection && isset($config->$checkboxSection))
             ? $config->$checkboxSection->toArray() : array();
+        if ($flipCheckboxes) {
+            $this->checkboxFacets = array_flip($this->checkboxFacets);
+        }
     }
 
     /**
