@@ -23,6 +23,9 @@ $config = array(
 if (PHP_SAPI == 'cli' && !defined('VUFIND_PHPUNIT_RUNNING')) {
     $config['modules'][] = 'VuFindConsole';
 }
+if (APPLICATION_ENV == 'development') {
+    $config['modules'][] = 'VuFindDevTools';
+}
 if ($localModules = getenv('VUFIND_LOCAL_MODULES')) {
     $localModules = array_map('trim', explode(',', $localModules));
     foreach ($localModules as $current) {

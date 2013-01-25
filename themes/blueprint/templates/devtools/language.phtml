@@ -1,0 +1,35 @@
+<?
+    $this->headTitle($this->translate('Language'));
+?>
+
+<h1>Comparing Languages Against <?=$this->escapeHtml($mainName)?></h1>
+
+<h2>Summary</h2>
+
+<table>
+  <tr><th>Language</th><th>Missing Lines</th><th>Extra Lines</th><th>Percent Translated</th><th>Extra Help Files</th></tr>
+  <? foreach ($details as $langCode => $diffs): ?>
+    <tr>
+      <td><?=$this->escapeHtml($langCode . ' (' . $diffs['name'] . ')')?></td>
+      <td><?=count($diffs['notInL2'])?></td>
+      <td><?=count($diffs['notInL1'])?></td>
+      <td><?=$this->escapeHtml($diffs['l2Percent'])?></td>
+      <td><?=count($diffs['helpFiles'])?></td>
+    </tr>
+  <? endforeach; ?>
+</table>
+
+<? foreach ($details as $langCode => $diffs): ?>
+  <? if (count($diffs['notInL1']) > 0): ?>
+    <h2>Extra Lines In <?=$this->escapeHtml($diffs['name'])?> (<?=$this->escapeHtml($langCode)?>.ini)</h2>
+    <? foreach ($diffs['notInL1'] as $key): ?>
+      <?=$this->escapeHtml($key)?> = "<?=$this->escapeHtml($diffs['object'][$key])?>"<br />
+    <? endforeach; ?>
+  <? endif; ?>
+  <? if (count($diffs['notInL2']) > 0): ?>
+    <h2>Missing From <?=$this->escapeHtml($diffs['name'])?> (<?=$this->escapeHtml($langCode)?>.ini)</h2>
+    <? foreach ($diffs['notInL2'] as $key): ?>
+      <?=$this->escapeHtml($key)?> = "<?=$this->escapeHtml($main[$key])?>"<br />
+    <? endforeach; ?>
+  <? endif; ?>
+<? endforeach; ?>
