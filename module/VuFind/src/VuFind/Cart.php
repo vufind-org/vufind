@@ -282,9 +282,20 @@ class Cart
 
         // Save the cookies:
         $cookie = implode(self::CART_COOKIE_DELIM, $ids);
-        setcookie(self::CART_COOKIE, $cookie, 0, '/');
+        $this->setCookie(self::CART_COOKIE, $cookie, 0, '/');
         $cookie = implode(self::CART_COOKIE_DELIM, $sources);
-        setcookie(self::CART_COOKIE_SOURCES, $cookie, 0, '/');
+        $this->setCookie(self::CART_COOKIE_SOURCES, $cookie, 0, '/');
+    }
+
+    /**
+     * Set a cookie (wrapper in case Zend Framework offers a better abstraction
+     * of cookie handling in the future).
+     *
+     * @return bool
+     */
+    protected function setCookie()
+    {
+        return call_user_func_array('setcookie', func_get_args());
     }
 
     /**
