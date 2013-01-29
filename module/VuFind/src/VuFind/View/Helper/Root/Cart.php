@@ -56,7 +56,7 @@ class Cart extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Get the Cart object from the service manager.
+     * Get the Cart object.
      *
      * @return \VuFind\Cart
      */
