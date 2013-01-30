@@ -295,7 +295,9 @@ class Cart
      */
     protected function setCookie()
     {
+        // @codeCoverageIgnoreStart
         return call_user_func_array('setcookie', func_get_args());
+        // @codeCoverageIgnoreEnd
     }
 
     /**
