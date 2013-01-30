@@ -116,7 +116,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
         // Find strings missing from language 2:
         $notInL2 = array();
         $l2Keys = array_keys((array)$lang2);
-        foreach($lang1 as $key => $junk) {
+        foreach ($lang1 as $key => $junk) {
             if (!in_array($key, $l2Keys)) {
                 $notInL2[] = $key;
             }
