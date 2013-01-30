@@ -140,6 +140,20 @@ class AdminController extends AbstractBase
     }
 
     /**
+     * Social statistics reporting
+     *
+     * @return \Zend\View\Model\ViewModel
+     */
+    public function socialstatsAction()
+    {
+        $view = $this->createViewModel();
+        $view->comments = $this->getTable('comments')->getStatistics();
+        $view->favorites = $this->getTable('userresource')->getStatistics();
+        $view->tags = $this->getTable('resourcetags')->getStatistics();
+        return $view;
+    }
+
+    /**
      * Statistics reporting
      *
      * @return \Zend\View\Model\ViewModel

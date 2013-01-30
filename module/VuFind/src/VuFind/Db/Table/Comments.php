@@ -26,6 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Table;
+use Zend\Db\Sql\Expression;
 
 /**
  * Table Definition for comments
@@ -104,5 +105,31 @@ class Comments extends Gateway
         // If we got this far, everything is okay:
         $row->delete();
         return true;
+    }
+
+    /**
+     * Get statistics on use of comments.
+     *
+     * @return array
+     */
+    public function getStatistics()
+    {
+        $select = $this->sql->select();
+        $select->columns(
+            array(
+                'users' => new Expression(
+                    'COUNT(DISTINCT(?))', array('user_id'),
+                    array(Expression::TYPE_IDENTIFIER)
+                ),
+                'resources' => new Expression(
+                    'COUNT(DISTINCT(?))', array('resource_id'),
+                    array(Expression::TYPE_IDENTIFIER)
+                ),
+                'total' => new Expression('COUNT(*)')
+            )
+        );
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $result = $statement->execute();
+        return (array)$result->current();
     }
 }

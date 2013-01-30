@@ -159,6 +159,32 @@ class ResourceTags extends Gateway
     }
 
     /**
+     * Get statistics on use of tags.
+     *
+     * @return array
+     */
+    public function getStatistics()
+    {
+        $select = $this->sql->select();
+        $select->columns(
+            array(
+                'users' => new Expression(
+                    'COUNT(DISTINCT(?))', array('user_id'),
+                    array(Expression::TYPE_IDENTIFIER)
+                ),
+                'resources' => new Expression(
+                    'COUNT(DISTINCT(?))', array('resource_id'),
+                    array(Expression::TYPE_IDENTIFIER)
+                ),
+                'total' => new Expression('COUNT(*)')
+            )
+        );
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $result = $statement->execute();
+        return (array)$result->current();
+    }
+
+    /**
      * Unlink rows for the specified resource.
      *
      * @param string|array $resource ID (or array of IDs) of resource(s) to
