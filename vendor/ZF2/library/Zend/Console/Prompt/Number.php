@@ -3,18 +3,12 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Console
  */
 
 namespace Zend\Console\Prompt;
 
-/**
- * @category   Zend
- * @package    Zend_Console
- * @subpackage Prompt
- */
 class Number extends Line
 {
     /**
@@ -117,7 +111,7 @@ class Number extends Line
     }
 
     /**
-     * @param boolean $allowEmpty
+     * @param  bool $allowEmpty
      */
     public function setAllowEmpty($allowEmpty)
     {
@@ -125,7 +119,7 @@ class Number extends Line
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function getAllowEmpty()
     {
@@ -197,7 +191,7 @@ class Number extends Line
     }
 
     /**
-     * @param boolean $allowFloat
+     * @param  bool $allowFloat
      */
     public function setAllowFloat($allowFloat)
     {
@@ -205,11 +199,10 @@ class Number extends Line
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function getAllowFloat()
     {
         return $this->allowFloat;
     }
-
 }

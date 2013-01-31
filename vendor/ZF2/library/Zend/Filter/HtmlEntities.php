@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Filter
  */
 
 namespace Zend\Filter;
@@ -13,10 +12,6 @@ namespace Zend\Filter;
 use Traversable;
 use Zend\Stdlib\ArrayUtils;
 
-/**
- * @category   Zend
- * @package    Zend_Filter
- */
 class HtmlEntities extends AbstractFilter
 {
     /**
@@ -36,7 +31,7 @@ class HtmlEntities extends AbstractFilter
     /**
      * Corresponds to the forth htmlentities() argument
      *
-     * @var boolean
+     * @var bool
      */
     protected $doubleQuote;
 
@@ -153,7 +148,7 @@ class HtmlEntities extends AbstractFilter
     /**
      * Returns the doubleQuote option
      *
-     * @return boolean
+     * @return bool
      */
     public function getDoubleQuote()
     {
@@ -163,12 +158,12 @@ class HtmlEntities extends AbstractFilter
     /**
      * Sets the doubleQuote option
      *
-     * @param boolean $doubleQuote
+     * @param  bool $doubleQuote
      * @return HtmlEntities Provides a fluent interface
      */
     public function setDoubleQuote($doubleQuote)
     {
-        $this->doubleQuote = (boolean) $doubleQuote;
+        $this->doubleQuote = (bool) $doubleQuote;
         return $this;
     }
 

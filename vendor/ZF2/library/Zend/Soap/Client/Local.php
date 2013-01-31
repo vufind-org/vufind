@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Soap
  */
 
 namespace Zend\Soap\Client;
@@ -20,10 +19,6 @@ use Zend\Soap\Server as SOAPServer;
  * with a provided Server object.
  *
  * Could be used for development or testing purposes.
- *
- * @category   Zend
- * @package    Zend_Soap
- * @subpackage Client
  */
 class Local extends SOAPClient
 {
@@ -60,10 +55,10 @@ class Local extends SOAPClient
      * @param string $location
      * @param string $action
      * @param int    $version
-     * @param int    $one_way
+     * @param int    $oneWay
      * @return mixed
      */
-    public function _doRequest(Common $client, $request, $location, $action, $version, $one_way = null)
+    public function _doRequest(Common $client, $request, $location, $action, $version, $oneWay = null)
     {
         // Perform request as is
         ob_start();

@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_View
  */
 
 namespace Zend\View\Helper;
@@ -15,9 +14,6 @@ use Zend\View\Exception;
 
 /**
  * Helper for setting and retrieving the doctype
- *
- * @package    Zend_View
- * @subpackage Helper
  */
 class Doctype extends AbstractHelper
 {
@@ -190,7 +186,7 @@ class Doctype extends AbstractHelper
     /**
      * Is doctype XHTML?
      *
-     * @return boolean
+     * @return bool
      */
     public function isXhtml()
     {
@@ -200,7 +196,7 @@ class Doctype extends AbstractHelper
     /**
      * Is doctype HTML5? (HeadMeta uses this for validation)
      *
-     * @return boolean
+     * @return bool
      */
     public function isHtml5()
     {
@@ -210,7 +206,7 @@ class Doctype extends AbstractHelper
     /**
      * Is doctype RDFa?
      *
-     * @return boolean
+     * @return bool
      */
     public function isRdfa()
     {

@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Authentication
  */
 
 namespace Zend\Authentication\Adapter;
@@ -17,12 +16,7 @@ use Zend\Db\ResultSet\ResultSet;
 use Zend\Db\Sql\Expression;
 use Zend\Db\Sql\Select as DbSelect;
 
-/**
- * @category   Zend
- * @package    Zend_Authentication
- * @subpackage Adapter
- */
-class DbTable implements AdapterInterface
+class DbTable extends AbstractAdapter
 {
 
     /**
@@ -59,20 +53,6 @@ class DbTable implements AdapterInterface
     protected $credentialColumn = null;
 
     /**
-     * $identity - Identity value
-     *
-     * @var string
-     */
-    protected $identity = null;
-
-    /**
-     * $credential - Credential values
-     *
-     * @var string
-     */
-    protected $credential = null;
-
-    /**
      * $credentialTreatment - Treatment applied to the credential, such as MD5() or PASSWORD()
      *
      * @var string
@@ -98,7 +78,7 @@ class DbTable implements AdapterInterface
      * different credentials. Default is FALSE and need to be set to true to
      * allow ambiguity usage.
      *
-     * @var boolean
+     * @var bool
      */
     protected $ambiguityIdentity = false;
 
@@ -194,31 +174,6 @@ class DbTable implements AdapterInterface
     }
 
     /**
-     * setIdentity() - set the value to be used as the identity
-     *
-     * @param  string $value
-     * @return DbTable Provides a fluent interface
-     */
-    public function setIdentity($value)
-    {
-        $this->identity = $value;
-        return $this;
-    }
-
-    /**
-     * setCredential() - set the credential value to be used, optionally can specify a treatment
-     * to be used, should be supplied in parametrized form, such as 'MD5(?)' or 'PASSWORD(?)'
-     *
-     * @param  string $credential
-     * @return DbTable Provides a fluent interface
-     */
-    public function setCredential($credential)
-    {
-        $this->credential = $credential;
-        return $this;
-    }
-
-    /**
      * setAmbiguityIdentity() - sets a flag for usage of identical identities
      * with unique credentials. It accepts integers (0, 1) or boolean (true,
      * false) parameters. Default is false.
@@ -265,7 +220,7 @@ class DbTable implements AdapterInterface
      *
      * @param  string|array $returnColumns
      * @param  string|array $omitColumns
-     * @return stdClass|boolean
+     * @return stdClass|bool
      */
     public function getResultRowObject($returnColumns = null, $omitColumns = null)
     {
@@ -339,7 +294,7 @@ class DbTable implements AdapterInterface
      * required pieces of information.
      *
      * @throws Exception\RuntimeException in the event that setup was not done properly
-     * @return boolean
+     * @return bool
      */
     protected function _authenticateSetup()
     {
@@ -431,7 +386,7 @@ class DbTable implements AdapterInterface
      * certain that only one record was returned in the resultset
      *
      * @param  array $resultIdentities
-     * @return boolean|\Zend\Authentication\Result
+     * @return bool|\Zend\Authentication\Result
      */
     protected function _authenticateValidateResultSet(array $resultIdentities)
     {
@@ -487,5 +442,4 @@ class DbTable implements AdapterInterface
             $this->authenticateResultInfo['messages']
         );
     }
-
 }

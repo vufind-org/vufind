@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Memory
  */
 
 namespace Zend\Memory\Container;
@@ -17,9 +16,6 @@ use Zend\Memory\Exception;
  * Memory value container
  *
  * Movable (may be swapped with specified backend and unloaded).
- *
- * @category   Zend
- * @package    Zend_Memory
  */
 class Movable extends AbstractContainer
 {
@@ -102,7 +98,7 @@ class Movable extends AbstractContainer
     /**
      * Return true if object is locked
      *
-     * @return boolean
+     * @return bool
      */
     public function isLocked()
     {
@@ -248,7 +244,7 @@ class Movable extends AbstractContainer
      * Check if object is marked as swapped
      *
      * @internal
-     * @return boolean
+     * @return bool
      */
     public function isSwapped()
     {

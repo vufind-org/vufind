@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Crypt
  */
 
 namespace Zend\Crypt\PublicKey;
@@ -15,10 +14,6 @@ use Zend\Stdlib\AbstractOptions;
 
 /**
  * RSA instance options
- *
- * @category   Zend
- * @package    Zend_Crypt
- * @subpackage PublicKey
  */
 class RsaOptions extends AbstractOptions
 {
@@ -166,19 +161,19 @@ class RsaOptions extends AbstractOptions
     /**
      * Enable/disable the binary output
      *
-     * @param  boolean $value
+     * @param  bool $value
      * @return RsaOptions
      */
     public function setBinaryOutput($value)
     {
-        $this->binaryOutput = (boolean)$value;
+        $this->binaryOutput = (bool) $value;
         return $this;
     }
 
     /**
      * Get the value of binary output
      *
-     * @return boolean
+     * @return bool
      */
     public function getBinaryOutput()
     {

@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Http
  */
 
 namespace Zend\Http\Header;
@@ -34,8 +33,6 @@ use stdClass;
  *                        |---|                                priority
  *
  *
- * @category   Zend
- * @package    Zend\Http\Header
  * @see        http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.1
  * @author     Dolf Schimmel - Freeaqingme
  */
@@ -293,7 +290,7 @@ abstract class AbstractAccept implements HeaderInterface
      * Match a media string against this header
      *
      * @param array|string $matchAgainst
-     * @return AcceptFieldValuePart|boolean The matched value or false
+     * @return AcceptFieldValuePart|bool The matched value or false
      */
     public function match($matchAgainst)
     {
@@ -337,7 +334,7 @@ abstract class AbstractAccept implements HeaderInterface
      *
      * @param array $match1
      * @param array $match2
-     * @return boolean|array
+     * @return bool|array
      */
     protected function matchAcceptParams($match1, $match2)
     {
@@ -452,5 +449,4 @@ abstract class AbstractAccept implements HeaderInterface
 
         return $this->fieldValueParts;
     }
-
 }

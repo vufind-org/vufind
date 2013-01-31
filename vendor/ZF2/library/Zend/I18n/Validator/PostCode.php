@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_I18n
  */
 
 namespace Zend\I18n\Validator;
@@ -17,11 +16,6 @@ use Zend\Validator\AbstractValidator;
 use Zend\Validator\Callback;
 use Zend\Validator\Exception;
 
-/**
- * @category   Zend
- * @package    Zend_I18n
- * @subpackage Validator
- */
 class PostCode extends AbstractValidator
 {
     const INVALID        = 'postcodeInvalid';
@@ -324,7 +318,7 @@ class PostCode extends AbstractValidator
      * Returns true if and only if $value is a valid postalcode
      *
      * @param  string $value
-     * @return boolean
+     * @return bool
      * @throws Exception\InvalidArgumentException
      */
     public function isValid($value)

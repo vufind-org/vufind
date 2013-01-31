@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_View
  */
 
 namespace Zend\View\Helper;
@@ -17,9 +16,6 @@ use Zend\View\Exception;
 
 /**
  * Helper for making easy links and getting urls that depend on the routes and router.
- *
- * @package    Zend_View
- * @subpackage Helper
  */
 class Url extends AbstractHelper
 {
@@ -68,7 +64,7 @@ class Url extends AbstractHelper
      * @param  string  $name               Name of the route
      * @param  array   $params             Parameters for the link
      * @param  array   $options            Options for the route
-     * @param  boolean $reuseMatchedParams Whether to reuse matched parameters
+     * @param  bool $reuseMatchedParams Whether to reuse matched parameters
      * @return string Url                  For the link href attribute
      * @throws Exception\RuntimeException  If no RouteStackInterface was provided
      * @throws Exception\RuntimeException  If no RouteMatch was provided

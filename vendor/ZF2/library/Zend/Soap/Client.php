@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Soap
  */
 
 namespace Zend\Soap;
@@ -18,10 +17,6 @@ use Zend\Stdlib\ArrayUtils;
 
 /**
  * \Zend\Soap\Client
- *
- * @category   Zend
- * @package    Zend_Soap
- * @subpackage Client
  */
 class Client implements ServerClient
 {
@@ -56,18 +51,18 @@ class Client implements ServerClient
     protected $use                 = null;
     protected $login               = null;
     protected $password            = null;
-    protected $proxy_host          = null;
-    protected $proxy_port          = null;
-    protected $proxy_login         = null;
-    protected $proxy_password      = null;
-    protected $local_cert          = null;
+    protected $proxyHost          = null;
+    protected $proxyPort          = null;
+    protected $proxyLogin         = null;
+    protected $proxyPassword      = null;
+    protected $localCert          = null;
     protected $passphrase          = null;
     protected $compression         = null;
-    protected $connection_timeout  = null;
-    protected $stream_context      = null;
+    protected $connectionTimeout  = null;
+    protected $streamContext      = null;
     protected $features            = null;
-    protected $cache_wsdl          = null;
-    protected $user_agent          = null;
+    protected $cacheWsdl          = null;
+    protected $userAgent          = null;
 
     /**
      * WSDL used to access server
@@ -250,7 +245,7 @@ class Client implements ServerClient
 
                 // Not used now
                 // case 'connection_timeout':
-                //     $this->connection_timeout = $value;
+                //     $this->connectionTimeout = $value;
                 //    break;
 
                 default:
@@ -288,7 +283,7 @@ class Client implements ServerClient
         $options['local_cert']     = $this->getHttpsCertificate();
         $options['passphrase']     = $this->getHttpsCertPassphrase();
         $options['compression']    = $this->getCompressionOptions();
-        //$options['connection_timeout'] = $this->connection_timeout;
+        //$options['connection_timeout'] = $this->connectionTimeout;
         $options['stream_context'] = $this->getStreamContext();
         $options['cache_wsdl']     = $this->getWSDLCache();
         $options['features']       = $this->getSoapFeatures();
@@ -318,7 +313,7 @@ class Client implements ServerClient
      *
      * @param  int $version One of the SOAP_1_1 or SOAP_1_2 constants
      * @return Client
-     * @throws Exception\ExceptionInterface with invalid soap version argument
+     * @throws Exception\InvalidArgumentException with invalid soap version argument
      */
     public function setSoapVersion($version)
     {
@@ -347,7 +342,7 @@ class Client implements ServerClient
      *
      * @param  array $classmap
      * @return Client
-     * @throws Exception\ExceptionInterface for any invalid class in the class map
+     * @throws Exception\InvalidArgumentException for any invalid class in the class map
      */
     public function setClassmap(array $classmap)
     {
@@ -378,7 +373,7 @@ class Client implements ServerClient
      *
      * @param  string $encoding
      * @return Client
-     * @throws Exception\ExceptionInterface with invalid encoding argument
+     * @throws Exception\InvalidArgumentException with invalid encoding argument
      */
     public function setEncoding($encoding)
     {
@@ -407,8 +402,8 @@ class Client implements ServerClient
      * Check for valid URN
      *
      * @param  string $urn
-     * @return boolean
-     * @throws Exception\ExceptionInterface on invalid URN
+     * @return bool
+     * @throws Exception\InvalidArgumentException on invalid URN
      */
     public function validateUrn($urn)
     {
@@ -484,7 +479,7 @@ class Client implements ServerClient
      *
      * @param  int $style One of the SOAP_RPC or SOAP_DOCUMENT constants
      * @return Client
-     * @throws Exception\ExceptionInterface with invalid style argument
+     * @throws Exception\InvalidArgumentException with invalid style argument
      */
     public function setStyle($style)
     {
@@ -514,7 +509,7 @@ class Client implements ServerClient
      *
      * @param  int $use One of the SOAP_ENCODED or SOAP_LITERAL constants
      * @return Client
-     * @throws Exception\ExceptionInterface with invalid message encoding method argument
+     * @throws Exception\InvalidArgumentException with invalid message encoding method argument
      */
     public function setEncodingMethod($use)
     {
@@ -597,7 +592,7 @@ class Client implements ServerClient
      */
     public function setProxyHost($proxyHost)
     {
-        $this->proxy_host = $proxyHost;
+        $this->proxyHost = $proxyHost;
 
         $this->soapClient = null;
 
@@ -611,7 +606,7 @@ class Client implements ServerClient
      */
     public function getProxyHost()
     {
-        return $this->proxy_host;
+        return $this->proxyHost;
     }
 
     /**
@@ -622,7 +617,7 @@ class Client implements ServerClient
      */
     public function setProxyPort($proxyPort)
     {
-        $this->proxy_port = (int) $proxyPort;
+        $this->proxyPort = (int) $proxyPort;
 
         $this->soapClient = null;
 
@@ -636,7 +631,7 @@ class Client implements ServerClient
      */
     public function getProxyPort()
     {
-        return $this->proxy_port;
+        return $this->proxyPort;
     }
 
     /**
@@ -647,7 +642,7 @@ class Client implements ServerClient
      */
     public function setProxyLogin($proxyLogin)
     {
-        $this->proxy_login = $proxyLogin;
+        $this->proxyLogin = $proxyLogin;
 
         $this->soapClient = null;
 
@@ -661,7 +656,7 @@ class Client implements ServerClient
      */
     public function getProxyLogin()
     {
-        return $this->proxy_login;
+        return $this->proxyLogin;
     }
 
     /**
@@ -672,7 +667,7 @@ class Client implements ServerClient
      */
     public function setProxyPassword($proxyPassword)
     {
-        $this->proxy_password = $proxyPassword;
+        $this->proxyPassword = $proxyPassword;
 
         $this->soapClient = null;
 
@@ -684,7 +679,7 @@ class Client implements ServerClient
      *
      * @param  string $localCert local certificate path
      * @return Client
-     * @throws Exception\ExceptionInterface with invalid local certificate path argument
+     * @throws Exception\InvalidArgumentException with invalid local certificate path argument
      */
     public function setHttpsCertificate($localCert)
     {
@@ -692,7 +687,7 @@ class Client implements ServerClient
             throw new Exception\InvalidArgumentException('Invalid HTTPS client certificate path.');
         }
 
-        $this->local_cert = $localCert;
+        $this->localCert = $localCert;
 
         $this->soapClient = null;
 
@@ -706,7 +701,7 @@ class Client implements ServerClient
      */
     public function getHttpsCertificate()
     {
-        return $this->local_cert;
+        return $this->localCert;
     }
 
     /**
@@ -769,7 +764,7 @@ class Client implements ServerClient
      */
     public function getProxyPassword()
     {
-        return $this->proxy_password;
+        return $this->proxyPassword;
     }
 
     /**
@@ -777,6 +772,7 @@ class Client implements ServerClient
      *
      * @param  resource $context
      * @return Client
+     * @throws Exception\InvalidArgumentException if $context is not a valid stream resource
      */
     public function setStreamContext($context)
     {
@@ -784,7 +780,7 @@ class Client implements ServerClient
             throw new Exception\InvalidArgumentException('Invalid stream context resource given.');
         }
 
-        $this->stream_context = $context;
+        $this->streamContext = $context;
         return $this;
     }
 
@@ -795,7 +791,7 @@ class Client implements ServerClient
      */
     public function getStreamContext()
     {
-        return $this->stream_context;
+        return $this->streamContext;
     }
 
     /**
@@ -825,15 +821,15 @@ class Client implements ServerClient
     /**
      * Set the SOAP WSDL Caching Options
      *
-     * @param string|int|boolean|null $caching
+     * @param string|int|bool|null $caching
      * @return Client
      */
     public function setWSDLCache($caching)
     {
         if ($caching === null) {
-            $this->cache_wsdl = null;
+            $this->cacheWsdl = null;
         } else {
-            $this->cache_wsdl = (int) $caching;
+            $this->cacheWsdl = (int) $caching;
         }
         return $this;
     }
@@ -845,7 +841,7 @@ class Client implements ServerClient
      */
     public function getWSDLCache()
     {
-        return $this->cache_wsdl;
+        return $this->cacheWsdl;
     }
 
     /**
@@ -857,9 +853,9 @@ class Client implements ServerClient
     public function setUserAgent($userAgent)
     {
         if ($userAgent === null) {
-            $this->user_agent = null;
+            $this->userAgent = null;
         } else {
-            $this->user_agent = (string) $userAgent;
+            $this->userAgent = (string) $userAgent;
         }
         return $this;
     }
@@ -871,7 +867,7 @@ class Client implements ServerClient
      */
     public function getUserAgent()
     {
-        return $this->user_agent;
+        return $this->userAgent;
     }
 
     /**
@@ -951,16 +947,16 @@ class Client implements ServerClient
      * @param string $location
      * @param string $action
      * @param int    $version
-     * @param int    $one_way
+     * @param int    $oneWay
      * @return mixed
      */
-    public function _doRequest(Client\Common $client, $request, $location, $action, $version, $one_way = null)
+    public function _doRequest(Client\Common $client, $request, $location, $action, $version, $oneWay = null)
     {
         // Perform request as is
-        if ($one_way === null) {
+        if ($oneWay === null) {
             return call_user_func(array($client,'SoapClient::__doRequest'), $request, $location, $action, $version);
         }
-        return call_user_func(array($client, 'SoapClient::__doRequest'), $request, $location, $action, $version, $one_way);
+        return call_user_func(array($client, 'SoapClient::__doRequest'), $request, $location, $action, $version, $oneWay);
     }
 
     /**
@@ -1026,7 +1022,7 @@ class Client implements ServerClient
      * Add SOAP input header
      *
      * @param SoapHeader $header
-     * @param boolean $permanent
+     * @param  bool $permanent
      * @return Client
      */
     public function addSoapInputHeader(SoapHeader $header, $permanent = false)
@@ -1108,7 +1104,7 @@ class Client implements ServerClient
      * Return a list of available functions
      *
      * @return array
-     * @throws Exception\ExceptionInterface
+     * @throws Exception\UnexpectedValueException
      */
     public function getFunctions()
     {
@@ -1131,7 +1127,7 @@ class Client implements ServerClient
      * Return a list of SOAP types
      *
      * @return array
-     * @throws Exception\ExceptionInterface
+     * @throws Exception\UnexpectedValueException
      */
     public function getTypes()
     {

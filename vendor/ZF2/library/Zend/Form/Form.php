@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Form
  */
 
 namespace Zend\Form;
@@ -21,10 +20,6 @@ use Zend\InputFilter\InputProviderInterface;
 use Zend\Stdlib\ArrayUtils;
 use Zend\Stdlib\Hydrator\HydratorInterface;
 
-/**
- * @category   Zend
- * @package    Zend_Form
- */
 class Form extends Fieldset implements FormInterface
 {
     /**
@@ -104,6 +99,13 @@ class Form extends Fieldset implements FormInterface
      * @var bool
      */
     protected $isPrepared = false;
+
+    /**
+     * Prefer form input filter over input filter defaults
+     *
+     * @var bool
+     */
+    protected $preferFormInputFilter = false;
 
     /**
      * Are the form elements/fieldsets wrapped by the form name ?
@@ -242,6 +244,8 @@ class Form extends Fieldset implements FormInterface
         $this->bindAs = $flags;
         $this->setObject($object);
         $this->extract();
+
+        return $this;
     }
 
     /**
@@ -402,6 +406,10 @@ class Form extends Fieldset implements FormInterface
      */
     public function isValid()
     {
+        if ($this->hasValidated) {
+            return $this->isValid;
+        }
+
         $this->isValid = false;
 
         if (!is_array($this->data) && !is_object($this->object)) {
@@ -639,6 +647,28 @@ class Form extends Fieldset implements FormInterface
     }
 
     /**
+     * Set flag indicating whether or not to prefer the form input filter over element and fieldset defaults
+     *
+     * @param  bool $preferFormInputFilter
+     * @return Form
+     */
+    public function setPreferFormInputFilter($preferFormInputFilter)
+    {
+        $this->preferFormInputFilter = (bool) $preferFormInputFilter;
+        return $this;
+    }
+
+    /**
+     * Should we use form input filter over element input filter defaults from elements and fieldsets?
+     *
+     * @return bool
+     */
+    public function getPreferFormInputFilter()
+    {
+        return $this->preferFormInputFilter;
+    }
+
+    /**
      * Attach defaults provided by the elements to the input filter
      *
      * @param  InputFilterInterface $inputFilter
@@ -659,6 +689,10 @@ class Form extends Fieldset implements FormInterface
 
         foreach ($fieldset->getElements() as $element) {
             $name = $element->getName();
+
+            if ($this->preferFormInputFilter && $inputFilter->has($name)) {
+                continue;
+            }
 
             if (!$element instanceof InputProviderInterface) {
                 if ($inputFilter->has($name)) {

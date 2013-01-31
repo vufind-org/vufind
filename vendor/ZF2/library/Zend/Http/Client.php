@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Http
  */
 
 namespace Zend\Http;
@@ -19,9 +18,6 @@ use Zend\Uri\Http;
 
 /**
  * Http client
- *
- * @category   Zend
- * @package    Zend\Http
  */
 class Client implements Stdlib\DispatchableInterface
 {
@@ -113,6 +109,7 @@ class Client implements Stdlib\DispatchableInterface
         'keepalive'       => false,
         'outputstream'    => false,
         'encodecookies'   => true,
+        'argseparator'    => null,
         'rfc3986strict'   => false
     );
 
@@ -356,6 +353,33 @@ class Client implements Stdlib\DispatchableInterface
     }
 
     /**
+     * Set the query string argument separator
+     *
+     * @param string $argSeparator
+     * @return Client
+     */
+    public function setArgSeparator($argSeparator)
+    {
+        $this->setOptions(array("argseparator" => $argSeparator));
+        return $this;
+    }
+
+    /**
+     * Get the query string argument separator
+     *
+     * @return string
+     */
+    public function getArgSeparator()
+    {
+        $argSeparator = $this->config['argseparator'];
+        if (empty($argSeparator)) {
+            $argSeparator = ini_get('arg_separator.output');
+            $this->setArgSeparator($argSeparator);
+        }
+        return $argSeparator;
+    }
+
+    /**
      * Set the encoding type and the boundary (if any)
      *
      * @param string $encType
@@ -434,7 +458,7 @@ class Client implements Stdlib\DispatchableInterface
      * Get the cookie Id (name+domain+path)
      *
      * @param  Header\SetCookie|Header\Cookie $cookie
-     * @return string|boolean
+     * @return string|bool
      */
     protected function getCookieId($cookie)
     {
@@ -452,8 +476,8 @@ class Client implements Stdlib\DispatchableInterface
      * @param string  $expire
      * @param string  $path
      * @param string  $domain
-     * @param boolean $secure
-     * @param boolean $httponly
+     * @param  bool $secure
+     * @param  bool $httponly
      * @param string  $maxAge
      * @param string  $version
      * @throws Exception\InvalidArgumentException
@@ -469,11 +493,11 @@ class Client implements Stdlib\DispatchableInterface
                     throw new Exception\InvalidArgumentException('The cookie parameter is not a valid Set-Cookie type');
                 }
             }
-        } elseif ($cookie instanceof Header\SetCookie) {
-            $this->cookies[$this->getCookieId($cookie)] = $cookie;
         } elseif (is_string($cookie) && $value !== null) {
             $setCookie = new Header\SetCookie($cookie, $value, $expire, $path, $domain, $secure, $httponly, $maxAge, $version);
             $this->cookies[$this->getCookieId($setCookie)] = $setCookie;
+        } elseif ($cookie instanceof Header\SetCookie) {
+            $this->cookies[$this->getCookieId($cookie)] = $cookie;
         } else {
             throw new Exception\InvalidArgumentException('Invalid parameter type passed as Cookie');
         }
@@ -533,7 +557,7 @@ class Client implements Stdlib\DispatchableInterface
      * Check if exists the header type specified
      *
      * @param  string $name
-     * @return boolean
+     * @return bool
      */
     public function hasHeader($name)
     {
@@ -550,7 +574,7 @@ class Client implements Stdlib\DispatchableInterface
      * Get the header value of the request
      *
      * @param  string $name
-     * @return string|boolean
+     * @return string|bool
      */
     public function getHeader($name)
     {
@@ -567,7 +591,7 @@ class Client implements Stdlib\DispatchableInterface
     /**
      * Set streaming for received data
      *
-     * @param string|boolean $streamfile Stream file, true for temp file, false/null for no streaming
+     * @param string|bool $streamfile Stream file, true for temp file, false/null for no streaming
      * @return \Zend\Http\Client
      */
     public function setStream($streamfile = true)
@@ -578,11 +602,11 @@ class Client implements Stdlib\DispatchableInterface
 
     /**
      * Get status of streaming for received data
-     * @return boolean|string
+     * @return bool|string
      */
     public function getStream()
     {
-        if (!is_null($this->streamName)) {
+        if (null !== $this->streamName) {
             return $this->streamName;
         }
 
@@ -659,7 +683,7 @@ class Client implements Stdlib\DispatchableInterface
      * @param array $digest
      * @param null|string $entityBody
      * @throws Exception\InvalidArgumentException
-     * @return string|boolean
+     * @return string|bool
      */
     protected function calcAuthDigest($user, $password, $type = self::AUTH_BASIC, $digest = array(), $entityBody = null)
     {
@@ -777,14 +801,14 @@ class Client implements Stdlib\DispatchableInterface
 
                 if (!empty($queryArray)) {
                     $newUri = $uri->toString();
-                    $queryString = http_build_query($query);
+                    $queryString = http_build_query($query, null, $this->getArgSeparator());
 
                     if ($this->config['rfc3986strict']) {
                         $queryString = str_replace('+', '%20', $queryString);
                     }
 
                     if (strpos($newUri, '?') !== false) {
-                        $newUri .= '&' . $queryString;
+                        $newUri .= $this->getArgSeparator() . $queryString;
                     } else {
                         $newUri .= '?' . $queryString;
                     }
@@ -855,9 +879,9 @@ class Client implements Stdlib\DispatchableInterface
             }
 
             // Get the cookies from response (if any)
-            $setCookie = $response->getCookie();
-            if (!empty($setCookie)) {
-                $this->addCookie($setCookie);
+            $setCookies = $response->getCookie();
+            if (!empty($setCookies)) {
+                $this->addCookie($setCookies);
             }
 
             // If we got redirected, look for the Location header
@@ -963,7 +987,7 @@ class Client implements Stdlib\DispatchableInterface
      * Remove a file to upload
      *
      * @param  string $filename
-     * @return boolean
+     * @return bool
      */
     public function removeFileUpload($filename)
     {
@@ -981,7 +1005,7 @@ class Client implements Stdlib\DispatchableInterface
      * @param   string $domain
      * @param   string $path
      * @param   boolean $secure
-     * @return  Header\Cookie|boolean
+     * @return  Header\Cookie|bool
      */
     protected function prepareCookies($domain, $path, $secure)
     {
@@ -1275,7 +1299,7 @@ class Client implements Stdlib\DispatchableInterface
      *
      * @param Http $uri
      * @param string $method
-     * @param boolean $secure
+     * @param  bool $secure
      * @param array $headers
      * @param string $body
      * @return string the raw response
@@ -1294,7 +1318,6 @@ class Client implements Stdlib\DispatchableInterface
                 throw new Exception\RuntimeException('Adapter does not support streaming');
             }
         }
-
         // HTTP connection
         $this->lastRawRequest = $this->adapter->write($method,
             $uri, $this->config['httpversion'], $headers, $body);

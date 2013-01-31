@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Mvc
  */
 
 namespace Zend\Mvc\Router\Http;
@@ -18,8 +17,6 @@ use Zend\Stdlib\RequestInterface as Request;
 /**
  * Literal route.
  *
- * @package    Zend_Mvc_Router
- * @subpackage Http
  * @see        http://guides.rubyonrails.org/routing.html
  */
 class Literal implements RouteInterface
@@ -95,7 +92,7 @@ class Literal implements RouteInterface
         $path = $uri->getPath();
 
         if ($pathOffset !== null) {
-            if ($pathOffset >= 0 && strlen($path) >= $pathOffset) {
+            if ($pathOffset >= 0 && strlen($path) >= $pathOffset && !empty($this->route)) {
                 if (strpos($path, $this->route, $pathOffset) === $pathOffset) {
                     return new RouteMatch($this->defaults, strlen($this->route));
                 }

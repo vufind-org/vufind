@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Barcode
  */
 
 namespace Zend\Barcode\Renderer;
@@ -17,9 +16,6 @@ use ZendPdf\PdfDocument;
 
 /**
  * Class for rendering the barcode in PDF resource
- *
- * @category   Zend
- * @package    Zend_Barcode
  */
 class Pdf extends AbstractRenderer
 {
@@ -103,7 +99,7 @@ class Pdf extends AbstractRenderer
      * Draw a polygon in the rendering resource
      * @param array $points
      * @param integer $color
-     * @param boolean $filled
+     * @param  bool $filled
      */
     protected function drawPolygon($points, $color, $filled = true)
     {
@@ -206,7 +202,7 @@ class Pdf extends AbstractRenderer
     {
         $drawingString = iconv('UTF-8', 'UTF-16BE//IGNORE', $text);
         $characters    = array();
-        for ($i = 0; $i < strlen($drawingString); $i ++) {
+        for ($i = 0, $len = strlen($drawingString); $i < $len; $i++) {
             $characters[] = (ord($drawingString[$i ++]) << 8) | ord($drawingString[$i]);
         }
         $glyphs = $font->glyphNumbersForCharacters($characters);

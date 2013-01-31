@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Memory
  */
 
 namespace Zend\Memory;
@@ -18,9 +17,6 @@ use Countable;
  *
  * It's an OO string wrapper.
  * Used to intercept string updates.
- *
- * @category   Zend
- * @package    Zend_Memory
  */
 class Value implements ArrayAccess, Countable
 {
@@ -41,7 +37,7 @@ class Value implements ArrayAccess, Countable
     /**
      * Boolean flag which signals to trace value modifications
      *
-     * @var boolean
+     * @var bool
      */
     private $trace;
 
@@ -84,7 +80,7 @@ class Value implements ArrayAccess, Countable
      * returns true if string offset exists
      *
      * @param integer $offset
-     * @return boolean
+     * @return bool
      */
     public function offsetExists($offset)
     {

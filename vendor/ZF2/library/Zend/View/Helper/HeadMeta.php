@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_View
  */
 
 namespace Zend\View\Helper;
@@ -18,8 +17,6 @@ use Zend\View\Exception;
  * Zend_Layout_View_Helper_HeadMeta
  *
  * @see        http://www.w3.org/TR/xhtml1/dtds.html
- * @package    Zend_View
- * @subpackage Helper
  */
 class HeadMeta extends Placeholder\Container\AbstractStandalone
 {
@@ -185,7 +182,7 @@ class HeadMeta extends Placeholder\Container\AbstractStandalone
      * Determine if item is valid
      *
      * @param  mixed $item
-     * @return boolean
+     * @return bool
      */
     protected function isValid($item)
     {

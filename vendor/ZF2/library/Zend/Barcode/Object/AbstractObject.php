@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Barcode
  */
 
 namespace Zend\Barcode\Object;
@@ -17,9 +16,6 @@ use Zend\Validator\Barcode as BarcodeValidator;
 
 /**
  * Class for generate Barcode
- *
- * @category   Zend
- * @package    Zend_Barcode
  */
 abstract class AbstractObject implements ObjectInterface
 {
@@ -92,19 +88,19 @@ abstract class AbstractObject implements ObjectInterface
 
     /**
      * Activate/deactivate border of the object
-     * @var boolean
+     * @var bool
      */
     protected $withBorder = false;
 
     /**
      * Activate/deactivate drawing of quiet zones
-     * @var boolean
+     * @var bool
      */
     protected $withQuietZones = true;
 
     /**
      * Force quiet zones even if
-     * @var boolean
+     * @var bool
      */
     protected $mandatoryQuietZones = false;
 
@@ -136,13 +132,13 @@ abstract class AbstractObject implements ObjectInterface
 
     /**
      * Display (or not) human readable text
-     * @var boolean
+     * @var bool
      */
     protected $drawText = true;
 
     /**
      * Adjust (or not) position of human readable characters with barcode
-     * @var boolean
+     * @var bool
      */
     protected $stretchText = false;
 
@@ -162,13 +158,13 @@ abstract class AbstractObject implements ObjectInterface
 
     /**
      * Drawing of checksum
-     * @var boolean
+     * @var bool
      */
     protected $withChecksum = false;
 
     /**
      * Drawing of checksum inside text
-     * @var boolean
+     * @var bool
      */
     protected $withChecksumInText = false;
 
@@ -181,14 +177,14 @@ abstract class AbstractObject implements ObjectInterface
     /**
      * Activate automatic addition of leading zeros
      * if barcode length is fixed
-     * @var boolean
+     * @var bool
      */
     protected $addLeadingZeros = true;
 
     /**
      * Activation of mandatory checksum
      * to deactivate unauthorized modification
-     * @var boolean
+     * @var bool
      */
     protected $mandatoryChecksum = false;
 
@@ -440,7 +436,7 @@ abstract class AbstractObject implements ObjectInterface
 
     /**
      * Activate/deactivate drawing of the bar
-     * @param boolean $value
+     * @param  bool $value
      * @return \Zend\Barcode\Object\ObjectInterface
      */
     public function setWithBorder($value)
@@ -451,7 +447,7 @@ abstract class AbstractObject implements ObjectInterface
 
     /**
      * Retrieve if border are draw or not
-     * @return boolean
+     * @return bool
      */
     public function getWithBorder()
     {
@@ -460,7 +456,7 @@ abstract class AbstractObject implements ObjectInterface
 
     /**
      * Activate/deactivate drawing of the quiet zones
-     * @param boolean $value
+     * @param  bool $value
      * @return AbstractObject
      */
     public function setWithQuietZones($value)
@@ -471,7 +467,7 @@ abstract class AbstractObject implements ObjectInterface
 
     /**
      * Retrieve if quiet zones are draw or not
-     * @return boolean
+     * @return bool
      */
     public function getWithQuietZones()
     {
@@ -538,7 +534,7 @@ abstract class AbstractObject implements ObjectInterface
     /**
      * Automatically add leading zeros if barcode length is fixed
      * @param string $text
-     * @param boolean $withoutChecksum
+     * @param  bool $withoutChecksum
      * @return string
      */
     protected function addLeadingZeros($text, $withoutChecksum = false)
@@ -583,7 +579,7 @@ abstract class AbstractObject implements ObjectInterface
 
     /**
      * Activate/deactivate drawing of text to encode
-     * @param boolean $value
+     * @param  bool $value
      * @return \Zend\Barcode\Object\ObjectInterface
      */
     public function setDrawText($value)
@@ -594,7 +590,7 @@ abstract class AbstractObject implements ObjectInterface
 
     /**
      * Retrieve if drawing of text to encode is enabled
-     * @return boolean
+     * @return bool
      */
     public function getDrawText()
     {
@@ -604,7 +600,7 @@ abstract class AbstractObject implements ObjectInterface
     /**
      * Activate/deactivate the adjustment of the position
      * of the characters to the position of the bars
-     * @param boolean $value
+     * @param  bool $value
      * @return \Zend\Barcode\Object\ObjectInterface
      * @throw \Zend\Barcode\Object\Exception\ExceptionInterface
      */
@@ -617,7 +613,7 @@ abstract class AbstractObject implements ObjectInterface
     /**
      * Retrieve if the adjustment of the position of the characters
      * to the position of the bars is enabled
-     * @return boolean
+     * @return bool
      */
     public function getStretchText()
     {
@@ -628,7 +624,7 @@ abstract class AbstractObject implements ObjectInterface
      * Activate/deactivate the automatic generation
      * of the checksum character
      * added to the barcode text
-     * @param boolean $value
+     * @param  bool $value
      * @return \Zend\Barcode\Object\ObjectInterface
      */
     public function setWithChecksum($value)
@@ -642,7 +638,7 @@ abstract class AbstractObject implements ObjectInterface
     /**
      * Retrieve if the checksum character is automatically
      * added to the barcode text
-     * @return boolean
+     * @return bool
      */
     public function getWithChecksum()
     {
@@ -653,7 +649,7 @@ abstract class AbstractObject implements ObjectInterface
      * Activate/deactivate the automatic generation
      * of the checksum character
      * added to the barcode text
-     * @param boolean $value
+     * @param  bool $value
      * @return \Zend\Barcode\Object\ObjectInterface
      * @throw \Zend\Barcode\Object\Exception\ExceptionInterface
      */
@@ -668,7 +664,7 @@ abstract class AbstractObject implements ObjectInterface
     /**
      * Retrieve if the checksum character is automatically
      * added to the barcode text
-     * @return boolean
+     * @return bool
      */
     public function getWithChecksumInText()
     {
@@ -785,7 +781,7 @@ abstract class AbstractObject implements ObjectInterface
      * Add a polygon drawing instruction in the set of instructions
      * @param array $points
      * @param integer $color
-     * @param boolean $filled
+     * @param  bool $filled
      */
     protected function addPolygon(array $points, $color = null, $filled = true)
     {
@@ -975,7 +971,7 @@ abstract class AbstractObject implements ObjectInterface
     /**
      * Calculate the offset from the left of the object
      * if an orientation is activated
-     * @param boolean $recalculate
+     * @param  bool $recalculate
      * @return float
      */
     public function getOffsetLeft($recalculate = false)
@@ -1002,7 +998,7 @@ abstract class AbstractObject implements ObjectInterface
     /**
      * Calculate the offset from the top of the object
      * if an orientation is activated
-     * @param boolean $recalculate
+     * @param  bool $recalculate
      * @return float
      */
     public function getOffsetTop($recalculate = false)

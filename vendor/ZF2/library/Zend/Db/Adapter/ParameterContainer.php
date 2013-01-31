@@ -3,18 +3,12 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Db
  */
 
 namespace Zend\Db\Adapter;
 
-/**
- * @category   Zend
- * @package    Zend_Db
- * @subpackage Adapter
- */
 class ParameterContainer implements \Iterator, \ArrayAccess, \Countable
 {
 
@@ -60,7 +54,7 @@ class ParameterContainer implements \Iterator, \ArrayAccess, \Countable
      * Offset exists
      *
      * @param  string $name
-     * @return boolean
+     * @return bool
      */
     public function offsetExists($name)
     {
@@ -171,7 +165,7 @@ class ParameterContainer implements \Iterator, \ArrayAccess, \Countable
      * Offset has errata
      *
      * @param  string|integer $name
-     * @return boolean
+     * @return bool
      */
     public function offsetHasErrata($name)
     {
@@ -271,7 +265,7 @@ class ParameterContainer implements \Iterator, \ArrayAccess, \Countable
     /**
      * Valid
      *
-     * @return boolean
+     * @return bool
      */
     public function valid()
     {

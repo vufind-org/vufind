@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Form
  */
 
 namespace Zend\Form\Element;
@@ -17,14 +16,9 @@ use Zend\Form\Exception;
 use Zend\Form\Fieldset;
 use Zend\Form\FieldsetInterface;
 use Zend\Form\FieldsetPrepareAwareInterface;
-use Zend\Form\Form;
+use Zend\Form\FormInterface;
 use Zend\Stdlib\ArrayUtils;
 
-/**
- * @category   Zend
- * @package    Zend_Form
- * @subpackage Element
- */
 class Collection extends Fieldset implements FieldsetPrepareAwareInterface
 {
     /**
@@ -81,7 +75,6 @@ class Collection extends Fieldset implements FieldsetPrepareAwareInterface
      */
     protected $templateElement;
 
-
     /**
      * Accepted options for Collection:
      * - target_element: an array or element used in the collection
@@ -125,12 +118,11 @@ class Collection extends Fieldset implements FieldsetPrepareAwareInterface
         return $this;
     }
 
-
     /**
      * Checks if the object can be set in this fieldset
      *
      * @param object $object
-     * @return boolean
+     * @return bool
      */
     public function allowObjectBinding($object)
     {
@@ -160,7 +152,6 @@ class Collection extends Fieldset implements FieldsetPrepareAwareInterface
 
         return $this;
     }
-
 
     /**
      * Populate values
@@ -247,7 +238,7 @@ class Collection extends Fieldset implements FieldsetPrepareAwareInterface
     /**
      * Checks if this fieldset can bind data
      *
-     * @return boolean
+     * @return bool
      */
     public function allowValueBinding()
     {
@@ -443,10 +434,10 @@ class Collection extends Fieldset implements FieldsetPrepareAwareInterface
     /**
      * Prepare the collection by adding a dummy template element if the user want one
      *
-     * @param Form $form
+     * @param  FormInterface $form
      * @return mixed|void
      */
-    public function prepareElement(Form $form)
+    public function prepareElement(FormInterface $form)
     {
         // Create a template that will also be prepared
         if ($this->shouldCreateTemplate) {
@@ -467,6 +458,7 @@ class Collection extends Fieldset implements FieldsetPrepareAwareInterface
      */
     public function extract()
     {
+
         if ($this->object instanceof Traversable) {
             $this->object = ArrayUtils::iteratorToArray($this->object);
         }
@@ -476,12 +468,15 @@ class Collection extends Fieldset implements FieldsetPrepareAwareInterface
         }
 
         $values = array();
+
         foreach ($this->object as $key => $value) {
             if ($this->hydrator) {
                 $values[$key] = $this->hydrator->extract($value);
             } elseif ($value instanceof $this->targetElement->object) {
-                $this->targetElement->object = $value;
-                $values[$key] = $this->targetElement->extract();
+                // @see https://github.com/zendframework/zf2/pull/2848
+                $targetElement = clone $this->targetElement;
+                $targetElement->object = $value;
+                $values[$key] = $targetElement->extract();
             }
         }
 

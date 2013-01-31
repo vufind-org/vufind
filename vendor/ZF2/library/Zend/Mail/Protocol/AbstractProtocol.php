@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Mail
  */
 
 namespace Zend\Mail\Protocol;
@@ -15,9 +14,6 @@ use Zend\Validator;
 /**
  * Provides low-level methods for concrete adapters to communicate with a remote mail server and track requests and responses.
  *
- * @category   Zend
- * @package    Zend_Mail
- * @subpackage Protocol
  * @todo Implement proxy settings
  */
 abstract class AbstractProtocol
@@ -99,7 +95,7 @@ abstract class AbstractProtocol
     public function __construct($host = '127.0.0.1', $port = null)
     {
         $this->validHost = new Validator\ValidatorChain();
-        $this->validHost->addValidator(new Validator\Hostname(Validator\Hostname::ALLOW_ALL));
+        $this->validHost->attach(new Validator\Hostname(Validator\Hostname::ALLOW_ALL));
 
         if (!$this->validHost->isValid($host)) {
             throw new Exception\RuntimeException(implode(', ', $this->validHost->getMessages()));
@@ -212,7 +208,7 @@ abstract class AbstractProtocol
      *
      * @param  string $remote Remote
      * @throws Exception\RuntimeException
-     * @return boolean
+     * @return bool
      */
     protected function _connect($remote)
     {
@@ -254,7 +250,7 @@ abstract class AbstractProtocol
      *
      * @param  string $request
      * @throws Exception\RuntimeException
-     * @return integer|boolean Number of bytes written to remote host
+     * @return integer|bool Number of bytes written to remote host
      */
     protected function _send($request)
     {

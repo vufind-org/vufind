@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Form
  */
 
 namespace Zend\Form\View\Helper;
@@ -14,11 +13,6 @@ use Zend\Form\ElementInterface;
 use Zend\Form\Exception;
 use Zend\Form\View\Helper\AbstractHelper;
 
-/**
- * @category   Zend
- * @package    Zend_Form
- * @subpackage View
- */
 class FormRow extends AbstractHelper
 {
     const LABEL_APPEND  = 'append';
@@ -113,15 +107,15 @@ class FormRow extends AbstractHelper
                     $elementString);
             } else {
                 if ($element->hasAttribute('id')) {
-                    $labelOpen = $labelHelper($element);
+                    $labelOpen = '';
                     $labelClose = '';
-                    $label = '';
+                    $label = $labelHelper($element);
                 } else {
                     $labelOpen  = $labelHelper->openTag($labelAttributes);
                     $labelClose = $labelHelper->closeTag();
                 }
 
-                if ($label !== '') {
+                if ($label !== '' && !$element->hasAttribute('id')) {
                     $label = '<span>' . $label . '</span>';
                 }
 
@@ -160,7 +154,7 @@ class FormRow extends AbstractHelper
      * @param bool                  $renderErrors
      * @return string|FormRow
      */
-    public function __invoke(ElementInterface $element = null, $labelPosition = null, $renderErrors = true)
+    public function __invoke(ElementInterface $element = null, $labelPosition = null, $renderErrors = null)
     {
         if (!$element) {
             return $this;
@@ -170,7 +164,9 @@ class FormRow extends AbstractHelper
             $this->setLabelPosition($labelPosition);
         }
 
-        $this->setRenderErrors($renderErrors);
+        if($renderErrors !== null){
+            $this->setRenderErrors($renderErrors);
+        }
 
         return $this->render($element);
     }

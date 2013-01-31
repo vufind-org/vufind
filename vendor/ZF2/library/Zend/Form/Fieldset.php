@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Form
  */
 
 namespace Zend\Form;
@@ -15,10 +14,6 @@ use Zend\Stdlib\Hydrator;
 use Zend\Stdlib\Hydrator\HydratorInterface;
 use Zend\Stdlib\PriorityQueue;
 
-/**
- * @category   Zend
- * @package    Zend_Form
- */
 class Fieldset extends Element implements FieldsetInterface
 {
     /**
@@ -358,10 +353,10 @@ class Fieldset extends Element implements FieldsetInterface
      * Ensures state is ready for use. Here, we append the name of the fieldsets to every elements in order to avoid
      * name clashes if the same fieldset is used multiple times
      *
-     * @param  Form $form
+     * @param  FormInterface $form
      * @return mixed|void
      */
-    public function prepareElement(Form $form)
+    public function prepareElement(FormInterface $form)
     {
         $name = $this->getName();
 
@@ -463,7 +458,7 @@ class Fieldset extends Element implements FieldsetInterface
      * Checks if the object can be set in this fieldset
      *
      * @param object $object
-     * @return boolean
+     * @return bool
      */
     public function allowObjectBinding($object)
     {
@@ -500,7 +495,7 @@ class Fieldset extends Element implements FieldsetInterface
     /**
      * Checks if this fieldset can bind data
      *
-     * @return boolean
+     * @return bool
      */
     public function allowValueBinding()
     {

@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Text
  */
 
 namespace Zend\Text\Figlet;
@@ -13,12 +12,10 @@ namespace Zend\Text\Figlet;
 use Traversable;
 use Zend\Stdlib\ArrayUtils;
 use Zend\Stdlib\ErrorHandler;
+use Zend\Stdlib\StringUtils;
 
 /**
  * Zend\Text\Figlet is a PHP implementation of FIGlet
- *
- * @category  Zend
- * @package   Zend_Text_Figlet
  */
 class Figlet
 {
@@ -69,7 +66,7 @@ class Figlet
     /**
      * Indicates if a font was loaded yet
      *
-     * @var boolean
+     * @var bool
      */
     protected $fontLoaded = false;
 
@@ -140,7 +137,7 @@ class Figlet
     /**
      * Whether to handle paragraphs || not
      *
-     * @var boolean
+     * @var bool
      */
     protected $handleParagraphs = false;
 
@@ -318,7 +315,7 @@ class Figlet
     /**
      * Set handling of paragraphs
      *
-     * @param  boolean $handleParagraphs Whether to handle paragraphs or not
+     * @param  bool $handleParagraphs Whether to handle paragraphs or not
      * @return Figlet
      */
     public function setHandleParagraphs($handleParagraphs)
@@ -413,9 +410,16 @@ class Figlet
             throw new Exception\InvalidArgumentException('$text must be a string');
         }
 
-        if ($encoding !== 'UTF-8') {
-            $text = iconv($encoding, 'UTF-8', $text);
+        // Get the string wrapper supporting UTF-8 character encoding and the input encoding
+        $strWrapper = StringUtils::getWrapper($encoding, 'UTF-8');
+
+        // Convert $text to UTF-8 and check encoding
+        $text = $strWrapper->convert($text);
+        if (!StringUtils::isValidUtf8($text)) {
+            throw new Exception\UnexpectedValueException('$text is not encoded with ' . $encoding);
         }
+
+        $strWrapper = StringUtils::getWrapper('UTF-8');
 
         $this->output     = '';
         $this->outputLine = array();
@@ -427,21 +431,14 @@ class Figlet
 
         $wordBreakMode  = 0;
         $lastCharWasEol = false;
-
-        ErrorHandler::start(E_NOTICE);
-        $textLength = iconv_strlen($text, 'UTF-8');
-        $error      = ErrorHandler::stop();
-
-        if ($textLength === false) {
-            throw new Exception\UnexpectedValueException('$text is not encoded with ' . $encoding, 0, $error);
-        }
+        $textLength     = $strWrapper->strlen($text);
 
         for ($charNum = 0; $charNum < $textLength; $charNum++) {
             // Handle paragraphs
-            $char = iconv_substr($text, $charNum, 1, 'UTF-8');
+            $char = $strWrapper->substr($text, $charNum, 1);
 
             if ($char === "\n" && $this->handleParagraphs && !$lastCharWasEol) {
-                $nextChar = iconv_substr($text, ($charNum + 1), 1, 'UTF-8');
+                $nextChar = $strWrapper->substr($text, ($charNum + 1), 1);
                 if (!$nextChar) {
                     $nextChar = null;
                 }
@@ -638,7 +635,7 @@ class Figlet
      * Returns true if this can be done, false otherwise.
      *
      * @param  string $char Character which to add to the output
-     * @return boolean
+     * @return bool
      */
     protected function _addChar($char)
     {
@@ -686,7 +683,7 @@ class Figlet
             }
         }
 
-        $this->outlineLength                          = strlen($this->outputLine[0]);
+        $this->outlineLength                         = strlen($this->outputLine[0]);
         $this->inCharLine[$this->inCharLineLength++] = $char;
 
         return true;
