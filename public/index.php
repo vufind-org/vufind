@@ -55,16 +55,8 @@ if (!class_exists('Zend\Loader\AutoloaderFactory')) {
     throw new RuntimeException('Unable to load ZF2.');
 }
 
-// Get application stack configuration
-$configuration = include 'config/application.config.php';
-
-// Setup service manager
-$serviceManager = new ServiceManager(new ServiceManagerConfig($configuration['service_manager']));
-$serviceManager->setService('ApplicationConfig', $configuration);
-$serviceManager->get('ModuleManager')->loadModules();
-
-// Run application
-$serviceManager->get('Application')->bootstrap()->run()->send();
+// Run the application!
+Zend\Mvc\Application::init(require 'config/application.config.php')->run();
 
 // Handle final profiling details, if necessary:
 if ($xhprof) {
