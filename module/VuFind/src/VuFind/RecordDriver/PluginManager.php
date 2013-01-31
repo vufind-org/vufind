@@ -46,6 +46,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     public function __construct(
         \Zend\ServiceManager\ConfigInterface $configuration = null
     ) {
+        // Record drivers are not meant to be shared -- every time we retrieve one,
+        // we are building a brand new object.
+        $this->setShareByDefault(false);
+
         parent::__construct($configuration);
 
         // Add an initializer for setting up hierarchies
@@ -63,10 +67,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
             }
         };
         $this->addInitializer($initializer, false);
-
-        // Record drivers are not meant to be shared -- every time we retrieve one,
-        // we are building a brand new object.
-        $this->setShareByDefault(false);
     }
 
     /**
