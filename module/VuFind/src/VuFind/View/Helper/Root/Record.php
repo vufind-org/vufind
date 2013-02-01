@@ -142,7 +142,7 @@ class Record extends AbstractHelper
 
     /**
      * Export the record in the requested format.  For legal values, see
-     * getExportFormats().
+     * the export helper's getFormatsForRecord() method.
      *
      * @param string $format Export format to display
      *
@@ -152,38 +152,6 @@ class Record extends AbstractHelper
     {
         $format = strtolower($format);
         return $this->renderTemplate('export-' . $format . '.phtml');
-    }
-
-    /**
-     * Get an array of strings representing formats in which this record's
-     * data may be exported (empty if none).  Legal values: "RefWorks",
-     * "EndNote", "MARC", "RDF".
-     *
-     * @return array Strings representing export formats.
-     */
-    public function getExportFormats()
-    {
-        $config = ConfigReader::getConfig();
-        $exportConfig = ConfigReader::getConfig('export');
-
-        // Get an array of enabled export formats (from config, or use defaults
-        // if nothing in config array).
-        $active = isset($config->Export)
-            ? $config->Export->toArray()
-            : array('RefWorks' => true, 'EndNote' => true);
-
-        // Loop through all possible formats:
-        $formats = array();
-        foreach ($exportConfig as $format => $details) {
-            if (isset($active[$format]) && $active[$format]
-                && $this->driver->supportsExport($format)
-            ) {
-                $formats[] = $format;
-            }
-        }
-
-        // Send back the results:
-        return $formats;
     }
 
     /**

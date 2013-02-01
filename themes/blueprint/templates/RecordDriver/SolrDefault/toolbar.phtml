@@ -17,7 +17,7 @@
     <? endif; ?>
     <li><a href="<?=$this->recordLink()->getActionUrl($this->driver, 'SMS')?>" class="smsRecord sms <?=$controllerClass?>" id="smsRecord" title="<?=$this->transEsc('Text this')?>"><?=$this->transEsc('Text this')?></a></li>
     <li><a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Email')?>" class="mailRecord mail <?=$controllerClass?>" id="mailRecord" title="<?=$this->transEsc('Email this')?>"><?=$this->transEsc('Email this')?></a></li>
-    <? $exportFormats = $this->record($this->driver)->getExportFormats(); if (count($exportFormats) > 0): ?>
+    <? $exportFormats = $this->export()->getFormatsForRecord($this->driver); if (count($exportFormats) > 0): ?>
     <li>
       <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>" class="export exportMenu"><?=$this->transEsc('Export Record')?></a>
       <ul class="menu offscreen" id="exportMenu">

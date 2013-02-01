@@ -7,7 +7,7 @@
         $this->recordLink()->getBreadcrumb($this->driver) . '<span>&gt;</span><em>' . $this->transEsc('Export Record') . '</em>';
 ?>
 <?=$this->flashmessages()?>
-<? $exportFormats = $this->record($this->driver)->getExportFormats(); if (count($exportFormats) > 0): ?>
+<? $exportFormats = $this->export()->getFormatsForRecord($this->driver); if (count($exportFormats) > 0): ?>
   <?=$this->transEsc('export_choose_format')?>
   <ul>
   <? foreach ($exportFormats as $exportFormat): ?>

@@ -221,6 +221,37 @@ class Export
     }
 
     /**
+     * Get an array of strings representing formats in which a specified record's
+     * data may be exported (empty if none).  Legal values: "BibTeX", "EndNote",
+     * "MARC", "MARCXML", "RDF", "RefWorks".
+     *
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
+     *
+     * @return array Strings representing export formats.
+     */
+    public function getFormatsForRecord($driver)
+    {
+        // Get an array of enabled export formats (from config, or use defaults
+        // if nothing in config array).
+        $active = isset($this->mainConfig->Export)
+            ? $this->mainConfig->Export->toArray()
+            : array('RefWorks' => true, 'EndNote' => true);
+
+        // Loop through all possible formats:
+        $formats = array();
+        foreach ($this->exportConfig as $format => $details) {
+            if (isset($active[$format]) && $active[$format]
+                && $driver->supportsExport($format)
+            ) {
+                $formats[] = $format;
+            }
+        }
+
+        // Send back the results:
+        return $formats;
+    }
+
+    /**
      * Get headers for the requested format.
      *
      * @param string $format Selected export format
