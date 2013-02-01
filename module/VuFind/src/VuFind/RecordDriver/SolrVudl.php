@@ -38,6 +38,11 @@ namespace VuFind\RecordDriver;
  */
 class SolrVudl extends SolrDefault
 {
+    /**
+     * Full VuDL record
+     *
+     * @var \SimpleXML
+     */
     protected $fullRecord = null;
 
     /**
