@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\ILS as ILSException,
+use VuFind\Exception\ILS as ILSException,
     VuFind\ILS\Connection as ILSConnection,
     VuFind\ILS\Logic\Holds as HoldLogic,
     VuFind\ILS\Logic\TitleHolds as TitleHoldLogic,
@@ -44,6 +43,11 @@ use VuFind\Config\Reader as ConfigReader,
  */
 class SolrMarc extends SolrDefault
 {
+    /**
+     * MARC record
+     *
+     * @var \File_MARC_Record
+     */
     protected $marcRecord;
 
     /**
@@ -288,9 +292,9 @@ class SolrMarc extends SolrDefault
     public function getNewerTitles()
     {
         // If the MARC links are being used, return blank array
-        $config = ConfigReader::getConfig();
-        $fieldsNames = isset($config->Record->marc_links)
-            ? array_map('trim', explode(',', $config->Record->marc_links)) : array();
+        $fieldsNames = isset($this->mainConfig->Record->marc_links)
+            ? array_map('trim', explode(',', $this->mainConfig->Record->marc_links))
+            : array();
         return in_array('785', $fieldsNames) ? array() : parent::getNewerTitles();
     }
 
@@ -331,9 +335,9 @@ class SolrMarc extends SolrDefault
     public function getPreviousTitles()
     {
         // If the MARC links are being used, return blank array
-        $config = ConfigReader::getConfig();
-        $fieldsNames = isset($config->Record->marc_links)
-            ? array_map('trim', explode(',', $config->Record->marc_links)) : array();
+        $fieldsNames = isset($this->mainConfig->Record->marc_links)
+            ? array_map('trim', explode(',', $this->mainConfig->Record->marc_links))
+            : array();
         return in_array('780', $fieldsNames) ? array() : parent::getPreviousTitles();
     }
 
@@ -644,12 +648,11 @@ class SolrMarc extends SolrDefault
     public function getAllRecordLinks()
     {
         // Load configurations:
-        $config = ConfigReader::getConfig();
-        $fieldsNames = isset($config->Record->marc_links)
-            ? explode(',', $config->Record->marc_links) : array();
+        $fieldsNames = isset($this->mainConfig->Record->marc_links)
+            ? explode(',', $this->mainConfig->Record->marc_links) : array();
         $useVisibilityIndicator
-            = isset($config->Record->marc_links_use_visibility_indicator)
-            ? $config->Record->marc_links_use_visibility_indicator : true;
+            = isset($this->mainConfig->Record->marc_links_use_visibility_indicator)
+            ? $this->mainConfig->Record->marc_links_use_visibility_indicator : true;
 
         $retVal = array();
         foreach ($fieldsNames as $value) {
@@ -724,9 +727,9 @@ class SolrMarc extends SolrDefault
             return;
         }
 
-        $config = ConfigReader::getConfig();
-        $linkTypeSetting = isset($config->Record->marc_links_link_types)
-            ? $config->Record->marc_links_link_types : 'id,oclc,dlc,isbn,issn,title';
+        $linkTypeSetting = isset($this->mainConfig->Record->marc_links_link_types)
+            ? $this->mainConfig->Record->marc_links_link_types
+            : 'id,oclc,dlc,isbn,issn,title';
         $linkTypes = explode(',', $linkTypeSetting);
         $linkFields = $field->getSubfields('w');
 

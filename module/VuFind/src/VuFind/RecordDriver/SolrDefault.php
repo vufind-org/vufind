@@ -27,7 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
-use VuFind\Code\ISBN, VuFind\Config\Reader as ConfigReader;
+use VuFind\Code\ISBN;
 
 /**
  * Default model for Solr records -- used when a more specific model based on
@@ -104,12 +104,18 @@ class SolrDefault extends AbstractBase
     protected $hierarchyDriver = null;
 
     /**
-     * Constructor.
+     * Constructor
+     *
+     * @param \Zend\Config\Config $mainConfig     VuFind main configuration (omit for
+     * built-in defaults)
+     * @param \Zend\Config\Config $recordConfig   Record-specific configuration file
+     * (omit to use $mainConfig as $recordConfig)
+     * @param \Zend\Config\Config $searchSettings Search-specific configuration file
      */
-    public function __construct()
-    {
+    public function __construct($mainConfig = null, $recordConfig = null,
+        $searchSettings = null
+    ) {
         // Turn on highlighting/snippets as needed:
-        $searchSettings = ConfigReader::getConfig('searches');
         $this->highlight = !isset($searchSettings->General->highlighting)
             ? false : $searchSettings->General->highlighting;
         $this->snippet = !isset($searchSettings->General->snippets)
@@ -123,6 +129,7 @@ class SolrDefault extends AbstractBase
                 $this->snippetCaptions[$key] = $value;
             }
         }
+        parent::__construct($mainConfig, $recordConfig);
     }
 
     /**
@@ -594,9 +601,8 @@ class SolrDefault extends AbstractBase
         // Get the COinS ID -- it should be in the OpenURL section of config.ini,
         // but we'll also check the COinS section for compatibility with legacy
         // configurations (this moved between the RC2 and 1.0 releases).
-        $config = ConfigReader::getConfig();
-        $coinsID = isset($config->OpenURL->rfr_id)
-            ? $config->OpenURL->rfr_id : $config->COinS->identifier;
+        $coinsID = isset($this->mainConfig->OpenURL->rfr_id)
+            ? $this->mainConfig->OpenURL->rfr_id : $this->mainConfig->COinS->identifier;
         if (empty($coinsID)) {
             $coinsID = 'vufind.svn.sourceforge.net';
         }
@@ -694,8 +700,8 @@ class SolrDefault extends AbstractBase
             // If we're working with the SFX resolver, we should add a
             // special parameter to ensure that electronic holdings links
             // are shown even though no specific date or issue is specified:
-            if (isset($config->OpenURL->resolver)
-                && strtolower($config->OpenURL->resolver) == 'sfx'
+            if (isset($this->mainConfig->OpenURL->resolver)
+                && strtolower($this->mainConfig->OpenURL->resolver) == 'sfx'
             ) {
                 $params['sfx.ignore_date_threshold'] = 1;
             }
@@ -1138,9 +1144,8 @@ class SolrDefault extends AbstractBase
     {
         // If collections are disabled or this record is not part of a hierarchy, go
         // no further....
-        $config = ConfigReader::getConfig();
-        if (!isset($config->Collections->collections)
-            || !$config->Collections->collections
+        if (!isset($this->mainConfig->Collections->collections)
+            || !$this->mainConfig->Collections->collections
             || !($hierarchyDriver = $this->getHierarchyDriver())
         ) {
             return false;
@@ -1262,9 +1267,8 @@ class SolrDefault extends AbstractBase
             $hierarchyType = isset($this->fields['hierarchytype'])
                 ? $this->fields['hierarchytype'] : false;
             if (!$hierarchyType) {
-                $config = ConfigReader::getConfig();
-                $hierarchyType = isset($config->Hierarchy->driver)
-                    ? $config->Hierarchy->driver : false;
+                $hierarchyType = isset($this->mainConfig->Hierarchy->driver)
+                    ? $this->mainConfig->Hierarchy->driver : false;
             }
             return $hierarchyType;
         }

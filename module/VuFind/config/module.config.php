@@ -402,15 +402,54 @@ $config = array(
             ),
             'recorddriver' => array(
                 'abstract_factories' => array('VuFind\RecordDriver\PluginFactory'),
-                'invokables' => array(
-                    'missing' => 'VuFind\RecordDriver\Missing',
-                    'solrauth' => 'VuFind\RecordDriver\SolrAuth',
-                    'solrdefault' => 'VuFind\RecordDriver\SolrDefault',
-                    'solrmarc' => 'VuFind\RecordDriver\SolrMarc',
-                    'solrreserves' => 'VuFind\RecordDriver\SolrReserves',
-                    'solrvudl' => 'VuFind\RecordDriver\SolrVudl',
-                    'summon' => 'VuFind\RecordDriver\Summon',
-                    'worldcat' => 'VuFind\RecordDriver\WorldCat',
+                'factories' => array(
+                    'missing' => function () {
+                        return new \VuFind\RecordDriver\Missing(
+                            \VuFind\Config\Reader::getConfig()
+                        );
+                    },
+                    'solrauth' => function () {
+                        return new \VuFind\RecordDriver\SolrAuth(
+                            \VuFind\Config\Reader::getConfig(), null,
+                            \VuFind\Config\Reader::getConfig('searches')
+                        );
+                    },
+                    'solrdefault' => function () {
+                        return new \VuFind\RecordDriver\SolrDefault(
+                            \VuFind\Config\Reader::getConfig(), null,
+                            \VuFind\Config\Reader::getConfig('searches')
+                        );
+                    },
+                    'solrmarc' => function () {
+                        return new \VuFind\RecordDriver\SolrMarc(
+                            \VuFind\Config\Reader::getConfig(), null,
+                            \VuFind\Config\Reader::getConfig('searches')
+                        );
+                    },
+                    'solrreserves' => function () {
+                        return new \VuFind\RecordDriver\SolrReserves(
+                            \VuFind\Config\Reader::getConfig(), null,
+                            \VuFind\Config\Reader::getConfig('searches')
+                        );
+                    },
+                    'solrvudl' => function () {
+                        return new \VuFind\RecordDriver\SolrVudl(
+                            \VuFind\Config\Reader::getConfig(), null,
+                            \VuFind\Config\Reader::getConfig('searches')
+                        );
+                    },
+                    'summon' => function () {
+                        $summon = \VuFind\Config\Reader::getConfig('Summon');
+                        return new \VuFind\RecordDriver\Summon(
+                            \VuFind\Config\Reader::getConfig(), $summon, $summon
+                        );
+                    },
+                    'worldcat' => function () {
+                        return new \VuFind\RecordDriver\WorldCat(
+                            \VuFind\Config\Reader::getConfig(),
+                            \VuFind\Config\Reader::getConfig('WorldCat')
+                        );
+                    },
                 ),
             ),
             'recordtab' => array(

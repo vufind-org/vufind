@@ -41,12 +41,17 @@ namespace VuFind\RecordDriver;
 class Missing extends SolrDefault
 {
     /**
-     * Constructor.
+     * Constructor
+     *
+     * @param \Zend\Config\Config $mainConfig   VuFind main configuration (omit for
+     * built-in defaults)
+     * @param \Zend\Config\Config $recordConfig Record-specific configuration file
+     * (omit to use $mainConfig as $recordConfig)
      */
-    public function __construct()
+    public function __construct($mainConfig = null, $recordConfig = null)
     {
         $this->resourceSource = 'missing';
-        parent::__construct();
+        parent::__construct($mainConfig, $recordConfig);
     }
 
     /**

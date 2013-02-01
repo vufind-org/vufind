@@ -42,15 +42,17 @@ class WorldCat extends SolrMarc
 
     /**
      * Constructor
+     *
+     * @param \Zend\Config\Config $mainConfig   VuFind main configuration (omit for
+     * built-in defaults)
+     * @param \Zend\Config\Config $recordConfig Record-specific configuration file
+     * (omit to use $mainConfig as $recordConfig)
      */
-    public function __construct()
+    public function __construct($mainConfig = null, $recordConfig = null)
     {
         // Set the correct resource source for database entries:
         $this->resourceSource = 'WorldCat';
-
-        // Use the WorldCat.ini file instead of config.ini for loading record
-        // settings (i.e. "related" record handlers):
-        $this->recordIni = 'WorldCat';
+        parent::__construct($mainConfig, $recordConfig);
     }
 
     /**

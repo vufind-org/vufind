@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
-use VuFind\Config\Reader as ConfigReader, VuFind\Date\Converter as DateConverter;
+use VuFind\Date\Converter as DateConverter;
 
 /**
  * Model for Summon records.
@@ -40,20 +40,21 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Date\Converter as DateConverter
 class Summon extends SolrDefault
 {
     /**
-     * Constructor.
+     * Constructor
+     *
+     * @param \Zend\Config\Config $mainConfig     VuFind main configuration (omit for
+     * built-in defaults)
+     * @param \Zend\Config\Config $recordConfig   Record-specific configuration file
+     * (omit to use $mainConfig as $recordConfig)
+     * @param \Zend\Config\Config $searchSettings Search-specific configuration file
      */
-    public function __construct()
-    {
-        // Turn on highlighting as needed:
-        $searchSettings = ConfigReader::getConfig('Summon');
-        $this->highlight = !isset($searchSettings->General->highlighting)
-            ? false : $searchSettings->General->highlighting;
-
+    public function __construct($mainConfig = null, $recordConfig = null,
+        $searchSettings = null
+    ) {
         // Set up resource source to allow tagging/saving/etc.
         $this->resourceSource = 'Summon';
 
-        // Make sure we read appropriate config file:
-        $this->recordIni = 'Summon';
+        parent::__construct($mainConfig, $recordConfig, $searchSettings);
     }
 
     /**
