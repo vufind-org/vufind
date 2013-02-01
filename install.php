@@ -242,7 +242,7 @@ function getModule()
                 "\nWhat module name would you like to use? [blank for none] "
             )
         );
-        $regex = '/[a-zA-Z][0-9a-zA-Z_]*/';
+        $regex = '/^[a-zA-Z][0-9a-zA-Z_]*$/';
         $illegalModules = array('VuFind', 'VuFindConsole', 'VuFindTest');
         if (in_array($moduleInput, $illegalModules)) {
             echo "\n{$moduleInput} is a reserved name; please try another.\n";
