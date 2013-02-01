@@ -18,6 +18,11 @@ return array(
                     $sm->getServiceLocator()->get('VuFind\Translator')
                 );
             },
+            'export' => function ($sm) {
+                return new \VuFind\View\Helper\Root\Export(
+                    $sm->getServiceLocator()->get('VuFind\Export')
+                );
+            },
             'flashmessages' => function ($sm) {
                 $messenger = $sm->getServiceLocator()->get('ControllerPluginManager')
                     ->get('FlashMessenger');

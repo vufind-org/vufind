@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
 namespace VuFind\Controller;
-use VuFind\Exception\Mail as MailException, VuFind\Export,
+use VuFind\Exception\Mail as MailException,
     Zend\Session\Container as SessionContainer;
 
 /**
@@ -463,7 +463,8 @@ class AbstractRecord extends AbstractBase
 
         // If this is an export format that redirects to an external site, perform
         // the redirect now (unless we're being called back from that service!):
-        if (Export::needsRedirect($format)
+        $export = $this->getServiceLocator()->get('VuFind\Export');
+        if ($export->needsRedirect($format)
             && !$this->params()->fromQuery('callback')
         ) {
             // Build callback URL:
@@ -471,12 +472,12 @@ class AbstractRecord extends AbstractBase
             $callback = $parts[0] . '?callback=1&style=' . urlencode($format);
 
             return $this->redirect()
-                ->toUrl(Export::getRedirectUrl($format, $callback));
+                ->toUrl($export->getRedirectUrl($format, $callback));
         }
 
         // Send appropriate HTTP headers for requested format:
         $response = $this->getResponse();
-        $response->getHeaders()->addHeaders(Export::getHeaders($format));
+        $response->getHeaders()->addHeaders($export->getHeaders($format));
 
         // Actually export the record
         $recordHelper = $this->getViewRenderer()->plugin('record');

@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind;
-use VuFind\Config\Reader as ConfigReader;
+use VuFind\SimpleXML, Zend\Config\Config;
 
 /**
  * Export support class
@@ -40,24 +40,50 @@ use VuFind\Config\Reader as ConfigReader;
 class Export
 {
     /**
+     * Main VuFind configuration
+     *
+     * @var Config
+     */
+    protected $mainConfig;
+
+    /**
+     * Export-specific configuration
+     *
+     * @var Config
+     */
+    protected $exportConfig;
+
+    /**
+     * Constructor
+     *
+     * @param Config $mainConfig   Main VuFind configuration
+     * @param Config $exportConfig Export-specific configuration
+     */
+    public function __construct(Config $mainConfig, Config $exportConfig)
+    {
+        $this->mainConfig = $mainConfig;
+        $this->exportConfig = $exportConfig;
+    }
+
+    /**
      * Get bulk export options.
      *
      * @return array
      */
-    public static function getBulkOptions()
+    public function getBulkOptions()
     {
         static $options = false;
 
         if ($options === false) {
             $options = array();
-            $config = ConfigReader::getConfig();
-            if (isset($config->BulkExport->enabled)
-                && isset($config->BulkExport->options)
-                && $config->BulkExport->enabled
+            if (isset($this->mainConfig->BulkExport->enabled)
+                && isset($this->mainConfig->BulkExport->options)
+                && $this->mainConfig->BulkExport->enabled
             ) {
-                foreach (explode(':', $config->BulkExport->options) as $option) {
-                    if (isset($config->Export->$option)
-                        && $config->Export->$option == true
+                $config = explode(':', $this->mainConfig->BulkExport->options);
+                foreach ($config as $option) {
+                    if (isset($this->mainConfig->Export->$option)
+                        && $this->mainConfig->Export->$option == true
                     ) {
                             $options[] = $option;
                     }
@@ -79,7 +105,7 @@ class Export
      *
      * @return string
      */
-    public static function getBulkUrl($view, $format, $ids)
+    public function getBulkUrl($view, $format, $ids)
     {
         $params = array();
         $params[] = 'f=' . urlencode($format);
@@ -91,8 +117,8 @@ class Export
         $url = $serverUrlHelper($urlHelper('cart-doexport'))
             . '?' . implode('&', $params);
 
-        return self::needsRedirect($format)
-            ? self::getRedirectUrl($format, $url) : $url;
+        return $this->needsRedirect($format)
+            ? $this->getRedirectUrl($format, $url) : $url;
     }
 
     /**
@@ -103,14 +129,10 @@ class Export
      *
      * @return string
      */
-    public static function getRedirectUrl($format, $callback)
+    public function getRedirectUrl($format, $callback)
     {
-        // Grab configuration, since we may need it to fill in template:
-        $config = ConfigReader::getConfig();
-
         // Fill in special tokens in template:/*
-        $exportConfig = ConfigReader::getConfig('export');
-        $template = $exportConfig->$format->redirectUrl;
+        $template = $this->exportConfig->$format->redirectUrl;
         preg_match_all('/\{([^}]+)\}/', $template, $matches);
         foreach ($matches[1] as $current) {
             $parts = explode('|', $current);
@@ -118,8 +140,8 @@ class Export
                 
             case 'config':
             case 'encodedConfig':
-                if (isset($config->{$parts[1]}->{$parts[2]})) {
-                    $value = $config->{$parts[1]}->{$parts[2]};
+                if (isset($this->mainConfig->{$parts[1]}->{$parts[2]})) {
+                    $value = $this->mainConfig->{$parts[1]}->{$parts[2]};
                 } else {
                     $value = $parts[3];
                 }
@@ -145,10 +167,9 @@ class Export
      *
      * @return bool
      */
-    public static function needsRedirect($format)
+    public function needsRedirect($format)
     {
-        $exportConfig = ConfigReader::getConfig('export');
-        return isset($exportConfig->$format->redirectUrl);
+        return isset($this->exportConfig->$format->redirectUrl);
     }
 
     /**
@@ -159,19 +180,18 @@ class Export
      *
      * @return string
      */
-    public static function processGroup($format, $parts)
+    public function processGroup($format, $parts)
     {
-        // Load export configuration:
-        $exportConfig = ConfigReader::getConfig('export');
-
         // If we're in XML mode, we need to do some special processing:
-        if (isset($exportConfig->$format->combineXpath)) {
-            $ns = array();
-            if (isset($exportConfig->$format->combineNamespaces)) {
-                foreach ($exportConfig->$format->combineNamespaces as $current) {
-                    $ns[] = explode('|', $current, 2);
-                }
-            }
+        if (isset($this->exportConfig->$format->combineXpath)) {
+            $ns = isset($this->exportConfig->$format->combineNamespaces)
+                ? $this->exportConfig->$format->combineNamespaces->toArray()
+                : array();
+            $ns = array_map(
+                function ($current) {
+                    return explode('|', $current, 2);
+                }, $ns
+            );
             foreach ($parts as $part) {
                 // Convert text into XML object:
                 $current = simplexml_load_string($part);
@@ -185,7 +205,9 @@ class Export
                     foreach ($ns as $n) {
                         $current->registerXPathNamespace($n[0], $n[1]);
                     }
-                    $matches = $current->xpath($exportConfig->$format->combineXpath);
+                    $matches = $current->xpath(
+                        $this->exportConfig->$format->combineXpath
+                    );
                     foreach ($matches as $match) {
                         SimpleXML::appendElement($retVal, $match);
                     }
@@ -205,10 +227,9 @@ class Export
      *
      * @return array
      */
-    public static function getHeaders($format)
+    public function getHeaders($format)
     {
-        $exportConfig = ConfigReader::getConfig('export');
-        return isset($exportConfig->$format->headers)
-            ? $exportConfig->$format->headers : array();
+        return isset($this->exportConfig->$format->headers)
+            ? $this->exportConfig->$format->headers : array();
     }
 }

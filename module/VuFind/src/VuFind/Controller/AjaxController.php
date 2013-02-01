@@ -27,7 +27,7 @@
  */
 namespace VuFind\Controller;
 use VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\Auth as AuthException, VuFind\Export;
+    VuFind\Exception\Auth as AuthException;
 
 /**
  * This controller handles global AJAX functionality
@@ -1229,7 +1229,8 @@ class AjaxController extends AbstractBase
     protected function exportFavorites()
     {
         $format = $this->params()->fromPost('format');
-        $url = Export::getBulkUrl(
+        $export = $this->getServiceLocator()->get('VuFind\Export');
+        $url = $export->getBulkUrl(
             $this->getViewRenderer(), $format,
             $this->params()->fromPost('ids', array())
         );

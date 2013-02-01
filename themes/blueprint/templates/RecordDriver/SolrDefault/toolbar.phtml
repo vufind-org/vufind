@@ -22,7 +22,7 @@
       <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>" class="export exportMenu"><?=$this->transEsc('Export Record')?></a>
       <ul class="menu offscreen" id="exportMenu">
       <? foreach ($exportFormats as $exportFormat): ?>
-        <li><a <? if (\VuFind\Export::needsRedirect($exportFormat)): ?>target="<?=$this->escapeHtml($exportFormat)?>Main" <? endif; ?>href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>?style=<?=$this->escapeHtml($exportFormat)?>"><?=$this->transEsc('Export to')?> <?=$this->escapeHtml($exportFormat)?></a></li>
+        <li><a <? if ($this->export()->needsRedirect($exportFormat)): ?>target="<?=$this->escapeHtml($exportFormat)?>Main" <? endif; ?>href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>?style=<?=$this->escapeHtml($exportFormat)?>"><?=$this->transEsc('Export to')?> <?=$this->escapeHtml($exportFormat)?></a></li>
       <? endforeach; ?>
       </ul>
     </li>

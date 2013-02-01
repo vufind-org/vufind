@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Exception\Mail as MailException, VuFind\Export,
+use VuFind\Exception\Mail as MailException,
     Zend\Session\Container as SessionContainer;
 
 /**
@@ -232,6 +232,16 @@ class CartController extends AbstractBase
     }
 
     /**
+     * Access export tools.
+     *
+     * @return \VuFind\Export
+     */
+    protected function getExport()
+    {
+        return $this->getServiceLocator()->get('VuFind\Export');
+    }
+
+    /**
      * Set up export of a batch of records.
      *
      * @return mixed
@@ -246,11 +256,14 @@ class CartController extends AbstractBase
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
 
+        // Get export tools:
+        $export = $this->getExport();
+
         // Process form submission if necessary:
         if (!is_null($this->params()->fromPost('submit'))) {
             $format = $this->params()->fromPost('format');
-            $url = Export::getBulkUrl($this->getViewRenderer(), $format, $ids);
-            if (Export::needsRedirect($format)) {
+            $url = $export->getBulkUrl($this->getViewRenderer(), $format, $ids);
+            if ($export->needsRedirect($format)) {
                 return $this->redirect()->toUrl($url);
             }
             $msg = array(
@@ -268,7 +281,7 @@ class CartController extends AbstractBase
 
         // Assign the list of legal export options.  We'll filter them down based
         // on what the selected records actually support.
-        $view->exportOptions = Export::getBulkOptions();
+        $view->exportOptions = $export->getBulkOptions();
         foreach ($view->records as $driver) {
             // Filter out unsupported export formats:
             $newFormats = array();
@@ -307,7 +320,7 @@ class CartController extends AbstractBase
 
         // Send appropriate HTTP headers for requested format:
         $response = $this->getResponse();
-        $response->getHeaders()->addHeaders(Export::getHeaders($format));
+        $response->getHeaders()->addHeaders($this->getExport()->getHeaders($format));
 
 
         // Actually export the records
@@ -319,7 +332,7 @@ class CartController extends AbstractBase
         }
 
         // Process and display the exported records
-        $response->setContent(Export::processGroup($format, $parts));
+        $response->setContent($this->getExport()->processGroup($format, $parts));
         return $response;
     }
 

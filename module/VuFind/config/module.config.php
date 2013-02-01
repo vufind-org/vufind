@@ -131,6 +131,12 @@ $config = array(
             'VuFind\DbAdapter' => function ($sm) {
                 return \VuFind\Db\AdapterFactory::getAdapter();
             },
+            'VuFind\Export' => function ($sm) {
+                return new \VuFind\Export(
+                    \VuFind\Config\Reader::getConfig(),
+                    \VuFind\Config\Reader::getConfig('export')
+                );
+            },
             'VuFind\Http' => function ($sm) {
                 $config = \VuFind\Config\Reader::getConfig();
                 $options = array();
