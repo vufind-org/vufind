@@ -221,6 +221,35 @@ class Export
     }
 
     /**
+     * Does the specified record support the specified export format?
+     *
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
+     * @param string                            $format Format to check
+     *
+     * @return bool
+     */
+    public function recordSupportsFormat($driver, $format)
+    {
+        // Check the requirements for export in the requested format:
+        if (isset($this->exportConfig->$format)) {
+            if (isset($this->exportConfig->$format->requiredMethods)) {
+                foreach ($this->exportConfig->$format->requiredMethods as $method) {
+                    // If a required method is missing, give up now:
+                    if (!is_callable(array($driver, $method))) {
+                        return false;
+                    }
+                }
+            }
+            // If we got this far, we didn't encounter a problem, and the
+            // requested export format is valid, so we can report success!
+            return true;
+        }
+
+        // If we got this far, we couldn't find evidence of support:
+        return false;
+    }
+
+    /**
      * Get an array of strings representing formats in which a specified record's
      * data may be exported (empty if none).  Legal values: "BibTeX", "EndNote",
      * "MARC", "MARCXML", "RDF", "RefWorks".
@@ -241,13 +270,37 @@ class Export
         $formats = array();
         foreach ($this->exportConfig as $format => $details) {
             if (isset($active[$format]) && $active[$format]
-                && $driver->supportsExport($format)
+                && $this->recordSupportsFormat($driver, $format)
             ) {
                 $formats[] = $format;
             }
         }
 
         // Send back the results:
+        return $formats;
+    }
+
+    /**
+     * Same return value as getFormatsForRecord(), but filtered to reflect bulk
+     * export configuration and to list only values supported by a set of records.
+     *
+     * @param array $drivers Array of record drivers
+     *
+     * @return array
+     */
+    public function getFormatsForRecords($drivers)
+    {
+        $formats = $this->getBulkOptions();
+        foreach ($drivers as $driver) {
+            // Filter out unsupported export formats:
+            $newFormats = array();
+            foreach ($formats as $current) {
+                if ($this->recordSupportsFormat($driver, $current)) {
+                    $newFormats[] = $current;
+                }
+            }
+            $formats = $newFormats;
+        }
         return $formats;
     }
 

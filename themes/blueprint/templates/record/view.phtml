@@ -4,7 +4,7 @@
     $this->headScript()->appendFile("check_save_statuses.js");
 
     // Add RDF header link if applicable:
-    if ($this->driver->supportsExport('RDF')) {
+    if ($this->export()->recordSupportsFormat($this->driver, 'RDF')) {
         $this->headLink()->appendAlternate($this->recordLink()->getActionUrl($this->driver, 'RDF'), 'application/rdf+xml', 'RDF Representation');
     }
 

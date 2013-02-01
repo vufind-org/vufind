@@ -281,17 +281,7 @@ class CartController extends AbstractBase
 
         // Assign the list of legal export options.  We'll filter them down based
         // on what the selected records actually support.
-        $view->exportOptions = $export->getBulkOptions();
-        foreach ($view->records as $driver) {
-            // Filter out unsupported export formats:
-            $newFormats = array();
-            foreach ($view->exportOptions as $current) {
-                if ($driver->supportsExport($current)) {
-                    $newFormats[] = $current;
-                }
-            }
-            $view->exportOptions = $newFormats;
-        }
+        $view->exportOptions = $export->getFormatsForRecords($view->records);
 
         // No legal export options?  Display a warning:
         if (empty($view->exportOptions)) {

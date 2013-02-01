@@ -452,7 +452,8 @@ class AbstractRecord extends AbstractBase
         $format = $this->params()->fromQuery('style');
 
         // Display export menu if missing/invalid option
-        if (empty($format) || !$driver->supportsExport($format)) {
+        $export = $this->getServiceLocator()->get('VuFind\Export');
+        if (empty($format) || !$export->recordSupportsFormat($driver, $format)) {
             if (!empty($format)) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('export_invalid_format');
@@ -463,7 +464,6 @@ class AbstractRecord extends AbstractBase
 
         // If this is an export format that redirects to an external site, perform
         // the redirect now (unless we're being called back from that service!):
-        $export = $this->getServiceLocator()->get('VuFind\Export');
         if ($export->needsRedirect($format)
             && !$this->params()->fromQuery('callback')
         ) {

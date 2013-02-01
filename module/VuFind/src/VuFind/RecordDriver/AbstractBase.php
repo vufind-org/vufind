@@ -373,35 +373,6 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface,
     }
 
     /**
-     * Returns true if the record supports export in the requested format.
-     *
-     * @param string $format Format corresponding with export.ini
-     *
-     * @return bool
-     */
-    public function supportsExport($format)
-    {
-        // Check the requirements for export in the requested format:
-        $exportConfig = ConfigReader::getConfig('export');
-        if (isset($exportConfig->$format)) {
-            if (isset($exportConfig->$format->requiredMethods)) {
-                foreach ($exportConfig->$format->requiredMethods as $method) {
-                    // If a required method is missing, give up now:
-                    if (!method_exists($this, $method)) {
-                        return false;
-                    }
-                }
-            }
-            // If we got this far, we didn't encounter a problem, and the
-            // requested export format is valid, so we can report success!
-            return true;
-        }
-
-        // If we got this far, we couldn't find evidence of support:
-        return false;
-    }
-
-    /**
      * Store a piece of supplemental information in the record driver.
      *
      * @param string $key Name of stored information
