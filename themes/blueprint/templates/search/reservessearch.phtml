@@ -6,7 +6,7 @@
     $this->layout()->breadcrumbs = '<em>' . $this->transEsc('Reserves') . '</em>';
 
     // Convenience variables:
-    $reservesLookfor = $this->results->getParams()->getDisplayQuery();
+    $reservesLookfor = $this->params->getDisplayQuery();
 ?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">

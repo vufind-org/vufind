@@ -1,5 +1,5 @@
 <div class="viewButtons">
-<? $viewList = $this->results->getParams()->getViewList(); if (count($viewList) > 1): ?>
+<? $viewList = $this->params->getViewList(); if (count($viewList) > 1): ?>
   <? foreach ($viewList as $viewType => $viewData): ?>
     <? if (!$viewData['selected']): ?>
       <a href="<?=$this->results->getUrlQuery()->setViewParam($viewType)?>" title="<?=$this->transEsc('Switch view to')?> <?=$this->transEsc($viewData['desc'])?>" >

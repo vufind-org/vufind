@@ -160,6 +160,9 @@ class AbstractSearch extends AbstractBase
             )
         );
 
+        // Make parameters available to the view:
+        $view->params = $params;
+
         // Attempt to perform the search; if there is a problem, inspect any Solr
         // exceptions to see if we should communicate to the user about them.
         try {

@@ -1,6 +1,6 @@
 <?
     // Set up page title:
-    $lookfor = $this->results->getParams()->getDisplayQuery();
+    $lookfor = $this->params->getDisplayQuery();
     if (isset($this->overrideTitle)) {
         $this->headTitle($this->overrideTitle);
     } else {
@@ -23,7 +23,7 @@
         <? endif; ?>
         <? if (isset($this->overrideSearchHeading)): ?>
           <?=$this->overrideSearchHeading?>
-        <? elseif ($this->results->getParams()->getSearchType() == 'basic'): ?>
+        <? elseif ($this->params->getSearchType() == 'basic'): ?>
           <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($lookfor)?>'</strong>
         <? endif; ?>
       </p>
@@ -48,7 +48,7 @@
         <?=$this->recommend($current)?>
       <? endforeach; ?>
     <? else: ?>
-      <?=$this->render('search/list-' . $this->results->getParams()->getView() . '.phtml')?>
+      <?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>
       <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
       <div data-role="controlgroup">
         <a href="<?=$this->url('search-email')?>" data-role="button" rel="external"><?=$this->transEsc("Email this Search")?></a>

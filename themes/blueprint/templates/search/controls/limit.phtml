@@ -1,5 +1,5 @@
 <div class="limitSelect">
-  <? $limitList = $this->results->getParams()->getLimitList(); if (count($limitList) > 1): ?>
+  <? $limitList = $this->params->getLimitList(); if (count($limitList) > 1): ?>
     <form action="<?=$this->currentPath() . $this->results->getUrlQuery()->setLimit(null)?>" method="post">
       <label for="limit"><?=$this->transEsc('Results per page')?></label>
       <select id="limit" name="limit" class="jumpMenu">

@@ -453,7 +453,9 @@ class SearchController extends AbstractSearch
             )
         );
         $results = $sm->setSearchClassId('SolrReserves')->getResults($params);
-        return $this->createViewModel(array('results' => $results));
+        return $this->createViewModel(
+            array('params' => $params, 'results' => $results)
+        );
     }
 
     /**
