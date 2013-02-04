@@ -183,8 +183,7 @@ class UrlQueryHelper
     {
         $newResults = clone($this->results);
         $newResults->getParams()->replaceSearchTerm($from, $to);
-        $myClass = get_class($this);
-        $helper = new $myClass($newResults);
+        $helper = new static($newResults);
         return $helper->getParams();
     }
 
