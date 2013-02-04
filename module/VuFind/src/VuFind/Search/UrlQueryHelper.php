@@ -39,26 +39,42 @@ namespace VuFind\Search;
 class UrlQueryHelper
 {
     /**
-     * Results object
+     * Options object
+     *
+     * @var \VuFind\Search\Base\Options
      */
-    protected $results;
+    protected $options;
+
+    /**
+     * Params object
+     *
+     * @var \VuFind\Search\Base\Params
+     */
+    protected $params;
+
     /**
      * URL search param
+     *
+     * @var string
      */
     protected $basicSearchParam = 'lookfor';
+
     /**
      * Base parameters for every search
+     *
+     * @var array
      */
     protected $defaultParams = array();
 
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Results $results VuFind search results object.
+     * @param \VuFind\Search\Base\Params $results VuFind search results object.
      */
-    public function __construct($results)
+    public function __construct(\VuFind\Search\Base\Params $params)
     {
-        $this->results = $results;
+        $this->params = $params;
+        $this->options = $params->getOptions();
     }
     
     /**
@@ -96,8 +112,8 @@ class UrlQueryHelper
         $params = $this->defaultParams;
 
         // Build all the URL parameters based on search object settings:
-        if ($this->results->getParams()->getSearchType() == 'advanced') {
-            $terms = $this->results->getParams()->getSearchTerms();
+        if ($this->params->getSearchType() == 'advanced') {
+            $terms = $this->params->getSearchTerms();
             if (isset($terms[0]['join'])) {
                 $params['join'] = $terms[0]['join'];
             }
@@ -117,37 +133,37 @@ class UrlQueryHelper
                 }
             }
         } else {
-            $search = $this->results->getParams()->getDisplayQuery();
+            $search = $this->params->getDisplayQuery();
             if (!empty($search)) {
                 $params[$this->basicSearchParam] = $search;
             }
-            $type = $this->results->getParams()->getSearchHandler();
+            $type = $this->params->getSearchHandler();
             if (!empty($type)) {
                 $params['type'] = $type;
             }
         }
-        $sort = $this->results->getParams()->getSort();
+        $sort = $this->params->getSort();
         if (!is_null($sort)
-            && $sort != $this->results->getParams()->getDefaultSort()
+            && $sort != $this->params->getDefaultSort()
         ) {
             $params['sort'] = $sort;
         }
-        $limit = $this->results->getParams()->getLimit();
+        $limit = $this->params->getLimit();
         if (!is_null($limit)
-            && $limit != $this->results->getOptions()->getDefaultLimit()
+            && $limit != $this->options->getDefaultLimit()
         ) {
             $params['limit'] = $limit;
         }
-        $view = $this->results->getParams()->getView();
+        $view = $this->params->getView();
         if (!is_null($view)
-            && $view != $this->results->getOptions()->getDefaultView()
+            && $view != $this->options->getDefaultView()
         ) {
             $params['view'] = $view;
         }
-        if ($this->results->getParams()->getPage() != 1) {
-            $params['page'] = $this->results->getParams()->getPage();
+        if ($this->params->getPage() != 1) {
+            $params['page'] = $this->params->getPage();
         }
-        $filters = $this->results->getParams()->getFilters();
+        $filters = $this->params->getFilters();
         if (!empty($filters)) {
             $params['filter'] = array();
             foreach ($filters as $field => $values) {
@@ -156,12 +172,11 @@ class UrlQueryHelper
                 }
             }
         }
-        $shards = $this->results->getParams()->getSelectedShards();
+        $shards = $this->params->getSelectedShards();
         if (!empty($shards)) {
             sort($shards);
             $key = implode(':::', $shards);
-            $defaultShards
-                = $this->results->getOptions()->getDefaultSelectedShards();
+            $defaultShards = $this->options->getDefaultSelectedShards();
             sort($defaultShards);
             if (implode(':::', $shards) != implode(':::', $defaultShards)) {
                 $params['shard'] = $shards;
@@ -181,9 +196,9 @@ class UrlQueryHelper
      */
     public function replaceTerm($from, $to)
     {
-        $newResults = clone($this->results);
-        $newResults->getParams()->replaceSearchTerm($from, $to);
-        $helper = new static($newResults);
+        $newParams = clone($this->params);
+        $newParams->replaceSearchTerm($from, $to);
+        $helper = new static($newParams);
         return $helper->getParams();
     }
 
@@ -254,7 +269,7 @@ class UrlQueryHelper
         if (isset($params['filter']) && is_array($params['filter'])) {
             foreach ($params['filter'] as $current) {
                 list($currentField, $currentValue)
-                    = $this->results->getParams()->parseFilter($current);
+                    = $this->params->parseFilter($current);
                 if ($currentField != $field || $currentValue != $value) {
                     $newFilter[] = $current;
                 }
@@ -283,7 +298,7 @@ class UrlQueryHelper
     public function removeFilter($filter, $escape = true)
     {
         // Treat this as a special case of removeFacet:
-        list($field, $value) = $this->results->getParams()->parseFilter($filter);
+        list($field, $value) = $this->params->parseFilter($filter);
         return $this->removeFacet($field, $value, $escape);
     }
 
@@ -312,7 +327,7 @@ class UrlQueryHelper
     public function setSort($s, $escape = true)
     {
         return $this->updateQueryString(
-            'sort', $s, $this->results->getParams()->getDefaultSort(), $escape
+            'sort', $s, $this->params->getDefaultSort(), $escape
         );
     }
 
@@ -328,7 +343,7 @@ class UrlQueryHelper
     public function setHandler($handler, $escape = true)
     {
         return $this->updateQueryString(
-            'type', $handler, $this->results->getOptions()->getDefaultHandler(),
+            'type', $handler, $this->options->getDefaultHandler(),
             $escape
         );
     }
@@ -365,7 +380,7 @@ class UrlQueryHelper
     public function setLimit($l, $escape = true)
     {
         return $this->updateQueryString(
-            'limit', $l, $this->results->getOptions()->getDefaultLimit(), $escape
+            'limit', $l, $this->options->getDefaultLimit(), $escape
         );
     }
 

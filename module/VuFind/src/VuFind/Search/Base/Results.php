@@ -135,7 +135,7 @@ abstract class Results implements ServiceLocatorAwareInterface
     {
         // Set up URL helper:
         if (!isset($this->helpers['urlQuery'])) {
-            $this->helpers['urlQuery'] = new UrlQueryHelper($this);
+            $this->helpers['urlQuery'] = new UrlQueryHelper($this->getParams());
         }
         return $this->helpers['urlQuery'];
     }
