@@ -1,6 +1,6 @@
 <? if (!isset($this->hideCartControls) && $this->cart()->isActive()): ?>
   <div class="bulkActionButtons">
-    <input type="checkbox" class="selectAllCheckboxes floatleft" name="selectAll" id="<?=$this->idPrefix?>addFormCheckboxSelectAll"/> <label class="floatleft" for="addFormCheckboxSelectAll"><?=$this->transEsc('select_page')?></label>
+    <input type="checkbox" class="selectAllCheckboxes floatleft" name="selectAll" id="<?=$this->idPrefix?>addFormCheckboxSelectAll"/> <label class="floatleft" for="<?=$this->idPrefix?>addFormCheckboxSelectAll"><?=$this->transEsc('select_page')?></label>
     <span class="floatleft">|</span>
     <span class="floatleft"><strong><?=$this->transEsc('with_selected')?>: </strong></span>
     <input id="<?=$this->idPrefix?>updateCart" type="submit" class="button floatleft bookbagAdd" name="add" value="<?=$this->transEsc('Add to Book Bag')?>"/>
