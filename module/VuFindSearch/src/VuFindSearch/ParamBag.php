@@ -1,0 +1,199 @@
+<?php
+
+/**
+ * Parameter bag.
+ *
+ * PHP version 5
+ *
+ * Copyright (C) Villanova University 2010.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @category VuFind2
+ * @package  Search
+ * @author   David Maus <maus@hab.de>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org
+ */
+
+namespace VuFindSearch;
+
+/**
+ * Lightweight wrapper for request parameters.
+ *
+ * This class represents the request parameters. Parameters are stored in an
+ * associative array with the parameter name as key. Because e.g. SOLR allows
+ * repeated query parameters the values are always stored in an array.
+ *
+ * @category VuFind2
+ * @package  Search
+ * @author   David Maus <maus@hab.de>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org
+ */
+class ParamBag
+{
+
+    /**
+     * Parameters
+     *
+     * @var array
+     */
+    protected $params = array();
+
+    /**
+     * Constructor.
+     *
+     * @param array $initial Initial parameters
+     *
+     * @return void
+     */
+    public function __construct (array $initial = array())
+    {
+        foreach ($initial as $name => $value) {
+            $this->add($name, $value);
+        }
+    }
+
+    /**
+     * Return parameter value.
+     *
+     * @param string $name Parameter name
+     *
+     * @return mixed|null Parameter value or NULL if not set
+     */
+    public function get ($name)
+    {
+        return isset($this->params[$name]) ? $this->params[$name] : null;
+    }
+
+    /**
+     * Set a parameter.
+     *
+     * @param string $name  Parameter name
+     * @param string $value Parameter value
+     *
+     * @return void
+     */
+    public function set ($name, $value)
+    {
+        if (is_array($value)) {
+            $this->params[$name] = $value;
+        } else {
+            $this->params[$name] = array($value);
+        }
+    }
+
+    /**
+     * Remove a parameter.
+     *
+     * @param string $name Parameter name
+     *
+     * @return void
+     */
+    public function remove ($name)
+    {
+        if (isset($this->params[$name])) {
+            unset($this->params[$name]);
+        }
+    }
+
+    /**
+     * Add parameter value.
+     *
+     * @param string $name  Parameter name
+     * @param mixed  $value Parameter value
+     *
+     * @return void
+     */
+    public function add ($name, $value)
+    {
+        if (!isset($this->params[$name])) {
+            $this->params[$name] = array();
+        }
+        if (is_array($value)) {
+            $this->params[$name] = array_merge($this->params[$name], $value);
+        } else {
+            $this->params[$name][] = $value;
+        }
+    }
+
+    /**
+     * Return array of request parameters.
+     *
+     * @return array
+     */
+    public function params ()
+    {
+        return $this->params;
+    }
+
+    /**
+     * Merge with another parameter bag.
+     *
+     * @param ParamBag $bag Parameter bag to merge with
+     *
+     * @return void
+     */
+    public function mergeWith (ParamBag $bag)
+    {
+        foreach ($bag->params as $key => $value) {
+            if (!empty($value)) {
+                $this->add($key, $value);
+            }
+        }
+    }
+
+    /**
+     * Merge with all supplied parameter bags.
+     *
+     * @param array $bags Parameter bags to merge with
+     *
+     * @return void
+     */
+    public function mergeWithAll (array $bags)
+    {
+        foreach ($bags as $bag) {
+            $this->mergeWith($bag);
+        }
+    }
+
+    /**
+     * Return array of params ready to be used in a HTTP request.
+     *
+     * Returns a numerical array with all request parameters as properly URL
+     * encoded key-value pairs.
+     *
+     * @return array
+     */
+    public function request ()
+    {
+        $request = array();
+        foreach ($this->params as $name => $values) {
+            if (!empty($values)) {
+                $request = array_merge(
+                    $request,
+                    array_map(
+                        function ($value) use ($name) {
+                            return sprintf('%s=%s', urlencode($name), urlencode($value));
+                        },
+                        $values
+                    )
+                );
+            }
+        }
+        return $request;
+    }
+
+}

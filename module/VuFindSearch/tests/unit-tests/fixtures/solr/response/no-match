@@ -1,0 +1,6 @@
+HTTP/1.1 200 OK
+Date: Thu, 11 Oct 2012 07:56:30 GMT
+Last-Modified: Thu, 11 Oct 2012 07:05:29 GMT
+Server: Jetty(6.1.11)
+
+{"responseHeader":{"status":0,"QTime":0,"params":{"json.nl":"arrarr","wt":"json","q":"id:690xx0223"}},"response":{"numFound":0,"start":0,"docs":[]}}
