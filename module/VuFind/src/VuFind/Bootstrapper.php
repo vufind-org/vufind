@@ -346,6 +346,26 @@ class Bootstrapper
         $this->events->attach('dispatch.error', $callback);
     }
 
+    protected function initSearch ()
+    {
+        $sm = $this->event->getApplication()->getServiceManager();
+
+        /// Hardcoded for now
+        $config = array(
+            'factories' => array(
+                'biblio' => 'VuFind\Search\Factory\SolrDefaultBackendFactory'
+            )
+        );
+
+        $registry = $sm->createScopedServiceManager();
+        $smConfig = new \Zend\ServiceManager\Config($config);
+        $smConfig->configureServiceManager($registry);
+        $bm = new \VuFind\Search\BackendManager($registry);
+
+        $events = $sm->get('SharedEventManager');
+        $events->attach('VuFind\Search', 'resolve', array($bm, 'onResolve'));
+    }
+
     /**
      * Set up logging.
      *
