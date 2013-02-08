@@ -371,5 +371,6 @@ class Bootstrapper
             }
         };
         $this->events->attach('dispatch.error', $callback);
+        $this->events->attach('render.error', $callback);
     }
 }
