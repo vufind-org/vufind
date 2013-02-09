@@ -373,4 +373,23 @@ class Bootstrapper
         $this->events->attach('dispatch.error', $callback);
         $this->events->attach('render.error', $callback);
     }
+
+    /**
+     * Set up handling for rendering problems.
+     *
+     * @return void
+     */
+    protected function initRenderErrorEvent()
+    {
+        // When a render.error is triggered, as a high priority, set a flag in the
+        // layout that can be used to suppress actions in the layout templates that
+        // might trigger exceptions -- this will greatly increase the odds of showing
+        // a user-friendly message instead of a fatal error.
+        $callback = function ($event) {
+            $serviceManager = $event->getApplication()->getServiceManager();
+            $viewModel = $serviceManager->get('viewmanager')->getViewModel();
+            $viewModel->renderingError = true;
+        };
+        $this->events->attach('render.error', $callback, 10000);
+    }
 }

@@ -1,47 +1,49 @@
 <? $account = $this->auth()->getManager(); ?>
 <a id="logo" href="<?=$this->url('home')?>"></a>
-<div id="headerRight">
-  <? $cart = $this->cart(); if ($cart->isActive()): ?>
-    <div id="cartSummary" class="cartSummary">
-      <a id="cartItems" title="<?=$this->transEsc('View Book Bag')?>" class="bookbag" href="<?=$this->url('cart-home')?>"><strong><span><?=count($cart->getItems())?></span></strong> <?=$this->transEsc('items')?> <?=$cart->isFull() ? '(' .  $this->transEsc('bookbag_full') . ')' : ''?></a>
-      <a id="viewCart" title="<?=$this->transEsc('View Book Bag')?>" class="viewCart bookbag offscreen" href="<?=$this->url('cart-home')?>"><strong><span id="cartSize"><?=count($cart->getItems())?></span></strong> <?=$this->transEsc('items')?><span id="cartStatus"><?=$cart->isFull() ? $this->transEsc('bookbag_full') : '&nbsp;'?></span></a>
-    </div>
-  <? endif; ?>
-  <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
-    <div id="logoutOptions"<?=!$account->isLoggedIn() ? ' class="hide"' : ''?>>
-      <a class="account" href="<?=$this->url('myresearch-home')?>"><?=$this->transEsc("Your Account")?></a> |
-      <a class="logout" href="<?=$this->url('myresearch-logout')?>"><?=$this->transEsc("Log Out")?></a>
-    </div>
-    <div id="loginOptions"<?=$account->isLoggedIn() ? ' class="hide"' : ''?>>
-    <? if ($sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
-      <a class="login" href="<?=$this->escapeHtml($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
-    <? else: ?>
-      <a class="login" href="<?=$this->url('myresearch-home')?>"><?=$this->transEsc("Login")?></a>
+<? if (!isset($this->layout()->renderingError)): ?>
+  <div id="headerRight">
+    <? $cart = $this->cart(); if ($cart->isActive()): ?>
+      <div id="cartSummary" class="cartSummary">
+        <a id="cartItems" title="<?=$this->transEsc('View Book Bag')?>" class="bookbag" href="<?=$this->url('cart-home')?>"><strong><span><?=count($cart->getItems())?></span></strong> <?=$this->transEsc('items')?> <?=$cart->isFull() ? '(' .  $this->transEsc('bookbag_full') . ')' : ''?></a>
+        <a id="viewCart" title="<?=$this->transEsc('View Book Bag')?>" class="viewCart bookbag offscreen" href="<?=$this->url('cart-home')?>"><strong><span id="cartSize"><?=count($cart->getItems())?></span></strong> <?=$this->transEsc('items')?><span id="cartStatus"><?=$cart->isFull() ? $this->transEsc('bookbag_full') : '&nbsp;'?></span></a>
+      </div>
     <? endif; ?>
-    </div>
-  <? endif; ?>
-  <? if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
-  <form method="post" name="themeForm" action="" id="themeForm">
-    <label for="themeForm_ui"><?=$this->transEsc("Theme")?>:</label>
-    <select id="themeForm_ui" name="ui" class="jumpMenu">
-    <? foreach ($this->layout()->themeOptions as $current): ?>
-      <option value="<?=$this->escapeHtml($current['name'])?>"<?=$current['selected'] ? ' selected="selected"' : ''?>><?=$this->transEsc($current['desc'])?></option>
-    <? endforeach; ?>
-    </select>
-    <noscript><input type="submit" value="<?=$this->transEsc("Set")?>" /></noscript>
-  </form>
-  <? endif; ?>
-  <? if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
-  <form method="post" name="langForm" action="" id="langForm">
-    <label for="langForm_mylang"><?=$this->transEsc("Language")?>:</label>
-    <select id="langForm_mylang" name="mylang" class="jumpMenu">
-    <? foreach ($this->layout()->allLangs as $langCode => $langName): ?>
-      <option value="<?=$langCode?>"<?=$this->layout()->userLang == $langCode ? ' selected="selected"' : ''?>><?=$this->displayLanguageOption($langName)?></option>
-    <? endforeach; ?>
-    </select>
-    <noscript><input type="submit" value="<?=$this->transEsc("Set")?>" /></noscript>
-  </form>
-  <? endif; ?>
-</div>
+    <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
+      <div id="logoutOptions"<?=!$account->isLoggedIn() ? ' class="hide"' : ''?>>
+        <a class="account" href="<?=$this->url('myresearch-home')?>"><?=$this->transEsc("Your Account")?></a> |
+        <a class="logout" href="<?=$this->url('myresearch-logout')?>"><?=$this->transEsc("Log Out")?></a>
+      </div>
+      <div id="loginOptions"<?=$account->isLoggedIn() ? ' class="hide"' : ''?>>
+      <? if ($sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
+        <a class="login" href="<?=$this->escapeHtml($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
+      <? else: ?>
+        <a class="login" href="<?=$this->url('myresearch-home')?>"><?=$this->transEsc("Login")?></a>
+      <? endif; ?>
+      </div>
+    <? endif; ?>
+    <? if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
+    <form method="post" name="themeForm" action="" id="themeForm">
+      <label for="themeForm_ui"><?=$this->transEsc("Theme")?>:</label>
+      <select id="themeForm_ui" name="ui" class="jumpMenu">
+      <? foreach ($this->layout()->themeOptions as $current): ?>
+        <option value="<?=$this->escapeHtml($current['name'])?>"<?=$current['selected'] ? ' selected="selected"' : ''?>><?=$this->transEsc($current['desc'])?></option>
+      <? endforeach; ?>
+      </select>
+      <noscript><input type="submit" value="<?=$this->transEsc("Set")?>" /></noscript>
+    </form>
+    <? endif; ?>
+    <? if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
+    <form method="post" name="langForm" action="" id="langForm">
+      <label for="langForm_mylang"><?=$this->transEsc("Language")?>:</label>
+      <select id="langForm_mylang" name="mylang" class="jumpMenu">
+      <? foreach ($this->layout()->allLangs as $langCode => $langName): ?>
+        <option value="<?=$langCode?>"<?=$this->layout()->userLang == $langCode ? ' selected="selected"' : ''?>><?=$this->displayLanguageOption($langName)?></option>
+      <? endforeach; ?>
+      </select>
+      <noscript><input type="submit" value="<?=$this->transEsc("Set")?>" /></noscript>
+    </form>
+    <? endif; ?>
+  </div>
+<? endif; ?>
 
 <div class="clear"></div>
