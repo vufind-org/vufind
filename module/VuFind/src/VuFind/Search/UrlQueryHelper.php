@@ -69,7 +69,7 @@ class UrlQueryHelper
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Params $results VuFind search results object.
+     * @param \VuFind\Search\Base\Params $params VuFind search results object.
      */
     public function __construct(\VuFind\Search\Base\Params $params)
     {

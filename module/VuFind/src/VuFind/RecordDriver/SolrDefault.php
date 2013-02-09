@@ -602,7 +602,8 @@ class SolrDefault extends AbstractBase
         // but we'll also check the COinS section for compatibility with legacy
         // configurations (this moved between the RC2 and 1.0 releases).
         $coinsID = isset($this->mainConfig->OpenURL->rfr_id)
-            ? $this->mainConfig->OpenURL->rfr_id : $this->mainConfig->COinS->identifier;
+            ? $this->mainConfig->OpenURL->rfr_id
+            : $this->mainConfig->COinS->identifier;
         if (empty($coinsID)) {
             $coinsID = 'vufind.svn.sourceforge.net';
         }
