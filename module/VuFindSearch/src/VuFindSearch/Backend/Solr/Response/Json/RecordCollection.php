@@ -47,6 +47,19 @@ class RecordCollection implements RecordCollectionInterface
 {
 
     /**
+     * Template of deserialized SOLR response.
+     *
+     * @see self::__construct()
+     *
+     * @var array
+     */
+    protected static $template = array(
+        'responseHeader' => array('QTime' => 0),
+        'response'       => array('start' => 0),
+        'facet_counts'   => array(),
+    );
+
+    /**
      * Deserialized SOLR response.
      *
      * @var array
@@ -69,7 +82,7 @@ class RecordCollection implements RecordCollectionInterface
      */
     public function __construct (array $response)
     {
-        $this->response = $response;
+        $this->response = array_replace_recursive(static::$template, $response);
         $this->offset   = $response['response']['start'];
         $this->records  = array();
         $this->rewind();
@@ -96,17 +109,13 @@ class RecordCollection implements RecordCollectionInterface
     }
 
     /**
-     * Return available facets.
-     *
-     * Returns associative array of facets indexed by facet field. The value
-     * is a numeric array with available facets for this field. Each facet is
-     * a numeric array with the facet value followed by the facet count.
+     * Return SOLR facet information.
      *
      * @return array
      */
     public function getFacets ()
     {
-        return $this->response['response']['facet_fields'];
+        return $this->response['facet_counts'];
     }
 
     /**
