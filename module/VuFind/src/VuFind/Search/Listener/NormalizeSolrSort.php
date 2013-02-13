@@ -105,7 +105,7 @@ class NormalizeSolrSort implements ListenerInterface
             $table  = $this->normalizeSortTable;
 
             $normalized = array();
-            foreach (explode(',', $params->getOrder()) as $component) {
+            foreach (explode(',', $params->getSort()) as $component) {
                 $parts = explode(' ', $component);
                 $field = reset($parts);
                 $order = next($parts);
@@ -119,7 +119,7 @@ class NormalizeSolrSort implements ListenerInterface
                     $normalized[] = $component;
                 }
             }
-            $params->setOrder(implode(',', $normalized));
+            $params->setSort(implode(',', $normalized));
         }
         return $event;
     }
