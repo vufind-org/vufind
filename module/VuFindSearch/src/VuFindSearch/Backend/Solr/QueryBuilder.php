@@ -146,6 +146,13 @@ class QueryBuilder
             }
         }
 
+        // Spellcheck
+        if ($params->getSpellcheckDictionary()) {
+            $searchParams->set('spellcheck', 'true');
+            $searchParams->set('spellcheck.dictionary', $params->getSpellcheckDictionary());
+            $searchParams->set('spellcheck.q', $this->createSpellcheckQuery($query));
+        }
+
         $searchParams->mergeWith(
             $this->createSearchParams($query)
         );
@@ -351,6 +358,20 @@ class QueryBuilder
         return $searchString;
     }
 
+    /**
+     * Create spellcheck query.
+     *
+     * @param AbstractQuery $query User query
+     *
+     * @return string
+     */
+    protected function createSpellcheckQuery (AbstractQuery $query)
+    {
+        if ($query instanceOf QueryGroup) {
+            return implode(' ', array_map(array($this, 'createSpellcheckQuery'), $query->getQueries()));
+        }
+        return $query->getString();
+    }
 
     /**
      * Return search string based on input and handler.
