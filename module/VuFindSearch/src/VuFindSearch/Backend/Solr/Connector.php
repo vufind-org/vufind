@@ -183,7 +183,6 @@ class Connector
         $queryParams = new ParamBag();
         $queryParams->set('start', $params->getOffset());
         $queryParams->set('rows', $params->getLimit());
-        $queryParams->set('fl', '*,score');
         $queryParams->set('sort', $params->getSort());
 
         $queryParams->mergeWith($queryBuilder->build($query, $params));
@@ -199,7 +198,7 @@ class Connector
     public function getQueryInvariants ()
     {
         if (!$this->invariants) {
-            $this->invariants = new ParamBag(array('wt' => 'json', 'json.nl' => 'arrarr'));
+            $this->invariants = new ParamBag(array('wt' => 'json', 'json.nl' => 'arrarr', 'fl' => '*,score'));
         }
         return $this->invariants;
     }
