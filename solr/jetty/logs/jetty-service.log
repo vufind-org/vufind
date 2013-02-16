@@ -1,0 +1,21 @@
+STATUS | wrapper  | 2013/02/16 11:47:16 | Jetty6-Service installed.
+STATUS | wrapper  | 2013/02/16 11:48:16 | --> Wrapper Started as Service
+STATUS | wrapper  | 2013/02/16 11:48:17 | Launching a JVM...
+INFO   | jvm 1    | 2013/02/16 11:48:18 | Error: Could not find or load main class org.mortbay.jetty.win32service.JettyServiceWrapperListener
+ERROR  | wrapper  | 2013/02/16 11:48:18 | JVM exited while loading the application.
+STATUS | wrapper  | 2013/02/16 11:48:22 | Launching a JVM...
+INFO   | jvm 2    | 2013/02/16 11:48:22 | Error: Could not find or load main class org.mortbay.jetty.win32service.JettyServiceWrapperListener
+ERROR  | wrapper  | 2013/02/16 11:48:22 | JVM exited while loading the application.
+STATUS | wrapper  | 2013/02/16 11:48:27 | Launching a JVM...
+INFO   | jvm 3    | 2013/02/16 11:48:27 | Error: Could not find or load main class org.mortbay.jetty.win32service.JettyServiceWrapperListener
+ERROR  | wrapper  | 2013/02/16 11:48:27 | JVM exited while loading the application.
+STATUS | wrapper  | 2013/02/16 11:48:31 | Launching a JVM...
+INFO   | jvm 4    | 2013/02/16 11:48:32 | Error: Could not find or load main class org.mortbay.jetty.win32service.JettyServiceWrapperListener
+ERROR  | wrapper  | 2013/02/16 11:48:32 | JVM exited while loading the application.
+STATUS | wrapper  | 2013/02/16 11:48:36 | Launching a JVM...
+INFO   | jvm 5    | 2013/02/16 11:48:36 | Error: Could not find or load main class org.mortbay.jetty.win32service.JettyServiceWrapperListener
+ERROR  | wrapper  | 2013/02/16 11:48:36 | JVM exited while loading the application.
+FATAL  | wrapper  | 2013/02/16 11:48:36 | There were 5 failed launches in a row, each lasting less than 300 seconds.  Giving up.
+FATAL  | wrapper  | 2013/02/16 11:48:36 |   There may be a configuration problem: please check the logs.
+STATUS | wrapper  | 2013/02/16 11:48:37 | <-- Wrapper Stopped
+STATUS | wrapper  | 2013/02/16 12:15:47 | Jetty6-Service removed.

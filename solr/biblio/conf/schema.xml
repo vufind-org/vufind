@@ -1,6 +1,8 @@
 <?xml version="1.0" ?>
 <schema name="VuFind Bibliographic Index" version="1.2">
   <types>
+    <!-- Define fieldType long as it is needed by the _version_ field required by Solr 4.x -->
+    <fieldType name="long" class="solr.TrieLongField" precisionStep="0" positionIncrementGap="0"/>
     <fieldType name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
     <fieldType name="textFacet" class="solr.TextField" sortMissingLast="true" omitNorms="true">
       <analyzer>
@@ -94,6 +96,8 @@
     <fieldType name="date" class="solr.DateField" sortMissingLast="true" omitNorms="true"/>
   </types>
  <fields>
+   <!-- Required by Solr 4.x -->
+   <field name="_version_" type="long" indexed="true" stored="true"/>
    <!-- Core Fields  -->
    <field name="id" type="string" indexed="true" stored="true"/>
    <field name="fullrecord" type="string" indexed="false" stored="true"/>
