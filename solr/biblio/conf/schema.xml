@@ -183,9 +183,9 @@
    <field name="container_start_page" type="text" indexed="true" stored="true"/>
    <field name="container_reference" type="text" indexed="true" stored="true"/>
    <!-- Hierarchy Fields -->
-   <field name="hierarchytype" type="string" index="true" stored="true" multiValued="false"/>
-   <field name="hierarchy_top_id" type="string" index="true" stored="true" multiValued="true"/>
-   <field name="hierarchy_top_title" type="string" index="true" stored="true" multiValued="true"/>
+   <field name="hierarchytype" type="string" indexed="true" stored="true" multiValued="false"/>
+   <field name="hierarchy_top_id" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="hierarchy_top_title" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="hierarchy_parent_id" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="hierarchy_parent_title" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="hierarchy_sequence" type="string" indexed="true" stored="true" multiValued="true"/>
