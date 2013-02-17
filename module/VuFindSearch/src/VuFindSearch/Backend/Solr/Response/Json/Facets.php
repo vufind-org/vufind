@@ -45,7 +45,7 @@ class Facets
     /**
      * Facet fields.
      *
-     * @var array
+     * @var ArrayObject
      */
     protected $fields;
 
