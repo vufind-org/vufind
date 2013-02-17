@@ -29,6 +29,8 @@
 
 namespace VuFind\Controller\Widget;
 
+use Zend\Stdlib\Parameters;
+
 /**
  * Widget interface definition.
  *
@@ -51,7 +53,7 @@ interface WidgetInterface
     /**
      * Set widget state based on query parameters.
      *
-     * @param Zend\Stdlib\Parameters $parameters Query parameters
+     * @param Parameters $parameters Query parameters
      *
      * @return void
      */
