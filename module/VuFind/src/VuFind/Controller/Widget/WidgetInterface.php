@@ -29,6 +29,7 @@
 
 namespace VuFind\Controller\Widget;
 
+use Zend\View\Renderer\RendererInterface;
 use Zend\Stdlib\Parameters;
 
 /**
@@ -65,5 +66,15 @@ interface WidgetInterface
      * @return array
      */
     public function getState ();
+
+    /**
+     * Render the widget.
+     *
+     * @param RendererInterface $renderer Responsible renderer
+     * @param string            $type     Media type or format
+     *
+     * @return void
+     */
+    public function render (RendererInterface $renderer, $type = 'text/html');
 
 }
