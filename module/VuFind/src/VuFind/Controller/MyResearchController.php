@@ -82,8 +82,8 @@ class MyResearchController extends AbstractBase
         }
 
         $config = ConfigReader::getConfig();
-        $page = isset($config->Site->defaultAccountPage)
-            ? $config->Site->defaultAccountPage : 'Favorites';
+        $page = isset($configArray->Site->defaultAccountPage)
+            ? $configArray->Site->defaultAccountPage : 'Favorites';
         return $this->forwardTo('MyResearch', $page);
     }
 
