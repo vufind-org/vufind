@@ -555,7 +555,9 @@ class MyResearchController extends AbstractBase
 
             $results = $sm->setSearchClassId('Favorites')->getResults($params);
             $results->performAndProcessSearch();
-            return $this->createViewModel(array('results' => $results));
+            return $this->createViewModel(
+                array('params' => $params, 'results' => $results)
+            );
         } catch (ListPermissionException $e) {
             if (!$this->getUser()) {
                 return $this->forceLogin();
