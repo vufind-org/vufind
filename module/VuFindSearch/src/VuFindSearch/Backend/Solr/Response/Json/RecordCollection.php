@@ -74,6 +74,13 @@ class RecordCollection implements RecordCollectionInterface
     protected $records;
 
     /**
+     * Facets.
+     *
+     * @var Facets
+     */
+    protected $facets;
+
+    /**
      * Constructor.
      *
      * @param array $response Deserialized SOLR response
@@ -115,7 +122,10 @@ class RecordCollection implements RecordCollectionInterface
      */
     public function getFacets ()
     {
-        return $this->response['facet_counts'];
+        if (!$this->facets) {
+            $this->facets = new Facets($this->response['facet_counts']);
+        }
+        return $this->facets;
     }
 
     /**
