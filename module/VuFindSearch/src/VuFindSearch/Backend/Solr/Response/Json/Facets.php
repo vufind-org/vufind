@@ -71,7 +71,7 @@ class Facets
      *
      * @return ArrayObject
      */
-    public function getFields ()
+    public function getFieldFacets ()
     {
         return $this->fields;
     }
