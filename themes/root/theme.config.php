@@ -33,6 +33,11 @@ return array(
                     $sm->getServiceLocator()->get('VuFind\ILSConnection')
                 );
             },
+            'record' => function ($sm) {
+                return new \VuFind\View\Helper\Root\Record(
+                    \VuFind\Config\Reader::getConfig()
+                );
+            },
             'recordlink' => function ($sm) {
                 return new \VuFind\View\Helper\Root\RecordLink(
                     $sm->getServiceLocator()->get('VuFind\RecordRouter')
@@ -67,7 +72,6 @@ return array(
             'printms' => 'VuFind\View\Helper\Root\Printms',
             'proxyurl' => 'VuFind\View\Helper\Root\ProxyUrl',
             'recommend' => 'VuFind\View\Helper\Root\Recommend',
-            'record' => 'VuFind\View\Helper\Root\Record',
             'related' => 'VuFind\View\Helper\Root\Related',
             'renderarray' => 'VuFind\View\Helper\Root\RenderArray',
             'resultfeed' => 'VuFind\View\Helper\Root\ResultFeed',
