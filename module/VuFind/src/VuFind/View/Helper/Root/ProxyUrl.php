@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\View\Helper\Root;
-use VuFind\Config\Reader as ConfigReader, Zend\View\Helper\AbstractHelper;
 
 /**
  * Proxy URL view helper
@@ -37,8 +36,25 @@ use VuFind\Config\Reader as ConfigReader, Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class ProxyUrl extends AbstractHelper
+class ProxyUrl extends \Zend\View\Helper\AbstractHelper
 {
+    /**
+     * VuFind configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $config;
+
+    /**
+     * Constructor
+     *
+     * @param \Zend\Config\Config $config VuFind configuration
+     */
+    public function __construct($config = null)
+    {
+        $this->config = $config;
+    }
+
     /**
      * Apply proxy prefix to URL (if configured).
      *
@@ -48,9 +64,8 @@ class ProxyUrl extends AbstractHelper
      */
     public function __invoke($url)
     {
-        $config = ConfigReader::getConfig();
-        if (isset($config->EZproxy->host)) {
-            $url = $config->EZproxy->host . '/login?qurl=' . urlencode($url);
+        if (isset($this->config->EZproxy->host)) {
+            $url = $this->config->EZproxy->host . '/login?qurl=' . urlencode($url);
         }
         return $url;
     }
