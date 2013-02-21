@@ -26,7 +26,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Statistics\Driver;
-use VuFind\Config\Reader as ConfigReader;
 
 /**
  * Writer to put statistics into an XML File
@@ -39,7 +38,22 @@ use VuFind\Config\Reader as ConfigReader;
  */
 class File extends AbstractBase
 {
-    protected $folder = null;
+    /**
+     * Folder where stats will be written.
+     *
+     * @var string
+     */
+    protected $folder;
+
+    /**
+     * Constructor
+     *
+     * @param string $folder Folder where stats will be written.
+     */
+    public function __construct($folder)
+    {
+        $this->folder = $folder;
+    }
 
     /**
      * Get the name of the folder for storing statistics.
@@ -48,10 +62,6 @@ class File extends AbstractBase
      */
     protected function getFolder()
     {
-        if (null === $this->folder) {
-            $configs = ConfigReader::getConfig();
-            $this->folder = $configs->Statistics->file;
-        }
         return $this->folder;
     }
 
@@ -61,6 +71,7 @@ class File extends AbstractBase
      * @param array $data     Data specific to what we're saving
      * @param array $userData Browser, IP, urls, etc
      *
+     * @throws \Exception
      * @return void
      */
     public function write($data, $userData)
@@ -81,6 +92,9 @@ class File extends AbstractBase
             $xml .= "\n</xml>";
         }
         $file = fopen($filename, 'w');
+        if (!$file) {
+            throw new \Exception('Cannot write to log file.');
+        }
         fwrite($file, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" . $xml);
         fclose($file);
     }

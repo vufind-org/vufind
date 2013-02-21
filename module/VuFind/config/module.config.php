@@ -532,9 +532,16 @@ $config = array(
             ),
             'statistics_driver' => array(
                 'abstract_factories' => array('VuFind\Statistics\Driver\PluginFactory'),
+                'factories' => array(
+                    'file' => function ($sm) {
+                        $config = \VuFind\Config\Reader::getConfig();
+                        $folder = isset($config->Statistics->file)
+                            ? $config->Statistics->file : sys_get_temp_dir();
+                        return new \VuFind\Statistics\Driver\File($folder);
+                    },
+                ),
                 'invokables' => array(
                     'db' => 'VuFind\Statistics\Driver\Db',
-                    'file' => 'VuFind\Statistics\Driver\File',
                     'solr' => 'VuFind\Statistics\Driver\Solr',
                 ),
                 'aliases' => array(
