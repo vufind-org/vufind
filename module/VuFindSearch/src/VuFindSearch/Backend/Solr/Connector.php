@@ -140,13 +140,14 @@ class Connector
     /**
      * Return document specified by id.
      *
-     * @param string $id The document to retrieve from Solr
+     * @param string   $id     The document to retrieve from Solr
+     * @param ParamBag $params Parameters
      *
      * @return string
      */
-    public function retrieve ($id)
+    public function retrieve ($id, ParamBag $params = null)
     {
-        $params = new ParamBag();
+        $params = $params ?: new ParamBag();
         $params->set('q', sprintf('id:"%s"', addcslashes($id, '"')));
         $result = $this->select($params);
         return $result;
@@ -157,13 +158,14 @@ class Connector
      *
      * Uses MoreLikeThis Request Handler
      *
-     * @param string $id Id of given record
+     * @param string   $id     Id of given record
+     * @param ParamBag $params Parameters
      *
      * @return string
      */
-    public function similar ($id)
+    public function similar ($id, ParamBag $params = null)
     {
-        $params = new ParamBag();
+        $params = $params ?: new ParamBag();
         $params->set('q', sprintf('id:"%s"', addcslashes($id, '"')));
         $params->set('qt', 'morelikethis');
         return $this->select($params);
@@ -173,21 +175,22 @@ class Connector
      * Execute a search.
      *
      * @param AbstractQuery $query        Search query
-     * @param Params        $params       Search parameters
+     * @param integer       $offset       Search offset
+     * @param integer       $limit        Search limit
      * @param QueryBuilder  $queryBuilder Query builder
+     * @param ParamBag      $params       Parameters
      *
      * @return string
      */
-    public function search (AbstractQuery $query, Params $params, QueryBuilder $queryBuilder)
+    public function search (AbstractQuery $query, $offset, $limit, QueryBuilder $queryBuilder, ParamBag $params = null)
     {
-        $queryParams = new ParamBag();
-        $queryParams->set('start', $params->getOffset());
-        $queryParams->set('rows', $params->getLimit());
-        $queryParams->set('sort', $params->getSort());
+        $params = $params ?: new ParamBag();
+        $params->set('start', $offset);
+        $params->set('rows', $limit);
 
-        $queryParams->mergeWith($queryBuilder->build($query, $params));
+        $params->mergeWith($queryBuilder->build($query));
 
-        return $this->select($queryParams);
+        return $this->select($params);
     }
 
     /**
