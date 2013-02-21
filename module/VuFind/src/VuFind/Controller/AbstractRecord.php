@@ -213,9 +213,8 @@ class AbstractRecord extends AbstractBase
 
         // Save statistics:
         if ($this->logStatistics) {
-            $statController = new \VuFind\Statistics\Record();
-            $statController->setServiceLocator($this->getServiceLocator());
-            $statController->log($this->loadRecord(), $this->getRequest());
+            $this->getServiceLocator()->get('VuFind\RecordStats')
+                ->log($this->loadRecord(), $this->getRequest());
         }
 
         return $this->showTab($this->params()->fromRoute('tab', $this->defaultTab));

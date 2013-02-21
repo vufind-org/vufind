@@ -26,8 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Statistics;
-use VuFind\Config\Reader as ConfigReader,
-    Zend\ServiceManager\ServiceLocatorInterface,
+use Zend\ServiceManager\ServiceLocatorInterface,
     Zend\ServiceManager\ServiceLocatorAwareInterface;
 
 /**
@@ -41,7 +40,18 @@ use VuFind\Config\Reader as ConfigReader,
  */
 abstract class AbstractBase implements ServiceLocatorAwareInterface
 {
+    /**
+     * Array of statistics drivers (null if not yet initialized)
+     *
+     * @var array
+     */
     protected $drivers = null;
+
+    /**
+     * An identifier of the source of the current set of statistics
+     *
+     * @var string
+     */
     protected $source;
 
     /**
@@ -53,9 +63,12 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
 
     /**
      * Constructor
+     *
+     * @param \Zend\Config\Config $config VuFind configuration
      */
-    public function __construct()
+    public function __construct($config)
     {
+        $this->config = $config;
         // Source pulled from class name
         $source = explode('\\', get_class($this));
         $this->source = end($source);
@@ -109,14 +122,11 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
      */
     public function getDriversForSource($source, $getAll = false)
     {
-        // Load configurations
-        $configs = ConfigReader::getConfig();
-
         $drivers = array();
 
         // For each mode
-        if (isset($configs->Statistics->mode)) {
-            foreach ($configs->Statistics->mode as $config) {
+        if (isset($this->config->Statistics->mode)) {
+            foreach ($this->config->Statistics->mode as $config) {
                 $setting = explode(':', $config);
 
                 // If the config setting has a limiter, we may need to skip this

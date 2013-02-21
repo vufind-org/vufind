@@ -168,9 +168,19 @@ $config = array(
             'VuFind\RecordRouter' => function ($sm) {
                 return new \VuFind\Record\Router($sm->get('VuFind\RecordLoader'));
             },
+            'VuFind\RecordStats' => function ($sm) {
+                return new \VuFind\Statistics\Record(
+                    \VuFind\Config\Reader::getConfig()
+                );
+            },
             'VuFind\SearchSpecsReader' => function ($sm) {
                 return new \VuFind\Config\SearchSpecsReader(
                     $sm->get('VuFind\CacheManager')
+                );
+            },
+            'VuFind\SearchStats' => function ($sm) {
+                return new \VuFind\Statistics\Search(
+                    \VuFind\Config\Reader::getConfig()
                 );
             },
             'VuFind\SMS' => 'VuFind\SMS\Factory',

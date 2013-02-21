@@ -228,9 +228,8 @@ class AbstractSearch extends AbstractBase
         }
         // Save statistics:
         if ($this->logStatistics) {
-            $statController = new \VuFind\Statistics\Search();
-            $statController->setServiceLocator($this->getServiceLocator());
-            $statController->log($results, $this->getRequest());
+            $this->getServiceLocator()->get('VuFind\SearchStats')
+                ->log($results, $this->getRequest());
         }
 
         // Special case: If we're in RSS view, we need to render differently:
