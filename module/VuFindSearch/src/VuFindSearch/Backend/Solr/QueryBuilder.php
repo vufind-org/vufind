@@ -36,7 +36,6 @@ use VuFindSearch\Query\QueryGroup;
 use VuFindSearch\Query\Query;
 
 use VuFindSearch\ParamBag;
-use VuFindSearch\Query\Params;
 
 /**
  * SOLR QueryBuilder.
@@ -113,7 +112,7 @@ class QueryBuilder
      * @todo Review usage of facets
      * @todo Implement hightlighting
      */
-    public function build (AbstractQuery $query, Params $params)
+    public function build (AbstractQuery $query)
     {
 
         if ($query instanceOf QueryGroup) {
@@ -122,41 +121,7 @@ class QueryBuilder
             $query->setString($this->normalizeSearchString($query->getString()));
         }
 
-        $searchParams = new ParamBag();
-
-        // Filters
-        foreach ($params->getFilters() as $field => $values) {
-            foreach ($values as $value) {
-                // Allow trailing wildcards and ranges
-                if (substr($value, -1) == '*' || preg_match(self::SOLR_RANGE_RE, $value)) {
-                    $searchParams->add('fq', "{$field}:{$value}");
-                } else {
-                    $searchParams->add('fq', sprintf('%s:"%s"', $field, addcslashes($value, '"')));
-                }
-            }
-        }
-
-        // Facet settings
-        $facets = $params->getFacets();
-        if (!empty($facets)) {
-            $searchParams->set('facet', 'true');
-            foreach ($facets as $name => $value) {
-                $solrName = "facet.{$name}";
-                $searchParams->set($solrName, $value);
-            }
-        }
-
-        // Spellcheck
-        if ($params->getSpellcheckDictionary()) {
-            $searchParams->set('spellcheck', 'true');
-            $searchParams->set('spellcheck.dictionary', $params->getSpellcheckDictionary());
-            $searchParams->set('spellcheck.q', $this->createSpellcheckQuery($query));
-        }
-
-        $searchParams->mergeWith(
-            $this->createSearchParams($query)
-        );
-        return $searchParams;
+        return $this->createSearchParams($query);
     }
 
     /**
@@ -356,21 +321,6 @@ class QueryBuilder
             }
         }
         return $searchString;
-    }
-
-    /**
-     * Create spellcheck query.
-     *
-     * @param AbstractQuery $query User query
-     *
-     * @return string
-     */
-    protected function createSpellcheckQuery (AbstractQuery $query)
-    {
-        if ($query instanceOf QueryGroup) {
-            return implode(' ', array_map(array($this, 'createSpellcheckQuery'), $query->getQueries()));
-        }
-        return $query->getString();
     }
 
     /**
