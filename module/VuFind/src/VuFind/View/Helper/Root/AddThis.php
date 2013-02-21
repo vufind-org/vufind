@@ -26,7 +26,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\View\Helper\Root;
-use VuFind\Config\Reader as ConfigReader, Zend\View\Helper\AbstractHelper;
 
 /**
  * AddThis view helper
@@ -37,8 +36,25 @@ use VuFind\Config\Reader as ConfigReader, Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class AddThis extends AbstractHelper
+class AddThis extends \Zend\View\Helper\AbstractHelper
 {
+    /**
+     * AddThis key (false if disabled)
+     *
+     * @var string|bool
+     */
+    protected $key;
+
+    /**
+     * Constructor
+     *
+     * @param string|bool $key AddThis key (false if disabled)
+     */
+    public function __construct($key)
+    {
+        $this->key = $key;
+    }
+
     /**
      * Returns AddThis API key (if AddThis is active) or false if not.
      *
@@ -46,7 +62,6 @@ class AddThis extends AbstractHelper
      */
     public function __invoke()
     {
-        $config = ConfigReader::getConfig();
-        return isset($config->AddThis->key) ? $config->AddThis->key : false;
+        return $this->key;
     }
 }

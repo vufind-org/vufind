@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\View\Helper\Root;
-use VuFind\Config\Reader as ConfigReader, Zend\View\Helper\AbstractHelper;
 
 /**
  * OpenURL view helper
@@ -37,8 +36,34 @@ use VuFind\Config\Reader as ConfigReader, Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class OpenUrl extends AbstractHelper
+class OpenUrl extends \Zend\View\Helper\AbstractHelper
 {
+    /**
+     * Context helper
+     *
+     * @var \VuFind\View\Helper\Root\Context
+     */
+    protected $context;
+
+    /**
+     * VuFind OpenURL configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $config;
+
+    /**
+     * Constructor
+     *
+     * @param \Zend\Config\Config $config VuFind OpenURL configuration
+     */
+    public function __construct(\VuFind\View\Helper\Root\Context $context,
+        $config = null
+    ) {
+        $this->context = $context;
+        $this->config = $config;
+    }
+
     /**
      * Render appropriate UI controls for an OpenURL link.
      *
@@ -51,16 +76,15 @@ class OpenUrl extends AbstractHelper
         // Static counter to ensure that each OpenURL gets a unique ID.
         static $counter = 0;
 
-        $config = ConfigReader::getConfig();
-        if (isset($config->OpenURL) && isset($config->OpenURL->url)) {
+        if (null !== $this->config && isset($this->config->url)) {
             // Trim off any parameters (for legacy compatibility -- default config
             // used to include extraneous parameters):
-            list($base) = explode('?', $config->OpenURL->url);
+            list($base) = explode('?', $this->config->url);
         } else {
             $base = false;
         }
 
-        $embed = (isset($config->OpenURL->embed) && !empty($config->OpenURL->embed));
+        $embed = (isset($this->config->embed) && !empty($this->config->embed));
         if ($embed) {
             $counter++;
         }
@@ -69,21 +93,20 @@ class OpenUrl extends AbstractHelper
         $params = array(
             'openUrl' => $openUrl,
             'openUrlBase' => empty($base) ? false : $base,
-            'openUrlWindow' => empty($config->OpenURL->window_settings)
-                ? false : $config->OpenURL->window_settings,
-            'openUrlGraphic' => empty($config->OpenURL->graphic)
-                ? false : $config->OpenURL->graphic,
-            'openUrlGraphicWidth' => empty($config->OpenURL->graphic_width)
-                ? false : $config->OpenURL->graphic_width,
-            'openUrlGraphicHeight' => empty($config->OpenURL->graphic_height)
-                ? false : $config->OpenURL->graphic_height,
+            'openUrlWindow' => empty($this->config->window_settings)
+                ? false : $this->config->window_settings,
+            'openUrlGraphic' => empty($this->config->graphic)
+                ? false : $this->config->graphic,
+            'openUrlGraphicWidth' => empty($this->config->graphic_width)
+                ? false : $this->config->graphic_width,
+            'openUrlGraphicHeight' => empty($this->config->graphic_height)
+                ? false : $this->config->graphic_height,
             'openUrlEmbed' => $embed,
             'openUrlId' => $counter
         );
 
         // Render the subtemplate:
-        $contextHelper = $this->getView()->plugin('context');
-        return $contextHelper($this->getView())->renderInContext(
+        return $this->context->__invoke($this->getView())->renderInContext(
             'Helpers/openurl.phtml', $params
         );
     }

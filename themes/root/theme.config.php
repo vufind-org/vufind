@@ -3,6 +3,12 @@ return array(
     'extends' => false,
     'helpers' => array(
         'factories' => array(
+            'addthis' => function ($sm) {
+                $config = \VuFind\Config\Reader::getConfig();
+                return new \VuFind\View\Helper\Root\AddThis(
+                    isset($config->AddThis->key) ? $config->AddThis->key : false
+                );
+            },
             'auth' => function ($sm) {
                 return new \VuFind\View\Helper\Root\Auth(
                     $sm->getServiceLocator()->get('VuFind\AuthManager')
@@ -33,6 +39,23 @@ return array(
                     $sm->getServiceLocator()->get('VuFind\ILSConnection')
                 );
             },
+            'proxyurl' => function ($sm) {
+                return new \VuFind\View\Helper\Root\ProxyUrl(
+                    \VuFind\Config\Reader::getConfig()
+                );
+            },
+            'openurl' => function ($sm) {
+                $config = \VuFind\Config\Reader::getConfig();
+                return new \VuFind\View\Helper\Root\OpenUrl(
+                    $sm->get('context'),
+                    isset($config->OpenURL) ? $config->OpenURL : null
+                );
+            },
+            'record' => function ($sm) {
+                return new \VuFind\View\Helper\Root\Record(
+                    \VuFind\Config\Reader::getConfig()
+                );
+            },
             'recordlink' => function ($sm) {
                 return new \VuFind\View\Helper\Root\RecordLink(
                     $sm->getServiceLocator()->get('VuFind\RecordRouter')
@@ -48,11 +71,16 @@ return array(
                 return new \VuFind\View\Helper\Root\SyndeticsPlus(
                     isset($config->Syndetics) ? $config->Syndetics : null
                 );
-            }
+            },
+            'systememail' => function ($sm) {
+                $config = \VuFind\Config\Reader::getConfig();
+                return new \VuFind\View\Helper\Root\SystemEmail(
+                    isset($config->Site->email) ? $config->Site->email : ''
+                );
+            },
         ),
         'invokables' => array(
             'addellipsis' => 'VuFind\View\Helper\Root\AddEllipsis',
-            'addthis' => 'VuFind\View\Helper\Root\AddThis',
             'authornotes' => 'VuFind\View\Helper\Root\AuthorNotes',
             'browse' => 'VuFind\View\Helper\Root\Browse',
             'citation' => 'VuFind\View\Helper\Root\Citation',
@@ -63,11 +91,8 @@ return array(
             'getlastsearchlink' => 'VuFind\View\Helper\Root\GetLastSearchLink',
             'highlight' => 'VuFind\View\Helper\Root\Highlight',
             'jqueryvalidation' => 'VuFind\View\Helper\Root\JqueryValidation',
-            'openurl' => 'VuFind\View\Helper\Root\OpenUrl',
             'printms' => 'VuFind\View\Helper\Root\Printms',
-            'proxyurl' => 'VuFind\View\Helper\Root\ProxyUrl',
             'recommend' => 'VuFind\View\Helper\Root\Recommend',
-            'record' => 'VuFind\View\Helper\Root\Record',
             'related' => 'VuFind\View\Helper\Root\Related',
             'renderarray' => 'VuFind\View\Helper\Root\RenderArray',
             'resultfeed' => 'VuFind\View\Helper\Root\ResultFeed',
@@ -75,7 +100,6 @@ return array(
             'safemoneyformat' => 'VuFind\View\Helper\Root\SafeMoneyFormat',
             'sortfacetlist' => 'VuFind\View\Helper\Root\SortFacetList',
             'summon' => 'VuFind\View\Helper\Root\Summon',
-            'systememail' => 'VuFind\View\Helper\Root\SystemEmail',
             'transesc' => 'VuFind\View\Helper\Root\TransEsc',
             'translate' => 'VuFind\View\Helper\Root\Translate',
             'truncate' => 'VuFind\View\Helper\Root\Truncate',

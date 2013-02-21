@@ -82,8 +82,8 @@ class MyResearchController extends AbstractBase
         }
 
         $config = ConfigReader::getConfig();
-        $page = isset($configArray->Site->defaultAccountPage)
-            ? $configArray->Site->defaultAccountPage : 'Favorites';
+        $page = isset($config->Site->defaultAccountPage)
+            ? $config->Site->defaultAccountPage : 'Favorites';
         return $this->forwardTo('MyResearch', $page);
     }
 
@@ -555,7 +555,9 @@ class MyResearchController extends AbstractBase
 
             $results = $sm->setSearchClassId('Favorites')->getResults($params);
             $results->performAndProcessSearch();
-            return $this->createViewModel(array('results' => $results));
+            return $this->createViewModel(
+                array('params' => $params, 'results' => $results)
+            );
         } catch (ListPermissionException $e) {
             if (!$this->getUser()) {
                 return $this->forceLogin();

@@ -60,7 +60,7 @@ class Solr extends AbstractBase
      *
      * @var string
      */
-    protected $cacheDir;
+    protected $cacheDir = null;
 
     /**
      * Constructor.
@@ -75,7 +75,9 @@ class Solr extends AbstractBase
     ) {
         $this->solr = $solr;
         $this->driverFactory = $factory;
-        $this->cacheDir = rtrim($cacheDir, '/');
+        if (null !== $cacheDir) {
+            $this->cacheDir = rtrim($cacheDir, '/');
+        }
     }
 
     /**

@@ -73,6 +73,16 @@ class CollectionList extends AbstractBase
     }
 
     /**
+     * Get the current search parameters.
+     *
+     * @return \VuFind\Search\SolrCollection\Params
+     */
+    public function getParams()
+    {
+        return $this->getResults()->getParams();
+    }
+
+    /**
      * Get the processed search results.
      *
      * @return \VuFind\Search\SolrCollection\Results
