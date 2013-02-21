@@ -82,20 +82,20 @@ class Service
      * Perform a search and return a wrapped response.
      *
      * @param string        $backend Search backend identifier
-     * @param AbstractQuery $query   Search query
-     * @param Params        $params  Search parameters
+     * @param integer       $offset  Search offset
+     * @param integer       $limit   Search limit
+     * @param ParamBag      $params  Search backend parameters
      *
      * @return ResponseInterface
-     *
      */
-    public function search ($backend, Query\AbstractQuery $query, Query\Params $params)
+    public function search ($backend, Query\AbstractQuery $query, $offset, $limit, ParamBag $params = null)
     {
         $context = __FUNCTION__;
-        $args = compact('backend', 'query', 'params', 'context');
+        $args = compact('backend', 'query', 'offset', 'limit', 'params', 'context');
         $backend  = $this->resolve($backend, $args);
 
         $this->triggerPre($context, $backend, $args);
-        $response = $backend->search($query, $params);
+        $response = $backend->search($query, $offset, $limit, $params);
         $this->triggerPost($context, $response, $args);
         return $response;
     }
@@ -103,19 +103,20 @@ class Service
     /**
      * Retrieve a single record.
      *
-     * @param string $backend Search backend identifier
-     * @param string $id      Record identifier
+     * @param string   $backend Search backend identifier
+     * @param string   $id      Record identifier
+     * @param ParamBag $params  Search backend parameters
      *
      * @return ResponseInterface
      */
-    public function retrieve ($backend, $id)
+    public function retrieve ($backend, $id, ParamBag $params = null)
     {
         $context = __FUNCTION__;
-        $args = compact('backend', 'id', 'context');
+        $args = compact('backend', 'id', 'params', 'context');
         $backend = $this->resolve($backend, $args);
 
         $this->triggerPre($context, $backend, $args);
-        $response = $backend->retrieve($id);
+        $response = $backend->retrieve($id, $params);
         $this->triggerPost($context, $response, $args);
         return $response;
     }
@@ -123,8 +124,9 @@ class Service
     /**
      * Delete a single record.
      *
-     * @param string $backend Search backend identifier
-     * @param string $id      Record identifier
+     * @param string   $backend Search backend identifier
+     * @param string   $id      Record identifier
+     * @param ParamBag $params  Search backend parameters
      *
      * @return null
      */
@@ -142,18 +144,19 @@ class Service
     /**
      * Delete all records.
      *
-     * @param string $backend Search backend identifier
+     * @param string   $backend Search backend identifier
+     * @param ParamBag $params  Search backend parameters
      *
      * @return null
      */
-    public function deleteAll ($backend)
+    public function deleteAll ($backend, ParamBag $params = null)
     {
         $context = __FUNCTION__;
-        $args = compact('backend', 'context');
+        $args = compact('backend', 'params', 'context');
         $backend = $this->resolve($backend, $args);
 
         $this->triggerPre($context, $backend, $args);
-        $response = $backend->deleteAll();
+        $response = $backend->deleteAll($params);
         $this->triggerPost($context, $response, $args);
         return $response;
     }
@@ -163,17 +166,18 @@ class Service
      *
      * @param string          $backend Search backend identifier
      * @param RecordInterface $record  The record to update
+     * @param ParamBag        $params  Search backend parameters
      *
      * @return void
      */
-    public function update ($backend, RecordInterface $record)
+    public function update ($backend, RecordInterface $record, ParamBag $params = null)
     {
         $context = __FUNCTION__;
-        $args = compact('backend', 'record', 'context');
+        $args = compact('backend', 'record', 'params', 'context');
         $backend = $this->resolve($backend, $args);
 
         $this->triggerPre($context, $backend, $args);
-        $response = $backend->update($record);
+        $response = $backend->update($record, $params);
         $this->triggerPost($context, $response, $args);
     }
 
