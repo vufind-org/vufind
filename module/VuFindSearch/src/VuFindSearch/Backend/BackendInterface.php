@@ -33,7 +33,7 @@ use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\QueryGroup;
 use VuFindSearch\Query\Query;
 
-use VuFindSearch\Query\Params;
+use VuFindSearch\ParamBag;
 
 /**
  * Search backend interface definition.
@@ -68,36 +68,43 @@ interface BackendInterface
      * Perform a search and return record collection.
      *
      * @param AbstractQuery $query  Search query
-     * @param Params        $params Search parameters
+     * @param integer       $offset Search offset
+     * @param integer       $limit  Search limit
+     * @param ParamBag      $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
-    public function search (AbstractQuery $query, Params $params);
+    public function search (AbstractQuery $query, $offset, $limit, ParamBag $params = null);
 
     /**
      * Retrieve a single document.
      *
-     * @param string $id Document identifier
+     * @param string   $id     Document identifier
+     * @param ParamBag $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
-    public function retrieve ($id);
+    public function retrieve ($id, ParamBag $params = null);
 
     /**
      * Delete a single record.
      *
-     * @param string $id Record identifier
+     * @param string   $id     Record identifier
+     * @param ParamBag $params Search backend parameters
      *
      * @return RecordCollectionInterface
+     *
+     * @todo Relocate to WritableBackendInterface
      */
-    public function delete ($id);
+    public function delete ($id, ParamBag $params = null);
 
     /**
      * Return similar records.
      *
-     * @param string $id Id of record to compare with
+     * @param string   $id     Id of record to compare with
+     * @param ParamBag $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
-    public function similar ($id);
+    public function similar ($id, ParamBag $params = null);
 }
