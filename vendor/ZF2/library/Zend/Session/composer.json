@@ -11,7 +11,7 @@
             "Zend\\Session\\": ""
         },
         "files": [
-            "compatibility/autoload.php"
+            "Zend/Session/compatibility/autoload.php"
         ]
     },
     "target-dir": "Zend/Session",
@@ -22,5 +22,11 @@
     "suggest": {
         "zendframework/zend-validator": "Zend\\Validator component",
         "zendframework/zend-eventmanager": "Zend\\EventManager component"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.1-dev",
+            "dev-develop": "2.2-dev"
+        }
     }
 }
