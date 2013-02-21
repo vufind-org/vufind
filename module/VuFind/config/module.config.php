@@ -118,6 +118,9 @@ $config = array(
     ),
     'service_manager' => array(
         'factories' => array(
+            'VuFind\AuthManager' => function ($sm) {
+                return new \VuFind\Auth\Manager(\VuFind\Config\Reader::getConfig());
+            },
             'VuFind\Cart' => function ($sm) {
                 $config = \VuFind\Config\Reader::getConfig();
                 $active = isset($config->Site->showBookBag)
@@ -204,7 +207,6 @@ $config = array(
             },
         ),
         'invokables' => array(
-            'VuFind\AuthManager' => 'VuFind\Auth\Manager',
             'VuFind\CacheManager' => 'VuFind\Cache\Manager',
             'VuFind\Mailer' => 'VuFind\Mailer',
             'VuFind\RecordLoader' => 'VuFind\Record\Loader',
