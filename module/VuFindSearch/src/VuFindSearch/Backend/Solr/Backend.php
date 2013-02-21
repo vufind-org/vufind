@@ -32,7 +32,8 @@ namespace VuFindSearch\Backend\Solr;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\QueryGroup;
 use VuFindSearch\Query\Query;
-use VuFindSearch\Query\Params;
+
+use VuFindSearch\ParamBag;
 
 use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
@@ -123,20 +124,25 @@ class Backend implements BackendInterface
         $this->dictionaries = $dictionaries;
     }
 
+
     /**
      * Perform a search and return record collection.
      *
      * @param AbstractQuery $query  Search query
-     * @param Params        $params Search parameters
+     * @param integer       $offset Search offset
+     * @param integer       $limit  Search limit
+     * @param ParamBag      $params Search backend parameters
      *
      * @return RecordCollectionInterface
      *
      * @todo Disable more SOLR request options when resubmitting for spellcheck
      * @todo Implement merge of spellcheck results
      */
-    public function search (AbstractQuery $query, Params $params)
+    public function search (AbstractQuery $query, $offset, $limit, ParamBag $params = null)
     {
-        if ($params->isSpellcheckEnabled()) {
+        // Check if spellcheck is enabled.
+        $spellcheck = $params->get('spellcheck');
+        if (is_array($spellcheck) && array_intersect($spellcheck, array('true', 'on'))) {
             if (!empty($this->dictionaries)) {
                 reset($this->dictionaries);
                 $params->setSpellcheckDictionary(current($this->dictionaries));
@@ -145,7 +151,7 @@ class Backend implements BackendInterface
             }
         }
 
-        $response   = $this->connector->search($query, $params, $this->getQueryBuilder());
+        $response   = $this->connector->search($query, $offset, $limit, $this->getQueryBuilder(), $params);
         $collection = $this->getRecordCollectionFactory()->factory($this->deserialize($response));
         $this->injectSourceIdentifier($collection);
 
@@ -163,13 +169,14 @@ class Backend implements BackendInterface
     /**
      * Retrieve a single document.
      *
-     * @param string $id Document identifier
+     * @param string   $id     Document identifier
+     * @param ParamBag $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
-    public function retrieve ($id)
+    public function retrieve ($id, ParamBag $params = null)
     {
-        $response   = $this->connector->retrieve($id);
+        $response   = $this->connector->retrieve($id, $params);
         $collection = $this->getRecordCollectionFactory()->factory($this->deserialize($response));
         $this->injectSourceIdentifier($collection);
         return $collection;
@@ -178,13 +185,14 @@ class Backend implements BackendInterface
     /**
      * Return similar records.
      *
-     * @param string $id Id of record to compare with
+     * @param string   $id     Id of record to compare with
+     * @param ParamBag $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
-    public function similar ($id)
+    public function similar ($id, ParamBag $params = null)
     {
-        $response   = $this->connector->similar($id);
+        $response   = $this->connector->similar($id, $params);
         $collection = $this->getRecordCollectionFactory()->factory($this->deserialize($response));
         $this->injectSourceIdentifier($collection);
         return $collection;
@@ -193,15 +201,14 @@ class Backend implements BackendInterface
     /**
      * Delete a single record.
      *
-     * @param string $id Record identifier
+     * @param string   $id     Record identifier
+     * @param ParamBag $params Search backend parameters
      *
-     * @return void
-     *
-     * @todo Currently not implemented in the connector
+     * @return RecordCollectionInterface
      */
-    public function delete ($id)
+    public function delete ($id, ParamBag $params = null)
     {
-        $this->connector->delete($id);
+        $this->connector->delete($id, $params);
     }
 
     /**
