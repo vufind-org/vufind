@@ -300,10 +300,16 @@ $config = array(
             ),
             'db_table' => array(
                 'abstract_factories' => array('VuFind\Db\Table\PluginFactory'),
+                'factories' => array(
+                    'resource' => function ($sm) {
+                        return new \VuFind\Db\Table\Resource(
+                            $sm->getServiceLocator()->get('VuFind\DateConverter')
+                        );
+                    },
+                ),
                 'invokables' => array(
                     'changetracker' => 'VuFind\Db\Table\ChangeTracker',
                     'comments' => 'VuFind\Db\Table\Comments',
-                    'resource' => 'VuFind\Db\Table\Resource',
                     'resourcetags' => 'VuFind\Db\Table\ResourceTags',
                     'search' => 'VuFind\Db\Table\Search',
                     'session' => 'VuFind\Db\Table\Session',

@@ -470,11 +470,12 @@ class UpgradeController extends AbstractBase
 
         // Process submit button:
         if (strlen($this->params()->fromPost('submit', '')) > 0) {
+            $converter = $this->getServiceLocator()->get('VuFind\DateConverter');
             foreach ($problems as $problem) {
                 try {
                     $driver = $this->getRecordLoader()
                         ->load($problem->record_id, $problem->source);
-                    $problem->assignMetadata($driver)->save();
+                    $problem->assignMetadata($driver, $converter)->save();
                 } catch (RecordMissingException $e) {
                     $this->session->warnings->append(
                         "Unable to load metadata for record "

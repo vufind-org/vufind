@@ -40,10 +40,20 @@ use Zend\Db\Sql\Expression;
 class Resource extends Gateway
 {
     /**
-     * Constructor
+     * Date converter
+     *
+     * @var \VuFind\Date\Converter
      */
-    public function __construct()
+    protected $dateConverter;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $converter Date converter
+     */
+    public function __construct(\VuFind\Date\Converter $converter)
     {
+        $this->dateConverter = $converter;
         parent::__construct('resource', 'VuFind\Db\Row\Resource');
     }
 
@@ -84,7 +94,7 @@ class Resource extends Gateway
             }
 
             // Load metadata into the database for sorting/failback purposes:
-            $result->assignMetadata($driver);
+            $result->assignMetadata($driver, $this->dateConverter);
 
             // Save the new row.
             $result->save();
