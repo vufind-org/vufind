@@ -83,7 +83,7 @@ class SolrDefaultBackendFactory implements FactoryInterface
             $this->logger = $this->serviceLocator->get('VuFind\Logger');
         }
         $connector = $this->createConnector();
-        $backend   = $this->createBackend('VuFind', $connector);
+        $backend   = $this->createBackend('Solr', $connector);
         $this->createListeners($backend);
         return $backend;
     }
@@ -102,6 +102,7 @@ class SolrDefaultBackendFactory implements FactoryInterface
         $specs   = $this->loadSpecs();
         $builder = new QueryBuilder($specs);
         $backend->setQueryBuilder($builder);
+
         if ($this->logger) {
             $backend->setLogger($this->logger);
         }
@@ -131,11 +132,36 @@ class SolrDefaultBackendFactory implements FactoryInterface
     protected function createConnector ()
     {
         $config  = Reader::getConfig();
+        $searchSettings = Reader::getConfig('searches');
+
         $url     = $config->Index->url . '/';
         $url    .= isset($config->Index->default_core) ? $config->Index->default_core : 'biblio';
 
         $connector = new Connector($url);
         $connector->setTimeout($config->Index->timeout);
+
+        $hl = !isset($searchSettings->General->highlighting) ? false : $searchSettings->General->highlighting;
+        $sn = !isset($searchSettings->General->snippets)     ? false : $searchSettings->General->snippets;
+        if ($hl || $sn) {
+            $connector->addQueryInvariant('hl', 'true');
+            $connector->addQueryInvariant('hl.fl', '*');
+            $connector->addQueryInvariant('hl.simple.pre', '{{{{START_HILITE}}}}');
+            $connector->addQueryInvariant('hl.simple.post', '{{{{END_HILITE}}}}');
+        }
+
+        // Hidden filters
+        if (isset($searchSettings->HiddenFilters)) {
+            foreach ($searchSettings->HiddenFilters as $field => $value) {
+                $connector->addQueryInvariant('fq', sprintf('%s:"%s"', $field, $value));
+            }
+        }
+        // Raw hidden filters
+        if (isset($searchSettings->RawHiddenFilters)) {
+            foreach ($searchSettings->RawHiddenFilters as $filter) {
+                $connector->addQueryInvariant('fq', $filter);
+            }
+        }
+
         if ($this->logger) {
             $connector->setLogger($this->logger);
         }
