@@ -32,7 +32,6 @@
 namespace VuFind\ILS\Driver;
 use ArrayObject, VuFind\Config\Reader as ConfigReader,
     VuFind\Connection\Manager as ConnectionManager,
-    VuFind\Date\Converter as DateConverter,
     VuFind\Exception\Date as DateException,
     VuFind\Exception\ILS as ILSException,
     Zend\Session\Container as SessionContainer;
@@ -75,6 +74,23 @@ class Demo extends AbstractBase
      * @var bool
      */
     protected $idsInMyResearch = true;
+
+    /**
+     * Date converter object
+     *
+     * @var \VuFind\Date\Converter
+     */
+    protected $dateConverter;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $dateConverter Date converter object
+     */
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
+        $this->dateConverter = $dateConverter;
+    }
 
     /**
      * Initialize the driver.
@@ -952,8 +968,7 @@ class Demo extends AbstractBase
             $expire = strtotime("now + 30 days");
         } else {
             try {
-                $dateFormat = new DateConverter();
-                $expire = $dateFormat->convertFromDisplayDate(
+                $expire = $this->dateConverter->convertFromDisplayDate(
                     "U", $holdDetails['requiredBy']
                 );
             } catch (DateException $e) {

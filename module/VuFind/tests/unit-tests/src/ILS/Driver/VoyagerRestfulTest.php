@@ -46,7 +46,7 @@ class VoyagerRestfulTest extends \VuFindTest\Unit\TestCase
      */
     public function __construct()
     {
-        $this->driver = new VoyagerRestful();
+        $this->driver = new VoyagerRestful(new \VuFind\Date\Converter());
     }
 
     /**

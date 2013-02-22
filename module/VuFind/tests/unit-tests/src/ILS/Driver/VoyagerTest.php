@@ -46,7 +46,7 @@ class VoyagerTest extends \VuFindTest\Unit\TestCase
      */
     public function __construct()
     {
-        $this->driver = new Voyager();
+        $this->driver = new Voyager(new \VuFind\Date\Converter());
     }
 
     /**

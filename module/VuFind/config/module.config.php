@@ -353,14 +353,41 @@ $config = array(
                             $sm->getServiceLocator()->get('VuFind\CacheManager')
                         );
                     },
+                    'demo' => function ($sm) {
+                        return new \VuFind\ILS\Driver\Demo(
+                            $sm->getServiceLocator()->get('VuFind\DateConverter')
+                        );
+                    },
+                    'horizon' => function ($sm) {
+                        return new \VuFind\ILS\Driver\Horizon(
+                            $sm->getServiceLocator()->get('VuFind\DateConverter')
+                        );
+                    },
+                    'horizonxmlapi' => function ($sm) {
+                        return new \VuFind\ILS\Driver\HorizonXMLAPI(
+                            $sm->getServiceLocator()->get('VuFind\DateConverter')
+                        );
+                    },
+                    'unicorn' => function ($sm) {
+                        return new \VuFind\ILS\Driver\Unicorn(
+                            $sm->getServiceLocator()->get('VuFind\DateConverter')
+                        );
+                    },
+                    'voyager' => function ($sm) {
+                        return new \VuFind\ILS\Driver\Voyager(
+                            $sm->getServiceLocator()->get('VuFind\DateConverter')
+                        );
+                    },
+                    'voyagerrestful' => function ($sm) {
+                        return new \VuFind\ILS\Driver\VoyagerRestful(
+                            $sm->getServiceLocator()->get('VuFind\DateConverter')
+                        );
+                    },
                 ),
                 'invokables' => array(
                     'amicus' => 'VuFind\ILS\Driver\Amicus',
                     'daia' => 'VuFind\ILS\Driver\DAIA',
-                    'demo' => 'VuFind\ILS\Driver\Demo',
                     'evergreen' => 'VuFind\ILS\Driver\Evergreen',
-                    'horizon' => 'VuFind\ILS\Driver\Horizon',
-                    'horizonxmlapi' => 'VuFind\ILS\Driver\HorizonXMLAPI',
                     'innovative' => 'VuFind\ILS\Driver\Innovative',
                     'koha' => 'VuFind\ILS\Driver\Koha',
                     'newgenlib' => 'VuFind\ILS\Driver\NewGenLib',
@@ -368,10 +395,7 @@ $config = array(
                     'pica' => 'VuFind\ILS\Driver\PICA',
                     'sample' => 'VuFind\ILS\Driver\Sample',
                     'symphony' => 'VuFind\ILS\Driver\Symphony',
-                    'unicorn' => 'VuFind\ILS\Driver\Unicorn',
                     'virtua' => 'VuFind\ILS\Driver\Virtua',
-                    'voyager' => 'VuFind\ILS\Driver\Voyager',
-                    'voyagerrestful' => 'VuFind\ILS\Driver\VoyagerRestful',
                     'xcncip' => 'VuFind\ILS\Driver\XCNCIP',
                     'xcncip2' => 'VuFind\ILS\Driver\XCNCIP2',
                 ),
