@@ -31,6 +31,8 @@ use VuFind\Config\Reader as ConfigReader,
     VuFind\Exception\RecordMissing as RecordMissingException,
     VuFind\Search\Base\Results as BaseResults;
 
+use VuFindSearch\Service as SearchService;
+
 /**
  * Solr Search Parameters
  *
@@ -46,6 +48,30 @@ class Results extends BaseResults
      * Raw Solr search response:
      */
     protected $rawResponse = null;
+
+    /**
+     * Search service.
+     *
+     * @var SearchService
+     * @tag NEW SEARCH
+     */
+    protected $searchService;
+
+    /**
+     * Return search service.
+     *
+     * @return SearchService
+     *
+     * @todo May better error handling, throw a custom exception if search service not present
+     * @tag NEW SEARCH
+     */
+    protected function getSearchService ()
+    {
+        if (!$this->searchService) {
+            $this->searchService = $this->getServiceLocator()->get('VuFind\Search');
+        }
+        return $this->searchService;
+    }
 
     /**
      * Get a connection to the Solr index.
@@ -116,6 +142,9 @@ class Results extends BaseResults
 
         // Perform the search:
         $this->rawResponse = $solr->search($params);
+
+        // ...and now use the new search service
+        $query = $this->getParams()->getQuery();
 
         // How many results were there?
         $this->resultTotal = isset($this->rawResponse['response']['numFound'])
@@ -542,7 +571,7 @@ class Results extends BaseResults
             ->get('VuFind\RecordDriverPluginManager')
             ->getSolrRecord($data);
     }
-    
+
     /**
      * Get complete facet counts for several index fields
      *
