@@ -47,7 +47,7 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      */
     public function __construct()
     {
-        $this->driver = $this->getMock('VuFind\ILS\Driver\Demo');
+        $this->driver = $this->getMock('VuFind\ILS\Driver\Sample');
         $this->auth = $this->getAuthManager()->get('ILS');
         $this->auth->getCatalog()->setDriver($this->driver);;
     }
