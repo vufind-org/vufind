@@ -412,7 +412,6 @@ class Connector
     {
         $client = new HttpClient();
         $client->setAdapter($this->httpAdapterClass);
-        $client->setMethod($method);
         $client->setOptions(array('timeout' => $this->timeout));
 
         $url    = $this->url . '/' . $handler;
@@ -422,10 +421,12 @@ class Connector
             $method = Request::METHOD_POST;
         }
 
+        $client->setMethod($method);
         if ($method === Request::METHOD_POST) {
             $client->setUri($url);
             $client->setRawBody($paramString);
-            $client->setHeaders(array('Content-Type' => Request::ENC_URLENCODED, 'Content-Length' => strlen($paramString)));
+            $client->setEncType(HttpClient::ENC_URLENCODED);
+            $client->setHeaders(array('Content-Length' => strlen($paramString)));
         } else {
             $url = $url . '?' . $paramString;
             $client->setUri($url);
