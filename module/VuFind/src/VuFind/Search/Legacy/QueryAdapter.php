@@ -1,11 +1,11 @@
 <?php
 
 /**
- * QueryAdapter class file.
+ * Legacy adapter: search query parameters to AbstractQuery object
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2011.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,25 +20,30 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category Search
- * @package  Query
- * @author   David Maus <maus@hab.de>
+ * @category VuFind2
+ * @package  Search_Solr
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/system_classes Wiki
+ * @link     http://www.vufind.org  Main Page
  */
 
-namespace VuFindSearch\Query;
+namespace VuFind\Search\Legacy;
+
+use VuFindSearch\Query\QueryGroup;
+use VuFindSearch\Query\Query;
 
 /**
- * Adapter for legacy query representation.
+ * Legacy adapter: search query parameters to AbstractQuery object
  *
- * @category Search
- * @package  Query
- * @author   David Maus <maus@hab.de>
+ * The class is a intermediate solution to translate the (possibly modified)
+ * search query parameters in an object required by the new search system.
+ *
+ * @category VuFind2
+ * @package  Search_Solr
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/system_classes Wiki
+ * @link     http://www.vufind.org  Main Page
  */
-
 abstract class QueryAdapter
 {
 
@@ -47,7 +52,7 @@ abstract class QueryAdapter
      *
      * @param array $search Search arguments
      *
-     * @return \VuFind\Search\Query|\VuFind\Search\QueryGroup
+     * @return Query|QueryGroup
      */
     public static function create (array $search)
     {
