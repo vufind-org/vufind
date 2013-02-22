@@ -1,5 +1,5 @@
 {
-    "hash": "709e2b5d13b45aebfbf45b88c857b8dd",
+    "hash": "c516fa0d575b47b9d78683aa619eb196",
     "packages": [
         {
             "name": "johnwohlers/sip2",
@@ -360,17 +360,17 @@
         },
         {
             "name": "zendframework/zendframework",
-            "version": "2.1.2",
+            "version": "2.1.3",
             "source": {
                 "type": "git",
                 "url": "git://github.com/zendframework/zf2.git",
-                "reference": "release-2.1.2"
+                "reference": "release-2.1.3"
             },
             "dist": {
                 "type": "zip",
-                "url": "http://packages.zendframework.com/releases/ZendFramework-2.1.2/ZendFramework-2.1.2.zip",
-                "reference": "release-2.1.2",
-                "shasum": "fd99fc5ce007c5856e3817f351a2184f7e1f4a98"
+                "url": "http://packages.zendframework.com/releases/ZendFramework-2.1.3/ZendFramework-2.1.3.zip",
+                "reference": "release-2.1.3",
+                "shasum": "506246b4bfa78db0d19852b26f0d4e383f10603f"
             },
             "require": {
                 "php": ">=5.3.3"
