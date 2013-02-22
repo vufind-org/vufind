@@ -121,7 +121,43 @@ class QueryBuilder
             $query->setString($this->normalizeSearchString($query->getString()));
         }
 
-        return $this->createSearchParams($query);
+        $string  = $query->getString() ?: '*:*';
+        $handler = $this->getSearchHandler($query->getHandler());
+
+        $params  = new ParamBag();
+
+        if ($this->containsAdvancedLuceneSyntax($string)) {
+
+            if ($handler) {
+                if (array_intersect($params->get('hl'), array('true', 'on')) {
+                    $params->set('hl.q', $this->createAdvancedInnerSearchString($string, $handler));
+                }
+                $string = $this->createAdvancedInnerSearchString($string, $handler);
+                if ($handler->hasDismax()) {
+                    $string = $handler->createBoostQueryString($string);
+                }
+            }
+        } else {
+            if ($handler && $handler->hasDismax()) {
+                $params->set('qf', implode(' ', $handler->getDismaxFields()));
+                $params->set('qt', 'dismax');
+                foreach ($handler->getDismaxParams() as $param) {
+                    foreach ($param as $pair) {
+                        $params->add(reset($pair), next($pair));
+                    }
+                }
+                if ($handler->hasFilterQuery()) {
+                    $params->add('fq', $handler->getFilterQuery());
+                }
+            } else {
+                if ($handler) {
+                    $string = $handler->createSimpleQueryString($string);
+                }
+            }
+        }
+        $params->set('q', $string);
+
+        return $params;
     }
 
     /**
@@ -215,55 +251,6 @@ class QueryBuilder
     }
 
     /// Internal API
-
-    /**
-     * Return ParamBag with search query related parameters.
-     *
-     * @param Query $query User query
-     *
-     * @return ParamBag
-     *
-     * @todo Review highlighting
-     */
-    protected function createSearchParams (Query $query)
-    {
-        $string  = $query->getString() ?: '*:*';
-        $handler = $this->getSearchHandler($query->getHandler());
-
-        $params  = new ParamBag();
-
-        if ($this->containsAdvancedLuceneSyntax($string)) {
-
-            if ($handler) {
-                // No need to check if hl is enabled or not; hl.q w/o hl=true has no effect
-                //   -- dmaus, 20121107
-                $params->set('hl.q', $this->createAdvancedInnerSearchString($string, $handler));
-                $string = $this->createAdvancedInnerSearchString($string, $handler);
-                if ($handler->hasDismax()) {
-                    $string = $handler->createBoostQueryString($string);
-                }
-            }
-        } else {
-            if ($handler && $handler->hasDismax()) {
-                $params->set('qf', implode(' ', $handler->getDismaxFields()));
-                $params->set('qt', 'dismax');
-                foreach ($handler->getDismaxParams() as $param) {
-                    foreach ($param as $pair) {
-                        $params->add(reset($pair), next($pair));
-                    }
-                }
-                if ($handler->hasFilterQuery()) {
-                    $params->add('fq', $handler->getFilterQuery());
-                }
-            } else {
-                if ($handler) {
-                    $string = $handler->createSimpleQueryString($string);
-                }
-            }
-        }
-        $params->set('q', $string);
-        return $params;
-    }
 
     /**
      * Return named search handler.
