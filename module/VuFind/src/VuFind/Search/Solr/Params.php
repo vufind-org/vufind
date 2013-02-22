@@ -28,6 +28,8 @@
 namespace VuFind\Search\Solr;
 use VuFind\Config\Reader as ConfigReader, VuFind\Search\Base\Params as BaseParams;
 
+use VuFind\Search\Legacy\QueryAdapter;
+
 /**
  * Solr Search Parameters
  *
@@ -100,6 +102,18 @@ class Params extends BaseParams
     public function getOverrideQuery()
     {
         return $this->overrideQuery;
+    }
+
+    /**
+     * Return search query object.
+     *
+     * @return VuFindSearch\Query\AbstractQuery
+     *
+     * @tag NEW SEARCH
+     */
+    public function getQuery ()
+    {
+        return QueryAdapter::create($this->getSearchTerms());
     }
 
     /**
