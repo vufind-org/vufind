@@ -386,14 +386,14 @@ class Connector
     /**
      * Repeat the last request with potentially modified parameters.
      *
-     * @see self::getLastRequestParameters()
+     * @param ParamBag $params Request parameters
      *
-     * @return void
+     * @return string
      */
-    public function resubmit ()
+    public function resubmit (ParamBag $params)
     {
         $last = $this->lastRequest;
-        return $this->sendRequest($last['handler'], $last['parameters'], $last['method']);
+        return $this->sendRequest($last['handler'], $params, $last['method']);
     }
 
     /**

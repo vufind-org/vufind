@@ -140,27 +140,30 @@ class Backend implements BackendInterface
      */
     public function search (AbstractQuery $query, $offset, $limit, ParamBag $params = null)
     {
-        // Check if spellcheck is enabled.
-        $spellcheck = $params->get('spellcheck');
-        if (is_array($spellcheck) && array_intersect($spellcheck, array('true', 'on'))) {
+        if ($params->get('spellcheck.q')) {
             if (!empty($this->dictionaries)) {
                 reset($this->dictionaries);
-                $params->setSpellcheckDictionary(current($this->dictionaries));
+                $params->set('spellcheck', 'true');
+                $params->set('spellcheck.dictionary', current($this->dictionaries));
             } else {
                 $this->log('warn', 'Spellcheck requested but no spellcheck dictionary configured');
             }
         }
 
         $response   = $this->connector->search($query, $offset, $limit, $this->getQueryBuilder(), $params);
-        $collection = $this->getRecordCollectionFactory()->factory($this->deserialize($response));
+        $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
 
         // Submit requests for more spelling suggestions
         while (next($this->dictionaries) !== false) {
-            $req = $this->connector->getLastRequestParameters();
-            $req->set('spellcheck.dictionary', array(current($this->dictionaries)));
-            $req->set('rows', array(0));
-            $response = $this->connector->resubmit();
+            $prev = $this->connector->getLastRequestParameters();
+            $next = new ParamBag(array('q' => '*:*', 'spellcheck' => 'true', 'rows' => 0));
+            $next->mergeWith($this->connector->getQueryInvariants());
+            $next->set('spellcheck.q', $prev->get('spellcheck.q'));
+            $next->set('spellcheck.dictionary', current($this->dictionaries));
+            $response   = $this->connector->resubmit($next);
+            $spellcheck = $this->createRecordCollection($response);
+            $collection->getSpellcheck()->mergeWith($spellcheck->getSpellcheck());
         }
 
         return $collection;
@@ -177,7 +180,7 @@ class Backend implements BackendInterface
     public function retrieve ($id, ParamBag $params = null)
     {
         $response   = $this->connector->retrieve($id, $params);
-        $collection = $this->getRecordCollectionFactory()->factory($this->deserialize($response));
+        $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
         return $collection;
     }
@@ -193,7 +196,7 @@ class Backend implements BackendInterface
     public function similar ($id, ParamBag $params = null)
     {
         $response   = $this->connector->similar($id, $params);
-        $collection = $this->getRecordCollectionFactory()->factory($this->deserialize($response));
+        $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
         return $collection;
     }
@@ -334,6 +337,18 @@ class Backend implements BackendInterface
     }
 
     /**
+     * Create record collection.
+     *
+     * @param string $json Serialized JSON response
+     *
+     * @return RecordCollectionInterface
+     */
+    protected function createRecordCollection ($json)
+    {
+        return $this->getRecordCollectionFactory()->factory($this->deserialize($json));
+    }
+
+    /**
      * Deserialize JSON response.
      *
      * @param string $json Serialized JSON response
@@ -347,8 +362,8 @@ class Backend implements BackendInterface
         $response = json_decode($json, true);
         $error    = json_last_error();
         if ($error != \JSON_ERROR_NONE) {
-            throw new RuntimeException(
-                sprintf('JSON decoding error: %s', $error)
+            throw new BackendException(
+                sprintf('JSON decoding error: %s -- %s', $error, $json)
             );
         }
         return $response;
