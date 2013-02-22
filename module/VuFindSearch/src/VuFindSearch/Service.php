@@ -130,15 +130,36 @@ class Service
      *
      * @return null
      */
-    public function delete ($backend, $id)
+    public function delete ($backend, $id, ParamBag $params = null)
     {
         $context = __FUNCTION__;
-        $args = compact('backend', 'id', 'context');
+        $args = compact('backend', 'id', 'params', 'context');
         $backend = $this->resolve($backend, $args);
 
         $this->triggerPre($context, $backend, $args);
-        $response = $backend->delete($id);
+        $response = $backend->delete($id, $params);
         $this->triggerPost($context, $response, $args);
+    }
+
+    /**
+     * Return similar records.
+     *
+     * @param string   $backend Search backend identifier
+     * @param string   $id      Id of record to compare with
+     * @param ParamBag $params  Search backend parameters
+     *
+     * @return RecordCollectionInterface
+     */
+    public function similar ($backend, $id, ParamBag $params = null)
+    {
+        $context = __FUNCTION__;
+        $args = compact('backend', 'id', 'params', 'context');
+        $backend = $this->resolve($backend, $args);
+
+        $this->triggerPre($context, $backend, $args);
+        $response = $backend->similar($id, $params);
+        $this->triggerPost($context, $response, $args);
+        return $response;
     }
 
     /**
