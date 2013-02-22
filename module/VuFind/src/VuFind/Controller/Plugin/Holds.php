@@ -26,8 +26,8 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller\Plugin;
-use VuFind\Crypt\HMAC, VuFind\Date\Converter as DateConverter,
-    Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Session\Container;
+use VuFind\Crypt\HMAC, Zend\Mvc\Controller\Plugin\AbstractPlugin,
+    Zend\Session\Container;
 
 /**
  * Zend action helper to perform renewal-related actions
@@ -264,20 +264,15 @@ class Holds extends AbstractPlugin
      * @param array $checkHolds Hold settings returned by the ILS driver's
      * checkFunction method.
      *
-     * @return string A formatted default required date
+     * @return int A timestamp representing the default required date
      */
-    public function getDefaultRequiredDate($checkHolds)
-    {
-        $formatDate = new DateConverter();
-
+    public function getDefaultRequiredDate($checkHolds) {
         $dateArray = isset($checkHolds['defaultRequiredDate'])
              ? explode(":", $checkHolds['defaultRequiredDate'])
              : array(0, 1, 0);
         list($d, $m, $y) = $dateArray;
-        $nextMonth  = mktime(
+        return mktime(
             0, 0, 0, date("m")+$m,   date("d")+$d,   date("Y")+$y
         );
-
-        return $formatDate->convertToDisplayDate("U", $nextMonth);
     }
 }

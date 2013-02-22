@@ -144,6 +144,11 @@ class RecordController extends AbstractRecord
             }
         }
 
+        // Find and format the default required date:
+        $defaultRequired = $this->holds()->getDefaultRequiredDate($checkHolds);
+        $defaultRequired = $this->getServiceLocator()->get('VuFind\DateConverter')
+            ->convertToDisplayDate("U", $defaultRequired);
+
         return $this->createViewModel(
             array(
                 'gatheredDetails' => $gatheredDetails,
@@ -153,9 +158,7 @@ class RecordController extends AbstractRecord
                 ),
                 'homeLibrary' => $this->getUser()->home_library,
                 'extraHoldFields' => $extraHoldFields,
-                'defaultRequiredDate' => $this->holds()->getDefaultRequiredDate(
-                    $checkHolds
-                )
+                'defaultRequiredDate' => $defaultRequired
             )
         );
     }

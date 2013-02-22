@@ -131,6 +131,11 @@ $config = array(
                     $sm->get('VuFind\RecordLoader'), $size, $active
                 );
             },
+            'VuFind\DateConverter' => function ($sm) {
+                return new \VuFind\Date\Converter(
+                    \VuFind\Config\Reader::getConfig()
+                );
+            },
             'VuFind\DbAdapter' => function ($sm) {
                 return \VuFind\Db\AdapterFactory::getAdapter();
             },
