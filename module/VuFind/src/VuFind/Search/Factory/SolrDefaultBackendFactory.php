@@ -83,7 +83,7 @@ class SolrDefaultBackendFactory implements FactoryInterface
             $this->logger = $this->serviceLocator->get('VuFind\Logger');
         }
         $connector = $this->createConnector();
-        $backend   = $this->createBackend('biblio', $connector);
+        $backend   = $this->createBackend('VuFind', $connector);
         $this->createListeners($backend);
         return $backend;
     }
