@@ -19,7 +19,7 @@
         },
         {
             "type": "vcs",
-            "url": "https://github.com/demiankatz/Summon"
+            "url": "https://github.com/summon/Summon.php"
         },
         {
             "type": "package",

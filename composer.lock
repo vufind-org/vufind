@@ -1,5 +1,5 @@
 {
-    "hash": "c516fa0d575b47b9d78683aa619eb196",
+    "hash": "c85013a99e68dc21b8f76f586fe2f491",
     "packages": [
         {
             "name": "johnwohlers/sip2",
@@ -285,12 +285,12 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/demiankatz/Summon.git",
+                "url": "https://github.com/summon/Summon.php.git",
                 "reference": "c77862d88e5d928d04ef8491d63177c91a4732de"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/demiankatz/Summon/zipball/c77862d88e5d928d04ef8491d63177c91a4732de",
+                "url": "https://api.github.com/repos/summon/Summon.php/zipball/c77862d88e5d928d04ef8491d63177c91a4732de",
                 "reference": "c77862d88e5d928d04ef8491d63177c91a4732de",
                 "shasum": ""
             },
@@ -311,8 +311,7 @@
             ],
             "description": "Library for interacting with Serials Solutions' Summon API.",
             "support": {
-                "source": "https://github.com/demiankatz/Summon/tree/master",
-                "issues": "https://github.com/demiankatz/Summon/issues"
+                "source": "https://github.com/summon/Summon.php/tree/master"
             },
             "time": "2013-02-22 14:04:58"
         },

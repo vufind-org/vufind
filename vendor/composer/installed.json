@@ -41,12 +41,12 @@
         "version_normalized": "9999999-dev",
         "source": {
             "type": "git",
-            "url": "https://github.com/demiankatz/Summon.git",
+            "url": "https://github.com/summon/Summon.php.git",
             "reference": "c77862d88e5d928d04ef8491d63177c91a4732de"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/demiankatz/Summon/zipball/c77862d88e5d928d04ef8491d63177c91a4732de",
+            "url": "https://api.github.com/repos/summon/Summon.php/zipball/c77862d88e5d928d04ef8491d63177c91a4732de",
             "reference": "c77862d88e5d928d04ef8491d63177c91a4732de",
             "shasum": ""
         },
@@ -69,8 +69,7 @@
         ],
         "description": "Library for interacting with Serials Solutions' Summon API.",
         "support": {
-            "source": "https://github.com/demiankatz/Summon/tree/master",
-            "issues": "https://github.com/demiankatz/Summon/issues"
+            "source": "https://github.com/summon/Summon.php/tree/master"
         }
     },
     {
@@ -383,104 +382,6 @@
         "homepage": "http://symfony.com"
     },
     {
-        "name": "zendframework/zendrest",
-        "version": "2.0.1",
-        "version_normalized": "2.0.1.0",
-        "dist": {
-            "type": "zip",
-            "url": "http://packages.zendframework.com/composer/ZendRest-2.0.1.zip",
-            "reference": null,
-            "shasum": null
-        },
-        "require": {
-            "php": ">=5.3.3",
-            "zendframework/zend-http": ">=2.0.0",
-            "zendframework/zend-uri": ">=2.0.0"
-        },
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.0.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "ZendRest": "library/"
-            }
-        },
-        "license": [
-            "BSD-3-Clause"
-        ],
-        "description": " ",
-        "homepage": "http://packages.zendframework.com/",
-        "keywords": [
-            "rest",
-            "zf2"
-        ],
-        "support": {
-            "email": "fw-general-subscribe@lists.zend.com",
-            "irc": "irc://irc.freenode.net/zftalk",
-            "issues": "https://github.com/zendframework/zf2/issues",
-            "source": "https://github.com/zendframework/zf2"
-        }
-    },
-    {
-        "name": "zendframework/zendservice-amazon",
-        "version": "2.0.2",
-        "version_normalized": "2.0.2.0",
-        "dist": {
-            "type": "zip",
-            "url": "http://packages.zendframework.com/composer/ZendService_Amazon-2.0.2.zip",
-            "reference": null,
-            "shasum": null
-        },
-        "require": {
-            "php": ">=5.3.3",
-            "zendframework/zend-crypt": ">=2.0.0",
-            "zendframework/zend-http": ">=2.0.0",
-            "zendframework/zend-json": ">=2.0.0",
-            "zendframework/zendrest": ">=2.0.0"
-        },
-        "require-dev": {
-            "zendframework/zend-i18n": ">=2.0.0"
-        },
-        "suggest": {
-            "zendframework/zend-uri": "Zend\\Uri component"
-        },
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.0.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "ZendService": "library/"
-            }
-        },
-        "license": [
-            "BSD-3-Clause"
-        ],
-        "description": "OOP wrapper for the Amazon web service",
-        "homepage": "http://packages.zendframework.com/",
-        "keywords": [
-            "amazon",
-            "ec2",
-            "s3",
-            "simpledb",
-            "sqs",
-            "zf2"
-        ],
-        "support": {
-            "email": "fw-general-subscribe@lists.zend.com",
-            "irc": "irc://irc.freenode.net/zftalk",
-            "issues": "https://github.com/zendframework/zf2/issues",
-            "source": "https://github.com/zendframework/zf2"
-        }
-    },
-    {
         "name": "zendframework/zendframework",
         "version": "2.1.3",
         "version_normalized": "2.1.3.0",
@@ -571,6 +472,104 @@
         "description": "Zend Framework 2",
         "keywords": [
             "framework",
+            "zf2"
+        ],
+        "support": {
+            "email": "fw-general-subscribe@lists.zend.com",
+            "irc": "irc://irc.freenode.net/zftalk",
+            "issues": "https://github.com/zendframework/zf2/issues",
+            "source": "https://github.com/zendframework/zf2"
+        }
+    },
+    {
+        "name": "zendframework/zendrest",
+        "version": "2.0.1",
+        "version_normalized": "2.0.1.0",
+        "dist": {
+            "type": "zip",
+            "url": "http://packages.zendframework.com/composer/ZendRest-2.0.1.zip",
+            "reference": null,
+            "shasum": null
+        },
+        "require": {
+            "php": ">=5.3.3",
+            "zendframework/zend-http": ">=2.0.0",
+            "zendframework/zend-uri": ">=2.0.0"
+        },
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "ZendRest": "library/"
+            }
+        },
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "description": " ",
+        "homepage": "http://packages.zendframework.com/",
+        "keywords": [
+            "rest",
+            "zf2"
+        ],
+        "support": {
+            "email": "fw-general-subscribe@lists.zend.com",
+            "irc": "irc://irc.freenode.net/zftalk",
+            "issues": "https://github.com/zendframework/zf2/issues",
+            "source": "https://github.com/zendframework/zf2"
+        }
+    },
+    {
+        "name": "zendframework/zendservice-amazon",
+        "version": "2.0.2",
+        "version_normalized": "2.0.2.0",
+        "dist": {
+            "type": "zip",
+            "url": "http://packages.zendframework.com/composer/ZendService_Amazon-2.0.2.zip",
+            "reference": null,
+            "shasum": null
+        },
+        "require": {
+            "php": ">=5.3.3",
+            "zendframework/zend-crypt": ">=2.0.0",
+            "zendframework/zend-http": ">=2.0.0",
+            "zendframework/zend-json": ">=2.0.0",
+            "zendframework/zendrest": ">=2.0.0"
+        },
+        "require-dev": {
+            "zendframework/zend-i18n": ">=2.0.0"
+        },
+        "suggest": {
+            "zendframework/zend-uri": "Zend\\Uri component"
+        },
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "ZendService": "library/"
+            }
+        },
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "description": "OOP wrapper for the Amazon web service",
+        "homepage": "http://packages.zendframework.com/",
+        "keywords": [
+            "amazon",
+            "ec2",
+            "s3",
+            "simpledb",
+            "sqs",
             "zf2"
         ],
         "support": {
