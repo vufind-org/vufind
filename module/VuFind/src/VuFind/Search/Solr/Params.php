@@ -214,8 +214,14 @@ class Params extends BaseParams
             $rawResults = array();
         }
         $ids = array();
+        $max = $this->getQueryIDLimit();
+        $count = 0;
         foreach ($rawResults as $current) {
             $ids[] = $current->record_id;
+            // If we have too many hits for Solr to handle, quit now:
+            if (++$count == $max) {
+                break;
+            }
         }
         $this->setQueryIDs($ids);
     }
