@@ -157,10 +157,21 @@ class Importer implements ServiceLocatorAwareInterface
             $classes = is_array($options['General']['custom_class'])
                 ? $options['General']['custom_class']
                 : array($options['General']['custom_class']);
+            $truncate = isset($options['General']['truncate_custom_class'])
+                ? $options['General']['truncate_custom_class'] : true;
             foreach ($classes as $class) {
-                // Dynamically generate the requested class:
-                $class = preg_replace('/[^A-Za-z0-9_]/', '', $class);
-                eval("class $class extends \\VuFind\\XSLT\\Import\\$class { }");
+                // Add a default namespace if none was provided:
+                if (false === strpos($class, '\\')) {
+                    $class = 'VuFind\XSLT\Import\\' . $class;
+                }
+                // If necessary, dynamically generate the truncated version of the
+                // requested class:
+                if ($truncate) {
+                    $parts = explode('\\', $class);
+                    $class = preg_replace('/[^A-Za-z0-9_]/', '', array_pop($parts));
+                    $ns = implode('\\', $parts);
+                    eval("class $class extends \\$ns\\$class { }");
+                }
                 $methods = get_class_methods($class);
                 if (method_exists($class, 'setServiceLocator')) {
                     $class::setServiceLocator($this->getServiceLocator());
