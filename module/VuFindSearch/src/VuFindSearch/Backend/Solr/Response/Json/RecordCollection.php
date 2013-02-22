@@ -56,6 +56,7 @@ class RecordCollection implements RecordCollectionInterface
     protected static $template = array(
         'responseHeader' => array('QTime' => 0),
         'response'       => array('start' => 0),
+        'spellcheck'     => array('suggestions' => array()),
         'facet_counts'   => array(),
     );
 
@@ -81,6 +82,13 @@ class RecordCollection implements RecordCollectionInterface
     protected $facets;
 
     /**
+     * Spellcheck information.
+     *
+     * @var Spellcheck
+     */
+    protected $spellcheck;
+
+    /**
      * Constructor.
      *
      * @param array $response Deserialized SOLR response
@@ -93,6 +101,19 @@ class RecordCollection implements RecordCollectionInterface
         $this->offset   = $response['response']['start'];
         $this->records  = array();
         $this->rewind();
+    }
+
+    /**
+     * Return spellcheck information.
+     *
+     * @return Spellcheck
+     */
+    public function getSpellcheck ()
+    {
+        if (!$this->spellcheck) {
+            $this->spellcheck = new Spellcheck($this->response['spellcheck']['suggestions']);
+        }
+        return $this->spellcheck;
     }
 
     /**
