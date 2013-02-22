@@ -353,7 +353,7 @@ class Bootstrapper
         /// Hardcoded for now
         $config = array(
             'factories' => array(
-                'biblio' => 'VuFind\Search\Factory\SolrDefaultBackendFactory'
+                'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory'
             )
         );
 
