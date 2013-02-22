@@ -479,11 +479,15 @@ $config = array(
                             \VuFind\Config\Reader::getConfig('searches')
                         );
                     },
-                    'summon' => function () {
+                    'summon' => function ($sm) {
                         $summon = \VuFind\Config\Reader::getConfig('Summon');
-                        return new \VuFind\RecordDriver\Summon(
+                        $driver = new \VuFind\RecordDriver\Summon(
                             \VuFind\Config\Reader::getConfig(), $summon, $summon
                         );
+                        $driver->setDateConverter(
+                            $sm->getServiceLocator()->get('VuFind\DateConverter')
+                        );
+                        return $driver;
                     },
                     'worldcat' => function () {
                         return new \VuFind\RecordDriver\WorldCat(

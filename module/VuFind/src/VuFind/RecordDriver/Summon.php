@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
-use VuFind\Date\Converter as DateConverter;
 
 /**
  * Model for Summon records.
@@ -39,6 +38,13 @@ use VuFind\Date\Converter as DateConverter;
  */
 class Summon extends SolrDefault
 {
+    /**
+     * Date converter
+     *
+     * @var \VuFind\Date\Converter
+     */
+    protected $dateConverter = null;
+
     /**
      * Constructor
      *
@@ -283,6 +289,32 @@ class Summon extends SolrDefault
     }
 
     /**
+     * Pass in a date converter
+     *
+     * @param \VuFind\Date\Converter $dc Date converter
+     *
+     * @return void
+     */
+    public function setDateConverter(\VuFind\Date\Converter $dc)
+    {
+        $this->dateConverter = $dc;
+    }
+
+    /**
+     * Get a date converter
+     *
+     * @return \VuFind\Date\Converter
+     */
+    protected function getDateConverter()
+    {
+        // No object passed in yet?  Build one with default settings:
+        if (null === $this->dateConverter) {
+            $this->dateConverter = new \VuFind\Date\Converter();
+        }
+        return $this->dateConverter;
+    }
+
+    /**
      * Get the publication dates of the record.  See also getDateSpan().
      *
      * @return array
@@ -293,7 +325,7 @@ class Summon extends SolrDefault
             && is_array($this->fields['PublicationDate_xml'])
         ) {
             $dates = array();
-            $converter = new DateConverter();
+            $converter = $this->getDateConverter();
             foreach ($this->fields['PublicationDate_xml'] as $current) {
                 if (isset($current['month']) && isset($current['year'])) {
                     if (!isset($current['day'])) {
