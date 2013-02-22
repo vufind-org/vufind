@@ -129,7 +129,7 @@ class QueryBuilder
         if ($this->containsAdvancedLuceneSyntax($string)) {
 
             if ($handler) {
-                if (array_intersect($params->get('hl'), array('true', 'on')) {
+                if ($params->get('hl') && array_intersect($params->get('hl'), array('true', 'on'))) {
                     $params->set('hl.q', $this->createAdvancedInnerSearchString($string, $handler));
                 }
                 $string = $this->createAdvancedInnerSearchString($string, $handler);
