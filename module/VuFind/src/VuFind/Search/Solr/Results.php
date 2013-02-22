@@ -31,6 +31,7 @@ use VuFind\Config\Reader as ConfigReader,
     VuFind\Exception\RecordMissing as RecordMissingException,
     VuFind\Search\Base\Results as BaseResults;
 
+use VuFindSearch\ParamBag;
 use VuFindSearch\Service as SearchService;
 
 /**
@@ -39,6 +40,7 @@ use VuFindSearch\Service as SearchService;
  * @category VuFind2
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
@@ -115,40 +117,18 @@ class Results extends BaseResults
      * parameters passed to the object.
      *
      * @return void
+     * @tag NEW SEARCH
      */
     protected function performSearch()
     {
-        $solr = $this->getSolrConnection($this->getParams()->getSelectedShards());
+        $query  = $this->getParams()->getQuery();
+        $limit  = $this->getParams()->getLimit();
+        $offset = $this->getStartRecord() - 1;
+        $params = $this->createBackendParameters($this->getParams());
+        $collection = $this->getSearchService()->search('Solr', $query, $offset, $limit, $params);
 
-        // Collect the search parameters:
-        $overrideQuery = $this->getParams()->getOverrideQuery();
-        $params = array(
-            'query' => !empty($overrideQuery)
-                ? $overrideQuery
-                : $solr->buildQuery($this->getParams()->getSearchTerms()),
-            'handler' => $this->getParams()->getSearchHandler(),
-            // Account for reserved VuFind word 'relevance' (which really means
-            // "no sort parameter in Solr"):
-            'sort' => $this->getParams()->getSort() == 'relevance'
-                ? null : $this->getParams()->getSort(),
-            'start' => $this->getStartRecord() - 1,
-            'limit' => $this->getParams()->getLimit(),
-            'facet' => $this->getParams()->getFacetSettings(),
-            'filter' => $this->getParams()->getFilterSettings(),
-            'spell' => $this->getParams()->getSpellingQuery(),
-            'dictionary' => $this->getOptions()->getSpellingDictionary(),
-            'highlight' => $this->getOptions()->highlightEnabled()
-        );
-
-        // Perform the search:
-        $this->rawResponse = $solr->search($params);
-
-        // ...and now use the new search service
-        $query = $this->getParams()->getQuery();
-
-        // How many results were there?
-        $this->resultTotal = isset($this->rawResponse['response']['numFound'])
-            ? $this->rawResponse['response']['numFound'] : 0;
+        $this->rawResponse = $collection->getRawResponse();
+        $this->resultTotal = $collection->getTotal();
 
         // Process spelling suggestions if no index error resulted from the query
         if ($this->getOptions()->spellcheckEnabled()) {
@@ -168,6 +148,41 @@ class Results extends BaseResults
                 $this->rawResponse['response']['docs'][$x]
             );
         }
+    }
+
+    /**
+     * Create search backend parameters for advanced features.
+     *
+     * @param Params $params Search parameters
+     *
+     * @return ParamBag
+     * @tag NEW SEARCH
+     */
+    protected function createBackendParameters (Params $params)
+    {
+        $backendParams = new ParamBag();
+
+        // Spellcheck
+        $spelling = $params->getSpellingQuery();
+        $backendParams->set('spellcheck.q', $spelling);
+
+        // Facets
+        $facets = $params->getFacetSettings();
+        if (!empty($facets)) {
+            $backendParams->add('facet', 'true');
+            foreach ($facets as $key => $value) {
+                $backendParams->add("facet.{$key}", $value);
+            }
+            $backendParams->add('facet.mincount', 1);
+        }
+
+        // Filters
+        $filters = $params->getFilterSettings();
+        foreach ($filters as $filter) {
+            $backendParams->add('fq', $filter);
+        }
+
+        return $backendParams;
     }
 
     /**
@@ -485,21 +500,15 @@ class Results extends BaseResults
      */
     public function getRecord($id)
     {
-        $solr = $this->getSolrConnection();
+        $collection = $this->getSearchService()->retrieve('Solr', $id);
 
-        // Check if we need to apply hidden filters:
-        $sm = $this->getSearchManager();
-        $sm->setSearchClassId($sm->extractSearchClassId(get_class($this)));
-        $options = $sm->getOptionsInstance();
-        $filters = $options->getHiddenFilters();
-        $extras = empty($filters) ? array() : array('fq' => $filters);
-
-        $record = $solr->getRecord($id, $extras);
-        if (empty($record)) {
+        if (count($collection) == 0) {
             throw new RecordMissingException(
                 'Record ' . $id . ' does not exist.'
             );
         }
+        $rawResponse = $collection->getRawResponse();
+        $record = $rawResponse['response']['docs'][0];
         return $this->initRecordDriver($record);
     }
 
@@ -541,13 +550,13 @@ class Results extends BaseResults
      * @param string $id Unique identifier of record
      *
      * @return array
+     * @tag NEW SEARCH
      */
     public function getSimilarRecords($id)
     {
-        $solr = $this->getSolrConnection($this->getParams()->getSelectedShards());
-        $filters = $this->getOptions()->getHiddenFilters();
-        $extras = empty($filters) ? array() : array('fq' => $filters);
-        $rawResponse = $solr->getMoreLikeThis($id, $extras);
+        $collection = $this->getSearchService()->similar('Solr', $id);
+        $rawResponse = $collection->getRawResponse();
+
         $results = array();
         for ($x = 0; $x < count($rawResponse['response']['docs']); $x++) {
             $results[] = $this->initRecordDriver(

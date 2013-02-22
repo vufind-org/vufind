@@ -113,6 +113,9 @@ class Params extends BaseParams
      */
     public function getQuery ()
     {
+        if ($this->overrideQuery) {
+            return new Query($this->overrideQuery);
+        }
         return QueryAdapter::create($this->getSearchTerms());
     }
 
