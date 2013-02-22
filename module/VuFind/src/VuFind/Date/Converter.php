@@ -42,7 +42,18 @@ use DateTime, VuFind\Config\Reader as ConfigReader,
  */
 class Converter
 {
+    /**
+     * Format string for dates
+     *
+     * @var string
+     */
     protected $displayDateFormat;
+
+    /**
+     * Format string for times
+     *
+     * @var string
+     */
     protected $displayTimeFormat;
 
     /**
