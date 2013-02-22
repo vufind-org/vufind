@@ -102,24 +102,31 @@ class NormalizeSolrSort implements ListenerInterface
         $backend = $event->getTarget();
         if ($backend === $this->backend) {
             $params = $event->getParam('params');
-            $table  = $this->normalizeSortTable;
+            if ($params) {
+                $table  = $this->normalizeSortTable;
 
-            $normalized = array();
-            foreach (explode(',', $params->getSort()) as $component) {
-                $parts = explode(' ', $component);
-                $field = reset($parts);
-                $order = next($parts);
-                if (isset($table[$field])) {
-                    $normalized[] = sprintf(
-                        '%s %s',
-                        $table[$field]['field'],
-                        $order ?: $table[$field]['order']
-                    );
-                } else {
-                    $normalized[] = $component;
+                $sort = $params->get('sort') ?: 'relevance';
+                if (is_array($sort)) {
+                    $sort = end($sort);
                 }
+
+                $normalized = array();
+                foreach (explode(',', $sort) as $component) {
+                    $parts = explode(' ', $component);
+                    $field = reset($parts);
+                    $order = next($parts);
+                    if (isset($table[$field])) {
+                        $normalized[] = sprintf(
+                            '%s %s',
+                            $table[$field]['field'],
+                            $order ?: $table[$field]['order']
+                        );
+                    } else {
+                        $normalized[] = $component;
+                    }
+                }
+                $params->set('sort', implode(',', $normalized));
             }
-            $params->setSort(implode(',', $normalized));
         }
         return $event;
     }
