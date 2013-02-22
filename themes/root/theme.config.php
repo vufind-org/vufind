@@ -19,6 +19,16 @@ return array(
                     $sm->getServiceLocator()->get('VuFind\Cart')
                 );
             },
+            'citation' => function ($sm) {
+                return new \VuFind\View\Helper\Root\Citation(
+                    $sm->getServiceLocator()->get('VuFind\DateConverter')
+                );
+            },
+            'datetime' => function ($sm) {
+                return new \VuFind\View\Helper\Root\DateTime(
+                    $sm->getServiceLocator()->get('VuFind\DateConverter')
+                );
+            },
             'displaylanguageoption' => function ($sm) {
                 return new VuFind\View\Helper\Root\DisplayLanguageOption(
                     $sm->getServiceLocator()->get('VuFind\Translator')
@@ -83,10 +93,8 @@ return array(
             'addellipsis' => 'VuFind\View\Helper\Root\AddEllipsis',
             'authornotes' => 'VuFind\View\Helper\Root\AuthorNotes',
             'browse' => 'VuFind\View\Helper\Root\Browse',
-            'citation' => 'VuFind\View\Helper\Root\Citation',
             'context' => 'VuFind\View\Helper\Root\Context',
             'currentpath' => 'VuFind\View\Helper\Root\CurrentPath',
-            'datetime' => 'VuFind\View\Helper\Root\DateTime',
             'excerpt' => 'VuFind\View\Helper\Root\Excerpt',
             'getlastsearchlink' => 'VuFind\View\Helper\Root\GetLastSearchLink',
             'highlight' => 'VuFind\View\Helper\Root\Highlight',

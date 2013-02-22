@@ -283,7 +283,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
      */
     public function testCitations()
     {
-        $citation = new Citation();
+        $citation = new Citation(new \VuFind\Date\Converter());
         $citation->setView($this->getPhpRenderer());
         $driver = new \VuFindTest\RecordDriver\TestHarness();
         foreach ($this->citations as $current) {
