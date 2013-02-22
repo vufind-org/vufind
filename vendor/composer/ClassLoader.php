@@ -75,34 +75,67 @@ class ClassLoader
     }
 
     /**
-     * Registers a set of classes
+     * Registers a set of classes, merging with any others previously set.
      *
-     * @param string       $prefix The classes prefix
-     * @param array|string $paths  The location(s) of the classes
+     * @param string       $prefix  The classes prefix
+     * @param array|string $paths   The location(s) of the classes
+     * @param bool         $prepend Prepend the location(s)
      */
-    public function add($prefix, $paths)
+    public function add($prefix, $paths, $prepend = false)
     {
         if (!$prefix) {
-            foreach ((array) $paths as $path) {
-                $this->fallbackDirs[] = $path;
+            if ($prepend) {
+                $this->fallbackDirs = array_merge(
+                    (array) $paths,
+                    $this->fallbackDirs
+                );
+            } else {
+                $this->fallbackDirs = array_merge(
+                    $this->fallbackDirs,
+                    (array) $paths
+                );
             }
 
             return;
         }
-        if (isset($this->prefixes[$prefix])) {
+        if (!isset($this->prefixes[$prefix])) {
+            $this->prefixes[$prefix] = (array) $paths;
+
+            return;
+        }
+        if ($prepend) {
+            $this->prefixes[$prefix] = array_merge(
+                (array) $paths,
+                $this->prefixes[$prefix]
+            );
+        } else {
             $this->prefixes[$prefix] = array_merge(
                 $this->prefixes[$prefix],
                 (array) $paths
             );
-        } else {
-            $this->prefixes[$prefix] = (array) $paths;
         }
+    }
+
+    /**
+     * Registers a set of classes, replacing any others previously set.
+     *
+     * @param string       $prefix  The classes prefix
+     * @param array|string $paths   The location(s) of the classes
+     */
+    public function set($prefix, $paths)
+    {
+        if (!$prefix) {
+            $this->fallbackDirs = (array) $paths;
+
+            return;
+        }
+        $this->prefixes[$prefix] = (array) $paths;
     }
 
     /**
      * Turns on searching the include path for class files.
      *
-     * @param Boolean $useIncludePath
+     * @param bool $useIncludePath
      */
     public function setUseIncludePath($useIncludePath)
     {
@@ -113,7 +146,7 @@ class ClassLoader
      * Can be used to check if the autoloader uses the include path to check
      * for classes.
      *
-     * @return Boolean
+     * @return bool
      */
     public function getUseIncludePath()
     {
@@ -123,7 +156,7 @@ class ClassLoader
     /**
      * Registers this instance as an autoloader.
      *
-     * @param Boolean $prepend Whether to prepend the autoloader or not
+     * @param bool $prepend Whether to prepend the autoloader or not
      */
     public function register($prepend = false)
     {
@@ -141,8 +174,8 @@ class ClassLoader
     /**
      * Loads the given class or interface.
      *
-     * @param  string       $class The name of the class
-     * @return Boolean|null True, if loaded
+     * @param  string    $class The name of the class
+     * @return bool|null True, if loaded
      */
     public function loadClass($class)
     {
@@ -162,12 +195,12 @@ class ClassLoader
      */
     public function findFile($class)
     {
-        if (isset($this->classMap[$class])) {
-            return $this->classMap[$class];
-        }
-
         if ('\\' == $class[0]) {
             $class = substr($class, 1);
+        }
+
+        if (isset($this->classMap[$class])) {
+            return $this->classMap[$class];
         }
 
         if (false !== $pos = strrpos($class, '\\')) {
@@ -201,5 +234,7 @@ class ClassLoader
         if ($this->useIncludePath && $file = stream_resolve_include_path($classPath)) {
             return $file;
         }
+
+        return $this->classMap[$class] = false;
     }
 }

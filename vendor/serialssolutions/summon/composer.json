@@ -1,0 +1,16 @@
+{
+    "name": "serialssolutions/summon",
+    "description": "Library for interacting with Serials Solutions' Summon API.",
+    "authors": [
+        {
+            "name": "Demian Katz",
+            "email": "demian.katz@villanova.edu"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "SerialsSolutions": ""
+        }
+    },
+    "license": "GPL-2.0"
+}

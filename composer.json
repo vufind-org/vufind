@@ -1,0 +1,65 @@
+{
+    "name": "vufind/vufind",
+    "description": "A flexible discovery layer.",
+    "authors": [
+        {
+            "name": "Demian Katz",
+            "email": "demian.katz@villanova.edu"
+        }
+    ],
+    "license": "GPL-2.0",
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://packages.zendframework.com/"
+        },
+        {
+            "type": "pear",
+            "url": "http://pear.php.net"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/demiankatz/Summon"
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "mobileesp/mdetect",
+                "version": "dev-master",
+                "dist": {
+                    "url": "http://mobileesp.googlecode.com/svn/PHP/mdetect.php",
+                    "type": "file"
+                },
+                "autoload": {
+                    "classmap": ["/"]
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "johnwohlers/sip2",
+                "version": "dev-master",
+                "dist": {
+                    "url": "https://php-sip2.googlecode.com/svn/trunk/sip2.class.php",
+                    "type": "file"
+                },
+                "autoload": {
+                    "classmap": ["/"]
+                }
+            }
+        }
+    ],
+    "require": {
+        "johnwohlers/sip2": "dev-master",
+        "mobileesp/mdetect": "dev-master",
+        "pear-pear.php.net/file_marc": "*",
+        "pear-pear.php.net/pear": "*",
+        "pear-pear.php.net/validate_ispn": "*",
+        "serialssolutions/summon": "dev-master",
+        "symfony/yaml": "*",
+        "zendframework/zendframework": "2.1.2",
+        "zendframework/zendrest": "2.*",
+        "zendframework/zendservice-amazon": "2.*"
+    }
+}
