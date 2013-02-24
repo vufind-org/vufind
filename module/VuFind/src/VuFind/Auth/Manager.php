@@ -26,11 +26,9 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Auth;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\Auth as AuthException, VuFind\Exception\ILS as ILSException,
+use VuFind\Exception\Auth as AuthException, VuFind\Exception\ILS as ILSException,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface,
-    Zend\Session\Container as SessionContainer;
+    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Wrapper class for handling logged-in user in session.
@@ -43,9 +41,32 @@ use VuFind\Config\Reader as ConfigReader,
  */
 class Manager implements ServiceLocatorAwareInterface
 {
+    /**
+     * Authentication module (false if uninitialized)
+     *
+     * @var \VuFind\Auth\AbstractBase|bool
+     */
     protected $auth = false;
+
+    /**
+     * VuFind configuration
+     *
+     * @var \Zend\Config\Config
+     */
     protected $config;
+
+    /**
+     * Session container
+     *
+     * @var \Zend\Session\Container
+     */
     protected $session;
+
+    /**
+     * ILS account information (false if uninitialized)
+     *
+     * @var array|bool
+     */
     protected $ilsAccount = false;
 
     /**
@@ -57,11 +78,13 @@ class Manager implements ServiceLocatorAwareInterface
 
     /**
      * Constructor
+     *
+     * @param \Zend\Config\Config $config VuFind configuration
      */
-    public function __construct()
+    public function __construct(\Zend\Config\Config $config)
     {
-        $this->config = ConfigReader::getConfig();
-        $this->session = new SessionContainer('Account');
+        $this->config = $config;
+        $this->session = new \Zend\Session\Container('Account');
     }
 
     /**

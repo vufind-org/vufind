@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\View\Helper\Root;
-use VuFind\Date\Converter as DateConverter, VuFind\Exception\Date as DateException,
-    Zend\View\Helper\AbstractHelper;
+use VuFind\Exception\Date as DateException;
 
 /**
  * Citation view helper
@@ -38,10 +37,38 @@ use VuFind\Date\Converter as DateConverter, VuFind\Exception\Date as DateExcepti
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class Citation extends AbstractHelper
+class Citation extends \Zend\View\Helper\AbstractHelper
 {
+    /**
+     * Citation details
+     *
+     * @var array
+     */
     protected $details = array();
+
+    /**
+     * Record driver
+     *
+     * @var \VuFind\RecordDriver\AbstractBase
+     */
     protected $driver;
+
+    /**
+     * Date converter
+     *
+     * @var \VuFind\Date\Converter
+     */
+    protected $dateConverter;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $converter Date converter
+     */
+    public function __construct(\VuFind\Date\Converter $converter)
+    {
+        $this->dateConverter = $converter;
+    }
 
     /**
      * Store a record driver object and return this object so that the appropriate
@@ -254,11 +281,10 @@ class Citation extends AbstractHelper
         $num = $this->driver->tryMethod('getContainerIssue');
         $date = $this->details['pubDate'];
         if (strlen($date) > 4) {
-            $converter = new DateConverter();
             try {
-                $year = $converter->convertFromDisplayDate('Y', $date);
-                $month = $converter->convertFromDisplayDate('M', $date) . '.';
-                $day = $converter->convertFromDisplayDate('j', $date);
+                $year = $this->dateConverter->convertFromDisplayDate('Y', $date);
+                $month = $this->dateConverter->convertFromDisplayDate('M', $date) . '.';
+                $day = $this->dateConverter->convertFromDisplayDate('j', $date);
             } catch (DateException $e) {
                 // If conversion fails, use raw date as year -- not ideal,
                 // but probably better than nothing:
@@ -301,11 +327,10 @@ class Citation extends AbstractHelper
         $num = $this->driver->tryMethod('getContainerIssue');
         $date = $this->details['pubDate'];
         if (strlen($date) > 4) {
-            $converter = new DateConverter();
             try {
-                $year = $converter->convertFromDisplayDate('Y', $date);
-                $month = $converter->convertFromDisplayDate('F', $date);
-                $day = $converter->convertFromDisplayDate('j', $date);
+                $year = $this->dateConverter->convertFromDisplayDate('Y', $date);
+                $month = $this->dateConverter->convertFromDisplayDate('F', $date);
+                $day = $this->dateConverter->convertFromDisplayDate('j', $date);
             } catch (DateException $e) {
                 // If conversion fails, use raw date as year -- not ideal,
                 // but probably better than nothing:
@@ -688,9 +713,8 @@ class Citation extends AbstractHelper
     {
         if (isset($this->details['pubDate'])) {
             if (strlen($this->details['pubDate']) > 4) {
-                $converter = new DateConverter();
                 try {
-                    return $converter->convertFromDisplayDate(
+                    return $this->dateConverter->convertFromDisplayDate(
                         'Y', $this->details['pubDate']
                     );
                 } catch (\Exception $e) {

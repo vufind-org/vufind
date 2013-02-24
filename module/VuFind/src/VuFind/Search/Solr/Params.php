@@ -200,6 +200,23 @@ class Params extends BaseParams
     }
 
     /**
+     * Restore settings from a minified object found in the database.
+     *
+     * @param \VuFind\Search\Minified $minified Minified Search Object
+     *
+     * @return void
+     */
+    public function deminify($minified)
+    {
+        parent::deminify($minified);
+
+        // Special case: deminified tag searches need some extra help:
+        if ('tag' == $this->getSearchHandler()) {
+            $this->initTagSearch();
+        }
+    }
+
+    /**
      * Special case -- set up a tag-based search.
      *
      * @return void
@@ -214,8 +231,14 @@ class Params extends BaseParams
             $rawResults = array();
         }
         $ids = array();
+        $max = $this->getQueryIDLimit();
+        $count = 0;
         foreach ($rawResults as $current) {
             $ids[] = $current->record_id;
+            // If we have too many hits for Solr to handle, quit now:
+            if (++$count == $max) {
+                break;
+            }
         }
         $this->setQueryIDs($ids);
     }

@@ -46,7 +46,7 @@ class DemoTest extends \VuFindTest\Unit\TestCase
      */
     public function __construct()
     {
-        $this->driver = new Demo();
+        $this->driver = new Demo(new \VuFind\Date\Converter());
         $this->driver->init();
     }
 

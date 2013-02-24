@@ -168,8 +168,7 @@ class AdminController extends AbstractBase
             'record' => false
         );
         // Search statistics
-        $search = new \VuFind\Statistics\Search();
-        $search->setServiceLocator($this->getServiceLocator());
+        $search = $this->getServiceLocator()->get('VuFind\SearchStats');
         $view->searchesBySource
             = $config->Statistics->searchesBySource
             ?: false;
@@ -184,8 +183,7 @@ class AdminController extends AbstractBase
             ? $searchSummary['total'] : null;
 
         // Record statistics
-        $records = new \VuFind\Statistics\Record();
-        $records->setServiceLocator($this->getServiceLocator());
+        $records = $this->getServiceLocator()->get('VuFind\RecordStats');
         $view->recordsBySource = $config->Statistics->recordsBySource ?: false;
         $recordSummary = $records->getStatsSummary(
             5, $config->Statistics->recordsBySource

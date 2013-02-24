@@ -46,7 +46,7 @@ class HorizonTest extends \VuFindTest\Unit\TestCase
      */
     public function __construct()
     {
-        $this->driver = new Horizon();
+        $this->driver = new Horizon(new \VuFind\Date\Converter());
     }
 
     /**

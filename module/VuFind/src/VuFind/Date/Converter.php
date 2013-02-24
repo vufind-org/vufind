@@ -27,8 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Date;
-use DateTime, VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\Date as DateException;
+use DateTime, VuFind\Exception\Date as DateException;
 
 /**
  * Date/time conversion functionality.
@@ -42,21 +41,28 @@ use DateTime, VuFind\Config\Reader as ConfigReader,
  */
 class Converter
 {
+    /**
+     * Format string for dates
+     *
+     * @var string
+     */
     protected $displayDateFormat;
+
+    /**
+     * Format string for times
+     *
+     * @var string
+     */
     protected $displayTimeFormat;
 
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config Configuration to use (set to null to load
-     * default configuration using ConfigReader class).
+     * @param \Zend\Config\Config $config Configuration to use (set to null to use
+     * defaults)
      */
     public function __construct($config = null)
     {
-        if (is_null($config)) {
-            $config = ConfigReader::getConfig();
-        }
-
         // Set Display Date Format
         $this->displayDateFormat
             = (isset($config->Site->displayDateFormat))

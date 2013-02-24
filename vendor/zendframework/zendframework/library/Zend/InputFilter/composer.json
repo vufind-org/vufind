@@ -1,0 +1,27 @@
+{
+    "name": "zendframework/zend-inputfilter",
+    "description": " ",
+    "license": "BSD-3-Clause",
+    "keywords": [
+        "zf2",
+        "inputfilter"
+    ],
+    "autoload": {
+        "psr-0": {
+            "Zend\\InputFilter\\": ""
+        }
+    },
+    "target-dir": "Zend/InputFilter",
+    "require": {
+        "php": ">=5.3.3",
+        "zendframework/zend-filter": "self.version",
+        "zendframework/zend-validator": "self.version",
+        "zendframework/zend-stdlib": "self.version"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.1-dev",
+            "dev-develop": "2.2-dev"
+        }
+    }
+}

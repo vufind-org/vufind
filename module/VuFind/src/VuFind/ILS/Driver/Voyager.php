@@ -28,7 +28,7 @@
  */
 namespace VuFind\ILS\Driver;
 use File_MARC, PDO, PDOException, VuFind\Config\Reader as ConfigReader,
-    VuFind\Date\Converter as DateConverter, VuFind\Exception\Date as DateException,
+    VuFind\Exception\Date as DateException,
     VuFind\Exception\ILS as ILSException,
     VuFind\I18n\Translator\TranslatorAwareInterface,
     Zend\Validator\EmailAddress as EmailAddressValidator;
@@ -77,9 +77,19 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface
     /**
      * Date formatting object
      *
-     * @var DateConverter
+     * @var \VuFind\Date\Converter
      */
     protected $dateFormat;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $dateConverter Date converter object
+     */
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
+        $this->dateFormat = $dateConverter;
+    }
 
     /**
      * Initialize the driver.
@@ -95,9 +105,6 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface
         if (empty($this->config)) {
             throw new ILSException('Configuration needs to be set.');
         }
-
-        // Set up object for formatting dates and times:
-        $this->dateFormat = new DateConverter();
 
         // Define Database Name
         $this->dbName = $this->config['Catalog']['database'];

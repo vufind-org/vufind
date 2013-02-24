@@ -121,11 +121,12 @@ class Resource extends ServiceLocatorAwareGateway
      * Use a record driver to assign metadata to the current row.  Return the
      * current object to allow fluent interface.
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver The record driver.
+     * @param \VuFind\RecordDriver\AbstractBase $driver    The record driver
+     * @param \VuFind\Date\Converter            $converter Date converter
      *
      * @return \VuFind\Db\Row\Resource
      */
-    public function assignMetadata($driver)
+    public function assignMetadata($driver, \VuFind\Date\Converter $converter)
     {
         // Grab title -- we have to have something in this field!
         $this->title = $driver->tryMethod('getSortTitle');
@@ -142,7 +143,6 @@ class Resource extends ServiceLocatorAwareGateway
         // Try to find a year; if not available, just leave the default null:
         $dates = $driver->tryMethod('getPublicationDates');
         if (isset($dates[0]) && strlen($dates[0]) > 4) {
-            $converter = new DateConverter();
             try {
                 $year = $converter->convertFromDisplayDate('Y', $dates[0]);
             } catch (DateException $e) {

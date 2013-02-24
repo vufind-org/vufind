@@ -60,6 +60,23 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     protected $httpService = null;
 
     /**
+     * Date converter object
+     *
+     * @var \VuFind\Date\Converter
+     */
+    protected $dateConverter;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $dateConverter Date converter object
+     */
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
+        $this->dateConverter = $dateConverter;
+    }
+
+    /**
      * Set the HTTP service to be used for HTTP requests.
      *
      * @param HttpServiceInterface $service HTTP service
@@ -399,8 +416,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         // convert expire date from display format
         // to the format Symphony/Unicorn expects
         $expire = $holdDetails['requiredBy'];
-        $formatDate = new \VuFind\Date\Converter();
-        $expire = $formatDate->convertFromDisplayDate(
+        $expire = $this->dateConverter->convertFromDisplayDate(
             $this->config['Catalog']['server_date_format'],
             $expire
         );
@@ -1238,8 +1254,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $dateTimeString = '';
         if ($time) {
             $dateTimeString = strftime('%m/%d/%Y %H:%M', $time);
-            $dateFormat = new \VuFind\Date\Converter();
-            $dateTimeString = $dateFormat->convertToDisplayDate(
+            $dateTimeString = $this->dateConverter->convertToDisplayDate(
                 'm/d/Y H:i', $dateTimeString
             );
         }

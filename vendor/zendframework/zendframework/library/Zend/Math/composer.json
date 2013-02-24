@@ -1,0 +1,24 @@
+{
+    "name": "zendframework/zend-math",
+    "description": " ",
+    "license": "BSD-3-Clause",
+    "keywords": [
+        "zf2",
+        "math"
+    ],
+    "autoload": {
+        "psr-0": {
+            "Zend\\Math\\": ""
+        }
+    },
+    "target-dir": "Zend/Math",
+    "require": {
+        "php": ">=5.3.3"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.1-dev",
+            "dev-develop": "2.2-dev"
+        }
+    }
+}

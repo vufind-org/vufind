@@ -41,8 +41,29 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException;
  */
 class Horizon extends AbstractBase
 {
+    /**
+     * Date converter object
+     *
+     * @var \VuFind\Date\Converter
+     */
     protected $dateFormat;
+
+    /**
+     * Database connection
+     *
+     * @var resource
+     */
     protected $db;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $dateConverter Date converter object
+     */
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
+        $this->dateFormat = $dateConverter;
+    }
 
     /**
      * Initialize the driver.
@@ -69,9 +90,6 @@ class Horizon extends AbstractBase
 
         // Select the databse
         mssql_select_db($this->config['Catalog']['database']);
-
-        // Set up object for formatting dates and times:
-        $this->dateFormat = new \VuFind\Date\Converter();
     }
 
     /**
