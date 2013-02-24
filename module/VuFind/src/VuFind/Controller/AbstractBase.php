@@ -65,7 +65,7 @@ class AbstractBase extends AbstractActionController
     /**
      * Get the account manager object.
      *
-     * @return \VuFind\Account\Manager
+     * @return \VuFind\Auth\Manager
      */
     protected function getAuthManager()
     {
