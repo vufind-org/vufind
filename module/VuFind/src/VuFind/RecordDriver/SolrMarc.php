@@ -73,8 +73,11 @@ class SolrMarc extends SolrDefault
         if (strcasecmp(substr($marc, 0, strlen($xmlHead)), $xmlHead) === 0) {
             $marc = new \File_MARCXML($marc, \File_MARCXML::SOURCE_STRING);
         } else {
-            $marc = preg_replace('/#31;/', "\x1F", $marc);
-            $marc = preg_replace('/#30;/', "\x1E", $marc);
+            // When indexing over HTTP, SolrMarc may use entities instead of certain
+            // control characters; we should normalize these:
+            $marc = str_replace(
+                array('#29;', '#30;', '#31;'), array("\x1D", "\x1E", "\x1F"), $marc
+            );
             $marc = new \File_MARC($marc, \File_MARC::SOURCE_STRING);
         }
 
