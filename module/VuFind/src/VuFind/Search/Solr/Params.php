@@ -27,7 +27,7 @@
  */
 namespace VuFind\Search\Solr;
 use VuFind\Config\Reader as ConfigReader, VuFind\Search\Base\Params as BaseParams;
-
+use VuFindSearch\Query\Query;
 use VuFind\Search\Legacy\QueryAdapter;
 
 /**
