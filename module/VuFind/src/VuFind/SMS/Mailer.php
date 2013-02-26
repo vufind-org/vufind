@@ -64,7 +64,7 @@ class Mailer extends AbstractBase
     /**
      * VuFind Mailer object
      *
-     * @var \VuFind\Mailer
+     * @var \VuFind\Mailer\Mailer
      */
     protected $mailer;
 
@@ -73,7 +73,7 @@ class Mailer extends AbstractBase
      *
      * @param \Zend\Config\Config $config  SMS configuration
      * @param array               $options Additional options: defaultFrom (optional)
-     * and mailer (must be a \VuFind\Mailer object)
+     * and mailer (must be a \VuFind\Mailer\Mailer object)
      */
     public function __construct(\Zend\Config\Config $config, $options = array())
     {
@@ -96,9 +96,11 @@ class Mailer extends AbstractBase
 
         // Make sure mailer dependency has been injected:
         if (!isset($options['mailer'])
-            || !($options['mailer'] instanceof \VuFind\Mailer)
+            || !($options['mailer'] instanceof \VuFind\Mailer\Mailer)
         ) {
-            throw new \Exception('$options["mailer"] must be a \VuFind\Mailer');
+            throw new \Exception(
+                '$options["mailer"] must be a \VuFind\Mailer\Mailer'
+            );
         }
         $this->mailer = $options['mailer'];
     }

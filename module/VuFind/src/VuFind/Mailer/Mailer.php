@@ -25,9 +25,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-namespace VuFind;
-use VuFind\Config\Reader as ConfigReader, VuFind\Exception\Mail as MailException,
-    Zend\Mail\Message, Zend\Mail\Transport\Smtp, Zend\Mail\Transport\SmtpOptions;
+namespace VuFind\Mailer;
+use VuFind\Exception\Mail as MailException, Zend\Mail\Message;
 
 /**
  * VuFind Mailer Class
@@ -40,13 +39,6 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Exception\Mail as MailException
  */
 class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
-    /**
-     * Configuration
-     *
-     * @var \Zend\Config\Config
-     */
-    protected $config;
-
     /**
      * Mail transport
      *
@@ -65,16 +57,10 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      * Constructor
      *
      * @param \Zend\Mail\Transport\TransportInterface $transport Mail transport
-     * object (we'll build our own if none is provided).
-     * @param \Zend\Config\Config                     $config    VuFind configuration
-     * object (we'll auto-load if none is provided).
      */
-    public function __construct($transport = null, $config = null)
+    public function __construct(\Zend\Mail\Transport\TransportInterface $transport)
     {
-        if (!is_null($transport)) {
-            $this->setTransport($transport);
-        }
-        $this->config = is_null($config) ? ConfigReader::getConfig() : $config;
+        $this->setTransport($transport);
     }
 
     /**
@@ -110,24 +96,6 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
      */
     public function getTransport()
     {
-        // Create transport if it does not already exist:
-        if (is_null($this->transport)) {
-            $settings = array (
-                'host' => $this->config->Mail->host,
-                'port' => $this->config->Mail->port
-            );
-            if (isset($this->config->Mail->username)
-                && isset($this->config->Mail->password)
-            ) {
-                $settings['connection_class'] = 'login';
-                $settings['connection_config'] = array(
-                    'username' => $this->config->Mail->username,
-                    'password' => $this->config->Mail->password
-                );
-            }
-            $this->transport = new Smtp();
-            $this->transport->setOptions(new SmtpOptions($settings));
-        }
         return $this->transport;
     }
 

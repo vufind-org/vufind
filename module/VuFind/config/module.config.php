@@ -172,6 +172,7 @@ $config = array(
                 $logger->setConfig($sm->get('VuFind\Config')->get('config'));
                 return $logger;
             },
+            'VuFind\Mailer' => 'VuFind\Mailer\Factory',
             'VuFind\RecordRouter' => function ($sm) {
                 return new \VuFind\Record\Router($sm->get('VuFind\RecordLoader'));
             },
@@ -225,7 +226,6 @@ $config = array(
         ),
         'invokables' => array(
             'VuFind\CacheManager' => 'VuFind\Cache\Manager',
-            'VuFind\Mailer' => 'VuFind\Mailer',
             'VuFind\RecordLoader' => 'VuFind\Record\Loader',
             'VuFind\SessionManager' => 'Zend\Session\SessionManager',
             'VuFind\WorldCatUtils' => 'VuFind\Connection\WorldCatUtils',
