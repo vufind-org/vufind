@@ -56,6 +56,7 @@ class Router
      * Constructor
      *
      * @param \VuFind\Record\Loader $loader Record loader
+     * @param \Zend\Config\Config   $config VuFind configuration
      */
     public function __construct(\VuFind\Record\Loader $loader,
         \Zend\Config\Config $config
