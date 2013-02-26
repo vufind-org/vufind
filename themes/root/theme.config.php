@@ -4,7 +4,7 @@ return array(
     'helpers' => array(
         'factories' => array(
             'addthis' => function ($sm) {
-                $config = \VuFind\Config\Reader::getConfig();
+                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
                 return new \VuFind\View\Helper\Root\AddThis(
                     isset($config->AddThis->key) ? $config->AddThis->key : false
                 );
@@ -51,11 +51,11 @@ return array(
             },
             'proxyurl' => function ($sm) {
                 return new \VuFind\View\Helper\Root\ProxyUrl(
-                    \VuFind\Config\Reader::getConfig()
+                    $sm->getServiceLocator()->get('VuFind\Config')->get('config')
                 );
             },
             'openurl' => function ($sm) {
-                $config = \VuFind\Config\Reader::getConfig();
+                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
                 return new \VuFind\View\Helper\Root\OpenUrl(
                     $sm->get('context'),
                     isset($config->OpenURL) ? $config->OpenURL : null
@@ -63,7 +63,7 @@ return array(
             },
             'record' => function ($sm) {
                 return new \VuFind\View\Helper\Root\Record(
-                    \VuFind\Config\Reader::getConfig()
+                    $sm->getServiceLocator()->get('VuFind\Config')->get('config')
                 );
             },
             'recordlink' => function ($sm) {
@@ -77,13 +77,13 @@ return array(
                 );
             },
             'syndeticsplus' => function ($sm) {
-                $config = \VuFind\Config\Reader::getConfig();
+                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
                 return new \VuFind\View\Helper\Root\SyndeticsPlus(
                     isset($config->Syndetics) ? $config->Syndetics : null
                 );
             },
             'systememail' => function ($sm) {
-                $config = \VuFind\Config\Reader::getConfig();
+                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
                 return new \VuFind\View\Helper\Root\SystemEmail(
                     isset($config->Site->email) ? $config->Site->email : ''
                 );

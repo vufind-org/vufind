@@ -23,7 +23,7 @@ return array(
     'helpers' => array(
         'factories' => array(
             'layoutclass' => function ($sm) {
-                $config = \VuFind\Config\Reader::getConfig();
+                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
                 $left = !isset($config->Site->sidebarOnLeft)
                     ? false : $config->Site->sidebarOnLeft;
                 return new \VuFind\View\Helper\Blueprint\LayoutClass($left);
