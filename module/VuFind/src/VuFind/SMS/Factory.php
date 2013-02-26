@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\SMS;
-use VuFind\Config\Reader as ConfigReader,
-    Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Factory for instantiating SMS objects
@@ -50,8 +49,8 @@ class Factory implements \Zend\ServiceManager\FactoryInterface
     public function createService(ServiceLocatorInterface $sm)
     {
         // Load configurations:
-        $mainConfig = ConfigReader::getConfig();
-        $smsConfig = ConfigReader::getConfig('sms');
+        $mainConfig = $sm->get('VuFind\Config')->get('config');
+        $smsConfig = $sm->get('VuFind\Config')->get('sms');
 
         // Determine SMS type:
         $type = isset($smsConfig->General->smsType)
