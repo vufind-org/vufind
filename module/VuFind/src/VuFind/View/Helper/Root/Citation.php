@@ -283,7 +283,8 @@ class Citation extends \Zend\View\Helper\AbstractHelper
         if (strlen($date) > 4) {
             try {
                 $year = $this->dateConverter->convertFromDisplayDate('Y', $date);
-                $month = $this->dateConverter->convertFromDisplayDate('M', $date) . '.';
+                $month = $this->dateConverter->convertFromDisplayDate('M', $date)
+                    . '.';
                 $day = $this->dateConverter->convertFromDisplayDate('j', $date);
             } catch (DateException $e) {
                 // If conversion fails, use raw date as year -- not ideal,

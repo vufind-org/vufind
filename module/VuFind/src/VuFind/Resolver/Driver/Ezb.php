@@ -61,8 +61,8 @@ class Ezb implements DriverInterface
     /**
      * Constructor
      *
-     * @param string            $baseUrl Base URL for link resolver
-     * @param \Zend\Http\Client $client  HTTP client
+     * @param string            $baseUrl    Base URL for link resolver
+     * @param \Zend\Http\Client $httpClient HTTP client
      */
     public function __construct($baseUrl, \Zend\Http\Client $httpClient)
     {

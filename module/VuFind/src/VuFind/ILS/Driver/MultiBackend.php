@@ -192,7 +192,9 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
         if ($pos > 0) {
             return substr($id, 0, $pos);
         }
-        //error_log("MultiBackend: Can't find source id in '$id' using '$delimiter'");
+        //error_log(
+        //    "MultiBackend: Can't find source id in '$id' using '$delimiter'"
+        //);
         return $id;
     }
 
