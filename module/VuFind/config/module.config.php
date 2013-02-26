@@ -419,9 +419,11 @@ $config = array(
                 'abstract_factories' => array('VuFind\Recommend\PluginFactory'),
                 'factories' => array(
                     'authorinfo' => function ($sm) {
+                        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
                         return new \VuFind\Recommend\AuthorInfo(
                             $sm->getServiceLocator()->get('SearchManager'),
-                            $sm->getServiceLocator()->get('VuFind\Http')->createClient()
+                            $sm->getServiceLocator()->get('VuFind\Http')->createClient(),
+                            isset ($config->Content->authors) ? $config->Content->authors : ''
                         );
                     },
                     'worldcatidentities' => function ($sm) {
