@@ -559,17 +559,23 @@ $config = array(
                 'factories' => array(
                     '360link' => function ($sm) {
                         return new \VuFind\Resolver\Driver\Threesixtylink(
-                            \VuFind\Config\Reader::getConfig()->OpenURL->url
+                            \VuFind\Config\Reader::getConfig()->OpenURL->url,
+                            $sm->getServiceLocator()->get('VuFind\Http')
+                                ->createClient()
                         );
                     },
                     'ezb' => function ($sm) {
                         return new \VuFind\Resolver\Driver\Ezb(
-                            \VuFind\Config\Reader::getConfig()->OpenURL->url
+                            \VuFind\Config\Reader::getConfig()->OpenURL->url,
+                            $sm->getServiceLocator()->get('VuFind\Http')
+                                ->createClient()
                         );
                     },
                     'sfx' => function ($sm) {
                         return new \VuFind\Resolver\Driver\Sfx(
-                            \VuFind\Config\Reader::getConfig()->OpenURL->url
+                            \VuFind\Config\Reader::getConfig()->OpenURL->url,
+                            $sm->getServiceLocator()->get('VuFind\Http')
+                                ->createClient()
                         );
                     },
                 ),

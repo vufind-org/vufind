@@ -49,13 +49,22 @@ class Threesixtylink implements DriverInterface
     protected $baseUrl;
 
     /**
+     * HTTP client
+     *
+     * @var \Zend\Http\Client
+     */
+    protected $httpClient;
+
+    /**
      * Constructor
      *
-     * @param string $baseUrl Base URL for link resolver
+     * @param string            $baseUrl Base URL for link resolver
+     * @param \Zend\Http\Client $client  HTTP client
      */
-    public function __construct($baseUrl)
+    public function __construct($baseUrl, \Zend\Http\Client $httpClient)
     {
         $this->baseUrl = $baseUrl;
+        $this->httpClient = $httpClient;
     }
 
     /**
@@ -72,7 +81,7 @@ class Threesixtylink implements DriverInterface
         // Make the call to SerialsSolutions and load results
         $url = $this->baseUrl . (substr($this->baseUrl, -1) == '/' ? '' : '/') .
             'openurlxml?version=1.0&' . $openURL;
-        $feed = file_get_contents($url);
+        $feed = $this->httpClient->setUri($url)->send()->getBody();
         return $feed;
     }
 
