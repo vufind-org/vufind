@@ -251,6 +251,10 @@ $config = array(
     // This section contains all VuFind-specific settings (i.e. configurations
     // unrelated to specific Zend Framework 2 components).
     'vufind' => array(
+        // The config reader is a special service manager for loading .ini files:
+        'config_reader' => array(
+            'abstract_factories' => array('VuFind\Config\PluginFactory'),
+        ),
         // This section contains service manager configurations for all VuFind
         // pluggable components:
         'plugin_managers' => array(
