@@ -31,7 +31,7 @@
  * @link     http://vufind.org/wiki/vufind2:link_resolver_drivers Wiki
  */
 namespace VuFind\Resolver\Driver;
-use DOMDocument, DOMXpath, VuFind\Config\Reader as ConfigReader;
+use DOMDocument, DOMXpath;
 
 /**
  * EZB Link Resolver Driver
@@ -44,16 +44,21 @@ use DOMDocument, DOMXpath, VuFind\Config\Reader as ConfigReader;
  */
 class Ezb implements DriverInterface
 {
+    /**
+     * Base URL for link resolver
+     *
+     * @var string
+     */
     protected $baseUrl;
 
     /**
      * Constructor
+     *
+     * @param string $baseUrl Base URL for link resolver
      */
-    public function __construct()
+    public function __construct($baseUrl)
     {
-        // Load Configuration for this Module
-        $config = ConfigReader::getConfig();
-        $this->baseUrl = $config->OpenURL->url;
+        $this->baseUrl = $baseUrl;
     }
 
     /**

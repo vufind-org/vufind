@@ -556,10 +556,22 @@ $config = array(
             ),
             'resolver_driver' => array(
                 'abstract_factories' => array('VuFind\Resolver\Driver\PluginFactory'),
-                'invokables' => array(
-                    '360link' => 'VuFind\Resolver\Driver\Threesixtylink',
-                    'ezb' => 'VuFind\Resolver\Driver\Ezb',
-                    'sfx' => 'VuFind\Resolver\Driver\Sfx',
+                'factories' => array(
+                    '360link' => function ($sm) {
+                        return new \VuFind\Resolver\Driver\Threesixtylink(
+                            \VuFind\Config\Reader::getConfig()->OpenURL->url
+                        );
+                    },
+                    'ezb' => function ($sm) {
+                        return new \VuFind\Resolver\Driver\Ezb(
+                            \VuFind\Config\Reader::getConfig()->OpenURL->url
+                        );
+                    },
+                    'sfx' => function ($sm) {
+                        return new \VuFind\Resolver\Driver\Sfx(
+                            \VuFind\Config\Reader::getConfig()->OpenURL->url
+                        );
+                    },
                 ),
                 'aliases' => array(
                     'threesixtylink' => '360link',
