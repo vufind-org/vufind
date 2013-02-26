@@ -174,7 +174,10 @@ $config = array(
             },
             'VuFind\Mailer' => 'VuFind\Mailer\Factory',
             'VuFind\RecordRouter' => function ($sm) {
-                return new \VuFind\Record\Router($sm->get('VuFind\RecordLoader'));
+                return new \VuFind\Record\Router(
+                    $sm->get('VuFind\RecordLoader'),
+                    $sm->get('VuFind\Config')->get('config')
+                );
             },
             'VuFind\RecordStats' => function ($sm) {
                 return new \VuFind\Statistics\Record(
