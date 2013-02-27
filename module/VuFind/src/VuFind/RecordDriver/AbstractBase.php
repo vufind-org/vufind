@@ -43,7 +43,8 @@ use VuFind\Exception\LoginRequired as LoginRequiredException,
  * @link     http://www.vufind.org  Main Page
  */
 abstract class AbstractBase implements ServiceLocatorAwareInterface,
-    \VuFind\I18n\Translator\TranslatorAwareInterface
+    \VuFind\I18n\Translator\TranslatorAwareInterface,
+    \VuFindSearch\Response\RecordInterface
 {
     /**
      * Used for identifying database records
@@ -51,6 +52,13 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface,
      * @var string
      */
     protected $resourceSource = 'VuFind';
+
+    /**
+     * Used for identifying search backends
+     *
+     * @var string
+     */
+    protected $sourceIdentifier;
 
     /**
      * For storing extra data with record
@@ -303,6 +311,28 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface,
     public function getResourceSource()
     {
         return $this->resourceSource;
+    }
+
+    /**
+     * Set the source backend identifier.
+     *
+     * @param string $identifier Backend identifier
+     *
+     * @return void
+     */
+    public function setSourceIdentifier($identifier)
+    {
+        $this->sourceIdentifier = $identifier;
+    }
+
+    /**
+     * Return the source backend identifier.
+     *
+     * @return string
+     */
+    public function getSourceIdentifier()
+    {
+        return $this->sourceIdentifier;
     }
 
     /**
