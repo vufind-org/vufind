@@ -87,7 +87,7 @@ class NormalizeSolrSort implements ListenerInterface
      */
     public function attach (SharedEventManagerInterface $manager)
     {
-        $manager->attach('VuFind\Search', 'search.pre', array($this, 'onSearchPre'));
+        $manager->attach('VuFind\Search', 'pre', array($this, 'onSearchPre'));
     }
 
     /**

@@ -94,9 +94,9 @@ class Service
         $args = compact('backend', 'query', 'offset', 'limit', 'params', 'context');
         $backend  = $this->resolve($backend, $args);
 
-        $this->triggerPre($context, $backend, $args);
+        $this->triggerPre($backend, $args);
         $response = $backend->search($query, $offset, $limit, $params);
-        $this->triggerPost($context, $response, $args);
+        $this->triggerPost($response, $args);
         return $response;
     }
 
@@ -115,9 +115,9 @@ class Service
         $args = compact('backend', 'id', 'params', 'context');
         $backend = $this->resolve($backend, $args);
 
-        $this->triggerPre($context, $backend, $args);
+        $this->triggerPre($backend, $args);
         $response = $backend->retrieve($id, $params);
-        $this->triggerPost($context, $response, $args);
+        $this->triggerPost($response, $args);
         return $response;
     }
 
@@ -134,11 +134,11 @@ class Service
     {
         $context = __FUNCTION__;
         $args = compact('backend', 'id', 'params', 'context');
-        $backend = $this->resolve($backend, $args);
+        $backend = $this->resolve($args);
 
         $this->triggerPre($context, $backend, $args);
         $response = $backend->delete($id, $params);
-        $this->triggerPost($context, $response, $args);
+        $this->triggerPost($response, $args);
     }
 
     /**
@@ -156,9 +156,9 @@ class Service
         $args = compact('backend', 'id', 'params', 'context');
         $backend = $this->resolve($backend, $args);
 
-        $this->triggerPre($context, $backend, $args);
+        $this->triggerPre($backend, $args);
         $response = $backend->similar($id, $params);
-        $this->triggerPost($context, $response, $args);
+        $this->triggerPost($response, $args);
         return $response;
     }
 
@@ -176,9 +176,9 @@ class Service
         $args = compact('backend', 'params', 'context');
         $backend = $this->resolve($backend, $args);
 
-        $this->triggerPre($context, $backend, $args);
+        $this->triggerPre($backend, $args);
         $response = $backend->deleteAll($params);
-        $this->triggerPost($context, $response, $args);
+        $this->triggerPost($response, $args);
         return $response;
     }
 
@@ -197,9 +197,9 @@ class Service
         $args = compact('backend', 'record', 'params', 'context');
         $backend = $this->resolve($backend, $args);
 
-        $this->triggerPre($context, $backend, $args);
+        $this->triggerPre($backend, $args);
         $response = $backend->update($record, $params);
-        $this->triggerPost($context, $response, $args);
+        $this->triggerPost($response, $args);
     }
 
     /**
@@ -278,15 +278,14 @@ class Service
     /**
      * Trigger the pre event.
      *
-     * @param string           $context Service context
      * @param BackendInterface $backend Selected backend
      * @param array            $args    Event arguments
      *
      * @return void
      */
-    protected function triggerPre ($context, BackendInterface $backend, $args)
+    protected function triggerPre (BackendInterface $backend, $args)
     {
-        $this->getEventManager()->trigger($context . '.pre', $backend, $args);
+        $this->getEventManager()->trigger('pre', $backend, $args);
     }
 
     /**
@@ -298,9 +297,9 @@ class Service
      *
      * @return void
      */
-    protected function triggerPost ($context, $response, $args)
+    protected function triggerPost ($response, $args)
     {
-        $this->getEventManager()->trigger($context . '.post', $response, $args);
+        $this->getEventManager()->trigger('post', $response, $args);
     }
 
     /**
