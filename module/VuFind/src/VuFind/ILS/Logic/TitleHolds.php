@@ -42,9 +42,32 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Crypt\HMAC,
  */
 class TitleHolds
 {
+    /**
+     * Auth manager object
+     *
+     * @var \VuFind\Auth\Manager
+     */
     protected $account;
+
+    /**
+     * Catalog connection object
+     *
+     * @var ILSConnection
+     */
     protected $catalog;
+
+    /**
+     * VuFind configuration
+     *
+     * @var \Zend\Config\Config
+     */
     protected $config;
+
+    /**
+     * Holding locations to hide from display
+     *
+     * @var array
+     */
     protected $hideHoldings = array();
 
     /**
