@@ -395,7 +395,9 @@ $config = array(
                     },
                     'voyagerrestful' => function ($sm) {
                         return new \VuFind\ILS\Driver\VoyagerRestful(
-                            $sm->getServiceLocator()->get('VuFind\DateConverter')
+                            $sm->getServiceLocator()->get('VuFind\DateConverter'),
+                            \VuFind\ILS\Connection::getHoldsMode(),
+                            \VuFind\ILS\Connection::getTitleHoldsMode()
                         );
                     },
                 ),
