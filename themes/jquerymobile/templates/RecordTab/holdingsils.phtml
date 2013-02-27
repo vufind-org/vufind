@@ -17,7 +17,7 @@
     <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
   </div>
 <? endif; ?>
-<? if ((\VuFind\ILS\Connection::getHoldsMode() == 'driver' && !empty($holdings)) || \VuFind\ILS\Connection::getTitleHoldsMode() == 'driver'): ?>
+<? if (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings)) || $this->ils()->getTitleHoldsMode() == 'driver'): ?>
   <? if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
     <? if (!$user): ?>
       <div class="info">

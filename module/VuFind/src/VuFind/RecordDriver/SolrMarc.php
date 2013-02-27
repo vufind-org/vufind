@@ -27,7 +27,6 @@
  */
 namespace VuFind\RecordDriver;
 use VuFind\Exception\ILS as ILSException,
-    VuFind\ILS\Connection as ILSConnection,
     VuFind\ILS\Logic\Holds as HoldLogic,
     VuFind\ILS\Logic\TitleHolds as TitleHoldLogic,
     VuFind\XSLT\Processor as XSLTProcessor;
@@ -968,7 +967,7 @@ class SolrMarc extends SolrDefault
         if ("monograph" == strtolower($biblioLevel)
             || stristr("part", $biblioLevel)
         ) {
-            if (ILSConnection::getTitleHoldsMode() != "disabled") {
+            if ($this->getILS()->getTitleHoldsMode() != "disabled") {
                 $holdLogic = new TitleHoldLogic($account, $this->getILS());
                 return $holdLogic->getHold($this->getUniqueID());
             }

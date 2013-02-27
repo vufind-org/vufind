@@ -136,7 +136,7 @@ class Holds
             // needed for hold data.
             $patron = $this->account->storedCatalogLogin();
             $result = $this->catalog->getHolding($id, $patron);
-            $mode = ILSConnection::getHoldsMode();
+            $mode = $this->catalog->getHoldsMode();
 
             if ($mode == "disabled") {
                  $holdings = $this->standardHoldings($result);

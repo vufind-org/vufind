@@ -70,6 +70,20 @@ class Connection
     protected $config;
 
     /**
+     * Holds mode
+     *
+     * @var string
+     */
+    protected $holdsMode = 'disabled';
+
+    /**
+     * Title-level holds mode
+     *
+     * @var string
+     */
+    protected $titleHoldsMode = 'disabled';
+
+    /**
      * Set the configuration of the connection.
      *
      * @param \Zend\Config\Config $config Configuration representing the [Catalog]
@@ -80,6 +94,20 @@ class Connection
     public function setConfig($config)
     {
         $this->config = $config;
+        return $this;
+    }
+
+    /**
+     * Set the hold configuration for the connection.
+     *
+     * @param \VuFind\ILS\HoldSettings $settings Hold settings
+     *
+     * @return Connection
+     */
+    public function setHoldConfig($settings)
+    {
+        $this->holdsMode = $settings->getHoldsMode();
+        $this->titleHoldsMode = $settings->getTitleHoldsMode();
         return $this;
     }
 
@@ -331,11 +359,9 @@ class Connection
      *
      * @return string The Holds mode
      */
-    public static function getHoldsMode()
+    public function getHoldsMode()
     {
-        $config = ConfigReader::getConfig();
-        return isset($config->Catalog->holds_mode)
-            ? $config->Catalog->holds_mode : 'all';
+        return $this->holdsMode;
     }
 
     /**
@@ -360,11 +386,9 @@ class Connection
      *
      * @return string The Title Holds mode
      */
-    public static function getTitleHoldsMode()
+    public function getTitleHoldsMode()
     {
-        $config = ConfigReader::getConfig();
-        return isset($config->Catalog->title_level_holds_mode)
-            ? $config->Catalog->title_level_holds_mode : 'disabled';
+        return $this->titleHoldsMode;
     }
 
     /**

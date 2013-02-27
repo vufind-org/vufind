@@ -78,7 +78,7 @@ class TitleHolds
     {
         // Get Holdings Data
         if ($this->catalog) {
-            $mode = ILSConnection::getTitleHoldsMode();
+            $mode = $this->catalog->getTitleHoldsMode();
             if ($mode == "disabled") {
                  return false;
             } else if ($mode == "driver") {

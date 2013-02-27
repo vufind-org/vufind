@@ -162,9 +162,15 @@ $config = array(
                 $catalog = new \VuFind\ILS\Connection();
                 return $catalog
                     ->setConfig($sm->get('VuFind\Config')->get('config')->Catalog)
+                    ->setHoldConfig($sm->get('VuFind\ILSHoldSettings'))
                     ->initWithDriverManager(
                         $sm->get('VuFind\ILSDriverPluginManager')
                     );
+            },
+            'VuFind\ILSHoldSettings' => function ($sm) {
+                return new \VuFind\ILS\HoldSettings(
+                    $sm->get('VuFind\Config')->get('config')->Catalog
+                );
             },
             'VuFind\Logger' => function ($sm) {
                 $logger = new \VuFind\Log\Logger();
@@ -394,10 +400,10 @@ $config = array(
                         );
                     },
                     'voyagerrestful' => function ($sm) {
+                        $ils = $sm->getServiceLocator()->get('VuFind\ILSHoldSettings');
                         return new \VuFind\ILS\Driver\VoyagerRestful(
                             $sm->getServiceLocator()->get('VuFind\DateConverter'),
-                            \VuFind\ILS\Connection::getHoldsMode(),
-                            \VuFind\ILS\Connection::getTitleHoldsMode()
+                            $ils->getHoldsMode(), $ils->getTitleHoldsMode()
                         );
                     },
                 ),
