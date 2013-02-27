@@ -27,8 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\ILS\Logic;
-use VuFind\Config\Reader as ConfigReader, VuFind\Crypt\HMAC,
-    VuFind\ILS\Connection as ILSConnection;
+use VuFind\Crypt\HMAC, VuFind\ILS\Connection as ILSConnection;
 
 /**
  * Hold Logic Class
@@ -75,11 +74,13 @@ class Holds
      *
      * @param \VuFind\Auth\Manager $account Auth manager object
      * @param ILSConnection        $ils     A catalog connection
+     * @param \Zend\Config\Config  $config  VuFind configuration
      */
-    public function __construct(\VuFind\Auth\Manager $account, ILSConnection $ils)
-    {
+    public function __construct(\VuFind\Auth\Manager $account, ILSConnection $ils,
+        \Zend\Config\Config $config
+    ) {
         $this->account = $account;
-        $this->config = ConfigReader::getConfig();
+        $this->config = $config;
 
         if (isset($this->config->Record->hide_holdings)) {
             foreach ($this->config->Record->hide_holdings as $current) {

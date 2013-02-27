@@ -167,9 +167,23 @@ $config = array(
                         $sm->get('VuFind\ILSDriverPluginManager')
                     );
             },
+            'VuFind\ILSHoldLogic' => function ($sm) {
+                return new \VuFind\ILS\Logic\Holds(
+                    $sm->get('VuFind\AuthManager'),
+                    $sm->get('VuFind\ILSConnection'),
+                    $sm->get('VuFind\Config')->get('config')
+                );
+            },
             'VuFind\ILSHoldSettings' => function ($sm) {
                 return new \VuFind\ILS\HoldSettings(
                     $sm->get('VuFind\Config')->get('config')->Catalog
+                );
+            },
+            'VuFind\ILSTitleHoldLogic' => function ($sm) {
+                return new \VuFind\ILS\Logic\TitleHolds(
+                    $sm->get('VuFind\AuthManager'),
+                    $sm->get('VuFind\ILSConnection'),
+                    $sm->get('VuFind\Config')->get('config')
                 );
             },
             'VuFind\Logger' => function ($sm) {
@@ -489,11 +503,17 @@ $config = array(
                         );
                     },
                     'solrmarc' => function ($sm) {
-                        return new \VuFind\RecordDriver\SolrMarc(
+                        $driver = new \VuFind\RecordDriver\SolrMarc(
                             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
                             null,
                             $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
                         );
+                        $driver->attachILS(
+                            $sm->getServiceLocator()->get('VuFind\ILSConnection'),
+                            $sm->getServiceLocator()->get('VuFind\ILSHoldLogic'),
+                            $sm->getServiceLocator()->get('VuFind\ILSTitleHoldLogic')
+                        );
+                        return $driver;
                     },
                     'solrreserves' => function ($sm) {
                         return new \VuFind\RecordDriver\SolrReserves(

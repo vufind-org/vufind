@@ -26,10 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
-use VuFind\Exception\ILS as ILSException,
-    VuFind\ILS\Logic\Holds as HoldLogic,
-    VuFind\ILS\Logic\TitleHolds as TitleHoldLogic,
-    VuFind\XSLT\Processor as XSLTProcessor;
+use VuFind\Exception\ILS as ILSException, VuFind\XSLT\Processor as XSLTProcessor;
 
 /**
  * Model for MARC records in Solr.
@@ -48,6 +45,27 @@ class SolrMarc extends SolrDefault
      * @var \File_MARC_Record
      */
     protected $marcRecord;
+
+    /**
+     * ILS connection
+     *
+     * @var \VuFind\ILS\Connection
+     */
+    protected $ils = null;
+
+    /**
+     * Hold logic
+     *
+     * @var \VuFind\ILS\Logic\Holds
+     */
+    protected $holdLogic;
+
+    /**
+     * Title hold logic
+     *
+     * @var \VuFind\ILS\Logic\TitleHolds
+     */
+    protected $titleHoldLogic;
 
     /**
      * Set raw data to initialize the object.
@@ -914,28 +932,42 @@ class SolrMarc extends SolrDefault
     }
 
     /**
-     * Get the ILS connection.
+     * Attach an ILS connection and related logic to the driver
      *
-     * @return \VuFind\ILS\Connection
+     * @param \VuFind\ILS\Connection       $ils            ILS connection
+     * @param \VuFind\ILS\Logic\Holds      $holdLogic      Hold logic handler
+     * @param \VuFind\ILS\Logic\TitleHolds $titleHoldLogic Title hold logic handler
      */
-    protected function getILS()
+    public function attachILS(\VuFind\ILS\Connection $ils,
+        \VuFind\ILS\Logic\Holds $holdLogic,
+        \VuFind\ILS\Logic\TitleHolds $titleHoldLogic
+    ) {
+        $this->ils = $ils;
+        $this->holdLogic = $holdLogic;
+        $this->titleHoldLogic = $titleHoldLogic;
+    }
+
+    /**
+     * Do we have an attached ILS connection?
+     *
+     * @return bool
+     */
+    protected function hasILS()
     {
-        return $this->getServiceLocator()->getServiceLocator()
-            ->get('VuFind\ILSConnection');
+        return null !== $this->ils;
     }
 
     /**
      * Get an array of information about record holdings, obtained in real-time
      * from the ILS.
      *
-     * @param \VuFind\Auth\Manager $account Auth manager object
-     *
      * @return array
      */
-    public function getRealTimeHoldings(\VuFind\Auth\Manager $account)
+    public function getRealTimeHoldings()
     {
-        $holdLogic = new HoldLogic($account, $this->getILS());
-        return $holdLogic->getHoldings($this->getUniqueID());
+        return $this->hasILS()
+            ? $this->holdLogic->getHoldings($this->getUniqueID())
+            : array();
     }
 
     /**
@@ -947,8 +979,11 @@ class SolrMarc extends SolrDefault
     public function getRealTimeHistory()
     {
         // Get Acquisitions Data
+        if (!$this->hasILS()) {
+            return array();
+        }
         try {
-            return $this->getILS()->getPurchaseHistory($this->getUniqueID());
+            return $this->ils->getPurchaseHistory($this->getUniqueID());
         } catch (ILSException $e) {
             return array();
         }
@@ -957,19 +992,16 @@ class SolrMarc extends SolrDefault
     /**
      * Get a link for placing a title level hold.
      *
-     * @param \VuFind\Auth\Manager $account Auth manager object
-     *
      * @return mixed A url if a hold is possible, boolean false if not
      */
-    public function getRealTimeTitleHold(\VuFind\Auth\Manager $account)
+    public function getRealTimeTitleHold()
     {
-        $biblioLevel = $this->getBibliographicLevel();
-        if ("monograph" == strtolower($biblioLevel)
-            || stristr("part", $biblioLevel)
-        ) {
-            if ($this->getILS()->getTitleHoldsMode() != "disabled") {
-                $holdLogic = new TitleHoldLogic($account, $this->getILS());
-                return $holdLogic->getHold($this->getUniqueID());
+        if ($this->hasILS()) {
+            $biblioLevel = strtolower($this->getBibliographicLevel());
+            if ("monograph" == $biblioLevel || strstr("part", $biblioLevel)) {
+                if ($this->ils->getTitleHoldsMode() != "disabled") {
+                    return $this->titleHoldLogic->getHold($this->getUniqueID());
+                }
             }
         }
 

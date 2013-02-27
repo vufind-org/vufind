@@ -149,15 +149,14 @@ class AjaxController extends AbstractBase
      *
      * @param array                  $record  Information on items linked to a single
      * bib record
-     * @param \VuFind\ILS\Connection $catalog ILS connection
      *
      * @return array        Filtered version of $record
      */
-    protected function filterSuppressedLocations($record, $catalog)
+    protected function filterSuppressedLocations($record)
     {
         static $hideHoldings = false;
         if ($hideHoldings === false) {
-            $logic = new \VuFind\ILS\Logic\Holds($this->getAuthManager(), $catalog);
+            $logic = $this->getServiceLocator()->get('VuFind\ILSHoldLogic');
             $hideHoldings = $logic->getSuppressedLocations();
         }
 
@@ -222,7 +221,7 @@ class AjaxController extends AbstractBase
         $statuses = array();
         foreach ($results as $recordNumber=>$record) {
             // Filter out suppressed locations:
-            $record = $this->filterSuppressedLocations($record, $catalog);
+            $record = $this->filterSuppressedLocations($record);
 
             // Skip empty records:
             if (count($record)) {
