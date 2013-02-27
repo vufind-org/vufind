@@ -7,6 +7,6 @@
     </testsuite>
   </testsuites>
   <php>
-    <includePath>../../../../vendor/ZF2/library</includePath>
+    <includePath>../../../../vendor/zendframework/zendframework/library</includePath>
   </php>
 </phpunit>
