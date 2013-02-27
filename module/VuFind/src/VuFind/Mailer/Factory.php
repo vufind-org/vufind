@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory for instantiating SMS objects
+ * Factory for instantiating Mailer objects
  *
  * PHP version 5
  *
@@ -20,20 +20,21 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  SMS
- * @author   Ronan McHugh <vufind-tech@lists.sourceforge.net>
+ * @package  Mailer
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-namespace VuFind\SMS;
-use Zend\ServiceManager\ServiceLocatorInterface;
+namespace VuFind\Mailer;
+use Zend\Mail\Transport\Smtp, Zend\Mail\Transport\SmtpOptions,
+    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Factory for instantiating SMS objects
+ * Factory for instantiating Mailer objects
  *
  * @category VuFind2
- * @package  SMS
- * @author   Ronan McHugh <vufind-tech@lists.sourceforge.net>
+ * @package  Mailer
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -49,26 +50,23 @@ class Factory implements \Zend\ServiceManager\FactoryInterface
     public function createService(ServiceLocatorInterface $sm)
     {
         // Load configurations:
-        $mainConfig = $sm->get('VuFind\Config')->get('config');
-        $smsConfig = $sm->get('VuFind\Config')->get('sms');
+        $config = $sm->get('VuFind\Config')->get('config');
 
-        // Determine SMS type:
-        $type = isset($smsConfig->General->smsType)
-            ? $smsConfig->General->smsType : 'Mailer';
-
-        // Initialize object based on requested type:
-        switch (strtolower($type)) {
-        case 'clickatell':
-            $client = $sm->get('VuFind\Http')->createClient();
-            return new Clickatell($smsConfig, array('client' => $client));
-        case 'mailer':
-            $options = array('mailer' => $sm->get('VuFind\Mailer'));
-            if (isset($mainConfig->Site->email)) {
-                $options['defaultFrom'] = $mainConfig->Site->email;
-            }
-            return new Mailer($smsConfig, $options);
-        default:
-            throw new \Exception('Unrecognized SMS type: ' . $type);
+        // Create mail transport:
+        $settings = array (
+            'host' => $config->Mail->host, 'port' => $config->Mail->port
+        );
+        if (isset($config->Mail->username) && isset($config->Mail->password)) {
+            $settings['connection_class'] = 'login';
+            $settings['connection_config'] = array(
+                'username' => $config->Mail->username,
+                'password' => $config->Mail->password
+            );
         }
+        $transport = new Smtp();
+        $transport->setOptions(new SmtpOptions($settings));
+
+        // Create service:
+        return new \VuFind\Mailer\Mailer($transport);
     }
 }

@@ -266,7 +266,8 @@ class Holds extends AbstractPlugin
      *
      * @return int A timestamp representing the default required date
      */
-    public function getDefaultRequiredDate($checkHolds) {
+    public function getDefaultRequiredDate($checkHolds)
+    {
         $dateArray = isset($checkHolds['defaultRequiredDate'])
              ? explode(":", $checkHolds['defaultRequiredDate'])
              : array(0, 1, 0);

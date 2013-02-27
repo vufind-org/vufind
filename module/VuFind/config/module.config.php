@@ -119,10 +119,12 @@ $config = array(
     'service_manager' => array(
         'factories' => array(
             'VuFind\AuthManager' => function ($sm) {
-                return new \VuFind\Auth\Manager(\VuFind\Config\Reader::getConfig());
+                return new \VuFind\Auth\Manager(
+                    $sm->get('VuFind\Config')->get('config')
+                );
             },
             'VuFind\Cart' => function ($sm) {
-                $config = \VuFind\Config\Reader::getConfig();
+                $config = $sm->get('VuFind\Config')->get('config');
                 $active = isset($config->Site->showBookBag)
                     ? (bool)$config->Site->showBookBag : false;
                 $size = isset($config->Site->bookBagMaxSize)
@@ -133,7 +135,7 @@ $config = array(
             },
             'VuFind\DateConverter' => function ($sm) {
                 return new \VuFind\Date\Converter(
-                    \VuFind\Config\Reader::getConfig()
+                    $sm->get('VuFind\Config')->get('config')
                 );
             },
             'VuFind\DbAdapter' => function ($sm) {
@@ -141,12 +143,12 @@ $config = array(
             },
             'VuFind\Export' => function ($sm) {
                 return new \VuFind\Export(
-                    \VuFind\Config\Reader::getConfig(),
-                    \VuFind\Config\Reader::getConfig('export')
+                    $sm->get('VuFind\Config')->get('config'),
+                    $sm->get('VuFind\Config')->get('export')
                 );
             },
             'VuFind\Http' => function ($sm) {
-                $config = \VuFind\Config\Reader::getConfig();
+                $config = $sm->get('VuFind\Config')->get('config');
                 $options = array();
                 if (isset($config->Proxy->host)) {
                     $options['proxy_host'] = $config->Proxy->host;
@@ -159,7 +161,7 @@ $config = array(
             'VuFind\ILSConnection' => function ($sm) {
                 $catalog = new \VuFind\ILS\Connection();
                 return $catalog
-                    ->setConfig(\VuFind\Config\Reader::getConfig()->Catalog)
+                    ->setConfig($sm->get('VuFind\Config')->get('config')->Catalog)
                     ->initWithDriverManager(
                         $sm->get('VuFind\ILSDriverPluginManager')
                     );
@@ -167,15 +169,19 @@ $config = array(
             'VuFind\Logger' => function ($sm) {
                 $logger = new \VuFind\Log\Logger();
                 $logger->setServiceLocator($sm);
-                $logger->setConfig(\VuFind\Config\Reader::getConfig());
+                $logger->setConfig($sm->get('VuFind\Config')->get('config'));
                 return $logger;
             },
+            'VuFind\Mailer' => 'VuFind\Mailer\Factory',
             'VuFind\RecordRouter' => function ($sm) {
-                return new \VuFind\Record\Router($sm->get('VuFind\RecordLoader'));
+                return new \VuFind\Record\Router(
+                    $sm->get('VuFind\RecordLoader'),
+                    $sm->get('VuFind\Config')->get('config')
+                );
             },
             'VuFind\RecordStats' => function ($sm) {
                 return new \VuFind\Statistics\Record(
-                    \VuFind\Config\Reader::getConfig()
+                    $sm->get('VuFind\Config')->get('config')
                 );
             },
             'VuFind\SearchSpecsReader' => function ($sm) {
@@ -185,7 +191,7 @@ $config = array(
             },
             'VuFind\SearchStats' => function ($sm) {
                 return new \VuFind\Statistics\Search(
-                    \VuFind\Config\Reader::getConfig()
+                    $sm->get('VuFind\Config')->get('config')
                 );
             },
             'VuFind\SMS' => 'VuFind\SMS\Factory',
@@ -223,7 +229,6 @@ $config = array(
         ),
         'invokables' => array(
             'VuFind\CacheManager' => 'VuFind\Cache\Manager',
-            'VuFind\Mailer' => 'VuFind\Mailer',
             'VuFind\RecordLoader' => 'VuFind\Record\Loader',
             'VuFind\SessionManager' => 'Zend\Session\SessionManager',
             'VuFind\WorldCatUtils' => 'VuFind\Connection\WorldCatUtils',
@@ -251,6 +256,10 @@ $config = array(
     // This section contains all VuFind-specific settings (i.e. configurations
     // unrelated to specific Zend Framework 2 components).
     'vufind' => array(
+        // The config reader is a special service manager for loading .ini files:
+        'config_reader' => array(
+            'abstract_factories' => array('VuFind\Config\PluginFactory'),
+        ),
         // This section contains service manager configurations for all VuFind
         // pluggable components:
         'plugin_managers' => array(
@@ -410,9 +419,11 @@ $config = array(
                 'abstract_factories' => array('VuFind\Recommend\PluginFactory'),
                 'factories' => array(
                     'authorinfo' => function ($sm) {
+                        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
                         return new \VuFind\Recommend\AuthorInfo(
                             $sm->getServiceLocator()->get('SearchManager'),
-                            $sm->getServiceLocator()->get('VuFind\Http')->createClient()
+                            $sm->getServiceLocator()->get('VuFind\Http')->createClient(),
+                            isset ($config->Content->authors) ? $config->Content->authors : ''
                         );
                     },
                     'worldcatidentities' => function ($sm) {
@@ -450,55 +461,61 @@ $config = array(
             'recorddriver' => array(
                 'abstract_factories' => array('VuFind\RecordDriver\PluginFactory'),
                 'factories' => array(
-                    'missing' => function () {
+                    'missing' => function ($sm) {
                         return new \VuFind\RecordDriver\Missing(
-                            \VuFind\Config\Reader::getConfig()
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
                         );
                     },
-                    'solrauth' => function () {
+                    'solrauth' => function ($sm) {
                         return new \VuFind\RecordDriver\SolrAuth(
-                            \VuFind\Config\Reader::getConfig(), null,
-                            \VuFind\Config\Reader::getConfig('searches')
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+                            null,
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
                         );
                     },
-                    'solrdefault' => function () {
+                    'solrdefault' => function ($sm) {
                         return new \VuFind\RecordDriver\SolrDefault(
-                            \VuFind\Config\Reader::getConfig(), null,
-                            \VuFind\Config\Reader::getConfig('searches')
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+                            null,
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
                         );
                     },
-                    'solrmarc' => function () {
+                    'solrmarc' => function ($sm) {
                         return new \VuFind\RecordDriver\SolrMarc(
-                            \VuFind\Config\Reader::getConfig(), null,
-                            \VuFind\Config\Reader::getConfig('searches')
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+                            null,
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
                         );
                     },
-                    'solrreserves' => function () {
+                    'solrreserves' => function ($sm) {
                         return new \VuFind\RecordDriver\SolrReserves(
-                            \VuFind\Config\Reader::getConfig(), null,
-                            \VuFind\Config\Reader::getConfig('searches')
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+                            null,
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
                         );
                     },
-                    'solrvudl' => function () {
+                    'solrvudl' => function ($sm) {
                         return new \VuFind\RecordDriver\SolrVudl(
-                            \VuFind\Config\Reader::getConfig(), null,
-                            \VuFind\Config\Reader::getConfig('searches')
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+                            null,
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
                         );
                     },
                     'summon' => function ($sm) {
-                        $summon = \VuFind\Config\Reader::getConfig('Summon');
+                        $summon = $sm->getServiceLocator()->get('VuFind\Config')->get('Summon');
                         $driver = new \VuFind\RecordDriver\Summon(
-                            \VuFind\Config\Reader::getConfig(), $summon, $summon
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+                            $summon, $summon
                         );
                         $driver->setDateConverter(
                             $sm->getServiceLocator()->get('VuFind\DateConverter')
                         );
                         return $driver;
                     },
-                    'worldcat' => function () {
+                    'worldcat' => function ($sm) {
                         return new \VuFind\RecordDriver\WorldCat(
-                            \VuFind\Config\Reader::getConfig(),
-                            \VuFind\Config\Reader::getConfig('WorldCat')
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('WorldCat')
                         );
                     },
                 ),
@@ -521,7 +538,7 @@ $config = array(
                         // If VuFind is configured to suppress the holdings tab when the
                         // ILS driver specifies no holdings, we need to pass in a connection
                         // object:
-                        $config = \VuFind\Config\Reader::getConfig();
+                        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
                         if (isset($config->Site->hideHoldingsTabWhenEmpty)
                             && $config->Site->hideHoldingsTabWhenEmpty
                         ) {
@@ -556,10 +573,28 @@ $config = array(
             ),
             'resolver_driver' => array(
                 'abstract_factories' => array('VuFind\Resolver\Driver\PluginFactory'),
-                'invokables' => array(
-                    '360link' => 'VuFind\Resolver\Driver\Threesixtylink',
-                    'ezb' => 'VuFind\Resolver\Driver\Ezb',
-                    'sfx' => 'VuFind\Resolver\Driver\Sfx',
+                'factories' => array(
+                    '360link' => function ($sm) {
+                        return new \VuFind\Resolver\Driver\Threesixtylink(
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('config')->OpenURL->url,
+                            $sm->getServiceLocator()->get('VuFind\Http')
+                                ->createClient()
+                        );
+                    },
+                    'ezb' => function ($sm) {
+                        return new \VuFind\Resolver\Driver\Ezb(
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('config')->OpenURL->url,
+                            $sm->getServiceLocator()->get('VuFind\Http')
+                                ->createClient()
+                        );
+                    },
+                    'sfx' => function ($sm) {
+                        return new \VuFind\Resolver\Driver\Sfx(
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('config')->OpenURL->url,
+                            $sm->getServiceLocator()->get('VuFind\Http')
+                                ->createClient()
+                        );
+                    },
                 ),
                 'aliases' => array(
                     'threesixtylink' => '360link',
@@ -583,7 +618,7 @@ $config = array(
                 'abstract_factories' => array('VuFind\Statistics\Driver\PluginFactory'),
                 'factories' => array(
                     'file' => function ($sm) {
-                        $config = \VuFind\Config\Reader::getConfig();
+                        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
                         $folder = isset($config->Statistics->file)
                             ? $config->Statistics->file : sys_get_temp_dir();
                         return new \VuFind\Statistics\Driver\File($folder);

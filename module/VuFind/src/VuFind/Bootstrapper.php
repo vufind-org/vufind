@@ -26,8 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind;
-use VuFind\Config\Reader as ConfigReader,
-    Zend\Console\Console, Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch;
+use Zend\Console\Console, Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch;
 
 /**
  * VuFind Bootstrapper
@@ -40,7 +39,7 @@ use VuFind\Config\Reader as ConfigReader,
  */
 class Bootstrapper
 {
-    protected $config;
+    protected $config = null;
     protected $event;
     protected $events;
 
@@ -51,7 +50,6 @@ class Bootstrapper
      */
     public function __construct(MvcEvent $event)
     {
-        $this->config = ConfigReader::getConfig();
         $this->event = $event;
         $this->events = $event->getApplication()->getEventManager();
     }
@@ -70,6 +68,26 @@ class Bootstrapper
                 $this->$method();
             }
         }
+    }
+
+    /**
+     * Set up configuration manager.
+     *
+     * @return void
+     */
+    protected function initConfig()
+    {
+        // Create the configuration manager:
+        $app = $this->event->getApplication();
+        $serviceManager = $app->getServiceManager();
+        $config = $app->getConfig();
+        $cfg = new \Zend\ServiceManager\Config($config['vufind']['config_reader']);
+        $serviceManager->setService(
+            'VuFind\Config', new \VuFind\Config\PluginManager($cfg)
+        );
+
+        // Use the manager to load the configuration used in subsequent init methods:
+        $this->config = $serviceManager->get('VuFind\Config')->get('config');
     }
 
     /**

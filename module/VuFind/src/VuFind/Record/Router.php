@@ -46,13 +46,23 @@ class Router
     protected $loader;
 
     /**
+     * VuFind configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $config;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Record\Loader $loader Record loader
+     * @param \Zend\Config\Config   $config VuFind configuration
      */
-    public function __construct(\VuFind\Record\Loader $loader)
-    {
+    public function __construct(\VuFind\Record\Loader $loader,
+        \Zend\Config\Config $config
+    ) {
         $this->loader = $loader;
+        $this->config = $config;
     }
 
     /**
@@ -88,9 +98,8 @@ class Router
         // to check if the driver is actually a collection; if so, we should switch
         // routes.
         if ('record' == $route['route']) {
-            $config = \VuFind\Config\Reader::getConfig();
-            if (isset($config->Collections->collections)
-                && $config->Collections->collections
+            if (isset($this->config->Collections->collections)
+                && $this->config->Collections->collections
             ) {
                 if (!is_object($driver)) {
                     list($source, $id) = explode('|', $driver, 2);

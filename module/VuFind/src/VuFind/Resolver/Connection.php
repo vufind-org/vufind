@@ -29,7 +29,6 @@
  * @link     http://vufind.org/wiki/vufind2:link_resolver_drivers Wiki
  */
 namespace VuFind\Resolver;
-use VuFind\Config\Reader as ConfigReader;
 
 /**
  * Resolver Connection Class
