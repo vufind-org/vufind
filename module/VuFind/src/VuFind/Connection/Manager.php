@@ -27,7 +27,7 @@
  */
 namespace VuFind\Connection;
 
-use VuFind\Config\Reader as ConfigReader, VuFind\ILS\Connection as ILSConnection,
+use VuFind\Config\Reader as ConfigReader,
     Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
