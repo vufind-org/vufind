@@ -56,7 +56,7 @@ class InstallController extends AbstractBase
     {
         // If auto-configuration is disabled, prevent any other action from being
         // accessed:
-        $config = ConfigReader::getConfig();
+        $config = $this->getConfig();
         if (!isset($config->System->autoConfigure)
             || !$config->System->autoConfigure
         ) {
@@ -115,7 +115,7 @@ class InstallController extends AbstractBase
         // See if the URL setting remains at the default (unless we already
         // know we've failed):
         if ($status) {
-            $config = ConfigReader::getConfig();
+            $config = $this->getConfig();
             if (stristr($config->Site->url, 'myuniversity.edu')) {
                 $status = false;
             }
@@ -428,7 +428,7 @@ class InstallController extends AbstractBase
      */
     protected function checkILS()
     {
-        $config = ConfigReader::getConfig();
+        $config = $this->getConfig();
         if (in_array($config->Catalog->driver, array('Sample', 'Demo'))) {
             $status = false;
         } else {
@@ -473,7 +473,7 @@ class InstallController extends AbstractBase
 
         // If we got this far, check whether we have an error with a real driver
         // or if we need to warn the user that they have selected a fake driver:
-        $config = ConfigReader::getConfig();
+        $config = $this->getConfig();
         $view = $this->createViewModel();
         if (in_array($config->Catalog->driver, array('Sample', 'Demo'))) {
             $view->demo = true;
@@ -526,7 +526,7 @@ class InstallController extends AbstractBase
     public function fixsolrAction()
     {
         // In Windows, localhost may fail -- see if switching to 127.0.0.1 helps:
-        $config = ConfigReader::getConfig();
+        $config = $this->getConfig();
         $configFile = ConfigReader::getLocalConfigPath('config.ini', null, true);
         if (stristr($config->Index->url, 'localhost')) {
             $newUrl = str_replace('localhost', '127.0.0.1', $config->Index->url);
@@ -569,7 +569,7 @@ class InstallController extends AbstractBase
     protected function checkSecurity()
     {
         // Are configuration settings missing?
-        $config = ConfigReader::getConfig();
+        $config = $this->getConfig();
         if (!isset($config->Authentication->hash_passwords)
             || !$config->Authentication->hash_passwords
             || !isset($config->Authentication->encrypt_ils_password)
@@ -665,7 +665,7 @@ class InstallController extends AbstractBase
     public function performsecurityfixAction()
     {
         // First, set encryption/hashing to true, and set the key
-        $config = ConfigReader::getConfig();
+        $config = $this->getConfig();
         $configPath = ConfigReader::getLocalConfigPath('config.ini', null, true);
         $writer = new ConfigWriter($configPath);
         if ($this->fixSecurityConfiguration($config, $writer)) {

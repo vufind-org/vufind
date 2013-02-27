@@ -61,7 +61,7 @@ class AdminController extends AbstractBase
         }
 
         // Block access to everyone when module is disabled:
-        $config = ConfigReader::getConfig();
+        $config = $this->getConfig();
         if (!isset($config->Site->admin_enabled) || !$config->Site->admin_enabled) {
             $routeMatch->setParam('action', 'disabled');
             return;
@@ -127,7 +127,7 @@ class AdminController extends AbstractBase
      */
     public function homeAction()
     {
-        $config = ConfigReader::getConfig();
+        $config = $this->getConfig();
         $xml = false;
         if (isset($config->Index->url)) {
             $response = $this->getServiceLocator()->get('VuFind\Http')
@@ -162,7 +162,7 @@ class AdminController extends AbstractBase
     {
         $view = $this->createViewModel();
 
-        $config = ConfigReader::getConfig();
+        $config = $this->getConfig();
         $statsFilled = array(
             'search' => false,
             'record' => false
@@ -240,7 +240,7 @@ class AdminController extends AbstractBase
     {
         $view = $this->createViewModel();
         $view->baseConfigPath = ConfigReader::getBaseConfigPath('');
-        $conf = ConfigReader::getConfig();
+        $conf = $this->getConfig();
         $view->showInstallLink
             = isset($conf->System->autoConfigure) && $conf->System->autoConfigure;
         return $view;

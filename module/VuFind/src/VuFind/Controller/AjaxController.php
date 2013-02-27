@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
 namespace VuFind\Controller;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\Auth as AuthException;
+use VuFind\Exception\Auth as AuthException;
 
 /**
  * This controller handles global AJAX functionality
@@ -209,7 +208,7 @@ class AjaxController extends AbstractBase
         );
 
         // Load callnumber and location settings:
-        $config = ConfigReader::getConfig();
+        $config = $this->getConfig();
         $callnumberSetting = isset($config->Item_Status->multiple_call_nos)
             ? $config->Item_Status->multiple_call_nos : 'msg';
         $locationSetting = isset($config->Item_Status->multiple_locations)
@@ -1257,7 +1256,7 @@ class AjaxController extends AbstractBase
         $this->writeSession();  // avoid session write timing bug
         $openUrl = $this->params()->fromQuery('openurl', '');
 
-        $config = ConfigReader::getConfig();
+        $config = $this->getConfig();
         $resolverType = isset($config->OpenURL->resolver)
             ? $config->OpenURL->resolver : 'other';
         $pluginManager = $this->getServiceLocator()
