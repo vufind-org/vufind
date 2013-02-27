@@ -44,14 +44,68 @@ use PDOException, VuFind\Exception\Date as DateException,
  */
 class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInterface
 {
+    /**
+     * Web services host
+     *
+     * @var string
+     */
     protected $ws_host;
+
+    /**
+     * Web services port
+     *
+     * @var string
+     */
     protected $ws_port;
+
+    /**
+     * Web services app
+     *
+     * @var string
+     */
     protected $ws_app;
+
+    /**
+     * Web services database key
+     *
+     * @var string
+     */
     protected $ws_dbKey;
+
+    /**
+     * Web services patron home UB ID
+     *
+     * @var string
+     */
     protected $ws_patronHomeUbId;
+
+    /**
+     * Legal pickup locations
+     *
+     * @var array
+     */
     protected $ws_pickUpLocations;
+
+    /**
+     * Default pickup location
+     *
+     * @var string
+     */
     protected $defaultPickUpLocation;
+
+    /**
+     * The maximum number of holds to check at a time (0 = no limit)
+     *
+     * @var int
+     */
     protected $holdCheckLimit;
+
+    /**
+     * Should we check renewal status before presenting a list of items or only
+     * after user requests renewal?
+     *
+     * @var bool
+     */
     protected $checkRenewalsUpFront;
 
     /**
