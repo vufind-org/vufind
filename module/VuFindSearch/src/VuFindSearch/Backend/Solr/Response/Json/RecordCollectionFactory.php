@@ -44,11 +44,11 @@ use VuFindSearch\Exception\InvalidArgumentException;
 class RecordCollectionFactory implements RecordCollectionFactoryInterface
 {
     /**
-     * Class of collection records.
+     * Factory to turn data into a record object.
      *
-     * @var string
+     * @var Callable
      */
-    protected $recordClass;
+    protected $recordFactory;
 
     /**
      * Class of collection.
@@ -65,9 +65,15 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
      *
      * @return void
      */
-    public function __construct ($recordClass = 'VuFindSearch\Backend\Solr\Response\Json\Record', $collectionClass = 'VuFindSearch\Backend\Solr\Response\Json\RecordCollection')
+    public function __construct ($recordFactory = null, $collectionClass = 'VuFindSearch\Backend\Solr\Response\Json\RecordCollection')
     {
-        $this->recordClass     = $recordClass;
+        if (null !== $recordFactory) {
+            $this->recordFactory = function ($data) {
+                return new Record($data);
+            };
+        } else {
+            $this->recordFactory = $recordFactory;
+        }
         $this->collectionClass = $collectionClass;
     }
 
@@ -85,7 +91,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
         }
         $collection = new $this->collectionClass($response);
         foreach ($response['response']['docs'] as $doc) {
-            $collection->add(new $this->recordClass($doc));
+            $collection->add(call_user_func($this->recordFactory, $doc));
         }
         return $collection;
     }

@@ -28,6 +28,10 @@
  */
 namespace VuFind\Search\Factory;
 
+use VuFind\RecordDriver\PluginManager;
+
+use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
+use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\Backend;
 
 use VuFind\Search\Listener\NormalizeSolrSort;
@@ -54,6 +58,23 @@ class SolrDefaultBackendFactory extends AbstractSolrBackendFactory
         $this->searchConfig = 'searches';
         $this->searchYaml = 'searchspecs.yaml';
         $this->serviceName = 'Solr';
+    }
+
+    /**
+     * Create the SOLR backend.
+     *
+     * @param string    $identifier Backend identifier
+     * @param Connector $connector  Connector
+     *
+     * @return Backend
+     */
+    protected function createBackend ($identifier, Connector $connector)
+    {
+        $backend = parent::createBackend($identifier, $connector);
+        $manager = $this->serviceLocator->get('VuFind\RecordDriverPluginManager');
+        $factory = new RecordCollectionFactory(array($manager, 'getSolrRecord'));
+        $backend->setRecordCollectionFactory($factory);
+        return $backend;
     }
 
     /**
