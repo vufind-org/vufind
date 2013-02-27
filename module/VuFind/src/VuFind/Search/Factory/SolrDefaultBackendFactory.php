@@ -57,20 +57,18 @@ class SolrDefaultBackendFactory extends AbstractSolrBackendFactory
             ? $this->config->Index->default_core : 'biblio';
         $this->searchConfig = 'searches';
         $this->searchYaml = 'searchspecs.yaml';
-        $this->serviceName = 'Solr';
     }
 
     /**
      * Create the SOLR backend.
      *
-     * @param string    $identifier Backend identifier
      * @param Connector $connector  Connector
      *
      * @return Backend
      */
-    protected function createBackend ($identifier, Connector $connector)
+    protected function createBackend (Connector $connector)
     {
-        $backend = parent::createBackend($identifier, $connector);
+        $backend = parent::createBackend($connector);
         $manager = $this->serviceLocator->get('VuFind\RecordDriverPluginManager');
         $factory = new RecordCollectionFactory(array($manager, 'getSolrRecord'));
         $backend->setRecordCollectionFactory($factory);

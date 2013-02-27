@@ -100,16 +100,27 @@ class Backend implements BackendInterface
     /**
      * Constructor.
      *
-     * @param string    $identifier Backend identifier
      * @param Connector $connector  SOLR connector
      *
      * @return void
      */
-    public function __construct ($identifier, Connector $connector)
+    public function __construct (Connector $connector)
     {
         $this->connector    = $connector;
-        $this->identifier   = $identifier;
         $this->dictionaries = array();
+        $this->identifier   = spl_object_hash($this);
+    }
+
+    /**
+     * Set the backend identifier.
+     *
+     * @param string $identifier Backend identifier
+     *
+     * @return void
+     */
+    public function setIdentifier ($identifier)
+    {
+        $this->identifier = $identifier;
     }
 
     /**

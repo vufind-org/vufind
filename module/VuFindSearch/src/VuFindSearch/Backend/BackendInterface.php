@@ -65,6 +65,15 @@ interface BackendInterface
 {
 
     /**
+     * Set the backend identifier.
+     *
+     * @param string $identifier
+     *
+     * @return void
+     */
+    public function setIdentifier ($identifier);
+
+    /**
      * Perform a search and return record collection.
      *
      * @param AbstractQuery $query  Search query

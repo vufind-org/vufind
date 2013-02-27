@@ -48,6 +48,5 @@ class SolrReservesBackendFactory extends AbstractSolrBackendFactory
         $this->solrCore = 'reserves';
         $this->searchConfig = 'reserves';
         $this->searchYaml = 'reservessearchspecs.yaml';
-        $this->serviceName = 'SolrReserves';
     }
 }

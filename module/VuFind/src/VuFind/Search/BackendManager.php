@@ -94,6 +94,7 @@ class BackendManager
             if (!$backend instanceOf BackendInterface) {
                 throw new UnexpectedValueException(sprintf('Object of class %s does not implement the expected interface', get_class($backend)));
             }
+            $backend->setIdentifier($name);
             return $backend;
         }
         return null;

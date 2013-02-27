@@ -82,13 +82,6 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected $searchYaml;
 
     /**
-     * The name of the service created by this factory.
-     *
-     * @var string
-     */
-    protected $serviceName;
-
-    /**
      * Main VuFind configuration
      *
      * @var \Zend\Config\Config
@@ -124,7 +117,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             $this->logger = $this->serviceLocator->get('VuFind\Logger');
         }
         $connector = $this->createConnector();
-        $backend   = $this->createBackend($this->serviceName, $connector);
+        $backend   = $this->createBackend($connector);
         $this->createListeners($backend);
         return $backend;
     }
@@ -132,14 +125,13 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     /**
      * Create the SOLR backend.
      *
-     * @param string    $identifier Backend identifier
      * @param Connector $connector  Connector
      *
      * @return Backend
      */
-    protected function createBackend ($identifier, Connector $connector)
+    protected function createBackend (Connector $connector)
     {
-        $backend = new Backend($identifier, $connector);
+        $backend = new Backend($connector);
         $specs   = $this->loadSpecs();
         $builder = new QueryBuilder($specs);
         $backend->setQueryBuilder($builder);
