@@ -44,8 +44,18 @@ class AjaxController extends AbstractBase
     const STATUS_ERROR = 'ERROR';            // bad
     const STATUS_NEED_AUTH = 'NEED_AUTH';    // must login first
 
+    /**
+     * Type of output to use
+     *
+     * @var string
+     */
     protected $outputMode;
-    protected $account;
+
+    /**
+     * Array of PHP errors captured during execution
+     *
+     * @var array
+     */
     protected static $php_errors = array();
 
     /**
@@ -975,7 +985,7 @@ class AjaxController extends AbstractBase
         $this->writeSession();  // avoid session write timing bug
 
         // Force login if necessary:
-        $config = \VuFind\Config\Reader::getConfig();
+        $config = $this->getConfig();
         if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
             && !$this->getUser()
         ) {
@@ -1016,7 +1026,7 @@ class AjaxController extends AbstractBase
         $this->writeSession();  // avoid session write timing bug
 
         // Force login if necessary:
-        $config = \VuFind\Config\Reader::getConfig();
+        $config = $this->getConfig();
         if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
             && !$this->getUser()
         ) {
