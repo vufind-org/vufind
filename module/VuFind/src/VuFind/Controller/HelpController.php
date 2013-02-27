@@ -28,7 +28,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Config\Reader as ConfigReader;
 
 /**
  * Home action for Help module
@@ -51,7 +50,6 @@ class HelpController extends AbstractBase
      */
     public function homeAction()
     {
-        $config = ConfigReader::getConfig();
         $this->layout()->setTemplate('layout/help');
 
         // Sanitize the topic name to include only alphanumeric characters
