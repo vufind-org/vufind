@@ -150,12 +150,7 @@ class Results extends BaseResults
         }
 
         // Construct record drivers for all the items in the response:
-        $this->results = array();
-        for ($x = 0; $x < count($this->rawResponse['response']['docs']); $x++) {
-            $this->results[] = $this->initRecordDriver(
-                $this->rawResponse['response']['docs'][$x]
-            );
-        }
+        $this->results = $collection->getRecords();
     }
 
     /**
