@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for the default SOLR backend.
+ * Factory for the reserves SOLR backend.
  *
  * PHP version 5
  *
@@ -28,12 +28,8 @@
  */
 namespace VuFind\Search\Factory;
 
-use VuFindSearch\Backend\Solr\Backend;
-
-use VuFind\Search\Listener\NormalizeSolrSort;
-
 /**
- * Factory for the default SOLR backend.
+ * Factory for the reserves SOLR backend.
  *
  * @category VuFind2
  * @package  Search
@@ -41,7 +37,7 @@ use VuFind\Search\Listener\NormalizeSolrSort;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class SolrDefaultBackendFactory extends AbstractSolrBackendFactory
+class SolrReservesBackendFactory extends AbstractSolrBackendFactory
 {
     /**
      * Constructor
@@ -49,26 +45,9 @@ class SolrDefaultBackendFactory extends AbstractSolrBackendFactory
     public function __construct()
     {
         parent::__construct();
-        $this->solrCore = isset($this->config->Index->default_core)
-            ? $this->config->Index->default_core : 'biblio';
-        $this->searchConfig = 'searches';
-        $this->searchYaml = 'searchspecs.yaml';
-        $this->serviceName = 'Solr';
-    }
-
-    /**
-     * Create listeners.
-     *
-     * @param Backend $backend Backend
-     *
-     * @return void
-     */
-    protected function createListeners (Backend $backend)
-    {
-        parent::createListeners($backend);
-        $events = $this->serviceLocator->get('SharedEventManager');
-        // Normalize sort directive
-        $listener = new NormalizeSolrSort($backend);
-        $listener->attach($events);
+        $this->solrCore = 'reserves';
+        $this->searchConfig = 'reserves';
+        $this->searchYaml = 'reservessearchspecs.yaml';
+        $this->serviceName = 'SolrReserves';
     }
 }

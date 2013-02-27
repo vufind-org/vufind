@@ -41,6 +41,18 @@ namespace VuFind\Search\SolrReserves;
 class Results extends \VuFind\Search\Solr\Results
 {
     /**
+     * Constructor
+     *
+     * @param \VuFind\Search\Base\Params $params Object representing user search
+     * parameters.
+     */
+    public function __construct(\VuFind\Search\Base\Params $params)
+    {
+        parent::__construct($params);
+        $this->backendId = 'SolrReserves';
+    }
+
+    /**
      * Get a connection to the Solr index.
      *
      * @param null|array $shards Selected shards to use (null for defaults)

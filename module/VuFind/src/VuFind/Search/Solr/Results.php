@@ -60,6 +60,14 @@ class Results extends BaseResults
     protected $searchService;
 
     /**
+     * Search backend identifiers.
+     *
+     * @var string
+     * @tag NEW SEARCH
+     */
+    protected $backendId = 'Solr';
+
+    /**
      * Return search service.
      *
      * @return SearchService
@@ -125,7 +133,7 @@ class Results extends BaseResults
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
         $params = $this->createBackendParameters($this->getParams());
-        $collection = $this->getSearchService()->search('Solr', $query, $offset, $limit, $params);
+        $collection = $this->getSearchService()->search($this->backendId, $query, $offset, $limit, $params);
 
         $this->rawResponse = $collection->getRawResponse();
         $this->resultTotal = $collection->getTotal();
@@ -500,7 +508,7 @@ class Results extends BaseResults
      */
     public function getRecord($id)
     {
-        $collection = $this->getSearchService()->retrieve('Solr', $id);
+        $collection = $this->getSearchService()->retrieve($this->backendId, $id);
 
         if (count($collection) == 0) {
             throw new RecordMissingException(
@@ -554,7 +562,7 @@ class Results extends BaseResults
      */
     public function getSimilarRecords($id)
     {
-        $collection = $this->getSearchService()->similar('Solr', $id);
+        $collection = $this->getSearchService()->similar($this->backendId, $id);
         $rawResponse = $collection->getRawResponse();
 
         $results = array();
