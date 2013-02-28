@@ -141,6 +141,12 @@ $config = array(
                     $sm->get('VuFind\Config')->get('config')
                 );
             },
+            'VuFind\CacheManager' => function ($sm) {
+                return new \VuFind\Cache\Manager(
+                    $sm->get('VuFind\Config')->get('config'),
+                    $sm->get('VuFind\Config')->get('searches')
+                );
+            },
             'VuFind\Cart' => function ($sm) {
                 $config = $sm->get('VuFind\Config')->get('config');
                 $active = isset($config->Site->showBookBag)
@@ -266,7 +272,6 @@ $config = array(
             },
         ),
         'invokables' => array(
-            'VuFind\CacheManager' => 'VuFind\Cache\Manager',
             'VuFind\RecordLoader' => 'VuFind\Record\Loader',
             'VuFind\SessionManager' => 'Zend\Session\SessionManager',
             'VuFind\WorldCatUtils' => 'VuFind\Connection\WorldCatUtils',
