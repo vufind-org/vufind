@@ -262,7 +262,7 @@ class AdminController extends AbstractBase
 
             // Reload config now that it has been edited (otherwise, old setting
             // will persist in cache):
-            ConfigReader::getConfig(null, true);
+            $this->getServiceLocator()->get('VuFind\Config')->reload('config');
         } else {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage(

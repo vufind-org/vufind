@@ -68,6 +68,6 @@ class PluginFactory implements AbstractFactoryInterface
     public function createServiceWithName(ServiceLocatorInterface $serviceLocator,
         $name, $requestedName
     ) {
-        return \VuFind\Config\Reader::getConfig($requestedName);
+        return \VuFind\Config\Reader::getConfig($requestedName, true);
     }
 }
