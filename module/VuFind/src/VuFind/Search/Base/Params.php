@@ -1293,7 +1293,7 @@ class Params implements ServiceLocatorAwareInterface
         if (isset($this->searchTerms[0]['group'])) {
             foreach ($this->searchTerms as $group) {
                 foreach ($group['group'] as $search) {
-                    if (preg_match("/\b$needle\b/", $search['lookfor'])) {
+                    if (preg_match("/\b$needle\b/u", $search['lookfor'])) {
                         return true;
                     }
                 }
@@ -1301,7 +1301,7 @@ class Params implements ServiceLocatorAwareInterface
         } else {
             // Basic search
             foreach ($this->searchTerms as $haystack) {
-                if (preg_match("/\b$needle\b/", $haystack['lookfor'])) {
+                if (preg_match("/\b$needle\b/u", $haystack['lookfor'])) {
                     return true;
                 }
             }
