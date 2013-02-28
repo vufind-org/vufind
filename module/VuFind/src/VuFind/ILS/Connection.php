@@ -30,8 +30,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS;
-use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException,
-    VuFind\ILS\Driver\DriverInterface;
+use VuFind\Exception\ILS as ILSException, VuFind\ILS\Driver\DriverInterface;
 
 /**
  * Catalog Connection Class
@@ -84,44 +83,26 @@ class Connection
     protected $titleHoldsMode = 'disabled';
 
     /**
-     * Set the configuration of the connection.
+     * Configuration loader
      *
-     * @param \Zend\Config\Config $config Configuration representing the [Catalog]
-     * section of config.ini
-     *
-     * @return Connection
+     * @var \VuFind\Config\PluginManager
      */
-    public function setConfig($config)
-    {
-        $this->config = $config;
-        return $this;
-    }
+    protected $configReader;
 
     /**
-     * Set the hold configuration for the connection.
+     * Constructor
      *
-     * @param \VuFind\ILS\HoldSettings $settings Hold settings
-     *
-     * @return Connection
-     */
-    public function setHoldConfig($settings)
-    {
-        $this->holdsMode = $settings->getHoldsMode();
-        $this->titleHoldsMode = $settings->getTitleHoldsMode();
-        return $this;
-    }
-
-    /**
-     * Initialize the driver using the ILS driver plugin manager.
-     *
+     * @param \Zend\Config\Config              $config        Configuration
+     * representing the [Catalog] section of config.ini
      * @param \VuFind\ILS\Driver\PluginManager $driverManager Driver plugin manager
-     *
-     * @throws \Exception
-     * @return Connection
+     * @param \VuFind\Config\PluginManager     $configReader  Configuration loader
      */
-    public function initWithDriverManager(
-        \VuFind\ILS\Driver\PluginManager $driverManager
+    public function __construct(\Zend\Config\Config $config,
+        \VuFind\ILS\Driver\PluginManager $driverManager,
+        \VuFind\Config\PluginManager $configReader
     ) {
+        $this->config = $config;
+        $this->configReader = $configReader;
         if (!isset($this->config->driver)) {
             throw new \Exception('ILS driver setting missing.');
         }
@@ -142,6 +123,19 @@ class Connection
                 $this->setDriver($driverManager->get('NoILS'));
             }
         }
+    }
+
+    /**
+     * Set the hold configuration for the connection.
+     *
+     * @param \VuFind\ILS\HoldSettings $settings Hold settings
+     *
+     * @return Connection
+     */
+    public function setHoldConfig($settings)
+    {
+        $this->holdsMode = $settings->getHoldsMode();
+        $this->titleHoldsMode = $settings->getTitleHoldsMode();
         return $this;
     }
 
@@ -200,13 +194,13 @@ class Connection
         // Determine config file name based on class name:
         $parts = explode('\\', $this->getDriverClass());
         try {
-            $config = ConfigReader::getConfig(end($parts));
+            $config = $this->configReader->get(end($parts));
         } catch (\Zend\Config\Exception\RuntimeException $e) {
             // Configuration loading failed; probably means file does not
             // exist -- just return an empty array in that case:
             return array();
         }
-        return $config->toArray();
+        return is_object($config) ? $config->toArray() : array();
     }
 
     /**

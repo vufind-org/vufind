@@ -183,13 +183,12 @@ $config = array(
                 return new \VuFindHttp\HttpService($options);
             },
             'VuFind\ILSConnection' => function ($sm) {
-                $catalog = new \VuFind\ILS\Connection();
-                return $catalog
-                    ->setConfig($sm->get('VuFind\Config')->get('config')->Catalog)
-                    ->setHoldConfig($sm->get('VuFind\ILSHoldSettings'))
-                    ->initWithDriverManager(
-                        $sm->get('VuFind\ILSDriverPluginManager')
-                    );
+                $catalog = new \VuFind\ILS\Connection(
+                    $sm->get('VuFind\Config')->get('config')->Catalog,
+                    $sm->get('VuFind\ILSDriverPluginManager'),
+                    $sm->get('VuFind\Config')
+                );
+                return $catalog->setHoldConfig($sm->get('VuFind\ILSHoldSettings'));
             },
             'VuFind\ILSHoldLogic' => function ($sm) {
                 return new \VuFind\ILS\Logic\Holds(

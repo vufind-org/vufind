@@ -136,6 +136,12 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             $this->serviceManager->setService(
                 'VuFind\Http', new \VuFindHttp\HttpService()
             );
+            $cfg = new \Zend\ServiceManager\Config(
+                array('abstract_factories' => array('VuFind\Config\PluginFactory'))
+            );
+            $this->serviceManager->setService(
+                'VuFind\Config', new \VuFind\Config\PluginManager($cfg)
+            );
             \VuFind\Connection\Manager::setServiceLocator($this->serviceManager);
         }
         return $this->serviceManager;
@@ -153,16 +159,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             $authManager = new \VuFind\Auth\PluginManager(
                 new \Zend\ServiceManager\Config(
                     array(
-                        'abstract_factories' =>
-                            array('VuFind\Auth\PluginFactory'),
-                        'factories' => array(
-                            'ils' => 
-                                function ($sm) {
-                                    return new \VuFind\Auth\ILS(
-                                        new \VuFind\ILS\Connection()
-                                    );
-                                },
-                        ),
+                        'abstract_factories' => array('VuFind\Auth\PluginFactory'),
                     )
                 )
             );
