@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
 namespace VuFind\Controller;
-use VuFind\Config\Reader as ConfigReader;
 
 /**
  * BrowseController Class
@@ -64,10 +63,12 @@ class BrowseController extends AbstractBase
 
     /**
      * Constructor
+     *
+     * @param \Zend\Config\Config $config VuFind configuration
      */
-    public function __construct()
+    public function __construct(\Zend\Config\Config $config)
     {
-        $this->config = ConfigReader::getConfig();
+        $this->config = $config;
 
         $this->disabledFacets = array();
         foreach ($this->config->Browse as $key => $setting) {

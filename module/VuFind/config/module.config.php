@@ -74,16 +74,30 @@ $config = array(
         ),
     ),
     'controllers' => array(
+        'factories' => array(
+            'browse' => function ($sm) {
+                return new \VuFind\Controller\BrowseController(
+                    $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+                );
+            },
+            'collection' => function ($sm) {
+                return new \VuFind\Controller\CollectionController(
+                    $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+                );
+            },
+            'collections' => function ($sm) {
+                return new \VuFind\Controller\CollectionsController(
+                    $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+                );
+            },
+        ),
         'invokables' => array(
             'admin' => 'VuFind\Controller\AdminController',
             'ajax' => 'VuFind\Controller\AjaxController',
             'alphabrowse' => 'VuFind\Controller\AlphabrowseController',
             'author' => 'VuFind\Controller\AuthorController',
             'authority' => 'VuFind\Controller\AuthorityController',
-            'browse' => 'VuFind\Controller\BrowseController',
             'cart' => 'VuFind\Controller\CartController',
-            'collection' => 'VuFind\Controller\CollectionController',
-            'collections' => 'VuFind\Controller\CollectionsController',
             'cover' => 'VuFind\Controller\CoverController',
             'error' => 'VuFind\Controller\ErrorController',
             'help' => 'VuFind\Controller\HelpController',
