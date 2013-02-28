@@ -41,6 +41,11 @@ use VuFind\Exception\Auth as AuthException;
  */
 class ILS extends AbstractBase
 {
+    /**
+     * Catalog connection
+     *
+     * @var \VuFind\ILS\Connection
+     */
     protected $catalog = null;
 
     /**

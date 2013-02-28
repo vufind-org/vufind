@@ -43,7 +43,18 @@ use VuFind\Exception\Auth as AuthException, Zend\Crypt\Password\Bcrypt;
  */
 class Database extends AbstractBase
 {
+    /**
+     * Username
+     *
+     * @var string
+     */
     protected $username;
+
+    /**
+     * Password
+     *
+     * @var string
+     */
     protected $password;
 
     /**
