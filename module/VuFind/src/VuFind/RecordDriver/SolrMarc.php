@@ -937,6 +937,8 @@ class SolrMarc extends SolrDefault
      * @param \VuFind\ILS\Connection       $ils            ILS connection
      * @param \VuFind\ILS\Logic\Holds      $holdLogic      Hold logic handler
      * @param \VuFind\ILS\Logic\TitleHolds $titleHoldLogic Title hold logic handler
+     *
+     * @return void
      */
     public function attachILS(\VuFind\ILS\Connection $ils,
         \VuFind\ILS\Logic\Holds $holdLogic,

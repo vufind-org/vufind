@@ -156,8 +156,7 @@ class AjaxController extends AbstractBase
      * Support method for getItemStatuses() -- filter suppressed locations from the
      * array of item information for a particular bib record.
      *
-     * @param array                  $record  Information on items linked to a single
-     * bib record
+     * @param array $record Information on items linked to a single bib record
      *
      * @return array        Filtered version of $record
      */
