@@ -41,8 +41,26 @@ use VuFind\Config\Reader as ConfigReader;
  */
 class BrowseController extends AbstractBase
 {
+    /**
+     * VuFind configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $config;
 
-    protected $config, $currentAction = null, $disabledFacets;
+    /**
+     * Current browse mode
+     *
+     * @var string
+     */
+    protected $currentAction = null;
+
+    /**
+     * Browse options disabled in configuration
+     *
+     * @var array
+     */
+    protected $disabledFacets;
 
     /**
      * Constructor
