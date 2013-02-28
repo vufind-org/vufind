@@ -90,6 +90,11 @@ $config = array(
                     $sm->getServiceLocator()->get('VuFind\Config')->get('config')
                 );
             },
+            'record' => function ($sm) {
+                return new \VuFind\Controller\RecordController(
+                    $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+                );
+            },
         ),
         'invokables' => array(
             'admin' => 'VuFind\Controller\AdminController',
@@ -107,7 +112,6 @@ $config = array(
             'missingrecord' => 'VuFind\Controller\MissingrecordController',
             'my-research' => 'VuFind\Controller\MyResearchController',
             'oai' => 'VuFind\Controller\OaiController',
-            'record' => 'VuFind\Controller\RecordController',
             'records' => 'VuFind\Controller\RecordsController',
             'search' => 'VuFind\Controller\SearchController',
             'summon' => 'VuFind\Controller\SummonController',
