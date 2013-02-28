@@ -81,8 +81,9 @@ class Database extends AbstractBase
      */
     protected function passwordHashingEnabled()
     {
-        return isset($this->config->Authentication->hash_passwords)
-            ? $this->config->Authentication->hash_passwords : false;
+        $config = $this->getConfig();
+        return isset($config->Authentication->hash_passwords)
+            ? $config->Authentication->hash_passwords : false;
     }
 
     /**
