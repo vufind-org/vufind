@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * VTLS Virtua Driver

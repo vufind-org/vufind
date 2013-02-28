@@ -30,8 +30,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use ArrayObject, VuFind\Config\Reader as ConfigReader,
-    VuFind\Connection\Manager as ConnectionManager,
+use ArrayObject, VuFind\Connection\Manager as ConnectionManager,
     VuFind\Exception\Date as DateException,
     VuFind\Exception\ILS as ILSException,
     Zend\Session\Container as SessionContainer;
