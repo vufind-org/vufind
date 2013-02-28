@@ -108,7 +108,7 @@ class Backend implements BackendInterface
     {
         $this->connector    = $connector;
         $this->dictionaries = array();
-        $this->identifier   = spl_object_hash($this);
+        $this->identifier   = null;
     }
 
     /**
