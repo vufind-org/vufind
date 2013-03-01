@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db;
-use VuFind\Config\Reader as ConfigReader, Zend\Db\Adapter\Adapter;
+use Zend\Db\Adapter\Adapter;
 
 /**
  * Database utility class.
