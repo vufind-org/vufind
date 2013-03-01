@@ -127,6 +127,16 @@ abstract class Options implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Perform initialization that cannot occur in constructor due to need for
+     * injected dependencies.
+     *
+     * @return void
+     */
+    public function init()
+    {
+    }
+
+    /**
      * Get string listing special advanced facet types.
      *
      * @return string

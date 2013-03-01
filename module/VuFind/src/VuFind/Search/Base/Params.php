@@ -87,6 +87,16 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Perform initialization that cannot occur in constructor due to need for
+     * injected dependencies.
+     *
+     * @return void
+     */
+    public function init()
+    {
+    }
+
+    /**
      * Get the search options object.
      *
      * @return \VuFind\Search\Base\Options

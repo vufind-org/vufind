@@ -164,6 +164,7 @@ class Manager implements ServiceLocatorAwareInterface
                 throw new \Exception('Invalid options object.');
             }
             $this->injectDependencies($this->optionsStore[$this->classId]);
+            $this->optionsStore[$this->classId]->init();
         }
         return $this->optionsStore[$this->classId];
     }
@@ -184,6 +185,7 @@ class Manager implements ServiceLocatorAwareInterface
             throw new \Exception('Invalid params object.');
         }
         $this->injectDependencies($params);
+        $params->init();
         return $params;
     }
 
