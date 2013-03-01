@@ -27,8 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Config\Reader as ConfigReader, Zend\Feed\Reader\Reader as FeedReader,
-    Zend\Log\LoggerInterface;
+use Zend\Feed\Reader\Reader as FeedReader, Zend\Log\LoggerInterface;
 
 /**
  * EuropeanaResults Recommendations Module
