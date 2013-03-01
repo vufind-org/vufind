@@ -96,18 +96,6 @@ interface BackendInterface
     public function retrieve ($id, ParamBag $params = null);
 
     /**
-     * Delete a single record.
-     *
-     * @param string   $id     Record identifier
-     * @param ParamBag $params Search backend parameters
-     *
-     * @return RecordCollectionInterface
-     *
-     * @todo Relocate to WritableBackendInterface
-     */
-    public function delete ($id, ParamBag $params = null);
-
-    /**
      * Return similar records.
      *
      * @param string   $id     Id of record to compare with
