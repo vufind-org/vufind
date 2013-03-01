@@ -455,6 +455,11 @@ $config = array(
                             $sm->getServiceLocator()->get('VuFind\DateConverter')
                         );
                     },
+                    'multibackend' => function ($sm) {
+                        return new \VuFind\ILS\Driver\MultiBackend(
+                            $sm->getServiceLocator()->get('VuFind\Config')
+                        );
+                    },
                     'unicorn' => function ($sm) {
                         return new \VuFind\ILS\Driver\Unicorn(
                             $sm->getServiceLocator()->get('VuFind\DateConverter')
