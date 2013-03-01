@@ -511,6 +511,21 @@ $config = array(
                             $config->Content->europeanaAPI
                         );
                     },
+                    'expandfacets' => function ($sm) {
+                        return new \VuFind\Recommend\ExpandFacets(
+                            $sm->getServiceLocator()->get('VuFind\Config')
+                        );
+                    },
+                    'sidefacets' => function ($sm) {
+                        return new \VuFind\Recommend\SideFacets(
+                            $sm->getServiceLocator()->get('VuFind\Config')
+                        );
+                    },
+                    'topfacets' => function ($sm) {
+                        return new \VuFind\Recommend\TopFacets(
+                            $sm->getServiceLocator()->get('VuFind\Config')
+                        );
+                    },
                     'worldcatidentities' => function ($sm) {
                         return new \VuFind\Recommend\WorldCatIdentities(
                             $sm->getServiceLocator()->get('VuFind\WorldCatUtils')
@@ -528,18 +543,15 @@ $config = array(
                     'catalogresults' => 'VuFind\Recommend\CatalogResults',
                     'collectionsidefacets' => 'VuFind\Recommend\CollectionSideFacets',
                     'europeanaresultsdeferred' => 'VuFind\Recommend\EuropeanaResultsDeferred',
-                    'expandfacets' => 'VuFind\Recommend\ExpandFacets',
                     'facetcloud' => 'VuFind\Recommend\FacetCloud',
                     'favoritefacets' => 'VuFind\Recommend\FavoriteFacets',
                     'openlibrarysubjects' => 'VuFind\Recommend\OpenLibrarySubjects',
                     'openlibrarysubjectsdeferred' => 'VuFind\Recommend\OpenLibrarySubjectsDeferred',
                     'pubdatevisajax' => 'VuFind\Recommend\PubDateVisAjax',
                     'resultgooglemapajax' => 'VuFind\Recommend\ResultGoogleMapAjax',
-                    'sidefacets' => 'VuFind\Recommend\SideFacets',
                     'summondatabases' => 'VuFind\Recommend\SummonDatabases',
                     'summonresults' => 'VuFind\Recommend\SummonResults',
                     'switchtype' => 'VuFind\Recommend\SwitchType',
-                    'topfacets' => 'VuFind\Recommend\TopFacets',
                 ),
             ),
             'recorddriver' => array(

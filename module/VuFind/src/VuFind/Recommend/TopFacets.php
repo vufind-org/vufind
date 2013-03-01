@@ -27,7 +27,6 @@
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Config\Reader as ConfigReader;
 
 /**
  * SideFacets Recommendations Module
@@ -43,9 +42,43 @@ use VuFind\Config\Reader as ConfigReader;
  */
 class TopFacets implements RecommendInterface
 {
+    /**
+     * Facet configuration
+     *
+     * @var array
+     */
     protected $facets;
+
+    /**
+     * Basic configurations
+     *
+     * @var array
+     */
     protected $baseSettings;
+
+    /**
+     * Search results
+     *
+     * @var \VuFind\Search\Base\Results
+     */
     protected $results;
+
+    /**
+     * Configuration loader
+     *
+     * @var \VuFind\Config\PluginManager
+     */
+    protected $configLoader;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     */
+    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    {
+        $this->configLoader = $configLoader;
+    }
 
     /**
      * setConfig
@@ -67,7 +100,7 @@ class TopFacets implements RecommendInterface
         $iniName = isset($settings[1]) ? $settings[1] : 'facets';
 
         // Load the desired facet information:
-        $config = ConfigReader::getConfig($iniName);
+        $config = $this->configLoader->get($iniName);
         $this->facets = isset($config->$mainSection)
             ? $config->$mainSection->toArray() : array();
 
