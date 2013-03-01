@@ -39,6 +39,7 @@ use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Backend\Feature\WritableBackendInterface;
 
 use Zend\Log\LoggerInterface;
 
@@ -100,7 +101,7 @@ class Backend implements BackendInterface
     /**
      * Constructor.
      *
-     * @param Connector $connector  SOLR connector
+     * @param Connector $connector SOLR connector
      *
      * @return void
      */
@@ -218,11 +219,37 @@ class Backend implements BackendInterface
      * @param string   $id     Record identifier
      * @param ParamBag $params Search backend parameters
      *
-     * @return RecordCollectionInterface
+     * @return void
      */
     public function delete ($id, ParamBag $params = null)
     {
         $this->connector->delete($id, $params);
+    }
+
+    /**
+     * Delete all records.
+     *
+     * @param ParamBag $params Backend parameters
+     *
+     * @return void
+     */
+    public function deleteAll (ParamBag $params = null)
+    {
+        $this->connector->deleteAll($params);
+    }
+
+    /**
+     * Update a single record.
+     *
+     * @param mixed    $record Record
+     * @param ParamBag $params Backend parameters
+     *
+     * @return void
+     *
+     * @todo Implement
+     */
+    public function update ($record, ParamBag $params = null)
+    {
     }
 
     /**
