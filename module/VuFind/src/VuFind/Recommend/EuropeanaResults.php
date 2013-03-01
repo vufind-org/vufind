@@ -215,7 +215,7 @@ class EuropeanaResults implements RecommendInterface,
     {
         // build url
         $url = $targetUrl . "?" . $requestParam . "=" . $this->lookfor;
-        //add providers to ignore
+        // add providers to ignore
         foreach ($excludeProviders as $provider) {
             $provider = trim($provider);
             if (!empty($provider)) {
@@ -224,7 +224,7 @@ class EuropeanaResults implements RecommendInterface,
         }
         $url .= '&wskey=' . urlencode($this->key);
 
-        //return complete url
+        // return complete url
         return $url;
     }
 
