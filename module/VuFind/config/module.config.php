@@ -656,12 +656,16 @@ $config = array(
                         }
                         return new \VuFind\RecordTab\HoldingsILS($catalog);
                     },
+                    'map' => function ($sm) {
+                        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+                        $enabled = isset($config->Content->recordMap);
+                        return new \VuFind\RecordTab\Map($enabled);
+                    },
                 ),
                 'invokables' => array(
                     'description' => 'VuFind\RecordTab\Description',
                     'excerpt' => 'VuFind\RecordTab\Excerpt',
                     'holdingsworldcat' => 'VuFind\RecordTab\HoldingsWorldCat',
-                    'map' => 'VuFind\RecordTab\Map',
                     'reviews' => 'VuFind\RecordTab\Reviews',
                     'staffviewarray' => 'VuFind\RecordTab\StaffViewArray',
                     'staffviewmarc' => 'VuFind\RecordTab\StaffViewMARC',

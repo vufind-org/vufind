@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
  */
 namespace VuFind\RecordTab;
-use VuFind\Config\Reader as ConfigReader;
 
 /**
  * Map tab
@@ -46,6 +45,23 @@ class Map extends AbstractBase
      * @var \Zend\I18n\Translator\Translator
      */
     protected $translator = null;
+
+    /**
+     * Is this module enabled in the configuration?
+     *
+     * @var bool
+     */
+    protected $enabled;
+
+    /**
+     * Constructor
+     *
+     * @param bool $enabled Is this module enabled in the configuration?
+     */
+    public function __construct($enabled = true)
+    {
+        $this->enabled = $enabled;
+    }
 
     /**
      * Get the on-screen description for this tab.
@@ -121,8 +137,7 @@ class Map extends AbstractBase
      */
     public function isActive()
     {
-        $config = ConfigReader::getConfig();
-        if (!isset($config->Content->recordMap)) {
+        if (!$this->enabled) {
             return false;
         }
         $longLat = $this->getRecordDriver()->tryMethod('getLongLat');
