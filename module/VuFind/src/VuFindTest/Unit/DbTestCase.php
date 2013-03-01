@@ -52,9 +52,8 @@ abstract class DbTestCase extends TestCase
 
         // Add database service:
         if (!$sm->has('VuFind\DbTablePluginManager')) {
-            $sm->setService(
-                'VuFind\DbAdapter', \VuFind\Db\AdapterFactory::getAdapter()
-            );
+            $dbFactory = new \VuFind\Db\AdapterFactory($sm->get('VuFind\Config'));
+            $sm->setService('VuFind\DbAdapter', $dbFactory->getAdapter());
             $factory = new \VuFind\Db\Table\PluginManager(
                 new \Zend\ServiceManager\Config(
                     array(

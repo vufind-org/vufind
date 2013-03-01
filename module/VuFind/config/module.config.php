@@ -179,7 +179,12 @@ $config = array(
                 );
             },
             'VuFind\DbAdapter' => function ($sm) {
-                return \VuFind\Db\AdapterFactory::getAdapter();
+                return $sm->get('VuFind\DbAdapterFactory')->getAdapter();
+            },
+            'VuFind\DbAdapterFactory' => function ($sm) {
+                return new \VuFind\Db\AdapterFactory(
+                    $sm->get('VuFind\Config')->get('config')
+                );
             },
             'VuFind\Export' => function ($sm) {
                 return new \VuFind\Export(

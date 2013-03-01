@@ -29,7 +29,6 @@ namespace VuFind\Controller;
 use VuFind\Config\Locator as ConfigLocator,
     VuFind\Config\Writer as ConfigWriter,
     VuFind\Connection\Manager as ConnectionManager,
-    VuFind\Db\AdapterFactory,
     Zend\Mvc\MvcEvent,
     Zend\Crypt\Password\Bcrypt;
 
@@ -338,9 +337,8 @@ class InstallController extends AbstractBase
                     . $this->params()->fromPost('dbrootpass') . '@'
                     . $view->dbhost;
                 try {
-                    $db = AdapterFactory::getAdapterFromConnectionString(
-                        $connection . '/mysql'
-                    );
+                    $db = $this->getServiceLocator()->get('VuFind\DbAdapterFactory')
+                        ->getAdapterFromConnectionString($connection . '/mysql');
                 } catch (\Exception $e) {
                     $this->flashMessenger()->setNamespace('error')
                         ->addMessage(
@@ -370,7 +368,9 @@ class InstallController extends AbstractBase
                         $db->query($query, $db::QUERY_MODE_EXECUTE);
                         $db->query($grant, $db::QUERY_MODE_EXECUTE);
                         $db->query('FLUSH PRIVILEGES', $db::QUERY_MODE_EXECUTE);
-                        $db = AdapterFactory::getAdapterFromConnectionString(
+                        $dbFactory = $this->getServiceLocator()
+                            ->get('VuFind\DbAdapterFactory');
+                        $db = $dbFactory->getAdapterFromConnectionString(
                             $connection . '/' . $view->dbname
                         );
                         $statements = explode(';', $sql);

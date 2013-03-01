@@ -27,7 +27,7 @@
  */
 namespace VuFind\Controller;
 use ArrayObject, VuFind\Config\Locator as ConfigLocator,
-    VuFind\Cookie\Container as CookieContainer, VuFind\Db\AdapterFactory,
+    VuFind\Cookie\Container as CookieContainer,
     VuFind\Exception\RecordMissing as RecordMissingException,
     Zend\Session\Container as SessionContainer;
 
@@ -171,7 +171,8 @@ class UpgradeController extends AbstractBase
         // subsequent calls.
         static $adapter = false;
         if (!$adapter) {
-            $adapter = AdapterFactory::getAdapter(
+            $factory = $this->getServiceLocator()->get('VuFind\DbAdapterFactory');
+            $adapter = $factory->getAdapter(
                 $this->session->dbRootUser, $this->session->dbRootPass
             );
         }
@@ -369,7 +370,9 @@ class UpgradeController extends AbstractBase
                 // Test the connection:
                 try {
                     // Query a table known to exist
-                    $db = AdapterFactory::getAdapter($dbrootuser, $pass);
+                    $factory = $this->getServiceLocator()
+                        ->get('VuFind\DbAdapterFactory');
+                    $db = $factory->getAdapter($dbrootuser, $pass);
                     $db->query("SELECT * FROM user;");
                     $this->session->dbRootUser = $dbrootuser;
                     $this->session->dbRootPass = $pass;
