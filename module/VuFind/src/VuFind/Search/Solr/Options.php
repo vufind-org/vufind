@@ -26,8 +26,6 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Solr;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Search\Base\Options as BaseOptions;
 
 /**
  * Solr Search Options
@@ -38,7 +36,7 @@ use VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Options extends BaseOptions
+class Options extends \VuFind\Search\Base\Options
 {
     /**
      * Spelling limit
@@ -83,15 +81,17 @@ class Options extends BaseOptions
     protected $solrShardsFieldsToStrip = array();
 
     /**
-     * Constructor
+     * Perform initialization that cannot occur in constructor due to need for
+     * injected dependencies.
      *
      * @return void
      */
-    public function __construct()
+    public function init()
     {
-        parent::__construct();
+        parent::init();
 
-        $searchSettings = ConfigReader::getConfig($this->searchIni);
+        $searchSettings = $this->getServiceLocator()->get('VuFind\Config')
+            ->get($this->searchIni);
         if (isset($searchSettings->General->default_limit)) {
             $this->defaultLimit = $searchSettings->General->default_limit;
         }
@@ -156,7 +156,8 @@ class Options extends BaseOptions
         }
 
         // Load facet preferences
-        $facetSettings = ConfigReader::getConfig($this->facetsIni);
+        $facetSettings = $this->getServiceLocator()->get('VuFind\Config')
+            ->get($this->facetsIni);
         if (isset($facetSettings->Advanced_Settings->translated_facets)
             && count($facetSettings->Advanced_Settings->translated_facets) > 0
         ) {
@@ -170,7 +171,7 @@ class Options extends BaseOptions
         }
 
         // Load Spelling preferences
-        $config = ConfigReader::getConfig();
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
         if (isset($config->Spelling->enabled)) {
             $this->spellcheck = $config->Spelling->enabled;
         }
