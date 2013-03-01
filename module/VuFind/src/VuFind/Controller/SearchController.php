@@ -341,7 +341,21 @@ class SearchController extends AbstractSearch
         $range = $this->params()->fromQuery('range');
         $dept = $this->params()->fromQuery('department');
 
+        // Validate the range parameter -- it should not exceed the greatest
+        // configured value:
         $searchSettings = $this->getConfig('searches');
+        $maxAge = 0;
+        if (isset($searchSettings->NewItem->ranges)) {
+            $tmp = explode(',', $searchSettings->NewItem->ranges);
+            foreach ($tmp as $current) {
+                if (intval($current) > $maxAge) {
+                    $maxAge = intval($current);
+                }
+            }
+        }
+        if ($maxAge > 0 && $range > $maxAge) {
+            $range = $maxAge;
+        }
 
         // The code always pulls in enough catalog results to get a fixed number
         // of pages worth of Solr results.  Note that if the Solr index is out of
