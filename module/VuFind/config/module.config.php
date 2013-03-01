@@ -505,6 +505,11 @@ $config = array(
                             isset ($config->Content->authors) ? $config->Content->authors : ''
                         );
                     },
+                    'collectionsidefacets' => function ($sm) {
+                        return new \VuFind\Recommend\CollectionSideFacets(
+                            $sm->getServiceLocator()->get('VuFind\Config')
+                        );
+                    },
                     'europeanaresults' => function ($sm) {
                         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
                         return new \VuFind\Recommend\EuropeanaResults(
@@ -513,6 +518,11 @@ $config = array(
                     },
                     'expandfacets' => function ($sm) {
                         return new \VuFind\Recommend\ExpandFacets(
+                            $sm->getServiceLocator()->get('VuFind\Config')
+                        );
+                    },
+                    'favoritefacets' => function ($sm) {
+                        return new \VuFind\Recommend\FavoriteFacets(
                             $sm->getServiceLocator()->get('VuFind\Config')
                         );
                     },
@@ -541,10 +551,8 @@ $config = array(
                     'authorfacets' => 'VuFind\Recommend\AuthorFacets',
                     'authorityrecommend' => 'VuFind\Recommend\AuthorityRecommend',
                     'catalogresults' => 'VuFind\Recommend\CatalogResults',
-                    'collectionsidefacets' => 'VuFind\Recommend\CollectionSideFacets',
                     'europeanaresultsdeferred' => 'VuFind\Recommend\EuropeanaResultsDeferred',
                     'facetcloud' => 'VuFind\Recommend\FacetCloud',
-                    'favoritefacets' => 'VuFind\Recommend\FavoriteFacets',
                     'openlibrarysubjects' => 'VuFind\Recommend\OpenLibrarySubjects',
                     'openlibrarysubjectsdeferred' => 'VuFind\Recommend\OpenLibrarySubjectsDeferred',
                     'pubdatevisajax' => 'VuFind\Recommend\PubDateVisAjax',
