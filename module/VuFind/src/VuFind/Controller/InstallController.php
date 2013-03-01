@@ -453,7 +453,8 @@ class InstallController extends AbstractBase
         // Process incoming parameter -- user may have selected a new driver:
         $newDriver = $this->params()->fromPost('driver');
         if (!empty($newDriver)) {
-            $configPath = ConfigLocator::getLocalConfigPath('config.ini', null, true);
+            $configPath
+                = ConfigLocator::getLocalConfigPath('config.ini', null, true);
             $writer = new ConfigWriter($configPath);
             $writer->set('Catalog', 'driver', $newDriver);
             if (!$writer->save()) {
