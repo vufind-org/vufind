@@ -164,12 +164,12 @@ class VuFind
      */
     public static function harvestWithParser($url)
     {
-        $parser = self::getParser();
+        $parser = static::getParser();
         switch (strtolower($parser)) {
         case 'aperture':
-            return self::harvestWithAperture($url);
+            return static::harvestWithAperture($url);
         case 'tika':
-            return self::harvestWithTika($url);
+            return static::harvestWithTika($url);
         default:
             // Ignore unrecognized parser option:
             return '';
@@ -220,7 +220,7 @@ class VuFind
         $xmlFile = tempnam('/tmp', 'apt');
 
         // Determine the base Aperture command (or fail if it is not configured):
-        $aptCmd = self::getApertureCommand($url, $xmlFile, $method);
+        $aptCmd = static::getApertureCommand($url, $xmlFile, $method);
         if (empty($aptCmd)) {
             return '';
         }
@@ -291,7 +291,7 @@ class VuFind
         $outputFile = tempnam('/tmp', 'tika');
 
         // Determine the base Tika command and execute
-        $tikaCommand = self::getTikaCommand($url, $outputFile, $arg);
+        $tikaCommand = static::getTikaCommand($url, $outputFile, $arg);
         proc_close(proc_open($tikaCommand[0], $tikaCommand[1], $tikaCommand[2]));
 
         // If we failed to process the file, give up now:
@@ -411,7 +411,7 @@ class VuFind
             }
         }
 
-        return self::xmlAsText($in);
+        return static::xmlAsText($in);
     }
 
     /**
