@@ -58,7 +58,7 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param string $worldcatId WorldCat ID
+     * @param string $worldCatId WorldCat ID
      */
     public function __construct($worldCatId)
     {
