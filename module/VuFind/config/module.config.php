@@ -266,6 +266,7 @@ $config = array(
             },
             'VuFind\WorldCatConnection' => function ($sm) {
                 return new \VuFind\Connection\WorldCat(
+                    $sm->get('VuFind\Config')->get('config'),
                     $sm->get('VuFind\Http')->createClient()
                 );
             },
