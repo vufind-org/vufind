@@ -26,8 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Summon;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Connection\Summon as SummonConnection,
+use VuFind\Connection\Summon as SummonConnection,
     VuFind\Connection\Summon\Query as SummonQuery,
     VuFind\Exception\RecordMissing as RecordMissingException,
     VuFind\Search\Base\Results as BaseResults;
@@ -57,11 +56,14 @@ class Results extends BaseResults
     {
         static $conn = false;
         if (!$conn) {
-            $config = ConfigReader::getConfig();
+            $configReader = $this->getServiceLocator()->get('VuFind\Config');
+            $config = $configReader->get('config');
             $id = isset($config->Summon->apiId) ? $config->Summon->apiId : null;
             $key = isset($config->Summon->apiKey) ? $config->Summon->apiKey : null;
             $client = $this->getServiceLocator()->get('VuFind\Http')->createClient();
-            $conn = new SummonConnection($id, $key, array(), $client);
+            $conn = new SummonConnection(
+                $configReader->get('Summon'), $id, $key, array(), $client
+            );
             \VuFind\ServiceManager\Initializer::initInstance(
                 $conn, $this->getServiceLocator()
             );
