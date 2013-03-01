@@ -41,18 +41,28 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Search\Memory,
  */
 class ResultScroller extends AbstractPlugin
 {
+    /**
+     * Is scroller enabled?
+     *
+     * @var bool
+     */
     protected $enabled;
+
+    /**
+     * Session data used by scroller
+     *
+     * @var SessionContainer
+     */
     protected $data;
 
     /**
      * Constructor. Create a new search result scroller.
+     *
+     * @param bool $enabled Is the scroller enabled?
      */
-    public function __construct()
+    public function __construct($enabled = true)
     {
-        // Is this functionality enabled in config.ini?
-        $config = ConfigReader::getConfig();
-        $this->enabled = (isset($config->Record->next_prev_navigation)
-            && $config->Record->next_prev_navigation);
+        $this->enabled = $enabled;
 
         // Set up session namespace for the class.
         $this->data = new SessionContainer('ResultScroller');

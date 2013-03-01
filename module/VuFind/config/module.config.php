@@ -124,6 +124,14 @@ $config = array(
         ),
     ),
     'controller_plugins' => array(
+        'factories' => array(
+            'result-scroller' => function ($sm) {
+                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+                $enabled = (isset($config->Record->next_prev_navigation)
+                    && $config->Record->next_prev_navigation);
+                return new \VuFind\Controller\Plugin\ResultScroller($enabled);
+            },
+        ),
         'invokables' => array(
             'db-upgrade' => 'VuFind\Controller\Plugin\DbUpgrade',
             'favorites' => 'VuFind\Controller\Plugin\Favorites',
@@ -131,7 +139,6 @@ $config = array(
             'holds' => 'VuFind\Controller\Plugin\Holds',
             'renewals' => 'VuFind\Controller\Plugin\Renewals',
             'reserves' => 'VuFind\Controller\Plugin\Reserves',
-            'result-scroller' => 'VuFind\Controller\Plugin\ResultScroller',
         )
     ),
     'service_manager' => array(
