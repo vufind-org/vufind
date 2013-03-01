@@ -26,8 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Base;
-use VuFind\Config\Reader as ConfigReader,
-    Zend\ServiceManager\ServiceLocatorAwareInterface,
+use Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -727,8 +726,8 @@ class Params implements ServiceLocatorAwareInterface
 
         // Load the necessary settings to determine the appropriate recommendations
         // module:
-        $searchSettings
-            = ConfigReader::getConfig($this->getOptions()->getSearchIni());
+        $searchSettings = $this->getServiceLocator()->get('VuFind\Config')
+            ->get($this->getOptions()->getSearchIni());
 
         // If we have a search type set, save it so we can try to load a
         // type-specific recommendations module:
