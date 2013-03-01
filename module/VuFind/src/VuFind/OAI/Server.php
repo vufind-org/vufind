@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\OAI;
-use SimpleXMLElement, VuFind\Config\Reader as ConfigReader,
+use SimpleXMLElement,
     VuFind\Exception\RecordMissing as RecordMissingException, VuFind\SimpleXML;
 
 /**
@@ -71,19 +71,21 @@ class Server
      * Constructor
      *
      * @param \VuFind\Search\Manager $sm      Search manager for retrieving records
+     * @param \Zend\Config\Config    $config  VuFind configuration
      * @param string                 $baseURL The base URL for the OAI server
      * @param array                  $params  The incoming OAI-PMH parameters
      * (i.e. $_GET)
      */
-    public function __construct(\VuFind\Search\Manager $sm, $baseURL, $params)
-    {
+    public function __construct(\VuFind\Search\Manager $sm,
+        \Zend\Config\Config $config, $baseURL, $params
+    ) {
         $this->searchManager = $sm;
         $this->tableManager = $sm->getServiceLocator()
             ->get('VuFind\DbTablePluginManager');
         $this->baseURL = $baseURL;
         $this->params = isset($params) && is_array($params) ? $params : array();
         $this->initializeMetadataFormats(); // Load details on supported formats
-        $this->initializeSettings();        // Load config.ini settings
+        $this->initializeSettings($config); // Load config.ini settings
     }
 
     /**
@@ -327,12 +329,12 @@ class Server
      * constructor and is only a separate method to allow easy override by child
      * classes).
      *
+     * @param \Zend\Config\Config $config VuFind configuration
+     *
      * @return void
      */
-    protected function initializeSettings()
+    protected function initializeSettings(\Zend\Config\Config $config)
     {
-        $config = ConfigReader::getConfig();
-
         // Override default repository name if configured:
         if (isset($config->OAI->repository_name)) {
             $this->repositoryName = $config->OAI->repository_name;
