@@ -50,6 +50,20 @@ class Facets
     protected $fields;
 
     /**
+     * Facet queries.
+     *
+     * @var ArrayObject
+     */
+    protected $queries;
+
+    /**
+     * SOLR facet information.
+     *
+     * @var array
+     */
+    protected $facets;
+
+    /**
      * Constructor.
      *
      * @param array $facets SOLR facet information
@@ -60,10 +74,7 @@ class Facets
      */
     public function __construct (array $facets)
     {
-        $this->fields = new ArrayObject();
-        foreach ($facets['facet_fields'] as $name => $info) {
-            $this->fields->offsetSet($name, new NamedList($info));
-        }
+        $this->facets = $facets;
     }
 
     /**
@@ -73,7 +84,31 @@ class Facets
      */
     public function getFieldFacets ()
     {
+        if (!$this->fields) {
+            $this->fields = new ArrayObject();
+            if (isset($this->facets['facet_fields'])) {
+                foreach ($this->facets['facet_fields'] as $name => $info) {
+                    $this->fields->offsetSet($name, new NamedList($info));
+                }
+            }
+        }
         return $this->fields;
+    }
+
+    /**
+     * Return facet queries.
+     *
+     * @return ArrayObject
+     */
+    public function getQueryFacets ()
+    {
+        if (!$this->queries) {
+            $this->queries = new ArrayObject();
+            if (isset($this->facets['facet_queries'])) {
+                $this->queries->exchangeArray($this->facets['facet_queries']);
+            }
+        }
+        return $this->queries;
     }
 
 }
