@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
  */
 namespace VuFind\RecordTab;
-use VuFind\Config\Reader as ConfigReader;
 
 /**
  * Reviews tab
@@ -39,6 +38,23 @@ use VuFind\Config\Reader as ConfigReader;
  */
 class Reviews extends AbstractBase
 {
+    /**
+     * Is this module enabled in the configuration?
+     *
+     * @var bool
+     */
+    protected $enabled;
+
+    /**
+     * Constructor
+     *
+     * @param bool $enabled Is this module enabled in the configuration?
+     */
+    public function __construct($enabled = true)
+    {
+        $this->enabled = $enabled;
+    }
+
     /**
      * Get the on-screen description for this tab.
      *
@@ -56,8 +72,7 @@ class Reviews extends AbstractBase
      */
     public function isActive()
     {
-        $config = ConfigReader::getConfig();
-        if (!isset($config->Content->reviews)) {
+        if (!$this->enabled) {
             return false;
         }
         $isbns = $this->getRecordDriver()->tryMethod('getISBNs');

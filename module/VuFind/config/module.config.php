@@ -637,6 +637,11 @@ $config = array(
                             $searchManager->setSearchClassId('SolrCollection')->getResults()
                         );
                     },
+                    'excerpt' => function ($sm) {
+                        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+                        $enabled = isset($config->Content->excerpts);
+                        return new \VuFind\RecordTab\Excerpt($enabled);
+                    },
                     'hierarchytree' => function ($sm) {
                         return new \VuFind\RecordTab\HierarchyTree(
                             $sm->getServiceLocator()->get('VuFind\Config')->get('config')
@@ -661,12 +666,15 @@ $config = array(
                         $enabled = isset($config->Content->recordMap);
                         return new \VuFind\RecordTab\Map($enabled);
                     },
+                    'reviews' => function ($sm) {
+                        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+                        $enabled = isset($config->Content->reviews);
+                        return new \VuFind\RecordTab\Reviews($enabled);
+                    },
                 ),
                 'invokables' => array(
                     'description' => 'VuFind\RecordTab\Description',
-                    'excerpt' => 'VuFind\RecordTab\Excerpt',
                     'holdingsworldcat' => 'VuFind\RecordTab\HoldingsWorldCat',
-                    'reviews' => 'VuFind\RecordTab\Reviews',
                     'staffviewarray' => 'VuFind\RecordTab\StaffViewArray',
                     'staffviewmarc' => 'VuFind\RecordTab\StaffViewMARC',
                     'toc' => 'VuFind\RecordTab\TOC',
