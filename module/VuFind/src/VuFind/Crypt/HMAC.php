@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Crypt;
-use VuFind\Config\Reader as ConfigReader;
 
 /**
  * HMAC hash generator wrapper
