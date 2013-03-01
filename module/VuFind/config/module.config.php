@@ -125,6 +125,12 @@ $config = array(
     ),
     'controller_plugins' => array(
         'factories' => array(
+            'reserves' => function ($sm) {
+                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+                $useIndex = isset($config->Reserves->search_enabled)
+                    && $config->Reserves->search_enabled;
+                return new \VuFind\Controller\Plugin\Reserves($useIndex);
+            },
             'result-scroller' => function ($sm) {
                 $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
                 $enabled = (isset($config->Record->next_prev_navigation)
@@ -138,7 +144,6 @@ $config = array(
             'followup' => 'VuFind\Controller\Plugin\Followup',
             'holds' => 'VuFind\Controller\Plugin\Holds',
             'renewals' => 'VuFind\Controller\Plugin\Renewals',
-            'reserves' => 'VuFind\Controller\Plugin\Reserves',
         )
     ),
     'service_manager' => array(
