@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Controller\Plugin;
-use VuFind\Config\Reader as ConfigReader, VuFind\Search\Memory,
-    Zend\Mvc\Controller\Plugin\AbstractPlugin,
+use VuFind\Search\Memory, Zend\Mvc\Controller\Plugin\AbstractPlugin,
     Zend\Session\Container as SessionContainer;
 
 /**
