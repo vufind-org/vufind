@@ -31,8 +31,7 @@ use Zend\Db\Sql\Expression,
     Zend\Db\Sql\Sql,
     Zend\Crypt\Symmetric\Mcrypt,
     Zend\Crypt\Password\Bcrypt,
-    Zend\Crypt\BlockCipher as BlockCipher,
-    VuFind\Config\Reader as ConfigReader;
+    Zend\Crypt\BlockCipher as BlockCipher;
 
 /**
  * Row Definition for user
@@ -45,6 +44,13 @@ use Zend\Db\Sql\Expression,
  */
 class User extends ServiceLocatorAwareGateway
 {
+    /**
+     * Is encryption enabled?
+     *
+     * @var bool
+     */
+    protected $encryptionEnabled = null;
+
     /**
      * Encryption key used for catalog passwords (null if encryption disabled):
      *
@@ -60,19 +66,6 @@ class User extends ServiceLocatorAwareGateway
     public function __construct($adapter)
     {
         parent::__construct('id', 'user', $adapter);
-        $config = ConfigReader::getConfig();
-        $encryption = isset($config->Authentication->encrypt_ils_password)
-            ? $config->Authentication->encrypt_ils_password : false;
-        if ($encryption) {
-            if (!isset($config->Authentication->ils_encryption_key)
-                || empty($config->Authentication->ils_encryption_key)
-            ) {
-                throw new \VuFind\Exception\PasswordSecurity(
-                    'ILS password encryption on, but no key set.'
-                );
-            }
-            $this->encryptionKey = $config->Authentication->ils_encryption_key;
-        }
     }
 
     /**
@@ -131,6 +124,7 @@ class User extends ServiceLocatorAwareGateway
      * @param string $password Password to save
      *
      * @return mixed           The output of the save method.
+     * @throws \VuFind\Exception\PasswordSecurity
      */
     public function saveCredentials($username, $password)
     {
@@ -146,10 +140,11 @@ class User extends ServiceLocatorAwareGateway
     }
 
     /**
-     *  This is a getter for the Catalog Password. It will return a plaintext version
-     *  of the password.
+     * This is a getter for the Catalog Password. It will return a plaintext version
+     * of the password.
      *
-     *  @return string The Catalog password in plain text
+     * @return string The Catalog password in plain text
+     * @throws \VuFind\Exception\PasswordSecurity
      */
     public function getCatPassword()
     {
@@ -165,7 +160,14 @@ class User extends ServiceLocatorAwareGateway
      */
     protected function passwordEncryptionEnabled()
     {
-        return null !== $this->encryptionKey;
+        if (null === $this->encryptionEnabled) {
+            $config = $this->getServiceLocator()->getServiceLocator()
+                ->get('VuFind\Config')->get('config');
+            $this->encryptionEnabled
+                = isset($config->Authentication->encrypt_ils_password)
+                ? $config->Authentication->encrypt_ils_password : false;
+        }
+        return $this->encryptionEnabled;
     }
 
     /**
@@ -177,9 +179,25 @@ class User extends ServiceLocatorAwareGateway
      * decrypt text.
      *
      * @return string|bool    The encrypted/decrypted string
+     * @throws \VuFind\Exception\PasswordSecurity
      */
     protected function encryptOrDecrypt($text, $encrypt = true)
     {
+        // Load encryption key from configuration if not already present:
+        if (null === $this->encryptionKey) {
+            $config = $this->getServiceLocator()->getServiceLocator()
+                ->get('VuFind\Config')->get('config');
+            if (!isset($config->Authentication->ils_encryption_key)
+                || empty($config->Authentication->ils_encryption_key)
+            ) {
+                throw new \VuFind\Exception\PasswordSecurity(
+                    'ILS password encryption on, but no key set.'
+                );
+            }
+            $this->encryptionKey = $config->Authentication->ils_encryption_key;
+        }
+
+        // Perform encryption:
         $cipher = new BlockCipher(new Mcrypt(array('algorithm' => 'blowfish')));
         $cipher->setKey($this->encryptionKey);
         return $encrypt ? $cipher->encrypt($text) : $cipher->decrypt($text);
