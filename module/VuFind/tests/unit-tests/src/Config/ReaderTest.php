@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
 namespace VuFindTest\Config;
-use VuFind\Config\Reader;
+use VuFind\Config\Locator, VuFind\Config\Reader;
 
 /**
  * Config Reader Test Class
@@ -62,14 +62,14 @@ class ReaderTest extends \VuFindTest\Unit\TestCase
     public static function setUpBeforeClass()
     {
         // Create test files:
-        $parentPath = Reader::getLocalConfigPath('unit-test-parent.ini', null, true);
+        $parentPath = Locator::getLocalConfigPath('unit-test-parent.ini', null, true);
         $parent = "[Section1]\n"
             . "a=1\nb=2\nc=3\n"
             . "[Section2]\n"
             . "d=4\ne=5\nf=6\n"
             . "[Section3]\n"
             . "g=7\nh=8\ni=9\n";
-        $childPath = Reader::getLocalConfigPath('unit-test-child.ini', null, true);
+        $childPath = Locator::getLocalConfigPath('unit-test-child.ini', null, true);
         $child = "[Section1]\n"
             . "j=10\nk=11\nl=12\n"
             . "[Section2]\n"

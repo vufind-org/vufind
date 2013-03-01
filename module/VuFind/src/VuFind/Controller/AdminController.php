@@ -26,8 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\Forbidden as ForbiddenException, Zend\Mvc\MvcEvent;
+use VuFind\Exception\Forbidden as ForbiddenException, Zend\Mvc\MvcEvent;
 
 /**
  * Class controls VuFind administration.
@@ -239,7 +238,7 @@ class AdminController extends AbstractBase
     public function configAction()
     {
         $view = $this->createViewModel();
-        $view->baseConfigPath = ConfigReader::getBaseConfigPath('');
+        $view->baseConfigPath = \VuFind\Config\Locator::getBaseConfigPath('');
         $conf = $this->getConfig();
         $view->showInstallLink
             = isset($conf->System->autoConfigure) && $conf->System->autoConfigure;
@@ -253,7 +252,7 @@ class AdminController extends AbstractBase
      */
     public function enableautoconfigAction()
     {
-        $configFile = ConfigReader::getConfigPath('config.ini');
+        $configFile = \VuFind\Config\Locator::getConfigPath('config.ini');
         $writer = new \VuFind\Config\Writer($configFile);
         $writer->set('System', 'autoConfigure', 1);
         if ($writer->save()) {

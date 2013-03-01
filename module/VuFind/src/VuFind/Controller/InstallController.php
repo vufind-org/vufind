@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Config\Reader as ConfigReader,
+use VuFind\Config\Locator as ConfigLocator,
     VuFind\Config\Writer as ConfigWriter,
     VuFind\Connection\Manager as ConnectionManager,
     VuFind\Db\AdapterFactory,
@@ -95,9 +95,9 @@ class InstallController extends AbstractBase
      */
     protected function installBasicConfig()
     {
-        $config = ConfigReader::getLocalConfigPath('config.ini', null, true);
+        $config = ConfigLocator::getLocalConfigPath('config.ini', null, true);
         if (!file_exists($config)) {
-            return copy(ConfigReader::getBaseConfigPath('config.ini'), $config);
+            return copy(ConfigLocator::getBaseConfigPath('config.ini'), $config);
         }
         return true;        // report success if file already exists
     }
@@ -135,7 +135,7 @@ class InstallController extends AbstractBase
     public function fixbasicconfigAction()
     {
         $view = $this->createViewModel();
-        $config = ConfigReader::getLocalConfigPath('config.ini', null, true);
+        $config = ConfigLocator::getLocalConfigPath('config.ini', null, true);
         try {
             if (!$this->installBasicConfig()) {
                 throw new \Exception('Cannot copy file into position.');
@@ -385,7 +385,7 @@ class InstallController extends AbstractBase
                         // forward back to the home action!
                         $string = "mysql://{$view->dbuser}:{$newpass}@"
                             . $view->dbhost . '/' . $view->dbname;
-                        $config = ConfigReader::getLocalConfigPath(
+                        $config = ConfigLocator::getLocalConfigPath(
                             'config.ini', null, true
                         );
                         $writer = new ConfigWriter($config);
@@ -453,16 +453,16 @@ class InstallController extends AbstractBase
         // Process incoming parameter -- user may have selected a new driver:
         $newDriver = $this->params()->fromPost('driver');
         if (!empty($newDriver)) {
-            $configPath = ConfigReader::getLocalConfigPath('config.ini', null, true);
+            $configPath = ConfigLocator::getLocalConfigPath('config.ini', null, true);
             $writer = new ConfigWriter($configPath);
             $writer->set('Catalog', 'driver', $newDriver);
             if (!$writer->save()) {
                 return $this->forwardTo('Install', 'fixbasicconfig');
             }
             // Copy configuration, if applicable:
-            $ilsIni = ConfigReader::getBaseConfigPath($newDriver . '.ini');
+            $ilsIni = ConfigLocator::getBaseConfigPath($newDriver . '.ini');
             $localIlsIni
-                = ConfigReader::getLocalConfigPath("{$newDriver}.ini", null, true);
+                = ConfigLocator::getLocalConfigPath("{$newDriver}.ini", null, true);
             if (file_exists($ilsIni) && !file_exists($localIlsIni)) {
                 if (!copy($ilsIni, $localIlsIni)) {
                     return $this->forwardTo('Install', 'fixbasicconfig');
@@ -494,7 +494,7 @@ class InstallController extends AbstractBase
             sort($drivers);
             $view->drivers = $drivers;
         } else {
-            $view->configPath = ConfigReader::getLocalConfigPath(
+            $view->configPath = ConfigLocator::getLocalConfigPath(
                 "{$config->Catalog->driver}.ini", null, true
             );
         }
@@ -527,7 +527,7 @@ class InstallController extends AbstractBase
     {
         // In Windows, localhost may fail -- see if switching to 127.0.0.1 helps:
         $config = $this->getConfig();
-        $configFile = ConfigReader::getLocalConfigPath('config.ini', null, true);
+        $configFile = ConfigLocator::getLocalConfigPath('config.ini', null, true);
         if (stristr($config->Index->url, 'localhost')) {
             $newUrl = str_replace('localhost', '127.0.0.1', $config->Index->url);
             try {
@@ -666,7 +666,7 @@ class InstallController extends AbstractBase
     {
         // First, set encryption/hashing to true, and set the key
         $config = $this->getConfig();
-        $configPath = ConfigReader::getLocalConfigPath('config.ini', null, true);
+        $configPath = ConfigLocator::getLocalConfigPath('config.ini', null, true);
         $writer = new ConfigWriter($configPath);
         if ($this->fixSecurityConfiguration($config, $writer)) {
             // Problem writing? Show the user an error:
@@ -709,7 +709,7 @@ class InstallController extends AbstractBase
      */
     public function doneAction()
     {
-        $config = ConfigReader::getLocalConfigPath('config.ini', null, true);
+        $config = ConfigLocator::getLocalConfigPath('config.ini', null, true);
         $writer = new ConfigWriter($config);
         $writer->set('System', 'autoConfigure', 0);
         if (!$writer->save()) {

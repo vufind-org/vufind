@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
 namespace VuFindConsole\Controller;
-use VuFind\Config\Reader as ConfigReader, VuFind\Harvester\NAF, VuFind\Harvester\OAI,
-    Zend\Console\Console;
+use VuFind\Harvester\NAF, VuFind\Harvester\OAI, Zend\Console\Console;
 
 /**
  * This controller handles various command-line tools
@@ -77,7 +76,7 @@ class HarvestController extends AbstractBase
         $this->checkLocalSetting();
 
         // Read Config files
-        $configFile = ConfigReader::getConfigPath('oai.ini', 'harvest');
+        $configFile = \VuFind\Config\Locator::getConfigPath('oai.ini', 'harvest');
         $oaiSettings = @parse_ini_file($configFile, true);
         if (empty($oaiSettings)) {
             Console::writeLine("Please add OAI-PMH settings to oai.ini.");

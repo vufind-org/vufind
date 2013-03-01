@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/ Wiki
  */
 namespace VuFind\XSLT;
-use DOMDocument, VuFind\Config\Reader as ConfigReader,
+use DOMDocument, VuFind\Config\Locator as ConfigLocator,
     VuFind\Connection\Manager as ConnectionManager,
     XSLTProcessor, Zend\Console\Console,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
@@ -88,7 +88,7 @@ class Importer implements ServiceLocatorAwareInterface
     protected function generateXML($xmlFile, $properties)
     {
         // Load properties file:
-        $properties = ConfigReader::getConfigPath($properties, 'import');
+        $properties = ConfigLocator::getConfigPath($properties, 'import');
         if (!file_exists($properties)) {
             throw new \Exception("Cannot load properties file: {$properties}.");
         }
@@ -100,7 +100,7 @@ class Importer implements ServiceLocatorAwareInterface
                 "Properties file ({$properties}) is missing General/xslt setting."
             );
         }
-        $xslFile = ConfigReader::getConfigPath(
+        $xslFile = ConfigLocator::getConfigPath(
             $options['General']['xslt'], 'import/xsl'
         );
 

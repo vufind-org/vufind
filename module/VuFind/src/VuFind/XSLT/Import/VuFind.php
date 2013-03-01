@@ -26,7 +26,8 @@
  * @link     http://vufind.org/wiki/importing_records Wiki
  */
 namespace VuFind\XSLT\Import;
-use DOMDocument, VuFind\Config\Reader as ConfigReader;
+use DOMDocument, VuFind\Config\Locator as ConfigLocator,
+    VuFind\Config\Reader as ConfigReader;
 
 /**
  * XSLT support class -- all methods of this class must be public and static;
@@ -41,6 +42,11 @@ use DOMDocument, VuFind\Config\Reader as ConfigReader;
  */
 class VuFind
 {
+    /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
     protected static $serviceLocator;
 
     /**
@@ -315,7 +321,7 @@ class VuFind
         // style of properties map, so we are parsing this manually.
         $map = array();
         $mapFile
-            = ConfigReader::getConfigPath($filename, 'import/translation_maps');
+            = ConfigLocator::getConfigPath($filename, 'import/translation_maps');
         foreach (file($mapFile) as $line) {
             $parts = explode('=', $line, 2);
             if (isset($parts[1])) {

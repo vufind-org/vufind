@@ -62,67 +62,6 @@ class Reader
     }
 
     /**
-     * Get the file path to the local configuration file (null if none found).
-     *
-     * @param string $filename config file name
-     * @param string $path     path relative to VuFind base (optional; defaults
-     * to config/vufind if set to null)
-     * @param bool   $force    force method to return path even if file does not
-     * exist (default = false, do not force)
-     *
-     * @return string
-     */
-    public static function getLocalConfigPath($filename, $path = null,
-        $force = false
-    ) {
-        if (is_null($path)) {
-            $path = 'config/vufind';
-        }
-        if (defined('LOCAL_OVERRIDE_DIR') && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0) {
-            $path = LOCAL_OVERRIDE_DIR . '/' . $path . '/' . $filename;
-            if ($force || file_exists($path)) {
-                return $path;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Get the file path to the base configuration file.
-     *
-     * @param string $filename config file name
-     * @param string $path     path relative to VuFind base (optional; defaults
-     * to config/vufind
-     *
-     * @return string
-     */
-    public static function getBaseConfigPath($filename, $path='config/vufind')
-    {
-        return APPLICATION_PATH . '/' . $path . '/' . $filename;
-    }
-
-    /**
-     * Get the file path to a config file.
-     *
-     * @param string $filename config file name
-     * @param string $path     path relative to VuFind base (optional; defaults
-     * to config/vufind
-     *
-     * @return string
-     */
-    public static function getConfigPath($filename, $path = 'config/vufind')
-    {
-        // Check if config exists in local dir:
-        $local = self::getLocalConfigPath($filename, $path);
-        if (!empty($local)) {
-            return $local;
-        }
-
-        // No local version?  Return default core version:
-        return self::getBaseConfigPath($filename, $path);
-    }
-
-    /**
      * Get the Ini Reader.
      *
      * @return \Zend\Config\Reader\Ini
@@ -156,7 +95,7 @@ class Reader
     {
         $configs = array();
 
-        $fullpath = self::getConfigPath($filename, $path);
+        $fullpath = Locator::getConfigPath($filename, $path);
 
         // Retrieve and parse at least one configuration file, and possibly a whole
         // chain of them if the Parent_Config setting is used:
