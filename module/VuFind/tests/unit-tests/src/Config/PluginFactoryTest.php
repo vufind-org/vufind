@@ -1,6 +1,6 @@
 <?php
 /**
- * Config Reader Test Class
+ * Config Factory Test Class
  *
  * PHP version 5
  *
@@ -26,10 +26,10 @@
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
 namespace VuFindTest\Config;
-use VuFind\Config\Locator, VuFind\Config\Reader;
+use VuFind\Config\Locator;
 
 /**
- * Config Reader Test Class
+ * Config Factory Test Class
  *
  * @category VuFind2
  * @package  Tests
@@ -38,7 +38,7 @@ use VuFind\Config\Locator, VuFind\Config\Reader;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-class ReaderTest extends \VuFindTest\Unit\TestCase
+class PluginFactoryTest extends \VuFindTest\Unit\TestCase
 {
     /**
      * Flag -- did writing config files fail?
@@ -53,6 +53,13 @@ class ReaderTest extends \VuFindTest\Unit\TestCase
      * @var array
      */
     protected static $filesToDelete = array();
+
+    /**
+     * Plugin factory instance.
+     *
+     * @var \VuFind\Config\PluginFactory
+     */
+    protected $factory;
 
     /**
      * Standard setup method.
@@ -92,6 +99,29 @@ class ReaderTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->factory = new \VuFind\Config\PluginFactory();
+    }
+
+    /**
+     * Wrapper around factory
+     *
+     * @param string $name Configuration to load
+     *
+     * @return \Zend\Config\Config
+     */
+    protected function getConfig($name)
+    {
+        return $this->factory->createServiceWithName(
+            $this->getMock('Zend\ServiceManager\ServiceLocatorInterface'),
+            $name, $name
+        );
+    }
+
+    /**
      * Test basic config.ini loading.
      *
      * @return void
@@ -100,7 +130,7 @@ class ReaderTest extends \VuFindTest\Unit\TestCase
     {
         // This should retrieve config.ini, which should have "Library Catalog"
         // set as the default system title.
-        $config = Reader::getConfig();
+        $config = $this->getConfig('config');
         $this->assertEquals('Library Catalog', $config->Site->title);
     }
 
@@ -112,7 +142,7 @@ class ReaderTest extends \VuFindTest\Unit\TestCase
     public function testCustomRead()
     {
         // This should retrieve sms.ini, which should include a Carriers array.
-        $config = Reader::getConfig('sms');
+        $config = $this->getConfig('sms');
         $this->assertTrue(isset($config->Carriers) && count($config->Carriers) > 0);
     }
 
@@ -128,7 +158,7 @@ class ReaderTest extends \VuFindTest\Unit\TestCase
         }
 
         // Make sure load succeeds:
-        $config = Reader::getConfig('unit-test-child');
+        $config = $this->getConfig('unit-test-child');
         $this->assertTrue(is_object($config));
 
         // Make sure Section 1 was overridden; values from parent should not be
@@ -155,7 +185,7 @@ class ReaderTest extends \VuFindTest\Unit\TestCase
         if (self::$writeFailed) {
             $this->markTestSkipped('Could not write test configurations.');
         }
-        $config = Reader::getConfig('unit-test-parent');
+        $config = $this->getConfig('unit-test-parent');
         $this->setExpectedException('Zend\Config\Exception\RuntimeException');
         $config->Section1->z = 'bad';
     }
