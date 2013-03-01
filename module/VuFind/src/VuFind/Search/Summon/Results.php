@@ -93,7 +93,8 @@ class Results extends BaseResults
                 'pageNumber' => $this->getParams()->getPage(),
                 'pageSize' => $this->getParams()->getLimit(),
                 'didYouMean' => $this->getOptions()->spellcheckEnabled()
-            )
+            ),
+            $this->getServiceLocator()->get('VuFind\Config')->get('Summon')
         );
         if ($this->getOptions()->highlightEnabled()) {
             $query->setHighlight(true);
