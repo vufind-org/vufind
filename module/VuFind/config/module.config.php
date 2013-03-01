@@ -627,6 +627,7 @@ $config = array(
                 'factories' => array(
                     'collectionhierarchytree' => function ($sm) {
                         return new \VuFind\RecordTab\CollectionHierarchyTree(
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
                             $sm->getServiceLocator()->get('VuFind\RecordLoader')
                         );
                     },
@@ -634,6 +635,11 @@ $config = array(
                         $searchManager = $sm->getServiceLocator()->get('SearchManager');
                         return new \VuFind\RecordTab\CollectionList(
                             $searchManager->setSearchClassId('SolrCollection')->getResults()
+                        );
+                    },
+                    'hierarchytree' => function ($sm) {
+                        return new \VuFind\RecordTab\HierarchyTree(
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
                         );
                     },
                     'holdingsils' => function ($sm) {
@@ -654,7 +660,6 @@ $config = array(
                 'invokables' => array(
                     'description' => 'VuFind\RecordTab\Description',
                     'excerpt' => 'VuFind\RecordTab\Excerpt',
-                    'hierarchytree' => 'VuFind\RecordTab\HierarchyTree',
                     'holdingsworldcat' => 'VuFind\RecordTab\HoldingsWorldCat',
                     'map' => 'VuFind\RecordTab\Map',
                     'reviews' => 'VuFind\RecordTab\Reviews',

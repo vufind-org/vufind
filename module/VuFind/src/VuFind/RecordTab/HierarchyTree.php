@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
  */
 namespace VuFind\RecordTab;
-use VuFind\Config\Reader as ConfigReader;
 
 /**
  * HierarchyTree tab
@@ -54,15 +53,22 @@ class HierarchyTree extends AbstractBase
     protected $config = null;
 
     /**
+     * Constructor
+     *
+     * @param \Zend\Config\Config $config Configuration
+     */
+    public function __construct(\Zend\Config\Config $config)
+    {
+        $this->config = $config;
+    }
+
+    /**
      * Get the VuFind configuration.
      *
      * @return \Zend\Config\Config
      */
     protected function getConfig()
     {
-        if (null === $this->config) {
-            $this->config = ConfigReader::getConfig();
-        }
         return $this->config;
     }
 
