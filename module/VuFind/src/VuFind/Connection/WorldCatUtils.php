@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Connection;
-use File_MARCXML, VuFind\Config\Reader as ConfigReader,
-    VuFind\XSLT\Processor as XSLTProcessor, Zend\Log\LoggerInterface;
+use File_MARCXML, VuFind\XSLT\Processor as XSLTProcessor, Zend\Log\LoggerInterface;
 
 /**
  * World Cat Utilities
@@ -48,6 +47,23 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
      * @var LoggerInterface|bool
      */
     protected $logger = false;
+
+    /**
+     * WorldCat ID
+     *
+     * @var string
+     */
+    protected $worldCatId;
+
+    /**
+     * Constructor
+     *
+     * @param string $worldcatId WorldCat ID
+     */
+    public function __construct($worldCatId)
+    {
+        $this->worldCatId = $worldCatId;
+    }
 
     /**
      * Set the logger
@@ -82,13 +98,7 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
      */
     protected function getWorldCatId()
     {
-        static $wcId = null;
-        if (is_null($wcId)) {
-            $config = ConfigReader::getConfig();
-            $wcId = isset($config->WorldCat->id)
-                ? $config->WorldCat->id : false;
-        }
-        return $wcId;
+        return $this->worldCatId;
     }
 
     /**

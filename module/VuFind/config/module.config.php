@@ -270,11 +270,16 @@ $config = array(
                     $sm->get('VuFind\Http')->createClient()
                 );
             },
+            'VuFind\WorldCatUtils' => function ($sm) {
+                $config = $sm->get('VuFind\Config')->get('config');
+                $wcId = isset($config->WorldCat->id)
+                    ? $config->WorldCat->id : false;
+                return new \VuFind\Connection\WorldCatUtils($wcId);
+            },
         ),
         'invokables' => array(
             'VuFind\RecordLoader' => 'VuFind\Record\Loader',
             'VuFind\SessionManager' => 'Zend\Session\SessionManager',
-            'VuFind\WorldCatUtils' => 'VuFind\Connection\WorldCatUtils',
         ),
         'initializers' => array(
             array('VuFind\ServiceManager\Initializer', 'initInstance'),
