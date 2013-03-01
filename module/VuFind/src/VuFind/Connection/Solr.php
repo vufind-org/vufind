@@ -27,7 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Connection;
-use VuFind\Config\Reader as ConfigReader, VuFind\Exception\Solr as SolrException,
+use VuFind\Exception\Solr as SolrException,
     VuFind\Solr\Utils as SolrUtils, Zend\Log\LoggerInterface,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
@@ -1756,7 +1756,7 @@ class Solr implements ServiceLocatorAwareInterface,
      */
     public function getHttpTimeout()
     {
-        $config = ConfigReader::getConfig();
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
         return isset($config->Index->timeout) ? $config->Index->timeout : 30;
     }
 
