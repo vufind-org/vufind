@@ -505,6 +505,12 @@ $config = array(
                             isset ($config->Content->authors) ? $config->Content->authors : ''
                         );
                     },
+                    'europeanaresults' => function ($sm) {
+                        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+                        return new \VuFind\Recommend\EuropeanaResults(
+                            $config->Content->europeanaAPI
+                        );
+                    },
                     'worldcatidentities' => function ($sm) {
                         return new \VuFind\Recommend\WorldCatIdentities(
                             $sm->getServiceLocator()->get('VuFind\WorldCatUtils')
@@ -521,7 +527,6 @@ $config = array(
                     'authorityrecommend' => 'VuFind\Recommend\AuthorityRecommend',
                     'catalogresults' => 'VuFind\Recommend\CatalogResults',
                     'collectionsidefacets' => 'VuFind\Recommend\CollectionSideFacets',
-                    'europeanaresults' => 'VuFind\Recommend\EuropeanaResults',
                     'europeanaresultsdeferred' => 'VuFind\Recommend\EuropeanaResultsDeferred',
                     'expandfacets' => 'VuFind\Recommend\ExpandFacets',
                     'facetcloud' => 'VuFind\Recommend\FacetCloud',

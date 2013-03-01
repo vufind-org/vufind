@@ -130,6 +130,16 @@ class EuropeanaResults implements RecommendInterface,
     protected $httpService = null;
 
     /**
+     * Constructor
+     *
+     * @param string $key API key
+     */
+    public function __construct($key)
+    {
+        $this->key = $key;
+    }
+
+    /**
      * Set the HTTP service to be used for HTTP requests.
      *
      * @param HttpServiceInterface $service HTTP service
@@ -192,10 +202,6 @@ class EuropeanaResults implements RecommendInterface,
         if (!empty($this->excludeProviders)) {
             $this->excludeProviders = explode(',', $this->excludeProviders);
         }
-
-        //get the key from config.ini
-        $config = ConfigReader::getConfig();
-        $this->key = $config->Content->europeanaAPI;
         $this->searchSite = "Europeana.eu";
     }
 
