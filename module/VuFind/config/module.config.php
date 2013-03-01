@@ -125,6 +125,11 @@ $config = array(
     ),
     'controller_plugins' => array(
         'factories' => array(
+            'holds' => function ($sm) {
+                return new \VuFind\Controller\Plugin\Holds(
+                    $sm->getServiceLocator()->get('VuFind\HMAC')
+                );
+            },
             'reserves' => function ($sm) {
                 $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
                 $useIndex = isset($config->Reserves->search_enabled)
@@ -142,7 +147,6 @@ $config = array(
             'db-upgrade' => 'VuFind\Controller\Plugin\DbUpgrade',
             'favorites' => 'VuFind\Controller\Plugin\Favorites',
             'followup' => 'VuFind\Controller\Plugin\Followup',
-            'holds' => 'VuFind\Controller\Plugin\Holds',
             'renewals' => 'VuFind\Controller\Plugin\Renewals',
         )
     ),
@@ -194,6 +198,11 @@ $config = array(
                 }
                 return new \VuFindHttp\HttpService($options);
             },
+            'VuFind\HMAC' => function ($sm) {
+                return new \VuFind\Crypt\HMAC(
+                    $sm->get('VuFind\Config')->get('config')->Security->HMACkey
+                );
+            },
             'VuFind\ILSConnection' => function ($sm) {
                 $catalog = new \VuFind\ILS\Connection(
                     $sm->get('VuFind\Config')->get('config')->Catalog,
@@ -204,9 +213,8 @@ $config = array(
             },
             'VuFind\ILSHoldLogic' => function ($sm) {
                 return new \VuFind\ILS\Logic\Holds(
-                    $sm->get('VuFind\AuthManager'),
-                    $sm->get('VuFind\ILSConnection'),
-                    $sm->get('VuFind\Config')->get('config')
+                    $sm->get('VuFind\AuthManager'), $sm->get('VuFind\ILSConnection'),
+                    $sm->get('VuFind\HMAC'), $sm->get('VuFind\Config')->get('config')
                 );
             },
             'VuFind\ILSHoldSettings' => function ($sm) {
@@ -216,9 +224,8 @@ $config = array(
             },
             'VuFind\ILSTitleHoldLogic' => function ($sm) {
                 return new \VuFind\ILS\Logic\TitleHolds(
-                    $sm->get('VuFind\AuthManager'),
-                    $sm->get('VuFind\ILSConnection'),
-                    $sm->get('VuFind\Config')->get('config')
+                    $sm->get('VuFind\AuthManager'), $sm->get('VuFind\ILSConnection'),
+                    $sm->get('VuFind\HMAC'), $sm->get('VuFind\Config')->get('config')
                 );
             },
             'VuFind\Logger' => function ($sm) {

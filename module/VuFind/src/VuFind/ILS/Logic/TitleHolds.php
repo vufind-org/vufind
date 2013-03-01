@@ -27,7 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\ILS\Logic;
-use VuFind\Crypt\HMAC, VuFind\ILS\Connection as ILSConnection;
+use VuFind\ILS\Connection as ILSConnection;
 
 /**
  * Title Hold Logic Class
@@ -56,6 +56,13 @@ class TitleHolds
     protected $catalog;
 
     /**
+     * HMAC generator
+     *
+     * @var \VuFind\Crypt\HMAC
+     */
+    protected $hmac;
+
+    /**
      * VuFind configuration
      *
      * @var \Zend\Config\Config
@@ -74,12 +81,14 @@ class TitleHolds
      *
      * @param \VuFind\Auth\Manager $account Auth manager object
      * @param ILSConnection        $ils     A catalog connection
+     * @param \VuFind\Crypt\HMAC   $hmac    HMAC generator
      * @param \Zend\Config\Config  $config  VuFind configuration
      */
     public function __construct(\VuFind\Auth\Manager $account, ILSConnection $ils,
-        \Zend\Config\Config $config
+        \VuFind\Crypt\HMAC $hmac, \Zend\Config\Config $config
     ) {
         $this->account = $account;
+        $this->hmac = $hmac;
         $this->config = $config;
 
         if (isset($this->config->Record->hide_holdings)) {
@@ -260,7 +269,7 @@ class TitleHolds
     protected function getHoldDetails($data, $HMACKeys)
     {
         // Generate HMAC
-        $HMACkey = HMAC::generate($HMACKeys, $data);
+        $HMACkey = $this->hmac->generate($HMACKeys, $data);
 
         // Add Params
         foreach ($data as $key => $param) {
@@ -270,7 +279,7 @@ class TitleHolds
             }
         }
 
-        //Add HMAC
+        // Add HMAC
         $queryString[] = "hashKey=" . urlencode($HMACkey);
         $queryString = implode('&', $queryString);
 
