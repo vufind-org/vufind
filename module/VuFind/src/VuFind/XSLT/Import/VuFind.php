@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/importing_records Wiki
  */
 namespace VuFind\XSLT\Import;
-use DOMDocument, VuFind\Config\Locator as ConfigLocator,
-    VuFind\Config\Reader as ConfigReader;
+use DOMDocument, VuFind\Config\Locator as ConfigLocator;
 
 /**
  * XSLT support class -- all methods of this class must be public and static;
@@ -70,6 +69,18 @@ class VuFind
     {
         return static::$serviceLocator->get('VuFind\DbTablePluginManager')
             ->get('ChangeTracker');
+    }
+
+    /**
+     * Get a configuration file.
+     *
+     * @param string $config Configuration name
+     *
+     * @return \Zend\Config\Config
+     */
+    public static function getConfig($config = 'config')
+    {
+        return static::$serviceLocator->get('VuFind\Config')->get($config);
     }
 
     /**
@@ -134,7 +145,7 @@ class VuFind
      */
     public static function getParser()
     {
-        $settings = ConfigReader::getConfig('fulltext');
+        $settings = static::getConfig('fulltext');
 
         // Is user preference explicitly set?
         if (isset($settings->General->parser)) {
@@ -189,7 +200,7 @@ class VuFind
         $method = "webcrawler"
     ) {
         // get the path to our sh/bat from the config
-        $settings = ConfigReader::getConfig('fulltext');
+        $settings = static::getConfig('fulltext');
         if (!isset($settings->Aperture->webcrawler)) {
             return '';
         }
@@ -257,7 +268,7 @@ class VuFind
      */
     public static function getTikaCommand($input, $output, $arg)
     {
-        $settings = ConfigReader::getConfig('fulltext');
+        $settings = static::getConfig('fulltext');
         if (!isset($settings->Tika->path)) {
             return '';
         }
