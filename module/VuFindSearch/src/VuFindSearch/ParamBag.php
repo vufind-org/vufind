@@ -170,6 +170,16 @@ class ParamBag
     }
 
     /**
+     * Return copy of parameters as array.
+     *
+     * @return array
+     */
+    public function getArrayCopy ()
+    {
+        return $this->params;
+    }
+
+    /**
      * Return array of params ready to be used in a HTTP request.
      *
      * Returns a numerical array with all request parameters as properly URL
