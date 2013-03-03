@@ -305,7 +305,7 @@ class Connector
      */
     protected function select (ParamBag $params)
     {
-        $this->prepare($params);
+        $params = $this->prepare($params);
         $result = $this->sendRequest('select', $params);
         return $result;
     }
@@ -332,8 +332,7 @@ class Connector
 
         $url = $this->url . '/browse';
 
-        $this->prepare($params);
-
+        $params = $this->prepare($params);
         $result = $this->sendRequest('browse', $params);
         return $result;
     }
@@ -359,8 +358,7 @@ class Connector
         $params->set('terms.limit', $limit);
         $params->set('terms.sort', 'index');
 
-        $this->prepare($params);
-
+        $params = $this->prepare($params);
         $result = $this->sendRequest('term', $params);
         return $result;
     }
@@ -375,12 +373,12 @@ class Connector
      *
      * @param ParamBag $params Parameters
      *
-     * @return void
+     * @return ParamBag
      */
     protected function prepare (ParamBag $params)
     {
         $params->mergeWith($this->getQueryInvariants());
-        return;
+        return $params;
     }
 
     /**
