@@ -532,10 +532,12 @@ class Connector
 
         $this->lastRequest = array('parameters' => $params, 'handler' => $handler, 'method' => $method);
 
+        $time     = microtime(true);
         $response = $client->send();
+        $time     = microtime(true) - $time;
 
         if ($this->logger) {
-            $this->logger->debug(sprintf('<= %s %s', $response->getStatusCode(), $response->getReasonPhrase()));
+            $this->logger->debug(sprintf('<= %s %s', $response->getStatusCode(), $response->getReasonPhrase()), array('time' => $time));
         }
 
         if (!$response->isSuccess()) {
