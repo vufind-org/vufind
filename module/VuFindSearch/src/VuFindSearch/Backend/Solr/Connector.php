@@ -463,8 +463,8 @@ class Connector
     {
         $params     = $params->getArrayCopy();
         $invariants = $this->getQueryInvariants()->getArrayCopy();
-        $defaults   = $this->getQueryDefaults();
-        $appends    = $this->getQueryAppends();
+        $defaults   = $this->getQueryDefaults()->getArrayCopy();
+        $appends    = $this->getQueryAppends()->getArrayCopy();
 
         $params = array_replace($defaults, $params);
         $params = array_replace($params, $invariants);
