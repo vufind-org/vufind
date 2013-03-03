@@ -106,6 +106,20 @@ class Connector
     protected $invariants;
 
     /**
+     * Query defaults.
+     *
+     * @var ParamBag
+     */
+    protected $defaults;
+
+    /**
+     * Query appends.
+     *
+     * @var ParamBag
+     */
+    protected $appends;
+
+    /**
      * Last request.
      *
      * @see self::resubmit()
@@ -130,9 +144,12 @@ class Connector
      *
      * @return void
      */
-    public function __construct($url)
+    public function __construct ($url)
     {
-        $this->url = $url;
+        $this->invariants = new ParamBag();
+        $this->defaults   = new ParamBag();
+        $this->appends    = new ParamBag();
+        $this->url        = $url;
     }
 
     /// Public API
@@ -200,10 +217,27 @@ class Connector
      */
     public function getQueryInvariants ()
     {
-        if (!$this->invariants) {
-            $this->invariants = new ParamBag(array('wt' => 'json', 'json.nl' => 'arrarr', 'fl' => '*,score'));
-        }
         return $this->invariants;
+    }
+
+    /**
+     * Return query defaults.
+     *
+     * @return ParamBag
+     */
+    public function getQueryDefaults ()
+    {
+        return $this->defaults;
+    }
+
+    /**
+     * Return query appends.
+     *
+     * @return ParamBag
+     */
+    public function getQueryAppends ()
+    {
+        return $this->appends;
     }
 
     /**
@@ -219,6 +253,30 @@ class Connector
     }
 
     /**
+     * Set the query defaults.
+     *
+     * @param array $defaults Query defaults
+     *
+     * @return void
+     */
+    public function setQueryDefaults (array $defaults)
+    {
+        $this->defaults = new ParamBag($defaults);
+    }
+
+    /**
+     * Set the query appends.
+     *
+     * @param array $appends Query appends
+     *
+     * @return void
+     */
+    public function setQueryAppends (array $appends)
+    {
+        $this->appends = new ParamBag($appends);
+    }
+
+    /**
      * Add a query invariant.
      *
      * @param string $parameter Query parameter
@@ -229,6 +287,32 @@ class Connector
     public function addQueryInvariant ($parameter, $value)
     {
         $this->getQueryInvariants()->add($parameter, $value);
+    }
+
+    /**
+     * Add a query default.
+     *
+     * @param string $parameter Query parameter
+     * @param string $value     Query parameter value
+     *
+     * @return void
+     */
+    public function addQueryDefault ($parameter, $value)
+    {
+        $this->getQueryDefaults()->add($parameter, $value);
+    }
+
+    /**
+     * Add a query append.
+     *
+     * @param string $parameter Query parameter
+     * @param string $value     Query parameter value
+     *
+     * @return void
+     */
+    public function addQueryAppend ($parameter, $value)
+    {
+        $this->getQueryAppends()->add($parameter, $value);
     }
 
     /**
@@ -377,8 +461,16 @@ class Connector
      */
     protected function prepare (ParamBag $params)
     {
-        $params->mergeWith($this->getQueryInvariants());
-        return $params;
+        $params     = $params->getArrayCopy();
+        $invariants = $this->getQueryInvariants()->getArrayCopy();
+        $defaults   = $this->getQueryDefaults();
+        $appends    = $this->getQueryAppends();
+
+        $params = array_replace($defaults, $params);
+        $params = array_replace($params, $invariants);
+        $params = array_merge($params, $appends);
+
+        return new ParamBag($params);
     }
 
     /**

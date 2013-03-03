@@ -168,26 +168,29 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         $connector->setTimeout(
             isset($this->config->Index->timeout) ? $this->config->Index->timeout : 30
         );
+        $connector->setQueryDefaults(
+            array('wt' => 'json', 'json.nl' => 'arrarr', 'fl' => '*,score')
+        );
 
         $hl = !isset($searchSettings->General->highlighting) ? false : $searchSettings->General->highlighting;
         $sn = !isset($searchSettings->General->snippets)     ? false : $searchSettings->General->snippets;
         if ($hl || $sn) {
-            $connector->addQueryInvariant('hl', 'true');
-            $connector->addQueryInvariant('hl.fl', '*');
-            $connector->addQueryInvariant('hl.simple.pre', '{{{{START_HILITE}}}}');
-            $connector->addQueryInvariant('hl.simple.post', '{{{{END_HILITE}}}}');
+            $connector->addQueryAppend('hl', 'true');
+            $connector->addQueryAppend('hl.fl', '*');
+            $connector->addQueryAppend('hl.simple.pre', '{{{{START_HILITE}}}}');
+            $connector->addQueryAppend('hl.simple.post', '{{{{END_HILITE}}}}');
         }
 
         // Hidden filters
         if (isset($searchSettings->HiddenFilters)) {
             foreach ($searchSettings->HiddenFilters as $field => $value) {
-                $connector->addQueryInvariant('fq', sprintf('%s:"%s"', $field, $value));
+                $connector->addQueryAppend('fq', sprintf('%s:"%s"', $field, $value));
             }
         }
         // Raw hidden filters
         if (isset($searchSettings->RawHiddenFilters)) {
             foreach ($searchSettings->RawHiddenFilters as $filter) {
-                $connector->addQueryInvariant('fq', $filter);
+                $connector->addQueryAppend('fq', $filter);
             }
         }
 
