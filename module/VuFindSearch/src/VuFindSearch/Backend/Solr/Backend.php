@@ -168,7 +168,7 @@ class Backend implements BackendInterface
 
         // Submit requests for more spelling suggestions
         while (next($this->dictionaries) !== false) {
-            $prev = $this->connector->getLastRequestParameters();
+            $prev = $this->connector->getLastQueryParameters();
             $next = new ParamBag(array('q' => '*:*', 'spellcheck' => 'true', 'rows' => 0));
             $next->mergeWith($this->connector->getQueryInvariants());
             $next->set('spellcheck.q', $prev->get('spellcheck.q'));

@@ -120,13 +120,13 @@ class Connector
     protected $appends;
 
     /**
-     * Last request.
+     * Last query.
      *
      * @see self::resubmit()
      *
      * @var array
      */
-    protected $lastRequest;
+    protected $lastQuery;
 
     /**
      * Class of HTTP client adapter to use.
@@ -332,9 +332,9 @@ class Connector
      *
      * @return ParamBag
      */
-    public function getLastRequestParameters ()
+    public function getLastQueryParameters ()
     {
-        return $this->lastRequest['parameters'];
+        return $this->lastQuery['parameters'];
     }
 
     /**
@@ -482,7 +482,7 @@ class Connector
      */
     public function resubmit (ParamBag $params)
     {
-        $last = $this->lastRequest;
+        $last = $this->lastQuery;
         return $this->query($last['handler'], $params, $last['method']);
     }
 
@@ -517,7 +517,7 @@ class Connector
         if ($this->logger) {
             $this->logger->debug(sprintf('Query %s', $paramString));
         }
-        $this->lastRequest = array('parameters' => $params, 'handler' => $handler, 'method' => $method);
+        $this->lastQuery = array('parameters' => $params, 'handler' => $handler, 'method' => $method);
         return $this->send($client);
     }
 
