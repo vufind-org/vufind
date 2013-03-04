@@ -131,7 +131,7 @@ class Connector
     /**
      * Class of HTTP client adapter to use.
      *
-     * @see self::sendRequest()
+     * @see self::createClient()
      *
      * @var string
      */
@@ -390,7 +390,7 @@ class Connector
     protected function select (ParamBag $params)
     {
         $params = $this->prepare($params);
-        $result = $this->sendRequest('select', $params);
+        $result = $this->query('select', $params);
         return $result;
     }
 
@@ -417,7 +417,7 @@ class Connector
         $url = $this->url . '/browse';
 
         $params = $this->prepare($params);
-        $result = $this->sendRequest('browse', $params);
+        $result = $this->query('browse', $params);
         return $result;
     }
 
@@ -443,7 +443,7 @@ class Connector
         $params->set('terms.sort', 'index');
 
         $params = $this->prepare($params);
-        $result = $this->sendRequest('term', $params);
+        $result = $this->query('term', $params);
         return $result;
     }
 
@@ -483,54 +483,59 @@ class Connector
     public function resubmit (ParamBag $params)
     {
         $last = $this->lastRequest;
-        return $this->sendRequest($last['handler'], $params, $last['method']);
+        return $this->query($last['handler'], $params, $last['method']);
     }
 
     /**
-     * Send request to SOLR and return the response.
+     * Send query to SOLR and return response body.
      *
      * @param string   $handler SOLR request handler to use
      * @param ParamBag $params  Request parameters
      * @param string   $method  Request method
      *
-     * @return Zend\Http\Response
-     *
-     * @throws RemoteErrorException  SOLR signaled a server error (HTTP 5xx)
-     * @throws RequestErrorException SOLR signaled a client error (HTTP 4xx)
+     * @return string Response body
      */
-    protected function sendRequest ($handler, ParamBag $params, $method = Request::METHOD_GET)
+    protected function query ($handler, ParamBag $params, $method = Request::METHOD_GET)
     {
-        $client = new HttpClient();
-        $client->setAdapter($this->httpAdapterClass);
-        $client->setOptions(array('timeout' => $this->timeout));
 
-        $url    = $this->url . '/' . $handler;
-
+        $url         = $this->url . '/' . $handler;
         $paramString = implode('&', $params->request());
         if (strlen($paramString) > self::MAX_GET_URL_LENGTH) {
             $method = Request::METHOD_POST;
         }
 
-        $client->setMethod($method);
         if ($method === Request::METHOD_POST) {
-            $client->setUri($url);
+            $client = $this->createClient($url, $method);
             $client->setRawBody($paramString);
             $client->setEncType(HttpClient::ENC_URLENCODED);
             $client->setHeaders(array('Content-Length' => strlen($paramString)));
         } else {
             $url = $url . '?' . $paramString;
-            $client->setUri($url);
-        }
-
-        if ($this->proxy) {
-            $this->proxy->proxify($client);
+            $client = $this->createClient($url, $method);
         }
 
         if ($this->logger) {
-            $this->logger->debug(sprintf('=> %s %s', $client->getMethod(), $client->getUri()), array('params' => $params->request()));
+            $this->logger->debug(sprintf('Query %s', $paramString));
         }
-
         $this->lastRequest = array('parameters' => $params, 'handler' => $handler, 'method' => $method);
+        return $this->send($client);
+    }
+
+    /**
+     * Send request the SOLR and return the response.
+     *
+     * @param HttpClient $client Prepare HTTP client
+     *
+     * @return string Response body
+     *
+     * @throws RemoteErrorException  SOLR signaled a server error (HTTP 5xx)
+     * @throws RequestErrorException SOLR signaled a client error (HTTP 4xx)
+     */
+    protected function send (HttpClient $client)
+    {
+        if ($this->logger) {
+            $this->logger->debug(sprintf('=> %s %s', $client->getMethod(), $client->getUri()));
+        }
 
         $time     = microtime(true);
         $response = $client->send();
@@ -550,5 +555,26 @@ class Connector
             }
         }
         return $response->getBody();
+    }
+
+    /**
+     * Create the HTTP client.
+     *
+     * @param string $url    Target URL
+     * @param string $method Request method
+     *
+     * @return HttpClient
+     */
+    protected function createClient ($url, $method)
+    {
+        $client = new HttpClient();
+        $client->setAdapter($this->httpAdapterClass);
+        $client->setOptions(array('timeout' => $this->timeout));
+        $client->setUri($url);
+        $client->setMethod($method);
+        if ($this->proxy) {
+            $this->proxy->proxify($client);
+        }
+        return $client;
     }
 }
