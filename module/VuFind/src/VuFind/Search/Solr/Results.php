@@ -153,6 +153,45 @@ class Results extends BaseResults
     }
 
     /**
+     * Normalize sort parameters.
+     *
+     * @param string $sort Sort parameter
+     *
+     * @return string
+     */
+    protected function normalizeSort($sort)
+    {
+        static $table = array(
+            'year' => array('field' => 'publishDateSort', 'order' => 'desc'),
+            'publishDateSort' => array('field' => 'publishDateSort', 'order' => 'desc'),
+            'author' => array('field' => 'authorStr', 'order' => 'asc'),
+            'title' => array('field' => 'title_sort', 'order' => 'asc'),
+            'relevance' => array('field' => 'score', 'order' => 'desc'),
+            'callnumber' => array('field' => 'callnumber', 'order' => 'asc'),
+        );
+        $normalized = array();
+        foreach (explode(',', $sort) as $component) {
+            $parts = explode(' ', trim($component));
+            $field = reset($parts);
+            $order = next($parts);
+            if (isset($table[$field])) {
+                $normalized[] = sprintf(
+                    '%s %s',
+                    $table[$field]['field'],
+                    $order ?: $table[$field]['order']
+                );
+            } else {
+                $normalized[] = sprintf(
+                    '%s %s',
+                    $field,
+                    $order ?: 'asc'
+                );
+            }
+        }
+        return implode(',', $normalized);
+    }
+
+    /**
      * Create search backend parameters for advanced features.
      *
      * @param Params $params Search parameters
@@ -183,6 +222,9 @@ class Results extends BaseResults
         foreach ($filters as $filter) {
             $backendParams->add('fq', $filter);
         }
+
+        // Sort
+        $backendParams->add('sort', $this->normalizeSort($params->getSort()));
 
         return $backendParams;
     }

@@ -74,20 +74,4 @@ class SolrDefaultBackendFactory extends AbstractSolrBackendFactory
         $backend->setRecordCollectionFactory($factory);
         return $backend;
     }
-
-    /**
-     * Create listeners.
-     *
-     * @param Backend $backend Backend
-     *
-     * @return void
-     */
-    protected function createListeners (Backend $backend)
-    {
-        parent::createListeners($backend);
-        $events = $this->serviceLocator->get('SharedEventManager');
-        // Normalize sort directive
-        $listener = new NormalizeSolrSort($backend);
-        $listener->attach($events);
-    }
 }
