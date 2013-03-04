@@ -26,7 +26,6 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Recommend;
-use VuFind\Config\Reader as ConfigReader;
 
 /**
  * Recommendation class to expand recommendation interfaces
@@ -39,9 +38,43 @@ use VuFind\Config\Reader as ConfigReader;
  */
 class ExpandFacets extends AbstractSearchManagerAwareModule
 {
+    /**
+     * Facets to display
+     *
+     * @var array
+     */
     protected $facets;
+
+    /**
+     * Settings from configuration
+     *
+     * @var string
+     */
     protected $settings;
+
+    /**
+     * Search results
+     *
+     * @var \VuFind\Search\Base\Results
+     */
     protected $searchObject;
+
+    /**
+     * Configuration loader
+     *
+     * @var \VuFind\Config\PluginManager
+     */
+    protected $configLoader;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     */
+    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    {
+        $this->configLoader = $configLoader;
+    }
 
     /**
      * setConfig
@@ -56,7 +89,7 @@ class ExpandFacets extends AbstractSearchManagerAwareModule
     {
         // Save the basic parameters:
         $this->settings = $settings;
-        
+
         // Parse the additional settings:
         $settings = explode(':', $settings);
         $mainSection = empty($settings[0]) ? 'Results' : $settings[0];
@@ -64,7 +97,7 @@ class ExpandFacets extends AbstractSearchManagerAwareModule
         $iniName = isset($settings[2]) ? $settings[2] : 'facets';
 
         // Load the desired facet information...
-        $config = ConfigReader::getConfig($iniName);
+        $config = $this->configLoader->get($iniName);
 
         // All standard facets to display:
         $this->facets = isset($config->$mainSection) ?

@@ -29,7 +29,7 @@
  */
 namespace VuFind\ILS\Driver;
 use PDOException, VuFind\Exception\Date as DateException,
-    VuFind\Exception\ILS as ILSException, VuFind\ILS\Connection as ILSConnection;
+    VuFind\Exception\ILS as ILSException;
 
 /**
  * Voyager Restful ILS Driver
@@ -44,14 +44,68 @@ use PDOException, VuFind\Exception\Date as DateException,
  */
 class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInterface
 {
+    /**
+     * Web services host
+     *
+     * @var string
+     */
     protected $ws_host;
+
+    /**
+     * Web services port
+     *
+     * @var string
+     */
     protected $ws_port;
+
+    /**
+     * Web services app
+     *
+     * @var string
+     */
     protected $ws_app;
+
+    /**
+     * Web services database key
+     *
+     * @var string
+     */
     protected $ws_dbKey;
+
+    /**
+     * Web services patron home UB ID
+     *
+     * @var string
+     */
     protected $ws_patronHomeUbId;
+
+    /**
+     * Legal pickup locations
+     *
+     * @var array
+     */
     protected $ws_pickUpLocations;
+
+    /**
+     * Default pickup location
+     *
+     * @var string
+     */
     protected $defaultPickUpLocation;
+
+    /**
+     * The maximum number of holds to check at a time (0 = no limit)
+     *
+     * @var int
+     */
     protected $holdCheckLimit;
+
+    /**
+     * Should we check renewal status before presenting a list of items or only
+     * after user requests renewal?
+     *
+     * @var bool
+     */
     protected $checkRenewalsUpFront;
 
     /**
@@ -60,6 +114,35 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * @var \VuFindHttp\HttpServiceInterface
      */
     protected $httpService = null;
+
+    /**
+     * Holds mode
+     *
+     * @var string
+     */
+    protected $holdsMode;
+
+    /**
+     * Title-level holds mode
+     *
+     * @var string
+     */
+    protected $titleHoldsMode;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $dateConverter  Date converter object
+     * @param string                 $holdsMode      Holds mode setting
+     * @param string                 $titleHoldsMode Title holds mode setting
+     */
+    public function __construct(\VuFind\Date\Converter $dateConverter,
+        $holdsMode = 'disabled', $titleHoldsMode = 'disabled'
+    ) {
+        parent::__construct($dateConverter);
+        $this->holdsMode = $holdsMode;
+        $this->titleHoldsMode = $titleHoldsMode;
+    }
 
     /**
      * Set the HTTP service to be used for HTTP requests.
@@ -214,7 +297,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     protected function processHoldingData($data, $patron = false)
     {
         $holding = parent::processHoldingData($data, $patron);
-        $mode = ILSConnection::getHoldsMode();
 
         foreach ($holding as $i => $row) {
             $is_borrowable = isset($row['_fullRow']['ITEM_TYPE_ID'])
@@ -231,7 +313,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
 
             // Hold Type - If we have patron data, we can use it to determine if a
             // hold link should be shown
-            if ($patron && $mode == "driver") {
+            if ($patron && $this->holdsMode == "driver") {
                 // This limit is set as the api is slow to return results
                 if ($i < $this->holdCheckLimit && $this->holdCheckLimit != "0") {
                     $holdType = $this->determineHoldType(
@@ -272,8 +354,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     {
         $holdType = isset($data['holdtype']) ? $data['holdtype'] : "auto";
         $level = isset($data['level']) ? $data['level'] : "copy";
-        $mode = ("title" == $level) ? ILSConnection::getTitleHoldsMode()
-            : ILSConnection::getHoldsMode();
+        $mode = ("title" == $level) ? $this->titleHoldsMode : $this->holdsMode;
         if ("driver" == $mode && "auto" == $holdType) {
             $itemID = isset($data['item_id']) ? $data['item_id'] : false;
             $result = $this->determineHoldType($patron['id'], $id, $itemID);

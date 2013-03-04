@@ -48,10 +48,13 @@ class CollectionHierarchyTree extends HierarchyTree
     /**
      * Constructor
      *
+     * @param \Zend\Config\Config   $config Configuration
      * @param \VuFind\Record\Loader $loader Record loader
      */
-    public function __construct(\VuFind\Record\Loader $loader)
-    {
+    public function __construct(\Zend\Config\Config $config,
+        \VuFind\Record\Loader $loader
+    ) {
+        parent::__construct($config);
         $this->loader = $loader;
     }
 

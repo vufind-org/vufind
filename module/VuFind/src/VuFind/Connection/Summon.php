@@ -28,8 +28,7 @@
  */
 namespace VuFind\Connection;
 use SerialsSolutions\Summon\Zend2 as BaseSummon,
-    VuFind\Config\Reader as ConfigReader, VuFind\Solr\Utils as SolrUtils,
-    Zend\Log\LoggerInterface;
+    VuFind\Solr\Utils as SolrUtils, Zend\Log\LoggerInterface;
 
 /**
  * Summon Search API Interface (VuFind implementation)
@@ -70,9 +69,10 @@ class Summon extends BaseSummon implements \Zend\Log\LoggerAwareInterface
      *
      * Sets up the Summon API Client
      *
-     * @param string            $apiId   Summon API ID
-     * @param string            $apiKey  Summon API Key
-     * @param array             $options Associative array of additional options;
+     * @param \Zend\Config\Config $config  Configuration representing Summon.ini
+     * @param string              $apiId   Summon API ID
+     * @param string              $apiKey  Summon API Key
+     * @param array               $options Associative array of additional options;
      * legal keys:
      *    <ul>
      *      <li>authedUser - is the end-user authenticated?</li>
@@ -81,13 +81,11 @@ class Summon extends BaseSummon implements \Zend\Log\LoggerAwareInterface
      *      <li>sessionId - Summon session ID to apply</li>
      *      <li>version - API version to use</li>
      *    </ul>
-     * @param \Zend\Http\Client $client  HTTP client
+     * @param \Zend\Http\Client   $client  HTTP client
      */
-    public function __construct($apiId, $apiKey, $options = array(),
-        \Zend\Http\Client $client = null
+    public function __construct(\Zend\Config\Config $config, $apiId, $apiKey,
+        $options = array(), \Zend\Http\Client $client = null
     ) {
-        $config = ConfigReader::getConfig('Summon');
-
         // Store preferred boolean behavior:
         if (!isset($options['caseSensitiveBooleans'])
             && isset($config->General->case_sensitive_bools)

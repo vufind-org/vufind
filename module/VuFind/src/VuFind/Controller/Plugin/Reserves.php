@@ -26,8 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller\Plugin;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Connection\Manager as ConnectionManager,
+use VuFind\Connection\Manager as ConnectionManager,
     Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
@@ -45,13 +44,30 @@ class Reserves extends AbstractPlugin
      * Do we need to use the Solr index for reserves (true) or the ILS driver
      * (false)?
      *
+     * @var bool
+     */
+    protected $useIndex;
+
+    /**
+     * Constructor
+     *
+     * @param bool $useIndex Do we need to use the Solr index for reserves (true)
+     * or the ILS driver (false)?
+     */
+    public function __construct($useIndex = false)
+    {
+        $this->useIndex = $useIndex;
+    }
+
+    /**
+     * Do we need to use the Solr index for reserves (true) or the ILS driver
+     * (false)?
+     *
      * @return bool
      */
     public function useIndex()
     {
-        $config = ConfigReader::getConfig();
-        return isset($config->Reserves->search_enabled)
-            && $config->Reserves->search_enabled;
+        return $this->useIndex;
     }
 
     /**

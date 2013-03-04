@@ -79,7 +79,7 @@ class HierarchyController extends AbstractBase
     public function searchtreeAction()
     {
         $this->writeSession();  // avoid session write timing bug
-        $config = \VuFind\Config\Reader::getConfig();
+        $config = $this->getConfig();
         $limit = isset($config->Hierarchy->treeSearchLimit)
             ? $config->Hierarchy->treeSearchLimit : -1;
         $resultIDs = array();

@@ -26,8 +26,6 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Summon;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Search\Base\Options as BaseOptions;
 
 /**
  * Summon Search Options
@@ -38,10 +36,12 @@ use VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Options extends BaseOptions
+class Options extends \VuFind\Search\Base\Options
 {
     /**
      * Maximum number of results
+     *
+     * @var int
      */
     protected $resultLimit = 400;
 
@@ -53,10 +53,21 @@ class Options extends BaseOptions
     public function __construct()
     {
         $this->searchIni = $this->facetsIni = 'Summon';
-        parent::__construct();
+    }
+
+    /**
+     * Perform initialization that cannot occur in constructor due to need for
+     * injected dependencies.
+     *
+     * @return void
+     */
+    public function init()
+    {
+        parent::init();
 
         // Load facet preferences:
-        $facetSettings = ConfigReader::getConfig($this->facetsIni);
+        $facetSettings = $this->getServiceLocator()->get('VuFind\Config')
+            ->get($this->facetsIni);
         if (isset($facetSettings->Advanced_Settings->translated_facets)
             && count($facetSettings->Advanced_Facet_Settings->translated_facets) > 0
         ) {
@@ -71,7 +82,8 @@ class Options extends BaseOptions
         }
 
         // Load the search configuration file:
-        $searchSettings = ConfigReader::getConfig($this->searchIni);
+        $searchSettings = $this->getServiceLocator()->get('VuFind\Config')
+            ->get($this->searchIni);
 
         // Set up highlighting preference
         if (isset($searchSettings->General->highlighting)) {

@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Search\SolrAuthor;
-use VuFind\Config\Reader as ConfigReader, VuFind\Search\Solr\Params as SolrParams;
+use VuFind\Search\Solr\Params as SolrParams;
 
 /**
  * Author Search Options
@@ -89,7 +89,8 @@ class Params extends SolrParams
     {
         // Load the necessary settings to determine the appropriate recommendations
         // module:
-        $ss = ConfigReader::getConfig($this->getOptions()->getSearchIni());
+        $ss = $this->getServiceLocator()->get('VuFind\Config')
+            ->get($this->getOptions()->getSearchIni());
 
         // Load the AuthorModuleRecommendations configuration if available, use
         // standard defaults otherwise:

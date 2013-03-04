@@ -119,7 +119,8 @@ class Params extends \VuFind\Search\Solr\Params
     protected function getRecommendationSettings()
     {
         // Collection recommendations
-        $searchSettings = \VuFind\Config\Reader::getConfig('Collection');
+        $searchSettings = $this->getServiceLocator()->get('VuFind\Config')
+            ->get('Collection');
         return isset($searchSettings->Recommend)
             ? $searchSettings->Recommend->toArray()
             : array('side' => array('CollectionSideFacets:Facets::Collection:true'));

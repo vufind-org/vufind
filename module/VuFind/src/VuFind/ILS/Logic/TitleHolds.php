@@ -27,8 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\ILS\Logic;
-use VuFind\Config\Reader as ConfigReader, VuFind\Crypt\HMAC,
-    VuFind\ILS\Connection as ILSConnection;
+use VuFind\ILS\Connection as ILSConnection;
 
 /**
  * Title Hold Logic Class
@@ -42,9 +41,39 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Crypt\HMAC,
  */
 class TitleHolds
 {
+    /**
+     * Auth manager object
+     *
+     * @var \VuFind\Auth\Manager
+     */
     protected $account;
+
+    /**
+     * Catalog connection object
+     *
+     * @var ILSConnection
+     */
     protected $catalog;
+
+    /**
+     * HMAC generator
+     *
+     * @var \VuFind\Crypt\HMAC
+     */
+    protected $hmac;
+
+    /**
+     * VuFind configuration
+     *
+     * @var \Zend\Config\Config
+     */
     protected $config;
+
+    /**
+     * Holding locations to hide from display
+     *
+     * @var array
+     */
     protected $hideHoldings = array();
 
     /**
@@ -52,11 +81,15 @@ class TitleHolds
      *
      * @param \VuFind\Auth\Manager $account Auth manager object
      * @param ILSConnection        $ils     A catalog connection
+     * @param \VuFind\Crypt\HMAC   $hmac    HMAC generator
+     * @param \Zend\Config\Config  $config  VuFind configuration
      */
-    public function __construct(\VuFind\Auth\Manager $account, ILSConnection $ils)
-    {
+    public function __construct(\VuFind\Auth\Manager $account, ILSConnection $ils,
+        \VuFind\Crypt\HMAC $hmac, \Zend\Config\Config $config
+    ) {
         $this->account = $account;
-        $this->config = ConfigReader::getConfig();
+        $this->hmac = $hmac;
+        $this->config = $config;
 
         if (isset($this->config->Record->hide_holdings)) {
             foreach ($this->config->Record->hide_holdings as $current) {
@@ -78,7 +111,7 @@ class TitleHolds
     {
         // Get Holdings Data
         if ($this->catalog) {
-            $mode = ILSConnection::getTitleHoldsMode();
+            $mode = $this->catalog->getTitleHoldsMode();
             if ($mode == "disabled") {
                  return false;
             } else if ($mode == "driver") {
@@ -236,7 +269,7 @@ class TitleHolds
     protected function getHoldDetails($data, $HMACKeys)
     {
         // Generate HMAC
-        $HMACkey = HMAC::generate($HMACKeys, $data);
+        $HMACkey = $this->hmac->generate($HMACKeys, $data);
 
         // Add Params
         foreach ($data as $key => $param) {
@@ -246,7 +279,7 @@ class TitleHolds
             }
         }
 
-        //Add HMAC
+        // Add HMAC
         $queryString[] = "hashKey=" . urlencode($HMACkey);
         $queryString = implode('&', $queryString);
 

@@ -26,8 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller\Plugin;
-use VuFind\Crypt\HMAC, Zend\Mvc\Controller\Plugin\AbstractPlugin,
-    Zend\Session\Container;
+use Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Session\Container;
 
 /**
  * Zend action helper to perform renewal-related actions
@@ -40,7 +39,29 @@ use VuFind\Crypt\HMAC, Zend\Mvc\Controller\Plugin\AbstractPlugin,
  */
 class Holds extends AbstractPlugin
 {
+    /**
+     * Session data
+     *
+     * @var Container
+     */
     protected $session;
+
+    /**
+     * HMAC generator
+     *
+     * @var \VuFind\Crypt\HMAC
+     */
+    protected $hmac;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Crypt\HMAC $hmac HMAC generator
+     */
+    public function __construct(\VuFind\Crypt\HMAC $hmac)
+    {
+        $this->hmac = $hmac;
+    }
 
     /**
      * Grab the Container object for storing helper-specific session
@@ -193,7 +214,7 @@ class Holds extends AbstractPlugin
         foreach ($linkData as $details) {
             $keyValueArray[$details] = $params->fromQuery($details);
         }
-        $hashKey = HMAC::generate($linkData, $keyValueArray);
+        $hashKey = $this->hmac->generate($linkData, $keyValueArray);
 
         if ($params->fromQuery('hashKey') != $hashKey) {
             return false;
@@ -212,7 +233,7 @@ class Holds extends AbstractPlugin
         $gatheredDetails['id'] = $params->fromRoute('id');
 
         // Get Values Passed from holdings.php
-        $gatheredDetails += $keyValueArray;
+        $gatheredDetails = array_merge($gatheredDetails, $keyValueArray);
 
         return $gatheredDetails;
     }

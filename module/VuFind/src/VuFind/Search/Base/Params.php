@@ -26,8 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Base;
-use VuFind\Config\Reader as ConfigReader,
-    Zend\ServiceManager\ServiceLocatorAwareInterface,
+use Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
@@ -85,6 +84,16 @@ class Params implements ServiceLocatorAwareInterface
         if (null !== $options) {
             $this->setOptions($options);
         }
+    }
+
+    /**
+     * Perform initialization that cannot occur in constructor due to need for
+     * injected dependencies.
+     *
+     * @return void
+     */
+    public function init()
+    {
     }
 
     /**
@@ -727,8 +736,8 @@ class Params implements ServiceLocatorAwareInterface
 
         // Load the necessary settings to determine the appropriate recommendations
         // module:
-        $searchSettings
-            = ConfigReader::getConfig($this->getOptions()->getSearchIni());
+        $searchSettings = $this->getServiceLocator()->get('VuFind\Config')
+            ->get($this->getOptions()->getSearchIni());
 
         // If we have a search type set, save it so we can try to load a
         // type-specific recommendations module:
@@ -1293,7 +1302,7 @@ class Params implements ServiceLocatorAwareInterface
         if (isset($this->searchTerms[0]['group'])) {
             foreach ($this->searchTerms as $group) {
                 foreach ($group['group'] as $search) {
-                    if (preg_match("/\b$needle\b/", $search['lookfor'])) {
+                    if (preg_match("/\b$needle\b/u", $search['lookfor'])) {
                         return true;
                     }
                 }
@@ -1301,7 +1310,7 @@ class Params implements ServiceLocatorAwareInterface
         } else {
             // Basic search
             foreach ($this->searchTerms as $haystack) {
-                if (preg_match("/\b$needle\b/", $haystack['lookfor'])) {
+                if (preg_match("/\b$needle\b/u", $haystack['lookfor'])) {
                     return true;
                 }
             }

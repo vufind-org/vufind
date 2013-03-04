@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use PDO, PDOException, VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\ILS as ILSException;
+use PDO, PDOException, VuFind\Exception\ILS as ILSException;
 
 /**
  * ILS Driver for NewGenLib

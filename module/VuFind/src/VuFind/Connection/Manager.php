@@ -27,8 +27,7 @@
  */
 namespace VuFind\Connection;
 
-use VuFind\Config\Reader as ConfigReader, VuFind\ILS\Connection as ILSConnection,
-    Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Central class for connecting to resources used by VuFind.
@@ -66,7 +65,7 @@ class Manager
      */
     public static function connectToIndex($type = null, $core = null, $url = null)
     {
-        $configArray = ConfigReader::getConfig();
+        $configArray = self::$serviceLocator->get('VuFind\Config')->get('config');
 
         // Load config.ini settings for missing parameters:
         if ($type == null) {

@@ -27,7 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use File_MARC, PDO, PDOException, VuFind\Config\Reader as ConfigReader,
+use File_MARC, PDO, PDOException,
     VuFind\Exception\Date as DateException,
     VuFind\Exception\ILS as ILSException,
     VuFind\I18n\Translator\TranslatorAwareInterface,
@@ -1550,22 +1550,6 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
         $items = array();
-
-        // Prevent unnecessary load on Voyager -- no point in exceeding the maximum
-        // configured date range.
-        $maxAge = 30;
-        $searchSettings = ConfigReader::getConfig('searches');
-        if (isset($searchSettings->NewItem->ranges)) {
-            $tmp = explode(',', $searchSettings->NewItem->ranges);
-            foreach ($tmp as $current) {
-                if (intval($current) > $maxAge) {
-                    $maxAge = intval($current);
-                }
-            }
-        }
-        if ($daysOld > $maxAge) {
-            $daysOld = $maxAge;
-        }
 
         $bindParams = array(
             ':enddate' => date('d-m-Y', strtotime('now')),

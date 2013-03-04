@@ -27,8 +27,7 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\Auth as AuthException,
+use VuFind\Exception\Auth as AuthException,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\RecordMissing as RecordMissingException,
     Zend\Stdlib\Parameters;
@@ -81,7 +80,7 @@ class MyResearchController extends AbstractBase
             return $this->redirect()->toUrl($url);
         }
 
-        $config = ConfigReader::getConfig();
+        $config = $this->getConfig();
         $page = isset($config->Site->defaultAccountPage)
             ? $config->Site->defaultAccountPage : 'Favorites';
         return $this->forwardTo('MyResearch', $page);

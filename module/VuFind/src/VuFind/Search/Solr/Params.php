@@ -26,7 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Solr;
-use VuFind\Config\Reader as ConfigReader, VuFind\Search\Base\Params as BaseParams;
+
 use VuFindSearch\Query\Query;
 use VuFind\Search\Legacy\QueryAdapter;
 
@@ -39,7 +39,7 @@ use VuFind\Search\Legacy\QueryAdapter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Params extends BaseParams
+class Params extends \VuFind\Search\Base\Params
 {
     /**
      * Facet result limit
@@ -64,17 +64,17 @@ class Params extends BaseParams
     protected $overrideQuery = false;
 
     /**
-     * Constructor
+     * Perform initialization that cannot occur in constructor due to need for
+     * injected dependencies.
      *
-     * @param \VuFind\Search\Base\Options $options Options to use (null to load
-     * defaults)
+     * @return void
      */
-    public function __construct($options = null)
+    public function init()
     {
-        parent::__construct($options);
+        parent::init();
 
         // Use basic facet limit by default, if set:
-        $config = ConfigReader::getConfig('facets');
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('facets');
         if (isset($config->Results_Settings->facet_limit)
             && is_numeric($config->Results_Settings->facet_limit)
         ) {
@@ -301,7 +301,7 @@ class Params extends BaseParams
      */
     protected function initFacetList($facetList, $facetSettings)
     {
-        $config = ConfigReader::getConfig('facets');
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('facets');
         if (!isset($config->$facetList)) {
             return false;
         }
@@ -346,7 +346,7 @@ class Params extends BaseParams
      */
     public function initBasicFacets()
     {
-        $config = ConfigReader::getConfig('facets');
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('facets');
         if (isset($config->ResultsTop)) {
             foreach ($config->ResultsTop as $key => $value) {
                 $this->addFacet($key, $value);
@@ -488,7 +488,7 @@ class Params extends BaseParams
      */
     public function getQueryIDLimit()
     {
-        $config = ConfigReader::getConfig();
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
         return isset($config->Index->maxBooleanClauses)
             ? $config->Index->maxBooleanClauses : 1024;
     }

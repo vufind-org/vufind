@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
  * AuthorInfo Recommendations Module

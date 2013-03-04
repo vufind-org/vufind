@@ -53,14 +53,15 @@ class Factory
         $class = 'VuFind\Hierarchy\Driver\ConfigurationBased'
     ) {
         // Set up options based on global VuFind settings:
-        $globalConfig = \VuFind\Config\Reader::getConfig();
+        $configReader = $sm->get('VuFind\Config');
+        $globalConfig = $configReader->get('config');
         $options = array(
             'enabled' => isset($globalConfig->Hierarchy->showTree)
                 ? $globalConfig->Hierarchy->showTree : false
         );
 
         // Load driver-specific configuration:
-        $driverConfig = \VuFind\Config\Reader::getConfig($config);
+        $driverConfig = $configReader->get($config);
 
         // Build object:
         return new $class(

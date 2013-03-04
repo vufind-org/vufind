@@ -47,10 +47,12 @@ class CollectionsController extends AbstractBase
 
     /**
      * Constructor
+     *
+     * @param \Zend\Config\Config $config VuFind configuration
      */
-    public function __construct()
+    public function __construct(\Zend\Config\Config $config)
     {
-        $this->config = \VuFind\Config\Reader::getConfig();
+        $this->config = $config;
     }
 
     /**

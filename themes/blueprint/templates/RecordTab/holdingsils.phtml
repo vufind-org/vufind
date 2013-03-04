@@ -2,7 +2,7 @@
     // Set up convenience variables:
     $account = $this->auth()->getManager();
     $user = $account->isLoggedIn();
-    $holdings = $this->driver->getRealTimeHoldings($account);
+    $holdings = $this->driver->getRealTimeHoldings();
     $openUrl = $this->driver->openURLActive('holdings') ? $this->driver->getOpenURL() : false;
     $offlineMode = $this->ils()->getOfflineMode();
     // Account for replace_other_urls setting
@@ -20,7 +20,7 @@
     <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
   </div>
 <? endif; ?>
-<? if ((\VuFind\ILS\Connection::getHoldsMode() == 'driver' && !empty($holdings)) || \VuFind\ILS\Connection::getTitleHoldsMode() == 'driver'): ?>
+<? if (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings)) || $this->ils()->getTitleHoldsMode() == 'driver'): ?>
   <? if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
     <? if (!$user): ?>
       <div class="info">
@@ -33,7 +33,7 @@
     <? endif; ?>
   <? endif; ?>
 <? endif; ?>
-<? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold', array($account)); if (!empty($holdingTitleHold)): ?>
+<? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
     <a class="holdPlace" href="<?=$this->recordLink()->getHoldUrl($holdingTitleHold)?>"><?=$this->transEsc('title_hold_place')?></a>
 <? endif; ?>
 <? if (!empty($urls) || $openUrl): ?>

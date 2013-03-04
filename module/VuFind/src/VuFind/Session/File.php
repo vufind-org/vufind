@@ -140,7 +140,10 @@ class File extends AbstractBase
 
         // Perform file-specific cleanup:
         $sess_file = $this->getPath() . '/sess_' . $sess_id;
-        return(unlink($sess_file));
+        if (file_exists($sess_file)) {
+            return(unlink($sess_file));
+        }
+        return true;
     }
 
     /**

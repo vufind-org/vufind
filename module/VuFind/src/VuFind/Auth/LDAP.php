@@ -41,7 +41,18 @@ use VuFind\Exception\Auth as AuthException;
  */
 class LDAP extends AbstractBase
 {
+    /**
+     * Username
+     *
+     * @var string
+     */
     protected $username;
+
+    /**
+     * Password
+     *
+     * @var string
+     */
     protected $password;
 
     /**

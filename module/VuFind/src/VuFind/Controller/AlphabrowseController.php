@@ -27,8 +27,7 @@
  * @link     http://vufind.org/wiki/alphabetical_heading_browse Wiki
  */
 namespace VuFind\Controller;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Connection\Manager as ConnectionManager,
+use VuFind\Connection\Manager as ConnectionManager,
     VuFind\Exception\Solr as SolrException;
 
 /**
@@ -52,7 +51,7 @@ class AlphabrowseController extends AbstractBase
      */
     public function homeAction()
     {
-        $config = ConfigReader::getConfig();
+        $config = $this->getConfig();
 
         // Load browse types from config file, or use defaults if unavailable:
         if (isset($config->AlphaBrowse_Types)

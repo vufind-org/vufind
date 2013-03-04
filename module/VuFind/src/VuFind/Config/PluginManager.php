@@ -54,4 +54,20 @@ class PluginManager extends Base
     {
         // Assume everything is okay.
     }
+
+    /**
+     * Reload a configuration and return the new version
+     *
+     * @param string $id Service identifier
+     *
+     * @return \Zend\Config\Config
+     */
+    public function reload($id)
+    {
+        $oldOverrideSetting = $this->getAllowOverride();
+        $this->setAllowOverride(true);
+        $this->setService($id, $this->create($id));
+        $this->setAllowOverride($oldOverrideSetting);
+        return $this->get($id);
+    }
 }

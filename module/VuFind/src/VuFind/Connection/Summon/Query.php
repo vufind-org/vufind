@@ -27,7 +27,7 @@
  * @link     http://api.summon.serialssolutions.com/help/api/ API Documentation
  */
 namespace VuFind\Connection\Summon;
-use VuFind\Config\Reader as ConfigReader, VuFind\Solr\Utils as SolrUtils;
+use VuFind\Solr\Utils as SolrUtils;
 
 /**
  * Summon REST API Interface (query model - VuFind implementation)
@@ -41,6 +41,11 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Solr\Utils as SolrUtils;
  */
 class Query extends \SerialsSolutions_Summon_Query
 {
+    /**
+     * Summon configuration object
+     *
+     * @var \Zend\Config\Config
+     */
     protected $config;
 
     /**
@@ -48,13 +53,14 @@ class Query extends \SerialsSolutions_Summon_Query
      *
      * Sets up the Summon API Client
      *
-     * @param string $query   Search query
-     * @param array  $options Other options to set (associative array)
+     * @param string              $query   Search query
+     * @param array               $options Other options to set (associative array)
+     * @param \Zend\Config\Config $config  Summon configuration object (optional)
      */
-    public function __construct($query = null, $options = array())
+    public function __construct($query = null, $options = array(), $config = null)
     {
         parent::__construct($query, $options);
-        $this->config = ConfigReader::getConfig('Summon');
+        $this->config = $config;
     }
 
     /**

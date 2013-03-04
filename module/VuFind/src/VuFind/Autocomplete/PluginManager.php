@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:autosuggesters Wiki
  */
 namespace VuFind\Autocomplete;
-use VuFind\Config\Reader as ConfigReader;
 
 /**
  * Autocomplete handler plugin manager
@@ -75,7 +74,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         $searcher = $request->get('searcher', 'Solr');
         $options = $this->getServiceLocator()->get('SearchManager')
             ->setSearchClassId($searcher)->getOptionsInstance();
-        $config = ConfigReader::getConfig($options->getSearchIni());
+        $config = $this->getServiceLocator()->get('VuFind\Config')
+            ->get($options->getSearchIni());
         $types = isset($config->Autocomplete_Types) ?
             $config->Autocomplete_Types->toArray() : array();
 

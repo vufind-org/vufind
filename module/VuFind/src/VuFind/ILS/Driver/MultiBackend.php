@@ -28,8 +28,7 @@
  */
 namespace VuFind\ILS\Driver;
 
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\ILS as ILSException,
+use VuFind\Exception\ILS as ILSException,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -90,7 +89,6 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
      */
     protected $config = array();
 
-
     /**
      * The seperating values to be used for each ILS.
      * Not yet implemented
@@ -98,6 +96,22 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
      */
     protected $delimiters = array();
 
+    /**
+     * Configuration loader
+     *
+     * @var \VuFind\Config\PluginManager
+     */
+    protected $configLoader;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     */
+    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    {
+        $this->configLoader = $configLoader;
+    }
 
     /**
      * Set the driver configuration.
@@ -314,7 +328,7 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
     {
         // Determine config file name based on class name:
         try {
-            $config = ConfigReader::getConfig($source);
+            $config = $this->configLoader->get($source);
         } catch (\Zend\Config\Exception\RuntimeException $e) {
             // Configuration loading failed; probably means file does not
             // exist -- just return an empty array in that case:

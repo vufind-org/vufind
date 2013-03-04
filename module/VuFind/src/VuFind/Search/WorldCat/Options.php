@@ -26,8 +26,6 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\WorldCat;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Search\Base\Options as BaseOptions;
 
 /**
  * WorldCat Search Options
@@ -38,7 +36,7 @@ use VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Options extends BaseOptions
+class Options extends \VuFind\Search\Base\Options
 {
     /**
      * Constructor
@@ -48,10 +46,21 @@ class Options extends BaseOptions
     public function __construct()
     {
         $this->searchIni = $this->facetsIni = 'WorldCat';
-        parent::__construct();
+    }
+
+    /**
+     * Perform initialization that cannot occur in constructor due to need for
+     * injected dependencies.
+     *
+     * @return void
+     */
+    public function init()
+    {
+        parent::init();
 
         // Load the configuration file:
-        $searchSettings = ConfigReader::getConfig($this->searchIni);
+        $searchSettings = $this->getServiceLocator()->get('VuFind\Config')
+            ->get($this->searchIni);
 
         // Search handler setup:
         $this->defaultHandler = 'srw.kw';

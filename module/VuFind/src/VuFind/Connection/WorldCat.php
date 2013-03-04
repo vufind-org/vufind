@@ -27,7 +27,6 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Connection;
-use VuFind\Config\Reader as ConfigReader;
 
 /**
  * WorldCat SRU Search Interface
@@ -57,14 +56,15 @@ class WorldCat extends SRU
     /**
      * Constructor
      *
-     * @param \Zend\Http\Client $client An HTTP client object
+     * @param \Zend\Config\Config $config VuFind configuration
+     * @param \Zend\Http\Client   $client An HTTP client object
      */
-    public function __construct(\Zend\Http\Client $client)
-    {
+    public function __construct(\Zend\Config\Config $config,
+        \Zend\Http\Client $client
+    ) {
         parent::__construct(
             'http://www.worldcat.org/webservices/catalog/search/sru', $client
         );
-        $config = ConfigReader::getConfig();
         $this->wskey = isset($config->WorldCat->apiKey)
             ? $config->WorldCat->apiKey : null;
         $this->limitCodes = isset($config->WorldCat->LimitCodes)

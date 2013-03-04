@@ -26,8 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Connection\Manager as ConnectionManager;
+use VuFind\Connection\Manager as ConnectionManager;
 
 /**
  * Class for generating sitemaps
@@ -40,25 +39,74 @@ use VuFind\Config\Reader as ConfigReader,
  */
 class Sitemap
 {
+    /**
+     * Base URL for site
+     *
+     * @var string
+     */
     protected $baseUrl;
+
+    /**
+     * Base URL for record
+     *
+     * @var string
+     */
     protected $resultUrl;
+
+    /**
+     * Sitemap configuration (sitemap.ini)
+     *
+     * @var \Zend\Config\Config
+     */
     protected $config;
+
+    /**
+     * Frequency of URL updates (always, daily, weekly, monthly, yearly, never)
+     *
+     * @var string
+     */
     protected $frequency;
+
+    /**
+     * URL entries per sitemap
+     *
+     * @var int
+     */
     protected $countPerPage;
+
+    /**
+     * Base path to sitemap files, including base filename
+     *
+     * @var string
+     */
     protected $fileStart;
+
+    /**
+     * Filename of sitemap index
+     *
+     * @var string
+     */
     protected $indexFile = false;
+
+    /**
+     * Warnings thrown during sitemap generation
+     *
+     * @var array
+     */
     protected $warnings = array();
 
     /**
      * Constructor
+     *
+     * @param string              $baseUrl VuFind base URL
+     * @param \Zend\Config\Config $config  Sitemap configuration settings
      */
-    public function __construct()
+    public function __construct($baseUrl, \Zend\Config\Config $config)
     {
         // Read Config file
-        $config = ConfigReader::getConfig();
-        $this->baseUrl = $config->Site->url;
+        $this->baseUrl = $baseUrl;
         $this->resultUrl = $this->baseUrl . '/Record/';
-        $this->config = ConfigReader::getConfig('sitemap');
+        $this->config = $config;
         $this->frequency = $this->config->Sitemap->frequency;
         $this->countPerPage = $this->config->Sitemap->countPerPage;
         $this->fileStart = $this->config->Sitemap->fileLocation . "/" .

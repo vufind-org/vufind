@@ -26,7 +26,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Config\Reader as ConfigReader;
 
 /**
  * Record Controller
@@ -41,14 +40,15 @@ class RecordController extends AbstractRecord
 {
     /**
      * Constructor
+     *
+     * @param \Zend\Config\Config $config VuFind configuration
      */
-    public function __construct()
+    public function __construct(\Zend\Config\Config $config)
     {
         // Call standard record controller initialization:
         parent::__construct();
 
         // Load default tab setting:
-        $config = ConfigReader::getConfig();
         $this->defaultTab = isset($config->Site->defaultRecordTab)
             ? $config->Site->defaultRecordTab : 'Holdings';
     }

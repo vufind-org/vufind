@@ -30,8 +30,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS;
-use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException,
-    VuFind\ILS\Driver\DriverInterface;
+use VuFind\Exception\ILS as ILSException, VuFind\ILS\Driver\DriverInterface;
 
 /**
  * Catalog Connection Class
@@ -70,30 +69,40 @@ class Connection
     protected $config;
 
     /**
-     * Set the configuration of the connection.
+     * Holds mode
      *
-     * @param \Zend\Config\Config $config Configuration representing the [Catalog]
-     * section of config.ini
-     *
-     * @return Connection
+     * @var string
      */
-    public function setConfig($config)
-    {
-        $this->config = $config;
-        return $this;
-    }
+    protected $holdsMode = 'disabled';
 
     /**
-     * Initialize the driver using the ILS driver plugin manager.
+     * Title-level holds mode
      *
-     * @param \VuFind\ILS\Driver\PluginManager $driverManager Driver plugin manager
-     *
-     * @throws \Exception
-     * @return Connection
+     * @var string
      */
-    public function initWithDriverManager(
-        \VuFind\ILS\Driver\PluginManager $driverManager
+    protected $titleHoldsMode = 'disabled';
+
+    /**
+     * Configuration loader
+     *
+     * @var \VuFind\Config\PluginManager
+     */
+    protected $configReader;
+
+    /**
+     * Constructor
+     *
+     * @param \Zend\Config\Config              $config        Configuration
+     * representing the [Catalog] section of config.ini
+     * @param \VuFind\ILS\Driver\PluginManager $driverManager Driver plugin manager
+     * @param \VuFind\Config\PluginManager     $configReader  Configuration loader
+     */
+    public function __construct(\Zend\Config\Config $config,
+        \VuFind\ILS\Driver\PluginManager $driverManager,
+        \VuFind\Config\PluginManager $configReader
     ) {
+        $this->config = $config;
+        $this->configReader = $configReader;
         if (!isset($this->config->driver)) {
             throw new \Exception('ILS driver setting missing.');
         }
@@ -114,6 +123,19 @@ class Connection
                 $this->setDriver($driverManager->get('NoILS'));
             }
         }
+    }
+
+    /**
+     * Set the hold configuration for the connection.
+     *
+     * @param \VuFind\ILS\HoldSettings $settings Hold settings
+     *
+     * @return Connection
+     */
+    public function setHoldConfig($settings)
+    {
+        $this->holdsMode = $settings->getHoldsMode();
+        $this->titleHoldsMode = $settings->getTitleHoldsMode();
         return $this;
     }
 
@@ -172,13 +194,13 @@ class Connection
         // Determine config file name based on class name:
         $parts = explode('\\', $this->getDriverClass());
         try {
-            $config = ConfigReader::getConfig(end($parts));
+            $config = $this->configReader->get(end($parts));
         } catch (\Zend\Config\Exception\RuntimeException $e) {
             // Configuration loading failed; probably means file does not
             // exist -- just return an empty array in that case:
             return array();
         }
-        return $config->toArray();
+        return is_object($config) ? $config->toArray() : array();
     }
 
     /**
@@ -331,11 +353,9 @@ class Connection
      *
      * @return string The Holds mode
      */
-    public static function getHoldsMode()
+    public function getHoldsMode()
     {
-        $config = ConfigReader::getConfig();
-        return isset($config->Catalog->holds_mode)
-            ? $config->Catalog->holds_mode : 'all';
+        return $this->holdsMode;
     }
 
     /**
@@ -360,11 +380,9 @@ class Connection
      *
      * @return string The Title Holds mode
      */
-    public static function getTitleHoldsMode()
+    public function getTitleHoldsMode()
     {
-        $config = ConfigReader::getConfig();
-        return isset($config->Catalog->title_level_holds_mode)
-            ? $config->Catalog->title_level_holds_mode : 'disabled';
+        return $this->titleHoldsMode;
     }
 
     /**

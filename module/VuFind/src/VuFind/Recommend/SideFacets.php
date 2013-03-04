@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Config\Reader as ConfigReader, VuFind\Solr\Utils as SolrUtils;
+use VuFind\Solr\Utils as SolrUtils;
 
 /**
  * SideFacets Recommendations Module
@@ -41,10 +41,50 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Solr\Utils as SolrUtils;
  */
 class SideFacets implements RecommendInterface
 {
+    /**
+     * Date facet configuration
+     *
+     * @var array
+     */
     protected $dateFacets = array();
+
+    /**
+     * Main facet configuration
+     *
+     * @var array
+     */
     protected $mainFacets = array();
+
+    /**
+     * Checkbox facet configuration
+     *
+     * @var array
+     */
     protected $checkboxFacets = array();
+
+    /**
+     * Search results
+     *
+     * @var \VuFind\Search\Base\Results
+     */
     protected $results;
+
+    /**
+     * Configuration loader
+     *
+     * @var \VuFind\Config\PluginManager
+     */
+    protected $configLoader;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     */
+    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    {
+        $this->configLoader = $configLoader;
+    }
 
     /**
      * setConfig
@@ -64,7 +104,7 @@ class SideFacets implements RecommendInterface
         $iniName = isset($settings[2]) ? $settings[2] : 'facets';
 
         // Load the desired facet information...
-        $config = ConfigReader::getConfig($iniName);
+        $config = $this->configLoader->get($iniName);
 
         // All standard facets to display:
         $this->mainFacets = isset($config->$mainSection) ?

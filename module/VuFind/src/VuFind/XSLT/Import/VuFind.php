@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/importing_records Wiki
  */
 namespace VuFind\XSLT\Import;
-use DOMDocument, VuFind\Config\Reader as ConfigReader;
+use DOMDocument, VuFind\Config\Locator as ConfigLocator;
 
 /**
  * XSLT support class -- all methods of this class must be public and static;
@@ -41,6 +41,11 @@ use DOMDocument, VuFind\Config\Reader as ConfigReader;
  */
 class VuFind
 {
+    /**
+     * Service locator
+     *
+     * @var ServiceLocatorInterface
+     */
     protected static $serviceLocator;
 
     /**
@@ -64,6 +69,18 @@ class VuFind
     {
         return static::$serviceLocator->get('VuFind\DbTablePluginManager')
             ->get('ChangeTracker');
+    }
+
+    /**
+     * Get a configuration file.
+     *
+     * @param string $config Configuration name
+     *
+     * @return \Zend\Config\Config
+     */
+    public static function getConfig($config = 'config')
+    {
+        return static::$serviceLocator->get('VuFind\Config')->get($config);
     }
 
     /**
@@ -128,7 +145,7 @@ class VuFind
      */
     public static function getParser()
     {
-        $settings = ConfigReader::getConfig('fulltext');
+        $settings = static::getConfig('fulltext');
 
         // Is user preference explicitly set?
         if (isset($settings->General->parser)) {
@@ -158,12 +175,12 @@ class VuFind
      */
     public static function harvestWithParser($url)
     {
-        $parser = self::getParser();
+        $parser = static::getParser();
         switch (strtolower($parser)) {
         case 'aperture':
-            return self::harvestWithAperture($url);
+            return static::harvestWithAperture($url);
         case 'tika':
-            return self::harvestWithTika($url);
+            return static::harvestWithTika($url);
         default:
             // Ignore unrecognized parser option:
             return '';
@@ -183,7 +200,7 @@ class VuFind
         $method = "webcrawler"
     ) {
         // get the path to our sh/bat from the config
-        $settings = ConfigReader::getConfig('fulltext');
+        $settings = static::getConfig('fulltext');
         if (!isset($settings->Aperture->webcrawler)) {
             return '';
         }
@@ -214,7 +231,7 @@ class VuFind
         $xmlFile = tempnam('/tmp', 'apt');
 
         // Determine the base Aperture command (or fail if it is not configured):
-        $aptCmd = self::getApertureCommand($url, $xmlFile, $method);
+        $aptCmd = static::getApertureCommand($url, $xmlFile, $method);
         if (empty($aptCmd)) {
             return '';
         }
@@ -251,7 +268,7 @@ class VuFind
      */
     public static function getTikaCommand($input, $output, $arg)
     {
-        $settings = ConfigReader::getConfig('fulltext');
+        $settings = static::getConfig('fulltext');
         if (!isset($settings->Tika->path)) {
             return '';
         }
@@ -285,7 +302,7 @@ class VuFind
         $outputFile = tempnam('/tmp', 'tika');
 
         // Determine the base Tika command and execute
-        $tikaCommand = self::getTikaCommand($url, $outputFile, $arg);
+        $tikaCommand = static::getTikaCommand($url, $outputFile, $arg);
         proc_close(proc_open($tikaCommand[0], $tikaCommand[1], $tikaCommand[2]));
 
         // If we failed to process the file, give up now:
@@ -315,7 +332,7 @@ class VuFind
         // style of properties map, so we are parsing this manually.
         $map = array();
         $mapFile
-            = ConfigReader::getConfigPath($filename, 'import/translation_maps');
+            = ConfigLocator::getConfigPath($filename, 'import/translation_maps');
         foreach (file($mapFile) as $line) {
             $parts = explode('=', $line, 2);
             if (isset($parts[1])) {
@@ -405,7 +422,7 @@ class VuFind
             }
         }
 
-        return self::xmlAsText($in);
+        return static::xmlAsText($in);
     }
 
     /**

@@ -27,8 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Config\Reader as ConfigReader, Zend\Feed\Reader\Reader as FeedReader,
-    Zend\Log\LoggerInterface;
+use Zend\Feed\Reader\Reader as FeedReader, Zend\Log\LoggerInterface;
 
 /**
  * EuropeanaResults Recommendations Module
@@ -130,6 +129,16 @@ class EuropeanaResults implements RecommendInterface,
     protected $httpService = null;
 
     /**
+     * Constructor
+     *
+     * @param string $key API key
+     */
+    public function __construct($key)
+    {
+        $this->key = $key;
+    }
+
+    /**
      * Set the HTTP service to be used for HTTP requests.
      *
      * @param HttpServiceInterface $service HTTP service
@@ -192,10 +201,6 @@ class EuropeanaResults implements RecommendInterface,
         if (!empty($this->excludeProviders)) {
             $this->excludeProviders = explode(',', $this->excludeProviders);
         }
-
-        //get the key from config.ini
-        $config = ConfigReader::getConfig();
-        $this->key = $config->Content->europeanaAPI;
         $this->searchSite = "Europeana.eu";
     }
 
@@ -215,7 +220,7 @@ class EuropeanaResults implements RecommendInterface,
     {
         // build url
         $url = $targetUrl . "?" . $requestParam . "=" . $this->lookfor;
-        //add providers to ignore
+        // add providers to ignore
         foreach ($excludeProviders as $provider) {
             $provider = trim($provider);
             if (!empty($provider)) {
@@ -224,7 +229,7 @@ class EuropeanaResults implements RecommendInterface,
         }
         $url .= '&wskey=' . urlencode($this->key);
 
-        //return complete url
+        // return complete url
         return $url;
     }
 

@@ -26,8 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\Forbidden as ForbiddenException, Zend\Mvc\MvcEvent;
+use VuFind\Exception\Forbidden as ForbiddenException, Zend\Mvc\MvcEvent;
 
 /**
  * Class controls VuFind administration.
@@ -61,7 +60,7 @@ class AdminController extends AbstractBase
         }
 
         // Block access to everyone when module is disabled:
-        $config = ConfigReader::getConfig();
+        $config = $this->getConfig();
         if (!isset($config->Site->admin_enabled) || !$config->Site->admin_enabled) {
             $routeMatch->setParam('action', 'disabled');
             return;
@@ -127,7 +126,7 @@ class AdminController extends AbstractBase
      */
     public function homeAction()
     {
-        $config = ConfigReader::getConfig();
+        $config = $this->getConfig();
         $xml = false;
         if (isset($config->Index->url)) {
             $response = $this->getServiceLocator()->get('VuFind\Http')
@@ -162,7 +161,7 @@ class AdminController extends AbstractBase
     {
         $view = $this->createViewModel();
 
-        $config = ConfigReader::getConfig();
+        $config = $this->getConfig();
         $statsFilled = array(
             'search' => false,
             'record' => false
@@ -239,8 +238,8 @@ class AdminController extends AbstractBase
     public function configAction()
     {
         $view = $this->createViewModel();
-        $view->baseConfigPath = ConfigReader::getBaseConfigPath('');
-        $conf = ConfigReader::getConfig();
+        $view->baseConfigPath = \VuFind\Config\Locator::getBaseConfigPath('');
+        $conf = $this->getConfig();
         $view->showInstallLink
             = isset($conf->System->autoConfigure) && $conf->System->autoConfigure;
         return $view;
@@ -253,7 +252,7 @@ class AdminController extends AbstractBase
      */
     public function enableautoconfigAction()
     {
-        $configFile = ConfigReader::getConfigPath('config.ini');
+        $configFile = \VuFind\Config\Locator::getConfigPath('config.ini');
         $writer = new \VuFind\Config\Writer($configFile);
         $writer->set('System', 'autoConfigure', 1);
         if ($writer->save()) {
@@ -262,7 +261,7 @@ class AdminController extends AbstractBase
 
             // Reload config now that it has been edited (otherwise, old setting
             // will persist in cache):
-            ConfigReader::getConfig(null, true);
+            $this->getServiceLocator()->get('VuFind\Config')->reload('config');
         } else {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage(

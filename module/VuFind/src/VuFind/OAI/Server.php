@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\OAI;
-use SimpleXMLElement, VuFind\Config\Reader as ConfigReader,
+use SimpleXMLElement,
     VuFind\Exception\RecordMissing as RecordMissingException, VuFind\SimpleXML;
 
 /**
@@ -42,48 +42,123 @@ use SimpleXMLElement, VuFind\Config\Reader as ConfigReader,
  */
 class Server
 {
-    protected $baseURL;                         // Repository base URL
-    protected $params;                          // Incoming request parameters
-    protected $searchClassId = 'Solr';          // Search object class to use
-    protected $core = 'biblio';                 // What Solr core are we serving up?
-    protected $iso8601 = 'Y-m-d\TH:i:s\Z';      // ISO-8601 date format
-    protected $pageSize = 100;                  // Records per page in lists
-    protected $setField = null;                 // Solr field for set membership
+    /**
+     * Repository base URL
+     *
+     * @var string
+     */
+    protected $baseURL;
 
-    // Supported metadata formats:
+    /**
+     * Incoming request parameters
+     *
+     * @var array
+     */
+    protected $params;
+
+    /**
+     * Search object class to use
+     *
+     * @var string
+     */
+    protected $searchClassId = 'Solr';
+
+    /**
+     * What Solr core are we serving up?
+     *
+     * @var string
+     */
+    protected $core = 'biblio';
+
+    /**
+     * ISO-8601 date format
+     *
+     * @var string
+     */
+    protected $iso8601 = 'Y-m-d\TH:i:s\Z';
+
+    /**
+     * Records per page in lists
+     *
+     * @var int
+     */
+    protected $pageSize = 100;
+
+    /**
+     * Solr field for set membership
+     *
+     * @var string
+     */
+    protected $setField = null;
+
+    /**
+     * Supported metadata formats
+     *
+     * @var array
+     */
     protected $metadataFormats = array();
 
-    // Namespace used for ID prefixing (if any):
+    /**
+     * Namespace used for ID prefixing (if any)
+     *
+     * @var string
+     */
     protected $idNamespace = null;
 
-    // Values used in "Identify" response:
+    /**
+     * Repository name used in "Identify" response
+     *
+     * @var string
+     */
     protected $repositoryName = 'VuFind';
+
+    /**
+     * Earliest datestamp used in "Identify" response
+     *
+     * @var string
+     */
     protected $earliestDatestamp = '2000-01-01T00:00:00Z';
+
+    /**
+     * Admin email used in "Identify" response
+     *
+     * @var string
+     */
     protected $adminEmail;
 
-    // Search manager:
+    /**
+     * Search manager
+     *
+     * @var \VuFind\Search\Manager
+     */
     protected $searchManager;
 
-    // Table manager:
+    /**
+     * Table manager
+     *
+     * @var \VuFind\Db\Table\PluginManager
+     */
     protected $tableManager;
 
     /**
      * Constructor
      *
      * @param \VuFind\Search\Manager $sm      Search manager for retrieving records
+     * @param \Zend\Config\Config    $config  VuFind configuration
      * @param string                 $baseURL The base URL for the OAI server
      * @param array                  $params  The incoming OAI-PMH parameters
      * (i.e. $_GET)
      */
-    public function __construct(\VuFind\Search\Manager $sm, $baseURL, $params)
-    {
+    public function __construct(\VuFind\Search\Manager $sm,
+        \Zend\Config\Config $config, $baseURL, $params
+    ) {
         $this->searchManager = $sm;
         $this->tableManager = $sm->getServiceLocator()
             ->get('VuFind\DbTablePluginManager');
         $this->baseURL = $baseURL;
         $this->params = isset($params) && is_array($params) ? $params : array();
         $this->initializeMetadataFormats(); // Load details on supported formats
-        $this->initializeSettings();        // Load config.ini settings
+        $this->initializeSettings($config); // Load config.ini settings
     }
 
     /**
@@ -327,12 +402,12 @@ class Server
      * constructor and is only a separate method to allow easy override by child
      * classes).
      *
+     * @param \Zend\Config\Config $config VuFind configuration
+     *
      * @return void
      */
-    protected function initializeSettings()
+    protected function initializeSettings(\Zend\Config\Config $config)
     {
-        $config = ConfigReader::getConfig();
-
         // Override default repository name if configured:
         if (isset($config->OAI->repository_name)) {
             $this->repositoryName = $config->OAI->repository_name;

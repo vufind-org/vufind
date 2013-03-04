@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
 namespace VuFind\Controller;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\Auth as AuthException;
+use VuFind\Exception\Auth as AuthException;
 
 /**
  * This controller handles global AJAX functionality
@@ -45,8 +44,18 @@ class AjaxController extends AbstractBase
     const STATUS_ERROR = 'ERROR';            // bad
     const STATUS_NEED_AUTH = 'NEED_AUTH';    // must login first
 
+    /**
+     * Type of output to use
+     *
+     * @var string
+     */
     protected $outputMode;
-    protected $account;
+
+    /**
+     * Array of PHP errors captured during execution
+     *
+     * @var array
+     */
     protected static $php_errors = array();
 
     /**
@@ -147,17 +156,15 @@ class AjaxController extends AbstractBase
      * Support method for getItemStatuses() -- filter suppressed locations from the
      * array of item information for a particular bib record.
      *
-     * @param array                  $record  Information on items linked to a single
-     * bib record
-     * @param \VuFind\ILS\Connection $catalog ILS connection
+     * @param array $record Information on items linked to a single bib record
      *
      * @return array        Filtered version of $record
      */
-    protected function filterSuppressedLocations($record, $catalog)
+    protected function filterSuppressedLocations($record)
     {
         static $hideHoldings = false;
         if ($hideHoldings === false) {
-            $logic = new \VuFind\ILS\Logic\Holds($this->getAuthManager(), $catalog);
+            $logic = $this->getServiceLocator()->get('VuFind\ILSHoldLogic');
             $hideHoldings = $logic->getSuppressedLocations();
         }
 
@@ -210,7 +217,7 @@ class AjaxController extends AbstractBase
         );
 
         // Load callnumber and location settings:
-        $config = ConfigReader::getConfig();
+        $config = $this->getConfig();
         $callnumberSetting = isset($config->Item_Status->multiple_call_nos)
             ? $config->Item_Status->multiple_call_nos : 'msg';
         $locationSetting = isset($config->Item_Status->multiple_locations)
@@ -222,7 +229,7 @@ class AjaxController extends AbstractBase
         $statuses = array();
         foreach ($results as $recordNumber=>$record) {
             // Filter out suppressed locations:
-            $record = $this->filterSuppressedLocations($record, $catalog);
+            $record = $this->filterSuppressedLocations($record);
 
             // Skip empty records:
             if (count($record)) {
@@ -977,7 +984,7 @@ class AjaxController extends AbstractBase
         $this->writeSession();  // avoid session write timing bug
 
         // Force login if necessary:
-        $config = \VuFind\Config\Reader::getConfig();
+        $config = $this->getConfig();
         if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
             && !$this->getUser()
         ) {
@@ -1018,7 +1025,7 @@ class AjaxController extends AbstractBase
         $this->writeSession();  // avoid session write timing bug
 
         // Force login if necessary:
-        $config = \VuFind\Config\Reader::getConfig();
+        $config = $this->getConfig();
         if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
             && !$this->getUser()
         ) {
@@ -1258,7 +1265,7 @@ class AjaxController extends AbstractBase
         $this->writeSession();  // avoid session write timing bug
         $openUrl = $this->params()->fromQuery('openurl', '');
 
-        $config = ConfigReader::getConfig();
+        $config = $this->getConfig();
         $resolverType = isset($config->OpenURL->resolver)
             ? $config->OpenURL->resolver : 'other';
         $pluginManager = $this->getServiceLocator()

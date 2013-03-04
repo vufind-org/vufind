@@ -177,6 +177,18 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Get a VuFind configuration.
+     *
+     * @param string $id Configuration identifier (default = main VuFind config)
+     *
+     * @return \Zend\Config\Config
+     */
+    public function getConfig($id = 'config')
+    {
+        return $this->getServiceLocator()->get('VuFind\Config')->get($id);
+    }
+
+    /**
      * Get the ILS connection.
      *
      * @return \VuFind\ILS\Connection

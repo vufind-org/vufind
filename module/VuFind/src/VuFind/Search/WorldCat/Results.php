@@ -26,8 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\WorldCat;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\RecordMissing as RecordMissingException,
+use VuFind\Exception\RecordMissing as RecordMissingException,
     VuFind\Search\Base\Results as BaseResults;
 
 /**
@@ -65,7 +64,7 @@ class Results extends BaseResults
     protected function performSearch()
     {
         // Collect the search parameters:
-        $config = ConfigReader::getConfig();
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
         $wc = $this->getWorldCatConnection();
         $overrideQuery = $this->getParams()->getOverrideQuery();
         $query = empty($overrideQuery)
