@@ -492,17 +492,18 @@ class Connector
      *
      * @param string   $handler SOLR request handler to use
      * @param ParamBag $params  Request parameters
-     * @param string   $method  Request method
      *
      * @return string Response body
      */
-    protected function query ($handler, ParamBag $params, $method = Request::METHOD_GET)
+    protected function query ($handler, ParamBag $params)
     {
 
         $url         = $this->url . '/' . $handler;
         $paramString = implode('&', $params->request());
         if (strlen($paramString) > self::MAX_GET_URL_LENGTH) {
             $method = Request::METHOD_POST;
+        } else {
+            $method = Request::METHOD_GET;
         }
 
         if ($method === Request::METHOD_POST) {
