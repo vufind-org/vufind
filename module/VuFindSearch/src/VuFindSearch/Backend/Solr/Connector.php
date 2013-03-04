@@ -468,7 +468,7 @@ class Connector
 
         $params = array_replace($defaults, $params);
         $params = array_replace($params, $invariants);
-        $params = array_merge($params, $appends);
+        $params = array_merge_recursive($params, $appends);
 
         return new ParamBag($params);
     }
