@@ -29,8 +29,6 @@
 
 namespace VuFind\Search\Factory;
 
-use VuFind\Config\Reader;
-
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\QueryBuilder;
 use VuFindSearch\Backend\Solr\Connector;
@@ -38,9 +36,6 @@ use VuFindSearch\Backend\Solr\Backend;
 
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
-
-use Zend\Config\Reader\Yaml as YamlReader;
-use VuFind\Config\Reader\CacheDecorator as YamlCacheReader;
 
 /**
  * Abstract factory for SOLR backends.
