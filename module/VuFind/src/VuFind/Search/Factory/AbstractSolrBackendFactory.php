@@ -99,9 +99,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      * Constructor
      */
     public function __construct()
-    {
-        $this->config = Reader::getConfig();
-    }
+    {}
 
     /**
      * Create the backend.
@@ -113,6 +111,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     public function createService (ServiceLocatorInterface $serviceLocator)
     {
         $this->serviceLocator = $serviceLocator;
+        $this->config         = $this->serviceLocator->get('VuFind\Config');
         if ($this->serviceLocator->has('VuFind\Logger')) {
             $this->logger = $this->serviceLocator->get('VuFind\Logger');
         }
@@ -160,20 +159,20 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      */
     protected function createConnector ()
     {
-        $searchSettings = Reader::getConfig($this->searchConfig);
+        $config = $this->config->get('config');
+        $search = $this->config->get('searches');
 
-        $url = $this->config->Index->url . '/' . $this->solrCore;
-
+        $url    = $config->Index->url . '/' . $this->solrCore;
         $connector = new Connector($url);
         $connector->setTimeout(
-            isset($this->config->Index->timeout) ? $this->config->Index->timeout : 30
+            isset($config->Index->timeout) ? $config->Index->timeout : 30
         );
         $connector->setQueryDefaults(
             array('wt' => 'json', 'json.nl' => 'arrarr', 'fl' => '*,score')
         );
 
-        $hl = !isset($searchSettings->General->highlighting) ? false : $searchSettings->General->highlighting;
-        $sn = !isset($searchSettings->General->snippets)     ? false : $searchSettings->General->snippets;
+        $hl = !isset($search->General->highlighting) ? false : $search->General->highlighting;
+        $sn = !isset($search->General->snippets)     ? false : $search->General->snippets;
         if ($hl || $sn) {
             $connector->addQueryAppend('hl', 'true');
             $connector->addQueryAppend('hl.fl', '*');
@@ -182,14 +181,14 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         }
 
         // Hidden filters
-        if (isset($searchSettings->HiddenFilters)) {
-            foreach ($searchSettings->HiddenFilters as $field => $value) {
+        if (isset($search->HiddenFilters)) {
+            foreach ($search->HiddenFilters as $field => $value) {
                 $connector->addQueryAppend('fq', sprintf('%s:"%s"', $field, $value));
             }
         }
         // Raw hidden filters
-        if (isset($searchSettings->RawHiddenFilters)) {
-            foreach ($searchSettings->RawHiddenFilters as $filter) {
+        if (isset($search->RawHiddenFilters)) {
+            foreach ($search->RawHiddenFilters as $filter) {
                 $connector->addQueryAppend('fq', $filter);
             }
         }
@@ -210,20 +209,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      */
     protected function loadSpecs ()
     {
-        $global = Reader::getBaseConfigPath($this->searchYaml);
-        $local  = Reader::getLocalConfigPath($this->searchYaml);
-        if ($this->serviceLocator->has('VuFind\CacheManager')) {
-            $cache  = $this->serviceLocator->get('VuFind\CacheManager')->getCache('searchspecs');
-            $reader = new YamlCacheReader(new YamlReader('Symfony\Component\Yaml\Yaml::parse'), $cache);
-        } else {
-            $reader = new YamlReader(new YamlReader('Symfony\Component\Yaml\Yaml::parse'));
-        }
-        $specs = $reader->fromFile($global);
-        if ($local) {
-            foreach ($reader->fromFile($local) as $key => $value) {
-                $specs[$key] = $value;
-            }
-        }
+        $specs = $this->serviceLocator->get('VuFind\SearchSpecsReader')->get($this->searchYaml);
         return $specs;
     }
 }
