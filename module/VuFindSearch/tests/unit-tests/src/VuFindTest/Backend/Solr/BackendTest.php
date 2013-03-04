@@ -58,7 +58,8 @@ class BackendTest extends PHPUnit_Framework_TestCase
             ->method('retrieve')
             ->will($this->returnValue($resp->getBody()));
 
-        $back = new Backend('test', $conn);
+        $back = new Backend($conn);
+        $back->setIdentifier('test');
         $coll = $back->retrieve('foobar');
         $this->assertCount(1, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
