@@ -482,7 +482,8 @@ class Connector
      */
     public function resubmit (ParamBag $params)
     {
-        $last = $this->lastQuery;
+        $last   = $this->lastQuery;
+        $params = $this->prepare($params);
         return $this->query($last['handler'], $params, $last['method']);
     }
 
