@@ -368,17 +368,12 @@ class Bootstrapper
     {
         $sm = $this->event->getApplication()->getServiceManager();
 
-        /// Hardcoded for now
-        $config = array(
-            'factories' => array(
-                'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
-                'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
-                'SolrReserves' => 'VuFind\Search\Factory\SolrReservesBackendFactory',
-            )
+        $config = $sm->get('config');
+        $smConfig = new \Zend\ServiceManager\Config(
+            $config['vufind']['plugin_managers']['search_backend']
         );
 
         $registry = $sm->createScopedServiceManager();
-        $smConfig = new \Zend\ServiceManager\Config($config);
         $smConfig->configureServiceManager($registry);
         $bm = new \VuFind\Search\BackendManager($registry);
 

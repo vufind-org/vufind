@@ -727,6 +727,13 @@ $config = array(
                     'threesixtylink' => '360link',
                 ),
             ),
+            'search_backend' => array(
+                'factories' => array(
+                    'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
+                    'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
+                    'SolrReserves' => 'VuFind\Search\Factory\SolrReservesBackendFactory',
+                )
+            ),
             'session' => array(
                 'abstract_factories' => array('VuFind\Session\PluginFactory'),
                 'invokables' => array(
