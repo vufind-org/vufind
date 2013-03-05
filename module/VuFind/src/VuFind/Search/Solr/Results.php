@@ -551,9 +551,8 @@ class Results extends BaseResults
                 'Record ' . $id . ' does not exist.'
             );
         }
-        $rawResponse = $collection->getRawResponse();
-        $record = $rawResponse['response']['docs'][0];
-        return $this->initRecordDriver($record);
+
+        return current($collection->getRecords());
     }
 
     /**
@@ -599,30 +598,7 @@ class Results extends BaseResults
     public function getSimilarRecords($id)
     {
         $collection = $this->getSearchService()->similar($this->backendId, $id);
-        $rawResponse = $collection->getRawResponse();
-
-        $results = array();
-        for ($x = 0; $x < count($rawResponse['response']['docs']); $x++) {
-            $results[] = $this->initRecordDriver(
-                $rawResponse['response']['docs'][$x]
-            );
-        }
-        return $results;
-    }
-
-    /**
-     * Support method for performSearch(): given an array of Solr response data,
-     * construct an appropriate record driver object.
-     *
-     * @param array $data Solr data
-     *
-     * @return \VuFind\RecordDriver\Base
-     */
-    protected function initRecordDriver($data)
-    {
-        return $this->getServiceLocator()
-            ->get('VuFind\RecordDriverPluginManager')
-            ->getSolrRecord($data);
+        return $collection->getRecords();
     }
 
     /**
