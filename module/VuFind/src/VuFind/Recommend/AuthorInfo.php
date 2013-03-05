@@ -481,6 +481,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
             }
         }
         $info['description'] = $body;
+        $info['wiki_lang'] = $this->lang;
 
         return $info;
     }

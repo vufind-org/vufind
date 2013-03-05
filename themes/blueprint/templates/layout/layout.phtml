@@ -41,6 +41,16 @@
             }
             $this->headScript()->appendScript($script);
         }
+        $feedback = $this->feedback()->tabEnabled();
+        if ($feedback) {
+            $this->headScript()->appendFile("jquery.tabSlideOut.v2.0.js");
+            $this->headScript()->appendFile("feedback.js");
+            $tab = $this->imageLink("feedbacktab/image-tab-" . $this->layout()->userLang .".png");
+            if (null === $tab) {
+                $tab = $this->imageLink("feedbacktab/image-tab-en.png");
+            }
+            $this->headScript()->appendScript('var tabImage = \'' . $tab . '\';');
+        }
     ?>
     <?=$this->headScript()?>
   </head>
@@ -67,6 +77,15 @@
       <div class="searchbox">
         <?=$this->layout()->searchbox?>
       </div>
+      <? endif; ?>
+      <?
+        // Set up the feedback tab -- the same possible cases exist as the search box
+        if ($feedback && !isset($this->layout()->feedbacktab)) {
+            $this->layout()->feedbacktab = $this->render('feedback/email.phtml');
+        }
+      ?>
+      <? if (isset($this->layout()->feedbacktab)): ?>
+        <div class="feedbacktab"><?=$this->layout()->feedbacktab?></div>
       <? endif; ?>
       <? if ($this->layout()->breadcrumbs): ?>
       <div class="breadcrumbs">
