@@ -49,19 +49,4 @@ class Results extends \VuFind\Search\Solr\Results
         parent::__construct($params);
         $this->backendId = 'SolrAuth';
     }
-
-    /**
-     * Get a connection to the Solr index.
-     *
-     * @param null|array $shards Selected shards to use (null for defaults)
-     * @param string     $index  ID of index/search classes to use (this assumes
-     * that \VuFind\Search\$index\Options and VuFind\Connection\$index are both
-     * valid classes)
-     *
-     * @return \VuFind\Connection\Solr
-     */
-    public function getSolrConnection($shards = null, $index = 'SolrAuth')
-    {
-        return parent::getSolrConnection($shards, $index);
-    }
 }
