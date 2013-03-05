@@ -116,7 +116,12 @@ class Params extends \VuFind\Search\Base\Params
         if ($this->overrideQuery) {
             return new Query($this->overrideQuery);
         }
-        return QueryAdapter::create($this->getSearchTerms());
+
+        $legacy = $this->getSearchTerms();
+        if (empty($legacy)) {
+            return new Query();
+        }
+        return QueryAdapter::create($legacy);
     }
 
     /**
