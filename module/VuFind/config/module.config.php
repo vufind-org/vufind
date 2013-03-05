@@ -443,7 +443,8 @@ $config = array(
                     },
                     'demo' => function ($sm) {
                         return new \VuFind\ILS\Driver\Demo(
-                            $sm->getServiceLocator()->get('VuFind\DateConverter')
+                            $sm->getServiceLocator()->get('VuFind\DateConverter'),
+                            $sm->getServiceLocator()->get('VuFind\Search')
                         );
                     },
                     'horizon' => function ($sm) {
