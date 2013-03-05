@@ -64,10 +64,10 @@ class MyResearchController extends AbstractBase
 
         // Not logged in?  Force user to log in:
         if (!$this->getAuthManager()->isLoggedIn()) {
-            $this->followup()->store(
-                array(),
-                $this->getRequest()->getServer()->get('HTTP_REFERER')
-            );
+            $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
+            if (!empty($referer)) {
+                $this->followup()->store(array(), $referer);
+            }
             return $this->forwardTo('MyResearch', 'Login');
         }
 
