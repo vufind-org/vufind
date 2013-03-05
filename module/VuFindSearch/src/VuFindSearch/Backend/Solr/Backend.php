@@ -152,7 +152,7 @@ class Backend implements BackendInterface
      */
     public function search (AbstractQuery $query, $offset, $limit, ParamBag $params = null)
     {
-        if ($params->get('spellcheck.q')) {
+        if (null !== $params && $params->get('spellcheck.q')) {
             if (!empty($this->dictionaries)) {
                 reset($this->dictionaries);
                 $params->set('spellcheck', 'true');
