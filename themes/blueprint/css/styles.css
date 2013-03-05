@@ -2023,3 +2023,44 @@ div#closeContextHelp:active {
 .jstree-highlight {
     font-weight: bold;
 }
+
+/*hides the div so that only people with JavaScript will see the tab*/
+div.slideOutForm {
+    display: none;
+}
+
+/*stylizes the feedback tab div*/
+.slide-out-div {
+  padding: 20px;
+  width: 270px;
+  height: 300px;
+  background: #6B8F25;
+  border: 1px solid #000000;
+  z-index: 9;
+  color: white;
+}
+
+/* larger font size for "send us your feedback" */
+p.feedbackHeader {
+    font-size: 1.4em;
+}
+
+/* this is used to change the properties of errors in the feedback tab */
+#contact_form .error {
+  padding: .1em;
+  line-height: 2.5;
+}
+
+/* changes the text on the feedback home page */
+.feedbackPageLabel {
+    color: black;
+}
+
+/* These two sections change the colors of the selected and unselected text fields */
+.feedbackSelect {
+    background: #D6FFAD;
+}
+
+.feedbackDeselect {
+    background: #FFFFFF;
+}
