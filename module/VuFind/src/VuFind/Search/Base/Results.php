@@ -553,22 +553,18 @@ abstract class Results implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Unset the service locator.
+     * Sleep magic method -- the service locator can't be serialized, so we need to
+     * exclude it from serialization.  Since we can't obtain a new locator in the
+     * __wakeup() method, it needs to be re-injected from outside.
      *
-     * @return Results
+     * @return array
      */
-    public function unsetServiceLocator()
+    public function __sleep()
     {
-        $this->serviceLocator = null;
-        $params = $this->getParams();
-        if (method_exists($params, 'unsetServiceLocator')) {
-            $params->unsetServiceLocator();
-        }
-        $options = $this->getOptions();
-        if (method_exists($options, 'unsetServiceLocator')) {
-            $params->unsetServiceLocator();
-        }
-        return $this;
+        $vars = get_object_vars($this);
+        unset($vars['serviceLocator']);
+        $vars = array_keys($vars);
+        return $vars;
     }
 
     /**

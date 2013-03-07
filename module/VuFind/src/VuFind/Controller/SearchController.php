@@ -552,13 +552,11 @@ class SearchController extends AbstractSearch
             $results = $sm->setSearchClassId('Solr')->getResults($params);
             $results->getResults();                     // force processing for cache
 
-            // Temporarily remove the service manager so we can cache the
-            // results (otherwise we'll get errors about serializing closures):
-            $results->unsetServiceLocator();
             $cache->setItem($cacheName, $results);
         }
 
-        // Restore the real service locator to the object:
+        // Restore the real service locator to the object (it was lost during
+        // serialization):
         $results->restoreServiceLocator($this->getServiceLocator());
         return $results;
     }
