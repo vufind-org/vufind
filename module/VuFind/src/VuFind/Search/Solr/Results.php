@@ -280,13 +280,15 @@ class Results extends BaseResults
             $suggestionLimit = $this->getOptions()->getSpellingLimit();
             $suggestions     = array();
             foreach ($info['suggestion'] as $suggestion) {
+                if (count($suggestions) >= $suggestionLimit) {
+                    break;
+                }
                 $word = $suggestion['word'];
-                if (!$this->getParams()->findSearchTerm($word) && $suggestionLimit > 0) {
+                if (!$this->getParams()->findSearchTerm($word)) {
                     // TODO: Avoid reference to Options
                     // Note: !a || !b eq !(a && b)
                     if (!is_numeric($word) || !$this->getOptions()->shouldSkipNumericSpelling()) {
                         $suggestions[$word] = $suggestion['freq'];
-                        $suggestionLimit++;
                     }
                 }
             }
