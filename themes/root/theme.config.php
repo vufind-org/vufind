@@ -49,6 +49,12 @@ return array(
                     $sm->getServiceLocator()->get('VuFind\Export')
                 );
             },
+            'feedback' => function ($sm) {
+                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+                $enabled = isset($config->Feedback->tab_enabled)
+                    ? $config->Feedback->tab_enabled : false;
+                return new \VuFind\View\Helper\Root\Feedback($enabled);
+            },
             'flashmessages' => function ($sm) {
                 $messenger = $sm->getServiceLocator()->get('ControllerPluginManager')
                     ->get('FlashMessenger');

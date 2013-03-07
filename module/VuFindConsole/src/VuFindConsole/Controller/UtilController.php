@@ -296,8 +296,6 @@ class UtilController extends AbstractBase
         // Delete, Commit and Optimize if necessary:
         if (!empty($ids)) {
             $solr->deleteRecords($ids);
-            $solr->commit();
-            $solr->optimize();
         }
         return $this->getSuccessResponse();
     }

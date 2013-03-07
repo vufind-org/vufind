@@ -58,10 +58,17 @@ md %BASEPATH%\processed
 
 rem Process all the files in the target directory:
 cd %VUFIND_HOME%\util
+set FOUNDSOME=0
 for %%a in (%BASEPATH%\*.delete) do (
+  set FOUNDSOME=1
   echo Processing %%a...
   php deletes.php %%a flat %2
   move %%a %BASEPATH%\processed\ > nul
 )
+
+if "%FOUNDSOME%"=="0" goto end
+
+echo Optimizing index...
+php optimize.php
 
 :end

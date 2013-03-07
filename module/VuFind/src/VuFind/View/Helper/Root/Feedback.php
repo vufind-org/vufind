@@ -1,10 +1,11 @@
 <?php
 /**
- * Solr Authority aspect of the Search Multi-class (Results)
+ * This is a helper that lets the layout know whether or not to include the feedback
+ * tab
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2010.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,33 +21,49 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Search_SolrAuth
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-namespace VuFind\Search\SolrAuth;
+namespace VuFind\View\Helper\Root;
 
 /**
- * Solr Authority Search Parameters
+ * This is a helper that lets the layout know whether or not to include the feedback
+ * tab
  *
  * @category VuFind2
- * @package  Search_SolrAuth
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  View_Helpers
+ * @author   Josiah Knoll <jk1135@ship.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class Results extends \VuFind\Search\Solr\Results
+class Feedback extends \Zend\View\Helper\AbstractHelper
 {
+    /**
+     * Is the tab enabled?
+     *
+     * @var bool
+     */
+    protected $tab;
+
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Params $params Object representing user search
-     * parameters.
+     * @param bool $enabled Is the tab enabled?
      */
-    public function __construct(\VuFind\Search\Base\Params $params)
+    public function __construct($enabled = true)
     {
-        parent::__construct($params);
-        $this->backendId = 'SolrAuth';
+        $this->tab = $enabled;
+    }
+
+    /**
+     * This will retrieve the config for whether or not the tab is enabled.
+     *
+     * @return boolean
+     */
+    public function tabEnabled()
+    {
+        return $this->tab;
     }
 }

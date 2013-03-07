@@ -44,13 +44,21 @@ then
 fi
 
 # Process all the files in the target directory:
+FOUNDSOME=0
 cd $VUFIND_HOME/util
 for file in $BASEPATH/*.delete
 do
   if [ -f $file ]
   then
+    FOUNDSOME=1
     echo "Processing $file ..."
     php deletes.php $file flat $2
     mv $file $BASEPATH/processed/`basename $file`
   fi
 done
+
+if [ "$FOUNDSOME" -eq "1" ]
+then
+  echo "Optimizing index..."
+  php optimize.php
+fi

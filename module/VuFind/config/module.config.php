@@ -105,6 +105,7 @@ $config = array(
             'cart' => 'VuFind\Controller\CartController',
             'cover' => 'VuFind\Controller\CoverController',
             'error' => 'VuFind\Controller\ErrorController',
+            'feedback' => 'VuFind\Controller\FeedbackController',
             'help' => 'VuFind\Controller\HelpController',
             'hierarchy' => 'VuFind\Controller\HierarchyController',
             'index' => 'VuFind\Controller\IndexController',
@@ -442,7 +443,8 @@ $config = array(
                     },
                     'demo' => function ($sm) {
                         return new \VuFind\ILS\Driver\Demo(
-                            $sm->getServiceLocator()->get('VuFind\DateConverter')
+                            $sm->getServiceLocator()->get('VuFind\DateConverter'),
+                            $sm->getServiceLocator()->get('VuFind\Search')
                         );
                     },
                     'horizon' => function ($sm) {
@@ -727,6 +729,13 @@ $config = array(
                     'threesixtylink' => '360link',
                 ),
             ),
+            'search_backend' => array(
+                'factories' => array(
+                    'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
+                    'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
+                    'SolrReserves' => 'VuFind\Search\Factory\SolrReservesBackendFactory',
+                )
+            ),
             'session' => array(
                 'abstract_factories' => array('VuFind\Session\PluginFactory'),
                 'invokables' => array(
@@ -848,7 +857,8 @@ $staticRoutes = array(
     'Browse/LCC', 'Browse/Region', 'Browse/Tag', 'Browse/Topic',
     'Cart/doExport', 'Cart/Email', 'Cart/Export', 'Cart/Home', 'Cart/MyResearchBulk',
     'Cart/Save', 'Collections/ByTitle', 'Collections/Home',
-    'Cover/Show', 'Cover/Unavailable', 'Error/Unavailable', 'Help/Home',
+    'Cover/Show', 'Cover/Unavailable', 'Error/Unavailable',
+    'Feedback/Email', 'Feedback/Home', 'Help/Home',
     'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',
     'Install/FixDatabase', 'Install/FixDependencies', 'Install/FixILS',
     'Install/FixSecurity', 'Install/FixSolr', 'Install/Home',

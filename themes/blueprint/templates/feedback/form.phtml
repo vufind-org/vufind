@@ -1,0 +1,28 @@
+<div id="contact_form">
+  <form method="post">
+    <p class="feedbackHeader"><b><?=$this->transEsc("Send us your feedback!")?></b></p>
+    <label for="name" style="line-height: 2.5;">
+      <?=$this->transEsc("feedback_name")?></label>
+    <label class="error" for="name">
+      <?=$this->transEsc("Please enable JavaScript.")?></label>
+    <label class="error" for="name" id="name_error">
+      <?=$this->transEsc("This field is required")?>.</label><br />
+    <input type="text" id="name" size="30" class="text-input" /><br />
+    <label for="email" style="line-height: 2.5;">
+      <?=$this->transEsc("Email")?></label>
+    <label class="error" for="email" id="email_error">
+      <?=$this->transEsc("This field is required")?>.</label>
+    <label class="error" for="email" id="invalid_email_error">
+      <?=$this->transEsc("Email address is invalid")?>.</label><br />
+    <input type="text" id="email" size="30" class="text-input" /><br />
+    <label for="comments" style="line-height: 2.5;">
+      <?=$this->transEsc("Comments")?></label>
+    <label class="error" for="comments" id="comments_error">
+      <?=$this->transEsc("This field is required")?>.</label><br />
+    <textarea id="comments" style="width:250px;height:130px"></textarea><br />
+    <input type="submit" class="button" value="<?=$this->transEsc("Send")?>" />
+    <input type="hidden" id="formSuccess" value="<?=$this->transEsc("Form Submitted!")?>"/>
+    <input type="hidden" id="feedbackSuccess" value="<?=$this->transEsc("Thank you for your feedback.")?>"/>
+    <input type="hidden" id="feedbackFailure" value="<?=$this->transEsc("An error has occurred")?>"/>
+  </form>
+</div>
