@@ -237,7 +237,8 @@ class InstallController extends AbstractBase
     {
         $requiredFunctionsExist
             = function_exists('mb_substr') && is_callable('imagecreatefromstring')
-              && function_exists('mcrypt_module_open') && class_exists('XSLTProcessor');
+              && function_exists('mcrypt_module_open')
+              && class_exists('XSLTProcessor');
 
         return array(
             'title' => 'Dependencies',
