@@ -49,6 +49,8 @@ class Options extends \VuFind\Search\Base\Options
      * Selected spelling dictionary
      *
      * @var string
+     *
+     * Dictionaries are already set in AbstractSolrBackendFactory. (dm, 20130305)
      */
     protected $dictionary = 'default';
 
@@ -187,26 +189,28 @@ class Options extends \VuFind\Search\Base\Options
 
         // Turn on highlighting if the user has requested highlighting or snippet
         // functionality:
-        $highlight = !isset($searchSettings->General->highlighting)
-            ? false : $searchSettings->General->highlighting;
-        $snippet = !isset($searchSettings->General->snippets)
-            ? false : $searchSettings->General->snippets;
-        if ($highlight || $snippet) {
-            $this->highlight = true;
-        }
+        //   Already in AbstractSolrBackendFactory (dmaus, 20130305)
+        /* $highlight = !isset($searchSettings->General->highlighting) */
+        /*     ? false : $searchSettings->General->highlighting; */
+        /* $snippet = !isset($searchSettings->General->snippets) */
+        /*     ? false : $searchSettings->General->snippets; */
+        /* if ($highlight || $snippet) { */
+        /*     $this->highlight = true; */
+        /* } */
 
         // Apply hidden filters:
-        if (isset($searchSettings->HiddenFilters)) {
-            foreach ($searchSettings->HiddenFilters as $field => $subfields) {
-                $rawFilter = $field.':'.'"'.addcslashes($subfields, '"').'"';
-                $this->addHiddenFilter($rawFilter);
-            }
-        }
-        if (isset($searchSettings->RawHiddenFilters)) {
-            foreach ($searchSettings->RawHiddenFilters as $rawFilter) {
-                $this->addHiddenFilter($rawFilter);
-            }
-        }
+        //   Already in AbstractSolrBackendFactory (dmaus, 20130305)
+        /* if (isset($searchSettings->HiddenFilters)) { */
+        /*     foreach ($searchSettings->HiddenFilters as $field => $subfields) { */
+        /*         $rawFilter = $field.':'.'"'.addcslashes($subfields, '"').'"'; */
+        /*         $this->addHiddenFilter($rawFilter); */
+        /*     } */
+        /* } */
+        /* if (isset($searchSettings->RawHiddenFilters)) { */
+        /*     foreach ($searchSettings->RawHiddenFilters as $rawFilter) { */
+        /*         $this->addHiddenFilter($rawFilter); */
+        /*     } */
+        /* } */
 
         // Load autocomplete preference:
         if (isset($searchSettings->Autocomplete->enabled)) {
