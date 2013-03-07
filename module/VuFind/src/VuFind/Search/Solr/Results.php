@@ -30,8 +30,13 @@ use VuFind\Connection\Manager as ConnectionManager,
     VuFind\Exception\RecordMissing as RecordMissingException,
     VuFind\Search\Base\Results as BaseResults;
 
+use VuFindSearch\Query\AbstractQuery;
+use VuFindSearch\Query\QueryGroup;
+use VuFindSearch\Query\Query;
+
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service as SearchService;
+use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 
 /**
  * Solr Search Parameters
@@ -65,6 +70,13 @@ class Results extends BaseResults
      * @tag NEW SEARCH
      */
     protected $backendId = 'Solr';
+
+    /**
+     * Currently used spelling query, if any.
+     *
+     * @var string
+     */
+    protected $spellingQuery;
 
     /**
      * Return search service.
@@ -131,22 +143,15 @@ class Results extends BaseResults
         $query  = $this->getParams()->getQuery();
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
-        $params = $this->createBackendParameters($this->getParams());
+        $params = $this->createBackendParameters($query, $this->getParams());
         $collection = $this->getSearchService()->search($this->backendId, $query, $offset, $limit, $params);
 
         $this->rawResponse = $collection->getRawResponse();
         $this->resultTotal = $collection->getTotal();
 
-        // Process spelling suggestions if no index error resulted from the query
-        if ($this->getOptions()->spellcheckEnabled()) {
-            // Shingle dictionary
-            $this->processSpelling();
-            // Make sure we don't endlessly loop
-            if ($this->getOptions()->getSpellingDictionary() == 'default') {
-                // Expand against the basic dictionary
-                $this->basicSpelling();
-            }
-        }
+        // Process spelling suggestions
+        $spellcheck = $collection->getSpellcheck();
+        $this->processSpelling($spellcheck);
 
         // Construct record drivers for all the items in the response:
         $this->results = $collection->getRecords();
@@ -199,13 +204,16 @@ class Results extends BaseResults
      * @return ParamBag
      * @tag NEW SEARCH
      */
-    protected function createBackendParameters (Params $params)
+    protected function createBackendParameters (AbstractQuery $query, Params $params)
     {
         $backendParams = new ParamBag();
 
         // Spellcheck
-        $spelling = $params->getSpellingQuery();
-        $backendParams->set('spellcheck.q', $spelling);
+        $spelling = $this->createSpellingQuery($query);
+        if ($spelling) {
+            $backendParams->set('spellcheck.q', $spelling);
+            $this->spellingQuery = $spelling;
+        }
 
         // Facets
         $facets = $params->getFacetSettings();
@@ -226,151 +234,68 @@ class Results extends BaseResults
         // Sort
         $sort = $params->getSort();
         if ($sort) {
-            $backendParams->add('sort', $this->normalizeSort($params->getSort()));
+            $backendParams->add('sort', $this->normalizeSort($sort));
         }
 
         return $backendParams;
     }
 
     /**
-     * Process spelling suggestions from the results object
+     * Create spellcheck query.
+     *
+     * @param AbstractQuery $query Query
+     *
+     * @return string
+     */
+    protected function createSpellingQuery (AbstractQuery $query)
+    {
+        if ($query instanceOf Query) {
+            return $query->getString();
+        }
+        return implode(' ', array_map(array($this, 'createSpellingQuery'), $query->getQueries()));
+    }
+
+    /**
+     * Process SOLR spelling suggestions.
+     *
+     * @param Spellcheck $spellcheck Spellcheck information
      *
      * @return void
      */
-    protected function processSpelling()
+    protected function processSpelling (Spellcheck $spellcheck)
     {
-        // Do nothing if there are no suggestions
-        $suggestions = isset($this->rawResponse['spellcheck']['suggestions']) ?
-            $this->rawResponse['spellcheck']['suggestions'] : array();
-        if (count($suggestions) == 0) {
-            return;
-        }
+        $this->suggestions = array();
+        foreach ($spellcheck as $term => $info) {
 
-        // Loop through the array of search terms we have suggestions for
-        $suggestionList = array();
-        foreach ($suggestions as $suggestion) {
-            $ourTerm = $suggestion[0];
-
-            // Skip numeric terms if numeric suggestions are disabled
-            if ($this->getOptions()->shouldSkipNumericSpelling()
-                && is_numeric($ourTerm)
-            ) {
+            // TODO: Avoid reference to Options
+            if ($this->getOptions()->shouldSkipNumericSpelling() && is_numeric($term)) {
                 continue;
             }
-
-            $ourHit  = $suggestion[1]['origFreq'];
-            $count   = $suggestion[1]['numFound'];
-            $newList = $suggestion[1]['suggestion'];
-
-            $validTerm = true;
-
-            // Make sure the suggestion is for a valid search term.
-            // Sometimes shingling will have bridged two search fields (in
-            // an advanced search) or skipped over a stopword.
-            if (!$this->getParams()->findSearchTerm($ourTerm)) {
-                $validTerm = false;
+            // Term is not part of the query
+            if (!$this->getParams()->findSearchTerm($term)) {
+                continue;
             }
-
-            // Unless this term had no hits
-            if ($ourHit != 0) {
-                // Filter out suggestions we are already using
-                $newList = $this->filterSpellingTerms($newList);
-            }
-
-            // Make sure it has suggestions and is valid
-            if (count($newList) > 0 && $validTerm) {
-                // Did we get more suggestions then our limit?
-                if ($count > $this->getOptions()->getSpellingLimit()) {
-                    // Cut the list at the limit
-                    array_splice($newList, $this->getOptions()->getSpellingLimit());
-                }
-                $suggestionList[$ourTerm]['freq'] = $ourHit;
-                // Format the list nicely
-                foreach ($newList as $item) {
-                    if (is_array($item)) {
-                        $suggestionList[$ourTerm]['suggestions'][$item['word']]
-                            = $item['freq'];
-                    } else {
-                        $suggestionList[$ourTerm]['suggestions'][$item] = 0;
+            // Filter out suggestions that are already part of the query
+            // TODO: Avoid reference to Options
+            $suggestionLimit = $this->getOptions()->getSpellingLimit();
+            $suggestions     = array();
+            foreach ($info['suggestion'] as $suggestion) {
+                $word = $suggestion['word'];
+                if (!$this->getParams()->findSearchTerm($word) && $suggestionLimit > 0) {
+                    // TODO: Avoid reference to Options
+                    // Note: !a || !b eq !(a && b)
+                    if (!is_numeric($word) || !$this->getOptions()->shouldSkipNumericSpelling()) {
+                        $suggestions[$word] = $suggestion['freq'];
+                        $suggestionLimit++;
                     }
                 }
             }
-        }
-        $this->suggestions = $suggestionList;
-    }
-
-    /**
-     * Filter a list of spelling suggestions to remove suggestions
-     *   we are already searching for
-     *
-     * @param array $termList List of suggestions
-     *
-     * @return array          Filtered list
-     */
-    protected function filterSpellingTerms($termList)
-    {
-        $newList = array();
-        if (count($termList) == 0) {
-            return $newList;
-        }
-
-        foreach ($termList as $term) {
-            if (!$this->getParams()->findSearchTerm($term['word'])) {
-                $newList[] = $term;
-            }
-        }
-        return $newList;
-    }
-
-    /**
-     * Try running spelling against the basic dictionary.
-     *   This function should ensure it doesn't return
-     *   single word suggestions that have been accounted
-     *   for in the shingle suggestions above.
-     *
-     * @return array Suggestions array
-     */
-    protected function basicSpelling()
-    {
-        // TODO: There might be a way to run the search against both dictionaries
-        // from inside Solr. Investigate. Currently submitting a second search.
-
-        // Create a new search object
-        $newParams = clone($this->getParams());
-        $newParams->getOptions()->useBasicDictionary();
-
-        // Don't waste time loading facets or highlighting/retrieving results:
-        $newParams->resetFacetConfig();
-        $newParams->getOptions()->disableHighlighting();
-        $newParams->setLimit(0);
-        $newParams->recommendationsEnabled(false);
-
-        $sm = $this->getSearchManager();
-        $sm->setSearchClassId($sm->extractSearchClassId(get_class($this)));
-        $newSearch = $sm->getResults($newParams);
-
-        // Get the spelling results
-        $newList = $newSearch->getRawSuggestions();
-
-        // If there were no shingle suggestions
-        if (count($this->suggestions) == 0) {
-            // Just use the basic ones as provided
-            $this->suggestions = $newList;
-        } else {
-            // Otherwise...
-            // For all the new suggestions
-            foreach ($newList as $word => $data) {
-                // Check the old suggestions
-                $found = false;
-                foreach ($this->suggestions as $k => $v) {
-                    // Make sure it wasn't part of a shingle
-                    //   which has been suggested at a higher
-                    //   level.
-                    $found = preg_match("/\b$word\b/", $k) ? true : $found;
-                }
-                if (!$found) {
-                    $this->suggestions[$word] = $data;
-                }
+            if ($suggestions) {
+                $this->suggestions[$term] = array(
+                    'freq' => $info['origFreq'],
+                    // TODO: Avoid reference to Options
+                    'suggestions' => $suggestions
+                );
             }
         }
     }
@@ -385,7 +310,7 @@ class Results extends BaseResults
     {
         $returnArray = array();
         $suggestions = $this->getRawSuggestions();
-        $tokens = $this->spellingTokens($this->getParams()->getSpellingQuery());
+        $tokens = $this->spellingTokens($this->spellingQuery);
 
         foreach ($suggestions as $term => $details) {
             // Find out if our suggestion is part of a token
