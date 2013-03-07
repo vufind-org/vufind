@@ -295,6 +295,8 @@ class InstallController extends AbstractBase
                 ." For details on how to do this, see "
                 ."http://vufind.org/wiki/vufind2:installation_notes "
                 ."and look at the PHP installation instructions for your platform.";
+            $this->flashMessenger()->setNamespace('error')->addMessage($msg);
+            $problems++;
         }
 
         // Is the XSL library missing?
