@@ -224,7 +224,10 @@ class Results extends BaseResults
         }
 
         // Sort
-        $backendParams->add('sort', $this->normalizeSort($params->getSort()));
+        $sort = $params->getSort();
+        if ($sort) {
+            $backendParams->add('sort', $this->normalizeSort($params->getSort()));
+        }
 
         return $backendParams;
     }
