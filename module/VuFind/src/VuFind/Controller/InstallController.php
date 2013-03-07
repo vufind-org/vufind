@@ -237,7 +237,7 @@ class InstallController extends AbstractBase
     {
         $requiredFunctionsExist
             = function_exists('mb_substr') && is_callable('imagecreatefromstring')
-              && function_exists('mcrypt_module_open');
+              && function_exists('mcrypt_module_open') && class_exists('XSLTProcessor');
 
         return array(
             'title' => 'Dependencies',
@@ -297,6 +297,16 @@ class InstallController extends AbstractBase
                 ."and look at the PHP installation instructions for your platform.";
         }
 
+        // Is the XSL library missing?
+        if (!class_exists('XSLTProcessor')) {
+            $msg
+                = "Your PHP installation appears to be missing the XSL plug-in."
+                ." For details on how to do this, see "
+                ."http://vufind.org/wiki/vufind2:installation_notes "
+                ."and look at the PHP installation instructions for your platform.";
+            $this->flashMessenger()->setNamespace('error')->addMessage($msg);
+            $problems++;
+        }
 
         return $this->createViewModel(array('problems' => $problems));
     }
