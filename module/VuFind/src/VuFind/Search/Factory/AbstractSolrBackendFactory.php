@@ -125,10 +125,22 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      */
     protected function createBackend (Connector $connector)
     {
+
+        $config  = $this->config->get('config');
         $backend = new Backend($connector);
         $specs   = $this->loadSpecs();
         $builder = new QueryBuilder($specs);
         $backend->setQueryBuilder($builder);
+
+        // Spellcheck
+        if (isset($config->Spelling->enabled) && $config->Spelling->enabled) {
+            if (isset($config->Spelling->simple) && $config->Spelling->simple) {
+                $dictionaries = array('basicSpell');
+            } else {
+                $dictionaries = array('default', 'basicSpell');
+            }
+            $backend->setDictionaries($dictionaries);
+        }
 
         if ($this->logger) {
             $backend->setLogger($this->logger);
@@ -166,6 +178,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             array('wt' => 'json', 'json.nl' => 'arrarr', 'fl' => '*,score')
         );
 
+        // Highlighting
         $hl = !isset($search->General->highlighting) ? false : $search->General->highlighting;
         $sn = !isset($search->General->snippets)     ? false : $search->General->snippets;
         if ($hl || $sn) {
