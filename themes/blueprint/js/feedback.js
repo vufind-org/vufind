@@ -1,4 +1,6 @@
-//this overrides settings in jquery.tabSlideOut.v2.0.js
+/*global alert, path, tabImage*/
+
+// This overrides settings in jquery.tabSlideOut.v2.0.js
 $(function(){
   $('.slide-out-div').tabSlideOut({
     pathToTabImage: tabImage,
@@ -10,7 +12,7 @@ $(function(){
   });
 });
 
-//This is the ajax for the feedback
+// This is the ajax for the feedback
 $(function() {
   $('.error').hide();
   $("div#slideOut").removeClass('slideOutForm');
@@ -58,7 +60,7 @@ $(function() {
 
     var dataString = 'name='+ encodeURIComponent(name) + '&email='
         + encodeURIComponent(email) + '&comments=' + encodeURIComponent(comments);
-    //Grabs hidden inputs
+    // Grabs hidden inputs
     var formSuccess = $("input#formSuccess").val();
     var feedbackSuccess = $("input#feedbackSuccess").val();
     var feedbackFailure = $("input#feedbackFailure").val();
@@ -73,7 +75,7 @@ $(function() {
         .append("<p>"+feedbackSuccess+"</p>")
         .hide()
         .fadeIn(1500, function() {
-          $('#message')
+          $('#message');
         });
       },
       error: function() {
