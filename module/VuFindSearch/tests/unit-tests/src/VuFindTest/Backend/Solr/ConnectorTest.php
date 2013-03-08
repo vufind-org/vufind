@@ -106,6 +106,18 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test InvalidArgumentException invalid adapter object.
+     *
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage AdapterInterface
+     */
+    public function testSetAdapterThrowsInvalidObject ()
+    {
+        $conn = $this->createConnector('single-record');
+        $conn->setAdapter($this);
+    }
+
+    /**
      * Create connector with fixture file.
      *
      * @param string $fixture Fixture file

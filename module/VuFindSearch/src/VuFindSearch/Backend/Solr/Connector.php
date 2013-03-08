@@ -46,6 +46,8 @@ use Zend\Http\Client as HttpClient;
 
 use Zend\Log\LoggerInterface;
 
+use InvalidArgumentException;
+
 /**
  * SOLR connector.
  *
@@ -129,13 +131,13 @@ class Connector
     protected $lastQuery;
 
     /**
-     * Class of HTTP client adapter to use.
+     * HTTP client adapter.
      *
-     * @see self::createClient()
+     * Either the class name or a adapter instance.
      *
-     * @var string
+     * @var string|AdapterInterface
      */
-    protected $httpAdapterClass = 'Zend\Http\Client\Adapter\Socket';
+    protected $adapter = 'Zend\Http\Client\Adapter\Socket';
 
     /**
      * Constructor
@@ -364,18 +366,21 @@ class Connector
     }
 
     /**
-     * Set adapter class of HTTP client.
+     * Set HTTP client adapter.
      *
      * Keep in mind that a proxy service might replace the client adapter by a
      * Proxy adapter if necessary.
      *
-     * @param string $adapterClass Name of adapter class
+     * @param string|AdapterInterface $adapterClass Adapter or name of adapter class
      *
      * @return void
      */
-    public function setHttpAdapterClass ($adapterClass = 'Zend\Http\Client\Adapter\Socket')
+    public function setAdapter ($adapter)
     {
-        $this->httpAdapterClass = $adapterClass;
+        if (is_object($adapter) && (!$adapter instanceOf AdapterInterface)) {
+            throw new InvalidArgumentException(sprintf('HTTP client adapter must implement AdapterInterface: %s', get_class($adapter)));
+        }
+        $this->adapter = $adapter;
     }
 
     /// Internal API
@@ -570,7 +575,7 @@ class Connector
     protected function createClient ($url, $method)
     {
         $client = new HttpClient();
-        $client->setAdapter($this->httpAdapterClass);
+        $client->setAdapter($this->adapter);
         $client->setOptions(array('timeout' => $this->timeout));
         $client->setUri($url);
         $client->setMethod($method);
