@@ -2051,6 +2051,10 @@ p.feedbackHeader {
   line-height: 2.5;
 }
 
+#contact_form .invalid {
+  background-color: white;
+}
+
 /* changes the text on the feedback home page */
 .feedbackPageLabel {
     color: black;
