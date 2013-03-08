@@ -674,10 +674,6 @@ class XCNCIP extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      *
      * Obtain information on course reserves.
      *
-     * This version of findReserves was contributed by Matthew Hooper and includes
-     * support for electronic reserves (though eReserve support is still a work in
-     * progress).
-     *
      * @param string $course ID from getCourses (empty string to match all)
      * @param string $inst   ID from getInstructors (empty string to match all)
      * @param string $dept   ID from getDepartments (empty string to match all)
