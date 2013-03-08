@@ -45,9 +45,17 @@ class FeedbackController extends AbstractBase
      */
     public function emailAction()
     {
-        $name = $this->params()->fromPost('name', 'No Name Given');
-        $users_email = $this->params()->fromPost('email', 'user@noemail.com');
-        $comments = $this->params()->fromPost('comments', '');
+        $name = $this->params()->fromPost('name');
+        $users_email = $this->params()->fromPost('email');
+        $comments = $this->params()->fromPost('comments');
+
+        if (empty($name) || empty($users_email) || empty($comments)) {
+            throw new \Exception('Missing data.');
+        }
+        $validator = new \Zend\Validator\EmailAddress();
+        if (!$validator->isValid($users_email)) {
+            throw \Exception('Email address is invalid');
+        }
 
         // These settings are set in the feedback settion of your config.ini
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
@@ -57,7 +65,7 @@ class FeedbackController extends AbstractBase
         $recipient_name = isset($feedback->recipient_name)
             ? $feedback->recipient_name : 'Your Library';
         $email_subject = isset($feedback->email_subject)
-            ? $feedback->email_subject : 'Vufind Feedback';
+            ? $feedback->email_subject : 'VuFind Feedback';
         $sender_email = isset($feedback->sender_email)
             ? $feedback->sender_email : 'noreply@vufind.org';
         $sender_name = isset($feedback->sender_name)

@@ -90,82 +90,34 @@ class NewGenLib extends AbstractBase
      */
     public function getHolding($RecordID, $patron = false)
     {
-        $holding = array();
+        $holding = $this->getItemStatus($RecordID);
         $pieces = explode("_", $RecordID);
         $CatId = $pieces[0];
         $LibId = $pieces[1];
-        //SQL Statement
-        $mainsql = "select d.status as status, d.location_id as location_id, " .
-            "d.call_number as call_number, d.accession_number as " .
-            "accession_number, d.barcode as barcode, d.library_id as library_id " .
-            "from document d,cat_volume v where d.volume_id=v.volume_id and " .
-            "v.cataloguerecordid=" . $CatId . " and v.owner_library_id=" . $LibId;
-        try {
-            $sqlStmt = $this->db->prepare($mainsql);
-            $sqlStmt->execute();
-        } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
-        }
-        $reserve = 'N';
-        while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-            switch ($row['status']) {
-            case 'B':
-                $status = "Available";
-                $available = true;
-                $reserve = 'N';
-                break;
-            case 'A':
-                // Instead of relying on status = 'On holds shelf',
-                // I might want to see if:
-                // action.hold_request.current_copy = asset.copy.id
-                // and action.hold_request.capture_time is not null
-                // and I think action.hold_request.fulfillment_time is null
-                $status = "Checked out";
-                $available = false;
-                $reserve = 'Y';
-                break;
-            default:
-                $status = "LOST";
-                $available = false;
-                $reserve = 'N';
-                break;
-            }
-            $locationsql = "select location from location where location_id='" .
-                $row['location_id'] . "' and library_id=" . $row['library_id'];
-            try {
-                $sqlStmt1 = $this->db->prepare($locationsql);
-                $sqlStmt1->execute();
-            } catch (PDOException $e1) {
-                throw new ILSException($e1->getMessage());
-            }
-            $location = "";
-            while ($rowLoc = $sqlStmt1->fetch(PDO::FETCH_ASSOC)) {
-                $location=$rowLoc['location'];
-            }
 
+        for ($i = 0; $i < count($holding); $i++) {
+            // add extra data
             $duedateql = "select due_date from cir_transaction where " .
-                "accession_number='" . $row['accession_number'] .
-                "' and document_library_id='" . $row['library_id'] .
+                "accession_number='" . $holding[$i]['number'] .
+                "' and document_library_id='" . $holding[$i]['library_id'] .
                 "' and status='A'";
             try {
-                $sqlStmt2 = $this->db->prepare($duedateql);
+                $sqlStmt2 = $this->_db->prepare($duedateql);
                 $sqlStmt2->execute();
             } catch (PDOException $e1) {
-                throw new ILSException($e1->getMessage());
+                return new PEAR_Error($e1->getMessage());
             }
             $duedate = "";
             while ($rowDD = $sqlStmt2->fetch(PDO::FETCH_ASSOC)) {
                 $duedate=$rowDD['due_date'];
             }
-            $holding[] = array('id' => $RecordID,
-                'availability' => $available,
-                'status' => $status,
-                'location' => $location,
-                'reserve' => $reserve,
-                'callnumber' => $row['call_number'],
-                'duedate' => $duedate,
-                'number' => $row['accession_number'],
-                'barcode' => $row['barcode']);
+            // add needed entries
+            $holding[$i]['duedate'] = $duedate;
+            // field with link to place holdings or recalls
+            //$holding[$i]['link'] = "test";
+
+            // remove not needed entries
+            unset($holding[$i]['library_id']);
         }
 
         return $holding;
@@ -446,65 +398,17 @@ class NewGenLib extends AbstractBase
      */
     public function getStatus($RecordID)
     {
-        $StatusResult = array();
-        $pieces = explode("_", $RecordID);
-        $CatId = $pieces[0];
-        $LibId = $pieces[1];
-        //SQL Statement
-        $mainsql = "select d.status as status, d.location_id as location_id, " .
-            "d.call_number as call_number, d.library_id as library_id from " .
-            "document d,cat_volume v where d.volume_id=v.volume_id and " .
-            "v.cataloguerecordid='" . $CatId . "' and v.owner_library_id=" . $LibId;
-        try {
-            $sqlSmt = $this->db->prepare($mainsql);
-            $sqlSmt->execute();
-        } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
+        $status = $this->getItemStatus($RecordID);
+        if (!is_array($status)) {
+            return $status;
         }
-        $reserve = 'N';
-        while ($row = $sqlSmt->fetch(PDO::FETCH_ASSOC)) {
-            switch ($row['status']) {
-            case 'B':
-                $status = "Available";
-                $available = true;
-                $reserve = 'N';
-                break;
-            case 'A':
-                // Instead of relying on status = 'On holds shelf',
-                // I might want to see if:
-                // action.hold_request.current_copy = asset.copy.id
-                // and action.hold_request.capture_time is not null
-                // and I think action.hold_request.fulfillment_time is null
-                $status = "Checked out";
-                $available = false;
-                $reserve = 'Y';
-                break;
-            default:
-                $status = "Not Available";
-                $available = false;
-                $reserve = 'N';
-                break;
-            }
-            $locationsql = "select location from location where location_id='" .
-                $row['location_id'] . "' and library_id=" . $row['library_id'];
-            try {
-                $sqlSmt1 = $this->db->prepare($locationsql);
-                $sqlSmt1->execute();
-            } catch (PDOException $e1) {
-                throw new ILSException($e1->getMessage());
-            }
-            $location = "";
-            while ($rowLoc = $sqlSmt1->fetch(PDO::FETCH_ASSOC)) {
-                $location=$rowLoc['location'];
-            }
-            $StatusResult[] = array('id' => $RecordID,
-                'status' => $status,
-                'location' => $location,
-                'reserve' => $reserve,
-                'callnumber' => $row['call_number'],
-                'availability' => $available);
+        // remove not needed entries within the items within the result array
+        for ($i = 0; $i < count($status); $i++) {
+            unset($status[$i]['number']);
+            unset($status[$i]['barcode']);
+            unset($status[$i]['library_id']);
         }
-        return $StatusResult;
+        return $status;
     }
 
     /**
@@ -639,5 +543,80 @@ class NewGenLib extends AbstractBase
     {
         // TODO
         return array();
+    }
+
+    /**
+     * Support method to get information about the items attached to a record
+     *
+     * @param string $RecordID Record ID
+     *
+     * @return array
+     */
+    protected function getItemStatus($RecordID)
+    {
+        $StatusResult = array();
+        $pieces = explode("_", $RecordID);
+        $CatId = $pieces[0];
+        $LibId = $pieces[1];
+        //SQL Statement
+        $mainsql = "select d.status as status, d.location_id as location_id, " .
+            "d.call_number as call_number, d.accession_number as accession_number," .
+            " d.barcode as barcode, d.library_id as library_id from " .
+            "document d,cat_volume v where d.volume_id=v.volume_id and " .
+            "v.cataloguerecordid='" . $CatId . "' and v.owner_library_id=" . $LibId;
+
+        try {
+            $sqlSmt = $this->db->prepare($mainsql);
+            $sqlSmt->execute();
+        } catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
+        }
+        $reserve = 'N';
+        while ($row = $sqlSmt->fetch(PDO::FETCH_ASSOC)) {
+            switch ($row['status']) {
+            case 'B':
+                $status = "Available";
+                $available = true;
+                $reserve = 'N';
+                break;
+            case 'A':
+                // Instead of relying on status = 'On holds shelf',
+                // I might want to see if:
+                // action.hold_request.current_copy = asset.copy.id
+                // and action.hold_request.capture_time is not null
+                // and I think action.hold_request.fulfillment_time is null
+                $status = "Checked Out";
+                $available = false;
+                $reserve = 'N';
+                break;
+            default:
+                $status = "Not Available";
+                $available = false;
+                $reserve = 'N';
+                break;
+            }
+            $locationsql = "select location from location where location_id='" .
+                $row['location_id'] . "' and library_id=" . $row['library_id'];
+            try {
+                $sqlSmt1 = $this->db->prepare($locationsql);
+                $sqlSmt1->execute();
+            } catch (PDOException $e1) {
+                throw new ILSException($e1->getMessage());
+            }
+            $location = "";
+            while ($rowLoc = $sqlSmt1->fetch(PDO::FETCH_ASSOC)) {
+                $location=$rowLoc['location'];
+            }
+            $StatusResult[] = array('id' => $RecordID,
+                'status' => $status,
+                'location' => $location,
+                'reserve' => $reserve,
+                'callnumber' => $row['call_number'],
+                'availability' => $available,
+                'number' => $row['accession_number'],
+                'barcode' => $row['barcode'],
+                'library_id' => $row['library_id']);
+        }
+        return $StatusResult;
     }
 }
