@@ -187,7 +187,7 @@ class Params extends \VuFind\Search\Base\Params
     {
         // Special case -- did we get a list of IDs instead of a standard query?
         $ids = $request->get('overrideIds', null);
-        if (is_array($ids) && !empty($ids)) {
+        if (is_array($ids)) {
             $this->setQueryIDs($ids);
         } else {
             // Use standard initialization:
