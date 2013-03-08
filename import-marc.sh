@@ -138,7 +138,8 @@ MARC_FILE=`basename $1`
 
 RUN_CMD="$JAVA $INDEX_OPTIONS -Dsolr.core.name=$SOLRCORE $EXTRA_SOLRMARC_SETTINGS -jar $JAR_FILE $PROPERTIES_FILE $MARC_PATH/$MARC_FILE"
 echo "Now Importing $1 ..."
-echo $RUN_CMD
+# solrmarc writes log messages to stderr, write RUN_CMD to the same place
+echo "`date '+%h %d, %H:%M:%S'` $RUN_CMD" >&2
 exec $RUN_CMD
 
 exit 0

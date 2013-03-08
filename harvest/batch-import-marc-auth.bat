@@ -25,6 +25,33 @@ echo You need to set the VUFIND_HOME environmental variable before running this 
 goto end
 :vufindhomefound
 
+rem Find harvest directory for future use:
+set HARVEST_DIR=%VUFIND_LOCAL_DIR%\harvest
+if exist %HARVEST_DIR% goto harvestpathfound
+set HARVEST_DIR=%VUFIND_HOME%\harvest
+:harvestpathfound
+
+set BASEPATH_UNDER_HARVEST=1
+set MOVE_DATA=1
+
+rem Save script name for message below (otherwise it may get shifted away)
+set SCRIPT_NAME=%0
+
+rem Process switches
+:switchloop
+if "%1"=="-d" goto dswitch
+if "%1"=="-m" goto mswitch
+goto switchloopend
+:dswitch
+set BASEPATH_UNDER_HARVEST=0
+shift
+goto switchloop
+:mswitch
+set MOVE_DATA=0
+shift
+goto switchloop
+:switchloopend
+
 rem Make sure command line parameter was included:
 if not "!%2!"=="!!" goto paramsokay
 echo This script processes a batch of harvested authority records.
@@ -36,13 +63,19 @@ echo This script will search the harvest subdirectories of the directories defin
 echo by the VUFIND_LOCAL_DIR and VUFIND_HOME environment variables.
 echo.
 echo Example: %0 lcnaf marc_lcnaf.properties
+echo.
+echo Options:
+echo -d:  Use the directory path as-is, do not append it to %HARVEST_DIR%.
+echo      Useful for non-OAI batch loading.
+echo -m:  Do not move the data files after importing.
 goto end
 :paramsokay
 
 rem Check if the path is valid:
-set BASEPATH="%VUFIND_LOCAL_DIR%\harvest\%1"
-if exist %BASEPATH% goto basepathfound
-set BASEPATH="%VUFIND_HOME%\harvest\%1"
+set BASEPATH="%HARVEST_DIR%\%1"
+if "%BASEPATH_UNDER_HARVEST%"=="1" goto checkbasepath
+set BASEPATH="%1"
+:checkbasepath
 if exist %BASEPATH% goto basepathfound
 echo Directory %BASEPATH% does not exist!
 goto end
@@ -58,9 +91,11 @@ md %BASEPATH%\processed
 
 rem Process all the files in the target directory:
 for %%a in (%BASEPATH%\*.xml %BASEPATH%\*.mrc) do (
-  echo Processing %%a...
-  call %VUFIND_HOME%\import-marc-auth.bat %%a %2 > %BASEPATH%\log\%%~nxa.log
+  rem Capture solrmarc output to log
+  call %VUFIND_HOME%\import-marc-auth.bat %%a %2 2> %BASEPATH%\log\%%~nxa.log
+  if "%MOVE_DATA%"=="1" (
   move %%a %BASEPATH%\processed\ > nul
+  )
 )
 
 :end
