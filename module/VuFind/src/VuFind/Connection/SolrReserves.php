@@ -52,21 +52,6 @@ class SolrReserves extends Solr
     }
 
     /**
-     * Find reserves record matching the given instructor ID and course ID.
-     *
-     * @param string $course     The course ID
-     * @param string $instructor The instructor ID
-     * @param string $department The department ID
-     *
-     * @return array             A matching solr reserves record.
-     */
-    public function findReserves($course, $instructor, $department)
-    {
-        $id = $course . '|' . $instructor . '|' . $department;
-        return $this->getRecord($id);
-    }
-
-    /**
      * Build the reserves index from date returned by the ILS driver,
      * specifically: getInstructors, getDepartments, getCourses, findReserves
      *

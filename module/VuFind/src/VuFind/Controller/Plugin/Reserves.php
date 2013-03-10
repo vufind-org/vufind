@@ -83,15 +83,19 @@ class Reserves extends AbstractPlugin
     {
         // Special case -- process reserves info using index
         if ($this->useIndex()) {
-            // connect to reserves index
-            $reservesIndex = ConnectionManager::connectToIndex('SolrReserves');
             // get the selected reserve record from reserves index
             // and extract the bib IDs from it
-            $result = $reservesIndex->findReserves($course, $inst, $dept);
+            $result = $this->getController()->getServiceLocator()
+                ->get('VuFind\Search')
+                ->retrieve('SolrReserves', $course . '|' . $inst . '|' . $dept);
             $bibs = array();
-            $instructor = isset($result['instructor']) ? $result['instructor'] : '';
-            $course = isset($result['course']) ? $result['course'] : '';
-            foreach ($result['bib_id'] as $bib_id) {
+            if ($result->getTotal() < 1) {
+                return $bibs;
+            }
+            $record = current($result->getRecords());
+            $instructor = $record->getInstructor();
+            $course = $record->getCourse();
+            foreach ($record->getItemIds() as $bib_id) {
                 $bibs[] = array(
                     'BIB_ID' => $bib_id,
                     'bib_id' => $bib_id,

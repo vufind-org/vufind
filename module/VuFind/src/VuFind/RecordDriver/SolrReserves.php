@@ -110,4 +110,15 @@ class SolrReserves extends SolrDefault
         return isset($this->fields['bib_id'])
             ? count($this->fields['bib_id']) : 0;
     }
+
+    /**
+     * Get the list of attached reserves.
+     *
+     * @return array
+     */
+    public function getItemIds()
+    {
+        return isset($this->fields['bib_id'])
+            ? $this->fields['bib_id'] : array();
+    }
 }

@@ -27,6 +27,8 @@
  */
 namespace VuFind\Hierarchy\TreeDataSource;
 use VuFind\Connection\Manager as ConnectionManager;
+use VuFindSearch\Query\Query;
+use VuFindSearch\Service as SearchService;
 
 /**
  * Hierarchy Tree Data Source (Solr)
@@ -42,18 +44,11 @@ use VuFind\Connection\Manager as ConnectionManager;
 class Solr extends AbstractBase
 {
     /**
-     * Solr connection
+     * Search service
      *
-     * @var \VuFind\Connection\Solr
+     * @var SearchService
      */
-    protected $solr;
-
-    /**
-     * Record driver plugin manager
-     *
-     * @var \VuFind\RecordDriver\PluginManager
-     */
-    protected $driverFactory;
+    protected $searchService;
 
     /**
      * Cache directory
@@ -65,16 +60,11 @@ class Solr extends AbstractBase
     /**
      * Constructor.
      *
-     * @param \VuFind\Connection\Solr            $solr     Solr connection
-     * @param \VuFind\RecordDriver\PluginManager $factory  Record driver manager
-     * @param string                             $cacheDir Directory to hold cache
-     * results (optional)
+     * @param SearchService $search   Search service
+     * @param string        $cacheDir Directory to hold cache results (optional)
      */
-    public function __construct(\VuFind\Connection\Solr $solr,
-        \VuFind\RecordDriver\PluginManager $factory, $cacheDir = null
-    ) {
-        $this->solr = $solr;
-        $this->driverFactory = $factory;
+    public function __construct(SearchService $search, $cacheDir = null) {
+        $this->searchService = $search;
         if (null !== $cacheDir) {
             $this->cacheDir = rtrim($cacheDir, '/');
         }
@@ -93,7 +83,11 @@ class Solr extends AbstractBase
      */
     public function getXML($id, $options = array())
     {
-        $top = $this->driverFactory->getSolrRecord($this->solr->getRecord($id));
+        $top = $this->searchService->retrieve('Solr', $id)->getRecords();
+        if (!isset($top[0])) {
+            return '';
+        }
+        $top = $top[0];
         $cacheFile = (null !== $this->cacheDir)
             ? $this->cacheDir . '/hierarchyTree_' . urlencode($id) . '.xml'
             : false;
@@ -143,16 +137,17 @@ class Solr extends AbstractBase
      */
     protected function getChildren($parentID, &$count)
     {
-        $query = 'hierarchy_parent_id:"' . addcslashes($parentID, '"') . '"';
-        $results = $this->solr->search(array('query' => $query, 'limit' => 10000));
-        if ($results === false) {
+        $query = new Query(
+            'hierarchy_parent_id:"' . addcslashes($parentID, '"') . '"'
+        );
+        $results = $this->searchService->search('Solr', $query, 0, 10000);
+        if ($results->getTotal() < 1) {
             return '';
         }
         $xml = array();
         $sorting = $this->getHierarchyDriver()->treeSorting();
 
-        foreach ($results['response']['docs'] as $doc) {
-            $current = $this->driverFactory->getSolrRecord($doc);
+        foreach ($results->getRecords() as $current) {
             ++$count;
             if ($sorting) {
                 $positions = $current->getHierarchyPositionsInParents();

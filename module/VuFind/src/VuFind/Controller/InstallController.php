@@ -28,7 +28,6 @@
 namespace VuFind\Controller;
 use VuFind\Config\Locator as ConfigLocator,
     VuFind\Config\Writer as ConfigWriter,
-    VuFind\Connection\Manager as ConnectionManager,
     Zend\Mvc\MvcEvent,
     Zend\Crypt\Password\Bcrypt;
 
@@ -516,6 +515,19 @@ class InstallController extends AbstractBase
     }
 
     /**
+     * Support method to test the search service
+     *
+     * @return void
+     * @throws \Exception
+     */
+    protected function testSearchService()
+    {
+        // Try to retrieve an arbitrary ID -- this will fail if Solr is down:
+        $searchService = $this->getServiceLocator()->get('VuFind\Search');
+        $searchService->retrieve('Solr', '1');
+    }
+
+    /**
      * Check if the Solr index is working.
      *
      * @return array
@@ -523,8 +535,7 @@ class InstallController extends AbstractBase
     protected function checkSolr()
     {
         try {
-            $solr = ConnectionManager::connectToIndex();
-            $results = $solr->search();
+            $this->testSearchService();
             $status = true;
         } catch (\Exception $e) {
             $status = false;
@@ -545,8 +556,7 @@ class InstallController extends AbstractBase
         if (stristr($config->Index->url, 'localhost')) {
             $newUrl = str_replace('localhost', '127.0.0.1', $config->Index->url);
             try {
-                $solr = ConnectionManager::connectToIndex(null, null, $newUrl);
-                $results= $solr->search();
+                $this->testSearchService();
 
                 // If we got this far, the fix worked.  Let's write it to disk!
                 $writer = new ConfigWriter($configFile);
