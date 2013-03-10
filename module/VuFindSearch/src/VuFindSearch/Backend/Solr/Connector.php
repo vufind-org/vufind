@@ -43,6 +43,7 @@ use VuFindSearch\Backend\Exception\RequestErrorException;
 
 use Zend\Http\Request;
 use Zend\Http\Client as HttpClient;
+use Zend\Http\Client\Adapter\AdapterInterface;
 
 use Zend\Log\LoggerInterface;
 
