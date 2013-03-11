@@ -221,10 +221,12 @@ class Results extends BaseResults
         $backendParams = new ParamBag();
 
         // Spellcheck
-        $spelling = $this->createSpellingQuery($query);
-        if ($spelling) {
-            $backendParams->set('spellcheck.q', $spelling);
-            $this->spellingQuery = $spelling;
+        if ($params->getOptions()->spellcheckEnabled()) {
+            $spelling = $this->createSpellingQuery($query);
+            if ($spelling) {
+                $backendParams->set('spellcheck.q', $spelling);
+                $this->spellingQuery = $spelling;
+            }
         }
 
         // Facets

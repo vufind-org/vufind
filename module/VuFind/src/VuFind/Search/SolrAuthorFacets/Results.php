@@ -72,19 +72,6 @@ class Results extends \VuFind\Search\Solr\Results
     }
 
     /**
-     * Create spellcheck query.
-     *
-     * @param AbstractQuery $query Query
-     *
-     * @return string
-     */
-    protected function createSpellingQuery (AbstractQuery $query)
-    {
-        // No spell-checking necessary in this context:
-        return false;
-    }
-
-    /**
      * Is the current search saved in the database?
      *
      * @return bool
