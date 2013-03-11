@@ -26,8 +26,10 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Search\SolrAuthorFacets;
-use VuFind\Connection\Manager as ConnectionManager,
-    VuFind\Search\Solr\Results as SolrResults;
+
+use VuFindSearch\Query\AbstractQuery;
+
+use VuFindSearch\ParamBag;
 
 /**
  * AuthorFacets Search Results
@@ -38,7 +40,7 @@ use VuFind\Connection\Manager as ConnectionManager,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Results extends SolrResults
+class Results extends \VuFind\Search\Solr\Results
 {
     /**
      * Support method for performAndProcessSearch -- perform a search based on the
@@ -48,18 +50,13 @@ class Results extends SolrResults
      */
     protected function performSearch()
     {
-        $solr = ConnectionManager::connectToIndex();
-
-        // Collect the search parameters:
-        $params = array(
-            'query' => $solr->buildQuery($this->getParams()->getSearchTerms()),
-            'handler' => $this->getParams()->getSearchHandler(),
-            'limit' => 0,
-            'facet' => $this->getParams()->getFacetSettings(),
-        );
+        $query = $this->getParams()->getQuery();
+        $params = $this->createBackendParameters($query, $this->getParams());
+        $collection = $this->getSearchService()
+            ->search($this->backendId, $query, 0, 0, $params);
 
         // Perform the search:
-        $this->rawResponse = $solr->search($params);
+        $this->rawResponse = $collection->getRawResponse();
 
         // Get the facets from which we will build our results:
         $facets = $this->getFacetList(array('authorStr' => null));
@@ -72,6 +69,19 @@ class Results extends SolrResults
                 $facets['authorStr']['list'], 0, $params->getLimit()
             );
         }
+    }
+
+    /**
+     * Create spellcheck query.
+     *
+     * @param AbstractQuery $query Query
+     *
+     * @return string
+     */
+    protected function createSpellingQuery (AbstractQuery $query)
+    {
+        // No spell-checking necessary in this context:
+        return false;
     }
 
     /**
