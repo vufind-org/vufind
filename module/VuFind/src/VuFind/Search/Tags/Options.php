@@ -26,7 +26,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Search\Tags;
-use VuFind\Search\Base\Options as BaseOptions;
 
 /**
  * Search Tags Options
@@ -37,16 +36,17 @@ use VuFind\Search\Base\Options as BaseOptions;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Options extends BaseOptions
+class Options extends \VuFind\Search\Base\Options
 {
     /**
-     * Constructor
+     * Perform initialization that cannot occur in constructor due to need for
+     * injected dependencies.
      *
      * @return void
      */
-    public function __construct()
+    public function init()
     {
-        parent::__construct();
+        parent::init();
         $this->basicHandlers = array('tags' => 'Tag');
         $this->defaultSort = 'title';
         $this->sortOptions = array(

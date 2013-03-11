@@ -43,8 +43,6 @@ use VuFind\Exception\Auth as AuthException,
  */
 class MyResearchController extends AbstractBase
 {
-    protected $account;
-
     /**
      * Prepare and direct the home page where it needs to go
      *

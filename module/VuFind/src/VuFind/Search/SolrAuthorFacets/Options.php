@@ -26,7 +26,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Search\SolrAuthorFacets;
-use VuFind\Search\Solr\Options as SolrOptions;
 
 /**
  * AuthorFacets Search Options
@@ -37,14 +36,17 @@ use VuFind\Search\Solr\Options as SolrOptions;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Options extends SolrOptions
+class Options extends \VuFind\Search\Solr\Options
 {
     /**
-     * Constructor
+     * Perform initialization that cannot occur in constructor due to need for
+     * injected dependencies.
+     *
+     * @return void
      */
-    public function __construct()
+    public function init()
     {
-        parent::__construct();
+        parent::init();
 
         // Special sort options...
         // It's important to remember here we are talking about on-screen

@@ -52,6 +52,7 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function __construct()
     {
+        parent::__construct();
         $this->searchIni = $this->facetsIni = 'Summon';
     }
 
