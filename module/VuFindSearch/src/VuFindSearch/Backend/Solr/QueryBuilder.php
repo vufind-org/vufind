@@ -103,8 +103,7 @@ class QueryBuilder
     /**
      * Return SOLR search parameters based on a user query and params.
      *
-     * @param AbstractQuery $query  User query
-     * @param Params        $params User query params
+     * @param AbstractQuery $query User query
      *
      * @return ParamBag
      *
