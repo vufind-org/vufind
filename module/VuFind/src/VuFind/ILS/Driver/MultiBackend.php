@@ -146,7 +146,7 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
         $this->delimiters['login']
             = (isset($this->config['Delimiters']['login']) ?
                    $this->config['Delimiters']['login'] :
-                   '   ');
+                   "\t");
         $this->getDriverConfig($this->defaultDriver);
     }
 
@@ -258,8 +258,6 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
      */
     protected function getUninitializedDriver($source)
     {
-        $source = strtolower($source);
-
         // We don't really care if it's initialized here.  If it is, then there's
         // still no added overhead of returning an initialized driver.
         if (isset($this->cache[$source])) {
@@ -566,21 +564,21 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
      */
     public function supportsMethod($method, $params)
     {
-        //First we see if we can determine what instance the user is connected with
+        // First we see if we can determine what instance the user is connected with
         $instance = $this->getInstanceFromParams($params);
         if ($instance) {
             $driverInst = $this->getUninitializedDriver($instance);
             return  is_callable(array($driverInst, $method));
         }
 
-        //Falling back, we try to use a default driver if it's set
+        // Falling back, we try to use a default driver if it's set
         $instance = $this->defaultDriver;
         if ($instance) {
             $driverInst = $this->getUninitializedDriver($instance);
-            return is_callable(array($driver, $method));
+            return is_callable(array($driverInst, $method));
         }
 
-        //Lastly, we see if any of the drivers we have support the function
+        // Lastly, we see if any of the drivers we have support the function
         foreach ($this->drivers as $key => $driver) {
             $driverInst = $this->getUninitializedDriver($key);
             if (is_callable(array($driverInst, $method))) {

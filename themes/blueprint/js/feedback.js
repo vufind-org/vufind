@@ -14,7 +14,7 @@ $(document).ready(function(){
 
 // This is the ajax for the feedback
 $(document).ready(function(){
-  $('.error').hide();
+  $('#contact_form label.error').hide();
   $("div#slideOut").removeClass('slideOutForm');
   $('input.text-input').addClass('feedbackDeselect');
   $('input.text-input').focus(function(){
