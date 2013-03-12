@@ -258,8 +258,6 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
      */
     protected function getUninitializedDriver($source)
     {
-        $source = strtolower($source);
-
         // We don't really care if it's initialized here.  If it is, then there's
         // still no added overhead of returning an initialized driver.
         if (isset($this->cache[$source])) {
