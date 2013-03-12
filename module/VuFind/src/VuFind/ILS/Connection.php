@@ -420,14 +420,26 @@ class Connection
      * method; false otherwise.
      *
      * @param string $method Method to check
+     * @param array  $params Array of passed parameters (optional)
      *
      * @return bool
      */
-    public function checkCapability($method)
+    public function checkCapability($method, $params = array())
     {
+        // If possible, we want to try to check the capability without the expense
+        // of instantiating an object:
         if (is_callable(array($this->getDriverClass(), $method))) {
             return true;
         }
+
+        // The problem with is_callable is that it doesn't work well for classes
+        // implementing the __call() magic method; to compensate for this, ILS
+        // drivers using __call() must also implement supportsMethod().
+        if (is_callable(array($this->getDriverClass(), 'supportsMethod'))) {
+            return $this->getDriver()->supportsMethod($method, $params);
+        }
+
+        // If we got this far, the feature is unsupported:
         return false;
     }
     /**
@@ -443,7 +455,7 @@ class Connection
      */
     public function __call($methodName, $params)
     {
-        if ($this->checkCapability($methodName)) {
+        if ($this->checkCapability($methodName, $params)) {
             return call_user_func_array(
                 array($this->getDriver(), $methodName), $params
             );
