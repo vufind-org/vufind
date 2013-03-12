@@ -114,6 +114,11 @@ return array(
                     $sm->getServiceLocator()->get('VuFind\Config')->get('config')
                 );
             },
+            'worldcat' => function ($sm) {
+                return new \VuFind\View\Helper\Root\WorldCat(
+                    $sm->getServiceLocator()->get('VuFind\WorldCatConnection')
+                );
+            }
         ),
         'invokables' => array(
             'addellipsis' => 'VuFind\View\Helper\Root\AddEllipsis',

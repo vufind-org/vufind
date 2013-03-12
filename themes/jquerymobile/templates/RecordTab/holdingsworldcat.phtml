@@ -1,4 +1,4 @@
-<? $holdings = $this->driver->getWorldCatHoldings(); if ($holdings && count($holdings) > 0): ?>
+<? $holdings = $this->worldcat()->getHoldings($this->driver->getUniqueId()); if ($holdings && count($holdings) > 0): ?>
 <h3><?=$this->transEsc('Holdings at Other Libraries')?></h3>
 <table cellpadding="2" cellspacing="0" border="0" class="citation" width="100%">
 <? foreach ($holdings as $holding): ?>
