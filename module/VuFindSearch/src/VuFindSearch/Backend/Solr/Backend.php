@@ -333,7 +333,7 @@ class Backend implements BackendInterface
     /**
      * Return the SOLR connector.
      *
-     * @return ConnectorInterface
+     * @return Connector
      */
     public function getConnector ()
     {
