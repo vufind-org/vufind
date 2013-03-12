@@ -25,12 +25,28 @@ echo You need to set the VUFIND_HOME environmental variable before running this 
 goto end
 :vufindhomefound
 
+rem Save script name for message below (otherwise it may get shifted away)
+set SCRIPT_NAME=%0
+
+rem Set default behavior
+set SKIP_OPTIMIZE=0
+
+rem Process switches
+:switchloop
+if "%1"=="-s" goto sswitch
+goto switchloopend
+:sswitch
+set SKIP_OPTIMIZE=1
+shift
+goto switchloop
+:switchloopend
+
 rem Make sure command line parameter was included:
 if not "!%2!"=="!!" goto paramsokay
 echo This script processes a batch of harvested XML records using the specified XSL
 echo import configuration file.
 echo.
-echo Usage: %0 [harvest subdirectory] [properties file]
+echo Usage: %SCRIPT_NAME% [harvest subdirectory] [properties file]
 echo.
 echo [harvest subdirectory] is a directory name created by the OAI-PMH harvester.
 echo This script will search the harvest subdirectories of the directories defined
@@ -39,7 +55,10 @@ echo.
 echo [properties file] is a configuration file found in the import subdirectory of
 echo either your VUFIND_LOCAL_DIR or VUFIND_HOME directory.
 echo.
-echo Example: %0 oai_source ojs.properties
+echo Example: %SCRIPT_NAME% oai_source ojs.properties
+echo.
+echo Options:
+echo -s:  Skip optimize operation after importing.
 goto end
 :paramsokay
 
@@ -77,6 +96,7 @@ for %%a in (%BASEPATH%\*.xml) do (
 
 rem Optimize the index now that we are done (if necessary):
 if not "%OPTIMIZE%!"=="1!" goto end
+if not "%SKIP_OPTIMIZE%!"=="0!" goto end
 cd %VUFIND_HOME%\util
 echo Optimizing index...
 php optimize.php
