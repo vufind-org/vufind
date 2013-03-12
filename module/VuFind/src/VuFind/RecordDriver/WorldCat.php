@@ -303,16 +303,4 @@ class WorldCat extends SolrMarc
     {
         return $this->getFieldArray('780', array('a', 's', 't'));
     }
-
-    /**
-     * Get holdings information from WorldCat.
-     *
-     * @return SimpleXMLElement
-     */
-    public function getWorldCatHoldings()
-    {
-        $wc = $this->getServiceLocator()->getServiceLocator()
-            ->get('VuFind\WorldCatConnection');
-        return $wc->getHoldings($this->getUniqueId());
-    }
 }
