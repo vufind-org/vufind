@@ -77,9 +77,9 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected $searchYaml;
 
     /**
-     * Main VuFind configuration
+     * VuFind configuration reader
      *
-     * @var \Zend\Config\Config
+     * @var \VuFind\Config\PluginManager
      */
     protected $config;
 
