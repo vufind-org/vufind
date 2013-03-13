@@ -26,7 +26,9 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-namespace VuFind\Connection;
+namespace VuFindSearch\Backend\WorldCat;
+use VuFindSearch\Query\AbstractQuery;
+use VuFindSearch\ParamBag;
 
 /**
  * WorldCat SRU Search Interface
@@ -37,7 +39,7 @@ namespace VuFind\Connection;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class WorldCat extends SRU
+class Connector extends \VuFindSearch\Backend\SRU\Connector
 {
     /**
      * OCLC API key
@@ -56,19 +58,16 @@ class WorldCat extends SRU
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config VuFind configuration
-     * @param \Zend\Http\Client   $client An HTTP client object
+     * @param string            $wsKey      Web services key
+     * @param string            $limitCodes OCLC codes to use for limiting
+     * @param \Zend\Http\Client $client     An HTTP client object
      */
-    public function __construct(\Zend\Config\Config $config,
-        \Zend\Http\Client $client
-    ) {
+    public function __construct($wsKey, $limitCodes, \Zend\Http\Client $client) {
         parent::__construct(
             'http://www.worldcat.org/webservices/catalog/search/sru', $client
         );
-        $this->wskey = isset($config->WorldCat->apiKey)
-            ? $config->WorldCat->apiKey : null;
-        $this->limitCodes = isset($config->WorldCat->LimitCodes)
-            ? $config->WorldCat->LimitCodes : null;
+        $this->wskey = $wsKey;
+        $this->limitCodes = $limitCodes;
     }
 
     /**
@@ -95,58 +94,83 @@ class WorldCat extends SRU
     /**
      * Retrieve a specific record.
      *
-     * @param string $id Record ID to retrieve
+     * @param string   $id     Record ID to retrieve
+     * @param ParamBag $params Parameters
      *
      * @throws \Exception
      * @return string    MARC XML
      */
-    public function getRecord($id)
+    public function getRecord($id, ParamBag $params = null)
     {
+        $params = $params ?: new ParamBag();
+        $params->set('servicelevel', 'full');
+        $params->set('wskey', $this->wskey);
+
         $this->client->resetParameters();
         $uri = 'http://www.worldcat.org/webservices/catalog/content/' . $id;
-        $uri .= "?wskey={$this->wskey}&servicelevel=full";
+        $uri .= '?' . implode('&', $params->request());
         $this->client->setUri($uri);
         $this->debug('Connect: ' . $uri);
+        $start = microtime(true);
         $result = $this->client->setMethod('POST')->send();
+        $length = microtime(true) - $start;
         $this->checkForHttpError($result);
 
-        return $result->getBody();
+        // Check for error message in response:
+        $body = $result->getBody();
+        $xml = simplexml_load_string($body);
+        $error = isset($xml->diagnostic);
+
+        return array(
+            'docs' => $error ? array() : array($body),
+            'offset' => 0,
+            'total' => $error ? 0 : 1,
+            'time' => $length
+        );
     }
 
     /**
-     * Search
+     * Execute a search.
      *
-     * @param string $query    The search query
-     * @param string $oclcCode An OCLC code to exclude from results
-     * @param int    $page     The page of records to start with
-     * @param int    $limit    The number of records to return per page
-     * @param string $sort     The value to be used by for sorting
+     * @param AbstractQuery $query        Search query
+     * @param integer       $offset       Search offset
+     * @param integer       $limit        Search limit
+     * @param QueryBuilder  $queryBuilder Query builder
+     * @param ParamBag      $params       Parameters
      *
-     * @throws \Exception
-     * @return array          An array of query results
+     * @return array
      */
-    public function search($query, $oclcCode = null, $page = 1, $limit = 10,
-        $sort = null
+    public function search (AbstractQuery $query, $offset, $limit,
+        QueryBuilder $queryBuilder, ParamBag $params = null
     ) {
-        // Exclude current library from results
-        if ($oclcCode) {
-            $query .= ' not srw.li all "' . $oclcCode . '"';
-        }
-
-        // Submit query
-        $start = ($page-1) * $limit;
-        $params = array('query' => $query,
-                        'startRecord' => $start,
-                        'maximumRecords' => $limit,
-                        'sortKeys' => empty($sort) ? 'relevance' : $sort,
-                        'servicelevel' => 'full',
-                        'wskey' => $this->wskey);
+        $params = $params ?: new ParamBag();
+        $params->set('startRecord', $offset);
+        $params->set('maximumRecords', $limit);
+        $params->set('servicelevel', 'full');
+        $params->set('wskey', $this->wskey);
+        $params->mergeWith($queryBuilder->build($query));
 
         // Establish a limitation on searching by OCLC Codes
         if (!empty($this->limitCodes)) {
-            $params['oclcsymbol'] = $this->limitCodes;
+            $params->set('oclcsymbol', $this->limitCodes);
         }
 
-        return simplexml_load_string($this->call('POST', $params, false));
+        $start = microtime(true);
+        $response = $this->call('POST', $params->getArrayCopy(), false);
+        $length = microtime(true) - $start;
+
+        $xml = simplexml_load_string($response);
+        $docs = isset($xml->records->record) ? $xml->records->record : array();
+        $finalDocs = array();
+        foreach ($docs as $doc) {
+            $finalDocs[] = $doc->recordData->asXML();
+        }
+        return array(
+            'docs' => $finalDocs,
+            'offset' => $offset,
+            'total' => isset($xml->numberOfRecords) ? (int)$xml->numberOfRecords : 0,
+            'time' => $length
+        );
     }
+
 }

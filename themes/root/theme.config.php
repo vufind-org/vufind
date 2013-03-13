@@ -116,7 +116,7 @@ return array(
             },
             'worldcat' => function ($sm) {
                 return new \VuFind\View\Helper\Root\WorldCat(
-                    $sm->getServiceLocator()->get('VuFind\WorldCatConnection')
+                    $sm->getServiceLocator()->get('VuFind\Search')->getBackend('WorldCat')->getConnector()
                 );
             }
         ),

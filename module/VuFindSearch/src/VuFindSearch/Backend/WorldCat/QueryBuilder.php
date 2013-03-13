@@ -50,7 +50,24 @@ use VuFindSearch\ParamBag;
  */
 class QueryBuilder
 {
+    /**
+     * OCLC code to exclude from results
+     *
+     * @var string
+     */
+    protected $oclcCodeToExclude;
+
     /// Public API
+
+    /**
+     * Constructor
+     *
+     * @param string $exclude OCLC code to exclude from results
+     */
+    public function __construct($exclude = null)
+    {
+        $this->oclcCodeToExclude = $exclude;
+    }
 
     /**
      * Return WorldCat search parameters based on a user query and params.
@@ -61,8 +78,17 @@ class QueryBuilder
      */
     public function build (AbstractQuery $query)
     {
+        // Build base query
+        $queryStr = $this->abstractQueryToString($query);
+
+        // Exclude current library from results (if applicable)
+        if (null !== $this->oclcCodeToExclude) {
+            $queryStr .= ' not srw.li all "' . $this->oclcCodeToExclude . '"';
+        }
+
+        // Send back results
         $params = new ParamBag();
-        $params->set('query', $this->abstractQueryToString($query));
+        $params->set('query', $queryStr);
         return $params;
     }
 
@@ -141,11 +167,12 @@ class QueryBuilder
     protected function queryToString(Query $query)
     {
         // Clean and validate input:
-        $lookfor = str_replace('"', '', $query->getString());
         $index = $query->getHandler();
         if (empty($index)) {
-            $index = 'srw.kw';
+            // No handler?  Just accept query string as-is; no modifications needed.
+            return $query->getString();
         }
+        $lookfor = str_replace('"', '', $query->getString());
 
         // The index may contain multiple parts -- we want to search all listed index
         // fields:
