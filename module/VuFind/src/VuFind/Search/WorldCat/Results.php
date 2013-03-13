@@ -66,9 +66,9 @@ class Results extends BaseResults
         // Collect the search parameters:
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
         $wc = $this->getWorldCatConnection();
-        $overrideQuery = $this->getParams()->getOverrideQuery();
-        $query = empty($overrideQuery)
-            ? $wc->buildQuery($this->getParams()->getSearchTerms()) : $overrideQuery;
+        $queryBuilder = new \VuFindSearch\Backend\WorldCat\QueryBuilder();
+        $query = $queryBuilder->build($this->getParams()->getQuery())->get('query');
+        $query = $query[0];
 
         // Perform the search:
         $this->rawResponse  = $wc->search(

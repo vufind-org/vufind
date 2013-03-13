@@ -27,6 +27,8 @@
  */
 namespace VuFind\Search\WorldCat;
 use VuFind\Search\Base\Params as BaseParams;
+use VuFindSearch\Query\Query;
+use VuFind\Search\Legacy\QueryAdapter;
 
 /**
  * WorldCat Search Parameters
@@ -64,5 +66,25 @@ class Params extends BaseParams
     public function getOverrideQuery()
     {
         return $this->overrideQuery;
+    }
+
+    /**
+     * Return search query object.
+     *
+     * @return VuFindSearch\Query\AbstractQuery
+     *
+     * @tag NEW SEARCH
+     */
+    public function getQuery ()
+    {
+        if ($this->overrideQuery) {
+            return new Query($this->overrideQuery);
+        }
+
+        $legacy = $this->getSearchTerms();
+        if (empty($legacy)) {
+            return new Query();
+        }
+        return QueryAdapter::create($legacy);
     }
 }
