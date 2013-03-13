@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Writeable backend feature interface definition.
+ * Writable backend feature interface definition.
  *
  * PHP version 5
  *
@@ -33,7 +33,7 @@ use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\ParamBag;
 
 /**
- * Writeable backend feature interface definition.
+ * Writable backend feature interface definition.
  *
  * @category VuFind2
  * @package  Search
@@ -41,7 +41,7 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-interface WriteableBackendInterface extends BackendInterface
+interface WritableBackendInterface extends BackendInterface
 {
     /**
      * Delete a single record.
