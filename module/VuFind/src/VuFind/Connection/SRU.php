@@ -102,24 +102,6 @@ class SRU implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
-     * Does the current logger require debug messages?
-     *
-     * @return bool
-     */
-    protected function debugNeeded()
-    {
-        // There are three situations we need to worry about:
-        // - Logger not set -- no debug needed
-        // - Logger set but does not support debugNeeded() method -- assume debug
-        // - Logger has debugNeeded() method -- defer to that
-        if (!$this->logger) {
-            return false;
-        }
-        return !method_exists($this->logger, 'debugNeeded')
-            || $this->logger->debugNeeded();
-    }
-
-    /**
      * Log a debug message.
      *
      * @param string $msg Message to log.
@@ -156,9 +138,7 @@ class SRU implements \Zend\Log\LoggerAwareInterface
                          'startRecord' => 1,
                          'recordSchema' => 'marcxml');
 
-        if ($this->debugNeeded()) {
-            $this->debug('More Like This Query: ' . print_r($query, true));
-        }
+        $this->debug('More Like This Query: ' . print_r($query, true));
 
         return $this->call('GET', $options);
     }
@@ -202,9 +182,7 @@ class SRU implements \Zend\Log\LoggerAwareInterface
     public function search($query, $start = 1, $limit = null, $sortBy = null,
         $schema = 'marcxml', $process = true
     ) {
-        if ($this->debugNeeded()) {
-            $this->debug('Query: ' . print_r($query, true));
-        }
+        $this->debug('Query: ' . print_r($query, true));
 
         // Query String Parameters
         $options = array('operation' => 'searchRetrieve',
@@ -263,11 +241,7 @@ class SRU implements \Zend\Log\LoggerAwareInterface
             $queryString = implode('&', $query);
         }
 
-        if ($this->debugNeeded()) {
-            $this->debug(
-                'Connect: ' . print_r($this->host . '?' . $queryString, true)
-            );
-        }
+        $this->debug('Connect: ' . print_r($this->host . '?' . $queryString, true));
 
         // Send Request
         $this->client->resetParameters();
