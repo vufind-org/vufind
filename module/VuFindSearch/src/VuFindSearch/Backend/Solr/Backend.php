@@ -54,7 +54,7 @@ use VuFindSearch\Backend\Exception\BackendException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class Backend implements BackendInterface, WriteableBackendInterface
+class Backend implements BackendInterface, WritableBackendInterface
 {
     /**
      * Record collection factory.
