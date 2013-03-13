@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
 namespace VuFindConsole\Controller;
-use VuFind\Harvester\NAF, VuFind\Harvester\OAI, Zend\Console\Console;
+use VuFind\Harvester\OAI, Zend\Console\Console;
 
 /**
  * This controller handles various command-line tools
@@ -39,33 +39,6 @@ use VuFind\Harvester\NAF, VuFind\Harvester\OAI, Zend\Console\Console;
  */
 class HarvestController extends AbstractBase
 {
-    /**
-     * Harvest the LC Name Authority File.
-     *
-     * @return \Zend\Console\Response
-     */
-    public function harvestnafAction()
-    {
-        $this->checkLocalSetting();
-
-        // Perform the harvest. Note that first command line parameter
-        // may be used to start at a particular date.
-        try {
-            $harvest = new NAF(
-                $this->getServiceLocator()->get('VuFind\Http')->createClient()
-            );
-            $argv = $this->consoleOpts->getRemainingArgs();
-            if (isset($argv[0])) {
-                $harvest->setStartDate($argv[0]);
-            }
-            $harvest->launch();
-        } catch (\Exception $e) {
-            Console::writeLine($e->getMessage());
-            return $this->getFailureResponse();
-        }
-        return $this->getSuccessResponse();
-    }
-
     /**
      * Harvest OAI-PMH records.
      *
