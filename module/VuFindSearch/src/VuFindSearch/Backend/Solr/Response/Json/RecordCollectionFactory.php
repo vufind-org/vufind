@@ -60,8 +60,8 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
     /**
      * Constructor.
      *
-     * @param string $recordClass     Class of collection records
-     * @param string $collectionClass Class of collection
+     * @param Callable $recordFactory   Callback to construct records
+     * @param string   $collectionClass Class of collection
      *
      * @return void
      */
