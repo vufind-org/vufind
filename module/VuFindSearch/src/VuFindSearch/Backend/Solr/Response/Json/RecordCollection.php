@@ -29,10 +29,7 @@
 
 namespace VuFindSearch\Backend\Solr\Response\Json;
 
-use VuFindSearch\Response\RecordCollectionInterface;
-use VuFindSearch\Response\RecordInterface;
-
-use VuFindSearch\Exception\RuntimeException;
+use VuFindSearch\Response\AbstractRecordCollection;
 
 /**
  * Simple JSON-based record collection.
@@ -43,9 +40,8 @@ use VuFindSearch\Exception\RuntimeException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class RecordCollection implements RecordCollectionInterface
+class RecordCollection extends AbstractRecordCollection
 {
-
     /**
      * Template of deserialized SOLR response.
      *
@@ -66,13 +62,6 @@ class RecordCollection implements RecordCollectionInterface
      * @var array
      */
     protected $response;
-
-    /**
-     * Response records.
-     *
-     * @var array
-     */
-    protected $records;
 
     /**
      * Facets.
@@ -98,8 +87,6 @@ class RecordCollection implements RecordCollectionInterface
     public function __construct (array $response)
     {
         $this->response = array_replace_recursive(static::$template, $response);
-        $this->offset   = $response['response']['start'];
-        $this->records  = array();
         $this->rewind();
     }
 
@@ -162,16 +149,6 @@ class RecordCollection implements RecordCollectionInterface
     }
 
     /**
-     * Return records.
-     *
-     * @return array
-     */
-    public function getRecords ()
-    {
-        return $this->records;
-    }
-
-    /**
      * Return offset in the total search result set.
      *
      * @return int
@@ -180,116 +157,4 @@ class RecordCollection implements RecordCollectionInterface
     {
         return $this->response['response']['start'];
     }
-
-    /**
-     * Return first record in response.
-     *
-     * @return RecordInterface|null
-     */
-    public function first ()
-    {
-        return isset($this->records[$this->offset]) ? $this->records[$this->offset] : null;
-    }
-
-    /**
-     * Set the source backend identifier.
-     *
-     * @param string $identifier Backend identifier
-     *
-     * @return void
-     */
-    public function setSourceIdentifier ($identifier)
-    {
-        $this->source = $identifier;
-    }
-
-    /**
-     * Return the source backend identifier.
-     *
-     * @return string
-     */
-    public function getSourceIdentifier ()
-    {
-        return $this->source;
-    }
-
-    /**
-     * Add a record to the collection.
-     *
-     * @param RecordInterface $record Record to add
-     *
-     * @return void
-     */
-    public function add (RecordInterface $record)
-    {
-        if (!in_array($record, $this->records, true)) {
-            $this->records[$this->pointer] = $record;
-            $this->next();
-        }
-    }
-
-    /// Iterator interface
-
-    /**
-     * Return true if current collection index is valid.
-     *
-     * @return boolean
-     */
-    public function valid ()
-    {
-        return isset($this->records[$this->pointer]);
-    }
-
-    /**
-     * Return record at current collection index.
-     *
-     * @return RecordInterface
-     */
-    public function current ()
-    {
-        return $this->records[$this->pointer];
-    }
-
-    /**
-     * Rewind collection index.
-     *
-     * @return void
-     */
-    public function rewind ()
-    {
-        $this->pointer = $this->offset;
-    }
-
-    /**
-     * Move to next collection index.
-     *
-     * @return void
-     */
-    public function next ()
-    {
-        $this->pointer++;
-    }
-
-    /**
-     * Return current collection index.
-     *
-     * @return integer
-     */
-    public function key ()
-    {
-        return $this->pointer;
-    }
-
-    /// Countable interface
-
-    /**
-     * Return number of records in collection.
-     *
-     * @return integer
-     */
-    public function count ()
-    {
-        return count($this->records);
-    }
-
 }
