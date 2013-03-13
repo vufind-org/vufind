@@ -122,26 +122,6 @@ class Service
     }
 
     /**
-     * Delete a single record.
-     *
-     * @param string   $backend Search backend identifier
-     * @param string   $id      Record identifier
-     * @param ParamBag $params  Search backend parameters
-     *
-     * @return null
-     */
-    public function delete ($backend, $id, ParamBag $params = null)
-    {
-        $context = __FUNCTION__;
-        $args = compact('backend', 'id', 'params', 'context');
-        $backend = $this->resolve($args);
-
-        $this->triggerPre($context, $backend, $args);
-        $response = $backend->delete($id, $params);
-        $this->triggerPost($response, $args);
-    }
-
-    /**
      * Return similar records.
      *
      * @param string   $backend Search backend identifier
@@ -160,46 +140,6 @@ class Service
         $response = $backend->similar($id, $params);
         $this->triggerPost($response, $args);
         return $response;
-    }
-
-    /**
-     * Delete all records.
-     *
-     * @param string   $backend Search backend identifier
-     * @param ParamBag $params  Search backend parameters
-     *
-     * @return null
-     */
-    public function deleteAll ($backend, ParamBag $params = null)
-    {
-        $context = __FUNCTION__;
-        $args = compact('backend', 'params', 'context');
-        $backend = $this->resolve($backend, $args);
-
-        $this->triggerPre($backend, $args);
-        $response = $backend->deleteAll($params);
-        $this->triggerPost($response, $args);
-        return $response;
-    }
-
-    /**
-     * Update a record.
-     *
-     * @param string          $backend Search backend identifier
-     * @param RecordInterface $record  The record to update
-     * @param ParamBag        $params  Search backend parameters
-     *
-     * @return void
-     */
-    public function update ($backend, RecordInterface $record, ParamBag $params = null)
-    {
-        $context = __FUNCTION__;
-        $args = compact('backend', 'record', 'params', 'context');
-        $backend = $this->resolve($backend, $args);
-
-        $this->triggerPre($backend, $args);
-        $response = $backend->update($record, $params);
-        $this->triggerPost($response, $args);
     }
 
     /**
