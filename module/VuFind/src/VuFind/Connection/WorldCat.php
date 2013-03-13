@@ -85,9 +85,7 @@ class WorldCat extends SRU
         $uri = "http://www.worldcat.org/webservices/catalog/content/libraries/{$id}";
         $uri .= "?wskey={$this->wskey}&servicelevel=full";
         $this->client->setUri($uri);
-        if ($this->debugNeeded()) {
-            $this->debug('Connect: ' . $uri);
-        }
+        $this->debug('Connect: ' . $uri);
         $result = $this->client->setMethod('POST')->send();
         $this->checkForHttpError($result);
 
@@ -108,9 +106,7 @@ class WorldCat extends SRU
         $uri = 'http://www.worldcat.org/webservices/catalog/content/' . $id;
         $uri .= "?wskey={$this->wskey}&servicelevel=full";
         $this->client->setUri($uri);
-        if ($this->debugNeeded()) {
-            $this->debug('Connect: ' . $uri);
-        }
+        $this->debug('Connect: ' . $uri);
         $result = $this->client->setMethod('POST')->send();
         $this->checkForHttpError($result);
 
