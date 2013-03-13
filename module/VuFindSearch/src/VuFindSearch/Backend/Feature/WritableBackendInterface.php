@@ -29,7 +29,6 @@
 
 namespace VuFindSearch\Backend\Feature;
 
-use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\ParamBag;
 
 /**
@@ -41,7 +40,7 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-interface WritableBackendInterface extends BackendInterface
+interface WritableBackendInterface
 {
     /**
      * Delete a single record.
