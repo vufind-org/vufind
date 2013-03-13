@@ -54,7 +54,7 @@ use VuFindSearch\Backend\Exception\BackendException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class Backend implements BackendInterface
+class Backend implements BackendInterface, WriteableBackendInterface
 {
     /**
      * Record collection factory.
@@ -216,13 +216,14 @@ class Backend implements BackendInterface
     /**
      * Delete a single record.
      *
-     * @param string   $id     Record identifier
-     * @param ParamBag $params Search backend parameters
+     * @param string|array $id     Record identifier or array of record identifiers
+     * @param ParamBag     $params Search backend parameters
      *
      * @return void
      */
     public function delete ($id, ParamBag $params = null)
     {
+        $id = is_array($id) ? $id : array($id);
         $this->connector->delete($id, $params);
     }
 
@@ -245,11 +246,10 @@ class Backend implements BackendInterface
      * @param ParamBag $params Backend parameters
      *
      * @return void
-     *
-     * @todo Implement
      */
     public function update ($record, ParamBag $params = null)
     {
+        // TBD
     }
 
     /**
