@@ -46,8 +46,8 @@ interface WriteableBackendInterface extends BackendInterface
     /**
      * Delete a single record.
      *
-     * @param string   $id     Record identifier
-     * @param ParamBag $params Search backend parameters
+     * @param string|array $id     Record identifier or array of record identifiers
+     * @param ParamBag     $params Search backend parameters
      *
      * @return void
      */
