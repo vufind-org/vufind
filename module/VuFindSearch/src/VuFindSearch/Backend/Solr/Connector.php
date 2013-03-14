@@ -39,7 +39,7 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Params;
 
 use VuFindSearch\Backend\Exception\RemoteErrorException;
-use VuFindSearch\Backend\Exception\RequestErrorException;
+use VuFindSearch\Backend\Solr\Exception\RequestErrorException;
 
 use Zend\Http\Request;
 use Zend\Http\Client as HttpClient;
