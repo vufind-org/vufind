@@ -35,7 +35,6 @@ use VuFindSearch\Query\QueryGroup;
 use VuFindSearch\Query\Query;
 
 use VuFindSearch\ParamBag;
-use VuFindSearch\Service as SearchService;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 
 /**
@@ -56,14 +55,6 @@ class Results extends BaseResults
     protected $rawResponse = null;
 
     /**
-     * Search service.
-     *
-     * @var SearchService
-     * @tag NEW SEARCH
-     */
-    protected $searchService;
-
-    /**
      * Search backend identifiers.
      *
      * @var string
@@ -77,34 +68,6 @@ class Results extends BaseResults
      * @var string
      */
     protected $spellingQuery;
-
-    /**
-     * Return search service.
-     *
-     * @return SearchService
-     *
-     * @todo May better error handling, throw a custom exception if search service not present
-     * @tag NEW SEARCH
-     */
-    protected function getSearchService ()
-    {
-        if (!$this->searchService) {
-            $this->searchService = $this->getServiceLocator()->get('VuFind\Search');
-        }
-        return $this->searchService;
-    }
-
-    /**
-     * Sleep magic method -- the search service can't be serialized, so we need to
-     * exclude it from serialization.  Since we can't obtain a new locator in the
-     * __wakeup() method, it needs to be re-injected from outside.
-     *
-     * @return array
-     */
-    public function __sleep()
-    {
-        return array_diff(parent::__sleep(), array('searchService'));
-    }
 
     /**
      * Get a connection to the Solr index.

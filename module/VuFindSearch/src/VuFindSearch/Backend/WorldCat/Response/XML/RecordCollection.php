@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Simple JSON-based record collection.
+ * WorldCat record collection.
  *
  * PHP version 5
  *
@@ -27,12 +27,12 @@
  * @link     http://vufind.org
  */
 
-namespace VuFindSearch\Backend\Solr\Response\Json;
+namespace VuFindSearch\Backend\WorldCat\Response\XML;
 
 use VuFindSearch\Response\AbstractRecordCollection;
 
 /**
- * Simple JSON-based record collection.
+ * WorldCat record collection.
  *
  * @category VuFind2
  * @package  Search
@@ -43,76 +43,26 @@ use VuFindSearch\Response\AbstractRecordCollection;
 class RecordCollection extends AbstractRecordCollection
 {
     /**
-     * Template of deserialized SOLR response.
-     *
-     * @see self::__construct()
-     *
-     * @var array
-     */
-    protected static $template = array(
-        'responseHeader' => array('QTime' => 0),
-        'response'       => array('start' => 0),
-        'spellcheck'     => array('suggestions' => array()),
-        'facet_counts'   => array(),
-    );
-
-    /**
-     * Deserialized SOLR response.
+     * Raw response.
      *
      * @var array
      */
     protected $response;
 
     /**
-     * Facets.
-     *
-     * @var Facets
-     */
-    protected $facets;
-
-    /**
-     * Spellcheck information.
-     *
-     * @var Spellcheck
-     */
-    protected $spellcheck;
-
-    /**
      * Constructor.
      *
-     * @param array $response Deserialized SOLR response
+     * @param array $response WorldCat response
+     * @param int   $offset   Starting offset
+     * @param int   $time     Search execution time (in MS)
+     * @param int   $total    Total record count (optional)
      *
      * @return void
      */
     public function __construct (array $response)
     {
-        $this->response = array_replace_recursive(static::$template, $response);
+        $this->response = $response;
         $this->rewind();
-    }
-
-    /**
-     * Return spellcheck information.
-     *
-     * @return Spellcheck
-     */
-    public function getSpellcheck ()
-    {
-        if (!$this->spellcheck) {
-            $this->spellcheck = new Spellcheck($this->response['spellcheck']['suggestions']);
-        }
-        return $this->spellcheck;
-    }
-
-    /**
-     * Return raw deserialized response.
-     *
-     * @return array
-     *
-     * @todo Remove once we don't need it anymore (02/2013)
-     */
-    public function getRawResponse ()
-    {
-        return $this->response;
     }
 
     /**
@@ -122,7 +72,7 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getTotal ()
     {
-        return $this->response['response']['numFound'];
+        return $this->response['total'];
     }
 
     /**
@@ -132,20 +82,17 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getQueryTime ()
     {
-        return $this->response['responseHeader']['QTime'];
+        return $this->response['time'];
     }
 
     /**
-     * Return SOLR facet information.
+     * Return facet information.
      *
      * @return array
      */
     public function getFacets ()
     {
-        if (!$this->facets) {
-            $this->facets = new Facets($this->response['facet_counts']);
-        }
-        return $this->facets;
+        return array(); // not supported by WorldCat
     }
 
     /**
@@ -155,6 +102,6 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getOffset ()
     {
-        return $this->response['response']['start'];
+        return $this->response['offset'];
     }
 }

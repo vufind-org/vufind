@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Simple JSON-based factory for record collection.
+ * Simple XML-based factory for record collection.
  *
  * PHP version 5
  *
@@ -27,13 +27,13 @@
  * @link     http://vufind.org
  */
 
-namespace VuFindSearch\Backend\Solr\Response\Json;
+namespace VuFindSearch\Backend\WorldCat\Response\XML;
 
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Exception\InvalidArgumentException;
 
 /**
- * Simple JSON-based factory for record collection.
+ * Simple XML-based factory for record collection.
  *
  * @category VuFind2
  * @package  Search
@@ -60,27 +60,25 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
     /**
      * Constructor.
      *
-     * @param Callable $recordFactory   Callback to construct records
-     * @param string   $collectionClass Class of collection
+     * @param string $recordClass     Class of collection records
+     * @param string $collectionClass Class of collection
      *
      * @return void
      */
-    public function __construct ($recordFactory = null, $collectionClass = 'VuFindSearch\Backend\Solr\Response\Json\RecordCollection')
-    {
-        if (null === $recordFactory) {
-            $this->recordFactory = function ($data) {
-                return new Record($data);
-            };
-        } else {
-            $this->recordFactory = $recordFactory;
+    public function __construct ($recordFactory = null, $collectionClass = null) {
+        if (!is_callable($recordFactory)) {
+            throw new InvalidArgumentException('Record factory must be callable.');
         }
-        $this->collectionClass = $collectionClass;
+        $this->recordFactory = $recordFactory;
+        $this->collectionClass = (null === $collectionClass)
+            ? 'VuFindSearch\Backend\WorldCat\Response\XML\RecordCollection'
+            : $collectionClass;
     }
 
     /**
      * Return record collection.
      *
-     * @param array $response Deserialized JSON response
+     * @param array $response Collection of XML documents
      *
      * @return RecordCollection
      */
@@ -90,7 +88,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
             throw new InvalidArgumentException(sprintf('Unexpected type of value: Expected array, got %s', gettype($response)));
         }
         $collection = new $this->collectionClass($response);
-        foreach ($response['response']['docs'] as $doc) {
+        foreach ($response['docs'] as $doc) {
             $collection->add(call_user_func($this->recordFactory, $doc));
         }
         return $collection;

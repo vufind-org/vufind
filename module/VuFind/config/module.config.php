@@ -276,12 +276,6 @@ $config = array(
 
                 return $translator;
             },
-            'VuFind\WorldCatConnection' => function ($sm) {
-                return new \VuFind\Connection\WorldCat(
-                    $sm->get('VuFind\Config')->get('config'),
-                    $sm->get('VuFind\Http')->createClient()
-                );
-            },
             'VuFind\WorldCatUtils' => function ($sm) {
                 $config = $sm->get('VuFind\Config')->get('config');
                 $wcId = isset($config->WorldCat->id)
@@ -720,6 +714,7 @@ $config = array(
                     'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
                     'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
                     'SolrReserves' => 'VuFind\Search\Factory\SolrReservesBackendFactory',
+                    'WorldCat' => 'VuFind\Search\Factory\WorldCatBackendFactory',
                 )
             ),
             'session' => array(

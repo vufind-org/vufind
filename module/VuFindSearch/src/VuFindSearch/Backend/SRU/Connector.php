@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-namespace VuFind\Connection;
+namespace VuFindSearch\Backend\SRU;
 use VuFind\XSLT\Processor as XSLTProcessor, Zend\Log\LoggerInterface;
 
 /**
@@ -37,7 +37,7 @@ use VuFind\XSLT\Processor as XSLTProcessor, Zend\Log\LoggerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class SRU implements \Zend\Log\LoggerAwareInterface
+class Connector implements \Zend\Log\LoggerAwareInterface
 {
     /**
      * Logger object for debug info (or false for no debugging).
@@ -102,24 +102,6 @@ class SRU implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
-     * Does the current logger require debug messages?
-     *
-     * @return bool
-     */
-    protected function debugNeeded()
-    {
-        // There are three situations we need to worry about:
-        // - Logger not set -- no debug needed
-        // - Logger set but does not support debugNeeded() method -- assume debug
-        // - Logger has debugNeeded() method -- defer to that
-        if (!$this->logger) {
-            return false;
-        }
-        return !method_exists($this->logger, 'debugNeeded')
-            || $this->logger->debugNeeded();
-    }
-
-    /**
      * Log a debug message.
      *
      * @param string $msg Message to log.
@@ -131,86 +113,6 @@ class SRU implements \Zend\Log\LoggerAwareInterface
         if ($this->logger) {
             $this->logger->debug($msg);
         }
-    }
-
-    /**
-     * Build Query string from search parameters
-     *
-     * @param array $search An array of search parameters
-     *
-     * @throws \Exception
-     * @return array        An array of query results
-     */
-    public function buildQuery($search)
-    {
-        foreach ($search as $params) {
-            if ($params['lookfor'] != '') {
-                $query = (isset($query)) ? $query . ' ' . $params['bool'] . ' ' : '';
-                switch ($params['field']) {
-                case 'title':
-                    $query .= 'dc.title="' . $params['lookfor'] . '" OR ';
-                    $query .= 'dc.title=' . $params['lookfor'];
-                    break;
-                case 'id':
-                    $query .= 'rec.id=' . $params['lookfor'];
-                    break;
-                case 'author':
-                    preg_match_all('/"[^"]*"|[^ ]+/', $params['lookfor'], $wordList);
-                    $author = array();
-                    foreach ($wordList[0] as $phrase) {
-                        if (substr($phrase, 0, 1) == '"') {
-                            $arr = explode(
-                                ' ', substr($phrase, 1, strlen($phrase) - 2)
-                            );
-                            $author[] = implode(' AND ', $arr);
-                        } else {
-                            $author[] = $phrase;
-                        }
-                    }
-                    $author = implode(' ', $author);
-                    $query .= 'dc.creator any "' . $author . '" OR';
-                    $query .= 'dc.creator any ' . $author;
-                    break;
-                case 'callnumber':
-                    break;
-                case 'publisher':
-                    break;
-                case 'year':
-                    $query = 'dc.date=' . $params['lookfor'];
-                    break;
-                case 'series':
-                    break;
-                case 'language':
-                    break;
-                case 'toc':
-                    break;
-                case 'topic':
-                    break;
-                case 'geo':
-                    break;
-                case 'era':
-                    break;
-                case 'genre':
-                    break;
-                case 'subject':
-                    break;
-                case 'isn':
-                    break;
-                case 'all':
-                default:
-                    $query = 'dc.title="' . $params['lookfor'] . '" OR dc.title=' .
-                        $params['lookfor'] . ' OR dc.creator="' .
-                        $params['lookfor'] . '" OR dc.creator=' .
-                        $params['lookfor'] . ' OR dc.subject="' .
-                        $params['lookfor'] . '" OR dc.subject=' .
-                        $params['lookfor'] . ' OR dc.description=' .
-                        $params['lookfor'] . ' OR dc.date=' . $params['lookfor'];
-                    break;
-                }
-            }
-        }
-
-        return $query;
     }
 
     /**
@@ -236,9 +138,7 @@ class SRU implements \Zend\Log\LoggerAwareInterface
                          'startRecord' => 1,
                          'recordSchema' => 'marcxml');
 
-        if ($this->debugNeeded()) {
-            $this->debug('More Like This Query: ' . print_r($query, true));
-        }
+        $this->debug('More Like This Query: ' . print_r($query, true));
 
         return $this->call('GET', $options);
     }
@@ -282,9 +182,7 @@ class SRU implements \Zend\Log\LoggerAwareInterface
     public function search($query, $start = 1, $limit = null, $sortBy = null,
         $schema = 'marcxml', $process = true
     ) {
-        if ($this->debugNeeded()) {
-            $this->debug('Query: ' . print_r($query, true));
-        }
+        $this->debug('Query: ' . print_r($query, true));
 
         // Query String Parameters
         $options = array('operation' => 'searchRetrieve',
@@ -343,11 +241,7 @@ class SRU implements \Zend\Log\LoggerAwareInterface
             $queryString = implode('&', $query);
         }
 
-        if ($this->debugNeeded()) {
-            $this->debug(
-                'Connect: ' . print_r($this->host . '?' . $queryString, true)
-            );
-        }
+        $this->debug('Connect: ' . print_r($this->host . '?' . $queryString, true));
 
         // Send Request
         $this->client->resetParameters();

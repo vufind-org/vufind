@@ -29,6 +29,7 @@ namespace VuFind\Search\Base;
 use VuFind\Search\UrlQueryHelper, Zend\Paginator\Paginator,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
+use VuFindSearch\Service as SearchService;
 
 /**
  * Abstract results search model.
@@ -62,6 +63,14 @@ abstract class Results implements ServiceLocatorAwareInterface
     protected $helpers = array();
     // Spelling
     protected $suggestions = null;
+
+    /**
+     * Search service.
+     *
+     * @var SearchService
+     * @tag NEW SEARCH
+     */
+    protected $searchService;
 
     /**
      * Service locator
@@ -563,6 +572,7 @@ abstract class Results implements ServiceLocatorAwareInterface
     {
         $vars = get_object_vars($this);
         unset($vars['serviceLocator']);
+        unset($vars['searchService']);
         $vars = array_keys($vars);
         return $vars;
     }
@@ -589,6 +599,22 @@ abstract class Results implements ServiceLocatorAwareInterface
             throw new \Exception('Could not find service locator');
         }
         return $sl->get('SearchManager');
+    }
+
+    /**
+     * Return search service.
+     *
+     * @return SearchService
+     *
+     * @todo May better error handling, throw a custom exception if search service not present
+     * @tag NEW SEARCH
+     */
+    protected function getSearchService ()
+    {
+        if (!$this->searchService) {
+            $this->searchService = $this->getServiceLocator()->get('VuFind\Search');
+        }
+        return $this->searchService;
     }
 
     /**

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SOLR backend.
+ * WorldCat backend.
  *
  * PHP version 5
  *
@@ -27,7 +27,7 @@
  * @link     http://vufind.org
  */
 
-namespace VuFindSearch\Backend\Solr;
+namespace VuFindSearch\Backend\WorldCat;
 
 use VuFindSearch\Query\AbstractQuery;
 
@@ -37,14 +37,11 @@ use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 use VuFindSearch\Backend\BackendInterface;
-use VuFindSearch\Backend\Feature\WritableBackendInterface;
 
 use Zend\Log\LoggerInterface;
 
-use VuFindSearch\Backend\Exception\BackendException;
-
 /**
- * SOLR backend.
+ * WorldCat backend.
  *
  * @category VuFind2
  * @package  Search
@@ -52,7 +49,7 @@ use VuFindSearch\Backend\Exception\BackendException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class Backend implements BackendInterface, WritableBackendInterface
+class Backend implements BackendInterface
 {
     /**
      * Record collection factory.
@@ -60,13 +57,6 @@ class Backend implements BackendInterface, WritableBackendInterface
      * @var RecordCollectionFactoryInterface
      */
     protected $collectionFactory;
-
-    /**
-     * Dictionaries for spellcheck.
-     *
-     * @var array
-     */
-    protected $dictionaries;
 
     /**
      * Logger, if any.
@@ -99,14 +89,16 @@ class Backend implements BackendInterface, WritableBackendInterface
     /**
      * Constructor.
      *
-     * @param Connector $connector SOLR connector
+     * @param Connector                        $connector WorldCat connector
+     * @param RecordCollectionFactoryInterface $factory   Record collection factory
      *
      * @return void
      */
-    public function __construct (Connector $connector)
-    {
+    public function __construct (Connector $connector,
+        RecordCollectionFactoryInterface $factory
+    ) {
+        $this->setRecordCollectionFactory($factory);
         $this->connector    = $connector;
-        $this->dictionaries = array();
         $this->identifier   = null;
     }
 
@@ -123,19 +115,6 @@ class Backend implements BackendInterface, WritableBackendInterface
     }
 
     /**
-     * Set the spellcheck dictionaries to use.
-     *
-     * @param array $dictionaries Spellcheck dictionaries
-     *
-     * @return void
-     */
-    public function setDictionaries (array $dictionaries)
-    {
-        $this->dictionaries = $dictionaries;
-    }
-
-
-    /**
      * Perform a search and return record collection.
      *
      * @param AbstractQuery $query  Search query
@@ -144,38 +123,15 @@ class Backend implements BackendInterface, WritableBackendInterface
      * @param ParamBag      $params Search backend parameters
      *
      * @return RecordCollectionInterface
-     *
-     * @todo Disable more SOLR request options when resubmitting for spellcheck
-     * @todo Implement merge of spellcheck results
      */
-    public function search (AbstractQuery $query, $offset, $limit, ParamBag $params = null)
-    {
-        if (null !== $params && $params->get('spellcheck.q')) {
-            if (!empty($this->dictionaries)) {
-                reset($this->dictionaries);
-                $params->set('spellcheck', 'true');
-                $params->set('spellcheck.dictionary', current($this->dictionaries));
-            } else {
-                $this->log('warn', 'Spellcheck requested but no spellcheck dictionary configured');
-            }
-        }
-
-        $response   = $this->connector->search($query, $offset, $limit, $this->getQueryBuilder(), $params);
+    public function search (AbstractQuery $query, $offset, $limit,
+        ParamBag $params = null
+    ) {
+        $response   = $this->connector->search(
+            $query, $offset, $limit, $this->getQueryBuilder(), $params
+        );
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
-
-        // Submit requests for more spelling suggestions
-        while (next($this->dictionaries) !== false) {
-            $prev = $this->connector->getLastQueryParameters();
-            $next = new ParamBag(array('q' => '*:*', 'spellcheck' => 'true', 'rows' => 0));
-            $next->mergeWith($this->connector->getQueryInvariants());
-            $next->set('spellcheck.q', $prev->get('spellcheck.q'));
-            $next->set('spellcheck.dictionary', current($this->dictionaries));
-            $response   = $this->connector->resubmit($next);
-            $spellcheck = $this->createRecordCollection($response);
-            $collection->getSpellcheck()->mergeWith($spellcheck->getSpellcheck());
-        }
-
         return $collection;
     }
 
@@ -189,7 +145,7 @@ class Backend implements BackendInterface, WritableBackendInterface
      */
     public function retrieve ($id, ParamBag $params = null)
     {
-        $response   = $this->connector->retrieve($id, $params);
+        $response   = $this->connector->getRecord($id, $params);
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
         return $collection;
@@ -205,49 +161,16 @@ class Backend implements BackendInterface, WritableBackendInterface
      */
     public function similar ($id, ParamBag $params = null)
     {
-        $response   = $this->connector->similar($id, $params);
-        $collection = $this->createRecordCollection($response);
-        $this->injectSourceIdentifier($collection);
-        return $collection;
-    }
-
-    /**
-     * Delete a single record.
-     *
-     * @param string|array $id     Record identifier or array of record identifiers
-     * @param ParamBag     $params Search backend parameters
-     *
-     * @return void
-     */
-    public function delete ($id, ParamBag $params = null)
-    {
-        $id = is_array($id) ? $id : array($id);
-        $this->connector->delete($id, $params);
-    }
-
-    /**
-     * Delete all records.
-     *
-     * @param ParamBag $params Backend parameters
-     *
-     * @return void
-     */
-    public function deleteAll (ParamBag $params = null)
-    {
-        $this->connector->deleteAll($params);
-    }
-
-    /**
-     * Update a single record.
-     *
-     * @param mixed    $record Record
-     * @param ParamBag $params Backend parameters
-     *
-     * @return void
-     */
-    public function update ($record, ParamBag $params = null)
-    {
-        // TBD
+        // Not supported here -- see \VuFind\Related\WorldCatSimilar for an alternate
+        // approach.
+        return $this->createRecordCollection(
+            array(
+                'docs' => array(),
+                'time' => 0,
+                'total' => 0,
+                'offset' => 0
+            )
+        );
     }
 
     /**
@@ -322,14 +245,11 @@ class Backend implements BackendInterface, WritableBackendInterface
      */
     public function getRecordCollectionFactory ()
     {
-        if (!$this->collectionFactory) {
-            $this->collectionFactory = new Response\Json\RecordCollectionFactory();
-        }
         return $this->collectionFactory;
     }
 
     /**
-     * Return the SOLR connector.
+     * Return the WorldCat connector.
      *
      * @return Connector
      */
@@ -375,34 +295,12 @@ class Backend implements BackendInterface, WritableBackendInterface
     /**
      * Create record collection.
      *
-     * @param string $json Serialized JSON response
+     * @param array $records Records to process
      *
      * @return RecordCollectionInterface
      */
-    protected function createRecordCollection ($json)
+    protected function createRecordCollection ($records)
     {
-        return $this->getRecordCollectionFactory()->factory($this->deserialize($json));
+        return $this->getRecordCollectionFactory()->factory($records);
     }
-
-    /**
-     * Deserialize JSON response.
-     *
-     * @param string $json Serialized JSON response
-     *
-     * @return array
-     *
-     * @throws BackendException Deserialization error
-     */
-    protected function deserialize ($json)
-    {
-        $response = json_decode($json, true);
-        $error    = json_last_error();
-        if ($error != \JSON_ERROR_NONE) {
-            throw new BackendException(
-                sprintf('JSON decoding error: %s -- %s', $error, $json)
-            );
-        }
-        return $response;
-    }
-
 }

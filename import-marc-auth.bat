@@ -12,9 +12,9 @@ if not "!%VUFIND_HOME%!"=="!!" goto vufindhomefound
 rem VUFIND_HOME not set -- try to call vufind.bat to 
 rem fix the problem before we give up completely
 if exist vufind.bat goto usevufindbat
-rem If vufind.bat doesn't exist, the user hasn't run install.bat yet.
+rem If vufind.bat doesn't exist, the user hasn't run the installer yet.
 echo ERROR: vufind.bat does not exist -- could not set up environment.
-echo Please run install.bat to correct this problem.
+echo Please run install.php to correct this problem.
 goto end
 :usevufindbat
 call vufind > nul

@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\View\Helper\Root;
+use VuFindSearch\Backend\WorldCat\Connector;
 use Zend\View\Helper\AbstractHelper;
 
 /**
@@ -42,16 +43,16 @@ class WorldCat extends AbstractHelper
     /**
      * WorldCat connection
      *
-     * @var \VuFind\Connection\WorldCat
+     * @var Connector
      */
     protected $wc;
 
     /**
      * Constructor
      *
-     * @param \VuFind\Connection\WorldCat $wc WorldCat connection
+     * @param Connector $wc WorldCat connection
      */
-    public function __construct(\VuFind\Connection\WorldCat $wc)
+    public function __construct(Connector $wc)
     {
         $this->wc = $wc;
     }
@@ -61,7 +62,7 @@ class WorldCat extends AbstractHelper
      *
      * @param string $id Record ID
      *
-     * @return SimpleXMLElement
+     * @return \SimpleXMLElement
      */
     public function getHoldings($id)
     {

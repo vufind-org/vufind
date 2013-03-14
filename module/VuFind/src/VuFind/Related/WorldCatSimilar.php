@@ -54,8 +54,7 @@ class WorldCatSimilar extends Similar
         $parts = array();
 
         // Add Dewey class to query
-        $deweyClass = method_exists($driver, 'getDeweyCallNumber')
-            ? $driver->getDeweyCallNumber() : '';
+        $deweyClass = $driver->tryMethod('getDeweyCallNumber');
         if (!empty($deweyClass)) {
             // Skip "English Fiction" Dewey class -- this won't give us useful
             // matches because there's too much of it and it's too broad.

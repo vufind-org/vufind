@@ -142,6 +142,21 @@ class Service
         return $response;
     }
 
+
+    /**
+     * Get access to a search backend.
+     *
+     * @param string $backend Search backend identifier
+     *
+     * @return BackendInterface
+     */
+    public function getBackend($backend)
+    {
+        $context = __FUNCTION__;
+        $args = compact('backend', 'context');
+        return $this->resolve($backend, $args);
+    }
+
     /**
      * Set application logger.
      *
