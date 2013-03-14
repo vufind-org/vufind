@@ -703,7 +703,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                     );
 
                     // Create Rest API Renewal Key
-                    $restRenewID = $this->ws_dbKey. "|" . $renewID;
+                    $restRenewID = $this->ws_patronHomeUbId . "|" . $renewID;
 
                     // Add to Hierarchy
                     $hierarchy[$restRenewID] = false;
