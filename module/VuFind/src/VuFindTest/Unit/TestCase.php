@@ -108,6 +108,30 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Support method for getServiceManager()
+     *
+     * @return void
+     */
+    protected function setupSearchService()
+    {
+        $smConfig = new \Zend\ServiceManager\Config(
+            array(
+                'factories' => array(
+                    'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
+                )
+            )
+        );
+        $registry = $this->serviceManager->createScopedServiceManager();
+        $smConfig->configureServiceManager($registry);
+        $bm = new \VuFind\Search\BackendManager($registry);
+        $this->serviceManager->setService('VuFind\Search\BackendManager', $bm);
+        $ss = new \VuFindSearch\Service();
+        $this->serviceManager->setService('VuFind\Search', $ss);
+        $events = $ss->getEventManager();
+        $events->attach('resolve', array($bm, 'onResolve'));
+    }
+
+    /**
      * Get a service manager.
      *
      * @return \Zend\ServiceManager\ServiceManager
@@ -131,11 +155,12 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                 'VuFind\SearchSpecsReader', new \VuFind\Config\SearchSpecsReader()
             );
             $this->serviceManager->setService(
-                'VuFind\Logger', new \VuFind\Log\Logger()
+                'VuFind\Logger', $this->getMock('VuFind\Log\Logger')
             );
             $this->serviceManager->setService(
                 'VuFind\Http', new \VuFindHttp\HttpService()
             );
+            $this->setupSearchService();
             $cfg = new \Zend\ServiceManager\Config(
                 array('abstract_factories' => array('VuFind\Config\PluginFactory'))
             );
