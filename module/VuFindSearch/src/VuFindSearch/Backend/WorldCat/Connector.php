@@ -111,9 +111,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         $uri .= '?' . implode('&', $params->request());
         $this->client->setUri($uri);
         $this->debug('Connect: ' . $uri);
-        $start = microtime(true);
         $result = $this->client->setMethod('POST')->send();
-        $length = microtime(true) - $start;
         $this->checkForHttpError($result);
 
         // Check for error message in response:
@@ -124,8 +122,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         return array(
             'docs' => $error ? array() : array($body),
             'offset' => 0,
-            'total' => $error ? 0 : 1,
-            'time' => $length
+            'total' => $error ? 0 : 1
         );
     }
 
@@ -155,9 +152,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
             $params->set('oclcsymbol', $this->limitCodes);
         }
 
-        $start = microtime(true);
         $response = $this->call('POST', $params->getArrayCopy(), false);
-        $length = microtime(true) - $start;
 
         $xml = simplexml_load_string($response);
         $docs = isset($xml->records->record) ? $xml->records->record : array();
@@ -168,8 +163,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         return array(
             'docs' => $finalDocs,
             'offset' => $offset,
-            'total' => isset($xml->numberOfRecords) ? (int)$xml->numberOfRecords : 0,
-            'time' => $length
+            'total' => isset($xml->numberOfRecords) ? (int)$xml->numberOfRecords : 0
         );
     }
 

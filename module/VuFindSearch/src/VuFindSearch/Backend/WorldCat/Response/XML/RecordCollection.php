@@ -76,16 +76,6 @@ class RecordCollection extends AbstractRecordCollection
     }
 
     /**
-     * Return query time in milli-seconds.
-     *
-     * @return float
-     */
-    public function getQueryTime ()
-    {
-        return $this->response['time'];
-    }
-
-    /**
      * Return facet information.
      *
      * @return array

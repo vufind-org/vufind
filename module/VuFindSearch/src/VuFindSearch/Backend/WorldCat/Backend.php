@@ -166,7 +166,6 @@ class Backend implements BackendInterface
         return $this->createRecordCollection(
             array(
                 'docs' => array(),
-                'time' => 0,
                 'total' => 0,
                 'offset' => 0
             )
