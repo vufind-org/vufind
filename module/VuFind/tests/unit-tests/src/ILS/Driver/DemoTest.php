@@ -39,6 +39,11 @@ use VuFind\ILS\Driver\Demo;
  */
 class DemoTest extends \VuFindTest\Unit\TestCase
 {
+    /**
+     * Driver object
+     *
+     * @var Demo
+     */
     protected $driver;
 
     /**
@@ -46,7 +51,9 @@ class DemoTest extends \VuFindTest\Unit\TestCase
      */
     public function __construct()
     {
-        $this->driver = new Demo(new \VuFind\Date\Converter());
+        $this->driver = new Demo(
+            new \VuFind\Date\Converter(), $this->getMock('VuFindSearch\Service')
+        );
         $this->driver->init();
     }
 
