@@ -49,13 +49,6 @@ interface RecordCollectionInterface extends \Countable, \Iterator
     public function getTotal ();
 
     /**
-     * Return query time in milli-seconds.
-     *
-     * @return float
-     */
-    public function getQueryTime ();
-
-    /**
      * Return available facets.
      *
      * Returns an associative array with the internal field name as key. The

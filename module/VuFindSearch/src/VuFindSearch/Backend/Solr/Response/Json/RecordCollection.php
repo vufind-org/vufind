@@ -50,7 +50,7 @@ class RecordCollection extends AbstractRecordCollection
      * @var array
      */
     protected static $template = array(
-        'responseHeader' => array('QTime' => 0),
+        'responseHeader' => array(),
         'response'       => array('start' => 0),
         'spellcheck'     => array('suggestions' => array()),
         'facet_counts'   => array(),
@@ -123,16 +123,6 @@ class RecordCollection extends AbstractRecordCollection
     public function getTotal ()
     {
         return $this->response['response']['numFound'];
-    }
-
-    /**
-     * Return query time in milli-seconds.
-     *
-     * @return float
-     */
-    public function getQueryTime ()
-    {
-        return $this->response['responseHeader']['QTime'];
     }
 
     /**
