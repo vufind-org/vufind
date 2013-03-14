@@ -212,42 +212,16 @@ class Backend implements BackendInterface, WritableBackendInterface
     }
 
     /**
-     * Delete a single record.
+     * Delete records.
      *
-     * @param string|array $id     Record identifier or array of record identifiers
-     * @param ParamBag     $params Search backend parameters
-     *
-     * @return void
-     */
-    public function delete ($id, ParamBag $params = null)
-    {
-        $id = is_array($id) ? $id : array($id);
-        $this->connector->delete($id, $params);
-    }
-
-    /**
-     * Delete all records.
-     *
-     * @param ParamBag $params Backend parameters
+     * @param array    $directives Directives
+     * @param ParamBag $params     Parameters
      *
      * @return void
      */
-    public function deleteAll (ParamBag $params = null)
+    public function delete (array $directives, ParamBag $params)
     {
-        $this->connector->deleteAll($params);
-    }
-
-    /**
-     * Update a single record.
-     *
-     * @param mixed    $record Record
-     * @param ParamBag $params Backend parameters
-     *
-     * @return void
-     */
-    public function update ($record, ParamBag $params = null)
-    {
-        // TBD
+        $this->connector->delete($directives, $params);
     }
 
     /**
