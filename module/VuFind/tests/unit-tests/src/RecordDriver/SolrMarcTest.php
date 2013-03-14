@@ -26,7 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-namespace VuFind\Test\RecordDriver;
+namespace VuFindTest\RecordDriver;
 
 /**
  * SolrMarc Record Driver Test Class

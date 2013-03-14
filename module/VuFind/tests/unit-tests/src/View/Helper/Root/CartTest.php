@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-namespace VuFind\Test\View\Helper\Root;
+namespace VuFindTest\View\Helper\Root;
 
 /**
  * Cart view helper Test Class
