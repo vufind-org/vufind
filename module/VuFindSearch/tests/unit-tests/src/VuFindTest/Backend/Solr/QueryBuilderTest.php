@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Backend\Solr;
 
+use VuFindSearch\Query\Query;
 use VuFindSearch\Backend\Solr\QueryBuilder;
 use PHPUnit_Framework_TestCase;
 
@@ -118,6 +119,35 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
             $this->assertEquals(
                 $qb->capitalizeRanges($current[0]), $current[1]
             );
+        }
+    }
+
+    /**
+     * Test normalization of unusual queries.
+     *
+     * @return void
+     */
+    public function testNormalization()
+    {
+        // Set up an array of expected inputs and outputs:
+        // @codingStandardsIgnoreStart
+        $tests = array(
+            array("", "*:*"),                       // empty query
+            array("()", "*:*"),                     // empty parens
+            array("((()))", "*:*"),                 // nested empty parens
+            array("((())", "*:*"),                  // mismatched parens
+            array("this that ()", "this that "),    // text mixed w/ empty parens
+            array('"()"', '"()"'),                  // empty parens in quotes
+        );
+        // @codingStandardsIgnoreEnd
+
+        $qb = new QueryBuilder();
+        foreach ($tests as $test) {
+            list($input, $output) = $test;
+            $q = new Query($input);
+            $response = $qb->build($q);
+            $processedQ = $response->get('q');
+            $this->assertEquals($output, $processedQ[0]);
         }
     }
 
