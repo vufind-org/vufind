@@ -170,7 +170,7 @@ class Importer implements ServiceLocatorAwareInterface
                     $parts = explode('\\', $class);
                     $class = preg_replace('/[^A-Za-z0-9_]/', '', array_pop($parts));
                     $ns = implode('\\', $parts);
-                    eval("class $class extends \\$ns\\$class { }");
+                    class_alias("$ns\\$class", $class);
                 }
                 $methods = get_class_methods($class);
                 if (method_exists($class, 'setServiceLocator')) {
