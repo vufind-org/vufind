@@ -282,6 +282,17 @@ $config = array(
                     ? $config->WorldCat->id : false;
                 return new \VuFind\Connection\WorldCatUtils($wcId);
             },
+            'VuFind\Search\BackendManager' => function ($sm) {
+                $config = $sm->get('config');
+                $smConfig = new \Zend\ServiceManager\Config(
+                    $config['vufind']['plugin_managers']['search_backend']
+                );
+                $registry = $sm->createScopedServiceManager();
+                $smConfig->configureServiceManager($registry);
+                $manager  = new \VuFind\Search\BackendManager($registry);
+
+                return $manager;
+            },
         ),
         'invokables' => array(
             'VuFind\RecordLoader' => 'VuFind\Record\Loader',

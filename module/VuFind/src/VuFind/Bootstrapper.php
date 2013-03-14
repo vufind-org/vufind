@@ -366,17 +366,8 @@ class Bootstrapper
 
     protected function initSearch ()
     {
-        $sm = $this->event->getApplication()->getServiceManager();
-
-        $config = $sm->get('config');
-        $smConfig = new \Zend\ServiceManager\Config(
-            $config['vufind']['plugin_managers']['search_backend']
-        );
-
-        $registry = $sm->createScopedServiceManager();
-        $smConfig->configureServiceManager($registry);
-        $bm = new \VuFind\Search\BackendManager($registry);
-
+        $sm     = $this->event->getApplication()->getServiceManager();
+        $bm     = $sm->get('VuFind\Search\BackendManager');
         $events = $sm->get('SharedEventManager');
         $events->attach('VuFind\Search', 'resolve', array($bm, 'onResolve'));
     }

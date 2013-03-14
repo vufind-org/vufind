@@ -77,6 +77,41 @@ class BackendManager
     }
 
     /**
+     * Return named backend.
+     *
+     * @param string $name Backend name
+     *
+     * @return BackendInterface
+     *
+     * @throws UnexpectedValueException Retrieved backend is not an object
+     * @throws UnexpectedValueException Retrieved backend does not implement BackendInterface
+     */
+    public function get ($name)
+    {
+        $backend = $this->registry->get($name, false);
+        if (!is_object($backend)) {
+            throw new UnexpectedValueException(sprintf('Expected backend registry to return object, got %s', gettype($backend)));
+        }
+        if (!$backend instanceOf BackendInterface) {
+            throw new UnexpectedValueException(sprintf('Object of class %s does not implement the expected interface', get_class($backend)));
+        }
+        $backend->setIdentifier($name);
+        return $backend;
+    }
+
+    /**
+     * Return true if named backend is available.
+     *
+     * @param string $name Backend name
+     *
+     * @return boolean
+     */
+    public function has ($name)
+    {
+        return $this->registry->has($name);
+    }
+
+    /**
      * Listener for search system event `resolve`.
      *
      * @param EventInterface $e
@@ -86,16 +121,8 @@ class BackendManager
     public function onResolve (EventInterface $e)
     {
         $name = $e->getParam('backend');
-        if ($name && $this->registry->has($name, true, false)) {
-            $backend = $this->registry->get($name, false);
-            if (!is_object($backend)) {
-                throw new UnexpectedValueException(sprintf('Expected backend registry to return object, got %s', gettype($backend)));
-            }
-            if (!$backend instanceOf BackendInterface) {
-                throw new UnexpectedValueException(sprintf('Object of class %s does not implement the expected interface', get_class($backend)));
-            }
-            $backend->setIdentifier($name);
-            return $backend;
+        if ($name && $this->has($name)) {
+            return $this->get($name);
         }
         return null;
     }
