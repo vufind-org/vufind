@@ -65,6 +65,13 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
     protected $pointer = 0;
 
     /**
+     * Zero-based offset in complete search resul.
+     *
+     * @var int
+     */
+    protected $offset = 0;
+
+    /**
      * Return records.
      *
      * @return array
@@ -81,8 +88,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      */
     public function first ()
     {
-        $offset = $this->getOffset();
-        return isset($this->records[$offset]) ? $this->records[$offset] : null;
+        return isset($this->records[0]) ? $this->records[0] : null;
     }
 
     /**
@@ -151,7 +157,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      */
     public function rewind ()
     {
-        $this->pointer = $this->offset;
+        $this->pointer = 0;
     }
 
     /**
@@ -171,7 +177,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      */
     public function key ()
     {
-        return $this->pointer;
+        return $this->pointer + $this->offset;
     }
 
     /// Countable interface
