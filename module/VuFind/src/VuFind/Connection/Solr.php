@@ -1582,6 +1582,15 @@ class Solr implements ServiceLocatorAwareInterface,
             // STEP 3 -- unescape valid brackets/braces
             '[', ']', '{', '}');
         $input = preg_replace($patterns, $matches, $input);
+
+        // Remove empty parentheses outside of quotation marks -- these will
+        // cause a fatal Solr error and should be ignored.
+        $lookahead = '(?=(?:[^\"]*+\"[^\"]*+\")*+[^\"]*+$)';
+        $parenRegex = '/\(\s*\)' . $lookahead . '/';
+        while (preg_match($parenRegex, $input)) {
+            $input = preg_replace($parenRegex, '', $input);
+        }
+
         return $input;
     }
 
