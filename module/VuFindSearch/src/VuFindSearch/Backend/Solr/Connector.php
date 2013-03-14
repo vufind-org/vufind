@@ -48,6 +48,7 @@ use Zend\Http\Client\Adapter\AdapterInterface;
 use Zend\Log\LoggerInterface;
 
 use InvalidArgumentException;
+use XMLWriter;
 
 /**
  * SOLR connector.
@@ -211,6 +212,33 @@ class Connector
         $params->mergeWith($queryBuilder->build($query));
 
         return $this->select($params);
+    }
+
+    /**
+     * Delete records.
+     *
+     * @param array    $directives Directives
+     * @param ParamBag $params     Parameters
+     *
+     * @return void
+     */
+    public function delete (array $directives, ParamBag $params)
+    {
+        $writer = new XMLWriter();
+        $writer->openMemory();
+        $writer->startDocument();
+        $writer->startElement('delete');
+        foreach ($directives as $name => $directive) {
+            $value = is_array($directive) ? $directive : array($directive);
+            foreach ($directive as $value) {
+                $writer->writeElement($name, $value);
+            }
+            $writer->writeElement($name, $value);
+        }
+        $writer->endElement();
+        $writer->endDocument();
+        $document = $writer->flush();
+        return $this->update($document, $params);
     }
 
     /**
@@ -385,6 +413,28 @@ class Connector
     }
 
     /// Internal API
+
+    /**
+     * Send document to `update' request handler and return response.
+     *
+     * @param string   $document Document
+     * @param ParamBag $params   Parameters
+     *
+     * @return string
+     */
+    protected function update ($document, ParamBag $params)
+    {
+        $params = $this->prepare($params);
+        $url    = $this->url . '/update';
+        if (count($params) > 0) {
+            $url .= '?' . implode('&', $params->request());
+        }
+        $client = $this->createClient($url, 'POST');
+        $client->setEncType('text/xml; charset=UTF-8');
+        $client->getHeaders()->addHeaderLine('Content-Length', strlen($document));
+        $client->setRawBody($document);
+        return $this->send($client);
+    }
 
     /**
      * Send request to `select' query handler and return response.
