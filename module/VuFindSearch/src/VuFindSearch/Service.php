@@ -90,6 +90,7 @@ class Service
      */
     public function search ($backend, Query\AbstractQuery $query, $offset, $limit, ParamBag $params = null)
     {
+        $params  = $params ?: new ParamBag();
         $context = __FUNCTION__;
         $args = compact('backend', 'query', 'offset', 'limit', 'params', 'context');
         $backend  = $this->resolve($backend, $args);
@@ -111,6 +112,7 @@ class Service
      */
     public function retrieve ($backend, $id, ParamBag $params = null)
     {
+        $params  = $params ?: new ParamBag();
         $context = __FUNCTION__;
         $args = compact('backend', 'id', 'params', 'context');
         $backend = $this->resolve($backend, $args);
@@ -132,6 +134,7 @@ class Service
      */
     public function similar ($backend, $id, ParamBag $params = null)
     {
+        $params  = $params ?: new ParamBag();
         $context = __FUNCTION__;
         $args = compact('backend', 'id', 'params', 'context');
         $backend = $this->resolve($backend, $args);
