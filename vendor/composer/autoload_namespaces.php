@@ -10,6 +10,6 @@ return array(
     'ZendTest\\' => $vendorDir . '/zendframework/zendframework/tests/',
     'ZendService' => $vendorDir . '/zendframework/zendservice-amazon/library/',
     'ZendRest' => $vendorDir . '/zendframework/zendrest/library/',
-    'Symfony\\Component\\Yaml' => $vendorDir . '/symfony/yaml/',
+    'Symfony\\Component\\Yaml\\' => $vendorDir . '/symfony/yaml/',
     'SerialsSolutions' => $vendorDir . '/serialssolutions/summon/',
 );
