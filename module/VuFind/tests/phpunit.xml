@@ -3,6 +3,9 @@
     <testsuite name="VuFindHttp">
       <directory>../../VuFindHttp/tests/unit-tests/src</directory>
     </testsuite>
+    <testsuite name="VuFindSearch">
+      <directory>../../VuFindSearch/tests/unit-tests/src</directory>
+    </testsuite>
     <testsuite name="VuFindUnit">
       <directory>unit-tests/src</directory>
     </testsuite>
@@ -16,6 +19,7 @@
       <directory suffix=".php">../src</directory>
       <directory suffix=".php">../../VuFindConsole/src</directory>
       <directory suffix=".php">../../VuFindHttp/src</directory>
+      <directory suffix=".php">../../VuFindSearch/src</directory>
       <directory suffix=".php">../../VuFindTheme/src</directory>
     </whitelist>
   </filter>

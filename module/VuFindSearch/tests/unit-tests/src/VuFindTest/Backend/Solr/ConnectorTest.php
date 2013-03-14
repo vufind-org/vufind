@@ -128,7 +128,7 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
      */
     protected function createConnector ($fixture)
     {
-        $file = realpath(sprintf('%s/solr/response/%s', PHPUNIT_FIXTURES, $fixture));
+        $file = realpath(sprintf('%s/solr/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
         if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
             throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $file));
         }
