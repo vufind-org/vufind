@@ -25,11 +25,27 @@ echo You need to set the VUFIND_HOME environmental variable before running this 
 goto end
 :vufindhomefound
 
+rem Save script name for message below (otherwise it may get shifted away)
+set SCRIPT_NAME=%0
+
+rem Set default behavior
+set SKIP_OPTIMIZE=0
+
+rem Process switches
+:switchloop
+if "%1"=="-s" goto sswitch
+goto switchloopend
+:sswitch
+set SKIP_OPTIMIZE=1
+shift
+goto switchloop
+:switchloopend
+
 rem Make sure command line parameter was included:
 if not "!%1!"=="!!" goto paramsokay
 echo This script deletes records based on files created by the OAI-PMH harvester.
 echo.
-echo Usage: %0 [harvest subdirectory] [index type]
+echo Usage: %SCRIPT_NAME% [harvest subdirectory] [index type]
 echo.
 echo [harvest subdirectory] is a directory name created by the OAI-PMH harvester.
 echo This script will search the harvest subdirectories of the directories defined
@@ -38,7 +54,10 @@ echo.
 echo [index type] is optional; defaults to Solr for main bibliographic index, but
 echo can be set to SolrAuth for authority index.
 echo.
-echo Example: %0 oai_source
+echo Example: %SCRIPT_NAME% oai_source
+echo.
+echo Options:
+echo -s:  Skip optimize operation after importing.
 goto end
 :paramsokay
 
@@ -67,6 +86,7 @@ for %%a in (%BASEPATH%\*.delete) do (
 )
 
 if "%FOUNDSOME%"=="0" goto end
+if not "%SKIP_OPTIMIZE%!"=="0!" goto end
 
 echo Optimizing index...
 php optimize.php
