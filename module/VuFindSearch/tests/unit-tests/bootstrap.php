@@ -21,4 +21,4 @@ require_once('Zend/Loader/AutoloaderFactory.php');
     )
 );
 
-define('PHPUNIT_FIXTURES', realpath(__DIR__ . '/fixtures'));
+define('PHPUNIT_SEARCH_FIXTURES', realpath(__DIR__ . '/fixtures'));
