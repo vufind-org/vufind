@@ -154,14 +154,15 @@ class Results extends BaseResults
      */
     public function getRecord($id)
     {
-        $summon = $this->getSummonConnection();
-        $record = $summon->getRecord($id);
-        if (empty($record) || !isset($record['documents'][0])) {
+        $collection = $this->getSearchService()->retrieve('Summon', $id);
+
+        if (count($collection) == 0) {
             throw new RecordMissingException(
                 'Record ' . $id . ' does not exist.'
             );
         }
-        return $this->initRecordDriver($record['documents'][0]);
+
+        return current($collection->getRecords());
     }
 
     /**
