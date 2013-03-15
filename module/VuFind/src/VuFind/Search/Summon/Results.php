@@ -86,8 +86,16 @@ class Results extends BaseResults
 
         // Perform the actual search
         $summon = $this->getSummonConnection();
+        $queryBuilder = new \VuFindSearch\Backend\Summon\QueryBuilder();
+        $summonConfig = $this->getServiceLocator()->get('VuFind\Config')
+            ->get('Summon');
+        $queryBuilder->caseSensitiveBooleans
+            = isset($summonConfig->General->case_sensitive_bools)
+            ? $summonConfig->General->case_sensitive_bools : true;
+        $paramBag = $queryBuilder->build($this->getParams()->getQuery());
+        $queryStr = $paramBag->get('query');
         $query = new SummonQuery(
-            $summon->buildQuery($this->getParams()->getSearchTerms()),
+            $queryStr[0],
             array(
                 'sort' => $finalSort,
                 'pageNumber' => $this->getParams()->getPage(),

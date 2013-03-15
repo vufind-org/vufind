@@ -27,6 +27,8 @@
  */
 namespace VuFind\Search\Summon;
 use VuFind\Search\Base\Params as BaseParams;
+use VuFindSearch\Query\Query;
+use VuFind\Search\Legacy\QueryAdapter;
 
 /**
  * Summon Search Parameters
@@ -130,5 +132,21 @@ class Params extends BaseParams
 
         // Return modified list:
         return $facets;
+    }
+
+    /**
+     * Return search query object.
+     *
+     * @return VuFindSearch\Query\AbstractQuery
+     *
+     * @tag NEW SEARCH
+     */
+    public function getQuery ()
+    {
+        $legacy = $this->getSearchTerms();
+        if (empty($legacy)) {
+            return new Query();
+        }
+        return QueryAdapter::create($legacy);
     }
 }
