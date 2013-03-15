@@ -35,6 +35,8 @@ namespace VuFind\Exception;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
+ *
+ * @todo     Remove, superseded by VuFindSearch model exception
  */
 class Solr extends \Exception
 {
