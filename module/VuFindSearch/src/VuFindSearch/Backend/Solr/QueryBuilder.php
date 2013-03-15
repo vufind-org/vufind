@@ -260,6 +260,7 @@ class QueryBuilder
      */
     protected function getSearchHandler ($handler)
     {
+        $handler = $handler ? strtolower($handler) : $handler;
         if ($handler && isset($this->specs[$handler])) {
             return $this->specs[$handler];
         } else {

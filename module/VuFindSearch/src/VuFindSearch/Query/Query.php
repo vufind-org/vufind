@@ -82,7 +82,7 @@ class Query extends AbstractQuery
      */
     public function __construct ($string = null, $handler = null)
     {
-        $this->queryHandler = $handler ? strtolower($handler) : null;
+        $this->queryHandler = $handler ? $handler : null;
         $this->queryString  = $string;
     }
 
