@@ -174,7 +174,8 @@ class Results extends BaseResults
     /**
      * Create search backend parameters for advanced features.
      *
-     * @param Params $params Search parameters
+     * @param AbstractQuery $query  Current search query
+     * @param Params        $params Search parameters
      *
      * @return ParamBag
      * @tag NEW SEARCH
