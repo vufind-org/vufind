@@ -125,4 +125,15 @@ class RecordCollection extends AbstractRecordCollection
         }
         return array();
     }
+
+    /**
+     * Get database recommendations from Summon, if any.
+     *
+     * @return array|bool false if no recommendations, detailed array otherwise.
+     */
+    public function getDatabaseRecommendations()
+    {
+        return isset($this->response['recommendationLists']['database']) ?
+            $this->response['recommendationLists']['database'] : false;
+    }
 }

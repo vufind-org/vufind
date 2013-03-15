@@ -45,8 +45,17 @@ class Results extends BaseResults
 {
     /**
      * Raw search response:
+     *
+     * @var array
      */
     protected $rawResponse = null;
+
+    /**
+     * Database recommendations
+     *
+     * @var array|bool
+     */
+    protected $databaseRecommendations = false;
 
     /**
      * Support method for performAndProcessSearch -- perform a search based on the
@@ -74,6 +83,9 @@ class Results extends BaseResults
             $spellcheck = $collection->getSpellcheck();
             $this->processSpelling($spellcheck);
         }
+
+        // Get database recommendations.
+        $this->databaseRecommendations = $collection->getDatabaseRecommendations();
 
         // Add fake date facets if flagged earlier; this is necessary in order
         // to display the date range facet control in the interface.
@@ -375,7 +387,6 @@ class Results extends BaseResults
      */
     public function getDatabaseRecommendations()
     {
-        return isset($this->rawResponse['recommendationLists']['database']) ?
-            $this->rawResponse['recommendationLists']['database'] : false;
+        return $this->databaseRecommendations;
     }
 }
