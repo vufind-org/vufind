@@ -152,27 +152,6 @@ class Backend implements BackendInterface
     }
 
     /**
-     * Return similar records.
-     *
-     * @param string   $id     Id of record to compare with
-     * @param ParamBag $params Search backend parameters
-     *
-     * @return RecordCollectionInterface
-     */
-    public function similar ($id, ParamBag $params = null)
-    {
-        // Not supported here -- see \VuFind\Related\WorldCatSimilar for an alternate
-        // approach.
-        return $this->createRecordCollection(
-            array(
-                'docs' => array(),
-                'total' => 0,
-                'offset' => 0
-            )
-        );
-    }
-
-    /**
      * Set the Logger.
      *
      * @param LoggerInterface $logger Logger

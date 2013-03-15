@@ -95,13 +95,4 @@ interface BackendInterface
      */
     public function retrieve ($id, ParamBag $params = null);
 
-    /**
-     * Return similar records.
-     *
-     * @param string   $id     Id of record to compare with
-     * @param ParamBag $params Search backend parameters
-     *
-     * @return RecordCollectionInterface
-     */
-    public function similar ($id, ParamBag $params = null);
 }
