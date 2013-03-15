@@ -98,4 +98,16 @@ class RecordCollection extends AbstractRecordCollection
             ? $this->response['query']['pageSize'] : 0;
         return $page * $size;
     }
+
+    /**
+     * Get the raw Summon response.
+     *
+     * @return array
+     *
+     * @todo Remove once we don't need it anymore (02/2013)
+     */
+    public function getRawResponse()
+    {
+        return $this->response;
+    }
 }

@@ -29,6 +29,8 @@
 
 namespace VuFindSearch\Backend\Summon;
 
+use SerialsSolutions_Summon_Query as SummonQuery;
+
 use VuFindSearch\Query\AbstractQuery;
 
 use VuFindSearch\ParamBag;
@@ -127,7 +129,16 @@ class Backend implements BackendInterface
     public function search (AbstractQuery $query, $offset, $limit,
         ParamBag $params = null
     ) {
-        // TODO
+        $baseParams = $this->getQueryBuilder()->build($query);
+        if (null !== $params) {
+            $baseParams->mergeWith($params);
+        }
+        $baseParams->set('pageSize', $limit);
+        $baseParams->set('pageNumber', floor($offset / $limit) + 1);
+
+        $summonQuery = $this->paramBagToSummonQuery($baseParams);
+        $response = $this->connector->query($summonQuery);
+        return $this->createRecordCollection($response);
     }
 
     /**
@@ -275,5 +286,35 @@ class Backend implements BackendInterface
     protected function createRecordCollection ($records)
     {
         return $this->getRecordCollectionFactory()->factory($records);
+    }
+
+    /**
+     * Convert a ParamBag to a Summon query object.
+     *
+     * @param ParamBag $params ParamBag to convert
+     *
+     * @return SummonQuery
+     */
+    protected function paramBagToSummonQuery (ParamBag $params)
+    {
+        $params = $params->getArrayCopy();
+
+        // Extract the query:
+        $query = isset($params['query'][0]) ? $params['query'][0] : null;
+        unset($params['query']);
+
+        // Convert the options:
+        $options = array();
+        foreach ($params as $key => $param) {
+            // Most parameters need to be flattened from array format, but a few
+            // should remain as arrays:
+            if (in_array($key, array('facets', 'filters', 'rangeFilters'))) {
+                $options[$key] = $param;
+            } else {
+                $options[$key] = $param[0];
+            }
+        }
+
+        return new SummonQuery($query, $options);
     }
 }
