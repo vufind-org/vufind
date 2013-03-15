@@ -110,4 +110,19 @@ class RecordCollection extends AbstractRecordCollection
     {
         return $this->response;
     }
+
+    /**
+     * Get spelling suggestions.
+     *
+     * @return array
+     */
+    public function getSpellcheck()
+    {
+        if (isset($this->response['didYouMeanSuggestions'])
+            && is_array($this->response['didYouMeanSuggestions'])
+        ) {
+            return $this->response['didYouMeanSuggestions'];
+        }
+        return array();
+    }
 }

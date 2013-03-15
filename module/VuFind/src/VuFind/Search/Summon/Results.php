@@ -67,9 +67,12 @@ class Results extends BaseResults
         $this->rawResponse = $collection->getRawResponse();
         $this->resultTotal = $collection->getTotal();
 
-        // Save spelling details if they exist.
+        // Process spelling suggestions if enabled (note that we need this
+        // check here because sometimes the Summon API returns suggestions
+        // even when the spelling parameter is set to false).
         if ($this->getOptions()->spellcheckEnabled()) {
-            $this->processSpelling();
+            $spellcheck = $collection->getSpellcheck();
+            $this->processSpelling($spellcheck);
         }
 
         // Add fake date facets if flagged earlier; this is necessary in order
@@ -327,23 +330,21 @@ class Results extends BaseResults
     /**
      * Process spelling suggestions from the results object
      *
+     * @param array $spelling Suggestions from Summon
+     *
      * @return void
      */
-    protected function processSpelling()
+    protected function processSpelling($spelling)
     {
-        if (isset($this->rawResponse['didYouMeanSuggestions'])
-            && is_array($this->rawResponse['didYouMeanSuggestions'])
-        ) {
-            $this->suggestions = array();
-            foreach ($this->rawResponse['didYouMeanSuggestions'] as $current) {
-                if (!isset($this->suggestions[$current['originalQuery']])) {
-                    $this->suggestions[$current['originalQuery']] = array(
-                        'suggestions' => array()
-                    );
-                }
-                $this->suggestions[$current['originalQuery']]['suggestions'][]
-                    = $current['suggestedQuery'];
+        $this->suggestions = array();
+        foreach ($spelling as $current) {
+            if (!isset($this->suggestions[$current['originalQuery']])) {
+                $this->suggestions[$current['originalQuery']] = array(
+                    'suggestions' => array()
+                );
             }
+            $this->suggestions[$current['originalQuery']]['suggestions'][]
+                = $current['suggestedQuery'];
         }
     }
 
