@@ -128,9 +128,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
 
         $config  = $this->config->get('config');
         $backend = new Backend($connector);
-        $specs   = $this->loadSpecs();
-        $builder = new QueryBuilder($specs);
-        $backend->setQueryBuilder($builder);
+        $backend->setQueryBuilder($this->createQueryBuilder());
 
         // Spellcheck
         if (isset($config->Spelling->enabled) && $config->Spelling->enabled) {
@@ -167,7 +165,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected function createConnector ()
     {
         $config = $this->config->get('config');
-        $search = $this->config->get('searches');
+        $search = $this->config->get($this->searchConfig);
 
         $url    = $config->Index->url . '/' . $this->solrCore;
         $connector = new Connector($url);
@@ -208,6 +206,28 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             $connector->setProxy($this->serviceLocator->get('VuFind\Http'));
         }
         return $connector;
+    }
+
+    /**
+     * Create the query builder.
+     *
+     * @return QueryBuilder
+     */
+    protected function createQueryBuilder ()
+    {
+        $specs   = $this->loadSpecs();
+        $builder = new QueryBuilder($specs);
+
+        // Configure builder:
+        $search = $this->config->get($this->searchConfig);
+        $builder->caseSensitiveRanges
+            = isset($search->General->case_sensitive_ranges)
+            ? $search->General->case_sensitive_ranges : true;
+        $builder->caseSensitiveBooleans
+            = isset($search->General->case_sensitive_bools)
+            ? $search->General->case_sensitive_bools : true;
+
+        return $builder;
     }
 
     /**
