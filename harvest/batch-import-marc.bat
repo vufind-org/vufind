@@ -43,6 +43,7 @@ rem Process switches
 if "%1"=="-d" goto dswitch
 if "%1"=="-h" goto helpmessage
 if "%1"=="-m" goto mswitch
+if "%1"=="-p" goto pswitch
 if "%1"=="-z" goto zswitch
 goto switchloopend
 :dswitch
@@ -51,6 +52,11 @@ shift
 goto switchloop
 :mswitch
 set MOVE_DATA=0
+shift
+goto switchloop
+:pswitch
+set PROPERTIES_FILE=%2
+shift
 shift
 goto switchloop
 :zswitch
@@ -64,7 +70,7 @@ if not "!%1!"=="!!" goto paramsokay
 :helpmessage
 echo This script processes a batch of harvested MARC records.
 echo.
-echo Usage: %SCRIPT_NAME% [-dhmz] [harvest subdirectory]
+echo Usage: %SCRIPT_NAME% [-dhmz] [-p properties_file] [harvest subdirectory]
 echo.
 echo [harvest subdirectory] is a directory name created by the OAI-PMH harvester.
 echo This script will search the harvest subdirectories of the directories defined
@@ -77,6 +83,7 @@ echo -d:  Use the directory path as-is, do not append it to %HARVEST_DIR%.
 echo      Useful for non-OAI batch loading.
 echo -h:  Print this message
 echo -m:  Do not move the data files after importing.
+echo -p:  Used specified SolrMarc configuration properties file
 echo -z:  No logging.
 goto end
 :paramsokay
@@ -103,10 +110,10 @@ md %BASEPATH%\processed
 
 rem Process all the files in the target directory:
 for %%a in (%BASEPATH%\*.xml %BASEPATH%\*.mrc) do (
-  rem Capture solrmarc output to log
   if "%LOGGING%"=="0" (
     call %VUFIND_HOME%\import-marc.bat %%a
   )
+  rem Capture solrmarc output to log
   if "%LOGGING%"=="1" (
     call %VUFIND_HOME%\import-marc.bat %%a 2> %BASEPATH%\log\%%~nxa.log
   )

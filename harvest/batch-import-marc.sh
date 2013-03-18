@@ -22,7 +22,7 @@ function usage {
 cat <<EOF
 This script processes a batch of harvested MARC records.
 
-Usage: $(basename $0) [-dhmz] _harvest_subdirectory_
+Usage: $(basename $0) [-dhmz] [-p properties_file] _harvest_subdirectory_
 
 _harvest_subdirectory_ is a directory name created by the OAI-PMH harvester.
 This script will search the harvest subdirectories of the directories defined
@@ -35,17 +35,19 @@ Options:
      Useful for non-OAI batch loading.
 -h:  Print this message
 -m:  Do not move the data files after importing.
+-p:  Used specified SolrMarc configuration properties file
 -z:  No logging.
 EOF
 }
 
-while getopts ":dhmz" OPT
+while getopts ":dhmp:z" OPT
 do
   case $OPT in
     d) BASEPATH_UNDER_HARVEST=false;;
     h) usage; 
        exit 0;;
     m) MOVE_DATA=false;;
+    p) PROPERTIES_FILE="$OPTARG"; export PROPERTIES_FILE;;
     z) LOGGING=false;;
     :)
       echo "argument to '-$OPTARG' is missing" >&2
@@ -113,6 +115,7 @@ do
   if [ -f $file ]
   then
     # Logging output handled by log() function
+    # PROPERTIES_FILE passed via environment
     $VUFIND_HOME/import-marc.sh $file 2> >(log $file)
     if [ $MOVE_DATA == true ]
     then
