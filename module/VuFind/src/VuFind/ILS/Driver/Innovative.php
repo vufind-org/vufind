@@ -393,7 +393,11 @@ class Innovative extends AbstractBase implements
             // released under the GPL
             $api_contents = trim(strip_tags($result));
             $api_array_lines = explode("\n", $api_contents);
-            while (strlen($api_data['PBARCODE']) != 14 && !$api_data['ERRNUM']) {
+            $api_data = array();
+
+            while (strlen($api_data['PBARCODE']) != 14
+                && (!isset($api_data['ERRNUM']) || !$api_data['ERRNUM'])
+            ) {
                 foreach ($api_array_lines as $api_line) {
                     $api_line = str_replace("p=", "peq", $api_line);
                     $api_line_arr = explode("=", $api_line);
