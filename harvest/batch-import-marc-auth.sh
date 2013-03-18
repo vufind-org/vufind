@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Make sure VUFIND_HOME is set:
 if [ -z "$VUFIND_HOME" ]
@@ -15,13 +15,38 @@ then
 fi
 
 BASEPATH_UNDER_HARVEST=true
+LOGGING=true
 MOVE_DATA=true
 
-while getopts ":dm" OPT
+function usage {
+cat <<EOF
+This script processes a batch of harvested authority records.
+
+Usage: $(basename $0) [-dhmz] _harvest_subdirectory_ _SolrMarc_properties_file_
+
+_harvest_subdirectory_ is a directory name created by the OAI-PMH harvester.
+This script will search the harvest subdirectories of the directories defined
+by the VUFIND_LOCAL_DIR or VUFIND_HOME environment variables.
+
+Example: $(basename $0) lcnaf marc_lcnaf.properties
+
+Options:
+-d:  Use the directory path as-is, do not append it to $HARVEST_DIR.
+     Useful for non-OAI batch loading.
+-h:  Print this message
+-m:  Do not move the data files after importing.
+-z:  No logging.
+EOF
+}
+
+while getopts ":dhmz" OPT
 do
   case $OPT in
     d) BASEPATH_UNDER_HARVEST=false;;
+    h) usage; 
+       exit 0;;
     m) MOVE_DATA=false;;
+    z) LOGGING=false;;
     :)
       echo "argument to '-$OPTARG' is missing" >&2
       exit -1;;
@@ -34,20 +59,7 @@ shift $(($OPTIND - 1))
 # Make sure command line parameter was included:
 if [ -z "$2" ]
 then
-  echo "This script processes a batch of harvested authority records."
-  echo ""
-  echo "Usage: `basename $0` [-d] [-m] [harvest subdirectory] [SolrMarc properties file]"
-  echo ""
-  echo "[harvest subdirectory] is a directory name created by the OAI-PMH harvester."
-  echo "This script will search the harvest subdirectories of the directories defined"
-  echo "by the VUFIND_LOCAL_DIR and VUFIND_HOME environment variables."
-  echo ""
-  echo "Example: `basename $0` lcnaf marc_lcnaf.properties"
-  echo ""
-  echo "Options:"
-  echo "-d:  Use the directory path as-is, do not append it to $HARVEST_DIR."
-  echo "     Useful for non-OAI batch loading."
-  echo "-m:  Do not move the data files after importing."
+  usage
   exit 1
 fi
 
@@ -65,13 +77,31 @@ then
 fi
 
 # Create log/processed directories as needed:
-if [ ! -d $BASEPATH/log ]
+if [ $LOGGING == true ]
 then
-  mkdir $BASEPATH/log
+  if [ ! -d $BASEPATH/log ]
+  then
+    mkdir $BASEPATH/log
+  fi
 fi
 if [ ! -d $BASEPATH/processed ]
 then
   mkdir $BASEPATH/processed
+fi
+
+# The log() function can be redefined to suit a variety of logging needs
+# Positional parameters must be consistent:
+# $1 = name of the file being imported
+if [ $LOGGING == false ]
+then
+  function log {
+    cat - > /dev/null
+  }
+else
+  function log {
+    local FILE=$1
+    cat -u - > $BASEPATH/log/`basename $FILE`.log
+  }
 fi
 
 # Process all the files in the target directory:
@@ -80,7 +110,7 @@ do
   if [ -f $file ]
   then
     # Capture solrmarc output to log
-    $VUFIND_HOME/import-marc-auth.sh $file $2 2> $BASEPATH/log/`basename $file`.log
+    $VUFIND_HOME/import-marc-auth.sh $file $2 2> >(log $file)
     if [ $MOVE_DATA == true ]
     then
       mv $file $BASEPATH/processed/`basename $file`
