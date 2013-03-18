@@ -103,10 +103,10 @@ md %BASEPATH%\processed
 
 rem Process all the files in the target directory:
 for %%a in (%BASEPATH%\*.xml %BASEPATH%\*.mrc) do (
-  rem Capture solrmarc output to log
   if "%LOGGING%"=="0" (
     call %VUFIND_HOME%\import-marc-auth.bat %%a %2
   )
+  rem Capture solrmarc output to log
   if "%LOGGING%"=="1" (
     call %VUFIND_HOME%\import-marc-auth.bat %%a %2 2> %BASEPATH%\log\%%~nxa.log
   )
