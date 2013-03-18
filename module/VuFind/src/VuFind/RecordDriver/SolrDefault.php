@@ -495,6 +495,17 @@ class SolrDefault extends AbstractBase
     }
 
     /**
+     * Get the institutions holding the record.
+     *
+     * @return array
+     */
+    public function getInstitutions()
+    {
+        return isset($this->fields['institution'])
+            ? $this->fields['institution'] : array();
+    }
+
+    /**
      * Get an array of all ISBNs associated with the record (may be empty).
      *
      * @return array
