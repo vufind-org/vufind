@@ -500,9 +500,12 @@ class QueryBuilder
             '[', ']', '{', '}');
         $input = preg_replace($patterns, $matches, $input);
 
+        // Freestanding hyphens can cause problems:
+        $lookahead = self::$insideQuotes;
+        $input = preg_replace('/\s+-\s+' . $lookahead . '/', ' ', $input);
+
         // Remove empty parentheses outside of quotation marks -- these will
         // cause a fatal Solr error and should be ignored.
-        $lookahead = self::$insideQuotes;
         $parenRegex = '/\(\s*\)' . $lookahead . '/';
         while (preg_match($parenRegex, $input)) {
             $input = preg_replace($parenRegex, '', $input);

@@ -138,6 +138,8 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
             array("((())", "*:*"),                  // mismatched parens
             array("this that ()", "this that "),    // text mixed w/ empty parens
             array('"()"', '"()"'),                  // empty parens in quotes
+            array('title - sub', 'title sub'),      // freestanding hyphen
+            array('"title - sub"', '"title - sub"'),// freestanding hyphen in quotes
         );
         // @codingStandardsIgnoreEnd
 
