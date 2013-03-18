@@ -97,6 +97,7 @@ if "%LOGGING%"=="0" goto logfound
 md %BASEPATH%\log
 :logfound
 if exist %BASEPATH%\processed goto processedfound
+if "%MOVE_DATA%"=="0" goto processedfound
 md %BASEPATH%\processed
 :processedfound
 

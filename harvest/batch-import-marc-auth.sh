@@ -84,9 +84,12 @@ then
     mkdir $BASEPATH/log
   fi
 fi
-if [ ! -d $BASEPATH/processed ]
+if [ $MOVE_DATA == true ]
 then
-  mkdir $BASEPATH/processed
+  if [ ! -d $BASEPATH/processed ]
+  then
+    mkdir $BASEPATH/processed
+  fi
 fi
 
 # The log() function can be redefined to suit a variety of logging needs
