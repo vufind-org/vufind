@@ -112,7 +112,7 @@ for file in $BASEPATH/*.xml $BASEPATH/*.mrc
 do
   if [ -f $file ]
   then
-    # Capture solrmarc output to log
+    # Logging output handled by log() function
     $VUFIND_HOME/import-marc.sh $file 2> >(log $file)
     if [ $MOVE_DATA == true ]
     then
