@@ -393,17 +393,17 @@ class Innovative extends AbstractBase implements
             // released under the GPL
             $api_contents = trim(strip_tags($result));
             $api_array_lines = explode("\n", $api_contents);
-            while (strlen($api_data['PBARCODE']) != 14 && !$api_data['ERRNUM']) {
-                foreach ($api_array_lines as $api_line) {
-                    $api_line = str_replace("p=", "peq", $api_line);
-                    $api_line_arr = explode("=", $api_line);
-                    $regex_match = array("/\[(.*?)\]/","/\s/","/#/");
-                    $regex_replace = array('','','NUM');
-                    $key = trim(
-                        preg_replace($regex_match, $regex_replace, $api_line_arr[0])
-                    );
-                    $api_data[$key] = trim($api_line_arr[1]);
-                }
+            $api_data = array('PBARCODE' => false);
+
+            foreach ($api_array_lines as $api_line) {
+                $api_line = str_replace("p=", "peq", $api_line);
+                $api_line_arr = explode("=", $api_line);
+                $regex_match = array("/\[(.*?)\]/","/\s/","/#/");
+                $regex_replace = array('','','NUM');
+                $key = trim(
+                    preg_replace($regex_match, $regex_replace, $api_line_arr[0])
+                );
+                $api_data[$key] = trim($api_line_arr[1]);
             }
 
             if (!$api_data['PBARCODE']) {

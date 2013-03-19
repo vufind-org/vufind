@@ -7,6 +7,21 @@ then
   exit 1
 fi
 
+SKIP_OPTIMIZE=0
+
+while getopts ":s" OPT
+do
+  case $OPT in
+    s) SKIP_OPTIMIZE=1;;
+    :)
+      echo "argument to '-$OPTARG' is missing" >&2
+      exit -1;;
+    \?) echo "Unrecognized option '-$OPTARG'" >&2;;
+  esac
+done
+# Decrement the argument pointer so it points to next argument
+shift $(($OPTIND - 1))
+
 # Make sure command line parameter was included:
 if [ -z "$1" ]
 then
@@ -22,6 +37,9 @@ then
   echo "can be set to SolrAuth for authority index."
   echo ""
   echo "Example: `basename $0` oai_source"
+  echo ""
+  echo "Options:"
+  echo "-s:  Skip optimize operation after importing."
   exit 1
 fi
 
@@ -50,7 +68,10 @@ for file in $BASEPATH/*.delete
 do
   if [ -f $file ]
   then
-    FOUNDSOME=1
+    if [ "$SKIP_OPTIMIZE" -eq "0" ]
+    then
+      FOUNDSOME=1
+    fi
     echo "Processing $file ..."
     php deletes.php $file flat $2
     mv $file $BASEPATH/processed/`basename $file`

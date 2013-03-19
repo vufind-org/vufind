@@ -32,6 +32,7 @@ set HARVEST_DIR=%VUFIND_HOME%\harvest
 :harvestpathfound
 
 set BASEPATH_UNDER_HARVEST=1
+set LOGGING=1
 set MOVE_DATA=1
 
 rem Save script name for message below (otherwise it may get shifted away)
@@ -40,7 +41,10 @@ set SCRIPT_NAME=%0
 rem Process switches
 :switchloop
 if "%1"=="-d" goto dswitch
+if "%1"=="-h" goto helpmessage
 if "%1"=="-m" goto mswitch
+if "%1"=="-p" goto pswitch
+if "%1"=="-z" goto zswitch
 goto switchloopend
 :dswitch
 set BASEPATH_UNDER_HARVEST=0
@@ -50,13 +54,23 @@ goto switchloop
 set MOVE_DATA=0
 shift
 goto switchloop
+:pswitch
+set PROPERTIES_FILE=%2
+shift
+shift
+goto switchloop
+:zswitch
+set LOGGING=0
+shift
+goto switchloop
 :switchloopend
 
 rem Make sure command line parameter was included:
 if not "!%1!"=="!!" goto paramsokay
+:helpmessage
 echo This script processes a batch of harvested MARC records.
 echo.
-echo Usage: %SCRIPT_NAME% [-d] [-m] [harvest subdirectory]
+echo Usage: %SCRIPT_NAME% [-dhmz] [-p properties_file] [harvest subdirectory]
 echo.
 echo [harvest subdirectory] is a directory name created by the OAI-PMH harvester.
 echo This script will search the harvest subdirectories of the directories defined
@@ -67,7 +81,10 @@ echo.
 echo Options:
 echo -d:  Use the directory path as-is, do not append it to %HARVEST_DIR%.
 echo      Useful for non-OAI batch loading.
+echo -h:  Print this message
 echo -m:  Do not move the data files after importing.
+echo -p:  Used specified SolrMarc configuration properties file
+echo -z:  No logging.
 goto end
 :paramsokay
 
@@ -83,16 +100,23 @@ goto end
 
 rem Create log/processed directories as needed:
 if exist %BASEPATH%\log goto logfound
+if "%LOGGING%"=="0" goto logfound
 md %BASEPATH%\log
 :logfound
 if exist %BASEPATH%\processed goto processedfound
+if "%MOVE_DATA%"=="0" goto processedfound
 md %BASEPATH%\processed
 :processedfound
 
 rem Process all the files in the target directory:
 for %%a in (%BASEPATH%\*.xml %BASEPATH%\*.mrc) do (
+  if "%LOGGING%"=="0" (
+    call %VUFIND_HOME%\import-marc.bat %%a
+  )
   rem Capture solrmarc output to log
-  call %VUFIND_HOME%\import-marc.bat %%a 2> %BASEPATH%\log\%%~nxa.log
+  if "%LOGGING%"=="1" (
+    call %VUFIND_HOME%\import-marc.bat %%a 2> %BASEPATH%\log\%%~nxa.log
+  )
   if "%MOVE_DATA%"=="1" (
     move %%a %BASEPATH%\processed\ > nul
   )
