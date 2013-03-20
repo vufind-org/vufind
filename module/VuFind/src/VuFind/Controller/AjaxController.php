@@ -749,6 +749,8 @@ class AjaxController extends AbstractBase
         foreach ($this->params()->fromQuery('hf', array()) as $hf) {
             $params->getOptions()->addHiddenFilter($hf);
         }
+        $params->getOptions()->disableHighlighting();
+        $params->getOptions()->spellcheckEnabled(false);
         $results = $sm->setSearchClassId('Solr')->getResults($params);
         $filters = $params->getFilters();
         $dateFacets = $this->params()->fromQuery('facetFields');
