@@ -477,32 +477,6 @@ class Connector
         return $result;
     }
 
-    /**
-     * Extract terms from the Solr index.
-     *
-     * @param string $field Field to extract terms from
-     * @param string $start Starting term to extract (blank for beginning of list)
-     * @param int    $limit Maximum number of terms to return (-1 for no limit)
-     *
-     * @return string
-     *
-     * @todo Deserialize and process the response in backend
-     */
-    public function getTerms ($field, $start, $limit)
-    {
-        $params = new ParamBag();
-        $params->set('terms', 'true');
-        $params->set('terms.lower.incl', 'false');
-        $params->set('terms.fl', $field);
-        $params->set('terms.lower', $start);
-        $params->set('terms.limit', $limit);
-        $params->set('terms.sort', 'index');
-
-        $params = $this->prepare($params);
-        $result = $this->query('term', $params);
-        return $result;
-    }
-
     /// Internal API
 
     /**
@@ -551,7 +525,7 @@ class Connector
      *
      * @return string Response body
      */
-    protected function query ($handler, ParamBag $params)
+    public function query ($handler, ParamBag $params)
     {
 
         $url         = $this->url . '/' . $handler;

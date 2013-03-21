@@ -69,6 +69,25 @@ class BackendTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test terms component.
+     *
+     * @return void
+     */
+    public function testTerms ()
+    {
+        $resp = $this->loadResponse('terms');
+        $conn = $this->getMock('VuFindSearch\Backend\Solr\Connector', array('query'), array('http://example.tld/'));
+        $conn->expects($this->once())
+            ->method('query')
+            ->will($this->returnValue($resp->getBody()));
+        $back = new Backend($conn);
+        $back->setIdentifier('test');
+        $terms = $back->terms('author', '', -1);
+        $this->assertTrue($terms->hasFieldTerms('author'));
+        $this->assertCount(10, $terms->getFieldTerms('author'));
+    }
+
+    /**
      * Load a SOLR response as fixture.
      *
      * @param string $fixture Fixture file

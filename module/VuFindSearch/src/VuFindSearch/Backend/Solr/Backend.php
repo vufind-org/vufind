@@ -36,6 +36,8 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
+use VuFindSearch\Backend\Solr\Response\Json\Terms;
+
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Feature\MoreLikeThis;
 
@@ -222,6 +224,34 @@ class Backend implements BackendInterface, MoreLikeThis
     public function delete (array $directives, ParamBag $params)
     {
         $this->connector->delete($directives, $params);
+    }
+
+    /**
+     * Return terms from SOLR index.
+     *
+     * @param string   $field  Index field
+     * @param string   $start  Starting term (blank for beginning of list)
+     * @param int      $limit  Maximum number of terms
+     * @param ParamBag $params Additional parameters
+     *
+     * @return Terms
+     *
+     * @todo   Check if we need to utilize Connector::prepare(); if so, implement a Connector::terms()
+     */
+    public function terms ($field, $start, $limit, ParamBag $params = null)
+    {
+        $params = $params ?: new ParamBag();
+        $params->set('terms', 'true');
+        $params->set('terms.fl', $field);
+        $params->set('terms.lower', $start);
+        $params->set('terms.limit', $limit);
+        $params->set('terms.lower.incl', 'false');
+        $params->set('terms.sort', 'index');
+        $params->set('wt', 'json');
+        $params->set('json.nl', 'arrarr');
+
+        $response = $this->connector->query('term', $params);
+        return new Terms($this->deserialize($response));
     }
 
     /**
