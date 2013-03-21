@@ -55,14 +55,8 @@ class MultiIndexListener
      *
      * @var array
      */
-    protected $available;
+    protected $shards;
 
-    /**
-     * Active shards.
-     *
-     * @var array
-     */
-    protected $active;
 
     /**
      * Fields to strip, indexed by shard name.
@@ -93,20 +87,8 @@ class MultiIndexListener
         $this->specs       = $specs;
         $this->active      = array();
         $this->backend     = $backend;
-        $this->available   = $shards;
+        $this->shards      = $shards;
         $this->stripfields = $stripfields;
-    }
-
-    /**
-     * Set active shards.
-     *
-     * @param array $active Active shards
-     *
-     * @return void
-     */
-    public function setActiveShards (array $active)
-    {
-        $this->active = array_combine($active, $active);
     }
 
     /**
@@ -121,13 +103,12 @@ class MultiIndexListener
         $backend = $event->getTarget();
         if ($backend === $this->backend) {
             $params = $event->getParam('params');
-            $fields = $this->getFields();
+            $shards = explode(',', implode(',', $params->get('shards')));
+            $fields = $this->getFields($shards);
             $specs  = $this->getSearchSpecs($fields);
             $backend->getQueryBuilder()->setSpecs($specs);
             $facets = $params->get('facet.field') ?: array();
             $params->set('facet.field', array_diff($facets, $fields));
-            $shards = array_intersect_key($this->available, $this->active);
-            $params->set('shards', implode(',', $shards));
         }
         return $event;
     }
@@ -137,14 +118,19 @@ class MultiIndexListener
     /**
      * Return array of fields to strip.
      *
+     * @param array $shards Active shards
+     *
      * @return array
      */
-    protected function getFields ()
+    protected function getFields (array $shards)
     {
         $fields = array();
-        foreach ($this->stripfields as $shard => $strip) {
-            if (isset($this->active[$shard])) {
-                $fields = array_merge($fields, $strip);
+        foreach ($this->stripfields as $name => $strip) {
+            if (isset($this->shards[$name])) {
+                $uri = $this->shards[$name];
+                if (in_array($uri, $shards)) {
+                    $fields = array_merge($fields, $strip);
+                }
             }
         }
         return array_unique($fields);

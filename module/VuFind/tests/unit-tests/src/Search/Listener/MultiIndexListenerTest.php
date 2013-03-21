@@ -98,7 +98,7 @@ class MultiIndexListenerTest extends TestCase
      */
     protected static $fields = array(
         'a' => array('field_1', 'field_3'),
-        'b' => array('field_3')
+        'b' => array('field_3'),
     );
 
     /**
@@ -134,32 +134,18 @@ class MultiIndexListenerTest extends TestCase
      */
     public function testStripFacetFields ()
     {
-        $params   = new ParamBag(array('facet.field' => array('field_1', 'field_2', 'field_3')));
+        $params   = new ParamBag(
+            array(
+                'facet.field' => array('field_1', 'field_2', 'field_3'), 
+                'shards' => array(self::$shards['b'], self::$shards['c']),
+            )
+        );
         $event    = new Event('pre', $this->backend, array('params' => $params));
-        $this->listener->setActiveShards(array('b', 'c'));
         $this->listener->onSearchPre($event);
 
         $facets   = $params->get('facet.field');
         sort($facets);
         $this->assertEquals(array('field_1', 'field_2'), $facets);
-    }
-
-    /**
-     * `shards' parameter is set according to active shards.
-     *
-     * @return void
-     */
-    public function testSetShardsParameter ()
-    {
-        $params   = new ParamBag(array('facet.field' => array('field_1', 'field_2', 'field_3')));
-        $event    = new Event('pre', $this->backend, array('params' => $params));
-        $this->listener->setActiveShards(array('b', 'c'));
-        $this->listener->onSearchPre($event);
-
-        $shards   = $params->get('shards');
-        $shards   = explode(',', reset($shards));
-        sort($shards);
-        $this->assertEquals(array('example.org/b', 'example.org/c'), $shards);
     }
 
     /**
