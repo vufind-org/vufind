@@ -57,4 +57,15 @@ class NamedListTest extends TestCase
         }
         $this->assertEquals(array('first term', 'second term'), $keys);
     }
+
+    /**
+     * Test counting the list.
+     *
+     * @return void
+     */
+    public function testCountable ()
+    {
+        $list = new NamedList(array(array('first term', 'info'), array('second term', 'info')));
+        $this->assertEquals(2, count($list));
+    }
 }

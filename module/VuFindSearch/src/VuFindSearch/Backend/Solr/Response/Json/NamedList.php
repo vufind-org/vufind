@@ -29,7 +29,7 @@
 
 namespace VuFindSearch\Backend\Solr\Response\Json;
 
-use Iterator;
+use Countable, Iterator;
 
 /**
  * SOLR NamedList with parameter json.nl=arrarr.
@@ -45,7 +45,7 @@ use Iterator;
  * @see      http://wiki.apache.org/solr/SolJSON
  *
  */
-class NamedList implements Iterator
+class NamedList implements Countable, Iterator
 {
     /**
      * The named list.
@@ -64,6 +64,18 @@ class NamedList implements Iterator
     public function __construct (array $list)
     {
         $this->list = $list;
+    }
+
+    /// Countable
+
+    /**
+     * Return count of elements.
+     *
+     * @return int
+     */
+    public function count ()
+    {
+        return count($this->list);
     }
 
     /// Iterator
