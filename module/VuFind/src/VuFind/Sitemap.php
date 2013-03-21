@@ -136,12 +136,6 @@ class Sitemap
         $last_term = '';
 
         while (true) {
-            if ($currentPage == 1) {
-                $fileWhole = $this->fileStart . ".xml";
-            } else {
-                $fileWhole = $this->fileStart . "-" . $currentPage . ".xml";
-            }
-
             // Get
             $currentPageInfo
                 = $this->backend->terms('id', $last_term, $this->countPerPage)
@@ -149,20 +143,14 @@ class Sitemap
             if (null === $currentPageInfo || count($currentPageInfo) < 1) {
                 break;
             } else {
-                $smf = $this->openSitemapFile($fileWhole, 'urlset');
+                $filename = $this->getFilenameForPage($currentPage);
+                $smf = $this->openSitemapFile($filename, 'urlset');
                 foreach ($currentPageInfo as $item => $count) {
                     $loc = htmlspecialchars($this->resultUrl . urlencode($item));
                     if (strpos($loc, 'http') === false) {
                         $loc = 'http://'.$loc;
                     }
-                    fwrite($smf, '<url>' . "\n");
-                    fwrite($smf, '  <loc>' . $loc . '</loc>' . "\n");
-                    fwrite(
-                        $smf,
-                        '  <changefreq>'.htmlspecialchars($this->frequency)
-                        .'</changefreq>'."\n"
-                    );
-                    fwrite($smf, '</url>' . "\n");
+                    $this->writeSitemapEntry($smf, $loc);
                     $last_term = $item;
                 }
 
@@ -234,6 +222,18 @@ class Sitemap
     }
 
     /**
+     * Get the filename for the specified page number.
+     *
+     * @param int $page Page number
+     *
+     * @return string
+     */
+    protected function getFilenameForPage($page)
+    {
+        return $this->fileStart . ($page == 1 ? '' : '-' . $page) . '.xml';
+    }
+
+    /**
      * Start writing a sitemap file (including the top-level open tag).
      *
      * @param string $filename Filename to open.
@@ -263,6 +263,26 @@ class Sitemap
         fwrite($smf, $xml);
 
         return $smf;
+    }
+
+    /**
+     * Write an entry to a sitemap.
+     *
+     * @param int    $smf File handle to write to.
+     * @param string $loc URL to write.
+     *
+     * @return void
+     */
+    protected function writeSitemapEntry($smf, $loc)
+    {
+        fwrite($smf, '<url>' . "\n");
+        fwrite($smf, '  <loc>' . $loc . '</loc>' . "\n");
+        fwrite(
+            $smf,
+            '  <changefreq>'.htmlspecialchars($this->frequency)
+            .'</changefreq>'."\n"
+        );
+        fwrite($smf, '</url>' . "\n");
     }
 
     /**
