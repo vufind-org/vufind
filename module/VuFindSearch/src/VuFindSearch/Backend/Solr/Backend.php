@@ -236,8 +236,6 @@ class Backend implements BackendInterface, MoreLikeThis
      * @param ParamBag $params Additional parameters
      *
      * @return Terms
-     *
-     * @todo   Check if we need to utilize Connector::prepare(); if so, implement a Connector::terms()
      */
     public function terms ($field, $start, $limit, ParamBag $params = null)
     {
@@ -248,6 +246,9 @@ class Backend implements BackendInterface, MoreLikeThis
         $params->set('terms.limit', $limit);
         $params->set('terms.lower.incl', 'false');
         $params->set('terms.sort', 'index');
+
+        // Terms don't use the defaults/appends/invariants of the connector,
+        // so we set up the json parameters here instead of calling prepare().
         $params->set('wt', 'json');
         $params->set('json.nl', 'arrarr');
 
@@ -276,6 +277,9 @@ class Backend implements BackendInterface, MoreLikeThis
         $params->set('offset', $page * $limit);
         $params->set('rows', $limit);
         $params->set('source', $source);
+
+        // Alphabrowse doesn't use the defaults/appends/invariants of the connector,
+        // so we set up the json parameters here instead of calling prepare().
         $params->set('wt', 'json');
         $params->set('json.nl', 'arrarr');
 
