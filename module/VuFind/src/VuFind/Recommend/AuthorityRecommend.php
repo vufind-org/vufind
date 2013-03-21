@@ -29,7 +29,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Recommend;
-use VuFind\Exception\Solr as SolrException,
+use VuFindSearch\Backend\Exception\RequestErrorException,
     Zend\Http\Request, Zend\StdLib\Parameters;
 
 /**
@@ -144,7 +144,7 @@ class AuthorityRecommend extends AbstractSearchManagerAwareModule
             $authResults = $sm->setSearchClassId('SolrAuth')
                 ->getResults($authParams);
             $results = $authResults->getResults();
-        } catch (SolrException $e) {
+        } catch (RequestErrorException $e) {
             return;
         }
 

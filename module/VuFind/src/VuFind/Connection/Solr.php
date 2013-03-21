@@ -27,8 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Connection;
-use VuFind\Exception\Solr as SolrException,
-    VuFind\Solr\Utils as SolrUtils, Zend\Log\LoggerInterface,
+use Exception, VuFind\Solr\Utils as SolrUtils, Zend\Log\LoggerInterface,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -286,7 +285,7 @@ class Solr implements ServiceLocatorAwareInterface,
      * @param string $id     The document to retrieve from Solr
      * @param array  $extras Extra parameters to pass to Solr (optional)
      *
-     * @throws SolrException
+     * @throws Exception
      * @return string    The requested resource (or null if bad ID)
      */
     public function getRecord($id, $extras = array())
@@ -312,7 +311,7 @@ class Solr implements ServiceLocatorAwareInterface,
      * @param string $id     A Solr document ID.
      * @param array  $extras Extra parameters to pass to Solr (optional)
      *
-     * @throws SolrException
+     * @throws Exception
      * @return array     An array of query results similar to the specified record
      */
     public function getMoreLikeThis($id, $extras = array())
@@ -336,7 +335,7 @@ class Solr implements ServiceLocatorAwareInterface,
       * 'onephrase', 'and', 'or' (and perhaps others)
       * @param string $joiner    The operator used to combine generated clauses
       *
-      * @throws SolrException
+      * @throws Exception
       * @return string           A search string suitable for adding to a query URL
       */
     protected function applySearchSpecs($structure, $values, $joiner = "OR")
@@ -1049,7 +1048,7 @@ class Solr implements ServiceLocatorAwareInterface,
      *    <li>group - Array of fields to use for field collapsing (optional)</li>
      *  </ul>
      *
-     * @throws SolrException
+     * @throws Exception
      * @return array                  An array of query results
      */
     public function search($options = array())
@@ -1113,7 +1112,7 @@ class Solr implements ServiceLocatorAwareInterface,
      *
      * @param string $xml XML document to post to Solr
      *
-     * @throws SolrException
+     * @throws Exception
      * @return bool
      */
     public function saveRecord($xml)
@@ -1161,7 +1160,7 @@ class Solr implements ServiceLocatorAwareInterface,
      *
      * @param string $idList Array of IDs for record to delete
      *
-     * @throws SolrException
+     * @throws Exception
      * @return boolean
      */
     public function deleteRecords($idList)
@@ -1193,7 +1192,7 @@ class Solr implements ServiceLocatorAwareInterface,
     /**
      * Commit
      *
-     * @throws SolrException
+     * @throws Exception
      * @return string
      */
     public function commit()
@@ -1208,7 +1207,7 @@ class Solr implements ServiceLocatorAwareInterface,
     /**
      * Optimize
      *
-     * @throws SolrException
+     * @throws Exception
      * @return string
      */
     public function optimize()
@@ -1289,7 +1288,7 @@ class Solr implements ServiceLocatorAwareInterface,
      *
      * @param string $detail The body of the HTTP error response.
      *
-     * @throws SolrException
+     * @throws Exception
      * @return void
      */
     protected function throwSolrError($detail)
@@ -1300,7 +1299,7 @@ class Solr implements ServiceLocatorAwareInterface,
         } else {
             $errorMsg = $detail;
         }
-        throw new SolrException("Unexpected response -- " . $errorMsg);
+        throw new Exception("Unexpected response -- " . $errorMsg);
     }
 
     /**
@@ -1309,7 +1308,7 @@ class Solr implements ServiceLocatorAwareInterface,
      * @param string $method HTTP Method to use: GET, POST,
      * @param array  $params Array of parameters for the request
      *
-     * @throws SolrException
+     * @throws Exception
      * @return array         The Solr response
      */
     protected function select($method = 'GET', $params = array())
@@ -1383,7 +1382,7 @@ class Solr implements ServiceLocatorAwareInterface,
      * @param string $xml     The command to execute
      * @param array  $options Extra options to pass to the HTTP client
      *
-     * @throws SolrException
+     * @throws Exception
      * @return bool
      */
     protected function update($xml, $options = array())
@@ -1419,7 +1418,7 @@ class Solr implements ServiceLocatorAwareInterface,
      *
      * @param array $result The raw response from Solr
      *
-     * @throws SolrException
+     * @throws Exception
      * @return array        The processed response from Solr
      */
     protected function process($result)
@@ -1431,7 +1430,7 @@ class Solr implements ServiceLocatorAwareInterface,
                 $errorMsg, strlen('<pre>'), strpos($result, "</pre>")
             );
             $msg = 'Unable to process query<br />Solr Returned: ' . $errorMsg;
-            throw new SolrException($msg);
+            throw new Exception($msg);
         }
         $result = json_decode($result, true);
 
