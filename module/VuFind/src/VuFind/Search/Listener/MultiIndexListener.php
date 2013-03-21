@@ -142,9 +142,9 @@ class MultiIndexListener
     protected function getFields ()
     {
         $fields = array();
-        foreach ($this->stripfields as $shard => $fields) {
+        foreach ($this->stripfields as $shard => $strip) {
             if (isset($this->active[$shard])) {
-                $fields = array_merge($fields, $fields);
+                $fields = array_merge($fields, $strip);
             }
         }
         return array_unique($fields);
