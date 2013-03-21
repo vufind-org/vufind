@@ -112,25 +112,15 @@ class CollectionsController extends AbstractBase
         $limit = $this->getBrowseLimit();
 
         // Load Solr data or die trying:
-        $db = \VuFind\Connection\Manager::connectToIndex();
-        try {
-            $result = $db->alphabeticBrowse($source, $from, $page, $limit);
+        $db = $this->getServiceLocator()->get('VuFind\Search\BackendManager')
+            ->get('Solr');
+        $result = $db->alphabeticBrowse($source, $from, $page, $limit);
 
-            // No results?  Try the previous page just in case we've gone past the
-            // end of the list....
-            if ($result['Browse']['totalCount'] == 0) {
-                $page--;
-                $result = $db->alphabeticBrowse($source, $from, $page, $limit);
-            }
-        } catch (\VuFind\Exception\Solr $e) {
-            if ($e->isMissingBrowseIndex()) {
-                throw new \Exception(
-                    "Alphabetic Browse index missing.    See " .
-                    "http://vufind.org/wiki/alphabetical_heading_browse for " .
-                    "details on generating the index."
-                );
-            }
-            throw $e;
+        // No results?  Try the previous page just in case we've gone past the
+        // end of the list....
+        if ($result['Browse']['totalCount'] == 0) {
+            $page--;
+            $result = $db->alphabeticBrowse($source, $from, $page, $limit);
         }
 
         // Begin building view model:

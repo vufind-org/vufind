@@ -44,6 +44,7 @@ use VuFindSearch\Feature\MoreLikeThis;
 use Zend\Log\LoggerInterface;
 
 use VuFindSearch\Backend\Exception\BackendException;
+use VuFindSearch\Backend\Exception\RemoteErrorException;
 
 /**
  * SOLR backend.
@@ -256,6 +257,37 @@ class Backend implements BackendInterface, MoreLikeThis
     }
 
     /**
+     * Obtain information from an alphabetic browse index.
+     *
+     * @param string   $source Name of index to search
+     * @param string   $from   Starting point for browse results
+     * @param int      $page   Result page to return (starts at 0)
+     * @param int      $limit  Number of results to return on each page
+     * @param ParamBag $params Additional parameters
+     * POST)
+     *
+     * @return array
+     */
+    public function alphabeticBrowse($source, $from, $page, $limit = 20,
+        $params = null
+    ) {
+        $params = $params ?: new ParamBag();
+        $params->set('from', $from);
+        $params->set('offset', $page * $limit);
+        $params->set('rows', $limit);
+        $params->set('source', $source);
+        $params->set('wt', 'json');
+        $params->set('json.nl', 'arrarr');
+
+        try {
+            $response = $this->connector->query('browse', $params);
+        } catch (RemoteErrorException $e) {
+            $this->refineBrowseException($e);
+        }
+        return $this->deserialize($response);
+    }
+
+    /**
      * Set the Logger.
      *
      * @param LoggerInterface $logger Logger
@@ -412,4 +444,26 @@ class Backend implements BackendInterface, MoreLikeThis
         return $response;
     }
 
+    /**
+     * Improve the exception message for alphaBrowse errors when appropriate.
+     *
+     * @param RemoteErrorException $e Exception to clean up
+     *
+     * @return void
+     * @throws RemoteErrorException
+     */
+    protected function refineBrowseException(RemoteErrorException $e)
+    {
+        $error = $e->getMessage();
+        if (strstr($error, 'does not exist') || strstr($error, 'no such table')
+            || strstr($error, 'couldn\'t find a browse index')
+        ) {
+            throw new RemoteErrorException(
+                "Alphabetic Browse index missing.  See " .
+                "http://vufind.org/wiki/alphabetical_heading_browse for " .
+                "details on generating the index."
+            );
+        }
+        throw $e;
+    }
 }

@@ -27,8 +27,6 @@
  * @link     http://vufind.org/wiki/alphabetical_heading_browse Wiki
  */
 namespace VuFind\Controller;
-use VuFind\Connection\Manager as ConnectionManager,
-    VuFind\Exception\Solr as SolrException;
 
 /**
  * AlphabrowseController Class
@@ -71,7 +69,8 @@ class AlphabrowseController extends AbstractBase
         }
 
         // Connect to Solr:
-        $db = ConnectionManager::connectToIndex();
+        $db = $this->getServiceLocator()->get('VuFind\Search\BackendManager')
+            ->get('Solr');
 
         // Process incoming parameters:
         $source = $this->params()->fromQuery('source', false);
@@ -87,24 +86,13 @@ class AlphabrowseController extends AbstractBase
         // If required parameters are present, load results:
         if ($source && $from !== false) {
             // Load Solr data or die trying:
-            try {
-                $result = $db->alphabeticBrowse($source, $from, $page, $limit);
+            $result = $db->alphabeticBrowse($source, $from, $page, $limit);
 
-                // No results?    Try the previous page just in case we've gone past
-                // the end of the list....
-                if ($result['Browse']['totalCount'] == 0) {
-                    $page--;
-                    $result = $db->alphabeticBrowse($source, $from, $page, $limit);
-                }
-            } catch (SolrException $e) {
-                if ($e->isMissingBrowseIndex()) {
-                    throw new \Exception(
-                        "Alphabetic Browse index missing.    See " .
-                        "http://vufind.org/wiki/alphabetical_heading_browse for " .
-                        "details on generating the index."
-                    );
-                }
-                throw $e;
+            // No results?    Try the previous page just in case we've gone past
+            // the end of the list....
+            if ($result['Browse']['totalCount'] == 0) {
+                $page--;
+                $result = $db->alphabeticBrowse($source, $from, $page, $limit);
             }
 
             // Only display next/previous page links when applicable:

@@ -450,33 +450,6 @@ class Connector
         return $result;
     }
 
-    /**
-     * Obtain information from an alphabetic browse index.
-     *
-     * @param string $source    Name of index to search
-     * @param string $from      Starting point for browse results
-     * @param int    $page      Result page to return (starts at 0)
-     * @param int    $page_size Number of results to return on each page
-     *
-     * @return string
-     *
-     * @todo Deserialize and process the response in backend
-     */
-    public function alphabeticBrowse ($source, $from, $page, $page_size = 20)
-    {
-        $params = new ParamBag();
-        $params->set('from', $from);
-        $params->set('offset', $page * $page_size);
-        $params->set('rows', $page_size);
-        $params->set('source', $source);
-
-        $url = $this->url . '/browse';
-
-        $params = $this->prepare($params);
-        $result = $this->query('browse', $params);
-        return $result;
-    }
-
     /// Internal API
 
     /**
