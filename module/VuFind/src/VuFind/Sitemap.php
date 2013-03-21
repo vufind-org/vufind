@@ -26,7 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind;
-use VuFind\Connection\Manager as ConnectionManager;
+use VuFindSearch\Backend\Solr\Backend, Zend\Config\Config;
 
 /**
  * Class for generating sitemaps
@@ -39,6 +39,13 @@ use VuFind\Connection\Manager as ConnectionManager;
  */
 class Sitemap
 {
+    /**
+     * Search backend from which to retrieve record IDs.
+     *
+     * @var Backend
+     */
+    protected $backend;
+
     /**
      * Base URL for site
      *
@@ -56,7 +63,7 @@ class Sitemap
     /**
      * Sitemap configuration (sitemap.ini)
      *
-     * @var \Zend\Config\Config
+     * @var Config
      */
     protected $config;
 
@@ -98,12 +105,13 @@ class Sitemap
     /**
      * Constructor
      *
-     * @param string              $baseUrl VuFind base URL
-     * @param \Zend\Config\Config $config  Sitemap configuration settings
+     * @param Backend $backend Search backend
+     * @param string  $baseUrl VuFind base URL
+     * @param Config  $config  Sitemap configuration settings
      */
-    public function __construct($baseUrl, \Zend\Config\Config $config)
+    public function __construct(Backend $backend, $baseUrl, Config $config)
     {
-        // Read Config file
+        $this->backend = $backend;
         $this->baseUrl = $baseUrl;
         $this->resultUrl = $this->baseUrl . '/Record/';
         $this->config = $config;
@@ -124,8 +132,6 @@ class Sitemap
      */
     public function generate()
     {
-        $solr = ConnectionManager::connectToIndex();
-
         $currentPage = 1;
         $last_term = '';
 
@@ -137,16 +143,14 @@ class Sitemap
             }
 
             // Get
-            $current_page_info_array = $solr->getTerms(
-                'id', $last_term, $this->countPerPage
-            );
-            if (!isset($current_page_info_array)
-                || count($current_page_info_array) < 1
-            ) {
+            $currentPageInfo
+                = $this->backend->terms('id', $last_term, $this->countPerPage)
+                ->getFieldTerms('id');
+            if (null === $currentPageInfo || count($currentPageInfo) < 1) {
                 break;
             } else {
                 $smf = $this->openSitemapFile($fileWhole, 'urlset');
-                foreach ($current_page_info_array as $item => $count) {
+                foreach ($currentPageInfo as $item => $count) {
                     $loc = htmlspecialchars($this->resultUrl . urlencode($item));
                     if (strpos($loc, 'http') === false) {
                         $loc = 'http://'.$loc;
