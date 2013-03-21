@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-namespace VuFind\IntegrationTest\Connection;
+namespace VuFindTest\Integration\Connection;
 
 /**
  * ResultFeed Test Class
@@ -45,7 +45,8 @@ class SolrTest extends \VuFindTest\Unit\TestCase
      */
      public function testAlphaBrowseSeeAlso()
      {
-         $solr = \VuFind\Connection\Manager::connectToIndex();
+         $solr = $this->getServiceManager()->get('VuFind\Search\BackendManager')
+            ->get('Solr');
          $result = $solr->alphabeticBrowse('author', 'Dublin Society', 0, 1);
          $item = $result['Browse']['items'][0];
          $this->assertEquals($item['count'], count($item['ids']));
@@ -62,7 +63,8 @@ class SolrTest extends \VuFindTest\Unit\TestCase
      */
      public function testAlphaBrowseUseInstead()
      {
-         $solr = \VuFind\Connection\Manager::connectToIndex();
+         $solr = $this->getServiceManager()->get('VuFind\Search\BackendManager')
+            ->get('Solr');
          $result = $solr->alphabeticBrowse('author', 'Dublin Society, Royal', 0, 1);
          $item = $result['Browse']['items'][0];
          $this->assertEquals(0, $item['count']);
