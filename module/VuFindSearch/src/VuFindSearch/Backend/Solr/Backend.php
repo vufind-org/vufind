@@ -251,7 +251,8 @@ class Backend implements BackendInterface, MoreLikeThis
         $params->set('json.nl', 'arrarr');
 
         $response = $this->connector->query('term', $params);
-        return new Terms($this->deserialize($response));
+        $terms    = new Terms($this->deserialize($response));
+        return $terms;
     }
 
     /**
@@ -406,6 +407,8 @@ class Backend implements BackendInterface, MoreLikeThis
                 sprintf('JSON decoding error: %s -- %s', $error, $json)
             );
         }
+        $qtime = isset($response['responseHeader']['QTime']) ? $response['responseHeader']['QTime'] : 'n/a';
+        $this->log('debug', 'Deserialized SOLR response', array('qtime' => $qtime));
         return $response;
     }
 
