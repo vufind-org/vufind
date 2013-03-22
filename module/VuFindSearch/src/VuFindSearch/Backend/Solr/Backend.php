@@ -465,7 +465,8 @@ class Backend implements BackendInterface, MoreLikeThis
             throw new RemoteErrorException(
                 "Alphabetic Browse index missing.  See " .
                 "http://vufind.org/wiki/alphabetical_heading_browse for " .
-                "details on generating the index."
+                "details on generating the index.",
+                $e->getCode()
             );
         }
         throw $e;
