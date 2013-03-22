@@ -28,6 +28,8 @@
 namespace VuFind\Search\Base;
 use Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
+use VuFindSearch\Query\Query;
+use VuFind\Search\QueryAdapter;
 
 /**
  * Abstract parameters search model.
@@ -65,6 +67,11 @@ class Params implements ServiceLocatorAwareInterface
     protected $facetConfig = array();
     protected $checkboxFacets = array();
     protected $filterList = array();
+
+    /**
+     * Override Query
+     */
+    protected $overrideQuery = false;
 
     /**
      * Service locator
@@ -1585,5 +1592,47 @@ class Params implements ServiceLocatorAwareInterface
         return $this->getServiceLocator()->has('VuFind\Translator')
             ? $this->getServiceLocator()->get('VuFind\Translator')->translate($msg)
             : $msg;
+    }
+
+    /**
+     * Set the override query
+     *
+     * @param string $q Override query
+     *
+     * @return void
+     */
+    public function setOverrideQuery($q)
+    {
+        $this->overrideQuery = $q;
+    }
+
+    /**
+     * Get the override query
+     *
+     * @return string
+     */
+    public function getOverrideQuery()
+    {
+        return $this->overrideQuery;
+    }
+
+    /**
+     * Return search query object.
+     *
+     * @return VuFindSearch\Query\AbstractQuery
+     *
+     * @tag NEW SEARCH
+     */
+    public function getQuery()
+    {
+        if ($this->overrideQuery) {
+            return new Query($this->overrideQuery);
+        }
+
+        $legacy = $this->getSearchTerms();
+        if (empty($legacy)) {
+            return new Query();
+        }
+        return QueryAdapter::create($legacy);
     }
 }

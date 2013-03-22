@@ -27,9 +27,6 @@
  */
 namespace VuFind\Search\Solr;
 
-use VuFindSearch\Query\Query;
-use VuFind\Search\QueryAdapter;
-
 /**
  * Solr Search Parameters
  *
@@ -59,11 +56,6 @@ class Params extends \VuFind\Search\Base\Params
     protected $facetSort = null;
 
     /**
-     * Override Query
-     */
-    protected $overrideQuery = false;
-
-    /**
      * Perform initialization that cannot occur in constructor due to need for
      * injected dependencies.
      *
@@ -80,48 +72,6 @@ class Params extends \VuFind\Search\Base\Params
         ) {
             $this->setFacetLimit($config->Results_Settings->facet_limit);
         }
-    }
-
-    /**
-     * Set the override query
-     *
-     * @param string $q Override query
-     *
-     * @return void
-     */
-    public function setOverrideQuery($q)
-    {
-        $this->overrideQuery = $q;
-    }
-
-    /**
-     * Get the override query
-     *
-     * @return string
-     */
-    public function getOverrideQuery()
-    {
-        return $this->overrideQuery;
-    }
-
-    /**
-     * Return search query object.
-     *
-     * @return VuFindSearch\Query\AbstractQuery
-     *
-     * @tag NEW SEARCH
-     */
-    public function getQuery ()
-    {
-        if ($this->overrideQuery) {
-            return new Query($this->overrideQuery);
-        }
-
-        $legacy = $this->getSearchTerms();
-        if (empty($legacy)) {
-            return new Query();
-        }
-        return QueryAdapter::create($legacy);
     }
 
     /**

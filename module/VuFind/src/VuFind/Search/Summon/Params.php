@@ -26,9 +26,6 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Summon;
-use VuFind\Search\Base\Params as BaseParams;
-use VuFindSearch\Query\Query;
-use VuFind\Search\QueryAdapter;
 
 /**
  * Summon Search Parameters
@@ -39,7 +36,7 @@ use VuFind\Search\QueryAdapter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Params extends BaseParams
+class Params extends \VuFind\Search\Base\Params
 {
     /**
      * Settings for all the facets
@@ -132,21 +129,5 @@ class Params extends BaseParams
 
         // Return modified list:
         return $facets;
-    }
-
-    /**
-     * Return search query object.
-     *
-     * @return VuFindSearch\Query\AbstractQuery
-     *
-     * @tag NEW SEARCH
-     */
-    public function getQuery ()
-    {
-        $legacy = $this->getSearchTerms();
-        if (empty($legacy)) {
-            return new Query();
-        }
-        return QueryAdapter::create($legacy);
     }
 }
