@@ -26,6 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Search;
+use VuFindSearch\Query\QueryGroup;
 
 /**
  * Class to help build URLs and forms in the view based on search settings.
@@ -113,23 +114,24 @@ class UrlQueryHelper
 
         // Build all the URL parameters based on search object settings:
         if ($this->params->getSearchType() == 'advanced') {
-            $terms = $this->params->getSearchTerms();
-            if (isset($terms[0]['join'])) {
-                $params['join'] = $terms[0]['join'];
-            }
-            for ($i = 0; $i < count($terms); $i++) {
-                if (isset($terms[$i]['group'])) {
-                    $params['bool' . $i] = array($terms[$i]['group'][0]['bool']);
-                    for ($j = 0; $j < count($terms[$i]['group']); $j++) {
+            $query = $this->params->getQuery();
+            $params['join'] = $query->getOperator();
+            foreach ($query->getQueries() as $i => $current) {
+                if ($current instanceof QueryGroup) {
+                    $operator = $current->isNegated() ? 'NOT' : $current->getOperator();
+                    $params['bool' . $i] = array($operator);
+                    foreach ($current->getQueries() as $inner) {
                         if (!isset($params['lookfor' . $i])) {
                             $params['lookfor' . $i] = array();
                         }
                         if (!isset($params['type' . $i])) {
                             $params['type' . $i] = array();
                         }
-                        $params['lookfor'.$i][] = $terms[$i]['group'][$j]['lookfor'];
-                        $params['type' . $i][] = $terms[$i]['group'][$j]['field'];
+                        $params['lookfor'.$i][] = $inner->getString();
+                        $params['type' . $i][] = $inner->getHandler();
                     }
+                } else {
+                    throw new \Exception('Unexpected Query object.');
                 }
             }
         } else {
