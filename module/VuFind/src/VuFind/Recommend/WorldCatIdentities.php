@@ -27,6 +27,7 @@
  */
 namespace VuFind\Recommend;
 use VuFind\Connection\WorldCatUtils;
+use VuFindSearch\Query\Query;
 
 /**
  * WorldCatIdentities Recommendations Module
@@ -130,8 +131,8 @@ class WorldCatIdentities implements RecommendInterface
     public function getIdentities()
     {
         // Extract the first search term from the search object:
-        $search = $this->searchObject->getParams()->getSearchTerms();
-        $lookfor = isset($search[0]['lookfor']) ? $search[0]['lookfor'] : '';
+        $search = $this->searchObject->getParams()->getQuery();
+        $lookfor = ($search instanceof Query) ? $search->getString() : '';
 
         // Get terminology information:
         return $this->worldCatUtils->getRelatedIdentities($lookfor);

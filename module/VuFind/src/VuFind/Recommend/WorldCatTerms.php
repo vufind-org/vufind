@@ -27,6 +27,7 @@
  */
 namespace VuFind\Recommend;
 use VuFind\Connection\WorldCatUtils;
+use VuFindSearch\Query\Query;
 
 /**
  * WorldCatTerms Recommendations Module
@@ -131,8 +132,8 @@ class WorldCatTerms implements RecommendInterface
     public function getTerms()
     {
         // Extract the first search term from the search object:
-        $search = $this->searchObject->getParams()->getSearchTerms();
-        $lookfor = isset($search[0]['lookfor']) ? $search[0]['lookfor'] : '';
+        $search = $this->searchObject->getParams()->getQuery();
+        $lookfor = ($search instanceof Query) ? $search->getString() : '';
 
         // Get terminology information:
         $terms = $this->worldCatUtils->getRelatedTerms($lookfor, $this->vocab);

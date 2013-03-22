@@ -580,16 +580,6 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Return the search terms
-     *
-     * @return string
-     */
-    public function getSearchTerms()
-    {
-        return $this->searchTerms;
-    }
-
-    /**
      * Return the value for which search view we use
      *
      * @return string
@@ -1628,11 +1618,7 @@ class Params implements ServiceLocatorAwareInterface
         if ($this->overrideQuery) {
             return new Query($this->overrideQuery);
         }
-
-        $legacy = $this->getSearchTerms();
-        if (empty($legacy)) {
-            return new Query();
-        }
-        return QueryAdapter::create($legacy);
+        return (empty($this->searchTerms))
+            ? new Query() : QueryAdapter::create($this->searchTerms);
     }
 }

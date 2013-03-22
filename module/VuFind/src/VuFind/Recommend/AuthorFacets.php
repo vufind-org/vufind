@@ -27,6 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
+use VuFindSearch\Query\Query;
 use Zend\Http\Request, Zend\StdLib\Parameters;
 
 /**
@@ -114,11 +115,8 @@ class AuthorFacets extends AbstractSearchManagerAwareModule
      */
     public function getSearchTerm()
     {
-        $search = $this->results->getParams()->getSearchTerms();
-        if (isset($search[0]['lookfor'])) {
-            return $search[0]['lookfor'];
-        }
-        return '';
+        $search = $this->results->getParams()->getQuery();
+        return ($search instanceof Query) ? $search->getString() : '';
     }
 
     /**

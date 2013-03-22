@@ -27,6 +27,7 @@
  */
 namespace VuFind\Recommend;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFindSearch\Query\Query;
 
 /**
  * AuthorInfo Recommendations Module
@@ -567,9 +568,9 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      */
     protected function getAuthor()
     {
-        $search = $this->searchObject->getParams()->getSearchTerms();
-        if (isset($search[0]['lookfor'])) {
-            $author = $search[0]['lookfor'];
+        $search = $this->searchObject->getParams()->getQuery();
+        if ($search instanceof Query) {
+            $author = $search->getString();
             // remove quotes
             $author = str_replace('"', '', $author);
             return $this->useViaf
