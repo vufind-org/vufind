@@ -2068,3 +2068,7 @@ p.feedbackHeader {
 .feedbackDeselect {
     background: #FFFFFF;
 }
+
+.handle {
+    cursor:pointer;
+}
