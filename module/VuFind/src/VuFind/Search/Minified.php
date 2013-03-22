@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Search;
+use VuFind\Search\QueryAdapter;
 
 /**
  * A minified search object used exclusively for trimming a search object down to its
@@ -90,44 +91,8 @@ class Minified
         $this->cl = $searchObject->getParams()->getSearchClassId();
 
         // Search terms, we'll shorten keys
-        $tempTerms = $searchObject->getParams()->getSearchTerms();
-        foreach ($tempTerms as $term) {
-            $newTerm = array();
-            foreach ($term as $k => $v) {
-                switch ($k) {
-                case 'join':
-                    $newTerm['j'] = $v;
-                    break;
-                case 'index':
-                    $newTerm['i'] = $v;
-                    break;
-                case 'lookfor':
-                    $newTerm['l'] = $v;
-                    break;
-                case 'group':
-                    $newTerm['g'] = array();
-                    foreach ($v as $line) {
-                        $search = array();
-                        foreach ($line as $k2 => $v2) {
-                            switch ($k2) {
-                            case 'bool':
-                                $search['b'] = $v2;
-                                break;
-                            case 'field':
-                                $search['f'] = $v2;
-                                break;
-                            case 'lookfor':
-                                $search['l'] = $v2;
-                                break;
-                            }
-                        }
-                        $newTerm['g'][] = $search;
-                    }
-                    break;
-                }
-            }
-            $this->t[] = $newTerm;
-        }
+        $query = $searchObject->getParams()->getQuery();
+        $this->t = QueryAdapter::minify($query);
 
         // It would be nice to shorten filter fields too, but
         //      it would be a nightmare to maintain.
