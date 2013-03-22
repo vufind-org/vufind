@@ -27,7 +27,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 
-namespace VuFind\Search\Legacy;
+namespace VuFind\Search;
 
 use VuFindSearch\Query\QueryGroup;
 use VuFindSearch\Query\Query;

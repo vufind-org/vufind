@@ -28,7 +28,7 @@
 namespace VuFind\Search\Solr;
 
 use VuFindSearch\Query\Query;
-use VuFind\Search\Legacy\QueryAdapter;
+use VuFind\Search\QueryAdapter;
 
 /**
  * Solr Search Parameters
