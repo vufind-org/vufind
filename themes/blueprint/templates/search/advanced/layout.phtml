@@ -10,10 +10,11 @@
 
     // Set up saved search details:
     if (isset($this->saved) && is_object($this->saved)) {
-        $searchDetails = $this->saved->getParams()->getSearchTerms();
+        $searchDetails = $this->saved->getParams()->getQuery();
+        $groups = $searchDetails->getQueries();
         $searchFilters = $this->saved->getParams()->getFilterList();
     } else {
-        $searchDetails = $searchFilters = false;
+        $searchDetails = $searchFilters = $groups = false;
     }
 
     // Set up Javascript:
@@ -34,7 +35,7 @@
           <label for="groupJoinOptions"><?=$this->transEsc("search_match")?>:</label>
           <select id="groupJoinOptions" name="join">
             <option value="AND"><?=$this->transEsc("group_AND")?></option>
-            <option value="OR"<?=(isset($searchDetails[0]['join']) && $searchDetails[0]['join'] == 'OR') ? ' selected="selected"' : ''?>><?=$this->transEsc("group_OR")?></option>
+            <option value="OR"<?=($searchDetails->getOperator() == 'OR') ? ' selected="selected"' : ''?>><?=$this->transEsc("group_OR")?></option>
           </select>
         </div>
         <strong><?=$this->transEsc("search_groups")?></strong>:
@@ -44,8 +45,8 @@
       <div id="searchHolder">
         <? /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
         <noscript>
-        <? if ($searchDetails !== false) {
-               $numGroups = count($searchDetails);
+        <? if ($groups !== false) {
+               $numGroups = count($groups);
            }
            if (!isset($numGroups) || $numGroups < 3) {
                $numGroups = 3;
@@ -61,10 +62,11 @@
                     $options = array('AND', 'OR', 'NOT');
                     foreach ($options as $option) {
                         echo '<option value="' . $this->escapeHtml($option) . '"';
-                        if ($searchDetails && isset($searchDetails[$i]['group'][0]['bool'])
-                            && $searchDetails[$i]['group'][0]['bool'] == $option
-                        ) {
-                            echo ' selected="selected"';
+                        if ($groups && isset($groups[$i])) {
+                            $operator = $groups[$i]->isNegated() ? 'NOT' : $groups[$i]->getOperator();
+                            if ($operator == $option) {
+                                echo ' selected="selected"';
+                            }
                         }
                         echo '>' . $this->transEsc('search_' . $option) . '</option>';
                     }
@@ -74,27 +76,30 @@
             </div>
             <div class="groupSearchHolder" id="group<?=$i?>SearchHolder">
             <?
-              if (isset($searchDetails[$i]['group'])) {
-                  $numRows = count($searchDetails[$i]['group']);
+              if (isset($group[$i])) {
+                  $currentGroup = $group[$i]->getQueries();
+                  $numRows = count($currentGroup);
+              } else {
+                  $currentGroup = false;
               }
               if (!isset($numRows) || $numRows < 3) {
                   $numRows = 3;
               }
             ?>
             <? for ($j = 0; $j < $numRows; $j++): ?>
-              <? $currRow = isset($searchDetails[$i]['group'][$j]) ? $searchDetails[$i]['group'][$j] : false; ?>
+              <? $currRow = isset($currentGroup[$j]) ? $currentGroup[$j] : false; ?>
               <div class="advRow">
                 <div class="label">
                   <label <?=($j > 0)?'class="offscreen" ':''?>for="search_lookfor<?=$i?>_<?=$j?>"><?=$this->transEsc("adv_search_label")?>:</label>&nbsp;
                 </div>
                 <div class="terms">
-                  <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=isset($currRow['lookfor'])?$this->escapeHtml($currRow['lookfor']):''?>" size="50" name="lookfor<?=$i?>[]"/>
+                  <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtml($currRow->getString()):''?>" size="50" name="lookfor<?=$i?>[]"/>
                 </div>
                 <div class="field">
                   <label for="search_type<?=$i?>_<?=$j?>"><?=$this->transEsc("in")?></label>
                   <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]">
                   <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
-                    <option value="<?=$this->escapeHtml($searchVal)?>"<?=(isset($currRow['field']) && $currRow['field'] == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
+                    <option value="<?=$this->escapeHtml($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
                   <? endforeach; ?>
                   </select>
                 </div>

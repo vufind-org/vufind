@@ -1,11 +1,11 @@
 $(document).ready(function() {
-  <? if (isset($this->searchDetails) && is_array($this->searchDetails)): ?>
-    <? foreach ($this->searchDetails as $searchGroup): ?>
-      <? $i = 0; foreach ($searchGroup['group'] as $search): ?>
+  <? if (isset($this->searchDetails) && is_object($this->searchDetails)): ?>
+    <? foreach ($this->searchDetails->getQueries() as $searchGroup): ?>
+      <? $i = 0; foreach ($searchGroup->getQueries() as $search): ?>
         <? if (++$i == 1): ?>
-          var new_group = addGroup('<?=$this->escapeHtml(addslashes($search['lookfor']))?>', '<?=$this->escapeHtml(addslashes($search['field']))?>', '<?=$this->escapeHtml($search['bool'])?>');
+          var new_group = addGroup('<?=$this->escapeHtml(addslashes($search->getString()))?>', '<?=$this->escapeHtml(addslashes($search->getHandler()))?>', '<?=$this->escapeHtml($searchGroup->isNegated() ? 'NOT' : $searchGroup->getOperator())?>');
         <? else: ?>
-          addSearch(new_group, '<?=$this->escapeHtml(addslashes($search['lookfor']))?>', '<?=$this->escapeHtml(addslashes($search['field']))?>');
+          addSearch(new_group, '<?=$this->escapeHtml(addslashes($search->getString()))?>', '<?=$this->escapeHtml(addslashes($search->getHandler()))?>');
         <? endif; ?>
       <? endforeach; ?>
     <? endforeach; ?>
