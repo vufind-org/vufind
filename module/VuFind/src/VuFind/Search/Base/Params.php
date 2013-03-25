@@ -561,12 +561,8 @@ class Params implements ServiceLocatorAwareInterface
     public function getSearchHandler()
     {
         // We can only definitively name a handler if we have a basic search:
-        if (count($this->searchTerms) == 1
-            && isset($this->searchTerms[0]['index'])
-        ) {
-            return $this->searchTerms[0]['index'];
-        }
-        return null;
+        $q = $this->getQuery();
+        return $q instanceof Query ? $q->getHandler() : null;
     }
 
     /**
