@@ -46,15 +46,6 @@ class Options extends \VuFind\Search\Base\Options
     protected $spellingLimit = 3;
 
     /**
-     * Selected spelling dictionary
-     *
-     * @var string
-     *
-     * Dictionaries are already set in AbstractSolrBackendFactory. (dm, 20130305)
-     */
-    protected $dictionary = 'default';
-
-    /**
      * Spell check words with numbers in them?
      *
      * @var bool
@@ -265,26 +256,6 @@ class Options extends \VuFind\Search\Base\Options
         return $this->hiddenFilters;
     }
 
-    /**
-     * Switch the spelling dictionary to basic
-     *
-     * @return void
-     */
-    public function useBasicDictionary()
-    {
-        $this->dictionary = 'basicSpell';
-    }
-
-    /**
-     * Get the selected spelling dictionary
-     *
-     * @return string
-     */
-    public function getSpellingDictionary()
-    {
-        return $this->dictionary;
-    }
-
 
     /**
      * Are we skipping numeric words?
@@ -298,7 +269,7 @@ class Options extends \VuFind\Search\Base\Options
 
 
     /**
-     * Get the selected spelling dictionary
+     * Get the spelling limit.
      *
      * @return int
      */
