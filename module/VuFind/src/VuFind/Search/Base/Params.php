@@ -44,7 +44,13 @@ use VuFind\Search\QueryAdapter;
  */
 class Params implements ServiceLocatorAwareInterface
 {
-    // Search terms
+    /**
+     * Internal representation of user query.
+     *
+     * @var Query
+     */
+    protected $query;
+
     protected $searchTerms = array();
     // Page number
     protected $page = 1;
@@ -91,6 +97,9 @@ class Params implements ServiceLocatorAwareInterface
         if (null !== $options) {
             $this->setOptions($options);
         }
+
+        // Make sure we have some sort of query object:
+        $this->query = new Query();
     }
 
     /**
@@ -141,6 +150,9 @@ class Params implements ServiceLocatorAwareInterface
     {
         if (is_object($this->options)) {
             $this->options = clone($this->options);
+        }
+        if (is_object($this->query)) {
+            $this->query = clone($this->query);
         }
     }
 
@@ -278,12 +290,6 @@ class Params implements ServiceLocatorAwareInterface
         if (!$this->initBasicSearch($request)) {
             $this->initAdvancedSearch($request);
         }
-
-        // If no search parameters were found, default to an "all records" search:
-        if (count($this->searchTerms) == 0) {
-            // Treat it as an empty basic search
-            $this->setBasicSearch('');
-        }
     }
 
     /**
@@ -340,12 +346,7 @@ class Params implements ServiceLocatorAwareInterface
             $handler = $this->getOptions()->getDefaultHandler();
         }
 
-        $this->searchTerms = array(
-            array(
-                'index'   => $handler,
-                'lookfor' => $lookfor
-            )
-        );
+        $this->query = new Query($lookfor, $handler);
     }
 
     /**
@@ -362,44 +363,9 @@ class Params implements ServiceLocatorAwareInterface
     {
         $this->searchType = 'advanced';
 
-        $groupCount = 0;
-        // Loop through each search group
-        while (!is_null($lookfor = $request->get("lookfor{$groupCount}"))) {
-            $group = array();
-            // Loop through each term inside the group
-            for ($i = 0; $i < count($lookfor); $i++) {
-                // Ignore advanced search fields with no lookup
-                if ($lookfor[$i] != '') {
-                    // Use default fields if not set
-                    $typeArr = $request->get('type' . $groupCount);
-                    if (isset($typeArr[$i]) && !empty($typeArr[$i])) {
-                        $handler = $typeArr[$i];
-                    } else {
-                        $handler = $this->getOptions()->getDefaultHandler();
-                    }
-
-                    // Add term to this group
-                    $boolArr = $request->get('bool' . $groupCount);
-                    $group[] = array(
-                        'field'   => $handler,
-                        'lookfor' => $lookfor[$i],
-                        'bool'    => isset($boolArr[0]) ? $boolArr[0] : null
-                    );
-                }
-            }
-
-            // Make sure we aren't adding groups that had no terms
-            if (count($group) > 0) {
-                // Add the completed group to the list
-                $this->searchTerms[] = array(
-                    'group' => $group,
-                    'join'  => $request->get('join')
-                );
-            }
-
-            // Increment
-            $groupCount++;
-        }
+        $this->query = QueryAdapter::fromRequest(
+            $request, $this->getOptions()->getDefaultHandler()
+        );
     }
 
     /**
@@ -1151,52 +1117,6 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Replace a search term in the query
-     *
-     * @param string $from Search term to find
-     * @param string $to   Search term to insert
-     *
-     * @return void
-     */
-    public function replaceSearchTerm($from, $to)
-    {
-        // Escape $from so it is regular expression safe (just in case it
-        // includes any weird punctuation -- unlikely but possible):
-        $from = addcslashes($from, '\^$.[]|()?*+{}/');
-
-        // If our "from" pattern contains non-word characters, we can't use word
-        // boundaries for matching.  We want to try to use word boundaries when
-        // possible, however, to avoid the replacement from affecting unexpected
-        // parts of the search query.
-        if (!preg_match('/.*[^\w].*/', $from)) {
-            $pattern = "/\b$from\b/i";
-        } else {
-            $pattern = "/$from/i";
-        }
-
-        // Advanced search
-        if (isset($this->searchTerms[0]['group'])) {
-            for ($i = 0; $i < count($this->searchTerms); $i++) {
-                for ($j = 0; $j < count($this->searchTerms[$i]['group']); $j++) {
-                    $this->searchTerms[$i]['group'][$j]['lookfor']
-                        = preg_replace(
-                            $pattern, $to,
-                            $this->searchTerms[$i]['group'][$j]['lookfor']
-                        );
-                }
-            }
-        } else {
-            // Basic search
-            for ($i = 0; $i < count($this->searchTerms); $i++) {
-                // Perform the replacement:
-                $this->searchTerms[$i]['lookfor'] = preg_replace(
-                    $pattern, $to, $this->searchTerms[$i]['lookfor']
-                );
-            }
-        }
-    }
-
-    /**
      * Return a query string for the current search with a search term replaced.
      *
      * @param string $oldTerm The old term to replace
@@ -1207,13 +1127,13 @@ class Params implements ServiceLocatorAwareInterface
     public function getDisplayQueryWithReplacedTerm($oldTerm, $newTerm)
     {
         // Stash our old data for a minute
-        $oldTerms = $this->searchTerms;
+        $oldTerms = clone($this->query);
         // Replace the search term
-        $this->replaceSearchTerm($oldTerm, $newTerm);
+        $this->query->replaceTerm($oldTerm, $newTerm);
         // Get the new query string
         $query = $this->getDisplayQuery();
         // Restore the old data
-        $this->searchTerms = $oldTerms;
+        $this->query = $oldTerms;
         // Return the query string
         return $query;
     }
@@ -1289,44 +1209,7 @@ class Params implements ServiceLocatorAwareInterface
         $this->searchType   = $minified->ty;
 
         // Search terms, we need to expand keys
-        $tempTerms = $minified->t;
-        foreach ($tempTerms as $term) {
-            $newTerm = array();
-            foreach ($term as $k => $v) {
-                switch ($k) {
-                case 'j':
-                    $newTerm['join']    = $v;
-                    break;
-                case 'i':
-                    $newTerm['index']   = $v;
-                    break;
-                case 'l':
-                    $newTerm['lookfor'] = $v;
-                    break;
-                case 'g':
-                    $newTerm['group'] = array();
-                    foreach ($v as $line) {
-                        $search = array();
-                        foreach ($line as $k2 => $v2) {
-                            switch ($k2) {
-                            case 'b':
-                                $search['bool']    = $v2;
-                                break;
-                            case 'f':
-                                $search['field']   = $v2;
-                                break;
-                            case 'l':
-                                $search['lookfor'] = $v2;
-                                break;
-                            }
-                        }
-                        $newTerm['group'][] = $search;
-                    }
-                    break;
-                }
-            }
-            $this->searchTerms[] = $newTerm;
-        }
+        $this->query = QueryAdapter::deminify($minified->t);
     }
 
     /**
@@ -1499,7 +1382,6 @@ class Params implements ServiceLocatorAwareInterface
         if ($this->overrideQuery) {
             return new Query($this->overrideQuery);
         }
-        return (empty($this->searchTerms))
-            ? new Query() : QueryAdapter::create($this->searchTerms);
+        return $this->query;
     }
 }

@@ -199,7 +199,7 @@ class UrlQueryHelper
     public function replaceTerm($from, $to)
     {
         $newParams = clone($this->params);
-        $newParams->replaceSearchTerm($from, $to);
+        $newParams->getQuery()->replaceTerm($from, $to);
         $helper = new static($newParams);
         return $helper->getParams();
     }
