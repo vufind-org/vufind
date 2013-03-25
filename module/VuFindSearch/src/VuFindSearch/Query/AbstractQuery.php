@@ -46,4 +46,11 @@ abstract class AbstractQuery
      * @return bool
      */
     abstract public function containsTerm($needle);
+
+    /**
+     * Get a concatenated list of all query strings within the object.
+     *
+     * @return string
+     */
+    abstract public function getAllTerms();
 }

@@ -130,4 +130,14 @@ class Query extends AbstractQuery
 
         return (bool)preg_match("/\b$needle\b/u", $this->getString());
     }
+
+    /**
+     * Get a concatenated list of all query strings within the object.
+     *
+     * @return string
+     */
+    public function getAllTerms()
+    {
+        return $this->getString();
+    }
 }

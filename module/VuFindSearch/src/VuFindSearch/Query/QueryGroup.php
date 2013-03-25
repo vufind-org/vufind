@@ -222,4 +222,18 @@ class QueryGroup extends AbstractQuery
         }
         return false;
     }
+
+    /**
+     * Get a concatenated list of all query strings within the object.
+     *
+     * @return string
+     */
+    public function getAllTerms()
+    {
+        $parts = array();
+        foreach ($this->getQueries() as $q) {
+            $parts[] = $q->getAllTerms();
+        }
+        return implode(' ', $parts);
+    }
 }

@@ -1219,28 +1219,6 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Extract all the keywords from the advanced search as a string.
-     *
-     * @return string
-     */
-    public function extractAdvancedTerms()
-    {
-        $terms = array();
-        foreach ($this->searchTerms as $current) {
-            if (isset($current['lookfor'])) {
-                $terms[] = $current['lookfor'];
-            } else if (isset($current['group']) && is_array($current['group'])) {
-                foreach ($current['group'] as $subCurrent) {
-                    if (isset($subCurrent['lookfor'])) {
-                        $terms[] = $subCurrent['lookfor'];
-                    }
-                }
-            }
-        }
-        return implode(' ', $terms);
-    }
-
-    /**
      * Basic 'getter' for list of available view options.
      *
      * @return array

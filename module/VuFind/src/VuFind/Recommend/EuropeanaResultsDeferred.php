@@ -89,7 +89,7 @@ class EuropeanaResultsDeferred implements RecommendInterface
         // Collect the best possible search term(s):
         $this->lookfor =  $request->get('lookfor', '');
         if (empty($this->lookfor) && is_object($params)) {
-            $this->lookfor = $params->extractAdvancedTerms();
+            $this->lookfor = $params->getQuery()->getAllTerms();
         }
         $this->lookfor = trim($this->lookfor);
         $this->processedParams = implode(':', $settings);

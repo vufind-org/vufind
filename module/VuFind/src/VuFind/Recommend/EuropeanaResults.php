@@ -252,7 +252,7 @@ class EuropeanaResults implements RecommendInterface,
         // Collect the best possible search term(s):
         $this->lookfor =  $request->get('lookfor', '');
         if (empty($this->lookfor) && is_object($params)) {
-            $this->lookfor = $params->extractAdvancedTerms();
+            $this->lookfor = $params->getQuery()->getAllTerms();
         }
         $this->lookfor = urlencode(trim($this->lookfor));
         $this->sitePath = 'http://www.europeana.eu/portal/search.html?query=' .

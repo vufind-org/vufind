@@ -321,45 +321,6 @@ class Params extends \VuFind\Search\Base\Params
     }
 
     /**
-     * Adapt the search query to a spelling query
-     *
-     * @return string Spelling query
-     */
-    protected function buildSpellingQuery()
-    {
-        if ($this->searchType == 'advanced') {
-            return $this->extractAdvancedTerms();
-        }
-        return $this->getDisplayQuery();
-    }
-
-    /**
-     * Get Spelling Query
-     *
-     * @return string
-     */
-    public function getSpellingQuery()
-    {
-        // Build our spellcheck query
-        if ($this->getOptions()->spellcheckEnabled()) {
-            if ($this->getOptions()->usesSimpleSpelling()) {
-                $this->getOptions()->useBasicDictionary();
-            }
-            $spellcheck = $this->buildSpellingQuery();
-
-            // If the spellcheck query is purely numeric, skip it if
-            // the appropriate setting is turned on.
-            if ($this->getOptions()->shouldSkipNumericSpelling()
-                && is_numeric($spellcheck)
-            ) {
-                return '';
-            }
-            return $spellcheck;
-        }
-        return '';
-    }
-
-    /**
      * Load all available facet settings.  This is mainly useful for showing
      * appropriate labels when an existing search has multiple filters associated
      * with it.

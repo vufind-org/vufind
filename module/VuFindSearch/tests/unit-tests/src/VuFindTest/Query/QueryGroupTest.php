@@ -67,4 +67,18 @@ class QueryGroupTest extends PHPUnit_Framework_TestCase
         // Should not contain a partial term (matches on word boundaries):
         $this->assertFalse($q->containsTerm('tes'));
     }
+
+    /**
+     * Test getAllTerms() method
+     *
+     * @return void
+     */
+    public function testGetAllTerms()
+    {
+        $q1 = new Query('test');
+        $q2 = new Query('query');
+        $q3 = new Query('multi word query');
+        $q = new QueryGroup('OR', array($q1, $q2, $q3));
+        $this->assertEquals('test query multi word query', $q->getAllTerms());
+    }
 }

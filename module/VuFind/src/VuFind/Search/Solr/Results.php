@@ -186,7 +186,7 @@ class Results extends BaseResults
 
         // Spellcheck
         if ($params->getOptions()->spellcheckEnabled()) {
-            $spelling = $this->createSpellingQuery($query);
+            $spelling = $query->getAllTerms();
             if ($spelling) {
                 $backendParams->set('spellcheck.q', $spelling);
                 $this->spellingQuery = $spelling;
@@ -216,21 +216,6 @@ class Results extends BaseResults
         }
 
         return $backendParams;
-    }
-
-    /**
-     * Create spellcheck query.
-     *
-     * @param AbstractQuery $query Query
-     *
-     * @return string
-     */
-    protected function createSpellingQuery (AbstractQuery $query)
-    {
-        if ($query instanceOf Query) {
-            return $query->getString();
-        }
-        return implode(' ', array_map(array($this, 'createSpellingQuery'), $query->getQueries()));
     }
 
     /**
