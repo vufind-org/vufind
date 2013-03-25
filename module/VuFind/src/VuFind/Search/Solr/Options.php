@@ -55,13 +55,6 @@ class Options extends \VuFind\Search\Base\Options
     protected $dictionary = 'default';
 
     /**
-     * Level of spelling correction sophistication
-     *
-     * @var bool
-     */
-    protected $spellSimple = false;
-
-    /**
      * Spell check words with numbers in them?
      *
      * @var bool
@@ -180,9 +173,6 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($config->Spelling->limit)) {
             $this->spellingLimit = $config->Spelling->limit;
         }
-        if (isset($config->Spelling->simple)) {
-            $this->spellSimple = $config->Spelling->simple;
-        }
         if (isset($config->Spelling->skip_numeric)) {
             $this->spellSkipNumeric = $config->Spelling->skip_numeric;
         }
@@ -273,16 +263,6 @@ class Options extends \VuFind\Search\Base\Options
     public function getHiddenFilters()
     {
         return $this->hiddenFilters;
-    }
-
-    /**
-     * Switch the spelling setting to simple
-     *
-     * @return void
-     */
-    public function usesSimpleSpelling()
-    {
-        return $this->spellSimple;
     }
 
     /**
