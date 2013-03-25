@@ -424,7 +424,6 @@ class Connector
      */
     protected function update ($document, ParamBag $params)
     {
-        $params = $this->prepare($params);
         $url    = $this->url . '/update';
         if (count($params) > 0) {
             $url .= '?' . implode('&', $params->request());
@@ -449,8 +448,6 @@ class Connector
         $result = $this->query('select', $params);
         return $result;
     }
-
-    /// Internal API
 
     /**
      * Prepare final request parameters.
