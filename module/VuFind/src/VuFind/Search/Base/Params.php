@@ -599,66 +599,6 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Get a human-readable presentation version of the advanced search query
-     * stored in the object.  This will not work if $this->searchType is not
-     * 'advanced.'
-     *
-     * @return string
-     */
-    protected function buildAdvancedDisplayQuery()
-    {
-        // Groups and exclusions. This mirrors some logic in Solr.php
-        $groups   = array();
-        $excludes = array();
-
-        foreach ($this->searchTerms as $search) {
-            $thisGroup = array();
-            // Process each search group
-            if (isset($search['group'])) {
-                foreach ($search['group'] as $group) {
-                    // Build this group individually as a basic search
-                    $thisGroup[] = $this->getOptions()->getHumanReadableFieldName(
-                        $group['field']
-                    ) . ":{$group['lookfor']}";
-                }
-            }
-            // Is this an exclusion (NOT) group or a normal group?
-            if (isset($search['group'][0]['bool'])
-                && $search['group'][0]['bool'] == 'NOT'
-            ) {
-                $excludes[]
-                    = join(' ' . $this->translate('OR') . ' ', $thisGroup);
-            } else if (isset($search['group'][0]['bool'])) {
-                $groups[] = join(
-                    " " . $this->translate($search['group'][0]['bool'])." ",
-                    $thisGroup
-                );
-            }
-        }
-
-        // Base 'advanced' query
-        $output = '';
-        if (isset($this->searchTerms[0]['join'])) {
-            $output .= "(" .
-                join(
-                    ") " .
-                    $this->translate($this->searchTerms[0]['join']) . " (",
-                    $groups
-                ) .
-                ")";
-        }
-
-        // Concatenate exclusion after that
-        if (count($excludes) > 0) {
-            $output .= ' ' .
-                $this->translate('NOT') . ' ((' .
-                join(') ' . $this->translate('OR') . ' (', $excludes) . "))";
-        }
-
-        return $output;
-    }
-
-    /**
      * Build a string for onscreen display showing the
      *   query used in the search (not the filters).
      *
@@ -666,13 +606,12 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function getDisplayQuery()
     {
-        if ($this->searchType == 'advanced') {
-            return $this->buildAdvancedDisplayQuery();
-        }
+        // Set up callbacks:
+        $translate = array($this, 'translate');
+        $showField = array($this->getOptions(), 'getHumanReadableFieldName');
 
-        // Default -- Basic search:
-        return isset($this->searchTerms[0]['lookfor'])
-            ? $this->searchTerms[0]['lookfor'] : '';
+        // Build display query:
+        return QueryAdapter::display($this->getQuery(), $translate, $showField);
     }
 
     /**

@@ -68,4 +68,30 @@ class QueryAdapterTest extends TestCase
             $this->assertEquals($min, QueryAdapter::minify($q));
         }
     }
+
+    /**
+     * Test display capabilities.
+     *
+     * @return void
+     */
+    public function testDisplay()
+    {
+        // Array of fixture directory => expected display query
+        $cases = array(
+            'basic' => 'john smith',
+            'advanced' => '(CallNumber:oranges AND toc:bananas AND ISN:pears) OR (Title:cars OR Subject:trucks) NOT ((AllFields:squid))'
+        );
+
+        // Create simple closure to fill in for translation callbacks:
+        $echo = function ($str) {
+            return $str;
+        };
+
+        // Run the tests:
+        $fixturePath = realpath(__DIR__ . '/../../../fixtures/searches') . '/';
+        foreach ($cases as $case => $expected) {
+            $q = unserialize(file_get_contents($fixturePath . $case . '/query'));
+            $this->assertEquals($expected, QueryAdapter::display($q, $echo, $echo));
+        }
+    }
 }
