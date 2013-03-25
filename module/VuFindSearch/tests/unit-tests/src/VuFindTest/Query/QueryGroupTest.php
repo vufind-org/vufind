@@ -81,4 +81,19 @@ class QueryGroupTest extends PHPUnit_Framework_TestCase
         $q = new QueryGroup('OR', array($q1, $q2, $q3));
         $this->assertEquals('test query multi word query', $q->getAllTerms());
     }
+
+    /**
+     * Test replaceTerm() method
+     *
+     * @return void
+     */
+    public function testReplaceTerm()
+    {
+        $q1 = new Query('test');
+        $q2 = new Query('query');
+        $q3 = new Query('multi word query');
+        $q = new QueryGroup('OR', array($q1, $q2, $q3));
+        $q->replaceTerm('query', 'question');
+        $this->assertEquals('test question multi word question', $q->getAllTerms());
+    }
 }

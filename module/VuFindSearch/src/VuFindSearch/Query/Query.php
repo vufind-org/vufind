@@ -140,4 +140,32 @@ class Query extends AbstractQuery
     {
         return $this->getString();
     }
+
+    /**
+     * Replace a term.
+     *
+     * @param string $from Search term to find
+     * @param string $to   Search term to insert
+     *
+     * @return void
+     */
+    public function replaceTerm($from, $to)
+    {
+        // Escape $from so it is regular expression safe (just in case it
+        // includes any weird punctuation -- unlikely but possible):
+        $from = addcslashes($from, '\^$.[]|()?*+{}/');
+
+        // If our "from" pattern contains non-word characters, we can't use word
+        // boundaries for matching.  We want to try to use word boundaries when
+        // possible, however, to avoid the replacement from affecting unexpected
+        // parts of the search query.
+        if (!preg_match('/.*[^\w].*/', $from)) {
+            $pattern = "/\b$from\b/i";
+        } else {
+            $pattern = "/$from/i";
+        }
+
+        // Perform the replacement:
+        $this->queryString = preg_replace($pattern, $to, $this->queryString);
+    }
 }

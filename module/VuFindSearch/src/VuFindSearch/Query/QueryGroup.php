@@ -236,4 +236,19 @@ class QueryGroup extends AbstractQuery
         }
         return implode(' ', $parts);
     }
+
+    /**
+     * Replace a term.
+     *
+     * @param string $from Search term to find
+     * @param string $to   Search term to insert
+     *
+     * @return void
+     */
+    public function replaceTerm($from, $to)
+    {
+        foreach ($this->getQueries() as $q) {
+            $q->replaceTerm($from, $to);
+        }
+    }
 }

@@ -53,4 +53,14 @@ abstract class AbstractQuery
      * @return string
      */
     abstract public function getAllTerms();
+
+    /**
+     * Replace a term.
+     *
+     * @param string $from Search term to find
+     * @param string $to   Search term to insert
+     *
+     * @return void
+     */
+    abstract public function replaceTerm($from, $to);
 }
