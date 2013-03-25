@@ -117,4 +117,17 @@ class Query extends AbstractQuery
     {
         return $this->queryHandler;
     }
+
+    /**
+     * Does the query contain the specified term?
+     *
+     * @return bool
+     */
+    public function containsTerm($needle)
+    {
+        // Escape slashes in $needle to avoid regular expression errors:
+        $needle = str_replace('/', '\/', $needle);
+
+        return (bool)preg_match("/\b$needle\b/u", $this->getString());
+    }
 }

@@ -207,4 +207,19 @@ class QueryGroup extends AbstractQuery
     {
         return $this->negation;
     }
+
+    /**
+     * Does the query contain the specified term?
+     *
+     * @return bool
+     */
+    public function containsTerm($needle)
+    {
+        foreach ($this->getQueries() as $q) {
+            if ($q->containsTerm($needle)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

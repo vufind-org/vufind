@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract base class of user query components.
+ * Unit tests for QueryGroup class.
  *
  * PHP version 5
  *
@@ -27,10 +27,14 @@
  * @link     http://vufind.org
  */
 
-namespace VuFindSearch\Query;
+namespace VuFindTest\Query;
+
+use VuFindSearch\Query\Query;
+use VuFindSearch\Query\QueryGroup;
+use PHPUnit_Framework_TestCase;
 
 /**
- * Abstract base class of user query components.
+ * Unit tests for QueryGroup class.
  *
  * @category VuFind2
  * @package  Search
@@ -38,12 +42,29 @@ namespace VuFindSearch\Query;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-abstract class AbstractQuery
+class QueryGroupTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * Does the query contain the specified term?
+     * Test containsTerm() method
      *
-     * @return bool
+     * @return void
      */
-    abstract public function containsTerm($needle);
+    public function testContainsTerm()
+    {
+        $q1 = new Query('test');
+        $q2 = new Query('query');
+        $q3 = new Query('multi word query');
+        $q = new QueryGroup('OR', array($q1, $q2, $q3));
+
+        // Should report true for actual contained terms:
+        $this->assertTrue($q->containsTerm('test'));
+        $this->assertTrue($q->containsTerm('word'));
+        $this->assertTrue($q->containsTerm('query'));
+
+        // Should not contain a non-present term:
+        $this->assertFalse($q->containsTerm('garbage'));
+
+        // Should not contain a partial term (matches on word boundaries):
+        $this->assertFalse($q->containsTerm('tes'));
+    }
 }

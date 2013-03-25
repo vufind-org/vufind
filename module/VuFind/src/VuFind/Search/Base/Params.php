@@ -1219,38 +1219,6 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Find a word amongst the current search terms
-     *
-     * @param string $needle Search term to find
-     *
-     * @return bool          True/False if the word was found
-     */
-    public function findSearchTerm($needle)
-    {
-        // Escape slashes in $needle to avoid regular expression errors:
-        $needle = str_replace('/', '\/', $needle);
-
-        // Advanced search
-        if (isset($this->searchTerms[0]['group'])) {
-            foreach ($this->searchTerms as $group) {
-                foreach ($group['group'] as $search) {
-                    if (preg_match("/\b$needle\b/u", $search['lookfor'])) {
-                        return true;
-                    }
-                }
-            }
-        } else {
-            // Basic search
-            foreach ($this->searchTerms as $haystack) {
-                if (preg_match("/\b$needle\b/u", $haystack['lookfor'])) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
      * Extract all the keywords from the advanced search as a string.
      *
      * @return string

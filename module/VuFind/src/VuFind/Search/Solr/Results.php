@@ -250,7 +250,7 @@ class Results extends BaseResults
                 continue;
             }
             // Term is not part of the query
-            if (!$this->getParams()->findSearchTerm($term)) {
+            if (!$this->getParams()->getQuery()->containsTerm($term)) {
                 continue;
             }
             // Filter out suggestions that are already part of the query
@@ -262,7 +262,7 @@ class Results extends BaseResults
                     break;
                 }
                 $word = $suggestion['word'];
-                if (!$this->getParams()->findSearchTerm($word)) {
+                if (!$this->getParams()->getQuery()->containsTerm($word)) {
                     // TODO: Avoid reference to Options
                     // Note: !a || !b eq !(a && b)
                     if (!is_numeric($word) || !$this->getOptions()->shouldSkipNumericSpelling()) {
