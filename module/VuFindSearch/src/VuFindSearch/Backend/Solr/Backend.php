@@ -147,9 +147,6 @@ class Backend implements BackendInterface, MoreLikeThis
      * @param ParamBag      $params Search backend parameters
      *
      * @return RecordCollectionInterface
-     *
-     * @todo Disable more SOLR request options when resubmitting for spellcheck
-     * @todo Implement merge of spellcheck results
      */
     public function search (AbstractQuery $query, $offset, $limit, ParamBag $params = null)
     {
