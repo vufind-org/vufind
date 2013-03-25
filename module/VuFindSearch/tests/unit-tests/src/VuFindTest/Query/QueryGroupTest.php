@@ -96,4 +96,24 @@ class QueryGroupTest extends PHPUnit_Framework_TestCase
         $q->replaceTerm('query', 'question');
         $this->assertEquals('test question multi word question', $q->getAllTerms());
     }
+
+    /**
+     * Test QueryGroup cloning.
+     *
+     * @return void
+     */
+    public function testClone()
+    {
+        $q1 = new Query('test');
+        $q2 = new Query('query');
+        $q3 = new Query('multi word query');
+        $q = new QueryGroup('OR', array($q1, $q2, $q3));
+        $qClone = clone($q);
+        $q->replaceTerm('query', 'question');
+        $qClone->setOperator('AND');
+        $this->assertEquals('test question multi word question', $q->getAllTerms());
+        $this->assertEquals('OR', $q->getOperator());
+        $this->assertEquals('test query multi word query', $qClone->getAllTerms());
+        $this->assertEquals('AND', $qClone->getOperator());
+    }
 }

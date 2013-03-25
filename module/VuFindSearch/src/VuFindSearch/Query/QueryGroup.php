@@ -99,6 +99,20 @@ class QueryGroup extends AbstractQuery
     }
 
     /**
+     * Copy constructor
+     *
+     * @return void
+     */
+    public function __clone()
+    {
+        $new = array();
+        foreach ($this->queries as $q) {
+            $new[] = clone($q);
+        }
+        $this->queries = $new;
+    }
+
+    /**
      * Return name of reduced handler.
      *
      * @return string|null
