@@ -49,33 +49,6 @@ use Zend\StdLib\Parameters;
 abstract class QueryAdapter
 {
     /**
-     * Return a Query or QueryGroup based on user search arguments.
-     *
-     * @param array $search Search arguments
-     *
-     * @return Query|QueryGroup
-     */
-    public static function create(array $search)
-    {
-        if (isset($search['lookfor'])) {
-            $handler = isset($search['index']) ? $search['index'] : $search['field'];
-            return new Query($search['lookfor'], $handler);
-        } elseif (isset($search['group'])) {
-            $operator = $search['group'][0]['bool'];
-            return new QueryGroup($operator, array_map(array('self', 'create'), $search['group']));
-        } else {
-            // Special case: The outer-most group-of-groups.
-            if (isset($search[0]['join'])) {
-                $operator = $search[0]['join'];
-                return new QueryGroup($operator, array_map(array('self', 'create'), $search));
-            } else {
-                // Simple query
-                return new Query($search[0]['lookfor'], $search[0]['index']);
-            }
-        }
-    }
-
-    /**
      * Return a Query or QueryGroup based on minified search arguments.
      *
      * @param array $search Minified search arguments

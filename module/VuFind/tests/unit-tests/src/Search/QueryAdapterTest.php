@@ -56,11 +56,7 @@ class QueryAdapterTest extends TestCase
         foreach ($cases as $case) {
             // Load minified, unminified, and Query object data:
             $min = unserialize(file_get_contents($fixturePath . $case . '/min'));
-            $max = unserialize(file_get_contents($fixturePath . $case . '/max'));
             $q = unserialize(file_get_contents($fixturePath . $case . '/query'));
-
-            // Test conversion of unminified data:
-            $this->assertEquals($q, QueryAdapter::create($max));
 
             // Test conversion of minified data:
             $this->assertEquals($q, QueryAdapter::deminify($min));
