@@ -32,6 +32,7 @@ namespace VuFind\Search;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\QueryGroup;
 use VuFindSearch\Query\Query;
+use Zend\StdLib\Parameters;
 
 /**
  * Legacy adapter: search query parameters to AbstractQuery object
@@ -178,6 +179,56 @@ abstract class QueryAdapter
         }
 
         return $output;
+    }
+
+    /**
+     * Convert user request parameters into a query (currently for advanced searches
+     * only).
+     *
+     * @param Parameters $request        User-submitted parameters
+     * @param string     $defaultHandler Default search handler
+     *
+     * @return Query|QueryGroup
+     */
+    public static function fromRequest(Parameters $request, $defaultHandler)
+    {
+        $groupCount = 0;
+        $groups = array();
+
+        // Loop through each search group
+        while (!is_null($lookfor = $request->get("lookfor{$groupCount}"))) {
+            $group = array();
+            $lastBool = null;
+
+            // Loop through each term inside the group
+            for ($i = 0; $i < count($lookfor); $i++) {
+                // Ignore advanced search fields with no lookup
+                if ($lookfor[$i] != '') {
+                    // Use default fields if not set
+                    $typeArr = $request->get('type' . $groupCount);
+                    $handler = (isset($typeArr[$i]) && !empty($typeArr[$i]))
+                        ? $typeArr[$i] : $defaultHandler;
+
+                    // Add term to this group
+                    $boolArr = $request->get('bool' . $groupCount);
+                    $lastBool = isset($boolArr[0]) ? $boolArr[0] : null;
+                    $group[] = new Query($lookfor[$i], $handler);
+                }
+            }
+
+            // Make sure we aren't adding groups that had no terms
+            if (count($group) > 0) {
+                // Add the completed group to the list
+                $groups[] = new QueryGroup($lastBool, $group);
+            }
+
+            // Increment
+            $groupCount++;
+        }
+
+        return (count($groups) > 0)
+            ? new QueryGroup($request->get('join'), $groups)
+            : new Query();
     }
 
     /**

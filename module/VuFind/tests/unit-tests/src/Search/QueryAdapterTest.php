@@ -30,6 +30,7 @@
 namespace VuFindTest\Search;
 
 use VuFind\Search\QueryAdapter;
+use VuFindSearch\Query\Query;
 use VuFindTest\Unit\TestCase as TestCase;
 
 /**
@@ -67,6 +68,30 @@ class QueryAdapterTest extends TestCase
             // Test minification of a Query:
             $this->assertEquals($min, QueryAdapter::minify($q));
         }
+    }
+
+    /**
+     * Test building an advanced query from a request.
+     *
+     * @return void
+     */
+    public function testAdvancedRequest()
+    {
+        $fixturePath = realpath(__DIR__ . '/../../../fixtures/searches') . '/advanced/';
+        $req = unserialize(file_get_contents($fixturePath . 'request'));
+        $q = unserialize(file_get_contents($fixturePath . 'query'));
+        $this->assertEquals($q, QueryAdapter::fromRequest($req, 'AllFields'));
+    }
+
+    /**
+     * Test building an advanced query from an empty request.
+     *
+     * @return void
+     */
+    public function testEmptyRequest()
+    {
+        $req = new \Zend\Stdlib\Parameters(array());
+        $this->assertEquals(new Query(), QueryAdapter::fromRequest($req, 'AllFields'));
     }
 
     /**
