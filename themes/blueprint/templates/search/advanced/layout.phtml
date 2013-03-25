@@ -35,7 +35,7 @@
           <label for="groupJoinOptions"><?=$this->transEsc("search_match")?>:</label>
           <select id="groupJoinOptions" name="join">
             <option value="AND"><?=$this->transEsc("group_AND")?></option>
-            <option value="OR"<?=($searchDetails->getOperator() == 'OR') ? ' selected="selected"' : ''?>><?=$this->transEsc("group_OR")?></option>
+            <option value="OR"<?=(isset($searchDetails) && is_object($searchDetails) && $searchDetails->getOperator() == 'OR') ? ' selected="selected"' : ''?>><?=$this->transEsc("group_OR")?></option>
           </select>
         </div>
         <strong><?=$this->transEsc("search_groups")?></strong>:
