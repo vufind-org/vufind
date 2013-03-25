@@ -283,7 +283,7 @@ class Results extends BaseResults
             $targetTerm = "";
             foreach ($tokens as $token) {
                 // TODO - Do we need stricter matching here, similar to that in
-                // \VuFind\Search\Base\Params::replaceSearchTerm()?
+                // \VuFindSearch\Query\Query::replaceTerm()?
                 if (stripos($token, $term) !== false) {
                     $inToken = true;
                     // We need to replace the whole token
