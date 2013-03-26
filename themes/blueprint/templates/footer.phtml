@@ -14,7 +14,7 @@
 </div>
 <div class="span-5 last"><p><strong><?=$this->transEsc('Need Help?')?></strong></p>
   <ul>
-    <li><a href="<?=$this->url('help-home')?>?topic=search" class="searchHelp"><?=$this->transEsc('Search Tips')?></a></li>
+    <li><a href="<?=$this->url('help-home', array(), array('query' => array('topic' => 'search')))?>" class="searchHelp"><?=$this->transEsc('Search Tips')?></a></li>
     <li><a href="#"><?=$this->transEsc('Ask a Librarian')?></a></li>
     <li><a href="#"><?=$this->transEsc('FAQs')?></a></li>
   </ul>
