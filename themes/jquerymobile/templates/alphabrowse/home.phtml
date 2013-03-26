@@ -1,5 +1,6 @@
 <?
   $this->headTitle($this->translate('Browse the Collection Alphabetically'));
+  $baseQuery = array('source' => $this->source, 'from' => $this->from);
 ?>
 
 <div data-role="page">
@@ -32,12 +33,12 @@
       <div class="ui-grid-a">
         <div class="ui-block-a">
           <? if (isset($this->prevpage)): ?>
-            <a data-role="button" data-mini="true" data-icon="arrow-l" href="<?=$this->url('alphabrowse-home')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($this->from)?>&amp;page=<?=urlencode($this->prevpage)?>"><?=$this->transEsc('Prev')?></a>
+            <a data-role="button" data-mini="true" data-icon="arrow-l" href="<?=$this->escapeHtml($this->url('alphabrowse-home', array(), array('query' => $baseQuery + array('page' => $this->prevpage))))?>"><?=$this->transEsc('Prev')?></a>
           <? endif; ?>
         </div>
         <div class="ui-block-b">
           <? if (isset($this->nextpage)): ?>
-            <a data-role="button" data-mini="true" data-icon="arrow-r" data-iconpos="right" href="<?=$this->url('alphabrowse-home')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($this->from)?>&amp;page=<?=urlencode($this->nextpage)?>"><?=$this->transEsc('Next')?></a>
+            <a data-role="button" data-mini="true" data-icon="arrow-r" data-iconpos="right" href="<?=$this->escapeHtml($this->url('alphabrowse-home', array(), array('query' => $baseQuery + array('page' => $this->nextpage))))?>"><?=$this->transEsc('Next')?></a>
           <? endif; ?>
         </div>
       </div>
@@ -49,18 +50,17 @@
       <? foreach ($this->result['Browse']['items'] as $i => $item): ?>
         <li class="ui-li-has-count">
           <? if ($item['count'] > 0 || count($item['useInstead']) > 0): ?>
-          <? ob_start(); ?>
             <? if (count($item['useInstead']) > 0): ?>
-              <?=$this->url('alphabrowse-home')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode(implode($item['useInstead']))?>
+              <? $query = array('from' => implode($item['useInstead'])) + $baseQuery; ?>
+              <? $searchLink = $this->escapeHtml($this->url('alphabrowse-home', array(), array('query' => $query))); ?>
             <? else: ?>
               <? if ($item['count'] < 5): ?>
-                <?=$this->url('search-results')?>?type=ids&amp;lookfor=<? foreach ($item['ids'] as $id): ?><?=$id ?>+<? endforeach; ?>
+                <? $query = array('type' => 'ids', 'lookfor' => implode(' ', $item['ids'])); ?>
               <? else: ?>
-                <?=$this->url('search-results')?>?type=<?=urlencode(ucwords($this->source)) ?>Browse&amp;lookfor=<?=urlencode($item['heading'])?>
+                <? $query = array('type' => ucwords($this->source) . 'Browse', 'lookfor' => $item['heading']); ?>
               <? endif; ?>
+              <? $searchLink = $this->escapeHtml($this->url('search-results', array(), array('query' => $query))); ?>
             <? endif; ?>
-            <? $searchLink = ob_get_contents(); ?>
-          <? ob_end_clean(); ?>
           <? endif; ?>
           <a class="ui-link-inherit" data-ajax="false" href="<?=$searchLink ?>">
             <div class="ui-btn-text">

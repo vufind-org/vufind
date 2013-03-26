@@ -1,17 +1,18 @@
 <?
   $this->headTitle($this->translate('Browse the Collection Alphabetically'));
   $this->layout()->breadcrumbs = '<a href="' . $this->url('alphabrowse-home') . '">' . $this->transEsc('Browse Alphabetically') . '</a>';
+  $baseQuery = array('source' => $this->source, 'from' => $this->from);
 ?>
 
 <? /* LOAD THE LINK INFORMATION INTO $pageLinks, similar to smarty's {capture} */ ?>
 <? ob_start(); ?>
   <div class="alphaBrowsePageLinks">
     <? if (isset($this->prevpage)): ?>
-      <div class="alphaBrowsePrevLink"><a href="<?=$this->url('alphabrowse-home')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($this->from)?>&amp;page=<?=urlencode($this->prevpage)?>">&laquo; <?=$this->transEsc('Prev')?></a></div>
+      <div class="alphaBrowsePrevLink"><a href="<?=$this->escapeHtml($this->url('alphabrowse-home', array(), array('query' => $baseQuery + array('page' => $this->prevpage))))?>">&laquo; <?=$this->transEsc('Prev')?></a></div>
     <? endif; ?>
 
     <? if (isset($this->nextpage)): ?>
-      <div class="alphaBrowseNextLink"><a href="<?=$this->url('alphabrowse-home')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($this->from)?>&amp;page=<?=urlencode($this->nextpage)?>"><?=$this->transEsc('Next')?> &raquo;</a></div>
+      <div class="alphaBrowseNextLink"><a href="<?=$this->escapeHtml($this->url('alphabrowse-home', array(), array('query' => $baseQuery + array('page' => $this->nextpage))))?>"><?=$this->transEsc('Next')?> &raquo;</a></div>
     <? endif; ?>
     <div class="clear"></div>
   </div>
@@ -42,20 +43,17 @@
         <div class="alphaBrowseEntry<? if ($i%2==1): echo ' alt'; endif; ?>">
         <div class="alphaBrowseHeading">
           <? if ($item['count'] > 0): ?>
-          <? ob_start(); ?>
             <?/* linking using bib ids is generally more reliable than
               doing searches for headings, but headings give shorter
               queries and don't look as strange. */?>
             <? if ($item['count'] < 5): ?>
-              <?=$this->url('search-results')?>?type=ids&amp;lookfor=<? foreach ($item['ids'] as $id): ?><?=$id ?>+<? endforeach; ?>
+              <? $query = array('type' => 'ids', 'lookfor' => implode(' ', $item['ids'])); ?>
             <? else: ?>
-              <?=$this->url('search-results')?>?type=<?=urlencode(ucwords($this->source)) ?>Browse&amp;lookfor=<?=urlencode($item['heading'])?>
+              <? $query = array('type' => ucwords($this->source) . 'Browse', 'lookfor' => $item['heading']); ?>
             <? endif; ?>
-          <? $searchLink = ob_get_contents(); ?>
-          <? ob_end_clean(); ?>
-          <a href="<?=$searchLink ?>"><?=$this->escapeHtml($item['heading'])?></a>
+            <a href="<?=$this->escapeHtml($this->url('search-results', array(), array('query' => $query)))?>"><?=$this->escapeHtml($item['heading'])?></a>
           <? else: ?>
-          <?=$this->escapeHtml($item['heading'])?>
+            <?=$this->escapeHtml($item['heading'])?>
           <? endif; ?>
         </div>
         <div class="alphaBrowseCount"><? if ($item['count'] > 0): echo $item['count']; endif; ?></div>
@@ -66,7 +64,7 @@
           <div class="title"><?=$this->transEsc('Use instead') ?>:</div>
           <ul>
             <? foreach ($item['useInstead'] as $heading): ?>
-            <li><a href="<?=$this->url('alphabrowse-home')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($heading)?>"><?=$this->escapeHtml($heading)?></a></li>
+            <li><a href="<?=$this->escapeHtml($this->url('alphabrowse-home', array(), array('query' => array('from' => $heading) + $baseQuery)))?>"><?=$this->escapeHtml($heading)?></a></li>
             <? endforeach; ?>
           </ul>
           </div>
@@ -77,7 +75,7 @@
           <div class="title"><?=$this->transEsc('See also') ?>:</div>
           <ul>
             <? foreach ($item['seeAlso'] as $heading): ?>
-            <li><a href="<?=$this->url('alphabrowse-home')?>?source=<?=urlencode($this->source)?>&amp;from=<?=urlencode($heading)?>"><?=$this->escapeHtml($heading)?></a></li>
+            <li><a href="<?=$this->escapeHtml($this->url('alphabrowse-home', array(), array('query' => array('from' => $heading) + $baseQuery)))?>"><?=$this->escapeHtml($heading)?></a></li>
             <? endforeach; ?>
           </ul>
           </div>
