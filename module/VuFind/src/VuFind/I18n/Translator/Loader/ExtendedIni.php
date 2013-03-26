@@ -41,6 +41,11 @@ use Zend\I18n\Exception\InvalidArgumentException,
  */
 class ExtendedIni implements FileLoaderInterface
 {
+    /**
+     * Parsed translation data
+     *
+     * @var TextDomain
+     */
     protected $data;
 
     /**
