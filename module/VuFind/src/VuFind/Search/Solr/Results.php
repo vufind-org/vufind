@@ -215,6 +215,11 @@ class Results extends BaseResults
             $backendParams->add('sort', $this->normalizeSort($sort));
         }
 
+        // Highlighting -- on by default, but we should disable if necessary:
+        if (!$params->getOptions()->highlightEnabled()) {
+            $backendParams->add('hl', 'false');
+        }
+
         return $backendParams;
     }
 

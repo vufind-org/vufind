@@ -84,7 +84,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return void
      */
-    public function __construct (array $response)
+    public function __construct(array $response)
     {
         $this->response = array_replace_recursive(static::$template, $response);
         $this->rewind();
@@ -95,7 +95,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return Spellcheck
      */
-    public function getSpellcheck ()
+    public function getSpellcheck()
     {
         if (!$this->spellcheck) {
             $this->spellcheck = new Spellcheck($this->response['spellcheck']['suggestions']);
@@ -110,7 +110,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @todo Remove once we don't need it anymore (02/2013)
      */
-    public function getRawResponse ()
+    public function getRawResponse()
     {
         return $this->response;
     }
@@ -120,7 +120,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return int
      */
-    public function getTotal ()
+    public function getTotal()
     {
         return $this->response['response']['numFound'];
     }
@@ -130,7 +130,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    public function getFacets ()
+    public function getFacets()
     {
         if (!$this->facets) {
             $this->facets = new Facets($this->response['facet_counts']);
@@ -139,11 +139,22 @@ class RecordCollection extends AbstractRecordCollection
     }
 
     /**
+     * Get highlighting details.
+     *
+     * @return array
+     */
+    public function getHighlighting()
+    {
+        return isset($this->response['highlighting'])
+            ? $this->response['highlighting'] : array();
+    }
+
+    /**
      * Return offset in the total search result set.
      *
      * @return int
      */
-    public function getOffset ()
+    public function getOffset()
     {
         return $this->response['response']['start'];
     }

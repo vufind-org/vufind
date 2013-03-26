@@ -104,6 +104,13 @@ class SolrDefault extends AbstractBase
     protected $hierarchyDriver = null;
 
     /**
+     * Highlighting details
+     *
+     * @var array
+     */
+    protected $highlightDetails = array();
+
+    /**
      * Constructor
      *
      * @param \Zend\Config\Config $mainConfig     VuFind main configuration (omit for
@@ -130,6 +137,18 @@ class SolrDefault extends AbstractBase
             }
         }
         parent::__construct($mainConfig, $recordConfig);
+    }
+
+    /**
+     * Add highlighting details to the object.
+     *
+     * @param array $details Details to add
+     *
+     * @return void
+     */
+    public function setHighlightDetails($details)
+    {
+        $this->highlightDetails = $details;
     }
 
     /**
@@ -412,8 +431,8 @@ class SolrDefault extends AbstractBase
         if (!$this->highlight) {
             return '';
         }
-        return (isset($this->fields['_highlighting']['author'][0]))
-            ? $this->fields['_highlighting']['author'][0] : '';
+        return (isset($this->highlightDetails['author'][0]))
+            ? $this->highlightDetails['author'][0] : '';
     }
 
     /**
@@ -452,19 +471,19 @@ class SolrDefault extends AbstractBase
         if ($this->snippet) {
             // First check for preferred fields:
             foreach ($this->preferredSnippetFields as $current) {
-                if (isset($this->fields['_highlighting'][$current][0])) {
+                if (isset($this->highlightDetails[$current][0])) {
                     return array(
-                        'snippet' => $this->fields['_highlighting'][$current][0],
+                        'snippet' => $this->highlightDetails[$current][0],
                         'caption' => $this->getSnippetCaption($current)
                     );
                 }
             }
 
             // No preferred field found, so try for a non-forbidden field:
-            if (isset($this->fields['_highlighting'])
-                && is_array($this->fields['_highlighting'])
+            if (isset($this->highlightDetails)
+                && is_array($this->highlightDetails)
             ) {
-                foreach ($this->fields['_highlighting'] as $key => $value) {
+                foreach ($this->highlightDetails as $key => $value) {
                     if (!in_array($key, $this->forbiddenSnippetFields)) {
                         return array(
                             'snippet' => $value[0],
@@ -490,8 +509,8 @@ class SolrDefault extends AbstractBase
         if (!$this->highlight) {
             return '';
         }
-        return (isset($this->fields['_highlighting']['title'][0]))
-            ? $this->fields['_highlighting']['title'][0] : '';
+        return (isset($this->highlightDetails['title'][0]))
+            ? $this->highlightDetails['title'][0] : '';
     }
 
     /**

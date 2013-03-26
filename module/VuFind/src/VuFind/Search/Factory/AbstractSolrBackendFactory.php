@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\Factory;
 
+use VuFind\Search\Solr\InjectHighlightingListener;
+
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\QueryBuilder;
 use VuFindSearch\Backend\Solr\Connector;
@@ -155,6 +157,11 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      */
     protected function createListeners (Backend $backend)
     {
+        $events = $this->serviceLocator->get('SharedEventManager');
+
+        // Highlighting
+        $highlightListener = new InjectHighlightingListener($backend);
+        $highlightListener->attach($events);
     }
 
     /**
@@ -175,16 +182,6 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         $connector->setQueryDefaults(
             array('wt' => 'json', 'json.nl' => 'arrarr', 'fl' => '*,score')
         );
-
-        // Highlighting
-        $hl = !isset($search->General->highlighting) ? false : $search->General->highlighting;
-        $sn = !isset($search->General->snippets)     ? false : $search->General->snippets;
-        if ($hl || $sn) {
-            $connector->addQueryAppend('hl', 'true');
-            $connector->addQueryAppend('hl.fl', '*');
-            $connector->addQueryAppend('hl.simple.pre', '{{{{START_HILITE}}}}');
-            $connector->addQueryAppend('hl.simple.post', '{{{{END_HILITE}}}}');
-        }
 
         // Hidden filters
         if (isset($search->HiddenFilters)) {

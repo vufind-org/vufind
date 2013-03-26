@@ -170,14 +170,13 @@ class Options extends \VuFind\Search\Base\Options
 
         // Turn on highlighting if the user has requested highlighting or snippet
         // functionality:
-        //   Already in AbstractSolrBackendFactory (dmaus, 20130305)
-        /* $highlight = !isset($searchSettings->General->highlighting) */
-        /*     ? false : $searchSettings->General->highlighting; */
-        /* $snippet = !isset($searchSettings->General->snippets) */
-        /*     ? false : $searchSettings->General->snippets; */
-        /* if ($highlight || $snippet) { */
-        /*     $this->highlight = true; */
-        /* } */
+        $highlight = !isset($searchSettings->General->highlighting)
+            ? false : $searchSettings->General->highlighting;
+        $snippet = !isset($searchSettings->General->snippets)
+            ? false : $searchSettings->General->snippets;
+        if ($highlight || $snippet) {
+            $this->highlight = true;
+        }
 
         // Apply hidden filters:
         //   Already in AbstractSolrBackendFactory (dmaus, 20130305)
