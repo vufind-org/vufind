@@ -27,13 +27,13 @@
  * @link     http://vufind.org   Main Site
  */
 
-namespace VuFindTest\Search\Listener;
+namespace VuFindTest\Search\Solr;
 
 use VuFindSearch\ParamBag;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
 
-use VuFind\Search\Listener\MultiIndexListener;
+use VuFind\Search\Solr\MultiIndexListener;
 use VuFindTest\Unit\TestCase;
 use Zend\EventManager\Event;
 

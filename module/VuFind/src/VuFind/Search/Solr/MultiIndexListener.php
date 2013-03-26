@@ -27,7 +27,7 @@
  * @link     http://vufind.org   Main Site
  */
 
-namespace VuFind\Search\Listener;
+namespace VuFind\Search\Solr;
 
 use VuFindSearch\Backend\BackendInterface;
 use Zend\EventManager\EventInterface;
