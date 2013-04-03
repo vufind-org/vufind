@@ -107,8 +107,10 @@ class Sierra extends AbstractBase
             . "FROM sierra_view.bib_view "
             . "LEFT JOIN sierra_view.bib_record_item_record_link ON "
             . "(bib_view.id = bib_record_item_record_link.bib_record_id) "
-            . "WHERE bib_view.record_num = " . $this->idStrip($id) . ";";
-        $record_ids = pg_query($this->db, $get_record_ids_query);
+            . "WHERE bib_view.record_num = $1;";
+        $record_ids = pg_query_params(
+            $this->db, $get_record_ids_query, array($this->idStrip($id))
+        );
         while ($record = pg_fetch_row($record_ids)) {
             $itemRecords[] = $record[0];
         }
@@ -125,15 +127,17 @@ class Sierra extends AbstractBase
      */
     protected function processCallNumber($callnumber, $id)
     {
-        // If there's no item-specific bar code from the item-level queries
+        // If there's no item-specific call number from the item-level queries
         // in getStatus/getHoldings, get the bib-level call number
         if ($callnumber == null) {
             $query = "SELECT varfield_view.field_content "
-                . "FROM sierra_view.varfield_view " 
+                . "FROM sierra_view.varfield_view "
                 . "WHERE varfield_view.record_type_code = 'b' AND "
                 . "varfield_view.varfield_type_code = 'c' and "
-                . "varfield_view.record_num = " . $this->idStrip($id) . ";";
-            $results = pg_query($this->db, $query);
+                . "varfield_view.record_num = $1;";
+            $results = pg_query_params(
+                $this->db, $query, array($this->idStrip($id))
+            );
             $callnumberarray = pg_fetch_array($results, 0, PGSQL_NUM);
             $callnumber = $callnumberarray[0];
         }
@@ -296,8 +300,8 @@ class Sierra extends AbstractBase
                 . "INNER JOIN sierra_view.varfield_view "
                 . "ON (course_record_item_record_link.course_record_id = "
                 . "varfield_view.record_id) "
-                . "WHERE varfield_view.record_num = " . $coursenum . ";";
-            $results = pg_query($this->db, $query);
+                . "WHERE varfield_view.record_num = $1;";
+            $results = pg_query_params($this->db, $query, array($coursenum));
             while ($resultArray = pg_fetch_row($results)) {
                 $bareNumber = $resultArray[0];
                 $fullNumber = $this->createFullId($bareNumber);
@@ -353,9 +357,7 @@ class Sierra extends AbstractBase
             $itemIds = $this->getIds($id);
             // Use the database ids to get the item-level information (status,
             // location, and potentially call number) associated with that bib record
-            foreach ($itemIds as $item) {
-                $callnumber = null;
-                $query1 = "SELECT item_view.item_status_code, "
+            $query1 = "SELECT item_view.item_status_code, "
                     . "item_view.location_code, "
                     . "varfield_view.field_content, "
                     . "varfield_view.varfield_type_code, "
@@ -365,9 +367,12 @@ class Sierra extends AbstractBase
                     . "ON (item_view.id = varfield_view.record_id) "
                     . "LEFT JOIN sierra_view.checkout "
                     . "ON (item_view.id = checkout.item_record_id) "
-                    . "WHERE item_view.id = '" . $item . "'"
-                    . "AND varfield_view.record_type_code = 'i';";
-                $results1 = pg_query($this->db, $query1);
+                    . "WHERE item_view.id = $1"
+            . "AND varfield_view.record_type_code = 'i';";
+            pg_prepare($this->db, "prep_query", $query1);
+            foreach ($itemIds as $item) {
+                $callnumber = null;
+                $results1 = pg_execute($this->db, "prep_query", array($item));
                 while ($resultArray = pg_fetch_row($results1)) {
                     if ($resultArray[3] == "c") {
                         $callnumber = $resultArray[2];
@@ -423,25 +428,26 @@ class Sierra extends AbstractBase
         try {
             $holdings = array();
             $itemIds = $this->getIds($id);
-            //Use the database ids to get the item-level information (status,
+            // Use the database ids to get the item-level information (status,
             // location, and potentially call number) associated with that bib record
+            $query1 = "SELECT
+                        item_view.item_status_code,
+                        item_view.location_code,
+                        checkout.due_gmt,
+                        varfield_view.field_content,
+                        varfield_view.varfield_type_code
+                            FROM
+                        sierra_view.item_view
+                        LEFT JOIN sierra_view.checkout
+                        ON (item_view.id = checkout.item_record_id)
+                        LEFT JOIN sierra_view.varfield_view
+                        ON (item_view.id = varfield_view.record_id)
+                        WHERE item_view.id = $1
+                        AND varfield_view.record_type_code = 'i';";
+            $prep_query = pg_prepare($this->db, "prep_query", $query1);
             foreach ($itemIds as $item) {
                 $callnumber = null;
-                $query1 = "SELECT
-                    item_view.item_status_code,
-                    item_view.location_code,
-                    checkout.due_gmt,
-                    varfield_view.field_content,
-                    varfield_view.varfield_type_code
-                        FROM
-                    sierra_view.item_view
-                    LEFT JOIN sierra_view.checkout
-                    ON (item_view.id = checkout.item_record_id)
-                    LEFT JOIN sierra_view.varfield_view
-                    ON (item_view.id = varfield_view.record_id)
-                    WHERE item_view.id = '" . $item . "'
-                    AND varfield_view.record_type_code = 'i';";
-                $results1 = pg_query($this->db, $query1);
+                $results1 = pg_execute($this->db, "prep_query", array($item));
                 while ($row1 = pg_fetch_row($results1)) {
                     if ($row1[4] == "b") {
                         $barcode = $row1[3];
@@ -507,8 +513,11 @@ class Sierra extends AbstractBase
     {
         try {
             $newItems = array();
-            $query = "SELECT bib_view.record_num
-                FROM sierra_view.bib_view ";
+            $offset = $limit * ($page - 1);
+            if (is_int($daysOld) == false || $daysOld > 30) {
+                $daysOld = "30";
+            }
+            $query = "SELECT bib_view.record_num FROM sierra_view.bib_view ";
             if ($fundID != null) {
                 $query .= "INNER JOIN sierra_view.bib_record_order_record_link "
                     . "ON (bib_view.id = bib_record_order_record_link.bib_record_id)"
@@ -518,22 +527,30 @@ class Sierra extends AbstractBase
                     . "INNER JOIN sierra_view.fund_master "
                     . "ON (CAST (order_record_cmf.fund_code AS integer) = "
                     . "fund_master.code_num) "
-                    . "WHERE fund_master.code_num = '" . $fundID . "' AND ";
+                    . "WHERE fund_master.code_num = CAST ($3 AS integer) AND ";
             } else {
                 $query .= "WHERE ";
             }
             if ($this->config['Catalog']['new_by_cat_date'] == "Y") {
                 $query .= "bib_view.cataloging_date_gmt BETWEEN "
                     . "date_trunc('day', (now() - interval '" . $daysOld
-                    . " days')) AND now()";
+                    . " days')) AND now() ";
             } else {
                 $query .= "bib_view.record_creation_date_gmt BETWEEN "
                     . "date_trunc('day', (now() - interval '" . $daysOld
-                    . " days')) AND now()";
+                    . " days')) AND now() ";
             }
-            $query .= "ORDER BY cataloging_date_gmt LIMIT " . $limit
-                . " OFFSET " . ($limit * ($page - 1)) . ";";
-            $results = pg_query($this->db, $query);
+            $query .= "ORDER BY cataloging_date_gmt LIMIT CAST ($1 AS integer) "
+                . "OFFSET CAST ($2 AS integer);";
+            if ($fundID != null) {
+                $results = pg_query_params(
+                    $this->db, $query, array($limit, $offset, $fundID)
+                );
+            } else {
+                $results = pg_query_params(
+                    $this->db, $query, array($limit, $offset)
+                );
+            }
             $newItems['count'] = (string) pg_num_rows($results);
             if (pg_num_rows($results) != 0) {
                 while ($record = pg_fetch_row($results)) {
