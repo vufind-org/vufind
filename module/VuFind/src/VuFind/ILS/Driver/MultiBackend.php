@@ -147,7 +147,6 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
             = (isset($this->config['Delimiters']['login']) ?
                    $this->config['Delimiters']['login'] :
                    "\t");
-        $this->getDriverConfig($this->defaultDriver);
     }
 
 
@@ -206,6 +205,7 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
         if ($pos > 0) {
             return substr($id, 0, $pos);
         }
+
         //error_log(
         //    "MultiBackend: Can't find source id in '$id' using '$delimiter'"
         //);
@@ -263,26 +263,17 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
         if (isset($this->cache[$source])) {
             return $this->cache[$source];
         }
-
+        
         if (isset($this->drivers[$source])) {
             $driver = $this->drivers[$source];
             $config = $this->getDriverConfig($source);
-            try
-            {
-                $driverInst = $this->getServiceLocator()->get($driver);
-                $driverInst->setConfig($config);
-                $this->cache[$source] = $driverInst;
-                $this->isInitialized[$source] = false;
-                return $driverInst;
-            } catch (Exception $e) {
-                $msg = "MultiBackend: error initializing driver '$driver': ";
-                $msg = $msg . $e->__toString();
-                //error_log($msg);
-                return null;
-            }
-        } else {
-            //error_log("$source is not in drivers[]");
+            $driverInst = $this->getServiceLocator()->get($driver);
+            $driverInst->setConfig($config);
+            $this->cache[$source] = $driverInst;
+            $this->isInitialized[$source] = false;
+            return $driverInst;
         }
+
         return null;
     }
 
@@ -305,9 +296,7 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
                 $this->isInitialized[$source] = true;
                 $this->cache[$source] = $driver;
             } catch (Exception $e) {
-                $msg = "MultiBackend: error initializing driver '$driver': ";
-                $msg = $msg . $e->__toString();
-                //error_log($msg);
+                //error_log($e->__toString);
             }
         }
     }
@@ -413,14 +402,13 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
      *
      * @param string $id The record id to retrieve the holdings for
      *
+     * @throws ILSException
      * @return mixed     On success, an associative array with the following keys:
-     * id, availability (boolean), status, location, reserve, callnumber; on
-     * failure, a PEAR_Error.
-     * @access public
+     * id, availability (boolean), status, location, reserve, callnumber.
      */
     public function getStatus($id)
     {
-        return $this->getHolding($id);
+        return $this->getStatusOrHolding($id, "Status");
     }
 
     /**
@@ -431,15 +419,14 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
      *
      * @param array $ids The array of record ids to retrieve the status for
      *
-     * @return mixed     An array of getStatus() return values on success,
-     * a PEAR_Error object otherwise.
-     * @access public
+     * @throws ILSException
+     * @return array     An array of getStatus() return values on success.
      */
     public function getStatuses($ids)
     {
         $items = array();
         foreach ($ids as $id) {
-            $items[] = $this->getHolding($id);
+            $items[] = $this->getStatus($id);
         }
         return $items;
     }
@@ -453,24 +440,38 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
      * @param string $id     The record id to retrieve the holdings for
      * @param array  $patron Patron data
      *
-     * @return mixed     On success, an associative array with the following keys:
-     * id, availability (boolean), status, location, reserve, callnumber, duedate,
-     * number, barcode; on failure, a PEAR_Error.
-     * @access public
+     * @return array         On success, an associative array with the following
+     * keys: id, availability (boolean), status, location, reserve, callnumber,
+     * duedate, number, barcode.
      */
     public function getHolding($id, $patron = false)
     {
+        return $this->getStatusOrHolding($id, "Holding", $patron);
+    }
+
+    /**
+     * Support method for getStatus / getHolding
+     *
+     * @param string $id     The record id to retrieve the holdings for
+     * @param string $method "Status" or "Holding"
+     * @param array  $patron Patron data
+     *
+     * @return array
+     */
+    protected function getStatusOrHolding($id, $method, $patron = false)
+    {
+        $method = "get".ucfirst($method);
         $source = $this->getSource($id);
         $driver = $this->getDriver($source);
         if ($driver) {
-            $holdings = $driver->getHolding($this->getLocalId($id), $patron);
+            $holdings = $driver->$method($this->getLocalId($id), $patron);
             if ($holdings) {
                 return $this->addIdPrefixes($holdings, $source);
             }
-        } else {
-            //error_log("No driver for '$id' found-");
         }
+        //$source not found in $drivers
         return Array();
+
     }
 
     /**
@@ -481,9 +482,8 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
      *
      * @param string $id The record id to retrieve the info for
      *
-     * @return mixed     An array with the acquisitions data on success, PEAR_Error
-     * on failure
-     * @access public
+     * @throws ILSException
+     * @return array     An array with the acquisitions data on success.
      */
     public function getPurchaseHistory($id)
     {
@@ -516,6 +516,8 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
             $key = $this->getSource($username, $this->delimiters['login']);
             $user = $this->getLocalID($username, $this->delimiters['login']);
             $login = $this->getDriver($key)->patronLogin($user, $password);
+            $login['cat_username']
+                = $key.$this->delimiters['login'].$login['cat_username'];
             return $login;
         }
         foreach ($this->drivers as $key => $driver) {
