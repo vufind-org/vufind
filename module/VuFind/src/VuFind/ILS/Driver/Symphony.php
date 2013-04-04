@@ -404,6 +404,7 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
 
         foreach ($callInfos as $callInfo) {
             $libraryID = $callInfo->libraryID;
+            $library = $this->translatePolicyID('LIBR', $libraryID);
 
             $notInWhitelist = !empty($this->config['LibraryFilter']['include_only'])
                 && !in_array(
@@ -429,9 +430,13 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
                 ? $callInfo->ItemInfo
                 : array($callInfo->ItemInfo);
             foreach ($itemInfos as $itemInfo) {
-                $in_transit        = isset($itemInfo->transitReason);
-                $currentLocationID = $itemInfo->currentLocationID;
-                $homeLocationID    = $itemInfo->homeLocationID;
+                $in_transit = isset($itemInfo->transitReason);
+                $currentLocation = $this->translatePolicyID(
+                    'LOCN', $itemInfo->currentLocationID
+                );
+                $homeLocation = $this->translatePolicyID(
+                    'LOCN', $itemInfo->homeLocationID
+                );
 
                 /* I would like to be able to write
                  *      $available = $itemInfo->numberOfCharges == 0;
@@ -459,26 +464,29 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
 
                 /* Statuses like "Checked out" and "Missing" are represented
                  * by an item's current location. */
-                $status = $in_transit
-                    ? 'In transit'
-                    : $this->translatePolicyID('LOCN', $currentLocationID);
+                $status = $in_transit ? 'In transit' : $currentLocation;
 
-                /* If an item is available, its current location should be
-                 * reported as its location. */
-                $location = $available
-                    ? $this->translatePolicyID('LOCN', $currentLocationID)
-                    : $this->translatePolicyID('LOCN', $homeLocationID);
-
-                /* Locations may be shared among libraries, so unless holdings
-                 * are being filtered to just one library, it is insufficient
-                 * to provide just the location description as the "location".
+                /* "$library - $location" may be misleading for items that are
+                 * on reserve at a reserve desk in another library, so for
+                 * items on reserve, report location as just the reserve desk.
                  */
-                if (count($this->config['LibraryFilter']['include_only'])!=1) {
-                    $location = $this->translatePolicyID('LIBR', $libraryID)
-                        . ' - ' . $location;
-                }
+                if (isset($itemInfo->reserveCollectionID)) {
+                    $reserveDeskID = $itemInfo->reserveCollectionID;
+                    $location = $this->translatePolicyID('RSRV', $reserveDeskID);
+                } else {
+                    /* If an item is available, its current location should be
+                     * reported as its location. */
+                    $location = $available ? $currentLocation : $homeLocation;
 
-                $library = $this->translatePolicyID('LIBR', $libraryID);
+                    /* Locations may be shared among libraries, so unless
+                     * holdings are being filtered to just one library,
+                     * it is insufficient to provide just the location
+                     * description as the "location."
+                     */
+                    if (count($this->config['LibraryFilter']['include_only'])!=1) {
+                        $location = "$library - $location";
+                    }
+                }
 
                 $material = $this->translatePolicyID('ITYP', $itemInfo->itemTypeID);
 
