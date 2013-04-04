@@ -180,7 +180,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             isset($config->Index->timeout) ? $config->Index->timeout : 30
         );
         $connector->setQueryDefaults(
-            array('wt' => 'json', 'json.nl' => 'arrarr', 'fl' => '*,score')
+            array('fl' => '*,score')
         );
 
         // Hidden filters

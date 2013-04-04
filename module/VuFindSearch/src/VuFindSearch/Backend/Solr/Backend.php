@@ -46,6 +46,8 @@ use Zend\Log\LoggerInterface;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 
+use VuFindSearch\Exception\InvalidArgumentException;
+
 /**
  * SOLR backend.
  *
@@ -150,7 +152,10 @@ class Backend implements BackendInterface, MoreLikeThis
      */
     public function search (AbstractQuery $query, $offset, $limit, ParamBag $params = null)
     {
-        if (null !== $params && $params->get('spellcheck.q')) {
+        $params = $params ?: new ParamBag();
+        $this->injectResponseWriter($params);
+
+        if ($params->get('spellcheck.q')) {
             if (!empty($this->dictionaries)) {
                 reset($this->dictionaries);
                 $params->set('spellcheck', 'true');
@@ -189,6 +194,9 @@ class Backend implements BackendInterface, MoreLikeThis
      */
     public function retrieve ($id, ParamBag $params = null)
     {
+        $params = $params ?: new ParamBag();
+        $this->injectResponseWriter($params);
+
         $response   = $this->connector->retrieve($id, $params);
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
@@ -205,6 +213,9 @@ class Backend implements BackendInterface, MoreLikeThis
      */
     public function similar ($id, ParamBag $params = null)
     {
+        $params = $params ?: new ParamBag();
+        $this->injectResponseWriter($params);
+
         $response   = $this->connector->similar($id, $params);
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
@@ -237,17 +248,14 @@ class Backend implements BackendInterface, MoreLikeThis
     public function terms ($field, $start, $limit, ParamBag $params = null)
     {
         $params = $params ?: new ParamBag();
+        $this->injectResponseWriter($params);
+
         $params->set('terms', 'true');
         $params->set('terms.fl', $field);
         $params->set('terms.lower', $start);
         $params->set('terms.limit', $limit);
         $params->set('terms.lower.incl', 'false');
         $params->set('terms.sort', 'index');
-
-        // Terms don't use the defaults/appends/invariants of the connector,
-        // so we set up the json parameters here instead of calling prepare().
-        $params->set('wt', 'json');
-        $params->set('json.nl', 'arrarr');
 
         $response = $this->connector->query('term', $params);
         $terms    = new Terms($this->deserialize($response));
@@ -270,15 +278,12 @@ class Backend implements BackendInterface, MoreLikeThis
         $params = null
     ) {
         $params = $params ?: new ParamBag();
+        $this->injectResponseWriter($params);
+
         $params->set('from', $from);
         $params->set('offset', $page * $limit);
         $params->set('rows', $limit);
         $params->set('source', $source);
-
-        // Alphabrowse doesn't use the defaults/appends/invariants of the connector,
-        // so we set up the json parameters here instead of calling prepare().
-        $params->set('wt', 'json');
-        $params->set('json.nl', 'arrarr');
 
         try {
             $response = $this->connector->query('browse', $params);
@@ -467,5 +472,37 @@ class Backend implements BackendInterface, MoreLikeThis
             );
         }
         throw $e;
+    }
+
+    /**
+     * Inject response writer and named list implementation into parameters.
+     *
+     * @param ParamBag $params Parameters
+     *
+     * @return void
+     *
+     * @throws InvalidArgumentException Response writer and named list
+     * implementation already set to an incompatible type.
+     */
+    protected function injectResponseWriter(ParamBag $params)
+    {
+        if (array_diff($params->get('wt') ?: array(), array('json'))) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Invalid response writer type: %s',
+                    print_r($params->get('wt'), true)
+                )
+            );
+        }
+        if (array_diff($params->get('json.nl') ?: array(), array('arrarr'))) {
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Invalid named list implementation type: %s',
+                    print_r($params->get('json.nl'), true)
+                )
+            );
+        }
+        $params->set('wt', array('json'));
+        $params->set('json.nl', array('arrarr'));
     }
 }

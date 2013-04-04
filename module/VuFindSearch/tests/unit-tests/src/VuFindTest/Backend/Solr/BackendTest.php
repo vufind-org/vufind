@@ -30,6 +30,8 @@
 namespace VuFindTest\Backend\Solr;
 
 use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\ParamBag;
+
 use Zend\Http\Response;
 use PHPUnit_Framework_TestCase;
 use InvalidArgumentException;
@@ -85,6 +87,20 @@ class BackendTest extends PHPUnit_Framework_TestCase
         $terms = $back->terms('author', '', -1);
         $this->assertTrue($terms->hasFieldTerms('author'));
         $this->assertCount(10, $terms->getFieldTerms('author'));
+    }
+
+    /**
+     * Test injectResponseWriter throws on incompatible response writer.
+     *
+     * @return void
+     *
+     * @expectedException VuFindSearch\Exception\InvalidArgumentException
+     */
+    public function testInjectResponseWriterTrhownOnIncompabileResponseWriter ()
+    {
+        $conn = $this->getMock('VuFindSearch\Backend\Solr\Connector', array(), array('http://example.tld/'));
+        $back = new Backend($conn);
+        $back->retrieve('foobar', new ParamBag(array('wt' => array('xml'))));
     }
 
     /**
