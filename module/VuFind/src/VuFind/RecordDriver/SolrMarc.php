@@ -583,16 +583,16 @@ class SolrMarc extends SolrDefault
         }
 
         // If we got this far, we have a table -- collect it as a string:
-        $toc = '';
+        $toc = array();
         foreach ($fields as $field) {
             $subfields = $field->getSubfields();
             foreach ($subfields as $subfield) {
-                $toc .= $subfield->getData();
+                // Break the string into appropriate chunks,  and merge them into
+                // return array:
+                $toc = array_merge($toc, explode('--', $subfield->getData()));
             }
         }
-
-        // Now break the string into appropriate chunks:
-        return explode('--', $toc);
+        return $toc;
     }
 
     /**
