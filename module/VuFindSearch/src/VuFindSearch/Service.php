@@ -94,6 +94,7 @@ class Service
         $context = __FUNCTION__;
         $args = compact('backend', 'query', 'offset', 'limit', 'params', 'context');
         $backend  = $this->resolve($backend, $args);
+        $args['backend_instance'] = $backend;
 
         $this->triggerPre($backend, $args);
         $response = $backend->search($query, $offset, $limit, $params);
@@ -116,6 +117,7 @@ class Service
         $context = __FUNCTION__;
         $args = compact('backend', 'id', 'params', 'context');
         $backend = $this->resolve($backend, $args);
+        $args['backend_instance'] = $backend;
 
         $this->triggerPre($backend, $args);
         $response = $backend->retrieve($id, $params);
@@ -138,6 +140,7 @@ class Service
         $context = __FUNCTION__;
         $args = compact('backend', 'id', 'params', 'context');
         $backend = $this->resolve($backend, $args);
+        $args['backend_instance'] = $backend;
 
         $this->triggerPre($backend, $args);
         $response = $backend->similar($id, $params);
