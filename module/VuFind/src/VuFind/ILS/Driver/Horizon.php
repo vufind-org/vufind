@@ -695,4 +695,111 @@ class Horizon extends AbstractBase
             throw new ILSException($e->getMessage());
         }
     }
+
+    /**
+     * Get New Items
+     *
+     * Retrieve the IDs of items recently added to the catalog.
+     *
+     * The logic in this function follows the pattern used for the "New Additions"
+     * functionality of the Horizon staff client. New Additions was delivered with
+     * Horizon 7.4 and requires setup. Follow instructions in the "Circulation Setup
+     * Guide". The minimum setup is to set the "Track First Availability" flag for
+     * each appropriate item status.
+     *
+     * @param int $page    Not implemented in this driver - Sybase does not have SQL
+     *                     query paging functionality.
+     * @param int $limit   The maximum number of results to retrieve
+     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param int $fundId  Not implemented in this driver - The contributing library
+     *                     does not use acquisitions.
+     *
+     * @return array       Associative array with 'count' and 'results' keys
+     */
+    public function getNewItems($page, $limit, $daysOld, $fundId = null)
+    {
+        // This functionality first appeared in Horizon 7.4 - check our version
+        $hzVersionRequired = "7.4.0.0";
+        if ($this->checkHzVersion($hzVersionRequired)) {
+
+            // Set the Sybase or MSSQL rowcount limit
+            $limitsql = "set rowcount {$limit}";
+
+            // This is the actual query for IDs.
+            $newsql = "  select nb.bib# "
+                    . "    from new_bib nb "
+                    . "    join bib_control bc "
+                    . "      on bc.bib# = nb.bib# "
+                    . "     and bc.staff_only = 0 "
+                    . "   where nb.date > "
+                    . "         datediff(dd, '01JAN1970', getdate()) - {$daysOld} "
+                    . "order by nb.date desc ";
+
+            $results = array();
+
+            // Set the rowcount limit before executing the query for IDs
+            mssql_query($limitsql);
+
+            // Actual query for IDs
+            $sqlStmt = mssql_query($newsql);
+            while ($row = mssql_fetch_assoc($sqlStmt)) {
+                $results[] = $row['bib#'];
+            }
+
+            $retVal = array('count' => count($results), 'results' => array());
+            foreach ($results as $result) {
+                $retVal['results'][] = array('id' => $result);
+            }
+            return $retVal;
+        } else {
+            return array('count' => 0, 'results' => array());
+        }
+    }
+
+    /**
+     * Check Horizon Version
+     *
+     * Check the Horizon version found in the matham table to make sure it is at
+     * least the required version.
+     *
+     * @param string $hzVersionRequired Minimum version required
+     *
+     * @return boolean   True or False the required version is the same or higher.
+     */
+    protected function checkHzVersion($hzVersionRequired)
+    {
+        $checkHzVersionSQL = "select database_revision from matham";
+
+        $versionResult = mssql_query($checkHzVersionSQL);
+        while ($row = mssql_fetch_assoc($versionResult)) {
+            $hzVersionFound = $row['database_revision'];
+        }
+
+        /* The Horizon database version is made up of 4 numbers seperated by periods.
+         * Explode the string and check each segment against the required version.
+         */
+        $foundVersionParts    = explode('.', $hzVersionFound);
+        $requiredVersionParts = explode('.', $hzVersionRequired);
+
+        $versionOK = true;
+
+        for ($i = 0; $i < count($foundVersionParts); $i++) {
+            $required = intval($requiredVersionParts[$i]);
+            $found    = intval($foundVersionParts[$i]);
+
+
+            if ($found > $required) {
+                // If found is greater than required stop checking
+                break;
+            } elseif ($found < $required) {
+                /* If found is less than required set $versionOK false
+                 * and stop checking
+                 */
+                $versionOK = false;
+                break;
+            }
+        }
+
+        return $versionOK;
+    }
 }
