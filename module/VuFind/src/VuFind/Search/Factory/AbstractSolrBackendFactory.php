@@ -30,6 +30,7 @@
 namespace VuFind\Search\Factory;
 
 use VuFind\Search\Solr\InjectHighlightingListener;
+use VuFind\Search\Solr\MultiIndexListener;
 
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\QueryBuilder;
@@ -162,6 +163,22 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         // Highlighting
         $highlightListener = new InjectHighlightingListener($backend);
         $highlightListener->attach($events);
+
+        // Apply field stripping if applicable:
+        $search = $this->config->get($this->searchConfig);
+        if (isset($search->StripFields) && isset($search->IndexShards)) {
+            $strip = $search->StripFields->toArray();
+            foreach ($strip as $k => $v) {
+                $strip[$k] = array_map('trim', explode(',', $v));
+            }
+            $mindexListener = new MultiIndexListener(
+                $backend,
+                $search->IndexShards->toArray(),
+                $strip,
+                $this->loadSpecs()
+            );
+            $mindexListener->attach($events);
+        }
     }
 
     /**

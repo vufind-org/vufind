@@ -60,13 +60,6 @@ class Options extends \VuFind\Search\Base\Options
     protected $hiddenFilters = array();
 
     /**
-     * Shard fields to strip
-     *
-     * @var array
-     */
-    protected $solrShardsFieldsToStrip = array();
-
-    /**
      * Perform initialization that cannot occur in constructor due to need for
      * injected dependencies.
      *
@@ -224,12 +217,6 @@ class Options extends \VuFind\Search\Base\Options
                 $this->visibleShardCheckboxes
                     = $searchSettings->ShardPreferences->showCheckboxes;
             }
-            // Apply field stripping if applicable:
-            if (isset($searchSettings->StripFields)) {
-                foreach ($searchSettings->StripFields as $k => $v) {
-                    $this->solrShardsFieldsToStrip[$k] = $v;
-                }
-            }
         }
     }
 
@@ -297,15 +284,5 @@ class Options extends \VuFind\Search\Base\Options
     public function getAdvancedSearchAction()
     {
         return 'search-advanced';
-    }
-
-    /**
-     * Get details on which Solr fields to strip when sharding is active.
-     *
-     * @return array
-     */
-    public function getSolrShardsFieldsToStrip()
-    {
-        return $this->solrShardsFieldsToStrip;
     }
 }

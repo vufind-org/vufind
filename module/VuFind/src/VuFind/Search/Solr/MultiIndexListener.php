@@ -30,6 +30,8 @@
 namespace VuFind\Search\Solr;
 
 use VuFindSearch\Backend\BackendInterface;
+
+use Zend\EventManager\SharedEventManagerInterface;
 use Zend\EventManager\EventInterface;
 
 /**
@@ -57,7 +59,6 @@ class MultiIndexListener
      */
     protected $shards;
 
-
     /**
      * Fields to strip, indexed by shard name.
      *
@@ -82,13 +83,26 @@ class MultiIndexListener
      *
      * @return void
      */
-    public function __construct (BackendInterface $backend, array $shards, array $stripfields, array $specs)
-    {
+    public function __construct(BackendInterface $backend, array $shards,
+        array $stripfields, array $specs
+    ) {
         $this->specs       = $specs;
         $this->active      = array();
         $this->backend     = $backend;
         $this->shards      = $shards;
         $this->stripfields = $stripfields;
+    }
+
+    /**
+     * Attach listener to shared event manager.
+     *
+     * @param SharedEventManagerInterface $manager Shared event manager
+     *
+     * @return void
+     */
+    public function attach(SharedEventManagerInterface $manager)
+    {
+        $manager->attach('VuFind\Search', 'pre', array($this, 'onSearchPre'));
     }
 
     /**
@@ -98,7 +112,7 @@ class MultiIndexListener
      *
      * @return EventInterface
      */
-    public function onSearchPre (EventInterface $event)
+    public function onSearchPre(EventInterface $event)
     {
         $backend = $event->getTarget();
         if ($backend === $this->backend) {
@@ -122,7 +136,7 @@ class MultiIndexListener
      *
      * @return array
      */
-    protected function getFields (array $shards)
+    protected function getFields(array $shards)
     {
         $fields = array();
         foreach ($this->stripfields as $name => $strip) {
@@ -143,7 +157,7 @@ class MultiIndexListener
      *
      * @return array
      */
-    protected function getSearchSpecs (array $fields)
+    protected function getSearchSpecs(array $fields)
     {
         $specs  = array();
         $fields = array_merge(
@@ -179,7 +193,7 @@ class MultiIndexListener
      *
      * @return array
      */
-    protected function stripSpecsQueryFields (array $settings, array $fields)
+    protected function stripSpecsQueryFields(array $settings, array $fields)
     {
         $stripped = array();
         foreach ($settings as $field => $rule) {
