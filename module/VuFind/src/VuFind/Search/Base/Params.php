@@ -361,11 +361,11 @@ class Params implements ServiceLocatorAwareInterface
      */
     protected function initAdvancedSearch($request)
     {
-        $this->searchType = 'advanced';
-
         $this->query = QueryAdapter::fromRequest(
             $request, $this->getOptions()->getDefaultHandler()
         );
+
+        $this->searchType = $this->query instanceof Query ? 'basic' : 'advanced';
     }
 
     /**
