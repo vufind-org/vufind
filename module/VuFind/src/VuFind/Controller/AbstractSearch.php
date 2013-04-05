@@ -77,9 +77,8 @@ class AbstractSearch extends AbstractBase
     public function advancedAction()
     {
         $view = $this->createViewModel();
-        $view->options = $this->getSearchManager()
-            ->setSearchClassId($this->searchClassId)
-            ->getOptionsInstance();
+        $view->options = $this->getServiceLocator()
+            ->get('VuFind\SearchOptionsPluginManager')->get($this->searchClassId);
         if ($view->options->getAdvancedSearchAction() === false) {
             throw new \Exception('Advanced search not supported.');
         }
@@ -148,8 +147,9 @@ class AbstractSearch extends AbstractBase
             return $this->redirectToSavedSearch($savedId);
         }
 
-        $manager = $this->getSearchManager();
-        $params = $manager->setSearchClassId($this->searchClassId)->getParams();
+        $results = $this->getServiceLocator()
+            ->get('VuFind\SearchResultsPluginManager')->get($this->searchClassId);
+        $params = $results->getParams();
         $params->recommendationsEnabled(true);
 
         // Send both GET and POST variables to search class:
@@ -166,12 +166,6 @@ class AbstractSearch extends AbstractBase
         // Attempt to perform the search; if there is a problem, inspect any Solr
         // exceptions to see if we should communicate to the user about them.
         try {
-            // We need to reset the searchClassId here because it may have been
-            // changed if recommendation modules initialized by the params object
-            // manipulated the shared search manager object.
-            $results = $manager->setSearchClassId($this->searchClassId)
-                ->getResults($params);
-
             // Explicitly execute search within controller -- this allows us to
             // catch exceptions more reliably:
             $results->performAndProcessSearch();
@@ -218,8 +212,9 @@ class AbstractSearch extends AbstractBase
                 // We need to create and process an "empty results" object to
                 // ensure that recommendation modules and templates behave
                 // properly when displaying the error message.
-                $view->results = $this->getSearchManager()
-                    ->setSearchClassId('EmptySet')->getResults($params);
+                $view->results = $this->getServiceLocator()
+                    ->get('VuFind\SearchResultsPluginManager')->get('EmptySet');
+                $view->results->setParams($params);
                 $view->results->performAndProcessSearch();
             } else {
                 // Unexpected error -- let's throw this up to the next level.
