@@ -139,6 +139,43 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     public function getServiceManager()
     {
         if (!$this->serviceManager) {
+            $this->serviceManager = new \Zend\ServiceManager\ServiceManager();
+            $optionsFactory = new \VuFind\Search\Options\PluginManager(
+                new \Zend\ServiceManager\Config(
+                    array(
+                        'abstract_factories' => array('VuFind\Search\Options\PluginFactory'),
+                        'aliases' => array('VuFind' => 'Solr'),
+                    )
+                )
+            );
+            $optionsFactory->setServiceLocator($this->serviceManager);
+            $this->serviceManager->setService(
+                'VuFind\SearchOptionsPluginManager', $optionsFactory
+            );
+            $paramsFactory = new \VuFind\Search\Params\PluginManager(
+                new \Zend\ServiceManager\Config(
+                    array(
+                        'abstract_factories' => array('VuFind\Search\Params\PluginFactory'),
+                        'aliases' => array('VuFind' => 'Solr'),
+                    )
+                )
+            );
+            $paramsFactory->setServiceLocator($this->serviceManager);
+            $this->serviceManager->setService(
+                'VuFind\SearchParamsPluginManager', $paramsFactory
+            );
+            $resultsFactory = new \VuFind\Search\Results\PluginManager(
+                new \Zend\ServiceManager\Config(
+                    array(
+                        'abstract_factories' => array('VuFind\Search\Results\PluginFactory'),
+                        'aliases' => array('VuFind' => 'Solr'),
+                    )
+                )
+            );
+            $resultsFactory->setServiceLocator($this->serviceManager);
+            $this->serviceManager->setService(
+                'VuFind\SearchResultsPluginManager', $resultsFactory
+            );
             $recordDriverFactory = new \VuFind\RecordDriver\PluginManager(
                 new \Zend\ServiceManager\Config(
                     array(
@@ -147,7 +184,6 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                     )
                 )
             );
-            $this->serviceManager = new \Zend\ServiceManager\ServiceManager();
             $this->serviceManager->setService(
                 'VuFind\RecordDriverPluginManager', $recordDriverFactory
             );
