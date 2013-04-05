@@ -38,11 +38,45 @@ namespace VuFind\Recommend;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
-class SummonDatabases extends AbstractSearchManagerAwareModule
+class SummonDatabases implements RecommendInterface
 {
+    /**
+     * Database details
+     *
+     * @var array
+     */
     protected $databases;
+
+    /**
+     * Request parameter to pull query from
+     *
+     * @var string
+     */
     protected $requestParam = 'lookfor';
+
+    /**
+     * User query
+     *
+     * @var string
+     */
     protected $lookfor;
+
+    /**
+     * Results plugin manager
+     *
+     * @var \VuFind\Search\Results\PluginManager
+     */
+    protected $resultsManager;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
+     */
+    public function __construct(\VuFind\Search\Results\PluginManager $results)
+    {
+        $this->resultsManager = $results;
+    }
 
     /**
      * setConfig
@@ -97,10 +131,8 @@ class SummonDatabases extends AbstractSearchManagerAwareModule
         // to create a new Summon search object using the specified request 
         // parameter for search terms.
         if ($results->getParams()->getSearchClassId() != 'Summon') {
-            $sm = $this->getSearchManager();
-            $params = $sm->setSearchClassId('Summon')->getParams();
-            $params->setBasicSearch($this->lookfor);
-            $results = $sm->setSearchClassId('Summon')->getResults($params);
+            $results = $this->resultsManager->get('Summon');
+            $results->getParams()->setBasicSearch($this->lookfor, 'AllFields');
             $results->performAndProcessSearch();
         }
         $this->databases = $results->getDatabaseRecommendations();
