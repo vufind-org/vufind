@@ -536,6 +536,10 @@ abstract class Results implements ServiceLocatorAwareInterface
      */
     public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
     {
+        // If this isn't the top-level manager, get its parent:
+        if ($serviceLocator instanceof ServiceLocatorAwareInterface) {
+            $serviceLocator = $serviceLocator->getServiceLocator();
+        }
         $this->serviceLocator = $serviceLocator;
         return $this;
     }

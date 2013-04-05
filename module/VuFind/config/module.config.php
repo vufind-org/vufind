@@ -729,6 +729,30 @@ $config = array(
                     'WorldCat' => 'VuFind\Search\Factory\WorldCatBackendFactory',
                 )
             ),
+            'search_options' => array(
+                'abstract_factories' => array('VuFind\Search\Options\PluginFactory'),
+                'aliases' => array(
+                    // Alias to account for "source" field in resource table,
+                    // which uses "VuFind" for records from Solr index.
+                    'VuFind' => 'Solr'
+                ),
+            ),
+            'search_params' => array(
+                'abstract_factories' => array('VuFind\Search\Params\PluginFactory'),
+                'aliases' => array(
+                    // Alias to account for "source" field in resource table,
+                    // which uses "VuFind" for records from Solr index.
+                    'VuFind' => 'Solr'
+                ),
+            ),
+            'search_results' => array(
+                'abstract_factories' => array('VuFind\Search\Results\PluginFactory'),
+                'aliases' => array(
+                    // Alias to account for "source" field in resource table,
+                    // which uses "VuFind" for records from Solr index.
+                    'VuFind' => 'Solr'
+                ),
+            ),
             'session' => array(
                 'abstract_factories' => array('VuFind\Session\PluginFactory'),
                 'invokables' => array(

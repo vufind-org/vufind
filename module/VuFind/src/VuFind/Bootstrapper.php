@@ -106,7 +106,8 @@ class Bootstrapper
             'Auth', 'Autocomplete', 'Db\Table', 'Hierarchy\Driver',
             'Hierarchy\TreeDataSource', 'Hierarchy\TreeRenderer', 'ILS\Driver',
             'Recommend', 'RecordDriver', 'RecordTab', 'Related', 'Resolver\Driver',
-            'Session', 'Statistics\Driver'
+            'Search\Options', 'Search\Params', 'Search\Results', 'Session',
+            'Statistics\Driver'
         );
         foreach ($namespaces as $ns) {
             $serviceName = 'VuFind\\' . str_replace('\\', '', $ns) . 'PluginManager';

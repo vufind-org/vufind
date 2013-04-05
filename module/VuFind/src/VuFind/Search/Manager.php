@@ -48,10 +48,6 @@ class Manager implements ServiceLocatorAwareInterface
      * Search class id
      */
     protected $classId = 'Solr';
-    /**
-     * An array of all the current options
-     */
-    protected $optionsStore = array();
 
     /**
      * Service locator
@@ -157,16 +153,8 @@ class Manager implements ServiceLocatorAwareInterface
      */
     public function getOptionsInstance()
     {
-        if (!isset($this->optionsStore[$this->classId])) {
-            $class = $this->getOptionsClass();
-            $this->optionsStore[$this->classId] = new $class();
-            if (!($this->optionsStore[$this->classId] instanceof Base\Options)) {
-                throw new \Exception('Invalid options object.');
-            }
-            $this->injectDependencies($this->optionsStore[$this->classId]);
-            $this->optionsStore[$this->classId]->init();
-        }
-        return $this->optionsStore[$this->classId];
+        return $this->getServiceLocator()->get('VuFind\SearchOptionsPluginManager')
+            ->get($this->classId);
     }
 
     /**

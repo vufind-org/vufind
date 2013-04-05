@@ -40,7 +40,19 @@ use Zend\ServiceManager\AbstractFactoryInterface,
  */
 abstract class AbstractPluginFactory implements AbstractFactoryInterface
 {
+    /**
+     * Default namespace for building class names
+     *
+     * @var string
+     */
     protected $defaultNamespace;
+
+    /**
+     * Optional suffix to append to class names
+     *
+     * @var string
+     */
+    protected $classSuffix = '';
 
     /**
      * Get the name of a class for a given plugin name.
@@ -55,9 +67,11 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
         // If we have a FQCN, return it as-is; otherwise, prepend the default prefix:
         if (strpos($name, '\\') === false) {
             // First try the raw service name, then try a normalized version:
-            $name = $this->defaultNamespace . '\\' . $requestedName;
+            $name = $this->defaultNamespace . '\\' . $requestedName
+                . $this->classSuffix;
             if (!class_exists($name)) {
-                $name = $this->defaultNamespace . '\\' . ucwords(strtolower($name));
+                $name = $this->defaultNamespace . '\\' . ucwords(strtolower($name))
+                    . $this->classSuffix;
             }
         }
         return $name;
