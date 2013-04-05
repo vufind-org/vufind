@@ -95,8 +95,8 @@ class NoILS extends AbstractBase implements ServiceLocatorAwareInterface,
      */
     public function getSolrRecord($id)
     {
-        return $this->getServiceLocator()->getServiceLocator()->get('SearchManager')
-            ->setSearchClassId('Solr')->getResults()->getRecord($id);
+        return $this->getServiceLocator()->getServiceLocator()
+            ->get('VuFind\RecordLoader')->load($id);
     }
 
     /**

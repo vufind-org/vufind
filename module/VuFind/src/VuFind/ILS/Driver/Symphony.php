@@ -313,8 +313,7 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
         $entryNumber = $this->config['999Holdings']['entry_number'];
 
         $records = $this->getServiceLocator()->getServiceLocator()
-            ->get('SearchManager')->setSearchClassId('Solr')->getResults()
-            ->getRecords($ids);
+            ->get('VuFind\RecordLoader')->loadBatch($ids);
         foreach ($records as $record) {
             $results = $record->getFormattedMarcDetails($entryNumber, $marcMap);
             foreach ($results as $result) {
