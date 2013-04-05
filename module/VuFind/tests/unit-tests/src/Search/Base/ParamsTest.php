@@ -48,12 +48,9 @@ class ParamsTest extends \VuFindTest\Unit\TestCase
      */
     public function testSpellingReplacements()
     {
-        // Use Solr options since base options is an abstract class.
-        $sm = $this->getSearchManager()->setSearchClassId('Solr');
-        $options = $sm->getOptionsInstance();
-
-        // Create Params object for testing purposes.
-        $params = $sm->setSearchClassId('Base')->getParams($options);
+        // Use Solr since some Base components are abstract:
+        $params = $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
+            ->get('Solr');
 
         // Key test: word boundaries:
         $params->setBasicSearch('go good googler');

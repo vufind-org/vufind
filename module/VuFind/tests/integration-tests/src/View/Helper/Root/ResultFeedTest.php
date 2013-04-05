@@ -75,11 +75,10 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
         $request->set('sort', 'title');
         $request->set('view', 'rss');
 
-        $sm = $this->getSearchManager();
-        $params = $sm->setSearchClassId('Solr')->getParams();
-        $params->initFromRequest($request);
+        $results = $this->getServiceManager()
+            ->get('VuFind\SearchResultsPluginManager')->get('Solr');
+        $results->getParams()->initFromRequest($request);
 
-        $results = $sm->setSearchClassId('Solr')->getResults($params);
         $helper = new ResultFeed();
         $helper->setView($this->getPhpRenderer($this->getPlugins()));
         $mockTranslator = function ($str) {

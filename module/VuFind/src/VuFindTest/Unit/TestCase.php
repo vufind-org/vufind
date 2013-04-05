@@ -232,22 +232,4 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         }
         return $sm->get('VuFind\AuthPluginManager');
     }
-
-    /**
-     * Get a search manager instance for testing search objects.
-     *
-     * @return \VuFind\Search\Manager
-     */
-    public function getSearchManager()
-    {
-        $sm = $this->getServiceManager();
-        if (!$sm->has('SearchManager')) {
-            $searchManager = new \VuFind\Search\Manager(
-                array('default_namespace' => 'VuFind\Search')
-            );
-            $searchManager->setServiceLocator($sm);
-            $sm->setService('SearchManager', $searchManager);
-        }
-        return $sm->get('SearchManager');
-    }
 }

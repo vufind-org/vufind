@@ -47,7 +47,8 @@ class ResultsTest extends \VuFindTest\Unit\TestCase
     public function testSpellingTokenization()
     {
         // Use Solr results since base results is an abstract class.
-        $solr = $this->getSearchManager()->setSearchClassId('Solr')->getResults();
+        $solr = $this->getServiceManager()->get('VuFind\SearchResultsPluginManager')
+            ->get('Solr');
 
         $this->assertEquals(array('single'), $solr->spellingTokens('single'));
         $this->assertEquals(array('two', 'terms'), $solr->spellingTokens('two terms'));
