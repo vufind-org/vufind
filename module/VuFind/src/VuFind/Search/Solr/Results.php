@@ -70,43 +70,6 @@ class Results extends BaseResults
     protected $spellingQuery;
 
     /**
-     * Get a connection to the Solr index.
-     *
-     * @param null|array $shards Selected shards to use (null for defaults)
-     * @param string     $index  ID of index/search classes to use (this assumes
-     * that \VuFind\Search\$index\Options and \VuFind\Connection\$index are both
-     * valid classes)
-     *
-     * @return \VuFind\Connection\Solr
-     */
-    public function getSolrConnection($shards = null, $index = 'Solr')
-    {
-        // Turn on all shards by default if none are specified (we need to be sure
-        // that any given ID will yield results, even if not all shards are on by
-        // default).
-        $sm = $this->getSearchManager();
-        $options = $sm->setSearchClassId($index)->getOptionsInstance();
-        $allShards = $options->getShards();
-        if (is_null($shards)) {
-            $shards = array_keys($allShards);
-        }
-
-        // If we have selected shards, we need to format them:
-        if (!empty($shards)) {
-            $selectedShards = array();
-            foreach ($shards as $current) {
-                $selectedShards[$current] = $allShards[$current];
-            }
-            $shards = $selectedShards;
-        }
-
-        // Connect to Solr and set up shards:
-        $solr = ConnectionManager::connectToIndex($index);
-        $solr->setShards($shards, $options->getSolrShardsFieldsToStrip());
-        return $solr;
-    }
-
-    /**
      * Support method for performAndProcessSearch -- perform a search based on the
      * parameters passed to the object.
      *
@@ -207,6 +170,23 @@ class Results extends BaseResults
         $filters = $params->getFilterSettings();
         foreach ($filters as $filter) {
             $backendParams->add('fq', $filter);
+        }
+
+        // Shards
+        $allShards = $params->getOptions()->getShards();
+        $shards = $params->getSelectedShards();
+        if (is_null($shards)) {
+            $shards = array_keys($allShards);
+        }
+
+        // If we have selected shards, we need to format them:
+        if (!empty($shards)) {
+            $selectedShards = array();
+            foreach ($shards as $current) {
+                $selectedShards[$current] = $allShards[$current];
+            }
+            $shards = $selectedShards;
+            $backendParams->add('shards', implode(',', $selectedShards));
         }
 
         // Sort
