@@ -56,8 +56,7 @@ class VudlController extends AbstractBase
         $view->id = $id;
 
         // GET XML FILE NAME
-        $driver = $this->getSearchManager()->setSearchClassId('Solr')
-            ->getResults()->getRecord($id);
+        $driver = $this->getServiceLocator()->get('VuFind\RecordLoader')->load($id);
         if (!method_exists($driver, 'getFullRecord')) {
             throw new \Exception('Cannot obtain VuDL record');
         }
