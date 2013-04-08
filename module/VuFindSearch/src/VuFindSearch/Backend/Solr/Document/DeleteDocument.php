@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SOLR update document class.
+ * SOLR delete document class.
  *
  * PHP version 5
  *
@@ -29,14 +29,10 @@
 
 namespace VuFindSearch\Backend\Solr\Document;
 
-use VuFindSearch\Backend\Solr\Record\SerializableRecordInterface;
-use VuFindSearch\Response\RecordInterface;
-
-use SplObjectStorage;
 use XMLWriter;
 
 /**
- * SOLR update document class.
+ * SOLR delete document class.
  *
  * @category VuFind2
  * @package  Search
@@ -44,15 +40,21 @@ use XMLWriter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class UpdateDocument extends AbstractDocument
+class DeleteDocument extends AbstractDocument
 {
+    /**
+     * Unique keys to delete.
+     *
+     * @var array
+     */
+    protected $keys;
 
     /**
-     * Records and index attributes.
+     * Delete queries.
      *
-     * @var SplObjectStorage
+     * @var array
      */
-    protected $records;
+    protected $queries;
 
     /**
      * Constructor.
@@ -61,7 +63,8 @@ class UpdateDocument extends AbstractDocument
      */
     public function __construct()
     {
-        $this->records = new SplObjectStorage();
+        $this->keys    = array();
+        $this->queries = array();
     }
 
     /**
@@ -75,7 +78,7 @@ class UpdateDocument extends AbstractDocument
     }
 
     /**
-     * Return serialized XML representation.
+     * Return serialize XML representation.
      *
      * @return string
      */
@@ -84,23 +87,12 @@ class UpdateDocument extends AbstractDocument
         $writer = new XMLWriter();
         $writer->openMemory();
         $writer->startDocument();
-        $writer->startElement('add');
-        foreach ($this->records as $record) {
-            $writer->startElement('doc');
-            $indexAttr = $this->records->offsetGet($record);
-            foreach ($indexAttr as $name => $value) {
-                $writer->writeAttribute($name, $value);
-            }
-            foreach ($record->getFields() as $name => $values) {
-                $values = is_array($values) ? $values : array($values);
-                foreach ($values as $value) {
-                    $writer->startElement('field');
-                    $writer->writeAttribute('name', $name);
-                    $writer->text($value);
-                    $writer->endElement();
-                }
-            }
-            $writer->endElement();
+        $writer->startElement('delete');
+        foreach ($this->keys as $key) {
+            $writer->writeElement('id', $key);
+        }
+        foreach ($this->queries as $query) {
+            $writer->writeElement('query', $query);
         }
         $writer->endElement();
         $writer->endDocument();
@@ -108,16 +100,26 @@ class UpdateDocument extends AbstractDocument
     }
 
     /**
-     * Add record.
+     * Add unique key to delete.
      *
-     * @param SerializableRecordInterface $record    Record
-     * @param array                       $indexAttr Index attributes
+     * @param string $key Unique key
      *
      * @return void
      */
-    public function addRecord(SerializableRecordInterface $record, array $indexAttr = array())
+    public function addKey($key)
     {
-        $this->records->attach($record, $indexAttr);
+        $this->keys[] = $key;
     }
 
+    /**
+     * Add delete query.
+     *
+     * @param string $query Delete query
+     *
+     * @return void
+     */
+    public function addQuery($query)
+    {
+        $this->queries[] = $query;
+    }
 }
