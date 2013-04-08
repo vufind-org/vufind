@@ -254,33 +254,6 @@ class Connector
     }
 
     /**
-     * Delete records.
-     *
-     * @param array    $directives Directives
-     * @param ParamBag $params     Parameters
-     *
-     * @return void
-     */
-    public function delete (array $directives, ParamBag $params)
-    {
-        $writer = new XMLWriter();
-        $writer->openMemory();
-        $writer->startDocument();
-        $writer->startElement('delete');
-        foreach ($directives as $name => $directive) {
-            $value = is_array($directive) ? $directive : array($directive);
-            foreach ($directive as $value) {
-                $writer->writeElement($name, $value);
-            }
-            $writer->writeElement($name, $value);
-        }
-        $writer->endElement();
-        $writer->endDocument();
-        $document = $writer->flush();
-        return $this->update($document, $params);
-    }
-
-    /**
      * Return the current query invariants.
      *
      * @return ParamBag
