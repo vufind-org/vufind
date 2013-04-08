@@ -387,8 +387,9 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function setQueryIDs($ids)
     {
-        // No need for spell checking on an ID query!
+        // No need for spell checking or highlighting on an ID query!
         $this->getOptions()->spellcheckEnabled(false);
+        $this->getOptions()->disableHighlighting();
 
         // Special case -- no IDs to set:
         if (empty($ids)) {
