@@ -440,7 +440,7 @@ class Connector
      * Keep in mind that a proxy service might replace the client adapter by a
      * Proxy adapter if necessary.
      *
-     * @param string|AdapterInterface $adapterClass Adapter or name of adapter class
+     * @param string|AdapterInterface $adapter Adapter or name of adapter class
      *
      * @return void
      */
