@@ -41,7 +41,7 @@ use VuFindSearch\Query\Params;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Solr\Exception\RequestErrorException;
 
-use VuFindSearch\Backend\Solr\Document\UpdateDocument;
+use VuFindSearch\Backend\Solr\Document\AbstractDocument;
 
 use Zend\Http\Request;
 use Zend\Http\Client as HttpClient;
@@ -217,6 +217,43 @@ class Connector
     }
 
     /**
+     * Write to the SOLR index.
+     *
+     * @param AbstractDocument $document Document to write
+     * @param string           $format   Serialization forma, either `json' or `xml'
+     * @param string           $handler  Update handler
+     * @param ParamBag         $params   Update handler parameters
+     *
+     * @return void
+     */
+    public function write(AbstractDocument $document, $format = 'xml', $handler = 'update', ParamBag $params = null)
+    {
+        $params = $params ?: new ParamBag();
+        $url    = "{$this->url}/{$handler}";
+        if (count($params) > 0) {
+            $url .= '?' . implode('&', $params->request());
+        }
+        $client = $this->createClient($url, 'POST');
+        switch ($format) {
+        case 'xml':
+            $client->setEncType('text/xml; charset=UTF-8');
+            $body = $document->asXML();
+            break;
+        case 'json':
+            $client->setEncType('application/json');
+            $body = $document->asJSON();
+            break;
+        default:
+            throw new InvalidArgumentException(
+                "Unable to serialize to selected format: {$format}"
+            );
+        }
+        $client->setRawBody($body);
+        $client->getHeaders()->addHeaderLine('Content-Length', strlen($body));
+        return $this->send($client);
+    }
+
+    /**
      * Delete records.
      *
      * @param array    $directives Directives
@@ -241,44 +278,6 @@ class Connector
         $writer->endDocument();
         $document = $writer->flush();
         return $this->update($document, $params);
-    }
-
-    /**
-     * Save one or more documents.
-     *
-     * @param UpdateDocument $document SOLR update document
-     * @param string         $format   Serialization format, either `json' or `xml'
-     * @param string         $handler  Update handler
-     * @param ParamBag       $params   Update handler parameters
-     *
-     * @return void
-     *
-     * @throws InvalidArgumentException Unknown serialization format
-     */
-    public function save(UpdateDocument $document, $format, $handler, ParamBag $params = null)
-    {
-        $url    = "{$this->url}/{$handler}";
-        if (count($params) > 0) {
-            $url .= '?' . implode('&', $params->request());
-        }
-        $client = $this->createClient($url, 'POST');
-        switch ($format) {
-        case 'xml':
-            $client->setEncType('text/xml; charset=UTF-8');
-            $body = $document->asXML();
-            break;
-        case 'json':
-            $client->setEncType('application/json');
-            $body = $document->asJSON();
-            break;
-        default:
-            throw new InvalidArgumentException(
-                "Unable to serialize to selected format: {$format}"
-            );
-        }
-        $client->setRawBody($body);
-        $client->getHeaders()->addHeaderLine('Content-Length', strlen($body));
-        return $this->send($client);
     }
 
     /**
@@ -453,27 +452,6 @@ class Connector
     }
 
     /// Internal API
-
-    /**
-     * Send document to `update' request handler and return response.
-     *
-     * @param string   $document Document
-     * @param ParamBag $params   Parameters
-     *
-     * @return string
-     */
-    protected function update ($document, ParamBag $params)
-    {
-        $url    = $this->url . '/update';
-        if (count($params) > 0) {
-            $url .= '?' . implode('&', $params->request());
-        }
-        $client = $this->createClient($url, 'POST');
-        $client->setEncType('text/xml; charset=UTF-8');
-        $client->getHeaders()->addHeaderLine('Content-Length', strlen($document));
-        $client->setRawBody($document);
-        return $this->send($client);
-    }
 
     /**
      * Send request to `select' query handler and return response.

@@ -127,7 +127,7 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
     {
         $conn = $this->createConnector();
         $document = $this->getMock('VuFindSearch\Backend\Solr\Document\UpdateDocument');
-        $conn->save($document, 'unknown', 'update');
+        $conn->write($document, 'unknown', 'update');
     }
 
     /**
