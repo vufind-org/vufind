@@ -43,10 +43,38 @@ use Zend\Http\Request, Zend\StdLib\Parameters;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
-class AuthorFacets extends AbstractSearchManagerAwareModule
+class AuthorFacets implements RecommendInterface
 {
+    /**
+     * Configuration settings
+     *
+     * @var string
+     */
     protected $settings;
-    protected $searchObject;
+
+    /**
+     * Search results object
+     *
+     * @var \VuFind\Search\Base\Results
+     */
+    protected $results;
+
+    /**
+     * Results plugin manager
+     *
+     * @var \VuFind\Search\Results\PluginManager
+     */
+    protected $resultsManager;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
+     */
+    public function __construct(\VuFind\Search\Results\PluginManager $results)
+    {
+        $this->resultsManager = $results;
+    }
 
     /**
      * setConfig
@@ -132,18 +160,17 @@ class AuthorFacets extends AbstractSearchManagerAwareModule
             return array('count' => 0, 'list' => array());
         }
 
-        // Set up a special limit for the AuthorFacets search object:
-        $sm = $this->getSearchManager()->setSearchClassId('SolrAuthorFacets');
-        $options = $sm->getOptionsInstance();
-        $options->setLimitOptions(array(10));
+        // Start configuring the results object:
+        $results = $this->resultsManager->get('SolrAuthorFacets');
 
-        // Initialize an AuthorFacets search object using parameters from the
-        // current Solr search object.
-        $params = $sm->setSearchClassId('SolrAuthorFacets')->getParams($options);
-        $params->initFromRequest(new Parameters(array('lookfor' => $lookfor)));
+        // Set up a special limit for the AuthorFacets search object:
+        $results->getOptions()->setLimitOptions(array(10));
+
+        // Initialize object using parameters from the current Solr search object.
+        $results->getParams()
+            ->initFromRequest(new Parameters(array('lookfor' => $lookfor)));
 
         // Send back the results:
-        $results = $sm->setSearchClassId('SolrAuthorFacets')->getResults($params);
         return array(
             // Total authors (currently there is no way to calculate this without
             // risking out-of-memory errors or slow results, so we set this to

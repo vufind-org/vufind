@@ -490,6 +490,11 @@ $config = array(
             'recommend' => array(
                 'abstract_factories' => array('VuFind\Recommend\PluginFactory'),
                 'factories' => array(
+                    'authorfacets' => function ($sm) {
+                        return new \VuFind\Recommend\AuthorFacets(
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+                        );
+                    },
                     'authorinfo' => function ($sm) {
                         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
                         return new \VuFind\Recommend\AuthorInfo(
@@ -500,8 +505,7 @@ $config = array(
                     },
                     'catalogresults' => function ($sm) {
                         return new \VuFind\Recommend\CatalogResults(
-                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
-                            'Solr'
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
                         );
                     },
                     'collectionsidefacets' => function ($sm) {
@@ -538,8 +542,7 @@ $config = array(
                     },
                     'summonresults' => function ($sm) {
                         return new \VuFind\Recommend\SummonResults(
-                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
-                            'Summon'
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
                         );
                     },
                     'topfacets' => function ($sm) {
@@ -559,7 +562,6 @@ $config = array(
                     },
                 ),
                 'invokables' => array(
-                    'authorfacets' => 'VuFind\Recommend\AuthorFacets',
                     'authorityrecommend' => 'VuFind\Recommend\AuthorityRecommend',
                     'europeanaresultsdeferred' => 'VuFind\Recommend\EuropeanaResultsDeferred',
                     'facetcloud' => 'VuFind\Recommend\FacetCloud',
