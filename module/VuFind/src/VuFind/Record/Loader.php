@@ -58,14 +58,12 @@ class Loader implements ServiceLocatorAwareInterface
      */
     protected function getClassForSource($source)
     {
-        $sm = $this->getServiceLocator()->get('SearchManager');
-
-        // Throw an error if we can't find a loader class:
-        try {
-            return $sm->setSearchClassId($source)->getResults();
-        } catch (\Exception $e) {
-            throw new \Exception('Unrecognized data source: ' . $source);
+        // Legacy hack: translate "VuFind" source from database into "Solr":
+        if ($source == 'VuFind') {
+            $source = 'Solr';
         }
+        return $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+            ->get($source);
     }
 
     /**
