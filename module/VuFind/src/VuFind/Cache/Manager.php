@@ -106,6 +106,9 @@ class Manager
                 'searchspecs', $cacheBase . 'searchspecs'
             );
             break;
+        case false:
+            $this->createNoCache('searchspecs');
+            break;
         }
     }
 
@@ -122,9 +125,15 @@ class Manager
             if (!isset($this->cacheSettings[$key])) {
                 throw new \Exception('Requested unknown cache: ' . $key);
             }
-            $this->caches[$key] = StorageFactory::factory(
-                $this->cacheSettings[$key]
-            );
+            // Special case for "no-cache" caches:
+            if ($this->cacheSettings[$key] === false) {
+                $this->caches[$key]
+                    = new \VuFind\Cache\Storage\Adapter\NoCacheAdapter();
+            } else {
+                $this->caches[$key] = StorageFactory::factory(
+                    $this->cacheSettings[$key]
+                );
+            }
         }
         return $this->caches[$key];
     }
@@ -158,6 +167,18 @@ class Manager
     public function hasDirectoryCreationError()
     {
         return $this->directoryCreationError;
+    }
+
+    /**
+     * Create a "no-cache" setting.
+     *
+     * @param string $cacheName Name of "no cache" to create
+     *
+     * @return void
+     */
+    protected function createNoCache($cacheName)
+    {
+        $this->cacheSettings[$cacheName] = false;
     }
 
     /**
