@@ -498,6 +498,12 @@ $config = array(
                             isset ($config->Content->authors) ? $config->Content->authors : ''
                         );
                     },
+                    'catalogresults' => function ($sm) {
+                        return new \VuFind\Recommend\CatalogResults(
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
+                            'Solr'
+                        );
+                    },
                     'collectionsidefacets' => function ($sm) {
                         return new \VuFind\Recommend\CollectionSideFacets(
                             $sm->getServiceLocator()->get('VuFind\Config')
@@ -529,6 +535,12 @@ $config = array(
                             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
                         );
                     },
+                    'summonresults' => function ($sm) {
+                        return new \VuFind\Recommend\SummonResults(
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
+                            'Summon'
+                        );
+                    },
                     'topfacets' => function ($sm) {
                         return new \VuFind\Recommend\TopFacets(
                             $sm->getServiceLocator()->get('VuFind\Config')
@@ -548,14 +560,12 @@ $config = array(
                 'invokables' => array(
                     'authorfacets' => 'VuFind\Recommend\AuthorFacets',
                     'authorityrecommend' => 'VuFind\Recommend\AuthorityRecommend',
-                    'catalogresults' => 'VuFind\Recommend\CatalogResults',
                     'europeanaresultsdeferred' => 'VuFind\Recommend\EuropeanaResultsDeferred',
                     'facetcloud' => 'VuFind\Recommend\FacetCloud',
                     'openlibrarysubjects' => 'VuFind\Recommend\OpenLibrarySubjects',
                     'openlibrarysubjectsdeferred' => 'VuFind\Recommend\OpenLibrarySubjectsDeferred',
                     'pubdatevisajax' => 'VuFind\Recommend\PubDateVisAjax',
                     'resultgooglemapajax' => 'VuFind\Recommend\ResultGoogleMapAjax',
-                    'summonresults' => 'VuFind\Recommend\SummonResults',
                     'switchtype' => 'VuFind\Recommend\SwitchType',
                 ),
             ),
