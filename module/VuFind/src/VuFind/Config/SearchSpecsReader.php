@@ -75,13 +75,8 @@ class SearchSpecsReader
         // Load data if it is not already in the object's cache:
         if (!isset($this->searchSpecs[$filename])) {
             // Connect to searchspecs cache:
-            try {
-                $cache = (null !== $this->cacheManager)
-                    ? $this->cacheManager->getCache('searchspecs') : false;
-            } catch (\Exception $e) {
-                // Don't blow up if we fail to retrieve the desired cache:
-                $cache = false;
-            }
+            $cache = (null !== $this->cacheManager)
+                ? $this->cacheManager->getCache('searchspecs') : false;
 
             // Determine full configuration file path:
             $fullpath = Locator::getBaseConfigPath($filename);
