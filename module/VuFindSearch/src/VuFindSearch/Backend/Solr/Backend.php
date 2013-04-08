@@ -224,19 +224,6 @@ class Backend implements BackendInterface, MoreLikeThis
     }
 
     /**
-     * Delete records.
-     *
-     * @param array    $directives Directives
-     * @param ParamBag $params     Parameters
-     *
-     * @return void
-     */
-    public function delete (array $directives, ParamBag $params)
-    {
-        $this->connector->delete($directives, $params);
-    }
-
-    /**
      * Return terms from SOLR index.
      *
      * @param string   $field  Index field
