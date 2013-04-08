@@ -199,20 +199,6 @@ class Manager implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Extract the name of the search class family from a class name.
-     *
-     * @param string $className Class name to examine.
-     *
-     * @return string
-     */
-    public function extractSearchClassId($className)
-    {
-        // Parse identifier out of class name of format VuFind\Search\[id]\Params:
-        $class = explode('\\', $className);
-        return $class[2];
-    }
-
-    /**
      * Set the service locator.
      *
      * @param ServiceLocatorInterface $serviceLocator Locator to register

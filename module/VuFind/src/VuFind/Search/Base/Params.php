@@ -163,7 +163,9 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function getSearchClassId()
     {
-        return $this->getSearchManager()->extractSearchClassId(get_class($this));
+        // Parse identifier out of class name of format VuFind\Search\[id]\Params:
+        $class = explode('\\', get_class($this));
+        return $class[2];
     }
 
     /**
