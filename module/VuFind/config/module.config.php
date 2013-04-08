@@ -517,7 +517,8 @@ $config = array(
                     },
                     'expandfacets' => function ($sm) {
                         return new \VuFind\Recommend\ExpandFacets(
-                            $sm->getServiceLocator()->get('VuFind\Config')
+                            $sm->getServiceLocator()->get('VuFind\Config'),
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')->get('Solr')
                         );
                     },
                     'favoritefacets' => function ($sm) {
