@@ -498,7 +498,7 @@ $config = array(
                     'authorinfo' => function ($sm) {
                         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
                         return new \VuFind\Recommend\AuthorInfo(
-                            $sm->getServiceLocator()->get('SearchManager'),
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
                             $sm->getServiceLocator()->get('VuFind\Http')->createClient(),
                             isset ($config->Content->authors) ? $config->Content->authors : ''
                         );
