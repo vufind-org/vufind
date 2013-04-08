@@ -444,20 +444,21 @@ class Results extends BaseResults
     {
         // Figure out how many records to retrieve at the same time --
         // we'll use either 100 or the ID request limit, whichever is smaller.
-        $sm = $this->getSearchManager();
-        $params = $sm->setSearchClassId('Solr')->getParams();
+        $results = $this->getServiceLocator()
+            ->get('VuFind\SearchResultsPluginManager')->get('Solr');
+        $params = $results->getParams();
         $pageSize = $params->getQueryIDLimit();
         if ($pageSize < 1 || $pageSize > 100) {
             $pageSize = 100;
         }
+        $params->setLimit($pageSize);
 
         // Retrieve records a page at a time:
         $retVal = array();
         while (count($ids) > 0) {
             $currentPage = array_splice($ids, 0, $pageSize, array());
             $params->setQueryIDs($currentPage);
-            $params->setLimit($pageSize);
-            $results = $sm->setSearchClassId('Solr')->getResults($params);
+            $results->performAndProcessSearch();
             $retVal = array_merge($retVal, $results->getResults());
         }
 
