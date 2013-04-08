@@ -490,12 +490,27 @@ $config = array(
             'recommend' => array(
                 'abstract_factories' => array('VuFind\Recommend\PluginFactory'),
                 'factories' => array(
+                    'authorfacets' => function ($sm) {
+                        return new \VuFind\Recommend\AuthorFacets(
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+                        );
+                    },
                     'authorinfo' => function ($sm) {
                         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
                         return new \VuFind\Recommend\AuthorInfo(
-                            $sm->getServiceLocator()->get('SearchManager'),
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
                             $sm->getServiceLocator()->get('VuFind\Http')->createClient(),
                             isset ($config->Content->authors) ? $config->Content->authors : ''
+                        );
+                    },
+                    'authorityrecommend' => function ($sm) {
+                        return new \VuFind\Recommend\AuthorityRecommend(
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+                        );
+                    },
+                    'catalogresults' => function ($sm) {
+                        return new \VuFind\Recommend\CatalogResults(
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
                         );
                     },
                     'collectionsidefacets' => function ($sm) {
@@ -511,7 +526,8 @@ $config = array(
                     },
                     'expandfacets' => function ($sm) {
                         return new \VuFind\Recommend\ExpandFacets(
-                            $sm->getServiceLocator()->get('VuFind\Config')
+                            $sm->getServiceLocator()->get('VuFind\Config'),
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')->get('Solr')
                         );
                     },
                     'favoritefacets' => function ($sm) {
@@ -526,6 +542,11 @@ $config = array(
                     },
                     'summondatabases' => function ($sm) {
                         return new \VuFind\Recommend\SummonDatabases(
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+                        );
+                    },
+                    'summonresults' => function ($sm) {
+                        return new \VuFind\Recommend\SummonResults(
                             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
                         );
                     },
@@ -546,16 +567,12 @@ $config = array(
                     },
                 ),
                 'invokables' => array(
-                    'authorfacets' => 'VuFind\Recommend\AuthorFacets',
-                    'authorityrecommend' => 'VuFind\Recommend\AuthorityRecommend',
-                    'catalogresults' => 'VuFind\Recommend\CatalogResults',
                     'europeanaresultsdeferred' => 'VuFind\Recommend\EuropeanaResultsDeferred',
                     'facetcloud' => 'VuFind\Recommend\FacetCloud',
                     'openlibrarysubjects' => 'VuFind\Recommend\OpenLibrarySubjects',
                     'openlibrarysubjectsdeferred' => 'VuFind\Recommend\OpenLibrarySubjectsDeferred',
                     'pubdatevisajax' => 'VuFind\Recommend\PubDateVisAjax',
                     'resultgooglemapajax' => 'VuFind\Recommend\ResultGoogleMapAjax',
-                    'summonresults' => 'VuFind\Recommend\SummonResults',
                     'switchtype' => 'VuFind\Recommend\SwitchType',
                 ),
             ),
@@ -637,9 +654,8 @@ $config = array(
                         );
                     },
                     'collectionlist' => function ($sm) {
-                        $searchManager = $sm->getServiceLocator()->get('SearchManager');
                         return new \VuFind\RecordTab\CollectionList(
-                            $searchManager->setSearchClassId('SolrCollection')->getResults()
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')->get('SolrCollection')
                         );
                     },
                     'excerpt' => function ($sm) {

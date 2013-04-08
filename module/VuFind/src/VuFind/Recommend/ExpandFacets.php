@@ -36,7 +36,7 @@ namespace VuFind\Recommend;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class ExpandFacets extends AbstractSearchManagerAwareModule
+class ExpandFacets implements RecommendInterface
 {
     /**
      * Facets to display
@@ -67,13 +67,24 @@ class ExpandFacets extends AbstractSearchManagerAwareModule
     protected $configLoader;
 
     /**
+     * Empty result set (used by the template as the basis for URL generation)
+     *
+     * @var \VuFind\Search\Solr\Results
+     */
+    protected $emptyResults;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     * @param \VuFind\Search\Solr\Results  $emptyResults Empty result set (used
+     * by the template as the basis for URL generation)
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
-    {
+    public function __construct(\VuFind\Config\PluginManager $configLoader,
+        \VuFind\Search\Solr\Results $emptyResults
+    ) {
         $this->configLoader = $configLoader;
+        $this->emptyResults = $emptyResults;
     }
 
     /**
@@ -164,6 +175,6 @@ class ExpandFacets extends AbstractSearchManagerAwareModule
      */
     public function getEmptyResults()
     {
-        return $this->getSearchManager()->setSearchClassId('Solr')->getResults();
+        return $this->emptyResults;
     }
 }
