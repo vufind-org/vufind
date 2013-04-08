@@ -592,20 +592,6 @@ abstract class Results implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Pull the search manager from the service locator.
-     *
-     * @return \VuFind\Search\Manager
-     */
-    protected function getSearchManager()
-    {
-        $sl = $this->getServiceLocator();
-        if (!is_object($sl)) {
-            throw new \Exception('Could not find service locator');
-        }
-        return $sl->get('SearchManager');
-    }
-
-    /**
      * Return search service.
      *
      * @return SearchService
