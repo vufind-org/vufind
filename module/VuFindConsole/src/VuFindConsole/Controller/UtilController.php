@@ -398,7 +398,8 @@ class UtilController extends AbstractBase
      */
     public function createhierarchytreesAction()
     {
-        $solr = $this->getSearchManager()->setSearchClassId('Solr')->getResults();
+        $solr = $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+            ->get('Solr');
         $hierarchies = $solr->getFullFieldFacets(array('hierarchy_top_id'));
         foreach ($hierarchies['hierarchy_top_id']['data']['list'] as $hierarchy) {
             Console::writeLine("Building tree for {$hierarchy['value']}...");
