@@ -654,9 +654,8 @@ $config = array(
                         );
                     },
                     'collectionlist' => function ($sm) {
-                        $searchManager = $sm->getServiceLocator()->get('SearchManager');
                         return new \VuFind\RecordTab\CollectionList(
-                            $searchManager->setSearchClassId('SolrCollection')->getResults()
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')->get('SolrCollection')
                         );
                     },
                     'excerpt' => function ($sm) {
