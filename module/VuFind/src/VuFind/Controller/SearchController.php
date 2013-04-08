@@ -369,8 +369,7 @@ class SearchController extends AbstractSearch
             $resultPages = 10;
         }
         $catalog = $this->getILS();
-        $sm = $this->getSearchManager();
-        $params = $sm->setSearchClassId('Solr')->getParams();
+        $params = $this->getResultsManager()->get('Solr')->getParams();
         $perPage = $params->getLimit();
         $newItems = $catalog->getNewItems(1, $perPage * $resultPages, $range, $dept);
 
@@ -457,15 +456,14 @@ class SearchController extends AbstractSearch
      */
     public function reservessearchAction()
     {
-        $sm = $this->getSearchManager();
-        $params = $sm->setSearchClassId('SolrReserves')->getParams();
+        $results = $this->getResultsManager()->get('SolrReserves');
+        $params = $results->getParams();
         $params->initFromRequest(
             new \Zend\Stdlib\Parameters(
                 $this->getRequest()->getQuery()->toArray()
                 + $this->getRequest()->getPost()->toArray()
             )
         );
-        $results = $sm->setSearchClassId('SolrReserves')->getResults($params);
         return $this->createViewModel(
             array('params' => $params, 'results' => $results)
         );
@@ -491,9 +489,8 @@ class SearchController extends AbstractSearch
         $bibIDs = array_unique(array_map($callback, $result));
 
         // Truncate the list if it is too long:
-        $sm = $this->getSearchManager();
-        $params = $sm->setSearchClassId('Solr')->getParams();
-        $limit = $params->getQueryIDLimit();
+        $limit = $this->getResultsManager()->get('Solr')->getParams()
+            ->getQueryIDLimit();
         if (count($bibIDs) > $limit) {
             $bibIDs = array_slice($bibIDs, 0, $limit);
             $this->flashMessenger()->setNamespace('info')
@@ -541,15 +538,14 @@ class SearchController extends AbstractSearch
             // we may want to make this more flexible later.  Also keep in mind that
             // the template is currently looking for certain hard-coded fields; this
             // should also be made smarter.
-            $sm = $this->getSearchManager();
-            $params = $sm->setSearchClassId('Solr')->getParams();
+            $results = $this->getResultsManager()->get('Solr');
+            $params = $results->getParams();
             $params->$initMethod();
 
             // We only care about facet lists, so don't get any results (this helps
             // prevent problems with serialized File_MARC objects in the cache):
             $params->setLimit(0);
 
-            $results = $sm->setSearchClassId('Solr')->getResults($params);
             $results->getResults();                     // force processing for cache
 
             $cache->setItem($cacheName, $results);
