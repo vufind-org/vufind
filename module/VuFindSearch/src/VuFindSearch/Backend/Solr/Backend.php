@@ -172,14 +172,17 @@ class Backend implements BackendInterface, MoreLikeThis
         // Submit requests for more spelling suggestions
         while (next($this->dictionaries) !== false) {
             $prev = $this->connector->getLastQueryParameters();
-            $next = new ParamBag(array('q' => '*:*', 'spellcheck' => 'true', 'rows' => 0));
-            $this->injectResponseWriter($next);
-            $next->mergeWith($this->connector->getQueryInvariants());
-            $next->set('spellcheck.q', $prev->get('spellcheck.q'));
-            $next->set('spellcheck.dictionary', current($this->dictionaries));
-            $response   = $this->connector->resubmit($next);
-            $spellcheck = $this->createRecordCollection($response);
-            $collection->getSpellcheck()->mergeWith($spellcheck->getSpellcheck());
+            // Bypass secondary spell check if initial query disabled it:
+            if (current($prev->get('spellcheck')) == 'true') {
+                $next = new ParamBag(array('q' => '*:*', 'spellcheck' => 'true', 'rows' => 0));
+                $this->injectResponseWriter($next);
+                $next->mergeWith($this->connector->getQueryInvariants());
+                $next->set('spellcheck.q', $prev->get('spellcheck.q'));
+                $next->set('spellcheck.dictionary', current($this->dictionaries));
+                $response   = $this->connector->resubmit($next);
+                $spellcheck = $this->createRecordCollection($response);
+                $collection->getSpellcheck()->mergeWith($spellcheck->getSpellcheck());
+            }
         }
 
         return $collection;
