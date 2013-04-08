@@ -123,13 +123,6 @@ class Bootstrapper
             $serviceManager->setFactory($serviceName, $factory);
         }
 
-        // Set up search manager a little differently -- it is a more complex class
-        // that doesn't work like the other standard plugin managers.
-        $factory = function ($sm) use ($config) {
-            return new \VuFind\Search\Manager($config['vufind']['search_manager']);
-        };
-        $serviceManager->setFactory('SearchManager', $factory);
-
         // TODO: factor out static connection manager.
         \VuFind\Connection\Manager::setServiceLocator($serviceManager);
     }

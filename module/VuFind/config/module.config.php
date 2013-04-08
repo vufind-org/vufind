@@ -787,27 +787,12 @@ $config = array(
             ),
             'search_options' => array(
                 'abstract_factories' => array('VuFind\Search\Options\PluginFactory'),
-                'aliases' => array(
-                    // Alias to account for "source" field in resource table,
-                    // which uses "VuFind" for records from Solr index.
-                    'VuFind' => 'Solr'
-                ),
             ),
             'search_params' => array(
                 'abstract_factories' => array('VuFind\Search\Params\PluginFactory'),
-                'aliases' => array(
-                    // Alias to account for "source" field in resource table,
-                    // which uses "VuFind" for records from Solr index.
-                    'VuFind' => 'Solr'
-                ),
             ),
             'search_results' => array(
                 'abstract_factories' => array('VuFind\Search\Results\PluginFactory'),
-                'aliases' => array(
-                    // Alias to account for "source" field in resource table,
-                    // which uses "VuFind" for records from Solr index.
-                    'VuFind' => 'Solr'
-                ),
             ),
             'session' => array(
                 'abstract_factories' => array('VuFind\Session\PluginFactory'),
@@ -876,28 +861,6 @@ $config = array(
                 'TOC' => 'TOC', 'UserComments' => 'UserComments',
                 'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
                 'Details' => 'StaffViewMARC',
-            ),
-        ),
-        // This section controls the SearchManager service:
-        'search_manager' => array(
-            'default_namespace' => 'VuFind\Search',
-            'namespaces_by_id' => array(
-                'EmptySet' => 'VuFind\Search\EmptySet',
-                'Favorites' => 'VuFind\Search\Favorites',
-                'MixedList' => 'VuFind\Search\MixedList',
-                'Solr' => 'VuFind\Search\Solr',
-                'SolrAuth' => 'VuFind\Search\SolrAuth',
-                'SolrAuthor' => 'VuFind\Search\SolrAuthor',
-                'SolrAuthorFacets' => 'VuFind\Search\SolrAuthorFacets',
-                'SolrReserves' => 'VuFind\Search\SolrReserves',
-                'Summon' => 'VuFind\Search\Summon',
-                'Tags' => 'VuFind\Search\Tags',
-                'WorldCat' => 'VuFind\Search\WorldCat',
-            ),
-            'aliases' => array(
-                // Alias to account for "source" field in resource table,
-                // which uses "VuFind" for records from Solr index.
-                'VuFind' => 'Solr'
             ),
         ),
     ),
