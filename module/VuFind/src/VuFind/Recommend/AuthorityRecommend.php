@@ -48,13 +48,52 @@ use VuFindSearch\Backend\Exception\RequestErrorException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class AuthorityRecommend extends AbstractSearchManagerAwareModule
+class AuthorityRecommend implements RecommendInterface
 {
-    protected $searchObject;
+    /**
+     * User search query
+     *
+     * @var string
+     */
     protected $lookfor;
+
+    /**
+     * Configured filters for authority searches
+     *
+     * @var array
+     */
     protected $filters = array();
+
+    /**
+     * Current user search
+     *
+     * @var \VuFind\Search\Base\Results
+     */
     protected $results;
+
+    /**
+     * Generated recommendations
+     *
+     * @var array
+     */
     protected $recommendations = array();
+
+    /**
+     * Results plugin manager
+     *
+     * @var \VuFind\Search\Results\PluginManager
+     */
+    protected $resultsManager;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
+     */
+    public function __construct(\VuFind\Search\Results\PluginManager $results)
+    {
+        $this->resultsManager = $results;
+    }
 
     /**
      * setConfig
@@ -135,14 +174,12 @@ class AuthorityRecommend extends AbstractSearchManagerAwareModule
         // Initialise and process search (ignore Solr errors -- no reason to fail
         // just because search syntax is not compatible with Authority core):
         try {
-            $sm = $this->getSearchManager();
-            $authParams = $sm->setSearchClassId('SolrAuth')->getParams();
+            $authResults = $this->resultsManager->get('SolrAuth');
+            $authParams = $authResults->getParams();
             $authParams->initFromRequest($request);
             foreach ($this->filters as $filter) {
                 $authParams->getOptions()->addHiddenFilter($filter);
             }
-            $authResults = $sm->setSearchClassId('SolrAuth')
-                ->getResults($authParams);
             $results = $authResults->getResults();
         } catch (RequestErrorException $e) {
             return;

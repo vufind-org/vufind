@@ -503,6 +503,11 @@ $config = array(
                             isset ($config->Content->authors) ? $config->Content->authors : ''
                         );
                     },
+                    'authorityrecommend' => function ($sm) {
+                        return new \VuFind\Recommend\AuthorityRecommend(
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+                        );
+                    },
                     'catalogresults' => function ($sm) {
                         return new \VuFind\Recommend\CatalogResults(
                             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
@@ -562,7 +567,6 @@ $config = array(
                     },
                 ),
                 'invokables' => array(
-                    'authorityrecommend' => 'VuFind\Recommend\AuthorityRecommend',
                     'europeanaresultsdeferred' => 'VuFind\Recommend\EuropeanaResultsDeferred',
                     'facetcloud' => 'VuFind\Recommend\FacetCloud',
                     'openlibrarysubjects' => 'VuFind\Recommend\OpenLibrarySubjects',
