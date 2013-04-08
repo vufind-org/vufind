@@ -36,9 +36,40 @@ namespace VuFind\Related;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_a_related_record_module Wiki
  */
-class Editions extends AbstractServiceLocator
+class Editions implements RelatedInterface
 {
+    /**
+     * Related editions
+     *
+     * @var array
+     */
     protected $results = array();
+
+    /**
+     * Results plugin manager
+     *
+     * @var \VuFind\Search\Results\PluginManager
+     */
+    protected $resultsManager;
+
+    /**
+     * WorldCat utilities
+     *
+     * @var \VuFind\Connection\WorldCatUtils
+     */
+    protected $wcUtils;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
+     */
+    public function __construct(\VuFind\Search\Results\PluginManager $results,
+        \VuFind\Connection\WorldCatUtils $wcUtils)
+    {
+        $this->resultsManager = $results;
+        $this->wcUtils = $wcUtils;
+    }
 
     /**
      * init
@@ -56,8 +87,8 @@ class Editions extends AbstractServiceLocator
         $parts = $this->getQueryParts($driver);
         if (!empty($parts)) {
             // Limit the number of parts based on the boolean clause limit:
-            $sm = $this->getSearchManager();
-            $params = $sm->setSearchClassId('Solr')->getParams();
+            $result = $this->resultsManager->get('Solr');
+            $params = $result->getParams();
             $limit = $params->getQueryIDLimit();
             if (count($parts) > $limit) {
                 $parts = array_slice($parts, 0, $limit);
@@ -74,7 +105,6 @@ class Editions extends AbstractServiceLocator
             // Perform the search and return either results or an error:
             $params->setLimit(5);
             $params->setOverrideQuery($query);
-            $result = $sm->setSearchClassId('Solr')->getResults($params);
             $this->results = $result->getResults();
         }
     }
@@ -102,12 +132,11 @@ class Editions extends AbstractServiceLocator
      */
     protected function getQueryParts($driver)
     {
-        $wc = $this->getServiceLocator()->get('VuFind\WorldCatUtils');
         $parts = array();
         if (method_exists($driver, 'getCleanOCLCNum')) {
             $oclcNum = $driver->getCleanOCLCNum();
             if (!empty($oclcNum)) {
-                $oclcList = $wc->getXOCLCNUM($oclcNum);
+                $oclcList = $this->wcUtils->getXOCLCNUM($oclcNum);
                 foreach ($oclcList as $current) {
                     $parts[] = "oclc_num:" . $current;
                 }
@@ -116,7 +145,7 @@ class Editions extends AbstractServiceLocator
         if (method_exists($driver, 'getCleanISBN')) {
             $isbn = $driver->getCleanISBN();
             if (!empty($isbn)) {
-                $isbnList = $wc->getXISBN($isbn);
+                $isbnList = $this->wcUtils->getXISBN($isbn);
                 foreach ($isbnList as $current) {
                     $parts[] = 'isbn:' . $current;
                 }
@@ -125,7 +154,7 @@ class Editions extends AbstractServiceLocator
         if (method_exists($driver, 'getCleanISSN')) {
             $issn = $driver->getCleanISSN();
             if (!empty($issn)) {
-                $issnList = $wc->getXISSN($issn);
+                $issnList = $this->wcUtils->getXISSN($issn);
                 foreach ($issnList as $current) {
                     $parts[] = 'issn:' . $current;
                 }

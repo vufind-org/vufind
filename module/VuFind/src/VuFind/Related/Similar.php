@@ -36,9 +36,31 @@ namespace VuFind\Related;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_a_related_record_module Wiki
  */
-class Similar extends AbstractServiceLocator
+class Similar implements RelatedInterface
 {
+    /**
+     * Similar records
+     *
+     * @var array
+     */
     protected $results;
+
+    /**
+     * Results plugin manager
+     *
+     * @var \VuFind\Search\Results\PluginManager
+     */
+    protected $resultsManager;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
+     */
+    public function __construct(\VuFind\Search\Results\PluginManager $results)
+    {
+        $this->resultsManager = $results;
+    }
 
     /**
      * init
@@ -52,10 +74,8 @@ class Similar extends AbstractServiceLocator
      */
     public function init($settings, $driver)
     {
-        $sm = $this->getSearchManager();
-        $params = $sm->setSearchClassId('Solr')->getParams();
-        $searcher = $sm->setSearchClassId('Solr')->getResults($params);
-        $this->results = $searcher->getSimilarRecords($driver->getUniqueId());
+        $this->results = $this->resultsManager->get('Solr')
+            ->getSimilarRecords($driver->getUniqueId());
     }
 
     /**

@@ -704,11 +704,29 @@ $config = array(
             ),
             'related' => array(
                 'abstract_factories' => array('VuFind\Related\PluginFactory'),
-                'invokables' => array(
-                    'editions' => 'VuFind\Related\Editions',
-                    'similar' => 'VuFind\Related\Similar',
-                    'worldcateditions' => 'VuFind\Related\WorldCatEditions',
-                    'worldcatsimilar' => 'VuFind\Related\WorldCatSimilar',
+                'factories' => array(
+                    'editions' => function ($sm) {
+                        return new \VuFind\Related\Editions(
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
+                            $sm->getServiceLocator()->get('VuFind\WorldCatUtils')
+                        );
+                    },
+                    'similar' => function ($sm) {
+                        return new \VuFind\Related\Similar(
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+                        );
+                    },
+                    'worldcateditions' => function ($sm) {
+                        return new \VuFind\Related\WorldCatEditions(
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
+                            $sm->getServiceLocator()->get('VuFind\WorldCatUtils')
+                        );
+                    },
+                    'worldcatsimilar' => function ($sm) {
+                        return new \VuFind\Related\WorldCatSimilar(
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+                        );
+                    },
                 ),
             ),
             'resolver_driver' => array(
