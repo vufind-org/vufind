@@ -27,8 +27,6 @@
  * @link     http://vufind.org/wiki/vufind2:autosuggesters Wiki
  */
 namespace VuFind\Autocomplete;
-use Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
  * Solr Autocomplete Module
@@ -41,22 +39,73 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:autosuggesters Wiki
  */
-class Solr implements AutocompleteInterface, ServiceLocatorAwareInterface
+class Solr implements AutocompleteInterface
 {
+    /**
+     * Autocomplete handler
+     *
+     * @var string
+     */
     protected $handler;
+
+    /**
+     * Solr field to use for display
+     *
+     * @var string
+     */
     protected $displayField;
+
+    /**
+     * Default Solr display field if none is configured
+     *
+     * @var string
+     */
     protected $defaultDisplayField = 'title';
+
+    /**
+     * Solr field to use for sorting
+     *
+     * @var string
+     */
     protected $sortField;
+
+    /**
+     * Filters to apply to Solr search
+     *
+     * @var array
+     */
     protected $filters;
+
+    /**
+     * Search object family to use
+     *
+     * @var string
+     */
     protected $searchClassId = 'Solr';
+
+    /**
+     * Search results object
+     *
+     * @var \VuFind\Search\Base\Results
+     */
     protected $searchObject;
 
     /**
-     * Service locator
+     * Results plugin manager
      *
-     * @var ServiceLocatorInterface
+     * @var \VuFind\Search\Results\PluginManager
      */
-    protected $serviceLocator;
+    protected $resultsManager;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
+     */
+    public function __construct(\VuFind\Search\Results\PluginManager $results)
+    {
+        $this->resultsManager = $results;
+    }
 
     /**
      * setConfig
@@ -100,15 +149,10 @@ class Solr implements AutocompleteInterface, ServiceLocatorAwareInterface
      */
     protected function initSearchObject()
     {
-        // Get the search manager:
-        $sm = $this->getServiceLocator()->getServiceLocator()->get('SearchManager');
-
         // Build a new search object:
-        $params = $sm->setSearchClassId($this->searchClassId)->getParams();
-        $params->getOptions()->spellcheckEnabled(false);
-        $params->recommendationsEnabled(false);
-        $this->searchObject = $sm->setSearchClassId($this->searchClassId)
-            ->getResults($params);
+        $this->searchObject = $this->resultsManager->get($this->searchClassId);
+        $this->searchObject->getOptions()->spellcheckEnabled(false);
+        $this->searchObject->getParams()->recommendationsEnabled(false);
     }
 
     /**
@@ -291,28 +335,5 @@ class Solr implements AutocompleteInterface, ServiceLocatorAwareInterface
             }
         }
         return true;
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Solr
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 }

@@ -43,9 +43,12 @@ class SolrAuth extends Solr
 {
     /**
      * Constructor
+     *
+     * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
      */
-    public function __construct()
+    public function __construct(\VuFind\Search\Results\PluginManager $results)
     {
+        parent::__construct($results);
         $this->defaultDisplayField = 'heading';
         $this->searchClassId = 'SolrAuth';
     }

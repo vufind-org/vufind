@@ -352,13 +352,31 @@ $config = array(
             ),
             'autocomplete' => array(
                 'abstract_factories' => array('VuFind\Autocomplete\PluginFactory'),
+                'factories' => array(
+                    'solr' => function ($sm) {
+                        return new \VuFind\Autocomplete\Solr(
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+                        );
+                    },
+                    'solrauth' => function ($sm) {
+                        return new \VuFind\Autocomplete\SolrAuth(
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+                        );
+                    },
+                    'solrcn' => function ($sm) {
+                        return new \VuFind\Autocomplete\SolrCN(
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+                        );
+                    },
+                    'solrreserves' => function ($sm) {
+                        return new \VuFind\Autocomplete\SolrReserves(
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+                        );
+                    },
+                ),
                 'invokables' => array(
                     'none' => 'VuFind\Autocomplete\None',
                     'oclcidentities' => 'VuFind\Autocomplete\OCLCIdentities',
-                    'solr' => 'VuFind\Autocomplete\Solr',
-                    'solrauth' => 'VuFind\Autocomplete\SolrAuth',
-                    'solrcn' => 'VuFind\Autocomplete\SolrCN',
-                    'solrreserves' => 'VuFind\Autocomplete\SolrReserves',
                     'tag' => 'VuFind\Autocomplete\Tag',
                 ),
                 'aliases' => array(
