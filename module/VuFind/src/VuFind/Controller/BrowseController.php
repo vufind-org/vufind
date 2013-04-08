@@ -577,8 +577,9 @@ class BrowseController extends AbstractBase
     protected function getFacetList($facet, $category = null,
         $sort = 'count', $query = '[* TO *]'
     ) {
-        $sm = $this->getSearchManager();
-        $params = $sm->setSearchClassId('Solr')->getParams();
+        $results = $this->getServiceLocator()
+            ->get('VuFind\SearchResultsPluginManager')->get('Solr');
+        $params = $results->getParams();
         $params->addFacet($facet);
         if ($category != null) {
             $query = $category . ':' . $query;
@@ -589,7 +590,6 @@ class BrowseController extends AbstractBase
         $params->getOptions()->disableHighlighting();
         $params->getOptions()->spellcheckEnabled(false);
         $params->recommendationsEnabled(false);
-        $searchObject = $sm->setSearchClassId('Solr')->getResults($params);
         // Get limit from config
         $params->setFacetLimit($this->config->Browse->result_limit);
         $params->setLimit(0);
@@ -598,7 +598,7 @@ class BrowseController extends AbstractBase
             $params->setFacetPrefix($this->params()->fromQuery('facet_prefix'));
         }
         $params->setFacetSort($sort);
-        $result = $searchObject->getFacetList();
+        $result = $results->getFacetList();
         if (isset($result[$facet])) {
             // Sort facets alphabetically if configured to do so:
             if (isset($this->config->Browse->alphabetical_order)

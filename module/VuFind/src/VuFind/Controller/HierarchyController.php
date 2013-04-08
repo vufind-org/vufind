@@ -87,7 +87,8 @@ class HierarchyController extends AbstractBase
         $lookfor = $this->params()->fromQuery('lookfor', '');
         $searchType = $this->params()->fromQuery('type', 'AllFields');
 
-        $results = $this->getSearchManager()->setSearchClassId('Solr')->getResults();
+        $results = $this->getServiceLocator()
+            ->get('VuFind\SearchResultsPluginManager')->get('Solr');
         $results->getParams()->setBasicSearch($lookfor, $searchType);
         $results->getParams()->addFilter('hierarchy_top_id:' . $hierarchyID);
         $facets = $results->getFullFieldFacets(array('id'), false, $limit+1);
@@ -117,9 +118,9 @@ class HierarchyController extends AbstractBase
         $this->writeSession();  // avoid session write timing bug
         // Retrieve the record from the index
         $id = $this->params()->fromQuery('id');
-        $results = $this->getSearchManager()->setSearchClassId('Solr')->getResults();
+        $loader = $this->getServiceLocator()->get('VuFind\RecordLoader');
         try {
-            if ($recordDriver = $results->getRecord($id)) {
+            if ($recordDriver = $loader->load($id)) {
                 $results = $recordDriver->getHierarchyDriver()->render(
                     $recordDriver,
                     $this->params()->fromQuery('context'),

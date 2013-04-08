@@ -536,8 +536,9 @@ class MyResearchController extends AbstractBase
 
         // If we got this far, we just need to display the favorites:
         try {
-            $sm = $this->getSearchManager();
-            $params = $sm->setSearchClassId('Favorites')->getParams();
+            $results = $this->getServiceLocator()
+                ->get('VuFind\SearchResultsPluginManager')->get('Favorites');
+            $params = $results->getParams();
             $params->setAuthManager($this->getAuthManager());
 
             // We want to merge together GET, POST and route parameters to
@@ -550,7 +551,6 @@ class MyResearchController extends AbstractBase
                 )
             );
 
-            $results = $sm->setSearchClassId('Favorites')->getResults($params);
             $results->performAndProcessSearch();
             return $this->createViewModel(
                 array('params' => $params, 'results' => $results)
@@ -739,8 +739,8 @@ class MyResearchController extends AbstractBase
             if (!isset($current['id'])) {
                 throw new RecordMissingException();
             }
-            $record = $this->getSearchManager()->setSearchClassId('Solr')
-                ->getResults()->getRecord($current['id']);
+            $record = $this->getServiceLocator()->get('VuFind\RecordLoader')
+                ->load($current['id']);
         } catch (RecordMissingException $e) {
             $factory = $this->getServiceLocator()
                 ->get('VuFind\RecordDriverPluginManager');
@@ -886,8 +886,8 @@ class MyResearchController extends AbstractBase
                 if (!isset($row['id']) || empty($row['id'])) {
                     throw new \Exception();
                 }
-                $record = $this->getSearchManager()->setSearchClassId('Solr')
-                    ->getResults()->getRecord($row['id']);
+                $record = $this->getServiceLocator()->get('VuFind\RecordLoader')
+                    ->load($row['id']);
                 $row['title'] = $record->getShortTitle();
             } catch (\Exception $e) {
                 if (!isset($row['title'])) {

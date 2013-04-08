@@ -219,16 +219,6 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
-     * Get the search manager.
-     *
-     * @return \VuFind\Search\Manager
-     */
-    public function getSearchManager()
-    {
-        return $this->getServiceLocator()->get('SearchManager');
-    }
-
-    /**
      * Get a database table object.
      *
      * @param string $table Name of table to retrieve
