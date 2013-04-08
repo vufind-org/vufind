@@ -344,9 +344,9 @@ class ResultScroller extends AbstractPlugin
             $row = $searchTable->getRowById($this->data->searchId, false);
             if (!empty($row)) {
                 $minSO = unserialize($row->search_object);
-                $search = $minSO->deminify(
-                    $this->getController()->getServiceLocator()->get('SearchManager')
-                );
+                $manager = $this->getController()->getServiceLocator()
+                    ->get('VuFind\SearchResultsPluginManager');
+                $search = $minSO->deminify($manager);
                 // The saved search does not remember its original limit;
                 // we should reapply it from the session data:
                 $search->getParams()->setLimit($this->data->limit);

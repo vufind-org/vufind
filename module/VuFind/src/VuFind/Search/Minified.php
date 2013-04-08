@@ -102,19 +102,18 @@ class Minified
     /**
      * Turn the current object into search results.
      *
-     * @param \VuFind\Search\Manager $manager Search manager
+     * @param \VuFind\Search\Results\PluginManager $manager Search manager
      *
      * @return \VuFind\Search\Base\Results
      */
-    public function deminify(\VuFind\Search\Manager $manager)
+    public function deminify(\VuFind\Search\Results\PluginManager $manager)
     {
         // Figure out the parameter and result classes based on the search class ID:
         $this->populateClassNames();
 
         // Deminify everything:
-        $params = $manager->setSearchClassId($this->cl)->getParams();
-        $params->deminify($this);
-        $results = $manager->setSearchClassId($this->cl)->getResults($params);
+        $results = $manager->get($this->cl);
+        $results->getParams()->deminify($this);
         $results->deminify($this);
 
         return $results;

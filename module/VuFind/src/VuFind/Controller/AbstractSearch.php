@@ -112,7 +112,7 @@ class AbstractSearch extends AbstractBase
         if ($search->session_id == $sessId || $search->user_id == $userId) {
             // They do, deminify it to a new object.
             $minSO = unserialize($search->search_object);
-            $savedSearch = $minSO->deminify($this->getSearchManager());
+            $savedSearch = $minSO->deminify($this->getResultsManager());
 
             // Now redirect to the URL associated with the saved search; this
             // simplifies problems caused by mixing different classes of search
@@ -147,8 +147,7 @@ class AbstractSearch extends AbstractBase
             return $this->redirectToSavedSearch($savedId);
         }
 
-        $results = $this->getServiceLocator()
-            ->get('VuFind\SearchResultsPluginManager')->get($this->searchClassId);
+        $results = $this->getResultsManager()->get($this->searchClassId);
         $params = $results->getParams();
         $params->recommendationsEnabled(true);
 
@@ -192,7 +191,7 @@ class AbstractSearch extends AbstractBase
                     ->getId();
                 $history = $this->getTable('Search');
                 $history->saveSearch(
-                    $this->getSearchManager(), $results, $sessId,
+                    $this->getResultsManager(), $results, $sessId,
                     $history->getSearches(
                         $sessId, isset($user->id) ? $user->id : null
                     )
@@ -212,8 +211,7 @@ class AbstractSearch extends AbstractBase
                 // We need to create and process an "empty results" object to
                 // ensure that recommendation modules and templates behave
                 // properly when displaying the error message.
-                $view->results = $this->getServiceLocator()
-                    ->get('VuFind\SearchResultsPluginManager')->get('EmptySet');
+                $view->results = $this->getResultsManager()->get('EmptySet');
                 $view->results->setParams($params);
                 $view->results->performAndProcessSearch();
             } else {
@@ -298,7 +296,7 @@ class AbstractSearch extends AbstractBase
 
         // Restore the full search object:
         $minSO = unserialize($search->search_object);
-        $savedSearch = $minSO->deminify($this->getSearchManager());
+        $savedSearch = $minSO->deminify($this->getResultsManager());
 
         // Fail if this is not the right type of search:
         if ($savedSearch->getParams()->getSearchType() != 'advanced') {
@@ -312,5 +310,15 @@ class AbstractSearch extends AbstractBase
 
         // Make the object available to the view:
         return $savedSearch;
+    }
+
+    /**
+     * Convenience method for accessing results
+     *
+     * @return \VuFind\Search\Results\PluginManager
+     */
+    protected function getResultsManager()
+    {
+        return $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager');
     }
 }
