@@ -41,6 +41,8 @@ use VuFindSearch\Query\Params;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Solr\Exception\RequestErrorException;
 
+use VuFindSearch\Backend\Solr\Document\UpdateDocument;
+
 use Zend\Http\Request;
 use Zend\Http\Client as HttpClient;
 use Zend\Http\Client\Adapter\AdapterInterface;
@@ -239,6 +241,44 @@ class Connector
         $writer->endDocument();
         $document = $writer->flush();
         return $this->update($document, $params);
+    }
+
+    /**
+     * Save one or more documents.
+     *
+     * @param UpdateDocument $document SOLR update document
+     * @param string         $format   Serialization format, either `json' or `xml'
+     * @param string         $handler  Update handler
+     * @param ParamBag       $params   Update handler parameters
+     *
+     * @return void
+     *
+     * @throws InvalidArgumentException Unknown serialization format
+     */
+    public function save(UpdateDocument $document, $format, $handler, ParamBag $params = null)
+    {
+        $url    = "{$this->url}/{$handler}";
+        if (count($params) > 0) {
+            $url .= '?' . implode('&', $params->request());
+        }
+        $client = $this->createClient($url, 'POST');
+        switch ($format) {
+        case 'xml':
+            $client->setEncType('text/xml; charset=UTF-8');
+            $body = $document->asXML();
+            break;
+        case 'json':
+            $client->setEncType('application/json');
+            $body = $document->asJSON();
+            break;
+        default:
+            throw new InvalidArgumentException(
+                "Unable to serialize to selected format: {$format}"
+            );
+        }
+        $client->setRawBody($body);
+        $client->getHeaders()->addHeaderLine('Content-Length', strlen($body));
+        return $this->send($client);
     }
 
     /**

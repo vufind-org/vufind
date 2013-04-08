@@ -118,6 +118,19 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test InvalidArgumentException unknown serialization format.
+     *
+     * @expectedException        InvalidArgumentException
+     * @expectedExceptionMessage Unable to serialize
+     */
+    public function testSaveThrowsUnknownFormat ()
+    {
+        $conn = $this->createConnector();
+        $document = $this->getMock('VuFindSearch\Backend\Solr\Document\UpdateDocument');
+        $conn->save($document, 'unknown', 'update');
+    }
+
+    /**
      * Create connector with fixture file.
      *
      * @param string $fixture Fixture file
@@ -126,13 +139,15 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
      *
      * @throws InvalidArgumentException Fixture file does not exist
      */
-    protected function createConnector ($fixture)
+    protected function createConnector ($fixture = null)
     {
-        $file = realpath(sprintf('%s/solr/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
-        if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-            throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $file));
+        if ($fixture) {
+            $file = realpath(sprintf('%s/solr/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
+            if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
+                throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $file));
+            }
+            $this->response = file_get_contents($file);
         }
-        $this->response = file_get_contents($file);
 
         $conn = new Connector('http://example.tld/');
         $conn->setProxy($this);
