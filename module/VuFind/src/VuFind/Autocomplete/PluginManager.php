@@ -72,8 +72,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 
         // get Autocomplete_Type config
         $searcher = $request->get('searcher', 'Solr');
-        $options = $this->getServiceLocator()->get('SearchManager')
-            ->setSearchClassId($searcher)->getOptionsInstance();
+        $options = $this->getServiceLocator()
+            ->get('VuFind\SearchOptionsPluginManager')->get($searcher);
         $config = $this->getServiceLocator()->get('VuFind\Config')
             ->get($options->getSearchIni());
         $types = isset($config->Autocomplete_Types) ?
