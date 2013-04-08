@@ -28,7 +28,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use PDOException, VuFind\Exception\Date as DateException,
+use PDO, PDOException, VuFind\Exception\Date as DateException,
     VuFind\Exception\ILS as ILSException;
 
 /**
