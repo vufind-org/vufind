@@ -89,14 +89,11 @@ class Params implements ServiceLocatorAwareInterface
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Options $options Options to use (null to load
-     * defaults)
+     * @param \VuFind\Search\Base\Options $options Options to use
      */
-    public function __construct($options = null)
+    public function __construct($options)
     {
-        if (null !== $options) {
-            $this->setOptions($options);
-        }
+        $this->setOptions($options);
 
         // Make sure we have some sort of query object:
         $this->query = new Query();
@@ -119,13 +116,6 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function getOptions()
     {
-        // If no options have been set, use defaults:
-        if (null === $this->options) {
-            // Create a copy of the default configuration:
-            $default = $this->getSearchManager()
-                ->setSearchClassId($this->getSearchClassId())->getOptionsInstance();
-            $this->options = clone($default);
-        }
         return $this->options;
     }
 
@@ -1311,20 +1301,6 @@ class Params implements ServiceLocatorAwareInterface
     public function getServiceLocator()
     {
         return $this->serviceLocator;
-    }
-
-    /**
-     * Pull the search manager from the service locator.
-     *
-     * @return \VuFind\Search\Manager
-     */
-    protected function getSearchManager()
-    {
-        $sl = $this->getServiceLocator();
-        if (!is_object($sl)) {
-            throw new \Exception('Could not find service locator');
-        }
-        return $sl->get('SearchManager');
     }
 
     /**
