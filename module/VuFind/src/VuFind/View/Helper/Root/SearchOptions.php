@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\View\Helper\Root;
+use VuFind\Search\Options\PluginManager;
 
 /**
  * "Retrieve search options" view helper
@@ -41,22 +42,22 @@ class SearchOptions extends \Zend\View\Helper\AbstractHelper
     /**
      * Search manager
      *
-     * @var \VuFind\Search\Manager
+     * @var PluginManager
      */
     protected $manager;
 
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Manager $manager Search manager
+     * @param PluginManager $manager Search manager
      */
-    public function __construct(\VuFind\Search\Manager $manager)
+    public function __construct(PluginManager $manager)
     {
         $this->manager = $manager;
     }
 
     /**
-     * Wrapper to the search manager's getOptionsInstance method
+     * Wrapper to the options plugin manager
      *
      * @param string $type The search type of the object to retrieve
      *
@@ -64,6 +65,6 @@ class SearchOptions extends \Zend\View\Helper\AbstractHelper
      */
     public function __invoke($type = 'Solr')
     {
-        return $this->manager->setSearchClassId($type)->getOptionsInstance();
+        return $this->manager->get($type);
     }
 }

@@ -94,7 +94,7 @@ return array(
             },
             'searchoptions' => function ($sm) {
                 return new VuFind\View\Helper\Root\SearchOptions(
-                    $sm->getServiceLocator()->get('SearchManager')
+                    $sm->getServiceLocator()->get('VuFind\SearchOptionsPluginManager')
                 );
             },
             'syndeticsplus' => function ($sm) {
