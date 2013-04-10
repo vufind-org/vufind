@@ -112,6 +112,18 @@ class DeleteDocument extends AbstractDocument
     }
 
     /**
+     * Add array of unique keys to delete.
+     *
+     * @param array $keys Unique keys
+     *
+     * @return void
+     */
+    public function addKeys($keys)
+    {
+        $this->keys = array_merge($this->keys, $keys);
+    }
+
+    /**
      * Add delete query.
      *
      * @param string $query Delete query
