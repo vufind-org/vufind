@@ -249,7 +249,8 @@ class Connector
             );
         }
         $client->setRawBody($body);
-        $client->getHeaders()->addHeaderLine('Content-Length', strlen($body));
+        $client->getRequest()->getHeaders()
+            ->addHeaderLine('Content-Length', strlen($body));
         return $this->send($client);
     }
 
