@@ -269,9 +269,6 @@ class UtilController extends AbstractBase
             return $this->getFailureResponse();
         }
 
-        // Setup Solr Connection
-        $solr = ConnectionManager::connectToIndex($index);
-
         // Build list of records to delete:
         $ids = array();
 
@@ -298,7 +295,8 @@ class UtilController extends AbstractBase
 
         // Delete, Commit and Optimize if necessary:
         if (!empty($ids)) {
-            $solr->deleteRecords($ids);
+            $writer = $this->getServiceLocator()->get('VuFind\Solr\Writer');
+            $writer->deleteRecords($index, $ids);
         }
         return $this->getSuccessResponse();
     }

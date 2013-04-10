@@ -250,6 +250,12 @@ $config = array(
                 );
             },
             'VuFind\SMS' => 'VuFind\SMS\Factory',
+            'VuFind\Solr\Writer' => function ($sm) {
+                return new \VuFind\Solr\Writer(
+                    $sm->get('VuFind\Search\BackendManager'),
+                    $sm->get('VuFind\DbTablePluginManager')->get('changetracker')
+                );
+            },
             'VuFind\Translator' => function ($sm) {
                 $factory = new \Zend\I18n\Translator\TranslatorServiceFactory();
                 $translator = $factory->createService($sm);

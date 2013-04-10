@@ -161,6 +161,16 @@ class Connector
     /// Public API
 
     /**
+     * Get the Solr URL.
+     *
+     * @return string
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
      * Return document specified by id.
      *
      * @param string   $id     The document to retrieve from Solr
