@@ -173,7 +173,9 @@ class Backend implements BackendInterface, MoreLikeThis
         while (next($this->dictionaries) !== false) {
             $prev = $this->connector->getLastQueryParameters();
             // Bypass secondary spell check if initial query disabled it:
-            if (current($prev->get('spellcheck')) == 'true') {
+            if (is_array($prev->get('spellcheck'))
+                && current($prev->get('spellcheck')) == 'true'
+            ) {
                 $next = new ParamBag(array('q' => '*:*', 'spellcheck' => 'true', 'rows' => 0));
                 $this->injectResponseWriter($next);
                 $next->mergeWith($this->connector->getQueryInvariants());
