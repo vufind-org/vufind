@@ -789,6 +789,11 @@ $config = array(
                     'SolrReserves' => 'VuFind\Search\Factory\SolrReservesBackendFactory',
                     'Summon' => 'VuFind\Search\Factory\SummonBackendFactory',
                     'WorldCat' => 'VuFind\Search\Factory\WorldCatBackendFactory',
+                ),
+                'aliases' => array(
+                    'authority' => 'SolrAuth',
+                    'biblio' => 'Solr',
+                    'reserves' => 'SolrReserves',
                 )
             ),
             'search_options' => array(
