@@ -88,7 +88,7 @@ class Service
      *
      * @return ResponseInterface
      */
-    public function search ($backend, Query\AbstractQuery $query, $offset, $limit, ParamBag $params = null)
+    public function search ($backend, Query\AbstractQuery $query, $offset = 0, $limit = 20, ParamBag $params = null)
     {
         $params  = $params ?: new ParamBag();
         $context = __FUNCTION__;
