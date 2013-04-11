@@ -187,6 +187,9 @@ class Demo extends AbstractBase
         $result = $this->searchService->search(
             'Solr', new Query('*:*'), rand()%($this->totalRecords-1), 1
         );
+        if (count($result) === 0) {
+            throw new \Exception('Solr index is empty!');
+        }
         return current($result->getRecords())->getUniqueId();
     }
 
