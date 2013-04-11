@@ -247,13 +247,12 @@ class UtilController extends AbstractBase
         // Setup Solr Connection -- Allow core to be specified as first command line
         // param.
         $argv = $this->consoleOpts->getRemainingArgs();
-        $solr = ConnectionManager::connectToIndex(
-            null, isset($argv[0]) ? $argv[0] : ''
-        );
+        $core = isset($argv[0]) ? $argv[0] : 'Solr';
 
         // Commit and Optimize the Solr Index
-        $solr->commit();
-        $solr->optimize();
+        $solr = $this->getServiceLocator()->get('VuFind\Solr\Writer');
+        $solr->commit($core);
+        $solr->optimize($core);
         return $this->getSuccessResponse();
     }
 
