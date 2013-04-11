@@ -28,6 +28,8 @@
 namespace VuFindConsole\Controller;
 use File_MARC, File_MARCXML, VuFind\Connection\Manager as ConnectionManager,
     VuFind\Sitemap, Zend\Console\Console;
+use VuFindSearch\Backend\Solr\Document\UpdateDocument;
+use VuFindSearch\Backend\Solr\Record\SerializableRecord;
 
 /**
  * This controller handles various command-line tools
@@ -155,22 +157,81 @@ class UtilController extends AbstractBase
             && !empty($reserves)
         ) {
             // Setup Solr Connection
-            $solr = ConnectionManager::connectToIndex('SolrReserves');
+            $solr = $this->getServiceLocator()->get('VuFind\Solr\Writer');
 
             // Delete existing records
-            $solr->deleteAll();
+            $solr->deleteAll('SolrReserves');
 
-            // Build the index
-            $solr->buildIndex($instructors, $courses, $departments, $reserves);
+            // Build and Save the index
+            $index = $this->buildReservesIndex(
+                $instructors, $courses, $departments, $reserves
+            );
+            $solr->save('SolrReserves', $index);
 
             // Commit and Optimize the Solr Index
-            $solr->commit();
-            $solr->optimize();
+            $solr->commit('SolrReserves');
+            $solr->optimize('SolrReserves');
 
             Console::writeLine('Successfully loaded ' . count($reserves) . ' rows.');
             return $this->getSuccessResponse();
         }
         return $this->indexReservesHelp('Unable to load data.');
+    }
+
+    /**
+     * Build the reserves index from date returned by the ILS driver,
+     * specifically: getInstructors, getDepartments, getCourses, findReserves
+     *
+     * @param array $instructors Array of instructors $instructor_id => $instructor
+     * @param array $courses     Array of courses     $course_id => $course
+     * @param array $departments Array of department  $dept_id => $department
+     * @param array $reserves    Array of reserves records from driver's
+     * findReserves.
+     *
+     * @return UpdateDocument
+     */
+    protected function buildReservesIndex($instructors, $courses, $departments,
+        $reserves
+    ) {
+        foreach ($reserves as $record) {
+            if (!isset($record['INSTRUCTOR_ID']) || !isset($record['COURSE_ID'])
+                || !isset($record['DEPARTMENT_ID'])
+            ) {
+                throw new \Exception(
+                    'INSTRUCTOR_ID and/or COURSE_ID and/or DEPARTMENT_ID fields ' .
+                    'not present in reserve records. Please update ILS driver.'
+                );
+            }
+            $instructor_id = $record['INSTRUCTOR_ID'];
+            $course_id = $record['COURSE_ID'];
+            $department_id = $record['DEPARTMENT_ID'];
+            $id = $course_id . '|' . $instructor_id . '|' . $department_id;
+
+            if (!isset($index[$id])) {
+                $index[$id] = array(
+                    'id' => $id,
+                    'bib_id' => array(),
+                    'instructor_id' => $instructor_id,
+                    'instructor' => isset($instructors[$instructor_id])
+                        ? $instructors[$instructor_id] : '',
+                    'course_id' => $course_id,
+                    'course' => isset($courses[$course_id])
+                        ? $courses[$course_id] : '',
+                    'department_id' => $department_id,
+                    'department' => isset($departments[$department_id])
+                        ? $departments[$department_id] : ''
+                );
+            }
+            $index[$id]['bib_id'][] = $record['BIB_ID'];
+        }
+
+        $updates = new UpdateDocument();
+        foreach ($index as $id => $data) {
+            if (!empty($data['bib_id'])) {
+                $updates->addRecord(new SerializableRecord($data));
+            }
+        }
+        return $updates;
     }
 
     /**
