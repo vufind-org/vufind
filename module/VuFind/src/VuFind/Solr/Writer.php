@@ -28,7 +28,11 @@
 namespace VuFind\Solr;
 use VuFind\Db\Table\ChangeTracker, VuFind\Search\BackendManager;
 use VuFindSearch\Backend\Solr\Connector;
+use VuFindSearch\Backend\Solr\Document\CommitDocument;
 use VuFindSearch\Backend\Solr\Document\DeleteDocument;
+use VuFindSearch\Backend\Solr\Document\OptimizeDocument;
+use VuFindSearch\Backend\Solr\Document\UpdateDocument;
+
 /**
  * Solr Writer service
  *
@@ -67,6 +71,36 @@ class Writer
     }
 
     /**
+     * Commit the index.
+     *
+     * @param string $backend Backend ID
+     *
+     * @return void
+     */
+    public function commit($backend)
+    {
+        $connector = $this->getConnector($backend);
+        $connector->write(new CommitDocument());
+    }
+
+    /**
+     * Delete all records in the index.
+     *
+     * Note: This does not update the change tracker!
+     *
+     * @param string $backend Backend ID
+     *
+     * @return void
+     */
+    public function deleteAll($backend)
+    {
+        $deleteDoc = new DeleteDocument();
+        $deleteDoc->addQuery('*:*');
+        $connector = $this->getConnector($backend);
+        $connector->write($deleteDoc);
+    }
+
+    /**
      * Delete an array of IDs from the specified search backend
      *
      * @param string $backend Backend ID
@@ -87,6 +121,33 @@ class Writer
         foreach ($idList as $id) {
             $this->changeTracker->markDeleted($core, $id);
         }
+    }
+
+    /**
+     * Optimize the index.
+     *
+     * @param string $backend Backend ID
+     *
+     * @return void
+     */
+    public function optimize($backend)
+    {
+        $connector = $this->getConnector($backend);
+        $connector->write(new OptimizeDocument());
+    }
+
+    /**
+     * Save new record(s) to the index.
+     *
+     * @param string         $backend Backend ID
+     * @param UpdateDocument $doc     Document(s) to save
+     *
+     * @return void
+     */
+    public function save($backend, UpdateDocument $doc)
+    {
+        $connector = $this->getConnector($backend);
+        $connector->write($doc);
     }
 
     /**
