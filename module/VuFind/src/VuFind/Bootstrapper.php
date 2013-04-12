@@ -122,9 +122,6 @@ class Bootstrapper
             };
             $serviceManager->setFactory($serviceName, $factory);
         }
-
-        // TODO: factor out static connection manager.
-        \VuFind\Connection\Manager::setServiceLocator($serviceManager);
     }
 
     /**
