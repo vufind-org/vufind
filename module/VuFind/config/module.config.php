@@ -844,7 +844,7 @@ $staticRoutes = array(
     'Install/PerformSecurityFix', 'Install/ShowSQL',
     'MyResearch/Account', 'MyResearch/CheckedOut', 'MyResearch/Delete',
     'MyResearch/DeleteList', 'MyResearch/Edit', 'MyResearch/Email',
-    'MyResearch/Export', 'MyResearch/Favorites', 'MyResearch/Fines',
+    'MyResearch/Favorites', 'MyResearch/Fines',
     'MyResearch/Holds', 'MyResearch/Home', 'MyResearch/Logout', 'MyResearch/Profile',
     'MyResearch/SaveSearch',
     'OAI/Server', 'Records/Home',
