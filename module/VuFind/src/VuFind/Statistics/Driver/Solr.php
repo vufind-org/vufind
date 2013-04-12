@@ -26,8 +26,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Statistics\Driver;
-use VuFind\Connection\Manager as ConnectionManager;
-use VuFind\Solr\Writer, VuFindSearch\Backend\Solr\Backend;
+use VuFind\Solr\Writer;
+use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Query\Query;
 use VuFindSearch\ParamBag;
 
@@ -56,8 +56,6 @@ class Solr extends AbstractBase
      */
     protected $solrBackend;
 
-    protected $solr = null;
-
     /**
      * Constructor
      *
@@ -68,19 +66,6 @@ class Solr extends AbstractBase
     {
         $this->solrWriter = $writer;
         $this->solrBackend = $backend;
-    }
-
-    /**
-     * Get Solr connection.
-     *
-     * @return \VuFind\Connection\SolrStats
-     */
-    protected function getSolr()
-    {
-        if (null === $this->solr) {
-            $this->solr = ConnectionManager::connectToIndex('SolrStats');
-        }
-        return $this->solr;
     }
 
     /**
@@ -142,19 +127,18 @@ class Solr extends AbstractBase
      */
     public function getBrowserStats($version, $listLength = 5)
     {
+        $query = new Query('*:*');
+        $params = new ParamBag();
+        $params->add('fl', 'browser,browserVersion');
+        $params->add('group', 'true');
+        $params->add('group.field', 'session');
         $start = 0;
         $limit = 1000;
         $hashes = array();
         do {
-            $result = $this->getSolr()->search(
-                array(
-                    'field' => 'browser',
-                    'group' => array('session'),
-                    'start' => $start,
-                    'limit' => $limit
-                )
-            );
-            foreach ($result['grouped']['session']['groups'] as $group) {
+            $response = $this->solrBackend->search($query, $start, $limit, $params);
+            $groups = $response->getGroups();
+            foreach ($groups['session']['groups'] as $group) {
                 if ($version) {
                     // Version specific
                     $browser = $group['doclist']['docs'][0]['browser']
@@ -174,7 +158,7 @@ class Solr extends AbstractBase
                 }
             }
             $start += $limit;
-        } while (count($result['grouped']['session']['groups']) > 0);
+        } while (count($groups['session']['groups']) > 0);
         $solrBrowsers = array();
         foreach ($hashes as $browser=>$count) {
             $newBrowser = array(

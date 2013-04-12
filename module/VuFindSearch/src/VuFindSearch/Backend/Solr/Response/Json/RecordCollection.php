@@ -139,6 +139,17 @@ class RecordCollection extends AbstractRecordCollection
     }
 
     /**
+     * Get grouped results.
+     *
+     * @return array
+     */
+    public function getGroups()
+    {
+        return isset($this->response['grouped'])
+            ? $this->response['grouped'] : array();
+    }
+
+    /**
      * Get highlighting details.
      *
      * @return array
