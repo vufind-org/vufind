@@ -182,6 +182,26 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     }
 
     /**
+     * Get the Solr core.
+     *
+     * @return string
+     */
+    protected function getSolrCore()
+    {
+        return $this->solrCore;
+    }
+
+    /**
+     * Get the Solr URL.
+     *
+     * @return string
+     */
+    protected function getSolrUrl()
+    {
+        return $this->config->get('config')->Index->url . '/' . $this->getSolrCore();
+    }
+
+    /**
      * Create the SOLR connector.
      *
      * @return Connector
@@ -191,8 +211,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         $config = $this->config->get('config');
         $search = $this->config->get($this->searchConfig);
 
-        $url    = $config->Index->url . '/' . $this->solrCore;
-        $connector = new Connector($url);
+        $connector = new Connector($this->getSolrUrl());
         $connector->setTimeout(
             isset($config->Index->timeout) ? $config->Index->timeout : 30
         );

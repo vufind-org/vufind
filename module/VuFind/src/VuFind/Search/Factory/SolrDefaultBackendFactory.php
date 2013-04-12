@@ -53,10 +53,20 @@ class SolrDefaultBackendFactory extends AbstractSolrBackendFactory
     public function __construct()
     {
         parent::__construct();
-        $this->solrCore = isset($this->config->Index->default_core)
-            ? $this->config->Index->default_core : 'biblio';
         $this->searchConfig = 'searches';
         $this->searchYaml = 'searchspecs.yaml';
+    }
+
+    /**
+     * Get the Solr core.
+     *
+     * @return string
+     */
+    protected function getSolrCore()
+    {
+        $config = $this->config->get('config');
+        return isset($config->Index->default_core)
+            ? $config->Index->default_core : 'biblio';
     }
 
     /**
