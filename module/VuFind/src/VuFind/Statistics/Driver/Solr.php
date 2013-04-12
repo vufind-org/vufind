@@ -39,7 +39,24 @@ use VuFind\Connection\Manager as ConnectionManager;
  */
 class Solr extends AbstractBase
 {
+    /**
+     * Solr writer
+     *
+     * @var \VuFind\Solr\Writer
+     */
+    protected $solrWriter;
+
     protected $solr = null;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Solr\Writer $writer Solr writer
+     */
+    public function __construct(\VuFind\Solr\Writer $writer)
+    {
+        $this->solrWriter = $writer;
+    }
 
     /**
      * Get Solr connection.
@@ -67,11 +84,13 @@ class Solr extends AbstractBase
         if (isset($data['phrase']) && $data['phrase'] == '') {
             $data['phrase'] = '*:*';
         }
-        $this->getSolr()->saveRecord(
-            $this->getSolr()->getSaveXML(
+        $update = new \VuFindSearch\Backend\Solr\Document\UpdateDocument();
+        $update->addRecord(
+            new \VuFindSearch\Backend\Solr\Record\SerializableRecord(
                 array_merge($data, $userData)
             )
         );
+        $this->solrWriter->save('SolrStats', $update);
     }
 
     /**

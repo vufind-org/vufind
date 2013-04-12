@@ -787,6 +787,7 @@ $config = array(
                     'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
                     'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
                     'SolrReserves' => 'VuFind\Search\Factory\SolrReservesBackendFactory',
+                    'SolrStats' => 'VuFind\Search\Factory\SolrStatsBackendFactory',
                     'Summon' => 'VuFind\Search\Factory\SummonBackendFactory',
                     'WorldCat' => 'VuFind\Search\Factory\WorldCatBackendFactory',
                 ),
@@ -794,6 +795,7 @@ $config = array(
                     'authority' => 'SolrAuth',
                     'biblio' => 'Solr',
                     'reserves' => 'SolrReserves',
+                    'stats' => 'SolrStats',
                 )
             ),
             'search_options' => array(
@@ -828,10 +830,14 @@ $config = array(
                             ? $config->Statistics->file : sys_get_temp_dir();
                         return new \VuFind\Statistics\Driver\File($folder);
                     },
+                    'solr' => function ($sm) {
+                        return new \VuFind\Statistics\Driver\Solr(
+                            $sm->getServiceLocator()->get('VuFind\Solr\Writer')
+                        );
+                    },
                 ),
                 'invokables' => array(
                     'db' => 'VuFind\Statistics\Driver\Db',
-                    'solr' => 'VuFind\Statistics\Driver\Solr',
                 ),
                 'aliases' => array(
                     'database' => 'db',
