@@ -206,7 +206,6 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             $this->serviceManager->setService(
                 'SharedEventManager', new \Zend\EventManager\SharedEventManager()
             );
-            \VuFind\Connection\Manager::setServiceLocator($this->serviceManager);
         }
         return $this->serviceManager;
     }
