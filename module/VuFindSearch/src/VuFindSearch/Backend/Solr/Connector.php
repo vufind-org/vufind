@@ -234,7 +234,7 @@ class Connector
      * @param string           $handler  Update handler
      * @param ParamBag         $params   Update handler parameters
      *
-     * @return void
+     * @return string Response body
      */
     public function write(AbstractDocument $document, $format = 'xml', $handler = 'update', ParamBag $params = null)
     {
