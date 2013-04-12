@@ -90,8 +90,10 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
             throw new InvalidArgumentException(sprintf('Unexpected type of value: Expected array, got %s', gettype($response)));
         }
         $collection = new $this->collectionClass($response);
-        foreach ($response['response']['docs'] as $doc) {
-            $collection->add(call_user_func($this->recordFactory, $doc));
+        if (isset($response['response']['docs'])) {
+            foreach ($response['response']['docs'] as $doc) {
+                $collection->add(call_user_func($this->recordFactory, $doc));
+            }
         }
         return $collection;
     }
