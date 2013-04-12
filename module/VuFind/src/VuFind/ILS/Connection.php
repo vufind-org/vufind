@@ -193,13 +193,7 @@ class Connection
     {
         // Determine config file name based on class name:
         $parts = explode('\\', $this->getDriverClass());
-        try {
-            $config = $this->configReader->get(end($parts));
-        } catch (\Zend\Config\Exception\RuntimeException $e) {
-            // Configuration loading failed; probably means file does not
-            // exist -- just return an empty array in that case:
-            return array();
-        }
+        $config = $this->configReader->get(end($parts));
         return is_object($config) ? $config->toArray() : array();
     }
 

@@ -67,13 +67,18 @@ class PluginFactory implements AbstractFactoryInterface
      * @param string $path     path relative to VuFind base (optional; defaults
      * to config/vufind
      *
-     * @return \Zend\Config\Config
+     * @return Config
      */
     protected function loadConfigFile($filename, $path = 'config/vufind')
     {
         $configs = array();
 
         $fullpath = Locator::getConfigPath($filename, $path);
+
+        // Return empty configuration if file does not exist:
+        if (!file_exists($fullpath)) {
+            return new Config(array());
+        }
 
         // Retrieve and parse at least one configuration file, and possibly a whole
         // chain of them if the Parent_Config setting is used:
