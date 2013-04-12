@@ -26,6 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
+use VuFindSearch\Query\Query;
 
 /**
  * Collections Controller
@@ -65,13 +66,11 @@ class CollectionsController extends AbstractBase
         $collections = $this->getCollectionsFromTitle(
             $this->params()->fromQuery('title')
         );
-        if (is_array($collections) && count($collections) != 1) {
-            $view = $this->createViewModel();
-            $view->collections = $collections;
-            return $view;
+        if (count($collections) != 1) {
+            return $this->createViewModel(array('collections' => $collections));
         }
         return $this->redirect()
-            ->toRoute('collection', array('id' => $collections[0]['id']));
+            ->toRoute('collection', array('id' => $collections[0]->getUniqueId()));
     }
 
     /**
@@ -331,17 +330,10 @@ class CollectionsController extends AbstractBase
      */
     protected function getCollectionsFromTitle($title)
     {
-        $db = \VuFind\Connection\Manager::connectToIndex();
         $title = addcslashes($title, '"');
-        $result = $db->search(
-            array(
-                'query' => "is_hierarchy_title:\"$title\"",
-                'handler' => 'AllFields',
-                'limit' => $this->getBrowseLimit()
-            )
-        );
-
-        return isset($result['response']['docs'])
-            ? $result['response']['docs'] : array();
+        $query = new Query("is_hierarchy_title:\"$title\"", 'AllFields');
+        $searchService = $this->getServiceLocator()->get('VuFind\Search');
+        $result = $searchService->search('Solr', $query, 0, $this->getBrowseLimit());
+        return $result->getRecords();
     }
 }
