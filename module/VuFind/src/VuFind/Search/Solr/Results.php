@@ -26,8 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Solr;
-use VuFind\Connection\Manager as ConnectionManager,
-    VuFind\Exception\RecordMissing as RecordMissingException,
+use VuFind\Exception\RecordMissing as RecordMissingException,
     VuFind\Search\Base\Results as BaseResults;
 
 use VuFindSearch\Query\AbstractQuery;

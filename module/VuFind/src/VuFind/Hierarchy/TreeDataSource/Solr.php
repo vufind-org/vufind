@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
 namespace VuFind\Hierarchy\TreeDataSource;
-use VuFind\Connection\Manager as ConnectionManager;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service as SearchService;
 
