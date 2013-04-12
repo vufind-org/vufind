@@ -27,6 +27,9 @@
  */
 namespace VuFind\Statistics\Driver;
 use VuFind\Connection\Manager as ConnectionManager;
+use VuFind\Solr\Writer, VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\Query\Query;
+use VuFindSearch\ParamBag;
 
 /**
  * Writer to put statistics to the Solr index
@@ -42,20 +45,29 @@ class Solr extends AbstractBase
     /**
      * Solr writer
      *
-     * @var \VuFind\Solr\Writer
+     * @var Writer
      */
     protected $solrWriter;
+
+    /**
+     * Solr backend
+     *
+     * @var Backend
+     */
+    protected $solrBackend;
 
     protected $solr = null;
 
     /**
      * Constructor
      *
-     * @param \VuFind\Solr\Writer $writer Solr writer
+     * @param Writer  $writer  Solr writer
+     * @param Backend $backend Solr backend
      */
-    public function __construct(\VuFind\Solr\Writer $writer)
+    public function __construct(Writer $writer, Backend $backend)
     {
         $this->solrWriter = $writer;
+        $this->solrBackend = $backend;
     }
 
     /**
@@ -94,40 +106,6 @@ class Solr extends AbstractBase
     }
 
     /**
-     * Get the most common of a field.
-     *
-     * @param string  $field      What field of data are we researching?
-     * @param integer $listLength How long the top list is
-     *
-     * @return array
-     */
-    public function getTopList($field, $listLength = 5)
-    {
-        // Records saved in Solr
-        $records = $this->getSolr()->search(
-            array(
-                'facet' => array(
-                    'field' => array($field),
-                    'sort'  => 'count'
-                )
-            )
-        );
-        $top = array();
-        foreach ($records['facet_counts']['facet_fields'][$field] as $i=>$record) {
-            if ($i < $listLength) {
-                $top[] = array(
-                    'value' => ($record[0] == '*:*') ? '(empty)' : $record[0],
-                    'count' => $record[1]
-                );
-            }
-        }
-        return array(
-            'total' => $count,
-            'top'   => $top
-        );
-    }
-
-    /**
      * Get the total count of a field.
      *
      * @param string $field What field of data are we researching?
@@ -137,23 +115,20 @@ class Solr extends AbstractBase
      */
     public function getFullList($field, $value = array('value' => '[* TO *]'))
     {
+        $query = new Query($field.':'.$value['value']);
+        $params = new ParamBag();
+        $params->add('fl', $field);
         $start = 0;
         $limit = 1000;
         $data = array();
         do {
-            $search = $this->getSolr()->search(
-                array(
-                    'fields' => array($field),
-                    'filter' => array($field.':'.$value['value']),
-                    'start'  => $start,
-                    'limit'  => $limit
-                )
-            );
-            foreach ($search['response']['docs'] as $doc) {
-                $data[] = $doc;
+            $response = $this->solrBackend->search($query, $start, $limit, $params);
+            $records = $response->getRecords();
+            foreach ($records as $doc) {
+                $data[] = array($field => $doc->$field);
             }
             $start += $limit;
-        } while (count($search['response']['docs']) > 0);
+        } while (count($records) > 0);
         return $data;
     }
 

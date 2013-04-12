@@ -832,7 +832,8 @@ $config = array(
                     },
                     'solr' => function ($sm) {
                         return new \VuFind\Statistics\Driver\Solr(
-                            $sm->getServiceLocator()->get('VuFind\Solr\Writer')
+                            $sm->getServiceLocator()->get('VuFind\Solr\Writer'),
+                            $sm->getServiceLocator()->get('VuFind\Search\BackendManager')->get('SolrStats')
                         );
                     },
                 ),

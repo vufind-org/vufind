@@ -71,21 +71,7 @@ abstract class AbstractBase
      * @return void
      */
     abstract public function write($data, $userData);
-    
-    /**
-     * Get the most common of a field.
-     *
-     * @param string  $field      What field of data are we researching?
-     * @param integer $listLength How long the top list is
-     *
-     * @return array
-     */
-    public function getTopList($field, $listLength)
-    {
-        // Assume no statistics
-        return array();
-    }
-    
+
     /**
      * Get all the instances of a field.
      *
@@ -99,7 +85,7 @@ abstract class AbstractBase
         // Assume no statistics
         return array();
     }
-    
+
     /**
      * Returns browser usage statistics
      *
