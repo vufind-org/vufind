@@ -28,10 +28,10 @@
 namespace VuFind\Solr;
 use VuFind\Db\Table\ChangeTracker, VuFind\Search\BackendManager;
 use VuFindSearch\Backend\Solr\Connector;
+use VuFindSearch\Backend\Solr\Document\AbstractDocument;
 use VuFindSearch\Backend\Solr\Document\CommitDocument;
 use VuFindSearch\Backend\Solr\Document\DeleteDocument;
 use VuFindSearch\Backend\Solr\Document\OptimizeDocument;
-use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 
 /**
  * Solr Writer service
@@ -139,12 +139,12 @@ class Writer
     /**
      * Save new record(s) to the index.
      *
-     * @param string         $backend Backend ID
-     * @param UpdateDocument $doc     Document(s) to save
+     * @param string           $backend Backend ID
+     * @param AbstractDocument $doc     Document(s) to save
      *
      * @return void
      */
-    public function save($backend, UpdateDocument $doc)
+    public function save($backend, AbstractDocument $doc)
     {
         $connector = $this->getConnector($backend);
         $connector->write($doc);
