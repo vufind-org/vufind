@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
 namespace VuFindConsole\Controller;
-use File_MARC, File_MARCXML, VuFind\Connection\Manager as ConnectionManager,
-    VuFind\Sitemap, Zend\Console\Console;
+use File_MARC, File_MARCXML, VuFind\Sitemap, Zend\Console\Console;
 use VuFindSearch\Backend\Solr\Document\UpdateDocument;
 use VuFindSearch\Backend\Solr\Record\SerializableRecord;
 
@@ -409,19 +408,15 @@ class UtilController extends AbstractBase
                     'Delete authority records instead of bibliographic records'
             )
         );
-        $core = $this->consoleOpts->getOption('authorities')
-            ? 'authority' : 'biblio';
-
-        $solr = ConnectionManager::connectToIndex('Solr', $core);
+        $backend = $this->consoleOpts->getOption('authorities')
+            ? 'SolrAuth' : 'Solr';
 
         // Make ILS Connection
         try {
             $catalog = $this->getILS();
-            if ($core == 'authority') {
-                $result = $catalog->getSuppressedAuthorityRecords();
-            } else {
-                $result = $catalog->getSuppressedRecords();
-            }
+            $result = ($backend == 'SolrAuth')
+                ? $catalog->getSuppressedAuthorityRecords()
+                : $catalog->getSuppressedRecords();
         } catch (\Exception $e) {
             Console::writeLine("ILS error -- " . $e->getMessage());
             return $this->getFailureResponse();
@@ -437,15 +432,10 @@ class UtilController extends AbstractBase
         }
 
         // Get Suppressed Records and Delete from index
-        $status = $solr->deleteRecords($result);
-        if ($status) {
-            // Commit and Optimize
-            $solr->commit();
-            $solr->optimize();
-        } else {
-            Console::writeLine("Delete failed.");
-            return $this->getFailureResponse();
-        }
+        $solr = $this->getServiceLocator()->get('VuFind\Solr\Writer');
+        $solr->deleteRecords($backend, $result);
+        $solr->commit($backend);
+        $solr->optimize($backend);
         return $this->getSuccessResponse();
     }
 
