@@ -81,7 +81,8 @@ class Results extends BaseResults
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
         $params = $this->createBackendParameters($query, $this->getParams());
-        $collection = $this->getSearchService()->search($this->backendId, $query, $offset, $limit, $params);
+        $collection = $this->getSearchService()
+            ->search($this->backendId, $query, $offset, $limit, $params);
 
         $this->rawResponse = $collection->getRawResponse();
         $this->resultTotal = $collection->getTotal();
@@ -105,7 +106,8 @@ class Results extends BaseResults
     {
         static $table = array(
             'year' => array('field' => 'publishDateSort', 'order' => 'desc'),
-            'publishDateSort' => array('field' => 'publishDateSort', 'order' => 'desc'),
+            'publishDateSort' =>
+                array('field' => 'publishDateSort', 'order' => 'desc'),
             'author' => array('field' => 'authorStr', 'order' => 'asc'),
             'title' => array('field' => 'title_sort', 'order' => 'asc'),
             'relevance' => array('field' => 'score', 'order' => 'desc'),
@@ -215,7 +217,9 @@ class Results extends BaseResults
         foreach ($spellcheck as $term => $info) {
 
             // TODO: Avoid reference to Options
-            if ($this->getOptions()->shouldSkipNumericSpelling() && is_numeric($term)) {
+            if ($this->getOptions()->shouldSkipNumericSpelling()
+                && is_numeric($term)
+            ) {
                 continue;
             }
             // Term is not part of the query
@@ -234,7 +238,9 @@ class Results extends BaseResults
                 if (!$this->getParams()->getQuery()->containsTerm($word)) {
                     // TODO: Avoid reference to Options
                     // Note: !a || !b eq !(a && b)
-                    if (!is_numeric($word) || !$this->getOptions()->shouldSkipNumericSpelling()) {
+                    if (!is_numeric($word)
+                        || !$this->getOptions()->shouldSkipNumericSpelling()
+                    ) {
                         $suggestions[$word] = $suggestion['freq'];
                     }
                 }

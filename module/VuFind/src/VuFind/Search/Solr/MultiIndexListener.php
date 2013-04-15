@@ -174,7 +174,8 @@ class MultiIndexListener
             foreach ($spec as $component => $settings) {
                 switch ($component) {
                 case 'QueryFields':
-                    $specs[$handler][$component] = $this->stripSpecsQueryFields($settings, $fields);
+                    $specs[$handler][$component]
+                        = $this->stripSpecsQueryFields($settings, $fields);
                     break;
                 default:
                     $specs[$handler][$component] = $settings;
