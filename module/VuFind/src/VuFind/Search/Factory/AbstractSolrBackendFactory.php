@@ -271,7 +271,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      */
     protected function loadSpecs()
     {
-        $specs = $this->serviceLocator->get('VuFind\SearchSpecsReader')->get($this->searchYaml);
-        return $specs;
+        return $this->serviceLocator->get('VuFind\SearchSpecsReader')
+            ->get($this->searchYaml);
     }
 }
