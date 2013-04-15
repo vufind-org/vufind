@@ -1,5 +1,4 @@
 <?php
-
 /**
  * SOLR backend.
  *
@@ -26,7 +25,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\Solr;
 
 use VuFindSearch\Query\AbstractQuery;
@@ -150,8 +148,9 @@ class Backend implements BackendInterface, MoreLikeThis
      *
      * @return RecordCollectionInterface
      */
-    public function search(AbstractQuery $query, $offset, $limit, ParamBag $params = null)
-    {
+    public function search(AbstractQuery $query, $offset, $limit,
+        ParamBag $params = null
+    ) {
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
 
@@ -161,11 +160,15 @@ class Backend implements BackendInterface, MoreLikeThis
                 $params->set('spellcheck', 'true');
                 $params->set('spellcheck.dictionary', current($this->dictionaries));
             } else {
-                $this->log('warn', 'Spellcheck requested but no spellcheck dictionary configured');
+                $this->log(
+                    'warn',
+                    'Spellcheck requested but no spellcheck dictionary configured'
+                );
             }
         }
 
-        $response   = $this->connector->search($query, $offset, $limit, $this->getQueryBuilder(), $params);
+        $response   = $this->connector
+            ->search($query, $offset, $limit, $this->getQueryBuilder(), $params);
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
 
@@ -176,14 +179,17 @@ class Backend implements BackendInterface, MoreLikeThis
             if (is_array($prev->get('spellcheck'))
                 && current($prev->get('spellcheck')) == 'true'
             ) {
-                $next = new ParamBag(array('q' => '*:*', 'spellcheck' => 'true', 'rows' => 0));
+                $next = new ParamBag(
+                    array('q' => '*:*', 'spellcheck' => 'true', 'rows' => 0)
+                );
                 $this->injectResponseWriter($next);
                 $next->mergeWith($this->connector->getQueryInvariants());
                 $next->set('spellcheck.q', $prev->get('spellcheck.q'));
                 $next->set('spellcheck.dictionary', current($this->dictionaries));
                 $response   = $this->connector->resubmit($next);
                 $spellcheck = $this->createRecordCollection($response);
-                $collection->getSpellcheck()->mergeWith($spellcheck->getSpellcheck());
+                $collection->getSpellcheck()
+                    ->mergeWith($spellcheck->getSpellcheck());
             }
         }
 
@@ -344,8 +350,9 @@ class Backend implements BackendInterface, MoreLikeThis
      *
      * @return void
      */
-    public function setRecordCollectionFactory(RecordCollectionFactoryInterface $factory)
-    {
+    public function setRecordCollectionFactory(
+        RecordCollectionFactoryInterface $factory
+    ) {
         $this->collectionFactory = $factory;
     }
 
@@ -417,7 +424,8 @@ class Backend implements BackendInterface, MoreLikeThis
      */
     protected function createRecordCollection($json)
     {
-        return $this->getRecordCollectionFactory()->factory($this->deserialize($json));
+        return $this->getRecordCollectionFactory()
+            ->factory($this->deserialize($json));
     }
 
     /**
@@ -438,7 +446,8 @@ class Backend implements BackendInterface, MoreLikeThis
                 sprintf('JSON decoding error: %s -- %s', $error, $json)
             );
         }
-        $qtime = isset($response['responseHeader']['QTime']) ? $response['responseHeader']['QTime'] : 'n/a';
+        $qtime = isset($response['responseHeader']['QTime'])
+            ? $response['responseHeader']['QTime'] : 'n/a';
         $this->log('debug', 'Deserialized SOLR response', array('qtime' => $qtime));
         return $response;
     }

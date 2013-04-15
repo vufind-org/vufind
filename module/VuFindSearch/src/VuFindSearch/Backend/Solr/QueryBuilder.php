@@ -128,8 +128,13 @@ class QueryBuilder
         if ($this->containsAdvancedLuceneSyntax($string)) {
 
             if ($handler) {
-                if ($params->get('hl') && array_intersect($params->get('hl'), array('true', 'on'))) {
-                    $params->set('hl.q', $this->createAdvancedInnerSearchString($string, $handler));
+                if ($params->get('hl')
+                    && array_intersect($params->get('hl'), array('true', 'on'))
+                ) {
+                    $params->set(
+                        'hl.q',
+                        $this->createAdvancedInnerSearchString($string, $handler)
+                    );
                 }
                 $string = $this->createAdvancedInnerSearchString($string, $handler);
                 if ($handler->hasDismax()) {
@@ -209,7 +214,9 @@ class QueryBuilder
         }
 
         // Check for wildcards and fuzzy matches:
-        if (strstr($searchString, '*') || strstr($searchString, '?') || strstr($searchString, '~')) {
+        if (strstr($searchString, '*') || strstr($searchString, '?')
+            || strstr($searchString, '~')
+        ) {
             return true;
         }
 
@@ -297,14 +304,19 @@ class QueryBuilder
     protected function reduceQueryGroupComponents(AbstractQuery $component)
     {
         if ($component instanceOf QueryGroup) {
-            $reduced = array_map(array($this, 'reduceQueryGroupComponents'), $component->getQueries());
+            $reduced = array_map(
+                array($this, 'reduceQueryGroupComponents'), $component->getQueries()
+            );
             $searchString = $component->isNegated() ? 'NOT ' : '';
-            $searchString .= sprintf('(%s)', implode(" {$component->getOperator()} ", $reduced));
+            $searchString .= sprintf(
+                '(%s)', implode(" {$component->getOperator()} ", $reduced)
+            );
         } else {
             $searchString  = $this->normalizeSearchString($component->getString());
             $searchHandler = $this->getSearchHandler($component->getHandler());
             if ($searchHandler) {
-                $searchString = $this->createSearchString($searchString, $searchHandler);
+                $searchString
+                    = $this->createSearchString($searchString, $searchHandler);
             }
         }
         return $searchString;
@@ -341,8 +353,9 @@ class QueryBuilder
      * @return string
      *
      */
-    protected function createAdvancedInnerSearchString($string, SearchHandler $handler)
-    {
+    protected function createAdvancedInnerSearchString($string,
+        SearchHandler $handler
+    ) {
         // Special case -- if the user wants all records but the current handler
         // has a filter query, apply the filter query:
         if (trim($string) === '*:*' && $handler && $handler->hasFilterQuery()) {
@@ -367,10 +380,12 @@ class QueryBuilder
         // If the query ends in a question mark, the user may not really intend to
         // use the question mark as a wildcard -- let's account for that possibility
         if (substr($string, -1) == '?') {
-            $string = "({$string}) OR (" . substr($string, 0, strlen($string) - 1) . ")";
+            $string = "({$string}) OR (" . substr($string, 0, strlen($string) - 1)
+                . ")";
         }
 
-        return $handler ? $handler->createAdvancedQueryString($string, false) : $string;
+        return $handler
+            ? $handler->createAdvancedQueryString($string, false) : $string;
     }
 
     /**

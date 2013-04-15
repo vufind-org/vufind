@@ -215,8 +215,9 @@ class Connector
      *
      * @return string
      */
-    public function search(AbstractQuery $query, $offset, $limit, QueryBuilder $queryBuilder, ParamBag $params = null)
-    {
+    public function search(AbstractQuery $query, $offset, $limit,
+        QueryBuilder $queryBuilder, ParamBag $params = null
+    ) {
         $params = $params ?: new ParamBag();
         $params->set('start', $offset);
         $params->set('rows', $limit);
@@ -236,8 +237,9 @@ class Connector
      *
      * @return string Response body
      */
-    public function write(AbstractDocument $document, $format = 'xml', $handler = 'update', ParamBag $params = null)
-    {
+    public function write(AbstractDocument $document, $format = 'xml',
+        $handler = 'update', ParamBag $params = null
+    ) {
         $params = $params ?: new ParamBag();
         $url    = "{$this->url}/{$handler}";
         if (count($params) > 0) {
@@ -430,7 +432,12 @@ class Connector
     public function setAdapter($adapter)
     {
         if (is_object($adapter) && (!$adapter instanceOf AdapterInterface)) {
-            throw new InvalidArgumentException(sprintf('HTTP client adapter must implement AdapterInterface: %s', get_class($adapter)));
+            throw new InvalidArgumentException(
+                sprintf(
+                    'HTTP client adapter must implement AdapterInterface: %s',
+                    get_class($adapter)
+                )
+            );
         }
         $this->adapter = $adapter;
     }
@@ -521,7 +528,9 @@ class Connector
         if ($this->logger) {
             $this->logger->debug(sprintf('Query %s', $paramString));
         }
-        $this->lastQuery = array('parameters' => $params, 'handler' => $handler, 'method' => $method);
+        $this->lastQuery = array(
+            'parameters' => $params, 'handler' => $handler, 'method' => $method
+        );
         return $this->send($client);
     }
 
@@ -538,7 +547,9 @@ class Connector
     protected function send(HttpClient $client)
     {
         if ($this->logger) {
-            $this->logger->debug(sprintf('=> %s %s', $client->getMethod(), $client->getUri()));
+            $this->logger->debug(
+                sprintf('=> %s %s', $client->getMethod(), $client->getUri())
+            );
         }
 
         $time     = microtime(true);
@@ -546,7 +557,12 @@ class Connector
         $time     = microtime(true) - $time;
 
         if ($this->logger) {
-            $this->logger->debug(sprintf('<= %s %s', $response->getStatusCode(), $response->getReasonPhrase()), array('time' => $time));
+            $this->logger->debug(
+                sprintf(
+                    '<= %s %s', $response->getStatusCode(),
+                    $response->getReasonPhrase()
+                ), array('time' => $time)
+            );
         }
 
         if (!$response->isSuccess()) {

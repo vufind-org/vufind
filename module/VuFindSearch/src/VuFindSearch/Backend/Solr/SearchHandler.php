@@ -198,7 +198,8 @@ class SearchHandler
      */
     public function getFilterQuery()
     {
-        return empty($this->specs['FilterQuery']) ? null : $this->specs['FilterQuery'];
+        return empty($this->specs['FilterQuery'])
+            ? null : $this->specs['FilterQuery'];
     }
 
     /**
