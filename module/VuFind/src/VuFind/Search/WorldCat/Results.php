@@ -102,7 +102,6 @@ class Results extends \VuFind\Search\Base\Results
      * @param Params        $params Search parameters
      *
      * @return ParamBag
-     * @tag NEW SEARCH
      */
     protected function createBackendParameters(AbstractQuery $query, Params $params)
     {

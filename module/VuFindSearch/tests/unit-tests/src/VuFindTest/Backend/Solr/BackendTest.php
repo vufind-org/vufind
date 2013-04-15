@@ -52,7 +52,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testRetrieve ()
+    public function testRetrieve()
     {
         $resp = $this->loadResponse('single-record');
         $conn = $this->getMock('VuFindSearch\Backend\Solr\Connector', array('retrieve'), array('http://example.tld/'));
@@ -75,7 +75,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testTerms ()
+    public function testTerms()
     {
         $resp = $this->loadResponse('terms');
         $conn = $this->getMock('VuFindSearch\Backend\Solr\Connector', array('query'), array('http://example.tld/'));
@@ -96,7 +96,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
      *
      * @expectedException VuFindSearch\Exception\InvalidArgumentException
      */
-    public function testInjectResponseWriterTrhownOnIncompabileResponseWriter ()
+    public function testInjectResponseWriterTrhownOnIncompabileResponseWriter()
     {
         $conn = $this->getMock('VuFindSearch\Backend\Solr\Connector', array(), array('http://example.tld/'));
         $back = new Backend($conn);
@@ -112,7 +112,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
      *
      * @throws InvalidArgumentException Fixture files does not exist
      */
-    protected function loadResponse ($fixture)
+    protected function loadResponse($fixture)
     {
         $file = realpath(sprintf('%s/solr/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
         if (!is_string($file) || !file_exists($file) || !is_readable($file)) {

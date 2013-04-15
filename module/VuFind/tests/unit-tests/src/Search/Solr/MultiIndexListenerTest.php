@@ -120,7 +120,7 @@ class MultiIndexListenerTest extends TestCase
      *
      * @return void
      */
-    protected function setup ()
+    protected function setup()
     {
         $connector      = new Connector('http://example.org/');
         $this->backend  = new Backend($connector);
@@ -132,7 +132,7 @@ class MultiIndexListenerTest extends TestCase
      *
      * @return void
      */
-    public function testStripFacetFields ()
+    public function testStripFacetFields()
     {
         $params   = new ParamBag(
             array(
@@ -153,7 +153,7 @@ class MultiIndexListenerTest extends TestCase
      *
      * @return void
      */
-    public function testStripSpecsEmptySpecs ()
+    public function testStripSpecsEmptySpecs()
     {
         $this->setProperty($this->listener, 'specs', array());
         $specs = $this->callMethod($this->listener, 'getSearchSpecs', array(array('A', 'B', 'E')));
@@ -165,7 +165,7 @@ class MultiIndexListenerTest extends TestCase
      *
      * @return void
      */
-    public function testStripSpecsNoFieldsToStrip ()
+    public function testStripSpecsNoFieldsToStrip()
     {
         $specs = $this->callMethod($this->listener, 'getSearchSpecs', array(array('F', 'G', 'H')));
         $this->assertEquals($specs, self::$specs);
@@ -176,7 +176,7 @@ class MultiIndexListenerTest extends TestCase
      *
      * @return void
      */
-    public function testStripSpecsStrip ()
+    public function testStripSpecsStrip()
     {
         $specs = $this->callMethod($this->listener, 'getSearchSpecs', array(array('A', 'B', 'E')));
         $this->assertEquals(
@@ -203,7 +203,7 @@ class MultiIndexListenerTest extends TestCase
      *
      * @return void
      */
-    public function testStripSpecsAllQueryFields ()
+    public function testStripSpecsAllQueryFields()
     {
         $specs = $this->callMethod($this->listener, 'getSearchSpecs', array(array('A', 'B', 'C', 'D', 'E')));
         $this->assertEquals(

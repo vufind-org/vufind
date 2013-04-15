@@ -48,7 +48,7 @@ class SearchHandlerTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testSimpleSearchDismax ()
+    public function testSimpleSearchDismax()
     {
         $spec = array('DismaxParams' => array(array('foo', 'bar')), 'DismaxFields' => array('field1', 'field2'));
         $hndl = new SearchHandler($spec);

@@ -70,7 +70,7 @@ class ProxyServiceTest extends \PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testGetWithAssocParams ()
+    public function testGetWithAssocParams()
     {
         $service = new Service();
         $adapter = $this->getMock('Zend\Http\Client\Adapter\Test', array('write'));
@@ -91,7 +91,7 @@ class ProxyServiceTest extends \PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testGetWithParamPairs ()
+    public function testGetWithParamPairs()
     {
         $service = new Service();
         $adapter = $this->getMock('Zend\Http\Client\Adapter\Test', array('write'));
@@ -112,7 +112,7 @@ class ProxyServiceTest extends \PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testGetAppendsQueryPart ()
+    public function testGetAppendsQueryPart()
     {
         $service = new Service();
         $adapter = $this->getMock('Zend\Http\Client\Adapter\Test', array('write'));
@@ -133,7 +133,7 @@ class ProxyServiceTest extends \PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testPostForm ()
+    public function testPostForm()
     {
         $service = new Service();
         $adapter = new \Zend\Http\Client\Adapter\Test();
@@ -146,7 +146,7 @@ class ProxyServiceTest extends \PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testSendPostRequestEmptyBody ()
+    public function testSendPostRequestEmptyBody()
     {
         $service = new Service();
         $adapter = $this->getMock('Zend\Http\Client\Adapter\Test', array('write'));
@@ -167,7 +167,7 @@ class ProxyServiceTest extends \PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testProxify ()
+    public function testProxify()
     {
         $service = new Service(
             array(
@@ -189,7 +189,7 @@ class ProxyServiceTest extends \PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testNoProxifyLocal ()
+    public function testNoProxifyLocal()
     {
         $service = new Service(
             array(
@@ -216,7 +216,7 @@ class ProxyServiceTest extends \PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testRuntimeException ()
+    public function testRuntimeException()
     {
         $service = new Service();
         $service->get('http://example.tld');
@@ -227,7 +227,7 @@ class ProxyServiceTest extends \PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testIsAssocArrayWithMixedKeys ()
+    public function testIsAssocArrayWithMixedKeys()
     {
         $arr = array();
         $arr[] = 'foo';

@@ -1356,8 +1356,6 @@ class Params implements ServiceLocatorAwareInterface
      * Return search query object.
      *
      * @return VuFindSearch\Query\AbstractQuery
-     *
-     * @tag NEW SEARCH
      */
     public function getQuery()
     {

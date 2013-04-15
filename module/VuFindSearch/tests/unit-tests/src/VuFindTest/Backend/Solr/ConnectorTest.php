@@ -60,7 +60,7 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testRetrieve ()
+    public function testRetrieve()
     {
         $conn = $this->createConnector('single-record');
         $resp = $conn->retrieve('id');
@@ -74,7 +74,7 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testRetrieveMissingRecord ()
+    public function testRetrieveMissingRecord()
     {
         $conn = $this->createConnector('no-match');
         $resp = $conn->retrieve('id');
@@ -87,7 +87,7 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
      * @expectedException     VuFindSearch\Backend\Exception\RemoteErrorException
      * @expectedExceptionCode 500
      */
-    public function testInternalServerError ()
+    public function testInternalServerError()
     {
         $conn = $this->createConnector('internal-server-error');
         $resp = $conn->retrieve('id');
@@ -99,7 +99,7 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
      * @expectedException     VuFindSearch\Backend\Exception\RequestErrorException
      * @expectedExceptionCode 400
      */
-    public function testBadRequestError ()
+    public function testBadRequestError()
     {
         $conn = $this->createConnector('bad-request');
         $resp = $conn->retrieve('id');
@@ -111,7 +111,7 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
      * @expectedException InvalidArgumentException
      * @expectedExceptionMessage AdapterInterface
      */
-    public function testSetAdapterThrowsInvalidObject ()
+    public function testSetAdapterThrowsInvalidObject()
     {
         $conn = $this->createConnector('single-record');
         $conn->setAdapter($this);
@@ -123,7 +123,7 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
      * @expectedException        InvalidArgumentException
      * @expectedExceptionMessage Unable to serialize
      */
-    public function testSaveThrowsUnknownFormat ()
+    public function testSaveThrowsUnknownFormat()
     {
         $conn = $this->createConnector();
         $document = $this->getMock('VuFindSearch\Backend\Solr\Document\UpdateDocument');
@@ -139,7 +139,7 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
      *
      * @throws InvalidArgumentException Fixture file does not exist
      */
-    protected function createConnector ($fixture = null)
+    protected function createConnector($fixture = null)
     {
         if ($fixture) {
             $file = realpath(sprintf('%s/solr/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
@@ -161,7 +161,7 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function proxify (HttpClient $client)
+    public function proxify(HttpClient $client)
     {
         $adapter = new TestAdapter();
         $adapter->setResponse($this->response);

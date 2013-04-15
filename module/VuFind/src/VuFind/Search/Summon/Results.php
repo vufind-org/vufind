@@ -134,9 +134,8 @@ class Results extends BaseResults
      * @param Params $params Search parameters
      *
      * @return ParamBag
-     * @tag NEW SEARCH
      */
-    protected function createBackendParameters (Params $params)
+    protected function createBackendParameters(Params $params)
     {
         $backendParams = new ParamBag();
 
@@ -173,7 +172,7 @@ class Results extends BaseResults
      *
      * @return array
      */
-    protected function createBackendFacetParameters ($facets)
+    protected function createBackendFacetParameters($facets)
     {
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('Summon');
         $defaultFacetLimit = isset($config->Facet_Settings->facet_limit)
@@ -202,7 +201,7 @@ class Results extends BaseResults
      *
      * @return void
      */
-    public function createBackendFilterParameters (ParamBag $params, $filterList)
+    public function createBackendFilterParameters(ParamBag $params, $filterList)
     {
         // Which filters should be applied to our query?
         if (!empty($filterList)) {

@@ -61,7 +61,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      *
      * @return mixed
      */
-    protected function callMethod ($object, $method, array $arguments = array())
+    protected function callMethod($object, $method, array $arguments = array())
     {
         $reflectionMethod = new \ReflectionMethod($object, $method);
         $reflectionMethod->setAccessible(true);
@@ -80,7 +80,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      *
      * @return mixed
      */
-    protected function getProperty ($object, $property)
+    protected function getProperty($object, $property)
     {
         $reflectionProperty = new \ReflectionProperty($object, $property);
         $reflectionProperty->setAccessible(true);
@@ -100,7 +100,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    protected function setProperty ($object, $property, $value)
+    protected function setProperty($object, $property, $value)
     {
         $reflectionProperty = new \ReflectionProperty($object, $property);
         $reflectionProperty->setAccessible(true);

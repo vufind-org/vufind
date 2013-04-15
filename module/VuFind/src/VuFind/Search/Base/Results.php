@@ -68,7 +68,6 @@ abstract class Results implements ServiceLocatorAwareInterface
      * Search service.
      *
      * @var SearchService
-     * @tag NEW SEARCH
      */
     protected $searchService;
 
@@ -598,7 +597,6 @@ abstract class Results implements ServiceLocatorAwareInterface
      *
      * @todo May better error handling, throw a custom exception if search service
      * not present
-     * @tag NEW SEARCH
      */
     protected function getSearchService()
     {

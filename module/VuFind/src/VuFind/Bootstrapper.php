@@ -360,7 +360,7 @@ class Bootstrapper
      *
      * @return void
      */
-    protected function initSearch ()
+    protected function initSearch()
     {
         $sm     = $this->event->getApplication()->getServiceManager();
         $bm     = $sm->get('VuFind\Search\BackendManager');

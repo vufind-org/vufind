@@ -51,7 +51,7 @@ class BackendManagerTest extends TestCase
      *
      * @return void
      */
-    public function testGetThrowsOnNonObject ()
+    public function testGetThrowsOnNonObject()
     {
         $registry = $this->getMockForAbstractClass('Zend\ServiceManager\ServiceLocatorInterface');
         $registry->expects($this->once())
@@ -69,7 +69,7 @@ class BackendManagerTest extends TestCase
      *
      * @return void
      */
-    public function testGetThrowsOnNonBackend ()
+    public function testGetThrowsOnNonBackend()
     {
         $registry = $this->getMockForAbstractClass('Zend\ServiceManager\ServiceLocatorInterface');
         $registry->expects($this->once())

@@ -79,7 +79,7 @@ class CacheDecorator implements ReaderInterface
      *
      * @return array
      */
-    public function fromFile ($filename)
+    public function fromFile($filename)
     {
         $absFilename = realpath($filename);
         $mtime = @filemtime($absFilename);
@@ -99,7 +99,7 @@ class CacheDecorator implements ReaderInterface
      *
      * @return array|boolean
      */
-    public function fromString ($string)
+    public function fromString($string)
     {
         $key = $this->generateKey($string);
         if ($this->storage->hasItem($key)) {
@@ -119,7 +119,7 @@ class CacheDecorator implements ReaderInterface
      *
      * @return string
      */
-    protected function generateKey ($string)
+    protected function generateKey($string)
     {
         return md5($string);
     }

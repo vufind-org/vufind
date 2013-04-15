@@ -57,7 +57,6 @@ class Results extends BaseResults
      * Search backend identifiers.
      *
      * @var string
-     * @tag NEW SEARCH
      */
     protected $backendId = 'Solr';
 
@@ -73,7 +72,6 @@ class Results extends BaseResults
      * parameters passed to the object.
      *
      * @return void
-     * @tag NEW SEARCH
      */
     protected function performSearch()
     {
@@ -142,9 +140,8 @@ class Results extends BaseResults
      * @param Params        $params Search parameters
      *
      * @return ParamBag
-     * @tag NEW SEARCH
      */
-    protected function createBackendParameters (AbstractQuery $query, Params $params)
+    protected function createBackendParameters(AbstractQuery $query, Params $params)
     {
         $backendParams = new ParamBag();
 
@@ -211,7 +208,7 @@ class Results extends BaseResults
      *
      * @return void
      */
-    protected function processSpelling (Spellcheck $spellcheck)
+    protected function processSpelling(Spellcheck $spellcheck)
     {
         $this->suggestions = array();
         foreach ($spellcheck as $term => $info) {

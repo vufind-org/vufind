@@ -66,7 +66,7 @@ class Module
      *
      * @return array
      */
-    public function getAutoloaderConfig ()
+    public function getAutoloaderConfig()
     {
         return array(
             'Zend\Loader\StandardAutoloader' => array(
@@ -82,7 +82,7 @@ class Module
      *
      * @return array
      */
-    public function getServiceConfig ()
+    public function getServiceConfig()
     {
         return array(
             'factories' => array(
@@ -98,7 +98,7 @@ class Module
      *
      * @return SearchService
      */
-    public function setup (ServiceManager $sm)
+    public function setup(ServiceManager $sm)
     {
         $service = new Service();
         if ($sm->has('VuFind\Logger')) {
@@ -106,5 +106,4 @@ class Module
         }
         return $service;
     }
-
 }

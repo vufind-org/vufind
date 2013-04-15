@@ -48,7 +48,7 @@ class RecordCollectionFactoryTest extends PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testFactory ()
+    public function testFactory()
     {
         $json = json_encode(array('response' => array('start' => 0, 'docs' => array(array(), array(), array()))));
         $fact = new RecordCollectionFactory();

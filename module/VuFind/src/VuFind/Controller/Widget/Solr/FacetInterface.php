@@ -50,5 +50,5 @@ interface FacetInterface extends WidgetInterface
      *
      * @return void
      */
-    public function updateState (Facets $facets);
+    public function updateState(Facets $facets);
 }

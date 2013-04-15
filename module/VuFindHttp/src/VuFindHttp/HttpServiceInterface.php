@@ -51,7 +51,7 @@ interface HttpServiceInterface
      *
      * @return Zend\Http\Client
      */
-    public function proxify (\Zend\Http\Client $client, array $options = array());
+    public function proxify(\Zend\Http\Client $client, array $options = array());
 
     /**
      * Perform a GET request.
@@ -62,7 +62,7 @@ interface HttpServiceInterface
      *
      * @return \Zend\Http\Response
      */
-    public function get ($url, array $params = array(), $timeout = null);
+    public function get($url, array $params = array(), $timeout = null);
 
     /**
      * Perform a POST request.
@@ -74,7 +74,7 @@ interface HttpServiceInterface
      *
      * @return \Zend\Http\Response
      */
-    public function post ($url, $body = null, $type = 'application/octet-stream',
+    public function post($url, $body = null, $type = 'application/octet-stream',
         $timeout = null
     );
 
@@ -87,7 +87,7 @@ interface HttpServiceInterface
      *
      * @return \Zend\Http\Response
      */
-    public function postForm ($url, array $params = array(), $timeout = null);
+    public function postForm($url, array $params = array(), $timeout = null);
 
     /**
      * Return a new proxy client.
@@ -98,7 +98,7 @@ interface HttpServiceInterface
      *
      * @return \Zend\Http\Client
      */
-    public function createClient ($url, $method = \Zend\Http\Request::METHOD_GET,
+    public function createClient($url, $method = \Zend\Http\Request::METHOD_GET,
         $timeout = null
     );
 

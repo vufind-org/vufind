@@ -54,7 +54,7 @@ class Module
      *
      * @return array
      */
-    public function getAutoloaderConfig ()
+    public function getAutoloaderConfig()
     {
         return array(
             'Zend\Loader\StandardAutoloader' => array(
@@ -70,7 +70,7 @@ class Module
      *
      * @return array
      */
-    public function getConfig ()
+    public function getConfig()
     {
         return array();
     }
@@ -80,7 +80,7 @@ class Module
      *
      * @return void
      */
-    public function init ()
+    public function init()
     {
     }
 
@@ -89,7 +89,7 @@ class Module
      *
      * @return array
      */
-    public function getServiceConfig ()
+    public function getServiceConfig()
     {
         return array(
             'factories' => array(
@@ -103,7 +103,7 @@ class Module
      *
      * @return \VuFind\Service\Search
      */
-    public function setup ()
+    public function setup()
     {
         $config = include realpath(__DIR__ . '/' . $this->configPath);
 

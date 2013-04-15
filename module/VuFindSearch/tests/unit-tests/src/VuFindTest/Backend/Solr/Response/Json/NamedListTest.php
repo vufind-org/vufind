@@ -48,7 +48,7 @@ class NamedListTest extends TestCase
      *
      * @return void
      */
-    public function testIterate ()
+    public function testIterate()
     {
         $list = new NamedList(array(array('first term', 'info'), array('second term', 'info')));
         $keys = array();
@@ -63,7 +63,7 @@ class NamedListTest extends TestCase
      *
      * @return void
      */
-    public function testCountable ()
+    public function testCountable()
     {
         $list = new NamedList(array(array('first term', 'info'), array('second term', 'info')));
         $this->assertEquals(2, count($list));

@@ -48,7 +48,7 @@ class SpellcheckTest extends TestCase
      *
      * @return void
      */
-    public function testMerge ()
+    public function testMerge()
     {
         $s1 = new Spellcheck(
             array(

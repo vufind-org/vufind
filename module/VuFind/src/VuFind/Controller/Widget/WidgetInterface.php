@@ -57,13 +57,13 @@ interface WidgetInterface
      *
      * @return void
      */
-    public function setState (Parameters $parameters);
+    public function setState(Parameters $parameters);
 
     /**
      * Return array representing the widget state as query parameters.
      *
      * @return array
      */
-    public function getState ();
+    public function getState();
 
 }
