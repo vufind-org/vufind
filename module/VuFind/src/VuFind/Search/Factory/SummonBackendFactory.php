@@ -84,7 +84,7 @@ class SummonBackendFactory implements FactoryInterface
      *
      * @return BackendInterface
      */
-    public function createService (ServiceLocatorInterface $serviceLocator)
+    public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $this->serviceLocator = $serviceLocator;
         $configReader = $this->serviceLocator->get('VuFind\Config');
@@ -101,11 +101,11 @@ class SummonBackendFactory implements FactoryInterface
     /**
      * Create the Summon backend.
      *
-     * @param Connector $connector  Connector
+     * @param Connector $connector Connector
      *
      * @return Backend
      */
-    protected function createBackend (Connector $connector)
+    protected function createBackend(Connector $connector)
     {
         $backend = new Backend($connector, $this->createRecordCollectionFactory());
         $backend->setLogger($this->logger);
@@ -118,7 +118,7 @@ class SummonBackendFactory implements FactoryInterface
      *
      * @return Connector
      */
-    protected function createConnector ()
+    protected function createConnector()
     {
         // Load credentials:
         $id = isset($this->config->Summon->apiId)
@@ -142,7 +142,7 @@ class SummonBackendFactory implements FactoryInterface
      *
      * @return QueryBuilder
      */
-    protected function createQueryBuilder ()
+    protected function createQueryBuilder()
     {
         $builder = new QueryBuilder();
         $builder->caseSensitiveBooleans
@@ -156,7 +156,7 @@ class SummonBackendFactory implements FactoryInterface
      *
      * @return RecordCollectionFactory
      */
-    protected function createRecordCollectionFactory ()
+    protected function createRecordCollectionFactory()
     {
         $manager = $this->serviceLocator->get('VuFind\RecordDriverPluginManager');
         $stripSnippets = !isset($this->summonConfig->General->snippets)

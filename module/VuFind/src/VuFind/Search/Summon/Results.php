@@ -213,16 +213,20 @@ class Results extends BaseResults
                     // Special case -- "holdings only" is a separate parameter from
                     // other facets.
                     if ($filt['field'] == 'holdingsOnly') {
-                        $params->set('holdings', strtolower(trim($safeValue)) == 'true');
+                        $params->set(
+                            'holdings', strtolower(trim($safeValue)) == 'true'
+                        );
                     } else if ($filt['field'] == 'excludeNewspapers') {
                         // Special case -- support a checkbox for excluding
                         // newspapers:
-                        $params->add('filters', "ContentType,Newspaper Article,true");
+                        $params
+                            ->add('filters', "ContentType,Newspaper Article,true");
                     } else if ($range = SolrUtils::parseRange($filt['value'])) {
                         // Special case -- range query (translate [x TO y] syntax):
                         $from = SummonQuery::escapeParam($range['from']);
                         $to = SummonQuery::escapeParam($range['to']);
-                        $params->add('rangeFilters', "{$filt['field']},{$from}:{$to}");
+                        $params
+                            ->add('rangeFilters', "{$filt['field']},{$from}:{$to}");
                     } else {
                         // Standard case:
                         $params->add('filters', "{$filt['field']},{$safeValue}");

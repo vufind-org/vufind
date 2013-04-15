@@ -143,7 +143,8 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             $optionsFactory = new \VuFind\Search\Options\PluginManager(
                 new \Zend\ServiceManager\Config(
                     array(
-                        'abstract_factories' => array('VuFind\Search\Options\PluginFactory'),
+                        'abstract_factories' =>
+                            array('VuFind\Search\Options\PluginFactory'),
                         'aliases' => array('VuFind' => 'Solr'),
                     )
                 )
@@ -155,7 +156,8 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             $paramsFactory = new \VuFind\Search\Params\PluginManager(
                 new \Zend\ServiceManager\Config(
                     array(
-                        'abstract_factories' => array('VuFind\Search\Params\PluginFactory'),
+                        'abstract_factories' =>
+                            array('VuFind\Search\Params\PluginFactory'),
                         'aliases' => array('VuFind' => 'Solr'),
                     )
                 )
@@ -167,7 +169,8 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             $resultsFactory = new \VuFind\Search\Results\PluginManager(
                 new \Zend\ServiceManager\Config(
                     array(
-                        'abstract_factories' => array('VuFind\Search\Results\PluginFactory'),
+                        'abstract_factories' =>
+                            array('VuFind\Search\Results\PluginFactory'),
                         'aliases' => array('VuFind' => 'Solr'),
                     )
                 )

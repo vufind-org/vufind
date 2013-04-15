@@ -139,7 +139,7 @@ class Sitemap
             // Get
             $currentPageInfo
                 = $this->backend->terms('id', $last_term, $this->countPerPage)
-                ->getFieldTerms('id');
+                    ->getFieldTerms('id');
             if (null === $currentPageInfo || count($currentPageInfo) < 1) {
                 break;
             } else {

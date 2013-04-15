@@ -104,7 +104,7 @@ class Writer
      * Delete an array of IDs from the specified search backend
      *
      * @param string $backend Backend ID
-     * @param array  $ids     Record IDs to delete
+     * @param array  $idList  Record IDs to delete
      *
      * @return void
      */
@@ -152,6 +152,8 @@ class Writer
 
     /**
      * Get the connector for a specified backend.
+     *
+     * @param string $backend Backend ID
      *
      * @return Connector
      */

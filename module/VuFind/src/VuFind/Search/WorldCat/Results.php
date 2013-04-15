@@ -53,7 +53,8 @@ class Results extends \VuFind\Search\Base\Results
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
         $params = $this->createBackendParameters($query, $this->getParams());
-        $collection = $this->getSearchService()->search('WorldCat', $query, $offset, $limit, $params);
+        $collection = $this->getSearchService()
+            ->search('WorldCat', $query, $offset, $limit, $params);
 
         $this->resultTotal = $collection->getTotal();
         $this->results = $collection->getRecords();
@@ -97,12 +98,13 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Create search backend parameters for advanced features.
      *
-     * @param Params $params Search parameters
+     * @param AbstractQuery $query  Query being processed
+     * @param Params        $params Search parameters
      *
      * @return ParamBag
      * @tag NEW SEARCH
      */
-    protected function createBackendParameters (AbstractQuery $query, Params $params)
+    protected function createBackendParameters(AbstractQuery $query, Params $params)
     {
         $backendParams = new ParamBag();
 

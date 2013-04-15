@@ -62,7 +62,8 @@ class Solr extends AbstractBase
      * @param SearchService $search   Search service
      * @param string        $cacheDir Directory to hold cache results (optional)
      */
-    public function __construct(SearchService $search, $cacheDir = null) {
+    public function __construct(SearchService $search, $cacheDir = null)
+    {
         $this->searchService = $search;
         if (null !== $cacheDir) {
             $this->cacheDir = rtrim($cacheDir, '/');

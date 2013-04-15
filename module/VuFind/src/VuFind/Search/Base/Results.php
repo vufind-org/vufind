@@ -596,10 +596,11 @@ abstract class Results implements ServiceLocatorAwareInterface
      *
      * @return SearchService
      *
-     * @todo May better error handling, throw a custom exception if search service not present
+     * @todo May better error handling, throw a custom exception if search service
+     * not present
      * @tag NEW SEARCH
      */
-    protected function getSearchService ()
+    protected function getSearchService()
     {
         if (!$this->searchService) {
             $this->searchService = $this->getServiceLocator()->get('VuFind\Search');

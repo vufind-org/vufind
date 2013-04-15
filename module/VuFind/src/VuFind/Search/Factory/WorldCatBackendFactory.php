@@ -77,7 +77,7 @@ class WorldCatBackendFactory implements FactoryInterface
      *
      * @return BackendInterface
      */
-    public function createService (ServiceLocatorInterface $serviceLocator)
+    public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $this->serviceLocator = $serviceLocator;
         $this->config = $this->serviceLocator->get('VuFind\Config')->get('config');
@@ -92,11 +92,11 @@ class WorldCatBackendFactory implements FactoryInterface
     /**
      * Create the WorldCat backend.
      *
-     * @param Connector $connector  Connector
+     * @param Connector $connector Connector
      *
      * @return Backend
      */
-    protected function createBackend (Connector $connector)
+    protected function createBackend(Connector $connector)
     {
         $backend = new Backend($connector, $this->createRecordCollectionFactory());
         $backend->setLogger($this->logger);
@@ -109,7 +109,7 @@ class WorldCatBackendFactory implements FactoryInterface
      *
      * @return Connector
      */
-    protected function createConnector ()
+    protected function createConnector()
     {
         $wsKey = isset($this->config->WorldCat->apiKey)
             ? $this->config->WorldCat->apiKey : null;
@@ -128,7 +128,7 @@ class WorldCatBackendFactory implements FactoryInterface
      *
      * @return QueryBuilder
      */
-    protected function createQueryBuilder ()
+    protected function createQueryBuilder()
     {
         $exclude = isset($this->config->WorldCat->OCLCCode)
             ? $this->config->WorldCat->OCLCCode : null;
@@ -140,7 +140,7 @@ class WorldCatBackendFactory implements FactoryInterface
      *
      * @return RecordCollectionFactory
      */
-    protected function createRecordCollectionFactory ()
+    protected function createRecordCollectionFactory()
     {
         $manager = $this->serviceLocator->get('VuFind\RecordDriverPluginManager');
         $callback = function ($data) use ($manager) {

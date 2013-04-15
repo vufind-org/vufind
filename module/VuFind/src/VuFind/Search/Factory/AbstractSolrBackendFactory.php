@@ -97,7 +97,8 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      * Constructor
      */
     public function __construct()
-    {}
+    {
+    }
 
     /**
      * Create the backend.
@@ -106,7 +107,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      *
      * @return BackendInterface
      */
-    public function createService (ServiceLocatorInterface $serviceLocator)
+    public function createService(ServiceLocatorInterface $serviceLocator)
     {
         $this->serviceLocator = $serviceLocator;
         $this->config         = $this->serviceLocator->get('VuFind\Config');
@@ -122,11 +123,11 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     /**
      * Create the SOLR backend.
      *
-     * @param Connector $connector  Connector
+     * @param Connector $connector Connector
      *
      * @return Backend
      */
-    protected function createBackend (Connector $connector)
+    protected function createBackend(Connector $connector)
     {
 
         $config  = $this->config->get('config');
@@ -156,7 +157,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      *
      * @return void
      */
-    protected function createListeners (Backend $backend)
+    protected function createListeners(Backend $backend)
     {
         $events = $this->serviceLocator->get('SharedEventManager');
 
@@ -206,7 +207,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      *
      * @return Connector
      */
-    protected function createConnector ()
+    protected function createConnector()
     {
         $config = $this->config->get('config');
         $search = $this->config->get($this->searchConfig);
@@ -246,7 +247,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      *
      * @return QueryBuilder
      */
-    protected function createQueryBuilder ()
+    protected function createQueryBuilder()
     {
         $specs   = $this->loadSpecs();
         $builder = new QueryBuilder($specs);
@@ -268,7 +269,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      *
      * @return array
      */
-    protected function loadSpecs ()
+    protected function loadSpecs()
     {
         $specs = $this->serviceLocator->get('VuFind\SearchSpecsReader')->get($this->searchYaml);
         return $specs;

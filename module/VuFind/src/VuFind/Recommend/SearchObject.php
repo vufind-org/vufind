@@ -73,7 +73,8 @@ abstract class SearchObject implements RecommendInterface
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
      */
-    public function __construct(\VuFind\Search\Results\PluginManager $results) {
+    public function __construct(\VuFind\Search\Results\PluginManager $results)
+    {
         $this->resultsManager = $results;
     }
 

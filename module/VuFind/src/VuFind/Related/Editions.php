@@ -63,10 +63,11 @@ class Editions implements RelatedInterface
      * Constructor
      *
      * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
+     * @param \VuFind\Connection\WorldCatUtils     $wcUtils WorldCat utils object
      */
     public function __construct(\VuFind\Search\Results\PluginManager $results,
-        \VuFind\Connection\WorldCatUtils $wcUtils)
-    {
+        \VuFind\Connection\WorldCatUtils $wcUtils
+    ) {
         $this->resultsManager = $results;
         $this->wcUtils = $wcUtils;
     }
