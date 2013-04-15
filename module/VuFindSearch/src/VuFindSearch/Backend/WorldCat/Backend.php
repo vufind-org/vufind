@@ -94,7 +94,7 @@ class Backend implements BackendInterface
      *
      * @return void
      */
-    public function __construct (Connector $connector,
+    public function __construct(Connector $connector,
         RecordCollectionFactoryInterface $factory
     ) {
         $this->setRecordCollectionFactory($factory);
@@ -109,7 +109,7 @@ class Backend implements BackendInterface
      *
      * @return void
      */
-    public function setIdentifier ($identifier)
+    public function setIdentifier($identifier)
     {
         $this->identifier = $identifier;
     }
@@ -124,7 +124,7 @@ class Backend implements BackendInterface
      *
      * @return RecordCollectionInterface
      */
-    public function search (AbstractQuery $query, $offset, $limit,
+    public function search(AbstractQuery $query, $offset, $limit,
         ParamBag $params = null
     ) {
         $response   = $this->connector->search(
@@ -143,7 +143,7 @@ class Backend implements BackendInterface
      *
      * @return RecordCollectionInterface
      */
-    public function retrieve ($id, ParamBag $params = null)
+    public function retrieve($id, ParamBag $params = null)
     {
         $response   = $this->connector->getRecord($id, $params);
         $collection = $this->createRecordCollection($response);
@@ -158,7 +158,7 @@ class Backend implements BackendInterface
      *
      * @return void
      */
-    public function setLogger (LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }
@@ -170,7 +170,7 @@ class Backend implements BackendInterface
      *
      * @return QueryBuilder
      */
-    public function getQueryBuilder ()
+    public function getQueryBuilder()
     {
         if (!$this->queryBuilder) {
             $this->queryBuilder = new QueryBuilder();
@@ -187,7 +187,7 @@ class Backend implements BackendInterface
      *
      * @todo Typehint QueryBuilderInterface
      */
-    public function setQueryBuilder (QueryBuilder $queryBuilder)
+    public function setQueryBuilder(QueryBuilder $queryBuilder)
     {
         $this->queryBuilder = $queryBuilder;
     }
@@ -197,7 +197,7 @@ class Backend implements BackendInterface
      *
      * @return string
      */
-    public function getIdentifier ()
+    public function getIdentifier()
     {
         return $this->identifier;
     }
@@ -209,7 +209,7 @@ class Backend implements BackendInterface
      *
      * @return void
      */
-    public function setRecordCollectionFactory (RecordCollectionFactoryInterface $factory)
+    public function setRecordCollectionFactory(RecordCollectionFactoryInterface $factory)
     {
         $this->collectionFactory = $factory;
     }
@@ -221,7 +221,7 @@ class Backend implements BackendInterface
      *
      * @return RecordCollectionFactoryInterface
      */
-    public function getRecordCollectionFactory ()
+    public function getRecordCollectionFactory()
     {
         return $this->collectionFactory;
     }
@@ -231,7 +231,7 @@ class Backend implements BackendInterface
      *
      * @return Connector
      */
-    public function getConnector ()
+    public function getConnector()
     {
         return $this->connector;
     }
@@ -245,7 +245,7 @@ class Backend implements BackendInterface
      *
      * @return void
      */
-    protected function injectSourceIdentifier (RecordCollectionInterface $response)
+    protected function injectSourceIdentifier(RecordCollectionInterface $response)
     {
         $response->setSourceIdentifier($this->identifier);
         foreach ($response as $record) {
@@ -263,7 +263,7 @@ class Backend implements BackendInterface
      *
      * @return void
      */
-    protected function log ($level, $message, array $context = array())
+    protected function log($level, $message, array $context = array())
     {
         if ($this->logger) {
             $this->logger->$level($message, $context);
@@ -277,7 +277,7 @@ class Backend implements BackendInterface
      *
      * @return RecordCollectionInterface
      */
-    protected function createRecordCollection ($records)
+    protected function createRecordCollection($records)
     {
         return $this->getRecordCollectionFactory()->factory($records);
     }

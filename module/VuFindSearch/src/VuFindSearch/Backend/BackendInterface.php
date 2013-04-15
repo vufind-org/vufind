@@ -63,7 +63,6 @@ use VuFindSearch\ParamBag;
  */
 interface BackendInterface
 {
-
     /**
      * Set the backend identifier.
      *
@@ -71,14 +70,14 @@ interface BackendInterface
      *
      * @return void
      */
-    public function setIdentifier ($identifier);
+    public function setIdentifier($identifier);
 
     /**
      * Return backend identifier.
      *
      * @return string
      */
-    public function getIdentifier ();
+    public function getIdentifier();
 
     /**
      * Perform a search and return record collection.
@@ -90,7 +89,7 @@ interface BackendInterface
      *
      * @return RecordCollectionInterface
      */
-    public function search (AbstractQuery $query, $offset, $limit, ParamBag $params = null);
+    public function search(AbstractQuery $query, $offset, $limit, ParamBag $params = null);
 
     /**
      * Retrieve a single document.
@@ -100,6 +99,6 @@ interface BackendInterface
      *
      * @return RecordCollectionInterface
      */
-    public function retrieve ($id, ParamBag $params = null);
+    public function retrieve($id, ParamBag $params = null);
 
 }

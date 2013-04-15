@@ -91,7 +91,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return void
      */
-    public function __construct ($operator, array $queries = array(), $reducedHandler = null)
+    public function __construct($operator, array $queries = array(), $reducedHandler = null)
     {
         $this->setOperator($operator);
         $this->setQueries($queries);
@@ -117,7 +117,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return string|null
      */
-    public function getReducedHandler ()
+    public function getReducedHandler()
     {
         return $this->reducedHandler;
     }
@@ -129,7 +129,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return void
      */
-    public function setReducedHandler ($handler)
+    public function setReducedHandler($handler)
     {
         $this->reducedHandler = $handler;
     }
@@ -139,7 +139,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return void
      */
-    public function unsetReducedHandler ()
+    public function unsetReducedHandler()
     {
         $this->reducedHandler = null;
     }
@@ -151,7 +151,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return void
      */
-    public function addQuery (AbstractQuery $query)
+    public function addQuery(AbstractQuery $query)
     {
         $this->queries[] = $query;
     }
@@ -161,7 +161,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return array
      */
-    public function getQueries ()
+    public function getQueries()
     {
         return $this->queries;
     }
@@ -173,7 +173,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return void
      */
-    public function setQueries (array $queries)
+    public function setQueries(array $queries)
     {
         foreach ($queries as $query) {
             $this->addQuery($query);
@@ -189,7 +189,7 @@ class QueryGroup extends AbstractQuery
      *
      * @throws \InvalidArgumentException Unknown or invalid boolean operator
      */
-    public function setOperator ($operator)
+    public function setOperator($operator)
     {
         if (!in_array($operator, self::$operators)) {
             throw new InvalidArgumentException("Unknown or invalid boolean operator: {$operator}");
@@ -207,7 +207,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return string
      */
-    public function getOperator ()
+    public function getOperator()
     {
         return $this->operator;
     }
@@ -217,7 +217,7 @@ class QueryGroup extends AbstractQuery
      *
      * @return boolean
      */
-    public function isNegated ()
+    public function isNegated()
     {
         return $this->negation;
     }

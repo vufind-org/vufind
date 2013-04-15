@@ -76,7 +76,7 @@ class QueryBuilder
      *
      * @return ParamBag
      */
-    public function build (AbstractQuery $query)
+    public function build(AbstractQuery $query)
     {
         // Build base query
         $queryStr = $this->abstractQueryToString($query);

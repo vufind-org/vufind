@@ -50,13 +50,13 @@ interface RecordInterface
      *
      * @return void
      */
-    public function setSourceIdentifier ($identifier);
+    public function setSourceIdentifier($identifier);
 
     /**
      * Return the source backend identifier.
      *
      * @return string
      */
-    public function getSourceIdentifier ();
+    public function getSourceIdentifier();
 
 }

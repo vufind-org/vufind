@@ -78,7 +78,7 @@ class SearchHandler
      *
      * @return void
      */
-    public function __construct (array $spec)
+    public function __construct(array $spec)
     {
         foreach (self::$configKeys as $key) {
             $this->specs[$key] = isset($spec[$key]) ? $spec[$key] : array();
@@ -99,7 +99,7 @@ class SearchHandler
      *
      * @see \VuFind\Service\Solr\QueryBuilder::containsAdvancedLuceneSyntax()
      */
-    public function createAdvancedQueryString ($search)
+    public function createAdvancedQueryString($search)
     {
         return $this->createQueryString($search, true);
     }
@@ -113,7 +113,7 @@ class SearchHandler
      *
      * @see \VuFind\Service\Solr\SearchHandler::createAdvancedQueryString()
      */
-    public function createSimpleQueryString ($search)
+    public function createSimpleQueryString($search)
     {
         return $this->createQueryString($search, false);
     }
@@ -125,7 +125,7 @@ class SearchHandler
      *
      * @return string
      */
-    public function createBoostQueryString ($search)
+    public function createBoostQueryString($search)
     {
         $boostQuery = array();
         if ($this->hasDismax()) {
@@ -165,7 +165,7 @@ class SearchHandler
      *
      * @return boolean
      */
-    public function hasDismax ()
+    public function hasDismax()
     {
         return !empty($this->specs['DismaxFields']);
     }
@@ -175,7 +175,7 @@ class SearchHandler
      *
      * @return array
      */
-    public function getDismaxFields ()
+    public function getDismaxFields()
     {
         return $this->specs['DismaxFields'];
     }
@@ -185,7 +185,7 @@ class SearchHandler
      *
      * @return array
      */
-    public function getDismaxParams ()
+    public function getDismaxParams()
     {
         return $this->specs['DismaxParams'];
     }
@@ -196,7 +196,7 @@ class SearchHandler
      * @return string
      *
      */
-    public function getFilterQuery ()
+    public function getFilterQuery()
     {
         return empty($this->specs['FilterQuery']) ? null : $this->specs['FilterQuery'];
     }
@@ -206,7 +206,7 @@ class SearchHandler
      *
      * @return boolean
      */
-    public function hasFilterQuery ()
+    public function hasFilterQuery()
     {
         return (bool)$this->specs['FilterQuery'];
     }
@@ -216,7 +216,7 @@ class SearchHandler
      *
      * @return array
      */
-    public function toArray ()
+    public function toArray()
     {
         return $this->specs;
     }
@@ -230,7 +230,7 @@ class SearchHandler
      *
      * @return string
      */
-    protected function dismaxSubquery ($search)
+    protected function dismaxSubquery($search)
     {
         $dismaxParams = array();
         foreach ($this->specs['DismaxParams'] as $param) {
@@ -257,7 +257,7 @@ class SearchHandler
      *
      * @return string
      */
-    protected function mungeValues ($search, $tokenize = true)
+    protected function mungeValues($search, $tokenize = true)
     {
         if ($tokenize) {
             $tokens = $this->tokenize($search);
@@ -325,7 +325,7 @@ class SearchHandler
      * @return string
      *
      */
-    protected function createQueryString ($search, $advanced = false)
+    protected function createQueryString($search, $advanced = false)
     {
 
         // If this is a basic query and we have Dismax settings, let's build
@@ -356,7 +356,7 @@ class SearchHandler
      *
      * @return array
      */
-    protected function mungeRules ()
+    protected function mungeRules()
     {
         return $this->specs['QueryFields'];
     }
@@ -370,7 +370,7 @@ class SearchHandler
      *
      * @return string
      */
-    protected function munge (array $mungeRules, array $mungeValues, $joiner = 'OR')
+    protected function munge(array $mungeRules, array $mungeValues, $joiner = 'OR')
     {
         $clauses = array();
         foreach ($mungeRules as $field => $clausearray) {
@@ -418,7 +418,7 @@ class SearchHandler
      *
      * @return array
      */
-    protected function tokenize ($string)
+    protected function tokenize($string)
     {
         // Tokenize on spaces and quotes
         $phrases = array();

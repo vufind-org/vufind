@@ -44,7 +44,6 @@ namespace VuFindSearch;
  */
 class ParamBag
 {
-
     /**
      * Parameters
      *
@@ -59,7 +58,7 @@ class ParamBag
      *
      * @return void
      */
-    public function __construct (array $initial = array())
+    public function __construct(array $initial = array())
     {
         foreach ($initial as $name => $value) {
             $this->add($name, $value);
@@ -73,7 +72,7 @@ class ParamBag
      *
      * @return mixed|null Parameter value or NULL if not set
      */
-    public function get ($name)
+    public function get($name)
     {
         return isset($this->params[$name]) ? $this->params[$name] : null;
     }
@@ -86,7 +85,7 @@ class ParamBag
      *
      * @return void
      */
-    public function set ($name, $value)
+    public function set($name, $value)
     {
         if (is_array($value)) {
             $this->params[$name] = $value;
@@ -102,7 +101,7 @@ class ParamBag
      *
      * @return void
      */
-    public function remove ($name)
+    public function remove($name)
     {
         if (isset($this->params[$name])) {
             unset($this->params[$name]);
@@ -117,7 +116,7 @@ class ParamBag
      *
      * @return void
      */
-    public function add ($name, $value)
+    public function add($name, $value)
     {
         if (!isset($this->params[$name])) {
             $this->params[$name] = array();
@@ -134,7 +133,7 @@ class ParamBag
      *
      * @return array
      */
-    public function params ()
+    public function params()
     {
         return $this->params;
     }
@@ -146,7 +145,7 @@ class ParamBag
      *
      * @return void
      */
-    public function mergeWith (ParamBag $bag)
+    public function mergeWith(ParamBag $bag)
     {
         foreach ($bag->params as $key => $value) {
             if (!empty($value)) {
@@ -162,7 +161,7 @@ class ParamBag
      *
      * @return void
      */
-    public function mergeWithAll (array $bags)
+    public function mergeWithAll(array $bags)
     {
         foreach ($bags as $bag) {
             $this->mergeWith($bag);
@@ -174,7 +173,7 @@ class ParamBag
      *
      * @return array
      */
-    public function getArrayCopy ()
+    public function getArrayCopy()
     {
         return $this->params;
     }
@@ -187,7 +186,7 @@ class ParamBag
      *
      * @return array
      */
-    public function request ()
+    public function request()
     {
         $request = array();
         foreach ($this->params as $name => $values) {
@@ -205,5 +204,4 @@ class ParamBag
         }
         return $request;
     }
-
 }

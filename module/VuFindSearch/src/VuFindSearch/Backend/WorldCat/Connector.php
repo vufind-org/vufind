@@ -137,7 +137,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      *
      * @return array
      */
-    public function search (AbstractQuery $query, $offset, $limit,
+    public function search(AbstractQuery $query, $offset, $limit,
         QueryBuilder $queryBuilder, ParamBag $params = null
     ) {
         $params = $params ?: new ParamBag();

@@ -73,7 +73,7 @@ class Service
      *
      * @return void
      */
-    public function __construct ()
+    public function __construct()
     {
         $this->backends = array();
     }
@@ -88,7 +88,7 @@ class Service
      *
      * @return ResponseInterface
      */
-    public function search ($backend, Query\AbstractQuery $query, $offset = 0, $limit = 20, ParamBag $params = null)
+    public function search($backend, Query\AbstractQuery $query, $offset = 0, $limit = 20, ParamBag $params = null)
     {
         $params  = $params ?: new ParamBag();
         $context = __FUNCTION__;
@@ -111,7 +111,7 @@ class Service
      *
      * @return ResponseInterface
      */
-    public function retrieve ($backend, $id, ParamBag $params = null)
+    public function retrieve($backend, $id, ParamBag $params = null)
     {
         $params  = $params ?: new ParamBag();
         $context = __FUNCTION__;
@@ -134,7 +134,7 @@ class Service
      *
      * @return RecordCollectionInterface
      */
-    public function similar ($backend, $id, ParamBag $params = null)
+    public function similar($backend, $id, ParamBag $params = null)
     {
         $params  = $params ?: new ParamBag();
         $context = __FUNCTION__;
@@ -155,7 +155,7 @@ class Service
      *
      * @return void
      */
-    public function setLogger (LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }
@@ -167,7 +167,7 @@ class Service
      *
      * @return void
      */
-    public function setEventManager (EventManagerInterface $events)
+    public function setEventManager(EventManagerInterface $events)
     {
         $events->setIdentifiers('VuFind\Search');
         $this->events = $events;
@@ -180,7 +180,7 @@ class Service
      *
      * @return EventManagerInterface
      */
-    public function getEventManager ()
+    public function getEventManager()
     {
         if (!$this->events) {
             $this->events = new EventManager('VuFind\Search');
@@ -200,7 +200,7 @@ class Service
      *
      * @throws Exception\RuntimeException Unable to resolve backend
      */
-    protected function resolve ($backend, $args)
+    protected function resolve($backend, $args)
     {
         if (!isset($this->backends[$backend])) {
             $response = $this->getEventManager()->trigger(
@@ -229,7 +229,7 @@ class Service
      *
      * @return void
      */
-    protected function triggerPre (BackendInterface $backend, $args)
+    protected function triggerPre(BackendInterface $backend, $args)
     {
         $this->getEventManager()->trigger('pre', $backend, $args);
     }
@@ -243,7 +243,7 @@ class Service
      *
      * @return void
      */
-    protected function triggerPost ($response, $args)
+    protected function triggerPost($response, $args)
     {
         $this->getEventManager()->trigger('post', $response, $args);
     }
@@ -257,7 +257,7 @@ class Service
      *
      * @return void
      */
-    protected function log ($level, $message, array $context = array())
+    protected function log($level, $message, array $context = array())
     {
         if ($this->logger) {
             $this->logger->$level($message, $context);

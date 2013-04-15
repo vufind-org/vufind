@@ -150,7 +150,7 @@ class Connector
      *
      * @return void
      */
-    public function __construct ($url)
+    public function __construct($url)
     {
         $this->invariants = new ParamBag();
         $this->defaults   = new ParamBag();
@@ -178,7 +178,7 @@ class Connector
      *
      * @return string
      */
-    public function retrieve ($id, ParamBag $params = null)
+    public function retrieve($id, ParamBag $params = null)
     {
         $params = $params ?: new ParamBag();
         $params->set('q', sprintf('id:"%s"', addcslashes($id, '"')));
@@ -196,7 +196,7 @@ class Connector
      *
      * @return string
      */
-    public function similar ($id, ParamBag $params = null)
+    public function similar($id, ParamBag $params = null)
     {
         $params = $params ?: new ParamBag();
         $params->set('q', sprintf('id:"%s"', addcslashes($id, '"')));
@@ -215,7 +215,7 @@ class Connector
      *
      * @return string
      */
-    public function search (AbstractQuery $query, $offset, $limit, QueryBuilder $queryBuilder, ParamBag $params = null)
+    public function search(AbstractQuery $query, $offset, $limit, QueryBuilder $queryBuilder, ParamBag $params = null)
     {
         $params = $params ?: new ParamBag();
         $params->set('start', $offset);
@@ -269,7 +269,7 @@ class Connector
      *
      * @return ParamBag
      */
-    public function getQueryInvariants ()
+    public function getQueryInvariants()
     {
         return $this->invariants;
     }
@@ -279,7 +279,7 @@ class Connector
      *
      * @return ParamBag
      */
-    public function getQueryDefaults ()
+    public function getQueryDefaults()
     {
         return $this->defaults;
     }
@@ -289,7 +289,7 @@ class Connector
      *
      * @return ParamBag
      */
-    public function getQueryAppends ()
+    public function getQueryAppends()
     {
         return $this->appends;
     }
@@ -301,7 +301,7 @@ class Connector
      *
      * @return void
      */
-    public function setQueryInvariants (array $invariants)
+    public function setQueryInvariants(array $invariants)
     {
         $this->invariants = new ParamBag($invariants);
     }
@@ -313,7 +313,7 @@ class Connector
      *
      * @return void
      */
-    public function setQueryDefaults (array $defaults)
+    public function setQueryDefaults(array $defaults)
     {
         $this->defaults = new ParamBag($defaults);
     }
@@ -325,7 +325,7 @@ class Connector
      *
      * @return void
      */
-    public function setQueryAppends (array $appends)
+    public function setQueryAppends(array $appends)
     {
         $this->appends = new ParamBag($appends);
     }
@@ -338,7 +338,7 @@ class Connector
      *
      * @return void
      */
-    public function addQueryInvariant ($parameter, $value)
+    public function addQueryInvariant($parameter, $value)
     {
         $this->getQueryInvariants()->add($parameter, $value);
     }
@@ -351,7 +351,7 @@ class Connector
      *
      * @return void
      */
-    public function addQueryDefault ($parameter, $value)
+    public function addQueryDefault($parameter, $value)
     {
         $this->getQueryDefaults()->add($parameter, $value);
     }
@@ -364,7 +364,7 @@ class Connector
      *
      * @return void
      */
-    public function addQueryAppend ($parameter, $value)
+    public function addQueryAppend($parameter, $value)
     {
         $this->getQueryAppends()->add($parameter, $value);
     }
@@ -376,7 +376,7 @@ class Connector
      *
      * @return void
      */
-    public function setLogger (LoggerInterface $logger)
+    public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
     }
@@ -386,7 +386,7 @@ class Connector
      *
      * @return ParamBag
      */
-    public function getLastQueryParameters ()
+    public function getLastQueryParameters()
     {
         return $this->lastQuery['parameters'];
     }
@@ -400,7 +400,7 @@ class Connector
      *
      * @todo Typehint on ProxyInterface
      */
-    public function setProxy ($proxy)
+    public function setProxy($proxy)
     {
         $this->proxy = $proxy;
     }
@@ -412,7 +412,7 @@ class Connector
      *
      * @return void
      */
-    public function setTimeout ($timeout)
+    public function setTimeout($timeout)
     {
         $this->timeout = $timeout;
     }
@@ -427,7 +427,7 @@ class Connector
      *
      * @return void
      */
-    public function setAdapter ($adapter)
+    public function setAdapter($adapter)
     {
         if (is_object($adapter) && (!$adapter instanceOf AdapterInterface)) {
             throw new InvalidArgumentException(sprintf('HTTP client adapter must implement AdapterInterface: %s', get_class($adapter)));
@@ -444,7 +444,7 @@ class Connector
      *
      * @return array
      */
-    protected function select (ParamBag $params)
+    protected function select(ParamBag $params)
     {
         $params = $this->prepare($params);
         $result = $this->query('select', $params);
@@ -461,7 +461,7 @@ class Connector
      *
      * @return ParamBag
      */
-    protected function prepare (ParamBag $params)
+    protected function prepare(ParamBag $params)
     {
         $params     = $params->getArrayCopy();
         $invariants = $this->getQueryInvariants()->getArrayCopy();
@@ -482,7 +482,7 @@ class Connector
      *
      * @return string
      */
-    public function resubmit (ParamBag $params)
+    public function resubmit(ParamBag $params)
     {
         $last   = $this->lastQuery;
         $params = $this->prepare($params);
@@ -497,7 +497,7 @@ class Connector
      *
      * @return string Response body
      */
-    public function query ($handler, ParamBag $params)
+    public function query($handler, ParamBag $params)
     {
 
         $url         = $this->url . '/' . $handler;
@@ -535,7 +535,7 @@ class Connector
      * @throws RemoteErrorException  SOLR signaled a server error (HTTP 5xx)
      * @throws RequestErrorException SOLR signaled a client error (HTTP 4xx)
      */
-    protected function send (HttpClient $client)
+    protected function send(HttpClient $client)
     {
         if ($this->logger) {
             $this->logger->debug(sprintf('=> %s %s', $client->getMethod(), $client->getUri()));
@@ -569,7 +569,7 @@ class Connector
      *
      * @return HttpClient
      */
-    protected function createClient ($url, $method)
+    protected function createClient($url, $method)
     {
         $client = new HttpClient();
         $client->setAdapter($this->adapter);

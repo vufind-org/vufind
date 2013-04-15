@@ -46,7 +46,7 @@ interface RecordCollectionInterface extends \Countable, \Iterator
      *
      * @return int
      */
-    public function getTotal ();
+    public function getTotal();
 
     /**
      * Return available facets.
@@ -57,28 +57,28 @@ interface RecordCollectionInterface extends \Countable, \Iterator
      *
      * @return array
      */
-    public function getFacets ();
+    public function getFacets();
 
     /**
      * Return records.
      *
      * @return array
      */
-    public function getRecords ();
+    public function getRecords();
 
     /**
      * Return offset in the total search result set.
      *
      * @return int
      */
-    public function getOffset ();
+    public function getOffset();
 
     /**
      * Return first record in collection.
      *
      * @return RecordInterface|null
      */
-    public function first ();
+    public function first();
 
     /**
      * Set the source backend identifier.
@@ -87,14 +87,14 @@ interface RecordCollectionInterface extends \Countable, \Iterator
      *
      * @return void
      */
-    public function setSourceIdentifier ($identifier);
+    public function setSourceIdentifier($identifier);
 
     /**
      * Return the source backend identifier.
      *
      * @return string
      */
-    public function getSourceIdentifier ();
+    public function getSourceIdentifier();
 
     /**
      * Add a record to the collection.
@@ -103,6 +103,6 @@ interface RecordCollectionInterface extends \Countable, \Iterator
      *
      * @return void
      */
-    public function add (RecordInterface $record);
+    public function add(RecordInterface $record);
 
 }

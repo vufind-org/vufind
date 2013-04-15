@@ -57,7 +57,6 @@ namespace VuFindSearch\Query;
  */
 class Query extends AbstractQuery
 {
-
     /**
      * Name of query handler, if any.
      *
@@ -80,7 +79,7 @@ class Query extends AbstractQuery
      *
      * @return void
      */
-    public function __construct ($string = null, $handler = null)
+    public function __construct($string = null, $handler = null)
     {
         $this->queryHandler = $handler ? $handler : null;
         $this->queryString  = $string;
@@ -91,7 +90,7 @@ class Query extends AbstractQuery
      *
      * @return string
      */
-    public function getString ()
+    public function getString()
     {
         return $this->queryString;
     }
@@ -103,7 +102,7 @@ class Query extends AbstractQuery
      *
      * @return void
      */
-    public function setString ($string)
+    public function setString($string)
     {
         $this->queryString = $string;
     }
@@ -113,7 +112,7 @@ class Query extends AbstractQuery
      *
      * @return string
      */
-    public function getHandler ()
+    public function getHandler()
     {
         return $this->queryHandler;
     }

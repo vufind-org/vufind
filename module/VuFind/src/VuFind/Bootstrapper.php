@@ -355,6 +355,11 @@ class Bootstrapper
         $this->events->attach('dispatch.error', $callback);
     }
 
+    /**
+     * Set up search subsystem.
+     *
+     * @return void
+     */
     protected function initSearch ()
     {
         $sm     = $this->event->getApplication()->getServiceManager();

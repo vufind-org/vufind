@@ -59,7 +59,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return void
      */
-    public function __construct (array $response)
+    public function __construct(array $response)
     {
         $this->response = $response;
         $this->rewind();
@@ -70,7 +70,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return int
      */
-    public function getTotal ()
+    public function getTotal()
     {
         return $this->response['total'];
     }
@@ -80,7 +80,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return array
      */
-    public function getFacets ()
+    public function getFacets()
     {
         return array(); // not supported by WorldCat
     }
@@ -90,7 +90,7 @@ class RecordCollection extends AbstractRecordCollection
      *
      * @return int
      */
-    public function getOffset ()
+    public function getOffset()
     {
         return $this->response['offset'];
     }

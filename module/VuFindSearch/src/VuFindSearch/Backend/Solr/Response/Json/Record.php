@@ -67,7 +67,7 @@ class Record implements RecordInterface
      *
      * @return void
      */
-    public function __construct (array $fields)
+    public function __construct(array $fields)
     {
         $this->fields = $fields;
     }
@@ -79,7 +79,7 @@ class Record implements RecordInterface
      *
      * @return void
      */
-    public function setSourceIdentifier ($identifier)
+    public function setSourceIdentifier($identifier)
     {
         $this->source = $identifier;
     }
@@ -89,7 +89,7 @@ class Record implements RecordInterface
      *
      * @return string
      */
-    public function getSourceIdentifier ()
+    public function getSourceIdentifier()
     {
         return $this->source;
     }
@@ -101,7 +101,7 @@ class Record implements RecordInterface
      *
      * @return mixed
      */
-    public function __get ($name)
+    public function __get($name)
     {
         return isset($this->fields[$name]) ? $this->fields[$name] : null;
     }

@@ -72,7 +72,7 @@ class Facets
      *
      * @todo Implement facet_queries et al.
      */
-    public function __construct (array $facets)
+    public function __construct(array $facets)
     {
         $this->facets = $facets;
     }
@@ -82,7 +82,7 @@ class Facets
      *
      * @return ArrayObject
      */
-    public function getFieldFacets ()
+    public function getFieldFacets()
     {
         if (!$this->fields) {
             $this->fields = new ArrayObject();
@@ -100,7 +100,7 @@ class Facets
      *
      * @return ArrayObject
      */
-    public function getQueryFacets ()
+    public function getQueryFacets()
     {
         if (!$this->queries) {
             $this->queries = new ArrayObject();

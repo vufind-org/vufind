@@ -58,7 +58,7 @@ class Spellcheck implements IteratorAggregate, Countable
      *
      * @return void
      */
-    public function __construct (array $spellcheck)
+    public function __construct(array $spellcheck)
     {
         $this->terms = new ArrayObject();
         $list = new NamedList($spellcheck);
@@ -76,7 +76,7 @@ class Spellcheck implements IteratorAggregate, Countable
      *
      * @return void
      */
-    public function mergeWith (Spellcheck $spellcheck)
+    public function mergeWith(Spellcheck $spellcheck)
     {
         $this->terms->uksort(array($this, 'compareTermLength'));
         foreach ($spellcheck as $term => $info) {
@@ -93,7 +93,7 @@ class Spellcheck implements IteratorAggregate, Countable
      *
      * @return ArrayIterator
      */
-    public function getIterator ()
+    public function getIterator()
     {
         return $this->terms->getIterator();
     }
@@ -105,7 +105,7 @@ class Spellcheck implements IteratorAggregate, Countable
      *
      * @return integer
      */
-    public function count ()
+    public function count()
     {
         return $this->terms->count();
     }
@@ -119,7 +119,7 @@ class Spellcheck implements IteratorAggregate, Countable
      *
      * @return boolean
      */
-    protected function contains ($term)
+    protected function contains($term)
     {
         if ($this->terms->offsetExists($term)) {
             return true;
@@ -152,7 +152,7 @@ class Spellcheck implements IteratorAggregate, Countable
      *
      * @see    http://www.php.net/manual/en/arrayobject.uksort.php
      */
-    public function compareTermLength ($a, $b)
+    public function compareTermLength($a, $b)
     {
         return (strlen($b) - strlen($a));
     }

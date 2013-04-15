@@ -76,7 +76,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return array
      */
-    public function getRecords ()
+    public function getRecords()
     {
         return $this->records;
     }
@@ -86,7 +86,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return RecordInterface|null
      */
-    public function first ()
+    public function first()
     {
         return isset($this->records[0]) ? $this->records[0] : null;
     }
@@ -98,7 +98,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return void
      */
-    public function setSourceIdentifier ($identifier)
+    public function setSourceIdentifier($identifier)
     {
         $this->source = $identifier;
     }
@@ -108,7 +108,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return string
      */
-    public function getSourceIdentifier ()
+    public function getSourceIdentifier()
     {
         return $this->source;
     }
@@ -120,7 +120,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return void
      */
-    public function add (RecordInterface $record)
+    public function add(RecordInterface $record)
     {
         if (!in_array($record, $this->records, true)) {
             $this->records[$this->pointer] = $record;
@@ -135,7 +135,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return boolean
      */
-    public function valid ()
+    public function valid()
     {
         return isset($this->records[$this->pointer]);
     }
@@ -145,7 +145,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return RecordInterface
      */
-    public function current ()
+    public function current()
     {
         return $this->records[$this->pointer];
     }
@@ -155,7 +155,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return void
      */
-    public function rewind ()
+    public function rewind()
     {
         $this->pointer = 0;
     }
@@ -165,7 +165,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return void
      */
-    public function next ()
+    public function next()
     {
         $this->pointer++;
     }
@@ -175,7 +175,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return integer
      */
-    public function key ()
+    public function key()
     {
         return $this->pointer + $this->offset;
     }
@@ -187,7 +187,7 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
      *
      * @return integer
      */
-    public function count ()
+    public function count()
     {
         return count($this->records);
     }

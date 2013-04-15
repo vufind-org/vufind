@@ -26,8 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
-
-
 namespace VuFindSearch\Query;
 
 /**
@@ -42,7 +40,6 @@ namespace VuFindSearch\Query;
 
 class Params
 {
-
     /**
      * Sort order.
      *
@@ -97,7 +94,7 @@ class Params
      *
      * @return array
      */
-    public function getFacets ()
+    public function getFacets()
     {
         return $this->facets;
     }
@@ -109,7 +106,7 @@ class Params
      *
      * @return void
      */
-    public function setFacets (array $facets)
+    public function setFacets(array $facets)
     {
         $this->facets = $facets;
     }
@@ -119,7 +116,7 @@ class Params
      *
      * @return array
      */
-    public function getFilters ()
+    public function getFilters()
     {
         return $this->filters;
     }
@@ -132,7 +129,7 @@ class Params
      *
      * @return void
      */
-    public function setFilter ($field, $value)
+    public function setFilter($field, $value)
     {
         $this->filters[$field] = $value;
     }
@@ -142,7 +139,7 @@ class Params
      *
      * @return array
      */
-    public function getShards ()
+    public function getShards()
     {
         return array();
     }
@@ -152,7 +149,7 @@ class Params
      *
      * @return array
      */
-    public function getSpellcheckDictionary ()
+    public function getSpellcheckDictionary()
     {
         return $this->spellcheckDictionary;
     }
@@ -160,10 +157,11 @@ class Params
     /**
      * Set spellcheck dictionary.
      *
-     * @param  string $dictionary
+     * @param string $dictionary
+     *
      * @return void
      */
-    public function setSpellcheckDictionary ($dictionary)
+    public function setSpellcheckDictionary($dictionary)
     {
         $this->spellcheckDictionary = $dictionary;
     }
@@ -173,7 +171,7 @@ class Params
      *
      * @return boolean
      */
-    public function isSpellcheckEnabled ()
+    public function isSpellcheckEnabled()
     {
         return $this->spellcheckEnabled;
     }
@@ -181,10 +179,11 @@ class Params
     /**
      * Enable or disable spellcheck.
      *
-     * @param  boolean $enable
+     * @param boolean $enable
+     *
      * @return void
      */
-    public function enableSpellcheck ($enable)
+    public function enableSpellcheck($enable)
     {
         $this->spellcheckEnabled = (boolean)$enable;
     }
@@ -196,7 +195,7 @@ class Params
      *
      * @return array
      */
-    public function getHighlighting ()
+    public function getHighlighting()
     {
         return array();
     }
@@ -206,7 +205,7 @@ class Params
      *
      * @return string
      */
-    public function getSort ()
+    public function getSort()
     {
         return $this->sort;
     }
@@ -218,7 +217,7 @@ class Params
      *
      * @return void
      */
-    public function setSort ($sort)
+    public function setSort($sort)
     {
         $this->sort = (string)$sort;
     }
@@ -228,7 +227,7 @@ class Params
      *
      * @return int
      */
-    public function getLimit ()
+    public function getLimit()
     {
         return $this->limit;
     }
@@ -240,7 +239,7 @@ class Params
      *
      * @return void
      */
-    public function setLimit ($limit)
+    public function setLimit($limit)
     {
         $this->limit = (int)$limit;
     }
@@ -250,7 +249,7 @@ class Params
      *
      * @return int
      */
-    public function getOffset ()
+    public function getOffset()
     {
         return $this->offset;
     }
@@ -262,7 +261,7 @@ class Params
      *
      * @return void
      */
-    public function setOffset ($offset)
+    public function setOffset($offset)
     {
         $this->offset = (int)$offset;
     }

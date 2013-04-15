@@ -93,7 +93,7 @@ class QueryBuilder
      *
      * @return void
      */
-    public function __construct (array $specs = array())
+    public function __construct(array $specs = array())
     {
         $this->setSpecs($specs);
     }
@@ -111,7 +111,7 @@ class QueryBuilder
      * @todo Review usage of facets
      * @todo Implement hightlighting
      */
-    public function build (AbstractQuery $query)
+    public function build(AbstractQuery $query)
     {
 
         if ($query instanceOf QueryGroup) {
@@ -168,7 +168,7 @@ class QueryBuilder
      *
      * @todo Maybe factor out to dedicated UserQueryAnalyzer
      */
-    public function containsAdvancedLuceneSyntax ($searchString)
+    public function containsAdvancedLuceneSyntax($searchString)
     {
         // Check for various conditions that flag an advanced Lucene query:
         if ($searchString == '*:*') {
@@ -228,7 +228,7 @@ class QueryBuilder
      *
      * @return void
      */
-    public function setSpecs (array $specs)
+    public function setSpecs(array $specs)
     {
         foreach ($specs as $handler => $spec) {
             $this->specs[strtolower($handler)] = new SearchHandler($spec);
@@ -240,7 +240,7 @@ class QueryBuilder
      *
      * @return array
      */
-    public function getSpecs ()
+    public function getSpecs()
     {
         $specs = array();
         foreach ($specs as $handler => $spec) {
@@ -258,7 +258,7 @@ class QueryBuilder
      *
      * @return SearchHandler|null
      */
-    protected function getSearchHandler ($handler)
+    protected function getSearchHandler($handler)
     {
         $handler = $handler ? strtolower($handler) : $handler;
         if ($handler && isset($this->specs[$handler])) {
@@ -275,7 +275,7 @@ class QueryBuilder
      *
      * @return Query
      */
-    protected function reduceQueryGroup (QueryGroup $group)
+    protected function reduceQueryGroup(QueryGroup $group)
     {
         $searchString  = $this->reduceQueryGroupComponents($group);
         $searchHandler = $group->getReducedHandler();
@@ -294,7 +294,7 @@ class QueryBuilder
      * @see self::reduceQueryGroup()
      *
      */
-    protected function reduceQueryGroupComponents (AbstractQuery $component)
+    protected function reduceQueryGroupComponents(AbstractQuery $component)
     {
         if ($component instanceOf QueryGroup) {
             $reduced = array_map(array($this, 'reduceQueryGroupComponents'), $component->getQueries());
@@ -319,7 +319,7 @@ class QueryBuilder
      * @return string
      *
      */
-    protected function createSearchString ($string, SearchHandler $handler = null)
+    protected function createSearchString($string, SearchHandler $handler = null)
     {
         $advanced = $this->containsAdvancedLuceneSyntax($string);
 
@@ -341,7 +341,7 @@ class QueryBuilder
      * @return string
      *
      */
-    protected function createAdvancedInnerSearchString ($string, SearchHandler $handler)
+    protected function createAdvancedInnerSearchString($string, SearchHandler $handler)
     {
         // Special case -- if the user wants all records but the current handler
         // has a filter query, apply the filter query:
@@ -380,7 +380,7 @@ class QueryBuilder
      *
      * @return string
      */
-    protected function normalizeSearchString ($searchString)
+    protected function normalizeSearchString($searchString)
     {
         $searchString = $this->prepareForLuceneSyntax($searchString);
 
@@ -408,7 +408,7 @@ class QueryBuilder
      *
      * @todo Check if it is safe to assume $input to be an UTF-8 encoded string.
      */
-    protected function prepareForLuceneSyntax ($input)
+    protected function prepareForLuceneSyntax($input)
     {
         // Normalize fancy quotes:
         $quotes = array(
@@ -521,7 +521,7 @@ class QueryBuilder
      *
      * @return string
      */
-    public function capitalizeBooleans ($string)
+    public function capitalizeBooleans($string)
     {
         // Load the "inside quotes" lookahead so we can use it to prevent
         // switching case of Boolean reserved words inside quotes, since
@@ -541,7 +541,7 @@ class QueryBuilder
      *
      * @return string
      */
-    public function capitalizeRanges ($string)
+    public function capitalizeRanges($string)
     {
         // Load the "inside quotes" lookahead so we can use it to prevent
         // switching case of ranges inside quotes, since that can cause
@@ -565,7 +565,7 @@ class QueryBuilder
      *
      * @todo Check possible problem with umlauts/non-ASCII word characters
      */
-    protected function capitalizeRangesCallback ($match)
+    protected function capitalizeRangesCallback($match)
     {
         // Extract the relevant parts of the expression:
         $open = $match[1];         // opening symbol
@@ -611,7 +611,7 @@ class QueryBuilder
      *
      * @todo This function seems to be unused
      */
-    public function parseRange ($string)
+    public function parseRange($string)
     {
         $regEx = '/\[([^\]]+)\s+TO\s+([^\]]+)\]/';
         if (!preg_match($regEx, $string, $matches)) {

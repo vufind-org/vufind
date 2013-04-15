@@ -65,7 +65,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
      *
      * @return void
      */
-    public function __construct ($recordFactory = null, $collectionClass = null) {
+    public function __construct($recordFactory = null, $collectionClass = null) {
         if (!is_callable($recordFactory)) {
             throw new InvalidArgumentException('Record factory must be callable.');
         }
@@ -82,10 +82,15 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
      *
      * @return RecordCollection
      */
-    public function factory ($response)
+    public function factory($response)
     {
         if (!is_array($response)) {
-            throw new InvalidArgumentException(sprintf('Unexpected type of value: Expected array, got %s', gettype($response)));
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Unexpected type of value: Expected array, got %s',
+                    gettype($response)
+                )
+            );
         }
         $collection = new $this->collectionClass($response);
         foreach ($response['docs'] as $doc) {

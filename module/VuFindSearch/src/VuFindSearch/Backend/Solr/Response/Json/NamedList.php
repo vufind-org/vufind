@@ -61,7 +61,7 @@ class NamedList implements Countable, Iterator
      *
      * @return void
      */
-    public function __construct (array $list)
+    public function __construct(array $list)
     {
         $this->list = $list;
     }
@@ -73,7 +73,7 @@ class NamedList implements Countable, Iterator
      *
      * @return int
      */
-    public function count ()
+    public function count()
     {
         return count($this->list);
     }
@@ -85,7 +85,7 @@ class NamedList implements Countable, Iterator
      *
      * @return mixed
      */
-    public function current ()
+    public function current()
     {
         return $this->valid() ? $this->current[1] : null;
     }
@@ -95,7 +95,7 @@ class NamedList implements Countable, Iterator
      *
      * @return string
      */
-    public function key ()
+    public function key()
     {
         return $this->valid() ? $this->current[0] : null;
     }
@@ -105,7 +105,7 @@ class NamedList implements Countable, Iterator
      *
      * @return void
      */
-    public function next ()
+    public function next()
     {
         $this->current = next($this->list);
     }
@@ -115,7 +115,7 @@ class NamedList implements Countable, Iterator
      *
      * @return boolean
      */
-    public function valid ()
+    public function valid()
     {
         return is_array($this->current);
     }
@@ -125,7 +125,7 @@ class NamedList implements Countable, Iterator
      *
      * @return void
      */
-    public function rewind ()
+    public function rewind()
     {
         reset($this->list);
         $this->current = current($this->list);
