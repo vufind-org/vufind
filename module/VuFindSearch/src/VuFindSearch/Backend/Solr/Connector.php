@@ -36,7 +36,6 @@ use VuFindSearch\Query\QueryGroup;
 use VuFindSearch\Query\Query;
 
 use VuFindSearch\ParamBag;
-use VuFindSearch\Query\Params;
 
 use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Solr\Exception\RequestErrorException;
