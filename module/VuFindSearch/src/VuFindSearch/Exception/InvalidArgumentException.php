@@ -38,5 +38,7 @@ namespace VuFindSearch\Exception;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class InvalidArgumentException extends \InvalidArgumentException implements ExceptionInterface
-{}
+class InvalidArgumentException extends \InvalidArgumentException
+    implements ExceptionInterface
+{
+}

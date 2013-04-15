@@ -65,8 +65,9 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
      *
      * @return void
      */
-    public function __construct($recordFactory = null, $collectionClass = 'VuFindSearch\Backend\Solr\Response\Json\RecordCollection')
-    {
+    public function __construct($recordFactory = null,
+        $collectionClass = 'VuFindSearch\Backend\Solr\Response\Json\RecordCollection'
+    ) {
         if (null === $recordFactory) {
             $this->recordFactory = function ($data) {
                 return new Record($data);
@@ -87,7 +88,12 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
     public function factory($response)
     {
         if (!is_array($response)) {
-            throw new InvalidArgumentException(sprintf('Unexpected type of value: Expected array, got %s', gettype($response)));
+            throw new InvalidArgumentException(
+                sprintf(
+                    'Unexpected type of value: Expected array, got %s',
+                    gettype($response)
+                )
+            );
         }
         $collection = new $this->collectionClass($response);
         if (isset($response['response']['docs'])) {

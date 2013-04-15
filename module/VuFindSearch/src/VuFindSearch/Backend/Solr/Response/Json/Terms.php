@@ -59,7 +59,9 @@ class Terms implements IteratorAggregate
      */
     public function __construct(array $terms)
     {
-        $terms = array_replace(array('responseHeader' => array(), 'terms' => array()), $terms);
+        $terms = array_replace(
+            array('responseHeader' => array(), 'terms' => array()), $terms
+        );
         $this->terms = new ArrayObject();
         foreach ($terms['terms'] as $field => $info) {
             $this->terms->offsetSet($field, new NamedList($info));
@@ -76,6 +78,13 @@ class Terms implements IteratorAggregate
         return $this->terms->getIterator();
     }
 
+    /**
+     * Get terms for the specified field
+     *
+     * @param string $field Field name
+     *
+     * @return array
+     */
     public function getFieldTerms($field)
     {
         if ($this->hasFieldTerms($field)) {
@@ -84,6 +93,13 @@ class Terms implements IteratorAggregate
         return null;
     }
 
+    /**
+     * Does the requested field exist?
+     *
+     * @param string $field Field name
+     *
+     * @return bool
+     */
     public function hasFieldTerms($field)
     {
         return $this->terms->offsetExists($field);

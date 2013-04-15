@@ -81,15 +81,17 @@ class Service
     /**
      * Perform a search and return a wrapped response.
      *
-     * @param string        $backend Search backend identifier
-     * @param integer       $offset  Search offset
-     * @param integer       $limit   Search limit
-     * @param ParamBag      $params  Search backend parameters
+     * @param string              $backend Search backend identifier
+     * @param Query\AbstractQuery $query   Search query
+     * @param integer             $offset  Search offset
+     * @param integer             $limit   Search limit
+     * @param ParamBag            $params  Search backend parameters
      *
      * @return ResponseInterface
      */
-    public function search($backend, Query\AbstractQuery $query, $offset = 0, $limit = 20, ParamBag $params = null)
-    {
+    public function search($backend, Query\AbstractQuery $query, $offset = 0,
+        $limit = 20, ParamBag $params = null
+    ) {
         $params  = $params ?: new ParamBag();
         $context = __FUNCTION__;
         $args = compact('backend', 'query', 'offset', 'limit', 'params', 'context');
@@ -213,7 +215,10 @@ class Service
             );
             if (!$response->stopped()) {
                 throw new Exception\RuntimeException(
-                    sprintf('Unable to resolve backend: %s, %s', $args['context'], $args['backend'])
+                    sprintf(
+                        'Unable to resolve backend: %s, %s', $args['context'],
+                        $args['backend']
+                    )
                 );
             }
             $this->backends[$backend] = $response->last();
@@ -237,7 +242,6 @@ class Service
     /**
      * Trigger the post event.
      *
-     * @param string $context  Service context
      * @param mixed  $response Backend response
      * @param array  $args     Event arguments
      *

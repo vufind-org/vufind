@@ -60,12 +60,13 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
     /**
      * Constructor.
      *
-     * @param string $recordClass     Class of collection records
-     * @param string $collectionClass Class of collection
+     * @param Callable $recordFactory   Record factory function
+     * @param string   $collectionClass Class of collection
      *
      * @return void
      */
-    public function __construct($recordFactory = null, $collectionClass = null) {
+    public function __construct($recordFactory = null, $collectionClass = null)
+    {
         if (!is_callable($recordFactory)) {
             throw new InvalidArgumentException('Record factory must be callable.');
         }

@@ -99,7 +99,7 @@ interface RecordCollectionInterface extends \Countable, \Iterator
     /**
      * Add a record to the collection.
      *
-     * @param RecordInterface $record
+     * @param RecordInterface $record Record to add
      *
      * @return void
      */

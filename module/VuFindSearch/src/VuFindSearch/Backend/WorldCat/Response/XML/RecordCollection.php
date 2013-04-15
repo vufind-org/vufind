@@ -53,9 +53,6 @@ class RecordCollection extends AbstractRecordCollection
      * Constructor.
      *
      * @param array $response WorldCat response
-     * @param int   $offset   Starting offset
-     * @param int   $time     Search execution time (in MS)
-     * @param int   $total    Total record count (optional)
      *
      * @return void
      */

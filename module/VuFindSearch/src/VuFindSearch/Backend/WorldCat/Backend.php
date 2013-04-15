@@ -209,8 +209,9 @@ class Backend implements BackendInterface
      *
      * @return void
      */
-    public function setRecordCollectionFactory(RecordCollectionFactoryInterface $factory)
-    {
+    public function setRecordCollectionFactory(
+        RecordCollectionFactoryInterface $factory
+    ) {
         $this->collectionFactory = $factory;
     }
 

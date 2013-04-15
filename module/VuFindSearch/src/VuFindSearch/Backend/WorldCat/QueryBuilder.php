@@ -72,7 +72,7 @@ class QueryBuilder
     /**
      * Return WorldCat search parameters based on a user query and params.
      *
-     * @param AbstractQuery $query  User query
+     * @param AbstractQuery $query User query
      *
      * @return ParamBag
      */

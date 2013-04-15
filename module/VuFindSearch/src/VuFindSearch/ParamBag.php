@@ -195,7 +195,9 @@ class ParamBag
                     $request,
                     array_map(
                         function ($value) use ($name) {
-                            return sprintf('%s=%s', urlencode($name), urlencode($value));
+                            return sprintf(
+                                '%s=%s', urlencode($name), urlencode($value)
+                            );
                         },
                         $values
                     )

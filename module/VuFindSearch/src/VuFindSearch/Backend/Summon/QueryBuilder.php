@@ -63,11 +63,11 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder
     /**
      * Return Summon search parameters based on a user query and params.
      *
-     * @param AbstractQuery $query  User query
+     * @param AbstractQuery $query User query
      *
      * @return ParamBag
      */
-    public function build (AbstractQuery $query)
+    public function build(AbstractQuery $query)
     {
         // Build base query
         $queryStr = $this->abstractQueryToString($query);

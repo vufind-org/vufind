@@ -42,4 +42,5 @@ namespace VuFindSearch\Backend\Exception;
  * @link     http://vufind.org
  */
 class RemoteErrorException extends BackendException
-{}
+{
+}

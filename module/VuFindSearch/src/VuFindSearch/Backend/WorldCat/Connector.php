@@ -62,7 +62,8 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      * @param string            $limitCodes OCLC codes to use for limiting
      * @param \Zend\Http\Client $client     An HTTP client object
      */
-    public function __construct($wsKey, $limitCodes, \Zend\Http\Client $client) {
+    public function __construct($wsKey, $limitCodes, \Zend\Http\Client $client)
+    {
         parent::__construct(
             'http://www.worldcat.org/webservices/catalog/search/sru', $client
         );

@@ -63,7 +63,8 @@ class OptimizeDocument extends AbstractDocument
     /**
      * Constructor.
      *
-     * @param integer $optimizeWithin optimizeWithin attribute value
+     * @param bool $waitFlush    waitFlush attribute value
+     * @param bool $waitSearcher waitSearcher attribute value
      *
      * @return void
      */
@@ -95,10 +96,14 @@ class OptimizeDocument extends AbstractDocument
         $writer->startDocument();
         $writer->startElement('optimize');
         if ($this->waitFlush !== null) {
-            $writer->writeAttribute('waitFlush', $this->waitFlush ? 'true' : 'false');
+            $writer->writeAttribute(
+                'waitFlush', $this->waitFlush ? 'true' : 'false'
+            );
         }
         if ($this->waitSearcher !== null) {
-            $writer->writeAttribute('waitSearcher', $this->waitSearcher ? 'true' : 'false');
+            $writer->writeAttribute(
+                'waitSearcher', $this->waitSearcher ? 'true' : 'false'
+            );
         }
         $writer->endElement();
         $writer->endDocument();

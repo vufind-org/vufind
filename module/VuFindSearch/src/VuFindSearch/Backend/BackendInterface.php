@@ -66,7 +66,7 @@ interface BackendInterface
     /**
      * Set the backend identifier.
      *
-     * @param string $identifier
+     * @param string $identifier Backend identifier
      *
      * @return void
      */
@@ -89,7 +89,9 @@ interface BackendInterface
      *
      * @return RecordCollectionInterface
      */
-    public function search(AbstractQuery $query, $offset, $limit, ParamBag $params = null);
+    public function search(AbstractQuery $query, $offset, $limit,
+        ParamBag $params = null
+    );
 
     /**
      * Retrieve a single document.

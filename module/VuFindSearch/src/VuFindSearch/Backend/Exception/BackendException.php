@@ -41,4 +41,5 @@ use VuFindSearch\Exception\RuntimeException;
  * @link     http://vufind.org
  */
 class BackendException extends RuntimeException
-{}
+{
+}

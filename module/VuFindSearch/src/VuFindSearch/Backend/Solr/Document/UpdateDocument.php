@@ -115,8 +115,9 @@ class UpdateDocument extends AbstractDocument
      *
      * @return void
      */
-    public function addRecord(SerializableRecordInterface $record, array $indexAttr = array())
-    {
+    public function addRecord(SerializableRecordInterface $record,
+        array $indexAttr = array()
+    ) {
         $this->records->attach($record, $indexAttr);
     }
 

@@ -50,6 +50,8 @@ class RawXMLDocument extends AbstractDocument
     /**
      * Constructor.
      *
+     * @param string $xml XML document to pass to Solr
+     *
      * @return void
      */
     public function __construct($xml)
