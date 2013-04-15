@@ -43,6 +43,8 @@ abstract class AbstractQuery
     /**
      * Does the query contain the specified term?
      *
+     * @param string $needle Term to check
+     *
      * @return bool
      */
     abstract public function containsTerm($needle);

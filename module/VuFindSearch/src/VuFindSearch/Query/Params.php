@@ -157,7 +157,7 @@ class Params
     /**
      * Set spellcheck dictionary.
      *
-     * @param string $dictionary
+     * @param string $dictionary Dictionary
      *
      * @return void
      */
@@ -179,7 +179,7 @@ class Params
     /**
      * Enable or disable spellcheck.
      *
-     * @param boolean $enable
+     * @param boolean $enable Is spell checking enabled?
      *
      * @return void
      */
@@ -213,7 +213,7 @@ class Params
     /**
      * Set sort order.
      *
-     * @param string $order
+     * @param string $sort New sort order
      *
      * @return void
      */
@@ -235,7 +235,7 @@ class Params
     /**
      * Set limit.
      *
-     * @param int $limit
+     * @param int $limit Limit
      *
      * @return void
      */
@@ -257,7 +257,7 @@ class Params
     /**
      * Set offset.
      *
-     * @param int $offset
+     * @param int $offset Offset
      *
      * @return void
      */

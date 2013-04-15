@@ -91,8 +91,9 @@ class QueryGroup extends AbstractQuery
      *
      * @return void
      */
-    public function __construct($operator, array $queries = array(), $reducedHandler = null)
-    {
+    public function __construct($operator, array $queries = array(),
+        $reducedHandler = null
+    ) {
         $this->setOperator($operator);
         $this->setQueries($queries);
         $this->setReducedHandler($reducedHandler);
@@ -192,7 +193,9 @@ class QueryGroup extends AbstractQuery
     public function setOperator($operator)
     {
         if (!in_array($operator, self::$operators)) {
-            throw new InvalidArgumentException("Unknown or invalid boolean operator: {$operator}");
+            throw new InvalidArgumentException(
+                "Unknown or invalid boolean operator: {$operator}"
+            );
         }
         if ($operator == 'NOT') {
             $this->operator = 'OR';
@@ -224,6 +227,8 @@ class QueryGroup extends AbstractQuery
 
     /**
      * Does the query contain the specified term?
+     *
+     * @param string $needle Term to check
      *
      * @return bool
      */
