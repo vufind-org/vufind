@@ -242,8 +242,8 @@ class Service
     /**
      * Trigger the post event.
      *
-     * @param mixed  $response Backend response
-     * @param array  $args     Event arguments
+     * @param mixed $response Backend response
+     * @param array $args     Event arguments
      *
      * @return void
      */
