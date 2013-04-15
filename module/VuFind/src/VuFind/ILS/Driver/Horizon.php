@@ -697,6 +697,20 @@ class Horizon extends AbstractBase
     }
 
     /**
+     * Get Funds
+     *
+     * Return a list of funds which may be used to limit the getNewItems list.
+     *
+     * @throws ILSException
+     * @return array An associative array with key = fund ID, value = fund name.
+     */
+    public function getFunds()
+    {
+        // No funds for limiting in Horizon.
+        return array();
+    }
+
+    /**
      * Get New Items
      *
      * Retrieve the IDs of items recently added to the catalog.
