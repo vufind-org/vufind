@@ -62,12 +62,16 @@ abstract class QueryAdapter
             return new Query($search['l'], $handler);
         } elseif (isset($search['g'])) {
             $operator = $search['g'][0]['b'];
-            return new QueryGroup($operator, array_map(array('self', 'deminify'), $search['g']));
+            return new QueryGroup(
+                $operator, array_map(array('self', 'deminify'), $search['g'])
+            );
         } else {
             // Special case: The outer-most group-of-groups.
             if (isset($search[0]['j'])) {
                 $operator = $search[0]['j'];
-                return new QueryGroup($operator, array_map(array('self', 'deminify'), $search));
+                return new QueryGroup(
+                    $operator, array_map(array('self', 'deminify'), $search)
+                );
             } else {
                 // Simple query
                 return new Query($search[0]['l'], $search[0]['i']);
@@ -140,15 +144,14 @@ abstract class QueryAdapter
         }
 
         // Base 'advanced' query
-        $output = '('
-            . join(') ' . call_user_func($translate, $query->getOperator())
-            . ' (', $groups) . ')';
+        $operator = call_user_func($translate, $query->getOperator());
+        $output = '(' . join(') ' . $operator . ' (', $groups) . ')';
 
         // Concatenate exclusion after that
         if (count($excludes) > 0) {
             $output .= ' ' . call_user_func($translate, 'NOT') . ' (('
-                . join(') ' . call_user_func($translate, 'OR')
-                . ' (', $excludes) . '))';
+                . join(') ' . call_user_func($translate, 'OR') . ' (', $excludes)
+                . '))';
         }
 
         return $output;
