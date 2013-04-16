@@ -77,9 +77,23 @@ class Loader implements ServiceLocatorAwareInterface
      */
     public function load($id, $source = 'VuFind')
     {
-        // Load the record:
         return $this->getClassForSource($source)->getRecord($id);
     }
+
+    /**
+     * Given an array of IDs and a record source, load a batch of records for
+     * that source.
+     *
+     * @param array  $ids    Record IDs
+     * @param string $source Record source
+     *
+     * @throws \Exception
+     * @return array
+     */
+     public function loadBatchForSource($ids, $source = 'VuFind')
+     {
+         return $this->getClassForSource($source)->getRecords($ids);
+     }
 
     /**
      * Given an array of associative arrays with id and source keys (or pipe-
@@ -115,8 +129,7 @@ class Loader implements ServiceLocatorAwareInterface
         // Retrieve the records and put them back in order:
         $retVal = array();
         foreach ($idBySource as $source => $details) {
-            $records = $this->getClassForSource($source)
-                ->getRecords(array_keys($details));
+            $records = $this->loadBatchForSource(array_keys($details), $source);
             foreach ($records as $current) {
                 $id = $current->getUniqueId();
                 $retVal[$details[$id]] = $current;
