@@ -1,7 +1,7 @@
 <?php
 
 /**
- * RequestErrorException.
+ * RequestParseErrorException.
  *
  * PHP version 5
  *
@@ -27,14 +27,12 @@
  * @link     http://vufind.org
  */
 
-namespace VuFindSearch\Backend\Solr\Exception;
-use VuFindSearch\Backend\Exception\RequestErrorException as Base;
+namespace VuFindSearch\Backend\Exception;
 
 /**
- * RequestErrorException.
+ * RequestParseErrorException.
  *
- * Signals an error in the request to the remote service, e.g. indicated by a
- * 4xx response code.
+ * Signals an error parsing the syntax of the user-supplied search criteria.
  *
  * @category VuFind2
  * @package  Search
@@ -42,21 +40,6 @@ use VuFindSearch\Backend\Exception\RequestErrorException as Base;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class RequestErrorException extends Base
+class RequestParseErrorException extends RequestErrorException
 {
-    /**
-     * Is this exception caused by a Solr parse error?
-     *
-     * @return bool
-     */
-    public function isParseError()
-    {
-        $error = $this->getMessage();
-        if (stristr($error, 'org.apache.lucene.queryParser.ParseException')
-            || stristr($error, 'undefined field')
-        ) {
-            return true;
-        }
-        return false;
-    }
 }

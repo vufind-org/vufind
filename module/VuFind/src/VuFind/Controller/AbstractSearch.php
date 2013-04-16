@@ -202,22 +202,17 @@ class AbstractSearch extends AbstractBase
             if ($this->useResultScroller) {
                 $this->resultScroller()->init($results);
             }
-        } catch (\Exception $e) {
+        } catch (\VuFindSearch\Backend\Exception\RequestParseErrorException $e) {
             // If it's a parse error or the user specified an invalid field, we
             // should display an appropriate message:
-            if (method_exists($e, 'isParseError') && $e->isParseError()) {
-                $view->parseError = true;
+            $view->parseError = true;
 
-                // We need to create and process an "empty results" object to
-                // ensure that recommendation modules and templates behave
-                // properly when displaying the error message.
-                $view->results = $this->getResultsManager()->get('EmptySet');
-                $view->results->setParams($params);
-                $view->results->performAndProcessSearch();
-            } else {
-                // Unexpected error -- let's throw this up to the next level.
-                throw $e;
-            }
+            // We need to create and process an "empty results" object to
+            // ensure that recommendation modules and templates behave
+            // properly when displaying the error message.
+            $view->results = $this->getResultsManager()->get('EmptySet');
+            $view->results->setParams($params);
+            $view->results->performAndProcessSearch();
         }
         // Save statistics:
         if ($this->logStatistics) {

@@ -38,7 +38,8 @@ use VuFindSearch\Query\Query;
 use VuFindSearch\ParamBag;
 
 use VuFindSearch\Backend\Exception\RemoteErrorException;
-use VuFindSearch\Backend\Solr\Exception\RequestErrorException;
+use VuFindSearch\Backend\Exception\RequestErrorException;
+use VuFindSearch\Backend\Exception\RequestParseErrorException;
 
 use VuFindSearch\Backend\Solr\Document\AbstractDocument;
 
@@ -579,11 +580,30 @@ class Connector
             $phrase = $response->getReasonPhrase();
             if ($status >= 500) {
                 throw new RemoteErrorException($phrase, $status);
+            } else if ($this->isParseError($phrase)) {
+                throw new RequestParseErrorException($phrase, $status);
             } else {
                 throw new RequestErrorException($phrase, $status);
             }
         }
         return $response->getBody();
+    }
+
+    /**
+     * Check the Solr error message for indication of a syntax error.
+     *
+     * @param string $error Error message
+     *
+     * @return bool
+     */
+    protected function isParseError($error)
+    {
+        if (stristr($error, 'org.apache.lucene.queryParser.ParseException')
+            || stristr($error, 'undefined field')
+        ) {
+            return true;
+        }
+        return false;
     }
 
     /**
