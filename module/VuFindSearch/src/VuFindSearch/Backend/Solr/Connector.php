@@ -92,7 +92,7 @@ class Connector
     /**
      * HTTP read timeout.
      *
-     * @var float
+     * @var int
      */
     protected $timeout = 30;
 
@@ -407,9 +407,19 @@ class Connector
     }
 
     /**
+     * Get the HTTP connect timeout.
+     *
+     * @return int
+     */
+    public function getTimeout()
+    {
+        return $this->timeout;
+    }
+
+    /**
      * Set the HTTP connect timeout.
      *
-     * @param float $timeout Timeout in seconds
+     * @param int $timeout Timeout in seconds
      *
      * @return void
      */

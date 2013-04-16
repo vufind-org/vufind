@@ -79,8 +79,8 @@ class Writer
      */
     public function commit($backend)
     {
-        $connector = $this->getConnector($backend);
-        $connector->write(new CommitDocument());
+        // Commit can take a long time -- use a custom timeout:
+        $this->writeWithTimeout($backend, new CommitDocument(), 60 * 60);
     }
 
     /**
@@ -132,8 +132,8 @@ class Writer
      */
     public function optimize($backend)
     {
-        $connector = $this->getConnector($backend);
-        $connector->write(new OptimizeDocument());
+        // Optimize can take a long time -- use a custom timeout:
+        $this->writeWithTimeout($backend, new OptimizeDocument(), 60 * 60 * 24);
     }
 
     /**
@@ -148,6 +148,30 @@ class Writer
     {
         $connector = $this->getConnector($backend);
         $connector->write($doc);
+    }
+
+    /**
+     * Write a document using a custom timeout value.
+     *
+     * @param string           $backend Backend ID
+     * @param AbstractDocument $doc     Document(s) to write
+     * @param int              $timeout Timeout value
+     *
+     * @return void
+     */
+    protected function writeWithTimeout($backend, AbstractDocument $doc, $timeout)
+    {
+        $connector = $this->getConnector($backend);
+
+        // Remember the old timeout value and then override it with a different one:
+        $oldTimeout = $connector->getTimeout();
+        $connector->setTimeout($timeout);
+
+        // Write!
+        $connector->write($doc);
+
+        // Restore previous timeout value:
+        $connector->setTimeout($oldTimeout);
     }
 
     /**
