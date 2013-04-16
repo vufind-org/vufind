@@ -97,6 +97,7 @@ class OaiController extends AbstractBase
         try {
             $server = new $serverClass(
                 $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
+                $this->getServiceLocator()->get('VuFind\RecordLoader'),
                 $this->getServiceLocator()->get('VuFind\DbTablePluginManager'),
                 $config, $baseURL, $this->getRequest()->getQuery()->toArray()
             );

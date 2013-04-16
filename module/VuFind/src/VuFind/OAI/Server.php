@@ -134,6 +134,13 @@ class Server
     protected $resultsManager;
 
     /**
+     * Record loader
+     *
+     * @var \VuFind\Record\Loader
+     */
+    protected $recordLoader;
+
+    /**
      * Table manager
      *
      * @var \VuFind\Db\Table\PluginManager
@@ -145,6 +152,7 @@ class Server
      *
      * @param \VuFind\Search\Results\PluginManager $results Search manager for
      * retrieving records
+     * @param \VuFind\Record\Loader                $loader  Record loader
      * @param \VuFind\Db\Table\PluginManager       $tables  Table manager
      * @param \Zend\Config\Config                  $config  VuFind configuration
      * @param string                               $baseURL The base URL for the OAI
@@ -153,10 +161,11 @@ class Server
      * parameters (i.e. $_GET)
      */
     public function __construct(\VuFind\Search\Results\PluginManager $results,
-        \VuFind\Db\Table\PluginManager $tables,
+        \VuFind\Record\Loader $loader, \VuFind\Db\Table\PluginManager $tables,
         \Zend\Config\Config $config, $baseURL, $params
     ) {
         $this->resultsManager = $results;
+        $this->recordLoader = $loader;
         $this->tableManager = $tables;
         $this->baseURL = $baseURL;
         $this->params = isset($params) && is_array($params) ? $params : array();
@@ -764,8 +773,7 @@ class Server
         $id = $this->stripID($id);
         if ($id !== false) {
             try {
-                return $this->resultsManager->get($this->searchClassId)
-                    ->getRecord($id);
+                return $this->recordLoader->load($id, $this->searchClassId);
             } catch (RecordMissingException $e) {
                 return false;
             }
