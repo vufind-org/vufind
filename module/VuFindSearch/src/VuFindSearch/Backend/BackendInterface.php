@@ -30,9 +30,6 @@
 namespace VuFindSearch\Backend;
 
 use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\Query\QueryGroup;
-use VuFindSearch\Query\Query;
-
 use VuFindSearch\ParamBag;
 
 /**
@@ -70,7 +67,7 @@ interface BackendInterface
      * @param integer       $limit  Search limit
      * @param ParamBag      $params Search backend parameters
      *
-     * @return RecordCollectionInterface
+     * @return \VuFindSearch\Response\RecordCollectionInterface
      */
     public function search(AbstractQuery $query, $offset, $limit,
         ParamBag $params = null
@@ -82,7 +79,7 @@ interface BackendInterface
      * @param string   $id     Document identifier
      * @param ParamBag $params Search backend parameters
      *
-     * @return RecordCollectionInterface
+     * @return \VuFindSearch\Response\RecordCollectionInterface
      */
     public function retrieve($id, ParamBag $params = null);
 
