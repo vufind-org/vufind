@@ -38,23 +38,6 @@ namespace VuFind\RecordDriver;
  */
 class WorldCat extends SolrMarc
 {
-    protected $marcRecord;
-
-    /**
-     * Constructor
-     *
-     * @param \Zend\Config\Config $mainConfig   VuFind main configuration (omit for
-     * built-in defaults)
-     * @param \Zend\Config\Config $recordConfig Record-specific configuration file
-     * (omit to use $mainConfig as $recordConfig)
-     */
-    public function __construct($mainConfig = null, $recordConfig = null)
-    {
-        // Set the correct resource source for database entries:
-        $this->resourceSource = 'WorldCat';
-        parent::__construct($mainConfig, $recordConfig);
-    }
-
     /**
      * Set raw data to initialize the object.
      *

@@ -748,7 +748,7 @@ class MyResearchController extends AbstractBase
             $record->setRawData(
                 array('id' => isset($current['id']) ? $current['id'] : null)
             );
-            $record->setResourceSource('VuFind');
+            $record->setSourceIdentifier('Solr');
         }
         $record->setExtraDetail('ils_details', $current);
         return $record;

@@ -46,24 +46,6 @@ class Summon extends SolrDefault
     protected $dateConverter = null;
 
     /**
-     * Constructor
-     *
-     * @param \Zend\Config\Config $mainConfig     VuFind main configuration (omit for
-     * built-in defaults)
-     * @param \Zend\Config\Config $recordConfig   Record-specific configuration file
-     * (omit to use $mainConfig as $recordConfig)
-     * @param \Zend\Config\Config $searchSettings Search-specific configuration file
-     */
-    public function __construct($mainConfig = null, $recordConfig = null,
-        $searchSettings = null
-    ) {
-        // Set up resource source to allow tagging/saving/etc.
-        $this->resourceSource = 'Summon';
-
-        parent::__construct($mainConfig, $recordConfig, $searchSettings);
-    }
-
-    /**
      * Get all subject headings associated with this record.  Each heading is
      * returned as an array of chunks, increasing from least specific to most
      * specific.

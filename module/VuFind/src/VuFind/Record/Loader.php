@@ -134,7 +134,7 @@ class Loader implements ServiceLocatorAwareInterface
                     ->get('VuFind\RecordDriverPluginManager');
                 $retVal[$i] = $factory->get('Missing');
                 $retVal[$i]->setRawData($fields);
-                $retVal[$i]->setResourceSource($details['source']);
+                $retVal[$i]->setSourceIdentifier($details['source']);
             }
         }
 

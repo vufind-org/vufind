@@ -47,18 +47,11 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface,
     \VuFindSearch\Response\RecordInterface
 {
     /**
-     * Used for identifying database records
-     *
-     * @var string
-     */
-    protected $resourceSource = 'VuFind';
-
-    /**
      * Used for identifying search backends
      *
      * @var string
      */
-    protected $sourceIdentifier;
+    protected $sourceIdentifier = 'Solr';
 
     /**
      * For storing extra data with record
@@ -166,7 +159,9 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface,
     public function getComments()
     {
         $table = $this->getDbTable('Comments');
-        return $table->getForResource($this->getUniqueId(), $this->resourceSource);
+        return $table->getForResource(
+            $this->getUniqueId(), $this->getResourceSource()
+        );
     }
 
     /**
@@ -196,7 +191,8 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface,
     {
         $tags = $this->getDbTable('Tags');
         return $tags->getForResource(
-            $this->getUniqueId(), $this->resourceSource, 0, $list_id, $user_id, $sort
+            $this->getUniqueId(), $this->getResourceSource(), 0, $list_id, $user_id,
+            $sort
         );
     }
 
@@ -211,8 +207,9 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface,
     public function addTags($user, $tags)
     {
         $resources = $this->getDbTable('Resource');
-        $resource
-            = $resources->findResource($this->getUniqueId(), $this->resourceSource);
+        $resource = $resources->findResource(
+            $this->getUniqueId(), $this->getResourceSource()
+        );
         foreach (Tags::parse($tags) as $tag) {
             $resource->addTag($tag, $user);
         }
@@ -253,7 +250,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface,
         // Get or create a resource object as needed:
         $resourceTable = $this->getDbTable('Resource');
         $resource = $resourceTable->findResource(
-            $this->getUniqueId(), $this->resourceSource, true, $this
+            $this->getUniqueId(), $this->getResourceSource(), true, $this
         );
 
         // Add the information to the user's account:
@@ -277,7 +274,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface,
     {
         $db = $this->getDbTable('UserResource');
         $data = $db->getSavedData(
-            $this->getUniqueId(), $this->resourceSource, $list_id, $user_id
+            $this->getUniqueId(), $this->getResourceSource(), $list_id, $user_id
         );
         $notes = array();
         foreach ($data as $current) {
@@ -299,7 +296,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface,
     {
         $table = $this->getDbTable('UserList');
         return $table->getListsContainingResource(
-            $this->getUniqueId(), $this->resourceSource, $user_id
+            $this->getUniqueId(), $this->getResourceSource(), $user_id
         );
     }
 
@@ -310,7 +307,10 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface,
      */
     public function getResourceSource()
     {
-        return $this->resourceSource;
+        // Normally resource source is the same as source identifier, but for legacy
+        // reasons we need to call Solr 'VuFind' instead.  TODO: clean this up.
+        $id = $this->getSourceIdentifier();
+        return $id == 'Solr' ? 'VuFind' : $id;
     }
 
     /**
@@ -322,7 +322,8 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface,
      */
     public function setSourceIdentifier($identifier)
     {
-        $this->sourceIdentifier = $identifier;
+        // Normalize "VuFind" identifier to "Solr" (see above).  TODO: clean this up.
+        $this->sourceIdentifier = $identifier == 'VuFind' ? 'Solr' : $identifier;
     }
 
     /**
