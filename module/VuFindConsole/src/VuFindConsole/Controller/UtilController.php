@@ -446,12 +446,13 @@ class UtilController extends AbstractBase
      */
     public function createhierarchytreesAction()
     {
-        $solr = $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
-            ->get('Solr');
-        $hierarchies = $solr->getFullFieldFacets(array('hierarchy_top_id'));
+        $recordLoader = $this->getServiceLocator()->get('VuFind\RecordLoader');
+        $hierarchies = $this->getServiceLocator()
+            ->get('VuFind\SearchResultsPluginManager')->get('Solr')
+            ->getFullFieldFacets(array('hierarchy_top_id'));
         foreach ($hierarchies['hierarchy_top_id']['data']['list'] as $hierarchy) {
             Console::writeLine("Building tree for {$hierarchy['value']}...");
-            $driver = $solr->getRecord($hierarchy['value']);
+            $driver = $recordLoader->load($hierarchy['value']);
             if ($driver->getHierarchyType()) {
                 // Only do this if the record is actually a hierarchy type record
                 $driver->getHierarchyDriver()->getTreeSource()
