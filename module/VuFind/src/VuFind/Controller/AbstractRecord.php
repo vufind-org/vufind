@@ -509,11 +509,9 @@ class AbstractRecord extends AbstractBase
         // common scenario) and the GET parameters (a fallback used by some
         // legacy routes).
         if (!is_object($this->driver)) {
-            $results = $this->getServiceLocator()
-                ->get('VuFind\SearchResultsPluginManager')
-                ->get($this->searchClassId);
-            $this->driver = $results->getRecord(
-                $this->params()->fromRoute('id', $this->params()->fromQuery('id'))
+            $this->driver = $this->getRecordLoader()->load(
+                $this->params()->fromRoute('id', $this->params()->fromQuery('id')),
+                $this->searchClassId
             );
         }
         return $this->driver;
