@@ -138,7 +138,9 @@ class Backend implements BackendInterface
 
         $summonQuery = $this->paramBagToSummonQuery($baseParams);
         $response = $this->connector->query($summonQuery);
-        return $this->createRecordCollection($response);
+        $collection = $this->createRecordCollection($response);
+        $this->injectSourceIdentifier($collection);
+        return $collection;
     }
 
     /**
