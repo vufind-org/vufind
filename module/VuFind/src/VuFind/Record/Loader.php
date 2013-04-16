@@ -26,8 +26,9 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Record;
-use Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+use VuFind\Exception\RecordMissing as RecordMissingException,
+    VuFind\RecordDriver\PluginManager as RecordFactory,
+    VuFindSearch\Service as SearchService;
 
 /**
  * Record loader
@@ -38,32 +39,33 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Loader implements ServiceLocatorAwareInterface
+class Loader
 {
     /**
-     * Service locator
+     * Record factory
      *
-     * @var ServiceLocatorInterface
+     * @var RecordFactory
      */
-    protected $serviceLocator;
+    protected $recordFactory;
 
     /**
-     * Given a record source, return the search object that can load that type of
-     * record.
+     * Search service
      *
-     * @param string $source Record source
-     *
-     * @throws \Exception
-     * @return \VuFind\Search\Base\Results
+     * @var SearchService
      */
-    protected function getClassForSource($source)
-    {
-        // Legacy hack: translate "VuFind" source from database into "Solr":
-        if ($source == 'VuFind') {
-            $source = 'Solr';
-        }
-        return $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
-            ->get($source);
+    protected $searchService;
+
+    /**
+     * Constructor
+     *
+     * @param SearchService $searchService Search service
+     * @param RecordFactory $recordFactory Record loader
+     */
+    public function __construct(SearchService $searchService,
+        RecordFactory $recordFactory
+    ) {
+        $this->searchService = $searchService;
+        $this->recordFactory = $recordFactory;
     }
 
     /**
@@ -77,7 +79,13 @@ class Loader implements ServiceLocatorAwareInterface
      */
     public function load($id, $source = 'VuFind')
     {
-        return $this->getClassForSource($source)->getRecord($id);
+        $results = $this->searchService->retrieve($source, $id)->getRecords();
+        if (count($results) < 1) {
+            throw new RecordMissingException(
+                'Record ' . $source . ':' . $id . ' does not exist.'
+            );
+        }
+        return $results[0];
     }
 
     /**
@@ -92,7 +100,7 @@ class Loader implements ServiceLocatorAwareInterface
      */
      public function loadBatchForSource($ids, $source = 'VuFind')
      {
-         return $this->getClassForSource($source)->getRecords($ids);
+         return $this->searchService->retrieveBatch($source, $ids)->getRecords();
      }
 
     /**
@@ -143,9 +151,7 @@ class Loader implements ServiceLocatorAwareInterface
                 $fields = isset($details['extra_fields'])
                     ? $details['extra_fields'] : array();
                 $fields['id'] = $details['id'];
-                $factory = $this->getServiceLocator()
-                    ->get('VuFind\RecordDriverPluginManager');
-                $retVal[$i] = $factory->get('Missing');
+                $retVal[$i] = $this->recordFactory->get('Missing');
                 $retVal[$i]->setRawData($fields);
                 $retVal[$i]->setSourceIdentifier($details['source']);
             }
@@ -154,28 +160,5 @@ class Loader implements ServiceLocatorAwareInterface
         // Send back the final array, with the keys in proper order:
         ksort($retVal);
         return $retVal;
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Manager
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 }

@@ -197,43 +197,6 @@ abstract class Results implements ServiceLocatorAwareInterface
     abstract protected function performSearch();
 
     /**
-     * Method to retrieve a record by ID.  Returns a record driver object.
-     *
-     * @param string $id Unique identifier of record
-     *
-     * @return \VuFind\RecordDriver\AbstractBase
-     */
-    public function getRecord($id)
-    {
-        // This needs to be defined in subclasses:
-        throw new \Exception('getRecord needs to be defined.');
-    }
-
-    /**
-     * Method to retrieve an array of records by ID.
-     *
-     * @param array $ids Array of unique record identifiers.
-     *
-     * @return array
-     */
-    public function getRecords($ids)
-    {
-        // This is the default, dumb behavior for retrieving multiple records --
-        // just call getRecord() repeatedly.  For efficiency, this method should
-        // be overridden in child classes when possible to reduce API calls, etc.
-        $retVal = array();
-        foreach ($ids as $id) {
-            try {
-                $retVal[] = $this->getRecord($id);
-            } catch (\Exception $e) {
-                // Just omit missing records from the return array; calling code in
-                // \VuFind\Record\Loader::loadBatch() will deal with this.
-            }
-        }
-        return $retVal;
-    }
-
-    /**
      * Get spelling suggestion information.
      *
      * @return array

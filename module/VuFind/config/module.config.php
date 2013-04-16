@@ -228,6 +228,12 @@ $config = array(
                 return $logger;
             },
             'VuFind\Mailer' => 'VuFind\Mailer\Factory',
+            'VuFind\RecordLoader' => function ($sm) {
+                return new \VuFind\Record\Loader(
+                    $sm->get('VuFind\Search'),
+                    $sm->get('VuFind\RecordDriverPluginManager')
+                );
+            },
             'VuFind\RecordRouter' => function ($sm) {
                 return new \VuFind\Record\Router(
                     $sm->get('VuFind\RecordLoader'),
@@ -238,6 +244,17 @@ $config = array(
                 return new \VuFind\Statistics\Record(
                     $sm->get('VuFind\Config')->get('config')
                 );
+            },
+            'VuFind\Search\BackendManager' => function ($sm) {
+                $config = $sm->get('config');
+                $smConfig = new \Zend\ServiceManager\Config(
+                    $config['vufind']['plugin_managers']['search_backend']
+                );
+                $registry = $sm->createScopedServiceManager();
+                $smConfig->configureServiceManager($registry);
+                $manager  = new \VuFind\Search\BackendManager($registry);
+
+                return $manager;
             },
             'VuFind\SearchSpecsReader' => function ($sm) {
                 return new \VuFind\Config\SearchSpecsReader(
@@ -288,20 +305,8 @@ $config = array(
                     ? $config->WorldCat->id : false;
                 return new \VuFind\Connection\WorldCatUtils($wcId);
             },
-            'VuFind\Search\BackendManager' => function ($sm) {
-                $config = $sm->get('config');
-                $smConfig = new \Zend\ServiceManager\Config(
-                    $config['vufind']['plugin_managers']['search_backend']
-                );
-                $registry = $sm->createScopedServiceManager();
-                $smConfig->configureServiceManager($registry);
-                $manager  = new \VuFind\Search\BackendManager($registry);
-
-                return $manager;
-            },
         ),
         'invokables' => array(
-            'VuFind\RecordLoader' => 'VuFind\Record\Loader',
             'VuFind\SessionManager' => 'Zend\Session\SessionManager',
         ),
         'initializers' => array(
@@ -792,10 +797,13 @@ $config = array(
                     'WorldCat' => 'VuFind\Search\Factory\WorldCatBackendFactory',
                 ),
                 'aliases' => array(
+                    // Allow Solr core names to be used as aliases for services:
                     'authority' => 'SolrAuth',
                     'biblio' => 'Solr',
                     'reserves' => 'SolrReserves',
                     'stats' => 'SolrStats',
+                    // Legacy:
+                    'VuFind' => 'Solr',
                 )
             ),
             'search_options' => array(

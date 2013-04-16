@@ -415,59 +415,6 @@ class Results extends BaseResults
     }
 
     /**
-     * Method to retrieve a record by ID.  Returns a record driver object.
-     *
-     * @param string $id Unique identifier of record
-     *
-     * @throws RecordMissingException
-     * @return \VuFind\RecordDriver\Base
-     */
-    public function getRecord($id)
-    {
-        $collection = $this->getSearchService()->retrieve($this->backendId, $id);
-
-        if (count($collection) == 0) {
-            throw new RecordMissingException(
-                'Record ' . $id . ' does not exist.'
-            );
-        }
-
-        return current($collection->getRecords());
-    }
-
-    /**
-     * Method to retrieve an array of records by ID.
-     *
-     * @param array $ids Array of unique record identifiers.
-     *
-     * @return array
-     */
-    public function getRecords($ids)
-    {
-        // Figure out how many records to retrieve at the same time --
-        // we'll use either 100 or the ID request limit, whichever is smaller.
-        $results = $this->getServiceLocator()
-            ->get('VuFind\SearchResultsPluginManager')->get('Solr');
-        $params = $results->getParams();
-        $pageSize = $params->getQueryIDLimit();
-        if ($pageSize < 1 || $pageSize > 100) {
-            $pageSize = 100;
-        }
-        $params->setLimit($pageSize);
-
-        // Retrieve records a page at a time:
-        $retVal = array();
-        while (count($ids) > 0) {
-            $currentPage = array_splice($ids, 0, $pageSize, array());
-            $params->setQueryIDs($currentPage);
-            $results->performAndProcessSearch();
-            $retVal = array_merge($retVal, $results->getResults());
-        }
-
-        return $retVal;
-    }
-
-    /**
      * Method to retrieve records similar to the provided ID.  Returns an
      * array of record driver objects.
      *

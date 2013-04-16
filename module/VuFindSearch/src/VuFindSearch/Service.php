@@ -30,6 +30,7 @@
 namespace VuFindSearch;
 
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Feature\RetrieveBatchInterface;
 
 use Zend\Log\LoggerInterface;
 use Zend\EventManager\EventManagerInterface;
@@ -123,6 +124,46 @@ class Service
 
         $this->triggerPre($backend, $args);
         $response = $backend->retrieve($id, $params);
+        $this->triggerPost($response, $args);
+        return $response;
+    }
+
+    /**
+     * Retrieve a batch of records.
+     *
+     * @param string   $backend Search backend identifier
+     * @param array    $ids     Record identifier
+     * @param ParamBag $params  Search backend parameters
+     *
+     * @return ResponseInterface
+     */
+    public function retrieveBatch($backend, $ids, ParamBag $params = null)
+    {
+        $params  = $params ?: new ParamBag();
+        $context = __FUNCTION__;
+        $args = compact('backend', 'id', 'params', 'context');
+        $backend = $this->resolve($backend, $args);
+        $args['backend_instance'] = $backend;
+
+        $this->triggerPre($backend, $args);
+
+        // If the backend implements the RetrieveBatchInterface, we can load
+        // all the records at once; otherwise, we need to load them one at a
+        // time and aggregate them:
+        if ($backend instanceof RetrieveBatchInterface) {
+            $response = $backend->retrieveBatch($ids, $params);
+        } else {
+            $response = false;
+            foreach ($ids as $id) {
+                $next = $backend->retrieve($id, $params);
+                if (!$response) {
+                    $response = $next;
+                } else {
+                    $response->add($next->first());
+                }
+            }
+        }
+
         $this->triggerPost($response, $args);
         return $response;
     }

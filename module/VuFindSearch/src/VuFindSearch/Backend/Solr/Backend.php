@@ -28,6 +28,7 @@
 namespace VuFindSearch\Backend\Solr;
 
 use VuFindSearch\Query\AbstractQuery;
+use VuFindSearch\Query\Query;
 
 use VuFindSearch\ParamBag;
 
@@ -38,6 +39,7 @@ use VuFindSearch\Backend\Solr\Response\Json\Terms;
 
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Feature\MoreLikeThis;
+use VuFindSearch\Feature\RetrieveBatchInterface;
 
 use Zend\Log\LoggerInterface;
 
@@ -55,7 +57,7 @@ use VuFindSearch\Exception\InvalidArgumentException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class Backend implements BackendInterface, MoreLikeThis
+class Backend implements BackendInterface, MoreLikeThis, RetrieveBatchInterface
 {
     /**
      * Record collection factory.
@@ -213,6 +215,44 @@ class Backend implements BackendInterface, MoreLikeThis
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
         return $collection;
+    }
+
+    /**
+     * Retrieve a batch of documents.
+     *
+     * @param array    $ids    Array of document identifiers
+     * @param ParamBag $params Search backend parameters
+     *
+     * @return \VuFindSearch\Response\RecordCollectionInterface
+     */
+    public function retrieveBatch($ids, ParamBag $params = null)
+    {
+        // Load 100 records at a time; this is a good number to avoid memory
+        // problems while still covering a lot of ground.
+        $pageSize = 100;
+
+        // Callback function for formatting IDs:
+        $formatIds = function ($i) {
+            return '"' . addcslashes($i, '"') . '"';
+        };
+
+        // Retrieve records a page at a time:
+        $results = false;
+        while (count($ids) > 0) {
+            $currentPage = array_splice($ids, 0, $pageSize, array());
+            $currentPage = array_map($formatIds, $currentPage);
+            $query = new Query('id:(' . implode(' OR ', $currentPage) . ')');
+            $next = $this->search($query, 0, $pageSize);
+            if (!$results) {
+                $results = $next;
+            } else {
+                foreach ($next->getRecords() as $record) {
+                    $results->add($record);
+                }
+            }
+        }
+
+        return $results;
     }
 
     /**

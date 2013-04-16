@@ -61,27 +61,6 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Method to retrieve a record by ID.  Returns a record driver object.
-     *
-     * @param string $id Unique identifier of record
-     *
-     * @throws RecordMissingException
-     * @return \VuFind\RecordDriver\Base
-     */
-    public function getRecord($id)
-    {
-        $collection = $this->getSearchService()->retrieve('WorldCat', $id);
-
-        if (count($collection) == 0) {
-            throw new RecordMissingException(
-                'Record ' . $id . ' does not exist.'
-            );
-        }
-
-        return current($collection->getRecords());
-    }
-
-    /**
      * Returns the stored list of facets for the last search
      *
      * @param array $filter Array of field => on-screen description listing
