@@ -26,7 +26,6 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\WorldCat;
-use VuFind\Search\Base\Params as BaseParams;
 
 /**
  * WorldCat Search Parameters
@@ -37,32 +36,6 @@ use VuFind\Search\Base\Params as BaseParams;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Params extends BaseParams
+class Params extends \VuFind\Search\Base\Params
 {
-    /**
-     * Override Query
-     */
-    protected $overrideQuery = false;
-
-    /**
-     * Set the override query
-     *
-     * @param string $q Override query
-     *
-     * @return void
-     */
-    public function setOverrideQuery($q)
-    {
-        $this->overrideQuery = $q;
-    }
-
-    /**
-     * Get the override query
-     *
-     * @return string
-     */
-    public function getOverrideQuery()
-    {
-        return $this->overrideQuery;
-    }
 }

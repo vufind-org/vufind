@@ -26,8 +26,6 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Solr;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Search\Base\Options as BaseOptions;
 
 /**
  * Solr Search Options
@@ -38,7 +36,7 @@ use VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Options extends BaseOptions
+class Options extends \VuFind\Search\Base\Options
 {
     /**
      * Spelling limit
@@ -46,20 +44,6 @@ class Options extends BaseOptions
      * @var int
      */
     protected $spellingLimit = 3;
-
-    /**
-     * Selected spelling dictionary
-     *
-     * @var string
-     */
-    protected $dictionary = 'default';
-
-    /**
-     * Level of spelling correction sophistication
-     *
-     * @var bool
-     */
-    protected $spellSimple = false;
 
     /**
      * Spell check words with numbers in them?
@@ -76,22 +60,17 @@ class Options extends BaseOptions
     protected $hiddenFilters = array();
 
     /**
-     * Shard fields to strip
-     *
-     * @var array
-     */
-    protected $solrShardsFieldsToStrip = array();
-
-    /**
-     * Constructor
+     * Perform initialization that cannot occur in constructor due to need for
+     * injected dependencies.
      *
      * @return void
      */
-    public function __construct()
+    public function init()
     {
-        parent::__construct();
+        parent::init();
 
-        $searchSettings = ConfigReader::getConfig($this->searchIni);
+        $searchSettings = $this->getServiceLocator()->get('VuFind\Config')
+            ->get($this->searchIni);
         if (isset($searchSettings->General->default_limit)) {
             $this->defaultLimit = $searchSettings->General->default_limit;
         }
@@ -156,7 +135,8 @@ class Options extends BaseOptions
         }
 
         // Load facet preferences
-        $facetSettings = ConfigReader::getConfig($this->facetsIni);
+        $facetSettings = $this->getServiceLocator()->get('VuFind\Config')
+            ->get($this->facetsIni);
         if (isset($facetSettings->Advanced_Settings->translated_facets)
             && count($facetSettings->Advanced_Settings->translated_facets) > 0
         ) {
@@ -170,15 +150,12 @@ class Options extends BaseOptions
         }
 
         // Load Spelling preferences
-        $config = ConfigReader::getConfig();
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
         if (isset($config->Spelling->enabled)) {
             $this->spellcheck = $config->Spelling->enabled;
         }
         if (isset($config->Spelling->limit)) {
             $this->spellingLimit = $config->Spelling->limit;
-        }
-        if (isset($config->Spelling->simple)) {
-            $this->spellSimple = $config->Spelling->simple;
         }
         if (isset($config->Spelling->skip_numeric)) {
             $this->spellSkipNumeric = $config->Spelling->skip_numeric;
@@ -195,17 +172,18 @@ class Options extends BaseOptions
         }
 
         // Apply hidden filters:
-        if (isset($searchSettings->HiddenFilters)) {
-            foreach ($searchSettings->HiddenFilters as $field => $subfields) {
-                $rawFilter = $field.':'.'"'.addcslashes($subfields, '"').'"';
-                $this->addHiddenFilter($rawFilter);
-            }
-        }
-        if (isset($searchSettings->RawHiddenFilters)) {
-            foreach ($searchSettings->RawHiddenFilters as $rawFilter) {
-                $this->addHiddenFilter($rawFilter);
-            }
-        }
+        //   Already in AbstractSolrBackendFactory (dmaus, 20130305)
+        /* if (isset($searchSettings->HiddenFilters)) { */
+        /*     foreach ($searchSettings->HiddenFilters as $field => $subfields) { */
+        /*         $rawFilter = $field.':'.'"'.addcslashes($subfields, '"').'"'; */
+        /*         $this->addHiddenFilter($rawFilter); */
+        /*     } */
+        /* } */
+        /* if (isset($searchSettings->RawHiddenFilters)) { */
+        /*     foreach ($searchSettings->RawHiddenFilters as $rawFilter) { */
+        /*         $this->addHiddenFilter($rawFilter); */
+        /*     } */
+        /* } */
 
         // Load autocomplete preference:
         if (isset($searchSettings->Autocomplete->enabled)) {
@@ -239,12 +217,6 @@ class Options extends BaseOptions
                 $this->visibleShardCheckboxes
                     = $searchSettings->ShardPreferences->showCheckboxes;
             }
-            // Apply field stripping if applicable:
-            if (isset($searchSettings->StripFields)) {
-                foreach ($searchSettings->StripFields as $k => $v) {
-                    $this->solrShardsFieldsToStrip[$k] = $v;
-                }
-            }
         }
     }
 
@@ -270,36 +242,6 @@ class Options extends BaseOptions
         return $this->hiddenFilters;
     }
 
-    /**
-     * Switch the spelling setting to simple
-     *
-     * @return void
-     */
-    public function usesSimpleSpelling()
-    {
-        return $this->spellSimple;
-    }
-
-    /**
-     * Switch the spelling dictionary to basic
-     *
-     * @return void
-     */
-    public function useBasicDictionary()
-    {
-        $this->dictionary = 'basicSpell';
-    }
-
-    /**
-     * Get the selected spelling dictionary
-     *
-     * @return string
-     */
-    public function getSpellingDictionary()
-    {
-        return $this->dictionary;
-    }
-
 
     /**
      * Are we skipping numeric words?
@@ -313,7 +255,7 @@ class Options extends BaseOptions
 
 
     /**
-     * Get the selected spelling dictionary
+     * Get the spelling limit.
      *
      * @return int
      */
@@ -342,15 +284,5 @@ class Options extends BaseOptions
     public function getAdvancedSearchAction()
     {
         return 'search-advanced';
-    }
-
-    /**
-     * Get details on which Solr fields to strip when sharding is active.
-     *
-     * @return array
-     */
-    public function getSolrShardsFieldsToStrip()
-    {
-        return $this->solrShardsFieldsToStrip;
     }
 }

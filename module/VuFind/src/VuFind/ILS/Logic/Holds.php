@@ -27,8 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\ILS\Logic;
-use VuFind\Config\Reader as ConfigReader, VuFind\Crypt\HMAC,
-    VuFind\ILS\Connection as ILSConnection;
+use VuFind\ILS\Connection as ILSConnection;
 
 /**
  * Hold Logic Class
@@ -42,9 +41,39 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Crypt\HMAC,
  */
 class Holds
 {
+    /**
+     * Auth manager object
+     *
+     * @var \VuFind\Auth\Manager
+     */
     protected $account;
+
+    /**
+     * Catalog connection object
+     *
+     * @var ILSConnection
+     */
     protected $catalog;
+
+    /**
+     * HMAC generator
+     *
+     * @var \VuFind\Crypt\HMAC
+     */
+    protected $hmac;
+
+    /**
+     * VuFind configuration
+     *
+     * @var \Zend\Config\Config
+     */
     protected $config;
+
+    /**
+     * Holding locations to hide from display
+     *
+     * @var array
+     */
     protected $hideHoldings = array();
 
     /**
@@ -52,11 +81,15 @@ class Holds
      *
      * @param \VuFind\Auth\Manager $account Auth manager object
      * @param ILSConnection        $ils     A catalog connection
+     * @param \VuFind\Crypt\HMAC   $hmac    HMAC generator
+     * @param \Zend\Config\Config  $config  VuFind configuration
      */
-    public function __construct(\VuFind\Auth\Manager $account, ILSConnection $ils)
-    {
+    public function __construct(\VuFind\Auth\Manager $account, ILSConnection $ils,
+        \VuFind\Crypt\HMAC $hmac, \Zend\Config\Config $config
+    ) {
         $this->account = $account;
-        $this->config = ConfigReader::getConfig();
+        $this->hmac = $hmac;
+        $this->config = $config;
 
         if (isset($this->config->Record->hide_holdings)) {
             foreach ($this->config->Record->hide_holdings as $current) {
@@ -136,7 +169,7 @@ class Holds
             // needed for hold data.
             $patron = $this->account->storedCatalogLogin();
             $result = $this->catalog->getHolding($id, $patron);
-            $mode = ILSConnection::getHoldsMode();
+            $mode = $this->catalog->getHoldsMode();
 
             if ($mode == "disabled") {
                  $holdings = $this->standardHoldings($result);
@@ -315,7 +348,7 @@ class Holds
     protected function getHoldDetails($holdDetails, $HMACKeys)
     {
         // Generate HMAC
-        $HMACkey = HMAC::generate($HMACKeys, $holdDetails);
+        $HMACkey = $this->hmac->generate($HMACKeys, $holdDetails);
 
         // Add Params
         foreach ($holdDetails as $key => $param) {
@@ -325,7 +358,7 @@ class Holds
             }
         }
 
-        //Add HMAC
+        // Add HMAC
         $queryString[] = "hashKey=" . urlencode($HMACkey);
         $queryString = implode('&', $queryString);
 

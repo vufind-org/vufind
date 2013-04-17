@@ -71,7 +71,7 @@ class XMLFile extends AbstractBase
      */
     protected function getFilename($id)
     {
-        return $this->getBasePath() . '/' . $id . '.xml';
+        return $this->getBasePath() . '/' . urlencode($id) . '.xml';
     }
 
     /**

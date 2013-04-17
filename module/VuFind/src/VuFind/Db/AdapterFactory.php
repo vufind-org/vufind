@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db;
-use VuFind\Config\Reader as ConfigReader, Zend\Db\Adapter\Adapter;
+use Zend\Db\Adapter\Adapter;
 
 /**
  * Database utility class.
@@ -40,6 +40,23 @@ use VuFind\Config\Reader as ConfigReader, Zend\Db\Adapter\Adapter;
 class AdapterFactory
 {
     /**
+     * VuFind configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $config;
+
+    /**
+     * Constructor
+     *
+     * @param \Zend\Config\Config $config VuFind configuration
+     */
+    public function __construct(\Zend\Config\Config $config)
+    {
+        $this->config = $config;
+    }
+
+    /**
      * Obtain a Zend\DB connection using standard VuFind configuration.
      *
      * @param string $overrideUser Username override (leave null to use username
@@ -49,12 +66,11 @@ class AdapterFactory
      *
      * @return object
      */
-    public static function getAdapter($overrideUser = null, $overridePass = null)
+    public function getAdapter($overrideUser = null, $overridePass = null)
     {
         // Parse details from connection string:
-        $config = ConfigReader::getConfig();
-        return static::getAdapterFromConnectionString(
-            $config->Database->database, $overrideUser, $overridePass
+        return $this->getAdapterFromConnectionString(
+            $this->config->Database->database, $overrideUser, $overridePass
         );
     }
 
@@ -65,7 +81,7 @@ class AdapterFactory
      *
      * @return string
      */
-    public static function getDriverName($type)
+    public function getDriverName($type)
     {
         switch (strtolower($type)) {
         case 'mysql':
@@ -85,14 +101,13 @@ class AdapterFactory
      *
      * @return object
      */
-    public static function getAdapterFromOptions($options)
+    public function getAdapterFromOptions($options)
     {
         // Set up custom options by database type:
         switch (strtolower($options['driver'])) {
         case 'mysqli':
-            $config = ConfigReader::getConfig();
-            $options['charset'] = isset($config->Database->charset)
-                ? $config->Database->charset : 'utf8';
+            $options['charset'] = isset($this->config->Database->charset)
+                ? $this->config->Database->charset : 'utf8';
             $options['options'] = array('buffer_results' => true);
             break;
         }
@@ -113,7 +128,7 @@ class AdapterFactory
      *
      * @return object
      */
-    public static function getAdapterFromConnectionString($connectionString,
+    public function getAdapterFromConnectionString($connectionString,
         $overrideUser = null, $overridePass = null
     ) {
         list($type, $details) = explode('://', $connectionString);
@@ -132,13 +147,13 @@ class AdapterFactory
 
         // Set up default options:
         $options = array(
-            'driver' => static::getDriverName($type),
+            'driver' => $this->getDriverName($type),
             'hostname' => $host,
             'username' => $username,
             'password' => $password,
             'database' => $dbName
         );
 
-        return static::getAdapterFromOptions($options);
+        return $this->getAdapterFromOptions($options);
     }
 }

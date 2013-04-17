@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\View\Helper\Root;
-use VuFind\Config\Reader as ConfigReader, Zend\View\Helper\AbstractHelper;
 
 /**
  * System contact email helper.
@@ -37,8 +36,25 @@ use VuFind\Config\Reader as ConfigReader, Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class SystemEmail extends AbstractHelper
+class SystemEmail extends \Zend\View\Helper\AbstractHelper
 {
+    /**
+     * System email
+     *
+     * @var string
+     */
+    protected $email;
+
+    /**
+     * Constructor
+     *
+     * @param string $email System email
+     */
+    public function __construct($email)
+    {
+        $this->email = $email;
+    }
+
     /**
      * System contact email helper.
      *
@@ -46,6 +62,6 @@ class SystemEmail extends AbstractHelper
      */
     public function __invoke()
     {
-        return ConfigReader::getConfig()->Site->email;
+        return $this->email;
     }
 }

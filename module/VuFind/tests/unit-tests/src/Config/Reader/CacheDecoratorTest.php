@@ -48,7 +48,7 @@ class CacheDecoratorTest extends \PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testFromFileAndString ()
+    public function testFromFileAndString()
     {
         $cache = $this->getMockForAbstractClass('Zend\Cache\Storage\StorageInterface', array('setItem', 'hasItem'));
         $cache->expects($this->exactly(2))
@@ -73,7 +73,7 @@ class CacheDecoratorTest extends \PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    public function testFromFileAndStringCached ()
+    public function testFromFileAndStringCached()
     {
         $cache = $this->getMockForAbstractClass('Zend\Cache\Storage\StorageInterface', array('setItem', 'hasItem', 'getItem'));
         $cache->expects($this->never())

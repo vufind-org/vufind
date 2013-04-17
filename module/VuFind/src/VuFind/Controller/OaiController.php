@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
 namespace VuFind\Controller;
-use VuFind\Config\Reader as ConfigReader;
 
 /**
  * OAIController Class
@@ -82,7 +81,7 @@ class OaiController extends AbstractBase
     protected function handleOAI($serverClass)
     {
         // Check if the OAI Server is enabled before continuing
-        $config = ConfigReader::getConfig();
+        $config = $this->getConfig();
         $response = $this->getResponse();
         if (!isset($config->OAI)) {
             $response->setStatusCode(404);
@@ -97,8 +96,10 @@ class OaiController extends AbstractBase
         // Build OAI response or die trying:
         try {
             $server = new $serverClass(
-                $this->getSearchManager(),
-                $baseURL, $this->getRequest()->getQuery()->toArray()
+                $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
+                $this->getServiceLocator()->get('VuFind\RecordLoader'),
+                $this->getServiceLocator()->get('VuFind\DbTablePluginManager'),
+                $config, $baseURL, $this->getRequest()->getQuery()->toArray()
             );
             $xml = $server->getResponse();
         } catch (\Exception $e) {

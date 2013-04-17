@@ -26,7 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Cache;
-use VuFind\Config\Reader as ConfigReader, Zend\Cache\StorageFactory;
+use Zend\Cache\StorageFactory, Zend\Config\Config;
 
 /**
  * VuFind Cache Manager
@@ -71,12 +71,12 @@ class Manager
 
     /**
      * Constructor
+     *
+     * @param Config $config       Main VuFind configuration
+     * @param Config $searchConfig Search configuration
      */
-    public function __construct()
+    public function __construct(Config $config, Config $searchConfig)
     {
-        // Get global cache options
-        $config = ConfigReader::getConfig('config');
-
         // $config and $config->Cache are Zend\Config\Config objects
         // $cache is created immutable, so get the array, it will be modified
         // downstream.
@@ -95,9 +95,8 @@ class Manager
         $this->createFileCache('language', $cacheBase . 'languages');
 
         // Set up search specs cache based on config settings:
-        $config = ConfigReader::getConfig('searches');
-        $searchCacheType = isset($config->Cache->type)
-            ? $config->Cache->type : false;
+        $searchCacheType = isset($searchConfig->Cache->type)
+            ? $searchConfig->Cache->type : false;
         switch ($searchCacheType) {
         case 'APC':
             $this->createAPCCache('searchspecs');
@@ -106,6 +105,9 @@ class Manager
             $this->createFileCache(
                 'searchspecs', $cacheBase . 'searchspecs'
             );
+            break;
+        case false:
+            $this->createNoCache('searchspecs');
             break;
         }
     }
@@ -123,9 +125,15 @@ class Manager
             if (!isset($this->cacheSettings[$key])) {
                 throw new \Exception('Requested unknown cache: ' . $key);
             }
-            $this->caches[$key] = StorageFactory::factory(
-                $this->cacheSettings[$key]
-            );
+            // Special case for "no-cache" caches:
+            if ($this->cacheSettings[$key] === false) {
+                $this->caches[$key]
+                    = new \VuFind\Cache\Storage\Adapter\NoCacheAdapter();
+            } else {
+                $this->caches[$key] = StorageFactory::factory(
+                    $this->cacheSettings[$key]
+                );
+            }
         }
         return $this->caches[$key];
     }
@@ -159,6 +167,18 @@ class Manager
     public function hasDirectoryCreationError()
     {
         return $this->directoryCreationError;
+    }
+
+    /**
+     * Create a "no-cache" setting.
+     *
+     * @param string $cacheName Name of "no cache" to create
+     *
+     * @return void
+     */
+    protected function createNoCache($cacheName)
+    {
+        $this->cacheSettings[$cacheName] = false;
     }
 
     /**

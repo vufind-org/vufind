@@ -6,8 +6,8 @@
       <ul class="results" data-role="listview" data-split-icon="plus" data-split-theme="c">
         <? foreach ($collections as $i => $collection): ?>
          <li>
-           <a rel="external" href="<?=$this->url('collection', array('id' => $collection['id']))?>"><h3><?=$this->escapeHtml($collection['title'])?></h3>
-           <p><?=$this->escapeHtml($collection['description'])?></p>
+           <a rel="external" href="<?=$this->url('collection', array('id' => $collection->getUniqueId()))?>"><h3><?=$this->escapeHtml($collection->getTitle())?></h3>
+           <p><?=$this->escapeHtml(implode(' ', $collection->getSummary()))?></p>
            </a>
          </li>
         <? endforeach; ?>

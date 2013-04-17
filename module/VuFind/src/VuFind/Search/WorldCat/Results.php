@@ -26,9 +26,9 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\WorldCat;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\Search\Base\Results as BaseResults;
+use VuFind\Exception\RecordMissing as RecordMissingException;
+use VuFindSearch\Query\AbstractQuery;
+use VuFindSearch\ParamBag;
 
 /**
  * WorldCat Search Parameters
@@ -39,23 +39,8 @@ use VuFind\Config\Reader as ConfigReader,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Results extends BaseResults
+class Results extends \VuFind\Search\Base\Results
 {
-    /**
-     * Raw search response:
-     */
-    protected $rawResponse = null;
-
-    /**
-     * Get a connection to the WorldCat API.
-     *
-     * @return \VuFind\Connection\WorldCat
-     */
-    public function getWorldCatConnection()
-    {
-        return $this->getServiceLocator()->get('VuFind\WorldCatConnection');
-    }
-
     /**
      * Support method for performAndProcessSearch -- perform a search based on the
      * parameters passed to the object.
@@ -64,71 +49,15 @@ class Results extends BaseResults
      */
     protected function performSearch()
     {
-        // Collect the search parameters:
-        $config = ConfigReader::getConfig();
-        $wc = $this->getWorldCatConnection();
-        $overrideQuery = $this->getParams()->getOverrideQuery();
-        $query = empty($overrideQuery)
-            ? $wc->buildQuery($this->getParams()->getSearchTerms()) : $overrideQuery;
+        $query  = $this->getParams()->getQuery();
+        $limit  = $this->getParams()->getLimit();
+        $offset = $this->getStartRecord() - 1;
+        $params = $this->createBackendParameters($query, $this->getParams());
+        $collection = $this->getSearchService()
+            ->search('WorldCat', $query, $offset, $limit, $params);
 
-        // Perform the search:
-        $this->rawResponse  = $wc->search(
-            $query, $config->WorldCat->OCLCCode, $this->getParams()->getPage(),
-            $this->getParams()->getLimit(), $this->getParams()->getSort()
-        );
-
-        // How many results were there?
-        $this->resultTotal = isset($this->rawResponse->numberOfRecords)
-            ? intval($this->rawResponse->numberOfRecords) : 0;
-
-        // Construct record drivers for all the items in the response:
-        $this->results = array();
-        if (isset($this->rawResponse->records->record)
-            && count($this->rawResponse->records->record) > 0
-        ) {
-            foreach ($this->rawResponse->records->record as $current) {
-                $this->results[] = $this->initRecordDriver(
-                    $current->recordData->record->asXML()
-                );
-            }
-        }
-    }
-
-    /**
-     * Method to retrieve a record by ID.  Returns a record driver object.
-     *
-     * @param string $id Unique identifier of record
-     *
-     * @throws RecordMissingException
-     * @return \VuFind\RecordDriver\Base
-     */
-    public function getRecord($id)
-    {
-        $wc = $this->getWorldCatConnection();
-        $record = $wc->getRecord($id);
-        if (empty($record)) {
-            throw new RecordMissingException(
-                'Record ' . $id . ' does not exist.'
-            );
-        }
-        return $this->initRecordDriver($record);
-    }
-
-    /**
-     * Support method for performSearch(): given a WorldCat MARC record,
-     * construct an appropriate record driver object.
-     *
-     * @param string $data Raw record data
-     *
-     * @return \VuFind\RecordDriver\Base
-     */
-    protected function initRecordDriver($data)
-    {
-        $factory = $this->getServiceLocator()
-            ->get('VuFind\RecordDriverPluginManager');
-        $driver = $factory->get('WorldCat');
-        $driver->setRawData($data);
-        return $driver;
+        $this->resultTotal = $collection->getTotal();
+        $this->results = $collection->getRecords();
     }
 
     /**
@@ -143,5 +72,24 @@ class Results extends BaseResults
     {
         // No facets in WorldCat:
         return array();
+    }
+
+    /**
+     * Create search backend parameters for advanced features.
+     *
+     * @param AbstractQuery $query  Query being processed
+     * @param Params        $params Search parameters
+     *
+     * @return ParamBag
+     */
+    protected function createBackendParameters(AbstractQuery $query, Params $params)
+    {
+        $backendParams = new ParamBag();
+
+        // Sort
+        $sort = $params->getSort();
+        $backendParams->set('sortKeys', empty($sort) ? 'relevance' : $sort);
+
+        return $backendParams;
     }
 }

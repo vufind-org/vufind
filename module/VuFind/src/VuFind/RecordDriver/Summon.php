@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
-use VuFind\Date\Converter as DateConverter;
 
 /**
  * Model for Summon records.
@@ -40,22 +39,11 @@ use VuFind\Date\Converter as DateConverter;
 class Summon extends SolrDefault
 {
     /**
-     * Constructor
+     * Date converter
      *
-     * @param \Zend\Config\Config $mainConfig     VuFind main configuration (omit for
-     * built-in defaults)
-     * @param \Zend\Config\Config $recordConfig   Record-specific configuration file
-     * (omit to use $mainConfig as $recordConfig)
-     * @param \Zend\Config\Config $searchSettings Search-specific configuration file
+     * @var \VuFind\Date\Converter
      */
-    public function __construct($mainConfig = null, $recordConfig = null,
-        $searchSettings = null
-    ) {
-        // Set up resource source to allow tagging/saving/etc.
-        $this->resourceSource = 'Summon';
-
-        parent::__construct($mainConfig, $recordConfig, $searchSettings);
-    }
+    protected $dateConverter = null;
 
     /**
      * Get all subject headings associated with this record.  Each heading is
@@ -283,6 +271,32 @@ class Summon extends SolrDefault
     }
 
     /**
+     * Pass in a date converter
+     *
+     * @param \VuFind\Date\Converter $dc Date converter
+     *
+     * @return void
+     */
+    public function setDateConverter(\VuFind\Date\Converter $dc)
+    {
+        $this->dateConverter = $dc;
+    }
+
+    /**
+     * Get a date converter
+     *
+     * @return \VuFind\Date\Converter
+     */
+    protected function getDateConverter()
+    {
+        // No object passed in yet?  Build one with default settings:
+        if (null === $this->dateConverter) {
+            $this->dateConverter = new \VuFind\Date\Converter();
+        }
+        return $this->dateConverter;
+    }
+
+    /**
      * Get the publication dates of the record.  See also getDateSpan().
      *
      * @return array
@@ -293,7 +307,7 @@ class Summon extends SolrDefault
             && is_array($this->fields['PublicationDate_xml'])
         ) {
             $dates = array();
-            $converter = new DateConverter();
+            $converter = $this->getDateConverter();
             foreach ($this->fields['PublicationDate_xml'] as $current) {
                 if (isset($current['month']) && isset($current['year'])) {
                     if (!isset($current['day'])) {

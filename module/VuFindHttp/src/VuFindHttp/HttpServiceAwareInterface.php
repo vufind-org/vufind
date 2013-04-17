@@ -48,5 +48,5 @@ interface HttpServiceAwareInterface
      *
      * @return void
      */
-    public function setHttpService (HttpServiceInterface $service);
+    public function setHttpService(HttpServiceInterface $service);
 }

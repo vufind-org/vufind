@@ -26,9 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller\Plugin;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Connection\Manager as ConnectionManager,
-    Zend\Mvc\Controller\Plugin\AbstractPlugin;
+use Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
  * Zend action helper to perform reserves-related actions
@@ -45,13 +43,30 @@ class Reserves extends AbstractPlugin
      * Do we need to use the Solr index for reserves (true) or the ILS driver
      * (false)?
      *
+     * @var bool
+     */
+    protected $useIndex;
+
+    /**
+     * Constructor
+     *
+     * @param bool $useIndex Do we need to use the Solr index for reserves (true)
+     * or the ILS driver (false)?
+     */
+    public function __construct($useIndex = false)
+    {
+        $this->useIndex = $useIndex;
+    }
+
+    /**
+     * Do we need to use the Solr index for reserves (true) or the ILS driver
+     * (false)?
+     *
      * @return bool
      */
     public function useIndex()
     {
-        $config = ConfigReader::getConfig();
-        return isset($config->Reserves->search_enabled)
-            && $config->Reserves->search_enabled;
+        return $this->useIndex;
     }
 
     /**
@@ -67,15 +82,19 @@ class Reserves extends AbstractPlugin
     {
         // Special case -- process reserves info using index
         if ($this->useIndex()) {
-            // connect to reserves index
-            $reservesIndex = ConnectionManager::connectToIndex('SolrReserves');
             // get the selected reserve record from reserves index
             // and extract the bib IDs from it
-            $result = $reservesIndex->findReserves($course, $inst, $dept);
+            $result = $this->getController()->getServiceLocator()
+                ->get('VuFind\Search')
+                ->retrieve('SolrReserves', $course . '|' . $inst . '|' . $dept);
             $bibs = array();
-            $instructor = isset($result['instructor']) ? $result['instructor'] : '';
-            $course = isset($result['course']) ? $result['course'] : '';
-            foreach ($result['bib_id'] as $bib_id) {
+            if ($result->getTotal() < 1) {
+                return $bibs;
+            }
+            $record = current($result->getRecords());
+            $instructor = $record->getInstructor();
+            $course = $record->getCourse();
+            foreach ($record->getItemIds() as $bib_id) {
                 $bibs[] = array(
                     'BIB_ID' => $bib_id,
                     'bib_id' => $bib_id,

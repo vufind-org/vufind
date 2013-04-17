@@ -44,14 +44,21 @@ class Auth extends Base
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Manager $sm      Search manager for retrieving records
-     * @param string                 $baseURL The base URL for the OAI server
-     * @param array                  $params  The incoming OAI-PMH parameters
-     * (i.e. $_GET)
+     * @param \VuFind\Search\Results\PluginManager $results Search manager for
+     * retrieving records
+     * @param \VuFind\Record\Loader                $loader  Record loader
+     * @param \VuFind\Db\Table\PluginManager       $tables  Table manager
+     * @param \Zend\Config\Config                  $config  VuFind configuration
+     * @param string                               $baseURL The base URL for the OAI
+     * server
+     * @param array                                $params  The incoming OAI-PMH
+     * parameters (i.e. $_GET)
      */
-    public function __construct(\VuFind\Search\Manager $sm, $baseURL, $params)
-    {
-        parent::__construct($sm, $baseURL, $params);
+    public function __construct(\VuFind\Search\Results\PluginManager $results,
+        \VuFind\Record\Loader $loader, \VuFind\Db\Table\PluginManager $tables,
+        \Zend\Config\Config $config, $baseURL, $params
+    ) {
+        parent::__construct($results, $loader, $tables, $config, $baseURL, $params);
         $this->core = 'authority';
         $this->searchClassId = 'SolrAuth';
     }
@@ -61,13 +68,15 @@ class Auth extends Base
      * constructor and is only a separate method to allow easy override by child
      * classes).
      *
+     * @param \Zend\Config\Config $config VuFind configuration
+     *
      * @return void
      */
-    protected function initializeSettings()
+    protected function initializeSettings(\Zend\Config\Config $config)
     {
         // Use some of the same settings as the regular OAI server, but override
         // others:
-        parent::initializeSettings();
+        parent::initializeSettings($config);
         $this->repositoryName = 'Authority Data Store';
         $this->setField = 'source';
     }

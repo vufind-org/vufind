@@ -27,8 +27,8 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use File_MARC, PDO, PDOException, VuFind\Config\Reader as ConfigReader,
-    VuFind\Date\Converter as DateConverter, VuFind\Exception\Date as DateException,
+use File_MARC, PDO, PDOException,
+    VuFind\Exception\Date as DateException,
     VuFind\Exception\ILS as ILSException,
     VuFind\I18n\Translator\TranslatorAwareInterface,
     Zend\Validator\EmailAddress as EmailAddressValidator;
@@ -77,9 +77,19 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface
     /**
      * Date formatting object
      *
-     * @var DateConverter
+     * @var \VuFind\Date\Converter
      */
     protected $dateFormat;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $dateConverter Date converter object
+     */
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
+        $this->dateFormat = $dateConverter;
+    }
 
     /**
      * Initialize the driver.
@@ -95,9 +105,6 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface
         if (empty($this->config)) {
             throw new ILSException('Configuration needs to be set.');
         }
-
-        // Set up object for formatting dates and times:
-        $this->dateFormat = new DateConverter();
 
         // Define Database Name
         $this->dbName = $this->config['Catalog']['database'];
@@ -1543,22 +1550,6 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
         $items = array();
-
-        // Prevent unnecessary load on Voyager -- no point in exceeding the maximum
-        // configured date range.
-        $maxAge = 30;
-        $searchSettings = ConfigReader::getConfig('searches');
-        if (isset($searchSettings->NewItem->ranges)) {
-            $tmp = explode(',', $searchSettings->NewItem->ranges);
-            foreach ($tmp as $current) {
-                if (intval($current) > $maxAge) {
-                    $maxAge = intval($current);
-                }
-            }
-        }
-        if ($daysOld > $maxAge) {
-            $daysOld = $maxAge;
-        }
 
         $bindParams = array(
             ':enddate' => date('d-m-Y', strtotime('now')),

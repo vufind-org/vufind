@@ -7,7 +7,7 @@
     // since text messages can be short, and we want the most important stuff
     // at the top!
     if ($this->driver->supportsAjaxStatus()) {
-        $holdings = $this->driver->getRealTimeHoldings($this->auth()->getManager());
+        $holdings = $this->driver->getRealTimeHoldings();
 
         // Figure out which call number/location to display.  We'll try to find
         // a location with an available item that has a call number.  Failing that,

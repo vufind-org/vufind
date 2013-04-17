@@ -27,7 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * Horizon ILS Driver
@@ -41,8 +41,29 @@ use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException;
  */
 class Horizon extends AbstractBase
 {
+    /**
+     * Date converter object
+     *
+     * @var \VuFind\Date\Converter
+     */
     protected $dateFormat;
+
+    /**
+     * Database connection
+     *
+     * @var resource
+     */
     protected $db;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $dateConverter Date converter object
+     */
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
+        $this->dateFormat = $dateConverter;
+    }
 
     /**
      * Initialize the driver.
@@ -69,9 +90,6 @@ class Horizon extends AbstractBase
 
         // Select the databse
         mssql_select_db($this->config['Catalog']['database']);
-
-        // Set up object for formatting dates and times:
-        $this->dateFormat = new \VuFind\Date\Converter();
     }
 
     /**
@@ -161,39 +179,77 @@ class Horizon extends AbstractBase
     protected function processHoldingRow($id, $row, $patron)
     {
         $duedate = $row['DUEDATE'];
-        switch ($row['STATUS_CODE']) {
-        case 'i': // checked in
-            $available = 1;
-            $reserve = 'N';
-            break;
-        case 'h': // being held
-            $available = 0;
-            $reserve = 'Y';
-            break;
-        case 'l': // lost
-            $available = 0;
-            $reserve = 'N';
-            $duedate=''; // No due date for lost items
-            break;
-        default:
-            $available = 0;
-            $reserve = 'N';
-            break;
+        $item_status = $row['STATUS_CODE']; //get the item status code
+        $statuses = isset($this->config['Statuses'][$item_status])
+            ? $this->config['Statuses'][$item_status] : null;
+
+        // query the config file for the item status if there are
+        // config values, use the configuration otherwise execute the switch
+        if (!$statuses == null) {
+            // break out the values
+            $arrayValues = array_map('strtolower', explode(',', $statuses));
+
+            //set the variables based on what we find in the config file
+            if (in_array(strtolower('available:1'), $arrayValues)) {
+                $available = 1;
+            }
+            if (in_array(strtolower('available:0'), $arrayValues)) {
+                $available = 0;
+            }
+            if (in_array(strtolower('reserve:N'), $arrayValues)) {
+                $reserve = 'N';
+            }
+            if (in_array(strtolower('reserve:Y'), $arrayValues)) {
+                $reserve = 'Y';
+            }
+            if (in_array(strtolower('duedate:0'), $arrayValues)) {
+                $duedate='';
+            }
+        } else {
+            switch ($row['STATUS_CODE']) {
+            case 'i': // checked in
+                $available = 1;
+                $reserve = 'N';
+                break;
+            case 'rb': // Reserve Bookroom
+                $available = 0;
+                $reserve = 'Y';
+                break;
+            case 'h': // being held
+                $available = 0;
+                $reserve = 'N';
+                break;
+            case 'l': // lost
+                $available = 0;
+                $reserve = 'N';
+                $duedate=''; // No due date for lost items
+                break;
+            case 'm': // missing
+                $available = 0;
+                $reserve = 'N';
+                $duedate=''; // No due date for missing items
+                break;
+            default:
+                $available = 0;
+                $reserve = 'N';
+                break;
+            }
         }
 
-         return array('id' => $id,
-                      'availability' => $available,
-                      'item_num' => $row['ITEM_NUM'],
-                      'status' => $row['STATUS'],
-                      'location' => $row['LOCATION'],
-                      'reserve' => $reserve,
-                      'callnumber' => $row['CALLNUMBER'],
-                      'collection' => $row['COLLECTION'],
-                      'duedate' => $duedate,
-                      'barcode' => $row['ITEM_BARCODE'],
-                      'number' => $row['ITEM_SEQUENCE_NUMBER'],
-                      'requests_placed' => $row['REQUEST']
-         );
+        return array(
+            'id' => $id,
+            'availability' => $available,
+            'item_num' => $row['ITEM_NUM'],
+            'status' => $row['STATUS'],
+            'location' => $row['LOCATION'],
+            'reserve' => $reserve,
+            'callnumber' => $row['CALLNUMBER'],
+            'collection' => $row['COLLECTION'],
+            'duedate' => $duedate,
+            'barcode' => $row['ITEM_BARCODE'],
+            'number' => $row['ITEM_SEQUENCE_NUMBER'],
+            'requests_placed' => $row['REQUEST']
+        );
     }
 
     /**
@@ -676,5 +732,152 @@ class Horizon extends AbstractBase
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
         }
+    }
+
+    /**
+     * Get Funds
+     *
+     * Return a list of funds which may be used to limit the getNewItems list.
+     *
+     * @throws ILSException
+     * @return array An associative array with key = fund ID, value = fund name.
+     */
+    public function getFunds()
+    {
+        // No funds for limiting in Horizon.
+        return array();
+    }
+
+    /**
+     * Get New Items
+     *
+     * Retrieve the IDs of items recently added to the catalog.
+     *
+     * The logic in this function follows the pattern used for the "New Additions"
+     * functionality of the Horizon staff client. New Additions was delivered with
+     * Horizon 7.4 and requires setup. Follow instructions in the "Circulation Setup
+     * Guide". The minimum setup is to set the "Track First Availability" flag for
+     * each appropriate item status.
+     *
+     * @param int $page    Not implemented in this driver - Sybase does not have SQL
+     *                     query paging functionality.
+     * @param int $limit   The maximum number of results to retrieve
+     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param int $fundId  Not implemented in this driver - The contributing library
+     *                     does not use acquisitions.
+     *
+     * @return array       Associative array with 'count' and 'results' keys
+     */
+    public function getNewItems($page, $limit, $daysOld, $fundId = null)
+    {
+        // This functionality first appeared in Horizon 7.4 - check our version
+        $hzVersionRequired = "7.4.0.0";
+        if ($this->checkHzVersion($hzVersionRequired)) {
+
+            // Set the Sybase or MSSQL rowcount limit
+            $limitsql = "set rowcount {$limit}";
+
+            // This is the actual query for IDs.
+            $newsql = "  select nb.bib# "
+                    . "    from new_bib nb "
+                    . "    join bib_control bc "
+                    . "      on bc.bib# = nb.bib# "
+                    . "     and bc.staff_only = 0 "
+                    . "   where nb.date > "
+                    . "         datediff(dd, '01JAN1970', getdate()) - {$daysOld} "
+                    . "order by nb.date desc ";
+
+            $results = array();
+
+            // Set the rowcount limit before executing the query for IDs
+            mssql_query($limitsql);
+
+            // Actual query for IDs
+            $sqlStmt = mssql_query($newsql);
+            while ($row = mssql_fetch_assoc($sqlStmt)) {
+                $results[] = $row['bib#'];
+            }
+
+            $retVal = array('count' => count($results), 'results' => array());
+            foreach ($results as $result) {
+                $retVal['results'][] = array('id' => $result);
+            }
+            return $retVal;
+        } else {
+            return array('count' => 0, 'results' => array());
+        }
+    }
+
+    /**
+     * Check Horizon Version
+     *
+     * Check the Horizon version found in the matham table to make sure it is at
+     * least the required version.
+     *
+     * @param string $hzVersionRequired Minimum version required
+     *
+     * @return boolean   True or False the required version is the same or higher.
+     */
+    protected function checkHzVersion($hzVersionRequired)
+    {
+        $checkHzVersionSQL = "select database_revision from matham";
+
+        $versionResult = mssql_query($checkHzVersionSQL);
+        while ($row = mssql_fetch_assoc($versionResult)) {
+            $hzVersionFound = $row['database_revision'];
+        }
+
+        /* The Horizon database version is made up of 4 numbers seperated by periods.
+         * Explode the string and check each segment against the required version.
+         */
+        $foundVersionParts    = explode('.', $hzVersionFound);
+        $requiredVersionParts = explode('.', $hzVersionRequired);
+
+        $versionOK = true;
+
+        for ($i = 0; $i < count($foundVersionParts); $i++) {
+            $required = intval($requiredVersionParts[$i]);
+            $found    = intval($foundVersionParts[$i]);
+
+
+            if ($found > $required) {
+                // If found is greater than required stop checking
+                break;
+            } elseif ($found < $required) {
+                /* If found is less than required set $versionOK false
+                 * and stop checking
+                 */
+                $versionOK = false;
+                break;
+            }
+        }
+
+        return $versionOK;
+    }
+
+    /**
+     * Get suppressed records.
+     *
+     * Get a list of Horizon bib numbers that have the staff-only flag set.
+     *
+     * @return array ID numbers of suppressed records in the system.
+     */
+    public function getSuppressedRecords()
+    {
+        $list = array();
+
+        $sql = "select bc.bib#" .
+            "  from bib_control bc" .
+            " where bc.staff_only = 1";
+        try {
+            $sqlStmt = mssql_query($sql);
+            while ($row = mssql_fetch_assoc($sqlStmt)) {
+                $list[] = $row['bib#'];
+            }
+        } catch (\Exception $e) {
+            throw new ILSException($e->getMessage());
+        }
+
+        return $list;
     }
 }

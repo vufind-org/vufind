@@ -26,10 +26,15 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Solr;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Connection\Manager as ConnectionManager,
-    VuFind\Exception\RecordMissing as RecordMissingException,
+use VuFind\Exception\RecordMissing as RecordMissingException,
     VuFind\Search\Base\Results as BaseResults;
+
+use VuFindSearch\Query\AbstractQuery;
+use VuFindSearch\Query\QueryGroup;
+use VuFindSearch\Query\Query;
+
+use VuFindSearch\ParamBag;
+use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 
 /**
  * Solr Search Parameters
@@ -37,34 +42,139 @@ use VuFind\Config\Reader as ConfigReader,
  * @category VuFind2
  * @package  Search_Solr
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
 class Results extends BaseResults
 {
     /**
-     * Raw Solr search response:
+     * Facet details:
+     *
+     * @var array
      */
-    protected $rawResponse = null;
+    protected $responseFacets = null;
 
     /**
-     * Get a connection to the Solr index.
+     * Search backend identifiers.
      *
-     * @param null|array $shards Selected shards to use (null for defaults)
-     * @param string     $index  ID of index/search classes to use (this assumes
-     * that \VuFind\Search\$index\Options and \VuFind\Connection\$index are both
-     * valid classes)
-     *
-     * @return \VuFind\Connection\Solr
+     * @var string
      */
-    public function getSolrConnection($shards = null, $index = 'Solr')
+    protected $backendId = 'Solr';
+
+    /**
+     * Currently used spelling query, if any.
+     *
+     * @var string
+     */
+    protected $spellingQuery;
+
+    /**
+     * Support method for performAndProcessSearch -- perform a search based on the
+     * parameters passed to the object.
+     *
+     * @return void
+     */
+    protected function performSearch()
     {
-        // Turn on all shards by default if none are specified (we need to be sure
-        // that any given ID will yield results, even if not all shards are on by
-        // default).
-        $sm = $this->getSearchManager();
-        $options = $sm->setSearchClassId($index)->getOptionsInstance();
-        $allShards = $options->getShards();
+        $query  = $this->getParams()->getQuery();
+        $limit  = $this->getParams()->getLimit();
+        $offset = $this->getStartRecord() - 1;
+        $params = $this->createBackendParameters($query, $this->getParams());
+        $collection = $this->getSearchService()
+            ->search($this->backendId, $query, $offset, $limit, $params);
+
+        $this->responseFacets = $collection->getFacets();
+        $this->resultTotal = $collection->getTotal();
+
+        // Process spelling suggestions
+        $spellcheck = $collection->getSpellcheck();
+        $this->processSpelling($spellcheck);
+
+        // Construct record drivers for all the items in the response:
+        $this->results = $collection->getRecords();
+    }
+
+    /**
+     * Normalize sort parameters.
+     *
+     * @param string $sort Sort parameter
+     *
+     * @return string
+     */
+    protected function normalizeSort($sort)
+    {
+        static $table = array(
+            'year' => array('field' => 'publishDateSort', 'order' => 'desc'),
+            'publishDateSort' =>
+                array('field' => 'publishDateSort', 'order' => 'desc'),
+            'author' => array('field' => 'authorStr', 'order' => 'asc'),
+            'title' => array('field' => 'title_sort', 'order' => 'asc'),
+            'relevance' => array('field' => 'score', 'order' => 'desc'),
+            'callnumber' => array('field' => 'callnumber', 'order' => 'asc'),
+        );
+        $normalized = array();
+        foreach (explode(',', $sort) as $component) {
+            $parts = explode(' ', trim($component));
+            $field = reset($parts);
+            $order = next($parts);
+            if (isset($table[$field])) {
+                $normalized[] = sprintf(
+                    '%s %s',
+                    $table[$field]['field'],
+                    $order ?: $table[$field]['order']
+                );
+            } else {
+                $normalized[] = sprintf(
+                    '%s %s',
+                    $field,
+                    $order ?: 'asc'
+                );
+            }
+        }
+        return implode(',', $normalized);
+    }
+
+    /**
+     * Create search backend parameters for advanced features.
+     *
+     * @param AbstractQuery $query  Current search query
+     * @param Params        $params Search parameters
+     *
+     * @return ParamBag
+     */
+    protected function createBackendParameters(AbstractQuery $query, Params $params)
+    {
+        $backendParams = new ParamBag();
+
+        // Spellcheck
+        if ($params->getOptions()->spellcheckEnabled()) {
+            $spelling = $query->getAllTerms();
+            if ($spelling) {
+                $backendParams->set('spellcheck.q', $spelling);
+                $this->spellingQuery = $spelling;
+            }
+        }
+
+        // Facets
+        $facets = $params->getFacetSettings();
+        if (!empty($facets)) {
+            $backendParams->add('facet', 'true');
+            foreach ($facets as $key => $value) {
+                $backendParams->add("facet.{$key}", $value);
+            }
+            $backendParams->add('facet.mincount', 1);
+        }
+
+        // Filters
+        $filters = $params->getFilterSettings();
+        foreach ($filters as $filter) {
+            $backendParams->add('fq', $filter);
+        }
+
+        // Shards
+        $allShards = $params->getOptions()->getShards();
+        $shards = $params->getSelectedShards();
         if (is_null($shards)) {
             $shards = array_keys($allShards);
         }
@@ -76,210 +186,69 @@ class Results extends BaseResults
                 $selectedShards[$current] = $allShards[$current];
             }
             $shards = $selectedShards;
+            $backendParams->add('shards', implode(',', $selectedShards));
         }
 
-        // Connect to Solr and set up shards:
-        $solr = ConnectionManager::connectToIndex($index);
-        $solr->setShards($shards, $options->getSolrShardsFieldsToStrip());
-        return $solr;
+        // Sort
+        $sort = $params->getSort();
+        if ($sort) {
+            $backendParams->add('sort', $this->normalizeSort($sort));
+        }
+
+        // Highlighting -- on by default, but we should disable if necessary:
+        if (!$params->getOptions()->highlightEnabled()) {
+            $backendParams->add('hl', 'false');
+        }
+
+        return $backendParams;
     }
 
     /**
-     * Support method for performAndProcessSearch -- perform a search based on the
-     * parameters passed to the object.
+     * Process SOLR spelling suggestions.
+     *
+     * @param Spellcheck $spellcheck Spellcheck information
      *
      * @return void
      */
-    protected function performSearch()
+    protected function processSpelling(Spellcheck $spellcheck)
     {
-        $solr = $this->getSolrConnection($this->getParams()->getSelectedShards());
+        $this->suggestions = array();
+        foreach ($spellcheck as $term => $info) {
 
-        // Collect the search parameters:
-        $overrideQuery = $this->getParams()->getOverrideQuery();
-        $params = array(
-            'query' => !empty($overrideQuery)
-                ? $overrideQuery
-                : $solr->buildQuery($this->getParams()->getSearchTerms()),
-            'handler' => $this->getParams()->getSearchHandler(),
-            // Account for reserved VuFind word 'relevance' (which really means
-            // "no sort parameter in Solr"):
-            'sort' => $this->getParams()->getSort() == 'relevance'
-                ? null : $this->getParams()->getSort(),
-            'start' => $this->getStartRecord() - 1,
-            'limit' => $this->getParams()->getLimit(),
-            'facet' => $this->getParams()->getFacetSettings(),
-            'filter' => $this->getParams()->getFilterSettings(),
-            'spell' => $this->getParams()->getSpellingQuery(),
-            'dictionary' => $this->getOptions()->getSpellingDictionary(),
-            'highlight' => $this->getOptions()->highlightEnabled()
-        );
-
-        // Perform the search:
-        $this->rawResponse = $solr->search($params);
-
-        // How many results were there?
-        $this->resultTotal = isset($this->rawResponse['response']['numFound'])
-            ? $this->rawResponse['response']['numFound'] : 0;
-
-        // Process spelling suggestions if no index error resulted from the query
-        if ($this->getOptions()->spellcheckEnabled()) {
-            // Shingle dictionary
-            $this->processSpelling();
-            // Make sure we don't endlessly loop
-            if ($this->getOptions()->getSpellingDictionary() == 'default') {
-                // Expand against the basic dictionary
-                $this->basicSpelling();
-            }
-        }
-
-        // Construct record drivers for all the items in the response:
-        $this->results = array();
-        for ($x = 0; $x < count($this->rawResponse['response']['docs']); $x++) {
-            $this->results[] = $this->initRecordDriver(
-                $this->rawResponse['response']['docs'][$x]
-            );
-        }
-    }
-
-    /**
-     * Process spelling suggestions from the results object
-     *
-     * @return void
-     */
-    protected function processSpelling()
-    {
-        // Do nothing if there are no suggestions
-        $suggestions = isset($this->rawResponse['spellcheck']['suggestions']) ?
-            $this->rawResponse['spellcheck']['suggestions'] : array();
-        if (count($suggestions) == 0) {
-            return;
-        }
-
-        // Loop through the array of search terms we have suggestions for
-        $suggestionList = array();
-        foreach ($suggestions as $suggestion) {
-            $ourTerm = $suggestion[0];
-
-            // Skip numeric terms if numeric suggestions are disabled
+            // TODO: Avoid reference to Options
             if ($this->getOptions()->shouldSkipNumericSpelling()
-                && is_numeric($ourTerm)
+                && is_numeric($term)
             ) {
                 continue;
             }
-
-            $ourHit  = $suggestion[1]['origFreq'];
-            $count   = $suggestion[1]['numFound'];
-            $newList = $suggestion[1]['suggestion'];
-
-            $validTerm = true;
-
-            // Make sure the suggestion is for a valid search term.
-            // Sometimes shingling will have bridged two search fields (in
-            // an advanced search) or skipped over a stopword.
-            if (!$this->getParams()->findSearchTerm($ourTerm)) {
-                $validTerm = false;
+            // Term is not part of the query
+            if (!$this->getParams()->getQuery()->containsTerm($term)) {
+                continue;
             }
-
-            // Unless this term had no hits
-            if ($ourHit != 0) {
-                // Filter out suggestions we are already using
-                $newList = $this->filterSpellingTerms($newList);
-            }
-
-            // Make sure it has suggestions and is valid
-            if (count($newList) > 0 && $validTerm) {
-                // Did we get more suggestions then our limit?
-                if ($count > $this->getOptions()->getSpellingLimit()) {
-                    // Cut the list at the limit
-                    array_splice($newList, $this->getOptions()->getSpellingLimit());
+            // Filter out suggestions that are already part of the query
+            // TODO: Avoid reference to Options
+            $suggestionLimit = $this->getOptions()->getSpellingLimit();
+            $suggestions     = array();
+            foreach ($info['suggestion'] as $suggestion) {
+                if (count($suggestions) >= $suggestionLimit) {
+                    break;
                 }
-                $suggestionList[$ourTerm]['freq'] = $ourHit;
-                // Format the list nicely
-                foreach ($newList as $item) {
-                    if (is_array($item)) {
-                        $suggestionList[$ourTerm]['suggestions'][$item['word']]
-                            = $item['freq'];
-                    } else {
-                        $suggestionList[$ourTerm]['suggestions'][$item] = 0;
+                $word = $suggestion['word'];
+                if (!$this->getParams()->getQuery()->containsTerm($word)) {
+                    // TODO: Avoid reference to Options
+                    // Note: !a || !b eq !(a && b)
+                    if (!is_numeric($word)
+                        || !$this->getOptions()->shouldSkipNumericSpelling()
+                    ) {
+                        $suggestions[$word] = $suggestion['freq'];
                     }
                 }
             }
-        }
-        $this->suggestions = $suggestionList;
-    }
-
-    /**
-     * Filter a list of spelling suggestions to remove suggestions
-     *   we are already searching for
-     *
-     * @param array $termList List of suggestions
-     *
-     * @return array          Filtered list
-     */
-    protected function filterSpellingTerms($termList)
-    {
-        $newList = array();
-        if (count($termList) == 0) {
-            return $newList;
-        }
-
-        foreach ($termList as $term) {
-            if (!$this->getParams()->findSearchTerm($term['word'])) {
-                $newList[] = $term;
-            }
-        }
-        return $newList;
-    }
-
-    /**
-     * Try running spelling against the basic dictionary.
-     *   This function should ensure it doesn't return
-     *   single word suggestions that have been accounted
-     *   for in the shingle suggestions above.
-     *
-     * @return array Suggestions array
-     */
-    protected function basicSpelling()
-    {
-        // TODO: There might be a way to run the search against both dictionaries
-        // from inside Solr. Investigate. Currently submitting a second search.
-
-        // Create a new search object
-        $newParams = clone($this->getParams());
-        $newParams->getOptions()->useBasicDictionary();
-
-        // Don't waste time loading facets or highlighting/retrieving results:
-        $newParams->resetFacetConfig();
-        $newParams->getOptions()->disableHighlighting();
-        $newParams->setLimit(0);
-        $newParams->recommendationsEnabled(false);
-
-        $sm = $this->getSearchManager();
-        $sm->setSearchClassId($sm->extractSearchClassId(get_class($this)));
-        $newSearch = $sm->getResults($newParams);
-
-        // Get the spelling results
-        $newList = $newSearch->getRawSuggestions();
-
-        // If there were no shingle suggestions
-        if (count($this->suggestions) == 0) {
-            // Just use the basic ones as provided
-            $this->suggestions = $newList;
-        } else {
-            // Otherwise...
-            // For all the new suggestions
-            foreach ($newList as $word => $data) {
-                // Check the old suggestions
-                $found = false;
-                foreach ($this->suggestions as $k => $v) {
-                    // Make sure it wasn't part of a shingle
-                    //   which has been suggested at a higher
-                    //   level.
-                    $found = preg_match("/\b$word\b/", $k) ? true : $found;
-                }
-                if (!$found) {
-                    $this->suggestions[$word] = $data;
-                }
+            if ($suggestions) {
+                $this->suggestions[$term] = array(
+                    'freq' => $info['origFreq'],
+                    'suggestions' => $suggestions
+                );
             }
         }
     }
@@ -294,7 +263,7 @@ class Results extends BaseResults
     {
         $returnArray = array();
         $suggestions = $this->getRawSuggestions();
-        $tokens = $this->spellingTokens($this->getParams()->getSpellingQuery());
+        $tokens = $this->spellingTokens($this->spellingQuery);
 
         foreach ($suggestions as $term => $details) {
             // Find out if our suggestion is part of a token
@@ -302,7 +271,7 @@ class Results extends BaseResults
             $targetTerm = "";
             foreach ($tokens as $token) {
                 // TODO - Do we need stricter matching here, similar to that in
-                // \VuFind\Search\Base\Params::replaceSearchTerm()?
+                // \VuFindSearch\Query\Query::replaceTerm()?
                 if (stripos($token, $term) !== false) {
                     $inToken = true;
                     // We need to replace the whole token
@@ -339,7 +308,7 @@ class Results extends BaseResults
     protected function doSpellingReplace($term, $targetTerm, $inToken, $details,
         $returnArray
     ) {
-        $config = ConfigReader::getConfig();
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
 
         $returnArray[$targetTerm]['freq'] = $details['freq'];
         foreach ($details['suggestions'] as $word => $freq) {
@@ -391,7 +360,7 @@ class Results extends BaseResults
     public function getFacetList($filter = null)
     {
         // Make sure we have processed the search before proceeding:
-        if (is_null($this->rawResponse)) {
+        if (null === $this->responseFacets) {
             $this->performAndProcessSearch();
         }
 
@@ -403,18 +372,10 @@ class Results extends BaseResults
         // Start building the facet list:
         $list = array();
 
-        // If we have no facets to process, give up now
-        if (!isset($this->rawResponse['facet_counts']['facet_fields'])
-            || !is_array($this->rawResponse['facet_counts']['facet_fields'])
-        ) {
-            return $list;
-        }
-
         // Loop through every field returned by the result set
+        $fieldFacets = $this->responseFacets->getFieldFacets();
         foreach (array_keys($filter) as $field) {
-            $data = isset($this->rawResponse['facet_counts']['facet_fields'][$field])
-                ? $this->rawResponse['facet_counts']['facet_fields'][$field]
-                : array();
+            $data = isset($fieldFacets[$field]) ? $fieldFacets[$field] : array();
             // Skip empty arrays:
             if (count($data) < 1) {
                 continue;
@@ -429,15 +390,15 @@ class Results extends BaseResults
             $translate
                 = in_array($field, $this->getOptions()->getTranslatedFacets());
             // Loop through values:
-            foreach ($data as $facet) {
+            foreach ($data as $value => $count) {
                 // Initialize the array of data about the current facet:
                 $currentSettings = array();
-                $currentSettings['value'] = $facet[0];
+                $currentSettings['value'] = $value;
                 $currentSettings['displayText']
-                    = $translate ? $this->translate($facet[0]) : $facet[0];
-                $currentSettings['count'] = $facet[1];
+                    = $translate ? $this->translate($value) : $value;
+                $currentSettings['count'] = $count;
                 $currentSettings['isApplied']
-                    = $this->getParams()->hasFilter("$field:".$facet[0]);
+                    = $this->getParams()->hasFilter("$field:".$value);
 
                 // Store the collected values:
                 $list[$field]['list'][] = $currentSettings;
@@ -446,103 +407,6 @@ class Results extends BaseResults
         return $list;
     }
 
-    /**
-     * Method to retrieve a record by ID.  Returns a record driver object.
-     *
-     * @param string $id Unique identifier of record
-     *
-     * @throws RecordMissingException
-     * @return \VuFind\RecordDriver\Base
-     */
-    public function getRecord($id)
-    {
-        $solr = $this->getSolrConnection();
-
-        // Check if we need to apply hidden filters:
-        $sm = $this->getSearchManager();
-        $sm->setSearchClassId($sm->extractSearchClassId(get_class($this)));
-        $options = $sm->getOptionsInstance();
-        $filters = $options->getHiddenFilters();
-        $extras = empty($filters) ? array() : array('fq' => $filters);
-
-        $record = $solr->getRecord($id, $extras);
-        if (empty($record)) {
-            throw new RecordMissingException(
-                'Record ' . $id . ' does not exist.'
-            );
-        }
-        return $this->initRecordDriver($record);
-    }
-
-    /**
-     * Method to retrieve an array of records by ID.
-     *
-     * @param array $ids Array of unique record identifiers.
-     *
-     * @return array
-     */
-    public function getRecords($ids)
-    {
-        // Figure out how many records to retrieve at the same time --
-        // we'll use either 100 or the ID request limit, whichever is smaller.
-        $sm = $this->getSearchManager();
-        $params = $sm->setSearchClassId('Solr')->getParams();
-        $pageSize = $params->getQueryIDLimit();
-        if ($pageSize < 1 || $pageSize > 100) {
-            $pageSize = 100;
-        }
-
-        // Retrieve records a page at a time:
-        $retVal = array();
-        while (count($ids) > 0) {
-            $currentPage = array_splice($ids, 0, $pageSize, array());
-            $params->setQueryIDs($currentPage);
-            $params->setLimit($pageSize);
-            $results = $sm->setSearchClassId('Solr')->getResults($params);
-            $retVal = array_merge($retVal, $results->getResults());
-        }
-
-        return $retVal;
-    }
-
-    /**
-     * Method to retrieve records similar to the provided ID.  Returns an
-     * array of record driver objects.
-     *
-     * @param string $id Unique identifier of record
-     *
-     * @return array
-     */
-    public function getSimilarRecords($id)
-    {
-        $solr = $this->getSolrConnection($this->getParams()->getSelectedShards());
-        $filters = $this->getOptions()->getHiddenFilters();
-        $extras = empty($filters) ? array() : array('fq' => $filters);
-        $rawResponse = $solr->getMoreLikeThis($id, $extras);
-        $results = array();
-        for ($x = 0; $x < count($rawResponse['response']['docs']); $x++) {
-            $results[] = $this->initRecordDriver(
-                $rawResponse['response']['docs'][$x]
-            );
-        }
-        return $results;
-    }
-
-    /**
-     * Support method for performSearch(): given an array of Solr response data,
-     * construct an appropriate record driver object.
-     *
-     * @param array $data Solr data
-     *
-     * @return \VuFind\RecordDriver\Base
-     */
-    protected function initRecordDriver($data)
-    {
-        return $this->getServiceLocator()
-            ->get('VuFind\RecordDriverPluginManager')
-            ->getSolrRecord($data);
-    }
-    
     /**
      * Get complete facet counts for several index fields
      *

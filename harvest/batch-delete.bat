@@ -12,9 +12,9 @@ if not "!%VUFIND_HOME%!"=="!!" goto vufindhomefound
 rem VUFIND_HOME not set -- try to call vufind.bat to 
 rem fix the problem before we give up completely
 if exist %0\..\..\vufind.bat goto usevufindbat
-rem If vufind.bat doesn't exist, the user hasn't run install.bat yet.
+rem If vufind.bat doesn't exist, the user hasn't run the installer yet.
 echo ERROR: vufind.bat does not exist -- could not set up environment.
-echo Please run install.bat to correct this problem.
+echo Please run install.php to correct this problem.
 goto end
 :usevufindbat
 cd %0\..\..
@@ -25,11 +25,27 @@ echo You need to set the VUFIND_HOME environmental variable before running this 
 goto end
 :vufindhomefound
 
+rem Save script name for message below (otherwise it may get shifted away)
+set SCRIPT_NAME=%0
+
+rem Set default behavior
+set SKIP_OPTIMIZE=0
+
+rem Process switches
+:switchloop
+if "%1"=="-s" goto sswitch
+goto switchloopend
+:sswitch
+set SKIP_OPTIMIZE=1
+shift
+goto switchloop
+:switchloopend
+
 rem Make sure command line parameter was included:
 if not "!%1!"=="!!" goto paramsokay
 echo This script deletes records based on files created by the OAI-PMH harvester.
 echo.
-echo Usage: %0 [harvest subdirectory] [index type]
+echo Usage: %SCRIPT_NAME% [harvest subdirectory] [index type]
 echo.
 echo [harvest subdirectory] is a directory name created by the OAI-PMH harvester.
 echo This script will search the harvest subdirectories of the directories defined
@@ -38,7 +54,10 @@ echo.
 echo [index type] is optional; defaults to Solr for main bibliographic index, but
 echo can be set to SolrAuth for authority index.
 echo.
-echo Example: %0 oai_source
+echo Example: %SCRIPT_NAME% oai_source
+echo.
+echo Options:
+echo -s:  Skip optimize operation after importing.
 goto end
 :paramsokay
 
@@ -58,10 +77,18 @@ md %BASEPATH%\processed
 
 rem Process all the files in the target directory:
 cd %VUFIND_HOME%\util
+set FOUNDSOME=0
 for %%a in (%BASEPATH%\*.delete) do (
+  set FOUNDSOME=1
   echo Processing %%a...
   php deletes.php %%a flat %2
   move %%a %BASEPATH%\processed\ > nul
 )
+
+if "%FOUNDSOME%"=="0" goto end
+if not "%SKIP_OPTIMIZE%!"=="0!" goto end
+
+echo Optimizing index...
+php optimize.php
 
 :end

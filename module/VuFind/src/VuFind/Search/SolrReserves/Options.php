@@ -27,7 +27,6 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\SolrReserves;
-use VuFind\Search\Solr\Options as SolrOptions;
 
 /**
  * Solr Reserves Search Options
@@ -39,7 +38,7 @@ use VuFind\Search\Solr\Options as SolrOptions;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Options extends SolrOptions
+class Options extends \VuFind\Search\Solr\Options
 {
     /**
      * Constructor
@@ -48,8 +47,19 @@ class Options extends SolrOptions
      */
     public function __construct()
     {
-        $this->facetsIni = $this->searchIni = 'reserves';
         parent::__construct();
+        $this->facetsIni = $this->searchIni = 'reserves';
+    }
+
+    /**
+     * Perform initialization that cannot occur in constructor due to need for
+     * injected dependencies.
+     *
+     * @return void
+     */
+    public function init()
+    {
+        parent::init();
         $this->spellcheck = false;
     }
 

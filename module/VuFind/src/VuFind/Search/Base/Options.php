@@ -127,6 +127,16 @@ abstract class Options implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Perform initialization that cannot occur in constructor due to need for
+     * injected dependencies.
+     *
+     * @return void
+     */
+    public function init()
+    {
+    }
+
+    /**
      * Get string listing special advanced facet types.
      *
      * @return string
@@ -564,19 +574,27 @@ abstract class Options implements ServiceLocatorAwareInterface
      */
     public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
     {
+        // If this isn't the top-level manager, get its parent:
+        if ($serviceLocator instanceof ServiceLocatorAwareInterface) {
+            $serviceLocator = $serviceLocator->getServiceLocator();
+        }
         $this->serviceLocator = $serviceLocator;
         return $this;
     }
 
     /**
-     * Unset the service locator.
+     * Sleep magic method -- the service locator can't be serialized, so we need to
+     * exclude it from serialization.  Since we can't obtain a new locator in the
+     * __wakeup() method, it needs to be re-injected from outside.
      *
-     * @return Params
+     * @return array
      */
-    public function unsetServiceLocator()
+    public function __sleep()
     {
-        $this->serviceLocator = null;
-        return $this;
+        $vars = get_object_vars($this);
+        unset($vars['serviceLocator']);
+        $vars = array_keys($vars);
+        return $vars;
     }
 
     /**

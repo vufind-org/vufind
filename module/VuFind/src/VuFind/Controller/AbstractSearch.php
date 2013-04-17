@@ -77,9 +77,8 @@ class AbstractSearch extends AbstractBase
     public function advancedAction()
     {
         $view = $this->createViewModel();
-        $view->options = $this->getSearchManager()
-            ->setSearchClassId($this->searchClassId)
-            ->getOptionsInstance();
+        $view->options = $this->getServiceLocator()
+            ->get('VuFind\SearchOptionsPluginManager')->get($this->searchClassId);
         if ($view->options->getAdvancedSearchAction() === false) {
             throw new \Exception('Advanced search not supported.');
         }
@@ -113,7 +112,7 @@ class AbstractSearch extends AbstractBase
         if ($search->session_id == $sessId || $search->user_id == $userId) {
             // They do, deminify it to a new object.
             $minSO = unserialize($search->search_object);
-            $savedSearch = $minSO->deminify($this->getSearchManager());
+            $savedSearch = $minSO->deminify($this->getResultsManager());
 
             // Now redirect to the URL associated with the saved search; this
             // simplifies problems caused by mixing different classes of search
@@ -148,8 +147,8 @@ class AbstractSearch extends AbstractBase
             return $this->redirectToSavedSearch($savedId);
         }
 
-        $manager = $this->getSearchManager();
-        $params = $manager->setSearchClassId($this->searchClassId)->getParams();
+        $results = $this->getResultsManager()->get($this->searchClassId);
+        $params = $results->getParams();
         $params->recommendationsEnabled(true);
 
         // Send both GET and POST variables to search class:
@@ -166,12 +165,6 @@ class AbstractSearch extends AbstractBase
         // Attempt to perform the search; if there is a problem, inspect any Solr
         // exceptions to see if we should communicate to the user about them.
         try {
-            // We need to reset the searchClassId here because it may have been
-            // changed if recommendation modules initialized by the params object
-            // manipulated the shared search manager object.
-            $results = $manager->setSearchClassId($this->searchClassId)
-                ->getResults($params);
-
             // Explicitly execute search within controller -- this allows us to
             // catch exceptions more reliably:
             $results->performAndProcessSearch();
@@ -198,7 +191,7 @@ class AbstractSearch extends AbstractBase
                     ->getId();
                 $history = $this->getTable('Search');
                 $history->saveSearch(
-                    $this->getSearchManager(), $results, $sessId,
+                    $this->getResultsManager(), $results, $sessId,
                     $history->getSearches(
                         $sessId, isset($user->id) ? $user->id : null
                     )
@@ -209,28 +202,22 @@ class AbstractSearch extends AbstractBase
             if ($this->useResultScroller) {
                 $this->resultScroller()->init($results);
             }
-        } catch (\Exception $e) {
+        } catch (\VuFindSearch\Backend\Exception\RequestParseErrorException $e) {
             // If it's a parse error or the user specified an invalid field, we
             // should display an appropriate message:
-            if (method_exists($e, 'isParseError') && $e->isParseError()) {
-                $view->parseError = true;
+            $view->parseError = true;
 
-                // We need to create and process an "empty results" object to
-                // ensure that recommendation modules and templates behave
-                // properly when displaying the error message.
-                $view->results = $this->getSearchManager()
-                    ->setSearchClassId('EmptySet')->getResults($params);
-                $view->results->performAndProcessSearch();
-            } else {
-                // Unexpected error -- let's throw this up to the next level.
-                throw $e;
-            }
+            // We need to create and process an "empty results" object to
+            // ensure that recommendation modules and templates behave
+            // properly when displaying the error message.
+            $view->results = $this->getResultsManager()->get('EmptySet');
+            $view->results->setParams($params);
+            $view->results->performAndProcessSearch();
         }
         // Save statistics:
         if ($this->logStatistics) {
-            $statController = new \VuFind\Statistics\Search();
-            $statController->setServiceLocator($this->getServiceLocator());
-            $statController->log($results, $this->getRequest());
+            $this->getServiceLocator()->get('VuFind\SearchStats')
+                ->log($results, $this->getRequest());
         }
 
         // Special case: If we're in RSS view, we need to render differently:
@@ -304,7 +291,7 @@ class AbstractSearch extends AbstractBase
 
         // Restore the full search object:
         $minSO = unserialize($search->search_object);
-        $savedSearch = $minSO->deminify($this->getSearchManager());
+        $savedSearch = $minSO->deminify($this->getResultsManager());
 
         // Fail if this is not the right type of search:
         if ($savedSearch->getParams()->getSearchType() != 'advanced') {
@@ -318,5 +305,15 @@ class AbstractSearch extends AbstractBase
 
         // Make the object available to the view:
         return $savedSearch;
+    }
+
+    /**
+     * Convenience method for accessing results
+     *
+     * @return \VuFind\Search\Results\PluginManager
+     */
+    protected function getResultsManager()
+    {
+        return $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager');
     }
 }

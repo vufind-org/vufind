@@ -7,6 +7,21 @@ then
   exit 1
 fi
 
+SKIP_OPTIMIZE=0
+
+while getopts ":s" OPT
+do
+  case $OPT in
+    s) SKIP_OPTIMIZE=1;;
+    :)
+      echo "argument to '-$OPTARG' is missing" >&2
+      exit -1;;
+    \?) echo "Unrecognized option '-$OPTARG'" >&2;;
+  esac
+done
+# Decrement the argument pointer so it points to next argument
+shift $(($OPTIND - 1))
+
 # Make sure command line parameter was included:
 if [ -z "$2" ]
 then
@@ -23,6 +38,9 @@ then
   echo "either your VUFIND_LOCAL_DIR or VUFIND_HOME directory."
   echo ""
   echo "Example: `basename $0` oai_source ojs.properties"
+  echo ""
+  echo "Options:"
+  echo "-s:  Skip optimize operation after importing."
   exit 1
 fi
 
@@ -59,8 +77,11 @@ do
     if [ "$?" -eq "0" ]
     then
       mv $file $BASEPATH/processed/`basename $file`
-      # We processed a file, so we need to optimize later on:
-      OPTIMIZE=1
+      # We processed a file and skip is not set, so we need to optimize later on:
+      if [ "$SKIP_OPTIMIZE" -eq "0" ]
+      then
+        OPTIMIZE=1
+      fi
     fi
   fi
 done

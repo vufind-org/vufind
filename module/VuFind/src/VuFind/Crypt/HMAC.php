@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Crypt;
-use VuFind\Config\Reader as ConfigReader;
 
 /**
  * HMAC hash generator wrapper
@@ -40,6 +39,23 @@ use VuFind\Config\Reader as ConfigReader;
 class HMAC
 {
     /**
+     * Hash key
+     *
+     * @var string
+     */
+    protected $hashKey;
+
+    /**
+     * Constructor
+     *
+     * @param string $key Hash key
+     */
+    public function __construct($key)
+    {
+        $this->hashKey = $key;
+    }
+
+    /**
      * Accepts $keysToHash, a list of array keys, and $keyValueArray, a keyed array
      *
      * @param array $keysToHash    A list of keys to hash
@@ -47,14 +63,13 @@ class HMAC
      *
      * @return sting A hash_hmac string using md5
      */
-    public static function generate($keysToHash, $keyValueArray)
+    public function generate($keysToHash, $keyValueArray)
     {
-        $config = ConfigReader::getConfig();
         $str = '';
         foreach ($keysToHash as $key) {
             $value = isset($keyValueArray[$key]) ? $keyValueArray[$key] : '';
             $str .= $key . '=' . $value . '|';
         }
-        return hash_hmac('md5', $str, $config->Security->HMACkey);
+        return hash_hmac('md5', $str, $this->hashKey);
     }
 }

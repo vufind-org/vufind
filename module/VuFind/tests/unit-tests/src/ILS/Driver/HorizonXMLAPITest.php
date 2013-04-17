@@ -46,7 +46,7 @@ class HorizonXMLAPITest extends \VuFindTest\Unit\TestCase
      */
     public function __construct()
     {
-        $this->driver = new HorizonXMLAPI();
+        $this->driver = new HorizonXMLAPI(new \VuFind\Date\Converter());
     }
 
     /**

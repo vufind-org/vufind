@@ -61,7 +61,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      *
      * @return mixed
      */
-    protected function callMethod ($object, $method, array $arguments = array())
+    protected function callMethod($object, $method, array $arguments = array())
     {
         $reflectionMethod = new \ReflectionMethod($object, $method);
         $reflectionMethod->setAccessible(true);
@@ -80,7 +80,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      *
      * @return mixed
      */
-    protected function getProperty ($object, $property)
+    protected function getProperty($object, $property)
     {
         $reflectionProperty = new \ReflectionProperty($object, $property);
         $reflectionProperty->setAccessible(true);
@@ -100,11 +100,35 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
      *
      * @return void
      */
-    protected function setProperty ($object, $property, $value)
+    protected function setProperty($object, $property, $value)
     {
         $reflectionProperty = new \ReflectionProperty($object, $property);
         $reflectionProperty->setAccessible(true);
         return $reflectionProperty->setValue($object, $value);
+    }
+
+    /**
+     * Support method for getServiceManager()
+     *
+     * @return void
+     */
+    protected function setupSearchService()
+    {
+        $smConfig = new \Zend\ServiceManager\Config(
+            array(
+                'factories' => array(
+                    'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
+                )
+            )
+        );
+        $registry = $this->serviceManager->createScopedServiceManager();
+        $smConfig->configureServiceManager($registry);
+        $bm = new \VuFind\Search\BackendManager($registry);
+        $this->serviceManager->setService('VuFind\Search\BackendManager', $bm);
+        $ss = new \VuFindSearch\Service();
+        $this->serviceManager->setService('VuFind\Search', $ss);
+        $events = $ss->getEventManager();
+        $events->attach('resolve', array($bm, 'onResolve'));
     }
 
     /**
@@ -115,6 +139,46 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
     public function getServiceManager()
     {
         if (!$this->serviceManager) {
+            $this->serviceManager = new \Zend\ServiceManager\ServiceManager();
+            $optionsFactory = new \VuFind\Search\Options\PluginManager(
+                new \Zend\ServiceManager\Config(
+                    array(
+                        'abstract_factories' =>
+                            array('VuFind\Search\Options\PluginFactory'),
+                        'aliases' => array('VuFind' => 'Solr'),
+                    )
+                )
+            );
+            $optionsFactory->setServiceLocator($this->serviceManager);
+            $this->serviceManager->setService(
+                'VuFind\SearchOptionsPluginManager', $optionsFactory
+            );
+            $paramsFactory = new \VuFind\Search\Params\PluginManager(
+                new \Zend\ServiceManager\Config(
+                    array(
+                        'abstract_factories' =>
+                            array('VuFind\Search\Params\PluginFactory'),
+                        'aliases' => array('VuFind' => 'Solr'),
+                    )
+                )
+            );
+            $paramsFactory->setServiceLocator($this->serviceManager);
+            $this->serviceManager->setService(
+                'VuFind\SearchParamsPluginManager', $paramsFactory
+            );
+            $resultsFactory = new \VuFind\Search\Results\PluginManager(
+                new \Zend\ServiceManager\Config(
+                    array(
+                        'abstract_factories' =>
+                            array('VuFind\Search\Results\PluginFactory'),
+                        'aliases' => array('VuFind' => 'Solr'),
+                    )
+                )
+            );
+            $resultsFactory->setServiceLocator($this->serviceManager);
+            $this->serviceManager->setService(
+                'VuFind\SearchResultsPluginManager', $resultsFactory
+            );
             $recordDriverFactory = new \VuFind\RecordDriver\PluginManager(
                 new \Zend\ServiceManager\Config(
                     array(
@@ -123,7 +187,6 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                     )
                 )
             );
-            $this->serviceManager = new \Zend\ServiceManager\ServiceManager();
             $this->serviceManager->setService(
                 'VuFind\RecordDriverPluginManager', $recordDriverFactory
             );
@@ -131,12 +194,27 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                 'VuFind\SearchSpecsReader', new \VuFind\Config\SearchSpecsReader()
             );
             $this->serviceManager->setService(
-                'VuFind\Logger', new \VuFind\Log\Logger()
+                'VuFind\Logger', $this->getMock('VuFind\Log\Logger')
             );
             $this->serviceManager->setService(
                 'VuFind\Http', new \VuFindHttp\HttpService()
             );
-            \VuFind\Connection\Manager::setServiceLocator($this->serviceManager);
+            $this->setupSearchService();
+            $cfg = new \Zend\ServiceManager\Config(
+                array('abstract_factories' => array('VuFind\Config\PluginFactory'))
+            );
+            $this->serviceManager->setService(
+                'VuFind\Config', new \VuFind\Config\PluginManager($cfg)
+            );
+            $this->serviceManager->setService(
+                'SharedEventManager', new \Zend\EventManager\SharedEventManager()
+            );
+            $this->serviceManager->setService(
+                'VuFind\RecordLoader', new \VuFind\Record\Loader(
+                    $this->serviceManager->get('VuFind\Search'),
+                    $this->serviceManager->get('VuFind\RecordDriverPluginManager')
+                )
+            );
         }
         return $this->serviceManager;
     }
@@ -153,16 +231,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             $authManager = new \VuFind\Auth\PluginManager(
                 new \Zend\ServiceManager\Config(
                     array(
-                        'abstract_factories' =>
-                            array('VuFind\Auth\PluginFactory'),
-                        'factories' => array(
-                            'ils' => 
-                                function ($sm) {
-                                    return new \VuFind\Auth\ILS(
-                                        new \VuFind\ILS\Connection()
-                                    );
-                                },
-                        ),
+                        'abstract_factories' => array('VuFind\Auth\PluginFactory'),
                     )
                 )
             );
@@ -170,23 +239,5 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             $sm->setService('VuFind\AuthPluginManager', $authManager);
         }
         return $sm->get('VuFind\AuthPluginManager');
-    }
-
-    /**
-     * Get a search manager instance for testing search objects.
-     *
-     * @return \VuFind\Search\Manager
-     */
-    public function getSearchManager()
-    {
-        $sm = $this->getServiceManager();
-        if (!$sm->has('SearchManager')) {
-            $searchManager = new \VuFind\Search\Manager(
-                array('default_namespace' => 'VuFind\Search')
-            );
-            $searchManager->setServiceLocator($sm);
-            $sm->setService('SearchManager', $searchManager);
-        }
-        return $sm->get('SearchManager');
     }
 }

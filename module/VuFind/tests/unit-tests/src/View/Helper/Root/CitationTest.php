@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-namespace VuFind\Test\View\Helper\Root;
+namespace VuFindTest\View\Helper\Root;
 use VuFind\View\Helper\Root\Citation;
 
 /**
@@ -283,7 +283,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
      */
     public function testCitations()
     {
-        $citation = new Citation();
+        $citation = new Citation(new \VuFind\Date\Converter());
         $citation->setView($this->getPhpRenderer());
         $driver = new \VuFindTest\RecordDriver\TestHarness();
         foreach ($this->citations as $current) {

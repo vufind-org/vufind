@@ -213,9 +213,8 @@ class AbstractRecord extends AbstractBase
 
         // Save statistics:
         if ($this->logStatistics) {
-            $statController = new \VuFind\Statistics\Record();
-            $statController->setServiceLocator($this->getServiceLocator());
-            $statController->log($this->loadRecord(), $this->getRequest());
+            $this->getServiceLocator()->get('VuFind\RecordStats')
+                ->log($this->loadRecord(), $this->getRequest());
         }
 
         return $this->showTab($this->params()->fromRoute('tab', $this->defaultTab));
@@ -346,7 +345,7 @@ class AbstractRecord extends AbstractBase
     public function emailAction()
     {
         // Force login if necessary:
-        $config = \VuFind\Config\Reader::getConfig();
+        $config = $this->getConfig();
         if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
             && !$this->getUser()
         ) {
@@ -510,10 +509,9 @@ class AbstractRecord extends AbstractBase
         // common scenario) and the GET parameters (a fallback used by some
         // legacy routes).
         if (!is_object($this->driver)) {
-            $sm = $this->getServiceLocator()->get('SearchManager');
-            $results = $sm->setSearchClassId($this->searchClassId)->getResults();
-            $this->driver = $results->getRecord(
-                $this->params()->fromRoute('id', $this->params()->fromQuery('id'))
+            $this->driver = $this->getRecordLoader()->load(
+                $this->params()->fromRoute('id', $this->params()->fromQuery('id')),
+                $this->searchClassId
             );
         }
         return $this->driver;

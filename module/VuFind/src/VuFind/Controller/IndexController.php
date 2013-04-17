@@ -27,8 +27,6 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Config\Reader as ConfigReader;
-
 /**
  * Redirects the user to the appropriate default VuFind action.
  *
@@ -48,7 +46,7 @@ class IndexController extends AbstractBase
      */
     public function homeAction()
     {
-        $config = ConfigReader::getConfig();
+        $config = $this->getConfig();
         $loggedInModule = isset($config->Site->defaultLoggedInModule)
             ? $config->Site->defaultLoggedInModule : 'MyResearch';
         $loggedOutModule = isset($config->Site->defaultModule)

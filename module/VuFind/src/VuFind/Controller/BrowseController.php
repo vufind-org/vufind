@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
 namespace VuFind\Controller;
-use VuFind\Config\Reader as ConfigReader;
 
 /**
  * BrowseController Class
@@ -41,15 +40,35 @@ use VuFind\Config\Reader as ConfigReader;
  */
 class BrowseController extends AbstractBase
 {
+    /**
+     * VuFind configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $config;
 
-    protected $config, $currentAction = null, $disabledFacets;
+    /**
+     * Current browse mode
+     *
+     * @var string
+     */
+    protected $currentAction = null;
+
+    /**
+     * Browse options disabled in configuration
+     *
+     * @var array
+     */
+    protected $disabledFacets;
 
     /**
      * Constructor
+     *
+     * @param \Zend\Config\Config $config VuFind configuration
      */
-    public function __construct()
+    public function __construct(\Zend\Config\Config $config)
     {
-        $this->config = ConfigReader::getConfig();
+        $this->config = $config;
 
         $this->disabledFacets = array();
         foreach ($this->config->Browse as $key => $setting) {
@@ -558,8 +577,9 @@ class BrowseController extends AbstractBase
     protected function getFacetList($facet, $category = null,
         $sort = 'count', $query = '[* TO *]'
     ) {
-        $sm = $this->getSearchManager();
-        $params = $sm->setSearchClassId('Solr')->getParams();
+        $results = $this->getServiceLocator()
+            ->get('VuFind\SearchResultsPluginManager')->get('Solr');
+        $params = $results->getParams();
         $params->addFacet($facet);
         if ($category != null) {
             $query = $category . ':' . $query;
@@ -570,7 +590,6 @@ class BrowseController extends AbstractBase
         $params->getOptions()->disableHighlighting();
         $params->getOptions()->spellcheckEnabled(false);
         $params->recommendationsEnabled(false);
-        $searchObject = $sm->setSearchClassId('Solr')->getResults($params);
         // Get limit from config
         $params->setFacetLimit($this->config->Browse->result_limit);
         $params->setLimit(0);
@@ -579,7 +598,7 @@ class BrowseController extends AbstractBase
             $params->setFacetPrefix($this->params()->fromQuery('facet_prefix'));
         }
         $params->setFacetSort($sort);
-        $result = $searchObject->getFacetList();
+        $result = $results->getFacetList();
         if (isset($result[$facet])) {
             // Sort facets alphabetically if configured to do so:
             if (isset($this->config->Browse->alphabetical_order)

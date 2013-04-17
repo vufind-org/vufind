@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\View\Helper\Root;
-use VuFind\Config\Reader as ConfigReader, Zend\View\Exception\RuntimeException,
-    Zend\View\Helper\AbstractHelper;
+use Zend\View\Exception\RuntimeException, Zend\View\Helper\AbstractHelper;
 
 /**
  * Record driver view helper
@@ -40,8 +39,36 @@ use VuFind\Config\Reader as ConfigReader, Zend\View\Exception\RuntimeException,
  */
 class Record extends AbstractHelper
 {
+    /**
+     * Context view helper
+     *
+     * @var \VuFind\View\Helper\Root\Context
+     */
     protected $contextHelper;
+
+    /**
+     * Record driver
+     *
+     * @var \VuFind\RecordDriver\AbstractBase
+     */
     protected $driver;
+
+    /**
+     * VuFind configuration
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $config;
+
+    /**
+     * Constructor
+     *
+     * @param \Zend\Config\Config $config VuFind configuration
+     */
+    public function __construct($config = null)
+    {
+        $this->config = $config;
+    }
 
     /**
      * Render a template within a record driver folder.
@@ -213,10 +240,9 @@ class Record extends AbstractHelper
      */
     public function getPreviews()
     {
-        $config = ConfigReader::getConfig();
         return $this->renderTemplate(
             'preview.phtml',
-            array('driver' => $this->driver, 'config' => $config)
+            array('driver' => $this->driver, 'config' => $this->config)
         );
     }
 

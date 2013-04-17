@@ -61,11 +61,10 @@ class WorldCatEditions extends Editions
             }
 
             // Perform the search and save results:
-            $sm = $this->getSearchManager();
-            $params = $sm->setSearchClassId('WorldCat')->getParams();
+            $result = $this->resultsManager->get('WorldCat');
+            $params = $result->getParams();
             $params->setLimit(5);
             $params->setOverrideQuery($query);
-            $result = $sm->setSearchClassId('WorldCat')->getResults($params);
             $this->results = $result->getResults();
         }
     }
@@ -80,19 +79,18 @@ class WorldCatEditions extends Editions
      */
     protected function getQueryParts($driver)
     {
-        $wc = $this->getServiceLocator()->get('VuFind\WorldCatUtils');
         $parts = array();
         if (method_exists($driver, 'getCleanISBN')) {
             $isbn = $driver->getCleanISBN();
             if (!empty($isbn)) {
-                $isbnList = $wc->getXISBN($isbn);
+                $isbnList = $this->wcUtils->getXISBN($isbn);
                 $parts[] = '(srw.bn any "' . implode(' ', $isbnList) . '")';
             }
         }
         if (method_exists($driver, 'getCleanISSN')) {
             $issn = $driver->getCleanISSN();
             if (!empty($issn)) {
-                $issnList = $wc->getXISSN($issn);
+                $issnList = $this->wcUtils->getXISSN($issn);
                 $parts[] = '(srw.sn any "' . implode(' ', $issnList) . '")';
             }
         }

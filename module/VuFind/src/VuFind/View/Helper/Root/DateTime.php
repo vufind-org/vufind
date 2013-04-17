@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\View\Helper\Root;
-use VuFind\Date\Converter as DateConverter, Zend\View\Helper\AbstractHelper;
 
 /**
  * View helper for formatting dates and times
@@ -37,16 +36,23 @@ use VuFind\Date\Converter as DateConverter, Zend\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class DateTime extends AbstractHelper
+class DateTime extends \Zend\View\Helper\AbstractHelper
 {
+    /**
+     * Date converter
+     *
+     * @var \VuFind\Date\Converter
+     */
     protected $converter;
 
     /**
      * Constructor
+     *
+     * @param \VuFind\Date\Converter $converter Date converter
      */
-    public function __construct()
+    public function __construct(\VuFind\Date\Converter $converter)
     {
-        $this->converter = new DateConverter();
+        $this->converter = $converter;
     }
 
     /**

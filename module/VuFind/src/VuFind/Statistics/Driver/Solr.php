@@ -26,7 +26,10 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Statistics\Driver;
-use VuFind\Connection\Manager as ConnectionManager;
+use VuFind\Solr\Writer;
+use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\Query\Query;
+use VuFindSearch\ParamBag;
 
 /**
  * Writer to put statistics to the Solr index
@@ -39,19 +42,30 @@ use VuFind\Connection\Manager as ConnectionManager;
  */
 class Solr extends AbstractBase
 {
-    protected $solr = null;
+    /**
+     * Solr writer
+     *
+     * @var Writer
+     */
+    protected $solrWriter;
 
     /**
-     * Get Solr connection.
+     * Solr backend
      *
-     * @return \VuFind\Connection\SolrStats
+     * @var Backend
      */
-    protected function getSolr()
+    protected $solrBackend;
+
+    /**
+     * Constructor
+     *
+     * @param Writer  $writer  Solr writer
+     * @param Backend $backend Solr backend
+     */
+    public function __construct(Writer $writer, Backend $backend)
     {
-        if (null === $this->solr) {
-            $this->solr = ConnectionManager::connectToIndex('SolrStats');
-        }
-        return $this->solr;
+        $this->solrWriter = $writer;
+        $this->solrBackend = $backend;
     }
 
     /**
@@ -67,45 +81,13 @@ class Solr extends AbstractBase
         if (isset($data['phrase']) && $data['phrase'] == '') {
             $data['phrase'] = '*:*';
         }
-        $this->getSolr()->saveRecord(
-            $this->getSolr()->getSaveXML(
+        $update = new \VuFindSearch\Backend\Solr\Document\UpdateDocument();
+        $update->addRecord(
+            new \VuFindSearch\Backend\Solr\Record\SerializableRecord(
                 array_merge($data, $userData)
             )
         );
-    }
-
-    /**
-     * Get the most common of a field.
-     *
-     * @param string  $field      What field of data are we researching?
-     * @param integer $listLength How long the top list is
-     *
-     * @return array
-     */
-    public function getTopList($field, $listLength = 5)
-    {
-        // Records saved in Solr
-        $records = $this->getSolr()->search(
-            array(
-                'facet' => array(
-                    'field' => array($field),
-                    'sort'  => 'count'
-                )
-            )
-        );
-        $top = array();
-        foreach ($records['facet_counts']['facet_fields'][$field] as $i=>$record) {
-            if ($i < $listLength) {
-                $top[] = array(
-                    'value' => ($record[0] == '*:*') ? '(empty)' : $record[0],
-                    'count' => $record[1]
-                );
-            }
-        }
-        return array(
-            'total' => $count,
-            'top'   => $top
-        );
+        $this->solrWriter->save('SolrStats', $update);
     }
 
     /**
@@ -118,23 +100,20 @@ class Solr extends AbstractBase
      */
     public function getFullList($field, $value = array('value' => '[* TO *]'))
     {
+        $query = new Query($field.':'.$value['value']);
+        $params = new ParamBag();
+        $params->add('fl', $field);
         $start = 0;
         $limit = 1000;
         $data = array();
         do {
-            $search = $this->getSolr()->search(
-                array(
-                    'fields' => array($field),
-                    'filter' => array($field.':'.$value['value']),
-                    'start'  => $start,
-                    'limit'  => $limit
-                )
-            );
-            foreach ($search['response']['docs'] as $doc) {
-                $data[] = $doc;
+            $response = $this->solrBackend->search($query, $start, $limit, $params);
+            $records = $response->getRecords();
+            foreach ($records as $doc) {
+                $data[] = array($field => $doc->$field);
             }
             $start += $limit;
-        } while (count($search['response']['docs']) > 0);
+        } while (count($records) > 0);
         return $data;
     }
 
@@ -148,19 +127,18 @@ class Solr extends AbstractBase
      */
     public function getBrowserStats($version, $listLength = 5)
     {
+        $query = new Query('*:*');
+        $params = new ParamBag();
+        $params->add('fl', 'browser,browserVersion');
+        $params->add('group', 'true');
+        $params->add('group.field', 'session');
         $start = 0;
         $limit = 1000;
         $hashes = array();
         do {
-            $result = $this->getSolr()->search(
-                array(
-                    'field' => 'browser',
-                    'group' => array('session'),
-                    'start' => $start,
-                    'limit' => $limit
-                )
-            );
-            foreach ($result['grouped']['session']['groups'] as $group) {
+            $response = $this->solrBackend->search($query, $start, $limit, $params);
+            $groups = $response->getGroups();
+            foreach ($groups['session']['groups'] as $group) {
                 if ($version) {
                     // Version specific
                     $browser = $group['doclist']['docs'][0]['browser']
@@ -180,7 +158,7 @@ class Solr extends AbstractBase
                 }
             }
             $start += $limit;
-        } while (count($result['grouped']['session']['groups']) > 0);
+        } while (count($groups['session']['groups']) > 0);
         $solrBrowsers = array();
         foreach ($hashes as $browser=>$count) {
             $newBrowser = array(

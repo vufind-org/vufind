@@ -54,8 +54,7 @@ class WorldCatSimilar extends Similar
         $parts = array();
 
         // Add Dewey class to query
-        $deweyClass = method_exists($driver, 'getDeweyCallNumber')
-            ? $driver->getDeweyCallNumber() : '';
+        $deweyClass = $driver->tryMethod('getDeweyCallNumber');
         if (!empty($deweyClass)) {
             // Skip "English Fiction" Dewey class -- this won't give us useful
             // matches because there's too much of it and it's too broad.
@@ -92,11 +91,8 @@ class WorldCatSimilar extends Similar
         }
 
         // Perform the search and save results:
-        $sm = $this->getSearchManager();
-        $params = $sm->setSearchClassId('WorldCat')->getParams();
-        $params->setLimit(5);
-        $params->setOverrideQuery($query);
-        $result = $sm->setSearchClassId('WorldCat')->getResults($params);
-        $this->results = $result->getResults();
+        $queryObj = new \VuFindSearch\Query\Query($query);
+        $result = $this->searchService->search('WorldCat', $queryObj, 0, 5);
+        $this->results = $result->getRecords();
     }
 }

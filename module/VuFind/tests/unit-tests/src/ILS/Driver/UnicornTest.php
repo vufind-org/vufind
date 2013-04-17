@@ -46,7 +46,7 @@ class UnicornTest extends \VuFindTest\Unit\TestCase
      */
     public function __construct()
     {
-        $this->driver = new Unicorn();
+        $this->driver = new Unicorn(new \VuFind\Date\Converter());
     }
 
     /**

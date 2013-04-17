@@ -26,11 +26,11 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Summon;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Connection\Summon as SummonConnection,
-    VuFind\Connection\Summon\Query as SummonQuery,
+use SerialsSolutions_Summon_Query as SummonQuery,
     VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\Search\Base\Results as BaseResults;
+    VuFind\Search\Base\Results as BaseResults,
+    VuFind\Solr\Utils as SolrUtils,
+    VuFindSearch\ParamBag;
 
 /**
  * Summon Search Parameters
@@ -44,30 +44,18 @@ use VuFind\Config\Reader as ConfigReader,
 class Results extends BaseResults
 {
     /**
-     * Raw search response:
+     * Facet details:
+     *
+     * @var array
      */
-    protected $rawResponse = null;
+    protected $responseFacets = null;
 
     /**
-     * Get a connection to the Summon API.
+     * Database recommendations
      *
-     * @return SummonConnection
+     * @var array|bool
      */
-    public function getSummonConnection()
-    {
-        static $conn = false;
-        if (!$conn) {
-            $config = ConfigReader::getConfig();
-            $id = isset($config->Summon->apiId) ? $config->Summon->apiId : null;
-            $key = isset($config->Summon->apiKey) ? $config->Summon->apiKey : null;
-            $client = $this->getServiceLocator()->get('VuFind\Http')->createClient();
-            $conn = new SummonConnection($id, $key, array(), $client);
-            \VuFind\ServiceManager\Initializer::initInstance(
-                $conn, $this->getServiceLocator()
-            );
-        }
-        return $conn;
-    }
+    protected $databaseRecommendations = false;
 
     /**
      * Support method for performAndProcessSearch -- perform a search based on the
@@ -77,40 +65,34 @@ class Results extends BaseResults
      */
     protected function performSearch()
     {
-        // The "relevance" sort option is a VuFind reserved word; we need to make
-        // this null in order to achieve the desired effect with Summon:
-        $sort = $this->getParams()->getSort();
-        $finalSort = ($sort == 'relevance') ? null : $sort;
-
-        // Perform the actual search
-        $summon = $this->getSummonConnection();
-        $query = new SummonQuery(
-            $summon->buildQuery($this->getParams()->getSearchTerms()),
-            array(
-                'sort' => $finalSort,
-                'pageNumber' => $this->getParams()->getPage(),
-                'pageSize' => $this->getParams()->getLimit(),
-                'didYouMean' => $this->getOptions()->spellcheckEnabled()
-            )
+        $query  = $this->getParams()->getQuery();
+        $limit  = $this->getParams()->getLimit();
+        $offset = $this->getStartRecord() - 1;
+        $params = $this->createBackendParameters($this->getParams());
+        $collection = $this->getSearchService()->search(
+            'Summon', $query, $offset, $limit, $params
         );
-        if ($this->getOptions()->highlightEnabled()) {
-            $query->setHighlight(true);
-            $query->setHighlightStart('{{{{START_HILITE}}}}');
-            $query->setHighlightEnd('{{{{END_HILITE}}}}');
+
+        $this->responseFacets = $collection->getFacets();
+        $this->resultTotal = $collection->getTotal();
+
+        // Process spelling suggestions if enabled (note that we need this
+        // check here because sometimes the Summon API returns suggestions
+        // even when the spelling parameter is set to false).
+        if ($this->getOptions()->spellcheckEnabled()) {
+            $spellcheck = $collection->getSpellcheck();
+            $this->processSpelling($spellcheck);
         }
-        $query->initFacets($this->getParams()->getFullFacetSettings());
-        $query->initFilters($this->getParams()->getFilterList());
-        $this->rawResponse = $summon->query($query);
+
+        // Get database recommendations.
+        $this->databaseRecommendations = $collection->getDatabaseRecommendations();
 
         // Add fake date facets if flagged earlier; this is necessary in order
         // to display the date range facet control in the interface.
         $dateFacets = $this->getParams()->getDateFacetSettings();
         if (!empty($dateFacets)) {
-            if (!isset($this->rawResponse['facetFields'])) {
-                $this->rawResponse['facetFields'] = array();
-            }
             foreach ($dateFacets as $dateFacet) {
-                $this->rawResponse['facetFields'][] = array(
+                $this->responseFacets[] = array(
                     'fieldName' => 'PublicationDate',
                     'displayName' => 'PublicationDate',
                     'counts' => array()
@@ -118,56 +100,115 @@ class Results extends BaseResults
             }
         }
 
-        // Save spelling details if they exist.
-        if ($this->getOptions()->spellcheckEnabled()) {
-            $this->processSpelling();
-        }
-
-        // Store relevant details from the search results:
-        $this->resultTotal = $this->rawResponse['recordCount'];
-
         // Construct record drivers for all the items in the response:
-        $this->results = array();
-        foreach ($this->rawResponse['documents'] as $current) {
-            $this->results[] = $this->initRecordDriver($current);
-        }
+        $this->results = $collection->getRecords();
     }
 
     /**
-     * Method to retrieve a record by ID.  Returns a record driver object.
+     * Create search backend parameters for advanced features.
      *
-     * @param string $id Unique identifier of record
+     * @param Params $params Search parameters
      *
-     * @throws RecordMissingException
-     * @return \VuFind\RecordDriver\Base
+     * @return ParamBag
      */
-    public function getRecord($id)
+    protected function createBackendParameters(Params $params)
     {
-        $summon = $this->getSummonConnection();
-        $record = $summon->getRecord($id);
-        if (empty($record) || !isset($record['documents'][0])) {
-            throw new RecordMissingException(
-                'Record ' . $id . ' does not exist.'
-            );
+        $backendParams = new ParamBag();
+
+        $options = $params->getOptions();
+
+        // The "relevance" sort option is a VuFind reserved word; we need to make
+        // this null in order to achieve the desired effect with Summon:
+        $sort = $params->getSort();
+        $finalSort = ($sort == 'relevance') ? null : $sort;
+        $backendParams->set('sort', $finalSort);
+
+        $backendParams->set('didYouMean', $options->spellcheckEnabled());
+
+        if ($options->highlightEnabled()) {
+            $backendParams->set('highlight', true);
+            $backendParams->set('highlightStart', '{{{{START_HILITE}}}}');
+            $backendParams->set('highlightEnd', '{{{{END_HILITE}}}}');
         }
-        return $this->initRecordDriver($record['documents'][0]);
+        $backendParams->set(
+            'facets',
+            $this->createBackendFacetParameters($params->getFullFacetSettings())
+        );
+        $this->createBackendFilterParameters(
+            $backendParams, $params->getFilterList()
+        );
+
+        return $backendParams;
     }
 
     /**
-     * Support method for performSearch(): given an array of Summon response data,
-     * construct an appropriate record driver object.
+     * Set up facets based on VuFind settings.
      *
-     * @param array $data Raw record data
+     * @param array $facets Facet settings
      *
-     * @return \VuFind\RecordDriver\Base
+     * @return array
      */
-    protected function initRecordDriver($data)
+    protected function createBackendFacetParameters($facets)
     {
-        $factory = $this->getServiceLocator()
-            ->get('VuFind\RecordDriverPluginManager');
-        $driver = $factory->get('Summon');
-        $driver->setRawData($data);
-        return $driver;
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('Summon');
+        $defaultFacetLimit = isset($config->Facet_Settings->facet_limit)
+            ? $config->Facet_Settings->facet_limit : 30;
+
+        $finalFacets = array();
+        foreach ($facets as $facet) {
+            // See if parameters are included as part of the facet name;
+            // if not, override them with defaults.
+            $parts = explode(',', $facet);
+            $facetName = $parts[0];
+            $facetMode = isset($parts[1]) ? $parts[1] : 'and';
+            $facetPage = isset($parts[2]) ? $parts[2] : 1;
+            $facetLimit = isset($parts[3]) ? $parts[3] : $defaultFacetLimit;
+            $facetParams = "{$facetMode},{$facetPage},{$facetLimit}";
+            $finalFacets[] = "{$facetName},{$facetParams}";
+        }
+        return $finalFacets;
+    }
+
+    /**
+     * Set up filters based on VuFind settings.
+     *
+     * @param ParamBag $params     Parameter collection to update
+     * @param array    $filterList Filter settings
+     *
+     * @return void
+     */
+    public function createBackendFilterParameters(ParamBag $params, $filterList)
+    {
+        // Which filters should be applied to our query?
+        if (!empty($filterList)) {
+            // Loop through all filters and add appropriate values to request:
+            foreach ($filterList as $filterArray) {
+                foreach ($filterArray as $filt) {
+                    $safeValue = SummonQuery::escapeParam($filt['value']);
+                    // Special case -- "holdings only" is a separate parameter from
+                    // other facets.
+                    if ($filt['field'] == 'holdingsOnly') {
+                        $params->set(
+                            'holdings', strtolower(trim($safeValue)) == 'true'
+                        );
+                    } else if ($filt['field'] == 'excludeNewspapers') {
+                        // Special case -- support a checkbox for excluding
+                        // newspapers:
+                        $params
+                            ->add('filters', "ContentType,Newspaper Article,true");
+                    } else if ($range = SolrUtils::parseRange($filt['value'])) {
+                        // Special case -- range query (translate [x TO y] syntax):
+                        $from = SummonQuery::escapeParam($range['from']);
+                        $to = SummonQuery::escapeParam($range['to']);
+                        $params
+                            ->add('rangeFilters', "{$filt['field']},{$from}:{$to}");
+                    } else {
+                        // Standard case:
+                        $params->add('filters', "{$filt['field']},{$safeValue}");
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -205,13 +246,11 @@ class Results extends BaseResults
 
         // Loop through the facets returned by Summon.
         $facetResult = array();
-        if (isset($this->rawResponse['facetFields'])
-            && is_array($this->rawResponse['facetFields'])
-        ) {
+        if (is_array($this->responseFacets)) {
             // Get the filter list -- we'll need to check it below:
             $filterList = $this->getParams()->getFilters();
 
-            foreach ($this->rawResponse['facetFields'] as $current) {
+            foreach ($this->responseFacets as $current) {
                 // The "displayName" value is actually the name of the field on
                 // Summon's side -- we'll probably need to translate this to a
                 // different value for actual display!
@@ -280,23 +319,21 @@ class Results extends BaseResults
     /**
      * Process spelling suggestions from the results object
      *
+     * @param array $spelling Suggestions from Summon
+     *
      * @return void
      */
-    protected function processSpelling()
+    protected function processSpelling($spelling)
     {
-        if (isset($this->rawResponse['didYouMeanSuggestions'])
-            && is_array($this->rawResponse['didYouMeanSuggestions'])
-        ) {
-            $this->suggestions = array();
-            foreach ($this->rawResponse['didYouMeanSuggestions'] as $current) {
-                if (!isset($this->suggestions[$current['originalQuery']])) {
-                    $this->suggestions[$current['originalQuery']] = array(
-                        'suggestions' => array()
-                    );
-                }
-                $this->suggestions[$current['originalQuery']]['suggestions'][]
-                    = $current['suggestedQuery'];
+        $this->suggestions = array();
+        foreach ($spelling as $current) {
+            if (!isset($this->suggestions[$current['originalQuery']])) {
+                $this->suggestions[$current['originalQuery']] = array(
+                    'suggestions' => array()
+                );
             }
+            $this->suggestions[$current['originalQuery']]['suggestions'][]
+                = $current['suggestedQuery'];
         }
     }
 
@@ -327,7 +364,6 @@ class Results extends BaseResults
      */
     public function getDatabaseRecommendations()
     {
-        return isset($this->rawResponse['recommendationLists']['database']) ?
-            $this->rawResponse['recommendationLists']['database'] : false;
+        return $this->databaseRecommendations;
     }
 }

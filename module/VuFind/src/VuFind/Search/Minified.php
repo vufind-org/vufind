@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Search;
+use VuFind\Search\QueryAdapter;
 
 /**
  * A minified search object used exclusively for trimming a search object down to its
@@ -90,44 +91,8 @@ class Minified
         $this->cl = $searchObject->getParams()->getSearchClassId();
 
         // Search terms, we'll shorten keys
-        $tempTerms = $searchObject->getParams()->getSearchTerms();
-        foreach ($tempTerms as $term) {
-            $newTerm = array();
-            foreach ($term as $k => $v) {
-                switch ($k) {
-                case 'join':
-                    $newTerm['j'] = $v;
-                    break;
-                case 'index':
-                    $newTerm['i'] = $v;
-                    break;
-                case 'lookfor':
-                    $newTerm['l'] = $v;
-                    break;
-                case 'group':
-                    $newTerm['g'] = array();
-                    foreach ($v as $line) {
-                        $search = array();
-                        foreach ($line as $k2 => $v2) {
-                            switch ($k2) {
-                            case 'bool':
-                                $search['b'] = $v2;
-                                break;
-                            case 'field':
-                                $search['f'] = $v2;
-                                break;
-                            case 'lookfor':
-                                $search['l'] = $v2;
-                                break;
-                            }
-                        }
-                        $newTerm['g'][] = $search;
-                    }
-                    break;
-                }
-            }
-            $this->t[] = $newTerm;
-        }
+        $query = $searchObject->getParams()->getQuery();
+        $this->t = QueryAdapter::minify($query);
 
         // It would be nice to shorten filter fields too, but
         //      it would be a nightmare to maintain.
@@ -137,19 +102,18 @@ class Minified
     /**
      * Turn the current object into search results.
      *
-     * @param \VuFind\Search\Manager $manager Search manager
+     * @param \VuFind\Search\Results\PluginManager $manager Search manager
      *
      * @return \VuFind\Search\Base\Results
      */
-    public function deminify(\VuFind\Search\Manager $manager)
+    public function deminify(\VuFind\Search\Results\PluginManager $manager)
     {
         // Figure out the parameter and result classes based on the search class ID:
         $this->populateClassNames();
 
         // Deminify everything:
-        $params = $manager->setSearchClassId($this->cl)->getParams();
-        $params->deminify($this);
-        $results = $manager->setSearchClassId($this->cl)->getResults($params);
+        $results = $manager->get($this->cl);
+        $results->getParams()->deminify($this);
         $results->deminify($this);
 
         return $results;

@@ -29,6 +29,7 @@ namespace VuFind\Search\Base;
 use VuFind\Search\UrlQueryHelper, Zend\Paginator\Paginator,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
+use VuFindSearch\Service as SearchService;
 
 /**
  * Abstract results search model.
@@ -62,6 +63,13 @@ abstract class Results implements ServiceLocatorAwareInterface
     protected $helpers = array();
     // Spelling
     protected $suggestions = null;
+
+    /**
+     * Search service.
+     *
+     * @var SearchService
+     */
+    protected $searchService;
 
     /**
      * Service locator
@@ -187,43 +195,6 @@ abstract class Results implements ServiceLocatorAwareInterface
      * @return void
      */
     abstract protected function performSearch();
-
-    /**
-     * Method to retrieve a record by ID.  Returns a record driver object.
-     *
-     * @param string $id Unique identifier of record
-     *
-     * @return \VuFind\RecordDriver\AbstractBase
-     */
-    public function getRecord($id)
-    {
-        // This needs to be defined in subclasses:
-        throw new \Exception('getRecord needs to be defined.');
-    }
-
-    /**
-     * Method to retrieve an array of records by ID.
-     *
-     * @param array $ids Array of unique record identifiers.
-     *
-     * @return array
-     */
-    public function getRecords($ids)
-    {
-        // This is the default, dumb behavior for retrieving multiple records --
-        // just call getRecord() repeatedly.  For efficiency, this method should
-        // be overridden in child classes when possible to reduce API calls, etc.
-        $retVal = array();
-        foreach ($ids as $id) {
-            try {
-                $retVal[] = $this->getRecord($id);
-            } catch (\Exception $e) {
-                // Just omit missing records from the return array; calling code in
-                // \VuFind\Record\Loader::loadBatch() will deal with this.
-            }
-        }
-        return $retVal;
-    }
 
     /**
      * Get spelling suggestion information.
@@ -527,6 +498,10 @@ abstract class Results implements ServiceLocatorAwareInterface
      */
     public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
     {
+        // If this isn't the top-level manager, get its parent:
+        if ($serviceLocator instanceof ServiceLocatorAwareInterface) {
+            $serviceLocator = $serviceLocator->getServiceLocator();
+        }
         $this->serviceLocator = $serviceLocator;
         return $this;
     }
@@ -553,22 +528,19 @@ abstract class Results implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Unset the service locator.
+     * Sleep magic method -- the service locator can't be serialized, so we need to
+     * exclude it from serialization.  Since we can't obtain a new locator in the
+     * __wakeup() method, it needs to be re-injected from outside.
      *
-     * @return Results
+     * @return array
      */
-    public function unsetServiceLocator()
+    public function __sleep()
     {
-        $this->serviceLocator = null;
-        $params = $this->getParams();
-        if (method_exists($params, 'unsetServiceLocator')) {
-            $params->unsetServiceLocator();
-        }
-        $options = $this->getOptions();
-        if (method_exists($options, 'unsetServiceLocator')) {
-            $params->unsetServiceLocator();
-        }
-        return $this;
+        $vars = get_object_vars($this);
+        unset($vars['serviceLocator']);
+        unset($vars['searchService']);
+        $vars = array_keys($vars);
+        return $vars;
     }
 
     /**
@@ -582,17 +554,19 @@ abstract class Results implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Pull the search manager from the service locator.
+     * Return search service.
      *
-     * @return \VuFind\Search\Manager
+     * @return SearchService
+     *
+     * @todo May better error handling, throw a custom exception if search service
+     * not present
      */
-    protected function getSearchManager()
+    protected function getSearchService()
     {
-        $sl = $this->getServiceLocator();
-        if (!is_object($sl)) {
-            throw new \Exception('Could not find service locator');
+        if (!$this->searchService) {
+            $this->searchService = $this->getServiceLocator()->get('VuFind\Search');
         }
-        return $sl->get('SearchManager');
+        return $this->searchService;
     }
 
     /**

@@ -79,8 +79,8 @@ class SearchSpecsReader
                 ? $this->cacheManager->getCache('searchspecs') : false;
 
             // Determine full configuration file path:
-            $fullpath = Reader::getBaseConfigPath($filename);
-            $local = Reader::getLocalConfigPath($filename);
+            $fullpath = Locator::getBaseConfigPath($filename);
+            $local = Locator::getLocalConfigPath($filename);
 
             // Generate cache key:
             $key = $filename . '-' . filemtime($fullpath);

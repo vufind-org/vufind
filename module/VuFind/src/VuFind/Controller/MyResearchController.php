@@ -27,8 +27,7 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\Auth as AuthException,
+use VuFind\Exception\Auth as AuthException,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\RecordMissing as RecordMissingException,
     Zend\Stdlib\Parameters;
@@ -44,8 +43,6 @@ use VuFind\Config\Reader as ConfigReader,
  */
 class MyResearchController extends AbstractBase
 {
-    protected $account;
-
     /**
      * Prepare and direct the home page where it needs to go
      *
@@ -65,10 +62,10 @@ class MyResearchController extends AbstractBase
 
         // Not logged in?  Force user to log in:
         if (!$this->getAuthManager()->isLoggedIn()) {
-            $this->followup()->store(
-                array(),
-                $this->getRequest()->getServer()->get('HTTP_REFERER')
-            );
+            $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
+            if (!empty($referer)) {
+                $this->followup()->store(array(), $referer);
+            }
             return $this->forwardTo('MyResearch', 'Login');
         }
 
@@ -81,9 +78,9 @@ class MyResearchController extends AbstractBase
             return $this->redirect()->toUrl($url);
         }
 
-        $config = ConfigReader::getConfig();
-        $page = isset($configArray->Site->defaultAccountPage)
-            ? $configArray->Site->defaultAccountPage : 'Favorites';
+        $config = $this->getConfig();
+        $page = isset($config->Site->defaultAccountPage)
+            ? $config->Site->defaultAccountPage : 'Favorites';
         return $this->forwardTo('MyResearch', $page);
     }
 
@@ -539,8 +536,9 @@ class MyResearchController extends AbstractBase
 
         // If we got this far, we just need to display the favorites:
         try {
-            $sm = $this->getSearchManager();
-            $params = $sm->setSearchClassId('Favorites')->getParams();
+            $results = $this->getServiceLocator()
+                ->get('VuFind\SearchResultsPluginManager')->get('Favorites');
+            $params = $results->getParams();
             $params->setAuthManager($this->getAuthManager());
 
             // We want to merge together GET, POST and route parameters to
@@ -553,9 +551,10 @@ class MyResearchController extends AbstractBase
                 )
             );
 
-            $results = $sm->setSearchClassId('Favorites')->getResults($params);
             $results->performAndProcessSearch();
-            return $this->createViewModel(array('results' => $results));
+            return $this->createViewModel(
+                array('params' => $params, 'results' => $results)
+            );
         } catch (ListPermissionException $e) {
             if (!$this->getUser()) {
                 return $this->forceLogin();
@@ -740,8 +739,8 @@ class MyResearchController extends AbstractBase
             if (!isset($current['id'])) {
                 throw new RecordMissingException();
             }
-            $record = $this->getSearchManager()->setSearchClassId('Solr')
-                ->getResults()->getRecord($current['id']);
+            $record = $this->getServiceLocator()->get('VuFind\RecordLoader')
+                ->load($current['id']);
         } catch (RecordMissingException $e) {
             $factory = $this->getServiceLocator()
                 ->get('VuFind\RecordDriverPluginManager');
@@ -749,7 +748,7 @@ class MyResearchController extends AbstractBase
             $record->setRawData(
                 array('id' => isset($current['id']) ? $current['id'] : null)
             );
-            $record->setResourceSource('VuFind');
+            $record->setSourceIdentifier('Solr');
         }
         $record->setExtraDetail('ils_details', $current);
         return $record;
@@ -887,8 +886,8 @@ class MyResearchController extends AbstractBase
                 if (!isset($row['id']) || empty($row['id'])) {
                     throw new \Exception();
                 }
-                $record = $this->getSearchManager()->setSearchClassId('Solr')
-                    ->getResults()->getRecord($row['id']);
+                $record = $this->getServiceLocator()->get('VuFind\RecordLoader')
+                    ->load($row['id']);
                 $row['title'] = $record->getShortTitle();
             } catch (\Exception $e) {
                 if (!isset($row['title'])) {

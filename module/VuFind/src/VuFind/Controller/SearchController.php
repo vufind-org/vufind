@@ -27,8 +27,7 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\Mail as MailException, VuFind\Search\Memory,
+use VuFind\Exception\Mail as MailException, VuFind\Search\Memory,
     VuFind\Solr\Utils as SolrUtils;
 
 /**
@@ -85,7 +84,7 @@ class SearchController extends AbstractSearch
         );
 
         // Force login if necessary:
-        $config = \VuFind\Config\Reader::getConfig();
+        $config = $this->getConfig();
         if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
             && !$this->getUser()
         ) {
@@ -262,7 +261,7 @@ class SearchController extends AbstractSearch
 
             // Saved searches
             if ($current->saved == 1) {
-                $saved[] = $minSO->deminify($this->getSearchManager());
+                $saved[] = $minSO->deminify($this->getResultsManager());
             } else {
                 // All the others...
 
@@ -274,7 +273,7 @@ class SearchController extends AbstractSearch
                     Memory::forgetSearch();
                 } else {
                     // Otherwise add to the list
-                    $unsaved[] = $minSO->deminify($this->getSearchManager());
+                    $unsaved[] = $minSO->deminify($this->getResultsManager());
                 }
             }
         }
@@ -311,7 +310,7 @@ class SearchController extends AbstractSearch
         // Find out if there are user configured range options; if not,
         // default to the standard 1/5/30 days:
         $ranges = array();
-        $searchSettings = ConfigReader::getConfig('searches');
+        $searchSettings = $this->getConfig('searches');
         if (isset($searchSettings->NewItem->ranges)) {
             $tmp = explode(',', $searchSettings->NewItem->ranges);
             foreach ($tmp as $range) {
@@ -342,7 +341,21 @@ class SearchController extends AbstractSearch
         $range = $this->params()->fromQuery('range');
         $dept = $this->params()->fromQuery('department');
 
-        $searchSettings = ConfigReader::getConfig('searches');
+        // Validate the range parameter -- it should not exceed the greatest
+        // configured value:
+        $searchSettings = $this->getConfig('searches');
+        $maxAge = 0;
+        if (isset($searchSettings->NewItem->ranges)) {
+            $tmp = explode(',', $searchSettings->NewItem->ranges);
+            foreach ($tmp as $current) {
+                if (intval($current) > $maxAge) {
+                    $maxAge = intval($current);
+                }
+            }
+        }
+        if ($maxAge > 0 && $range > $maxAge) {
+            $range = $maxAge;
+        }
 
         // The code always pulls in enough catalog results to get a fixed number
         // of pages worth of Solr results.  Note that if the Solr index is out of
@@ -356,8 +369,7 @@ class SearchController extends AbstractSearch
             $resultPages = 10;
         }
         $catalog = $this->getILS();
-        $sm = $this->getSearchManager();
-        $params = $sm->setSearchClassId('Solr')->getParams();
+        $params = $this->getResultsManager()->get('Solr')->getParams();
         $perPage = $params->getLimit();
         $newItems = $catalog->getNewItems(1, $perPage * $resultPages, $range, $dept);
 
@@ -444,15 +456,14 @@ class SearchController extends AbstractSearch
      */
     public function reservessearchAction()
     {
-        $sm = $this->getSearchManager();
-        $params = $sm->setSearchClassId('SolrReserves')->getParams();
+        $results = $this->getResultsManager()->get('SolrReserves');
+        $params = $results->getParams();
         $params->initFromRequest(
             new \Zend\Stdlib\Parameters(
                 $this->getRequest()->getQuery()->toArray()
                 + $this->getRequest()->getPost()->toArray()
             )
         );
-        $results = $sm->setSearchClassId('SolrReserves')->getResults($params);
         return $this->createViewModel(
             array('params' => $params, 'results' => $results)
         );
@@ -478,9 +489,8 @@ class SearchController extends AbstractSearch
         $bibIDs = array_unique(array_map($callback, $result));
 
         // Truncate the list if it is too long:
-        $sm = $this->getSearchManager();
-        $params = $sm->setSearchClassId('Solr')->getParams();
-        $limit = $params->getQueryIDLimit();
+        $limit = $this->getResultsManager()->get('Solr')->getParams()
+            ->getQueryIDLimit();
         if (count($bibIDs) > $limit) {
             $bibIDs = array_slice($bibIDs, 0, $limit);
             $this->flashMessenger()->setNamespace('info')
@@ -528,24 +538,21 @@ class SearchController extends AbstractSearch
             // we may want to make this more flexible later.  Also keep in mind that
             // the template is currently looking for certain hard-coded fields; this
             // should also be made smarter.
-            $sm = $this->getSearchManager();
-            $params = $sm->setSearchClassId('Solr')->getParams();
+            $results = $this->getResultsManager()->get('Solr');
+            $params = $results->getParams();
             $params->$initMethod();
 
             // We only care about facet lists, so don't get any results (this helps
             // prevent problems with serialized File_MARC objects in the cache):
             $params->setLimit(0);
 
-            $results = $sm->setSearchClassId('Solr')->getResults($params);
             $results->getResults();                     // force processing for cache
 
-            // Temporarily remove the service manager so we can cache the
-            // results (otherwise we'll get errors about serializing closures):
-            $results->unsetServiceLocator();
             $cache->setItem($cacheName, $results);
         }
 
-        // Restore the real service locator to the object:
+        // Restore the real service locator to the object (it was lost during
+        // serialization):
         $results->restoreServiceLocator($this->getServiceLocator());
         return $results;
     }
@@ -583,7 +590,7 @@ class SearchController extends AbstractSearch
     {
         switch ($this->params()->fromQuery('method')) {
         case 'describe':
-            $config = ConfigReader::getConfig();
+            $config = $this->getConfig();
             $xml = $this->getViewRenderer()->render(
                 'search/opensearch-describe.phtml', array('site' => $config->Site)
             );

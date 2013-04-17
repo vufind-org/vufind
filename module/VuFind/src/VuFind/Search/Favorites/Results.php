@@ -173,20 +173,6 @@ class Results extends BaseResults
     }
 
     /**
-     * Method to retrieve a record by ID.  Returns a record driver object.
-     *
-     * @param string $id Unique identifier of record
-     *
-     * @return \VuFind\RecordDriver\Base
-     */
-    public function getRecord($id)
-    {
-        throw new \Exception(
-            'getRecord not supported by VuFind\Search\Favorites\Results'
-        );
-    }
-
-    /**
      * Get an array of tags being applied as filters.
      *
      * @return array

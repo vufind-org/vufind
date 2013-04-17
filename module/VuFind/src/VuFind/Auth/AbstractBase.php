@@ -27,8 +27,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Auth;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\Auth as AuthException;
+use VuFind\Exception\Auth as AuthException;
 
 /**
  * Abstract authentication base class
@@ -72,11 +71,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
      */
     public function getConfig()
     {
-        // Load configuration if not already present:
-        if (is_null($this->config)) {
-            $this->setConfig(ConfigReader::getConfig());
-        }
-
         // Validate configuration if not already validated:
         if (!$this->configValidated) {
             $this->validateConfig();

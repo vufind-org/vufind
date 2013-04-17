@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-namespace VuFind\Test\View\Helper\Root;
+namespace VuFindTest\View\Helper\Root;
 
 /**
  * Cart view helper Test Class
@@ -46,8 +46,15 @@ class CartTest extends \PHPUnit_Framework_TestCase
     public function testCart()
     {
         // Create a mock cart object:
+        $mockLoader = $this->getMock(
+            'VuFind\Record\Loader', array(),
+            array(
+                $this->getMock('VuFindSearch\Service'),
+                $this->getMock('VuFind\RecordDriver\PluginManager')
+            )
+        );
         $cart = $this->getMock(
-            'VuFind\Cart', null, array($this->getMock('VuFind\Record\Loader'))
+            'VuFind\Cart', null, array($mockLoader)
         );
 
         // Create a helper object:

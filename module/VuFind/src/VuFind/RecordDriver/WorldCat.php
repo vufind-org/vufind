@@ -38,23 +38,6 @@ namespace VuFind\RecordDriver;
  */
 class WorldCat extends SolrMarc
 {
-    protected $marcRecord;
-
-    /**
-     * Constructor
-     *
-     * @param \Zend\Config\Config $mainConfig   VuFind main configuration (omit for
-     * built-in defaults)
-     * @param \Zend\Config\Config $recordConfig Record-specific configuration file
-     * (omit to use $mainConfig as $recordConfig)
-     */
-    public function __construct($mainConfig = null, $recordConfig = null)
-    {
-        // Set the correct resource source for database entries:
-        $this->resourceSource = 'WorldCat';
-        parent::__construct($mainConfig, $recordConfig);
-    }
-
     /**
      * Set raw data to initialize the object.
      *
@@ -81,11 +64,9 @@ class WorldCat extends SolrMarc
      * Get an array of information about record holdings, obtained in real-time
      * from the ILS.
      *
-     * @param \VuFind\Auth\Manager $account Auth manager object
-     *
      * @return array
      */
-    public function getRealTimeHoldings(\VuFind\Auth\Manager $account)
+    public function getRealTimeHoldings()
     {
         // Not supported here:
         return array();
@@ -304,17 +285,5 @@ class WorldCat extends SolrMarc
     public function getPreviousTitles()
     {
         return $this->getFieldArray('780', array('a', 's', 't'));
-    }
-
-    /**
-     * Get holdings information from WorldCat.
-     *
-     * @return SimpleXMLElement
-     */
-    public function getWorldCatHoldings()
-    {
-        $wc = $this->getServiceLocator()->getServiceLocator()
-            ->get('VuFind\WorldCatConnection');
-        return $wc->getHoldings($this->getUniqueId());
     }
 }

@@ -151,7 +151,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
      */
     public function getLangName($lang)
     {
-        $config = \VuFind\Config\Reader::getConfig();
+        $config = $this->getConfig();
         if (isset($config->Languages->$lang)) {
             return $config->Languages->$lang;
         }

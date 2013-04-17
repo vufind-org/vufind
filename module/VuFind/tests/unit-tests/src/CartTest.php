@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-namespace VuFind\Test;
+namespace VuFindTest;
 
 /**
  * Cart Test Class
@@ -50,7 +50,13 @@ class CartTest extends \PHPUnit_Framework_TestCase
      */
     public function __construct()
     {
-        $this->loader = $this->getMock('VuFind\Record\Loader');
+        $this->loader = $this->getMock(
+            'VuFind\Record\Loader', array(),
+            array(
+                $this->getMock('VuFindSearch\Service'),
+                $this->getMock('VuFind\RecordDriver\PluginManager')
+            )
+        );
     }
 
     /**

@@ -57,21 +57,7 @@ class Db extends AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
     {
         $this->getTable('UserStatsFields')->save($data, $userData);
     }
-    
-    /**
-     * Get the most common of a field.
-     *
-     * @param string  $field      What field of data are we researching?
-     * @param integer $listLength How long the top list is
-     *
-     * @return array
-     */
-    public function getTopList($field, $listLength = 5)
-    {
-        // Use the model
-        return $this->getTable('UserStatsFields')->getTop($field, $listLength);
-    }
-    
+
     /**
      * Get all the instances of a field.
      *
@@ -86,7 +72,7 @@ class Db extends AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
         return $this->getTable('UserStatsFields')->getFields($field, $value)
             ->toArray();
     }
-    
+
     /**
      * Returns browser usage statistics
      *

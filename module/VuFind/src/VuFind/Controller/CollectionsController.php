@@ -26,6 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
+use VuFindSearch\Query\Query;
 
 /**
  * Collections Controller
@@ -47,10 +48,12 @@ class CollectionsController extends AbstractBase
 
     /**
      * Constructor
+     *
+     * @param \Zend\Config\Config $config VuFind configuration
      */
-    public function __construct()
+    public function __construct(\Zend\Config\Config $config)
     {
-        $this->config = \VuFind\Config\Reader::getConfig();
+        $this->config = $config;
     }
 
     /**
@@ -63,13 +66,11 @@ class CollectionsController extends AbstractBase
         $collections = $this->getCollectionsFromTitle(
             $this->params()->fromQuery('title')
         );
-        if (is_array($collections) && count($collections) != 1) {
-            $view = $this->createViewModel();
-            $view->collections = $collections;
-            return $view;
+        if (count($collections) != 1) {
+            return $this->createViewModel(array('collections' => $collections));
         }
         return $this->redirect()
-            ->toRoute('collection', array('id' => $collections[0]['id']));
+            ->toRoute('collection', array('id' => $collections[0]->getUniqueId()));
     }
 
     /**
@@ -110,25 +111,15 @@ class CollectionsController extends AbstractBase
         $limit = $this->getBrowseLimit();
 
         // Load Solr data or die trying:
-        $db = \VuFind\Connection\Manager::connectToIndex();
-        try {
-            $result = $db->alphabeticBrowse($source, $from, $page, $limit);
+        $db = $this->getServiceLocator()->get('VuFind\Search\BackendManager')
+            ->get('Solr');
+        $result = $db->alphabeticBrowse($source, $from, $page, $limit);
 
-            // No results?  Try the previous page just in case we've gone past the
-            // end of the list....
-            if ($result['Browse']['totalCount'] == 0) {
-                $page--;
-                $result = $db->alphabeticBrowse($source, $from, $page, $limit);
-            }
-        } catch (\VuFind\Exception\Solr $e) {
-            if ($e->isMissingBrowseIndex()) {
-                throw new \Exception(
-                    "Alphabetic Browse index missing.    See " .
-                    "http://vufind.org/wiki/alphabetical_heading_browse for " .
-                    "details on generating the index."
-                );
-            }
-            throw $e;
+        // No results?  Try the previous page just in case we've gone past the
+        // end of the list....
+        if ($result['Browse']['totalCount'] == 0) {
+            $page--;
+            $result = $db->alphabeticBrowse($source, $from, $page, $limit);
         }
 
         // Begin building view model:
@@ -177,8 +168,8 @@ class CollectionsController extends AbstractBase
 
         $browseField = "hierarchy_browse";
 
-        $searchObject = $this->getServiceLocator()->get('SearchManager')
-            ->setSearchClassId('Solr')->getResults();
+        $searchObject = $this->getServiceLocator()
+            ->get('VuFind\SearchResultsPluginManager')->get('Solr');
         foreach ($appliedFilters as $filter) {
             $searchObject->getParams()->addFilter($filter);
         }
@@ -339,17 +330,10 @@ class CollectionsController extends AbstractBase
      */
     protected function getCollectionsFromTitle($title)
     {
-        $db = \VuFind\Connection\Manager::connectToIndex();
         $title = addcslashes($title, '"');
-        $result = $db->search(
-            array(
-                'query' => "is_hierarchy_title:\"$title\"",
-                'handler' => 'AllFields',
-                'limit' => $this->getBrowseLimit()
-            )
-        );
-
-        return isset($result['response']['docs'])
-            ? $result['response']['docs'] : array();
+        $query = new Query("is_hierarchy_title:\"$title\"", 'AllFields');
+        $searchService = $this->getServiceLocator()->get('VuFind\Search');
+        $result = $searchService->search('Solr', $query, 0, $this->getBrowseLimit());
+        return $result->getRecords();
     }
 }

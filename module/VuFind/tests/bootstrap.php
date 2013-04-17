@@ -53,5 +53,7 @@ $loader = Zend\Loader\AutoloaderFactory::getRegisteredAutoloader(
 );
 $loader->registerNamespace('VuFindTest', __DIR__ . '/../src/VuFindTest');
 
+define('PHPUNIT_SEARCH_FIXTURES', realpath(__DIR__ . '/../../VuFindSearch/tests/unit-tests/fixtures'));
+
 // Use output buffering -- some tests involve HTTP headers and will fail if there is output.
 ob_start();

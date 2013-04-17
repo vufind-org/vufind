@@ -36,7 +36,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException;
+use VuFind\Exception\ILS as ILSException;
 
 /**
  * Aleph Translator Class
@@ -1457,13 +1457,16 @@ class Aleph extends AbstractBase
             return substr($date, 6, 2) . "." .substr($date, 4, 2) . "."
                 . substr($date, 0, 4);
         } else {
-            list($day, $month, $year) = split("/", $date, 3);
-            $translate_month = array(
-                'jan' => 1, 'feb' => 2, 'mar' => 3, 'apr' => 4, 'may' => 5,
-                'jun' => 6, 'jul' => 7, 'aug' => 8, 'sep' => 9, 'oct' => 10,
-                'nov' => 11, 'dec' => 12
-            );
-            return $day . "." . $translate_month[strtolower($month)] . "." . $year;
+            list($day, $month, $year) = explode("/", $date, 3);
+            if (!is_numeric($month)) {
+                $translate_month = array(
+                    'jan' => 1, 'feb' => 2, 'mar' => 3, 'apr' => 4, 'may' => 5,
+                    'jun' => 6, 'jul' => 7, 'aug' => 8, 'sep' => 9, 'oct' => 10,
+                    'nov' => 11, 'dec' => 12
+                );
+                $month = $translate_month[strtolower($month)];
+            }
+            return $day . "." . $month . "." . $year;
         }
     }
 
@@ -1630,10 +1633,6 @@ class Aleph extends AbstractBase
      * Find Reserves
      *
      * Obtain information on course reserves.
-     *
-     * This version of findReserves was contributed by Matthew Hooper and includes
-     * support for electronic reserves (though eReserve support is still a work in
-     * progress).
      *
      * @param string $course ID from getCourses (empty string to match all)
      * @param string $inst   ID from getInstructors (empty string to match all)

@@ -26,8 +26,9 @@
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
 namespace VuFindConsole\Controller;
-use File_MARC, File_MARCXML, VuFind\Connection\Manager as ConnectionManager,
-    VuFind\Sitemap, Zend\Console\Console;
+use File_MARC, File_MARCXML, VuFind\Sitemap, Zend\Console\Console;
+use VuFindSearch\Backend\Solr\Document\UpdateDocument;
+use VuFindSearch\Backend\Solr\Record\SerializableRecord;
 
 /**
  * This controller handles various command-line tools
@@ -155,22 +156,81 @@ class UtilController extends AbstractBase
             && !empty($reserves)
         ) {
             // Setup Solr Connection
-            $solr = ConnectionManager::connectToIndex('SolrReserves');
+            $solr = $this->getServiceLocator()->get('VuFind\Solr\Writer');
 
             // Delete existing records
-            $solr->deleteAll();
+            $solr->deleteAll('SolrReserves');
 
-            // Build the index
-            $solr->buildIndex($instructors, $courses, $departments, $reserves);
+            // Build and Save the index
+            $index = $this->buildReservesIndex(
+                $instructors, $courses, $departments, $reserves
+            );
+            $solr->save('SolrReserves', $index);
 
             // Commit and Optimize the Solr Index
-            $solr->commit();
-            $solr->optimize();
+            $solr->commit('SolrReserves');
+            $solr->optimize('SolrReserves');
 
             Console::writeLine('Successfully loaded ' . count($reserves) . ' rows.');
             return $this->getSuccessResponse();
         }
         return $this->indexReservesHelp('Unable to load data.');
+    }
+
+    /**
+     * Build the reserves index from date returned by the ILS driver,
+     * specifically: getInstructors, getDepartments, getCourses, findReserves
+     *
+     * @param array $instructors Array of instructors $instructor_id => $instructor
+     * @param array $courses     Array of courses     $course_id => $course
+     * @param array $departments Array of department  $dept_id => $department
+     * @param array $reserves    Array of reserves records from driver's
+     * findReserves.
+     *
+     * @return UpdateDocument
+     */
+    protected function buildReservesIndex($instructors, $courses, $departments,
+        $reserves
+    ) {
+        foreach ($reserves as $record) {
+            if (!isset($record['INSTRUCTOR_ID']) || !isset($record['COURSE_ID'])
+                || !isset($record['DEPARTMENT_ID'])
+            ) {
+                throw new \Exception(
+                    'INSTRUCTOR_ID and/or COURSE_ID and/or DEPARTMENT_ID fields ' .
+                    'not present in reserve records. Please update ILS driver.'
+                );
+            }
+            $instructor_id = $record['INSTRUCTOR_ID'];
+            $course_id = $record['COURSE_ID'];
+            $department_id = $record['DEPARTMENT_ID'];
+            $id = $course_id . '|' . $instructor_id . '|' . $department_id;
+
+            if (!isset($index[$id])) {
+                $index[$id] = array(
+                    'id' => $id,
+                    'bib_id' => array(),
+                    'instructor_id' => $instructor_id,
+                    'instructor' => isset($instructors[$instructor_id])
+                        ? $instructors[$instructor_id] : '',
+                    'course_id' => $course_id,
+                    'course' => isset($courses[$course_id])
+                        ? $courses[$course_id] : '',
+                    'department_id' => $department_id,
+                    'department' => isset($departments[$department_id])
+                        ? $departments[$department_id] : ''
+                );
+            }
+            $index[$id]['bib_id'][] = $record['BIB_ID'];
+        }
+
+        $updates = new UpdateDocument();
+        foreach ($index as $id => $data) {
+            if (!empty($data['bib_id'])) {
+                $updates->addRecord(new SerializableRecord($data));
+            }
+        }
+        return $updates;
     }
 
     /**
@@ -186,13 +246,12 @@ class UtilController extends AbstractBase
         // Setup Solr Connection -- Allow core to be specified as first command line
         // param.
         $argv = $this->consoleOpts->getRemainingArgs();
-        $solr = ConnectionManager::connectToIndex(
-            null, isset($argv[0]) ? $argv[0] : ''
-        );
+        $core = isset($argv[0]) ? $argv[0] : 'Solr';
 
         // Commit and Optimize the Solr Index
-        $solr->commit();
-        $solr->optimize();
+        $solr = $this->getServiceLocator()->get('VuFind\Solr\Writer');
+        $solr->commit($core);
+        $solr->optimize($core);
         return $this->getSuccessResponse();
     }
 
@@ -204,7 +263,13 @@ class UtilController extends AbstractBase
     public function sitemapAction()
     {
         // Build sitemap and display appropriate warnings if needed:
-        $generator = new Sitemap();
+        $backendManager = $this->getServiceLocator()
+            ->get('VuFind\Search\BackendManager');
+        $configLoader = $this->getServiceLocator()->get('VuFind\Config');
+        $generator = new Sitemap(
+            $backendManager->get('Solr'),
+            $configLoader->get('config')->Site->url, $configLoader->get('sitemap')
+        );
         $generator->generate();
         foreach ($generator->getWarnings() as $warning) {
             Console::writeLine("$warning");
@@ -263,9 +328,6 @@ class UtilController extends AbstractBase
             return $this->getFailureResponse();
         }
 
-        // Setup Solr Connection
-        $solr = ConnectionManager::connectToIndex($index);
-
         // Build list of records to delete:
         $ids = array();
 
@@ -292,9 +354,8 @@ class UtilController extends AbstractBase
 
         // Delete, Commit and Optimize if necessary:
         if (!empty($ids)) {
-            $solr->deleteRecords($ids);
-            $solr->commit();
-            $solr->optimize();
+            $writer = $this->getServiceLocator()->get('VuFind\Solr\Writer');
+            $writer->deleteRecords($index, $ids);
         }
         return $this->getSuccessResponse();
     }
@@ -347,19 +408,15 @@ class UtilController extends AbstractBase
                     'Delete authority records instead of bibliographic records'
             )
         );
-        $core = $this->consoleOpts->getOption('authorities')
-            ? 'authority' : 'biblio';
-
-        $solr = ConnectionManager::connectToIndex('Solr', $core);
+        $backend = $this->consoleOpts->getOption('authorities')
+            ? 'SolrAuth' : 'Solr';
 
         // Make ILS Connection
         try {
             $catalog = $this->getILS();
-            if ($core == 'authority') {
-                $result = $catalog->getSuppressedAuthorityRecords();
-            } else {
-                $result = $catalog->getSuppressedRecords();
-            }
+            $result = ($backend == 'SolrAuth')
+                ? $catalog->getSuppressedAuthorityRecords()
+                : $catalog->getSuppressedRecords();
         } catch (\Exception $e) {
             Console::writeLine("ILS error -- " . $e->getMessage());
             return $this->getFailureResponse();
@@ -375,15 +432,10 @@ class UtilController extends AbstractBase
         }
 
         // Get Suppressed Records and Delete from index
-        $status = $solr->deleteRecords($result);
-        if ($status) {
-            // Commit and Optimize
-            $solr->commit();
-            $solr->optimize();
-        } else {
-            Console::writeLine("Delete failed.");
-            return $this->getFailureResponse();
-        }
+        $solr = $this->getServiceLocator()->get('VuFind\Solr\Writer');
+        $solr->deleteRecords($backend, $result);
+        $solr->commit($backend);
+        $solr->optimize($backend);
         return $this->getSuccessResponse();
     }
 
@@ -394,11 +446,13 @@ class UtilController extends AbstractBase
      */
     public function createhierarchytreesAction()
     {
-        $solr = $this->getSearchManager()->setSearchClassId('Solr')->getResults();
-        $hierarchies = $solr->getFullFieldFacets(array('hierarchy_top_id'));
+        $recordLoader = $this->getServiceLocator()->get('VuFind\RecordLoader');
+        $hierarchies = $this->getServiceLocator()
+            ->get('VuFind\SearchResultsPluginManager')->get('Solr')
+            ->getFullFieldFacets(array('hierarchy_top_id'));
         foreach ($hierarchies['hierarchy_top_id']['data']['list'] as $hierarchy) {
             Console::writeLine("Building tree for {$hierarchy['value']}...");
-            $driver = $solr->getRecord($hierarchy['value']);
+            $driver = $recordLoader->load($hierarchy['value']);
             if ($driver->getHierarchyType()) {
                 // Only do this if the record is actually a hierarchy type record
                 $driver->getHierarchyDriver()->getTreeSource()

@@ -40,14 +40,15 @@ class CollectionController extends AbstractRecord
 {
     /**
      * Constructor
+     *
+     * @param \Zend\Config\Config $config VuFind configuration
      */
-    public function __construct()
+    public function __construct(\Zend\Config\Config $config)
     {
         // Call standard record controller initialization:
         parent::__construct();
 
         // Set default tab, if specified:
-        $config = \VuFind\Config\Reader::getConfig();
         if (isset($config->Collections->defaultTab)) {
             $this->defaultTab = $config->Collections->defaultTab;
         }

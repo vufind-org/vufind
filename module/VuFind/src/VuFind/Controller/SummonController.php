@@ -127,25 +127,22 @@ class SummonController extends AbstractSearch
         $cache = $this->getServiceLocator()->get('VuFind\CacheManager')
             ->getCache('object');
         if (!($results = $cache->getItem('summonSearchAdvancedFacets'))) {
-            $sm = $this->getSearchManager();
-            $params = $sm->setSearchClassId('Summon')->getParams();
+            $results = $this->getResultsManager()->get('Summon');
+            $params = $results->getParams();
             $params->addFacet('Language,or,1,20');
             $params->addFacet('ContentType,or,1,20', 'Format');
 
             // We only care about facet lists, so don't get any results:
             $params->setLimit(0);
 
-            $results = $sm->setSearchClassId('Summon')->getResults($params);
             // force processing for cache
             $results->getResults();
 
-            // Temporarily remove the service manager so we can cache the
-            // results (otherwise we'll get errors about serializing closures):
-            $results->unsetServiceLocator();
             $cache->setItem('summonSearchAdvancedFacets', $results);
         }
 
-        // Restore the real service locator to the object:
+        // Restore the real service locator to the object (it was lost during
+        // serialization):
         $results->restoreServiceLocator($this->getServiceLocator());
         return $results;
     }

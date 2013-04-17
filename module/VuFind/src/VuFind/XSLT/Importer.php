@@ -26,9 +26,9 @@
  * @link     http://vufind.org/wiki/ Wiki
  */
 namespace VuFind\XSLT;
-use DOMDocument, VuFind\Config\Reader as ConfigReader,
-    VuFind\Connection\Manager as ConnectionManager,
+use DOMDocument, VuFind\Config\Locator as ConfigLocator,
     XSLTProcessor, Zend\Console\Console,
+    VuFindSearch\Backend\Solr\Document\RawXMLDocument,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -69,8 +69,8 @@ class Importer implements ServiceLocatorAwareInterface
 
         // Save the results (or just display them, if in test mode):
         if (!$testMode) {
-            $solr = ConnectionManager::connectToIndex($index);
-            $result = $solr->saveRecord($xml);
+            $solr = $this->getServiceLocator()->get('VuFind\Solr\Writer');
+            $result = $solr->save($index, new RawXMLDocument($xml));
         } else {
             Console::write($xml . "\n");
         }
@@ -88,7 +88,7 @@ class Importer implements ServiceLocatorAwareInterface
     protected function generateXML($xmlFile, $properties)
     {
         // Load properties file:
-        $properties = ConfigReader::getConfigPath($properties, 'import');
+        $properties = ConfigLocator::getConfigPath($properties, 'import');
         if (!file_exists($properties)) {
             throw new \Exception("Cannot load properties file: {$properties}.");
         }
@@ -100,7 +100,7 @@ class Importer implements ServiceLocatorAwareInterface
                 "Properties file ({$properties}) is missing General/xslt setting."
             );
         }
-        $xslFile = ConfigReader::getConfigPath(
+        $xslFile = ConfigLocator::getConfigPath(
             $options['General']['xslt'], 'import/xsl'
         );
 
@@ -157,10 +157,21 @@ class Importer implements ServiceLocatorAwareInterface
             $classes = is_array($options['General']['custom_class'])
                 ? $options['General']['custom_class']
                 : array($options['General']['custom_class']);
+            $truncate = isset($options['General']['truncate_custom_class'])
+                ? $options['General']['truncate_custom_class'] : true;
             foreach ($classes as $class) {
-                // Dynamically generate the requested class:
-                $class = preg_replace('/[^A-Za-z0-9_]/', '', $class);
-                eval("class $class extends \\VuFind\\XSLT\\Import\\$class { }");
+                // Add a default namespace if none was provided:
+                if (false === strpos($class, '\\')) {
+                    $class = 'VuFind\XSLT\Import\\' . $class;
+                }
+                // If necessary, dynamically generate the truncated version of the
+                // requested class:
+                if ($truncate) {
+                    $parts = explode('\\', $class);
+                    $class = preg_replace('/[^A-Za-z0-9_]/', '', array_pop($parts));
+                    $ns = implode('\\', $parts);
+                    class_alias("$ns\\$class", $class);
+                }
                 $methods = get_class_methods($class);
                 if (method_exists($class, 'setServiceLocator')) {
                     $class::setServiceLocator($this->getServiceLocator());

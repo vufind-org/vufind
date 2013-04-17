@@ -28,8 +28,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use DOMDocument, VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\ILS as ILSException;
+use DOMDocument, VuFind\Exception\ILS as ILSException;
 
 /**
  * ILS Driver for VuFind to query availability information via DAIA.
@@ -44,6 +43,11 @@ use DOMDocument, VuFind\Config\Reader as ConfigReader,
  */
 class DAIA extends AbstractBase
 {
+    /**
+     * Base URL
+     *
+     * @var string
+     */
     protected $baseURL;
 
     /**
@@ -151,7 +155,7 @@ class DAIA extends AbstractBase
     protected function queryDAIA($id)
     {
         $daia = new DOMDocument();
-        $daia->load($this->baseURL . '?output=xml&ppn='.$id);
+        $daia->load($this->baseURL . $id);
 
         return $daia;
     }
@@ -163,7 +167,7 @@ class DAIA extends AbstractBase
      *
      * @return array
      */
-    public function daiaToHolding($id)
+    protected function daiaToHolding($id)
     {
         $daia = $this->queryDAIA($id);
         // get Availability information from DAIA

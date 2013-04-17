@@ -50,21 +50,8 @@ class Missing extends SolrDefault
      */
     public function __construct($mainConfig = null, $recordConfig = null)
     {
-        $this->resourceSource = 'missing';
+        $this->sourceIdentifier = 'missing';
         parent::__construct($mainConfig, $recordConfig);
-    }
-
-    /**
-     * Set the resource source of the missing record.  This is a special function
-     * of the missing record driver and normally should NOT be attempted.
-     *
-     * @param string $source Resource source
-     *
-     * @return void
-     */
-    public function setResourceSource($source)
-    {
-        $this->resourceSource = $source;
     }
 
     /**

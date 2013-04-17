@@ -26,8 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use PDO, PDOException, VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\ILS as ILSException,
+use PDO, PDOException, VuFind\Exception\ILS as ILSException,
     VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
@@ -874,10 +873,6 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * Find Reserves
      *
      * Obtain information on course reserves.
-     *
-     * This version of findReserves was contributed by Matthew Hooper and includes
-     * support for electronic reserves (though eReserve support is still a work in
-     * progress).
      *
      * @param string $course ID from getCourses (empty string to match all)
      * @param string $inst   ID from getInstructors (empty string to match all)

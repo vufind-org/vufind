@@ -40,10 +40,20 @@ use Zend\Db\Sql\Expression;
 class Resource extends Gateway
 {
     /**
-     * Constructor
+     * Date converter
+     *
+     * @var \VuFind\Date\Converter
      */
-    public function __construct()
+    protected $dateConverter;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $converter Date converter
+     */
+    public function __construct(\VuFind\Date\Converter $converter)
     {
+        $this->dateConverter = $converter;
         parent::__construct('resource', 'VuFind\Db\Row\Resource');
     }
 
@@ -84,7 +94,7 @@ class Resource extends Gateway
             }
 
             // Load metadata into the database for sorting/failback purposes:
-            $result->assignMetadata($driver);
+            $result->assignMetadata($driver, $this->dateConverter);
 
             // Save the new row.
             $result->save();
@@ -126,9 +136,10 @@ class Resource extends Gateway
         $sort = null, $offset = 0, $limit = null
     ) {
         // Set up base query:
+        $obj = & $this;
         return $this->select(
-            function ($select) use ($user, $list, $tags, $sort, $offset, $limit) {
-                $select->columns(
+            function ($s) use ($user, $list, $tags, $sort, $offset, $limit, $obj) {
+                $s->columns(
                     array(
                         new Expression(
                             'DISTINCT(?)', array('resource.id'),
@@ -136,41 +147,40 @@ class Resource extends Gateway
                         ), '*'
                     )
                 );
-                $select->join(
+                $s->join(
                     array('ur' => 'user_resource'), 'resource.id = ur.resource_id',
                     array()
                 );
-                $select->where->equalTo('ur.user_id', $user);
+                $s->where->equalTo('ur.user_id', $user);
 
                 // Adjust for list if necessary:
                 if (!is_null($list)) {
-                    $select->where->equalTo('ur.list_id', $list);
+                    $s->where->equalTo('ur.list_id', $list);
                 }
 
                 if ($offset > 0) {
-                    $select->offset($offset);
+                    $s->offset($offset);
                 }
                 if (!is_null($limit)) {
-                    $select->limit($limit);
+                    $s->limit($limit);
                 }
 
                 // Adjust for tags if necessary:
                 if (!empty($tags)) {
-                    $linkingTable = $this->getDbTable('ResourceTags');
+                    $linkingTable = $obj->getDbTable('ResourceTags');
                     foreach ($tags as $tag) {
                         $matches = $linkingTable
                             ->getResourcesForTag($tag, $user, $list)->toArray();
                         $getId = function ($i) {
                             return $i['resource_id'];
                         };
-                        $select->where
-                            ->in('resource.id', array_map($getId, $matches));
+                        $s->where->in('resource.id', array_map($getId, $matches));
                     }
                 }
 
                 // Apply sorting, if necessary:
                 if (!empty($sort)) {
-                    Resource::applySort($select, $sort);
+                    Resource::applySort($s, $sort);
                 }
             }
         );

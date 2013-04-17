@@ -26,8 +26,8 @@
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Config\Reader as ConfigReader,
-    VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFindSearch\Query\Query;
 
 /**
  * AuthorInfo Recommendations Module
@@ -73,11 +73,11 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     protected $lang;
 
     /**
-     * Search manager
+     * Results plugin manager
      *
-     * @var \VuFind\Search\Manager
+     * @var \VuFind\Search\Results\PluginManager
      */
-    protected $searchManager;
+    protected $resultsManager;
 
     /**
      * Should we use VIAF for authorized names?
@@ -94,16 +94,27 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     protected $pagesRetrieved = array();
 
     /**
+     * Sources of author data that may be used (comma-delimited string; currently
+     * only 'wikipedia' is supported).
+     *
+     * @var string
+     */
+    protected $sources;
+
+    /**
      * Constructor
      *
-     * @param \VuFind\Search\Manager $searchManager Search manager
-     * @param \Zend\Http\Client      $client        HTTP client
+     * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
+     * @param \Zend\Http\Client                    $client  HTTP client
+     * @param string                               $sources Source identifiers
+     * (currently, only 'wikipedia' is supported)
      */
-    public function __construct(\VuFind\Search\Manager $searchManager,
-        \Zend\Http\Client $client
+    public function __construct(\VuFind\Search\Results\PluginManager $results,
+        \Zend\Http\Client $client, $sources = 'wikipedia'
     ) {
-        $this->searchManager = $searchManager;
+        $this->resultsManager = $results;
         $this->client = $client;
+        $this->sources = $sources;
     }
 
     /**
@@ -220,14 +231,8 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     public function getAuthorInfo()
     {
         // Don't load Wikipedia content if Wikipedia is disabled:
-        $config = ConfigReader::getConfig();
-        if (!isset($config->Content->authors)
-            || !stristr($config->Content->authors, 'wikipedia')
-        ) {
-            return null;
-        }
-
-        return $this->getWikipedia($this->getAuthor());
+        return stristr($this->sources, 'wikipedia')
+            ? $this->getWikipedia($this->getAuthor()) : null;
     }
 
     /**
@@ -477,6 +482,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
             }
         }
         $info['description'] = $body;
+        $info['wiki_lang'] = $this->lang;
 
         return $info;
     }
@@ -536,7 +542,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     protected function normalizeNameWithViaf($author)
     {
         // Do authority search:
-        $auth = $this->searchManager->setSearchClassId('SolrAuth')->getResults();
+        $auth = $this->resultsManager->get('SolrAuth');
         $auth->getParams()->setBasicSearch('"' . $author . '"', 'MainHeading');
         $results = $auth->getResults();
 
@@ -562,9 +568,9 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      */
     protected function getAuthor()
     {
-        $search = $this->searchObject->getParams()->getSearchTerms();
-        if (isset($search[0]['lookfor'])) {
-            $author = $search[0]['lookfor'];
+        $search = $this->searchObject->getParams()->getQuery();
+        if ($search instanceof Query) {
+            $author = $search->getString();
             // remove quotes
             $author = str_replace('"', '', $author);
             return $this->useViaf

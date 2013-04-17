@@ -1,0 +1,31 @@
+{
+    "name": "zendframework/zend-i18n",
+    "description": " ",
+    "license": "BSD-3-Clause",
+    "keywords": [
+        "zf2",
+        "i18n"
+    ],
+    "autoload": {
+        "psr-0": {
+            "Zend\\I18n\\": ""
+        }
+    },
+    "target-dir": "Zend/I18n",
+    "require": {
+        "php": ">=5.3.3",
+        "ext-intl": "*",
+        "zendframework/zend-stdlib": "self.version"
+    },
+    "suggest": {
+        "zendframework/zend-filter": "You should install this package to use the provided filters",
+        "zendframework/zend-validator": "You should install this package to use the provided validators",
+        "zendframework/zend-view": "You should install this package to use the provided view helpers"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.1-dev",
+            "dev-develop": "2.2-dev"
+        }
+    }
+}

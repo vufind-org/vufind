@@ -140,16 +140,16 @@ class Search extends Gateway
     /**
      * Add a search into the search table (history)
      *
-     * @param \VuFind\Search\Manager      $manager       Search manager
-     * @param \VuFind\Search\Base\Results $newSearch     Search to save
-     * @param string                      $sessionId     Current session ID
-     * @param array                       $searchHistory Existing saved searches (for
-     * deduplication purposes)
+     * @param \VuFind\Search\Results\PluginManager $manager       Search manager
+     * @param \VuFind\Search\Base\Results          $newSearch     Search to save
+     * @param string                               $sessionId     Current session ID
+     * @param array                                $searchHistory Existing saved
+     * searches (for deduplication purposes)
      *
      * @return void
      */
-    public function saveSearch($manager, $newSearch, $sessionId,
-        $searchHistory = array()
+    public function saveSearch(\VuFind\Search\Results\PluginManager $manager,
+        $newSearch, $sessionId, $searchHistory = array()
     ) {
         // Duplicate elimination
         $dupSaved  = false;

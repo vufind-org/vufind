@@ -26,8 +26,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use ArrayObject, VuFind\Config\Reader as ConfigReader,
-    VuFind\Cookie\Container as CookieContainer, VuFind\Db\AdapterFactory,
+use ArrayObject, VuFind\Config\Locator as ConfigLocator,
+    VuFind\Cookie\Container as CookieContainer,
     VuFind\Exception\RecordMissing as RecordMissingException,
     Zend\Session\Container as SessionContainer;
 
@@ -143,8 +143,8 @@ class UpgradeController extends AbstractBase
         $upgrader = new \VuFind\Config\Upgrade(
             $this->cookie->oldVersion, $this->cookie->newVersion,
             $this->cookie->sourceDir . '/web/conf',
-            dirname(ConfigReader::getBaseConfigPath('config.ini')),
-            dirname(ConfigReader::getLocalConfigPath('config.ini', null, true))
+            dirname(ConfigLocator::getBaseConfigPath('config.ini')),
+            dirname(ConfigLocator::getLocalConfigPath('config.ini', null, true))
         );
         try {
             $upgrader->run();
@@ -171,7 +171,8 @@ class UpgradeController extends AbstractBase
         // subsequent calls.
         static $adapter = false;
         if (!$adapter) {
-            $adapter = AdapterFactory::getAdapter(
+            $factory = $this->getServiceLocator()->get('VuFind\DbAdapterFactory');
+            $adapter = $factory->getAdapter(
                 $this->session->dbRootUser, $this->session->dbRootPass
             );
         }
@@ -199,7 +200,7 @@ class UpgradeController extends AbstractBase
      */
     protected function setDbEncodingConfiguration($charset)
     {
-        $config = ConfigReader::getLocalConfigPath('config.ini', null, true);
+        $config = ConfigLocator::getLocalConfigPath('config.ini', null, true);
         $writer = new \VuFind\Config\Writer($config);
         $writer->set('Database', 'charset', $charset);
         if (!$writer->save()) {
@@ -369,7 +370,9 @@ class UpgradeController extends AbstractBase
                 // Test the connection:
                 try {
                     // Query a table known to exist
-                    $db = AdapterFactory::getAdapter($dbrootuser, $pass);
+                    $factory = $this->getServiceLocator()
+                        ->get('VuFind\DbAdapterFactory');
+                    $db = $factory->getAdapter($dbrootuser, $pass);
                     $db->query("SELECT * FROM user;");
                     $this->session->dbRootUser = $dbrootuser;
                     $this->session->dbRootPass = $pass;
@@ -470,11 +473,12 @@ class UpgradeController extends AbstractBase
 
         // Process submit button:
         if (strlen($this->params()->fromPost('submit', '')) > 0) {
+            $converter = $this->getServiceLocator()->get('VuFind\DateConverter');
             foreach ($problems as $problem) {
                 try {
                     $driver = $this->getRecordLoader()
                         ->load($problem->record_id, $problem->source);
-                    $problem->assignMetadata($driver)->save();
+                    $problem->assignMetadata($driver, $converter)->save();
                 } catch (RecordMissingException $e) {
                     $this->session->warnings->append(
                         "Unable to load metadata for record "
@@ -575,7 +579,7 @@ class UpgradeController extends AbstractBase
         return $this->createViewModel(
             array(
                 'configDir' => dirname(
-                    ConfigReader::getLocalConfigPath('config.ini', null, true)
+                    ConfigLocator::getLocalConfigPath('config.ini', null, true)
                 ),
                 'importDir' => LOCAL_OVERRIDE_DIR . '/import'
             )

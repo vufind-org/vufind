@@ -28,7 +28,7 @@
  * @link     http://vufind.org/wiki/vufind2:link_resolver_drivers Wiki
  */
 namespace VuFind\Resolver\Driver;
-use DOMDocument, DOMXpath, VuFind\Config\Reader as ConfigReader;
+use DOMDocument, DOMXpath;
 
 /**
  * 360Link Link Resolver Driver
@@ -41,16 +41,30 @@ use DOMDocument, DOMXpath, VuFind\Config\Reader as ConfigReader;
  */
 class Threesixtylink implements DriverInterface
 {
+    /**
+     * Base URL for link resolver
+     *
+     * @var string
+     */
     protected $baseUrl;
 
     /**
-     * Constructor
+     * HTTP client
+     *
+     * @var \Zend\Http\Client
      */
-    public function __construct()
+    protected $httpClient;
+
+    /**
+     * Constructor
+     *
+     * @param string            $baseUrl    Base URL for link resolver
+     * @param \Zend\Http\Client $httpClient HTTP client
+     */
+    public function __construct($baseUrl, \Zend\Http\Client $httpClient)
     {
-        // Load Configuration for this Module
-        $config = ConfigReader::getConfig();
-        $this->baseUrl = $config->OpenURL->url;
+        $this->baseUrl = $baseUrl;
+        $this->httpClient = $httpClient;
     }
 
     /**
@@ -67,7 +81,7 @@ class Threesixtylink implements DriverInterface
         // Make the call to SerialsSolutions and load results
         $url = $this->baseUrl . (substr($this->baseUrl, -1) == '/' ? '' : '/') .
             'openurlxml?version=1.0&' . $openURL;
-        $feed = file_get_contents($url);
+        $feed = $this->httpClient->setUri($url)->send()->getBody();
         return $feed;
     }
 

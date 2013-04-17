@@ -26,8 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind;
-use VuFind\Config\Reader as ConfigReader,
-    Zend\Console\Console, Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch;
+use Zend\Console\Console, Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch;
 
 /**
  * VuFind Bootstrapper
@@ -40,7 +39,7 @@ use VuFind\Config\Reader as ConfigReader,
  */
 class Bootstrapper
 {
-    protected $config;
+    protected $config = null;
     protected $event;
     protected $events;
 
@@ -51,7 +50,6 @@ class Bootstrapper
      */
     public function __construct(MvcEvent $event)
     {
-        $this->config = ConfigReader::getConfig();
         $this->event = $event;
         $this->events = $event->getApplication()->getEventManager();
     }
@@ -73,6 +71,26 @@ class Bootstrapper
     }
 
     /**
+     * Set up configuration manager.
+     *
+     * @return void
+     */
+    protected function initConfig()
+    {
+        // Create the configuration manager:
+        $app = $this->event->getApplication();
+        $serviceManager = $app->getServiceManager();
+        $config = $app->getConfig();
+        $cfg = new \Zend\ServiceManager\Config($config['vufind']['config_reader']);
+        $serviceManager->setService(
+            'VuFind\Config', new \VuFind\Config\PluginManager($cfg)
+        );
+
+        // Use the manager to load the configuration used in subsequent init methods:
+        $this->config = $serviceManager->get('VuFind\Config')->get('config');
+    }
+
+    /**
      * Set up plugin managers.
      *
      * @return void
@@ -88,7 +106,8 @@ class Bootstrapper
             'Auth', 'Autocomplete', 'Db\Table', 'Hierarchy\Driver',
             'Hierarchy\TreeDataSource', 'Hierarchy\TreeRenderer', 'ILS\Driver',
             'Recommend', 'RecordDriver', 'RecordTab', 'Related', 'Resolver\Driver',
-            'Session', 'Statistics\Driver'
+            'Search\Options', 'Search\Params', 'Search\Results', 'Session',
+            'Statistics\Driver'
         );
         foreach ($namespaces as $ns) {
             $serviceName = 'VuFind\\' . str_replace('\\', '', $ns) . 'PluginManager';
@@ -103,16 +122,6 @@ class Bootstrapper
             };
             $serviceManager->setFactory($serviceName, $factory);
         }
-
-        // Set up search manager a little differently -- it is a more complex class
-        // that doesn't work like the other standard plugin managers.
-        $factory = function ($sm) use ($config) {
-            return new \VuFind\Search\Manager($config['vufind']['search_manager']);
-        };
-        $serviceManager->setFactory('SearchManager', $factory);
-
-        // TODO: factor out static connection manager.
-        \VuFind\Connection\Manager::setServiceLocator($serviceManager);
     }
 
     /**
@@ -344,6 +353,19 @@ class Bootstrapper
             }
         };
         $this->events->attach('dispatch.error', $callback);
+    }
+
+    /**
+     * Set up search subsystem.
+     *
+     * @return void
+     */
+    protected function initSearch()
+    {
+        $sm     = $this->event->getApplication()->getServiceManager();
+        $bm     = $sm->get('VuFind\Search\BackendManager');
+        $events = $sm->get('SharedEventManager');
+        $events->attach('VuFind\Search', 'resolve', array($bm, 'onResolve'));
     }
 
     /**

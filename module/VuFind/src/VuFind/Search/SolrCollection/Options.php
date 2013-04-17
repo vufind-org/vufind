@@ -26,7 +26,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Search\SolrCollection;
-use VuFind\Config\Reader as ConfigReader;
 
 /**
  * Solr Collection Search Options
@@ -40,16 +39,18 @@ use VuFind\Config\Reader as ConfigReader;
 class Options extends \VuFind\Search\Solr\Options
 {
     /**
-     * Constructor
+     * Perform initialization that cannot occur in constructor due to need for
+     * injected dependencies.
      *
      * @return void
      */
-    public function __construct()
+    public function init()
     {
-        parent::__construct();
+        parent::init();
 
         // Load sort preferences (or defaults if none in .ini file):
-        $searchSettings = ConfigReader::getConfig('Collection');
+        $searchSettings = $this->getServiceLocator()->get('VuFind\Config')
+            ->get('Collection');
         if (isset($searchSettings->Sort)) {
             $this->sortOptions = array();
             foreach ($searchSettings->Sort as $key => $value) {

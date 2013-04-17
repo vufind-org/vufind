@@ -26,7 +26,6 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Summon;
-use VuFind\Search\Base\Params as BaseParams;
 
 /**
  * Summon Search Parameters
@@ -37,7 +36,7 @@ use VuFind\Search\Base\Params as BaseParams;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Params extends BaseParams
+class Params extends \VuFind\Search\Base\Params
 {
     /**
      * Settings for all the facets

@@ -26,9 +26,10 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Base;
-use VuFind\Config\Reader as ConfigReader,
-    Zend\ServiceManager\ServiceLocatorAwareInterface,
+use Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
+use VuFindSearch\Query\Query;
+use VuFind\Search\QueryAdapter;
 
 /**
  * Abstract parameters search model.
@@ -43,7 +44,13 @@ use VuFind\Config\Reader as ConfigReader,
  */
 class Params implements ServiceLocatorAwareInterface
 {
-    // Search terms
+    /**
+     * Internal representation of user query.
+     *
+     * @var Query
+     */
+    protected $query;
+
     protected $searchTerms = array();
     // Page number
     protected $page = 1;
@@ -68,6 +75,11 @@ class Params implements ServiceLocatorAwareInterface
     protected $filterList = array();
 
     /**
+     * Override Query
+     */
+    protected $overrideQuery = false;
+
+    /**
      * Service locator
      *
      * @var ServiceLocatorInterface
@@ -77,14 +89,24 @@ class Params implements ServiceLocatorAwareInterface
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Options $options Options to use (null to load
-     * defaults)
+     * @param \VuFind\Search\Base\Options $options Options to use
      */
-    public function __construct($options = null)
+    public function __construct($options)
     {
-        if (null !== $options) {
-            $this->setOptions($options);
-        }
+        $this->setOptions($options);
+
+        // Make sure we have some sort of query object:
+        $this->query = new Query();
+    }
+
+    /**
+     * Perform initialization that cannot occur in constructor due to need for
+     * injected dependencies.
+     *
+     * @return void
+     */
+    public function init()
+    {
     }
 
     /**
@@ -94,13 +116,6 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function getOptions()
     {
-        // If no options have been set, use defaults:
-        if (null === $this->options) {
-            // Create a copy of the default configuration:
-            $default = $this->getSearchManager()
-                ->setSearchClassId($this->getSearchClassId())->getOptionsInstance();
-            $this->options = clone($default);
-        }
         return $this->options;
     }
 
@@ -126,6 +141,9 @@ class Params implements ServiceLocatorAwareInterface
         if (is_object($this->options)) {
             $this->options = clone($this->options);
         }
+        if (is_object($this->query)) {
+            $this->query = clone($this->query);
+        }
     }
 
     /**
@@ -135,7 +153,9 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function getSearchClassId()
     {
-        return $this->getSearchManager()->extractSearchClassId(get_class($this));
+        // Parse identifier out of class name of format VuFind\Search\[id]\Params:
+        $class = explode('\\', get_class($this));
+        return $class[2];
     }
 
     /**
@@ -262,12 +282,6 @@ class Params implements ServiceLocatorAwareInterface
         if (!$this->initBasicSearch($request)) {
             $this->initAdvancedSearch($request);
         }
-
-        // If no search parameters were found, default to an "all records" search:
-        if (count($this->searchTerms) == 0) {
-            // Treat it as an empty basic search
-            $this->setBasicSearch('');
-        }
     }
 
     /**
@@ -324,12 +338,7 @@ class Params implements ServiceLocatorAwareInterface
             $handler = $this->getOptions()->getDefaultHandler();
         }
 
-        $this->searchTerms = array(
-            array(
-                'index'   => $handler,
-                'lookfor' => $lookfor
-            )
-        );
+        $this->query = new Query($lookfor, $handler);
     }
 
     /**
@@ -344,46 +353,11 @@ class Params implements ServiceLocatorAwareInterface
      */
     protected function initAdvancedSearch($request)
     {
-        $this->searchType = 'advanced';
+        $this->query = QueryAdapter::fromRequest(
+            $request, $this->getOptions()->getDefaultHandler()
+        );
 
-        $groupCount = 0;
-        // Loop through each search group
-        while (!is_null($lookfor = $request->get("lookfor{$groupCount}"))) {
-            $group = array();
-            // Loop through each term inside the group
-            for ($i = 0; $i < count($lookfor); $i++) {
-                // Ignore advanced search fields with no lookup
-                if ($lookfor[$i] != '') {
-                    // Use default fields if not set
-                    $typeArr = $request->get('type' . $groupCount);
-                    if (isset($typeArr[$i]) && !empty($typeArr[$i])) {
-                        $handler = $typeArr[$i];
-                    } else {
-                        $handler = $this->getOptions()->getDefaultHandler();
-                    }
-
-                    // Add term to this group
-                    $boolArr = $request->get('bool' . $groupCount);
-                    $group[] = array(
-                        'field'   => $handler,
-                        'lookfor' => $lookfor[$i],
-                        'bool'    => isset($boolArr[0]) ? $boolArr[0] : null
-                    );
-                }
-            }
-
-            // Make sure we aren't adding groups that had no terms
-            if (count($group) > 0) {
-                // Add the completed group to the list
-                $this->searchTerms[] = array(
-                    'group' => $group,
-                    'join'  => $request->get('join')
-                );
-            }
-
-            // Increment
-            $groupCount++;
-        }
+        $this->searchType = $this->query instanceof Query ? 'basic' : 'advanced';
     }
 
     /**
@@ -545,12 +519,8 @@ class Params implements ServiceLocatorAwareInterface
     public function getSearchHandler()
     {
         // We can only definitively name a handler if we have a basic search:
-        if (count($this->searchTerms) == 1
-            && isset($this->searchTerms[0]['index'])
-        ) {
-            return $this->searchTerms[0]['index'];
-        }
-        return null;
+        $q = $this->getQuery();
+        return $q instanceof Query ? $q->getHandler() : null;
     }
 
     /**
@@ -561,16 +531,6 @@ class Params implements ServiceLocatorAwareInterface
     public function getSearchType()
     {
         return $this->searchType;
-    }
-
-    /**
-     * Return the search terms
-     *
-     * @return string
-     */
-    public function getSearchTerms()
-    {
-        return $this->searchTerms;
     }
 
     /**
@@ -597,66 +557,6 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Get a human-readable presentation version of the advanced search query
-     * stored in the object.  This will not work if $this->searchType is not
-     * 'advanced.'
-     *
-     * @return string
-     */
-    protected function buildAdvancedDisplayQuery()
-    {
-        // Groups and exclusions. This mirrors some logic in Solr.php
-        $groups   = array();
-        $excludes = array();
-
-        foreach ($this->searchTerms as $search) {
-            $thisGroup = array();
-            // Process each search group
-            if (isset($search['group'])) {
-                foreach ($search['group'] as $group) {
-                    // Build this group individually as a basic search
-                    $thisGroup[] = $this->getOptions()->getHumanReadableFieldName(
-                        $group['field']
-                    ) . ":{$group['lookfor']}";
-                }
-            }
-            // Is this an exclusion (NOT) group or a normal group?
-            if (isset($search['group'][0]['bool'])
-                && $search['group'][0]['bool'] == 'NOT'
-            ) {
-                $excludes[]
-                    = join(' ' . $this->translate('OR') . ' ', $thisGroup);
-            } else if (isset($search['group'][0]['bool'])) {
-                $groups[] = join(
-                    " " . $this->translate($search['group'][0]['bool'])." ",
-                    $thisGroup
-                );
-            }
-        }
-
-        // Base 'advanced' query
-        $output = '';
-        if (isset($this->searchTerms[0]['join'])) {
-            $output .= "(" .
-                join(
-                    ") " .
-                    $this->translate($this->searchTerms[0]['join']) . " (",
-                    $groups
-                ) .
-                ")";
-        }
-
-        // Concatenate exclusion after that
-        if (count($excludes) > 0) {
-            $output .= ' ' .
-                $this->translate('NOT') . ' ((' .
-                join(') ' . $this->translate('OR') . ' (', $excludes) . "))";
-        }
-
-        return $output;
-    }
-
-    /**
      * Build a string for onscreen display showing the
      *   query used in the search (not the filters).
      *
@@ -664,13 +564,12 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function getDisplayQuery()
     {
-        if ($this->searchType == 'advanced') {
-            return $this->buildAdvancedDisplayQuery();
-        }
+        // Set up callbacks:
+        $translate = array($this, 'translate');
+        $showField = array($this->getOptions(), 'getHumanReadableFieldName');
 
-        // Default -- Basic search:
-        return isset($this->searchTerms[0]['lookfor'])
-            ? $this->searchTerms[0]['lookfor'] : '';
+        // Build display query:
+        return QueryAdapter::display($this->getQuery(), $translate, $showField);
     }
 
     /**
@@ -727,8 +626,8 @@ class Params implements ServiceLocatorAwareInterface
 
         // Load the necessary settings to determine the appropriate recommendations
         // module:
-        $searchSettings
-            = ConfigReader::getConfig($this->getOptions()->getSearchIni());
+        $searchSettings = $this->getServiceLocator()->get('VuFind\Config')
+            ->get($this->getOptions()->getSearchIni());
 
         // If we have a search type set, save it so we can try to load a
         // type-specific recommendations module:
@@ -1210,52 +1109,6 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Replace a search term in the query
-     *
-     * @param string $from Search term to find
-     * @param string $to   Search term to insert
-     *
-     * @return void
-     */
-    public function replaceSearchTerm($from, $to)
-    {
-        // Escape $from so it is regular expression safe (just in case it
-        // includes any weird punctuation -- unlikely but possible):
-        $from = addcslashes($from, '\^$.[]|()?*+{}/');
-
-        // If our "from" pattern contains non-word characters, we can't use word
-        // boundaries for matching.  We want to try to use word boundaries when
-        // possible, however, to avoid the replacement from affecting unexpected
-        // parts of the search query.
-        if (!preg_match('/.*[^\w].*/', $from)) {
-            $pattern = "/\b$from\b/i";
-        } else {
-            $pattern = "/$from/i";
-        }
-
-        // Advanced search
-        if (isset($this->searchTerms[0]['group'])) {
-            for ($i = 0; $i < count($this->searchTerms); $i++) {
-                for ($j = 0; $j < count($this->searchTerms[$i]['group']); $j++) {
-                    $this->searchTerms[$i]['group'][$j]['lookfor']
-                        = preg_replace(
-                            $pattern, $to,
-                            $this->searchTerms[$i]['group'][$j]['lookfor']
-                        );
-                }
-            }
-        } else {
-            // Basic search
-            for ($i = 0; $i < count($this->searchTerms); $i++) {
-                // Perform the replacement:
-                $this->searchTerms[$i]['lookfor'] = preg_replace(
-                    $pattern, $to, $this->searchTerms[$i]['lookfor']
-                );
-            }
-        }
-    }
-
-    /**
      * Return a query string for the current search with a search term replaced.
      *
      * @param string $oldTerm The old term to replace
@@ -1266,69 +1119,15 @@ class Params implements ServiceLocatorAwareInterface
     public function getDisplayQueryWithReplacedTerm($oldTerm, $newTerm)
     {
         // Stash our old data for a minute
-        $oldTerms = $this->searchTerms;
+        $oldTerms = clone($this->query);
         // Replace the search term
-        $this->replaceSearchTerm($oldTerm, $newTerm);
+        $this->query->replaceTerm($oldTerm, $newTerm);
         // Get the new query string
         $query = $this->getDisplayQuery();
         // Restore the old data
-        $this->searchTerms = $oldTerms;
+        $this->query = $oldTerms;
         // Return the query string
         return $query;
-    }
-
-    /**
-     * Find a word amongst the current search terms
-     *
-     * @param string $needle Search term to find
-     *
-     * @return bool          True/False if the word was found
-     */
-    public function findSearchTerm($needle)
-    {
-        // Escape slashes in $needle to avoid regular expression errors:
-        $needle = str_replace('/', '\/', $needle);
-
-        // Advanced search
-        if (isset($this->searchTerms[0]['group'])) {
-            foreach ($this->searchTerms as $group) {
-                foreach ($group['group'] as $search) {
-                    if (preg_match("/\b$needle\b/", $search['lookfor'])) {
-                        return true;
-                    }
-                }
-            }
-        } else {
-            // Basic search
-            foreach ($this->searchTerms as $haystack) {
-                if (preg_match("/\b$needle\b/", $haystack['lookfor'])) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Extract all the keywords from the advanced search as a string.
-     *
-     * @return string
-     */
-    public function extractAdvancedTerms()
-    {
-        $terms = array();
-        foreach ($this->searchTerms as $current) {
-            if (isset($current['lookfor'])) {
-                $terms[] = $current['lookfor'];
-            } else if (isset($current['group']) && is_array($current['group'])) {
-                foreach ($current['group'] as $subCurrent) {
-                    if (isset($subCurrent['lookfor'])) {
-                        $terms[] = $subCurrent['lookfor'];
-                    }
-                }
-            }
-        }
-        return implode(' ', $terms);
     }
 
     /**
@@ -1402,44 +1201,7 @@ class Params implements ServiceLocatorAwareInterface
         $this->searchType   = $minified->ty;
 
         // Search terms, we need to expand keys
-        $tempTerms = $minified->t;
-        foreach ($tempTerms as $term) {
-            $newTerm = array();
-            foreach ($term as $k => $v) {
-                switch ($k) {
-                case 'j':
-                    $newTerm['join']    = $v;
-                    break;
-                case 'i':
-                    $newTerm['index']   = $v;
-                    break;
-                case 'l':
-                    $newTerm['lookfor'] = $v;
-                    break;
-                case 'g':
-                    $newTerm['group'] = array();
-                    foreach ($v as $line) {
-                        $search = array();
-                        foreach ($line as $k2 => $v2) {
-                            switch ($k2) {
-                            case 'b':
-                                $search['bool']    = $v2;
-                                break;
-                            case 'f':
-                                $search['field']   = $v2;
-                                break;
-                            case 'l':
-                                $search['lookfor'] = $v2;
-                                break;
-                            }
-                        }
-                        $newTerm['group'][] = $search;
-                    }
-                    break;
-                }
-            }
-            $this->searchTerms[] = $newTerm;
-        }
+        $this->query = QueryAdapter::deminify($minified->t);
     }
 
     /**
@@ -1500,18 +1262,18 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Unset the service locator.
+     * Sleep magic method -- the service locator can't be serialized, so we need to
+     * exclude it from serialization.  Since we can't obtain a new locator in the
+     * __wakeup() method, it needs to be re-injected from outside.
      *
-     * @return Params
+     * @return array
      */
-    public function unsetServiceLocator()
+    public function __sleep()
     {
-        $this->serviceLocator = null;
-        $options = $this->getOptions();
-        if (method_exists($options, 'unsetServiceLocator')) {
-            $options->unsetServiceLocator();
-        }
-        return $this;
+        $vars = get_object_vars($this);
+        unset($vars['serviceLocator']);
+        $vars = array_keys($vars);
+        return $vars;
     }
 
     /**
@@ -1523,6 +1285,10 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
     {
+        // If this isn't the top-level manager, get its parent:
+        if ($serviceLocator instanceof ServiceLocatorAwareInterface) {
+            $serviceLocator = $serviceLocator->getServiceLocator();
+        }
         $this->serviceLocator = $serviceLocator;
         return $this;
     }
@@ -1535,20 +1301,6 @@ class Params implements ServiceLocatorAwareInterface
     public function getServiceLocator()
     {
         return $this->serviceLocator;
-    }
-
-    /**
-     * Pull the search manager from the service locator.
-     *
-     * @return \VuFind\Search\Manager
-     */
-    protected function getSearchManager()
-    {
-        $sl = $this->getServiceLocator();
-        if (!is_object($sl)) {
-            throw new \Exception('Could not find service locator');
-        }
-        return $sl->get('SearchManager');
     }
 
     /**
@@ -1576,5 +1328,40 @@ class Params implements ServiceLocatorAwareInterface
         return $this->getServiceLocator()->has('VuFind\Translator')
             ? $this->getServiceLocator()->get('VuFind\Translator')->translate($msg)
             : $msg;
+    }
+
+    /**
+     * Set the override query
+     *
+     * @param string $q Override query
+     *
+     * @return void
+     */
+    public function setOverrideQuery($q)
+    {
+        $this->overrideQuery = $q;
+    }
+
+    /**
+     * Get the override query
+     *
+     * @return string
+     */
+    public function getOverrideQuery()
+    {
+        return $this->overrideQuery;
+    }
+
+    /**
+     * Return search query object.
+     *
+     * @return VuFindSearch\Query\AbstractQuery
+     */
+    public function getQuery()
+    {
+        if ($this->overrideQuery) {
+            return new Query($this->overrideQuery);
+        }
+        return $this->query;
     }
 }

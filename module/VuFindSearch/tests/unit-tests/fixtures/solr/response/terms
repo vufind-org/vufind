@@ -1,0 +1,7 @@
+HTTP/1.1 200 OK
+Date: Thu, 21 Mar 2013 10:51:31 GMT
+Last-Modified: Thu, 21 Mar 2013 10:43:54 GMT
+ETag: "OTkxNzhhZDNjODAwMDAwU29scg=="
+Server: Jetty(6.1.11)
+
+{"responseHeader":{"status":0,"QTime":0},"terms":{"author":[["de",27],["johann",21],["friedrich",18],["von",16],["andreas",15],["johannes",15],["georg",14],["heinrich",14],["michael",14],["peter",12]]}}

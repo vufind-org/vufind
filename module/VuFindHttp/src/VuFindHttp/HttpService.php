@@ -86,7 +86,7 @@ class HttpService implements HttpServiceInterface
      *
      * @return Zend\Http\Client
      */
-    public function proxify (\Zend\Http\Client $client, array $options = array())
+    public function proxify(\Zend\Http\Client $client, array $options = array())
     {
         if ($this->proxyConfig) {
             $host = $client->getUri()->getHost();
@@ -109,7 +109,7 @@ class HttpService implements HttpServiceInterface
      *
      * @return \Zend\Http\Response
      */
-    public function get ($url, array $params = array(), $timeout = null)
+    public function get($url, array $params = array(), $timeout = null)
     {
         if ($params) {
             $query = $this->createQueryString($params);
@@ -134,7 +134,7 @@ class HttpService implements HttpServiceInterface
      *
      * @return \Zend\Http\Response
      */
-    public function post ($url, $body = null, $type = 'application/octet-stream',
+    public function post($url, $body = null, $type = 'application/octet-stream',
         $timeout = null
     ) {
         $client
@@ -155,7 +155,7 @@ class HttpService implements HttpServiceInterface
      *
      * @return \Zend\Http\Response
      */
-    public function postForm ($url, array $params = array(), $timeout = null)
+    public function postForm($url, array $params = array(), $timeout = null)
     {
         $body = $this->createQueryString($params);
         return $this->post($url, $body, \Zend\Http\Client::ENC_URLENCODED, $timeout);
@@ -183,7 +183,7 @@ class HttpService implements HttpServiceInterface
      *
      * @return \Zend\Http\Client
      */
-    public function createClient ($url = null,
+    public function createClient($url = null,
         $method = \Zend\Http\Request::METHOD_GET, $timeout = null
     ) {
         $client = new \Zend\Http\Client();
@@ -210,7 +210,7 @@ class HttpService implements HttpServiceInterface
      *
      * @return string
      */
-    protected function createQueryString (array $params = array())
+    protected function createQueryString(array $params = array())
     {
         if ($this->isAssocParams($params)) {
             return http_build_query($params);
@@ -229,7 +229,7 @@ class HttpService implements HttpServiceInterface
      *
      * @todo Catch more exceptions, maybe?
      */
-    protected function send (\Zend\Http\Client $client)
+    protected function send(\Zend\Http\Client $client)
     {
         try {
             $response = $client->send();
@@ -250,7 +250,7 @@ class HttpService implements HttpServiceInterface
      *
      * @return boolean
      */
-    public static function isAssocParams (array $array)
+    public static function isAssocParams(array $array)
     {
         foreach ($array as $key => $value) {
             if (!is_numeric($key)) {
@@ -267,7 +267,7 @@ class HttpService implements HttpServiceInterface
      *
      * @return boolean
      */
-    protected function isLocal ($host)
+    protected function isLocal($host)
     {
         return preg_match(self::LOCAL_ADDRESS_RE, $host);
     }

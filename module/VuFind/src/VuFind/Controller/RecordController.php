@@ -26,7 +26,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use VuFind\Config\Reader as ConfigReader;
 
 /**
  * Record Controller
@@ -41,14 +40,15 @@ class RecordController extends AbstractRecord
 {
     /**
      * Constructor
+     *
+     * @param \Zend\Config\Config $config VuFind configuration
      */
-    public function __construct()
+    public function __construct(\Zend\Config\Config $config)
     {
         // Call standard record controller initialization:
         parent::__construct();
 
         // Load default tab setting:
-        $config = ConfigReader::getConfig();
         $this->defaultTab = isset($config->Site->defaultRecordTab)
             ? $config->Site->defaultRecordTab : 'Holdings';
     }
@@ -144,6 +144,11 @@ class RecordController extends AbstractRecord
             }
         }
 
+        // Find and format the default required date:
+        $defaultRequired = $this->holds()->getDefaultRequiredDate($checkHolds);
+        $defaultRequired = $this->getServiceLocator()->get('VuFind\DateConverter')
+            ->convertToDisplayDate("U", $defaultRequired);
+
         return $this->createViewModel(
             array(
                 'gatheredDetails' => $gatheredDetails,
@@ -153,9 +158,7 @@ class RecordController extends AbstractRecord
                 ),
                 'homeLibrary' => $this->getUser()->home_library,
                 'extraHoldFields' => $extraHoldFields,
-                'defaultRequiredDate' => $this->holds()->getDefaultRequiredDate(
-                    $checkHolds
-                )
+                'defaultRequiredDate' => $defaultRequired
             )
         );
     }

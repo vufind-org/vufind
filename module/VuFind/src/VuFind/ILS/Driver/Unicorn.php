@@ -25,8 +25,7 @@
  * @link     http://code.google.com/p/vufind-unicorn/ vufind-unicorn project
  */
 namespace VuFind\ILS\Driver;
-use File_MARC, VuFind\Config\Reader as ConfigReader,
-    VuFind\Exception\ILS as ILSException;
+use File_MARC, VuFind\Exception\ILS as ILSException;
 
 /**
  * SirsiDynix Unicorn ILS Driver (VuFind side)
@@ -45,12 +44,33 @@ use File_MARC, VuFind\Config\Reader as ConfigReader,
  **/
 class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
+    /**
+     * Host
+     *
+     * @var string
+     */
     protected $host;
-    protected $port;
-    protected $search_prog;
-    protected $url;
 
-    protected $db;
+    /**
+     * Port
+     *
+     * @var string
+     */
+    protected $port;
+
+    /**
+     * Name of API program
+     *
+     * @var string
+     */
+    protected $search_prog;
+
+    /**
+     * Full URL to API (alternative to host/port/search_prog)
+     *
+     * @var string
+     */
+    protected $url;
 
     /**
      * HTTP service
@@ -58,6 +78,23 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @var \VuFindHttp\HttpServiceInterface
      */
     protected $httpService = null;
+
+    /**
+     * Date converter object
+     *
+     * @var \VuFind\Date\Converter
+     */
+    protected $dateConverter;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Date\Converter $dateConverter Date converter object
+     */
+    public function __construct(\VuFind\Date\Converter $dateConverter)
+    {
+        $this->dateConverter = $dateConverter;
+    }
 
     /**
      * Set the HTTP service to be used for HTTP requests.
@@ -98,8 +135,6 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $this->port = $this->config['Catalog']['port'];
             $this->search_prog = $this->config['Catalog']['search_prog'];
         }
-
-        $this->db = \VuFind\Connection\Manager::connectToIndex();
     }
 
     /**
@@ -399,8 +434,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         // convert expire date from display format
         // to the format Symphony/Unicorn expects
         $expire = $holdDetails['requiredBy'];
-        $formatDate = new \VuFind\Date\Converter();
-        $expire = $formatDate->convertFromDisplayDate(
+        $expire = $this->dateConverter->convertFromDisplayDate(
             $this->config['Catalog']['server_date_format'],
             $expire
         );
@@ -892,10 +926,6 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * Obtain information on course reserves.
      *
-     * This version of findReserves was contributed by Matthew Hooper and includes
-     * support for electronic reserves (though eReserve support is still a work in
-     * progress).
-     *
      * @param string $courseId     ID from getCourses (empty string to match all)
      * @param string $instructorId ID from getInstructors (empty string to match all)
      * @param string $departmentId ID from getDepartments (empty string to match all)
@@ -1238,8 +1268,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $dateTimeString = '';
         if ($time) {
             $dateTimeString = strftime('%m/%d/%Y %H:%M', $time);
-            $dateFormat = new \VuFind\Date\Converter();
-            $dateTimeString = $dateFormat->convertToDisplayDate(
+            $dateTimeString = $this->dateConverter->convertToDisplayDate(
                 'm/d/Y H:i', $dateTimeString
             );
         }

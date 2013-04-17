@@ -27,7 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use VuFind\Config\Reader as ConfigReader, VuFind\Exception\ILS as ILSException,
+use VuFind\Exception\ILS as ILSException,
     VuFind\I18n\Translator\TranslatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
@@ -95,8 +95,8 @@ class NoILS extends AbstractBase implements ServiceLocatorAwareInterface,
      */
     public function getSolrRecord($id)
     {
-        return $this->getServiceLocator()->getServiceLocator()->get('SearchManager')
-            ->setSearchClassId('Solr')->getResults()->getRecord($id);
+        return $this->getServiceLocator()->getServiceLocator()
+            ->get('VuFind\RecordLoader')->load($id);
     }
 
     /**

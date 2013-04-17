@@ -26,8 +26,9 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Record;
-use Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+use VuFind\Exception\RecordMissing as RecordMissingException,
+    VuFind\RecordDriver\PluginManager as RecordFactory,
+    VuFindSearch\Service as SearchService;
 
 /**
  * Record loader
@@ -38,34 +39,33 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Loader implements ServiceLocatorAwareInterface
+class Loader
 {
     /**
-     * Service locator
+     * Record factory
      *
-     * @var ServiceLocatorInterface
+     * @var RecordFactory
      */
-    protected $serviceLocator;
+    protected $recordFactory;
 
     /**
-     * Given a record source, return the search object that can load that type of
-     * record.
+     * Search service
      *
-     * @param string $source Record source
-     *
-     * @throws \Exception
-     * @return \VuFind\Search\Base\Results
+     * @var SearchService
      */
-    protected function getClassForSource($source)
-    {
-        $sm = $this->getServiceLocator()->get('SearchManager');
+    protected $searchService;
 
-        // Throw an error if we can't find a loader class:
-        try {
-            return $sm->setSearchClassId($source)->getResults();
-        } catch (\Exception $e) {
-            throw new \Exception('Unrecognized data source: ' . $source);
-        }
+    /**
+     * Constructor
+     *
+     * @param SearchService $searchService Search service
+     * @param RecordFactory $recordFactory Record loader
+     */
+    public function __construct(SearchService $searchService,
+        RecordFactory $recordFactory
+    ) {
+        $this->searchService = $searchService;
+        $this->recordFactory = $recordFactory;
     }
 
     /**
@@ -79,8 +79,28 @@ class Loader implements ServiceLocatorAwareInterface
      */
     public function load($id, $source = 'VuFind')
     {
-        // Load the record:
-        return $this->getClassForSource($source)->getRecord($id);
+        $results = $this->searchService->retrieve($source, $id)->getRecords();
+        if (count($results) < 1) {
+            throw new RecordMissingException(
+                'Record ' . $source . ':' . $id . ' does not exist.'
+            );
+        }
+        return $results[0];
+    }
+
+    /**
+     * Given an array of IDs and a record source, load a batch of records for
+     * that source.
+     *
+     * @param array  $ids    Record IDs
+     * @param string $source Record source
+     *
+     * @throws \Exception
+     * @return array
+     */
+    public function loadBatchForSource($ids, $source = 'VuFind')
+    {
+        return $this->searchService->retrieveBatch($source, $ids)->getRecords();
     }
 
     /**
@@ -117,8 +137,7 @@ class Loader implements ServiceLocatorAwareInterface
         // Retrieve the records and put them back in order:
         $retVal = array();
         foreach ($idBySource as $source => $details) {
-            $records = $this->getClassForSource($source)
-                ->getRecords(array_keys($details));
+            $records = $this->loadBatchForSource(array_keys($details), $source);
             foreach ($records as $current) {
                 $id = $current->getUniqueId();
                 $retVal[$details[$id]] = $current;
@@ -132,39 +151,14 @@ class Loader implements ServiceLocatorAwareInterface
                 $fields = isset($details['extra_fields'])
                     ? $details['extra_fields'] : array();
                 $fields['id'] = $details['id'];
-                $factory = $this->getServiceLocator()
-                    ->get('VuFind\RecordDriverPluginManager');
-                $retVal[$i] = $factory->get('Missing');
+                $retVal[$i] = $this->recordFactory->get('Missing');
                 $retVal[$i]->setRawData($fields);
-                $retVal[$i]->setResourceSource($details['source']);
+                $retVal[$i]->setSourceIdentifier($details['source']);
             }
         }
 
         // Send back the final array, with the keys in proper order:
         ksort($retVal);
         return $retVal;
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Manager
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 }

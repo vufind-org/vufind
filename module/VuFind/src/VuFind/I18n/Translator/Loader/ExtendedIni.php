@@ -41,6 +41,11 @@ use Zend\I18n\Exception\InvalidArgumentException,
  */
 class ExtendedIni implements FileLoaderInterface
 {
+    /**
+     * Parsed translation data
+     *
+     * @var TextDomain
+     */
     protected $data;
 
     /**
@@ -87,7 +92,7 @@ class ExtendedIni implements FileLoaderInterface
                 // Split the string on the equals sign, keeping a max of two chunks:
                 $parts = explode('=', $current, 2);
                 $key = trim($parts[0]);
-                if (!empty($key) && substr($key, 0, 1) != ';') {
+                if ($key != "" && substr($key, 0, 1) != ';') {
                     // Trim outermost double quotes off the value if present:
                     if (isset($parts[1])) {
                         $value = preg_replace(
