@@ -91,10 +91,8 @@ class WorldCatSimilar extends Similar
         }
 
         // Perform the search and save results:
-        $result = $this->resultsManager->get('WorldCat');
-        $params = $result->getParams();
-        $params->setLimit(5);
-        $params->setOverrideQuery($query);
-        $this->results = $result->getResults();
+        $queryObj = new \VuFindSearch\Query\Query($query);
+        $result = $this->searchService->search('WorldCat', $queryObj, 0, 5);
+        $this->results = $result->getRecords();
     }
 }

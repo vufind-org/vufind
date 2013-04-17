@@ -409,21 +409,6 @@ class Results extends BaseResults
     }
 
     /**
-     * Method to retrieve records similar to the provided ID.  Returns an
-     * array of record driver objects.
-     *
-     * @param string $id Unique identifier of record
-     *
-     * @return array
-     * @tag NEW SEARCH
-     */
-    public function getSimilarRecords($id)
-    {
-        $collection = $this->getSearchService()->similar($this->backendId, $id);
-        return $collection->getRecords();
-    }
-
-    /**
      * Get complete facet counts for several index fields
      *
      * @param array  $facetfields  name of the Solr fields to return facets for

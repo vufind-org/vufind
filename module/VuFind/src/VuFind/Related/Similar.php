@@ -46,20 +46,20 @@ class Similar implements RelatedInterface
     protected $results;
 
     /**
-     * Results plugin manager
+     * Search service
      *
-     * @var \VuFind\Search\Results\PluginManager
+     * @var \VuFindSearch\Service
      */
-    protected $resultsManager;
+    protected $searchService;
 
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
+     * @param \VuFindSearch\Service $results Results plugin manager
      */
-    public function __construct(\VuFind\Search\Results\PluginManager $results)
+    public function __construct(\VuFindSearch\Service $search)
     {
-        $this->resultsManager = $results;
+        $this->searchService = $search;
     }
 
     /**
@@ -74,8 +74,8 @@ class Similar implements RelatedInterface
      */
     public function init($settings, $driver)
     {
-        $this->results = $this->resultsManager->get('Solr')
-            ->getSimilarRecords($driver->getUniqueId());
+        $this->results
+            = $this->searchService->similar('Solr', $driver->getUniqueId());
     }
 
     /**

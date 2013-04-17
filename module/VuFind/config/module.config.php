@@ -742,7 +742,7 @@ $config = array(
                     },
                     'similar' => function ($sm) {
                         return new \VuFind\Related\Similar(
-                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+                            $sm->getServiceLocator()->get('VuFind\Search')
                         );
                     },
                     'worldcateditions' => function ($sm) {
@@ -753,7 +753,7 @@ $config = array(
                     },
                     'worldcatsimilar' => function ($sm) {
                         return new \VuFind\Related\WorldCatSimilar(
-                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+                            $sm->getServiceLocator()->get('VuFind\Search')
                         );
                     },
                 ),
