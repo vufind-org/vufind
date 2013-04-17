@@ -179,39 +179,77 @@ class Horizon extends AbstractBase
     protected function processHoldingRow($id, $row, $patron)
     {
         $duedate = $row['DUEDATE'];
-        switch ($row['STATUS_CODE']) {
-        case 'i': // checked in
-            $available = 1;
-            $reserve = 'N';
-            break;
-        case 'h': // being held
-            $available = 0;
-            $reserve = 'Y';
-            break;
-        case 'l': // lost
-            $available = 0;
-            $reserve = 'N';
-            $duedate=''; // No due date for lost items
-            break;
-        default:
-            $available = 0;
-            $reserve = 'N';
-            break;
+        $item_status = $row['STATUS_CODE']; //get the item status code
+        $statuses = isset($this->config['Statuses'][$item_status])
+            ? $this->config['Statuses'][$item_status] : null;
+
+        // query the config file for the item status if there are
+        // config values, use the configuration otherwise execute the switch
+        if (!$statuses == null) {
+            // break out the values
+            $arrayValues = array_map('strtolower', explode(',', $statuses));
+
+            //set the variables based on what we find in the config file
+            if (in_array(strtolower('available:1'), $arrayValues)) {
+                $available = 1;
+            }
+            if (in_array(strtolower('available:0'), $arrayValues)) {
+                $available = 0;
+            }
+            if (in_array(strtolower('reserve:N'), $arrayValues)) {
+                $reserve = 'N';
+            }
+            if (in_array(strtolower('reserve:Y'), $arrayValues)) {
+                $reserve = 'Y';
+            }
+            if (in_array(strtolower('duedate:0'), $arrayValues)) {
+                $duedate='';
+            }
+        } else {
+            switch ($row['STATUS_CODE']) {
+            case 'i': // checked in
+                $available = 1;
+                $reserve = 'N';
+                break;
+            case 'rb': // Reserve Bookroom
+                $available = 0;
+                $reserve = 'Y';
+                break;
+            case 'h': // being held
+                $available = 0;
+                $reserve = 'N';
+                break;
+            case 'l': // lost
+                $available = 0;
+                $reserve = 'N';
+                $duedate=''; // No due date for lost items
+                break;
+            case 'm': // missing
+                $available = 0;
+                $reserve = 'N';
+                $duedate=''; // No due date for missing items
+                break;
+            default:
+                $available = 0;
+                $reserve = 'N';
+                break;
+            }
         }
 
-         return array('id' => $id,
-                      'availability' => $available,
-                      'item_num' => $row['ITEM_NUM'],
-                      'status' => $row['STATUS'],
-                      'location' => $row['LOCATION'],
-                      'reserve' => $reserve,
-                      'callnumber' => $row['CALLNUMBER'],
-                      'collection' => $row['COLLECTION'],
-                      'duedate' => $duedate,
-                      'barcode' => $row['ITEM_BARCODE'],
-                      'number' => $row['ITEM_SEQUENCE_NUMBER'],
-                      'requests_placed' => $row['REQUEST']
-         );
+        return array(
+            'id' => $id,
+            'availability' => $available,
+            'item_num' => $row['ITEM_NUM'],
+            'status' => $row['STATUS'],
+            'location' => $row['LOCATION'],
+            'reserve' => $reserve,
+            'callnumber' => $row['CALLNUMBER'],
+            'collection' => $row['COLLECTION'],
+            'duedate' => $duedate,
+            'barcode' => $row['ITEM_BARCODE'],
+            'number' => $row['ITEM_SEQUENCE_NUMBER'],
+            'requests_placed' => $row['REQUEST']
+        );
     }
 
     /**
