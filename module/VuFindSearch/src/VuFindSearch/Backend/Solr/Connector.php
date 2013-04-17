@@ -207,23 +207,16 @@ class Connector
     /**
      * Execute a search.
      *
-     * @param AbstractQuery $query        Search query
-     * @param integer       $offset       Search offset
-     * @param integer       $limit        Search limit
-     * @param QueryBuilder  $queryBuilder Query builder
-     * @param ParamBag      $params       Parameters
+     * @param ParamBag $params Parameters
+     * @param integer  $offset Search offset
+     * @param integer  $limit  Search limit
      *
      * @return string
      */
-    public function search(AbstractQuery $query, $offset, $limit,
-        QueryBuilder $queryBuilder, ParamBag $params = null
-    ) {
-        $params = $params ?: new ParamBag();
+    public function search(ParamBag $params, $offset, $limit)
+    {
         $params->set('start', $offset);
         $params->set('rows', $limit);
-
-        $params->mergeWith($queryBuilder->build($query));
-
         return $this->select($params);
     }
 
@@ -231,7 +224,7 @@ class Connector
      * Write to the SOLR index.
      *
      * @param AbstractDocument $document Document to write
-     * @param string           $format   Serialization forma, either `json' or `xml'
+     * @param string           $format   Serialization format, either 'json' or 'xml'
      * @param string           $handler  Update handler
      * @param ParamBag         $params   Update handler parameters
      *

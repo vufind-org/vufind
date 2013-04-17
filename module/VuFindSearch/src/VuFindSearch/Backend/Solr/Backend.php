@@ -169,8 +169,8 @@ class Backend implements BackendInterface, MoreLikeThis, RetrieveBatchInterface
             }
         }
 
-        $response   = $this->connector
-            ->search($query, $offset, $limit, $this->getQueryBuilder(), $params);
+        $params->mergeWith($this->getQueryBuilder()->build($query));
+        $response   = $this->connector->search($params, $offset, $limit);
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
 
@@ -241,8 +241,13 @@ class Backend implements BackendInterface, MoreLikeThis, RetrieveBatchInterface
         while (count($ids) > 0) {
             $currentPage = array_splice($ids, 0, $pageSize, array());
             $currentPage = array_map($formatIds, $currentPage);
-            $query = new Query('id:(' . implode(' OR ', $currentPage) . ')');
-            $next = $this->search($query, 0, $pageSize);
+            $params = new ParamBag(
+                array('q' => 'id:(' . implode(' OR ', $currentPage) . ')')
+            );
+            $this->injectResponseWriter($params);
+            $next = $this->createRecordCollection(
+                $this->connector->search($params, 0, $pageSize)
+            );
             if (!$results) {
                 $results = $next;
             } else {
