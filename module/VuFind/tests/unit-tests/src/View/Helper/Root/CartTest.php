@@ -46,8 +46,15 @@ class CartTest extends \PHPUnit_Framework_TestCase
     public function testCart()
     {
         // Create a mock cart object:
+        $mockLoader = $this->getMock(
+            'VuFind\Record\Loader', array(),
+            array(
+                $this->getMock('VuFindSearch\Service'),
+                $this->getMock('VuFind\RecordDriver\PluginManager')
+            )
+        );
         $cart = $this->getMock(
-            'VuFind\Cart', null, array($this->getMock('VuFind\Record\Loader'))
+            'VuFind\Cart', null, array($mockLoader)
         );
 
         // Create a helper object:

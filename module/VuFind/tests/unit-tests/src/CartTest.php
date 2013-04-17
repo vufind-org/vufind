@@ -50,7 +50,13 @@ class CartTest extends \PHPUnit_Framework_TestCase
      */
     public function __construct()
     {
-        $this->loader = $this->getMock('VuFind\Record\Loader');
+        $this->loader = $this->getMock(
+            'VuFind\Record\Loader', array(),
+            array(
+                $this->getMock('VuFindSearch\Service'),
+                $this->getMock('VuFind\RecordDriver\PluginManager')
+            )
+        );
     }
 
     /**
