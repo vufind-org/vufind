@@ -854,4 +854,30 @@ class Horizon extends AbstractBase
 
         return $versionOK;
     }
+
+    /**
+     * Get suppressed records.
+     *
+     * Get a list of Horizon bib numbers that have the staff-only flag set.
+     *
+     * @return array ID numbers of suppressed records in the system.
+     */
+    public function getSuppressedRecords()
+    {
+        $list = array();
+
+        $sql = "select bc.bib#" .
+            "  from bib_control bc" .
+            " where bc.staff_only = 1";
+        try {
+            $sqlStmt = mssql_query($sql);
+            while ($row = mssql_fetch_assoc($sqlStmt)) {
+                $list[] = $row['bib#'];
+            }
+        } catch (\Exception $e) {
+            throw new ILSException($e->getMessage());
+        }
+
+        return $list;
+    }
 }
