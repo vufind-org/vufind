@@ -247,7 +247,6 @@ class Results extends BaseResults
             if ($suggestions) {
                 $this->suggestions[$term] = array(
                     'freq' => $info['origFreq'],
-                    // TODO: Avoid reference to Options
                     'suggestions' => $suggestions
                 );
             }
