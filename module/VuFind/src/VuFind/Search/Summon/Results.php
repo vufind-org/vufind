@@ -44,11 +44,11 @@ use SerialsSolutions_Summon_Query as SummonQuery,
 class Results extends BaseResults
 {
     /**
-     * Raw search response:
+     * Facet details:
      *
      * @var array
      */
-    protected $rawResponse = null;
+    protected $responseFacets = null;
 
     /**
      * Database recommendations
@@ -73,7 +73,7 @@ class Results extends BaseResults
             'Summon', $query, $offset, $limit, $params
         );
 
-        $this->rawResponse = $collection->getRawResponse();
+        $this->responseFacets = $collection->getFacets();
         $this->resultTotal = $collection->getTotal();
 
         // Process spelling suggestions if enabled (note that we need this
@@ -91,11 +91,8 @@ class Results extends BaseResults
         // to display the date range facet control in the interface.
         $dateFacets = $this->getParams()->getDateFacetSettings();
         if (!empty($dateFacets)) {
-            if (!isset($this->rawResponse['facetFields'])) {
-                $this->rawResponse['facetFields'] = array();
-            }
             foreach ($dateFacets as $dateFacet) {
-                $this->rawResponse['facetFields'][] = array(
+                $this->responseFacets[] = array(
                     'fieldName' => 'PublicationDate',
                     'displayName' => 'PublicationDate',
                     'counts' => array()
@@ -249,13 +246,11 @@ class Results extends BaseResults
 
         // Loop through the facets returned by Summon.
         $facetResult = array();
-        if (isset($this->rawResponse['facetFields'])
-            && is_array($this->rawResponse['facetFields'])
-        ) {
+        if (is_array($this->responseFacets)) {
             // Get the filter list -- we'll need to check it below:
             $filterList = $this->getParams()->getFilters();
 
-            foreach ($this->rawResponse['facetFields'] as $current) {
+            foreach ($this->responseFacets as $current) {
                 // The "displayName" value is actually the name of the field on
                 // Summon's side -- we'll probably need to translate this to a
                 // different value for actual display!

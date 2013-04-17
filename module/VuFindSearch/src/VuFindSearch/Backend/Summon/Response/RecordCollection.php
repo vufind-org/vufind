@@ -79,7 +79,8 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getFacets()
     {
-        return $this->response['facetFields'];
+        return isset($this->response['facetFields'])
+            ? $this->response['facetFields'] : array();
     }
 
     /**
@@ -94,18 +95,6 @@ class RecordCollection extends AbstractRecordCollection
         $size = isset($this->response['query']['pageSize'])
             ? $this->response['query']['pageSize'] : 0;
         return $page * $size;
-    }
-
-    /**
-     * Get the raw Summon response.
-     *
-     * @return array
-     *
-     * @todo Remove once we don't need it anymore (02/2013)
-     */
-    public function getRawResponse()
-    {
-        return $this->response;
     }
 
     /**
