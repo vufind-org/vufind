@@ -130,23 +130,18 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
     /**
      * Execute a search.
      *
-     * @param AbstractQuery $query        Search query
-     * @param integer       $offset       Search offset
-     * @param integer       $limit        Search limit
-     * @param QueryBuilder  $queryBuilder Query builder
-     * @param ParamBag      $params       Parameters
+     * @param ParamBag $params Parameters
+     * @param integer  $offset Search offset
+     * @param integer  $limit  Search limit
      *
-     * @return array
+     * @return string
      */
-    public function search(AbstractQuery $query, $offset, $limit,
-        QueryBuilder $queryBuilder, ParamBag $params = null
-    ) {
-        $params = $params ?: new ParamBag();
+    public function search(ParamBag $params, $offset, $limit)
+    {
         $params->set('startRecord', $offset);
         $params->set('maximumRecords', $limit);
         $params->set('servicelevel', 'full');
         $params->set('wskey', $this->wskey);
-        $params->mergeWith($queryBuilder->build($query));
 
         // Establish a limitation on searching by OCLC Codes
         if (!empty($this->limitCodes)) {
