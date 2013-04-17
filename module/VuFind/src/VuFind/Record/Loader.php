@@ -98,10 +98,10 @@ class Loader
      * @throws \Exception
      * @return array
      */
-     public function loadBatchForSource($ids, $source = 'VuFind')
-     {
-         return $this->searchService->retrieveBatch($source, $ids)->getRecords();
-     }
+    public function loadBatchForSource($ids, $source = 'VuFind')
+    {
+        return $this->searchService->retrieveBatch($source, $ids)->getRecords();
+    }
 
     /**
      * Given an array of associative arrays with id and source keys (or pipe-
