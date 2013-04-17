@@ -396,6 +396,7 @@ ul.recordSet .addToFavLink {
     text-align: right;
 }
 .summcover {
+    min-height: 1px; /* Chrome display glitch workaround */
     max-width: 70px;
     padding:0;
     margin:0;
