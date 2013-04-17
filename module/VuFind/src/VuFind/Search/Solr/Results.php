@@ -49,9 +49,11 @@ use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 class Results extends BaseResults
 {
     /**
-     * Raw Solr search response:
+     * Facet details:
+     *
+     * @var array
      */
-    protected $rawResponse = null;
+    protected $responseFacets = null;
 
     /**
      * Search backend identifiers.
@@ -82,7 +84,7 @@ class Results extends BaseResults
         $collection = $this->getSearchService()
             ->search($this->backendId, $query, $offset, $limit, $params);
 
-        $this->rawResponse = $collection->getRawResponse();
+        $this->responseFacets = $collection->getFacets();
         $this->resultTotal = $collection->getTotal();
 
         // Process spelling suggestions
@@ -359,7 +361,7 @@ class Results extends BaseResults
     public function getFacetList($filter = null)
     {
         // Make sure we have processed the search before proceeding:
-        if (is_null($this->rawResponse)) {
+        if (null === $this->responseFacets) {
             $this->performAndProcessSearch();
         }
 
@@ -371,18 +373,10 @@ class Results extends BaseResults
         // Start building the facet list:
         $list = array();
 
-        // If we have no facets to process, give up now
-        if (!isset($this->rawResponse['facet_counts']['facet_fields'])
-            || !is_array($this->rawResponse['facet_counts']['facet_fields'])
-        ) {
-            return $list;
-        }
-
         // Loop through every field returned by the result set
+        $fieldFacets = $this->responseFacets->getFieldFacets();
         foreach (array_keys($filter) as $field) {
-            $data = isset($this->rawResponse['facet_counts']['facet_fields'][$field])
-                ? $this->rawResponse['facet_counts']['facet_fields'][$field]
-                : array();
+            $data = isset($fieldFacets[$field]) ? $fieldFacets[$field] : array();
             // Skip empty arrays:
             if (count($data) < 1) {
                 continue;
@@ -397,15 +391,15 @@ class Results extends BaseResults
             $translate
                 = in_array($field, $this->getOptions()->getTranslatedFacets());
             // Loop through values:
-            foreach ($data as $facet) {
+            foreach ($data as $value => $count) {
                 // Initialize the array of data about the current facet:
                 $currentSettings = array();
-                $currentSettings['value'] = $facet[0];
+                $currentSettings['value'] = $value;
                 $currentSettings['displayText']
-                    = $translate ? $this->translate($facet[0]) : $facet[0];
-                $currentSettings['count'] = $facet[1];
+                    = $translate ? $this->translate($value) : $value;
+                $currentSettings['count'] = $count;
                 $currentSettings['isApplied']
-                    = $this->getParams()->hasFilter("$field:".$facet[0]);
+                    = $this->getParams()->hasFilter("$field:".$value);
 
                 // Store the collected values:
                 $list[$field]['list'][] = $currentSettings;

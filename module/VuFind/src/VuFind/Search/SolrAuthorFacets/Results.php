@@ -52,11 +52,11 @@ class Results extends \VuFind\Search\Solr\Results
     {
         $query = $this->getParams()->getQuery();
         $params = $this->createBackendParameters($query, $this->getParams());
+        // Perform the search:
         $collection = $this->getSearchService()
             ->search($this->backendId, $query, 0, 0, $params);
 
-        // Perform the search:
-        $this->rawResponse = $collection->getRawResponse();
+        $this->responseFacets = $collection->getFacets();
 
         // Get the facets from which we will build our results:
         $facets = $this->getFacetList(array('authorStr' => null));

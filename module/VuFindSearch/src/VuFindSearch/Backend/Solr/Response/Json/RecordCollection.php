@@ -105,18 +105,6 @@ class RecordCollection extends AbstractRecordCollection
     }
 
     /**
-     * Return raw deserialized response.
-     *
-     * @return array
-     *
-     * @todo Remove once we don't need it anymore (02/2013)
-     */
-    public function getRawResponse()
-    {
-        return $this->response;
-    }
-
-    /**
      * Return total number of records found.
      *
      * @return int
