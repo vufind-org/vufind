@@ -26,7 +26,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Search\MixedList;
-use VuFind\Search\Base\Options as BaseOptions;
 
 /**
  * Search Mixed List Options
@@ -37,7 +36,7 @@ use VuFind\Search\Base\Options as BaseOptions;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Options extends BaseOptions
+class Options extends \VuFind\Search\Base\Options
 {
     /**
      * Return the route name for the search results action.

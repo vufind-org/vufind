@@ -60,10 +60,9 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
     public function createServiceWithName(ServiceLocatorInterface $serviceLocator,
         $name, $requestedName
     ) {
-        $obj = parent::createServiceWithName($serviceLocator, $name, $requestedName);
-        // TODO: eliminate init method to get rid of this awkwardness:
-        $obj->setServiceLocator($serviceLocator->getServiceLocator());
-        $obj->init();
-        return $obj;
+        $class = $this->getClassName($name, $requestedName);
+        return new $class(
+            $serviceLocator->getServiceLocator()->get('VuFind\Config')
+        );
     }
 }

@@ -60,17 +60,14 @@ class Options extends \VuFind\Search\Base\Options
     protected $hiddenFilters = array();
 
     /**
-     * Perform initialization that cannot occur in constructor due to need for
-     * injected dependencies.
+     * Constructor
      *
-     * @return void
+     * @param \VuFind\Config\PluginManager $configLoader Config loader
      */
-    public function init()
+    public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
-        parent::init();
-
-        $searchSettings = $this->getServiceLocator()->get('VuFind\Config')
-            ->get($this->searchIni);
+        parent::__construct($configLoader);
+        $searchSettings = $configLoader->get($this->searchIni);
         if (isset($searchSettings->General->default_limit)) {
             $this->defaultLimit = $searchSettings->General->default_limit;
         }
@@ -135,8 +132,7 @@ class Options extends \VuFind\Search\Base\Options
         }
 
         // Load facet preferences
-        $facetSettings = $this->getServiceLocator()->get('VuFind\Config')
-            ->get($this->facetsIni);
+        $facetSettings = $configLoader->get($this->facetsIni);
         if (isset($facetSettings->Advanced_Settings->translated_facets)
             && count($facetSettings->Advanced_Settings->translated_facets) > 0
         ) {
@@ -150,7 +146,7 @@ class Options extends \VuFind\Search\Base\Options
         }
 
         // Load Spelling preferences
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $config = $configLoader->get('config');
         if (isset($config->Spelling->enabled)) {
             $this->spellcheck = $config->Spelling->enabled;
         }

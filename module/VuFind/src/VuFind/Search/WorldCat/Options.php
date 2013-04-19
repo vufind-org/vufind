@@ -41,27 +41,15 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Constructor
      *
-     * @return void
+     * @param \VuFind\Config\PluginManager $configLoader Config loader
      */
-    public function __construct()
+    public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
-        parent::__construct();
+        parent::__construct($configLoader);
         $this->searchIni = $this->facetsIni = 'WorldCat';
-    }
-
-    /**
-     * Perform initialization that cannot occur in constructor due to need for
-     * injected dependencies.
-     *
-     * @return void
-     */
-    public function init()
-    {
-        parent::init();
 
         // Load the configuration file:
-        $searchSettings = $this->getServiceLocator()->get('VuFind\Config')
-            ->get($this->searchIni);
+        $searchSettings = $configLoader->get($this->searchIni);
 
         // Search handler setup:
         $this->defaultHandler = 'srw.kw';

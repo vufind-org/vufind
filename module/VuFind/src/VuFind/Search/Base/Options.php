@@ -27,8 +27,6 @@
  */
 namespace VuFind\Search\Base;
 use VuFind\I18n\Translator\TranslatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface,
     Zend\Session\Container as SessionContainer;
 
 /**
@@ -42,8 +40,7 @@ use VuFind\I18n\Translator\TranslatorAwareInterface,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-abstract class Options implements ServiceLocatorAwareInterface,
-    TranslatorAwareInterface
+abstract class Options implements TranslatorAwareInterface
 {
     // Available sort options
     protected $sortOptions = array();
@@ -121,28 +118,13 @@ abstract class Options implements ServiceLocatorAwareInterface,
     protected $translator = null;
 
     /**
-     * Service locator
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
-
-    /**
      * Constructor
+     *
+     * @param \VuFind\Config\PluginManager $configLoader Config loader
      */
-    public function __construct()
+    public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
         $this->limitOptions = array($this->defaultLimit);
-    }
-
-    /**
-     * Perform initialization that cannot occur in constructor due to need for
-     * injected dependencies.
-     *
-     * @return void
-     */
-    public function init()
-    {
     }
 
     /**
@@ -575,25 +557,8 @@ abstract class Options implements ServiceLocatorAwareInterface,
     }
 
     /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return Params
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        // If this isn't the top-level manager, get its parent:
-        if ($serviceLocator instanceof ServiceLocatorAwareInterface) {
-            $serviceLocator = $serviceLocator->getServiceLocator();
-        }
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Sleep magic method -- the service locator can't be serialized, so we need to
-     * exclude it from serialization.  Since we can't obtain a new locator in the
+     * Sleep magic method -- the translator can't be serialized, so we need to
+     * exclude it from serialization.  Since we can't obtain a new one in the
      * __wakeup() method, it needs to be re-injected from outside.
      *
      * @return array
@@ -601,19 +566,9 @@ abstract class Options implements ServiceLocatorAwareInterface,
     public function __sleep()
     {
         $vars = get_object_vars($this);
-        unset($vars['serviceLocator']);
+        unset($vars['translator']);
         $vars = array_keys($vars);
         return $vars;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 
     /**
