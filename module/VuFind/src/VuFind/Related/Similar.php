@@ -55,7 +55,7 @@ class Similar implements RelatedInterface
     /**
      * Constructor
      *
-     * @param \VuFindSearch\Service $results Results plugin manager
+     * @param \VuFindSearch\Service $search Search service
      */
     public function __construct(\VuFindSearch\Service $search)
     {
