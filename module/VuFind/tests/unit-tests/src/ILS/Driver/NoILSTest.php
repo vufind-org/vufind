@@ -39,6 +39,18 @@ use VuFind\ILS\Driver\NoILS;
  */
 class NoILSTest extends \VuFindTest\Unit\TestCase
 {
+    /**
+     * Mock record loader
+     *
+     * @param \VuFind\Record\Loader
+     */
+    protected $loader;
+
+    /**
+     * Driver object
+     *
+     * @var NoILS
+     */
     protected $driver;
 
     /**
@@ -46,7 +58,14 @@ class NoILSTest extends \VuFindTest\Unit\TestCase
      */
     public function __construct()
     {
-        $this->driver = new NoILS();
+        $this->loader = $this->getMock(
+            'VuFind\Record\Loader', array(),
+            array(
+                $this->getMock('VuFindSearch\Service'),
+                $this->getMock('VuFind\RecordDriver\PluginManager')
+            )
+        );
+        $this->driver = new NoILS($this->loader);
         $this->driver->init();
     }
 

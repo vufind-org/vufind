@@ -486,6 +486,11 @@ $config = array(
                             $sm->getServiceLocator()->get('VuFind\Config')
                         );
                     },
+                    'noils' => function ($sm) {
+                        return new \VuFind\ILS\Driver\NoILS(
+                            $sm->getServiceLocator()->get('VuFind\RecordLoader')
+                        );
+                    },
                     'unicorn' => function ($sm) {
                         return new \VuFind\ILS\Driver\Unicorn(
                             $sm->getServiceLocator()->get('VuFind\DateConverter')
@@ -511,7 +516,6 @@ $config = array(
                     'innovative' => 'VuFind\ILS\Driver\Innovative',
                     'koha' => 'VuFind\ILS\Driver\Koha',
                     'newgenlib' => 'VuFind\ILS\Driver\NewGenLib',
-                    'noils' => 'VuFind\ILS\Driver\NoILS',
                     'pica' => 'VuFind\ILS\Driver\PICA',
                     'sample' => 'VuFind\ILS\Driver\Sample',
                     'symphony' => 'VuFind\ILS\Driver\Symphony',
