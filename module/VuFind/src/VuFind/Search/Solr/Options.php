@@ -171,20 +171,6 @@ class Options extends \VuFind\Search\Base\Options
             $this->highlight = true;
         }
 
-        // Apply hidden filters:
-        //   Already in AbstractSolrBackendFactory (dmaus, 20130305)
-        /* if (isset($searchSettings->HiddenFilters)) { */
-        /*     foreach ($searchSettings->HiddenFilters as $field => $subfields) { */
-        /*         $rawFilter = $field.':'.'"'.addcslashes($subfields, '"').'"'; */
-        /*         $this->addHiddenFilter($rawFilter); */
-        /*     } */
-        /* } */
-        /* if (isset($searchSettings->RawHiddenFilters)) { */
-        /*     foreach ($searchSettings->RawHiddenFilters as $rawFilter) { */
-        /*         $this->addHiddenFilter($rawFilter); */
-        /*     } */
-        /* } */
-
         // Load autocomplete preference:
         if (isset($searchSettings->Autocomplete->enabled)) {
             $this->autocompleteEnabled = $searchSettings->Autocomplete->enabled;
