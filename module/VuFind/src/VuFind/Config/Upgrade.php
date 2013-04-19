@@ -431,12 +431,13 @@ class Upgrade
         // If the [BulkExport] options setting is an old default, update it to
         // reflect the fact that we now support more options.
         $eo = $newConfig['BulkExport']['options'];
-        if (($this->from == '1.3' && $eo == 'MARC:EndNote:RefWorks:BibTeX')
+        if (($this->from == '1.4' && $eo == 'MARC:MARCXML:EndNote:RefWorks:BibTeX')
+            || ($this->from == '1.3' && $eo == 'MARC:EndNote:RefWorks:BibTeX')
             || ($this->from == '1.2' && $eo == 'MARC:EndNote:BibTeX')
             || ($this->from == '1.1' && $eo == 'MARC:EndNote')
         ) {
             $newConfig['BulkExport']['options']
-                = 'MARC:MARCXML:EndNote:RefWorks:BibTeX';
+                = 'MARC:MARCXML:EndNote:EndNoteWeb:RefWorks:BibTeX';
         }
 
         // Warn the user if they have Amazon enabled but do not have the appropriate
