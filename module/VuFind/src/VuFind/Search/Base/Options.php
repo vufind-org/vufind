@@ -26,7 +26,8 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Base;
-use Zend\ServiceManager\ServiceLocatorAwareInterface,
+use VuFind\I18n\Translator\TranslatorAwareInterface,
+    Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface,
     Zend\Session\Container as SessionContainer;
 
@@ -41,7 +42,8 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-abstract class Options implements ServiceLocatorAwareInterface
+abstract class Options implements ServiceLocatorAwareInterface,
+    TranslatorAwareInterface
 {
     // Available sort options
     protected $sortOptions = array();
@@ -110,6 +112,13 @@ abstract class Options implements ServiceLocatorAwareInterface
      * @var string
      */
     protected $facetsIni = 'facets';
+
+    /**
+     * Translator (or null if unavailable)
+     *
+     * @var \Zend\I18n\Translator\Translator
+     */
+    protected $translator = null;
 
     /**
      * Service locator
@@ -608,6 +617,19 @@ abstract class Options implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Set a translator
+     *
+     * @param \Zend\I18n\Translator\Translator $translator Translator
+     *
+     * @return Options
+     */
+    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
+    {
+        $this->translator = $translator;
+        return $this;
+    }
+
+    /**
      * Translate a string if a translator is available.
      *
      * @param string $msg Message to translate
@@ -616,8 +638,7 @@ abstract class Options implements ServiceLocatorAwareInterface
      */
     public function translate($msg)
     {
-        return $this->getServiceLocator()->has('VuFind\Translator')
-            ? $this->getServiceLocator()->get('VuFind\Translator')->translate($msg)
-            : $msg;
+        return null !== $this->translator
+            ? $this->translator->translate($msg) : $msg;
     }
 }
