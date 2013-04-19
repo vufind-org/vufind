@@ -215,6 +215,11 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
                     $this->serviceManager->get('VuFind\RecordDriverPluginManager')
                 )
             );
+            $this->serviceManager->setService('Config', array());
+            $factory = new \Zend\I18n\Translator\TranslatorServiceFactory();
+            $this->serviceManager->setService(
+                'VuFind\Translator', $factory->createService($this->serviceManager)
+            );
         }
         return $this->serviceManager;
     }
