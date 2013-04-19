@@ -54,8 +54,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * the provided tab configuration array.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
-     * @param array                             $config Tab configuration (map of
-     * driver class => tab service name
+     * @param array                             $config Tab configuration
+     * (associative array including 'tabs' array mapping driver class => tab service
+     * name)
      *
      * @return array
      */
@@ -67,8 +68,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         // setting.
         $className = get_class($driver);
         while (true) {
-            if (isset($config[$className])) {
-                return $config[$className];
+            if (isset($config[$className]['tabs'])) {
+                return $config[$className]['tabs'];
             }
             $className = get_parent_class($className);
             if (empty($className)) {
