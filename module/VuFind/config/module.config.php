@@ -242,7 +242,9 @@ $config = array(
             },
             'VuFind\RecordStats' => function ($sm) {
                 return new \VuFind\Statistics\Record(
-                    $sm->get('VuFind\Config')->get('config')
+                    $sm->get('VuFind\Config')->get('config'),
+                    $sm->get('VuFind\StatisticsDriverPluginManager'),
+                    $sm->get('VuFind\SessionManager')->getId()
                 );
             },
             'VuFind\Search\BackendManager' => function ($sm) {
@@ -263,7 +265,9 @@ $config = array(
             },
             'VuFind\SearchStats' => function ($sm) {
                 return new \VuFind\Statistics\Search(
-                    $sm->get('VuFind\Config')->get('config')
+                    $sm->get('VuFind\Config')->get('config'),
+                    $sm->get('VuFind\StatisticsDriverPluginManager'),
+                    $sm->get('VuFind\SessionManager')->getId()
                 );
             },
             'VuFind\SMS' => 'VuFind\SMS\Factory',

@@ -26,8 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Statistics;
-use Zend\ServiceManager\ServiceLocatorInterface,
-    Zend\ServiceManager\ServiceLocatorAwareInterface;
+use VuFind\Statistics\Driver\PluginManager, Zend\Config\Config;
 
 /**
  * VuFind Search Controller
@@ -38,7 +37,7 @@ use Zend\ServiceManager\ServiceLocatorInterface,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-abstract class AbstractBase implements ServiceLocatorAwareInterface
+abstract class AbstractBase
 {
     /**
      * Array of statistics drivers (null if not yet initialized)
@@ -55,23 +54,41 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
     protected $source;
 
     /**
-     * Service locator
+     * Session ID
      *
-     * @var ServiceLocatorInterface
+     * @var string
      */
-    protected $serviceLocator;
+    protected $sessId;
+
+    /**
+     * Statistics driver plugin manager
+     *
+     * @var PluginManager
+     */
+    protected $pluginManager;
+
+    /**
+     * VuFind configuration
+     *
+     * @var Config
+     */
+    protected $config;
 
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config VuFind configuration
+     * @param Config        $config VuFind configuration
+     * @param PluginManager $pm     Statistics driver plugin manager
+     * @param string        $sessId Session ID
      */
-    public function __construct($config)
+    public function __construct(Config $config, PluginManager $pm, $sessId)
     {
         $this->config = $config;
         // Source pulled from class name
         $source = explode('\\', get_class($this));
         $this->source = end($source);
+        $this->pluginManager = $pm;
+        $this->sessId = $sessId;
     }
     
     /**
@@ -85,28 +102,6 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
             $this->drivers = $this->getDriversForSource($this->source);
         }
         return $this->drivers;
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return AbstractBase
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 
     /**
@@ -148,9 +143,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
                 }
 
                 // If we got this far, we want the current option!  Build the driver:
-                $loader = $this->getServiceLocator()
-                    ->get('VuFind\StatisticsDriverPluginManager');
-                $newDriver = $loader->get($setting[0]);
+                $newDriver = $this->pluginManager->get($setting[0]);
 
                 // Set the name of the data source;  we use the special value
                 // "global" to represent global writer requests (the special null
@@ -214,8 +207,7 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface
                 ? 'Manual'
                 : $server->get('HTTP_REFERER'),
             'url'              => $server->get('REQUEST_URI'),
-            'session'          =>
-                $this->getServiceLocator()->get('VuFind\SessionManager')->getId()
+            'session'          => $this->sessId
         );
     }
 
