@@ -340,15 +340,16 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface,
      * Return an array of related record suggestion objects (implementing the
      * \VuFind\Related\RelatedInterface) based on the current record.
      *
-     * @param array $types Array of relationship types to load; each entry should
-     * be a partial class name (i.e. 'Similar' or 'Editions') optionally followed
-     * by a colon-separated list of parameters to pass to the constructor.  If the
-     * parameter is set to null instead of an array, default settings will be loaded
-     * from config.ini.
+     * @param \VuFind\Related\PluginManager $factory Related module plugin factory
+     * @param array $types                           Array of relationship types to
+     * load; each entry should be a service name (i.e. 'Similar' or 'Editions')
+     * optionally followed by a colon-separated list of parameters to pass to the
+     * constructor.  If the parameter is set to null instead of an array, default
+     * settings will be loaded from config.ini.
      *
      * @return array
      */
-    public function getRelated($types = null)
+    public function getRelated(\VuFind\Related\PluginManager $factory, $types = null)
     {
         if (is_null($types)) {
             $types = isset($this->recordConfig->Record->related) ?
@@ -359,8 +360,6 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface,
             $parts = explode(':', $current);
             $type = $parts[0];
             $params = isset($parts[1]) ? $parts[1] : null;
-            $factory = $this->getServiceLocator()->getServiceLocator()
-                ->get('VuFind\RelatedPluginManager');
             if ($factory->has($type)) {
                 $plugin = $factory->get($type);
                 $plugin->init($params, $this);
