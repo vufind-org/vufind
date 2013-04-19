@@ -631,36 +631,52 @@ class Horizon extends AbstractBase
     {
         // Expressions
         $sqlExpressions = array(
-            "item.bib# as BIB_NUM", "item.item# as ITEM_NUM",
-            "item.ibarcode as ITEM_BARCODE",
-            "convert(varchar(12), dateadd(dd, item.due_date, '01 jan 1970'))" .
-                "as DUEDATE",
-            "item.n_renewals as RENEW", "request.bib_queue_ord as REQUEST"
+            "convert(varchar(12), dateadd(dd, i.due_date, '01 jan 1970')) " .
+                            "as DUEDATE",
+            "i.bib#          as BIB_NUM",
+            "i.ibarcode      as ITEM_BARCODE",
+            "i.n_renewals    as RENEW",
+            "r.bib_queue_ord as REQUEST",
+            "i.volume        as VOLUME",
+            "p.pubdate       as PUBLICATION_YEAR",
+            "t.processed     as TITLE",
+            "i.item#         as ITEM_NUM",
         );
 
         // From
-        $sqlFrom = array("circ");
+        $sqlFrom = array("circ c");
 
         // Join
         $sqlJoin = array(
-            "item on item.item#=circ.item#",
-            "borrower on borrower.borrower#=circ.borrower#",
-            "borrower_barcode on borrower_barcode.borrower#=circ.borrower#"
+            "item i on i.item#=c.item#",
+            "borrower b on b.borrower# = c.borrower#",
+            "borrower_barcode bb on bb.borrower# = c.borrower#",
+            "title t on t.bib# = i.bib#",
         );
 
         // Left Outer Join
-        $sqlLeftOuterJoin = array("request on request.item#=circ.item#");
+        $sqlLeftOuterJoin = array(
+            "request r on r.item#=c.item#",
+            "pubdate_inverted p on p.bib# = i.bib#"
+        );
 
         // Where
         $sqlWhere = array(
-            "borrower_barcode.bbarcode=\"" . addslashes($patron['id']) . "\"");
+            "bb.bbarcode=\"" . addslashes($patron['id']) . "\"");
+
+        // Order by
+        $sqlOrder = array(
+            "i.due_date",
+            "t.processed"
+        );
 
         $sqlArray = array(
-            'expressions' => $sqlExpressions,
-            'from' => $sqlFrom,
-            'join' => $sqlJoin,
+            'expressions'   => $sqlExpressions,
+            'from'          => $sqlFrom,
+            'join'          => $sqlJoin,
             'leftOuterJoin' => $sqlLeftOuterJoin,
-            'where' => $sqlWhere
+            'where'         => $sqlWhere,
+            'order'         => $sqlOrder
         );
 
         return $sqlArray;
@@ -682,7 +698,7 @@ class Horizon extends AbstractBase
             $dueDate = $this->dateFormat->convertToDisplayDate(
                 "M d Y", trim($row['DUEDATE'])
             );
-            $now = time();
+            $now          = time();
             $dueTimeStamp = $this->dateFormat->convertFromDisplayDate(
                 "U", $dueDate
             );
@@ -695,13 +711,17 @@ class Horizon extends AbstractBase
             }
         }
 
-        return array('id' => $row['BIB_NUM'],
-                     'item_id' => $row['ITEM_NUM'],
-                     'duedate' => $dueDate,
-                     'barcode' => $row['ITEM_BARCODE'],
-                     'renew' => $row['RENEW'],
-                     'request' => $row['REQUEST'],
-                     'dueStatus' => $dueStatus
+        return array(
+            'id'               => $row['BIB_NUM'],
+             'item_id'          => $row['ITEM_NUM'],
+             'duedate'          => $dueDate,
+             'barcode'          => $row['ITEM_BARCODE'],
+             'renew'            => $row['RENEW'],
+             'request'          => $row['REQUEST'],
+             'dueStatus'        => $dueStatus,
+             'volume'           => $row['VOLUME'],
+             'publication_year' => $row['PUBLICATION_YEAR'],
+             'title'            => $row['TITLE']
         );
     }
 
@@ -720,8 +740,8 @@ class Horizon extends AbstractBase
     public function getMyTransactions($patron)
     {
         $transList = array();
-        $sqlArray = $this->getTransactionSQL($patron);
-        $sql = $this->buildSqlFromArray($sqlArray);
+        $sqlArray  = $this->getTransactionSQL($patron);
+        $sql       = $this->buildSqlFromArray($sqlArray);
 
         try {
             $sqlStmt = mssql_query($sql);

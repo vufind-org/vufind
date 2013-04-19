@@ -176,10 +176,8 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     {
         $transactions = parent::processTransactionsRow($row);
         $renewData = $this->determineRenewability($row['REQUEST']);
-        $transactions += array(
-            'renewable' => $renewData['renewable'],
-            'message' => $renewData['message']
-        );
+        $transactions['renewable'] = $renewData['renewable'];
+        $transactions['message'] = $renewData['message'];
         return $transactions;
     }
 
