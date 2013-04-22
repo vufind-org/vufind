@@ -301,7 +301,7 @@ class Backend implements BackendInterface, MoreLikeThis, RetrieveBatchInterface
         $params->set('terms.lower.incl', 'false');
         $params->set('terms.sort', 'index');
 
-        $response = $this->connector->query('term', $params);
+        $response = $this->connector->terms($params);
         $terms    = new Terms($this->deserialize($response));
         return $terms;
     }
