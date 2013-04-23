@@ -70,7 +70,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         // We should always update BulkExport options to latest full set when
         // upgrading a default configuration:
         $this->assertEquals(
-            'MARC:MARCXML:EndNote:RefWorks:BibTeX',
+            'MARC:MARCXML:EndNote:EndNoteWeb:RefWorks:BibTeX',
             $results['config.ini']['BulkExport']['options']
         );
 
@@ -133,5 +133,15 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
     public function testUpgrade13()
     {
         $this->checkVersion('1.3');
+    }
+
+    /**
+     * Test upgrading from 1.4.
+     *
+     * @return void
+     */
+    public function testUpgrade14()
+    {
+        $this->checkVersion('1.4');
     }
 }

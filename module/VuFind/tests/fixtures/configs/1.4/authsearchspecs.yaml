@@ -1,0 +1,62 @@
+---
+# This file contains search specifications used by the authority module; for details
+# on the workings of this file, see the comments in searchspecs.yaml.
+#-----------------------------------------------------------------------------------
+
+AllFields:
+  DismaxFields:
+    - heading_keywords^750
+    - use_for_keywords^400
+    - see_also_keywords^100
+    - allfields
+  DismaxParams:
+    - [bq, (record_type:"Personal Name" OR record_type:"Corporate Name")^500]
+  QueryFields:
+    heading_keywords:
+      - [onephrase, 1000]
+      - [and, 750]
+      - [or, 10]
+    use_for_keywords:
+      - [onephrase, 500]
+      - [and, 400]
+      - [or, 5]
+    see_also_keywords:
+      - [onephrase, 130]
+      - [and, 100]
+      - [or, 2]
+    allfields:
+      - [onephrase, 50]
+      - [and, 10]
+      - [or, ~]
+
+Heading:
+  DismaxFields:
+    - heading_keywords^750
+    - use_for_keywords^400
+    - see_also_keywords^100
+  DismaxParams:
+    - [bq, (record_type:"Personal Name" OR record_type:"Corporate Name")^500]
+  QueryFields:
+    heading_keywords:
+      - [onephrase, 1000]
+      - [and, 750]
+      - [or, 10]
+    use_for_keywords:
+      - [onephrase, 500]
+      - [and, 400]
+      - [or, 5]
+    see_also_keywords:
+      - [onephrase, 130]
+      - [and, 100]
+      - [or, 2]
+
+MainHeading:
+  DismaxFields:
+    - heading_keywords^750
+  DismaxParams:
+    - [bq, (record_type:"Personal Name" OR record_type:"Corporate Name")^500]
+  QueryFields:
+    heading_keywords:
+      - [onephrase, 1000]
+      - [and, 750]
+      - [or, 10]

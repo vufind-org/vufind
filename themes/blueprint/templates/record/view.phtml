@@ -58,8 +58,8 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>">
-  <? foreach ($this->driver->getRelated() as $current): ?>
-    <?=$this->related($current)?>
+  <? foreach ($this->related()->getList($this->driver) as $current): ?>
+    <?=$this->related()->render($current)?>
   <? endforeach; ?>
 </div>
 

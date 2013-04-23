@@ -28,9 +28,7 @@
  */
 namespace VuFind\ILS\Driver;
 use VuFind\Exception\ILS as ILSException,
-    VuFind\I18n\Translator\TranslatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+    VuFind\I18n\Translator\TranslatorAwareInterface;
 
 /**
  * Driver for offline/missing ILS.
@@ -42,22 +40,31 @@ use VuFind\Exception\ILS as ILSException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
-class NoILS extends AbstractBase implements ServiceLocatorAwareInterface,
-    TranslatorAwareInterface
+class NoILS extends AbstractBase implements TranslatorAwareInterface
 {
-    /**
-     * Service locator
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
-
     /**
      * Translator (or null if unavailable)
      *
      * @var \Zend\I18n\Translator\Translator
      */
     protected $translator = null;
+
+    /**
+     * Record loader
+     *
+     * @var \VuFind\Record\Loader
+     */
+    protected $recordLoader;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Record\Loader $loader Record loader
+     */
+    public function __construct(\VuFind\Record\Loader $loader)
+    {
+        $this->recordLoader = $loader;
+    }
 
     /**
      * Initialize the driver.
@@ -95,8 +102,7 @@ class NoILS extends AbstractBase implements ServiceLocatorAwareInterface,
      */
     public function getSolrRecord($id)
     {
-        return $this->getServiceLocator()->getServiceLocator()
-            ->get('VuFind\RecordLoader')->load($id);
+        return $this->recordLoader->load($id);
     }
 
     /**
@@ -345,29 +351,6 @@ class NoILS extends AbstractBase implements ServiceLocatorAwareInterface,
     {
         // Block authentication:
         return null;
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return NoILS
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
     }
 
     /**

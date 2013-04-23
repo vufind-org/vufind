@@ -48,27 +48,14 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Constructor
      *
-     * @return void
+     * @param \VuFind\Config\PluginManager $configLoader Config loader
      */
-    public function __construct()
+    public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
-        parent::__construct();
+        parent::__construct($configLoader);
         $this->searchIni = $this->facetsIni = 'Summon';
-    }
-
-    /**
-     * Perform initialization that cannot occur in constructor due to need for
-     * injected dependencies.
-     *
-     * @return void
-     */
-    public function init()
-    {
-        parent::init();
-
         // Load facet preferences:
-        $facetSettings = $this->getServiceLocator()->get('VuFind\Config')
-            ->get($this->facetsIni);
+        $facetSettings = $configLoader->get($this->facetsIni);
         if (isset($facetSettings->Advanced_Facet_Settings->translated_facets)
             && count($facetSettings->Advanced_Facet_Settings->translated_facets) > 0
         ) {
@@ -83,8 +70,7 @@ class Options extends \VuFind\Search\Base\Options
         }
 
         // Load the search configuration file:
-        $searchSettings = $this->getServiceLocator()->get('VuFind\Config')
-            ->get($this->searchIni);
+        $searchSettings = $configLoader->get($this->searchIni);
 
         // Set up highlighting preference
         if (isset($searchSettings->General->highlighting)) {

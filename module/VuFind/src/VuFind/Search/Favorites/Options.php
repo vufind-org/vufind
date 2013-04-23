@@ -26,7 +26,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Search\Favorites;
-use VuFind\Search\Base\Options as BaseOptions;
 
 /**
  * Search Favorites Options
@@ -37,16 +36,16 @@ use VuFind\Search\Base\Options as BaseOptions;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Options extends BaseOptions
+class Options extends \VuFind\Search\Base\Options
 {
     /**
      * Constructor
      *
-     * @return void
+     * @param \VuFind\Config\PluginManager $configLoader Config loader
      */
-    public function __construct()
+    public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
-        parent::__construct();
+        parent::__construct($configLoader);
 
         $this->defaultSort = 'title';
         $this->sortOptions = array(

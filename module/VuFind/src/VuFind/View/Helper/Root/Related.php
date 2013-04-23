@@ -40,6 +40,36 @@ use Zend\View\Exception\RuntimeException, Zend\View\Helper\AbstractHelper;
 class Related extends AbstractHelper
 {
     /**
+     * Plugin manager for related record modules.
+     *
+     * @var \VuFind\Related\PluginManager
+     */
+    protected $pluginManager;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Related\PluginManager $pluginManager Plugin manager for related
+     * record modules.
+     */
+    public function __construct(\VuFind\Related\PluginManager $pluginManager)
+    {
+        $this->pluginManager = $pluginManager;
+    }
+
+    /**
+     * Get a list of related records modules.
+     *
+     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
+     *
+     * @return array
+     */
+    public function getList(\VuFind\RecordDriver\AbstractBase $driver)
+    {
+        return $driver->getRelated($this->pluginManager);
+    }
+
+    /**
      * Render the output of a related records module.
      *
      * @param \VuFind\Related\RelatedInterface $related The related records object to
@@ -47,7 +77,7 @@ class Related extends AbstractHelper
      *
      * @return string
      */
-    public function __invoke($related)
+    public function render($related)
     {
         // Set up the rendering context:
         $contextHelper = $this->getView()->plugin('context');

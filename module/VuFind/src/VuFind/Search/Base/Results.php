@@ -520,10 +520,9 @@ abstract class Results implements ServiceLocatorAwareInterface
         if (method_exists($params, 'setServiceLocator')) {
             $params->setServiceLocator($serviceLocator);
         }
-        $options = $this->getOptions();
-        if (method_exists($options, 'setServiceLocator')) {
-            $params->setServiceLocator($serviceLocator);
-        }
+        // Restore translator:
+        $this->getOptions()
+            ->setTranslator($serviceLocator->get('VuFind\Translator'));
         return $this;
     }
 

@@ -221,6 +221,18 @@ class Connector
     }
 
     /**
+     * Extract terms from a SOLR index.
+     *
+     * @param ParamBag $params Parameters
+     *
+     * @return string
+     */
+    public function terms(ParamBag $params)
+    {
+        return $this->query('term', $params);
+    }
+
+    /**
      * Write to the SOLR index.
      *
      * @param AbstractDocument $document Document to write

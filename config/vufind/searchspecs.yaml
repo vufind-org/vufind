@@ -111,6 +111,10 @@
 #  testing "one two"
 #   ...becomes (testing OR "one two")
 #
+# identity: Use the search as-is
+#  testing "one two"
+#   ...becomes (testing "one two")
+#
 # Additional Munge types can be defined in the CustomMunge section.  Each array
 # entry under CustomMunge defines a new named munge type.  Each array entry under
 # the name of the munge type specifies a string manipulation operation.  Operations

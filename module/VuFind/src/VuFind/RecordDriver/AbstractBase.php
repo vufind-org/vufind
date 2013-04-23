@@ -27,9 +27,7 @@
  */
 namespace VuFind\RecordDriver;
 use VuFind\Exception\LoginRequired as LoginRequiredException,
-    VuFind\Tags, VuFind\XSLT\Import\VuFind as ArticleStripper,
-    Zend\ServiceManager\ServiceLocatorInterface,
-    Zend\ServiceManager\ServiceLocatorAwareInterface;
+    VuFind\Tags, VuFind\XSLT\Import\VuFind as ArticleStripper;
 
 /**
  * Abstract base record model.
@@ -42,7 +40,7 @@ use VuFind\Exception\LoginRequired as LoginRequiredException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-abstract class AbstractBase implements ServiceLocatorAwareInterface,
+abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface,
     \VuFindSearch\Response\RecordInterface
 {
@@ -82,11 +80,11 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface,
     protected $fields = array();
 
     /**
-     * Service locator
+     * Database table plugin manager
      *
-     * @var ServiceLocatorInterface
+     * @var \VuFind\Db\Table\PluginManager
      */
-    protected $serviceLocator;
+    protected $tableManager;
 
     /**
      * Translator (or null if unavailable)
@@ -340,15 +338,16 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface,
      * Return an array of related record suggestion objects (implementing the
      * \VuFind\Related\RelatedInterface) based on the current record.
      *
-     * @param array $types Array of relationship types to load; each entry should
-     * be a partial class name (i.e. 'Similar' or 'Editions') optionally followed
-     * by a colon-separated list of parameters to pass to the constructor.  If the
-     * parameter is set to null instead of an array, default settings will be loaded
-     * from config.ini.
+     * @param \VuFind\Related\PluginManager $factory Related module plugin factory
+     * @param array $types                           Array of relationship types to
+     * load; each entry should be a service name (i.e. 'Similar' or 'Editions')
+     * optionally followed by a colon-separated list of parameters to pass to the
+     * constructor.  If the parameter is set to null instead of an array, default
+     * settings will be loaded from config.ini.
      *
      * @return array
      */
-    public function getRelated($types = null)
+    public function getRelated(\VuFind\Related\PluginManager $factory, $types = null)
     {
         if (is_null($types)) {
             $types = isset($this->recordConfig->Record->related) ?
@@ -359,8 +358,6 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface,
             $parts = explode(':', $current);
             $type = $parts[0];
             $params = isset($parts[1]) ? $parts[1] : null;
-            $factory = $this->getServiceLocator()->getServiceLocator()
-                ->get('VuFind\RelatedPluginManager');
             if ($factory->has($type)) {
                 $plugin = $factory->get($type);
                 $plugin->init($params, $this);
@@ -474,39 +471,41 @@ abstract class AbstractBase implements ServiceLocatorAwareInterface,
     }
 
     /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return AbstractBase
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
-    }
-
-    /**
      * Get a database table object.
      *
-     * @param string $table Name of table to retrieve
+     * @param string $table Table to load.
      *
-     * @return \VuFind\Db\Table\Gateway
+     * @return \VuFind\Db\Table\User
      */
-    protected function getDbTable($table)
+    public function getDbTable($table)
     {
-        return $this->getServiceLocator()->getServiceLocator()
-            ->get('VuFind\DbTablePluginManager')->get($table);
+        return $this->getDbTableManager()->get($table);
+    }
+
+    /**
+     * Get the table plugin manager.  Throw an exception if it is missing.
+     *
+     * @throws \Exception
+     * @return \VuFind\Db\Table\PluginManager
+     */
+    public function getDbTableManager()
+    {
+        if (null === $this->tableManager) {
+            throw new \Exception('DB table manager missing.');
+        }
+        return $this->tableManager;
+    }
+
+    /**
+     * Set the table plugin manager.
+     *
+     * @param \VuFind\Db\Table\PluginManager $manager Plugin manager
+     *
+     * @return void
+     */
+    public function setDbTableManager(\VuFind\Db\Table\PluginManager $manager)
+    {
+        $this->tableManager = $manager;
     }
 
     /**

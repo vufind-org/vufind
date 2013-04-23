@@ -39,14 +39,13 @@ namespace VuFind\Search\Tags;
 class Options extends \VuFind\Search\Base\Options
 {
     /**
-     * Perform initialization that cannot occur in constructor due to need for
-     * injected dependencies.
+     * Constructor
      *
-     * @return void
+     * @param \VuFind\Config\PluginManager $configLoader Config loader
      */
-    public function init()
+    public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
-        parent::init();
+        parent::__construct($configLoader);
         $this->basicHandlers = array('tags' => 'Tag');
         $this->defaultSort = 'title';
         $this->sortOptions = array(

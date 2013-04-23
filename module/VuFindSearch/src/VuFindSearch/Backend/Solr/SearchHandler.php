@@ -268,6 +268,7 @@ class SearchHandler
                 ),
                 'and' => implode(' AND ', $tokens),
                 'or'  => implode(' OR ', $tokens),
+                'identity' => $search,
             );
         } else {
             $mungeValues = array(
@@ -285,6 +286,8 @@ class SearchHandler
                 $mungeValues['onephrase'] = sprintf('"%s"', $search);
             }
         }
+
+        $mungeValues['identity'] = $search;
 
         foreach ($this->specs['CustomMunge'] as $mungeName => $mungeOps) {
             $mungeValues[$mungeName] = $search;

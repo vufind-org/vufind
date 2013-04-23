@@ -272,7 +272,9 @@ class Form extends Fieldset implements FormInterface
     public function bindValues(array $values = array())
     {
         if (!is_object($this->object)) {
-            return;
+            if ( $this->baseFieldset === null || $this->baseFieldset->allowValueBinding() == false ) {
+                return;
+            }
         }
         if (!$this->hasValidated() && !empty($values)) {
             $this->setData($values);
@@ -343,9 +345,9 @@ class Form extends Fieldset implements FormInterface
             throw new Exception\InvalidArgumentException(sprintf(
                 '%s expects the flag to be one of %s::%s or %s::%s',
                 __METHOD__,
-                get_called_class(),
+                get_class($this),
                 'BIND_ON_VALIDATE',
-                get_called_class(),
+                get_class($this),
                 'BIND_MANUAL'
             ));
         }

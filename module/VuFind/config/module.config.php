@@ -242,7 +242,9 @@ $config = array(
             },
             'VuFind\RecordStats' => function ($sm) {
                 return new \VuFind\Statistics\Record(
-                    $sm->get('VuFind\Config')->get('config')
+                    $sm->get('VuFind\Config')->get('config'),
+                    $sm->get('VuFind\StatisticsDriverPluginManager'),
+                    $sm->get('VuFind\SessionManager')->getId()
                 );
             },
             'VuFind\Search\BackendManager' => function ($sm) {
@@ -263,7 +265,9 @@ $config = array(
             },
             'VuFind\SearchStats' => function ($sm) {
                 return new \VuFind\Statistics\Search(
-                    $sm->get('VuFind\Config')->get('config')
+                    $sm->get('VuFind\Config')->get('config'),
+                    $sm->get('VuFind\StatisticsDriverPluginManager'),
+                    $sm->get('VuFind\SessionManager')->getId()
                 );
             },
             'VuFind\SMS' => 'VuFind\SMS\Factory',
@@ -482,6 +486,11 @@ $config = array(
                             $sm->getServiceLocator()->get('VuFind\Config')
                         );
                     },
+                    'noils' => function ($sm) {
+                        return new \VuFind\ILS\Driver\NoILS(
+                            $sm->getServiceLocator()->get('VuFind\RecordLoader')
+                        );
+                    },
                     'unicorn' => function ($sm) {
                         return new \VuFind\ILS\Driver\Unicorn(
                             $sm->getServiceLocator()->get('VuFind\DateConverter')
@@ -507,7 +516,6 @@ $config = array(
                     'innovative' => 'VuFind\ILS\Driver\Innovative',
                     'koha' => 'VuFind\ILS\Driver\Koha',
                     'newgenlib' => 'VuFind\ILS\Driver\NewGenLib',
-                    'noils' => 'VuFind\ILS\Driver\NoILS',
                     'pica' => 'VuFind\ILS\Driver\PICA',
                     'sample' => 'VuFind\ILS\Driver\Sample',
                     'symphony' => 'VuFind\ILS\Driver\Symphony',
@@ -860,33 +868,43 @@ $config = array(
         // parent class.
         'recorddriver_tabs' => array(
             'VuFind\RecordDriver\SolrAuth' => array(
-                'Details' => 'StaffViewMARC',
+                'tabs' => array (
+                    'Details' => 'StaffViewMARC',
+                 ),
             ),
             'VuFind\RecordDriver\SolrDefault' => array(
-                'Holdings' => 'HoldingsILS', 'Description' => 'Description',
-                'TOC' => 'TOC', 'UserComments' => 'UserComments',
-                'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
-                'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
-                'Details' => 'StaffViewArray',
+                'tabs' => array (
+                    'Holdings' => 'HoldingsILS', 'Description' => 'Description',
+                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
+                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+                    'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
+                    'Details' => 'StaffViewArray',
+                ),
             ),
             'VuFind\RecordDriver\SolrMarc' => array(
-                'Holdings' => 'HoldingsILS', 'Description' => 'Description',
-                'TOC' => 'TOC', 'UserComments' => 'UserComments',
-                'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
-                'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
-                'Details' => 'StaffViewMARC',
+                'tabs' => array(
+                    'Holdings' => 'HoldingsILS', 'Description' => 'Description',
+                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
+                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+                    'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
+                    'Details' => 'StaffViewMARC',
+                ),
             ),
             'VuFind\RecordDriver\Summon' => array(
-                'Description' => 'Description',
-                'TOC' => 'TOC', 'UserComments' => 'UserComments',
-                'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
-                'Details' => 'StaffViewArray',
+                'tabs' => array(
+                    'Description' => 'Description',
+                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
+                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+                    'Details' => 'StaffViewArray',
+                ),
             ),
             'VuFind\RecordDriver\WorldCat' => array(
-                'Holdings' => 'HoldingsWorldCat', 'Description' => 'Description',
-                'TOC' => 'TOC', 'UserComments' => 'UserComments',
-                'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
-                'Details' => 'StaffViewMARC',
+                'tabs' => array (
+                    'Holdings' => 'HoldingsWorldCat', 'Description' => 'Description',
+                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
+                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+                    'Details' => 'StaffViewMARC',
+                ),
             ),
         ),
     ),
