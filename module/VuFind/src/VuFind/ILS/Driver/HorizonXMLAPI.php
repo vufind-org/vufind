@@ -610,19 +610,18 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     public function placeHold($holdDetails)
     {
-        $userId = $holdDetails['patron']['id'];
-        $userBarcode = $holdDetails['patron']['id'];
-        $userPassword = $holdDetails['patron']['cat_password'];
-        $bibId = $holdDetails['id'];
+        $userId           = $holdDetails['patron']['id'];
+        $userBarcode      = $holdDetails['patron']['id'];
+        $userPassword     = $holdDetails['patron']['cat_password'];
+        $bibId            = $holdDetails['id'];
         $pickUpLocationID = !empty($holdDetails['pickUpLocation'])
-            ? $holdDetails['pickUpLocation']
-            : $this->getDefaultPickUpLocation();
-        $pickUpLocation = trim($this->config['pickUpLocations'][$pickUpLocationID]);
-        $notify = $this->config['Holds']['notify'];
+                          ? $holdDetails['pickUpLocation']
+                          : $this->getDefaultPickUpLocation();
+        $notify           = $this->config['Holds']['notify'];
 
         $requestDetails = array(
             'bibId' => $bibId,
-            'pickuplocation' => $pickUpLocation,
+            'pickuplocation' => $pickUpLocationID,
             'notify' => $notify
         );
 
