@@ -30,9 +30,9 @@
       <div>
       <? if (count($this->pickup) > 1): ?>
         <?
-          if (isset($this->gatheredDetails['pickUpLocation']) && !empty($this->gatheredDetails['pickUpLocation'])) {
+          if (isset($this->gatheredDetails['pickUpLocation']) && $this->gatheredDetails['pickUpLocation'] !== "") {
               $selected = $this->gatheredDetails['pickUpLocation'];
-          } elseif (isset($this->homeLibrary)) {
+          } elseif (isset($this->homeLibrary) && $this->homeLibrary !== "") {
               $selected = $this->homeLibrary;
           } else {
               $selected = $this->defaultPickup;
