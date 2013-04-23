@@ -83,6 +83,10 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
         $this->wsDefaultPickUpLocation
             = (isset($this->config['Holds']['defaultPickUpLocation']))
             ? $this->config['Holds']['defaultPickUpLocation'] : false;
+
+        $this->wsDateFormat
+            = (isset($this->config['Webservices']['dateformat']))
+            ? $this->config['Webservices']['dateformat'] : 'd/m/Y';
     }
 
     /**
@@ -700,11 +704,12 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
                 $currentRenewals = (string)$renewData->itemout[$i]->numrenewals;
 
                 $dueDate = (string)$renewData->itemout[$i]->duedate;
+                $renewerror = (string)$renewData->itemout[$i]->renewerror;
 
                 // Convert Horizon Format to display format
                 if (!empty($dueDate)) {
                     $currentDueDate = $this->dateFormat->convertToDisplayDate(
-                        "d/m/Y", $dueDate
+                        $this->wsDateFormat, $dueDate
                     );
                 }
 
@@ -720,7 +725,8 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
                     $response['details'][$ikey] = array(
                     'item_id' => $ikey,
                     'new_date' => "",
-                    'success' => false
+                        'success'    => false,
+                        'sysMessage' => $renewerror
                     );
                 }
             }
