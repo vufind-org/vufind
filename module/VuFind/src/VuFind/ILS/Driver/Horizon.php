@@ -554,66 +554,73 @@ class Horizon extends AbstractBase
      */
     public function getMyFines($patron)
     {
-        $sql = "select item.bib# as BIB_NUM, item.item# as ITEM_NUM, " .
-               "burb.borrower# as BORROWER_NUM, burb.amount as AMOUNT, " .
-               "convert(varchar(12),dateadd(dd, burb.date, '01 jan 1970')) " .
-               "as DUEDATE, " .
-               "burb.block as FINE, burb.amount as BALANCE from burb " .
-               "join item on item.item#=burb.item# " .
-               "join borrower on borrower.borrower#=burb.borrower# " .
-               "join borrower_barcode on " .
-               "borrower_barcode.borrower#=burb.borrower# " .
-               "where borrower_barcode.bbarcode=\"" . addslashes($patron['id']) .
-               "\" and amount != 0";
+        $sql = "   select bu.amount as AMOUNT " .
+               "        , case when i.last_cko_date is not null " . 
+               "               then convert(varchar(10), " . 
+               "                    dateadd(dd, i.last_cko_date, " . 
+               "                   '01jan70'), 101) " . 
+               "               else convert(varchar(10), " . 
+               "                  dateadd(dd, bu2.date, " . 
+               "                   '01jan70'), 101) end as CHECKOUT " . 
+               "        , bl.descr as FINE " .
+               "        , (  select sum(b2.amount) " .
+               "               from burb b2 " .
+               "              where b2.reference# = bu.reference# " .
+               "           group by b2.reference#) as BALANCE " .
+               "        , convert(varchar(10), " .
+               "                  dateadd(dd, bu.date, " .
+               "                   '01jan70'), 101) as CREATEDATE " .
+               "        , case when i.due_date is not null " . 
+               "               then convert(varchar(10), " . 
+               "                    dateadd(dd, i.due_date, " . 
+               "                   '01jan70'), 101) " . 
+               "               else convert(varchar(10), " . 
+               "                  dateadd(dd, bu3.date, " . 
+               "                   '01jan70'), 101) end as DUEDATE " . 
+               "        , i2.bib# as ID " .
+               "        , t.processed as TITLE " .
+               "        , case when bl.amount_type = 0 " .
+               "               then 0 else 1 end as FEEBLOCK " .
+               "     from burb bu " .
+               "     join block bl " .
+               "       on bl.block = bu.block " .
+               "     join borrower_barcode bb " .
+               "       on bb.borrower# = bu.borrower# " .
+               "left join item i " .
+               "       on i.item# = bu.item# " .
+               "      and i.borrower# = bu.borrower# " .
+               "left join item i2 " .
+               "       on i2.item# = bu.item# " .
+               "left join burb bu2 " .
+               "       on bu2.reference# = bu.reference# " .
+               "      and bu2.block = 'infocko' " .
+               "left join burb bu3 " .
+               "       on bu3.reference# = bu.reference# " .
+               "      and bu3.block = 'infodue' " .
+               "left join title t " .
+               "       on t.bib# = i2.bib# " .
+               "    where bb.bbarcode = \"" . addslashes($patron['id']) . "\" " .
+               "      and bu.ord = 0 " .
+               "      and bl.pac_display = 1 " .
+               " order by FEEBLOCK desc, bu.item#, bu.block, bu.date ";
 
         try {
             $sqlStmt = mssql_query($sql);
 
             while ($row = mssql_fetch_assoc($sqlStmt)) {
-                $checkout = '';
-                $duedate = '';
-                $bib_num = $row['BIB_NUM'];
-                $item_num = $row['ITEM_NUM'];
-                $borrower_num = $row['BORROWER_NUM'];
-                $amount = $row['AMOUNT'];
-                $balance += $amount;
-
-                if (isset($bib_num) && isset($item_num)) {
-                    $cko = "select convert(varchar(12)," .
-                        "dateadd(dd, date, '01 jan 1970')) as CHECKOUT " .
-                        "from burb where borrower#=" . addslashes($borrower_num) .
-                        " and item#=" . addslashes($item_num) .
-                        " and block=\"infocko\"";
-                    $sqlStmt_cko = mssql_query($cko);
-
-                    if ($row_cko = mssql_fetch_assoc($sqlStmt_cko)) {
-                        $checkout = $row_cko['CHECKOUT'];
-                    }
-
-                    $due = "select convert(varchar(12)," .
-                        "dateadd(dd, date, '01 jan 1970')) as DUEDATE " .
-                        "from burb where borrower#=" . addslashes($borrower_num) .
-                        " and item#=" . addslashes($item_num) .
-                        " and block=\"infodue\"";
-                    $sqlStmt_due = mssql_query($due);
-
-                    if ($row_due = mssql_fetch_assoc($sqlStmt_due)) {
-                        $duedate = $row_due['DUEDATE'];
-                    }
-                }
-
-                $fineList[] = array('id' => $bib_num,
-                                    'amount' => $amount,
+                 $fineList[] = array('amount'     => $row['AMOUNT'],
+                                     'checkout'   => $row['CHECKOUT'],
                                     'fine' => $row['FINE'],
-                                    'balance' => $balance,
-                                    'checkout' => $checkout,
-                                    'duedate' => $duedate);
+                                     'balance'    => $row['BALANCE'],
+                                     'createdate' => $row['CREATEDATE'],
+                                     'duedate'    => $row['DUEDATE'],
+                                     'id'         => $row['ID'],
+                                     'title'      => $row['TITLE']);
             }
             return $fineList;
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
         }
-
     }
 
     /**
