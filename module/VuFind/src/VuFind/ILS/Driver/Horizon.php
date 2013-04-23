@@ -395,33 +395,60 @@ class Horizon extends AbstractBase
     {
         // Expressions
         $sqlExpressions = array(
-            "bib# as BIB_NUM", "bib_queue_ord as POSITION",
-            "request_location as LOCATION", "request_status as STATUS",
-            "convert(varchar(12),dateadd(dd, hold_exp_date, '1 jan 1970')) " .
-                "as EXPIRE",
-            "convert(varchar(12),dateadd(dd, request_date, '1 jan 1970')) " .
-                "as CREATED"
+            "r.bib#           as BIB_NUM",
+            "r.request#       as REQNUM",
+            "r.item#          as ITEM_ID",
+            "r.bib_queue_ord  as POSITION",
+            "l.name           as LOCATION",
+            "r.request_status as STATUS",
+            "case when r.request_status = 1 " .
+                "then 0 " .
+                "else 1 " .
+                "end          as SORT",
+            "t.processed      as TITLE",
+            "p.pubdate        as PUBLICATION_YEAR",
+            "i.volume         as VOLUME",
+            "convert(varchar(12),dateadd(dd, r.hold_exp_date, '1 jan 1970')) " .
+                             "as HOLD_EXPIRE",
+            "convert(varchar(12),dateadd(dd, r.expire_date, '1 jan 1970'))   " .
+                             "as REQUEST_EXPIRE",
+            "convert(varchar(12),dateadd(dd, r.request_date, '1 jan 1970'))  " .
+                             "as CREATED"
         );
 
         // From
-        $sqlFrom = array("request");
+        $sqlFrom = array("request r");
 
         // Join
         $sqlJoin = array(
-            "borrower_barcode on borrower_barcode.borrower#=request.borrower#"
+            "borrower_barcode bb on bb.borrower# = r.borrower#",
+            "location l          on l.location = r.pickup_location",
+            "title t             on t.bib# = r.bib#"
+        );
+
+        $sqlLeftOuterJoin = array(
+            "item i             on i.item# = r.item#",
+            "pubdate_inverted p on p.bib# = r.bib#"
         );
 
         // Where
         $sqlWhere = array(
-            "borrower_barcode.bbarcode=\"" . addslashes($patron['id']) .
+            "bb.bbarcode=\"" . addslashes($patron['id']) .
                "\""
         );
 
+        $sqlOrder = array(
+            "SORT",
+            "t.processed"
+        );
+
         $sqlArray = array(
-            'expressions' => $sqlExpressions,
-            'from' => $sqlFrom,
-            'join' => $sqlJoin,
-            'where' => $sqlWhere
+            'expressions'   => $sqlExpressions,
+            'from'          => $sqlFrom,
+            'join'          => $sqlJoin,
+            'leftOuterJoin' => $sqlLeftOuterJoin,
+            'where'         => $sqlWhere,
+            'order'         => $sqlOrder
         );
 
         return $sqlArray;
@@ -438,17 +465,27 @@ class Horizon extends AbstractBase
     protected function processHoldsRow($row)
     {
         if ($row['STATUS'] != 6) {
-            $position = ($row['STATUS'] != 1) ? $row['POSITION'] : false;
+            $position  = ($row['STATUS'] != 1) ? $row['POSITION'] : false;
             $available = ($row['STATUS'] == 1) ? true : false;
-            $expire = false;
-            $create = false;
+            $expire    = false;
+            $create    = false;
             // Convert Horizon Format to display format
-            if (!empty($row['EXPIRE'])) {
+            if (!empty($row['HOLD_EXPIRE'])) {
                 $expire = $this->dateFormat->convertToDisplayDate(
-                    "M d Y", trim($row['EXPIRE'])
+                    "M d Y", trim($row['HOLD_EXPIRE'])
                 );
+            } elseif (!empty($row['REQUEST_EXPIRE'])) {
+                // If there is no Hold Expiration date fall back to the
+                // Request Expiration date.
+                $expire = $this->dateFormat->convertToDisplayDate(
+                    "M d Y", trim($row['REQUEST_EXPIRE'])
+                );
+            } elseif ($row['STATUS']==2) {
+                // Items that are 'In Transit' have no expiration date.
+                $expire = 'In Transit';
             } else {
-                $expire = "[Not yet available for pickup]";
+                // Just in case we missed a possible scenario
+                $expire = false;
             }
             if (!empty($row['CREATED'])) {
                 $create = $this->dateFormat->convertToDisplayDate(
@@ -456,13 +493,18 @@ class Horizon extends AbstractBase
                 );
             }
 
-            return array('id' => $row['BIB_NUM'],
-                         'location' => $row['LOCATION'],
-                         'expire' => $expire,
-                         'create' => $create,
-                         'reqnum' => null,
-                         'position' => $position,
-                         'available' => $available
+            return array(
+                'id' => $row['BIB_NUM'],
+                'location'         => $row['LOCATION'],
+                'reqnum'           => $row['REQNUM'],
+                'expire'           => $expire,
+                'create'           => $create,
+                'position'         => $position,
+                'available'        => $available,
+                'item_id'          => $row['ITEM_ID'],
+                'volume'           => $row['VOLUME'],
+                'publication_year' => $row['PUBLICATION_YEAR'],
+                'title'            => $row['TITLE']
             );
         }
         return false;
@@ -482,7 +524,7 @@ class Horizon extends AbstractBase
     public function getMyHolds($patron)
     {
         $sqlArray = $this->getHoldsSQL($patron);
-        $sql = $this->buildSqlFromArray($sqlArray);
+        $sql      = $this->buildSqlFromArray($sqlArray);
 
         try {
             $sqlStmt = mssql_query($sql);
