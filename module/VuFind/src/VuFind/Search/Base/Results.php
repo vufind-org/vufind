@@ -590,8 +590,6 @@ abstract class Results implements ServiceLocatorAwareInterface
      */
     public function translate($msg)
     {
-        return $this->getServiceLocator()->has('VuFind\Translator')
-            ? $this->getServiceLocator()->get('VuFind\Translator')->translate($msg)
-            : $msg;
+        return $this->getOptions()->translate($msg);
     }
 }
