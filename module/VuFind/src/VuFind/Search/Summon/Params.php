@@ -40,10 +40,15 @@ class Params extends \VuFind\Search\Base\Params
 {
     /**
      * Settings for all the facets
+     *
+     * @var array
      */
     protected $fullFacetSettings = array();
+
     /**
      * Settings for the date facet only
+     *
+     * @var array
      */
     protected $dateFacetSettings = array();
 

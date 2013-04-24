@@ -26,7 +26,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Search\Tags;
-use VuFind\Search\Base\Params as BaseParams;
 
 /**
  * Search Tags Parameters
@@ -37,7 +36,7 @@ use VuFind\Search\Base\Params as BaseParams;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Params extends BaseParams
+class Params extends \VuFind\Search\Base\Params
 {
     /**
      * Load all recommendation settings from the relevant ini file.  Returns an

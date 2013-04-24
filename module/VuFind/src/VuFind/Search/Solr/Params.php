@@ -40,18 +40,29 @@ class Params extends \VuFind\Search\Base\Params
 {
     /**
      * Facet result limit
+     *
+     * @var int
      */
     protected $facetLimit = 30;
+
     /**
      * Offset for facet results
+     *
+     * @var int
      */
     protected $facetOffset = null;
+
     /**
      * Prefix for facet searching
+     *
+     * @var string
      */
     protected $facetPrefix = null;
+
     /**
      * Sorting order for facet search results
+     *
+     * @var string
      */
     protected $facetSort = null;
 

@@ -26,7 +26,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Search\Favorites;
-use VuFind\Search\Base\Params as BaseParams;
 
 /**
  * Search Favorites Parameters
@@ -37,8 +36,13 @@ use VuFind\Search\Base\Params as BaseParams;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Params extends BaseParams
+class Params extends \VuFind\Search\Base\Params
 {
+    /**
+     * Auth manager
+     *
+     * @var \VuFind\Auth\Manager
+     */
     protected $account;
 
     /**

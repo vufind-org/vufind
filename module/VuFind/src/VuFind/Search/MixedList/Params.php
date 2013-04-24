@@ -26,7 +26,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Search\MixedList;
-use VuFind\Search\Base\Params as BaseParams;
 
 /**
  * Search Mixed List Parameters
@@ -37,10 +36,12 @@ use VuFind\Search\Base\Params as BaseParams;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class Params extends BaseParams
+class Params extends \VuFind\Search\Base\Params
 {
     /**
      * Array of target record ids
+     *
+     * @var array
      */
     protected $recordsToRequest;
 
