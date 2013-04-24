@@ -339,7 +339,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * \VuFind\Related\RelatedInterface) based on the current record.
      *
      * @param \VuFind\Related\PluginManager $factory Related module plugin factory
-     * @param array $types                           Array of relationship types to
+     * @param array                         $types   Array of relationship types to
      * load; each entry should be a service name (i.e. 'Similar' or 'Editions')
      * optionally followed by a colon-separated list of parameters to pass to the
      * constructor.  If the parameter is set to null instead of an array, default
