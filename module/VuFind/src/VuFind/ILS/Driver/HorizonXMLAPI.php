@@ -190,7 +190,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     /**
      * Get Pick Up Locations
      *
-     * This is responsible for gettting a list of valid library locations for
+     * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
      *
      * @param array $patron      Patron information returned by the patronLogin
@@ -207,14 +207,62 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     public function getPickUpLocations($patron, $holdDetails = null)
     {
-        // It is not possible to get a list of pick up locations without supplying
-        // a valid bibliographic id - In order to provide pick up locations for
-        // "My Profile", we must rely on values from the config file
         $pickresponse = false;
-        if (isset($this->wsPickUpLocations)) {
+        if ($this->wsPickUpLocations == false) {
+            // Select
+            $sqlSelect = array(
+                    "l.location LOCATIONID",
+                    "l.name LOCATIONDISPLAY"
+            );
+
+            // From
+            $sqlFrom = array("pickup_location_sort pls");
+
+            // Join
+            $sqlJoin = array(
+                    "location l on l.location = pls.pickup_location",
+                    "borrower b on b.location = pls.location",
+                    "borrower_barcode bb on bb.borrower# = b.borrower#"
+            );
+
+            // Where
+            $sqlWhere = array(
+                    "pls.display = 1",
+                    "bb.bbarcode=\"".addslashes($patron['id'])."\""
+            );
+
+            // Order by
+            $sqlOrder = array("l.name");
+
+            $sqlArray = array(
+                    'expressions' => $sqlSelect,
+                    'from'        => $sqlFrom,
+                    'join'        => $sqlJoin,
+                    'where'       => $sqlWhere,
+                    'order'       => $sqlOrder
+            );
+
+            $sql = $this->buildSqlFromArray($sqlArray);
+
+            try {
+                $sqlStmt = mssql_query($sql);
+
+                while ($row = mssql_fetch_assoc($sqlStmt)) {
+                    $pickresponse[] = array(
+                        'locationID'      => $row['LOCATIONID'],
+                        'locationDisplay' => $row['LOCATIONDISPLAY']
+                    );
+                }
+            } catch (\Exception $e) {
+                throw new ILSException($e->getMessage());
+            }
+
+        } elseif (isset($this->wsPickUpLocations)) {
             foreach ($this->wsPickUpLocations as $code => $library) {
-                $pickresponse[] = array('locationID' => $code,
-                                        'locationDisplay' => $library);
+                $pickresponse[] = array(
+                    'locationID' => $code,
+                    'locationDisplay' => $library
+                );
             }
         }
         return $pickresponse;
@@ -223,7 +271,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     /**
      * Get Default Pick Up Location
      *
-     * Returns the default pick up location set in VoyagerRestful.ini
+     * This is responsible for retrieving the pickup location for a logged in patron.
      *
      * @param array $patron      Patron information returned by the patronLogin
      * method.
@@ -236,7 +284,46 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
-        return $this->wsDefaultPickUpLocation;
+        if ($this->wsDefaultPickUpLocation == false) {
+
+            // Select
+            $sqlSelect = array("b.location LOCATION");
+
+            // From
+            $sqlFrom = array("borrower b");
+
+            // Join
+            $sqlJoin = array("borrower_barcode bb on bb.borrower# = b.borrower#");
+
+            // Where
+            $sqlWhere = array("bb.bbarcode=\"".addslashes($patron['id'])."\"");
+
+            $sqlArray = array(
+                    'expressions' => $sqlSelect,
+                    'from'        => $sqlFrom,
+                    'join'        => $sqlJoin,
+                    'where'       => $sqlWhere
+            );
+
+            $sql = $this->buildSqlFromArray($sqlArray);
+
+            try {
+                $sqlStmt = mssql_query($sql);
+
+                $row = mssql_fetch_assoc($sqlStmt);
+                if ($row) {
+                    $defaultPickUpLocation = $row['LOCATION'];
+                    return $defaultPickUpLocation;
+                } else {
+                    return null;
+                }
+            } catch (\Exception $e) {
+                throw new ILSException($e->getMessage());
+            }
+
+        } elseif (isset($this->wsDefaultPickUpLocation)) {
+            return $this->wsDefaultPickUpLocation;
+        }
     }
 
     /**
