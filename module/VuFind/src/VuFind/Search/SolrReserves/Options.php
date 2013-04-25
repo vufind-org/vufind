@@ -43,23 +43,12 @@ class Options extends \VuFind\Search\Solr\Options
     /**
      * Constructor
      *
-     * @return void
+     * @param \VuFind\Config\PluginManager $configLoader Config loader
      */
-    public function __construct()
+    public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
-        parent::__construct();
+        parent::__construct($configLoader);
         $this->facetsIni = $this->searchIni = 'reserves';
-    }
-
-    /**
-     * Perform initialization that cannot occur in constructor due to need for
-     * injected dependencies.
-     *
-     * @return void
-     */
-    public function init()
-    {
-        parent::init();
         $this->spellcheck = false;
     }
 
