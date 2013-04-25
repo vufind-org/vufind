@@ -864,7 +864,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
             }
         }
 
-        return array('block' => "authentication_error_admin");
+        return array('blocks' => array("authentication_error_admin"));
     }
 
     /**

@@ -256,7 +256,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         // process the API response
         if ($response == 'invalid_login') {
-            return array('block' => "authentication_error_admin");
+            return array('blocks' => array("authentication_error_admin"));
         }
 
         $results = array();

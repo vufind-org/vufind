@@ -101,10 +101,10 @@ class Renewals extends AbstractPlugin
             );
             if ($renewResult !== false) {
                 // Assign Blocks to the Template
-                if (isset($renewResult['block'])
-                    && is_array($renewResult['block'])
+                if (isset($renewResult['blocks'])
+                    && is_array($renewResult['blocks'])
                 ) {
-                    foreach ($renewResult['block'] as $block) {
+                    foreach ($renewResult['blocks'] as $block) {
                         $flashMsg->setNamespace('info')->addMessage($block);
                     }
                 }
