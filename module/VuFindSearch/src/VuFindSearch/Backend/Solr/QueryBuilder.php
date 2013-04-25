@@ -146,9 +146,7 @@ class QueryBuilder
                 $params->set('qf', implode(' ', $handler->getDismaxFields()));
                 $params->set('qt', 'dismax');
                 foreach ($handler->getDismaxParams() as $param) {
-                    foreach ($param as $pair) {
-                        $params->add(reset($pair), next($pair));
-                    }
+                    $params->add(reset($param), next($param));
                 }
                 if ($handler->hasFilterQuery()) {
                     $params->add('fq', $handler->getFilterQuery());
