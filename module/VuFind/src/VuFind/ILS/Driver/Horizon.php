@@ -134,35 +134,54 @@ class Horizon extends AbstractBase
         // import/marc.properties
         // Expressions
         $sqlExpressions = array(
-            "item.item# as ITEM_NUM", "item.item_status as STATUS_CODE",
-            "item_status.descr as STATUS", "location.name as LOCATION",
-            "item.call_reconstructed as CALLNUMBER", "item.ibarcode as ITEM_BARCODE",
-            "convert(varchar(12), " .
-            "dateadd(dd,item.due_date,'jan 1 1970')) as DUEDATE",
-            "item.copy_reconstructed as ITEM_SEQUENCE_NUMBER",
-            "substring(collection.pac_descr,5,40) as COLLECTION",
-            "(select count(*) from request where " .
-            "request.bib# = item.bib# and reactivate_date = NULL) as REQUEST"
+            "i.item# as ITEM_ID",
+            "i.item_status as STATUS_CODE",
+            "ist.descr as STATUS",
+            "l.name as LOCATION",
+            "i.call_reconstructed as CALLNUMBER",
+            "i.ibarcode as ITEM_BARCODE",
+            "convert(varchar(10), " .
+            "        dateadd(dd,i.due_date,'jan 1 1970'), " .
+            "        101) as DUEDATE",
+            "i.copy_reconstructed as NUMBER",
+            "convert(varchar(10), " .
+            "        dateadd(dd,ch.cki_date,'jan 1 1970'), " .
+            "        101) as RETURNDATE",
+            "(select count(*)
+                from request r
+               where r.bib# = i.bib#
+                 and r.reactivate_date = NULL) as REQUEST",
+            "i.notes as NOTES",
+            "ist.available_for_request IS_HOLDABLE",
+
         );
 
         // From
-        $sqlFrom = array("item");
+        $sqlFrom = array("item i");
 
         // inner Join
         $sqlInnerJoin = array(
-            "item_status on item.item_status = item_status.item_status",
-            "location on item.location = location.location",
-            "collection on item.collection = collection.collection"
+            "item_status ist on i.item_status = ist.item_status",
+            "location l on i.location = l.location",
+        );
+
+        $sqlLeftOuterJoin = array(
+           "circ_history ch on ch.item# = i.item#"
         );
 
         // Where
-        $sqlWhere = array("item.bib# = " . addslashes($id));
+        $sqlWhere = array(
+            "i.bib# = " . addslashes($id),
+            "i.staff_only = 0"
+        );
 
-        $sqlArray = array('expressions' => $sqlExpressions,
-                          'from' => $sqlFrom,
-                          'innerJoin' => $sqlInnerJoin,
-                          'where' => $sqlWhere
-                          );
+        $sqlArray = array(
+            'expressions' => $sqlExpressions,
+            'from' => $sqlFrom,
+            'innerJoin' => $sqlInnerJoin,
+            'leftOuterJoin' => $sqlLeftOuterJoin,
+            'where' => $sqlWhere
+        );
 
         return $sqlArray;
     }
@@ -178,10 +197,10 @@ class Horizon extends AbstractBase
      */
     protected function processHoldingRow($id, $row, $patron)
     {
-        $duedate = $row['DUEDATE'];
+        $duedate     = $row['DUEDATE'];
         $item_status = $row['STATUS_CODE']; //get the item status code
-        $statuses = isset($this->config['Statuses'][$item_status])
-            ? $this->config['Statuses'][$item_status] : null;
+        $statuses    = isset($this->config['Statuses'][$item_status])
+                     ? $this->config['Statuses'][$item_status] : null;
 
         // query the config file for the item status if there are
         // config values, use the configuration otherwise execute the switch
@@ -209,47 +228,59 @@ class Horizon extends AbstractBase
             switch ($row['STATUS_CODE']) {
             case 'i': // checked in
                 $available = 1;
-                $reserve = 'N';
+                $reserve   = 'N';
                 break;
             case 'rb': // Reserve Bookroom
                 $available = 0;
-                $reserve = 'Y';
+                $reserve   = 'Y';
                 break;
             case 'h': // being held
                 $available = 0;
-                $reserve = 'N';
+                $reserve   = 'N';
                 break;
             case 'l': // lost
                 $available = 0;
-                $reserve = 'N';
-                $duedate=''; // No due date for lost items
+                $reserve   = 'N';
+                $duedate   = ''; // No due date for lost items
                 break;
             case 'm': // missing
                 $available = 0;
-                $reserve = 'N';
-                $duedate=''; // No due date for missing items
+                $reserve   = 'N';
+                $duedate   = ''; // No due date for missing items
                 break;
             default:
                 $available = 0;
-                $reserve = 'N';
+                $reserve   = 'N';
                 break;
             }
         }
 
-        return array(
-            'id' => $id,
-            'availability' => $available,
-            'item_num' => $row['ITEM_NUM'],
-            'status' => $row['STATUS'],
-            'location' => $row['LOCATION'],
-            'reserve' => $reserve,
-            'callnumber' => $row['CALLNUMBER'],
-            'collection' => $row['COLLECTION'],
-            'duedate' => $duedate,
-            'barcode' => $row['ITEM_BARCODE'],
-            'number' => $row['ITEM_SEQUENCE_NUMBER'],
-            'requests_placed' => $row['REQUEST']
+        $holding = array(
+            'id'              => $id,
+            'availability'    => $available,
+            'item_id'         => $row['ITEM_ID'],
+            'status'          => $row['STATUS'],
+            'location'        => $row['LOCATION'],
+            'reserve'         => $reserve,
+            'callnumber'      => $row['CALLNUMBER'],
+            'duedate'         => $duedate,
+            'returnDate'      => $row['RETURNDATE'],
+            'barcode'         => $row['ITEM_BARCODE'],
+            'requests_placed' => $row['REQUEST'],
+            'is_holdable'     => $row['IS_HOLDABLE'],
         );
+
+        // Only set the number key if there is actually volume data
+        if ($row['NUMBER'] != '') {
+            $holding += array('number' => $row['NUMBER']);
+        }
+
+        // Only set the notes key if there are actually notes to display
+        if ($row['NOTES'] != '') {
+            $holding += array('notes' => array($row['NOTES']));
+        }
+
+        return $holding;
     }
 
     /**
