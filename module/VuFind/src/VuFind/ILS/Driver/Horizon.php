@@ -586,32 +586,34 @@ class Horizon extends AbstractBase
     public function getMyFines($patron)
     {
         $sql = "   select bu.amount as AMOUNT " .
-               "        , case when i.last_cko_date is not null " . 
-               "               then convert(varchar(10), " . 
-               "                    dateadd(dd, i.last_cko_date, " . 
-               "                   '01jan70'), 101) " . 
-               "               else convert(varchar(10), " . 
-               "                  dateadd(dd, bu2.date, " . 
-               "                   '01jan70'), 101) end as CHECKOUT " . 
+               "        , coalesce( " .
+               "              convert(varchar(10), " .
+               "                      dateadd(dd, i.last_cko_date, '01jan70'), " .
+               "                      101), " .
+               "              convert(varchar(10), " .
+               "                      dateadd(dd, bu2.date, '01jan70'), " .
+               "                      101)) as CHECKOUT " .
                "        , bl.descr as FINE " .
                "        , (  select sum(b2.amount) " .
                "               from burb b2 " .
                "              where b2.reference# = bu.reference# " .
                "           group by b2.reference#) as BALANCE " .
                "        , convert(varchar(10), " .
-               "                  dateadd(dd, bu.date, " .
-               "                   '01jan70'), 101) as CREATEDATE " .
-               "        , case when i.due_date is not null " . 
-               "               then convert(varchar(10), " . 
-               "                    dateadd(dd, i.due_date, " . 
-               "                   '01jan70'), 101) " . 
-               "               else convert(varchar(10), " . 
-               "                  dateadd(dd, bu3.date, " . 
-               "                   '01jan70'), 101) end as DUEDATE " . 
+               "                  dateadd(dd, bu.date, '01jan70'), " .
+               "                  101) as CREATEDATE " .
+               "        , coalesce( " .
+               "              convert(varchar(10), " .
+               "                      dateadd(dd, i.due_date, '01jan70'), " .
+               "                      101), " .
+               "              convert(varchar(10), " .
+               "                      dateadd(dd, bu3.date, '01jan70'), " .
+               "                      101)) as DUEDATE " .
                "        , i2.bib# as ID " .
-               "        , t.processed as TITLE " .
+               "        , coalesce (t.processed, bu4.comment) as TITLE " .
                "        , case when bl.amount_type = 0 " .
-               "               then 0 else 1 end as FEEBLOCK " .
+               "               then 0 " .
+               "               else 1 " .
+               "          end as FEEBLOCK " .
                "     from burb bu " .
                "     join block bl " .
                "       on bl.block = bu.block " .
@@ -630,10 +632,18 @@ class Horizon extends AbstractBase
                "      and bu3.block = 'infodue' " .
                "left join title t " .
                "       on t.bib# = i2.bib# " .
+               "left join burb bu4 " .
+               "       on bu4.reference# = bu.reference# " .
+               "      and bu4.ord = 0 " .
+               "      and bu4.block in ('l', 'LostPro','fine','he') " .
                "    where bb.bbarcode = \"" . addslashes($patron['id']) . "\" " .
                "      and bu.ord = 0 " .
                "      and bl.pac_display = 1 " .
-               " order by FEEBLOCK desc, bu.item#, bu.block, bu.date ";
+               " order by FEEBLOCK desc " .
+               "        , bu.item# " .
+               "        , TITLE " .
+               "        , bu.block " .
+               "        , bu.date";
 
         try {
             $sqlStmt = mssql_query($sql);
