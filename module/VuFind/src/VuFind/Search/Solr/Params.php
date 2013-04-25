@@ -67,17 +67,17 @@ class Params extends \VuFind\Search\Base\Params
     protected $facetSort = null;
 
     /**
-     * Perform initialization that cannot occur in constructor due to need for
-     * injected dependencies.
+     * Constructor
      *
-     * @return void
+     * @param \VuFind\Search\Base\Options  $options      Options to use
+     * @param \VuFind\Config\PluginManager $configLoader Config loader
      */
-    public function init()
+    public function __construct($options, \VuFind\Config\PluginManager $configLoader)
     {
-        parent::init();
+        parent::__construct($options, $configLoader);
 
         // Use basic facet limit by default, if set:
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('facets');
+        $config = $configLoader->get('facets');
         if (isset($config->Results_Settings->facet_limit)
             && is_numeric($config->Results_Settings->facet_limit)
         ) {

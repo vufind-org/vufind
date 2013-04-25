@@ -48,12 +48,12 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Options $options Options to use (null to load
-     * defaults)
+     * @param \VuFind\Search\Base\Options  $options      Options to use
+     * @param \VuFind\Config\PluginManager $configLoader Config loader
      */
-    public function __construct($options = null)
+    public function __construct($options, \VuFind\Config\PluginManager $configLoader)
     {
-        parent::__construct($options);
+        parent::__construct($options, $configLoader);
         $this->recommendationsEnabled(true);
     }
 
