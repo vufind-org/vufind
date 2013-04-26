@@ -118,11 +118,16 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     protected function processHoldingRow($id, $row, $patron)
     {
-        $holding = parent::processHoldingRow($id, $row, $patron);
-        $holding += array(
-            'addLink' => $this->checkItemRequests($patron, $id)
+        $itemData = array(
+            'id' => $row['ITEM_ID'],
+            'level' => 'item'
         );
-        return $holding;
+
+         $holding = parent::processHoldingRow($id, $row, $patron);
+         $holding += array(
+            'addLink' => $this->checkRequestIsValid($id, $itemData, $patron)
+         );
+         return $holding;
     }
 
     /**
@@ -419,17 +424,17 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     }
 
     /**
-     * Check Item Requests
+     * Check if Request is Valid
      *
      * Determines if a user can place a hold or recall on a specific item
      *
-     * @param array  $patron Patron Array Data
-     * @param string $bibId  An item's Bib ID
-     * @param string $itemId An item's Item ID (optional)
+     * @param string $bibId    An item's Bib ID
+     * @param string $itemData Array containing item id and hold level
+     * @param array  $patron   Patron Array Data
      *
      * @return boolean true if the request can be made, false if it cannot
      */
-    protected function checkItemRequests($patron, $bibId, $itemId = false)
+    public function checkRequestIsValid($bibId, $itemData, $patron)
     {
         // Register Account
         $session = $this->registerUser(
@@ -439,20 +444,25 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
             $params = array(
                 "session" => $session,
                 "profile" => $this->wsProfile,
-                "bibkey" => $bibId,
-                "aspect" => "submenu13",
-                "lang" => "eng",
-                "menu" => "request",
+                "bibkey"  => $bibId,
+                "aspect"  => "submenu13",
+                "lang"    => "eng",
+                "menu"    => "request",
                 "submenu" => "none",
-                "source" => "~!horizon",
-                "uri" => "",
-                "GetXML" => "true"
+                "source"  => "~!horizon",
+                "uri"     => "",
+                "GetXML"  => "true"
             );
+
+            // set itemkey only if available and level is not title-level
+            if ($itemData['id'] != '' && $itemData['level'] != 'title') {
+                $params += array("itemkey" => $itemData);
+            }
 
             $initResponse = $this->makeRequest($params);
 
             if ($initResponse->request_confirm) {
-                return "Request";
+                return true;
             }
         }
         return false;
