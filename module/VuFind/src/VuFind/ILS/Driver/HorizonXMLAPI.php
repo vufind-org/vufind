@@ -120,28 +120,9 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     {
         $holding = parent::processHoldingRow($id, $row, $patron);
         $holding += array(
-            'item_id' => $id,
             'addLink' => $this->checkItemRequests($patron, $id)
         );
         return $holding;
-    }
-
-    /**
-     * Protected support method for getMyHolds.
-     *
-     * @param array $row An sql row
-     *
-     * @return array Keyed data
-     */
-    protected function processHoldsRow($row)
-    {
-        $hold = parent::processHoldsRow($row);
-        // item# not populated by Horizon,
-        // this is provided for VuFind matching
-        if ($hold) {
-            $hold['item_id'] = $row['BIB_NUM'];
-        }
-        return $hold;
     }
 
     /**
@@ -559,6 +540,11 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
                         "GetXML" => "true"
                         );
 
+        // set itemkey only if available
+        if ($requestDetails['itemId'] != '') {
+            $params += array("itemkey" => $requestDetails['itemId']);
+        }
+
         $initResponse = $this->makeRequest($params);
 
         if ($initResponse->request_confirm) {
@@ -621,21 +607,21 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     protected function cancelRequest($session, $data)
     {
         $responseItems = array();
-        
+
+        $params = array("session"    => $session,
+                        "profile"    => $this->wsProfile,
+                        "lang"       => "eng",
+                        "menu"       => "account",
+                        "submenu"    => "holds",
+                        "cancelhold" => "Cancel Request",
+                        "GetXML"     => "true"
+                        );
+
         foreach ($data as $values) {
-            $bibData[] = $values['bib_id'];
-            $items[] = $values['item_id'];
+            $cancelData[] = $values['bib_id'] . ':' . $values['item_id'];
         }
 
-        $params = array("session" => $session,
-                        "profile" => $this->wsProfile,
-                        "lang" => "eng",
-                        "menu" => "account",
-                        "submenu" => "holds",
-                        "cancelhold" => "Cancel Request",
-                        "waitingholdselected" => $bibData,
-                        "GetXML" => "true"
-                        );
+        $params += array("waitingholdselected" => $cancelData);
 
         $response = $this->makeRequest($params);
 
@@ -705,16 +691,22 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
         $userBarcode      = $holdDetails['patron']['id'];
         $userPassword     = $holdDetails['patron']['cat_password'];
         $bibId            = $holdDetails['id'];
+        $itemId           = $holdDetails['item_id'];
+        $level            = $holdDetails['level'];
         $pickUpLocationID = !empty($holdDetails['pickUpLocation'])
                           ? $holdDetails['pickUpLocation']
                           : $this->getDefaultPickUpLocation();
         $notify           = $this->config['Holds']['notify'];
 
         $requestDetails = array(
-            'bibId' => $bibId,
+            'bibId'          => $bibId,
             'pickuplocation' => $pickUpLocationID,
-            'notify' => $notify
+            'notify'         => $notify
         );
+
+        if ($level != 'title' && $itemId != '') {
+            $requestDetails += array('itemId' => $itemId);
+        }
 
         // Register Account
         $session = $this->registerUser($userBarcode, $userPassword);
