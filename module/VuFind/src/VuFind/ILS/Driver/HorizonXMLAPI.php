@@ -456,7 +456,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
 
             // set itemkey only if available and level is not title-level
             if ($itemData['id'] != '' && $itemData['level'] != 'title') {
-                $params += array("itemkey" => $itemData);
+                $params += array("itemkey" => $itemData['id']);
             }
 
             $initResponse = $this->makeRequest($params);
