@@ -387,10 +387,11 @@ class MyResearchController extends AbstractBase
     {
         $lists = $this->params()->fromPost('lists');
         foreach ($lists as $list) {
+            $tags = $this->params()->fromPost('tags'.$list);
             $driver->saveToFavorites(
                 array(
                     'list'  => $list,
-                    'mytags'  => $this->params()->fromPost('tags'.$list),
+                    'mytags'  => \VuFind\Tags::parse($tags),
                     'notes' => $this->params()->fromPost('notes'.$list)
                 ),
                 $user

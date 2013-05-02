@@ -618,7 +618,7 @@ class AjaxController extends AbstractBase
             );
             $tag = $this->params()->fromPost('tag', '');
             if (strlen($tag) > 0) { // don't add empty tags
-                $driver->addTags($user, $tag);
+                $driver->addTags($user, \VuFind\Tags::parse($tag));
             }
         } catch (\Exception $e) {
             return $this->output(

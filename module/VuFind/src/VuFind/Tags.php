@@ -47,7 +47,7 @@ class Tags
      */
     public static function parse($tags)
     {
-        preg_match_all('/"[^"]*"|[^ ]+/', $tags, $words);
+        preg_match_all('/"[^"]*"|[^ ]+/', trim($tags), $words);
         $result = array();
         foreach ($words[0] as $tag) {
             $result[] = str_replace('"', '', $tag);

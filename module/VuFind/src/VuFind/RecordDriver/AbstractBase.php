@@ -27,7 +27,7 @@
  */
 namespace VuFind\RecordDriver;
 use VuFind\Exception\LoginRequired as LoginRequiredException,
-    VuFind\Tags, VuFind\XSLT\Import\VuFind as ArticleStripper;
+    VuFind\XSLT\Import\VuFind as ArticleStripper;
 
 /**
  * Abstract base record model.
@@ -198,7 +198,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      * Add tags to the record.
      *
      * @param \VuFind\Db\Row\User $user The user posting the tag
-     * @param string              $tags The user-provided tag string
+     * @param array               $tags The user-provided tags
      *
      * @return void
      */
@@ -208,7 +208,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         $resource = $resources->findResource(
             $this->getUniqueId(), $this->getResourceSource()
         );
-        foreach (Tags::parse($tags) as $tag) {
+        foreach ($tags as $tag) {
             $resource->addTag($tag, $user);
         }
     }
@@ -218,7 +218,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
      *
      * @param array               $params Array with some or all of these keys:
      *  <ul>
-     *    <li>mytags - Unparsed tag string to associate with record (optional)</li>
+     *    <li>mytags - Tag array to associate with record (optional)</li>
      *    <li>notes - Notes to associate with record (optional)</li>
      *    <li>list - ID of list to save record into (omit to create new list)</li>
      *  </ul>
@@ -254,8 +254,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
         // Add the information to the user's account:
         $user->saveResource(
             $resource, $list,
-            isset($params['mytags'])
-            ? Tags::parse(trim($params['mytags'])) : array(),
+            isset($params['mytags']) ? $params['mytags'] : array(),
             isset($params['notes']) ? $params['notes'] : ''
         );
     }

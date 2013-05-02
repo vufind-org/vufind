@@ -26,7 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller\Plugin;
-use VuFind\Exception\LoginRequired as LoginRequiredException, VuFind\Tags,
+use VuFind\Exception\LoginRequired as LoginRequiredException,
     Zend\Mvc\Controller\Plugin\AbstractPlugin;
 
 /**
@@ -83,8 +83,7 @@ class Favorites extends AbstractPlugin
 
             // Add the information to the user's account:
             $tags = isset($params['mytags'])
-                ? Tags::parse(trim($params['mytags']))
-                : array();
+                ? \VuFind\Tags::parse($params['mytags']) : array();
             $user->saveResource($resource, $list, $tags, '', false);
         }
     }
