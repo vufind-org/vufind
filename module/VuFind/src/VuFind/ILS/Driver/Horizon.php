@@ -122,6 +122,83 @@ class Horizon extends AbstractBase
     }
 
     /**
+     * Protected support method determine availability, reserve and duedate values
+     * based on item status. Used by getHolding, getStatus and getStatuses.
+     *
+     * @param string $status Item status code
+     *
+     * @return array
+     *
+     */
+
+    protected function parseStatus($status)
+    {
+        $statuses = isset($this->config['Statuses'][$item_status])
+                  ? $this->config['Statuses'][$item_status] : null;
+
+        // query the config file for the item status if there are
+        // config values, use the configuration otherwise execute the switch
+        if (!$statuses == null) {
+            // break out the values
+            $arrayValues = array_map('strtolower', explode(',', $statuses));
+
+            //set the variables based on what we find in the config file
+            if (in_array(strtolower('available:1'), $arrayValues)) {
+                $available = 1;
+            }
+            if (in_array(strtolower('available:0'), $arrayValues)) {
+                $available = 0;
+            }
+            if (in_array(strtolower('reserve:N'),   $arrayValues)) {
+                $reserve  = 'N';
+            }
+            if (in_array(strtolower('reserve:Y'),   $arrayValues)) {
+                $reserve  = 'Y';
+            }
+            if (in_array(strtolower('duedate:0'),   $arrayValues)) {
+                $duedate  = '';
+            }
+        } else {
+            switch ($status) {
+            case 'i': // checked in
+                $available = 1;
+                $reserve   = 'N';
+                break;
+            case 'rb': // Reserve Bookroom
+                $available = 0;
+                $reserve   = 'Y';
+                break;
+            case 'h': // being held
+                $available = 0;
+                $reserve   = 'N';
+                break;
+            case 'l': // lost
+                $available = 0;
+                $reserve   = 'N';
+                $duedate   = ''; // No due date for lost items
+                break;
+            case 'm': // missing
+                $available = 0;
+                $reserve   = 'N';
+                $duedate   = ''; // No due date for missing items
+                break;
+            default:
+                $available = 0;
+                $reserve   = 'N';
+                break;
+            }
+        }
+
+        $statusValues = array('available' => $available,
+                              'reserve'   => $reserve);
+
+        if (isset($duedate)) {
+            $statusValues += array('duedate' => $duedate);
+        }
+        return $statusValues;
+    }
+
+    /**
      * Protected support method for getHolding.
      *
      * @param array $id A Bibliographic id
@@ -199,75 +276,28 @@ class Horizon extends AbstractBase
     {
         $duedate     = $row['DUEDATE'];
         $item_status = $row['STATUS_CODE']; //get the item status code
-        $statuses    = isset($this->config['Statuses'][$item_status])
-                     ? $this->config['Statuses'][$item_status] : null;
 
-        // query the config file for the item status if there are
-        // config values, use the configuration otherwise execute the switch
-        if (!$statuses == null) {
-            // break out the values
-            $arrayValues = array_map('strtolower', explode(',', $statuses));
 
-            //set the variables based on what we find in the config file
-            if (in_array(strtolower('available:1'), $arrayValues)) {
-                $available = 1;
-            }
-            if (in_array(strtolower('available:0'), $arrayValues)) {
-                $available = 0;
-            }
-            if (in_array(strtolower('reserve:N'), $arrayValues)) {
-                $reserve = 'N';
-            }
-            if (in_array(strtolower('reserve:Y'), $arrayValues)) {
-                $reserve = 'Y';
-            }
-            if (in_array(strtolower('duedate:0'), $arrayValues)) {
-                $duedate='';
-            }
-        } else {
-            switch ($row['STATUS_CODE']) {
-            case 'i': // checked in
-                $available = 1;
-                $reserve   = 'N';
-                break;
-            case 'rb': // Reserve Bookroom
-                $available = 0;
-                $reserve   = 'Y';
-                break;
-            case 'h': // being held
-                $available = 0;
-                $reserve   = 'N';
-                break;
-            case 'l': // lost
-                $available = 0;
-                $reserve   = 'N';
-                $duedate   = ''; // No due date for lost items
-                break;
-            case 'm': // missing
-                $available = 0;
-                $reserve   = 'N';
-                $duedate   = ''; // No due date for missing items
-                break;
-            default:
-                $available = 0;
-                $reserve   = 'N';
-                break;
-            }
+        $statusValues = $this->parseStatus($item_status);
+
+        if (isset($statusValues['duedate'])) {
+            $duedate = $statusValues['duedate'];
         }
 
         $holding = array(
             'id'              => $id,
-            'availability'    => $available,
+            'availability'    => $statusValues['available'],
             'item_id'         => $row['ITEM_ID'],
             'status'          => $row['STATUS'],
             'location'        => $row['LOCATION'],
-            'reserve'         => $reserve,
+            'reserve'         => $statusValues['reserve'],
             'callnumber'      => $row['CALLNUMBER'],
             'duedate'         => $duedate,
             'returnDate'      => $row['RETURNDATE'],
             'barcode'         => $row['ITEM_BARCODE'],
             'requests_placed' => $row['REQUEST'],
             'is_holdable'     => $row['IS_HOLDABLE'],
+
         );
 
         // Only set the number key if there is actually volume data
@@ -316,27 +346,92 @@ class Horizon extends AbstractBase
     }
 
     /**
+     * Protected support method for getStatuses.
+     *
+     * @param string $id  Bib Id
+     * @param array  $row SQL Row Data
+     *
+     * @return array Keyed data
+     */
+    protected function processStatusRow($id, $row)
+    {
+        $item_status  = $row['STATUS_CODE']; //get the item status code
+        $statusValues = $this->parseStatus($item_status);
+
+        $status = array('id'           => $id,
+                        'availability' => $statusValues['available'],
+                        'status'       => $row['STATUS'],
+                        'location'     => $row['LOCATION'],
+                        'reserve'      => $statusValues['reserve'],
+                        'callnumber'   => $row['CALLNUMBER']);
+
+        return $status;
+    }
+
+    /**
      * Get Status
      *
-     * This is responsible for retrieving the status information of a certain
-     * record.
+     * This is responsible for retrieving the status information of a specific
+     * record. It is a proxy to getStatuses.
      *
      * @param string $id The record id to retrieve the holdings for
      *
-     * @throws ILSException
-     * @return mixed     On success, an associative array with the following keys:
-     * id, availability (boolean), status, location, reserve, callnumber.
+     * @return mixed On success, an associative array with the following keys:
+     *               id, availability (boolean), status, location, reserve, and
+     *               callnumber.
      */
     public function getStatus($id)
     {
-        return $this->getHolding($id);
+        $idList = array($id);
+        $status = $this->getStatuses($idList);
+        return current($status);
+    }
+
+
+    /**
+     * Protected support method for getStatus.
+     *
+     * @param array $idList A list of Bibliographic id
+     *
+     * @return array Keyed data for use in an sql query
+     */
+    protected function getStatusesSQL($idList)
+    {
+        // Query holding information based on id field defined in
+        // import/marc.properties
+        // Expressions
+        $sqlExpressions = array("i.bib# as ID",
+                                "i.item_status as STATUS_CODE",
+                                "ist.descr as STATUS",
+                                "l.name as LOCATION",
+                                "i.call_reconstructed as CALLNUMBER");
+
+        // From
+        $sqlFrom = array("item i");
+
+        // inner Join
+        $sqlInnerJoin = array("item_status ist on i.item_status = ist.item_status",
+                              "location l on i.location = l.location");
+
+        $bibIDs = implode(',', $idList);
+
+        // Where
+        $sqlWhere = array("i.bib# in (" .$bibIDs . ")",
+                          "i.staff_only = 0");
+
+        $sqlArray = array('expressions' => $sqlExpressions,
+                          'from'        => $sqlFrom,
+                          'innerJoin'   => $sqlInnerJoin,
+                          'where'       => $sqlWhere);
+
+        return $sqlArray;
     }
 
     /**
      * Get Statuses
      *
-     * This is responsible for retrieving the status information for a
-     * collection of records.
+     * This is responsible for retrieving the status information for a collection of
+     * records.
      *
      * @param array $idList The array of record ids to retrieve the status for
      *
@@ -345,11 +440,20 @@ class Horizon extends AbstractBase
      */
     public function getStatuses($idList)
     {
-        $status = array();
-        foreach ($idList as $id) {
-            $status[] = $this->getStatus($id);
+        $sqlArray = $this->getStatusesSQL($idList);
+        $sql      = $this->buildSqlFromArray($sqlArray);
+
+        try {
+            $status  = array();
+            $sqlStmt = mssql_query($sql);
+            while ($row = mssql_fetch_assoc($sqlStmt)) {
+                $id            = $row['ID'];
+                $status[$id][] = $this->processStatusRow($id, $row);
+            }
+            return $status;
+        } catch (\Exception $e) {
+            throw new ILSException($e->getMessage());
         }
-        return $status;
     }
 
     /**
