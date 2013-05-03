@@ -42,8 +42,25 @@ use ArrayObject, VuFind\Config\Locator as ConfigLocator,
  */
 class UpgradeController extends AbstractBase
 {
+    /**
+     * Cookie container
+     *
+     * @var CookieContainer
+     */
     protected $cookie;
+
+    /**
+     * Session container
+     *
+     * @var SessionContainer
+     */
     protected $session;
+
+    /**
+     * Are we capturing SQL instead of executing it?
+     *
+     * @var bool
+     */
     protected $logsql = false;
 
     /**
