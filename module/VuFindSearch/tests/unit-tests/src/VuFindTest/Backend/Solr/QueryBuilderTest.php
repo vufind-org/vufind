@@ -69,7 +69,7 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
             array('andornot noted andy oranges', 'andornot noted andy oranges'),
             array('(this or that) and (apples not oranges)', '(this OR that) AND (apples NOT oranges)'),
             array('this aNd that', 'this AND that'),        // strange capitalization of AND
-            array('this nOt that', 'this NOT that')         // strange capitalization of NOT
+            array('this nOt that', 'this NOT that'),        // strange capitalization of NOT
         );
         // @codingStandardsIgnoreEnd
 
@@ -140,6 +140,11 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
             array('"()"', '"()"'),                  // empty parens in quotes
             array('title - sub', 'title sub'),      // freestanding hyphen
             array('"title - sub"', '"title - sub"'),// freestanding hyphen in quotes
+            array('test~1', 'test'),                // meaningless proximity
+            array('test~1 fish', 'test fish'),      // meaningless proximity
+            array('"test~1"', '"test~1"'),          // meaningless prox. in quotes
+            array('test~0.9', 'test~0.9'),          // valid proximity
+            array('test~11', 'test~11'),            // illegal prox. (leave alone)
         );
         // @codingStandardsIgnoreEnd
 

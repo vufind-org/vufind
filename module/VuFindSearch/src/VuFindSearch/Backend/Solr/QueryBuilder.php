@@ -113,7 +113,6 @@ class QueryBuilder
      */
     public function build(AbstractQuery $query)
     {
-
         if ($query instanceOf QueryGroup) {
             $query = $this->reduceQueryGroup($query);
         } else {
@@ -516,6 +515,10 @@ class QueryBuilder
         // Freestanding hyphens can cause problems:
         $lookahead = self::$insideQuotes;
         $input = preg_replace('/\s+-\s+' . $lookahead . '/', ' ', $input);
+
+        // A proximity of 1 is illegal and meaningless -- remove it:
+        $input = preg_replace('/~1$/', '', $input);
+        $input = preg_replace('/~1\s+' . $lookahead . '/', ' ', $input);
 
         // Remove empty parentheses outside of quotation marks -- these will
         // cause a fatal Solr error and should be ignored.
