@@ -54,11 +54,13 @@ class ResourceTags extends Gateway
      * @param string $tag      ID of tag to link up
      * @param string $user     ID of user creating link (optional but recommended)
      * @param string $list     ID of list to link up (optional)
+     * @param string $posted   Posted date (optional -- omit for current)
      *
      * @return void
      */
-    public function createLink($resource, $tag, $user = null, $list = null)
-    {
+    public function createLink($resource, $tag, $user = null, $list = null,
+        $posted = null
+    ) {
         $callback = function ($select) use ($resource, $tag, $user, $list) {
             $select->where->equalTo('resource_id', $resource)
                 ->equalTo('tag_id', $tag);
@@ -85,6 +87,9 @@ class ResourceTags extends Gateway
             }
             if (!is_null($user)) {
                 $result->user_id = $user;
+            }
+            if (!is_null($posted)) {
+                $result->posted = $posted;
             }
             $result->save();
         }

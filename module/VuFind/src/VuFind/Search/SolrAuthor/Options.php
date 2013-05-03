@@ -39,14 +39,13 @@ namespace VuFind\Search\SolrAuthor;
 class Options extends \VuFind\Search\Solr\Options
 {
     /**
-     * Perform initialization that cannot occur in constructor due to need for
-     * injected dependencies.
+     * Constructor
      *
-     * @return void
+     * @param \VuFind\Config\PluginManager $configLoader Config loader
      */
-    public function init()
+    public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
-        parent::init();
+        parent::__construct($configLoader);
 
         // No spell check needed in author module:
         $this->spellcheck = false;

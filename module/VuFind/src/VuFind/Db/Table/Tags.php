@@ -222,4 +222,95 @@ class Tags extends Gateway
         };
         $this->delete($callback);
     }
+
+    /**
+     * Get a list of duplicate tags (this should never happen, but past bugs
+     * have introduced problems).
+     *
+     * @return mixed
+     */
+    public function getDuplicates()
+    {
+        $callback = function ($select) {
+            $select->columns(
+                array(
+                    'tag',
+                    'cnt' => new Expression(
+                        'COUNT(?)', array('tag'), array(Expression::TYPE_IDENTIFIER)
+                    ),
+                    'id' => new Expression(
+                        'MIN(?)', array('id'), array(Expression::TYPE_IDENTIFIER)
+                    )
+                )
+            );
+            $select->group('tag');
+            $select->having->greaterThan('cnt', 1);
+        };
+        return $this->select($callback);
+    }
+
+    /**
+     * Support method for fixDuplicateTag() -- merge $source into $target.
+     *
+     * @param string $target Target ID
+     * @param string $source Source ID
+     *
+     * @return void
+     */
+    protected function mergeTags($target, $source)
+    {
+        // Don't merge a tag with itself!
+        if ($target === $source) {
+            return;
+        }
+        $table = $this->getDbTable('ResourceTags');
+        $result = $table->select(array('tag_id' => $source));
+
+        foreach ($result as $current) {
+            // Move the link to the target ID:
+            $table->createLink(
+                $current->resource_id, $target, $current->user_id,
+                $current->list_id, $current->posted
+            );
+
+            // Remove the duplicate link:
+            $table->delete($current->toArray());
+        }
+
+        // Remove the source tag:
+        $this->delete(array('id' => $source));
+    }
+
+    /**
+     * Support method for fixDuplicateTags()
+     *
+     * @param string $tag Tag to deduplicate.
+     *
+     * @return void
+     */
+    protected function fixDuplicateTag($tag)
+    {
+        // Make sure this really is a duplicate.
+        $result = $this->select(array('tag' => $tag));
+        if (count($result) < 2) {
+            return;
+        }
+
+        $first = $result->current();
+        foreach ($result as $current) {
+            $this->mergeTags($first->id, $current->id);
+        }
+    }
+
+    /**
+     * Repair duplicate tags in the database (if any).
+     *
+     * @return void
+     */
+    public function fixDuplicateTags()
+    {
+        foreach ($this->getDuplicates() as $dupe) {
+            $this->fixDuplicateTag($dupe->tag);
+        }
+    }
 }

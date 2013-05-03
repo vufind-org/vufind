@@ -49,7 +49,7 @@
             <? if ($item['count'] < 5): ?>
               <? $query = array('type' => 'ids', 'lookfor' => implode(' ', $item['ids'])); ?>
             <? else: ?>
-              <? $query = array('type' => ucwords($this->source) . 'Browse', 'lookfor' => $item['heading']); ?>
+              <? $query = array('type' => ucwords($this->source) . 'Browse', 'lookfor' => '"' . addcslashes($item['heading'], '"') . '"'); ?>
             <? endif; ?>
             <a href="<?=$this->escapeHtml($this->url('search-results', array(), array('query' => $query)))?>"><?=$this->escapeHtml($item['heading'])?></a>
           <? else: ?>

@@ -187,7 +187,9 @@ class AbstractRecord extends AbstractBase
 
         // Save tags, if any:
         if ($this->params()->fromPost('submit')) {
-            $driver->addTags($user, $this->params()->fromPost('tag'));
+            $tags = $this->params()->fromPost('tag');
+            $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
+            $driver->addTags($user, $tagParser->parse($tags));
             return $this->redirectToRecord();
         }
 

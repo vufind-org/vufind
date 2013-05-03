@@ -122,6 +122,83 @@ class Horizon extends AbstractBase
     }
 
     /**
+     * Protected support method determine availability, reserve and duedate values
+     * based on item status. Used by getHolding, getStatus and getStatuses.
+     *
+     * @param string $status Item status code
+     *
+     * @return array
+     *
+     */
+
+    protected function parseStatus($status)
+    {
+        $statuses = isset($this->config['Statuses'][$item_status])
+                  ? $this->config['Statuses'][$item_status] : null;
+
+        // query the config file for the item status if there are
+        // config values, use the configuration otherwise execute the switch
+        if (!$statuses == null) {
+            // break out the values
+            $arrayValues = array_map('strtolower', explode(',', $statuses));
+
+            //set the variables based on what we find in the config file
+            if (in_array(strtolower('available:1'), $arrayValues)) {
+                $available = 1;
+            }
+            if (in_array(strtolower('available:0'), $arrayValues)) {
+                $available = 0;
+            }
+            if (in_array(strtolower('reserve:N'),   $arrayValues)) {
+                $reserve  = 'N';
+            }
+            if (in_array(strtolower('reserve:Y'),   $arrayValues)) {
+                $reserve  = 'Y';
+            }
+            if (in_array(strtolower('duedate:0'),   $arrayValues)) {
+                $duedate  = '';
+            }
+        } else {
+            switch ($status) {
+            case 'i': // checked in
+                $available = 1;
+                $reserve   = 'N';
+                break;
+            case 'rb': // Reserve Bookroom
+                $available = 0;
+                $reserve   = 'Y';
+                break;
+            case 'h': // being held
+                $available = 0;
+                $reserve   = 'N';
+                break;
+            case 'l': // lost
+                $available = 0;
+                $reserve   = 'N';
+                $duedate   = ''; // No due date for lost items
+                break;
+            case 'm': // missing
+                $available = 0;
+                $reserve   = 'N';
+                $duedate   = ''; // No due date for missing items
+                break;
+            default:
+                $available = 0;
+                $reserve   = 'N';
+                break;
+            }
+        }
+
+        $statusValues = array('available' => $available,
+                              'reserve'   => $reserve);
+
+        if (isset($duedate)) {
+            $statusValues += array('duedate' => $duedate);
+        }
+        return $statusValues;
+    }
+
+    /**
      * Protected support method for getHolding.
      *
      * @param array $id A Bibliographic id
@@ -134,35 +211,54 @@ class Horizon extends AbstractBase
         // import/marc.properties
         // Expressions
         $sqlExpressions = array(
-            "item.item# as ITEM_NUM", "item.item_status as STATUS_CODE",
-            "item_status.descr as STATUS", "location.name as LOCATION",
-            "item.call_reconstructed as CALLNUMBER", "item.ibarcode as ITEM_BARCODE",
-            "convert(varchar(12), " .
-            "dateadd(dd,item.due_date,'jan 1 1970')) as DUEDATE",
-            "item.copy_reconstructed as ITEM_SEQUENCE_NUMBER",
-            "substring(collection.pac_descr,5,40) as COLLECTION",
-            "(select count(*) from request where " .
-            "request.bib# = item.bib# and reactivate_date = NULL) as REQUEST"
+            "i.item# as ITEM_ID",
+            "i.item_status as STATUS_CODE",
+            "ist.descr as STATUS",
+            "l.name as LOCATION",
+            "i.call_reconstructed as CALLNUMBER",
+            "i.ibarcode as ITEM_BARCODE",
+            "convert(varchar(10), " .
+            "        dateadd(dd,i.due_date,'jan 1 1970'), " .
+            "        101) as DUEDATE",
+            "i.copy_reconstructed as NUMBER",
+            "convert(varchar(10), " .
+            "        dateadd(dd,ch.cki_date,'jan 1 1970'), " .
+            "        101) as RETURNDATE",
+            "(select count(*)
+                from request r
+               where r.bib# = i.bib#
+                 and r.reactivate_date = NULL) as REQUEST",
+            "i.notes as NOTES",
+            "ist.available_for_request IS_HOLDABLE",
+
         );
 
         // From
-        $sqlFrom = array("item");
+        $sqlFrom = array("item i");
 
         // inner Join
         $sqlInnerJoin = array(
-            "item_status on item.item_status = item_status.item_status",
-            "location on item.location = location.location",
-            "collection on item.collection = collection.collection"
+            "item_status ist on i.item_status = ist.item_status",
+            "location l on i.location = l.location",
+        );
+
+        $sqlLeftOuterJoin = array(
+           "circ_history ch on ch.item# = i.item#"
         );
 
         // Where
-        $sqlWhere = array("item.bib# = " . addslashes($id));
+        $sqlWhere = array(
+            "i.bib# = " . addslashes($id),
+            "i.staff_only = 0"
+        );
 
-        $sqlArray = array('expressions' => $sqlExpressions,
-                          'from' => $sqlFrom,
-                          'innerJoin' => $sqlInnerJoin,
-                          'where' => $sqlWhere
-                          );
+        $sqlArray = array(
+            'expressions' => $sqlExpressions,
+            'from' => $sqlFrom,
+            'innerJoin' => $sqlInnerJoin,
+            'leftOuterJoin' => $sqlLeftOuterJoin,
+            'where' => $sqlWhere
+        );
 
         return $sqlArray;
     }
@@ -178,78 +274,43 @@ class Horizon extends AbstractBase
      */
     protected function processHoldingRow($id, $row, $patron)
     {
-        $duedate = $row['DUEDATE'];
+        $duedate     = $row['DUEDATE'];
         $item_status = $row['STATUS_CODE']; //get the item status code
-        $statuses = isset($this->config['Statuses'][$item_status])
-            ? $this->config['Statuses'][$item_status] : null;
 
-        // query the config file for the item status if there are
-        // config values, use the configuration otherwise execute the switch
-        if (!$statuses == null) {
-            // break out the values
-            $arrayValues = array_map('strtolower', explode(',', $statuses));
 
-            //set the variables based on what we find in the config file
-            if (in_array(strtolower('available:1'), $arrayValues)) {
-                $available = 1;
-            }
-            if (in_array(strtolower('available:0'), $arrayValues)) {
-                $available = 0;
-            }
-            if (in_array(strtolower('reserve:N'), $arrayValues)) {
-                $reserve = 'N';
-            }
-            if (in_array(strtolower('reserve:Y'), $arrayValues)) {
-                $reserve = 'Y';
-            }
-            if (in_array(strtolower('duedate:0'), $arrayValues)) {
-                $duedate='';
-            }
-        } else {
-            switch ($row['STATUS_CODE']) {
-            case 'i': // checked in
-                $available = 1;
-                $reserve = 'N';
-                break;
-            case 'rb': // Reserve Bookroom
-                $available = 0;
-                $reserve = 'Y';
-                break;
-            case 'h': // being held
-                $available = 0;
-                $reserve = 'N';
-                break;
-            case 'l': // lost
-                $available = 0;
-                $reserve = 'N';
-                $duedate=''; // No due date for lost items
-                break;
-            case 'm': // missing
-                $available = 0;
-                $reserve = 'N';
-                $duedate=''; // No due date for missing items
-                break;
-            default:
-                $available = 0;
-                $reserve = 'N';
-                break;
-            }
+        $statusValues = $this->parseStatus($item_status);
+
+        if (isset($statusValues['duedate'])) {
+            $duedate = $statusValues['duedate'];
         }
 
-        return array(
-            'id' => $id,
-            'availability' => $available,
-            'item_num' => $row['ITEM_NUM'],
-            'status' => $row['STATUS'],
-            'location' => $row['LOCATION'],
-            'reserve' => $reserve,
-            'callnumber' => $row['CALLNUMBER'],
-            'collection' => $row['COLLECTION'],
-            'duedate' => $duedate,
-            'barcode' => $row['ITEM_BARCODE'],
-            'number' => $row['ITEM_SEQUENCE_NUMBER'],
-            'requests_placed' => $row['REQUEST']
+        $holding = array(
+            'id'              => $id,
+            'availability'    => $statusValues['available'],
+            'item_id'         => $row['ITEM_ID'],
+            'status'          => $row['STATUS'],
+            'location'        => $row['LOCATION'],
+            'reserve'         => $statusValues['reserve'],
+            'callnumber'      => $row['CALLNUMBER'],
+            'duedate'         => $duedate,
+            'returnDate'      => $row['RETURNDATE'],
+            'barcode'         => $row['ITEM_BARCODE'],
+            'requests_placed' => $row['REQUEST'],
+            'is_holdable'     => $row['IS_HOLDABLE'],
+
         );
+
+        // Only set the number key if there is actually volume data
+        if ($row['NUMBER'] != '') {
+            $holding += array('number' => $row['NUMBER']);
+        }
+
+        // Only set the notes key if there are actually notes to display
+        if ($row['NOTES'] != '') {
+            $holding += array('notes' => array($row['NOTES']));
+        }
+
+        return $holding;
     }
 
     /**
@@ -285,27 +346,92 @@ class Horizon extends AbstractBase
     }
 
     /**
+     * Protected support method for getStatuses.
+     *
+     * @param string $id  Bib Id
+     * @param array  $row SQL Row Data
+     *
+     * @return array Keyed data
+     */
+    protected function processStatusRow($id, $row)
+    {
+        $item_status  = $row['STATUS_CODE']; //get the item status code
+        $statusValues = $this->parseStatus($item_status);
+
+        $status = array('id'           => $id,
+                        'availability' => $statusValues['available'],
+                        'status'       => $row['STATUS'],
+                        'location'     => $row['LOCATION'],
+                        'reserve'      => $statusValues['reserve'],
+                        'callnumber'   => $row['CALLNUMBER']);
+
+        return $status;
+    }
+
+    /**
      * Get Status
      *
-     * This is responsible for retrieving the status information of a certain
-     * record.
+     * This is responsible for retrieving the status information of a specific
+     * record. It is a proxy to getStatuses.
      *
      * @param string $id The record id to retrieve the holdings for
      *
-     * @throws ILSException
-     * @return mixed     On success, an associative array with the following keys:
-     * id, availability (boolean), status, location, reserve, callnumber.
+     * @return mixed On success, an associative array with the following keys:
+     *               id, availability (boolean), status, location, reserve, and
+     *               callnumber.
      */
     public function getStatus($id)
     {
-        return $this->getHolding($id);
+        $idList = array($id);
+        $status = $this->getStatuses($idList);
+        return current($status);
+    }
+
+
+    /**
+     * Protected support method for getStatus.
+     *
+     * @param array $idList A list of Bibliographic id
+     *
+     * @return array Keyed data for use in an sql query
+     */
+    protected function getStatusesSQL($idList)
+    {
+        // Query holding information based on id field defined in
+        // import/marc.properties
+        // Expressions
+        $sqlExpressions = array("i.bib# as ID",
+                                "i.item_status as STATUS_CODE",
+                                "ist.descr as STATUS",
+                                "l.name as LOCATION",
+                                "i.call_reconstructed as CALLNUMBER");
+
+        // From
+        $sqlFrom = array("item i");
+
+        // inner Join
+        $sqlInnerJoin = array("item_status ist on i.item_status = ist.item_status",
+                              "location l on i.location = l.location");
+
+        $bibIDs = implode(',', $idList);
+
+        // Where
+        $sqlWhere = array("i.bib# in (" .$bibIDs . ")",
+                          "i.staff_only = 0");
+
+        $sqlArray = array('expressions' => $sqlExpressions,
+                          'from'        => $sqlFrom,
+                          'innerJoin'   => $sqlInnerJoin,
+                          'where'       => $sqlWhere);
+
+        return $sqlArray;
     }
 
     /**
      * Get Statuses
      *
-     * This is responsible for retrieving the status information for a
-     * collection of records.
+     * This is responsible for retrieving the status information for a collection of
+     * records.
      *
      * @param array $idList The array of record ids to retrieve the status for
      *
@@ -314,11 +440,20 @@ class Horizon extends AbstractBase
      */
     public function getStatuses($idList)
     {
-        $status = array();
-        foreach ($idList as $id) {
-            $status[] = $this->getStatus($id);
+        $sqlArray = $this->getStatusesSQL($idList);
+        $sql      = $this->buildSqlFromArray($sqlArray);
+
+        try {
+            $status  = array();
+            $sqlStmt = mssql_query($sql);
+            while ($row = mssql_fetch_assoc($sqlStmt)) {
+                $id            = $row['ID'];
+                $status[$id][] = $this->processStatusRow($id, $row);
+            }
+            return $status;
+        } catch (\Exception $e) {
+            throw new ILSException($e->getMessage());
         }
-        return $status;
     }
 
     /**
@@ -554,66 +689,83 @@ class Horizon extends AbstractBase
      */
     public function getMyFines($patron)
     {
-        $sql = "select item.bib# as BIB_NUM, item.item# as ITEM_NUM, " .
-               "burb.borrower# as BORROWER_NUM, burb.amount as AMOUNT, " .
-               "convert(varchar(12),dateadd(dd, burb.date, '01 jan 1970')) " .
-               "as DUEDATE, " .
-               "burb.block as FINE, burb.amount as BALANCE from burb " .
-               "join item on item.item#=burb.item# " .
-               "join borrower on borrower.borrower#=burb.borrower# " .
-               "join borrower_barcode on " .
-               "borrower_barcode.borrower#=burb.borrower# " .
-               "where borrower_barcode.bbarcode=\"" . addslashes($patron['id']) .
-               "\" and amount != 0";
+        $sql = "   select bu.amount as AMOUNT " .
+               "        , coalesce( " .
+               "              convert(varchar(10), " .
+               "                      dateadd(dd, i.last_cko_date, '01jan70'), " .
+               "                      101), " .
+               "              convert(varchar(10), " .
+               "                      dateadd(dd, bu2.date, '01jan70'), " .
+               "                      101)) as CHECKOUT " .
+               "        , bl.descr as FINE " .
+               "        , (  select sum(b2.amount) " .
+               "               from burb b2 " .
+               "              where b2.reference# = bu.reference# " .
+               "           group by b2.reference#) as BALANCE " .
+               "        , convert(varchar(10), " .
+               "                  dateadd(dd, bu.date, '01jan70'), " .
+               "                  101) as CREATEDATE " .
+               "        , coalesce( " .
+               "              convert(varchar(10), " .
+               "                      dateadd(dd, i.due_date, '01jan70'), " .
+               "                      101), " .
+               "              convert(varchar(10), " .
+               "                      dateadd(dd, bu3.date, '01jan70'), " .
+               "                      101)) as DUEDATE " .
+               "        , i2.bib# as ID " .
+               "        , coalesce (t.processed, bu4.comment) as TITLE " .
+               "        , case when bl.amount_type = 0 " .
+               "               then 0 " .
+               "               else 1 " .
+               "          end as FEEBLOCK " .
+               "     from burb bu " .
+               "     join block bl " .
+               "       on bl.block = bu.block " .
+               "     join borrower_barcode bb " .
+               "       on bb.borrower# = bu.borrower# " .
+               "left join item i " .
+               "       on i.item# = bu.item# " .
+               "      and i.borrower# = bu.borrower# " .
+               "left join item i2 " .
+               "       on i2.item# = bu.item# " .
+               "left join burb bu2 " .
+               "       on bu2.reference# = bu.reference# " .
+               "      and bu2.block = 'infocko' " .
+               "left join burb bu3 " .
+               "       on bu3.reference# = bu.reference# " .
+               "      and bu3.block = 'infodue' " .
+               "left join title t " .
+               "       on t.bib# = i2.bib# " .
+               "left join burb bu4 " .
+               "       on bu4.reference# = bu.reference# " .
+               "      and bu4.ord = 0 " .
+               "      and bu4.block in ('l', 'LostPro','fine','he') " .
+               "    where bb.bbarcode = \"" . addslashes($patron['id']) . "\" " .
+               "      and bu.ord = 0 " .
+               "      and bl.pac_display = 1 " .
+               " order by FEEBLOCK desc " .
+               "        , bu.item# " .
+               "        , TITLE " .
+               "        , bu.block " .
+               "        , bu.date";
 
         try {
             $sqlStmt = mssql_query($sql);
 
             while ($row = mssql_fetch_assoc($sqlStmt)) {
-                $checkout = '';
-                $duedate = '';
-                $bib_num = $row['BIB_NUM'];
-                $item_num = $row['ITEM_NUM'];
-                $borrower_num = $row['BORROWER_NUM'];
-                $amount = $row['AMOUNT'];
-                $balance += $amount;
-
-                if (isset($bib_num) && isset($item_num)) {
-                    $cko = "select convert(varchar(12)," .
-                        "dateadd(dd, date, '01 jan 1970')) as CHECKOUT " .
-                        "from burb where borrower#=" . addslashes($borrower_num) .
-                        " and item#=" . addslashes($item_num) .
-                        " and block=\"infocko\"";
-                    $sqlStmt_cko = mssql_query($cko);
-
-                    if ($row_cko = mssql_fetch_assoc($sqlStmt_cko)) {
-                        $checkout = $row_cko['CHECKOUT'];
-                    }
-
-                    $due = "select convert(varchar(12)," .
-                        "dateadd(dd, date, '01 jan 1970')) as DUEDATE " .
-                        "from burb where borrower#=" . addslashes($borrower_num) .
-                        " and item#=" . addslashes($item_num) .
-                        " and block=\"infodue\"";
-                    $sqlStmt_due = mssql_query($due);
-
-                    if ($row_due = mssql_fetch_assoc($sqlStmt_due)) {
-                        $duedate = $row_due['DUEDATE'];
-                    }
-                }
-
-                $fineList[] = array('id' => $bib_num,
-                                    'amount' => $amount,
+                 $fineList[] = array('amount'     => $row['AMOUNT'],
+                                     'checkout'   => $row['CHECKOUT'],
                                     'fine' => $row['FINE'],
-                                    'balance' => $balance,
-                                    'checkout' => $checkout,
-                                    'duedate' => $duedate);
+                                     'balance'    => $row['BALANCE'],
+                                     'createdate' => $row['CREATEDATE'],
+                                     'duedate'    => $row['DUEDATE'],
+                                     'id'         => $row['ID'],
+                                     'title'      => $row['TITLE']);
             }
             return $fineList;
         } catch (\Exception $e) {
             throw new ILSException($e->getMessage());
         }
-
     }
 
     /**

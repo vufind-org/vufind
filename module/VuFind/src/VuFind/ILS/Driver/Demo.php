@@ -873,8 +873,17 @@ class Demo extends AbstractBase
      */
     public function renewMyItems($renewDetails)
     {
-        // Set up return value -- no blocks in demo driver currently.
-        $finalResult = array('blocks' => array(), 'details' => array());
+        // Simulate an account block at random.
+        if (rand() % 4 == 1) {
+            return array(
+                'blocks' => array(
+                    'Simulated account block; try again and it will work eventually.'
+                )
+            );
+        }
+
+        // Set up successful return value.
+        $finalResult = array('blocks' => false, 'details' => array());
 
         // Grab transactions from session so we can modify them:
         $transactions = $this->session->transactions;

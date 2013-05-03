@@ -64,8 +64,10 @@ class CollectionController extends AbstractRecord
         return array(
             'VuFind\RecordDriver\AbstractBase'
                 => array(
-                    'CollectionList' => 'CollectionList',
-                    'HierarchyTree' => 'CollectionHierarchyTree',
+                    'tabs' => array(
+                        'CollectionList' => 'CollectionList',
+                        'HierarchyTree' => 'CollectionHierarchyTree',
+                    )
                 )
         );
     }

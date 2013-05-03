@@ -89,24 +89,15 @@ class Params implements ServiceLocatorAwareInterface
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Options $options Options to use
+     * @param \VuFind\Search\Base\Options  $options      Options to use
+     * @param \VuFind\Config\PluginManager $configLoader Config loader
      */
-    public function __construct($options)
+    public function __construct($options, \VuFind\Config\PluginManager $configLoader)
     {
         $this->setOptions($options);
 
         // Make sure we have some sort of query object:
         $this->query = new Query();
-    }
-
-    /**
-     * Perform initialization that cannot occur in constructor due to need for
-     * injected dependencies.
-     *
-     * @return void
-     */
-    public function init()
-    {
     }
 
     /**
@@ -1325,9 +1316,7 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function translate($msg)
     {
-        return $this->getServiceLocator()->has('VuFind\Translator')
-            ? $this->getServiceLocator()->get('VuFind\Translator')->translate($msg)
-            : $msg;
+        return $this->getOptions()->translate($msg);
     }
 
     /**

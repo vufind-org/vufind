@@ -64,10 +64,9 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
             ->get('VuFind\SearchOptionsPluginManager')->get($requestedName);
         $class = $this->getClassName($name, $requestedName);
         // Clone the options instance in case caller modifies it:
-        $obj = new $class(clone($options));
-        // TODO: eliminate init method to get rid of this awkwardness:
-        $obj->setServiceLocator($serviceLocator->getServiceLocator());
-        $obj->init();
-        return $obj;
+        return new $class(
+            clone($options),
+            $serviceLocator->getServiceLocator()->get('VuFind\Config')
+        );
     }
 }
