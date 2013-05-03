@@ -277,6 +277,9 @@ $config = array(
                     $sm->get('VuFind\DbTablePluginManager')->get('changetracker')
                 );
             },
+            'VuFind\Tags' => function ($sm) {
+                return new \VuFind\Tags();
+            },
             'VuFind\Translator' => function ($sm) {
                 $factory = new \Zend\I18n\Translator\TranslatorServiceFactory();
                 $translator = $factory->createService($sm);

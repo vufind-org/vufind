@@ -45,13 +45,13 @@ class Tags
      *
      * @return array
      */
-    public static function parse($tags)
+    public function parse($tags)
     {
         preg_match_all('/"[^"]*"|[^ ]+/', trim($tags), $words);
         $result = array();
         foreach ($words[0] as $tag) {
             $result[] = str_replace('"', '', $tag);
         }
-        return $result;
+        return array_unique($result);
     }
 }

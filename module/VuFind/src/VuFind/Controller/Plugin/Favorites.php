@@ -73,6 +73,7 @@ class Favorites extends AbstractPlugin
         }
 
         // Loop through all the IDs and save them:
+        $tagParser = $this->getController()->getServiceLocator()->get('VuFind\Tags');
         foreach ($params['ids'] as $current) {
             // Break apart components of ID:
             list($source, $id) = explode('|', $current, 2);
@@ -83,7 +84,7 @@ class Favorites extends AbstractPlugin
 
             // Add the information to the user's account:
             $tags = isset($params['mytags'])
-                ? \VuFind\Tags::parse($params['mytags']) : array();
+                ? $tagParser->parse($params['mytags']) : array();
             $user->saveResource($resource, $list, $tags, '', false);
         }
     }

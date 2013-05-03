@@ -386,12 +386,13 @@ class MyResearchController extends AbstractBase
     protected function processEditSubmit($user, $driver, $listID)
     {
         $lists = $this->params()->fromPost('lists');
+        $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
         foreach ($lists as $list) {
             $tags = $this->params()->fromPost('tags'.$list);
             $driver->saveToFavorites(
                 array(
                     'list'  => $list,
-                    'mytags'  => \VuFind\Tags::parse($tags),
+                    'mytags'  => $tagParser->parse($tags),
                     'notes' => $this->params()->fromPost('notes'.$list)
                 ),
                 $user

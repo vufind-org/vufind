@@ -39,6 +39,21 @@ namespace VuFindTest;
 class TagsTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * Tag parser
+     *
+     * @var \VuFind\Tags
+     */
+    protected $parser;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->parser = new \VuFind\Tags();
+    }
+
+    /**
      * Test tag parsing
      *
      * @return void
@@ -47,7 +62,7 @@ class TagsTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             array('this', 'that', 'the other'),
-            \VuFind\Tags::parse('this that "the other"')
+            $this->parser->parse('this that "the other"')
         );
     }
 
@@ -58,6 +73,16 @@ class TagsTest extends \PHPUnit_Framework_TestCase
      */
     public function testEmptyTagParsing()
     {
-        $this->assertEquals(array(), \VuFind\Tags::parse(''));
+        $this->assertEquals(array(), $this->parser->parse(''));
+    }
+
+    /**
+     * Test deduplication
+     *
+     * @return void
+     */
+    public function testDeduplication()
+    {
+        $this->assertEquals(array('test'), $this->parser->parse('test test test'));
     }
 }

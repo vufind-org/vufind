@@ -617,8 +617,9 @@ class AjaxController extends AbstractBase
                 $this->params()->fromPost('source', 'VuFind')
             );
             $tag = $this->params()->fromPost('tag', '');
+            $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
             if (strlen($tag) > 0) { // don't add empty tags
-                $driver->addTags($user, \VuFind\Tags::parse($tag));
+                $driver->addTags($user, $tagParser->parse($tag));
             }
         } catch (\Exception $e) {
             return $this->output(
