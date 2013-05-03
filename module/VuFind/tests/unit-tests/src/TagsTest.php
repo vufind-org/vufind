@@ -85,4 +85,16 @@ class TagsTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(array('test'), $this->parser->parse('test test test'));
     }
+
+    /**
+     * Test truncation
+     *
+     * @return void
+     */
+    public function testTruncation()
+    {
+        // Create custom object w/ small size limit:
+        $parser = new \VuFind\Tags(10);
+        $this->assertEquals(array('0123456789'), $parser->parse('01234567890'));
+    }
 }

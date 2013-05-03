@@ -39,6 +39,23 @@ namespace VuFind;
 class Tags
 {
     /**
+     * Maximum tag length.
+     *
+     * @var int
+     */
+    protected $maxLength;
+
+    /**
+     * Constructor
+     *
+     * @param int $maxLength Maximum tag length
+     */
+    public function __construct($maxLength = 64)
+    {
+        $this->maxLength = $maxLength;
+    }
+
+    /**
      * Parse a user-submitted tag string into an array of separate tags.
      *
      * @param string $tags User-provided tags
@@ -50,7 +67,8 @@ class Tags
         preg_match_all('/"[^"]*"|[^ ]+/', trim($tags), $words);
         $result = array();
         foreach ($words[0] as $tag) {
-            $result[] = str_replace('"', '', $tag);
+            // Wipe out double-quotes and trim over-long tags:
+            $result[] = substr(str_replace('"', '', $tag), 0, $this->maxLength);
         }
         return array_unique($result);
     }
