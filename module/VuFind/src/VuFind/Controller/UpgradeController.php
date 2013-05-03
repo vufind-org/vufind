@@ -329,12 +329,16 @@ class UpgradeController extends AbstractBase
             unset($this->session->dbRootUser);
             unset($this->session->dbRootPass);
 
-            // Check for legacy "anonymous tag" bug:
+            // Check for legacy tag bugs:
             $resourceTagsTable = $this->getTable('ResourceTags');
             $anonymousTags = $resourceTagsTable->getAnonymousCount();
             if ($anonymousTags > 0 && !isset($this->cookie->skipAnonymousTags)) {
                 $this->getRequest()->getQuery()->set('anonymousCnt', $anonymousTags);
                 return $this->forwardTo('Upgrade', 'FixAnonymousTags');
+            }
+            $dupeTags = $this->getTable('Tags')->getDuplicates();
+            if (count($dupeTags) > 0 && !isset($this->cookie->skipDupeTags)) {
+                return $this->forwardTo('Upgrade', 'FixDuplicateTags');
             }
         } catch (\Exception $e) {
             $this->flashMessenger()->setNamespace('error')
@@ -463,6 +467,28 @@ class UpgradeController extends AbstractBase
                 'anonymousTags' => $this->params()->fromQuery('anonymousCnt')
             )
         );
+    }
+
+    /**
+     * Prompt the user about fixing duplicate tags.
+     *
+     * @return mixed
+     */
+    public function fixduplicatetagsAction()
+    {
+        // Handle skip action:
+        if (strlen($this->params()->fromPost('skip', '')) > 0) {
+            $this->cookie->skipDupeTags = true;
+            return $this->forwardTo('Upgrade', 'FixDatabase');
+        }
+
+        // Handle submit action:
+        if (strlen($this->params()->fromPost('submit', '')) > 0) {
+            $this->getTable('Tags')->fixDuplicateTags();
+            return $this->forwardTo('Upgrade', 'FixDatabase');
+        }
+
+        return $this->createViewModel();
     }
 
     /**

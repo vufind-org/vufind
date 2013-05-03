@@ -957,10 +957,10 @@ $staticRoutes = array(
     'Search/Suggest',
     'Summon/Advanced', 'Summon/Home', 'Summon/Search',
     'Tag/Home',
-    'Upgrade/Home', 'Upgrade/FixAnonymousTags', 'Upgrade/FixConfig',
-    'Upgrade/FixDatabase', 'Upgrade/FixMetadata', 'Upgrade/GetDBCredentials',
-    'Upgrade/GetDbEncodingPreference', 'Upgrade/GetSourceDir', 'Upgrade/Reset',
-    'Upgrade/ShowSQL',
+    'Upgrade/Home', 'Upgrade/FixAnonymousTags', 'Upgrade/FixDuplicateTags',
+    'Upgrade/FixConfig', 'Upgrade/FixDatabase', 'Upgrade/FixMetadata',
+    'Upgrade/GetDBCredentials', 'Upgrade/GetDbEncodingPreference',
+    'Upgrade/GetSourceDir', 'Upgrade/Reset', 'Upgrade/ShowSQL',
     'VuDL/Browse', 'VuDL/DSRecord', 'VuDL/Record',
     'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search'
 );
