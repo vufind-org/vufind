@@ -374,11 +374,16 @@ class QueryBuilder
             $string = '[* TO *]';
         }
 
-        // If the query ends in a question mark, the user may not really intend to
-        // use the question mark as a wildcard -- let's account for that possibility
-        if (substr($string, -1) == '?') {
-            $string = "({$string}) OR (" . substr($string, 0, strlen($string) - 1)
-                . ")";
+        // If the query ends in a non-escaped question mark, the user may not really
+        // intend to use the question mark as a wildcard -- let's account for that
+        // possibility
+        if (substr($query, -1) == '?' && substr($query, -2) != '\?') {
+            // Make sure all question marks are properly escaped (first unescape
+            // any that are already escaped to prevent double-escapes, then escape
+            // all of them):
+            $strippedQuery
+                = str_replace('?', '\?', str_replace('\?', '?', $query));
+            $query = "({$query}) OR (" . $strippedQuery . ")";
         }
 
         return $handler
