@@ -48,10 +48,14 @@
 <? foreach ($holdings as $location => $holding): ?>
 <h3><?=$this->transEsc($location)?></h3>
 <table cellpadding="2" cellspacing="0" border="0" class="citation" summary="<?=$this->transEsc('Holdings details from')?> <?=$this->transEsc($location)?>">
-  <? if (isset($holding['items'][0]['callnumber'])): ?>
+  <? $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
   <tr>
     <th><?=$this->transEsc("Call Number")?>: </th>
-    <td><?=$this->escapeHtml($holding['items'][0]['callnumber'])?></td>
+    <td>
+      <? foreach ($callNos as $callNo): ?>
+        <?=$this->escapeHtml($callNo)?><br />
+      <? endforeach; ?>
+    </td>
   </tr>
   <? endif; ?>
   <? if (!empty($holding['summary'])): ?>
