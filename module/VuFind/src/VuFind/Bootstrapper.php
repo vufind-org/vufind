@@ -253,6 +253,64 @@ class Bootstrapper
     }
 
     /**
+     * Support method for initLanguage(): process HTTP_ACCEPT_LANGUAGE value.
+     * Returns browser-requested language string or false if none found.
+     *
+     * @return string|bool
+     */
+    public function detectBrowserLanguage()
+    {
+        if (isset($this->config->Site->browserDetectLanguage)
+            && false == $this->config->Site->browserDetectLanguage
+        ) {
+            return false;
+        }
+
+        // break up string into pieces (languages and q factors)
+        preg_match_all(
+            '/([a-z]{1,8}(-[a-z]{1,8})?)\s*(;\s*q\s*=\s*(1|0\.[0-9]+))?/i',
+            $this->event->getRequest()->getServer()->get('HTTP_ACCEPT_LANGUAGE'),
+            $langParse
+        );
+
+        if (!count($langParse[1])) {
+            return false;
+        }
+
+        // create a list like "en" => 0.8
+        $langs = array_combine($langParse[1], $langParse[4]);
+
+        // set default to 1 for any without q factor
+        foreach ($langs as $lang => $val) {
+            if (empty($val)) {
+                $langs[$lang] = 1;
+            }
+        }
+
+        // sort list based on value
+        arsort($langs, SORT_NUMERIC);
+
+        $validLanguages = array_keys($this->config->Languages->toArray());
+
+        // return first valid language
+        foreach ($langs as $language => $rating) {
+            // Make sure language code is valid
+            $language = strtolower($language);
+            if (in_array($language, $validLanguages)) {
+                return $language;
+            }
+
+            // Make sure language code is valid, reset to default if bad:
+            $langStrip = current(explode("-", $language));
+            if (in_array($langStrip, $validLanguages)) {
+                return $langStrip;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Set up language handling.
      *
      * @return void
@@ -265,18 +323,23 @@ class Bootstrapper
         }
 
         $config =& $this->config;
-        $callback = function ($event) use ($config) {
+        $browserCallback = array($this, 'detectBrowserLanguage');
+        $callback = function ($event) use ($config, $browserCallback) {
+            $validBrowserLanguage = call_user_func($browserCallback);
+
             // Setup Translator
             $request = $event->getRequest();
             if (($language = $request->getPost()->get('mylang', false))
                 || ($language = $request->getQuery()->get('lng', false))
             ) {
                 setcookie('language', $language, null, '/');
+            } elseif (!empty($request->getCookie()->language)) {
+                $language = $request->getCookie()->language;
             } else {
-                $language = !empty($request->getCookie()->language)
-                    ? $request->getCookie()->language
-                    : $config->Site->language;
+                $language = (false !== $validBrowserLanguage)
+                    ? $validBrowserLanguage : $config->Site->language;
             }
+
             // Make sure language code is valid, reset to default if bad:
             if (!in_array($language, array_keys($config->Languages->toArray()))) {
                 $language = $config->Site->language;
