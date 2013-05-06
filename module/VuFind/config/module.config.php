@@ -278,7 +278,10 @@ $config = array(
                 );
             },
             'VuFind\Tags' => function ($sm) {
-                return new \VuFind\Tags();
+                $config = $sm->get('VuFind\Config')->get('config');
+                $maxLength = isset($config->Social->max_tag_length)
+                    ? $config->Social->max_tag_length : 64;
+                return new \VuFind\Tags($maxLength);
             },
             'VuFind\Translator' => function ($sm) {
                 $factory = new \Zend\I18n\Translator\TranslatorServiceFactory();
