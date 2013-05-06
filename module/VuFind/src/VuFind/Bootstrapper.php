@@ -39,8 +39,25 @@ use Zend\Console\Console, Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch;
  */
 class Bootstrapper
 {
+    /**
+     * Main VuFind configuration
+     *
+     * @var \Zend\Config\Config
+     */
     protected $config = null;
+
+    /**
+     * Current MVC event
+     *
+     * @var MvcEvent
+     */
     protected $event;
+
+    /**
+     * Event manager
+     *
+     * @var \Zend\EventManager\EventManagerInterface
+     */
     protected $events;
 
     /**
