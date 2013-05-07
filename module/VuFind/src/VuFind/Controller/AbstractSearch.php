@@ -39,12 +39,40 @@ use VuFind\Search\Memory, Zend\Stdlib\Parameters;
  */
 class AbstractSearch extends AbstractBase
 {
+    /**
+     * Search class family to use.
+     *
+     * @var string
+     */
     protected $searchClassId = 'Solr';
+
+    /**
+     * Should we save searches to history?
+     *
+     * @var bool
+     */
     protected $saveToHistory = true;
+
+    /**
+     * Should we log search statistics?
+     *
+     * @var bool
+     */
     protected $logStatistics = true;
+
+    /**
+     * Should we remember the search for breadcrumb purposes?
+     *
+     * @var bool
+     */
     protected $rememberSearch = true;
+
+    /**
+     * Should we use the result scroller?
+     *
+     * @var bool
+     */
     protected $useResultScroller = true;
-    protected $user;
 
     /**
      * Constructor
