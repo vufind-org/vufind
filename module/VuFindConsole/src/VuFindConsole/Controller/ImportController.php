@@ -101,6 +101,12 @@ class ImportController extends AbstractBase
             $importer->save($argv[0], $argv[1], $index, $testMode);
         } catch (\Exception $e) {
             Console::writeLine("Fatal error: " . $e->getMessage());
+            if (is_callable(array($e, 'getPrevious')) && $e = $e->getPrevious()) {
+                while ($e) {
+                    Console::writeLine("Previous exception: " . $e->getMessage());
+                    $e = $e->getPrevious();
+                }
+            }
             return $this->getFailureResponse();
         }
         if (!$testMode) {
