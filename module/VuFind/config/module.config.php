@@ -346,6 +346,19 @@ $config = array(
         'config_reader' => array(
             'abstract_factories' => array('VuFind\Config\PluginFactory'),
         ),
+        // PostgreSQL sequence mapping
+        'pgsql_seq_mapping'  => array(
+            'comments'       => array('id', 'comments_id_seq'),
+            'oai_resumption' => array('id', 'oai_resumption_id_seq'),
+            'resource'       => array('id', 'resource_id_seq'),
+            'resource_tags'  => array('id', 'resource_tags_id_seq'),
+            'search'         => array('id', 'search_id_seq'),
+            'session'        => array('id', 'session_id_seq'),
+            'tags'           => array('id', 'tags_id_seq'),
+            'user'           => array('id', 'user_id_seq'),
+            'user_list'      => array('id', 'user_list_id_seq'),
+            'user_resource'  => array('id', 'user_resource_id_seq')
+        ),
         // This section contains service manager configurations for all VuFind
         // pluggable components:
         'plugin_managers' => array(

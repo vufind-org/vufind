@@ -99,7 +99,7 @@ class Tags extends Gateway
      */
     public function getForResource($id, $source = 'VuFind', $limit = 0,
         $list = null, $user = null, $sort = 'count'
-    ) {
+    ) {   
         return $this->select(
             function ($select) use ($id, $source, $limit, $list, $user, $sort) {
                 $select->columns(
@@ -119,7 +119,7 @@ class Tags extends Gateway
                 );
                 $select->where->equalTo('r.record_id', $id)
                     ->equalTo('r.source', $source);
-                $select->group(array('id', 'tag'));
+                $select->group(array('tags.id', 'tag'));
 
                 if ($sort == 'count') {
                     $select->order(array('cnt DESC', 'tags.tag'));

@@ -102,18 +102,30 @@ class AdapterFactory
      * @return object
      */
     public function getAdapterFromOptions($options)
-    {
+    {       
         // Set up custom options by database type:
-        switch (strtolower($options['driver'])) {
+        $driver = strtolower($options['driver']);
+        switch ($driver) {
         case 'mysqli':
             $options['charset'] = isset($this->config->Database->charset)
                 ? $this->config->Database->charset : 'utf8';
             $options['options'] = array('buffer_results' => true);
-            break;
+            break; 
         }
 
         // Set up database connection:
-        return new Adapter($options);
+        $adapter = new Adapter($options);
+
+        // Special-case setup:
+        if ($driver == 'pdo_pgsql' && isset($this->config->Database->schema)) {
+            // Set schema
+            $statement = $adapter->createStatement(
+                'SET search_path TO ' . $this->config->Database->schema
+            );
+            $result = $statement->execute();
+        }
+
+        return $adapter;
     }
 
     /**

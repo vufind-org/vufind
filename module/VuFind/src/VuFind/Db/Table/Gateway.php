@@ -27,6 +27,7 @@
  */
 namespace VuFind\Db\Table;
 use Zend\Db\TableGateway\AbstractTableGateway,
+    Zend\Db\TableGateway\Feature,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
     Zend\ServiceManager\ServiceLocatorInterface;
 
@@ -85,6 +86,21 @@ class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterfa
         if ($this->isInitialized) {
             return;
         }
+
+        // Special case for PostgreSQL sequences:
+        if ($this->adapter->getDriver()->getDatabasePlatformName() == "Postgresql") {
+            $cfg = $this->getServiceLocator()->getServiceLocator()->get('config');
+            $maps = $cfg['vufind']['pgsql_seq_mapping'];
+            if (isset($maps[$this->table])) {
+                $this->featureSet = new Feature\FeatureSet();
+                $this->featureSet->addFeature(
+                    new Feature\SequenceFeature(
+                        $maps[$this->table][0], $maps[$this->table][1]
+                    )
+                );
+            }
+        }
+
         parent::initialize();
         if (null !== $this->rowClass) {
             $resultSetPrototype = $this->getResultSetPrototype();
