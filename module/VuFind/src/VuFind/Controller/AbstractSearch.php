@@ -68,13 +68,6 @@ class AbstractSearch extends AbstractBase
     protected $rememberSearch = true;
 
     /**
-     * Should we use the result scroller?
-     *
-     * @var bool
-     */
-    protected $useResultScroller = true;
-
-    /**
      * Constructor
      */
     public function __construct()
@@ -161,6 +154,17 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
+     * Is the result scroller active?
+     *
+     * @return bool
+     */
+    protected function resultScrollerActive()
+    {
+        // Disabled by default:
+        return false;
+    }
+
+    /**
      * Send search results to results view
      *
      * @return \Zend\View\Model\ViewModel
@@ -227,7 +231,7 @@ class AbstractSearch extends AbstractBase
             }
 
             // Set up results scroller:
-            if ($this->useResultScroller) {
+            if ($this->resultScrollerActive()) {
                 $this->resultScroller()->init($results);
             }
         } catch (\VuFindSearch\Backend\Exception\RequestParseErrorException $e) {

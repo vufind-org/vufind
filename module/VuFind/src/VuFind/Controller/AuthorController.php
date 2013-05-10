@@ -59,7 +59,6 @@ class AuthorController extends AbstractSearch
     {
         $this->searchClassId = 'SolrAuthorFacets';
         $this->saveToHistory = false;
-        $this->useResultScroller = false;
         $this->rememberSearch = false;
         return parent::resultsAction();
     }

@@ -125,18 +125,13 @@ $config = array(
                     && $config->Reserves->search_enabled;
                 return new \VuFind\Controller\Plugin\Reserves($useIndex);
             },
-            'result-scroller' => function ($sm) {
-                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-                $enabled = (isset($config->Record->next_prev_navigation)
-                    && $config->Record->next_prev_navigation);
-                return new \VuFind\Controller\Plugin\ResultScroller($enabled);
-            },
         ),
         'invokables' => array(
             'db-upgrade' => 'VuFind\Controller\Plugin\DbUpgrade',
             'favorites' => 'VuFind\Controller\Plugin\Favorites',
             'followup' => 'VuFind\Controller\Plugin\Followup',
             'renewals' => 'VuFind\Controller\Plugin\Renewals',
+            'result-scroller' => 'VuFind\Controller\Plugin\ResultScroller',
         )
     ),
     'service_manager' => array(

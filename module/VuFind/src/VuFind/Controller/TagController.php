@@ -44,7 +44,6 @@ class TagController extends AbstractSearch
     public function __construct()
     {
         $this->searchClassId = 'Tags';
-        $this->useResultScroller = false;
         parent::__construct();
     }
 

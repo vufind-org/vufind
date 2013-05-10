@@ -44,7 +44,6 @@ class RecordsController extends AbstractSearch
     public function __construct()
     {
         $this->searchClassId = 'MixedList';
-        $this->useResultScroller = false;
         parent::__construct();
     }
 

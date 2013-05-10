@@ -46,8 +46,19 @@ class SummonController extends AbstractSearch
     public function __construct()
     {
         $this->searchClassId = 'Summon';
-        $this->useResultScroller = false;
         parent::__construct();
+    }
+
+    /**
+     * Is the result scroller active?
+     *
+     * @return bool
+     */
+    protected function resultScrollerActive()
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('Summon');
+        return (isset($config->Record->next_prev_navigation)
+            && $config->Record->next_prev_navigation);
     }
 
     /**

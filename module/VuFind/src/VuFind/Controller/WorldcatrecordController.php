@@ -45,9 +45,20 @@ class WorldcatrecordController extends AbstractRecord
     {
         // Override some defaults:
         $this->searchClassId = 'WorldCat';
-        $this->useResultScroller = false;
 
         // Call standard record controller initialization:
         parent::__construct();
+    }
+
+    /**
+     * Is the result scroller active?
+     *
+     * @return bool
+     */
+    protected function resultScrollerActive()
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('WorldCat');
+        return (isset($config->Record->next_prev_navigation)
+            && $config->Record->next_prev_navigation);
     }
 }

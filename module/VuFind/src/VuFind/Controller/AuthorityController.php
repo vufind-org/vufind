@@ -44,7 +44,6 @@ class AuthorityController extends AbstractSearch
     public function __construct()
     {
         $this->searchClassId = 'SolrAuth';
-        $this->useResultScroller = false;
         parent::__construct();
     }
 
