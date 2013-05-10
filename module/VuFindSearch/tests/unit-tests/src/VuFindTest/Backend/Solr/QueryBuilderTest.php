@@ -141,10 +141,15 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
             array('title - sub', 'title sub'),      // freestanding hyphen
             array('"title - sub"', '"title - sub"'),// freestanding hyphen in quotes
             array('test~1', 'test'),                // meaningless proximity
+            array('test~1.', 'test'),               // meaningless proximity w/dec.
+            array('test~1.000', 'test'),            // meaningless proximity w/dec.
             array('test~1 fish', 'test fish'),      // meaningless proximity
+            array('test~1. fish', 'test fish'),     // meaningless proximity w/dec.
+            array('test~1.000 fish', 'test fish'),  // meaningless proximity w/dec.
             array('"test~1"', '"test~1"'),          // meaningless prox. in quotes
             array('test~0.9', 'test~0.9'),          // valid proximity
-            array('test~11', 'test~11'),            // illegal prox. (leave alone)
+            array('test~10', 'test~10'),            // illegal prox. (leave alone)
+            array('test~10 fish', 'test~10 fish'),  // illegal prox. (leave alone)
         );
         // @codingStandardsIgnoreEnd
 
