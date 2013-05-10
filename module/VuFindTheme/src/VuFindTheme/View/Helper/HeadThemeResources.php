@@ -68,6 +68,12 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
             'Content-Type', 'text/html; charset=' . $this->container->getEncoding()
         );
 
+        // Set up generator:
+        $generator = $this->container->getGenerator();
+        if (!empty($generator)) {
+            $headMeta()->appendName('Generator', $generator);
+        }
+
         // Load CSS (make sure we prepend them in the appropriate order; theme
         // resources should load before extras added by individual templates):
         $headLink = $this->getView()->plugin('headlink');

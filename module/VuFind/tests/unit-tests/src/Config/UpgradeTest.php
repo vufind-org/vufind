@@ -41,6 +41,13 @@ use VuFind\Config\Upgrade;
 class UpgradeTest extends \VuFindTest\Unit\TestCase
 {
     /**
+     * Target upgrade version
+     *
+     * @var string
+     */
+    protected $targetVersion = '2.0';
+
+    /**
      * Get an upgrade object for the specified source version:
      *
      * @param string $version Version
@@ -51,7 +58,7 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
     {
         $oldDir = realpath(__DIR__ . '/../../../fixtures/configs/' . $version);
         $rawDir = realpath(__DIR__ . '/../../../../../../config/vufind');
-        return new Upgrade($version, '2.0', $oldDir, $rawDir);
+        return new Upgrade($version, $this->targetVersion, $oldDir, $rawDir);
     }
 
     /**
@@ -143,5 +150,30 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
     public function testUpgrade14()
     {
         $this->checkVersion('1.4');
+    }
+
+    /**
+     * Test generator upgrade.
+     *
+     * @return void
+     */
+    public function testDefaultGenerator()
+    {
+        // We expect the upgrader to switch default values:
+        $upgrader = $this->getUpgrader('defaultgenerator');
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            'VuFind ' . $this->targetVersion,
+            $results['config.ini']['Site']['generator']
+        );
+
+        // We expect the upgrader not to change custom values:
+        $upgrader = $this->getUpgrader('customgenerator');
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            'Custom Generator', $results['config.ini']['Site']['generator']
+        );
     }
 }
