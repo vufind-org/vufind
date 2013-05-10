@@ -269,8 +269,7 @@ class AbstractBase extends AbstractActionController
      * @param array  $params     Extra parameters for the RouteMatch object (no
      * need to provide action here, since $action takes care of that)
      *
-     * @return bool              Returns false so this can be returned by a
-     * controller without causing duplicate ViewModel attachment.
+     * @return mixed
      */
     public function forwardTo($controller, $action, $params = array())
     {
@@ -279,6 +278,34 @@ class AbstractBase extends AbstractActionController
 
         // Dispatch the requested controller/action:
         return $this->forward()->dispatch($controller, $params);
+    }
+
+    /**
+     * Confirm an action.
+     *
+     * @param string       $title     Title of confirm dialog
+     * @param string       $yesTarget Form target for "confirm" action
+     * @param string       $noTarget  Form target for "cancel" action
+     * @param string|array $messages  Info messages for confirm dialog
+     * @param array        $extras    Extra details to include in form
+     *
+     * @return mixed
+     */
+    public function confirm($title, $yesTarget, $noTarget, $messages = array(),
+        $extras = array()
+    ) {
+        return $this->forwardTo(
+            'Confirm', 'Confirm',
+            array(
+                'data' => array(
+                    'title' => $title,
+                    'confirm' => $yesTarget,
+                    'cancel' => $noTarget,
+                    'messages' => (array)$messages,
+                    'extras' => $extras
+                )
+            )
+        );
     }
 
     /**
