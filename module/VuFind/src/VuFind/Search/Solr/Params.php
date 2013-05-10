@@ -102,7 +102,7 @@ class Params extends \VuFind\Search\Base\Params
                 ) {
                     $filterQuery[] = $field.':'.$value;
                 } else {
-                    $filterQuery[] = $field.':"'.$value.'"';
+                    $filterQuery[] = $field.':"'.addcslashes($value, '"\\').'"';
                 }
             }
         }
