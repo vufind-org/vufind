@@ -180,7 +180,9 @@ class Backend implements BackendInterface, MoreLikeThis, RetrieveBatchInterface
         $this->injectSourceIdentifier($collection);
 
         if ($spellcheck) {
-            $this->aggregateSpellcheck($collection->getSpellcheck(), end($params->get('spellcheck.q')));
+            $this->aggregateSpellcheck(
+                $collection->getSpellcheck(), end($params->get('spellcheck.q'))
+            );
         }
 
         return $collection;

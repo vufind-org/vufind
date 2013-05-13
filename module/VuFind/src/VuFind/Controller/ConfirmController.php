@@ -56,14 +56,13 @@ class ConfirmController extends AbstractBase
             $this->flashMessenger()->setNamespace('info');
 
             foreach ($data['messages'] as $message) {
-                $this->flashMessenger()->addMessage(
-                    true === is_array($message)
-                        ? array(
-                            'msg' => $message['msg'],
-                            'tokens' => $message['tokens']
-                        )
-                        : $message
-                );
+                $flash = (true === is_array($message))
+                    ? array(
+                        'msg' => $message['msg'],
+                        'tokens' => $message['tokens']
+                    )
+                    : $message;
+                $this->flashMessenger()->addMessage($flash);
             }
         }
 
