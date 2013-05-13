@@ -110,4 +110,32 @@ class WriterTest extends \VuFindTest\Unit\TestCase
         $this->assertEquals('val2', $ini['test']['key2']);
         $this->assertEquals('val3', $ini['test']['key3']);
     }
+
+    /**
+     * Test setting a duplicate value.
+     *
+     * @return void
+     */
+    public function testSetDuplicateValue()
+    {
+        $cfg = "[test]\nkey1=val1\nkey1=val2\n";
+        $test = new Writer('fake.ini', $cfg);
+        $test->set('test', 'key1', 'val1b');
+        $ini = parse_ini_string($test->getContent(), true);
+        $this->assertEquals('val1b', $ini['test']['key1']);
+    }
+
+    /**
+     * Test that we add a missing section at the end if necessary.
+     *
+     * @return void
+     */
+    public function testAddMissingSection()
+    {
+        $cfg = "[test]\nkey1=val1\n";
+        $test = new Writer('fake.ini', $cfg);
+        $test->set('test2', 'key1', 'val1b');
+        $ini = parse_ini_string($test->getContent(), true);
+        $this->assertEquals('val1b', $ini['test2']['key1']);
+    }
 }

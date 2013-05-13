@@ -100,32 +100,28 @@ class Writer
 
         // Process one line at a time...
         foreach ($lines as $line) {
-            // Once the setting is set, we can stop doing fancy processing -- it's
-            // just a matter of writing lines through unchanged:
-            if (!$settingSet) {
-                // Separate comments from content:
-                $parts = explode(';', trim($line), 2);
-                $content = trim($parts[0]);
-                $comment = isset($parts[1]) ? $parts[1] : '';
+            // Separate comments from content:
+            $parts = explode(';', trim($line), 2);
+            $content = trim($parts[0]);
+            $comment = isset($parts[1]) ? $parts[1] : '';
 
-                // Is this a section heading?
-                if (preg_match('/^\[(.+)\]$/', trim($content), $matches)) {
-                    // If we just left the target section and didn't find the
-                    // desired setting, we should write it to the end.
-                    if ($currentSection == $section && !$settingSet) {
-                        $line = $setting . ' = "' . $value . '"' . "\n\n" . $line;
-                        $settingSet = true;
+            // Is this a section heading?
+            if (preg_match('/^\[(.+)\]$/', trim($content), $matches)) {
+                // If we just left the target section and didn't find the
+                // desired setting, we should write it to the end.
+                if ($currentSection == $section && !$settingSet) {
+                    $line = $setting . ' = "' . $value . '"' . "\n\n" . $line;
+                    $settingSet = true;
+                }
+                $currentSection = $matches[1];
+            } else if (strstr($content, '=')) {
+                list($key, $oldValue) = explode('=', $content, 2);
+                if ($currentSection == $section && trim($key) == $setting) {
+                    $line = $setting . ' = "' . $value . '"';
+                    if (!empty($comment)) {
+                        $line .= ' ;' . $comment;
                     }
-                    $currentSection = $matches[1];
-                } else if (strstr($content, '=')) {
-                    list($key, $oldValue) = explode('=', $content, 2);
-                    if ($currentSection == $section && trim($key) == $setting) {
-                        $line = $setting . ' = "' . $value . '"';
-                        if (!empty($comment)) {
-                            $line .= ' ;' . $comment;
-                        }
-                        $settingSet = true;
-                    }
+                    $settingSet = true;
                 }
             }
 
