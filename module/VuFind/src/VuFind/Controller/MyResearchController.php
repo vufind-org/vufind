@@ -497,15 +497,10 @@ class MyResearchController extends AbstractBase
         } else {
             $url = $this->url()->fromRoute('userList', array('id' => $listID));
         }
-        $this->getRequest()->getQuery()->set('confirmAction', $url);
-        $this->getRequest()->getQuery()->set('cancelAction', $url);
-        $this->getRequest()->getQuery()->set(
-            'extraFields', array('delete' => $id, 'source' => $source)
+        return $this->confirm(
+            'confirm_delete_brief', $url, $url, 'confirm_delete',
+            array('delete' => $id, 'source' => $source)
         );
-        $this->getRequest()->getQuery()
-            ->set('confirmTitle', 'confirm_delete_brief');
-        $this->getRequest()->getQuery()->set('confirmMessage', "confirm_delete");
-        return $this->forwardTo('MyResearch', 'Confirm');
     }
 
     /**
@@ -654,24 +649,6 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Takes params from the request and uses them to display a confirmation box
-     *
-     * @return mixed
-     */
-    public function confirmAction()
-    {
-        return $this->createViewModel(
-            array(
-                'title' => $this->params()->fromQuery('confirmTitle'),
-                'message' => $this->params()->fromQuery('confirmMessage'),
-                'confirm' => $this->params()->fromQuery('confirmAction'),
-                'cancel' => $this->params()->fromQuery('cancelAction'),
-                'extras' => $this->params()->fromQuery('extraFields')
-            )
-        );
-    }
-
-    /**
      * Creates a confirmation box to delete or not delete the current list
      *
      * @return mixed
@@ -710,21 +687,12 @@ class MyResearchController extends AbstractBase
         }
 
         // If we got this far, we must display a confirmation message:
-        $this->getRequest()->getQuery()->set(
-            'confirmAction', $this->url()->fromRoute('myresearch-deletelist')
+        return $this->confirm(
+            'confirm_delete_list_brief',
+            $this->url()->fromRoute('myresearch-deletelist'),
+            $this->url()->fromRoute('userList', array('id' => $listID)),
+            'confirm_delete_list_text', array('listID' => $listID)
         );
-        $this->getRequest()->getQuery()->set(
-            'cancelAction',
-            $this->url()->fromRoute('userList', array('id' => $listID))
-        );
-        $this->getRequest()->getQuery()->set(
-            'extraFields', array('listID' => $listID)
-        );
-        $this->getRequest()->getQuery()
-            ->set('confirmTitle', 'confirm_delete_list_brief');
-        $this->getRequest()->getQuery()
-            ->set('confirmMessage', 'confirm_delete_list_text');
-        return $this->forwardTo('MyResearch', 'Confirm');
     }
 
     /**

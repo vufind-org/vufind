@@ -1,6 +1,6 @@
 <?php
 /**
- * Tag Controller
+ * Confirm Controller
  *
  * PHP version 5
  *
@@ -22,39 +22,52 @@
  * @category VuFind2
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
 
 /**
- * Tag Controller
+ * Redirects the user to the appropriate VuFind action.
  *
  * @category VuFind2
  * @package  Controller
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class TagController extends AbstractSearch
+class ConfirmController extends AbstractBase
 {
     /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->searchClassId = 'Tags';
-        parent::__construct();
-    }
-
-    /**
-     * Home action
+     * Determines what elements are displayed on the home page based on whether
+     * the user is logged in.
      *
      * @return mixed
      */
-    public function homeAction()
+    public function confirmAction()
     {
-        return $this->resultsAction();
+        // Get Data from the route
+        $data = $this->params()->fromRoute('data');
+
+        // Assign Flash Messages
+        if (isset($data['messages'])) {
+            $this->flashMessenger()->setNamespace('info');
+
+            foreach ($data['messages'] as $message) {
+                $this->flashMessenger()->addMessage(
+                    true === is_array($message)
+                        ? array(
+                            'msg' => $message['msg'],
+                            'tokens' => $message['tokens']
+                        )
+                        : $message
+                );
+            }
+        }
+
+        // Assign Data
+        return $this->createViewModel($data);
     }
 }
-

@@ -510,6 +510,13 @@ class Upgrade
             unset($newConfig['Statistics']['enabled']);
         }
 
+        // Update generator if it is default value:
+        if (isset($newConfig['Site']['generator'])
+            && $newConfig['Site']['generator'] == 'VuFind ' . $this->from
+        ) {
+            $newConfig['Site']['generator'] = 'VuFind ' . $this->to;
+        }
+
         // Deal with shard settings (which may have to be moved to another file):
         $this->upgradeShardSettings();
 

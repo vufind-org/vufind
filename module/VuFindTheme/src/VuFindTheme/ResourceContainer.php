@@ -67,6 +67,13 @@ class ResourceContainer
     protected $encoding = 'UTF-8';
 
     /**
+     * Generator value for <meta> tag
+     *
+     * @var string
+     */
+    protected $generator = '';
+
+    /**
      * Add a CSS file.
      *
      * @param array|string $css CSS file (or array of CSS files) to add (possibly
@@ -164,5 +171,27 @@ class ResourceContainer
     public function getFavicon()
     {
         return $this->favicon;
+    }
+
+    /**
+     * Set the generator.
+     *
+     * @param string $generator New generator.
+     *
+     * @return void
+     */
+    public function setGenerator($generator)
+    {
+        $this->generator = $generator;
+    }
+
+    /**
+     * Get the generator.
+     *
+     * @return string
+     */
+    public function getGenerator()
+    {
+        return $this->generator;
     }
 }

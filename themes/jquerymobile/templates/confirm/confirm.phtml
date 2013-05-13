@@ -5,12 +5,18 @@
 
     <?=$this->flashmessages();?>
 
-    <p><?=$this->transEsc($this->message) ?></p>
-
     <form action="<?=$this->escapeHtml($this->confirm)?>" method="post" data-ajax="false">
-      <? foreach ($this->extras as $extra=>$value): ?>
-        <input type="hidden" name="<?=$this->escapeHtml($extra) ?>" value="<?=$this->escapeHtml($value) ?>" />
-      <? endforeach; ?>
+      <? if (isset($this->extras)): ?>
+        <? foreach ($this->extras as $extra=>$value): ?>
+          <? if (is_array($value)): ?>
+            <? foreach ($value as $current): ?>
+              <input type="hidden" name="<?=$this->escapeHtml($extra) ?>[]" value="<?=$this->escapeHtml($current) ?>" />
+            <? endforeach; ?>
+          <? else: ?>
+            <input type="hidden" name="<?=$this->escapeHtml($extra) ?>" value="<?=$this->escapeHtml($value) ?>" />
+          <? endif; ?>
+        <? endforeach; ?>
+      <? endif;?>
       <input type="submit" name="confirm" value="<?=$this->transEsc('confirm_dialog_yes') ?>" />
     </form>
     <form action="<?=$this->escapeHtml($this->cancel) ?>" method="post" data-ajax="false">

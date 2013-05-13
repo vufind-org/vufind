@@ -90,6 +90,7 @@ $config = array(
             'author' => 'VuFind\Controller\AuthorController',
             'authority' => 'VuFind\Controller\AuthorityController',
             'cart' => 'VuFind\Controller\CartController',
+            'confirm' => 'VuFind\Controller\ConfirmController',
             'cover' => 'VuFind\Controller\CoverController',
             'error' => 'VuFind\Controller\ErrorController',
             'feedback' => 'VuFind\Controller\FeedbackController',
@@ -124,18 +125,13 @@ $config = array(
                     && $config->Reserves->search_enabled;
                 return new \VuFind\Controller\Plugin\Reserves($useIndex);
             },
-            'result-scroller' => function ($sm) {
-                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-                $enabled = (isset($config->Record->next_prev_navigation)
-                    && $config->Record->next_prev_navigation);
-                return new \VuFind\Controller\Plugin\ResultScroller($enabled);
-            },
         ),
         'invokables' => array(
             'db-upgrade' => 'VuFind\Controller\Plugin\DbUpgrade',
             'favorites' => 'VuFind\Controller\Plugin\Favorites',
             'followup' => 'VuFind\Controller\Plugin\Followup',
             'renewals' => 'VuFind\Controller\Plugin\Renewals',
+            'result-scroller' => 'VuFind\Controller\Plugin\ResultScroller',
         )
     ),
     'service_manager' => array(
@@ -278,7 +274,10 @@ $config = array(
                 );
             },
             'VuFind\Tags' => function ($sm) {
-                return new \VuFind\Tags();
+                $config = $sm->get('VuFind\Config')->get('config');
+                $maxLength = isset($config->Social->max_tag_length)
+                    ? $config->Social->max_tag_length : 64;
+                return new \VuFind\Tags($maxLength);
             },
             'VuFind\Translator' => function ($sm) {
                 $factory = new \Zend\I18n\Translator\TranslatorServiceFactory();
@@ -342,6 +341,19 @@ $config = array(
         // The config reader is a special service manager for loading .ini files:
         'config_reader' => array(
             'abstract_factories' => array('VuFind\Config\PluginFactory'),
+        ),
+        // PostgreSQL sequence mapping
+        'pgsql_seq_mapping'  => array(
+            'comments'       => array('id', 'comments_id_seq'),
+            'oai_resumption' => array('id', 'oai_resumption_id_seq'),
+            'resource'       => array('id', 'resource_id_seq'),
+            'resource_tags'  => array('id', 'resource_tags_id_seq'),
+            'search'         => array('id', 'search_id_seq'),
+            'session'        => array('id', 'session_id_seq'),
+            'tags'           => array('id', 'tags_id_seq'),
+            'user'           => array('id', 'user_id_seq'),
+            'user_list'      => array('id', 'user_list_id_seq'),
+            'user_resource'  => array('id', 'user_resource_id_seq')
         ),
         // This section contains service manager configurations for all VuFind
         // pluggable components:
@@ -940,6 +952,7 @@ $staticRoutes = array(
     'Browse/LCC', 'Browse/Region', 'Browse/Tag', 'Browse/Topic',
     'Cart/doExport', 'Cart/Email', 'Cart/Export', 'Cart/Home', 'Cart/MyResearchBulk',
     'Cart/Save', 'Collections/ByTitle', 'Collections/Home',
+    'Confirm/Confirm',
     'Cover/Show', 'Cover/Unavailable', 'Error/Unavailable',
     'Feedback/Email', 'Feedback/Home', 'Help/Home',
     'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',

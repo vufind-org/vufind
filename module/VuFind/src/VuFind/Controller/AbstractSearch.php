@@ -39,12 +39,33 @@ use VuFind\Search\Memory, Zend\Stdlib\Parameters;
  */
 class AbstractSearch extends AbstractBase
 {
+    /**
+     * Search class family to use.
+     *
+     * @var string
+     */
     protected $searchClassId = 'Solr';
+
+    /**
+     * Should we save searches to history?
+     *
+     * @var bool
+     */
     protected $saveToHistory = true;
+
+    /**
+     * Should we log search statistics?
+     *
+     * @var bool
+     */
     protected $logStatistics = true;
+
+    /**
+     * Should we remember the search for breadcrumb purposes?
+     *
+     * @var bool
+     */
     protected $rememberSearch = true;
-    protected $useResultScroller = true;
-    protected $user;
 
     /**
      * Constructor
@@ -133,6 +154,17 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
+     * Is the result scroller active?
+     *
+     * @return bool
+     */
+    protected function resultScrollerActive()
+    {
+        // Disabled by default:
+        return false;
+    }
+
+    /**
      * Send search results to results view
      *
      * @return \Zend\View\Model\ViewModel
@@ -199,7 +231,7 @@ class AbstractSearch extends AbstractBase
             }
 
             // Set up results scroller:
-            if ($this->useResultScroller) {
+            if ($this->resultScrollerActive()) {
                 $this->resultScroller()->init($results);
             }
         } catch (\VuFindSearch\Backend\Exception\RequestParseErrorException $e) {

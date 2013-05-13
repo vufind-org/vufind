@@ -77,14 +77,12 @@ class AjaxController extends AbstractBase
         // Set the output mode to JSON:
         $this->outputMode = 'json';
 
-        // Call the method specified by the 'method' parameter as long as it is
-        // valid and will not result in an infinite loop!
-        $method = $this->params()->fromQuery('method');
-        if ($method != 'init' && $method != '__construct' && $method != 'output'
-            && method_exists($this, $method)
-        ) {
+        // Call the method specified by the 'method' parameter; append Ajax to
+        // the end to avoid access to arbitrary inappropriate methods.
+        $callback = array($this, $this->params()->fromQuery('method') . 'Ajax');
+        if (is_callable($callback)) {
             try {
-                return $this->$method();
+                return call_user_func($callback);
             } catch (\Exception $e) {
                 $debugMsg = ('development' == APPLICATION_ENV)
                     ? ': ' . $e->getMessage() : '';
@@ -138,7 +136,7 @@ class AjaxController extends AbstractBase
      *
      * @return mixed
      */
-    public function getLightbox()
+    protected function getLightboxAjax()
     {
         // Turn layouts on for this action since we want to render the
         // page inside a lightbox:
@@ -186,7 +184,7 @@ class AjaxController extends AbstractBase
      * @author Chris Delis <cedelis@uillinois.edu>
      * @author Tuan Nguyen <tuan@yorku.ca>
      */
-    public function getItemStatuses()
+    protected function getItemStatusesAjax()
     {
         $this->writeSession();  // avoid session write timing bug
         $catalog = $this->getILS();
@@ -450,7 +448,7 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
-    protected function getSaveStatuses()
+    protected function getSaveStatusesAjax()
     {
         $this->writeSession();  // avoid session write timing bug
         // check if user is logged in
@@ -559,7 +557,7 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
-    protected function getSalt()
+    protected function getSaltAjax()
     {
         return $this->output($this->generateSalt(), self::STATUS_OK);
     }
@@ -569,7 +567,7 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
-    protected function login()
+    protected function loginAjax()
     {
         // Fetch Salt
         $salt = $this->generateSalt();
@@ -601,7 +599,7 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
-    protected function tagRecord()
+    protected function tagRecordAjax()
     {
         $user = $this->getUser();
         if ($user === false) {
@@ -636,7 +634,7 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
-    protected function getRecordTags()
+    protected function getRecordTagsAjax()
     {
         // Retrieve from database:
         $tagTable = $this->getTable('Tags');
@@ -671,7 +669,7 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
-    public function getMapData($fields = array('long_lat'))
+    protected function getMapDataAjax($fields = array('long_lat'))
     {
         $this->writeSession();  // avoid session write timing bug
         $results = $this->getResultsManager()->get('Solr');
@@ -738,7 +736,7 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
-    public function getVisData($fields = array('publishDate'))
+    protected function getVisDataAjax($fields = array('publishDate'))
     {
         $this->writeSession();  // avoid session write timing bug
         $results = $this->getResultsManager()->get('Solr');
@@ -831,7 +829,7 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
-    public function saveRecord()
+    protected function saveRecordAjax()
     {
         $user = $this->getUser();
         if (!$user) {
@@ -854,7 +852,7 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
-    public function bulkSave()
+    protected function bulkSaveAjax()
     {
         // Without IDs, we can't continue
         $ids = $this->params()->fromPost('ids', array());
@@ -896,7 +894,7 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
-    public function addList()
+    protected function addListAjax()
     {
         $user = $this->getUser();
 
@@ -930,7 +928,7 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
-    public function getACSuggestions()
+    protected function getACSuggestionsAjax()
     {
         $this->writeSession();  // avoid session write timing bug
         $query = $this->getRequest()->getQuery();
@@ -946,7 +944,7 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
-    public function smsRecord()
+    protected function smsRecordAjax()
     {
         $this->writeSession();  // avoid session write timing bug
         // Attempt to send the email:
@@ -978,7 +976,7 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
-    public function emailRecord()
+    protected function emailRecordAjax()
     {
         $this->writeSession();  // avoid session write timing bug
 
@@ -1019,7 +1017,7 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
-    public function emailSearch()
+    protected function emailSearchAjax()
     {
         $this->writeSession();  // avoid session write timing bug
 
@@ -1064,7 +1062,7 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
-    public function checkRequestIsValid()
+    protected function checkRequestIsValidAjax()
     {
         $this->writeSession();  // avoid session write timing bug
         $id = $this->params()->fromQuery('id');
@@ -1107,7 +1105,7 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
-    public function commentRecord()
+    protected function commentRecordAjax()
     {
         $user = $this->getUser();
         if ($user === false) {
@@ -1139,7 +1137,7 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
-    public function deleteRecordComment()
+    protected function deleteRecordCommentAjax()
     {
         $user = $this->getUser();
         if ($user === false) {
@@ -1165,7 +1163,7 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
-    public function getRecordCommentsAsHTML()
+    protected function getRecordCommentsAsHTMLAjax()
     {
         $driver = $this->getRecordLoader()->load(
             $this->params()->fromQuery('id'),
@@ -1181,7 +1179,7 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
-    protected function deleteFavorites()
+    protected function deleteFavoritesAjax()
     {
         $user = $this->getUser();
         if ($user === false) {
@@ -1213,7 +1211,7 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
-    protected function removeItemsCart()
+    protected function removeItemsCartAjax()
     {
         // Without IDs, we can't continue
         $ids = $this->params()->fromPost('ids');
@@ -1232,7 +1230,7 @@ class AjaxController extends AbstractBase
      *
      * @return \Zend\Http\Response
      */
-    protected function exportFavorites()
+    protected function exportFavoritesAjax()
     {
         $format = $this->params()->fromPost('format');
         $export = $this->getServiceLocator()->get('VuFind\Export');
@@ -1259,7 +1257,7 @@ class AjaxController extends AbstractBase
      * @return \Zend\Http\Response
      * @author Graham Seaman <Graham.Seaman@rhul.ac.uk>
      */
-    protected function getResolverLinks()
+    protected function getResolverLinksAjax()
     {
         $this->writeSession();  // avoid session write timing bug
         $openUrl = $this->params()->fromQuery('openurl', '');

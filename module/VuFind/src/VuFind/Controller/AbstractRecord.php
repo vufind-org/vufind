@@ -62,13 +62,6 @@ class AbstractRecord extends AbstractBase
     protected $searchClassId = 'Solr';
 
     /**
-     * Should we use the result scroller?
-     *
-     * @var bool
-     */
-    protected $useResultScroller = true;
-
-    /**
      * Should we log statistics?
      *
      * @var bool
@@ -564,6 +557,17 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
+     * Is the result scroller active?
+     *
+     * @return bool
+     */
+    protected function resultScrollerActive()
+    {
+        // Disabled by default:
+        return false;
+    }
+
+    /**
      * Display a particular tab.
      *
      * @param string $tab  Name of tab to display
@@ -592,7 +596,7 @@ class AbstractRecord extends AbstractBase
         $view->defaultTab = strtolower($this->defaultTab);
 
         // Set up next/previous record links (if appropriate)
-        if ($this->useResultScroller) {
+        if ($this->resultScrollerActive()) {
             $driver = $this->loadRecord();
             $view->scrollData = $this->resultScroller()->getScrollData($driver);
         }

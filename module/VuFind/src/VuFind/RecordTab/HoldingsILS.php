@@ -68,6 +68,26 @@ class HoldingsILS extends AbstractBase
     }
 
     /**
+     * Support method used by template -- extract all unique call numbers from
+     * an array of items.
+     *
+     * @param array $items Items to search through.
+     *
+     * @return array
+     */
+    public function getUniqueCallNumbers($items)
+    {
+        $callNos = array();
+        foreach ($items as $item) {
+            if (isset($item['callnumber']) && strlen($item['callnumber']) > 0) {
+                $callNos[] = $item['callnumber'];
+            }
+        }
+        sort($callNos);
+        return array_unique($callNos);
+    }
+
+    /**
      * Is this tab active?
      *
      * @return bool

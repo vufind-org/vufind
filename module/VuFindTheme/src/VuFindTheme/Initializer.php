@@ -91,6 +91,8 @@ class Initializer
      * selected through the user interface; each entry is a colon-separated
      * name:description pair, where name may be 'standard,' 'mobile,' or one of
      * the parameter-values from the alternate_themes array.</li>
+     *   <li>generator - a Generator value to display in the HTML header
+     * (optional)</li>
      * </ul>
      * @param MvcEvent $event  Zend MVC Event object
      */
@@ -319,6 +321,11 @@ class Initializer
 
         // Grab the resource manager for tracking CSS, JS, etc.:
         $resources = $this->serviceManager->get('VuFindTheme\ResourceContainer');
+
+        // Set generator if necessary:
+        if (isset($this->config->generator)) {
+            $resources->setGenerator($this->config->generator);
+        }
 
         // Apply the loaded theme settings in reverse for proper inheritance:
         foreach ($themes as $key=>$currentThemeInfo) {
