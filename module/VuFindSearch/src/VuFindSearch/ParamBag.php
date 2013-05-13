@@ -78,6 +78,20 @@ class ParamBag
     }
 
     /**
+     * Return true if the bag contains a parameter-value-pair.
+     *
+     * @param string $name  Parameter name
+     * @param string $value Parameter value
+     *
+     * @return boolean
+     */
+    public function contains($name, $value)
+    {
+        $haystack = $this->get($name);
+        return is_array($haystack) && in_array($value, $haystack);
+    }
+
+    /**
      * Set a parameter.
      *
      * @param string $name  Parameter name
