@@ -208,15 +208,11 @@ class Connector
      * Execute a search.
      *
      * @param ParamBag $params Parameters
-     * @param integer  $offset Search offset
-     * @param integer  $limit  Search limit
      *
      * @return string
      */
-    public function search(ParamBag $params, $offset, $limit)
+    public function search(ParamBag $params)
     {
-        $params->set('start', $offset);
-        $params->set('rows', $limit);
         return $this->select($params);
     }
 

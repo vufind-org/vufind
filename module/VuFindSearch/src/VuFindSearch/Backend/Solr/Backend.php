@@ -169,8 +169,10 @@ class Backend implements BackendInterface, MoreLikeThis, RetrieveBatchInterface
             }
         }
 
+        $params->set('rows', $limit);
+        $params->set('start', $offset);
         $params->mergeWith($this->getQueryBuilder()->build($query));
-        $response   = $this->connector->search($params, $offset, $limit);
+        $response   = $this->connector->search($params);
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
 
