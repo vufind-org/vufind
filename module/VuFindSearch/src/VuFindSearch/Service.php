@@ -31,6 +31,7 @@ namespace VuFindSearch;
 
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Feature\RetrieveBatchInterface;
+use VuFindSearch\Backend\Exception\BackendException;
 
 use Zend\Log\LoggerInterface;
 use Zend\EventManager\EventManagerInterface;
@@ -100,7 +101,12 @@ class Service
         $args['backend_instance'] = $backend;
 
         $this->triggerPre($backend, $args);
-        $response = $backend->search($query, $offset, $limit, $params);
+        try {
+            $response = $backend->search($query, $offset, $limit, $params);
+        } catch (BackendException $e) {
+            $this->triggerError($e, $args);
+            throw $e;
+        }
         $this->triggerPost($response, $args);
         return $response;
     }
@@ -123,7 +129,12 @@ class Service
         $args['backend_instance'] = $backend;
 
         $this->triggerPre($backend, $args);
-        $response = $backend->retrieve($id, $params);
+        try {
+            $response = $backend->retrieve($id, $params);
+        } catch (BackendException $e) {
+            $this->triggerError($e, $args);
+            throw $e;
+        }
         $this->triggerPost($response, $args);
         return $response;
     }
@@ -151,11 +162,21 @@ class Service
         // all the records at once; otherwise, we need to load them one at a
         // time and aggregate them:
         if ($backend instanceof RetrieveBatchInterface) {
-            $response = $backend->retrieveBatch($ids, $params);
+            try {
+                $response = $backend->retrieveBatch($ids, $params);
+            } catch (BackendException $e) {
+                $this->triggerError($e, $args);
+                throw $e;
+            }
         } else {
             $response = false;
             foreach ($ids as $id) {
-                $next = $backend->retrieve($id, $params);
+                try {
+                    $next = $backend->retrieve($id, $params);
+                } catch (BackendException $e) {
+                    $this->triggerError($e, $args);
+                    throw $e;
+                }
                 if (!$response) {
                     $response = $next;
                 } else {
@@ -186,7 +207,12 @@ class Service
         $args['backend_instance'] = $backend;
 
         $this->triggerPre($backend, $args);
-        $response = $backend->similar($id, $params);
+        try {
+            $response = $backend->similar($id, $params);
+        } catch (BackendException $e) {
+            $this->triggerError($e, $args);
+            throw $e;
+        }
         $this->triggerPost($response, $args);
         return $response;
     }
