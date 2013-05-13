@@ -157,7 +157,7 @@ class Backend implements BackendInterface, MoreLikeThis, RetrieveBatchInterface
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
 
-        $spellcheck = $params->get('spellcheck.q') && !empty($this->dictionaries);
+        $spellcheck = $params->get('spellcheck.q');
         if ($spellcheck) {
             if (empty($this->dictionaries)) {
                 $this->log(
