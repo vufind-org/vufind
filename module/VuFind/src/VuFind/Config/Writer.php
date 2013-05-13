@@ -38,7 +38,18 @@ namespace VuFind\Config;
  */
 class Writer
 {
+    /**
+     * Configuration file to write
+     *
+     * @var string
+     */
     protected $filename;
+
+    /**
+     * Content of file
+     *
+     * @var string
+     */
     protected $content;
 
     /**
