@@ -1,6 +1,6 @@
 <?php
 /**
- * Config Reader Test Class
+ * Config Upgrade Test Class
  *
  * PHP version 5
  *
@@ -29,7 +29,7 @@ namespace VuFindTest\Config;
 use VuFind\Config\Upgrade;
 
 /**
- * Config Reader Test Class
+ * Config Upgrade Test Class
  *
  * @category VuFind2
  * @package  Tests
