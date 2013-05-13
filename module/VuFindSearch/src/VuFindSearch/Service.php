@@ -268,6 +268,19 @@ class Service
     }
 
     /**
+     * Trigger the error event.
+     *
+     * @param BackendException $exception Error exception
+     * @param array            $args      Event arguments
+     *
+     * @return void
+     */
+    public function triggerError(BackendException $exception, $args)
+    {
+        $this->getEventManager()->trigger('error', $exception, $args);
+    }
+
+    /**
      * Trigger the pre event.
      *
      * @param BackendInterface $backend Selected backend
