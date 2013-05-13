@@ -81,4 +81,33 @@ class WriterTest extends \VuFindTest\Unit\TestCase
         $test = new Writer('fake.ini', $cfg, $comments);
         $this->assertEquals($target, $test->getContent());
     }
+
+    /**
+     * Test reading from a string.
+     *
+     * @return void
+     */
+    public function testReadString()
+    {
+        $cfg = "[test]\nkey1=val1\n";
+        $test = new Writer('fake.ini', $cfg);
+        $this->assertEquals($cfg, $test->getContent());
+    }
+
+    /**
+     * Test setting a value.
+     *
+     * @return void
+     */
+    public function testBasicSet()
+    {
+        $cfg = "[test]\nkey1=val1\nkey3=val3\n";
+        $test = new Writer('fake.ini', $cfg);
+        $test->set('test', 'key2', 'val2');
+        $test->set('test', 'key1', 'val1b');
+        $ini = parse_ini_string($test->getContent(), true);
+        $this->assertEquals('val1b', $ini['test']['key1']);
+        $this->assertEquals('val2', $ini['test']['key2']);
+        $this->assertEquals('val3', $ini['test']['key3']);
+    }
 }

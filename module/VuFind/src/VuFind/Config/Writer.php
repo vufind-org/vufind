@@ -55,24 +55,27 @@ class Writer
     /**
      * Constructor
      *
-     * @param string     $filename Configuration file to write
-     * @param array|null $content  Content to load into file (set to null to load
-     * contents of existing file specified by $filename)
-     * @param array      $comments Comments to associate with content (ignored if
-     * $content is null).
+     * @param string            $filename Configuration file to write
+     * @param string|array|null $content  Content to load into file (set to null to
+     * load contents of existing file specified by $filename; set to array to build
+     * string in combination with $comments; set to string to use raw config string)
+     * @param array             $comments Comments to associate with content (ignored
+     * if $content is not an array).
      *
      * @throws \Exception
      */
     public function __construct($filename, $content = null, $comments = array())
     {
         $this->filename = $filename;
-        if (is_null($content)) {
+        if (null === $content) {
             $this->content = file_get_contents($filename);
             if (!$this->content) {
                 throw new \Exception('Could not read ' . $filename);
             }
-        } else {
+        } else if (is_array($content)) {
             $this->content = $this->buildContent($content, $comments);
+        } else {
+            $this->content = $content;
         }
     }
 
