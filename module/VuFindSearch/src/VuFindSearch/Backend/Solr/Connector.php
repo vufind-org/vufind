@@ -126,15 +126,6 @@ class Connector
     protected $appends;
 
     /**
-     * Last query.
-     *
-     * @see self::resubmit()
-     *
-     * @var array
-     */
-    protected $lastQuery;
-
-    /**
      * HTTP client adapter.
      *
      * Either the class name or a adapter instance.
@@ -385,16 +376,6 @@ class Connector
     }
 
     /**
-     * Return parameters of the last request.
-     *
-     * @return ParamBag
-     */
-    public function getLastQueryParameters()
-    {
-        return $this->lastQuery['parameters'];
-    }
-
-    /**
      * Set the HTTP proxy service.
      *
      * @param mixed $proxy Proxy service
@@ -494,20 +475,6 @@ class Connector
     }
 
     /**
-     * Repeat the last request with potentially modified parameters.
-     *
-     * @param ParamBag $params Request parameters
-     *
-     * @return string
-     */
-    public function resubmit(ParamBag $params)
-    {
-        $last   = $this->lastQuery;
-        $params = $this->prepare($params);
-        return $this->query($last['handler'], $params, $last['method']);
-    }
-
-    /**
      * Send query to SOLR and return response body.
      *
      * @param string   $handler SOLR request handler to use
@@ -539,9 +506,6 @@ class Connector
         if ($this->logger) {
             $this->logger->debug(sprintf('Query %s', $paramString));
         }
-        $this->lastQuery = array(
-            'parameters' => $params, 'handler' => $handler, 'method' => $method
-        );
         return $this->send($client);
     }
 
