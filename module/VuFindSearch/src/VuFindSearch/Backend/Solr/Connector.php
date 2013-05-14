@@ -70,7 +70,7 @@ class Connector
      *
      * Switches to POST if the SOLR target URL exeeds this length.
      *
-     * @see self::sendRequest()
+     * @see self::query()
      *
      * @var integer
      */
