@@ -23,16 +23,57 @@ class FormDateTimeSelect extends FormDateSelectHelper
      *
      * @var int
      */
-    protected $timeType = IntlDateFormatter::LONG;
+    protected $timeType;
 
+    /**
+     * @throws Exception\ExtensionNotLoadedException if ext/intl is not present
+     */
+    public function __construct()
+    {
+        parent::__construct();
+
+        // Delaying initialization until we know ext/intl is available
+        $this->timeType = IntlDateFormatter::LONG;
+    }
+
+    /**
+     * Invoke helper as function
+     *
+     * Proxies to {@link render()}.
+     *
+     * @param ElementInterface $element
+     * @param int              $dateType
+     * @param int|null|string  $timeType
+     * @param null|string      $locale
+     * @return string
+     */
+    public function __invoke(
+        ElementInterface $element = null,
+        $dateType = IntlDateFormatter::LONG,
+        $timeType = IntlDateFormatter::LONG,
+        $locale = null
+    ) {
+        if (!$element) {
+            return $this;
+        }
+
+        $this->setDateType($dateType);
+        $this->setTimeType($timeType);
+
+        if ($locale !== null) {
+            $this->setLocale($locale);
+        }
+
+        return $this->render($element);
+    }
 
     /**
      * Render a date element that is composed of six selects
      *
      * @param  ElementInterface $element
+     * @return string
      * @throws \Zend\Form\Exception\InvalidArgumentException
      * @throws \Zend\Form\Exception\DomainException
-     * @return string
      */
     public function render(ElementInterface $element)
     {
@@ -106,37 +147,6 @@ class FormDateTimeSelect extends FormDateSelectHelper
         $markup = trim($markup);
 
         return $markup;
-    }
-
-    /**
-     * Invoke helper as function
-     *
-     * Proxies to {@link render()}.
-     *
-     * @param \Zend\Form\ElementInterface $element
-     * @param int                         $dateType
-     * @param int|null|string             $timeType
-     * @param null|string                 $locale
-     * @return string
-     */
-    public function __invoke(
-        ElementInterface $element = null,
-        $dateType = IntlDateFormatter::LONG,
-        $timeType = IntlDateFormatter::LONG,
-        $locale = null
-    ) {
-        if (!$element) {
-            return $this;
-        }
-
-        $this->setDateType($dateType);
-        $this->setTimeType($timeType);
-
-        if ($locale !== null) {
-            $this->setLocale($locale);
-        }
-
-        return $this->render($element);
     }
 
     /**
@@ -219,7 +229,7 @@ class FormDateTimeSelect extends FormDateSelectHelper
     /**
      * Create a key => value options for hours
      *
-     * @param string  $pattern Pattern to use for hours
+     * @param  string $pattern Pattern to use for hours
      * @return array
      */
     protected function getHoursOptions($pattern)
@@ -243,7 +253,7 @@ class FormDateTimeSelect extends FormDateSelectHelper
     /**
      * Create a key => value options for minutes
      *
-     * @param string  $pattern Pattern to use for minutes
+     * @param  string $pattern Pattern to use for minutes
      * @return array
      */
     protected function getMinutesOptions($pattern)
@@ -267,7 +277,7 @@ class FormDateTimeSelect extends FormDateSelectHelper
     /**
      * Create a key => value options for seconds
      *
-     * @param string  $pattern Pattern to use for seconds
+     * @param  string $pattern Pattern to use for seconds
      * @return array
      */
     protected function getSecondsOptions($pattern)

@@ -42,4 +42,44 @@ use VuFindSearch\Exception\RuntimeException;
  */
 class BackendException extends RuntimeException
 {
+    /**
+     * Tags.
+     *
+     * @var array
+     */
+    protected $tags = array();
+
+    /**
+     * Add a tag.
+     *
+     * @param string $tag Tag name
+     *
+     * @return void
+     */
+    public function addTag($tag)
+    {
+        $this->tags[] = (string)$tag;
+    }
+
+    /**
+     * Return all tags.
+     *
+     * @return array
+     */
+    public function getTags()
+    {
+        return $this->tags;
+    }
+
+    /**
+     * Return true if the exception has the requested tag.
+     *
+     * @param string $tag Tag
+     *
+     * @return boolean
+     */
+    public function hasTag($tag)
+    {
+        return in_array($tag, $this->tags);
+    }
 }
