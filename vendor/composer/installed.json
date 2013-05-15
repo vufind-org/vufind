@@ -486,18 +486,18 @@
     },
     {
         "name": "zendframework/zendframework",
-        "version": "2.1.5",
-        "version_normalized": "2.1.5.0",
+        "version": "2.2.0",
+        "version_normalized": "2.2.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/zendframework/zf2.git",
-            "reference": "release-2.1.5"
+            "reference": "release-2.2.0"
         },
         "dist": {
             "type": "zip",
-            "url": "https://packages.zendframework.com/composer/zendframework-zendframework-2.1.5-release-2.1.5-acb4f2.zip",
-            "reference": "2.1.5",
-            "shasum": "6a883d6e6facdb24998ab5ab53d2b941c8ec8995"
+            "url": "https://packages.zendframework.com/composer/zendframework-zendframework-2.2.0-release-2.2.0-d642a8.zip",
+            "reference": "2.2.0",
+            "shasum": "d89721110070b0c272be791a3dc83a4092a3b928"
         },
         "require": {
             "php": ">=5.3.3"
@@ -555,28 +555,29 @@
             "zendframework/zend-xmlrpc": "self.version"
         },
         "require-dev": {
-            "doctrine/common": ">=2.1",
+            "doctrine/annotations": ">=1.0",
             "ircmaxell/random-lib": "dev-master",
             "ircmaxell/security-lib": "dev-master",
+            "ocramius/proxy-manager": "0.3.*",
             "phpunit/phpunit": "3.7.*"
         },
         "suggest": {
-            "doctrine/common": "Doctrine\\Common >=2.1 for annotation features",
-            "ext-intl": "ext/intl for i18n features",
+            "doctrine/annotations": "Doctrine Annotations >=1.0 for annotation features",
+            "ext-intl": "ext/intl for i18n features (included in default builds of PHP)",
             "ircmaxell/random-lib": "Fallback random byte generator for Zend\\Math\\Rand if OpenSSL/Mcrypt extensions are unavailable",
-            "pecl-weakref": "Implementation of weak references for Zend\\Stdlib\\CallbackHandler",
+            "ocramius/proxy-manager": "ProxyManager to handle lazy initialization of services",
             "zendframework/zendpdf": "ZendPdf for creating PDF representations of barcodes",
             "zendframework/zendservice-recaptcha": "ZendService\\ReCaptcha for rendering ReCaptchas in Zend\\Captcha and/or Zend\\Form"
         },
-        "time": "2013-04-17 15:15:58",
+        "time": "2013-05-15 10:27:32",
         "bin": [
             "bin/classmap_generator.php"
         ],
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "2.1-dev",
-                "dev-develop": "2.2-dev"
+                "dev-master": "2.2-dev",
+                "dev-develop": "2.3-dev"
             }
         },
         "installation-source": "dist",
@@ -596,7 +597,7 @@
             "zf2"
         ],
         "support": {
-            "source": "https://github.com/zendframework/zf2/tree/release-2.1.5",
+            "source": "https://github.com/zendframework/zf2/tree/release-2.2.0",
             "issues": "https://github.com/zendframework/zf2/issues"
         }
     }
