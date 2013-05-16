@@ -193,6 +193,20 @@ class ParamBag
     }
 
     /**
+     * Exchange the parameter array.
+     *
+     * @param array $input New parameters
+     *
+     * @return array Old parameters
+     */
+    public function exchangeArray(array $input)
+    {
+        $current = $this->params;
+        $this->params = $input;
+        return $current;
+    }
+
+    /**
      * Return array of params ready to be used in a HTTP request.
      *
      * Returns a numerical array with all request parameters as properly URL
