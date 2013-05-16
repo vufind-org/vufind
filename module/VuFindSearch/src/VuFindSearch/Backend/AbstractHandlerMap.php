@@ -1,0 +1,105 @@
+<?php
+
+/**
+ * Base class for search backend handler maps.
+ *
+ * PHP version 5
+ *
+ * Copyright (C) Villanova University 2010.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @category VuFind2
+ * @package  Search
+ * @author   David Maus <maus@hab.de>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org
+ */
+
+namespace VuFindSearch\Backend;
+
+use VuFindSearch\ParamBag;
+
+/**
+ * Base class for search backend handler maps.
+ *
+ * The handler map maps search functions to parameterizable backend request
+ * handlers. The base class implements the parameter preparation method which
+ * applies query defaults, appends, and invariants to an existing set of
+ * parameters.
+ *
+ * @category VuFind2
+ * @package  Search
+ * @author   David Maus <maus@hab.de>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org
+ */
+abstract class AbstractHandlerMap
+{
+
+    /**
+     * Prepare final set of parameters for search function.
+     *
+     * Applies the query defaults, appends, and invariants.
+     *
+     * The concept of defaults, appends, and invariants follows SOLR with
+     * regards to the order of the application process: Invariants come last
+     * and overwrite runtime parameters, defaults, and appends.
+     *
+     * @param string   $function Name of search function
+     * @param ParamBag $params   Parameters
+     *
+     * @return void
+     */
+    final public function prepare($function, ParamBag $params)
+    {
+        $final      = $params->getArrayCopy();
+        $defaults   = $this->getDefaults($function);
+        $invariants = $this->getInvariants($function);
+        $appends    = $this->getAppends($function);
+
+        $final = array_replace($defaults, $final);
+        $final = array_merge_recursive($final, $appends);
+        $final = array_replace($final, $invariants);
+
+        $params->exchangeArray($final);
+    }
+
+    /**
+     * Return query invariants for search function.
+     *
+     * @param string $function Name of search function
+     *
+     * @return array Query invariants
+     */
+    abstract protected function getInvariants($function);
+
+    /**
+     * Return query defaults for search function.
+     *
+     * @param string $function Name of search function
+     *
+     * @return array Query defaults
+     */
+    abstract protected function getDefaults($function);
+
+    /**
+     * Return query appends for search function.
+     *
+     * @param string $function Name of search function
+     *
+     * @return array Query appends
+     */
+    abstract protected function getAppends($function);
+}
