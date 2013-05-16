@@ -46,6 +46,10 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
      */
     protected function getPlugins()
     {
+        $currentPath = $this->getMock('VuFind\View\Helper\Root\CurrentPath');
+        $currentPath->expects($this->any())->method('__invoke')
+            ->will($this->returnValue('/test/path'));
+
         $recordLink = $this->getMock(
             'VuFind\View\Helper\Root\RecordLink', array(),
             array(new \VuFind\Record\Router(
@@ -55,8 +59,15 @@ class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
         );
         $recordLink->expects($this->any())->method('getUrl')
             ->will($this->returnValue('test/url'));
+
+        $serverUrl = $this->getMock('Zend\View\Helper\ServerUrl');
+        $serverUrl->expects($this->any())->method('__invoke')
+            ->will($this->returnValue('http://server/url'));
+
         return array(
-            'recordlink' => $recordLink
+            'currentpath' => $currentPath,
+            'recordlink' => $recordLink,
+            'serverurl' => $serverUrl
         );
     }
 

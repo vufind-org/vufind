@@ -58,7 +58,7 @@
         "pear-pear.php.net/validate_ispn": "*",
         "serialssolutions/summon": "dev-master",
         "symfony/yaml": "*",
-        "zendframework/zendframework": "2.1.5",
+        "zendframework/zendframework": "2.2.0",
         "zendframework/zendrest": "2.*",
         "zendframework/zendservice-amazon": "2.*"
     }
