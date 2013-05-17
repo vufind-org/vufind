@@ -143,16 +143,6 @@ class ParamBag
     }
 
     /**
-     * Return array of request parameters.
-     *
-     * @return array
-     */
-    public function params()
-    {
-        return $this->params;
-    }
-
-    /**
      * Merge with another parameter bag.
      *
      * @param ParamBag $bag Parameter bag to merge with
