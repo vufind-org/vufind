@@ -202,7 +202,10 @@ class ParamBag
     public function exchangeArray(array $input)
     {
         $current = $this->params;
-        $this->params = $input;
+        $this->params = array();
+        foreach ($input as $key => $value) {
+            $this->set($key, $value);
+        }
         return $current;
     }
 
