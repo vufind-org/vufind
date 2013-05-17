@@ -55,13 +55,19 @@ class AbstractHandlerMapTest extends TestCase
         $map = $this->getMockForAbstractClass('VuFindSearch\Backend\AbstractHandlerMap');
         $map->expects($this->once())
             ->method('getDefaults')
-            ->will($this->returnValue(array('p1' => array('default'), 'p2' => array('default'))));
+            ->will(
+                $this->returnValue(
+                    new ParamBag(array('p1' => array('default'), 'p2' => array('default')))
+                )
+            );
         $map->expects($this->once())
             ->method('getAppends')
-            ->will($this->returnValue(array()));
+            ->will($this->returnValue(new ParamBag()));
         $map->expects($this->once())
             ->method('getInvariants')
-            ->will($this->returnValue(array()));
+            ->will(
+                $this->returnValue(new ParamBag())
+            );
 
         $params = new ParamBag(array('p2' => array('non-default')));
         $map->prepare('f', $params);
@@ -80,13 +86,13 @@ class AbstractHandlerMapTest extends TestCase
         $map = $this->getMockForAbstractClass('VuFindSearch\Backend\AbstractHandlerMap');
         $map->expects($this->once())
             ->method('getDefaults')
-            ->will($this->returnValue(array()));
+            ->will($this->returnValue(new ParamBag()));
         $map->expects($this->once())
             ->method('getAppends')
-            ->will($this->returnValue(array('p1' => 'append')));
+            ->will($this->returnValue(new ParamBag(array('p1' => 'append'))));
         $map->expects($this->once())
             ->method('getInvariants')
-            ->will($this->returnValue(array()));
+            ->will($this->returnValue(new ParamBag()));
 
         $params = new ParamBag(array('p1' => array('something')));
         $map->prepare('f', $params);
@@ -104,13 +110,13 @@ class AbstractHandlerMapTest extends TestCase
         $map = $this->getMockForAbstractClass('VuFindSearch\Backend\AbstractHandlerMap');
         $map->expects($this->once())
             ->method('getDefaults')
-            ->will($this->returnValue(array()));
+            ->will($this->returnValue(new ParamBag()));
         $map->expects($this->once())
             ->method('getAppends')
-            ->will($this->returnValue(array('p1' => array('append'))));
+            ->will($this->returnValue(new ParamBag(array('p1' => array('append')))));
         $map->expects($this->once())
             ->method('getInvariants')
-            ->will($this->returnValue(array('p1' => array('invariant'))));
+            ->will($this->returnValue(new ParamBag(array('p1' => array('invariant')))));
 
         $params = new ParamBag(array('p1' => array('something')));
         $map->prepare('f', $params);

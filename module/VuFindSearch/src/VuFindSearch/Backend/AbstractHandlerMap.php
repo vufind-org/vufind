@@ -65,9 +65,9 @@ abstract class AbstractHandlerMap
     final public function prepare($function, ParamBag $params)
     {
         $final      = $params->getArrayCopy();
-        $defaults   = $this->getDefaults($function);
-        $invariants = $this->getInvariants($function);
-        $appends    = $this->getAppends($function);
+        $defaults   = $this->getDefaults($function)->getArrayCopy();
+        $invariants = $this->getInvariants($function)->getArrayCopy();
+        $appends    = $this->getAppends($function)->getArrayCopy();
 
         $final = array_replace($defaults, $final);
         $final = array_merge_recursive($final, $appends);
@@ -81,25 +81,25 @@ abstract class AbstractHandlerMap
      *
      * @param string $function Name of search function
      *
-     * @return array Query invariants
+     * @return ParamBag Query invariants
      */
-    abstract protected function getInvariants($function);
+    abstract public function getInvariants($function);
 
     /**
      * Return query defaults for search function.
      *
      * @param string $function Name of search function
      *
-     * @return array Query defaults
+     * @return ParamBag Query defaults
      */
-    abstract protected function getDefaults($function);
+    abstract public function getDefaults($function);
 
     /**
      * Return query appends for search function.
      *
      * @param string $function Name of search function
      *
-     * @return array Query appends
+     * @return ParamBag Query appends
      */
-    abstract protected function getAppends($function);
+    abstract public function getAppends($function);
 }
