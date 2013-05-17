@@ -181,14 +181,12 @@
     <delete dir="${srcdir}/solr/alphabetical_browse" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/stats/index" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/authority/index" includeemptydirs="true" failonerror="true" />
+    <delete dir="${srcdir}/solr/authority/tlog" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/biblio/index" includeemptydirs="true" failonerror="true" />
+    <delete dir="${srcdir}/solr/biblio/tlog" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/biblio/spellchecker" includeemptydirs="true" failonerror="true" />
     <delete dir="${srcdir}/solr/biblio/spellShingle" includeemptydirs="true" failonerror="true" />
-    <delete failonerror="false">
-      <fileset dir="${srcdir}/solr/jetty/logs">
-        <include name="*.log" />
-      </fileset>
-    </delete>
+    <delete file="${srcdir}/import/solrmarc.log" failonerror="true" />
     <delete dir="${srcdir}/local" includeemptydirs="true" failonerror="true" />
     <exec command="git reset --hard" />
   </target>
