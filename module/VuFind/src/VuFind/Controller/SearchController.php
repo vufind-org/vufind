@@ -408,10 +408,14 @@ class SearchController extends AbstractSearch
         // Call rather than forward, so we can use custom template
         $view = $this->resultsAction();
 
-        // Customize the URL helper to make sure it builds proper reserves URLs:
-        $url = $view->results->getUrlQuery();
-        $url->setDefaultParameter('range', $range);
-        $url->setDefaultParameter('department', $dept);
+        // Customize the URL helper to make sure it builds proper reserves URLs
+        // (check it's set first -- RSS feed will return a response model rather
+        // than a view model):
+        if (isset($view->results)) {
+            $url = $view->results->getUrlQuery();
+            $url->setDefaultParameter('range', $range);
+            $url->setDefaultParameter('department', $dept);
+        }
 
         return $view;
     }
