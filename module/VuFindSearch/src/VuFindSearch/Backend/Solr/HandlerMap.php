@@ -199,49 +199,68 @@ class HandlerMap extends AbstractHandlerMap
         return $this->getParameters($handler, 'appends');
     }
 
-    /// Interal API
+    /**
+     * Add handler default, append, or invariant.
+     *
+     * @param string $handler Request handler
+     * @param string $type    Parameter type, one of 'defaults', 'appends',
+     *                        or 'invariants'
+     * @param string $name    Parameter name
+     * @param string $value   Parameter value
+     *
+     * @return void
+     */
+    public function addParameter($handler, $type, $name, $value)
+    {
+        if ($key != 'invariants' && $key != 'appends' && $key != 'defaults') {
+            throw new InvalidArgumentException(
+                sprintf('Invalid parameter type: %s', $key)
+            );
+        }
+        $this->getParameters($handler, $type)->add($name, $value);
+    }
 
     /**
      * Set handler defaults, appends, or invariants.
      *
      * @param string $handler    Request handler
-     * @param string $key        Parameter key, one of 'defaults', 'appends',
+     * @param string $type       Parameter type, one of 'defaults', 'appends',
      *                           or 'invariants'
      * @param array  $parameters Parameters
      *
      * @return void
      */
-    protected function setParameters($handler, $key, array $parameters)
+    public function setParameters($handler, $type, array $parameters)
     {
-        if ($key != 'invariants' && $key != 'appends' && $key != 'defaults') {
+        if ($type != 'invariants' && $type != 'appends' && $type != 'defaults') {
             throw new InvalidArgumentException(
-                sprintf('Invalid parameter key: %s', $key)
+                sprintf('Invalid parameter key: %s', $type)
             );
         }
-        $this->parameters[$handler][$key] = new ParamBag($parameters);
+        $this->parameters[$handler][$type] = new ParamBag($parameters);
     }
 
     /**
      * Return handler defauls, appends, or invariants.
      *
      * @param string $handler Request handler
-     * @param string $key     Parameter key, one of 'defaults', 'appends',
+     * @param string $type    Parameter type, one of 'defaults', 'appends',
      *                        or 'invariants'
      *
      * @return array
      *
      * @throws InvalidArgumentException Invalid parameter key
      */
-    protected function getParameters($handler, $key)
+    public function getParameters($handler, $type)
     {
-        if ($key != 'invariants' && $key != 'appends' && $key != 'defaults') {
+        if ($type != 'invariants' && $type != 'appends' && $type != 'defaults') {
             throw new InvalidArgumentException(
-                sprintf('Invalid parameter key: %s', $key)
+                sprintf('Invalid parameter key: %s', $type)
             );
         }
-        if (!isset($this->parameters[$handler][$key])) {
-            $this->parameters[$handler][$key] = new ParamBag();
+        if (!isset($this->parameters[$handler][$type])) {
+            $this->parameters[$handler][$type] = new ParamBag();
         }
-        return $this->parameters[$handler][$key];
+        return $this->parameters[$handler][$type];
     }
 }
