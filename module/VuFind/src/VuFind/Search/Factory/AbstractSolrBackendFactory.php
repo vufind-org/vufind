@@ -34,6 +34,7 @@ use VuFind\Search\Solr\MultiIndexListener;
 
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\QueryBuilder;
+use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\Backend;
 
@@ -51,6 +52,7 @@ use Zend\ServiceManager\FactoryInterface;
  */
 abstract class AbstractSolrBackendFactory implements FactoryInterface
 {
+
     /**
      * Logger.
      *
@@ -212,26 +214,41 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         $config = $this->config->get('config');
         $search = $this->config->get($this->searchConfig);
 
-        $connector = new Connector($this->getSolrUrl());
-        $connector->setTimeout(
-            isset($config->Index->timeout) ? $config->Index->timeout : 30
-        );
-        $connector->setQueryDefaults(
-            array('fl' => '*,score')
+        $handlers = array(
+            'select' => array(
+                'fallback' => true,
+                'defaults' => array('fl' => '*,score'),
+                'appends'  => array('fq' => array()),
+            ),
+            'terms' => array(
+                'functions' => array('terms'),
+            ),
         );
 
         // Hidden filters
         if (isset($search->HiddenFilters)) {
             foreach ($search->HiddenFilters as $field => $value) {
-                $connector->addQueryAppend('fq', sprintf('%s:"%s"', $field, $value));
+                array_push(
+                    $handlers['select']['appends']['fq'],
+                    sprintf('%s:"%s"', $field, $value)
+                );
             }
         }
+
         // Raw hidden filters
         if (isset($search->RawHiddenFilters)) {
             foreach ($search->RawHiddenFilters as $filter) {
-                $connector->addQueryAppend('fq', $filter);
+                array_push(
+                    $handlers['select']['appends']['fq'],
+                    $filter
+                );
             }
         }
+
+        $connector = new Connector($this->getSolrUrl(), new HandlerMap($handlers));
+        $connector->setTimeout(
+            isset($config->Index->timeout) ? $config->Index->timeout : 30
+        );
 
         if ($this->logger) {
             $connector->setLogger($this->logger);
