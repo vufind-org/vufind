@@ -62,18 +62,12 @@ abstract class AbstractHandlerMap
      *
      * @return void
      */
-    final public function prepare($function, ParamBag $params)
+    public function prepare($function, ParamBag $params)
     {
-        $final      = $params->getArrayCopy();
         $defaults   = $this->getDefaults($function)->getArrayCopy();
         $invariants = $this->getInvariants($function)->getArrayCopy();
         $appends    = $this->getAppends($function)->getArrayCopy();
-
-        $final = array_replace($defaults, $final);
-        $final = array_merge_recursive($final, $appends);
-        $final = array_replace($final, $invariants);
-
-        $params->exchangeArray($final);
+        $this->apply($params, $defaults, $appends, $invariants);
     }
 
     /**
@@ -102,4 +96,25 @@ abstract class AbstractHandlerMap
      * @return ParamBag Query appends
      */
     abstract public function getAppends($function);
+
+    /// Internal API
+
+    /**
+     * Apply query defaults, appends, invariants.
+     *
+     * @param ParamBag $params     Parameters
+     * @param array    $defaults   Query defaults
+     * @param array    $appends    Query appends
+     * @param array    $invariants Query invariants
+     *
+     * @return void
+     */
+    protected function apply(ParamBag $params, array $defaults, array $appends, array $invariants)
+    {
+        $final = $params->getArrayCopy();
+        $final = array_replace($defaults, $final);
+        $final = array_merge_recursive($final, $appends);
+        $final = array_replace($final, $invariants);
+        $params->exchangeArray($final);
+    }
 }
