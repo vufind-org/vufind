@@ -30,6 +30,7 @@
 namespace VuFindTest\Backend\Solr;
 
 use VuFindSearch\Backend\Solr\Connector;
+use VuFindSearch\Backend\Solr\HandlerMap;
 
 use Zend\Http\Client\Adapter\Test as TestAdapter;
 use Zend\Http\Client as HttpClient;
@@ -149,7 +150,8 @@ class ConnectorTest extends PHPUnit_Framework_TestCase
             $this->response = file_get_contents($file);
         }
 
-        $conn = new Connector('http://example.tld/');
+        $map  = new HandlerMap(array('select' => array('fallback' => true)));
+        $conn = new Connector('http://example.tld/', $map);
         $conn->setProxy($this);
         return $conn;
     }

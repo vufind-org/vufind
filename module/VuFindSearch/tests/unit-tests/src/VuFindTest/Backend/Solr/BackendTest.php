@@ -30,6 +30,7 @@
 namespace VuFindTest\Backend\Solr;
 
 use VuFindSearch\Backend\Solr\Backend;
+use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\ParamBag;
 
 use Zend\Http\Response;
@@ -55,7 +56,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
     public function testRetrieve()
     {
         $resp = $this->loadResponse('single-record');
-        $conn = $this->getMock('VuFindSearch\Backend\Solr\Connector', array('retrieve'), array('http://example.tld/'));
+        $conn = $this->getConnectorMock(array('retrieve'));
         $conn->expects($this->once())
             ->method('retrieve')
             ->will($this->returnValue($resp->getBody()));
@@ -77,8 +78,9 @@ class BackendTest extends PHPUnit_Framework_TestCase
      */
     public function testTerms()
     {
+        $map  = new HandlerMap(array('select' => array('fallback' => true)));
         $resp = $this->loadResponse('terms');
-        $conn = $this->getMock('VuFindSearch\Backend\Solr\Connector', array('query'), array('http://example.tld/'));
+        $conn = $this->getConnectorMock(array('query'));
         $conn->expects($this->once())
             ->method('query')
             ->will($this->returnValue($resp->getBody()));
@@ -98,7 +100,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
      */
     public function testInjectResponseWriterTrhownOnIncompabileResponseWriter()
     {
-        $conn = $this->getMock('VuFindSearch\Backend\Solr\Connector', array(), array('http://example.tld/'));
+        $conn = $this->getConnectorMock();
         $back = new Backend($conn);
         $back->retrieve('foobar', new ParamBag(array('wt' => array('xml'))));
     }
@@ -119,6 +121,22 @@ class BackendTest extends PHPUnit_Framework_TestCase
             throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $file));
         }
         return Response::fromString(file_get_contents($file));
+    }
+
+    /// Internal API
+
+    /**
+     * Return connector mock.
+     *
+     * @param array $mock Functions to mock
+     *
+     * @return Connector
+     */
+    protected function getConnectorMock(array $mock = array())
+    {
+        $map = new HandlerMap(array('select' => array('fallback' => true)));
+        return $this->getMock('VuFindSearch\Backend\Solr\Connector', $mock, array('http://example.org/', $map));
+        return new Connector('http://example.org/', $map);
     }
 
 }

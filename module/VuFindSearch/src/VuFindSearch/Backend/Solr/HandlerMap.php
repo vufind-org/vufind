@@ -74,7 +74,7 @@ class HandlerMap extends AbstractHandlerMap
      *
      * @return void
      */
-    public function __construct(array $map)
+    public function __construct(array $map = array())
     {
         $this->handlers = array();
         $this->parameters = array();
