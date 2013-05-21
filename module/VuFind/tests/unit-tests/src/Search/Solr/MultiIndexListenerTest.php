@@ -32,6 +32,7 @@ namespace VuFindTest\Search\Solr;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\Connector;
+use VuFindSearch\Backend\Solr\HandlerMap;
 
 use VuFind\Search\Solr\MultiIndexListener;
 use VuFindTest\Unit\TestCase;
@@ -122,7 +123,8 @@ class MultiIndexListenerTest extends TestCase
      */
     protected function setup()
     {
-        $connector      = new Connector('http://example.org/');
+        $handlermap     = new HandlerMap(array('select' => array('fallback' => true)));
+        $connector      = new Connector('http://example.org/', $handlermap);
         $this->backend  = new Backend($connector);
         $this->listener = new MultiIndexListener($this->backend, self::$shards, self::$fields, self::$specs);
     }
