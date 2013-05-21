@@ -40,7 +40,7 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-interface MoreLikeThis
+interface SimilarInterface
 {
     /**
      * Return similar records.

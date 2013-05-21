@@ -39,7 +39,7 @@ use VuFindSearch\Backend\Solr\Response\Json\Terms;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 
 use VuFindSearch\Backend\BackendInterface;
-use VuFindSearch\Feature\MoreLikeThis;
+use VuFindSearch\Feature\SimilarInterface;
 use VuFindSearch\Feature\RetrieveBatchInterface;
 
 use Zend\Log\LoggerInterface;
@@ -58,7 +58,7 @@ use VuFindSearch\Exception\InvalidArgumentException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class Backend implements BackendInterface, MoreLikeThis, RetrieveBatchInterface
+class Backend implements BackendInterface, SimilarInterface, RetrieveBatchInterface
 {
     /**
      * Record collection factory.
