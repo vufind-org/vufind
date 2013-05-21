@@ -104,7 +104,7 @@ class HandlerMap extends AbstractHandlerMap
                         )
                     );
                 }
-                $fallback = $definition['fallback'];
+                $fallback = $handler;
             }
             if (isset($definition['functions'])) {
                 foreach ((array)$definition['functions'] as $function) {
