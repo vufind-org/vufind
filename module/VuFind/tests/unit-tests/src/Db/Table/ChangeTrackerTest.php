@@ -55,7 +55,7 @@ class ChangeTrackerTest extends \VuFindTest\Unit\DbTestCase
         $this->assertTrue(is_object($row));
         $this->assertTrue(empty($row->deleted));
         $this->assertEquals($row->first_indexed, $row->last_indexed);
-        $this->assertEquals($row->last_record_change, '2012-01-17 15:46:10');
+        $this->assertEquals($row->last_record_change, '2012-01-17 20:46:10');
 
         // Try to index an earlier record version -- changes should be ignored:
         $tracker->index($core, 'test1', 1326830000);
@@ -63,7 +63,7 @@ class ChangeTrackerTest extends \VuFindTest\Unit\DbTestCase
         $this->assertTrue(is_object($row));
         $this->assertTrue(empty($row->deleted));
         $this->assertEquals($row->first_indexed, $row->last_indexed);
-        $this->assertEquals($row->last_record_change, '2012-01-17 15:46:10');
+        $this->assertEquals($row->last_record_change, '2012-01-17 20:46:10');
 
         // Index a later record version -- this should lead to changes:
         $tracker->index($core, 'test1', 1326833176);
@@ -74,7 +74,7 @@ class ChangeTrackerTest extends \VuFindTest\Unit\DbTestCase
             // use <= in case test runs too fast for values to become unequal:
             strtotime($row->first_indexed) <= strtotime($row->last_indexed)
         );
-        $this->assertEquals($row->last_record_change, '2012-01-17 15:46:16');
+        $this->assertEquals($row->last_record_change, '2012-01-17 20:46:16');
 
         // Delete the record:
         $tracker->markDeleted($core, 'test1');
@@ -94,7 +94,7 @@ class ChangeTrackerTest extends \VuFindTest\Unit\DbTestCase
         $row = $tracker->retrieve($core, 'test2');
         $this->assertTrue(is_object($row));
         $this->assertTrue(empty($row->deleted));
-        $this->assertEquals($row->last_record_change, '2012-01-17 15:46:10');
+        $this->assertEquals($row->last_record_change, '2012-01-17 20:46:10');
 
         // Clean up after ourselves:
         $tracker->delete(array('core' => $core));

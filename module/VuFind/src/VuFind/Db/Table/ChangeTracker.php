@@ -99,7 +99,7 @@ class ChangeTracker extends Gateway
             $row = $this->createRow();
             $row->core = $core;
             $row->id = $id;
-            $row->first_indexed = $row->last_indexed = date($this->dateFormat);
+            $row->first_indexed = $row->last_indexed = $this->getUtcDate();
         }
         return $row;
     }
@@ -125,9 +125,41 @@ class ChangeTracker extends Gateway
         }
 
         // Save new value to the object:
-        $row->deleted = date($this->dateFormat);
+        $row->deleted = $this->getUtcDate();
         $row->save();
         return $row;
+    }
+
+    /**
+     * Get a UTC time.
+     *
+     * @param int $ts Timestamp (null for current)
+     *
+     * @return string
+     */
+    protected function getUtcDate($ts = null)
+    {
+        $oldTz = date_default_timezone_get();
+        date_default_timezone_set('UTC');
+        $date = date($this->dateFormat, null === $ts ? time() : $ts);
+        date_default_timezone_set($oldTz);
+        return $date;
+    }
+
+    /**
+     * Convert a string to time in UTC.
+     *
+     * @param string $str String to parse
+     *
+     * @return int
+     */
+    protected function strToUtcTime($str)
+    {
+        $oldTz = date_default_timezone_get();
+        date_default_timezone_set('UTC');
+        $time = strtotime($str);
+        date_default_timezone_set($oldTz);
+        return $time;
     }
 
     /**
@@ -155,7 +187,7 @@ class ChangeTracker extends Gateway
         // Make sure there is a change date in the row (this will be empty
         // if we just created a new row):
         if (empty($row->last_record_change)) {
-            $row->last_record_change = date($this->dateFormat, $change);
+            $row->last_record_change = $this->getUtcDate($change);
             $saveNeeded = true;
         }
 
@@ -163,11 +195,11 @@ class ChangeTracker extends Gateway
         // record change date before current record change date?  Either way,
         // we need to update the table!
         if (!empty($row->deleted)
-            || strtotime($row->last_record_change) < $change
+            || $this->strToUtcTime($row->last_record_change) < $change
         ) {
             // Save new values to the object:
-            $row->last_indexed = date($this->dateFormat);
-            $row->last_record_change = date($this->dateFormat, $change);
+            $row->last_indexed = $this->getUtcDate();
+            $row->last_record_change = $this->getUtcDate($change);
 
             // If first indexed is null, we're restoring a deleted record, so
             // we need to treat it as new -- we'll use the current time.
