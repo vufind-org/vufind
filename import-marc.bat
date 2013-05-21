@@ -112,7 +112,7 @@ set JAR_FILE=%VUFIND_HOME%\import\SolrMarc.jar
 rem #####################################################
 rem # Execute Importer
 rem #####################################################
-set RUN_CMD=%JAVA% %INDEX_OPTIONS% -Dsolr.core.name=%SOLRCORE% %EXTRA_SOLRMARC_SETTINGS% -jar %JAR_FILE% %PROPERTIES_FILE% %1
+set RUN_CMD=%JAVA% %INDEX_OPTIONS% -Duser.timezone=UTC -Dsolr.core.name=%SOLRCORE% %EXTRA_SOLRMARC_SETTINGS% -jar %JAR_FILE% %PROPERTIES_FILE% %1
 echo Now Importing %1 ...
 echo %RUN_CMD%
 %RUN_CMD%
