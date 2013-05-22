@@ -27,7 +27,8 @@
  * @link     http://api.summon.serialssolutions.com/help/api/ API Documentation
  */
 namespace SerialsSolutions\Summon;
-use SerialsSolutions_Summon_Exception, Zend\Http\Client as HttpClient;
+use SerialsSolutions_Summon_Exception, Zend\Http\Client as HttpClient,
+    Zend\Log\LoggerAwareInterface, Zend\Log\LoggerInterface;
 
 /**
  * Summon Search API Interface (Zend Framework 2 implementation)
@@ -39,13 +40,20 @@ use SerialsSolutions_Summon_Exception, Zend\Http\Client as HttpClient;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://api.summon.serialssolutions.com/help/api/ API Documentation
  */
-class Zend2 extends \SerialsSolutions_Summon_Base
+class Zend2 extends \SerialsSolutions_Summon_Base implements LoggerAwareInterface
 {
     /**
      * The HTTP_Request object used for API transactions
      * @var HttpClient
      */
     protected $client;
+
+    /**
+     * Logger object for debug info (or false for no debugging).
+     *
+     * @var LoggerInterface|bool
+     */
+    protected $logger = false;
 
     /**
      * Constructor
@@ -69,6 +77,34 @@ class Zend2 extends \SerialsSolutions_Summon_Base
     {
         parent::__construct($apiId, $apiKey, $options);
         $this->client = is_object($client) ? $client : new HttpClient();
+    }
+
+    /**
+     * Set the logger
+     *
+     * @param LoggerInterface $logger Logger to use.
+     *
+     * @return void
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * Print a message if debug is enabled.
+     *
+     * @param string $msg Message to print
+     *
+     * @return void
+     */
+    protected function debugPrint($msg)
+    {
+        if ($this->logger) {
+            $this->logger->debug("$msg\n");
+        } else {
+            parent::debugPrint($msg);
+        }
     }
 
     /**
