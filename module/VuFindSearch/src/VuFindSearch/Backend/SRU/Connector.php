@@ -261,18 +261,19 @@ class Connector implements LoggerAwareInterface
      * Process an SRU response.  Returns either the raw XML string or a
      * SimpleXMLElement based on the contents of the class' raw property.
      *
-     * @param string $result SRU response
+     * @param string $response SRU response
      *
      * @return string|SimpleXMLElement
      */
-    protected function process($result)
+    protected function process($response)
     {
-        if (substr($result, 0, 5) != '<?xml') {
-            throw new BackendException('Cannot Load Results');
-        }
-
         // Send back either the raw XML or a SimpleXML object, as requested:
-        $result = XSLTProcessor::process('sru-convert.xsl', $result);
+        $result = XSLTProcessor::process('sru-convert.xsl', $response);
+        if (!$result) {
+            throw new BackendException(
+                sprintf('Error processing SRU response: %20s', $response)
+            );
+        }
         return $this->raw ? $result : simplexml_load_string($result);
     }
 }
