@@ -61,6 +61,27 @@ class BackendException extends RuntimeException
     protected $response;
 
     /**
+     * Exception factory.
+     *
+     * Returns a RequestErrorException or RemoteErrorException depending on
+     * the response's status code.
+     *
+     * @param Response $response Server response
+     *
+     * @return RequestErrorException|RemoteErrorException
+     */
+    public static function createFromResponse(Response $response)
+    {
+        $status = $response->getStatusCode();
+        $phrase = $response->getReasonPhrase();
+        if ($status >= 500) {
+            return new RemoteErrorException($phrase, $status, $response);
+        } else {
+            return new RequestErrorException($phrase, $status, $response);
+        }
+    }
+
+    /**
      * Constructor.
      *
      * @param string    $message  Exception message

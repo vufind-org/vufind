@@ -37,9 +37,7 @@ use VuFindSearch\Query\Query;
 
 use VuFindSearch\ParamBag;
 
-use VuFindSearch\Backend\Exception\RemoteErrorException;
-use VuFindSearch\Backend\Exception\RequestErrorException;
-use VuFindSearch\Backend\Exception\RequestParseErrorException;
+use VuFindSearch\Backend\Exception\BackendException;
 
 use VuFindSearch\Backend\Solr\Document\AbstractDocument;
 
@@ -405,13 +403,7 @@ class Connector
         }
 
         if (!$response->isSuccess()) {
-            $status = $response->getStatusCode();
-            $phrase = $response->getReasonPhrase();
-            if ($status >= 500) {
-                throw new RemoteErrorException($phrase, $status, $response);
-            } else {
-                throw new RequestErrorException($phrase, $status, $response);
-            }
+            throw BackendException::createFromResponse($response);
         }
         return $response->getBody();
     }
