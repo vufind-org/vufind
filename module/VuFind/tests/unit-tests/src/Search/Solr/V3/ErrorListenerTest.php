@@ -31,7 +31,7 @@ namespace VuFindTest\Search\Solr\V3;
 
 use VuFind\Search\Solr\V3\ErrorListener;
 
-use VuFindSearch\Backend\Exception\BackendException;
+use VuFindSearch\Backend\Exception\HttpErrorException;
 
 use Zend\EventManager\Event;
 use Zend\Http\Response;
@@ -60,7 +60,7 @@ class ErrorListenerTest extends TestCase
     {
         $response  = $this->createResponse('solr3-parse-error');
 
-        $exception = BackendException::createFromResponse($response);
+        $exception = HttpErrorException::createFromResponse($response);
         $params    = array('backend' => 'test');
         $event     = new Event(null, $exception, $params);
         $listener  = new ErrorListener(array('test'));
@@ -77,7 +77,7 @@ class ErrorListenerTest extends TestCase
     {
         $response = $this->createResponse('solr3-undefined-field-error');
 
-        $exception = BackendException::createFromResponse($response);
+        $exception = HttpErrorException::createFromResponse($response);
         $params    = array('backend' => 'test');
         $event     = new Event(null, $exception, $params);
         $listener  = new ErrorListener(array('test'));

@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\Solr\V3;
 
-use VuFindSearch\Backend\Exception\BackendException;
+use VuFindSearch\Backend\Exception\HttpErrorException;
 
 use Zend\EventManager\EventInterface;
 
@@ -76,7 +76,7 @@ class ErrorListener
         $backend = $event->getParam('backend');
         if (in_array($backend, $this->backends)) {
             $error  = $event->getTarget();
-            if ($error instanceOf BackendException) {
+            if ($error instanceOf HttpErrorException) {
                 $reason = $error->getResponse()->getReasonPhrase();
                 if (stristr($error, 'org.apache.lucene.queryParser.ParseException')
                     || stristr($error, 'undefined field')
