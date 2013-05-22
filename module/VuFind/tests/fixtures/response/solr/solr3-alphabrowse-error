@@ -1,0 +1,93 @@
+HTTP/1.1 Error 500 I couldn't find a browse index
+Date: Wed, 22 May 2013 10:08:23 GMT
+Content-Type: text/html
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+<title>Error 500 I couldn't find a browse index at: /home/dkatz/vufind3/solr/alphabetical_browse/author_browse.db.
+Maybe you need to create your browse indexes?
+
+java.lang.Exception: I couldn't find a browse index at: /home/dkatz/vufind3/solr/alphabetical_browse/author_browse.db.
+Maybe you need to create your browse indexes?
+	at au.gov.nla.solr.handler.HeadingsDB.openDB(BrowseRequestHandler.java:72)
+	at au.gov.nla.solr.handler.HeadingsDB.reopenIfUpdated(BrowseRequestHandler.java:127)
+	at au.gov.nla.solr.handler.Browse.reopenDatabasesIfUpdated(BrowseRequestHandler.java:553)
+	at au.gov.nla.solr.handler.BrowseRequestHandler.handleRequestBody(BrowseRequestHandler.java:752)
+	at org.apache.solr.handler.RequestHandlerBase.handleRequest(RequestHandlerBase.java:129)
+	at org.apache.solr.core.SolrCore.execute(SolrCore.java:1372)
+	at org.apache.solr.servlet.SolrDispatchFilter.execute(SolrDispatchFilter.java:356)
+	at org.apache.solr.servlet.SolrDispatchFilter.doFilter(SolrDispatchFilter.java:252)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1088)
+	at org.mortbay.jetty.servlet.ServletHandler.handle(ServletHandler.java:360)
+	at org.mortbay.jetty.security.SecurityHandler.handle(SecurityHandler.java:216)
+	at org.mortbay.jetty.servlet.SessionHandler.handle(SessionHandler.java:181)
+	at org.mortbay.jetty.handler.ContextHandler.handle(ContextHandler.java:729)
+	at org.mortbay.jetty.webapp.WebAppContext.handle(WebAppContext.java:405)
+	at org.mortbay.jetty.handler.ContextHandlerCollection.handle(ContextHandlerCollection.java:206)
+	at org.mortbay.jetty.handler.HandlerCollection.handle(HandlerCollection.java:114)
+	at org.mortbay.jetty.handler.HandlerWrapper.handle(HandlerWrapper.java:152)
+	at org.mortbay.jetty.Server.handle(Server.java:324)
+	at org.mortbay.jetty.HttpConnection.handleRequest(HttpConnection.java:505)
+	at org.mortbay.jetty.HttpConnection$RequestHandler.headerComplete(HttpConnection.java:829)
+	at org.mortbay.jetty.HttpParser.parseNext(HttpParser.java:513)
+	at org.mortbay.jetty.HttpParser.parseAvailable(HttpParser.java:211)
+	at org.mortbay.jetty.HttpConnection.handle(HttpConnection.java:380)
+	at org.mortbay.io.nio.SelectChannelEndPoint.run(SelectChannelEndPoint.java:395)
+	at org.mortbay.thread.QueuedThreadPool$PoolThread.run(QueuedThreadPool.java:488)
+</title>
+</head>
+<body><h2>HTTP ERROR: 500</h2><pre>I couldn't find a browse index at: /home/dkatz/vufind3/solr/alphabetical_browse/author_browse.db.
+Maybe you need to create your browse indexes?
+
+java.lang.Exception: I couldn't find a browse index at: /home/dkatz/vufind3/solr/alphabetical_browse/author_browse.db.
+Maybe you need to create your browse indexes?
+	at au.gov.nla.solr.handler.HeadingsDB.openDB(BrowseRequestHandler.java:72)
+	at au.gov.nla.solr.handler.HeadingsDB.reopenIfUpdated(BrowseRequestHandler.java:127)
+	at au.gov.nla.solr.handler.Browse.reopenDatabasesIfUpdated(BrowseRequestHandler.java:553)
+	at au.gov.nla.solr.handler.BrowseRequestHandler.handleRequestBody(BrowseRequestHandler.java:752)
+	at org.apache.solr.handler.RequestHandlerBase.handleRequest(RequestHandlerBase.java:129)
+	at org.apache.solr.core.SolrCore.execute(SolrCore.java:1372)
+	at org.apache.solr.servlet.SolrDispatchFilter.execute(SolrDispatchFilter.java:356)
+	at org.apache.solr.servlet.SolrDispatchFilter.doFilter(SolrDispatchFilter.java:252)
+	at org.mortbay.jetty.servlet.ServletHandler$CachedChain.doFilter(ServletHandler.java:1088)
+	at org.mortbay.jetty.servlet.ServletHandler.handle(ServletHandler.java:360)
+	at org.mortbay.jetty.security.SecurityHandler.handle(SecurityHandler.java:216)
+	at org.mortbay.jetty.servlet.SessionHandler.handle(SessionHandler.java:181)
+	at org.mortbay.jetty.handler.ContextHandler.handle(ContextHandler.java:729)
+	at org.mortbay.jetty.webapp.WebAppContext.handle(WebAppContext.java:405)
+	at org.mortbay.jetty.handler.ContextHandlerCollection.handle(ContextHandlerCollection.java:206)
+	at org.mortbay.jetty.handler.HandlerCollection.handle(HandlerCollection.java:114)
+	at org.mortbay.jetty.handler.HandlerWrapper.handle(HandlerWrapper.java:152)
+	at org.mortbay.jetty.Server.handle(Server.java:324)
+	at org.mortbay.jetty.HttpConnection.handleRequest(HttpConnection.java:505)
+	at org.mortbay.jetty.HttpConnection$RequestHandler.headerComplete(HttpConnection.java:829)
+	at org.mortbay.jetty.HttpParser.parseNext(HttpParser.java:513)
+	at org.mortbay.jetty.HttpParser.parseAvailable(HttpParser.java:211)
+	at org.mortbay.jetty.HttpConnection.handle(HttpConnection.java:380)
+	at org.mortbay.io.nio.SelectChannelEndPoint.run(SelectChannelEndPoint.java:395)
+	at org.mortbay.thread.QueuedThreadPool$PoolThread.run(QueuedThreadPool.java:488)
+</pre>
+<p>RequestURI=/solr/biblio/browse</p><p><i><small><a href="http://jetty.mortbay.org/">Powered by Jetty://</a></small></i></p><br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+
+</body>
+</html>

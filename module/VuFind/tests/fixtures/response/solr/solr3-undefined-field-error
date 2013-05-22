@@ -1,0 +1,33 @@
+HTTP/1.1 400 undefined field test
+Date: Wed, 22 May 2013 10:08:23 GMT
+Content-Type: text/html
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+<title>Error 400 undefined field test</title>
+</head>
+<body><h2>HTTP ERROR: 400</h2><pre>undefined field test</pre>
+<p>RequestURI=/solr/biblio/select</p><p><i><small><a href="http://jetty.mortbay.org/">Powered by Jetty://</a></small></i></p><br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+<br/>                                                
+
+</body>
+</html>
