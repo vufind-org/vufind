@@ -27,6 +27,7 @@
  */
 namespace VuFindSearch\Backend\SRU;
 
+use VuFindSearch\Backend\Exception\HttpErrorException;
 use VuFindSearch\Backend\Exception\BackendException;
 
 use VuFind\XSLT\Processor as XSLTProcessor;
@@ -214,7 +215,7 @@ class Connector implements LoggerAwareInterface
     public function checkForHttpError($result)
     {
         if (!$result->isSuccess()) {
-            throw BackendException::createFromResponse($response);
+            throw HttpErrorException::createFromResponse($response);
         }
     }
 

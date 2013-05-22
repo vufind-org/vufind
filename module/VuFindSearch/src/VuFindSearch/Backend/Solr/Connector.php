@@ -37,7 +37,7 @@ use VuFindSearch\Query\Query;
 
 use VuFindSearch\ParamBag;
 
-use VuFindSearch\Backend\Exception\BackendException;
+use VuFindSearch\Backend\Exception\HttpErrorException;
 
 use VuFindSearch\Backend\Solr\Document\AbstractDocument;
 
@@ -403,7 +403,7 @@ class Connector
         }
 
         if (!$response->isSuccess()) {
-            throw BackendException::createFromResponse($response);
+            throw HttpErrorException::createFromResponse($response);
         }
         return $response->getBody();
     }

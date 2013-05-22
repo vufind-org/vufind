@@ -41,6 +41,6 @@ namespace VuFindSearch\Backend\Exception;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class RemoteErrorException extends BackendException
+class RemoteErrorException extends HttpErrorException
 {
 }
