@@ -75,9 +75,9 @@ class BackendException extends RuntimeException
         $status = $response->getStatusCode();
         $phrase = $response->getReasonPhrase();
         if ($status >= 500) {
-            return new RemoteErrorException($phrase, $status, $response);
+            return new RemoteErrorException($status . ' ' . $phrase, $status, $response);
         } else {
-            return new RequestErrorException($phrase, $status, $response);
+            return new RequestErrorException($status . ' ' . $phrase, $status, $response);
         }
     }
 
