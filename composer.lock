@@ -290,12 +290,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/summon/Summon.php.git",
-                "reference": "c77862d88e5d928d04ef8491d63177c91a4732de"
+                "reference": "e660100499afa047ba8d83c065df1c489fa1d87e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/summon/Summon.php/zipball/c77862d88e5d928d04ef8491d63177c91a4732de",
-                "reference": "c77862d88e5d928d04ef8491d63177c91a4732de",
+                "url": "https://api.github.com/repos/summon/Summon.php/zipball/e660100499afa047ba8d83c065df1c489fa1d87e",
+                "reference": "e660100499afa047ba8d83c065df1c489fa1d87e",
                 "shasum": ""
             },
             "type": "library",
@@ -317,7 +317,7 @@
             "support": {
                 "source": "https://github.com/summon/Summon.php/tree/master"
             },
-            "time": "2013-02-22 14:04:58"
+            "time": "2013-05-22 14:23:13"
         },
         {
             "name": "symfony/yaml",
@@ -484,11 +484,16 @@
         {
             "name": "zendframework/zendrest",
             "version": "2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zendframework/ZendRest.git",
+                "reference": "release-2.0.1"
+            },
             "dist": {
                 "type": "zip",
-                "url": "http://packages.zendframework.com/composer/ZendRest-2.0.1.zip",
-                "reference": null,
-                "shasum": null
+                "url": "https://packages.zendframework.com/composer/zendframework-zendrest-2.0.1-release-2.0.1-97c8b5.zip",
+                "reference": "2.0.1",
+                "shasum": "e5c2ae15280bfbfb090601752dcb1f193d8617f8"
             },
             "require": {
                 "php": ">=5.3.3",
@@ -516,20 +521,24 @@
                 "zf2"
             ],
             "support": {
-                "email": "fw-general-subscribe@lists.zend.com",
-                "irc": "irc://irc.freenode.net/zftalk",
-                "issues": "https://github.com/zendframework/zf2/issues",
-                "source": "https://github.com/zendframework/zf2"
-            }
+                "source": "https://github.com/zendframework/ZendRest/tree/release-2.0.1",
+                "issues": "https://github.com/zendframework/ZendRest/issues"
+            },
+            "time": "2012-09-24 15:17:53"
         },
         {
             "name": "zendframework/zendservice-amazon",
             "version": "2.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zendframework/ZendService_Amazon.git",
+                "reference": "release-2.0.2"
+            },
             "dist": {
                 "type": "zip",
-                "url": "http://packages.zendframework.com/composer/ZendService_Amazon-2.0.2.zip",
-                "reference": null,
-                "shasum": null
+                "url": "https://packages.zendframework.com/composer/zendframework-zendservice-amazon-2.0.2-release-2.0.2-91b73f.zip",
+                "reference": "2.0.2",
+                "shasum": "4d83d67516a107b0110ca3473c8ef6c37464eddb"
             },
             "require": {
                 "php": ">=5.3.3",
@@ -569,11 +578,10 @@
                 "zf2"
             ],
             "support": {
-                "email": "fw-general-subscribe@lists.zend.com",
-                "irc": "irc://irc.freenode.net/zftalk",
-                "issues": "https://github.com/zendframework/zf2/issues",
-                "source": "https://github.com/zendframework/zf2"
-            }
+                "source": "https://github.com/zendframework/ZendService_Amazon/tree/release-2.0.2",
+                "issues": "https://github.com/zendframework/ZendService_Amazon/issues"
+            },
+            "time": "2012-10-17 19:02:58"
         }
     ],
     "packages-dev": [

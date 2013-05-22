@@ -1259,7 +1259,9 @@ class SolrDefault extends AbstractBase
     public function getHierarchyPositionsInParents()
     {
         $retVal = array();
-        if (isset($this->fields['hierarchy_parent_id'])) {
+        if (isset($this->fields['hierarchy_parent_id'])
+            && isset($this->fields['hierarchy_sequence'])
+        ) {
             foreach ($this->fields['hierarchy_parent_id'] as $key => $val) {
                 $retVal[$val] = $this->fields['hierarchy_sequence'][$key];
             }

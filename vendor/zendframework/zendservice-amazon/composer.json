@@ -1,1 +1,44 @@
-{"name":"zendframework\/zendservice-amazon","description":"OOP wrapper for the Amazon web service","type":"library","keywords":["zf2","amazon","ec2","s3","simpledb","sqs"],"homepage":"http:\/\/packages.zendframework.com\/","license":"BSD-3-Clause","autoload":{"psr-0":{"ZendService":"library\/"}},"repositories":[{"type":"composer","url":"http:\/\/packages.zendframework.com\/"}],"require":{"php":">=5.3.3","zendframework\/zend-http":">=2.0.0","zendframework\/zendrest":">=2.0.0","zendframework\/zend-crypt":">=2.0.0","zendframework\/zend-json":">=2.0.0"},"require-dev":{"zendframework\/zend-i18n":">=2.0.0"},"suggest":{"zendframework\/zend-uri":"Zend\\Uri component"},"extra":{"branch-alias":{"dev-master":"2.0.x-dev"}},"version":"2.0.2","dist":{"url":"http:\/\/packages.zendframework.com\/composer\/ZendService_Amazon-2.0.2.zip","type":"zip"}}
+{
+    "name": "zendframework/zendservice-amazon",
+    "description": "OOP wrapper for the Amazon web service",
+    "type": "library",
+    "keywords": [
+        "zf2",
+        "amazon",
+        "ec2",
+        "s3",
+        "simpledb",
+        "sqs"
+    ],
+    "homepage": "http://packages.zendframework.com/",
+    "license": "BSD-3-Clause",
+    "autoload": {
+        "psr-0": {
+            "ZendService": "library/"
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://packages.zendframework.com/"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3",
+        "zendframework/zend-http": ">=2.0.0",
+        "zendframework/zendrest": ">=2.0.0",
+        "zendframework/zend-crypt": ">=2.0.0",
+        "zendframework/zend-json": ">=2.0.0"
+    },
+    "require-dev": {
+        "zendframework/zend-i18n": ">=2.0.0"
+    },
+    "suggest": {
+        "zendframework/zend-uri": "Zend\\Uri component"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0.x-dev"
+        }
+    }
+}
