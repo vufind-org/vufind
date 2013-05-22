@@ -408,31 +408,12 @@ class Connector
             $status = $response->getStatusCode();
             $phrase = $response->getReasonPhrase();
             if ($status >= 500) {
-                throw new RemoteErrorException($phrase, $status);
-            } else if ($this->isParseError($phrase)) {
-                throw new RequestParseErrorException($phrase, $status);
+                throw new RemoteErrorException($phrase, $status, $response);
             } else {
-                throw new RequestErrorException($phrase, $status);
+                throw new RequestErrorException($phrase, $status, $response);
             }
         }
         return $response->getBody();
-    }
-
-    /**
-     * Check the Solr error message for indication of a syntax error.
-     *
-     * @param string $error Error message
-     *
-     * @return bool
-     */
-    protected function isParseError($error)
-    {
-        if (stristr($error, 'org.apache.lucene.queryParser.ParseException')
-            || stristr($error, 'undefined field')
-        ) {
-            return true;
-        }
-        return false;
     }
 
     /**

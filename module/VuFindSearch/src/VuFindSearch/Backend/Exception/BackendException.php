@@ -31,6 +31,10 @@ namespace VuFindSearch\Backend\Exception;
 
 use VuFindSearch\Exception\RuntimeException;
 
+use Zend\Http\Response;
+
+use Exception;
+
 /**
  * BackendException.
  *
@@ -48,6 +52,39 @@ class BackendException extends RuntimeException
      * @var array
      */
     protected $tags = array();
+
+    /**
+     * Server response.
+     *
+     * @var Response
+     */
+    protected $response;
+
+    /**
+     * Constructor.
+     *
+     * @param string    $message  Exception message
+     * @param int       $code     Exception code
+     * @param Response  $response Server response
+     * @param Exception $prev     Previous exception
+     *
+     * @return void
+     */
+    public function __construct($message, $code, Response $response, Exception $prev = null)
+    {
+        parent::__construct($message, $code, $prev);
+        $this->response = $response;
+    }
+
+    /**
+     * Return server response.
+     *
+     * @return Response
+     */
+    public function getResponse()
+    {
+        return $this->response;
+    }
 
     /**
      * Add a tag.
