@@ -29,6 +29,7 @@
 
 namespace VuFindSearch\Backend\Summon;
 
+use SerialsSolutions\Summon\Zend2 as Connector;
 use SerialsSolutions_Summon_Query as SummonQuery;
 
 use VuFindSearch\Query\AbstractQuery;

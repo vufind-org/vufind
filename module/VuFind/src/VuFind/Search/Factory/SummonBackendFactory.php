@@ -29,10 +29,10 @@
 
 namespace VuFind\Search\Factory;
 
+use SerialsSolutions\Summon\Zend2 as Connector;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Summon\Response\RecordCollectionFactory;
 use VuFindSearch\Backend\Summon\QueryBuilder;
-use VuFindSearch\Backend\Summon\Connector;
 use VuFindSearch\Backend\Summon\Backend;
 
 use Zend\ServiceManager\ServiceLocatorInterface;
