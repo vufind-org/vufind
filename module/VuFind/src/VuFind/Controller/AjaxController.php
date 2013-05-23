@@ -843,7 +843,10 @@ class AjaxController extends AbstractBase
             $this->params()->fromPost('id'),
             $this->params()->fromPost('source', 'VuFind')
         );
-        $driver->saveToFavorites($this->getRequest()->getPost()->toArray(), $user);
+        $post = $this->getRequest()->getPost()->toArray();
+        $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
+        $post['mytags'] = $tagParser->parse($post['mytags']);
+        $driver->saveToFavorites($post, $user);
         return $this->output('Done', self::STATUS_OK);
     }
 
