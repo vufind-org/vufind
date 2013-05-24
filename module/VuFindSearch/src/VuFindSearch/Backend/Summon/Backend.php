@@ -135,7 +135,8 @@ class Backend implements BackendInterface
             $baseParams->mergeWith($params);
         }
         $baseParams->set('pageSize', $limit);
-        $baseParams->set('pageNumber', floor($offset / $limit) + 1);
+        $page = $limit > 0 ? floor($offset / $limit) + 1 : 1;
+        $baseParams->set('pageNumber', $page);
 
         $summonQuery = $this->paramBagToSummonQuery($baseParams);
         $response = $this->connector->query($summonQuery);
