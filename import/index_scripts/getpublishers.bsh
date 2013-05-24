@@ -1,0 +1,60 @@
+/**
+ * Custom date script.
+ *
+ * This can be used to override built-in SolrMarc custom functions.  If you change
+ * this script, you will need to activate it in import/marc_local.properties before
+ * it will be applied during indexing.
+ */
+import org.marc4j.marc.*;
+
+/**
+ * Get all available publishers from the record.
+ *
+ * @param  Record          record
+ * @return Set             publishers
+ */
+public Set getPublishers(Record record) {
+    Set publishers = new LinkedHashSet();
+
+    // First check old-style 260b name:
+    List list260 = record.getVariableFields("260");
+    for (VariableField vf : list260)
+    {
+        DataField df = (DataField) vf;
+        Subfield current = df.getSubfield('b');
+        if (current != null) {
+            publishers.add(current.getData());
+        }
+    }
+
+    // Now track down relevant RDA-style 264b names; we only care about
+    // copyright and publication names (and ignore copyright names if
+    // publication names are present).
+    Set pubNames = new LinkedHashSet();
+    Set copyNames = new LinkedHashSet();
+    List list264 = record.getVariableFields("264");
+    for (VariableField vf : list264)
+    {
+        DataField df = (DataField) vf;
+        Subfield currentName = df.getSubfield('b');
+        if (currentName != null) {
+            char ind2 = df.getIndicator2();
+            switch (ind2)
+            {
+                case '1':
+                    pubNames.add(currentName.getData());
+                    break;
+                case '4':
+                    copyNames.add(currentName.getData());
+                    break;
+            }
+        }
+    }
+    if (pubNames.size() > 0) {
+        publishers.addAll(pubNames);
+    } else if (copyNames.size() > 0) {
+        publishers.addAll(copyNames);
+    }
+
+    return publishers;
+}

@@ -126,3 +126,70 @@ public String getDate(Record record)
         return (null);
     return cleanDate(date);
 }
+
+/**
+ * Get all available dates from the record.
+ *
+ * @param  Record          record
+ * @return Set             dates
+ */
+public Set getDates(Record record) {
+    Set dates = new LinkedHashSet();
+
+    // First check old-style 260c date:
+    String oldStyle = getDate(record);
+    if (oldStyle != null && oldStyle.length() > 0) {
+        dates.add(oldStyle);
+    }
+
+    // Now track down relevant RDA-style 264c dates; we only care about
+    // copyright and publication dates (and ignore copyright dates if
+    // publication dates are present).
+    Set pubDates = new LinkedHashSet();
+    Set copyDates = new LinkedHashSet();
+    List list264 = record.getVariableFields("264");
+    for (VariableField vf : list264)
+    {
+        DataField df = (DataField) vf;
+        Subfield currentDate = df.getSubfield('c');
+        if (currentDate != null) {
+            String currentDateStr = cleanDate(currentDate.getData());
+            char ind2 = df.getIndicator2();
+            switch (ind2)
+            {
+                case '1':
+                    pubDates.add(currentDateStr);
+                    break;
+                case '4':
+                    copyDates.add(currentDateStr);
+                    break;
+            }
+        }
+    }
+    if (pubDates.size() > 0) {
+        dates.addAll(pubDates);
+    } else if (copyDates.size() > 0) {
+        dates.addAll(copyDates);
+    }
+
+    return dates;
+}
+
+/**
+ * Get the earliest publication date from the record.
+ *
+ * @param  Record          record
+ * @return String          earliest date
+ */
+public String getFirstDate(Record record) {
+    String result = null;
+    Set dates = getDates(record);
+    Iterator datesIter = dates.iterator();
+    while (datesIter.hasNext()) {
+        String current = datesIter.next();
+        if (result == null || Integer.parseInt(current) < Integer.parseInt(result)) {
+            result = current;
+        }
+    }
+    return result;
+}
