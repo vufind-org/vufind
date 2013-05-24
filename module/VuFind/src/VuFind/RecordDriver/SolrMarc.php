@@ -325,7 +325,40 @@ class SolrMarc extends SolrDefault
      */
     public function getPlacesOfPublication()
     {
-        return $this->getFieldArray('260');
+        // First check old-style 260a place:
+        $places = $this->getFieldArray('260');
+
+        // Now track down relevant RDA-style 264a places; we only care about
+        // copyright and publication places (and ignore copyright places if
+        // publication places are present).  This behavior is designed to be
+        // consistent with default SolrMarc handling of names/dates.
+        $pubPlaces = $copyPlaces = array();
+
+        $fields = $this->marcRecord->getFields('264');
+        if (is_array($fields)) {
+            foreach ($fields as $currentField) {
+                $currentPlace = $currentField->getSubfield('a');
+                $currentPlace = is_object($currentPlace)
+                    ? $currentPlace->getData() : null;
+                if (!empty($currentPlace)) {
+                    switch ($currentField->getIndicator('2')) {
+                    case '1':
+                        $pubPlaces[] = $currentPlace;
+                        break;
+                    case '4':
+                        $copyPlaces[] = $currentPlace;
+                        break;
+                    }
+                }
+            }
+        }
+        if (count($pubPlaces) > 0) {
+            $places = array_merge($places, $pubPlaces);
+        } else if (count($copyPlaces) > 0) {
+            $places = array_merge($places, $copyPlaces);
+        }
+
+        return $places;
     }
 
     /**
