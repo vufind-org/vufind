@@ -14,7 +14,7 @@
 
 <form method="post" name="<?=empty($this->list->id) ? 'newList' : 'editListForm'?>" action="">
 <label class="displayBlock" for="list_title"><?=$this->transEsc('List'); ?>:</label>
-<input id="list_title" type="text" name="title" value="<?=$this->escapeHtml($this->list['title']); ?>" size="50" 
+<input id="list_title" type="text" name="title" value="<?=(isset($this->list['title'])?$this->escapeHtml($this->list['title']):''); ?>" size="50" 
   class="mainFocus <?=$this->jqueryValidation(array('required'=>'This field is required')) ?>"/>
 <label class="displayBlock" for="list_desc"><?=$this->transEsc('Description') ?></label>
 <textarea id="list_desc" name="desc" rows="3" cols="50"><?=$this->escapeHtml($this->list['description']) ?></textarea>
