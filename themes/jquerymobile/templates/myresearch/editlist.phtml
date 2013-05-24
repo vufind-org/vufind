@@ -12,10 +12,10 @@
 
     <form method="post" name="<?=empty($this->list->id) ? 'newList' : 'editListForm'?>" data-ajax="false">
     <label class="displayBlock" for="list_title"><?=$this->transEsc('List'); ?>:</label>
-    <input id="list_title" type="text" name="title" value="<?=$this->escapeHtml($this->list['title']); ?>" size="50"
+    <input id="list_title" type="text" name="title" value="<?=isset($this->list['title']) ? $this->escapeHtml($this->list['title']) : ''?>" size="50"
       class="mainFocus <?=$this->jqueryValidation(array('required'=>'This field is required')) ?>"/>
     <label class="displayBlock" for="list_desc"><?=$this->transEsc('Description') ?></label>
-    <textarea id="list_desc" name="desc" rows="3" cols="50"><?=$this->escapeHtml($this->list['description']) ?></textarea>
+    <textarea id="list_desc" name="desc" rows="3" cols="50"><?=isset($this->list['description']) ? $this->escapeHtml($this->list['description']) : ''?></textarea>
     <fieldset>
       <legend><?=$this->transEsc('Access') ?></legend>
       <input id="list_public_1" type="radio" name="public" value="1"<? if ($this->list->isPublic()): ?> checked="checked"<? endif; ?>/> <label for="list_public_1"><?=$this->transEsc('Public') ?></label>
