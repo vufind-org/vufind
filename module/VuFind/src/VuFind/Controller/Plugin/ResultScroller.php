@@ -343,7 +343,7 @@ class ResultScroller extends AbstractPlugin
             $searchTable = $this->getController()->getTable('Search');
             $row = $searchTable->getRowById($this->data->searchId, false);
             if (!empty($row)) {
-                $minSO = unserialize($row->search_object);
+                $minSO = $row->getSearchObject();
                 $manager = $this->getController()->getServiceLocator()
                     ->get('VuFind\SearchResultsPluginManager');
                 $search = $minSO->deminify($manager);

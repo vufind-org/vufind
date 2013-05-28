@@ -157,11 +157,7 @@ class Search extends Gateway
             // Deminify the old search (note that if we have a resource, we need
             // to grab the contents -- this is necessary for PostgreSQL compatibility
             // although MySQL returns a plain string).
-            $minSO = unserialize(
-                is_resource($oldSearch->search_object)
-                ? stream_get_contents($oldSearch->search_object)
-                : $oldSearch->search_object
-            );
+            $minSO = $oldSearch->getSearchObject();
             $dupSearch = $minSO->deminify($manager);
             // See if the classes and urls match
             $oldUrl = $dupSearch->getUrlQuery()->getParams();

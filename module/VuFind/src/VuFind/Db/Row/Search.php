@@ -48,4 +48,33 @@ class Search extends RowGateway
     {
         parent::__construct('id', 'search', $adapter);
     }
+
+    /**
+     * Get the search object from the row
+     *
+     * @return \VuFind\Search\Minified
+     */
+    public function getSearchObject()
+    {
+        // Resource check for PostgreSQL compatibility:
+        $raw = is_resource($this->search_object)
+            ? stream_get_contents($this->search_object) : $this->search_object;
+        return unserialize($raw);
+    }
+
+    /**
+     * Save
+     *
+     * @return int
+     */
+    public function save()
+    {
+        // Note that if we have a resource, we need to grab the contents before
+        // saving -- this is necessary for PostgreSQL compatibility although MySQL
+        // returns a plain string
+        $this->search_object = is_resource($this->search_object)
+            ? stream_get_contents($this->search_object)
+            : $this->search_object;
+        parent::save();
+    }
 }
