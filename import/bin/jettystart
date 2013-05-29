@@ -1,6 +1,5 @@
 #!/bin/bash
 # A simple script to start jetty given the default configuration of solr for solrmarc
-# $Id: jettystart
 
 E_BADARGS=65
 

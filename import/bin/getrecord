@@ -1,7 +1,6 @@
 #! /bin/bash
 # getrecord
 # Get specific record(s) from larger file of marc records.
-# $Id: getrecord
 
 E_BADARGS=65
 

@@ -1,7 +1,6 @@
 @echo off
 :: getfromsolr.bat
 :: Program to extract one or more MARC records from a solr index 
-:: $Id: getfromsolr.bat 
 ::Get the current batch file's short path
 setlocal
 ::

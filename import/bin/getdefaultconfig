@@ -1,7 +1,6 @@
 #! /bin/bash
 # getdefaultconfig
 # return the name of the default configuration file
-# $Id: getdefaultconfig
 
 E_BADARGS=65
 

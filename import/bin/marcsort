@@ -1,7 +1,6 @@
 #! /bin/bash
 # marcsorter.sh
 # Program to sort marc records numerically based on 001 field
-# $Id: marcsorter.sh 
 
 E_BADARGS=65
 

@@ -1,7 +1,6 @@
 #! /bin/bash
 # printrecord.sh
 # Diagnostic program to display marc records.
-# $Id: printrecord.sh 
 
 E_BADARGS=65
 

@@ -1,7 +1,6 @@
 @echo off
 :: getrecord.bat
 :: Program to extract one or more MARC records from a file 
-:: $Id: getrecord.bat 
 setlocal
 ::Get the current batch file's short path
 for %%x in (%~f0) do set scriptdir=%%~dpsx

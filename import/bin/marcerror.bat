@@ -1,7 +1,6 @@
 @echo off
 :: marcerror.sh
 :: Diagnostic program to show look for errors in Marc records.
-:: $Id: marcerror.sh 
 setlocal
 ::Get the current batch file's short path
 for %%x in (%~f0) do set scriptdir=%%~dpsx

@@ -1,7 +1,6 @@
 #! /bin/bash
 # hathifetch.sh
 # Program to retrieve JSON records from Hathi Trust and extract the marc records from those JSON records.
-# $Id: hathifetch.sh
 
 E_BADARGS=65
 

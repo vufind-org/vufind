@@ -1,7 +1,6 @@
 @echo off
 :: updatesolrserver.bat
 :: send an update message to a running solr server, 
-:: $Id: updatesolrserver.bat
 setlocal
 ::Get the current batch file's short path
 for %%x in (%~f0) do set scriptdir=%%~dpsx

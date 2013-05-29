@@ -1,7 +1,6 @@
 @echo off
 :: getdefaultconfig.bat
 :: Grep for marc records
-:: $Id: getdefaultconfig.bat
 setlocal
 ::Get the current batch file's short path
 for %%x in (%~f0) do set scriptdir=%%~dpsx

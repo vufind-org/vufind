@@ -1,7 +1,6 @@
 #! /bin/bash
 # getz3950
 # Get specific record(s) over a z3950 connection
-# $Id: getz3950
 
 E_BADARGS=65
 

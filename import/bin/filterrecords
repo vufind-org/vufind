@@ -1,7 +1,6 @@
 #! /bin/bash
 # filterrecords
 # Grep for marc records:  selects only those records that contain certain fields or certain values in certain fields.
-# $Id: filterrecords
 
 E_BADARGS=65
 

@@ -1,7 +1,6 @@
 @echo off
 :: printrecord.bat
 :: Diagnostic program to display marc records.
-:: $Id: printrecord.bat
 setlocal
 ::Get the current batch file's short path
 for %%x in (%~f0) do set scriptdir=%%~dpsx

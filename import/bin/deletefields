@@ -1,7 +1,6 @@
 #! /bin/bash
 # deletefields
 # delete specified fields or subfields from records
-# $Id: deletefields
 
 E_BADARGS=65
 
