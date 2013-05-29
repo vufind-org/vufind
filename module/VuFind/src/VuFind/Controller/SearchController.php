@@ -257,7 +257,7 @@ class SearchController extends AbstractSearch
 
         // Loop through the history
         foreach ($searchHistory as $current) {
-            $minSO = unserialize($current->search_object);
+            $minSO = $current->getSearchObject();
 
             // Saved searches
             if ($current->saved == 1) {

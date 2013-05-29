@@ -132,7 +132,7 @@ class AbstractSearch extends AbstractBase
         $userId = $user ? $user->id : false;
         if ($search->session_id == $sessId || $search->user_id == $userId) {
             // They do, deminify it to a new object.
-            $minSO = unserialize($search->search_object);
+            $minSO = $search->getSearchObject();
             $savedSearch = $minSO->deminify($this->getResultsManager());
 
             // Now redirect to the URL associated with the saved search; this
@@ -322,7 +322,7 @@ class AbstractSearch extends AbstractBase
         }
 
         // Restore the full search object:
-        $minSO = unserialize($search->search_object);
+        $minSO = $search->getSearchObject();
         $savedSearch = $minSO->deminify($this->getResultsManager());
 
         // Fail if this is not the right type of search:

@@ -66,9 +66,13 @@ abstract class HttpErrorException extends BackendException
         $status = $response->getStatusCode();
         $phrase = $response->getReasonPhrase();
         if ($status >= 500) {
-            return new RemoteErrorException($status . ' ' . $phrase, $status, $response);
+            return new RemoteErrorException(
+                $status . ' ' . $phrase, $status, $response
+            );
         } else {
-            return new RequestErrorException($status . ' ' . $phrase, $status, $response);
+            return new RequestErrorException(
+                $status . ' ' . $phrase, $status, $response
+            );
         }
     }
 
@@ -82,8 +86,9 @@ abstract class HttpErrorException extends BackendException
      *
      * @return void
      */
-    public function __construct($message, $code, Response $response, Exception $prev = null)
-    {
+    public function __construct($message, $code, Response $response,
+        Exception $prev = null
+    ) {
         parent::__construct($message, $code, $prev);
         $this->response = $response;
     }

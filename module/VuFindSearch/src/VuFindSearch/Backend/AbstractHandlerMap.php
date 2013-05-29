@@ -109,8 +109,9 @@ abstract class AbstractHandlerMap
      *
      * @return void
      */
-    protected function apply(ParamBag $params, array $defaults, array $appends, array $invariants)
-    {
+    protected function apply(ParamBag $params, array $defaults, array $appends,
+        array $invariants
+    ) {
         $final = $params->getArrayCopy();
         $final = array_replace($defaults, $final);
         $final = array_merge_recursive($final, $appends);
