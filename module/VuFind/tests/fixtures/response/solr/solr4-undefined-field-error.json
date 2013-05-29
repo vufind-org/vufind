@@ -1,0 +1,5 @@
+HTTP/1.1 400 Bad Request
+Last-Modified: Wed, 29 May 2013 05:58:05 GMT
+Content-Type: application/json; charset=UTF-8
+
+{"responseHeader":{"status":400,"QTime":2,"params":{"spellcheck":"true","facet":"true","sort":"score desc","facet.mincount":"1","spellcheck.q":"test:test","facet.limit":"30","hl.simple.pre":"{{{{START_HILITE}}}}","json.nl":"arrarr","hl.fl":"*","wt":"json","hl":"true","rows":"20","fl":"*,score","start":"0","facet.sort":"count","q":"test:test","spellcheck.dictionary":"default","hl.simple.post":"{{{{END_HILITE}}}}","facet.field":["topic_facet","institution","building","format","callnumber-first","publishDate","authorStr","language","genre_facet","era_facet","geographic_facet"]}},"error":{"msg":"undefined field test","code":400}}
