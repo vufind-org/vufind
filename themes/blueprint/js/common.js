@@ -61,6 +61,7 @@ function extractParams(str) {
 
 function initAutocomplete() {
     $('input.autocomplete').each(function() {
+        var lastXhr = null;
         var params = extractParams($(this).attr('class'));
         var maxItems = params.maxItems > 0 ? params.maxItems : 10;
         var $autocomplete = $(this).autocomplete({
@@ -73,7 +74,11 @@ function initAutocomplete() {
                 if (!searcher) {
                     searcher = 'Solr';
                 }
-                $.ajax({
+                // Abort previous access if one is defined
+                if (lastXhr !== null && typeof lastXhr["abort"] != "undefined") {
+                    lastXhr.abort();
+                }
+                lastXhr = $.ajax({
                     url: path + '/AJAX/JSON',
                     data: {method:'getACSuggestions',type:type,q:request.term,searcher:searcher},
                     dataType:'json',
