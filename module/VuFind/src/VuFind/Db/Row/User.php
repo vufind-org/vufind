@@ -331,7 +331,10 @@ class User extends ServiceLocatorAwareGateway
             );
             $select->where->equalTo('user_list.user_id', $userId);
             $select->group(
-                array('id', 'user_id', 'title', 'description', 'created', 'public')
+                array(
+                    'user_list.id', 'user_list.user_id', 'title', 'description',
+                    'created', 'public'
+                )
             );
             $select->order(array('title'));
         };
