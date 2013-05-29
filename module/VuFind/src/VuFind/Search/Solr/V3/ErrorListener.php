@@ -78,8 +78,8 @@ class ErrorListener
             $error  = $event->getTarget();
             if ($error instanceOf HttpErrorException) {
                 $reason = $error->getResponse()->getReasonPhrase();
-                if (stristr($error, 'org.apache.lucene.queryParser.ParseException')
-                    || stristr($error, 'undefined field')
+                if (stristr($reason, 'org.apache.lucene.queryParser.ParseException')
+                    || stristr($reason, 'undefined field')
                 ) {
                     $error->addTag('VuFind\Search\ParserError');
                 }
