@@ -44,9 +44,8 @@ use Zend\EventManager\EventInterface;
  */
 class ErrorListener
 {
-
     /**
-     * Backends ot listen on.
+     * Backends to listen on.
      *
      * @var array
      */
