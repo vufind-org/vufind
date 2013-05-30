@@ -180,8 +180,9 @@ class Backend implements BackendInterface, SimilarInterface, RetrieveBatchInterf
         $this->injectSourceIdentifier($collection);
 
         if ($spellcheck) {
+            $spellcheckQuery = $params->get('spellcheck.q');
             $this->aggregateSpellcheck(
-                $collection->getSpellcheck(), end($params->get('spellcheck.q'))
+                $collection->getSpellcheck(), end($spellcheckQuery)
             );
         }
 
