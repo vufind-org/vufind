@@ -31,6 +31,7 @@ namespace VuFind\Search\Solr\V4;
 
 use VuFindSearch\Backend\Exception\HttpErrorException;
 
+use Zend\Http\Response;
 use Zend\EventManager\EventInterface;
 
 /**
@@ -44,6 +45,22 @@ use Zend\EventManager\EventInterface;
  */
 class ErrorListener
 {
+    /**
+     * Parser error tag.
+     *
+     * @var string
+     */
+    const TAG_PARSER_ERROR = 'VuFind\Search\ParserError';
+
+    /**
+     * Normalized media types.
+     *
+     * @var string
+     */
+    const TYPE_OTHER = 'other';
+    const TYPE_JSON  = 'json';
+    const TYPE_XML   = 'xml';
+
     /**
      * Backends to listen on.
      *
@@ -74,27 +91,68 @@ class ErrorListener
     {
         $backend = $event->getParam('backend');
         if (in_array($backend, $this->backends)) {
-            $error  = $event->getTarget();
+            $error = $event->getTarget();
             if ($error instanceOf HttpErrorException) {
-                $body = $error->getResponse()->getBody();
-                $type = $error->getResponse()->getHeaders()->get('content-type')
-                    ->toString();
-                if (stristr($type, 'json')) {
+                $response = $error->getResponse();
+
+                $body = $response->getBody();
+                $type = $this->getResponseBodyMediaType($response);
+
+                if ($type === self::TYPE_JSON) {
                     $body = json_decode($body);
-                    $reason = isset($body->error->msg) ? $body->error->msg : '';
-                } else if (stristr($type, 'xml')) {
-                    // TODO -- parse XML response
-                    $reason = '';
-                } else {
-                    $reason = '';
-                }
-                if (stristr($reason, 'org.apache.solr.search.SyntaxError')
-                    || stristr($reason, 'undefined field')
-                ) {
-                    $error->addTag('VuFind\Search\ParserError');
+                    if (json_last_error() === \JSON_ERROR_NONE) {
+                        $tags = $this->analyzeJsonErrorResponse($body);
+                        foreach ($tags as $tag) {
+                            $error->addTag($tag);
+                        }
+                    }
                 }
             }
         }
         return $event;
     }
+
+    /// Internal API
+
+    /**
+     * Analyze JSON-encoded error response and return appropriate tags.
+     *
+     * @param StdLib $body Deserialize JSON body
+     *
+     * @return array Tags
+     */
+    protected function analyzeJsonErrorResponse($body)
+    {
+        $tags = array();
+        if (isset($body->error->msg)) {
+            $reason = $body->error->msg;
+            if (stristr($reason, 'org.apache.solr.search.SyntaxError')
+                || stristr($reason, 'undefined field')) {
+                $tags[] = self::TAG_PARSER_ERROR;
+            }
+        }
+        return $tags;
+    }
+
+    /**
+     * Return normalized media type identifier.
+     *
+     * @param Response $response HTTP response
+     *
+     * @return string One of `json', `xml', or `other'
+     */
+    protected function getResponseBodyMediaType(Response $response)
+    {
+        if ($response->getHeaders()->has('content-type')) {
+            $type = $response->getHeaders()->get('content-type')->getFieldValue();
+            if (strpos($type, 'application/json') === 0) {
+                return self::TYPE_JSON;
+            }
+            if (strpos($type, 'application/xml') === 0) {
+                return self::TYPE_XML;
+            }
+        }
+        return self::TYPE_OTHER;
+    }
+
 }
