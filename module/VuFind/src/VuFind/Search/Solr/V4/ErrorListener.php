@@ -30,6 +30,7 @@
 namespace VuFind\Search\Solr\V4;
 
 use VuFindSearch\Backend\Exception\HttpErrorException;
+use VuFind\Search\Solr\AbstractErrorListener;
 
 use Zend\Http\Response;
 use Zend\EventManager\EventInterface;
@@ -43,14 +44,8 @@ use Zend\EventManager\EventInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class ErrorListener
+class ErrorListener extends AbstractErrorListener
 {
-    /**
-     * Parser error tag.
-     *
-     * @var string
-     */
-    const TAG_PARSER_ERROR = 'VuFind\Search\ParserError';
 
     /**
      * Normalized media types.
@@ -62,25 +57,6 @@ class ErrorListener
     const TYPE_XML   = 'xml';
 
     /**
-     * Backends to listen on.
-     *
-     * @var array
-     */
-    protected $backends;
-
-    /**
-     * Constructor.
-     *
-     * @param array $backends Name of backends to listen on
-     *
-     * @return void
-     */
-    public function __construct(array $backends)
-    {
-        $this->backends = $backends;
-    }
-
-    /**
      * VuFindSearch.error
      *
      * @param EventInterface $event Event
@@ -90,7 +66,7 @@ class ErrorListener
     public function onSearchError(EventInterface $event)
     {
         $backend = $event->getParam('backend');
-        if (in_array($backend, $this->backends)) {
+        if ($this->listenForBackend($backend)) {
             $error = $event->getTarget();
             if ($error instanceOf HttpErrorException) {
                 $response = $error->getResponse();
@@ -127,7 +103,8 @@ class ErrorListener
         if (isset($body->error->msg)) {
             $reason = $body->error->msg;
             if (stristr($reason, 'org.apache.solr.search.SyntaxError')
-                || stristr($reason, 'undefined field')) {
+                || stristr($reason, 'undefined field')
+            ) {
                 $tags[] = self::TAG_PARSER_ERROR;
             }
         }

@@ -63,7 +63,7 @@ class ErrorListenerTest extends TestCase
         $exception = HttpErrorException::createFromResponse($response);
         $params    = array('backend' => 'test');
         $event     = new Event(null, $exception, $params);
-        $listener  = new ErrorListener(array('test'));
+        $listener  = new ErrorListener('test');
         $listener->onSearchError($event);
         $this->assertTrue($exception->hasTag('VuFind\Search\ParserError'));
     }
@@ -80,7 +80,7 @@ class ErrorListenerTest extends TestCase
         $exception = HttpErrorException::createFromResponse($response);
         $params    = array('backend' => 'test');
         $event     = new Event(null, $exception, $params);
-        $listener  = new ErrorListener(array('test'));
+        $listener  = new ErrorListener('test');
         $listener->onSearchError($event);
         $this->assertTrue($exception->hasTag('VuFind\Search\ParserError'));
     }
