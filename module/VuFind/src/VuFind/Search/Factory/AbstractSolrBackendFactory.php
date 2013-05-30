@@ -31,6 +31,7 @@ namespace VuFind\Search\Factory;
 
 use VuFind\Search\Solr\InjectHighlightingListener;
 use VuFind\Search\Solr\MultiIndexListener;
+use VuFind\Search\Solr\V4\ErrorListener;
 
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\QueryBuilder;
@@ -182,6 +183,10 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             );
             $mindexListener->attach($events);
         }
+
+        // Error listener, use SOLR 4.x by default
+        $errorListener = new ErrorListener($backend);
+        $errorListener->attach($events);
     }
 
     /**
