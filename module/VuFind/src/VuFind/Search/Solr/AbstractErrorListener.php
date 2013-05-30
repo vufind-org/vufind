@@ -33,6 +33,8 @@ use VuFindSearch\Backend\BackendInterface;
 
 use Zend\EventManager\EventInterface;
 
+use SplObjectStorage;
+
 /**
  * Abstract base class of SOLR error listeners.
  *
@@ -56,7 +58,7 @@ abstract class AbstractErrorListener
     /**
      * Backends to listen for.
      *
-     * @var array
+     * @var SplObjectStorage
      */
     protected $backends;
 
@@ -67,41 +69,34 @@ abstract class AbstractErrorListener
      *
      * @return void
      */
-    public function __construct($backend)
+    public function __construct(BackendInterface $backend)
     {
-        $this->backends = array();
+        $this->backends = new SplObjectStorage();
         $this->addBackend($backend);
     }
 
     /**
      * Add backend to listen for.
      *
-     * @param BackendInterface|string $backend Backend instance or name of backend
+     * @param BackendInterface $backend Backend instance
      *
      * @return void
      */
-    public function addBackend($backend)
+    public function addBackend(BackendInterface $backend)
     {
-        if ($backend instanceOf BackendInterface) {
-            $this->backends[] = $backend->getName();
-        } else {
-            $this->backends[] = $backend;
-        }
+        $this->backends->attach($backend);
     }
 
     /**
      * Return true if listeners listens for backend errors.
      *
-     * @param BackendInterface|string $backend Backend instance or name of backend
+     * @param BackendInterface $backend Backend instance
      *
      * @return boolean
      */
-    public function listenForBackend($backend)
+    public function listenForBackend(BackendInterface $backend)
     {
-        if ($backend instanceOf BackendInterface) {
-            $backend = $backend->getName();
-        }
-        return in_array($backend, $this->backends);
+        return $this->backends->contains($backend);
     }
 
     /**

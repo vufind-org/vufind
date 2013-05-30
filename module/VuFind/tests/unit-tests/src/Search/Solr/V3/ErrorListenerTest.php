@@ -58,12 +58,13 @@ class ErrorListenerTest extends TestCase
      */
     public function testDetectParseError()
     {
-        $response  = $this->createResponse('solr3-parse-error');
+        $response = $this->createResponse('solr3-parse-error');
+        $backend  = $this->getMockForAbstractClass('VuFindSearch\Backend\BackendInterface');
 
         $exception = HttpErrorException::createFromResponse($response);
-        $params    = array('backend' => 'test');
+        $params    = array('backend_instance' => $backend);
         $event     = new Event(null, $exception, $params);
-        $listener  = new ErrorListener('test');
+        $listener  = new ErrorListener($backend);
         $listener->onSearchError($event);
         $this->assertTrue($exception->hasTag('VuFind\Search\ParserError'));
     }
@@ -76,11 +77,12 @@ class ErrorListenerTest extends TestCase
     public function testDetectUndefinedFieldError()
     {
         $response = $this->createResponse('solr3-undefined-field-error');
+        $backend  = $this->getMockForAbstractClass('VuFindSearch\Backend\BackendInterface');
 
         $exception = HttpErrorException::createFromResponse($response);
-        $params    = array('backend' => 'test');
+        $params    = array('backend_instance' => $backend);
         $event     = new Event(null, $exception, $params);
-        $listener  = new ErrorListener('test');
+        $listener  = new ErrorListener($backend);
         $listener->onSearchError($event);
         $this->assertTrue($exception->hasTag('VuFind\Search\ParserError'));
     }
