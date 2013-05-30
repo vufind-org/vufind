@@ -69,43 +69,6 @@ class User extends ServiceLocatorAwareGateway
     }
 
     /**
-     * Sleep magic method -- the service locator can't be serialized, so we need to
-     * exclude it from serialization.  Since we can't obtain a new locator in the
-     * __wakeup() method, it needs to be re-injected by the \VuFind\Auth\Manager
-     * (see the isLoggedIn() method of that class).
-     *
-     * @return array
-     */
-    public function __sleep()
-    {
-        $vars = get_object_vars($this);
-        unset($vars['serviceLocator']);
-        $vars = array_keys($vars);
-        return $vars;
-    }
-
-    /**
-     * Saves the properties to the database.
-     *
-     * This performs an intelligent insert/update, and reloads the
-     * properties with fresh data from the table on success.
-     *
-     * @return mixed The primary key value(s), as an associative array if the
-     *     key is compound, or a scalar if the key is single-column.
-     */
-    public function save()
-    {
-        // Since this object is frequently stored in the session, we should
-        // reconnect to the database as part of the save action to prevent
-        // exceptions:
-        $this->sql = new Sql(
-            $this->getServiceLocator()->getServiceLocator()->get('VuFind\DbAdapter'),
-            $this->table
-        );
-        return parent::save();
-    }
-
-    /**
      * Reset ILS login credentials.
      *
      * @return void
@@ -331,7 +294,10 @@ class User extends ServiceLocatorAwareGateway
             );
             $select->where->equalTo('user_list.user_id', $userId);
             $select->group(
-                array('id', 'user_id', 'title', 'description', 'created', 'public')
+                array(
+                    'user_list.id', 'user_list.user_id', 'title', 'description',
+                    'created', 'public'
+                )
             );
             $select->order(array('title'));
         };

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * SOLR 3.x error listener.
+ * SOLR 4.x error listener.
  *
  * PHP version 5
  *
@@ -27,7 +27,7 @@
  * @link     http://vufind.org   Main Site
  */
 
-namespace VuFind\Search\Solr\V3;
+namespace VuFind\Search\Solr\V4;
 
 use VuFindSearch\Backend\Exception\HttpErrorException;
 
@@ -76,8 +76,19 @@ class ErrorListener
         if (in_array($backend, $this->backends)) {
             $error  = $event->getTarget();
             if ($error instanceOf HttpErrorException) {
-                $reason = $error->getResponse()->getReasonPhrase();
-                if (stristr($reason, 'org.apache.lucene.queryParser.ParseException')
+                $body = $error->getResponse()->getBody();
+                $type = $error->getResponse()->getHeaders()->get('content-type')
+                    ->toString();
+                if (stristr($type, 'json')) {
+                    $body = json_decode($body);
+                    $reason = isset($body->error->msg) ? $body->error->msg : '';
+                } else if (stristr($type, 'xml')) {
+                    // TODO -- parse XML response
+                    $reason = '';
+                } else {
+                    $reason = '';
+                }
+                if (stristr($reason, 'org.apache.solr.search.SyntaxError')
                     || stristr($reason, 'undefined field')
                 ) {
                     $error->addTag('VuFind\Search\ParserError');

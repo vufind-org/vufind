@@ -70,6 +70,13 @@ class Manager implements ServiceLocatorAwareInterface
     protected $ilsAccount = false;
 
     /**
+     * Cache for current logged in user object
+     *
+     * @var \VuFind\Db\Row\User
+     */
+    protected $currentUser = false;
+
+    /**
      * Service locator
      *
      * @var ServiceLocatorInterface
@@ -189,8 +196,9 @@ class Manager implements ServiceLocatorAwareInterface
         // Clear out cached ILS connection.
         $this->ilsAccount = false;
 
-        // Clear out the cached user object.
-        unset($this->session->user);
+        // Clear out the cached user object and session entry.
+        $this->currentUser = false;
+        unset($this->session->userId);
 
         // Destroy the session for good measure, if requested.
         if ($destroy) {
@@ -213,17 +221,16 @@ class Manager implements ServiceLocatorAwareInterface
      */
     public function isLoggedIn()
     {
-        $user = isset($this->session->user) ? $this->session->user : false;
-
-        // User may have been serialized into session; if so, we may need to
-        // restore its service locator, since SL's can't be serialized:
-        if ($user && null === $user->getServiceLocator()) {
-            $user->setServiceLocator(
-                $this->getServiceLocator()->get('VuFind\DbTablePluginManager')
-            );
+        // If user object is not in cache, but user ID is in session,
+        // load the object from the database:
+        if (!$this->currentUser && isset($this->session->userId)) {
+            $results = $this->getServiceLocator()
+                ->get('VuFind\DbTablePluginManager')->get('user')
+                ->select(array('id' => $this->session->userId));
+            $this->currentUser = count($results) < 1
+                ? false : $results->current();
         }
-
-        return $user;
+        return $this->currentUser;
     }
 
     /**
@@ -249,7 +256,8 @@ class Manager implements ServiceLocatorAwareInterface
      */
     public function updateSession($user)
     {
-        $this->session->user = $user;
+        $this->currentUser = $user;
+        $this->session->userId = $user->id;
     }
 
     /**
