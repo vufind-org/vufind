@@ -31,6 +31,7 @@ namespace VuFind\Search\Solr;
 
 use VuFindSearch\Backend\BackendInterface;
 
+use Zend\EventManager\SharedEventManagerInterface;
 use Zend\EventManager\EventInterface;
 
 use SplObjectStorage;
@@ -97,6 +98,18 @@ abstract class AbstractErrorListener
     public function listenForBackend(BackendInterface $backend)
     {
         return $this->backends->contains($backend);
+    }
+
+    /**
+     * Attach listener to shared event manager.
+     *
+     * @param SharedEventManagerInterface $manager Shared event manager
+     *
+     * @return void
+     */
+    public function attach(SharedEventManagerInterface $manager)
+    {
+        $manager->attach('VuFind\Search', 'error', array($this, 'onSearchError'));
     }
 
     /**
