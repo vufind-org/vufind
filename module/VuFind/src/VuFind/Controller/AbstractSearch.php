@@ -246,6 +246,8 @@ class AbstractSearch extends AbstractBase
                 $view->results = $this->getResultsManager()->get('EmptySet');
                 $view->results->setParams($params);
                 $view->results->performAndProcessSearch();
+            } else {
+                throw $e;
             }
         }
         // Save statistics:
@@ -255,7 +257,9 @@ class AbstractSearch extends AbstractBase
         }
 
         // Special case: If we're in RSS view, we need to render differently:
-        if ($view->results->getParams()->getView() == 'rss') {
+        if (isset($view->results)
+            && $view->results->getParams()->getView() == 'rss'
+        ) {
             $response = $this->getResponse();
             $response->getHeaders()->addHeaderLine('Content-type', 'text/xml');
             $feed = $this->getViewRenderer()->plugin('resultfeed');
