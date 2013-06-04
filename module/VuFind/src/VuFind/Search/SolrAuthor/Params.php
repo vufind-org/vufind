@@ -73,7 +73,7 @@ class Params extends \VuFind\Search\Solr\Params
         // For display purposes, undo the query manipulation performed above
         // in initBasicSearch():
         $q = parent::getDisplayQuery();
-        return str_replace('\"', '"', substr($q, 1, strlen($q) - 2));
+        return str_replace('\"', '"', substr($q, 1, -1));
     }
 
     /**
