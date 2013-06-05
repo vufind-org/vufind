@@ -125,4 +125,37 @@ class HandlerMapTest extends TestCase
             $map->getAppends('search')->getArrayCopy()
         );
     }
+
+    /**
+     * Test defaults, appends, invariants for pure fallback definitions.
+     *
+     * @return void
+     *
+     * @see http://vufind.org/jira/browse/VUFIND-820 VUFIND-820
+     */
+    public function testGetDefaultsAppendsInvariantsPureFallback ()
+    {
+        $map = new HandlerMap(
+            array(
+                'search' => array(
+                    'fallback' => true,
+                    'invariants' => array('p1' => 'v1'),
+                    'defaults' => array('p2' => 'v2'),
+                    'appends' => array('p3' => 'v3'),
+                )
+            )
+        );
+        $this->assertEquals(
+            array('p1' => array('v1')),
+            $map->getInvariants('search')->getArrayCopy()
+        );
+        $this->assertEquals(
+            array('p2' => array('v2')),
+            $map->getDefaults('search')->getArrayCopy()
+        );
+        $this->assertEquals(
+            array('p3' => array('v3')),
+            $map->getAppends('search')->getArrayCopy()
+        );       
+    }
 }

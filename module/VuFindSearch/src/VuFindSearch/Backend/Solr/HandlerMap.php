@@ -118,21 +118,21 @@ class HandlerMap extends AbstractHandlerMap
                     }
                     $this->handlers[$function] = $handler;
                 }
-                if (isset($definition['invariants'])) {
-                    $this->setParameters(
-                        $handler, 'invariants', (array)$definition['invariants']
-                    );
-                }
-                if (isset($definition['defaults'])) {
-                    $this->setParameters(
-                        $handler, 'defaults', (array)$definition['defaults']
-                    );
-                }
-                if (isset($definition['appends'])) {
-                    $this->setParameters(
-                        $handler, 'appends', (array)$definition['appends']
-                    );
-                }
+            }
+            if (isset($definition['invariants'])) {
+                $this->setParameters(
+                    $handler, 'invariants', (array)$definition['invariants']
+                );
+            }
+            if (isset($definition['defaults'])) {
+                $this->setParameters(
+                    $handler, 'defaults', (array)$definition['defaults']
+                );
+            }
+            if (isset($definition['appends'])) {
+                $this->setParameters(
+                    $handler, 'appends', (array)$definition['appends']
+                );
             }
         }
         $this->fallback = $fallback;
