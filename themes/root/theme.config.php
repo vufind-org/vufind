@@ -60,6 +60,12 @@ return array(
                     ->get('FlashMessenger');
                 return new \VuFind\View\Helper\Root\Flashmessages($messenger);
             },
+            'googleanalytics' => function ($sm) {
+                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+                $key = isset($config->GoogleAnalytics->apiKey)
+                    ? $config->GoogleAnalytics->apiKey : false;
+                return new \VuFind\View\Helper\Root\GoogleAnalytics($key);
+            },
             'ils' => function ($sm) {
                 return new \VuFind\View\Helper\Root\Ils(
                     $sm->getServiceLocator()->get('VuFind\ILSConnection')
