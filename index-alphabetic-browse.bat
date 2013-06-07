@@ -64,7 +64,7 @@ call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse title title_fullStr 
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse topic topic_browse
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse author author_browse
 call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse lcc callnumber-a 1
-call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse dewey dewey-raw 1 "-Dbibleech=StoredFieldLeech -Dsortfield=dewey-sort -Dvaluefield=dewey-raw"
+call %VUFIND_HOME%\index-alphabetic-browse.bat build_browse dewey dewey-raw 1 "-Dbibleech=StoredFieldLeech -Dsortfield=dewey-sort-browse -Dvaluefield=dewey-raw"
 goto end
 
 rem Function to process a single browse index:

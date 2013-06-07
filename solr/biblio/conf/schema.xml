@@ -154,7 +154,8 @@
    <field name="dewey-ones" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="dewey-full" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="dewey-sort" type="string" indexed="true" stored="true" />
-   <field name="dewey-raw" type="string" indexed="true" stored="true" />
+   <field name="dewey-sort-browse" type="string" indexed="true" stored="true" multiValued="true" />
+   <field name="dewey-raw" type="string" indexed="true" stored="true" multiValued="true" />
    <field name="author2" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <field name="author2Str" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="author2-role" type="string" indexed="true" stored="true" multiValued="true"/>

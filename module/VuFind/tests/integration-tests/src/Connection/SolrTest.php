@@ -73,4 +73,25 @@ class SolrTest extends \VuFindTest\Unit\TestCase
          $this->assertTrue(empty($item['seeAlso']));
          $this->assertTrue(in_array('Royal Dublin Society', $item['useInstead']));
      }
+
+    /**
+     * Check that expected Dewey values are present (tests VUFIND-701).
+     *
+     * @return void
+     */
+     public function testDeweyValues()
+     {
+         $solr = $this->getServiceManager()->get('VuFind\Search\BackendManager')
+            ->get('Solr');
+         $result = $solr->alphabeticBrowse('dewey', '123.45 .I39', 0, 1);
+         $item = $result['Browse']['items'][0];
+         $this->assertEquals(1, $item['count']);
+         $this->assertEquals($item['count'], count($item['ids']));
+         $this->assertEquals('123.45 .I39', $item['heading']);
+         $result = $solr->alphabeticBrowse('dewey', '123.46 .Q39', 0, 1);
+         $item = $result['Browse']['items'][0];
+         $this->assertEquals(1, $item['count']);
+         $this->assertEquals($item['count'], count($item['ids']));
+         $this->assertEquals('123.46 .Q39', $item['heading']);
+     }
 }
