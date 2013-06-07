@@ -2025,12 +2025,12 @@ div#closeContextHelp:active {
     font-weight: bold;
 }
 
-/*hides the div so that only people with JavaScript will see the tab*/
+/* hides the div so that only people with JavaScript will see the tab */
 div.slideOutForm {
     display: none;
 }
 
-/*stylizes the feedback tab div*/
+/* stylizes the feedback tab div */
 .slide-out-div {
   padding: 20px;
   width: 270px;
@@ -2070,6 +2070,42 @@ p.feedbackHeader {
     background: #FFFFFF;
 }
 
-.handle {
+/* Creates and positions the new handle on the feedback form */
+div.handle {
     cursor:pointer;
+    text-decoration: none;
+}
+
+#feedbackTabBox {
+    margin-top: 0px;
+    margin-left: 0px;
+
+    width:30px;
+    height:86px;
+    background-color:#6B8F25;
+    overflow: visible;
+    border-right: solid 1px black;
+    border-bottom: solid 1px black;
+    border-top: solid 1px black;
+
+    padding: 0;
+    position: relative;
+}
+
+#feedbackTabText {
+    transform:rotate(-90deg);
+    -ms-transform:rotate(-90deg); /* IE 9 */
+    -webkit-transform:rotate(-90deg); /* Safari and Chrome */
+    -o-transform: rotate(-90deg); /* Opera */
+    -moz-transform: rotate(-90deg); /*Firefox*/
+    width: 86px;
+    height: 30px;
+    margin-top: -58px;
+    margin-left: -28px;
+    position: relative;
+    text-indent: 0;
+    text-align: center;
+    color: white;
+    font: bold 15px/30px 'lucida sans', 'trebuchet MS', 'Tahoma';
+    z-index: 10;
 }
