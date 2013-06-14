@@ -47,7 +47,7 @@ class WriterTest extends \VuFindTest\Unit\TestCase
      */
     public function testReadFile()
     {
-        $file = realpath(__DIR__ . '/../../../fixtures/configs/1.1/sms.ini');
+        $file = realpath(__DIR__ . '/../../../../fixtures/configs/1.1/sms.ini');
         $test = new Writer($file);
         $this->assertEquals(file_get_contents($file), $test->getContent());
     }

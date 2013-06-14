@@ -56,8 +56,8 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
      */
     protected function getUpgrader($version)
     {
-        $oldDir = realpath(__DIR__ . '/../../../fixtures/configs/' . $version);
-        $rawDir = realpath(__DIR__ . '/../../../../../../config/vufind');
+        $oldDir = realpath(__DIR__ . '/../../../../fixtures/configs/' . $version);
+        $rawDir = realpath(__DIR__ . '/../../../../../../../config/vufind');
         return new Upgrade($version, $this->targetVersion, $oldDir, $rawDir);
     }
 
