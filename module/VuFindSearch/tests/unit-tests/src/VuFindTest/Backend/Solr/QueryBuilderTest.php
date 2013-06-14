@@ -162,29 +162,4 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
             $this->assertEquals($output, $processedQ[0]);
         }
     }
-
-    /**
-     * Test parseRange functionality.
-     *
-     * @return void
-     */
-    public function testParseRange()
-    {
-        $this->markTestSkipped();
-        $qb = new QueryBuilder();
-
-        // basic range test:
-        $result = $qb->parseRange("[1 TO 100]");
-        $this->assertEquals('1', $result['from']);
-        $this->assertEquals('100', $result['to']);
-
-        // test whitespace handling:
-        $result = $qb->parseRange("[1      TO     100]");
-        $this->assertEquals('1', $result['from']);
-        $this->assertEquals('100', $result['to']);
-
-        // test invalid ranges:
-        $this->assertFalse($qb->parseRange('1 TO 100'));
-        $this->assertFalse($qb->parseRange('[not a range to me]'));
-    }
 }
