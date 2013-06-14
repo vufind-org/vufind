@@ -245,4 +245,15 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
         }
         return $sm->get('VuFind\AuthPluginManager');
     }
+
+    /**
+     * Is this test running in a continuous integration context?
+     *
+     * @return bool
+     */
+    public function continuousIntegrationRunning()
+    {
+        // We'll assume that if the CI Solr PID is present, then CI is active:
+        return file_exists(__DIR__ . '/../../../../../local/vufindtest.pid');
+    }
 }

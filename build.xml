@@ -139,7 +139,7 @@
     </if>
 
     <!-- start Solr (use restart in case of old PID files) -->
-    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local JETTY_PID=${tmp}/vufindtest.pid JETTY_CONSOLE=/dev/null ${srcdir}/vufind.sh restart" outputProperty="LASTOUTPUT" />
+    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local JETTY_PID=${srcdir}/local/vufindtest.pid JETTY_CONSOLE=/dev/null ${srcdir}/vufind.sh restart" outputProperty="LASTOUTPUT" />
     <echo message="${LASTOUTPUT}" />
 
     <!-- wait for Solor to finish spinning up -->
@@ -178,7 +178,7 @@
     </if>
 
     <!-- stop Solr -->
-    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local JETTY_PID=${tmp}/vufindtest.pid ${srcdir}/vufind.sh stop" outputProperty="LASTOUTPUT" />
+    <exec command="VUFIND_HOME=${srcdir} VUFIND_LOCAL_DIR=${srcdir}/local JETTY_PID=${srcdir}/local/vufindtest.pid ${srcdir}/vufind.sh stop" outputProperty="LASTOUTPUT" />
     <echo message="${LASTOUTPUT}" />
 
     <!-- delete the configuration, sample index, logs and cache data -->

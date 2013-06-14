@@ -72,12 +72,31 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      */
     public static function setUpBeforeClass()
     {
+        // If CI is not running, all tests were skipped, so no work is necessary:
+        $test = new ILSTest();
+        if (!$test->continuousIntegrationRunning()) {
+            return;
+        }
         // Fail if there are already users in the database (we don't want to run this
         // on a real system -- it's only meant for the continuous integration server)
-        $test = new ILSTest();
         $userTable = $test->getTable('User');
         if (count($userTable->select()) > 0) {
-            throw new \Exception('Test cannot run with pre-existing user data!');
+            return $this->markTestSkipped(
+                'Test cannot run with pre-existing user data!'
+            );
+        }
+    }
+
+    /**
+     * Standard setup method.
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        // Give up if we're not running in CI:
+        if (!$this->continuousIntegrationRunning()) {
+            return $this->markTestSkipped('Continuous integration not running.');
         }
     }
 
@@ -176,6 +195,12 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
      */
     public static function tearDownAfterClass()
     {
+        // If CI is not running, all tests were skipped, so no work is necessary:
+        $test = new ILSTest();
+        if (!$test->continuousIntegrationRunning()) {
+            return;
+        }
+
         // Delete test user
         $test = new ILSTest();
         $userTable = $test->getTable('User');
