@@ -39,6 +39,19 @@ namespace VuFindTest\Integration\Connection;
 class SolrTest extends \VuFindTest\Unit\TestCase
 {
     /**
+     * Standard setup method.
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        // Give up if we're not running in CI:
+        if (!$this->continuousIntegrationRunning()) {
+            return $this->markTestSkipped('Continuous integration not running.');
+        }
+    }
+
+    /**
      * Check AlphaBrowse "see also" functionality.
      *
      * @return void

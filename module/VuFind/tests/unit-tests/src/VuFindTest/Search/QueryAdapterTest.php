@@ -52,7 +52,7 @@ class QueryAdapterTest extends TestCase
     public function testConversions()
     {
         $cases = array('basic', 'advanced');
-        $fixturePath = realpath(__DIR__ . '/../../../fixtures/searches') . '/';
+        $fixturePath = realpath(__DIR__ . '/../../../../fixtures/searches') . '/';
         foreach ($cases as $case) {
             // Load minified, unminified, and Query object data:
             $min = unserialize(file_get_contents($fixturePath . $case . '/min'));
@@ -73,7 +73,7 @@ class QueryAdapterTest extends TestCase
      */
     public function testAdvancedRequest()
     {
-        $fixturePath = realpath(__DIR__ . '/../../../fixtures/searches') . '/advanced/';
+        $fixturePath = realpath(__DIR__ . '/../../../../fixtures/searches') . '/advanced/';
         $req = unserialize(file_get_contents($fixturePath . 'request'));
         $q = unserialize(file_get_contents($fixturePath . 'query'));
         $this->assertEquals($q, QueryAdapter::fromRequest($req, 'AllFields'));
@@ -109,7 +109,7 @@ class QueryAdapterTest extends TestCase
         };
 
         // Run the tests:
-        $fixturePath = realpath(__DIR__ . '/../../../fixtures/searches') . '/';
+        $fixturePath = realpath(__DIR__ . '/../../../../fixtures/searches') . '/';
         foreach ($cases as $case => $expected) {
             $q = unserialize(file_get_contents($fixturePath . $case . '/query'));
             $this->assertEquals($expected, QueryAdapter::display($q, $echo, $echo));

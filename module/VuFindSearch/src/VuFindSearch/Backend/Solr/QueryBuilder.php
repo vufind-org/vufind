@@ -614,27 +614,4 @@ class QueryBuilder implements QueryBuilderInterface
             return $open . trim($start) . ' TO ' . trim($end) . $close;
         }
     }
-
-    /**
-     * Return from and to values of SOLR range.
-     *
-     * Returns false if the search string does not contain a range. Otherwise
-     * it returns an associative array with the keys `from', and `to'
-     * referring to the lower and upper bound of the range.
-     *
-     * @param string $string Search string
-     *
-     * @return array|false
-     *
-     * @todo This function seems to be unused
-     */
-    public function parseRange($string)
-    {
-        $regEx = '/\[([^\]]+)\s+TO\s+([^\]]+)\]/';
-        if (!preg_match($regEx, $string, $matches)) {
-            return false;
-        }
-        return array('from' => trim($matches[1]), 'to' => trim($matches[2]));
-    }
-
 }

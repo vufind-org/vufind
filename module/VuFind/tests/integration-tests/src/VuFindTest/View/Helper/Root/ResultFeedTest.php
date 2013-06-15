@@ -40,6 +40,19 @@ use VuFind\View\Helper\Root\ResultFeed;
 class ResultFeedTest extends \VuFindTest\Unit\ViewHelperTestCase
 {
     /**
+     * Standard setup method.
+     *
+     * @return void
+     */
+    public function setUp()
+    {
+        // Give up if we're not running in CI:
+        if (!$this->continuousIntegrationRunning()) {
+            return $this->markTestSkipped('Continuous integration not running.');
+        }
+    }
+
+    /**
      * Get plugins to register to support view helper being tested
      *
      * @return array

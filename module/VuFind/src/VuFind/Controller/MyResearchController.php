@@ -50,13 +50,25 @@ class MyResearchController extends AbstractBase
      */
     public function homeAction()
     {
-        // Process login request, if necessary:
-        if ($this->params()->fromPost('processLogin')) {
+        // Process login request, if necessary (either because a form has been
+        // submitted or because we're using an external login provider):
+        if ($this->params()->fromPost('processLogin')
+            || $this->getSessionInitiator()
+        ) {
             try {
                 $this->getAuthManager()->login($this->getRequest());
             } catch (AuthException $e) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage($e->getMessage());
+                $msg = $e->getMessage();
+                // If a Shibboleth-style login has failed and the user just logged
+                // out, we need to override the error message with a more relevant
+                // one:
+                if ($msg == 'authentication_error_admin'
+                    && $this->getAuthManager()->userHasLoggedOut()
+                    && $this->getSessionInitiator()
+                ) {
+                    $msg = 'authentication_error_loggedout';
+                }
+                $this->flashMessenger()->setNamespace('error')->addMessage($msg);
             }
         }
 
@@ -131,8 +143,7 @@ class MyResearchController extends AbstractBase
     {
         // If this authentication method doesn't use a VuFind-generated login
         // form, force it through:
-        $url = $this->getServerUrl('myresearch-home');
-        if ($this->getAuthManager()->getSessionInitiator($url)) {
+        if ($this->getSessionInitiator()) {
             // Don't get stuck in an infinite loop -- if processLogin is already
             // set, it probably means Home action is forwarding back here to
             // report an error!
@@ -868,5 +879,17 @@ class MyResearchController extends AbstractBase
         }
 
         return $this->createViewModel(array('fines' => $fines));
+    }
+
+    /**
+     * Convenience method to get a session initiator URL. Returns false if not
+     * applicable.
+     *
+     * @return string|bool
+     */
+    protected function getSessionInitiator()
+    {
+        $url = $this->getServerUrl('myresearch-home');
+        return $this->getAuthManager()->getSessionInitiator($url);
     }
 }

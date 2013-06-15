@@ -26,7 +26,9 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Mailer;
-use VuFind\Exception\Mail as MailException, Zend\Mail\Message;
+use VuFind\Exception\Mail as MailException,
+    Zend\Mail\Message,
+    Zend\Mail\Header\ContentType;
 
 /**
  * VuFind Mailer Class
@@ -109,7 +111,8 @@ class Mailer implements \VuFind\I18n\Translator\TranslatorAwareInterface
         $message = new Message();
         $message->setEncoding('UTF-8');
         $headers = $message->getHeaders();
-        $ctype = new \Zend\Mail\Header\ContentType();
+        $ctype = new ContentType();
+        $ctype->setType('text/plain');
         $ctype->addParameter('charset', 'UTF-8');
         $headers->addHeader($ctype);
         return $message;
