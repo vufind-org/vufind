@@ -48,7 +48,7 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class QueryBuilder
+class QueryBuilder implements QueryBuilderInterface
 {
 
     /**
@@ -106,10 +106,6 @@ class QueryBuilder
      * @param AbstractQuery $query User query
      *
      * @return ParamBag
-     *
-     * @todo Review usage of filters
-     * @todo Review usage of facets
-     * @todo Implement hightlighting
      */
     public function build(AbstractQuery $query)
     {

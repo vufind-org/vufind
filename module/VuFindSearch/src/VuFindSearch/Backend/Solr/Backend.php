@@ -98,7 +98,7 @@ class Backend implements BackendInterface, SimilarInterface, RetrieveBatchInterf
     /**
      * Query builder.
      *
-     * @var QueryBuilder
+     * @var QueryBuilderInterface
      */
     protected $queryBuilder;
 
@@ -347,7 +347,7 @@ class Backend implements BackendInterface, SimilarInterface, RetrieveBatchInterf
     /**
      * Return query builder.
      *
-     * Lazy loads an empty QueryBuilder if none was set.
+     * Lazy loads an empty default QueryBuilder if none was set.
      *
      * @return QueryBuilder
      */
@@ -362,13 +362,13 @@ class Backend implements BackendInterface, SimilarInterface, RetrieveBatchInterf
     /**
      * Set the query builder.
      *
-     * @param QueryBuilder $queryBuilder Query builder
+     * @param QueryBuilderInterface $queryBuilder Query builder
      *
      * @return void
      *
      * @todo Typehint QueryBuilderInterface
      */
-    public function setQueryBuilder(QueryBuilder $queryBuilder)
+    public function setQueryBuilder(QueryBuilderInterface $queryBuilder)
     {
         $this->queryBuilder = $queryBuilder;
     }
