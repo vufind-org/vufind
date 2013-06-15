@@ -32,6 +32,8 @@ namespace VuFindTest\Search;
 use VuFind\Search\BackendManager;
 use VuFindTest\Unit\TestCase as TestCase;
 
+use Zend\EventManager\SharedEventManager;
+
 /**
  * BackendManager unit tests.
  *
@@ -77,5 +79,24 @@ class BackendManagerTest extends TestCase
             ->will($this->returnValue($this));
         $manager = new BackendManager($registry);
         $manager->get('not-a-backend');
+    }
+
+    /**
+     * Test attaching to and detaching from shared event manager.
+     *
+     * @return void
+     */
+    public function testAttachDetachShared ()
+    {
+        $registry = $this->getMockForAbstractClass('Zend\ServiceManager\ServiceLocatorInterface');
+        $events   = new SharedEventManager();
+        $manager  = new BackendManager($registry);
+        $manager->attachShared($events);
+
+        $listeners = $this->getProperty($manager, 'listeners');
+        $this->assertTrue($listeners->offsetExists($events));
+
+        $manager->detachShared($events);
+        $this->assertFalse($listeners->offsetExists($events));
     }
 }

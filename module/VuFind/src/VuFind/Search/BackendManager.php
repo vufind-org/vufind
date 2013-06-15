@@ -30,10 +30,14 @@
 namespace VuFind\Search;
 
 use Zend\ServiceManager\ServiceLocatorInterface;
+
+use Zend\EventManager\SharedListenerAggregateInterface;
+use Zend\EventManager\SharedEventManagerInterface;
 use Zend\EventManager\EventInterface;
 
 use VuFindSearch\Backend\BackendInterface;
 
+use SplObjectStorage;
 use UnexpectedValueException;
 
 /**
@@ -45,7 +49,7 @@ use UnexpectedValueException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class BackendManager
+class BackendManager implements SharedListenerAggregateInterface
 {
     /**
      * Backend registry.
@@ -53,6 +57,13 @@ class BackendManager
      * @var ServiceLocatorInterface
      */
     protected $registry;
+
+    /**
+     * Attached listeners.
+     *
+     * @var SplObjectStorage
+     */
+    protected $listeners;
 
     /**
      * Constructor.
@@ -63,7 +74,8 @@ class BackendManager
      */
     public function __construct(ServiceLocatorInterface $registry)
     {
-        $this->registry = $registry;
+        $this->registry  = $registry;
+        $this->listeners = new SplObjectStorage();
     }
 
     /**
@@ -136,5 +148,40 @@ class BackendManager
             return $this->get($name);
         }
         return null;
+    }
+
+    /**
+     * Attach to shared event manager.
+     *
+     * @param SharedEventManagerInterface $events Shared event manager
+     *
+     * @return void
+     */
+    public function attachShared(SharedEventManagerInterface $events)
+    {
+        if (!$this->listeners->offsetExists($events)) {
+            $listener = $events->attach(
+                'VuFind\Search',
+                'resolve',
+                array($this, 'onResolve')
+            );
+            $this->listeners->attach($events, $listener);
+        }
+    }
+
+    /**
+     * Detach from shared event manager.
+     *
+     * @param SharedEventManagerInterface $events Shared event manager
+     *
+     * @return void
+     */
+    public function detachShared(SharedEventManagerInterface $events)
+    {
+        if ($this->listeners->offsetExists($events)) {
+            $listener = $this->listeners->offsetGet($events);
+            $events->detach('VuFind\Search', $listener);
+            $this->listeners->detach($events);
+        }
     }
 }
