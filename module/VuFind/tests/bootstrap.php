@@ -33,25 +33,14 @@ set_include_path(implode(PATH_SEPARATOR, $pathParts));
 // Composer autoloading
 if (file_exists('vendor/autoload.php')) {
     $loader = include 'vendor/autoload.php';
+    $loader = new Composer\Autoload\ClassLoader();
+    $loader->add('VuFindTest', __DIR__ . '/unit-tests/src');
+    $loader->add('VuFindTest', __DIR__ . '/../src');
+    $loader->add('VuFind', __DIR__ . '/../src');
+    $loader->add('VuFindHttp', __DIR__ . '/../../VuFindHttp/src');
+    $loader->add('VuFindSearch', __DIR__ . '/../../VuFindSearch/src');
+    $loader->register();
 }
-
-if (!class_exists('Zend\Loader\AutoloaderFactory')) {
-    throw new RuntimeException('Unable to load ZF2.');
-}
-
-// Get application stack configuration
-$configuration = include 'config/application.config.php';
-
-// Setup service manager
-$serviceManager = new ServiceManager(new ServiceManagerConfig($configuration['service_manager']));
-$serviceManager->setService('ApplicationConfig', $configuration);
-$serviceManager->get('ModuleManager')->loadModules();
-
-// Setup autoloader for VuFindTest classes
-$loader = Zend\Loader\AutoloaderFactory::getRegisteredAutoloader(
-    Zend\Loader\AutoloaderFactory::STANDARD_AUTOLOADER
-);
-$loader->registerNamespace('VuFindTest', __DIR__ . '/../src/VuFindTest');
 
 define('PHPUNIT_SEARCH_FIXTURES', realpath(__DIR__ . '/../../VuFindSearch/tests/unit-tests/fixtures'));
 
