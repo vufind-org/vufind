@@ -162,4 +162,32 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
             $this->assertEquals($output, $processedQ[0]);
         }
     }
+
+    /**
+     * Test generation with a query handler
+     *
+     * @return void
+     */
+    public function testQueryHandler()
+    {
+        // Set up an array of expected inputs and outputs:
+        // @codingStandardsIgnoreStart
+        $tests = array(
+            array('this?', '((this?) OR (this\?))'),// trailing question mark
+        );
+        // @codingStandardsIgnoreEnd
+
+        $qb = new QueryBuilder(
+            array(
+                'test' => array()
+            )
+        );
+        foreach ($tests as $test) {
+            list($input, $output) = $test;
+            $q = new Query($input, 'test');
+            $response = $qb->build($q);
+            $processedQ = $response->get('q');
+            $this->assertEquals($output, $processedQ[0]);
+        }
+    }
 }
