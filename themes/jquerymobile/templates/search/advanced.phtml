@@ -19,6 +19,7 @@
   <div data-role="content">
     <!-- SEARCH BOXES -->
     <form method="get" action="<?=$this->url($basicSearch)?>" data-ajax="false">
+      <input type="hidden" name="join" value="AND" />
       <fieldset class="ui-grid-a">
       <? for ($i = 0; $i < 3; $i++): ?>
         <div class="ui-block-a">
