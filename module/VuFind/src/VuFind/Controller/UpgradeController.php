@@ -123,8 +123,8 @@ class UpgradeController extends AbstractBase
      */
     public function establishversionsAction()
     {
-        $this->cookie->oldVersion = $this->getVersion(realpath(APPLICATION_PATH));
-        $this->cookie->newVersion = $this->getVersion($this->cookie->sourceDir);
+        $this->cookie->newVersion = $this->getVersion(realpath(APPLICATION_PATH));
+        $this->cookie->oldVersion = $this->getVersion($this->cookie->sourceDir);
 
         // Block upgrade when encountering common errors:
         if (empty($this->cookie->oldVersion)) {
