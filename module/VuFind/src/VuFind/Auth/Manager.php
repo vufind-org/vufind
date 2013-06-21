@@ -199,6 +199,7 @@ class Manager implements ServiceLocatorAwareInterface
         // Clear out the cached user object and session entry.
         $this->currentUser = false;
         unset($this->session->userId);
+        setcookie('loggedOut', 1, null, '/');
 
         // Destroy the session for good measure, if requested.
         if ($destroy) {
@@ -211,6 +212,16 @@ class Manager implements ServiceLocatorAwareInterface
         }
 
         return $url;
+    }
+
+    /**
+     * Checks whether the user has recently logged out.
+     *
+     * @return bool
+     */
+    public function userHasLoggedOut()
+    {
+        return isset($_COOKIE['loggedOut']) && $_COOKIE['loggedOut'];
     }
 
     /**
@@ -258,6 +269,7 @@ class Manager implements ServiceLocatorAwareInterface
     {
         $this->currentUser = $user;
         $this->session->userId = $user->id;
+        setcookie('loggedOut', '', time() - 3600, '/'); // clear logged out cookie
     }
 
     /**

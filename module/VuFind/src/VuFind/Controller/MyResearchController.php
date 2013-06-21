@@ -58,8 +58,17 @@ class MyResearchController extends AbstractBase
             try {
                 $this->getAuthManager()->login($this->getRequest());
             } catch (AuthException $e) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage($e->getMessage());
+                $msg = $e->getMessage();
+                // If a Shibboleth-style login has failed and the user just logged
+                // out, we need to override the error message with a more relevant
+                // one:
+                if ($msg == 'authentication_error_admin'
+                    && $this->getAuthManager()->userHasLoggedOut()
+                    && $this->getSessionInitiator()
+                ) {
+                    $msg = 'authentication_error_loggedout';
+                }
+                $this->flashMessenger()->setNamespace('error')->addMessage($msg);
             }
         }
 
