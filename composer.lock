@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "fdb889414f2d72a89f529eb202d2e2c0",
+    "hash": "83fbfd387d9ede9662af03b21e48c831",
     "packages": [
         {
             "name": "johnwohlers/sip2",
@@ -321,17 +321,17 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.2.1",
+            "version": "v2.3.1",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "v2.2.1"
+                "reference": "v2.3.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/v2.2.1",
-                "reference": "v2.2.1",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/v2.3.1",
+                "reference": "v2.3.1",
                 "shasum": ""
             },
             "require": {
@@ -340,7 +340,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.2-dev"
+                    "dev-master": "2.3-dev"
                 }
             },
             "autoload": {
@@ -364,21 +364,21 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com",
-            "time": "2013-03-23 07:49:54"
+            "time": "2013-05-10 18:12:13"
         },
         {
             "name": "zendframework/zendframework",
-            "version": "2.2.0",
+            "version": "2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zf2.git",
-                "reference": "release-2.2.0"
+                "reference": "release-2.2.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-2.2.0-release-2.2.0-d642a8.zip",
-                "reference": "2.2.0",
-                "shasum": "d89721110070b0c272be791a3dc83a4092a3b928"
+                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-2.2.1-release-2.2.1-8597ab.zip",
+                "reference": "2.2.1",
+                "shasum": "f8419ea13b7f3f1195b625fa789688b47efe8778"
             },
             "require": {
                 "php": ">=5.3.3"
@@ -476,10 +476,10 @@
                 "zf2"
             ],
             "support": {
-                "source": "https://github.com/zendframework/zf2/tree/release-2.2.0",
+                "source": "https://github.com/zendframework/zf2/tree/release-2.2.1",
                 "issues": "https://github.com/zendframework/zf2/issues"
             },
-            "time": "2013-05-15 10:27:32"
+            "time": "2013-06-12 20:13:34"
         },
         {
             "name": "zendframework/zendrest",

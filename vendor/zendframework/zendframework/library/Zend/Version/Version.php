@@ -19,7 +19,7 @@ final class Version
     /**
      * Zend Framework version identification - see compareVersion()
      */
-    const VERSION = '2.2.0';
+    const VERSION = '2.2.1';
 
     /**
      * Github Service Identifier for version information is retreived from
@@ -40,7 +40,7 @@ final class Version
 
     /**
      * Compare the specified Zend Framework version string $version
-     * with the current Zend_Version::VERSION of Zend Framework.
+     * with the current Zend\Version\Version::VERSION of Zend Framework.
      *
      * @param  string  $version  A version string (e.g. "0.7.1").
      * @return int           -1 if the $version is older,

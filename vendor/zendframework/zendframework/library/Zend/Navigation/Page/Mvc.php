@@ -131,12 +131,16 @@ class Mvc extends AbstractPage
                     $myParams['action'] = $this->action;
                 }
 
-                if (null !== $this->getRoute()
-                    && $this->routeMatch->getMatchedRouteName() === $this->getRoute()
-                    && (count(array_intersect_assoc($reqParams, $myParams)) == count($myParams))
-                ) {
-                    $this->active = true;
-                    return true;
+                if (null !== $this->getRoute()) {
+                    if (
+                        $this->routeMatch->getMatchedRouteName() === $this->getRoute()
+                        && (count(array_intersect_assoc($reqParams, $myParams)) == count($myParams))
+                    ) {
+                        $this->active = true;
+                        return $this->active;
+                    } else {
+                        return parent::isActive($recursive);
+                    }
                 }
             }
 
@@ -197,7 +201,7 @@ class Mvc extends AbstractPage
             );
         }
 
-        if ($this->useRouteMatch()) {
+        if ($this->useRouteMatch() && $this->getRouteMatch()) {
             $rmParams = $this->getRouteMatch()->getParams();
 
             if (isset($rmParams[ModuleRouteListener::ORIGINAL_CONTROLLER])) {

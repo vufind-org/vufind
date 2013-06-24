@@ -79,7 +79,6 @@ class Server extends AbstractServer
         'i4'                         => 'i4',
         'int'                        => 'int',
         'integer'                    => 'int',
-        'Zend\Math\BigInteger'       => 'i8',
         'i8'                         => 'i8',
         'ex:i8'                      => 'i8',
         'double'                     => 'double',
@@ -331,7 +330,7 @@ class Server extends AbstractServer
             } else {
                 $type = gettype($definition);
             }
-            throw new Server\Exception\InvalidArgumentException('Unable to load server definition; must be an array or Zend_Server_Definition, received ' . $type, 612);
+            throw new Server\Exception\InvalidArgumentException('Unable to load server definition; must be an array or Zend\Server\Definition, received ' . $type, 612);
         }
 
         $this->table->clearMethods();

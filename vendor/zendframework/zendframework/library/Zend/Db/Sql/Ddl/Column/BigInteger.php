@@ -7,10 +7,12 @@
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
-namespace Zend\Session\Exception;
+namespace Zend\Db\Sql\Ddl\Column;
 
-/**
- * Zend\Session\Exception
- */
-interface ExceptionInterface
-{}
+class BigInteger extends Integer
+{
+    /**
+     * @var string
+     */
+    protected $type = 'BIGINT';
+}
