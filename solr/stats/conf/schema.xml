@@ -18,16 +18,24 @@
    <field name="institution" type="string" indexed="true" stored="true" multiValued="true"/>
    <field name="collection" type="string" indexed="true" stored="true" multiValued="true"/>
 
+   <!-- User fields -->
    <field name="browser" type="string" indexed="true" stored="true"/>
    <field name="browserVersion" type="string" indexed="true" stored="true"/>
-   <field name="referrer" type="string" indexed="true" stored="true"/>
    <field name="ipaddress" type="string" indexed="true" stored="true"/>
+   <field name="referrer" type="string" indexed="true" stored="true"/>
+   <field name="session" type="string" indexed="true" stored="true"/>
    <field name="url" type="string" indexed="true"/>
-   <field name="recordId" type="string" indexed="true" stored="true"/>
-   <field name="phrase" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="word" type="string" indexed="true" stored="true" multiValued="true"/>
-   <field name="type" type="string" indexed="true" stored="true" multiValued="true"/>
+
+   <!-- Search fields -->
    <field name="noresults" type="boolean" indexed="true" stored="true"/>
+   <field name="phrase" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="resultCount" type="string" indexed="true" stored="true"/>
+   <field name="type" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="searchSource" type="string" indexed="true" stored="true"/>
+
+   <!-- Record fields -->
+   <field name="recordId" type="string" indexed="true" stored="true"/>
+   <field name="recordSource" type="string" indexed="true" stored="true"/>
  </fields>
 
  <uniqueKey>id</uniqueKey>
