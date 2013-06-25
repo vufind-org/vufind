@@ -118,6 +118,7 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase
             array(
                 'factories' => array(
                     'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
+                    'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
                 )
             )
         );
