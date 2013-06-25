@@ -354,10 +354,24 @@
      <lst>
     -->
     <lst name="defaults">
-      <str name="echoParam">explicit</str>
+      <str name="echoParams">explicit</str>
     </lst>
   </requestHandler>
   
+  <!-- the following handler will be used for eligible dismax searches defined
+     in web/conf/searchspecs.yaml.  Searches relying on advanced features
+     incompatible with dismax will be sent to the standard handler instead.
+     You can use this handler definition to set global Dismax settings
+     (i.e. mm / bf).  If you need different settings for different types of
+     searches (i.e. Title vs. Author), you can also configure individual
+     settings in the searchspecs.yaml file.
+  -->
+  <requestHandler name="dismax" class="solr.SearchHandler">
+    <lst name="defaults">
+     <str name="defType">dismax</str>
+     <str name="echoParams">explicit</str>
+    </lst>
+  </requestHandler>
   
   <!-- Search component for extracting terms (useful for sitemap generation) -->
   <searchComponent name="term" class="org.apache.solr.handler.component.TermsComponent">
