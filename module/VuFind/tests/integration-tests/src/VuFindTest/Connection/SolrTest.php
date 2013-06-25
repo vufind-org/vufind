@@ -28,7 +28,7 @@
 namespace VuFindTest\Integration\Connection;
 
 /**
- * ResultFeed Test Class
+ * Solr Connection Test Class
  *
  * @category VuFind2
  * @package  Tests
