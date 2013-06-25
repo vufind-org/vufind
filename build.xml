@@ -16,7 +16,7 @@
   <property name="mysqlrootpass" value="password" />
   <property name="pgsqlhost" value="localhost" />
   <property name="pgsqlrootuser" value="postgres" />
-  <property name="version" value="2.0.1" />
+  <property name="version" value="2.0.2" />
 
   <!-- Main Target -->
   <target name="main" description="main target">
