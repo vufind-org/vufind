@@ -108,6 +108,7 @@ $config = array(
             'tag' => 'VuFind\Controller\TagController',
             'upgrade' => 'VuFind\Controller\UpgradeController',
             'vudl' => 'VuFind\Controller\VudlController',
+            'web' => 'VuFind\Controller\WebController',
             'worldcat' => 'VuFind\Controller\WorldcatController',
             'worldcatrecord' => 'VuFind\Controller\WorldcatrecordController',
         ),
@@ -677,6 +678,14 @@ $config = array(
                             $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
                         );
                     },
+                    'solrweb' => function ($sm) {
+                        return new \VuFind\RecordDriver\SolrWeb(
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+                            null,
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('website'),
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('website')
+                        );
+                    },
                     'summon' => function ($sm) {
                         $summon = $sm->getServiceLocator()->get('VuFind\Config')->get('Summon');
                         $driver = new \VuFind\RecordDriver\Summon(
@@ -816,6 +825,7 @@ $config = array(
                     'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
                     'SolrReserves' => 'VuFind\Search\Factory\SolrReservesBackendFactory',
                     'SolrStats' => 'VuFind\Search\Factory\SolrStatsBackendFactory',
+                    'SolrWeb' => 'VuFind\Search\Factory\SolrWebBackendFactory',
                     'Summon' => 'VuFind\Search\Factory\SummonBackendFactory',
                     'WorldCat' => 'VuFind\Search\Factory\WorldCatBackendFactory',
                 ),
@@ -975,6 +985,7 @@ $staticRoutes = array(
     'Upgrade/GetDBCredentials', 'Upgrade/GetDbEncodingPreference',
     'Upgrade/GetSourceDir', 'Upgrade/Reset', 'Upgrade/ShowSQL',
     'VuDL/Browse', 'VuDL/DSRecord', 'VuDL/Record',
+    'Web/Home', 'Web/Results',
     'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search'
 );
 

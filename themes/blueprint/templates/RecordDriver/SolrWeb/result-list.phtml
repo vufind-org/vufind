@@ -1,0 +1,33 @@
+<?
+    $url = $this->driver->getUrl();
+?>
+<div class="listentry span-15">
+  <div class="resultItemLine1">
+    <a href="<?=$this->escapeHtml($url)?>" class="title"><?
+      $summHighlightedTitle = $this->driver->getHighlightedTitle();
+      $summTitle = $this->driver->getTitle();
+      if (!empty($summHighlightedTitle)) {
+          echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
+      } else if (!empty($summTitle)) {
+          echo $this->escapeHtml($this->truncate($summTitle, 180));
+      } else {
+          echo $this->transEsc('Title not available');
+      }
+    ?></a>
+  </div>
+
+  <div class="resultItemLine2">
+    <? $snippet = $this->driver->getHighlightedSnippet(); ?>
+    <? $summary = $this->driver->getSummary(); ?>
+    <? if (!empty($snippet)): ?>
+      <?=$this->highlight($snippet['snippet'])?>
+    <? elseif (!empty($summary)): ?>
+      <?=$this->escapeHtml($summary[0])?>
+    <? endif; ?>
+  </div>
+
+  <div class="resultItemLine3">
+    <span style="color:#008000;" class="ui-li-desc"><?=$this->escapeHtml($url)?></span>
+  </div>
+</div>
+<div class="clearer"></div>
