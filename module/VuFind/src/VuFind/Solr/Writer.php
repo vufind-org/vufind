@@ -94,8 +94,23 @@ class Writer
      */
     public function deleteAll($backend)
     {
+        $this->deleteByQuery($backend, '*:*');
+    }
+
+    /**
+     * Delete records based on a Solr query.
+     *
+     * Note: This does not update the change tracker!
+     *
+     * @param string $backend Backend ID
+     * @param string $query   Delete query
+     *
+     * @return void
+     */
+    public function deleteByQuery($backend, $query)
+    {
         $deleteDoc = new DeleteDocument();
-        $deleteDoc->addQuery('*:*');
+        $deleteDoc->addQuery($query);
         $connector = $this->getConnector($backend);
         $connector->write($deleteDoc);
     }
