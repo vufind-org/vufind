@@ -9,6 +9,12 @@ $config = array(
             'util' => 'VuFindConsole\Controller\UtilController',
         ),
     ),
+    'service_manager' => array(
+        'allow_override' => true,
+        'invokables' => array(
+            'Router' => 'VuFindConsole\Mvc\Router\ConsoleRouter',
+        ),
+    ),
     'view_manager' => array(
         // CLI tools are admin-oriented, so we should always output full errors:
         'display_exceptions' => true,

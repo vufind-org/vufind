@@ -86,10 +86,5 @@ class Module
      */
     public function onBootstrap(MvcEvent $e)
     {
-        $callback = function ($e) {
-            $e->setRouter(new ConsoleRouter());
-        };
-        $events = $e->getApplication()->getEventManager();
-        $events->attach('route', $callback, 10000);
     }
 }
