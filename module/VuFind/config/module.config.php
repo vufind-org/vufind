@@ -608,6 +608,11 @@ $config = array(
                             $sm->getServiceLocator()->get('VuFind\Config')
                         );
                     },
+                    'webresults' => function ($sm) {
+                        return new \VuFind\Recommend\WebResults(
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+                        );
+                    },
                     'worldcatidentities' => function ($sm) {
                         return new \VuFind\Recommend\WorldCatIdentities(
                             $sm->getServiceLocator()->get('VuFind\WorldCatUtils')
