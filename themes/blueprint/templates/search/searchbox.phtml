@@ -23,12 +23,14 @@
       <label for="searchForm_lookfor" class="offscreen"><?=$this->transEsc("Your search terms")?></label>
       <input id="searchForm_lookfor" type="text" name="lookfor" size="40" value="<?=$this->escapeHtml($this->lookfor)?>"<?=$options->autocompleteEnabled() ? ' class="autocomplete searcher:' . $this->escapeHtml($this->searchClassId) . ' typeSelector:searchForm_type"' : ''?>/>
       <label for="searchForm_type" class="offscreen"><?=$this->transEsc("Search Type")?></label>
-      <? if (count($options->getBasicHandlers()) > 0): ?>
+      <? $handlerCount = count($options->getBasicHandlers()); if ($handlerCount > 1): ?>
       <select id="searchForm_type" name="type">
       <? foreach ($options->getBasicHandlers() as $searchVal => $searchDesc): ?>
         <option value="<?=$this->escapeHtml($searchVal)?>"<?=$this->searchIndex == $searchVal ? ' selected="selected"' : ''?>><?=$this->transEsc($searchDesc)?></option>
       <? endforeach; ?>
       </select>
+      <? elseif ($handlerCount == 1): ?>
+        <input type="hidden" name="type" value="<?=$this->escapeHtml(current(array_keys($options->getBasicHandlers())))?>" />
       <? endif; ?>
       <input type="submit" name="submit" value="<?=$this->transEsc("Find")?>"/>
       <? if ($advSearch): ?>
