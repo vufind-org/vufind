@@ -42,7 +42,7 @@ class ImportController extends AbstractBase
     /**
      * XSLT Import Tool
      *
-     * @return void
+     * @return \Zend\Console\Response
      */
     public function importXslAction()
     {
@@ -96,9 +96,7 @@ class ImportController extends AbstractBase
 
         // Try to import the document if successful:
         try {
-            $importer = new Importer();
-            $importer->setServiceLocator($this->getServiceLocator());
-            $importer->save($argv[0], $argv[1], $index, $testMode);
+            $this->performImport($argv[0], $argv[1], $index, $testMode);
         } catch (\Exception $e) {
             Console::writeLine("Fatal error: " . $e->getMessage());
             if (is_callable(array($e, 'getPrevious')) && $e = $e->getPrevious()) {
@@ -113,5 +111,89 @@ class ImportController extends AbstractBase
             Console::writeLine("Successfully imported {$argv[0]}...");
         }
         return $this->getSuccessResponse();
+    }
+
+    /**
+     * Support method -- perform an XML import.
+     *
+     * @param string $xml        XML file to load
+     * @param string $properties Configuration file to load
+     * @param string $index      Name of backend to write to
+     * @param bool   $testMode   Use test mode?
+     *
+     * @return void
+     */
+    protected function performImport($xml, $properties, $index = 'Solr',
+        $testMode = false
+    ) {
+        $importer = new Importer();
+        $importer->setServiceLocator($this->getServiceLocator());
+        $importer->save($xml, $properties, $index, $testMode);
+    }
+
+    /**
+     * Tool to crawl website for special index.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function webcrawlAction()
+    {
+        $configLoader = $this->getServiceLocator()->get('VuFind\Config');
+        $crawlConfig = $configLoader->get('webcrawl');
+
+        // Get the time we started indexing -- we'll delete records older than this date
+        // after everything is finished.  Note that we subtract a few seconds for safety.
+        $startTime = date('Y-m-d\TH:i:s\Z', time() - 5);
+
+        // Loop through sitemap URLs in the config file.
+        foreach ($crawlConfig->Sitemaps->url as $current) {
+            $this->harvestSitemap($current);
+        }
+
+        // Perform the delete of outdated records:
+        $solr = $this->getServiceLocator()->get('VuFind\Solr\Writer');
+        $solr->deleteByQuery('SolrWeb', 'last_indexed:[* TO ' . $startTime . ']');
+        $solr->commit('SolrWeb');
+        $solr->optimize('SolrWeb');
+    }
+
+    /**
+     * Support method for webcrawlAction().
+     *
+     * Process a sitemap URL, either harvesting its contents directly or recursively
+     * reading in child sitemaps.
+     *
+     * @param string $url URL of sitemap to read.
+     *
+     * @return bool       True on success, false on error.
+     */
+    protected function harvestSitemap($url)
+    {
+        $retVal = false;
+
+        $file = tempnam('/tmp', 'sitemap');
+        file_put_contents($file, file_get_contents($url));
+        $xml = simplexml_load_file($file);
+        if ($xml) {
+            // Are there any child sitemaps?  If so, pull them in:
+            $results = isset($xml->sitemap) ? $xml->sitemap : array();
+            foreach ($results as $current) {
+                if (isset($current->loc)) {
+                    $success = $this->harvestSitemap((string)$current->loc);
+                    if (!$success) {
+                        return $success;
+                    }
+                }
+            }
+
+            try {
+                $this->performImport($file, 'sitemap.properties', 'SolrWeb');
+                $retVal = true;
+            } catch (\Exception $e) {
+                $retVal = false;
+            }
+        }
+        unlink($file);
+        return $retVal;
     }
 }
