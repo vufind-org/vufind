@@ -215,6 +215,19 @@ class VuFind
     }
 
     /**
+     * Strip illegal XML characters from a string.
+     *
+     * @param string $in String to process
+     *
+     * @return string
+     */
+    public static function stripBadChars($in)
+    {
+        $badChars = '/[^\\x0009\\x000A\\x000D\\x0020-\\xD7FF\\xE000-\\xFFFD]/';
+        return preg_replace($badChars, ' ', $in);
+    }
+
+    /**
      * Harvest the contents of a document file (PDF, Word, etc.) using Aperture.
      * This method will only work if Aperture is properly configured in the
      * fulltext.ini file.  Without proper configuration, this will simply return an
@@ -253,8 +266,7 @@ class VuFind
 
         // Send back what we extracted, stripping out any illegal characters that
         // will prevent XML from generating correctly:
-        $badChars = '/[^\\x0009\\x000A\\x000D\\x0020-\\xD7FF\\xE000-\\xFFFD]/';
-        return preg_replace($badChars, ' ', $final);
+        return static::stripBadChars($final);
     }
 
     /**
