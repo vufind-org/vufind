@@ -104,7 +104,9 @@
    <field name="spelling" type="textSpell" indexed="true" stored="true"/>
    <field name="spellingShingle" type="textSpellShingle" indexed="true" stored="true" multiValued="true"/>
    <field name="last_indexed" type="date" indexed="true" stored="true"/>
+   <field name="last_modified" type="date" indexed="true" stored="true"/>
    <field name="title" type="text" indexed="true" stored="true"/>
+   <field name="title_unstemmed" type="textProper" indexed="true" stored="false"/>
    <field name="title_sort" type="string" indexed="true" stored="false"/>
    <field name="url" type="string" indexed="false" stored="true"/>
    <field name="url_keywords" type="text" indexed="true" stored="false"/>
@@ -147,6 +149,7 @@
  <copyField source="category" dest="keywords_unstemmed" />
  <copyField source="subject" dest="keywords_unstemmed" />
  <copyField source="linktype" dest="keywords_unstemmed" />
+ <copyField source="title" dest="title_unstemmed"/>
  <!-- Default Boolean Operator -->
  <solrQueryParser defaultOperator="AND"/>
 </schema>

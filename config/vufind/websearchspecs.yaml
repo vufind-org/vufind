@@ -5,6 +5,7 @@
 
 AllFields:
   DismaxFields:
+    - title_unstemmed^800
     - title^750
     - description_unstemmed^350
     - description^300
@@ -14,6 +15,10 @@ AllFields:
     - fulltext_unstemmed^10
     - fulltext
   QueryFields:
+    title_unstemmed:
+      - [onephrase, 1200]
+      - [and, 800]
+      - [or, 15]
     title:
       - [onephrase, 1000]
       - [and, 750]
