@@ -59,7 +59,7 @@ class VuFindSitemap extends VuFind
         }
 
         // Extract and decode the full text from the XML:
-        $xml = file_get_contents($xmlFile);
+        $xml = str_replace(chr(0), ' ', file_get_contents($xmlFile));
         @unlink($xmlFile);
         preg_match('/<plainTextContent[^>]*>([^<]*)</ms', $xml, $matches);
         $final = isset($matches[1]) ?
@@ -138,6 +138,9 @@ class VuFindSitemap extends VuFind
     /**
      * Extract key metadata from HTML.
      *
+     * NOTE: This method uses some non-standard meta tags; it is intended as an
+     * example that can be overridden/extended to support local practices.
+     *
      * @param string $html HTML content.
      *
      * @return array
@@ -164,7 +167,6 @@ class VuFindSitemap extends VuFind
 
         // Extract the use count from the HTML:
         preg_match_all('/<meta name="useCount" content="([^"]*)"/ms', $html, $matches);
-        $linkTypes = array();
         $useCount = isset($matches[1][0]) ? $matches[1][0] : 1;
 
         return array(
@@ -209,6 +211,19 @@ class VuFindSitemap extends VuFind
      */
     public static function getDocument($url)
     {
+        // Turn the array into XML:
+        return static::arrayToSolrXml(static::getDocumentFieldArray($url));
+    }
+
+    /**
+     * Support method for getDocument() -- retrieve associative array of field data.
+     *
+     * @param string $url URL of file to retrieve.
+     *
+     * @return array
+     */
+    protected static function getDocumentFieldArray($url)
+    {
         $parser = static::getParser();
         if ($parser == 'None') {
             return '';
@@ -251,7 +266,6 @@ class VuFindSitemap extends VuFind
         $fields['url'] = $url;
         $fields['last_indexed'] = date('Y-m-d\TH:i:s\Z');
 
-        // Turn the array into XML:
-        return static::arrayToSolrXml($fields);
+        return $fields;
     }
 }
