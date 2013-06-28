@@ -141,8 +141,9 @@ class ImportController extends AbstractBase
         $configLoader = $this->getServiceLocator()->get('VuFind\Config');
         $crawlConfig = $configLoader->get('webcrawl');
 
-        // Get the time we started indexing -- we'll delete records older than this date
-        // after everything is finished.  Note that we subtract a few seconds for safety.
+        // Get the time we started indexing -- we'll delete records older than this
+        // date after everything is finished.  Note that we subtract a few seconds
+        // for safety.
         $startTime = date('Y-m-d\TH:i:s\Z', time() - 5);
 
         // Loop through sitemap URLs in the config file.

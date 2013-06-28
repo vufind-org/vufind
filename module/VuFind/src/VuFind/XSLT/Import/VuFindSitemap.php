@@ -74,7 +74,7 @@ class VuFindSitemap extends VuFind
         preg_match_all('/<keyword[^>]*>([^<]*)</ms', $xml, $matches);
         $keywords = array();
         if (isset($matches[1])) {
-            foreach($matches[1] as $current) {
+            foreach ($matches[1] as $current) {
                 $keywords[] = html_entity_decode($current, ENT_QUOTES, 'UTF-8');
             }
         }
@@ -90,7 +90,7 @@ class VuFindSitemap extends VuFind
             'keywords' => $keywords,
             'description' => $description,
             'fulltext' => $final,
-       );
+        );
     }
 
     /**
@@ -116,7 +116,7 @@ class VuFindSitemap extends VuFind
         );
         $keywords = array();
         if (isset($matches[1])) {
-            foreach($matches[1] as $current) {
+            foreach ($matches[1] as $current) {
                 $keywords[] = html_entity_decode($current, ENT_QUOTES, 'UTF-8');
             }
         }
@@ -132,7 +132,7 @@ class VuFindSitemap extends VuFind
             'keywords' => $keywords,
             'description' => $description,
             'fulltext' => $title . ' ' . static::harvestWithTika($htmlFile),
-       );
+        );
     }
 
     /**
@@ -148,25 +148,31 @@ class VuFindSitemap extends VuFind
     protected static function getHtmlFields($html)
     {
         // Extract the subjects from the HTML:
-        preg_match_all('/<meta name="subject" content="([^"]*)"/ms', $html, $matches);
+        preg_match_all(
+            '/<meta name="subject" content="([^"]*)"/ms', $html, $matches
+        );
         $subjects = array();
         if (isset($matches[1])) {
-            foreach($matches[1] as $current) {
+            foreach ($matches[1] as $current) {
                 $subjects[] = html_entity_decode($current, ENT_QUOTES, 'UTF-8');
             }
         }
 
         // Extract the link types from the HTML:
-        preg_match_all('/<meta name="category" content="([^"]*)"/ms', $html, $matches);
+        preg_match_all(
+            '/<meta name="category" content="([^"]*)"/ms', $html, $matches
+        );
         $categories = array();
         if (isset($matches[1])) {
-            foreach($matches[1] as $current) {
+            foreach ($matches[1] as $current) {
                 $categories[] = html_entity_decode($current, ENT_QUOTES, 'UTF-8');
             }
         }
 
         // Extract the use count from the HTML:
-        preg_match_all('/<meta name="useCount" content="([^"]*)"/ms', $html, $matches);
+        preg_match_all(
+            '/<meta name="useCount" content="([^"]*)"/ms', $html, $matches
+        );
         $useCount = isset($matches[1][0]) ? $matches[1][0] : 1;
 
         return array(
