@@ -1,0 +1,139 @@
+<h1>Suchoperatoren</h1>
+
+<ul class="HelpMenu">
+  <li><a href="#Wildcard Searches">Wyszukiwanie z wieloznacznikiem</a></li>
+  <li><a href="#Fuzzy Searches">Wyszukiwanie nieprecyzyjne</a></li>
+  <li><a href="#Proximity Searches">Wyszukiwanie z odstepem slów</a></li>
+  <li><a href="#Range Searches">Wyszukiwanie zakresowe</a></li>
+  <li><a href="#Boosting a Term">Zwiekszyc znaczenie slowa</a></li>
+  <li><a href="#Boolean operators">Operatory logiczne</a>
+    <ul>
+      <li><a href="#AND">AND</a></li>
+      <li><a href="#+">+</a></li>
+      <li><a href="#OR">OR</a></li>
+      <li><a href="#NOT">NOT</a></li>
+      <li><a href="#-">-</a></li>
+    </ul>
+  </li>
+</ul>
+
+<dl class="Content">
+  <dt><a name="Wildcard Searches"></a>Wyszukiwanie z wieloznacznikiem</dt>
+  <dd>
+    <p>Aby zastosowac wieloznacznik zastepujacy pojedynczy dowolny znak, uzyj znaku zapytania (<strong>?</strong>).</p>
+    <p>Przyklad: Jesli chcesz szukac "text" lub "test" wpisz:</p>
+    <pre class="code">te?t</pre>
+    <p>Wieloznacznikiem zastepujacym zero lub dowolna liczbe znaków jest asterysk (<strong>*</strong>).</p>
+    <p>Przyklad: Jesli chcesz szukac "test", "tests" lub "tester", wpisz:</p>
+    <pre class="code">test*</pre>
+    <p>Wieloznacznik mozesz pozycjonowac w jakimkolwiek miejscu slowa:</p>
+    <pre class="code">te*t</pre>
+  </dd>
+
+  <dt><a name="Fuzzy Searches"></a>Wyszukiwanie nieprecyzyjne</dt>
+  <dd>
+    <p>Aby zastosowac wyszukiwanie nieprecyzyjne uzyj tylde (<strong>~</strong>) na koncu slowa.
+       Przyklad: Jesli chcesz szukac podobnych slów do "room":</p>
+    <pre class="code">room~</pre>
+    <p>To wyszukiwanie daje wyniki zawierajace równiez "roam" oraz "rom".</p>
+    <p>Podobienstwo mozesz dopasowac zmieniajac wartosc pomiedzy 0 i 1 za tylda.
+       Im mniejsza wartosc, tym bardziej nieprecyzyjne jest wyszukiwanie.
+       Przyklad:</p>
+    <pre class="code">room~0.8</pre>
+    <p>Jesli nie podasz wartosci, automatycznie zostanie ona ustawiona na 0.5.</p>
+  </dd>
+
+  <dt><a name="Proximity Searches"></a>Wyszukiwanie z odstepem slów</dt>
+  <dd>
+    <p>
+      Aby zastosowac wyszukiwanie z odstepem slów uzyj tylde (<strong>~</strong>) za grupa slów wyszukiwawczych.
+      Przyklad: Jesli chcesz szukac tytulów, które zawieraja slowa "ekonomia" oraz "Keynes" i nie sa dalej od siebie
+      pozycjonowane niz 10 slów, wpisz:
+    </p>
+    <pre class="code">"ekonomia Keynes"~10</pre>
+  </dd>
+
+  <dt><a name="Range Searches"></a>Wyszukiwanie zakresowe</dt>
+  <dd>
+    <p>
+      Aby zastosowac wyszukiwanie zakresowe uzyj nawiasów klamrowych (<strong>{ }</strong>).
+      Przyklad: Jesli chcesz szukac slów, które zaczynaja sie na litere A, B oraz C:
+    </p>
+    <pre class="code">{A TO C}</pre>
+    <p>
+      W ten sam sposób mozna postepowac z liczbami, np. z datami roku:
+    </p>
+    <pre class="code">[2002 TO 2003]</pre>
+  </dd>
+
+  <dt><a name="Boosting a Term"></a>Zwiekszyc znaczenie slowa</dt>
+  <dd>
+    <p>
+      Wieksze znaczenie mozesz przypisac slowu za pomoca liczb.
+      Aby zwiekszyc znaczenie slowa uzyj cyrkumfleks (<strong>^</strong>). Przyklad:
+    </p>
+    <pre class="code">ekonomia Keynes^5</pre>
+    <p>Poprzez to slowo "Keynes" otrzyma wieksze znaczenie i bedzie bardziej uwzglednione przy wyszukiwaniu.
+    </p>
+  </dd>
+
+  <dt><a name="Boolean operators"></a>Operatory logiczne</dt>
+  <dd>
+    <p>
+      Operatory logiczne umozliwiaja logiczne polaczenie slów wyszukiwawczych.
+      Oto operatory dozwolone:
+      <strong>AND</strong>, <strong>+</strong>, <strong>OR</strong>,
+      <strong>NOT</strong>, <strong>-</strong>.
+    </p>
+    <p>Wskazówka: Operatory logiczne pisze sie duza litera.</p>
+    <dl>
+      <dt><a name="AND"></a>AND</dt>
+      <dd>
+        <p>Jesli uzyjesz operatora AND pomiedzy slowami wyszukiwawczymi
+        otrzymasz wyniki zawierajace obydwa slowa.
+        </p>
+        <p>Operator AND jest operatorem standardowym. To znaczy,
+        ze jest uzywany przez katalog automatycznie pomiedzy slowami wyszukiwawczymi,
+        nawet jak go nie wpiszesz.</p>
+        <p>Przyklad: Chcesz szukac tytulów, które zawieraja slowa
+            "ekonomia" i "Keynes":</p>
+        <pre class="code">ekonomia Keynes</pre>
+        <p>oraz</p>
+        <pre class="code">ekonomia AND Keynes</pre>
+      </dd>
+
+      <dt><a name="+"></a>+ (plus)</dt>
+      <dd>
+        <p>Jesli uzyjesz operatora plus (<strong>+</strong>) przed slowem wyszukiwawczym, to dolaczone zostana wszystkie trafienia, które to slowo zawieraja.</p>
+        <p>Przyklad:</p>
+        <pre class="code">+ekonomia +Keynes</pre>
+      </dd>
+
+      <dt><a name="OR"></a>OR</dt>
+      <dd>
+        <p>Jesli uzyjesz operatora OR pomiedzy slowami wyszukiwawczymi,
+        otrzymasz wyniki zawierajace przynajmniej jedno z podanych slów.</p>
+        <p>Przyklad: Chcesz szukac tytulów, które zawieraja slowa "ekonomia Keynes" lub
+           "Keynes":</p>
+        <pre class="code">"ekonomia Keynes" OR Keynes</pre>
+      </dd>
+
+      <dt><a name="NOT"></a>NOT</dt>
+      <dd>
+        <p>Wpisujac NOT przed slowem  wyszukiwawczym, wykluczasz wszystkie wyniki wyszukiwania, które zawieraja to slowo.</p>
+        <p>Przyklad: Chcesz szukac tytulów, które zawieraja slowo „ekonomia” ale nie „Keynes”:</p>
+        <pre class="code">ekonomia NOT Keynes</pre>
+        <p>Wskazówka: operator NOT stosuje sie z minimum dwoma slowami wyszukiwawczymi.
+           Nastepujace wyrazenie wyszukiwawcze nie przynosi zadnych rezultatów:</p>
+        <pre class="code">NOT ekonomia</pre>
+      </dd>
+
+      <dt><a name="-"></a>- (minus)</dt>
+      <dd>
+        <p>Jesli uzyjesz operatora minus (<strong>-</strong>) przed slowem wyszukiwawczym, to wykluczone zostana wszystkie trafienia, które to slowo zawieraja.</p>
+        <p>Przyklad:</p>
+        <pre class="code">ekonomia -Keynes</pre>
+      </dd>
+    </dl>
+  </dd>
+</dl>
