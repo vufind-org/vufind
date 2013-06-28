@@ -593,6 +593,11 @@ $config = array(
                             $sm->getServiceLocator()->get('VuFind\Config')
                         );
                     },
+                    'summonbestbets' => function ($sm) {
+                        return new \VuFind\Recommend\SummonBestBets(
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+                        );
+                    },
                     'summondatabases' => function ($sm) {
                         return new \VuFind\Recommend\SummonDatabases(
                             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')

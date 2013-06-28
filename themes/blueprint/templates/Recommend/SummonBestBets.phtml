@@ -1,0 +1,7 @@
+<? $summonBestBets = $this->recommend->getResults(); if (!empty($summonBestBets)): ?>
+<div class="authorbox">
+  <? foreach ($summonBestBets as $current): ?>
+    <p><a href="<?=$this->escapeHtml($current['link'])?>"><?=$this->escapeHtml($current['title'])?></a><br/><?=$current['description']?></p>
+  <? endforeach; ?>
+</div>
+<? endif; ?>

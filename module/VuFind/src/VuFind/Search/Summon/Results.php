@@ -51,6 +51,13 @@ class Results extends BaseResults
     protected $responseFacets = null;
 
     /**
+     * Best bets
+     *
+     * @var array|bool
+     */
+    protected $bestBets = false;
+
+    /**
      * Database recommendations
      *
      * @var array|bool
@@ -84,7 +91,8 @@ class Results extends BaseResults
             $this->processSpelling($spellcheck);
         }
 
-        // Get database recommendations.
+        // Get best bets and database recommendations.
+        $this->bestBets = $collection->getBestBets();
         $this->databaseRecommendations = $collection->getDatabaseRecommendations();
 
         // Add fake date facets if flagged earlier; this is necessary in order
@@ -355,6 +363,16 @@ class Results extends BaseResults
             }
         }
         return $retVal;
+    }
+
+    /**
+     * Get best bets from Summon, if any.
+     *
+     * @return array|bool false if no recommendations, detailed array otherwise.
+     */
+    public function getBestBets()
+    {
+        return $this->bestBets;
     }
 
     /**

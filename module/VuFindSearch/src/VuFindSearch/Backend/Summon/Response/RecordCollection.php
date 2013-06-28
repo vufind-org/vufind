@@ -113,13 +113,24 @@ class RecordCollection extends AbstractRecordCollection
     }
 
     /**
+     * Get best bets from Summon, if any.
+     *
+     * @return array|bool false if no recommendations, detailed array otherwise.
+     */
+    public function getBestBets()
+    {
+        return isset($this->response['recommendationLists']['bestBet'])
+            ? $this->response['recommendationLists']['bestBet'] : false;
+    }
+
+    /**
      * Get database recommendations from Summon, if any.
      *
      * @return array|bool false if no recommendations, detailed array otherwise.
      */
     public function getDatabaseRecommendations()
     {
-        return isset($this->response['recommendationLists']['database']) ?
-            $this->response['recommendationLists']['database'] : false;
+        return isset($this->response['recommendationLists']['database'])
+            ? $this->response['recommendationLists']['database'] : false;
     }
 }

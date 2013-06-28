@@ -1,6 +1,6 @@
 <?php
 /**
- * SummonDatabases Recommendations Module
+ * SummonBestBets Recommendations Module
  *
  * PHP version 5
  *
@@ -28,9 +28,9 @@
 namespace VuFind\Recommend;
 
 /**
- * SummonDatabases Recommendations Module
+ * SummonBestBets Recommendations Module
  *
- * This class provides database recommendations by doing a search of Summon.
+ * This class provides best bets recommendations by doing a search of Summon.
  *
  * @category VuFind2
  * @package  Recommendations
@@ -38,15 +38,15 @@ namespace VuFind\Recommend;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
-class SummonDatabases extends AbstractSummonRecommend
+class SummonBestBets extends AbstractSummonRecommend
 {
     /**
-     * Get database results.
+     * Get best bets results.
      *
      * @return array
      */
     public function getResults()
     {
-        return $this->results->getDatabaseRecommendations();
+        return $this->results->getBestBets();
     }
 }
