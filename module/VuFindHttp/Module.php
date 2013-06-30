@@ -1,11 +1,11 @@
 <?php
 
 /**
- * ZF2 module definition for the VF2 proxy service
+ * ZF2 module definition for the VF2 http service
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2012, 2013.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -24,7 +24,6 @@
  * @package  Http
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://github.com/dmj/vf2-proxy
  */
 
 namespace VuFindHttp;
@@ -36,7 +35,6 @@ namespace VuFindHttp;
  * @package  Http
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://github.com/dmj/vf2-proxy
  */
 
 class Module
