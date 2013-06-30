@@ -5,3 +5,7 @@ ChangeLog
 .\#*
 TAGS
 *~
+
+# Composer
+vendor
+composer.lock
