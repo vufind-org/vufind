@@ -1,0 +1,35 @@
+{
+    "name": "vufind/http",
+    "description": "VuFind 2.x HTTP service library",
+    "authors": [
+        {
+            "name": "David Maus",
+            "email": "maus@hab.de",
+            "role": "Developer"
+        },
+        {
+            "name": "Demian Katz",
+            "email": "demian.katz@villanova.edu",
+            "role": "Maintainer"
+        }
+    ],
+    "homepage": "http://vufind.org/",
+    "license": "GPL-2.0",
+    "support": {
+        "issues": "http://vufind.org/jira"
+    },
+    "repositories": [
+	{ "type": "composer", "url":  "http://packages.zendframework.com/" }
+    ],
+    "require": {
+        "zendframework/zend-http": "2.2.*"
+    },
+    "require-dev": {
+        "zendframework/zend-uri": "2.2.*"
+    },
+    "autoload": {
+        "psr-0": {
+            "VuFindHttp\\": "src"
+        }
+    }
+}
