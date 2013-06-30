@@ -43,13 +43,6 @@ class Module
 {
 
     /**
-     * Relative path to search service configuration.
-     *
-     * @var string
-     */
-    protected $configPath = 'config/http.conf.php';
-
-    /**
      * Return autoloader configuration.
      *
      * @return array
@@ -63,53 +56,6 @@ class Module
                 ),
             ),
         );
-    }
-
-    /**
-     * Return module configuration.
-     *
-     * @return array
-     */
-    public function getConfig()
-    {
-        return array();
-    }
-
-    /**
-     * Initialize module.
-     *
-     * @return void
-     */
-    public function init()
-    {
-    }
-
-    /**
-     * Return service configuration.
-     *
-     * @return array
-     */
-    public function getServiceConfig()
-    {
-        return array(
-            'factories' => array(
-                'VuFind\Http' => array($this, 'setup'),
-            )
-        );
-    }
-
-    /**
-     * Return configured http service to superior service manager.
-     *
-     * @return \VuFind\Service\Search
-     */
-    public function setup()
-    {
-        $config = include realpath(__DIR__ . '/' . $this->configPath);
-
-        $di = new \Zend\Di\Di();
-        $di->configure(new \Zend\Di\Config($config));
-        return $di->get('VuFindHttp\HttpService');
     }
 
 }
