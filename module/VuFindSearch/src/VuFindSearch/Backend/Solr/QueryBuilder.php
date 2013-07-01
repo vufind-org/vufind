@@ -123,14 +123,10 @@ class QueryBuilder implements QueryBuilderInterface
         if ($this->containsAdvancedLuceneSyntax($string)) {
 
             if ($handler) {
-                if ($params->get('hl')
-                    && array_intersect($params->get('hl'), array('true', 'on'))
-                ) {
-                    $params->set(
-                        'hl.q',
-                        $this->createAdvancedInnerSearchString($string, $handler)
-                    );
-                }
+                $params->set(
+                    'hl.q',
+                    $this->createAdvancedInnerSearchString($string, $handler)
+                );
                 $string = $this->createAdvancedInnerSearchString($string, $handler);
                 if ($handler->hasDismax()) {
                     $string = $handler->createBoostQueryString($string);
