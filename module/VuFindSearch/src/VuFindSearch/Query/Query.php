@@ -101,6 +101,18 @@ class Query extends AbstractQuery
     }
 
     /**
+     * Set name of search handler.
+     *
+     * @param string $handler Name of handler
+     *
+     * @return string
+     */
+    public function setHandler($handler)
+    {
+        $this->queryHandler = $handler;
+    }
+
+    /**
      * Does the query contain the specified term?
      *
      * @param string $needle Term to check
