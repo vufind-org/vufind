@@ -28,6 +28,9 @@
 
   <div class="resultItemLine3">
     <span style="color:#008000;" class="ui-li-desc"><?=$this->escapeHtml($url)?></span>
+    <? $lastMod = $this->driver->getLastModified(); if (!empty($lastMod)): ?>
+      <br /><?=$this->transEsc('Last Modified')?>: <?=$this->escapeHtml(trim(str_replace(array('T', 'Z'), ' ', $lastMod)))?>
+    <? endif; ?>
   </div>
 </div>
 <div class="clearer"></div>

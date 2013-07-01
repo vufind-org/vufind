@@ -74,4 +74,15 @@ class SolrWeb extends SolrDefault
     {
         return $this->fields['url'];
     }
+
+    /**
+     * Get the last modified date for the current record (or empty string if unset).
+     *
+     * @return string
+     */
+    public function getLastModified()
+    {
+        return isset($this->fields['last_modified'])
+            ? $this->fields['last_modified'] : '';
+    }
 }
