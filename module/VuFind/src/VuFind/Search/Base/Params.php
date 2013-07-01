@@ -349,6 +349,11 @@ class Params implements ServiceLocatorAwareInterface
         );
 
         $this->searchType = $this->query instanceof Query ? 'basic' : 'advanced';
+
+        // If we ended up with a basic search, set the default handler if necessary:
+        if ($this->searchType == 'basic' && $this->query->getHandler() === null) {
+            $this->query->setHandler($this->getOptions()->getDefaultHandler());
+        }
     }
 
     /**
