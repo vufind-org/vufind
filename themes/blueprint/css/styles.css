@@ -2109,3 +2109,28 @@ div.handle {
     font: bold 15px/30px 'lucida sans', 'trebuchet MS', 'Tahoma';
     z-index: 10;
 }
+
+.searchTabNav {
+    border-bottom:1px solid #619144;
+    display:table;
+    list-style:none;
+    padding:0 10px 1px 10px;
+}
+.searchTabNav li {
+    background:#EFD;
+    border:1px solid #619144;
+    display:inline;
+    font-size:10pt;
+    margin:0 1px;
+    padding:3px 6px;
+    text-align:center;
+    width:60px;
+}
+.searchTabNav li.active {
+    background:#FFF;
+    border-bottom:1px solid #FFF;
+}
+.searchTabNav li.active a {
+    color:#000;
+    text-decoration:none;
+}

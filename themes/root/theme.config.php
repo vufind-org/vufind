@@ -108,6 +108,15 @@ return array(
                     $sm->getServiceLocator()->get('VuFind\SearchOptionsPluginManager')
                 );
             },
+            'searchtabs' => function ($sm) {
+                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+                $config = isset($config->SearchTabs)
+                    ? $config->SearchTabs->toArray() : array();
+                return new VuFind\View\Helper\Root\SearchTabs(
+                    $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
+                    $config, $sm->get('url')
+                );
+            },
             'syndeticsplus' => function ($sm) {
                 $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
                 return new \VuFind\View\Helper\Root\SyndeticsPlus(
