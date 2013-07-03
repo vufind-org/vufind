@@ -42,8 +42,25 @@ namespace VuFind\Recommend;
  */
 class EuropeanaResultsDeferred implements RecommendInterface
 {
+    /**
+     * Raw configuration parameters
+     *
+     * @var string
+     */
     protected $rawParams;
+
+    /**
+     * Current search query
+     *
+     * @var string
+     */
     protected $lookfor;
+
+    /**
+     * Configuration parameters processed for submission via AJAX
+     *
+     * @var string
+     */
     protected $processedParams;
 
     /**
