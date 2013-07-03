@@ -57,6 +57,13 @@ class SummonResultsDeferred implements RecommendInterface
     protected $lookfor;
 
     /**
+     * Label for current search type
+     *
+     * @var string
+     */
+    protected $typeLabel = '';
+
+    /**
      * Configuration parameters processed for submission via AJAX
      *
      * @var string
@@ -111,6 +118,13 @@ class SummonResultsDeferred implements RecommendInterface
         }
         $this->lookfor = trim($this->lookfor);
 
+        // Collect the label for the current search type:
+        if (is_object($params)) {
+            $this->typeLabel = $params->getOptions()->getLabelForBasicHandler(
+                $params->getSearchHandler()
+            );
+        }
+
         // In AJAX mode, the query will always be found in the 'lookfor' parameter,
         // so override the setting:
         $settings[0] = 'lookfor';
@@ -143,6 +157,7 @@ class SummonResultsDeferred implements RecommendInterface
     public function getUrlParams()
     {
         return 'mod=SummonResults&params=' . urlencode($this->processedParams)
-            . '&lookfor=' . urlencode($this->lookfor);
+            . '&lookfor=' . urlencode($this->lookfor)
+            . '&typeLabel=' . urlencode($this->typeLabel);
     }
 }

@@ -112,11 +112,23 @@ abstract class SearchObject implements RecommendInterface
      */
     public function init($params, $request)
     {
+        // See if we can determine the label for the current search type; first
+        // check for an override in the GET parameters, then look at the incoming
+        // params object....
+        $typeLabel = $request->get('typeLabel');
+        $type = $request->get('type');
+        if (empty($typeLabel) && !empty($type)) {
+            $typeLabel = $params->getOptions()->getLabelForBasicHandler($type);
+        }
+
         // Set up the parameters:
         $this->results = $this->resultsManager->get($this->getSearchClassId());
         $params = $this->results->getParams();
         $params->setLimit($this->limit);
-        $params->setBasicSearch($request->get($this->requestParam));
+        $params->setBasicSearch(
+            $request->get($this->requestParam),
+            $params->getOptions()->getBasicHandlerForLabel($typeLabel)
+        );
 
         // Perform the search:
         $this->results->performAndProcessSearch();
