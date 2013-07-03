@@ -137,28 +137,14 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
     protected function remapBasicSearch($activeOptions, $targetClass, $query,
         $handler
     ) {
-        // Get label for source handler:
-        $sourceLabel = false;
-        foreach ($activeOptions->getBasicHandlers() as $id => $label) {
-            if ($handler == $id) {
-                $sourceLabel = $label;
-            }
-        }
-
         // Set up results object for URL building:
         $results = $this->results->get($targetClass);
         $options = $results->getOptions();
 
         // Find matching handler for new query (and use default if no match):
-        $targetHandler = false;
-        foreach ($options->getBasicHandlers() as $id => $label) {
-            if ($label == $sourceLabel) {
-                $targetHandler = $id;
-            }
-        }
-        if (!$targetHandler) {
-            $targetHandler = $options->getDefaultHandler();
-        }
+        $targetHandler = $options->getBasicHandlerForLabel(
+            $activeOptions->getLabelForBasicHandler($handler)
+        );
 
         // Build new URL:
         $results->getParams()->setBasicSearch($query, $targetHandler);
