@@ -121,12 +121,18 @@ abstract class SearchObject implements RecommendInterface
             $typeLabel = $params->getOptions()->getLabelForBasicHandler($type);
         }
 
+        // Extract a search query:
+        $lookfor = $request->get($this->requestParam);
+        if (empty($lookfor) && is_object($params)) {
+            $lookfor = $params->getQuery()->getAllTerms();
+        }
+
         // Set up the parameters:
         $this->results = $this->resultsManager->get($this->getSearchClassId());
         $params = $this->results->getParams();
         $params->setLimit($this->limit);
         $params->setBasicSearch(
-            $request->get($this->requestParam),
+            $lookfor,
             $params->getOptions()->getBasicHandlerForLabel($typeLabel)
         );
 
