@@ -203,7 +203,7 @@ class ChangeTracker extends Gateway
 
             // If first indexed is null, we're restoring a deleted record, so
             // we need to treat it as new -- we'll use the current time.
-            if (empty($this->first_indexed)) {
+            if (empty($row->first_indexed)) {
                 $row->first_indexed = $row->last_indexed;
             }
 
