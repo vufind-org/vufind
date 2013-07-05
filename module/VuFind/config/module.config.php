@@ -457,7 +457,7 @@ $config = array(
             'hierarchy_treedatasource' => array(
                 'factories' => array(
                     'solr' => function ($sm) {
-                        $cacheDir = $sm->getServiceLocator()->get('VuFind\CacheManager')->getCacheDir();
+                        $cacheDir = $sm->getServiceLocator()->get('VuFind\CacheManager')->getCacheDir(false);
                         return new \VuFind\Hierarchy\TreeDataSource\Solr(
                             $sm->getServiceLocator()->get('VuFind\Search'),
                             rtrim($cacheDir, '/') . '/hierarchy'

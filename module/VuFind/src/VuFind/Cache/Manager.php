@@ -141,9 +141,12 @@ class Manager
     /**
      * Get the path to the directory containing VuFind's cache data.
      *
+     * @param bool $allowCliOverride If true, use a different cache subdirectory
+     * for CLI mode; otherwise, share the web directories.
+     *
      * @return string
      */
-    public function getCacheDir()
+    public function getCacheDir($allowCliOverride = true)
     {
         if ($this->defaults && isset($this->defaults['cache_dir'])) {
             $dir = $this->defaults['cache_dir'];
@@ -158,7 +161,7 @@ class Manager
         }
 
         // Use separate cache dir in CLI mode to avoid permission issues:
-        if (PHP_SAPI == 'cli') {
+        if ($allowCliOverride && PHP_SAPI == 'cli') {
             $dir .= 'cli/';
         }
 
