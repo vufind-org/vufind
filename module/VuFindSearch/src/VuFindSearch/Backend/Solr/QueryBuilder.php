@@ -75,16 +75,23 @@ class QueryBuilder implements QueryBuilderInterface
     /**
      * Force ranges to uppercase?
      *
-     * @var boolean
+     * @var bool
      */
     public $caseSensitiveRanges = true;
 
     /**
      * Force boolean operators to uppercase?
      *
-     * @var boolean
+     * @var bool
      */
     public $caseSensitiveBooleans = true;
+
+    /**
+     * Should we create the hl.q parameter when appropriate?
+     *
+     * @var bool
+     */
+    public $createHighlightingQuery = false;
 
     /**
      * Constructor.
@@ -129,7 +136,7 @@ class QueryBuilder implements QueryBuilderInterface
 
                     // If a boost was added, we don't want to highlight based on
                     // the boost query, so we should use the non-boosted version:
-                    if ($oldString != $string) {
+                    if ($this->createHighlightingQuery && $oldString != $string) {
                         $params->set('hl.q', $oldString);
                     }
                 }
@@ -156,11 +163,25 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
+     * Control whether or not the QueryBuilder should create an hl.q parameter
+     * when the main query includes clauses that should not be factored into
+     * highlighting. (Turned off by default).
+     *
+     * @param bool $enable Should highlighting query generation be enabled?
+     *
+     * @return void
+     */
+    public function setCreateHighlightingQuery($enable)
+    {
+        $this->createHighlightingQuery = $enable;
+    }
+
+    /**
      * Return true if the search string contains advanced Lucene syntax.
      *
      * @param string $searchString Search string
      *
-     * @return boolean
+     * @return bool
      *
      * @todo Maybe factor out to dedicated UserQueryAnalyzer
      */

@@ -190,4 +190,35 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
             $this->assertEquals($output, $processedQ[0]);
         }
     }
+
+    /**
+     * Test generation with highlighting
+     *
+     * @return void
+     */
+    public function testHighlighting()
+    {
+        $qb = new QueryBuilder(
+            array(
+                'test' => array(
+                    'DismaxFields' => array('test1'),
+                    'DismaxParams' => array(array('bq', 'boost'))
+                )
+            )
+        );
+
+        $q = new Query('*:*', 'test');
+
+        // No hl.q if highlighting query disabled:
+        $qb->setCreateHighlightingQuery(false);
+        $response = $qb->build($q);
+        $hlQ = $response->get('hl.q');
+        $this->assertEquals(null, $hlQ[0]);
+
+        // hl.q if highlighting query enabled:
+        $qb->setCreateHighlightingQuery(true);
+        $response = $qb->build($q);
+        $hlQ = $response->get('hl.q');
+        $this->assertEquals('*:*', $hlQ[0]);
+    }
 }
