@@ -365,8 +365,6 @@ class Backend implements BackendInterface, SimilarInterface, RetrieveBatchInterf
      * @param QueryBuilderInterface $queryBuilder Query builder
      *
      * @return void
-     *
-     * @todo Typehint QueryBuilderInterface
      */
     public function setQueryBuilder(QueryBuilderInterface $queryBuilder)
     {
