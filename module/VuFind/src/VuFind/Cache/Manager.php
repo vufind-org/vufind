@@ -151,12 +151,18 @@ class Manager
             if (substr($dir, -1) != '/') {
                 $dir .= '/';
             }
-            return $dir;
+        } else if (strlen(LOCAL_OVERRIDE_DIR) > 0) {
+            $dir = LOCAL_OVERRIDE_DIR . '/cache/';
+        } else {
+            $dir = APPLICATION_PATH . '/data/cache/';
         }
-        if (strlen(LOCAL_OVERRIDE_DIR) > 0) {
-            return LOCAL_OVERRIDE_DIR . '/cache/';
+
+        // Use separate cache dir in CLI mode to avoid permission issues:
+        if (PHP_SAPI == 'cli') {
+            $dir .= 'cli/';
         }
-        return APPLICATION_PATH . '/data/cache/';
+
+        return $dir;
     }
 
     /**
@@ -210,6 +216,11 @@ class Manager
             } else {
                 // 0777 is chmod default, use if dir_permission is not explicitly set
                 $dir_perm = 0777;
+            }
+            // Make sure cache parent directory and directory itself exist:
+            $parentDir = dirname($dirName);
+            if (!is_dir($parentDir) && !@mkdir($parentDir, $dir_perm)) {
+                $this->directoryCreationError = true;
             }
             if (!@mkdir($dirName, $dir_perm)) {
                 $this->directoryCreationError = true;
