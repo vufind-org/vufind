@@ -65,6 +65,14 @@ class AuthorityRecommend implements RecommendInterface
     protected $filters = array();
 
     /**
+     * Maximum number of results that will be accompanied by recommendations (set
+     * to 0 for no limit).
+     *
+     * @var int
+     */
+    protected $resultLimit = 0;
+
+    /**
      * Current user search
      *
      * @var \VuFind\Search\Base\Results
@@ -109,7 +117,11 @@ class AuthorityRecommend implements RecommendInterface
         $params = explode(':', $settings);
         for ($i = 0; $i < count($params); $i += 2) {
             if (isset($params[$i+1])) {
-                $this->filters[] = $params[$i] . ':(' . $params[$i + 1] . ')';
+                if ($params[$i] == '__resultlimit__') {
+                    $this->resultLimit = intval($params[$i + 1]);
+                } else {
+                    $this->filters[] = $params[$i] . ':(' . $params[$i + 1] . ')';
+                }
             }
         }
     }
@@ -151,6 +163,13 @@ class AuthorityRecommend implements RecommendInterface
 
         // function will return blank on Advanced Search
         if ($results->getParams()->getSearchType()== 'advanced') {
+            return;
+        }
+
+        // check result limit before proceeding...
+        if ($this->resultLimit > 0
+            && $this->resultLimit < $results->getResultTotal()
+        ) {
             return;
         }
 
