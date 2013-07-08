@@ -142,7 +142,7 @@ class SearchTabs extends \Zend\View\Helper\AbstractHelper
         $options = $results->getOptions();
 
         // Find matching handler for new query (and use default if no match):
-        $targetHandler = $options->getBasicHandlerForLabel(
+        $targetHandler = $options->getHandlerForLabel(
             $activeOptions->getLabelForBasicHandler($handler)
         );
 

@@ -133,7 +133,7 @@ abstract class SearchObject implements RecommendInterface
         $params->setLimit($this->limit);
         $params->setBasicSearch(
             $lookfor,
-            $params->getOptions()->getBasicHandlerForLabel($typeLabel)
+            $params->getOptions()->getHandlerForLabel($typeLabel)
         );
 
         // Perform the search:
