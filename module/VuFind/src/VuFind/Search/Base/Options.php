@@ -179,6 +179,10 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Given a basic handler name, return the corresponding label (or false
      * if none found):
+     *
+     * @param string $handler Handler name to look up.
+     *
+     * @return string
      */
     public function getLabelForBasicHandler($handler)
     {
