@@ -36,14 +36,23 @@
 ?>
 <div>
   <?=$this->flashmessages()?>
-  <? foreach ($this->combinedResults as $searchClassId => $view): ?>
+  <? foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
     <?
+      $view = $currentSearch['view'];
       $results = $view->results;
       $params = $results->getParams();
       $lookfor = $params->getDisplayQuery();
       $recordTotal = $results->getResultTotal();
+      $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $results->getUrlQuery()->setPage(1);
     ?>
     <div class="combinedResult">
+      <div style="float: right;">
+        <a href="<?=$moreUrl?>"><?=$this->transEsc('More options')?></a>
+      </div>
+      <h2><?=$this->transEsc($currentSearch['label'])?></h2>
+      <? if (isset($currentSearch['sublabel'])): ?>
+        <p><i><?=$this->transEsc($currentSearch['sublabel'])?></i></p>
+      <? endif; ?>
       <div class="resulthead">
         <div class="floatleft">
           <? if ($recordTotal > 0): ?>
@@ -89,6 +98,7 @@
         <? endforeach; ?>
       <? else: ?>
         <?=$this->render('search/list-' . $params->getView() . '.phtml', array('results' => $results, 'params' => $params))?>
+        <p class="more_link"><a href="<?=$moreUrl?>"><?=$this->transEsc($currentSearch['more_link'])?></a></p>
       <? endif; ?>
     </div>
   <? endforeach; ?>

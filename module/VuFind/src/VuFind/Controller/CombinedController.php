@@ -79,11 +79,15 @@ class CombinedController extends AbstractSearch
         $combinedResults = array();
         $options = $this->getServiceLocator()
             ->get('VuFind\SearchOptionsPluginManager');
-        foreach (array('Solr', 'Summon') as $current) {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('combined')
+            ->toArray();
+        foreach ($config as $current => $settings) {
             $currentOptions = $options->get($current);
             list($controller, $action)
                 = explode('-', $currentOptions->getSearchAction());
-            $combinedResults[$current] = $this->forwardTo($controller, $action);
+            $combinedResults[$current] = $settings;
+            $combinedResults[$current]['view']
+                = $this->forwardTo($controller, $action);
         }
 
         // Build view model:
