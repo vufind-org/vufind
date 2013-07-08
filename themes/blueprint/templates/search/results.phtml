@@ -57,7 +57,7 @@
         <? if ($qtime = $this->results->getQuerySpeed()): ?>
           <?=$this->transEsc('query time')?>: <?=$this->escapeHtml(round($qtime, 2))?>s
         <? endif; ?>
-        <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:'); ?>
+        <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $this->results, $this); ?>
       <? else: ?>
         <h3><?=$this->transEsc('nohit_heading')?></h3>
       <? endif; ?>
@@ -85,7 +85,7 @@
     <? if (isset($this->parseError)): ?>
       <p class="error"><?=$this->transEsc('nohit_parse_error')?></p>
     <? endif; ?>
-    <?=$this->search()->renderSpellingSuggestions($this->transEsc('nohit_spelling') . ':'); ?>
+    <?=$this->search()->renderSpellingSuggestions($this->transEsc('nohit_spelling') . ':', $this->results, $this); ?>
     <? foreach ($this->results->getRecommendations('top') as $current): ?>
       <?=$this->recommend($current)?>
     <? endforeach; ?>

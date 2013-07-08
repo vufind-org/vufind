@@ -42,13 +42,16 @@ class Search extends AbstractHelper
     /**
      * Support function to display spelling suggestions.
      *
-     * @param string $msg HTML to display at the top of the spelling section.
+     * @param string                          $msg     HTML to display at the top of
+     * the spelling section.
+     * @param \VuFind\Search\Base\Results     $results Results object
+     * @param \Zend\View\Renderer\PhpRenderer $view    View renderer object
      *
      * @return string
      */
-    public function renderSpellingSuggestions($msg)
+    public function renderSpellingSuggestions($msg, $results, $view)
     {
-        $spellingSuggestions = $this->view->results->getSpellingSuggestions();
+        $spellingSuggestions = $results->getSpellingSuggestions();
         if (empty($spellingSuggestions)) {
             return '';
         }
@@ -56,22 +59,22 @@ class Search extends AbstractHelper
         $html = '<div class="corrections">';
         $html .= $msg;
         foreach ($spellingSuggestions as $term => $details) {
-            $html .= '<br/>' . $this->view->escapeHtml($term) . ' &raquo; ';
+            $html .= '<br/>' . $view->escapeHtml($term) . ' &raquo; ';
             $i = 0;
             foreach ($details['suggestions'] as $word => $data) {
                 if ($i++ > 0) {
                     $html .= ', ';
                 }
                 $html .= '<a href="'
-                    . $this->view->results->getUrlQuery()
+                    . $view->results->getUrlQuery()
                         ->replaceTerm($term, $data['new_term'])
-                    . '">' . $this->view->escapeHtml($word) . '</a>';
+                    . '">' . $view->escapeHtml($word) . '</a>';
                 if (isset($data['expand_term']) && !empty($data['expand_term'])) {
                     $html .= '<a href="'
-                        . $this->view->results->getUrlQuery()
+                        . $results->getUrlQuery()
                             ->replaceTerm($term, $data['expand_term'])
-                        . '"><img src="' . $this->view->imageLink('silk/expand.png')
-                        . '" alt="' . $this->view->transEsc('spell_expand_alt')
+                        . '"><img src="' . $view->imageLink('silk/expand.png')
+                        . '" alt="' . $view->transEsc('spell_expand_alt')
                         . '"/></a>';
                 }
             }
