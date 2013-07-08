@@ -205,7 +205,10 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function getDefaultHandler()
     {
-        return $this->defaultHandler;
+        if (!empty($this->defaultHandler)) {
+            return $this->defaultHandler;
+        }
+        return current(array_keys($this->getBasicHandlers()));
     }
 
     /**
