@@ -2134,3 +2134,24 @@ div.handle {
     color:#000;
     text-decoration:none;
 }
+
+.combinedResult {
+    width: 47%;
+    margin: 5px;
+    padding: 5px;
+    float: left;
+    border: 1px solid #eee;
+}
+
+.combinedResult .span-4, .combinedResult ul.recordSet .recordNumber {
+    display: none;
+}
+
+.combinedResult .span-9 {
+    width: 330px;
+}
+
+.combinedResult .span-2 {
+    clear: left;
+    float: left;
+}
