@@ -66,7 +66,7 @@ class Search extends AbstractHelper
                     $html .= ', ';
                 }
                 $html .= '<a href="'
-                    . $view->results->getUrlQuery()
+                    . $results->getUrlQuery()
                         ->replaceTerm($term, $data['new_term'])
                     . '">' . $view->escapeHtml($word) . '</a>';
                 if (isset($data['expand_term']) && !empty($data['expand_term'])) {
