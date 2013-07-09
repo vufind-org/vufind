@@ -107,7 +107,6 @@ class ChangeTrackerTest extends \VuFindTest\Unit\DbTestCase
         $row = $tracker->retrieve($core, 'test2');
         $this->assertTrue(is_object($row));
         $this->assertTrue(!empty($row->deleted));
-        $this->assertTrue(empty($row->last_record_change));
 
         // Index the previously-deleted record and make sure it undeletes properly:
         $tracker->index($core, 'test2', 1326833170);
@@ -115,7 +114,6 @@ class ChangeTrackerTest extends \VuFindTest\Unit\DbTestCase
         $this->assertTrue(is_object($row));
         $this->assertTrue(empty($row->deleted));
         $this->assertEquals($row->last_record_change, '2012-01-17 20:46:10');
-        $this->assertEquals($row->first_indexed, $row->last_indexed);
 
         // Clean up after ourselves:
         $tracker->delete(array('core' => $core));
