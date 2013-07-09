@@ -59,6 +59,44 @@ class CombinedController extends AbstractSearch
     }
 
     /**
+     * Single result action (used for AJAX)
+     *
+     * @return mixed
+     */
+    public function resultAction()
+    {
+        // Validate configuration:
+        $searchClassId = $this->params()->fromQuery('id');
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('combined')
+            ->toArray();
+        if (!isset($config[$searchClassId])) {
+            throw new \Exception('Illegal ID');
+        }
+
+        // Retrieve results:
+        $options = $this->getServiceLocator()
+            ->get('VuFind\SearchOptionsPluginManager');
+        $currentOptions = $options->get($searchClassId);
+        list($controller, $action)
+            = explode('-', $currentOptions->getSearchAction());
+        $settings = $config[$searchClassId];
+        $settings['view'] = $this->forwardTo($controller, $action);
+
+        // Send response:
+        $response = $this->getResponse();
+        $headers = $response->getHeaders();
+        $headers->addHeaderLine('Content-type', 'text/html');
+        $headers->addHeaderLine('Cache-Control', 'no-cache, must-revalidate');
+        $headers->addHeaderLine('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT');
+        $html = $this->getViewRenderer()->render(
+            'combined/results-list.phtml',
+            array('searchClassId' => $searchClassId, 'currentSearch' => $settings)
+        );
+        $response->setContent($html);
+        return $response;
+    }
+
+    /**
      * Results action
      *
      * @return mixed
