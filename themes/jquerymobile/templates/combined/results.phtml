@@ -1,0 +1,25 @@
+<?
+    // Set up page title:
+    $lookfor = $this->params->getDisplayQuery();
+    if (isset($this->overrideTitle)) {
+        $this->headTitle($this->overrideTitle);
+    } else {
+        $this->headTitle($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
+    }
+?>
+<div data-role="page" id="Search-list" class="results-page">
+  <?=$this->mobileMenu()->header()?>
+  <div data-role="content">
+    <?=$this->flashmessages()?>
+    <? foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
+      <div class="combinedResult" id="combined_<?=$this->escapeHtml($searchClassId)?>">
+        <? if (isset($currentSearch['ajax']) && $currentSearch['ajax']): ?>
+          <?=$this->render('combined/results-ajax.phtml', array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch))?>
+        <? else: ?>
+          <?=$this->render('combined/results-list.phtml', array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch))?>
+        <? endif; ?>
+      </div>
+    <? endforeach; ?>
+  </div>
+  <?=$this->mobileMenu()->footer()?>
+</div>
