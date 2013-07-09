@@ -26,7 +26,6 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Row;
-use Zend\Db\RowGateway\RowGateway;
 
 /**
  * Row Definition for user_resource

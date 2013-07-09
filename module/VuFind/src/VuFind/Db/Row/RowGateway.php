@@ -1,6 +1,6 @@
 <?php
 /**
- * Abstract base class for rows that need access to the service locator.
+ * Abstract base class for DB rows.
  *
  * PHP version 5
  *
@@ -26,11 +26,9 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Db\Row;
-use Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
 
 /**
- * Abstract base class for rows that need access to the service locator.
+ * Abstract base class for DB rows.
  *
  * @category VuFind2
  * @package  Db_Row
@@ -38,48 +36,15 @@ use Zend\ServiceManager\ServiceLocatorAwareInterface,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class ServiceLocatorAwareGateway extends RowGateway
-    implements ServiceLocatorAwareInterface
+class RowGateway extends \Zend\Db\RowGateway\RowGateway
 {
     /**
-     * Service locator
+     * Retrieve primary key information.
      *
-     * @var ServiceLocatorInterface
+     * @return array
      */
-    protected $serviceLocator;
-
-    /**
-     * Get access to another table.
-     *
-     * @param string $table Table name
-     *
-     * @return \VuFind\Db\Table\Gateway
-     */
-    public function getDbTable($table)
+    public function getPrimaryKeyColumn()
     {
-        return $this->getServiceLocator()->get($table);
-    }
-
-    /**
-     * Set the service locator.
-     *
-     * @param ServiceLocatorInterface $serviceLocator Locator to register
-     *
-     * @return ServiceLocatorAwareGateway
-     */
-    public function setServiceLocator(ServiceLocatorInterface $serviceLocator)
-    {
-        $this->serviceLocator = $serviceLocator;
-        return $this;
-    }
-
-    /**
-     * Get the service locator.
-     *
-     * @return \Zend\ServiceManager\ServiceLocatorInterface
-     */
-    public function getServiceLocator()
-    {
-        return $this->serviceLocator;
+        return $this->primaryKeyColumn;
     }
 }

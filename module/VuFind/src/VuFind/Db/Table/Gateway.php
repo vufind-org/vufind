@@ -119,7 +119,28 @@ class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterfa
      */
     public function createRow()
     {
-        return clone($this->getResultSetPrototype()->getArrayObjectPrototype());
+        $obj = clone($this->getResultSetPrototype()->getArrayObjectPrototype());
+
+        // If this is a PostgreSQL connection, we may need to initialize the ID
+        // from a sequence:
+        if ($this->adapter->getDriver()->getDatabasePlatformName() == "Postgresql"
+            && $obj instanceof \VuFind\Db\Row\RowGateway
+        ) {
+            // Do we have a sequence feature?
+            $feature = $this->featureSet->getFeatureByClassName(
+                'Zend\Db\TableGateway\Feature\SequenceFeature'
+            );
+            if ($feature) {
+                $key = $obj->getPrimaryKeyColumn();
+                if (count($key) != 1) {
+                    throw new \Exception('Unexpected number of key columns.');
+                }
+                $col = $key[0];
+                $obj->$col = $feature->nextSequenceId();
+            }
+        }
+
+        return $obj;
     }
 
     /**
