@@ -6,6 +6,12 @@
 
   // Load search actions and settings (if any):
   $options = $this->searchOptions($this->searchClassId);
+  $handlers = $this->searchbox()->getHandlers(
+      $this->searchClassId,
+      isset($this->searchIndex) ? $this->searchIndex : null,
+      $options
+  );
+  $handlerCount = count($handlers);
   $basicSearch = $options->getSearchAction();
   $lastSort = $options->getLastSort();
   $lastLimit = $options->getLastLimit();
@@ -17,14 +23,14 @@
   <input type="search" placeholder="<?=$this->transEsc("Search")?>" name="lookfor" id="searchForm_lookfor" value="<?=$this->escapeHtml($this->lookfor)?>"/>
   
   <label class="offscreen" for="searchForm_type"><?=$this->transEsc("Search Type")?></label>
-  <? $handlerCount = count($options->getBasicHandlers()); if ($handlerCount > 1): ?>
-  <select id="searchForm_type" name="type" data-native-menu="false">
-    <? foreach ($options->getBasicHandlers() as $searchVal => $searchDesc): ?>
-      <option value="<?=$this->escapeHtml($searchVal)?>"<?=$this->searchIndex == $searchVal ? ' selected="selected"' : ''?>><?=$this->transEsc($searchDesc)?></option>
-    <? endforeach; ?>
-  </select>
+  <? if ($handlerCount > 1): ?>
+    <select id="searchForm_type" name="type" data-native-menu="false">
+      <? foreach ($handlers as $handler): ?>
+        <option value="<?=$this->escapeHtml($handler['value'])?>"<?=$handler['selected'] ? ' selected="selected"' : ''?>><?=$this->transEsc($handler['label'])?></option>
+      <? endforeach; ?>
+    </select>
   <? elseif ($handlerCount == 1): ?>
-    <input type="hidden" name="type" value="<?=$this->escapeHtml(current(array_keys($options->getBasicHandlers())))?>" />
+    <input type="hidden" name="type" value="<?=$this->escapeHtml($handlers[0]['value'])?>" />
   <? endif; ?>
   <div data-role="fieldcontain">
     <input type="submit" data-theme="b" name="submit" value="<?=$this->transEsc("Find")?>"/>

@@ -71,4 +71,27 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
         }
         return $results;
     }
+
+    /**
+     * Get an array of information on search handlers for use in generating a
+     * drop-down or hidden field. Returns an array of arrays with 'value', 'label'
+     * and 'selected' keys.
+     *
+     * @param string                      $activeSearchClass Active search class ID
+     * @param string                      $activeHandler     Active search handler
+     * @param \VuFind\Search\Base\Options $options           Current search options
+     *
+     * @return array
+     */
+    public function getHandlers($activeSearchClass, $activeHandler, $options)
+    {
+        $handlers = array();
+        foreach ($options->getBasicHandlers() as $searchVal => $searchDesc) {
+            $handlers[] = array(
+                'value' => $searchVal, 'label' => $searchDesc,
+                'selected' => ($activeHandler == $searchVal)
+            );
+        }
+        return $handlers;
+    }
 }
