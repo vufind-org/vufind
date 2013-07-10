@@ -55,19 +55,6 @@
         <a href="<?=$this->url($advSearch)?>" class="small"><?=$this->transEsc("Advanced")?></a>
       <? endif; ?>
 
-      <?
-      /* Do we have any checkbox filters? */
-      $hasCheckboxFilters = false;
-      if (isset($this->checkboxFilters) && count($this->checkboxFilters) > 0) {
-        foreach ($this->checkboxFilters as $current) {
-          if ($current['selected']) {
-            $hasCheckboxFilters = true;
-            break;
-          }
-        }
-      }
-      ?>
-
       <? $shards = $options->getShards(); if ($options->showShardCheckboxes() && !empty($shards)): ?>
         <?
         $selectedShards = isset($this->selectedShards)
@@ -79,27 +66,21 @@
           <input type="checkbox" <?=$isSelected ? 'checked="checked" ' : ''?>name="shard[]" value='<?=$this->escapeHtml($shard)?>' /> <?=$this->transEsc($shard)?>
         <? endforeach; ?>
       <? endif; ?>
-      <? if ((isset($this->filterList) && is_array($this->filterList) && count($this->filterList) > 0) || $hasCheckboxFilters): ?>
+      <?
+        $filterDetails = $this->searchbox()->getFilterDetails(
+            isset($this->filterList) && is_array($this->filterList) ? $this->filterList : array(),
+            isset($this->checkboxFilters) && is_array($this->checkboxFilters) ? $this->checkboxFilters : array()
+        );
+      ?>
+      <? if (!empty($filterDetails)): ?>
         <? $defaultFilterState = $options->getRetainFilterSetting() ? ' checked="checked"' : ''; ?>
         <div class="keepFilters">
           <input type="checkbox"<?=$defaultFilterState?> id="searchFormKeepFilters"/> <label for="searchFormKeepFilters"><?=$this->transEsc("basic_search_keep_filters")?></label>
           <div class="offscreen">
-            <? if (isset($this->filterList) && is_array($this->filterList)): ?>
-              <? $i = 0; foreach ($this->filterList as $field => $data): ?>
-                <? foreach ($data as $value): ?>
-                  <input id="applied_filter_<?=++$i?>" type="checkbox"<?=$defaultFilterState?> name="filter[]" value="<?=$this->escapeHtml($field)?>:&quot;<?=$this->escapeHtml($value)?>&quot;" />
-                  <label for="applied_filter_<?=$i?>"><?=$this->escapeHtml($field)?>:&quot;<?=$this->escapeHtml($value)?>&quot;</label>
-                <? endforeach; ?>
-              <? endforeach; ?>
-            <? endif; ?>
-            <? if ($hasCheckboxFilters): ?>
-              <? $i = 0; foreach ($checkboxFilters as $current): ?>
-                <? if ($current['selected']): ?>
-                  <input id="applied_checkbox_filter_<?=++$i?>" type="checkbox"<?=$defaultFilterState?> name="filter[]" value="<?=$this->escapeHtml($current['filter'])?>" />
-                  <label for="applied_checkbox_filter_<?=$i?>"><?=$this->escapeHtml($current['filter'])?></label>
-                <? endif; ?>
-              <? endforeach; ?>
-            <? endif; ?>
+            <? foreach ($filterDetails as $current): ?>
+              <input id="<?=$this->escapeHtml($current['id'])?>" type="checkbox"<?=$defaultFilterState?> name="filter[]" value="<?=$this->escapeHtml($current['value'])?>" />
+              <label for="<?=$this->escapeHtml($current['id'])?>"><?=$this->escapeHtml($current['value'])?></label>
+            <? endforeach; ?>
           </div>
         </div>
       <? endif; ?>

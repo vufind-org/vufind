@@ -103,6 +103,9 @@ return array(
                     $sm->getServiceLocator()->get('VuFind\Config')->get('config')
                 );
             },
+            'searchbox' => function ($sm) {
+                return new \VuFind\View\Helper\Root\SearchBox();
+            },
             'searchoptions' => function ($sm) {
                 return new VuFind\View\Helper\Root\SearchOptions(
                     $sm->getServiceLocator()->get('VuFind\SearchOptionsPluginManager')
