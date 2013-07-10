@@ -205,7 +205,11 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
             if ($type == 'VuFind') {
                 $options = $this->optionsManager->get($target);
                 $j = 0;
-                foreach ($options->getBasicHandlers() as $searchVal => $searchDesc) {
+                $basic = $options->getBasicHandlers();
+                if (empty($basic)) {
+                    $basic = array('' => '');
+                }
+                foreach ($basic as $searchVal => $searchDesc) {
                     $j++;
                     $selected = $target == $activeSearchClass
                         && $activeHandler == $searchVal;
