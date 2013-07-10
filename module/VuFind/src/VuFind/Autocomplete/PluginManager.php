@@ -69,9 +69,16 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         // Process incoming parameters:
         $type = $request->get($typeParam, '');
         $query = $request->get($queryParam, '');
+        $searcher = $request->get('searcher', 'Solr');
+
+        // If we're using a combined search box, we need to override the searcher
+        // and type settings.
+        if (substr($type, 0, 7) == 'VuFind:') {
+            list($junk, $tmp) = explode(':', $type, 2);
+            list($searcher, $type) = explode('|', $tmp, 2);
+        }
 
         // get Autocomplete_Type config
-        $searcher = $request->get('searcher', 'Solr');
         $options = $this->getServiceLocator()
             ->get('VuFind\SearchOptionsPluginManager')->get($searcher);
         $config = $this->getServiceLocator()->get('VuFind\Config')
