@@ -137,4 +137,38 @@ class CombinedController extends AbstractSearch
             )
         );
     }
+
+    /**
+     * Action to process the combined search box.
+     *
+     * @return mixed
+     */
+    public function searchboxAction()
+    {
+        list($type, $target) = explode(':', $this->params()->fromQuery('type'), 2);
+        switch ($type) {
+        case 'VuFind':
+            list($searchClassId, $type) = explode('|', $target);
+            $params = $this->getRequest()->getQuery()->toArray();
+            $params['type'] = $type;
+
+            // Disable retained filters if we are switching classes!
+            $activeClass = $this->params()->fromQuery('activeSearchClassId');
+            if ($activeClass != $searchClassId) {
+                unset($params['filter']);
+            }
+            unset($params['activeSearchClassId']); // don't need to pass this forward
+
+            $route = $this->getServiceLocator()
+                ->get('VuFind\SearchOptionsPluginManager')
+                ->get($searchClassId)->getSearchAction();
+            $options = array('query' => $params);
+            return $this->redirect()->toRoute($route, array(), $options);
+        case 'External':
+            $lookfor = $this->params()->fromQuery('lookfor');
+            return $this->redirect()->toUrl($target . urlencode($lookfor));
+        default:
+            throw new \Exception('Unexpected search type.');
+        }
+    }
 }

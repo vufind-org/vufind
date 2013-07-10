@@ -8,11 +8,10 @@
   $options = $this->searchOptions($this->searchClassId);
   $handlers = $this->searchbox()->getHandlers(
       $this->searchClassId,
-      isset($this->searchIndex) ? $this->searchIndex : null,
-      $options
+      isset($this->searchIndex) ? $this->searchIndex : null
   );
   $handlerCount = count($handlers);
-  $basicSearch = $options->getSearchAction();
+  $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
   $lastSort = $options->getLastSort();
   $lastLimit = $options->getLastLimit();
 ?>
@@ -26,7 +25,7 @@
   <? if ($handlerCount > 1): ?>
     <select id="searchForm_type" name="type" data-native-menu="false">
       <? foreach ($handlers as $handler): ?>
-        <option value="<?=$this->escapeHtml($handler['value'])?>"<?=$handler['selected'] ? ' selected="selected"' : ''?>><?=$this->transEsc($handler['label'])?></option>
+        <option value="<?=$this->escapeHtml($handler['value'])?>"<?=$handler['selected'] ? ' selected="selected"' : ''?>><?=$handler['indent'] ? '-- ' : ''?><?=$this->transEsc($handler['label'])?></option>
       <? endforeach; ?>
     </select>
   <? elseif ($handlerCount == 1): ?>
@@ -36,6 +35,10 @@
     <input type="submit" data-theme="b" name="submit" value="<?=$this->transEsc("Find")?>"/>
   </div>
   <?
+    /* Show hidden field for active search class when in combined handler mode. */
+    if ($this->searchbox()->combinedHandlersActive()) {
+      echo '<input type="hidden" name="activeSearchClassId" value="' . $this->escapeHtml($this->searchClassId) . '" />';
+    }
     /* Load hidden limit preference from Session */
     if (!empty($lastLimit)) {
       echo '<input type="hidden" name="limit" value="' . $this->escapeHtml($lastLimit) . '" />';

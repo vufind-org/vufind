@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\View\Helper\Root;
+use VuFind\Search\Options\PluginManager as OptionsManager;
 
 /**
  * Search box view helper
@@ -38,6 +39,43 @@ namespace VuFind\View\Helper\Root;
  */
 class SearchBox extends \Zend\View\Helper\AbstractHelper
 {
+    /**
+     * Configuration for search box.
+     *
+     * @var array
+     */
+    protected $config;
+
+    /**
+     * Search options plugin manager
+     *
+     * @var OptionsManager
+     */
+    protected $optionsManager;
+
+    /**
+     * Constructor
+     *
+     * @param OptionsManager $optionsManager Search options plugin manager
+     * @param array          $config         Configuration for search box
+     */
+    public function __construct(OptionsManager $optionsManager, $config = array())
+    {
+        $this->optionsManager = $optionsManager;
+        $this->config = $config;
+    }
+
+    /**
+     * Are combined handlers enabled?
+     *
+     * @return bool
+     */
+    public function combinedHandlersActive()
+    {
+        return isset($this->config['General']['combinedHandlers'])
+            && $this->config['General']['combinedHandlers'];
+    }
+
     /**
      * Get an array of filter information for use by the "retain filters" feature
      * of the search box. Returns an array of arrays with 'id' and 'value' keys used
@@ -74,23 +112,91 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
 
     /**
      * Get an array of information on search handlers for use in generating a
-     * drop-down or hidden field. Returns an array of arrays with 'value', 'label'
-     * and 'selected' keys.
+     * drop-down or hidden field. Returns an array of arrays with 'value', 'label',
+     * 'indent' and 'selected' keys.
      *
      * @param string                      $activeSearchClass Active search class ID
      * @param string                      $activeHandler     Active search handler
-     * @param \VuFind\Search\Base\Options $options           Current search options
      *
      * @return array
      */
-    public function getHandlers($activeSearchClass, $activeHandler, $options)
+    public function getHandlers($activeSearchClass, $activeHandler)
+    {
+        return $this->combinedHandlersActive()
+            ? $this->getCombinedHandlers($activeSearchClass, $activeHandler)
+            : $this->getBasicHandlers($activeSearchClass, $activeHandler);
+    }
+
+    /**
+     * Support method for getHandlers() -- load basic settings.
+     *
+     * @param string                      $activeSearchClass Active search class ID
+     * @param string                      $activeHandler     Active search handler
+     *
+     * @return array
+     */
+    protected function getBasicHandlers($activeSearchClass, $activeHandler)
     {
         $handlers = array();
+        $options = $this->optionsManager->get($activeSearchClass);
         foreach ($options->getBasicHandlers() as $searchVal => $searchDesc) {
             $handlers[] = array(
-                'value' => $searchVal, 'label' => $searchDesc,
+                'value' => $searchVal, 'label' => $searchDesc, 'indent' => false,
                 'selected' => ($activeHandler == $searchVal)
             );
+        }
+        return $handlers;
+    }
+
+    /**
+     * Support method for getHandlers() -- load combined settings.
+     *
+     * @param string                      $activeSearchClass Active search class ID
+     * @param string                      $activeHandler     Active search handler
+     *
+     * @return array
+     */
+    protected function getCombinedHandlers($activeSearchClass, $activeHandler)
+    {
+        // Load and validate configuration:
+        $settings = isset($this->config['CombinedHandlers'])
+            ? $this->config['CombinedHandlers'] : array();
+        if (empty($settings)) {
+            throw new \Exception('CombinedHandlers configuration missing.');
+        }
+        $typeCount = count($settings['type']);
+        if ($typeCount != count($settings['target'])
+            || $typeCount != count($settings['label'])
+        ) {
+            throw new \Exception('CombinedHandlers configuration incomplete.');
+        }
+
+        // Build settings:
+        $handlers = array();
+        for ($i = 0; $i < $typeCount; $i++) {
+            $type = $settings['type'][$i];
+            $target = $settings['target'][$i];
+            $label = $settings['label'][$i];
+
+            if ($type == 'VuFind') {
+                $options = $this->optionsManager->get($target);
+                $j = 0;
+                foreach ($options->getBasicHandlers() as $searchVal => $searchDesc) {
+                    $j++;
+                    $handlers[] = array(
+                        'value' => $type . ':' . $target . '|' . $searchVal,
+                        'label' => $j == 1 ? $label : $searchDesc,
+                        'indent' => $j == 1 ? false : true,
+                        'selected' => $target == $activeSearchClass
+                            && $activeHandler == $searchVal
+                    );
+                }
+            } else if ($type == 'External') {
+                $handlers[] = array(
+                    'value' => $type . ':' . $target, 'label' => $label,
+                    'indent' => false, 'selected' => false
+                );
+            }
         }
         return $handlers;
     }

@@ -974,7 +974,7 @@ $staticRoutes = array(
     'Browse/LCC', 'Browse/Region', 'Browse/Tag', 'Browse/Topic',
     'Cart/doExport', 'Cart/Email', 'Cart/Export', 'Cart/Home', 'Cart/MyResearchBulk',
     'Cart/Save', 'Collections/ByTitle', 'Collections/Home',
-    'Combined/Home', 'Combined/Results', 'Confirm/Confirm',
+    'Combined/Home', 'Combined/Results', 'Combined/SearchBox', 'Confirm/Confirm',
     'Cover/Show', 'Cover/Unavailable', 'Error/Unavailable',
     'Feedback/Email', 'Feedback/Home', 'Help/Home',
     'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',
