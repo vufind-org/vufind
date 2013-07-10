@@ -115,8 +115,8 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
      * drop-down or hidden field. Returns an array of arrays with 'value', 'label',
      * 'indent' and 'selected' keys.
      *
-     * @param string                      $activeSearchClass Active search class ID
-     * @param string                      $activeHandler     Active search handler
+     * @param string $activeSearchClass Active search class ID
+     * @param string $activeHandler     Active search handler
      *
      * @return array
      */
@@ -130,8 +130,8 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
     /**
      * Support method for getHandlers() -- load basic settings.
      *
-     * @param string                      $activeSearchClass Active search class ID
-     * @param string                      $activeHandler     Active search handler
+     * @param string $activeSearchClass Active search class ID
+     * @param string $activeHandler     Active search handler
      *
      * @return array
      */
@@ -149,14 +149,13 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Support method for getHandlers() -- load combined settings.
+     * Support method for getCombinedHandlers() -- retrieve/validate configuration.
      *
-     * @param string                      $activeSearchClass Active search class ID
-     * @param string                      $activeHandler     Active search handler
+     * @param string $activeSearchClass Active search class ID
      *
      * @return array
      */
-    protected function getCombinedHandlers($activeSearchClass, $activeHandler)
+    protected function getCombinedHandlerConfig($activeSearchClass)
     {
         // Load and validate configuration:
         $settings = isset($this->config['CombinedHandlers'])
@@ -171,8 +170,33 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
             throw new \Exception('CombinedHandlers configuration incomplete.');
         }
 
+        // Add configuration for the current search class if it is not already
+        // present:
+        if (!in_array($activeSearchClass, $settings['target'])) {
+            $settings['type'][] = 'VuFind';
+            $settings['target'][] = $activeSearchClass;
+            $settings['label'][] = $activeSearchClass;
+        }
+
+        return $settings;
+    }
+
+    /**
+     * Support method for getHandlers() -- load combined settings.
+     *
+     * @param string $activeSearchClass Active search class ID
+     * @param string $activeHandler     Active search handler
+     *
+     * @return array
+     */
+    protected function getCombinedHandlers($activeSearchClass, $activeHandler)
+    {
         // Build settings:
         $handlers = array();
+        $selectedFound = false;
+        $backupSelectedIndex = false;
+        $settings = $this->getCombinedHandlerConfig($activeSearchClass);
+        $typeCount = count($settings['type']);
         for ($i = 0; $i < $typeCount; $i++) {
             $type = $settings['type'][$i];
             $target = $settings['target'][$i];
@@ -183,12 +207,20 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
                 $j = 0;
                 foreach ($options->getBasicHandlers() as $searchVal => $searchDesc) {
                     $j++;
+                    $selected = $target == $activeSearchClass
+                        && $activeHandler == $searchVal;
+                    if ($selected) {
+                        $selectedFound = true;
+                    } else if ($backupSelectedIndex === false
+                        && $target == $activeSearchClass
+                    ) {
+                        $backupSelectedIndex = count($handlers);
+                    }
                     $handlers[] = array(
                         'value' => $type . ':' . $target . '|' . $searchVal,
                         'label' => $j == 1 ? $label : $searchDesc,
                         'indent' => $j == 1 ? false : true,
-                        'selected' => $target == $activeSearchClass
-                            && $activeHandler == $searchVal
+                        'selected' => $selected
                     );
                 }
             } else if ($type == 'External') {
@@ -197,6 +229,12 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
                     'indent' => false, 'selected' => false
                 );
             }
+        }
+
+        // If we didn't find an exact match for a selected index, use a fuzzy
+        // match:
+        if (!$selectedFound && $backupSelectedIndex !== false) {
+            $handlers[$backupSelectedIndex]['selected'] = true;
         }
         return $handlers;
     }
