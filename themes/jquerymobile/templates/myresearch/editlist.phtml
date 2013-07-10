@@ -1,6 +1,6 @@
 <?
     // Set up page title:
-    $pageTitle = empty($this->list->id) ? 'Create a List' : "edit_list";
+    $pageTitle = $this->newList ? 'Create a List' : "edit_list";
     $this->headTitle($this->translate($pageTitle));
 ?>
 <div data-role="page" id="MyResearch-editlist">
@@ -10,7 +10,7 @@
 
     <?=$this->flashmessages()?>
 
-    <form method="post" name="<?=empty($this->list->id) ? 'newList' : 'editListForm'?>" data-ajax="false">
+    <form method="post" name="<?=$this->newList ? 'newList' : 'editListForm'?>" data-ajax="false">
     <label class="displayBlock" for="list_title"><?=$this->transEsc('List'); ?>:</label>
     <input id="list_title" type="text" name="title" value="<?=isset($this->list['title']) ? $this->escapeHtml($this->list['title']) : ''?>" size="50"
       class="mainFocus <?=$this->jqueryValidation(array('required'=>'This field is required')) ?>"/>

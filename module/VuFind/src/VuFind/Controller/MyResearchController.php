@@ -646,7 +646,8 @@ class MyResearchController extends AbstractBase
         // of the ID parameter:
         $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
         $table = $this->getTable('UserList');
-        $list = ($id == 'NEW') ? $table->getNew($user) : $table->getExisting($id);
+        $newList = ($id == 'NEW');
+        $list = $newList ? $table->getNew($user) : $table->getExisting($id);
 
         // Process form submission:
         if ($this->params()->fromPost('submit')) {
@@ -656,7 +657,7 @@ class MyResearchController extends AbstractBase
         }
 
         // Send the list to the view:
-        return $this->createViewModel(array('list' => $list));
+        return $this->createViewModel(array('list' => $list, 'newList' => $newList));
     }
 
     /**
