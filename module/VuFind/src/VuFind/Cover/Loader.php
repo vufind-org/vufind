@@ -715,7 +715,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
             throw new \Exception("Booksite 'key' not set in VuFind config");
         }
         $key = $this->config->Booksite->key;
-        $url = $url . '/poca/content_img?key=' . $key . '&ean=' . $isn;
+        $url = $url . '/poca/content_img?apikey=' . $key . '&ean=' . $isn;
         return $this->processImageURL($url);
     }
 
