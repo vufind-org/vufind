@@ -149,7 +149,17 @@ class ResultFeed extends AbstractHelper
         $entry->setTitle(empty($title) ? $record->getBreadcrumb() : $title);
         $serverUrl = $this->getView()->plugin('serverurl');
         $recordLink = $this->getView()->plugin('recordlink');
-        $entry->setLink($serverUrl($recordLink->getUrl($record)));
+        try {
+            $url = $serverUrl($recordLink->getUrl($record));
+        } catch (\Zend\Mvc\Router\Exception\RuntimeException $e) {
+            // No route defined? See if we can get a URL out of the driver.
+            // Useful for web results, among other things.
+            $url = $record->tryMethod('getUrl');
+            if (empty($url) || !is_string($url)) {
+                throw new \Exception('Cannot find URL for record.');
+            }
+        }
+        $entry->setLink($url);
         $date = $this->getDateModified($record);
         if (!empty($date)) {
             $entry->setDateModified($date);
