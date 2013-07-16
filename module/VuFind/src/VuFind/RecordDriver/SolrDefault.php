@@ -621,6 +621,30 @@ class SolrDefault extends AbstractBase
     }
 
     /**
+     * Support method for getOpenURL() -- pick the OpenURL format.
+     *
+     * @return string
+     */
+    protected function getOpenURLFormat()
+    {
+        // If we have multiple formats, Book, Journal and Article are most
+        // important...
+        $formats = $this->getFormats();
+        if (in_array('Book', $formats)) {
+            return 'Book';
+        } else if (in_array('Article', $formats)) {
+            return 'Article';
+        } else if (in_array('Journal', $formats)) {
+            return 'Journal';
+        } else if (isset($formats[0])) {
+            return $formats[0];
+        } else if (strlen($this->getCleanISSN()) > 0) {
+            return 'Journal';
+        }
+        return 'Book';
+    }
+
+    /**
      * Get the OpenURL parameters to represent this record (useful for the
      * title attribute of a COinS span tag).
      *
@@ -652,24 +676,8 @@ class SolrDefault extends AbstractBase
         );
 
         // Add additional parameters based on the format of the record:
-        $formats = $this->getFormats();
-
-        // If we have multiple formats, Book, Journal and Article are most
-        // important...
-        if (in_array('Book', $formats)) {
-            $format = 'Book';
-        } else if (in_array('Article', $formats)) {
-            $format = 'Article';
-        } else if (in_array('Journal', $formats)) {
-            $format = 'Journal';
-        } else if (isset($formats[0])) {
-            $format = $formats[0];
-        } else if (strlen($this->getCleanISSN()) > 0) {
-            $format = 'Journal';
-        } else {
-            $format = 'Book';
-        }
-        switch($format) {
+        $format = $this->getOpenURLFormat();
+        switch ($format) {
         case 'Book':
             $params['rft_val_fmt'] = 'info:ofi/fmt:kev:mtx:book';
             $params['rft.genre'] = 'book';
