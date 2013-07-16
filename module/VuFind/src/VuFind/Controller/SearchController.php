@@ -325,8 +325,10 @@ class SearchController extends AbstractSearch
         }
 
         $catalog = $this->getILS();
+        $fundList = $catalog->checkCapability('getFunds')
+            ? $catalog->getFunds() : array();
         return $this->createViewModel(
-            array('fundList' => $catalog->getFunds(), 'ranges' => $ranges)
+            array('fundList' => $fundList, 'ranges' => $ranges)
         );
     }
 
