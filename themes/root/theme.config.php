@@ -66,6 +66,14 @@ return array(
                     ? $config->GoogleAnalytics->apiKey : false;
                 return new \VuFind\View\Helper\Root\GoogleAnalytics($key);
             },
+            'historylabel' => function ($sm) {
+                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+                $config = isset($config->SearchHistoryLabels)
+                    ? $config->SearchHistoryLabels->toArray() : array();
+                return new VuFind\View\Helper\Root\HistoryLabel(
+                    $config, $sm->get('transesc')
+                );
+            },
             'ils' => function ($sm) {
                 return new \VuFind\View\Helper\Root\Ils(
                     $sm->getServiceLocator()->get('VuFind\ILSConnection')

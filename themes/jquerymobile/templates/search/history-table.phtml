@@ -3,6 +3,7 @@
     <a rel="external" href="<?=$this->url($info->getOptions()->getSearchAction()) . $info->getUrlQuery()->getParams()?>">
     <div class="result">
     <h3><?
+      echo $this->historylabel($info->getParams()->getSearchClassId()) . ' ';
       $desc = $info->getParams()->getDisplayQuery();
       echo empty($desc) ? $this->transEsc("history_empty_search") : $this->escapeHtml($desc);
     ?></h3>
