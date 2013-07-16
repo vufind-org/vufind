@@ -1,9 +1,9 @@
-/*global alert*/
+/*global alert,path*/
 
 // This overrides settings in jquery.tabSlideOut.v2.0.js
 $(document).ready(function(){
   $('.slide-out-div').tabSlideOut({
-    pathToTabImage: '',
+    pathToTabImage: path + '/themes/blueprint/images/trans.png',
     imageHeight: '86px',
     imageWidth: '30px',
     handleOffset: '-1',
