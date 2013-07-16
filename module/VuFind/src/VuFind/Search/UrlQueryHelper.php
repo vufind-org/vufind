@@ -334,7 +334,7 @@ class UrlQueryHelper
     public function setSort($s, $escape = true)
     {
         return $this->updateQueryString(
-            'sort', $s, $this->params->getDefaultSort(), $escape
+            'sort', $s, $this->params->getDefaultSort(), $escape, true
         );
     }
 
@@ -387,7 +387,7 @@ class UrlQueryHelper
     public function setLimit($l, $escape = true)
     {
         return $this->updateQueryString(
-            'limit', $l, $this->options->getDefaultLimit(), $escape
+            'limit', $l, $this->options->getDefaultLimit(), $escape, true
         );
     }
 
@@ -440,22 +440,26 @@ class UrlQueryHelper
     /**
      * Generic case of parameter rebuilding.
      *
-     * @param string $field   Field to update
-     * @param string $value   Value to use (null to skip field entirely)
-     * @param string $default Default value (skip field if $value matches; null
-     *                        for no default).
-     * @param bool   $escape  Should we escape the string for use in the view?
+     * @param string $field     Field to update
+     * @param string $value     Value to use (null to skip field entirely)
+     * @param string $default   Default value (skip field if $value matches; null
+     *                          for no default).
+     * @param bool   $escape    Should we escape the string for use in the view?
+     * @param bool   $clearPage Should we clear the page number, if any?
      *
      * @return string
      */
     protected function updateQueryString($field, $value, $default = null,
-        $escape = true
+        $escape = true, $clearPage = false
     ) {
         $params = $this->getParamArray();
         if (is_null($value) || $value == $default) {
             unset($params[$field]);
         } else {
             $params[$field] = $value;
+        }
+        if ($clearPage && isset($params['page'])) {
+            unset($params['page']);
         }
         return '?' . $this->buildQueryString($params, $escape);
     }
