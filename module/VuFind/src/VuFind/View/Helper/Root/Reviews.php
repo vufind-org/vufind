@@ -37,8 +37,13 @@ use DOMDocument, ZendService\Amazon\Amazon;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class Reviews extends AbstractSyndetics
+class Reviews extends AbstractSyndetics implements \Zend\Log\LoggerAwareInterface
 {
+    protected $logger;
+    public function setLogger(\Zend\Log\LoggerInterface $logger) {
+       $this->logger = $logger;
+    }
+
     /**
      * Do the actual work of loading the reviews.
      *
@@ -190,6 +195,51 @@ class Reviews extends AbstractSyndetics
             }
             return $result;
         }
+    }
+
+    /**
+     * Booksite
+     *
+     * Connects to Booksite's API and retrieves reviews for the specific ISBN
+     *
+     * @param string $id UNUSED, accepted for API uniformity
+     *
+     * @return array     Returns array with review data, otherwise a PEAR_Error.
+     * @author Joe Atzberger
+     */
+    protected function loadBooksite($id)
+    {
+        $reviews = array(); // Initialize return value
+
+        $isn = $this->getIsbn10();
+        // if (strlen($isn) != 13){    // convert normalized 10 char isn to 13 digits
+        //  $ISBN = new ISBN($isn);
+        //  $isn = $ISBN->get13();
+        // }
+        $url = isset($this->config->Booksite->url) ?
+                     $this->config->Booksite->url  : 'https://api.booksite.com';
+        if (! isset($this->config->Booksite->key)) {
+            throw new \Exception("Booksite 'key' not set in VuFind config");
+        }
+        $key = $this->config->Booksite->key;
+        $url = $url . '/poca/book/tradereviews?apikey=' . $key . '&ean=' . $isn;
+        $response = $this->getHttpClient($url)->send();
+        if (!$response->isSuccess()) {
+            $this->logger->warn("Reviews: " . $response->getStatusCode() . " " . $response->getReasonPhrase() . " $url");
+            return $reviews;    // still empty
+        }
+        $this->logger->debug("Reviews: " . $response->getStatusCode() . " " . $response->getReasonPhrase() . " $url");
+
+        $i = 0;
+        $json = json_decode($response->getBody());
+        foreach ($json as $source => $values) {
+            $reviews[$i]['Source' ] = $source;
+            $reviews[$i]['Date'   ] = (string)$values->reviewDate;
+            $reviews[$i]['Content'] = (string)$values->reviewText;
+            $i++;
+        }
+
+        return $reviews;
     }
 
     /**
