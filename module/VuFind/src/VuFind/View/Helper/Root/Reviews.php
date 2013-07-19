@@ -39,9 +39,23 @@ use DOMDocument, ZendService\Amazon\Amazon;
  */
 class Reviews extends AbstractSyndetics implements \Zend\Log\LoggerAwareInterface
 {
-    protected $logger;
-    public function setLogger(\Zend\Log\LoggerInterface $logger) {
-       $this->logger = $logger;
+    /**
+     * Logger
+     *
+     * @var \Zend\Log\LoggerInterface|bool
+     */
+    protected $logger = false;
+
+    /**
+     * Set logger
+     *
+     * @param \Zend\Log\LoggerInterface $logger Logger
+     *
+     * @return void
+     */
+    public function setLogger(\Zend\Log\LoggerInterface $logger)
+    {
+        $this->logger = $logger;
     }
 
     /**
@@ -225,10 +239,20 @@ class Reviews extends AbstractSyndetics implements \Zend\Log\LoggerAwareInterfac
         $url = $url . '/poca/book/tradereviews?apikey=' . $key . '&ean=' . $isn;
         $response = $this->getHttpClient($url)->send();
         if (!$response->isSuccess()) {
-            $this->logger->warn("Reviews: " . $response->getStatusCode() . " " . $response->getReasonPhrase() . " $url");
+            if ($this->logger) {
+                $this->logger->warn(
+                    "Reviews: " . $response->getStatusCode() . " "
+                    . $response->getReasonPhrase() . " $url"
+                );
+            }
             return $reviews;    // still empty
         }
-        $this->logger->debug("Reviews: " . $response->getStatusCode() . " " . $response->getReasonPhrase() . " $url");
+        if ($this->logger) {
+            $this->logger->debug(
+                "Reviews: " . $response->getStatusCode() . " "
+                . $response->getReasonPhrase() . " $url"
+            );
+        }
 
         $i = 0;
         $json = json_decode($response->getBody());
