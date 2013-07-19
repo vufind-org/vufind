@@ -102,6 +102,7 @@ $config = array(
             'missingrecord' => 'VuFind\Controller\MissingrecordController',
             'my-research' => 'VuFind\Controller\MyResearchController',
             'oai' => 'VuFind\Controller\OaiController',
+            'pazpar2' => 'VuFind\Controller\Pazpar2Controller',
             'records' => 'VuFind\Controller\RecordsController',
             'search' => 'VuFind\Controller\SearchController',
             'summon' => 'VuFind\Controller\SummonController',
@@ -658,6 +659,13 @@ $config = array(
                             $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
                         );
                     },
+                    'pazpar2' => function ($sm) {
+                        return new \VuFind\RecordDriver\Pazpar2(
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+                            null,
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
+                        );
+                    },
                     'solrdefault' => function ($sm) {
                         return new \VuFind\RecordDriver\SolrDefault(
                             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
@@ -835,6 +843,7 @@ $config = array(
             ),
             'search_backend' => array(
                 'factories' => array(
+                    'Pazpar2' => 'VuFind\Search\Factory\Pazpar2BackendFactory',
                     'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
                     'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
                     'SolrReserves' => 'VuFind\Search\Factory\SolrReservesBackendFactory',
@@ -906,6 +915,11 @@ $config = array(
         // driver is not defined here, it will inherit configuration from a configured
         // parent class.
         'recorddriver_tabs' => array(
+            'VuFind\RecordDriver\Pazpar2' => array(
+                'tabs' => array (
+                    'Details' => 'StaffViewMARC',
+                 ),
+            ),
             'VuFind\RecordDriver\SolrAuth' => array(
                 'tabs' => array (
                     'Details' => 'StaffViewMARC',
@@ -988,7 +1002,7 @@ $staticRoutes = array(
     'MyResearch/Favorites', 'MyResearch/Fines',
     'MyResearch/Holds', 'MyResearch/Home', 'MyResearch/Logout', 'MyResearch/Profile',
     'MyResearch/SaveSearch',
-    'OAI/Server', 'Records/Home',
+    'OAI/Server', 'Pazpar2/Home', 'Pazpar2/Search', 'Records/Home',
     'Search/Advanced', 'Search/Email', 'Search/History', 'Search/Home',
     'Search/NewItem', 'Search/OpenSearch', 'Search/Reserves', 'Search/Results',
     'Search/Suggest',

@@ -1,0 +1,31 @@
+<b>
+  <div class="result source<?=$this->escapeHtml($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
+    <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueID())?>" class="hiddenId" />
+    <h3><?
+      $summHighlightedTitle = $this->driver->getHighlightedTitle();
+      $summTitle = $this->driver->getTitle();
+      if (!empty($summHighlightedTitle)) {
+          echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
+      } else if (!empty($summTitle)) {
+          echo $this->escapeHtml($this->truncate($summTitle, 180));
+      } else {
+          echo $this->transEsc('Title not available');
+      }
+    ?></h3>
+    <? $summAuthor = $this->driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
+      <p><?=$this->transEsc('by')?> <?
+      $summHighlightedAuthor = $this->driver->getHighlightedAuthor();
+      echo !empty($summHighlightedAuthor)
+          ? $this->highlight($summHighlightedAuthor)
+          : $this->escapeHtml($summAuthor);
+      ?>
+    <? endif; ?>
+    <? $locations = $this->driver->getProviders(); if (!empty($locations)): ?>
+      <p><strong><?=$this->transEsc('Provider')?>:</strong> <?=$this->escapeHtml(implode(', ', $locations))?></p>
+    <? endif; ?>
+    <? $summCallNo = $this->driver->getCallNumber(); if (!empty($summCallNo)): ?>
+      <p><strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?></p>
+    <? endif; ?>
+    <?=$this->record($this->driver)->getFormatList()?>
+  </div>
+</b>
