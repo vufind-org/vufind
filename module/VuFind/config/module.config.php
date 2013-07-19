@@ -187,7 +187,9 @@ $config = array(
                         $options['proxy_port'] = $config->Proxy->port;
                     }
                 }
-                return new \VuFindHttp\HttpService($options);
+                $defaults = isset($config->Http)
+                    ? $config->Http->toArray() : array();
+                return new \VuFindHttp\HttpService($options, $defaults);
             },
             'VuFind\HMAC' => function ($sm) {
                 return new \VuFind\Crypt\HMAC(

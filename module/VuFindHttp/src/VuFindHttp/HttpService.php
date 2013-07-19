@@ -40,7 +40,6 @@ namespace VuFindHttp;
  */
 class HttpService implements HttpServiceInterface
 {
-
     /**
      * Regular expression matching a request to localhost.
      *
@@ -58,6 +57,13 @@ class HttpService implements HttpServiceInterface
     protected $proxyConfig;
 
     /**
+     * Default client options.
+     *
+     * @var array
+     */
+    protected $defaults;
+
+    /**
      * Default adapter
      *
      * @var \Zend\Http\Client\Adapter\AdapterInterface
@@ -68,12 +74,15 @@ class HttpService implements HttpServiceInterface
      * Constructor.
      *
      * @param array $proxyConfig Proxy configuration
+     * @param array $defaults    Default HTTP options
      *
      * @return void
      */
-    public function __construct (array $proxyConfig = array())
-    {
+    public function __construct (array $proxyConfig = array(),
+        array $defaults = array()
+    ) {
         $this->proxyConfig = $proxyConfig;
+        $this->defaults = $defaults;
     }
 
     /**
@@ -188,6 +197,9 @@ class HttpService implements HttpServiceInterface
     ) {
         $client = new \Zend\Http\Client();
         $client->setMethod($method);
+        if (!empty($this->defaults)) {
+            $client->setOptions($this->defaults);
+        }
         if (null !== $this->defaultAdapter) {
             $client->setAdapter($this->defaultAdapter);
         }
