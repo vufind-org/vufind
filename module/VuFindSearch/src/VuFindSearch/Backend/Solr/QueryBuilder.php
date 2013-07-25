@@ -500,7 +500,7 @@ class QueryBuilder implements QueryBuilderInterface
         //   Better: Remove all ^ if not followed by digits
         //     -- dmaus, 2012-11-11
         $cnt = preg_match_all('/\^/', $input, $tmp);
-        $matches = preg_match_all('/.+\^[0-9]/', $input, $tmp);
+        $matches = preg_match_all('/[^^]+\^[0-9]/', $input, $tmp);
         if (($cnt) && ($cnt !== $matches)) {
             $input = str_replace('^', '', $input);
         }

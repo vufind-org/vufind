@@ -150,6 +150,10 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
             array('test~0.9', 'test~0.9'),          // valid proximity
             array('test~10', 'test~10'),            // illegal prox. (leave alone)
             array('test~10 fish', 'test~10 fish'),  // illegal prox. (leave alone)
+            array('^10 test^10', '10 test10'),      // invalid boosts
+            array('^10', '10'),                     // invalid boosts
+            array('test^ test^6', 'test test6'),    // invalid boosts
+            array('test^1 test^2', 'test^1 test^2'),// valid boosts
         );
         // @codingStandardsIgnoreEnd
 
