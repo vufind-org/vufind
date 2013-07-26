@@ -1,0 +1,13 @@
+<?php
+  $links = $this->recommend->getLinks();
+?>
+<?php if (count($links) > 0) :?>
+  <div class="info">
+    <?=$this->transEsc('recommend_links_text')?>
+      <?php foreach($links as $title => $href): ?>
+        <p>
+          <a href="<?=$href?>"><?=$this->transEsc($title)?></a>
+        </p>
+      <?php endforeach; ?>
+  </div>
+<?php endif;?>
