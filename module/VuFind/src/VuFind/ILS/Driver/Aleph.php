@@ -37,6 +37,9 @@
  */
 namespace VuFind\ILS\Driver;
 use VuFind\Exception\ILS as ILSException;
+use Zend\Log\LoggerInterface;
+use VuFindHttp\HttpServiceInterface;
+use DateTime;
 
 /**
  * Aleph Translator Class
@@ -252,6 +255,35 @@ class AlephTranslator
  */
 class AlephRestfulException extends \Exception
 {
+    /**
+     * XML response (false for none)
+     *
+     * @var string|bool
+     */
+    protected $xmlResponse = false;
+
+    /**
+     * Attach an XML response to the exception
+     *
+     * @param string $body XML
+     *
+     * @return void
+     */
+    public function setXmlResponse($body)
+    {
+        $this->xmlResponse = $body;
+    }
+
+    /**
+     * Return XML response (false if none)
+     *
+     * @return string|bool
+     */
+    public function getXmlResponse()
+    {
+        return $this->xmlResponse;
+    }
+
 }
 
 /**
@@ -267,9 +299,21 @@ class AlephRestfulException extends \Exception
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
-class Aleph extends AbstractBase
+class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
+    \VuFindHttp\HttpServiceAwareInterface
 {
+    /**
+     * Duedate configuration
+     *
+     * @var array
+     */
     protected $duedates = false;
+
+    /**
+     * Translator object
+     *
+     * @var AlephTranslator
+     */
     protected $translator = false;
 
     /**
@@ -280,6 +324,20 @@ class Aleph extends AbstractBase
     protected $cacheManager;
 
     /**
+     * Logger object for debug info (or false for no debugging).
+     *
+     * @var LoggerInterface|bool
+     */
+    protected $logger = false;
+
+    /**
+     * HTTP service
+     *
+     * @var \VuFindHttp\HttpServiceInterface
+     */
+    protected $httpService = null;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Cache\Manager $cacheManager Cache manager (optional)
@@ -287,6 +345,30 @@ class Aleph extends AbstractBase
     public function __construct(\VuFind\Cache\Manager $cacheManager = null)
     {
         $this->cacheManager = $cacheManager;
+    }
+
+    /**
+     * Set the logger
+     *
+     * @param LoggerInterface $logger Logger to use.
+     *
+     * @return void
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * Set the HTTP service to be used for HTTP requests.
+     *
+     * @param HttpServiceInterface $service HTTP service
+     *
+     * @return void
+     */
+    public function setHttpService(HttpServiceInterface $service)
+    {
+        $this->httpService = $service;
     }
 
     /**
@@ -315,7 +397,7 @@ class Aleph extends AbstractBase
 
         // Process config
         $this->host = $this->config['Catalog']['host'];
-        $this->bib = split(',', $this->config['Catalog']['bib']);
+        $this->bib = explode(',', $this->config['Catalog']['bib']);
         $this->useradm = $this->config['Catalog']['useradm'];
         $this->admlib = $this->config['Catalog']['admlib'];
         if (isset($this->config['Catalog']['wwwuser'])
@@ -333,7 +415,7 @@ class Aleph extends AbstractBase
             $this->duedates = $this->config['duedates'];
         }
         $this->available_statuses
-            = split(',', $this->config['Catalog']['available_statuses']);
+            = explode(',', $this->config['Catalog']['available_statuses']);
         $this->quick_availability
             = isset($this->config['Catalog']['quick_availability'])
             ? $this->config['Catalog']['quick_availability'] : false;
@@ -356,6 +438,11 @@ class Aleph extends AbstractBase
                     $cache->setItem('alephTranslator', $this->translator);
                 }
             }
+        }
+        if (isset($this->config['Catalog']['preferred_pick_up_locations'])) {
+            $this->preferredPickUpLocations = explode(
+                ',', $this->config['Catalog']['preferred_pick_up_locations']
+            );
         }
     }
 
@@ -420,7 +507,9 @@ class Aleph extends AbstractBase
         $replyCode = (string) $result->{'reply-code'};
         if ($replyCode != "0000") {
             $replyText = (string) $result->{'reply-text'};
-            throw new AlephRestfulException($replyText, $replyCode);
+            $ex = new AlephRestfulException($replyText, $replyCode);
+            $ex->setXmlResponse($result);
+            throw $ex;
         }
         return $result;
     }
@@ -459,28 +548,25 @@ class Aleph extends AbstractBase
         if ($this->debug_enabled) {
             $this->debug("URL: '$url'");
         }
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        if ($body != null) {
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
-        }
-        $answer = curl_exec($ch);
-        if (!$answer) {
-            $error = curl_error($ch);
-            $message = "HTTP request failed with message: $error, URL: '$url'.";
-            if ($this->debug_enabled) {
-                $this->debug($message);
+
+        $result = null;
+        try {
+            $client = $this->httpService->createClient($url);
+            $client->setMethod($method);
+            if ($body != null) {
+                $client->setRawBody($body);
             }
-            throw new ILSException($message);
+            $result = $client->send();
+        } catch (\Exception $e) {
+            throw new ILSException($e->getMessage());
         }
-        $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        if ($http_code != 200) {
-            $message = "Request failed with http code: $http_code, "
-                . "URL: '$url' method: $method";
-            throw new ILSException($message);
+        if (!$result->isSuccess()) {
+            throw new ILSException('HTTP error');
         }
-        curl_close($ch);
+        $answer = $result->getBody();
+        if ($this->debug_enabled) {
+            $this->debug("url: $url response: $answer");
+        }
         $answer = str_replace('xmlns=', 'ns=', $answer);
         $result = simplexml_load_string($answer);
         if (!$result) {
@@ -503,7 +589,9 @@ class Aleph extends AbstractBase
      */
     protected function debug($msg)
     {
-        print($msg . "<BR>");
+        if ($this->logger) {
+            $this->logger->debug($msg);
+        }
     }
 
     /**
@@ -518,7 +606,7 @@ class Aleph extends AbstractBase
         if (count($this->bib)==1) {
             return array($this->bib[0], $id);
         } else {
-            return split('-', $id);
+            return explode('-', $id);
         }
     }
 
@@ -897,13 +985,24 @@ class Aleph extends AbstractBase
     public function renewMyItems($details)
     {
         $patron = $details['patron'];
+        $error = false;
+        $result = array();
         foreach ($details['details'] as $id) {
-            $this->doRestDLFRequest(
-                array('patron', $patron['id'], 'circulationActions', 'loans', $id),
-                null, 'POST', null
-            );
+            try {
+                $this->doRestDLFRequest(
+                    array(
+                        'patron', $patron['id'], 'circulationActions', 'loans', $id
+                    ),
+                    null, 'POST', null
+                );
+                $result[$id] = array('success' => true);
+            } catch (AlephRestfulException $ex) {
+                $result[$id] = array(
+                    'success' => false, 'sysMessage' => $ex->getMessage()
+                );
+            }
         }
-        return array('blocks' => false, 'details' => array());
+        return array('blocks' => false, 'details' => $result);
     }
 
     /**
@@ -1170,7 +1269,7 @@ class Aleph extends AbstractBase
         $credit_sign = (string) $xml->z305->{'z305-credit-debit'};
         $name = (string) $xml->z303->{'z303-name'};
         if (strstr($name, ",")) {
-            list($lastname, $firstname) = split(",", $name);
+            list($lastname, $firstname) = explode(",", $name);
         } else {
             $lastname = $name;
             $firstname = "";
@@ -1227,7 +1326,7 @@ class Aleph extends AbstractBase
             $recordList['firstname'] = "";
         } else {
             list($recordList['lastname'], $recordList['firstname'])
-                = split(",", $address2);
+                = explode(",", $address2);
         }
         $recordList['address1'] = $address2;
         $recordList['address2'] = $address3;
@@ -1281,7 +1380,7 @@ class Aleph extends AbstractBase
         $patron=array();
         $name = $xml->z303->{'z303-name'};
         if (strstr($name, ",")) {
-            list($lastName, $firstName) = split(",", $name);
+            list($lastName, $firstName) = explode(",", $name);
         } else {
             $lastName = $name;
             $firstName = "";
@@ -1339,7 +1438,7 @@ class Aleph extends AbstractBase
         $requests = 0;
         $str = $xml->xpath('//item/queue/text()');
         if ($str != null) {
-            list($requests, $other) = split(' ', trim($str[0]));
+            list($requests, $other) = explode(' ', trim($str[0]));
         }
         $date = $xml->xpath('//last-interest-date/text()');
         $date = $date[0];
@@ -1369,24 +1468,27 @@ class Aleph extends AbstractBase
         list($bib, $sys_no) = $this->parseId($details['id']);
         $recordId = $bib . $sys_no;
         $itemId = $details['item_id'];
-        $pickup_location = $details['pickUpLocation'];
         $patron = $details['patron'];
-        $requiredBy = $details['requiredBy'];
-        $comment = $details['comment'];
-        list($month, $day, $year) = split("-", $requiredBy);
-        $requiredBy = $year . str_pad($month, 2, "0", STR_PAD_LEFT)
-            . str_pad($day, 2, "0", STR_PAD_LEFT);
-        $patronId = $patron['id'];
-        if (!$pickup_location) {
-            $info = $this->getHoldingInfoForItem($patronId, $recordId, $itemId);
-            // FIXME: choose preffered location
-            foreach ($info['pickup-locations'] as $key => $value) {
-                $pickup_location = $key;
-            }
+        $pickupLocation = $details['pickUpLocation'];
+        if (!$pickupLocation) {
+            $pickupLocation = $this->getDefaultPickUpLocation($patron, $details);
         }
+        $comment = $details['comment'];
+        // convert from MM-DD-YYYY to YYYYMMDD required by Aleph
+        $requiredBy = $details['requiredBy'];
+        $requiredBy = DateTime::createFromFormat('n-j-Y', $requiredBy);
+        $dtErrs = DateTime::getLastErrors();
+        if ($requiredBy === false || $dtErrs['warning_count'] > 0 ) {
+            return array(
+                'success'    => false,
+                'sysMessage' => 'requiredBy must be in MM-DD-YYYY format'
+            );
+        }
+        $requiredBy = $requiredBy->format('Ymd');
+        $patronId = $patron['id'];
         $data = "post_xml=<?xml version='1.0' encoding='UTF-8'?>\n" .
             "<hold-request-parameters>\n" .
-            "   <pickup-location>$pickup_location</pickup-location>\n" .
+            "   <pickup-location>$pickupLocation</pickup-location>\n" .
             "   <last-interest-date>$requiredBy</last-interest-date>\n" .
             "   <note-1>$comment</note-1>\n".
             "</hold-request-parameters>\n";
@@ -1451,22 +1553,19 @@ class Aleph extends AbstractBase
      */
     public function parseDate($date)
     {
-        if ($date == "") {
+        if ($date == null || $date == "") {
             return "";
         } else if (preg_match("/^[0-9]{8}$/", $date) === 1) {
-            return substr($date, 6, 2) . "." .substr($date, 4, 2) . "."
-                . substr($date, 0, 4);
+            // 20120725
+            return DateTime::createFromFormat('Ynd', $date)->format('d.m.Y');
+        } else if (preg_match("/^[0-9]+\/[A-Za-z]{3}\/[0-9]{4}$/", $date) === 1) {
+            // 13/jan/2012
+            return DateTime::createFromFormat('d/M/Y', $date)->format('d.m.Y');
+        } else if (preg_match("/^[0-9]+\/[0-9]+\/[0-9]{4}$/", $date) === 1) {
+            // 13/7/2012
+            return DateTime::createFromFormat('d/m/Y', $date)->format('d.m.Y');
         } else {
-            list($day, $month, $year) = explode("/", $date, 3);
-            if (!is_numeric($month)) {
-                $translate_month = array(
-                    'jan' => 1, 'feb' => 2, 'mar' => 3, 'apr' => 4, 'may' => 5,
-                    'jun' => 6, 'jul' => 7, 'aug' => 8, 'sep' => 9, 'oct' => 10,
-                    'nov' => 11, 'dec' => 12
-                );
-                $month = $translate_month[strtolower($month)];
-            }
-            return $day . "." . $month . "." . $year;
+            throw new \Exception("Invalid date: $date");
         }
     }
 
@@ -1542,7 +1641,31 @@ class Aleph extends AbstractBase
      */
     public function getDefaultPickUpLocation($patron, $holdInfo=null)
     {
-        return null;
+        if ($holdInfo != null) {
+            $details = $this->getHoldingInfoForItem(
+                $patron['id'], $holdInfo['id'], $holdInfo['item_id']
+            );
+            $pickupLocations = $details['pickup-locations'];
+            if (isset($this->preferredPickUpLocations)) {
+                foreach (
+                    $details['pickup-locations'] as $locationID => $locationDisplay
+                ) {
+                    if (in_array($locationID, $this->preferredPickUpLocations)) {
+                        return $locationID;
+                    }
+                }
+            }
+            // nothing found or preferredPickUpLocations is empty? Return the first
+            // locationId in pickupLocations array
+            reset($pickupLocations);
+            return key($pickupLocations);
+        } else if (isset($this->preferredPickUpLocations)) {
+            return $this->preferredPickUpLocations[0];
+        } else {
+            throw new ILSException(
+                'Missing Catalog/preferredPickUpLocations config setting.'
+            );
+        }
     }
 
     /**
