@@ -1012,7 +1012,8 @@ $staticRoutes = array(
     'Upgrade/Home', 'Upgrade/FixAnonymousTags', 'Upgrade/FixDuplicateTags',
     'Upgrade/FixConfig', 'Upgrade/FixDatabase', 'Upgrade/FixMetadata',
     'Upgrade/GetDBCredentials', 'Upgrade/GetDbEncodingPreference',
-    'Upgrade/GetSourceDir', 'Upgrade/Reset', 'Upgrade/ShowSQL',
+    'Upgrade/GetSourceDir', 'Upgrade/GetSourceVersion', 'Upgrade/Reset',
+    'Upgrade/ShowSQL',
     'VuDL/Browse', 'VuDL/DSRecord', 'VuDL/Record',
     'Web/Home', 'Web/Results',
     'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search'

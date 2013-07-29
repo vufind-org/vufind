@@ -7,7 +7,13 @@
 ?>
 <h1><?=$this->transEsc('Upgrade VuFind')?></h1>
 <?=$this->flashmessages()?>
-<p>Please enter the full path of the directory containing your previous version of VuFind (i.e. /usr/local/vufind):</p>
+<h2>Option 1: Upgrade from VuFind 1.x</h2>
+<p>Please enter the full path of the directory containing your previous version of VuFind (e.g. /usr/local/vufind):</p>
 <form method="post" action="<?=$this->url('upgrade-getsourcedir')?>">
 <input type="text" name="sourcedir" /> <input type="submit" />
+</form>
+<h2>Option 2: Upgrade from VuFind 2.x</h2>
+<p>Please enter the version number you are upgrading from (e.g. 2.0.1):</p>
+<form method="post" action="<?=$this->url('upgrade-getsourceversion')?>">
+<input type="text" name="sourceversion" /> <input type="submit" />
 </form>

@@ -104,6 +104,13 @@ class Upgrade
     protected $warnings = array();
 
     /**
+     * Are we upgrading files in place rather than creating them?
+     *
+     * @var bool
+     */
+    protected $inPlaceUpgrade;
+
+    /**
      * Constructor
      *
      * @param string $from   Version we're upgrading from.
@@ -120,6 +127,7 @@ class Upgrade
         $this->oldDir = $oldDir;
         $this->rawDir = $rawDir;
         $this->newDir = $newDir;
+        $this->inPlaceUpgrade = ($this->oldDir == $this->newDir);
     }
 
     /**
@@ -148,8 +156,10 @@ class Upgrade
 
         // The following routines load special configurations that were not
         // explicitly loaded by loadConfigs:
-        $this->upgradeSolrMarc();
-        $this->upgradeSearchSpecs();
+        if ($this->from < 2) {  // some pieces only apply to 1.x upgrade!
+            $this->upgradeSolrMarc();
+            $this->upgradeSearchSpecs();
+        }
         $this->upgradeILS();
     }
 
@@ -330,7 +340,16 @@ class Upgrade
             return;
         }
 
+        // If we're doing an in-place upgrade, and the source file is empty,
+        // there is no point in upgrading anything (the file doesn't exist).
+        if (empty($this->oldConfigs[$filename]) && $this->inPlaceUpgrade) {
+            return;
+        }
+
+        // If target file already exists, back it up:
         $outfile = $this->newDir . '/' . $filename;
+        copy($outfile, $outfile . '.bak.' . time());
+
         $writer = new ConfigWriter(
             $outfile, $this->newConfigs[$filename], $this->comments[$filename]
         );
@@ -353,6 +372,10 @@ class Upgrade
     protected function saveUnmodifiedConfig($filename)
     {
         if (null === $this->newDir) {   // skip write if no destination
+            return;
+        }
+
+        if ($this->inPlaceUpgrade) {    // skip write if doing in-place upgrade
             return;
         }
 
