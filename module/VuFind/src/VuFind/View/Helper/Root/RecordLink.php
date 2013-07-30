@@ -80,9 +80,11 @@ class RecordLink extends \Zend\View\Helper\AbstractHelper
             break;
         case 'isn':
             $url = $urlHelper('search-results')
-                . '?join=AND&bool0[]=AND&lookfor0[]='
-                . urlencode($link['value']) . '&type0[]=isn&bool1[]=NOT&lookfor1[]='
-                . urlencode($link['exclude']) . '&type1[]=id&sort=title&view=list';
+                . '?join=AND&bool0[]=AND&lookfor0[]=%22'
+                . urlencode($link['value'])
+                . '%22&type0[]=isn&bool1[]=NOT&lookfor1[]=%22'
+                . urlencode($link['exclude'])
+                . '%22&type1[]=id&sort=title&view=list';
             break;
         case 'oclc':
             $url = $urlHelper('search-results')
