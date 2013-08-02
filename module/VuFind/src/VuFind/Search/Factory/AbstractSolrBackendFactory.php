@@ -229,7 +229,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
                 'defaults' => array('fl' => '*,score'),
                 'appends'  => array('fq' => array()),
             ),
-            'terms' => array(
+            'term' => array(
                 'functions' => array('terms'),
             ),
         );
