@@ -55,6 +55,13 @@ class NamedList implements Countable, Iterator
     protected $list;
 
     /**
+     * The current position
+     *
+     * @var array
+     */
+    protected $current = null;
+
+    /**
      * Constructor.
      *
      * @param array $list Named list
