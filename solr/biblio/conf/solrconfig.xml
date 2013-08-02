@@ -408,7 +408,7 @@
     </lst>
   </requestHandler>
 
-  <requestHandler name="/browse" class="au.gov.nla.solr.handler.BrowseRequestHandler">
+  <requestHandler name="/browse" class="org.vufind.solr.handler.BrowseRequestHandler">
     <str name="authIndexPath">${solr.solr.home:./solr}/authority/index</str>
     <str name="bibIndexPath">${solr.solr.home:./solr}/biblio/index</str>
 
