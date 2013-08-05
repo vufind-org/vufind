@@ -40,8 +40,8 @@
 
     <div class="alphaBrowseHeader"><?=$this->transEsc("alphabrowse_matches") ?></div>
       <? foreach ($this->result['Browse']['items'] as $i => $item): ?>
-        <div class="alphaBrowseEntry<? if ($i%2==1): echo ' alt'; endif; ?>">
-        <div class="alphaBrowseHeading">
+        <div class="alphaBrowseEntry<? if ($i%2==1): echo ' alt'; endif; ?> alphaBrowseSource_<?=$this->escapeHtml($this->source)?>">
+        <div class="alphaBrowseHeading alphaBrowseHeading_<?=$this->escapeHtml($this->source)?>">
           <? if ($item['count'] > 0): ?>
             <?/* linking using bib ids is generally more reliable than
               doing searches for headings, but headings give shorter
@@ -56,6 +56,20 @@
             <?=$this->escapeHtml($item['heading'])?>
           <? endif; ?>
         </div>
+        <? 
+          foreach ($this->extras as $ei => $extraName):
+            $extraData = $item['extras'][$extraName];
+        ?>
+          <div class="alphaBrowseExtra alphaBrowseColumn_<? echo $extraName?>">
+            <?
+              $extraDisplayArray = array();
+              foreach ($extraData as $j => $e) {
+                $extraDisplayArray = array_unique(array_merge($extraDisplayArray, $e));
+              }
+              echo (empty($extraDisplayArray)) ? '&nbsp;' : implode('<br />', $extraDisplayArray);
+            ?>
+          </div>
+        <? endforeach; ?>
         <div class="alphaBrowseCount"><? if ($item['count'] > 0): echo $item['count']; endif; ?></div>
         <div class="clear"></div>
 

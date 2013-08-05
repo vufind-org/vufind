@@ -28,6 +28,7 @@
  */
 namespace VuFind\Controller;
 
+use VuFindSearch\ParamBag;
 /**
  * AlphabrowseController Class
  *
@@ -68,6 +69,14 @@ class AlphabrowseController extends AbstractBase
             );
         }
 
+        // Load any extras from config file
+        $extras = array();
+        if (isset($config->AlphaBrowse_Extras)) {
+            foreach ($config->AlphaBrowse_Extras as $key => $value) {
+                $extras[$key] = $value;
+            }
+        }
+
         // Connect to Solr:
         $db = $this->getServiceLocator()->get('VuFind\Search\BackendManager')
             ->get('Solr');
@@ -79,6 +88,12 @@ class AlphabrowseController extends AbstractBase
         $limit  = isset($config->AlphaBrowse->page_size)
             ? $config->AlphaBrowse->page_size : 20;
 
+        // Set up any extra parameters to pass
+        $extraParams = new ParamBag(); 
+        if (isset($extras[$source])) {
+            $extraParams->add('extras', $extras[$source]);
+        }
+
 
         // Create view model:
         $view = $this->createViewModel();
@@ -86,13 +101,13 @@ class AlphabrowseController extends AbstractBase
         // If required parameters are present, load results:
         if ($source && $from !== false) {
             // Load Solr data or die trying:
-            $result = $db->alphabeticBrowse($source, $from, $page, $limit);
+            $result = $db->alphabeticBrowse($source, $from, $page, $limit, $extraParams);
 
             // No results?    Try the previous page just in case we've gone past
             // the end of the list....
             if ($result['Browse']['totalCount'] == 0) {
                 $page--;
-                $result = $db->alphabeticBrowse($source, $from, $page, $limit);
+                $result = $db->alphabeticBrowse($source, $from, $page, $limit, $extraParams);
             }
 
             // Only display next/previous page links when applicable:
@@ -108,6 +123,11 @@ class AlphabrowseController extends AbstractBase
         $view->alphaBrowseTypes = $types;
         $view->from = $from;
         $view->source = $source;
+
+        // Pass information about extra columns on to theme
+        if (isset($extras[$source])) {
+            $view->extras = explode(':', $extras[$source]);
+        }
         return $view;
     }
 }

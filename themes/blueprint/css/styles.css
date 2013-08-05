@@ -201,6 +201,13 @@ ul.cartContent {
     background-color: #fff;
 }
 
+.alphaBrowseExtra {
+    display: block;
+    float: left;
+    padding-left: .75em;
+    line-height: 1.31em;
+}
+
 .alphaBrowseForm {
     zoom: 1;
 }
@@ -209,6 +216,41 @@ ul.cartContent {
     float: left;
     width: 650px;
     line-height: 1.31em;
+}
+
+.alphaBrowseSource_dewey .alphaBrowseHeading {
+    width: 200px;
+    padding-right: .5em;
+}
+
+.alphaBrowseSource_dewey .alphaBrowseColumn_title {
+    width: 450px;
+}
+
+.alphaBrowseSource_lcc .alphaBrowseHeading {
+    width: 200px;
+    padding-right: .5em;
+}
+
+.alphaBrowseSource_lcc .alphaBrowseColumn_title {
+    width: 450px;
+}
+
+.alphaBrowseSource_title .alphaBrowseHeading {
+    width: 300px;
+    padding-right: .5em;
+}
+
+.alphaBrowseSource_title .alphaBrowseColumn_author {
+    width: 200px;
+}
+
+.alphaBrowseSource_title .alphaBrowseColumn_format {
+    width: 100px;
+}
+
+.alphaBrowseSource_title .alphaBrowseColumn_publishDate {
+    width: 45px;
 }
 
 .alphaBrowseCount {
