@@ -688,6 +688,9 @@ class InstallController extends AbstractBase
      */
     public function performsecurityfixAction()
     {
+        // This can take a while -- don't time out!
+        set_time_limit(0);
+
         // First, set encryption/hashing to true, and set the key
         $config = $this->getConfig();
         $configPath = ConfigLocator::getLocalConfigPath('config.ini', null, true);
