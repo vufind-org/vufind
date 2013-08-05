@@ -507,6 +507,9 @@ class UpgradeController extends AbstractBase
             return $this->forwardTo('Upgrade', 'Home');
         }
 
+        // This can take a while -- don't time out!
+        set_time_limit(0);
+
         // Check for problems:
         $table = $this->getTable('Resource');
         $problems = $table->findMissingMetadata();
