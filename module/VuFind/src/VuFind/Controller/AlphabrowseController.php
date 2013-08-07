@@ -101,13 +101,15 @@ class AlphabrowseController extends AbstractBase
         // If required parameters are present, load results:
         if ($source && $from !== false) {
             // Load Solr data or die trying:
-            $result = $db->alphabeticBrowse($source, $from, $page, $limit, $extraParams);
+            $result = $db
+                ->alphabeticBrowse($source, $from, $page, $limit, $extraParams);
 
             // No results?    Try the previous page just in case we've gone past
             // the end of the list....
             if ($result['Browse']['totalCount'] == 0) {
                 $page--;
-                $result = $db->alphabeticBrowse($source, $from, $page, $limit, $extraParams);
+                $result = $db
+                    ->alphabeticBrowse($source, $from, $page, $limit, $extraParams);
             }
 
             // Only display next/previous page links when applicable:
