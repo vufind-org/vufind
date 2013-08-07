@@ -6,8 +6,30 @@ set -x
 cd "`dirname $0`/import"
 CLASSPATH="browse-indexing.jar:../solr/lib/*"
 
-bib_index="../solr/biblio/index"
-auth_index="../solr/authority/index"
+# make index work with replicated index
+# current index is stored in the last line of index.properties
+function locate_index
+{
+    local targetVar=$1
+    local indexDir=$2
+    # default value
+    local subDir="index"
+
+    if [ -e $indexDir/index.properties ]
+    then
+        # read it into an array
+        readarray farr < $indexDir/index.properties
+        # get the last line
+        indexline="${farr[${#farr[@]}-1]}"
+        # parse the lastline to just get the filename
+        subDir=`echo $indexline | sed s/index=//`
+    fi
+
+    eval $targetVar="$indexDir/$subDir"
+}
+
+locate_index "bib_index" "../solr/biblio"
+locate_index "auth_index" "../solr/authority"
 index_dir="../solr/alphabetical_browse"
 
 mkdir -p "$index_dir"
