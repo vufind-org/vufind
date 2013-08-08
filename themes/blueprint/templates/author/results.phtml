@@ -11,5 +11,6 @@
     $this->layout()->searchbox = $this->context($this)->renderInContext('search/searchbox.phtml', array('searchClassId' => 'Solr'));
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<em>' . $this->params->getDisplayQuery() . '</em>';
+    $this->layout()->breadcrumbs = '<a href="' . $this->url('author-home') . '">' . $this->transEsc('Author') . '</a> <span>&gt;</span> '
+        . '<em>' . $this->escapeHtml($this->params->getDisplayQuery()) . '</em>';
 ?>
