@@ -10,7 +10,7 @@
           <? if ($collectionRecord === null): ?>
             <?=$this->render('collection/collection-record-error.phtml')?>
           <? else: ?>
-            <?=$this->record($collectionRecord)->getCollectionBriefRecord()?>
+            <?=html_entity_decode($this->record($collectionRecord)->getCollectionBriefRecord())?>
           <? endif; ?>
         <? endif; ?>
       </div>
