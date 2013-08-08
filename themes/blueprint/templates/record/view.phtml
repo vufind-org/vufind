@@ -10,7 +10,7 @@
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = $this->getLastSearchLink($this->transEsc('Search'), '', '<span>&gt;</span>') .
-        $this->recordLink()->getBreadcrumb($this->driver);
+    $this->recordLink()->getBreadcrumb($this->driver);
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
   <?=$this->record($this->driver)->getToolbar()?>

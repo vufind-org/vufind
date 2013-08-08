@@ -33,6 +33,7 @@
     // Load Javascript dependencies into header:
     $this->headScript()->appendFile("check_item_statuses.js");
     $this->headScript()->appendFile("check_save_statuses.js");
+    $this->headScript()->appendFile("check_all_facets.js");
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
   <? if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
@@ -125,4 +126,3 @@
 <? /* End Narrow Search Options */ ?>
 
 <div class="clear"></div>
-
