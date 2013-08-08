@@ -9,7 +9,7 @@
 
   <? foreach ($visFacets as $facetField=>$facetRange): ?>
     <div class="authorbox">
-      <div id="datevis<?=$this->escapeHtml($facetField)?>xWrapper">
+      <div id="datevis<?=$this->escapeHtml($facetField)?>xWrapper" style="display: none;">
         <strong><?=$this->translate($facetRange['label']) ?></strong>
         <? /* space the flot visualisation */ ?>  
         <div id="datevis<?=$facetField ?>x" style="margin:0 10px;width:auto;height:80px;cursor:crosshair;"></div>
