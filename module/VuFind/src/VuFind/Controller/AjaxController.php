@@ -1334,4 +1334,26 @@ class AjaxController extends AbstractBase
     {
         return $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager');
     }
+    
+    /**
+     * Return all facet values for the total expansion module
+     *
+     * @return \Zend\Http\Response
+     */
+    public function getAllFacetValuesAjax() {
+        $query = $this->getRequest()->getQuery();
+        if(empty($query['facetFields'])) {
+            return $this->output($this->translate('Empty field'), self::STATUS_ERROR);
+        }
+        $sm = $this->getSearchManager();
+        $params = $sm->setSearchClassId('Solr')->getParams();
+        $params->initFromRequest($this->getRequest()->getQuery());
+        foreach ($this->params()->fromQuery('hf', array()) as $hf) {
+            $params->getOptions()->addHiddenFilter($hf);
+        }
+        $results = $sm->setSearchClassId('Solr')->getResults($params);
+        $facets = $results->getFullFieldFacets($query['facetFields'], true, -1, 'count');
+        
+        return $this->output($facets, self::STATUS_OK);
+    }
 }
