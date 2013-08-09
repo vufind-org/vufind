@@ -3,8 +3,59 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "83fbfd387d9ede9662af03b21e48c831",
+    "hash": "30e3a3b576fcc39b044a40c879136f22",
     "packages": [
+        {
+            "name": "jasig/phpcas",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Jasig/phpCAS.git",
+                "reference": "13c17276481a5fb55de2ce4c0cf513197fb1ee24"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Jasig/phpCAS/zipball/13c17276481a5fb55de2ce4c0cf513197fb1ee24",
+                "reference": "13c17276481a5fb55de2ce4c0cf513197fb1ee24",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.0.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~3.7.10"
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "source/"
+                ]
+            },
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Joachim Fritschi",
+                    "homepage": "https://wiki.jasig.org/display/~fritschi"
+                },
+                {
+                    "name": "Adam Franco",
+                    "homepage": "https://wiki.jasig.org/display/~adamfranco"
+                }
+            ],
+            "description": "Provides a simple API for authenticating users against a CAS server",
+            "homepage": "https://wiki.jasig.org/display/CASC/phpCAS",
+            "keywords": [
+                "cas",
+                "jasig"
+            ],
+            "support": {
+                "source": "https://github.com/Jasig/phpCAS/tree/master",
+                "issues": "https://github.com/Jasig/phpCAS/issues"
+            },
+            "time": "2013-07-25 07:36:06"
+        },
         {
             "name": "johnwohlers/sip2",
             "version": "dev-master",
@@ -592,6 +643,7 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
+        "jasig/phpcas": 20,
         "johnwohlers/sip2": 20,
         "mobileesp/mdetect": 20,
         "serialssolutions/summon": 20
