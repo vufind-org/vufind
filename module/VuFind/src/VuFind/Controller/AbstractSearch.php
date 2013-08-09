@@ -266,6 +266,9 @@ class AbstractSearch extends AbstractBase
             $response->setContent($feed($view->results)->export('rss'));
             return $response;
         }
+                
+        // Facet limit
+        $view->facet_limit = $this->getServiceLocator()->get('VuFind\Config')->get('facets')->Results_Settings->facet_limit;
 
         return $view;
     }
