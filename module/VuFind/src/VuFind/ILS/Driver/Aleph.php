@@ -40,6 +40,7 @@ use VuFind\Exception\ILS as ILSException;
 use Zend\Log\LoggerInterface;
 use VuFindHttp\HttpServiceInterface;
 use DateTime;
+use VuFind\Exception\Date as DateException;
 
 /**
  * Aleph Translator Class
@@ -336,14 +337,22 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      * @var \VuFindHttp\HttpServiceInterface
      */
     protected $httpService = null;
+    
+    /**
+     * Date converter object
+     *
+     * @var \VuFind\Date\Converter
+     */
+    protected $dateConverter = null;
 
     /**
      * Constructor
      *
      * @param \VuFind\Cache\Manager $cacheManager Cache manager (optional)
      */
-    public function __construct(\VuFind\Cache\Manager $cacheManager = null)
+    public function __construct(\VuFind\Date\Converter $dateConverter, \VuFind\Cache\Manager $cacheManager = null)
     {
+        $this->dateConverter = $dateConverter;
         $this->cacheManager = $cacheManager;
     }
 
@@ -1474,17 +1483,14 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             $pickupLocation = $this->getDefaultPickUpLocation($patron, $details);
         }
         $comment = $details['comment'];
-        // convert from MM-DD-YYYY to YYYYMMDD required by Aleph
-        $requiredBy = $details['requiredBy'];
-        $requiredBy = DateTime::createFromFormat('n-j-Y', $requiredBy);
-        $dtErrs = DateTime::getLastErrors();
-        if ($requiredBy === false || $dtErrs['warning_count'] > 0 ) {
+        try {
+            $requiredBy = $this->dateConverter->convertFromDisplayDate('Ymd', $details['requiredBy']);
+        } catch (DateException $de) {
             return array(
                 'success'    => false,
-                'sysMessage' => 'requiredBy must be in MM-DD-YYYY format'
+                'sysMessage' => 'hold_date_invalid'
             );
         }
-        $requiredBy = $requiredBy->format('Ymd');
         $patronId = $patron['id'];
         $body = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?>'
              . '<hold-request-parameters></hold-request-parameters>');
@@ -1559,15 +1565,12 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     {
         if ($date == null || $date == "") {
             return "";
-        } else if (preg_match("/^[0-9]{8}$/", $date) === 1) {
-            // 20120725
-            return DateTime::createFromFormat('Ynd', $date)->format('d.m.Y');
-        } else if (preg_match("/^[0-9]+\/[A-Za-z]{3}\/[0-9]{4}$/", $date) === 1) {
-            // 13/jan/2012
-            return DateTime::createFromFormat('d/M/Y', $date)->format('d.m.Y');
-        } else if (preg_match("/^[0-9]+\/[0-9]+\/[0-9]{4}$/", $date) === 1) {
-            // 13/7/2012
-            return DateTime::createFromFormat('d/m/Y', $date)->format('d.m.Y');
+        } else if (preg_match("/^[0-9]{8}$/", $date) === 1) { // 20120725
+            return $this->dateConverter->convertToDisplayDate('Ynd', $date);
+        } else if (preg_match("/^[0-9]+\/[A-Za-z]{3}\/[0-9]{4}$/", $date) === 1) { // 13/jan/2012
+            return $this->dateConverter->convertToDisplayDate('d/M/Y', $date);
+        } else if (preg_match("/^[0-9]+\/[0-9]+\/[0-9]{4}$/", $date) === 1) { // 13/7/2012
+            return $this->dateConverter->convertToDisplayDate('d/M/Y', $date);
         } else {
             throw new \Exception("Invalid date: $date");
         }
