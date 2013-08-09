@@ -75,6 +75,12 @@ class AlphabrowseController extends AbstractBase
             foreach ($config->AlphaBrowse_Extras as $key => $value) {
                 $extras[$key] = $value;
             }
+        } else {
+            $extras = array(
+                'title' => 'author:format:publishDate',
+                'lcc' => 'title',
+                'dewey' => 'title'
+            );
         }
 
         // Connect to Solr:
@@ -127,9 +133,9 @@ class AlphabrowseController extends AbstractBase
         $view->source = $source;
 
         // Pass information about extra columns on to theme
-        if (isset($extras[$source])) {
-            $view->extras = explode(':', $extras[$source]);
-        }
+        $view->extras = isset($extras[$source])
+            ? explode(':', $extras[$source]) : array();
+
         return $view;
     }
 }
