@@ -1486,22 +1486,26 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         }
         $requiredBy = $requiredBy->format('Ymd');
         $patronId = $patron['id'];
-        $data = "post_xml=<?xml version='1.0' encoding='UTF-8'?>\n" .
-            "<hold-request-parameters>\n" .
-            "   <pickup-location>$pickupLocation</pickup-location>\n" .
-            "   <last-interest-date>$requiredBy</last-interest-date>\n" .
-            "   <note-1>$comment</note-1>\n".
-            "</hold-request-parameters>\n";
+        $body = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?>'
+             . '<hold-request-parameters></hold-request-parameters>');
+        $body->addChild('pickup-location', $pickupLocation);
+        $body->addChild('last-interest-date', $requiredBy);
+        $body->addChild('note-l', $comment);
+        $body = 'post_xml=' . $body->asXML();
         try {
             $result = $this->doRestDLFRequest(
                 array(
                     'patron', $patronId, 'record', $recordId, 'items', $itemId,
                     'hold'
-                ), null, "PUT", $data
+                ), null, "PUT", $body
             );
         } catch (AlephRestfulException $exception) {
+            $message = $exception->getMessage();
+            $note = $exception->getXmlResponse()->xpath('/put-item-hold/create-hold/note[@type="error"]');
+            $note = $note[0];
             return array(
-                'success' => false, 'sysMessage' => $exception->getMessage()
+                'success' => false,
+                'sysMessage' => "$message ($note)"
             );
         }
         return array('success' => true);
