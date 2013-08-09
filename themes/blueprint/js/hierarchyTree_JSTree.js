@@ -15,7 +15,7 @@ function getRecord(recordID)
       dataType: 'html',
       success: function(response) {
         if (response) {
-            $('#hierarchyRecord').html(response);
+            $('#hierarchyRecord').html(html_entity_decode(response));
             // Remove the old path highlighting
             $('#hierarchyTree a').removeClass("jstree-highlight");
             // Add Current path highlighting
@@ -269,3 +269,25 @@ $(document).ready(function()
         }
     });
 });
+
+function html_entity_decode(string, quote_style) {
+  var hash_map = {},
+    symbol = '',
+    tmp_str = '',
+    entity = '';
+  tmp_str = string.toString();
+
+  delete(hash_map['&']);
+  hash_map['&'] = '&amp;';
+  hash_map['>'] = '&gt;';
+  hash_map['<'] = '&lt;';
+
+  for (symbol in hash_map) {
+    entity = hash_map[symbol];
+    tmp_str = tmp_str.split(entity).join(symbol);
+  }
+  tmp_str = tmp_str.split('&#039;').join("'");
+
+  return tmp_str;
+}
+

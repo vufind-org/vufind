@@ -36,6 +36,12 @@ function moreFacets(name) {
 function lessFacets(name) {
     $("#more"+name).show();
     $("#narrowGroupHidden_"+name).addClass("offscreen");
+    $("#allGroupHidden_"+name).addClass("offscreen");
+}
+
+function allFacets(name) {
+    $("#more"+name).hide();
+    $("#allGroupHidden_"+name).removeClass("offscreen");
 }
 
 function filterAll(element, formId) {
