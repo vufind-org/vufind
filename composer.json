@@ -22,6 +22,11 @@
             "url": "https://github.com/summon/Summon.php"
         },
         {
+            "type": "vcs",
+            "url": "https://github.com/Jasig/phpCAS"
+        },
+
+        {
             "type": "package",
             "package": {
                 "name": "mobileesp/mdetect",
@@ -51,6 +56,7 @@
         }
     ],
     "require": {
+        "Jasig/phpCAS": "dev-master",
         "johnwohlers/sip2": "dev-master",
         "mobileesp/mdetect": "dev-master",
         "pear-pear.php.net/file_marc": "*",
