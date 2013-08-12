@@ -96,8 +96,8 @@ class Shibboleth extends AbstractBase
 
         // Has the user configured attributes to use for populating the user table?
         $attribsToCheck = array(
-            "cat_username", "email", "lastname", "firstname", "college", "major",
-            "home_library"
+            "cat_username", "cat_password", "email", "lastname", "firstname",
+            "college", "major", "home_library"
         );
         foreach ($attribsToCheck as $attribute) {
             if (isset($shib->$attribute)) {
