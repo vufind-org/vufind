@@ -803,8 +803,6 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             if ($item_status['opac'] != 'Y') {
                 continue;
             }
-            $group = $item->xpath('@href');
-            $group = substr(strrchr($group[0], "/"), 1);
             $status = $item->xpath('status/text()');
             $availability = false;
             $location = $item->xpath('z30-sub-library-code/text()');
