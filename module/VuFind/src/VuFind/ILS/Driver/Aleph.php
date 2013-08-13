@@ -453,6 +453,9 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 ',', $this->config['Catalog']['preferred_pick_up_locations']
             );
         }
+        if (isset($this->config['Catalog']['default_patron_id'])) {
+            $this->defaultPatronId = $this->config['Catalog']['default_patron_id'];
+        }
     }
 
     /**
@@ -751,6 +754,8 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         $params = array('view' => 'full');
         if ($patron) {
             $params['patron'] = $patron['id'];
+        } else if (isset($this->defaultPatronId)) {
+            $params['patron'] = $this->defaultPatronId;
         }
         try {
             $xml = $this->doRestDLFRequest(
