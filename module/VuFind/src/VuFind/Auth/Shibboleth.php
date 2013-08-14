@@ -101,7 +101,7 @@ class Shibboleth extends AbstractBase
         );
         foreach ($attribsToCheck as $attribute) {
             if (isset($shib->$attribute)) {
-                if (isset($shib->cat_username) && $shib->$attribute == "cat_password") {
+                if (isset($shib->cat_username) && $attribute == "cat_password") {
                     $user->saveCredentials($shib->cat_username, $shib->cat_password);
                 }
                 else {
