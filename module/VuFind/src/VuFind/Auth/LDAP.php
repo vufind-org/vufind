@@ -207,6 +207,10 @@ class LDAP extends AbstractBase
         // User object to populate from LDAP:
         $user = $this->getUserTable()->getByUsername($this->username);
 
+        // Variable to hold catalog password (handled separately from other
+        // attributes since we need to use saveCredentials method to store it):
+        $catPassword = null;
+
         // Loop through LDAP response and map fields to database object based
         // on configuration settings:
         for ($i = 0; $i < $data["count"]; $i++) {
@@ -214,10 +218,19 @@ class LDAP extends AbstractBase
                 foreach ($fields as $field) {
                     $configValue = $this->getSetting($field);
                     if ($data[$i][$j] == $configValue && !empty($configValue)) {
-                        $user->$field = $data[$i][$data[$i][$j]][0];
+                        if ($field != "cat_password" ) {
+                            $user->$field = $data[$i][$data[$i][$j]][0];
+                        } else {
+                            $catPassword = $data[$i][$data[$i][$j]][0];
+                        }
                     }
                 }
             }
+        }
+
+        // Save credentials if applicable:
+        if (!empty($catPassword) && !empty($user->cat_username)) {
+            $user->saveCredentials($user->cat_username, $catPassword); 
         }
 
         // Update the user in the database, then return it to the caller:
