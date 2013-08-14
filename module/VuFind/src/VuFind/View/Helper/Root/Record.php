@@ -340,6 +340,63 @@ class Record extends AbstractHelper
     }
 
     /**
+     * Generate a qrcode URL (return false if unsupported).
+     *
+     *
+     * @return string|bool
+     */
+    public function getQrCode(
+        $type, $location = false, $holding = false,
+        $level = "L", $size = "3", $margin = "4"
+        )
+    {
+        if(isset($this->config->QRCode)) {
+
+            $validTypes = array("core-qrcode", "holdings-qrcode", "results-qrcode");
+
+            switch($type) {
+                case "core-qrcode" :
+                    $generate = (isset($this->config->QRCode->showInCore) && $this->config->QRCode->showInCore)
+                    ? true : false;
+                    break;
+                case "holdings-qrcode" :
+                    $generate = (isset($this->config->QRCode->showInHoldings) && $this->config->QRCode->showInHoldings)
+                    ? true : false;
+                    break;
+                case "results-qrcode" :
+                    $generate = (isset($this->config->QRCode->showInResults) && $this->config->QRCode->showInResults)
+                    ? true : false;
+                    break;
+            }
+
+            if (!in_array($type, $validTypes) || false === $generate) {
+                return false;
+            }
+
+            $template = $type . ".phtml";
+
+            // Try to build text:
+            $text = $this->renderTemplate(
+                $template,
+                array(
+                    'driver' => $this->driver,
+                    'location' => $location,
+                    'holding' => $holding
+                )
+            );
+            $qrcode = array(
+                "text" => $text, 'level' => $level, 'size' => $size, 'margin' => $margin
+            );
+
+            $urlHelper = $this->getView()->plugin('url');
+            return $urlHelper('qrcode-show') . '?' . http_build_query($qrcode);
+
+            return false;
+        }
+
+    }
+
+    /**
      * Generate a thumbnail URL (return false if unsupported).
      *
      * @param string $size Size of thumbnail (small, medium or large -- small is

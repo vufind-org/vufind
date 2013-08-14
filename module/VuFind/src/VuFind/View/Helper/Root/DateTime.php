@@ -74,6 +74,30 @@ class DateTime extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Extract a full date and time string from human-readable date.
+     *
+     * @param string $createFormat The format the date was created in
+     * @apram string $dateString   The date String
+     *
+     * @return string|bool
+     */
+    public function extractFull($createFormat = false, $dateString = false)
+    {
+        $createFormat = (false === $createFormat) ?
+            'H:m:s H:i:s' : $createFormat;
+
+        $dateString = (false === $dateString) ?
+            date('H:m:s H:i:s') : $dateString;
+
+        try {
+            return $this->converter->convertToDisplayDate($createFormat, $dateString);
+        } catch (\VuFind\Exception\Date $e) {
+            // bad date? just ignore it!
+            return false;
+        }
+    }
+
+    /**
      * Builds an alphabetical help string based on the default display date format.
      *
      * @return string

@@ -1,0 +1,39 @@
+<?
+    $available = false;
+    $total = count($holding['items']);
+    $totalAvailable = 0;
+    foreach ($holding['items'] as $row) {
+        if (true == $row['availability']) {
+            $available = true;
+            $totalAvailable++;
+        }
+    }
+?>
+<?=$this->recordLink()->getUrl($this->driver)?>
+<?= "\n"?>
+<?= $this->truncate($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection(), "50")?>
+<?= "\n"?>
+<? $authors = $this->driver->getDeduplicatedAuthors(); ?>
+<? if (isset($authors['main']) && !empty($authors['main'])): ?>
+<?=$this->escapeHtml($authors['main'])?>
+<?= "\n"?>
+<? elseif (isset($authors['corporate']) && !empty($authors['corporate'])): ?>
+<?=$this->escapeHtml($authors['corporate'])?>
+<?= "\n"?>
+<? elseif (isset($authors['secondary']) && !empty($authors['secondary'])): ?>
+<?=$this->escapeHtml($authors['secondary'][0])?>
+<?= "\n"?>
+<? endif;?>
+<? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
+<? $i = 0; foreach ($formats as $format): ?><?=($i++ == 0)?'':', '?><?=$this->escapeHtml($format)?><? endforeach; ?>
+<?= "\n"?>
+<? endif; ?>
+<?=$this->escapeHtml($location)?>
+<?= "\n"?>
+<? if (isset($holding['items'][0]['callnumber'])): ?>
+<?=$this->escapeHtml($holding['items'][0]['callnumber'])?>
+<?= "\n"?>
+<? endif; ?>
+<?= $this->dateTime()->extractFull()?>
+<?= "\n"?>
+<?= $totalAvailable . " / " . $total . " " . $this->transEsc("Available") ?>
