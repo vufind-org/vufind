@@ -7,7 +7,9 @@ if (!isset($this->renderingError)) {
 }
 ?>
 <script type="text/javascript">
-<?=$script?>
+    //<![CDATA[
+    <?=$script?>
+    //]]>
 </script>
 
 <div class="result source<?=$this->escapeHtml($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
