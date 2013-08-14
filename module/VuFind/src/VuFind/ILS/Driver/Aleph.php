@@ -780,63 +780,49 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         } catch (\Exception $ex) {
             return array();
         }
-        foreach ($xml->xpath('//items/item') as $item) {
-            $item_id = $item->xpath('@href');
-            $item_id = substr($item_id[0], strrpos($item_id[0], '/') + 1);
-            $item_status = $item->xpath('z30-item-status-code/text()'); // $isc
-            $item_process_status
-                = $item->xpath('z30-item-process-status-code/text()'); // $ipsc
-            $sub_library = $item->xpath('z30-sub-library-code/text()'); // $slc
+        foreach ($xml->{'items'}->{'item'} as $item) {
+            $item_status         = (string) $item->{'z30-item-status-code'}; // $isc
+            $item_process_status = (string) $item->{'z30-item-process-status-code'}; // $ipsc
+            $sub_library_code    = (string) $item->{'z30-sub-library-code'}; // $slc
+            $z30 = $item->z30;
             if ($this->translator) {
-                $item_status = $this->translator->tab15Translate(
-                    (string) $sub_library[0], (string) $item_status[0],
-                    (string) $item_process_status[0]
+                $item_status = $this->translator->tab15Translate($sub_library_code, 
+                    $item_status, $item_process_status
                 );
             } else {
-                $z30_item_status = $item->xpath('z30/z30-item-status/text()');
-                $z30_sub_library = $item->xpath('z30/z30-sub-library/text()');
                 $item_status = array(
-                    'opac' => 'Y', 'request' => 'C', 'desc' => $z30_item_status[0],
-                    'sub_lib_desc' => $z30_sub_library[0]
+                    'opac'         => 'Y',
+                    'request'      => 'C',
+                    'desc'         => (string) $z30->{'z30-item-status'},
+                    'sub_lib_desc' => (string) $z30->{'z30-sub-library'}
                 );
             }
             if ($item_status['opac'] != 'Y') {
                 continue;
             }
-            $status = $item->xpath('status/text()');
             $availability = false;
-            $location = $item->xpath('z30-sub-library-code/text()');
             $reserve = ($item_status['request'] == 'C')?'N':'Y';
-            $callnumber = $item->xpath('z30/z30-call-no/text()');
-            $barcode = $item->xpath('z30/z30-barcode/text()');
-            $number = $item->xpath('z30/z30-inventory-number/text()');
-            $collection = $item->xpath('z30/z30-collection/text()');
-            $collection_code = $item->xpath('z30-collection-code/text()');
+            $collection = (string) $z30->{'z30-collection'};
+            $collection_desc = array('desc' => $collection);
             if ($this->translator) {
+                $collection_code = (string) $item->{'z30-collection-code'};
                 $collection_desc = $this->translator->tab40Translate(
-                    (string) $collection_code[0], (string) $location[0]
+                    $collection_code, $sub_library_code
                 );
-            } else {
-                $z30_collection = $item->xpath('z30/z30-collection/text()');
-                $collection_desc = array('desc' => $z30_collection[0]);
             }
-            $sig1 = $item->xpath('z30/z30-call-no/text()');
-            $sig2 = $item->xpath('z30/z30-call-no-2/text()');
-            $desc = $item->xpath('z30/z30-description/text()');
-            $note = $item->xpath('z30/z30-note-opac/text()');
-            $no_of_loans = $item->xpath('z30/z30-no-loans/text()');
             $requested = false;
             $duedate = '';
-            $status = $status[0];
+            $addLink = false;
+            $status = (string) $item->{'status'};
             if (in_array($status, $this->available_statuses)) {
                 $availability = true;
             }
             if ($item_status['request'] == 'Y' && $availability == false) {
-                $reserve = 'N';
+                $addLink = true;
             }
             if ($patron) {
                 $hold_request = $item->xpath('info[@type="HoldRequest"]/@allowed');
-                $reserve = ($hold_request[0] == 'Y')?'N':'Y';
+                $addLink = ($hold_request[0] == 'Y');
             }
             $matches = array();
             if (preg_match(
@@ -868,29 +854,32 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                     $duedate = "requested";
                 }
             }
+            $item_id = $item->attributes()->href;
+            $item_id = substr($item_id, strrpos($item_id, '/') + 1);
+            $note    = (string) $z30->{'z30-note-opac'};
             $holding[] = array(
-                'id' => $id,
-                'item_id' => $item_id,
-                'availability' => $availability, // was true
-                'status' => (string) $item_status['desc'],
-                'location' => (string) $location[0],
-                'reserve' => $reserve, // was 'reserve' => 'N'
-                'callnumber' => (string) $callnumber[0],
-                'duedate' => (string) $duedate,
-                'number' => isset($number[0])?((string) $number[0]):null,
-                'collection' => (string) $collection[0],
-                'collection_desc' => (string) $collection_desc['desc'],
-                'barcode' => (string) $barcode[0],
-                'description' => isset($desc[0])?((string) $desc[0]):null,
-                'note' => isset($note[0])?((string) $note[0]):null,
-                'is_holdable' => true, // ($reserve == 'Y')?true:false,
-                'holdtype' => 'hold',
+                'id'                => $id,
+                'item_id'           => $item_id,
+                'availability'      => $availability,
+                'status'            => (string) $item_status['desc'],
+                'location'          => $sub_library_code,
+                'reserve'           => 'N',
+                'callnumber'        => (string) $z30->{'z30-call-no'},
+                'duedate'           => (string) $duedate,
+                'number'            => (string) $z30->{'z30-inventory-number'},
+                'barcode'           => (string) $z30->{'z30-barcode'},
+                'description'       => (string) $z30->{'z30-description'},
+                'notes'             => ($note == null) ? null : array($note), 
+                'is_holdable'       => true,
+                'addLink'           => $addLink,
+                'holdtype'          => 'hold',
                 /* below are optional attributes*/
-                'sig1' => (string) $sig1[0],
-                'sig2' => isset($sig2[0])?((string) $sig2[0]):null,
-                'sub_lib_desc' => (string) $item_status['sub_lib_desc'],
-                'no_of_loans' => (integer) $no_of_loans[0],
-                'requested' => (string) $requested
+                'collection'        => (string) $collection,
+                'collection_desc'   => (string) $collection_desc['desc'],
+                'callnumber_second' => (string) $z30->{'z30-call-no-2'},
+                'sub_lib_desc'      => (string) $item_status['sub_lib_desc'],
+                'no_of_loans'       => (string) $z30->{'$no_of_loans'},
+                'requested'         => (string) $requested
             );
         }
         return $holding;
