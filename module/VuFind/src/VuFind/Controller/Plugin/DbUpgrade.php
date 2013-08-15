@@ -219,6 +219,9 @@ class DbUpgrade extends AbstractPlugin
                 $oldType = $details['Type'];
                 $parts = explode('(', $oldType);
                 switch ($parts[0]) {
+                case 'char':
+                    $newType = 'binary(' . $parts[1];
+                    break;
                 case 'text':
                     $newType = 'blob';
                     break;
@@ -230,8 +233,9 @@ class DbUpgrade extends AbstractPlugin
                 }
                 // Set up default:
                 if (null !== $details['Default']) {
-                    $safeDefault = mysql_real_escape_string($details['Default']);
-                    $currentDefault = " DEFAULT '{$safeDefault}'";
+                    $safeDefault = $this->getAdapter()->getPlatform()
+                        ->quoteValue($details['Default']);
+                    $currentDefault = " DEFAULT {$safeDefault}";
                 } else {
                     $currentDefault = '';
                 }
