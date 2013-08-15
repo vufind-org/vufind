@@ -264,8 +264,15 @@ class Loader implements \Zend\Log\LoggerAwareInterface
                     $provider = explode(':', trim($provider));
                     $func = trim($provider[0]);
                     $key = isset($provider[1]) ? trim($provider[1]) : null;
-                    if ($this->$func($key)) {
-                        return true;
+                    try {
+                        if ($this->$func($key)) {
+                            return true;
+                        }
+                    } catch (\Exception $e) {
+                        $this->debug(
+                            get_class($e) . ' during processing of ' . $func . ': '
+                            . $e->getMessage()
+                        );
                     }
                 }
             }
