@@ -702,7 +702,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
             $ISBN = new ISBN($isn);
             $isn = $ISBN->get13();
         }
-        $url = 'http://api.summon.serialssolutions.com/image/isbn/' . $id .
+        $url = 'http://api.summon.serialssolutions.com/2.0.0/image/isbn/' . $id .
             '/' . $isn . '/' . $this->size;
         return $this->processImageURL($url);
     }
