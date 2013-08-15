@@ -364,6 +364,17 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
     {
         $ids = is_array($ids) ? $ids : array($ids);
 
+        // SymWS ignores invalid titleIDs instead of rejecting them, so
+        // checking ahead of time for obviously invalid titleIDs is a useful
+        // sanity check (which has a good chance of catching, for example,
+        // the use of something other than catkeys as record IDs).
+        if (count($invalid = preg_grep('/^[1-9][0-9]*$/', $ids, PREG_GREP_INVERT)) > 0) {
+            $titleIDs = count($invalid) == 1 ? 'titleID' : 'titleIDs';
+            $msg = "Invalid $titleIDs: " . implode(', ', $invalid);
+            throw new ILSException($msg);
+        }
+
+        // Prepare $params array for makeRequest().
         $params = array(
             'titleID' => $ids,
             'includeAvailabilityInfo' => 'true',
