@@ -199,8 +199,7 @@
     <documentCache
       class="solr.LRUCache"
       size="50000"
-      initialSize="50000"
-      autowarmCount="10000"/>
+      initialSize="50000"/>
 
     <!-- If true, stored fields that are not requested will be loaded lazily.
 
