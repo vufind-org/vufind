@@ -99,7 +99,7 @@ class AlephTranslator
                 $line = str_pad($line, 80);
                 $matches = "";
                 if (preg_match($rgxp, $line, $matches)) {
-                    call_user_func($callback, $matches, $result, $this->charset);
+                    call_user_func_array($callback, array($matches, &$result, $this->charset));
                 }
             }
         }
