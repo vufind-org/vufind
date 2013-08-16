@@ -1,3 +1,17 @@
+<?
+// Add JS Variables for QrCode
+if (!isset($this->renderingError)) {
+    $script = 'if(vufindString === undefined) { var vufindString = {}; }';
+    $script .= 'vufindString.qrcode_hide = "' . $this->transEsc('qrcode_hide') . '";'
+            . 'vufindString.qrcode_show = "' . $this->transEsc('qrcode_show') . '";';
+}
+?>
+<script type="text/javascript">
+    //<![CDATA[
+    <?=$script?>
+    //]]>
+</script>
+
 <div class="result source<?=$this->escapeHtml($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
   <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueID())?>" class="hiddenId" />
   <div class="span-2">
@@ -112,6 +126,16 @@
   </div>
 
   <div class="span-4 last">
+
+    <? /* Display qrcode if appropriate: */ ?>
+    <? $QRCode = $this->record($this->driver)->getQRCode("results-qrcode"); ?>
+    <? if($QRCode): ?>
+      <a href="#" class="qrcodeLink"><?=$this->transEsc('Show QR Code')?></a>
+      <div class="qrcodeHolder">
+          <img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtml($QRCode);?>"/>
+      </div>
+    <? endif; ?>
+
     <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="fav tool saveRecord controller<?=$this->record($this->driver)->getController()?>" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a>
 
     <div class="savedLists info hide">

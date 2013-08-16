@@ -1,0 +1,12 @@
+<?
+    $available = false;
+    $total = count($holding['items']);
+    $totalAvailable = 0;
+    foreach ($holding['items'] as $row) {
+        if (true == $row['availability']) {
+            $available = true;
+            $totalAvailable++;
+        }
+    }
+?>
+<?=$this->serverUrl($this->recordLink()->getUrl($this->driver))?>
