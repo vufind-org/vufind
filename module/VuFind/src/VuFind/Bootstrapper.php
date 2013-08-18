@@ -445,7 +445,7 @@ class Bootstrapper
         $sm     = $this->event->getApplication()->getServiceManager();
         $bm     = $sm->get('VuFind\Search\BackendManager');
         $events = $sm->get('SharedEventManager');
-        $events->attach('VuFind\Search', 'resolve', array($bm, 'onResolve'));
+        $events->attach('VuFindSearch', 'resolve', array($bm, 'onResolve'));
     }
 
     /**
