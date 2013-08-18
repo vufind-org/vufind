@@ -48,6 +48,15 @@ use Zend\EventManager\EventManager;
  */
 class Service
 {
+    /**
+     * Event identifiers.
+     *
+     * @var string
+     */
+    const EVENT_PRE     = 'pre';
+    const EVENT_POST    = 'post';
+    const EVENT_ERROR   = 'error';
+    const EVENT_RESOLVE = 'resolve';
 
     /**
      * Event manager.
@@ -273,7 +282,7 @@ class Service
     {
         if (!isset($this->backends[$backend])) {
             $response = $this->getEventManager()->trigger(
-                "resolve",
+                self::EVENT_RESOLVE,
                 $this,
                 $args,
                 function ($o) {
@@ -303,7 +312,7 @@ class Service
      */
     public function triggerError(BackendException $exception, $args)
     {
-        $this->getEventManager()->trigger('error', $exception, $args);
+        $this->getEventManager()->trigger(self::EVENT_ERROR, $exception, $args);
     }
 
     /**
@@ -316,7 +325,7 @@ class Service
      */
     protected function triggerPre(BackendInterface $backend, $args)
     {
-        $this->getEventManager()->trigger('pre', $backend, $args);
+        $this->getEventManager()->trigger(self::EVENT_PRE, $backend, $args);
     }
 
     /**
@@ -329,7 +338,7 @@ class Service
      */
     protected function triggerPost($response, $args)
     {
-        $this->getEventManager()->trigger('post', $response, $args);
+        $this->getEventManager()->trigger(self::EVENT_POST, $response, $args);
     }
 
     /**
