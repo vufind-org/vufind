@@ -33,7 +33,6 @@ use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Backend\Exception\BackendException;
 
-use Zend\Log\LoggerInterface;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\EventManager;
 
@@ -64,13 +63,6 @@ class Service
      * @var EventManager
      */
     protected $events;
-
-    /**
-     * Logger, if any.
-     *
-     * @var LoggerInterface
-     */
-    protected $logger;
 
     /**
      * Cache resolved backends.
@@ -227,18 +219,6 @@ class Service
     }
 
     /**
-     * Set application logger.
-     *
-     * @param LoggerInterface $logger Logger
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
      * Set EventManager instance.
      *
      * @param EventManagerInterface $events Event manager
@@ -342,19 +322,4 @@ class Service
         $this->getEventManager()->trigger(self::EVENT_POST, $response, $args);
     }
 
-    /**
-     * Send a message to the logger.
-     *
-     * @param string $level   Log level
-     * @param string $message Log message
-     * @param array  $context Log context
-     *
-     * @return void
-     */
-    protected function log($level, $message, array $context = array())
-    {
-        if ($this->logger) {
-            $this->logger->$level($message, $context);
-        }
-    }
 }

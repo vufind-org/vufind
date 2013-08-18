@@ -101,9 +101,6 @@ class Module
     public function setup(ServiceManager $sm)
     {
         $service = new Service();
-        if ($sm->has('VuFind\Logger')) {
-            $service->setLogger($sm->get('VuFind\Logger'));
-        }
         return $service;
     }
 }
