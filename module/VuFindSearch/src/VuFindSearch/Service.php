@@ -262,7 +262,7 @@ class Service
     public function getEventManager()
     {
         if (!$this->events) {
-            $this->events = new EventManager('VuFind\Search');
+            $this->setEventManager(new EventManager());
         }
         return $this->events;
     }
