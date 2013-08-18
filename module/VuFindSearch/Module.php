@@ -76,31 +76,4 @@ class Module
             ),
         );
     }
-
-    /**
-     * Return service configuration.
-     *
-     * @return array
-     */
-    public function getServiceConfig()
-    {
-        return array(
-            'factories' => array(
-                'VuFind\Search' => array($this, 'setup'),
-            )
-        );
-    }
-
-    /**
-     * Return configured search service to superior service manager.
-     *
-     * @param ServiceManager $sm Service manager
-     *
-     * @return SearchService
-     */
-    public function setup(ServiceManager $sm)
-    {
-        $service = new Service();
-        return $service;
-    }
 }
