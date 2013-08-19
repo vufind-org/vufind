@@ -1508,4 +1508,42 @@ class SolrDefault extends AbstractBase
         return isset($this->fields['long_lat'])
             ? $this->fields['long_lat'] : false;
     }
+
+    /**
+     * Get schema.org type mapping, expected to be a space-delimited string of
+     * sub-types of http://schema.org/CreativeWork, defaulting to CreativeWork
+     * itself if nothing else matches.
+     *
+     * @return string
+     */
+    public function getSchemaOrgFormats()
+    {
+        $types = array();
+        $formats = isset($this->fields['format'])
+            ? array_unique($this->fields['format']) : array();
+        foreach ($formats as $format) {
+            switch ($format) {
+            case 'Book':
+            case 'eBook':
+                $types['Book'] = 1;
+                break;
+            case 'Video':
+            case 'VHS':
+                $types['Movie'] = 1;
+                break;
+            case 'Photo':
+                $types['Photograph'] = 1;
+                break;
+            case 'Map':
+                $types['Map'] = 1;
+                break;
+            case 'Audio':
+                $types['MusicRecording'] = 1;
+                break;
+            default:
+                $types['CreativeWork'] = 1;
+            }
+        }
+        return implode(" ", array_keys($types));
+    }
 }
