@@ -1,4 +1,4 @@
-<div class="span-13" vocab="http://schema.org/" resource="#record" typeof="CreativeWork">
+<div class="span-13" vocab="http://schema.org/" resource="#record" typeof="<?=$this->driver->getSchemaOrgFormats()?> Product">
   <h1 property="name"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h1>
 
   <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $summary[0] : false; ?>
