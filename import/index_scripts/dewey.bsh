@@ -120,11 +120,11 @@ public String getDeweySortable(Record record, String fieldSpec) {
  *
  * @param record
  * @param fieldSpec - which MARC fields / subfields need to be analyzed
- * @return Set containing normalized Dewey numbers extracted from specified fields.
+ * @return List containing normalized Dewey numbers extracted from specified fields.
  */
-public Set getDeweySortables(Record record, String fieldSpec) {
+public List getDeweySortables(Record record, String fieldSpec) {
     // Initialize our return value:
-    Set result = new LinkedHashSet();
+    List result = new LinkedList();
 
     // Loop through the specified MARC fields:
     Set input = indexer.getFieldList(record, fieldSpec);
