@@ -417,6 +417,7 @@ class SearchController extends AbstractSearch
             $url = $view->results->getUrlQuery();
             $url->setDefaultParameter('range', $range);
             $url->setDefaultParameter('department', $dept);
+            $url->setSuppressQuery(true);
         }
 
         return $view;
@@ -522,6 +523,7 @@ class SearchController extends AbstractSearch
         $url->setDefaultParameter('course', $course);
         $url->setDefaultParameter('inst', $inst);
         $url->setDefaultParameter('dept', $dept);
+        $url->setSuppressQuery(true);
         return $view;
     }
 
