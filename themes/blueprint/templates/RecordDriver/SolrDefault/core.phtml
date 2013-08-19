@@ -1,9 +1,9 @@
-<div class="span-13">
-  <h1><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h1>
+<div class="span-13" vocab="http://schema.org/" resource="#record" typeof="CreativeWork">
+  <h1 property="name"><?=$this->escapeHtml($this->driver->getShortTitle() . ' ' . $this->driver->getSubtitle() . ' ' . $this->driver->getTitleSection())?></h1>
 
   <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $summary[0] : false; ?>
   <? if ($summary): ?>
-    <p>
+    <p property="description">
       <?=$this->escapeHtml($this->truncate($summary, 300))?>
       <a href='<?=$this->recordLink()->getTabUrl($this->driver, 'Description')?>#tabnav'><?=$this->transEsc('Full description')?></a>
     </p>
@@ -48,14 +48,14 @@
     <? if (isset($authors['main']) && !empty($authors['main'])): ?>
     <tr valign="top">
       <th><?=$this->transEsc('Main Author')?>: </th>
-      <td><a href="<?=$this->record($this->driver)->getLink('author', $authors['main'])?>"><?=$this->escapeHtml($authors['main'])?></a></td>
+      <td><a href="<?=$this->record($this->driver)->getLink('author', $authors['main'])?>" property="author"><?=$this->escapeHtml($authors['main'])?></a></td>
     </tr>
     <? endif; ?>
 
     <? if (isset($authors['corporate']) && !empty($authors['corporate'])): ?>
     <tr valign="top">
       <th><?=$this->transEsc('Corporate Author')?>: </th>
-      <td><a href="<?=$this->record($this->driver)->getLink('author', $authors['corporate'])?>"><?=$this->escapeHtml($authors['corporate'])?></a></td>
+      <td><a href="<?=$this->record($this->driver)->getLink('author', $authors['corporate'])?>" property="creator"><?=$this->escapeHtml($authors['corporate'])?></a></td>
     </tr>
     <? endif; ?>
 
@@ -63,7 +63,7 @@
     <tr valign="top">
       <th><?=$this->transEsc('Other Authors')?>: </th>
       <td>
-        <? $i = 0; foreach ($authors['secondary'] as $field): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->record($this->driver)->getLink('author', $field)?>"><?=$this->escapeHtml($field)?></a><? endforeach; ?>
+        <? $i = 0; foreach ($authors['secondary'] as $field): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->record($this->driver)->getLink('author', $field)?>" property="contributor"><?=$this->escapeHtml($field)?></a><? endforeach; ?>
       </td>
     </tr>
     <? endif; ?>
@@ -96,7 +96,7 @@
     <? $edition = $this->driver->getEdition(); if (!empty($edition)): ?>
     <tr valign="top">
       <th><?=$this->transEsc('Edition')?>: </th>
-      <td><?=$this->escapeHtml($edition)?></td>
+      <td property="bookEdition"><?=$this->escapeHtml($edition)?></td>
     </tr>
     <? endif; ?>
 
@@ -130,7 +130,7 @@
       <th><?=$this->transEsc('Subjects')?>: </th>
       <td>
         <? foreach ($subjects as $field): ?>
-        <div class="subjectLine">
+        <div class="subjectLine" property="keywords">
           <? $subject = ''; ?>
           <? $i = 0; foreach ($field as $subfield): ?>
             <?=($i++ == 0) ? '' : ' &gt; '?>
