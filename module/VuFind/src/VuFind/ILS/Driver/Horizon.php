@@ -130,11 +130,10 @@ class Horizon extends AbstractBase
      * @return array
      *
      */
-
     protected function parseStatus($status)
     {
-        $statuses = isset($this->config['Statuses'][$item_status])
-                  ? $this->config['Statuses'][$item_status] : null;
+        $statuses = isset($this->config['Statuses'][$status])
+            ? $this->config['Statuses'][$status] : null;
 
         // query the config file for the item status if there are
         // config values, use the configuration otherwise execute the switch
