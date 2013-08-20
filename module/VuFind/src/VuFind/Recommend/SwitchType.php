@@ -42,10 +42,33 @@ namespace VuFind\Recommend;
  */
 class SwitchType implements RecommendInterface
 {
-    protected $newHandler;      // search handler to try
-    protected $newHandlerName;  // on-screen description of handler
-    protected $active;          // is this module active?
-    protected $results;         // results object
+    /**
+     * search handler to try
+     *
+     * @var string
+     */
+    protected $newHandler;
+
+    /**
+     * on-screen description of handler
+     *
+     * @var string
+     */
+    protected $newHandlerName;
+
+    /**
+     * is this module active?
+     *
+     * @var bool
+     */
+    protected $active;
+
+    /**
+     * results object
+     *
+     * @var \VuFind\Search\Base\Results
+     */
+    protected $results;
 
     /**
      * setConfig
