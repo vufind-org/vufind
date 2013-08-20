@@ -319,6 +319,7 @@ $config = array(
         ),
         'invokables' => array(
             'VuFind\SessionManager' => 'Zend\Session\SessionManager',
+            'VuFind\Search'         => 'VuFindSearch\Service',
         ),
         'initializers' => array(
             array('VuFind\ServiceManager\Initializer', 'initInstance'),

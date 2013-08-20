@@ -277,6 +277,26 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
     );
 
     /**
+     * Setup test case.
+     *
+     * Mark test skipped if short_open_tag is not enabled. The partial
+     * uses short open tags. This directive is PHP_INI_PERDIR,
+     * i.e. can only be changed via php.ini or a per-directory
+     * equivalent. The testCitations() will fail if the test is run on
+     * a system with short_open_tag disabled in the system-wide php
+     * ini-file.
+     *
+     * @return void
+     */
+    protected function setup ()
+    {
+        parent::setup();
+        if (!ini_get('short_open_tag')) {
+            $this->markTestSkipped('Test requires short_open_tag to be enabled');
+        }
+    }
+
+    /**
      * Test citation generation
      *
      * @return void

@@ -33,7 +33,6 @@ use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Backend\Exception\BackendException;
 
-use Zend\Log\LoggerInterface;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\EventManager;
 
@@ -48,6 +47,15 @@ use Zend\EventManager\EventManager;
  */
 class Service
 {
+    /**
+     * Event identifiers.
+     *
+     * @var string
+     */
+    const EVENT_PRE     = 'pre';
+    const EVENT_POST    = 'post';
+    const EVENT_ERROR   = 'error';
+    const EVENT_RESOLVE = 'resolve';
 
     /**
      * Event manager.
@@ -55,13 +63,6 @@ class Service
      * @var EventManager
      */
     protected $events;
-
-    /**
-     * Logger, if any.
-     *
-     * @var LoggerInterface
-     */
-    protected $logger;
 
     /**
      * Cache resolved backends.
@@ -218,27 +219,16 @@ class Service
     }
 
     /**
-     * Set application logger.
-     *
-     * @param LoggerInterface $logger Logger
-     *
-     * @return void
-     */
-    public function setLogger(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
-
-    /**
      * Set EventManager instance.
      *
      * @param EventManagerInterface $events Event manager
      *
      * @return void
+     * @todo   Deprecate `VuFind\Search' event namespace (2.2)
      */
     public function setEventManager(EventManagerInterface $events)
     {
-        $events->setIdentifiers('VuFind\Search');
+        $events->setIdentifiers(array('VuFind\Search', 'VuFindSearch'));
         $this->events = $events;
     }
 
@@ -252,7 +242,7 @@ class Service
     public function getEventManager()
     {
         if (!$this->events) {
-            $this->events = new EventManager('VuFind\Search');
+            $this->setEventManager(new EventManager());
         }
         return $this->events;
     }
@@ -273,7 +263,7 @@ class Service
     {
         if (!isset($this->backends[$backend])) {
             $response = $this->getEventManager()->trigger(
-                "resolve",
+                self::EVENT_RESOLVE,
                 $this,
                 $args,
                 function ($o) {
@@ -303,7 +293,7 @@ class Service
      */
     public function triggerError(BackendException $exception, $args)
     {
-        $this->getEventManager()->trigger('error', $exception, $args);
+        $this->getEventManager()->trigger(self::EVENT_ERROR, $exception, $args);
     }
 
     /**
@@ -316,7 +306,7 @@ class Service
      */
     protected function triggerPre(BackendInterface $backend, $args)
     {
-        $this->getEventManager()->trigger('pre', $backend, $args);
+        $this->getEventManager()->trigger(self::EVENT_PRE, $backend, $args);
     }
 
     /**
@@ -329,22 +319,7 @@ class Service
      */
     protected function triggerPost($response, $args)
     {
-        $this->getEventManager()->trigger('post', $response, $args);
+        $this->getEventManager()->trigger(self::EVENT_POST, $response, $args);
     }
 
-    /**
-     * Send a message to the logger.
-     *
-     * @param string $level   Log level
-     * @param string $message Log message
-     * @param array  $context Log context
-     *
-     * @return void
-     */
-    protected function log($level, $message, array $context = array())
-    {
-        if ($this->logger) {
-            $this->logger->$level($message, $context);
-        }
-    }
 }
