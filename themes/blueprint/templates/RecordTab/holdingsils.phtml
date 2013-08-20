@@ -10,7 +10,18 @@
 
     // Set page title.
     $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
+    // Add JS Variables for QrCode
+    if (!isset($this->renderingError)) {
+        $script = 'if(vufindString === undefined) { var vufindString = {}; }';
+        $script .= 'vufindString.qrcode_hide = "' . $this->transEsc('qrcode_hide') . '";'
+        . 'vufindString.qrcode_show = "' . $this->transEsc('qrcode_show') . '";';
+    }
 ?>
+
+<script type="text/javascript">
+<?=$script?>
+</script>
+
 <? if ($offlineMode == "ils-offline"): ?>
   <div class="sysInfo">
     <h2><?=$this->transEsc('ils_offline_title')?></h2>
@@ -46,6 +57,16 @@
   <? if ($openUrl): ?><?=$this->openUrl($openUrl);?><? endif; ?>
 <? endif; ?>
 <? foreach ($holdings as $location => $holding): ?>
+<? /* Display qrcode if appropriate: */ ?>
+<? $QRCode = $this->record($this->driver)->getQRCode("holdings-qrcode", $location, $holding); ?>
+<? if($QRCode): ?>
+<div class="qrcodeHoldings">
+  <a href="#" class="span-4 qrcodeLink"><?=$this->transEsc('Show QR Code')?></a>
+  <div class="qrcodeHolder">
+    <img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtml($QRCode);?>"/>
+  </div>
+</div>
+<? endif; ?>
 <h3><?=$this->transEsc($location)?></h3>
 <table cellpadding="2" cellspacing="0" border="0" class="citation" summary="<?=$this->transEsc('Holdings details from')?> <?=$this->transEsc($location)?>">
   <? $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
