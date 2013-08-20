@@ -368,7 +368,8 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
         // checking ahead of time for obviously invalid titleIDs is a useful
         // sanity check (which has a good chance of catching, for example,
         // the use of something other than catkeys as record IDs).
-        if (count($invalid = preg_grep('/^[1-9][0-9]*$/', $ids, PREG_GREP_INVERT)) > 0) {
+        $invalid = preg_grep('/^[1-9][0-9]*$/', $ids, PREG_GREP_INVERT);
+        if (count($invalid) > 0) {
             $titleIDs = count($invalid) == 1 ? 'titleID' : 'titleIDs';
             $msg = "Invalid $titleIDs: " . implode(', ', $invalid);
             throw new ILSException($msg);
