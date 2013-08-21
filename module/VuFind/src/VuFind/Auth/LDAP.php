@@ -56,6 +56,14 @@ class LDAP extends AbstractBase
     protected $password;
 
     /**
+     * Catalog Password
+     *
+     * @var string
+     */
+    protected $cat_password_temp;
+
+
+    /**
      * Validate configuration parameters.  This is a support method for getConfig(),
      * so the configuration MUST be accessed using $this->config; do not call
      * $this->getConfig() from within this method!
@@ -214,10 +222,18 @@ class LDAP extends AbstractBase
                 foreach ($fields as $field) {
                     $configValue = $this->getSetting($field);
                     if ($data[$i][$j] == $configValue && !empty($configValue)) {
-                        $user->$field = $data[$i][$data[$i][$j]][0];
+                        if ($field != "cat_password" ) {
+                            $user->$field = $data[$i][$data[$i][$j]][0];
+                        }
+                        else {
+                            $this->cat_password_temp = $data[$i][$data[$i][$j]][0];
+                        }
                     }
                 }
             }
+        }
+        if (isset($this->cat_password_temp) && !empty($this->cat_password_temp) && !empty($user->cat_username)) {
+            $user->saveCredentials($user->cat_username, $this->cat_password_temp); 
         }
 
         // Update the user in the database, then return it to the caller:
