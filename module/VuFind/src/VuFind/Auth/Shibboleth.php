@@ -94,15 +94,29 @@ class Shibboleth extends AbstractBase
         // If we made it this far, we should log in the user!
         $user = $this->getUserTable()->getByUsername($username);
 
+        // Variable to hold catalog password (handled separately from other
+        // attributes since we need to use saveCredentials method to store it):
+        $catPassword = null;
+
         // Has the user configured attributes to use for populating the user table?
         $attribsToCheck = array(
-            "cat_username", "email", "lastname", "firstname", "college", "major",
-            "home_library"
+            'cat_username', 'cat_password', 'email', 'lastname', 'firstname',
+            'college', 'major', 'home_library'
         );
         foreach ($attribsToCheck as $attribute) {
             if (isset($shib->$attribute)) {
-                $user->$attribute = $request->getServer()->get($shib->$attribute);
+                $value = $request->getServer()->get($shib->$attribute);
+                if ($attribute != 'cat_password') {
+                    $user->$attribute = $value;
+                } else {
+                    $catPassword = $value;
+                }
             }
+        }
+
+        // Save credentials if applicable:
+        if (!empty($catPassword) && !empty($user->cat_username)) {
+            $user->saveCredentials($user->cat_username, $catPassword);
         }
 
         // Save and return the user object:
