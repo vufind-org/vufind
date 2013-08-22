@@ -48,14 +48,14 @@
     <? if (isset($authors['main']) && !empty($authors['main'])): ?>
     <tr valign="top">
       <th><?=$this->transEsc('Main Author')?>: </th>
-      <td><a href="<?=$this->record($this->driver)->getLink('author', $authors['main'])?>" property="author"><?=$this->escapeHtml($authors['main'])?></a></td>
+      <td property="author"><a href="<?=$this->record($this->driver)->getLink('author', $authors['main'])?>"><?=$this->escapeHtml($authors['main'])?></a></td>
     </tr>
     <? endif; ?>
 
     <? if (isset($authors['corporate']) && !empty($authors['corporate'])): ?>
     <tr valign="top">
       <th><?=$this->transEsc('Corporate Author')?>: </th>
-      <td><a href="<?=$this->record($this->driver)->getLink('author', $authors['corporate'])?>" property="creator"><?=$this->escapeHtml($authors['corporate'])?></a></td>
+      <td property="creator"><a href="<?=$this->record($this->driver)->getLink('author', $authors['corporate'])?>"><?=$this->escapeHtml($authors['corporate'])?></a></td>
     </tr>
     <? endif; ?>
 
@@ -63,7 +63,7 @@
     <tr valign="top">
       <th><?=$this->transEsc('Other Authors')?>: </th>
       <td>
-        <? $i = 0; foreach ($authors['secondary'] as $field): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->record($this->driver)->getLink('author', $field)?>" property="contributor"><?=$this->escapeHtml($field)?></a><? endforeach; ?>
+        <? $i = 0; foreach ($authors['secondary'] as $field): ?><?=($i++ == 0)?'':', '?><span property="contributor"><a href="<?=$this->record($this->driver)->getLink('author', $field)?>"><?=$this->escapeHtml($field)?></a></span><? endforeach; ?>
       </td>
     </tr>
     <? endif; ?>
