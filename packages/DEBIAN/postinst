@@ -26,6 +26,10 @@ a2enmod rewrite
 chown -R www-data:www-data $VUFIND_LOCAL_DIR/cache
 chown -R www-data:www-data $VUFIND_LOCAL_DIR/config
 
+# Set up CLI cache.
+mkdir $VUFIND_LOCAL_DIR/cache/cli
+chmod 777 $VUFIND_LOCAL_DIR/cache/cli
+
 # Create the Apache configuration
 cd $VUFIND_HOME
 php install.php --use-defaults
