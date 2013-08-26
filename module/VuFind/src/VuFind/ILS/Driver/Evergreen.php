@@ -99,22 +99,20 @@ class Evergreen extends AbstractBase
         $holding = array();
 
         // Build SQL Statement
-        $sql = "select copy_status.name as status, " .
-               "call_number.label as callnumber, " .
-               "copy_location.name as location " .
-               "from $this->dbName.config.copy_status, " .
-               "$this->dbName.asset.call_number, " .
-               "$this->dbName.asset.copy_location, " .
-               "$this->dbName.asset.copy " .
-               "where copy.id = $id " .
-               "and copy.status = copy_status.id " .
-               "and copy.call_number = call_number.id " .
-               "and copy.location = copy_location.id";
+        $sql = <<<HERE
+SELECT ccs.name AS status, acn.label AS callnumber, acpl.name AS location
+FROM config.copy_status ccs
+    INNER JOIN asset.copy ac ON ccs.id = ac.status
+    INNER JOIN asset.call_number acn ON ac.call_number = acn.id
+    INNER JOIN asset.copy_location acpl ON ac.copy_location = acpl.id
+WHERE ac.id = ?
+HERE;
 
         // Execute SQL
         try {
             $holding = array();
             $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt->bindParam(1, $id, PDO::PARAM_INT);
             $sqlStmt->execute();
         } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
@@ -190,29 +188,26 @@ class Evergreen extends AbstractBase
         $holding = array();
 
         // Build SQL Statement
-        $sql = "select copy_status.name as status, " .
-               "call_number.label as callnumber, " .
-               "org_unit.name as location, " .
-               "copy.copy_number as copy_number, " .
-               "copy.barcode as barcode, " .
-               "extract (year from circulation.due_date) as due_year, " .
-               "extract (month from circulation.due_date) as due_month, " .
-               "extract (day from circulation.due_date) as due_day " .
-               "from $this->dbName.config.copy_status, " .
-               "$this->dbName.asset.call_number, " .
-               "$this->dbName.actor.org_unit, " .
-               "$this->dbName.asset.copy " .
-               "FULL JOIN $this->dbName.action.circulation " .
-               "ON (copy.id = circulation.target_copy " .
-               " and circulation.checkin_time is null) " .
-               "where copy.id = $id " .
-               "and copy.status = copy_status.id " .
-               "and copy.call_number = call_number.id " .
-               "and copy.circ_lib = org_unit.id";
+        $sql = <<<HERE
+SELECT ccs.name AS status, acn.label AS callnumber, aou.name AS location,
+    ac.copy_number, ac.barcode,
+    extract (year from circ.due_date) as due_year,
+    extract (month from circ.due_date) as due_month,
+    extract (day from circ.due_date) as due_day
+FROM config.copy_status ccs
+    INNER JOIN asset.copy ac ON ac.status = ccs.id
+    INNER JOIN asset.call_number acn ON acn.id = ac.call_number
+    INNER JOIN actor.org_unit aou ON aou.id = ac.circ_lib
+    FULL JOIN action.circulation circ ON (
+        ac.id = circ.target_copy AND circ.checkin_time IS NULL
+    )
+WHERE acn.record = ?
+HERE;
 
         // Execute SQL
         try {
             $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt->bindParam(1, $id, PDO::PARAM_INT);
             $sqlStmt->execute();
         } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
@@ -246,7 +241,6 @@ class Evergreen extends AbstractBase
             } else {
                 $due_date = "";
             }
-
             $holding[] = array(
                 'id' => $id,
                 'availability' => $available,
@@ -295,23 +289,26 @@ class Evergreen extends AbstractBase
      */
     public function patronLogin($barcode, $passwd)
     {
-        $sql = "select usr.id as id, usr.first_given_name as firstName, " .
-               "usr.family_name as lastName, usr.email, usrname " .
-               "from actor.usr, actor.card " .
-               "where usr.card = card.id " .
-               "and card.active = true " .
-               "and usr.passwd = MD5('$passwd') ";
-
+        $sql = <<<HERE
+SELECT usr.id, usr.first_given_name as firstName,
+    usr.family_name as lastName, usr.email, usrname
+FROM actor.usr usr
+    INNER JOIN actor.card ON usr.card = card.id
+WHERE card.active = true
+    AND usr.passwd = MD5(?)
+HERE;
         if (is_numeric($barcode)) {
             // A barcode was supplied as ID
-            $sql .= "and card.barcode = '$barcode'";
+            $sql .= "AND card.barcode = ?";
         } else {
             // A username was supplied as ID
-            $sql .= "and usr.usrname = '$barcode'";
+            $sql .= "AND usr.usrname = ?";
         }
 
         try {
             $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt->bindParam(1, $passwd, PDO::PARAM_STR);
+            $sqlStmt->bindParam(2, $barcode, PDO::PARAM_STR);
             $sqlStmt->execute();
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             if (isset($row['id']) && ($row['id'] != '')) {
@@ -507,17 +504,20 @@ class Evergreen extends AbstractBase
      */
     public function getMyProfile($patron)
     {
-        $sql = "select usr.family_name, usr.first_given_name, " .
-               "usr.day_phone, usr.evening_phone, usr.other_phone, " .
-               "usr_address.street1, usr_address.street2, " .
-               "usr_address.post_code, usr.usrgroup " .
-               "from actor.usr, actor.usr_address " .
-               "where usr.id = '" . $patron['id'] . "' " .
-               "and usr.active = true " .
-               "and usr.mailing_address = usr_address.id";
+        $sql = <<<HERE
+SELECT usr.family_name, usr.first_given_name, usr.day_phone,
+    usr.evening_phone, usr.other_phone, aua.street1,
+    aua.street2, aua.post_code, pgt.name AS usrgroup
+FROM actor.usr
+    FULL JOIN actor.usr_address aua ON aua.id = usr.mailing_address
+    INNER JOIN permission.grp_tree pgt ON pgt.id = usr.profile
+WHERE usr.active = true
+     AND usr.id = ?
+HERE;
 
         try {
             $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt->bindParam(1, $patron['id'], PDO::PARAM_INT);
             $sqlStmt->execute();
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
 
