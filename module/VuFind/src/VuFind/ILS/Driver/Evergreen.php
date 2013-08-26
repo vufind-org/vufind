@@ -99,22 +99,20 @@ class Evergreen extends AbstractBase
         $holding = array();
 
         // Build SQL Statement
-        $sql = "select copy_status.name as status, " .
-               "call_number.label as callnumber, " .
-               "copy_location.name as location " .
-               "from $this->dbName.config.copy_status, " .
-               "$this->dbName.asset.call_number, " .
-               "$this->dbName.asset.copy_location, " .
-               "$this->dbName.asset.copy " .
-               "where copy.id = $id " .
-               "and copy.status = copy_status.id " .
-               "and copy.call_number = call_number.id " .
-               "and copy.location = copy_location.id";
+        $sql = <<<HERE
+SELECT ccs.name AS status, acn.label AS callnumber, acpl.name AS location
+FROM config.copy_status ccs
+    INNER JOIN asset.copy ac ON ccs.id = ac.status
+    INNER JOIN asset.call_number acn ON ac.call_number = acn.id
+    INNER JOIN asset.copy_location acpl ON ac.copy_location = acpl.id
+WHERE ac.id = ?
+HERE;
 
         // Execute SQL
         try {
             $holding = array();
             $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt->bindParam(1, $id, PDO::PARAM_INT);
             $sqlStmt->execute();
         } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
@@ -190,29 +188,26 @@ class Evergreen extends AbstractBase
         $holding = array();
 
         // Build SQL Statement
-        $sql = "select copy_status.name as status, " .
-               "call_number.label as callnumber, " .
-               "org_unit.name as location, " .
-               "copy.copy_number as copy_number, " .
-               "copy.barcode as barcode, " .
-               "extract (year from circulation.due_date) as due_year, " .
-               "extract (month from circulation.due_date) as due_month, " .
-               "extract (day from circulation.due_date) as due_day " .
-               "from $this->dbName.config.copy_status, " .
-               "$this->dbName.asset.call_number, " .
-               "$this->dbName.actor.org_unit, " .
-               "$this->dbName.asset.copy " .
-               "FULL JOIN $this->dbName.action.circulation " .
-               "ON (copy.id = circulation.target_copy " .
-               " and circulation.checkin_time is null) " .
-               "where copy.id = $id " .
-               "and copy.status = copy_status.id " .
-               "and copy.call_number = call_number.id " .
-               "and copy.circ_lib = org_unit.id";
+        $sql = <<<HERE
+SELECT ccs.name AS status, acn.label AS callnumber, aou.name AS location,
+    ac.copy_number, ac.barcode,
+    extract (year from circ.due_date) as due_year,
+    extract (month from circ.due_date) as due_month,
+    extract (day from circ.due_date) as due_day
+FROM config.copy_status ccs
+    INNER JOIN asset.copy ac ON ac.status = ccs.id
+    INNER JOIN asset.call_number acn ON acn.id = ac.call_number
+    INNER JOIN actor.org_unit aou ON aou.id = ac.circ_lib
+    FULL JOIN action.circulation circ ON (
+        ac.id = circ.target_copy AND circ.checkin_time IS NULL
+    )
+WHERE acn.record = ?
+HERE;
 
         // Execute SQL
         try {
             $sqlStmt = $this->db->prepare($sql);
+            $sqlStmt->bindParam(1, $id, PDO::PARAM_INT);
             $sqlStmt->execute();
         } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
@@ -246,7 +241,6 @@ class Evergreen extends AbstractBase
             } else {
                 $due_date = "";
             }
-
             $holding[] = array(
                 'id' => $id,
                 'availability' => $available,
