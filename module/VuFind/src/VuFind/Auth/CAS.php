@@ -146,13 +146,19 @@ class CAS extends AbstractBase
         );
         foreach ($attribsToCheck as $attribute) {
             if (isset($cas->$attribute)) {
-                if (isset($casauth->getAttribute(cat_username)) && $attribute == "cat_password" && isset($casauth->getAttribute($cas->cat_password))) { 
-                    $user->saveCredentials($casauth->getAttribute($cas->cat_username), $casauth->getAttribute($cas->cat_password));
-                }
-                else {
-                    $user->$attribute = $casauth->getAttribute($cas->$attribute);
+                $value = $casauth->getAttribute($cas->$attribute);
+                if ($attribute != 'cat_password') {
+                    $user->$attribute = $value;
+                } else {
+                   $catPassword = $value;
                 }
             }
+        }
+
+        // Save credentials if applicable:
+        if (!empty ($catPassword) && !empty($user->cat_username)) {
+           $user->saveCredentials($user->cat_username, $casPassword);
+
         }
 
         // Save and return the user object:
