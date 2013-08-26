@@ -439,6 +439,17 @@ class Horizon extends AbstractBase
      */
     public function getStatuses($idList)
     {
+        // Make sure we only give Horizon integers
+        $callback = function ($i) {
+            return preg_match('/^[0-9]+$/', $i);
+        };
+        $idList = array_filter($idList, $callback);
+
+        // Skip DB call if we have no valid IDs.
+        if (empty($idList)) {
+            return array();
+        }
+
         $sqlArray = $this->getStatusesSQL($idList);
         $sql      = $this->buildSqlFromArray($sqlArray);
 
