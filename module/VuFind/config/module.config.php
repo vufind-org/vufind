@@ -138,6 +138,7 @@ $config = array(
         )
     ),
     'service_manager' => array(
+        'allow_override' => true,
         'factories' => array(
             'VuFind\AuthManager' => function ($sm) {
                 return new \VuFind\Auth\Manager(
@@ -325,6 +326,7 @@ $config = array(
             array('VuFind\ServiceManager\Initializer', 'initInstance'),
         ),
         'aliases' => array(
+            'mvctranslator' => 'VuFind\Translator',
             'translator' => 'VuFind\Translator',
         ),
     ),

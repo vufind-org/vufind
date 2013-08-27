@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "83fbfd387d9ede9662af03b21e48c831",
+    "hash": "491fdb42e52e4e1f5c562c15af39febf",
     "packages": [
         {
             "name": "johnwohlers/sip2",
@@ -368,17 +368,17 @@
         },
         {
             "name": "zendframework/zendframework",
-            "version": "2.2.1",
+            "version": "2.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zf2.git",
-                "reference": "release-2.2.1"
+                "reference": "7469e0ca45e55f6179cea109e7d4e210ba9b2b10"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-2.2.1-release-2.2.1-8597ab.zip",
-                "reference": "2.2.1",
-                "shasum": "f8419ea13b7f3f1195b625fa789688b47efe8778"
+                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-7469e0ca45e55f6179cea109e7d4e210ba9b2b10-zip-bb08c0.zip",
+                "reference": "2.2.2",
+                "shasum": "3f6fc92c3c428f37f9ef2fde78c58551ca718dfd"
             },
             "require": {
                 "php": ">=5.3.3"
@@ -420,6 +420,7 @@
                 "zendframework/zend-permissions-acl": "self.version",
                 "zendframework/zend-permissions-rbac": "self.version",
                 "zendframework/zend-progressbar": "self.version",
+                "zendframework/zend-resources": "self.version",
                 "zendframework/zend-serializer": "self.version",
                 "zendframework/zend-server": "self.version",
                 "zendframework/zend-servicemanager": "self.version",
@@ -439,7 +440,7 @@
                 "doctrine/annotations": ">=1.0",
                 "ircmaxell/random-lib": "dev-master",
                 "ircmaxell/security-lib": "dev-master",
-                "ocramius/proxy-manager": "0.3.*",
+                "ocramius/proxy-manager": "0.4.*",
                 "phpunit/phpunit": "3.7.*"
             },
             "suggest": {
@@ -451,7 +452,9 @@
                 "zendframework/zendservice-recaptcha": "ZendService\\ReCaptcha for rendering ReCaptchas in Zend\\Captcha and/or Zend\\Form"
             },
             "bin": [
-                "bin/classmap_generator.php"
+                "bin/classmap_generator.php",
+                "bin/pluginmap_generator.php",
+                "bin/templatemap_generator.php"
             ],
             "type": "library",
             "extra": {
@@ -462,8 +465,7 @@
             },
             "autoload": {
                 "psr-0": {
-                    "Zend\\": "library/",
-                    "ZendTest\\": "tests/"
+                    "Zend\\": "library/"
                 }
             },
             "license": [
@@ -476,10 +478,10 @@
                 "zf2"
             ],
             "support": {
-                "source": "https://github.com/zendframework/zf2/tree/release-2.2.1",
+                "source": "https://github.com/zendframework/zf2/tree/release-2.2.2",
                 "issues": "https://github.com/zendframework/zf2/issues"
             },
-            "time": "2013-06-12 20:13:34"
+            "time": "2013-07-24 14:02:19"
         },
         {
             "name": "zendframework/zendrest",

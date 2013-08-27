@@ -197,8 +197,8 @@ class Factory
                     break;
                 case 'required':
                     $input->setRequired($value);
-                    if (!isset($inputSpecification['allow_empty'])) {
-                        $input->setAllowEmpty(!$value);
+                    if (isset($inputSpecification['allow_empty'])) {
+                        $input->setAllowEmpty($inputSpecification['allow_empty']);
                     }
                     break;
                 case 'allow_empty':
@@ -212,6 +212,7 @@ class Factory
                     break;
                 case 'error_message':
                     $input->setErrorMessage($value);
+                    break;
                 case 'fallback_value':
                     $input->setFallbackValue($value);
                     break;
@@ -283,6 +284,7 @@ class Factory
         $inputFilter = $this->getInputFilterManager()->get($type);
 
         if ($inputFilter instanceof CollectionInputFilter) {
+            $inputFilter->setFactory($this);
             if (isset($inputFilterSpecification['input_filter'])) {
                 $inputFilter->setInputFilter($inputFilterSpecification['input_filter']);
             }
