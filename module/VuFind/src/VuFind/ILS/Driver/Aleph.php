@@ -254,7 +254,7 @@ class AlephTranslator
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class AlephRestfulException extends \Exception
+class AlephRestfulException extends ILSException
 {
     /**
      * XML response (false for none)
