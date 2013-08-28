@@ -96,6 +96,13 @@ class Connector
     protected $map;
 
     /**
+     * Solr field used to store unique identifier
+     *
+     * @var string
+     */
+    protected $uniqueKey;
+
+    /**
      * HTTP read timeout.
      *
      * @var int
@@ -121,15 +128,17 @@ class Connector
     /**
      * Constructor
      *
-     * @param string     $url SOLR base URL
-     * @param HandlerMap $map Handler map
+     * @param string     $url       SOLR base URL
+     * @param HandlerMap $map       Handler map
+     * @param string     $uniqueKey Solr field used to store unique identifier
      *
      * @return void
      */
-    public function __construct($url, HandlerMap $map)
+    public function __construct($url, HandlerMap $map, $uniqueKey = 'id')
     {
         $this->url = $url;
         $this->map = $map;
+        $this->uniqueKey = $uniqueKey;
     }
 
     /// Public API
@@ -165,7 +174,8 @@ class Connector
     public function retrieve($id, ParamBag $params = null)
     {
         $params = $params ?: new ParamBag();
-        $params->set('q', sprintf('id:"%s"', addcslashes($id, '"')));
+        $params
+            ->set('q', sprintf('%s:"%s"', $this->uniqueKey, addcslashes($id, '"')));
 
         $handler = $this->map->getHandler(__FUNCTION__);
         $this->map->prepare(__FUNCTION__, $params);
@@ -186,7 +196,8 @@ class Connector
     public function similar($id, ParamBag $params = null)
     {
         $params = $params ?: new ParamBag();
-        $params->set('q', sprintf('id:"%s"', addcslashes($id, '"')));
+        $params
+            ->set('q', sprintf('%s:"%s"', $this->uniqueKey, addcslashes($id, '"')));
         $params->set('qt', 'morelikethis');
 
         $handler = $this->map->getHandler(__FUNCTION__);
