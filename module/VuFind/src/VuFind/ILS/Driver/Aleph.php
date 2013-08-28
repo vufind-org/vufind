@@ -519,6 +519,8 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         $replyCode = (string) $result->{'reply-code'};
         if ($replyCode != "0000") {
             $replyText = (string) $result->{'reply-text'};
+            $this->logger->err("DLF request failed", array('url' => $url,
+                'reply-code' => $replyCode, 'reply-message' => $replyText));
             $ex = new AlephRestfulException($replyText, $replyCode);
             $ex->setXmlResponse($result);
             throw $ex;
