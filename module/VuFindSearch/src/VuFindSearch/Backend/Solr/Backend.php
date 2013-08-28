@@ -500,7 +500,7 @@ class Backend implements BackendInterface, SimilarInterface, RetrieveBatchInterf
      */
     protected function refineBrowseException(RemoteErrorException $e)
     {
-        $error = $e->getMessage();
+        $error = $e->getMessage() . $e->getResponse();
         if (strstr($error, 'does not exist') || strstr($error, 'no such table')
             || strstr($error, 'couldn\'t find a browse index')
         ) {
@@ -508,7 +508,7 @@ class Backend implements BackendInterface, SimilarInterface, RetrieveBatchInterf
                 "Alphabetic Browse index missing.  See " .
                 "http://vufind.org/wiki/alphabetical_heading_browse for " .
                 "details on generating the index.",
-                $e->getCode()
+                $e->getCode(), $e->getResponse(), $e->getPrevious()
             );
         }
         throw $e;

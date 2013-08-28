@@ -60,16 +60,26 @@ class Editions implements RelatedInterface
     protected $wcUtils;
 
     /**
+     * Maximum limit
+     *
+     * @var int
+     */
+    protected $maxLimit;
+
+    /**
      * Constructor
      *
-     * @param \VuFind\Search\Results\PluginManager $results Results plugin manager
-     * @param \VuFind\Connection\WorldCatUtils     $wcUtils WorldCat utils object
+     * @param \VuFind\Search\Results\PluginManager $results  Results plugin manager
+     * @param \VuFind\Connection\WorldCatUtils     $wcUtils  WorldCat utils object
+     * @param int                                  $maxLimit The maximum number of
+     * results to look up in Solr; set to -1 to use the "max boolean clauses" limit.
      */
     public function __construct(\VuFind\Search\Results\PluginManager $results,
-        \VuFind\Connection\WorldCatUtils $wcUtils
+        \VuFind\Connection\WorldCatUtils $wcUtils, $maxLimit = -1
     ) {
         $this->resultsManager = $results;
         $this->wcUtils = $wcUtils;
+        $this->maxLimit = $maxLimit;
     }
 
     /**
@@ -91,6 +101,9 @@ class Editions implements RelatedInterface
             $result = $this->resultsManager->get('Solr');
             $params = $result->getParams();
             $limit = $params->getQueryIDLimit();
+            if ($this->maxLimit > 0 && $limit > $this->maxLimit) {
+                $limit = $this->maxLimit;
+            }
             if (count($parts) > $limit) {
                 $parts = array_slice($parts, 0, $limit);
             }

@@ -68,6 +68,13 @@ class UrlQueryHelper
     protected $defaultParams = array();
 
     /**
+     * Should we suppress the standard query parameter?
+     *
+     * @var bool
+     */
+    protected $suppressQuery = false;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Params $params VuFind search results object.
@@ -104,6 +111,18 @@ class UrlQueryHelper
     }
 
     /**
+     * Control query suppression
+     *
+     * @param bool $suppress Should we suppress queries?
+     *
+     * @return void
+     */
+    public function setSuppressQuery($suppress)
+    {
+        $this->suppressQuery = $suppress;
+    }
+
+    /**
      * Get an array of URL parameters.
      *
      * @return array
@@ -113,40 +132,42 @@ class UrlQueryHelper
         $params = $this->defaultParams;
 
         // Build all the URL parameters based on search object settings:
-        if ($this->params->getSearchType() == 'advanced') {
-            $query = $this->params->getQuery();
-            if ($query instanceof QueryGroup) {
-                $params['join'] = $query->getOperator();
-                foreach ($query->getQueries() as $i => $current) {
-                    if ($current instanceof QueryGroup) {
-                        $operator = $current->isNegated()
-                            ? 'NOT' : $current->getOperator();
-                        $params['bool' . $i] = array($operator);
-                        foreach ($current->getQueries() as $inner) {
-                            if (!isset($params['lookfor' . $i])) {
-                                $params['lookfor' . $i] = array();
+        if (!$this->suppressQuery) {
+            if ($this->params->getSearchType() == 'advanced') {
+                $query = $this->params->getQuery();
+                if ($query instanceof QueryGroup) {
+                    $params['join'] = $query->getOperator();
+                    foreach ($query->getQueries() as $i => $current) {
+                        if ($current instanceof QueryGroup) {
+                            $operator = $current->isNegated()
+                                ? 'NOT' : $current->getOperator();
+                            $params['bool' . $i] = array($operator);
+                            foreach ($current->getQueries() as $inner) {
+                                if (!isset($params['lookfor' . $i])) {
+                                    $params['lookfor' . $i] = array();
+                                }
+                                if (!isset($params['type' . $i])) {
+                                    $params['type' . $i] = array();
+                                }
+                                $params['lookfor'.$i][] = $inner->getString();
+                                $params['type' . $i][] = $inner->getHandler();
                             }
-                            if (!isset($params['type' . $i])) {
-                                $params['type' . $i] = array();
-                            }
-                            $params['lookfor'.$i][] = $inner->getString();
-                            $params['type' . $i][] = $inner->getHandler();
+                        } else {
+                            throw new \Exception('Unexpected Query object.');
                         }
-                    } else {
-                        throw new \Exception('Unexpected Query object.');
                     }
+                } else {
+                    throw new \Exception('Unexpected Query object.');
                 }
             } else {
-                throw new \Exception('Unexpected Query object.');
-            }
-        } else {
-            $search = $this->params->getDisplayQuery();
-            if (!empty($search)) {
-                $params[$this->basicSearchParam] = $search;
-            }
-            $type = $this->params->getSearchHandler();
-            if (!empty($type)) {
-                $params['type'] = $type;
+                $search = $this->params->getDisplayQuery();
+                if (!empty($search)) {
+                    $params[$this->basicSearchParam] = $search;
+                }
+                $type = $this->params->getSearchHandler();
+                if (!empty($type)) {
+                    $params['type'] = $type;
+                }
             }
         }
         $sort = $this->params->getSort();

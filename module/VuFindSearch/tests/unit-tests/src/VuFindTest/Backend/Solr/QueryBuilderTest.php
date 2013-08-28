@@ -136,7 +136,7 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
             array("()", "*:*"),                     // empty parens
             array("((()))", "*:*"),                 // nested empty parens
             array("((())", "*:*"),                  // mismatched parens
-            array("this that ()", "this that "),    // text mixed w/ empty parens
+            array("this that ()", "this that"),     // text mixed w/ empty parens
             array('"()"', '"()"'),                  // empty parens in quotes
             array('title - sub', 'title sub'),      // freestanding hyphen
             array('"title - sub"', '"title - sub"'),// freestanding hyphen in quotes
@@ -154,6 +154,7 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
             array('^10', '10'),                     // invalid boosts
             array('test^ test^6', 'test test6'),    // invalid boosts
             array('test^1 test^2', 'test^1 test^2'),// valid boosts
+            array('title /', 'title'),              // trailing slash
         );
         // @codingStandardsIgnoreEnd
 

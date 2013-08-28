@@ -547,6 +547,10 @@ class QueryBuilder implements QueryBuilderInterface
             $input = preg_replace($parenRegex, '', $input);
         }
 
+        // Remove surrounding slashes and whitespace -- these serve no purpose
+        // and can cause problems.
+        $input = trim($input, '/ ');
+
         return $input;
     }
 

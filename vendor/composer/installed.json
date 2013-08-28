@@ -445,24 +445,24 @@
     },
     {
         "name": "symfony/yaml",
-        "version": "v2.3.1",
-        "version_normalized": "2.3.1.0",
+        "version": "v2.3.4",
+        "version_normalized": "2.3.4.0",
         "target-dir": "Symfony/Component/Yaml",
         "source": {
             "type": "git",
             "url": "https://github.com/symfony/Yaml.git",
-            "reference": "v2.3.1"
+            "reference": "5a279f1b5f5e1045a6c432354d9ea727ff3a9847"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/symfony/Yaml/zipball/v2.3.1",
-            "reference": "v2.3.1",
+            "url": "https://api.github.com/repos/symfony/Yaml/zipball/5a279f1b5f5e1045a6c432354d9ea727ff3a9847",
+            "reference": "5a279f1b5f5e1045a6c432354d9ea727ff3a9847",
             "shasum": ""
         },
         "require": {
             "php": ">=5.3.3"
         },
-        "time": "2013-05-10 18:12:13",
+        "time": "2013-08-24 15:26:22",
         "type": "library",
         "extra": {
             "branch-alias": {
@@ -494,18 +494,18 @@
     },
     {
         "name": "zendframework/zendframework",
-        "version": "2.2.1",
-        "version_normalized": "2.2.1.0",
+        "version": "2.2.4",
+        "version_normalized": "2.2.4.0",
         "source": {
             "type": "git",
             "url": "https://github.com/zendframework/zf2.git",
-            "reference": "release-2.2.1"
+            "reference": "5b03d868755c181fc9b5dc56c1f8c26e73ca0bed"
         },
         "dist": {
             "type": "zip",
-            "url": "https://packages.zendframework.com/composer/zendframework-zendframework-2.2.1-release-2.2.1-8597ab.zip",
-            "reference": "2.2.1",
-            "shasum": "f8419ea13b7f3f1195b625fa789688b47efe8778"
+            "url": "https://packages.zendframework.com/composer/zendframework-zendframework-5b03d868755c181fc9b5dc56c1f8c26e73ca0bed-zip-8b1552.zip",
+            "reference": "2.2.4",
+            "shasum": "f12b12d23c937b8cbd246c6fa56c07fb1df34cb0"
         },
         "require": {
             "php": ">=5.3.3"
@@ -547,6 +547,7 @@
             "zendframework/zend-permissions-acl": "self.version",
             "zendframework/zend-permissions-rbac": "self.version",
             "zendframework/zend-progressbar": "self.version",
+            "zendframework/zend-resources": "self.version",
             "zendframework/zend-serializer": "self.version",
             "zendframework/zend-server": "self.version",
             "zendframework/zend-servicemanager": "self.version",
@@ -566,7 +567,7 @@
             "doctrine/annotations": ">=1.0",
             "ircmaxell/random-lib": "dev-master",
             "ircmaxell/security-lib": "dev-master",
-            "ocramius/proxy-manager": "0.3.*",
+            "ocramius/proxy-manager": "0.4.*",
             "phpunit/phpunit": "3.7.*"
         },
         "suggest": {
@@ -577,9 +578,11 @@
             "zendframework/zendpdf": "ZendPdf for creating PDF representations of barcodes",
             "zendframework/zendservice-recaptcha": "ZendService\\ReCaptcha for rendering ReCaptchas in Zend\\Captcha and/or Zend\\Form"
         },
-        "time": "2013-06-12 20:13:34",
+        "time": "2013-08-26 15:09:04",
         "bin": [
-            "bin/classmap_generator.php"
+            "bin/classmap_generator.php",
+            "bin/pluginmap_generator.php",
+            "bin/templatemap_generator.php"
         ],
         "type": "library",
         "extra": {
@@ -591,8 +594,7 @@
         "installation-source": "dist",
         "autoload": {
             "psr-0": {
-                "Zend\\": "library/",
-                "ZendTest\\": "tests/"
+                "Zend\\": "library/"
             }
         },
         "license": [
@@ -605,7 +607,7 @@
             "zf2"
         ],
         "support": {
-            "source": "https://github.com/zendframework/zf2/tree/release-2.2.1",
+            "source": "https://github.com/zendframework/zf2/tree/release-2.2.4",
             "issues": "https://github.com/zendframework/zf2/issues"
         }
     }

@@ -130,11 +130,10 @@ class Horizon extends AbstractBase
      * @return array
      *
      */
-
     protected function parseStatus($status)
     {
-        $statuses = isset($this->config['Statuses'][$item_status])
-                  ? $this->config['Statuses'][$item_status] : null;
+        $statuses = isset($this->config['Statuses'][$status])
+            ? $this->config['Statuses'][$status] : null;
 
         // query the config file for the item status if there are
         // config values, use the configuration otherwise execute the switch
@@ -440,6 +439,17 @@ class Horizon extends AbstractBase
      */
     public function getStatuses($idList)
     {
+        // Make sure we only give Horizon integers
+        $callback = function ($i) {
+            return preg_match('/^[0-9]+$/', $i);
+        };
+        $idList = array_filter($idList, $callback);
+
+        // Skip DB call if we have no valid IDs.
+        if (empty($idList)) {
+            return array();
+        }
+
         $sqlArray = $this->getStatusesSQL($idList);
         $sql      = $this->buildSqlFromArray($sqlArray);
 
