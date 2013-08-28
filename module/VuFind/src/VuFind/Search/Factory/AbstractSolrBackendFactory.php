@@ -98,6 +98,13 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected $solrCore = '';
 
     /**
+     * Solr field used to store unique identifiers
+     *
+     * @var string
+     */
+    protected $uniqueKey = 'id';
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -254,7 +261,9 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             }
         }
 
-        $connector = new Connector($this->getSolrUrl(), new HandlerMap($handlers));
+        $connector = new Connector(
+            $this->getSolrUrl(), new HandlerMap($handlers), $this->uniqueKey
+        );
         $connector->setTimeout(
             isset($config->Index->timeout) ? $config->Index->timeout : 30
         );
