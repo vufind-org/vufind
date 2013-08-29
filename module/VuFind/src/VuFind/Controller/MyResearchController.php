@@ -532,7 +532,10 @@ class MyResearchController extends AbstractBase
             );
             // If the user already confirmed the operation, perform the delete now;
             // otherwise prompt for confirmation:
-            if ($this->params()->fromPost('confirm')) {
+            $confirm = $this->params()->fromPost(
+                'confirm', $this->params()->fromQuery('confirm')
+            );
+            if ($confirm) {
                 $success = $this->performDeleteFavorite($deleteId, $deleteSource);
                 if ($success !== true) {
                     return $success;
@@ -602,7 +605,9 @@ class MyResearchController extends AbstractBase
 
             // Similarly, if the user is in the process of bulk-saving records,
             // send them back to the appropriate place in the cart.
-            $bulkIds = $this->params()->fromPost('ids', array());
+            $bulkIds = $this->params()->fromPost(
+                'ids', $this->params()->fromQuery('ids', array())
+            );
             if (!empty($bulkIds)) {
                 $params = array();
                 foreach ($bulkIds as $id) {
