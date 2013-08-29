@@ -279,8 +279,13 @@ class SearchHandler
             // unmodified (it's probably an advanced search that won't benefit from
             // tokenization).  We'll just set all possible values to the same thing,
             // except that we'll try to do the "one phrase" in quotes if possible.
-            // IMPORTANT: If we detect a boolean NOT, we MUST omit the quotes.
-            if (strstr($search, '"') || strstr($search, ' NOT ')) {
+            // IMPORTANT: If we detect a boolean NOT, we MUST omit the quotes. We
+            // also omit quotes if the phrase is already quoted or if there is no
+            // whitespace (in which case phrase searching is pointless and might
+            // interfere with wildcard behavior):
+            if (strstr($search, '"') || strstr($search, ' NOT ')
+                || !preg_match('/\s/', $search)
+            ) {
                 $mungeValues['onephrase'] = $search;
             } else {
                 $mungeValues['onephrase'] = sprintf('"%s"', $search);
@@ -331,7 +336,6 @@ class SearchHandler
      */
     protected function createQueryString($search, $advanced = false)
     {
-
         // If this is a basic query and we have Dismax settings, let's build
         // a Dismax subquery to avoid some of the ugly side effects of our Lucene
         // query generation logic.
