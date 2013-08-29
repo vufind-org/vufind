@@ -613,7 +613,7 @@ class MyResearchController extends AbstractBase
                 foreach ($bulkIds as $id) {
                     $params[] = urlencode('ids[]') . '=' . urlencode($id);
                 }
-                $saveUrl = $this->url()->forRoute('cart-save');
+                $saveUrl = $this->url()->fromRoute('cart-save');
                 return $this->redirect()
                     ->toUrl($saveUrl . '?' . implode('&', $params));
             }
