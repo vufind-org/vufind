@@ -193,7 +193,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     public function getPickUpLocations($patron, $holdDetails = null)
     {
-        $pickresponse = false;
+        $pickresponse = array();
         if ($this->wsPickUpLocations == false) {
             // Select
             $sqlSelect = array(
