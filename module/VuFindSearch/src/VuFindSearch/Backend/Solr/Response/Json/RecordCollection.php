@@ -98,8 +98,11 @@ class RecordCollection extends AbstractRecordCollection
     public function getSpellcheck()
     {
         if (!$this->spellcheck) {
+            $sq = isset($this->response['responseHeader']['params']['spellcheck.q'])
+                ? $this->response['responseHeader']['params']['spellcheck.q']
+                : $this->response['responseHeader']['params']['q'];
             $this->spellcheck
-                = new Spellcheck($this->response['spellcheck']['suggestions']);
+                = new Spellcheck($this->response['spellcheck']['suggestions'], $sq);
         }
         return $this->spellcheck;
     }

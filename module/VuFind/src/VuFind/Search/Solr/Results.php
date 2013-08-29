@@ -67,7 +67,7 @@ class Results extends BaseResults
      *
      * @var string
      */
-    protected $spellingQuery;
+    protected $spellingQuery = '';
 
     /**
      * Support method for performAndProcessSearch -- perform a search based on the
@@ -88,8 +88,7 @@ class Results extends BaseResults
         $this->resultTotal = $collection->getTotal();
 
         // Process spelling suggestions
-        $spellcheck = $collection->getSpellcheck();
-        $this->processSpelling($spellcheck);
+        $this->processSpelling($collection->getSpellcheck());
 
         // Construct record drivers for all the items in the response:
         $this->results = $collection->getRecords();
@@ -148,13 +147,10 @@ class Results extends BaseResults
         $backendParams = new ParamBag();
 
         // Spellcheck
-        if ($params->getOptions()->spellcheckEnabled()) {
-            $spelling = $query->getAllTerms();
-            if ($spelling) {
-                $backendParams->set('spellcheck.q', $spelling);
-                $this->spellingQuery = $spelling;
-            }
-        }
+        $backendParams->set(
+            'spellcheck',
+            $params->getOptions()->spellcheckEnabled() ? 'true' : 'false'
+        );
 
         // Facets
         $facets = $params->getFacetSettings();
@@ -212,9 +208,9 @@ class Results extends BaseResults
      */
     protected function processSpelling(Spellcheck $spellcheck)
     {
+        $this->spellingQuery = $spellcheck->getQuery();
         $this->suggestions = array();
         foreach ($spellcheck as $term => $info) {
-
             // TODO: Avoid reference to Options
             if ($this->getOptions()->shouldSkipNumericSpelling()
                 && is_numeric($term)

@@ -94,6 +94,13 @@ class QueryBuilder implements QueryBuilderInterface
     public $createHighlightingQuery = false;
 
     /**
+     * Should we create the spellcheck.q parameter when appropriate?
+     *
+     * @var bool
+     */
+    public $createSpellingQuery = false;
+
+    /**
      * Constructor.
      *
      * @param array $specs Search handler specifications
@@ -159,6 +166,11 @@ class QueryBuilder implements QueryBuilderInterface
         }
         $params->set('q', $string);
 
+        // Add spelling query if applicable:
+        if ($this->createSpellingQuery) {
+            $params->set('spellcheck.q', $query->getAllTerms());
+        }
+
         return $params;
     }
 
@@ -174,6 +186,19 @@ class QueryBuilder implements QueryBuilderInterface
     public function setCreateHighlightingQuery($enable)
     {
         $this->createHighlightingQuery = $enable;
+    }
+
+    /**
+     * Control whether or not the QueryBuilder should create a spellcheck.q
+     * parameter. (Turned off by default).
+     *
+     * @param bool $enable Should spelling query generation be enabled?
+     *
+     * @return void
+     */
+    public function setCreateSpellingQuery($enable)
+    {
+        $this->createSpellingQuery = $enable;
     }
 
     /**

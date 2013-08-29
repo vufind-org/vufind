@@ -36,7 +36,6 @@ use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
 use VuFindSearch\Backend\Solr\Response\Json\Terms;
-use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Feature\SimilarInterface;
@@ -66,13 +65,6 @@ class Backend implements BackendInterface, SimilarInterface, RetrieveBatchInterf
      * @var RecordCollectionFactoryInterface
      */
     protected $collectionFactory;
-
-    /**
-     * Dictionaries for spellcheck.
-     *
-     * @var array
-     */
-    protected $dictionaries;
 
     /**
      * Logger, if any.
@@ -112,7 +104,6 @@ class Backend implements BackendInterface, SimilarInterface, RetrieveBatchInterf
     public function __construct(Connector $connector)
     {
         $this->connector    = $connector;
-        $this->dictionaries = array();
         $this->identifier   = null;
     }
 
@@ -127,19 +118,6 @@ class Backend implements BackendInterface, SimilarInterface, RetrieveBatchInterf
     {
         $this->identifier = $identifier;
     }
-
-    /**
-     * Set the spellcheck dictionaries to use.
-     *
-     * @param array $dictionaries Spellcheck dictionaries
-     *
-     * @return void
-     */
-    public function setDictionaries(array $dictionaries)
-    {
-        $this->dictionaries = $dictionaries;
-    }
-
 
     /**
      * Perform a search and return record collection.
@@ -157,34 +135,12 @@ class Backend implements BackendInterface, SimilarInterface, RetrieveBatchInterf
         $params = $params ?: new ParamBag();
         $this->injectResponseWriter($params);
 
-        $spellcheck = $params->get('spellcheck.q');
-        if ($spellcheck) {
-            if (empty($this->dictionaries)) {
-                $this->log(
-                    'warn',
-                    'Spellcheck requested but no spellcheck dictionary configured'
-                );
-                $spellcheck = false;
-            } else {
-                reset($this->dictionaries);
-                $params->set('spellcheck', 'true');
-                $params->set('spellcheck.dictionary', current($this->dictionaries));
-            }
-        }
-
         $params->set('rows', $limit);
         $params->set('start', $offset);
         $params->mergeWith($this->getQueryBuilder()->build($query));
         $response   = $this->connector->search($params);
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
-
-        if ($spellcheck) {
-            $spellcheckQuery = $params->get('spellcheck.q');
-            $this->aggregateSpellcheck(
-                $collection->getSpellcheck(), end($spellcheckQuery)
-            );
-        }
 
         return $collection;
     }
@@ -544,28 +500,5 @@ class Backend implements BackendInterface, SimilarInterface, RetrieveBatchInterf
         }
         $params->set('wt', array('json'));
         $params->set('json.nl', array('arrarr'));
-    }
-
-    /**
-     * Submit requests for more spelling suggestions.
-     *
-     * @param Spellcheck $spellcheck Aggregating spellcheck object
-     * @param string     $query      Spellcheck query
-     *
-     * @return void
-     */
-    protected function aggregateSpellcheck(Spellcheck $spellcheck, $query)
-    {
-        while (next($this->dictionaries) !== false) {
-            $params = new ParamBag(array('q' => '*:*', 'rows' => 0));
-            $params->set('spellcheck', 'true');
-            $params->set('spellcheck.q', $query);
-            $params->set('spellcheck.dictionary', current($this->dictionaries));
-            $this->injectResponseWriter($params);
-
-            $response   = $this->connector->search($params);
-            $collection = $this->createRecordCollection($response);
-            $spellcheck->mergeWith($collection->getSpellcheck());
-        }
     }
 }
