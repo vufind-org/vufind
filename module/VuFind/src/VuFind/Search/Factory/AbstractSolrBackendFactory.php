@@ -30,6 +30,7 @@
 namespace VuFind\Search\Factory;
 
 use VuFind\Search\Solr\InjectHighlightingListener;
+use VuFind\Search\Solr\InjectSpellingListener;
 use VuFind\Search\Solr\MultiIndexListener;
 use VuFind\Search\Solr\V3\ErrorListener as LegacyErrorListener;
 use VuFind\Search\Solr\V4\ErrorListener;
@@ -54,7 +55,6 @@ use Zend\ServiceManager\FactoryInterface;
  */
 abstract class AbstractSolrBackendFactory implements FactoryInterface
 {
-
     /**
      * Logger.
      *
@@ -140,21 +140,8 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      */
     protected function createBackend(Connector $connector)
     {
-
-        $config  = $this->config->get('config');
         $backend = new Backend($connector);
         $backend->setQueryBuilder($this->createQueryBuilder());
-
-        // Spellcheck
-        if (isset($config->Spelling->enabled) && $config->Spelling->enabled) {
-            if (isset($config->Spelling->simple) && $config->Spelling->simple) {
-                $dictionaries = array('basicSpell');
-            } else {
-                $dictionaries = array('default', 'basicSpell');
-            }
-            $backend->setDictionaries($dictionaries);
-        }
-
         if ($this->logger) {
             $backend->setLogger($this->logger);
         }
@@ -175,6 +162,18 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         // Highlighting
         $highlightListener = new InjectHighlightingListener($backend);
         $highlightListener->attach($events);
+
+        // Spellcheck
+        $config  = $this->config->get('config');
+        if (isset($config->Spelling->enabled) && $config->Spelling->enabled) {
+            if (isset($config->Spelling->simple) && $config->Spelling->simple) {
+                $dictionaries = array('basicSpell');
+            } else {
+                $dictionaries = array('default', 'basicSpell');
+            }
+            $spellingListener = new InjectSpellingListener($backend, $dictionaries);
+            $spellingListener->attach($events);
+        }
 
         // Apply field stripping if applicable:
         $search = $this->config->get($this->searchConfig);
