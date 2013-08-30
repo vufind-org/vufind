@@ -175,7 +175,8 @@ class InjectSpellingListener
             $params = new ParamBag();
             $params->set('spellcheck', 'true');
             $params->set('spellcheck.dictionary', current($this->dictionaries));
-            $collection = $this->backend->search(new Query($query), 0, 0, $params);
+            $queryObj = new Query($query, 'AllFields');
+            $collection = $this->backend->search($queryObj, 0, 0, $params);
             $spellcheck->mergeWith($collection->getSpellcheck());
         }
     }
