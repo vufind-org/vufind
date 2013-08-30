@@ -26,6 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\WorldCat;
+use VuFindSearch\ParamBag;
 
 /**
  * WorldCat Search Parameters
@@ -38,4 +39,19 @@ namespace VuFind\Search\WorldCat;
  */
 class Params extends \VuFind\Search\Base\Params
 {
+    /**
+     * Create search backend parameters for advanced features.
+     *
+     * @return ParamBag
+     */
+    public function getBackendParameters()
+    {
+        $backendParams = new ParamBag();
+
+        // Sort
+        $sort = $this->getSort();
+        $backendParams->set('sortKeys', empty($sort) ? 'relevance' : $sort);
+
+        return $backendParams;
+    }
 }

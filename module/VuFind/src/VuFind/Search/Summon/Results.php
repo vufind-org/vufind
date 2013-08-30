@@ -26,11 +26,6 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Summon;
-use SerialsSolutions_Summon_Query as SummonQuery,
-    VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\Search\Base\Results as BaseResults,
-    VuFind\Solr\Utils as SolrUtils,
-    VuFindSearch\ParamBag;
 
 /**
  * Summon Search Parameters
@@ -41,7 +36,7 @@ use SerialsSolutions_Summon_Query as SummonQuery,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Results extends BaseResults
+class Results extends \VuFind\Search\Base\Results
 {
     /**
      * Facet details:
@@ -75,7 +70,7 @@ class Results extends BaseResults
         $query  = $this->getParams()->getQuery();
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
-        $params = $this->createBackendParameters($this->getParams());
+        $params = $this->getParams()->getBackendParameters();
         $collection = $this->getSearchService()->search(
             'Summon', $query, $offset, $limit, $params
         );
@@ -110,113 +105,6 @@ class Results extends BaseResults
 
         // Construct record drivers for all the items in the response:
         $this->results = $collection->getRecords();
-    }
-
-    /**
-     * Create search backend parameters for advanced features.
-     *
-     * @param Params $params Search parameters
-     *
-     * @return ParamBag
-     */
-    protected function createBackendParameters(Params $params)
-    {
-        $backendParams = new ParamBag();
-
-        $options = $params->getOptions();
-
-        // The "relevance" sort option is a VuFind reserved word; we need to make
-        // this null in order to achieve the desired effect with Summon:
-        $sort = $params->getSort();
-        $finalSort = ($sort == 'relevance') ? null : $sort;
-        $backendParams->set('sort', $finalSort);
-
-        $backendParams->set('didYouMean', $options->spellcheckEnabled());
-
-        if ($options->highlightEnabled()) {
-            $backendParams->set('highlight', true);
-            $backendParams->set('highlightStart', '{{{{START_HILITE}}}}');
-            $backendParams->set('highlightEnd', '{{{{END_HILITE}}}}');
-        }
-        $backendParams->set(
-            'facets',
-            $this->createBackendFacetParameters($params->getFullFacetSettings())
-        );
-        $this->createBackendFilterParameters(
-            $backendParams, $params->getFilterList()
-        );
-
-        return $backendParams;
-    }
-
-    /**
-     * Set up facets based on VuFind settings.
-     *
-     * @param array $facets Facet settings
-     *
-     * @return array
-     */
-    protected function createBackendFacetParameters($facets)
-    {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('Summon');
-        $defaultFacetLimit = isset($config->Facet_Settings->facet_limit)
-            ? $config->Facet_Settings->facet_limit : 30;
-
-        $finalFacets = array();
-        foreach ($facets as $facet) {
-            // See if parameters are included as part of the facet name;
-            // if not, override them with defaults.
-            $parts = explode(',', $facet);
-            $facetName = $parts[0];
-            $facetMode = isset($parts[1]) ? $parts[1] : 'and';
-            $facetPage = isset($parts[2]) ? $parts[2] : 1;
-            $facetLimit = isset($parts[3]) ? $parts[3] : $defaultFacetLimit;
-            $facetParams = "{$facetMode},{$facetPage},{$facetLimit}";
-            $finalFacets[] = "{$facetName},{$facetParams}";
-        }
-        return $finalFacets;
-    }
-
-    /**
-     * Set up filters based on VuFind settings.
-     *
-     * @param ParamBag $params     Parameter collection to update
-     * @param array    $filterList Filter settings
-     *
-     * @return void
-     */
-    public function createBackendFilterParameters(ParamBag $params, $filterList)
-    {
-        // Which filters should be applied to our query?
-        if (!empty($filterList)) {
-            // Loop through all filters and add appropriate values to request:
-            foreach ($filterList as $filterArray) {
-                foreach ($filterArray as $filt) {
-                    $safeValue = SummonQuery::escapeParam($filt['value']);
-                    // Special case -- "holdings only" is a separate parameter from
-                    // other facets.
-                    if ($filt['field'] == 'holdingsOnly') {
-                        $params->set(
-                            'holdings', strtolower(trim($safeValue)) == 'true'
-                        );
-                    } else if ($filt['field'] == 'excludeNewspapers') {
-                        // Special case -- support a checkbox for excluding
-                        // newspapers:
-                        $params
-                            ->add('filters', "ContentType,Newspaper Article,true");
-                    } else if ($range = SolrUtils::parseRange($filt['value'])) {
-                        // Special case -- range query (translate [x TO y] syntax):
-                        $from = SummonQuery::escapeParam($range['from']);
-                        $to = SummonQuery::escapeParam($range['to']);
-                        $params
-                            ->add('rangeFilters', "{$filt['field']},{$from}:{$to}");
-                    } else {
-                        // Standard case:
-                        $params->add('filters', "{$filt['field']},{$safeValue}");
-                    }
-                }
-            }
-        }
     }
 
     /**

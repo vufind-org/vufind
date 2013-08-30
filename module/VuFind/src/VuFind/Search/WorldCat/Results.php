@@ -26,9 +26,6 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\WorldCat;
-use VuFind\Exception\RecordMissing as RecordMissingException;
-use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\ParamBag;
 
 /**
  * WorldCat Search Parameters
@@ -52,7 +49,7 @@ class Results extends \VuFind\Search\Base\Results
         $query  = $this->getParams()->getQuery();
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
-        $params = $this->createBackendParameters($query, $this->getParams());
+        $params = $this->getParams()->getBackendParameters();
         $collection = $this->getSearchService()
             ->search('WorldCat', $query, $offset, $limit, $params);
 
@@ -72,24 +69,5 @@ class Results extends \VuFind\Search\Base\Results
     {
         // No facets in WorldCat:
         return array();
-    }
-
-    /**
-     * Create search backend parameters for advanced features.
-     *
-     * @param AbstractQuery $query  Query being processed
-     * @param Params        $params Search parameters
-     *
-     * @return ParamBag
-     */
-    protected function createBackendParameters(AbstractQuery $query, Params $params)
-    {
-        $backendParams = new ParamBag();
-
-        // Sort
-        $sort = $params->getSort();
-        $backendParams->set('sortKeys', empty($sort) ? 'relevance' : $sort);
-
-        return $backendParams;
     }
 }

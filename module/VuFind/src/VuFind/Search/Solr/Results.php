@@ -26,14 +26,6 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Solr;
-use VuFind\Exception\RecordMissing as RecordMissingException,
-    VuFind\Search\Base\Results as BaseResults;
-
-use VuFindSearch\Query\AbstractQuery;
-use VuFindSearch\Query\QueryGroup;
-use VuFindSearch\Query\Query;
-
-use VuFindSearch\ParamBag;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 
 /**
@@ -46,7 +38,7 @@ use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Results extends BaseResults
+class Results extends \VuFind\Search\Base\Results
 {
     /**
      * Facet details:
@@ -80,7 +72,7 @@ class Results extends BaseResults
         $query  = $this->getParams()->getQuery();
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
-        $params = $this->createBackendParameters($query, $this->getParams());
+        $params = $this->getParams()->getBackendParameters();
         $collection = $this->getSearchService()
             ->search($this->backendId, $query, $offset, $limit, $params);
 
@@ -92,111 +84,6 @@ class Results extends BaseResults
 
         // Construct record drivers for all the items in the response:
         $this->results = $collection->getRecords();
-    }
-
-    /**
-     * Normalize sort parameters.
-     *
-     * @param string $sort Sort parameter
-     *
-     * @return string
-     */
-    protected function normalizeSort($sort)
-    {
-        static $table = array(
-            'year' => array('field' => 'publishDateSort', 'order' => 'desc'),
-            'publishDateSort' =>
-                array('field' => 'publishDateSort', 'order' => 'desc'),
-            'author' => array('field' => 'authorStr', 'order' => 'asc'),
-            'title' => array('field' => 'title_sort', 'order' => 'asc'),
-            'relevance' => array('field' => 'score', 'order' => 'desc'),
-            'callnumber' => array('field' => 'callnumber', 'order' => 'asc'),
-        );
-        $normalized = array();
-        foreach (explode(',', $sort) as $component) {
-            $parts = explode(' ', trim($component));
-            $field = reset($parts);
-            $order = next($parts);
-            if (isset($table[$field])) {
-                $normalized[] = sprintf(
-                    '%s %s',
-                    $table[$field]['field'],
-                    $order ?: $table[$field]['order']
-                );
-            } else {
-                $normalized[] = sprintf(
-                    '%s %s',
-                    $field,
-                    $order ?: 'asc'
-                );
-            }
-        }
-        return implode(',', $normalized);
-    }
-
-    /**
-     * Create search backend parameters for advanced features.
-     *
-     * @param AbstractQuery $query  Current search query
-     * @param Params        $params Search parameters
-     *
-     * @return ParamBag
-     */
-    protected function createBackendParameters(AbstractQuery $query, Params $params)
-    {
-        $backendParams = new ParamBag();
-
-        // Spellcheck
-        $backendParams->set(
-            'spellcheck',
-            $params->getOptions()->spellcheckEnabled() ? 'true' : 'false'
-        );
-
-        // Facets
-        $facets = $params->getFacetSettings();
-        if (!empty($facets)) {
-            $backendParams->add('facet', 'true');
-            foreach ($facets as $key => $value) {
-                $backendParams->add("facet.{$key}", $value);
-            }
-            $backendParams->add('facet.mincount', 1);
-        }
-
-        // Filters
-        $filters = $params->getFilterSettings();
-        foreach ($filters as $filter) {
-            $backendParams->add('fq', $filter);
-        }
-
-        // Shards
-        $allShards = $params->getOptions()->getShards();
-        $shards = $params->getSelectedShards();
-        if (is_null($shards)) {
-            $shards = array_keys($allShards);
-        }
-
-        // If we have selected shards, we need to format them:
-        if (!empty($shards)) {
-            $selectedShards = array();
-            foreach ($shards as $current) {
-                $selectedShards[$current] = $allShards[$current];
-            }
-            $shards = $selectedShards;
-            $backendParams->add('shards', implode(',', $selectedShards));
-        }
-
-        // Sort
-        $sort = $params->getSort();
-        if ($sort) {
-            $backendParams->add('sort', $this->normalizeSort($sort));
-        }
-
-        // Highlighting -- on by default, but we should disable if necessary:
-        if (!$params->getOptions()->highlightEnabled()) {
-            $backendParams->add('hl', 'false');
-        }
-
-        return $backendParams;
     }
 
     /**

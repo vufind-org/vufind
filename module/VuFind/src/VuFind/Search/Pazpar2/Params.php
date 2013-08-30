@@ -26,6 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Pazpar2;
+use VuFindSearch\ParamBag;
 
 /**
  * Pazpar2 Search Parameters
@@ -38,4 +39,25 @@ namespace VuFind\Search\Pazpar2;
  */
 class Params extends \VuFind\Search\Base\Params
 {
+    /**
+     * Create search backend parameters for advanced features.
+     *
+     * @return ParamBag
+     */
+    public function getBackendParameters()
+    {
+        $backendParams = new ParamBag();
+
+        // Sources
+        $sources = $this->getSelectedShards();
+        if (!empty($sources)) {
+            $allShards = $this->getOptions()->getShards();
+            foreach ($sources as $i=>$current) {
+                $sources[$i] = $allShards[$current];
+            }
+            $backendParams->set('filter', 'pz:id='.implode('|', $sources));
+        }
+
+        return $backendParams;
+    }
 }

@@ -26,6 +26,9 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search\Summon;
+use SerialsSolutions_Summon_Query as SummonQuery,
+    VuFind\Solr\Utils as SolrUtils,
+    VuFindSearch\ParamBag;
 
 /**
  * Summon Search Parameters
@@ -134,5 +137,103 @@ class Params extends \VuFind\Search\Base\Params
 
         // Return modified list:
         return $facets;
+    }
+
+    /**
+     * Create search backend parameters for advanced features.
+     *
+     * @return ParamBag
+     */
+    public function getBackendParameters()
+    {
+        $backendParams = new ParamBag();
+
+        $options = $this->getOptions();
+
+        // The "relevance" sort option is a VuFind reserved word; we need to make
+        // this null in order to achieve the desired effect with Summon:
+        $sort = $this->getSort();
+        $finalSort = ($sort == 'relevance') ? null : $sort;
+        $backendParams->set('sort', $finalSort);
+
+        $backendParams->set('didYouMean', $options->spellcheckEnabled());
+
+        if ($options->highlightEnabled()) {
+            $backendParams->set('highlight', true);
+            $backendParams->set('highlightStart', '{{{{START_HILITE}}}}');
+            $backendParams->set('highlightEnd', '{{{{END_HILITE}}}}');
+        }
+        $backendParams->set('facets', $this->getBackendFacetParameters());
+        $this->createBackendFilterParameters($backendParams);
+
+        return $backendParams;
+    }
+
+    /**
+     * Set up facets based on VuFind settings.
+     *
+     * @return array
+     */
+    protected function getBackendFacetParameters()
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('Summon');
+        $defaultFacetLimit = isset($config->Facet_Settings->facet_limit)
+            ? $config->Facet_Settings->facet_limit : 30;
+
+        $finalFacets = array();
+        foreach ($this->getFullFacetSettings() as $facet) {
+            // See if parameters are included as part of the facet name;
+            // if not, override them with defaults.
+            $parts = explode(',', $facet);
+            $facetName = $parts[0];
+            $facetMode = isset($parts[1]) ? $parts[1] : 'and';
+            $facetPage = isset($parts[2]) ? $parts[2] : 1;
+            $facetLimit = isset($parts[3]) ? $parts[3] : $defaultFacetLimit;
+            $facetParams = "{$facetMode},{$facetPage},{$facetLimit}";
+            $finalFacets[] = "{$facetName},{$facetParams}";
+        }
+        return $finalFacets;
+    }
+
+    /**
+     * Set up filters based on VuFind settings.
+     *
+     * @param ParamBag $params     Parameter collection to update
+     *
+     * @return void
+     */
+    public function createBackendFilterParameters(ParamBag $params)
+    {
+        // Which filters should be applied to our query?
+        $filterList = $this->getFilterList();
+        if (!empty($filterList)) {
+            // Loop through all filters and add appropriate values to request:
+            foreach ($filterList as $filterArray) {
+                foreach ($filterArray as $filt) {
+                    $safeValue = SummonQuery::escapeParam($filt['value']);
+                    // Special case -- "holdings only" is a separate parameter from
+                    // other facets.
+                    if ($filt['field'] == 'holdingsOnly') {
+                        $params->set(
+                            'holdings', strtolower(trim($safeValue)) == 'true'
+                        );
+                    } else if ($filt['field'] == 'excludeNewspapers') {
+                        // Special case -- support a checkbox for excluding
+                        // newspapers:
+                        $params
+                            ->add('filters', "ContentType,Newspaper Article,true");
+                    } else if ($range = SolrUtils::parseRange($filt['value'])) {
+                        // Special case -- range query (translate [x TO y] syntax):
+                        $from = SummonQuery::escapeParam($range['from']);
+                        $to = SummonQuery::escapeParam($range['to']);
+                        $params
+                            ->add('rangeFilters', "{$filt['field']},{$from}:{$to}");
+                    } else {
+                        // Standard case:
+                        $params->add('filters', "{$filt['field']},{$safeValue}");
+                    }
+                }
+            }
+        }
     }
 }
