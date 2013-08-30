@@ -225,12 +225,13 @@ class QueryBuilder implements QueryBuilderInterface
         $searchString = preg_replace('/"[^"]*"/', 'quoted', $searchString);
 
         // Check for field specifiers:
-        if (preg_match("/[^\s]\:[^\s]/", $searchString)) {
+        if (preg_match("/[^\s\\\]\:[^\s]/", $searchString)) {
             return true;
         }
 
-        // Check for parentheses and range operators:
-        if (strstr($searchString, '(') && strstr($searchString, ')')) {
+        // Check for unescaped parentheses:
+        $stripped = str_replace(array('\(', '\)'), '', $searchString);
+        if (strstr($stripped, '(') && strstr($stripped, ')')) {
             return true;
         }
         $rangeReg = self::SOLR_RANGE_RE;
