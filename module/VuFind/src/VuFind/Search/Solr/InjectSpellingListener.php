@@ -29,6 +29,7 @@
 
 namespace VuFind\Search\Solr;
 
+use VuFindSearch\Service;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
 use VuFindSearch\ParamBag;
@@ -91,8 +92,8 @@ class InjectSpellingListener
      */
     public function attach(SharedEventManagerInterface $manager)
     {
-        $manager->attach('VuFind\Search', 'pre', array($this, 'onSearchPre'));
-        $manager->attach('VuFind\Search', 'post', array($this, 'onSearchPost'));
+        $manager->attach('VuFind\Search', Service::EVENT_PRE, array($this, 'onSearchPre'));
+        $manager->attach('VuFind\Search', Service::EVENT_POST, array($this, 'onSearchPost'));
     }
 
     /**
