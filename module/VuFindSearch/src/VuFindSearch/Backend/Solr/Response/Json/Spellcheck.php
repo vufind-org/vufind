@@ -52,13 +52,21 @@ class Spellcheck implements IteratorAggregate, Countable
     protected $terms;
 
     /**
+     * Spelling query that generated suggestions
+     *
+     * @var string
+     */
+    protected $query;
+
+    /**
      * Constructor.
      *
-     * @param array $spellcheck SOLR spellcheck information
+     * @param array  $spellcheck SOLR spellcheck information
+     * @param string $query      Spelling query that generated suggestions
      *
      * @return void
      */
-    public function __construct(array $spellcheck)
+    public function __construct(array $spellcheck, $query)
     {
         $this->terms = new ArrayObject();
         $list = new NamedList($spellcheck);
@@ -67,6 +75,17 @@ class Spellcheck implements IteratorAggregate, Countable
                 $this->terms->offsetSet($term, $info);
             }
         }
+        $this->query = $query;
+    }
+
+    /**
+     * Get spelling query.
+     *
+     * @return string
+     */
+    public function getQuery()
+    {
+        return $this->query;
     }
 
     /**

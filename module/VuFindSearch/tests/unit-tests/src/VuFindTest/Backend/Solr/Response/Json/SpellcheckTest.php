@@ -55,16 +55,29 @@ class SpellcheckTest extends TestCase
                 array('this is a phrase', array()),
                 array('foo', array()),
                 array('foobar', array())
-            )
+            ),
+            'fake query'
         );
         $s2 = new Spellcheck(
             array(
                 array('is a', array()),
                 array('bar', array()),
                 array('foo bar', array())
-            )
+            ),
+            'fake query'
         );
         $s1->mergeWith($s2);
         $this->assertCount(5, $s1);
+    }
+
+    /**
+     * Test getQuery()
+     *
+     * @return void
+     */
+    public function testGetQuery()
+    {
+        $s = new Spellcheck(array(), 'test');
+        $this->assertEquals('test', $s->getQuery());
     }
 }
