@@ -27,6 +27,8 @@
  */
 namespace VuFind\Search\Solr;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
+use VuFindSearch\Query\AbstractQuery;
+use VuFindSearch\Query\QueryGroup;
 
 /**
  * Solr Search Parameters
@@ -73,8 +75,25 @@ class Results extends \VuFind\Search\Base\Results
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
-        $collection = $this->getSearchService()
-            ->search($this->backendId, $query, $offset, $limit, $params);
+        $searchService = $this->getSearchService();
+
+        try {
+            $collection = $searchService
+                ->search($this->backendId, $query, $offset, $limit, $params);
+        } catch (\VuFindSearch\Backend\Exception\BackendException $e) {
+            // If the query caused a parser error, see if we can clean it up:
+            if ($e->hasTag('VuFind\Search\ParserError')
+                && $newQuery = $this->fixBadQuery($query)
+            ) {
+                // We need to get a fresh set of $params, since the previous one was
+                // manipulated by the previous search() call.
+                $params = $this->getParams()->getBackendParameters();
+                $collection = $searchService
+                    ->search($this->backendId, $newQuery, $offset, $limit, $params);
+            } else {
+                throw $e;
+            }
+        }
 
         $this->responseFacets = $collection->getFacets();
         $this->resultTotal = $collection->getTotal();
@@ -84,6 +103,61 @@ class Results extends \VuFind\Search\Base\Results
 
         // Construct record drivers for all the items in the response:
         $this->results = $collection->getRecords();
+    }
+
+    /**
+     * Try to fix a query that caused a parser error.
+     *
+     * @param AbstractQuery $query Bad query
+     *
+     * @return bool|AbstractQuery  Fixed query, or false if no solution is found.
+     */
+    protected function fixBadQuery(AbstractQuery $query)
+    {
+        if ($query instanceof QueryGroup) {
+            return $this->fixBadQueryGroup($query);
+        } else {
+            // Single query? Can we fix it on its own?
+            $oldString = $string = $query->getString();
+
+            // Are there any unescaped colons in the string?
+            $string = str_replace(':', '\\:', str_replace('\\:', ':', $string));
+
+            // Did we change anything? If so, we should replace the query:
+            if ($oldString != $string) {
+                $query->setString($string);
+                return $query;
+            }
+        }
+        return false;
+    }
+
+    protected function fixBadQueryGroup(QueryGroup $query)
+    {
+        $newQueries = array();
+        $fixed = false;
+
+        // Try to fix each query in the group; replace any query that needs to
+        // be changed.
+        foreach ($query->getQueries() as $current) {
+            $fixedQuery = $this->fixBadQuery($current);
+            if ($fixedQuery) {
+                $fixed = true;
+                $newQueries[] = $fixedQuery;
+            } else {
+                $newQueries[] = $current;
+            }
+        }
+
+        // If any of the queries in the group was fixed, we'll treat the whole
+        // group as being fixed.
+        if ($fixed) {
+            $query->setQueries($newQueries);
+            return $query;
+        }
+
+        // If we got this far, nothing was changed -- report failure:
+        return false;
     }
 
     /**
