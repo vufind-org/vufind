@@ -109,7 +109,7 @@ function doTreeSearch()
 
         $.each(results["results"], function(key, val)
         {
-            var jsTreeNode = $(".jsTreeID:input[value="+val+"]").parent();
+            var jsTreeNode = $('.jsTreeID:input[value="'+val+'"]').parent();
             if (jsTreeNode.hasClass("jstree-closed")) {
                 jsTreeNode.removeClass("jstree-closed").addClass("jstree-open");
             }
