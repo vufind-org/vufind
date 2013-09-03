@@ -162,8 +162,8 @@ class CombinedController extends AbstractSearch
             $route = $this->getServiceLocator()
                 ->get('VuFind\SearchOptionsPluginManager')
                 ->get($searchClassId)->getSearchAction();
-            $options = array('query' => $params);
-            return $this->redirect()->toRoute($route, array(), $options);
+            $base = $this->url()->fromRoute($route);
+            return $this->redirect()->toUrl($base . '?' . http_build_query($params));
         case 'External':
             $lookfor = $this->params()->fromQuery('lookfor');
             return $this->redirect()->toUrl($target . urlencode($lookfor));
