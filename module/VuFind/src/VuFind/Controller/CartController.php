@@ -227,8 +227,12 @@ class CartController extends AbstractBase
         if (!is_array($ids) || empty($ids)) {
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
-        $this->getRequest()->getQuery()->set('id', $ids);
-        return $this->forwardTo('Records', 'Home');
+        $callback = function ($i) {
+            return 'id[]=' . urlencode($i);
+        };
+        $query = '?print=true&' . implode('&', array_map($callback, $ids));
+        $url = $this->url()->fromRoute('records-home') . $query;
+        return $this->redirect()->toUrl($url);
     }
 
     /**
