@@ -101,7 +101,8 @@ class RecordCollection extends AbstractRecordCollection
             $params = isset($this->response['responseHeader']['params'])
                 ? $this->response['responseHeader']['params'] : array();
             $sq = isset($params['spellcheck.q'])
-                ? $params['spellcheck.q'] : $params['q'];
+                ? $params['spellcheck.q']
+                : (isset($params['q']) ? $params['q'] : '');
             $sugg = isset($this->response['spellcheck']['suggestions'])
                 ? $this->response['spellcheck']['suggestions'] : array();
             $this->spellcheck = new Spellcheck($sugg, $sq);
