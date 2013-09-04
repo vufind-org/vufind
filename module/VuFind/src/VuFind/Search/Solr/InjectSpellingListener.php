@@ -160,9 +160,11 @@ class InjectSpellingListener
             $result = $event->getTarget();
             $params = $event->getParam('params');
             $spellcheckQuery = $params->get('spellcheck.q');
-            $this->aggregateSpellcheck(
-                $result->getSpellcheck(), end($spellcheckQuery)
-            );
+            if (!empty($spellcheckQuery)) {
+                $this->aggregateSpellcheck(
+                    $result->getSpellcheck(), end($spellcheckQuery)
+                );
+            }
         }
     }
 
