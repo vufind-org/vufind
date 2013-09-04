@@ -2,7 +2,7 @@
   <cores adminPath="/admin/multicore">
     <core name="biblio" instanceDir="biblio"/>
     <core name="authority" instanceDir="authority"/>
-    <core name="stats" instanceDir="stats"/>
+    <!-- uncomment to enable stats core: <core name="stats" instanceDir="stats"/> -->
     <!-- uncomment to enable website core: <core name="website" instanceDir="website"/> -->
     <!-- uncomment to enable reserves core: <core name="reserves" instanceDir="reserves"/> -->
   </cores>
