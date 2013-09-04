@@ -198,7 +198,7 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Set up filters based on VuFind settings.
      *
-     * @param ParamBag $params     Parameter collection to update
+     * @param ParamBag $params Parameter collection to update
      *
      * @return void
      */

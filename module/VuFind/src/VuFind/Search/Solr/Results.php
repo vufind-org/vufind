@@ -132,6 +132,13 @@ class Results extends \VuFind\Search\Base\Results
         return false;
     }
 
+    /**
+     * Support method for fixBadQuery().
+     *
+     * @param QueryGroup $query Query to fix
+     *
+     * @return bool|QueryGroup  Fixed query, or false if no solution is found.
+     */
     protected function fixBadQueryGroup(QueryGroup $query)
     {
         $newQueries = array();
