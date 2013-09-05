@@ -290,12 +290,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/summon/Summon.php.git",
-                "reference": "e660100499afa047ba8d83c065df1c489fa1d87e"
+                "reference": "b71b189d93bf48b73beb539575b072e998d736e6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/summon/Summon.php/zipball/e660100499afa047ba8d83c065df1c489fa1d87e",
-                "reference": "e660100499afa047ba8d83c065df1c489fa1d87e",
+                "url": "https://api.github.com/repos/summon/Summon.php/zipball/b71b189d93bf48b73beb539575b072e998d736e6",
+                "reference": "b71b189d93bf48b73beb539575b072e998d736e6",
                 "shasum": ""
             },
             "type": "library",
@@ -315,9 +315,10 @@
             ],
             "description": "Library for interacting with Serials Solutions' Summon API.",
             "support": {
-                "source": "https://github.com/summon/Summon.php/tree/master"
+                "source": "https://github.com/summon/Summon.php/tree/master",
+                "issues": "https://github.com/summon/Summon.php/issues"
             },
-            "time": "2013-05-22 14:23:13"
+            "time": "2013-09-05 14:14:28"
         },
         {
             "name": "symfony/yaml",

@@ -70,6 +70,7 @@ class Zend2 extends \SerialsSolutions_Summon_Base implements LoggerAwareInterfac
      *      <li>host - base URL of Summon API</li>
      *      <li>sessionId - Summon session ID to apply</li>
      *      <li>version - API version to use</li>
+     *      <li>responseType - Acceptable response (json or xml)</li>
      *    </ul>
      * @param HttpClient $client  HTTP client object (optional)
      */
