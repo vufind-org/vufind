@@ -135,7 +135,9 @@ class CombinedController extends AbstractSearch
                 = explode('-', $currentOptions->getSearchAction());
             $combinedResults[$current] = $settings;
             $combinedResults[$current]['view']
-                = $this->forwardTo($controller, $action);
+                = (!isset($settings['ajax']) || !$settings['ajax'])
+                ? $this->forwardTo($controller, $action)
+                : $this->createViewModel(array('results' => $results));
         }
 
         // Build view model:
