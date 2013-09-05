@@ -11,5 +11,5 @@
 ?>
 <h2><?=$this->transEsc($currentSearch['label'])?></h2>
 <p><?=$this->transEsc("Loading")?>... <img src="<?=$this->imageLink('ajax_loading.gif')?>" /></p>
-<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$(document).ready(function(){' . $loadJs . '});')?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$(document).ready(function(){' . $loadJs . '});', 'SET')?>
 <noscript><?=$this->transEsc('Please enable JavaScript.')?></noscript>
