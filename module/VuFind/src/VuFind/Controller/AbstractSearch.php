@@ -165,6 +165,23 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
+     * Store the URL of the provided search (if appropriate).
+     *
+     * @param \VuFind\Search\Base\Results $results Search results object
+     *
+     * @return void
+     */
+    protected function rememberSearch($results)
+    {
+        if ($this->rememberSearch) {
+            $searchUrl = $this->url()->fromRoute(
+                $results->getOptions()->getSearchAction()
+            ) . $results->getUrlQuery()->getParams(false);
+            Memory::rememberSearch($searchUrl);
+        }
+    }
+
+    /**
      * Send search results to results view
      *
      * @return \Zend\View\Model\ViewModel
@@ -209,12 +226,7 @@ class AbstractSearch extends AbstractBase
             // Send results to the view and remember the current URL as the last
             // search.
             $view->results = $results;
-            if ($this->rememberSearch) {
-                $searchUrl = $this->url()->fromRoute(
-                    $results->getOptions()->getSearchAction()
-                ) . $results->getUrlQuery()->getParams(false);
-                Memory::rememberSearch($searchUrl);
-            }
+            $this->rememberSearch($results);
 
             // Add to search history:
             if ($this->saveToHistory) {
