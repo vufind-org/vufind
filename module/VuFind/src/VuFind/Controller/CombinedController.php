@@ -26,7 +26,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use Zend\Stdlib\Parameters;
+use VuFind\Search\Memory, Zend\Stdlib\Parameters;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -65,6 +65,11 @@ class CombinedController extends AbstractSearch
      */
     public function resultAction()
     {
+        $this->writeSession();  // avoid session write timing bug
+
+        // Turn off search memory -- not relevant in this context:
+        Memory::disable();
+
         // Validate configuration:
         $searchClassId = $this->params()->fromQuery('id');
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('combined')
@@ -112,6 +117,11 @@ class CombinedController extends AbstractSearch
                 + $this->getRequest()->getPost()->toArray()
             )
         );
+
+        // Remember the current URL, then disable memory so multi-search results
+        // don't overwrite it:
+        $this->rememberSearch($results);
+        Memory::disable();
 
         // Gather combined results:
         $combinedResults = array();

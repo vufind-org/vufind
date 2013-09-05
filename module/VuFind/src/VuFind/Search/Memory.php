@@ -40,6 +40,24 @@ use Zend\Session\Container as SessionContainer;
 class Memory
 {
     /**
+     * Is memory currently active? (i.e. will we save new URLs?)
+     *
+     * @var bool
+     */
+    protected static $active = true;
+
+    /**
+     * Stop updating the URL in memory -- used in combined search to prevent
+     * multiple search URLs from overwriting one another.
+     *
+     * @return void
+     */
+    public function disable()
+    {
+        self::$active = false;
+    }
+
+    /**
      * Clear the last accessed search URL in the session.
      *
      * @return void
@@ -59,6 +77,11 @@ class Memory
      */
     public static function rememberSearch($url)
     {
+        // Do nothing if disabled.
+        if (!self::$active) {
+            return;
+        }
+
         // Only remember URL if string is non-empty... otherwise clear the memory.
         if (strlen(trim($url)) > 0) {
             $session = new SessionContainer('Search');
