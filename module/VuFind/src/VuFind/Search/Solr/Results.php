@@ -405,6 +405,9 @@ class Results extends \VuFind\Search\Base\Results
             }
         }
 
+        // Don't waste time on spellcheck:
+        $params->getOptions()->spellcheckEnabled(false);
+
         // Do search
         $result = $clone->getFacetList();
 
