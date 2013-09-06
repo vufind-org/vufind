@@ -26,7 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Search;
-use Zend\Session\Container as SessionContainer;
+use Zend\Session\Container;
 
 /**
  * Wrapper class to handle search memory
@@ -44,7 +44,25 @@ class Memory
      *
      * @var bool
      */
-    protected static $active = true;
+    protected $active = true;
+
+    /**
+     * Session container
+     *
+     * @var Container
+     */
+    protected $session;
+
+    /**
+     * Constructor
+     *
+     * @param Container $session Session container for storing URLs (optional)
+     */
+    public function __construct($session = null)
+    {
+        $this->session = (null === $session)
+            ? new Container('Search') : $session;
+    }
 
     /**
      * Stop updating the URL in memory -- used in combined search to prevent
@@ -54,7 +72,7 @@ class Memory
      */
     public function disable()
     {
-        self::$active = false;
+        $this->active = false;
     }
 
     /**
@@ -62,10 +80,9 @@ class Memory
      *
      * @return void
      */
-    public static function forgetSearch()
+    public function forgetSearch()
     {
-        $session = new SessionContainer('Search');
-        unset($session->last);
+        unset($this->session->last);
     }
 
     /**
@@ -75,19 +92,18 @@ class Memory
      *
      * @return void
      */
-    public static function rememberSearch($url)
+    public function rememberSearch($url)
     {
         // Do nothing if disabled.
-        if (!self::$active) {
+        if (!$this->active) {
             return;
         }
 
         // Only remember URL if string is non-empty... otherwise clear the memory.
         if (strlen(trim($url)) > 0) {
-            $session = new SessionContainer('Search');
-            $session->last = $url;
+            $this->session->last = $url;
         } else {
-            self::forgetSearch();
+            $this->forgetSearch();
         }
     }
 
@@ -97,9 +113,8 @@ class Memory
      *
      * @return string|null
      */
-    public static function retrieve()
+    public function retrieve()
     {
-        $session = new SessionContainer('Search');
-        return isset($session->last) ? $session->last : null;
+        return isset($this->session->last) ? $this->session->last : null;
     }
 }

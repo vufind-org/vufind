@@ -379,4 +379,14 @@ class AbstractBase extends AbstractActionController
     {
         $this->getServiceLocator()->get('VuFind\SessionManager')->writeClose();
     }
+
+    /**
+     * Get the search memory
+     *
+     * @return \VuFind\Search\Memory
+     */
+    public function getSearchMemory()
+    {
+        return $this->getServiceLocator()->get('VuFind\Search\Memory');
+    }
 }

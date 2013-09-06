@@ -27,8 +27,7 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Exception\Mail as MailException, VuFind\Search\Memory,
-    VuFind\Solr\Utils as SolrUtils;
+use VuFind\Exception\Mail as MailException, VuFind\Solr\Utils as SolrUtils;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -265,7 +264,7 @@ class SearchController extends AbstractSearch
                     $current->delete();
 
                     // We don't want to remember the last search after a purge:
-                    Memory::forgetSearch();
+                    $this->getSearchMemory()->forgetSearch();
                 } else {
                     // Otherwise add to the list
                     $unsaved[] = $minSO->deminify($this->getResultsManager());

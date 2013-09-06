@@ -26,7 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller;
-use VuFind\Search\Memory, Zend\Stdlib\Parameters;
+use Zend\Stdlib\Parameters;
 
 /**
  * VuFind Search Controller
@@ -177,7 +177,7 @@ class AbstractSearch extends AbstractBase
             $searchUrl = $this->url()->fromRoute(
                 $results->getOptions()->getSearchAction()
             ) . $results->getUrlQuery()->getParams(false);
-            Memory::rememberSearch($searchUrl);
+            $this->getSearchMemory()->rememberSearch($searchUrl);
         }
     }
 

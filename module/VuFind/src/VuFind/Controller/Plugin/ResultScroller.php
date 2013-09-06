@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\Controller\Plugin;
-use VuFind\Search\Memory, Zend\Mvc\Controller\Plugin\AbstractPlugin,
+use Zend\Mvc\Controller\Plugin\AbstractPlugin,
     Zend\Session\Container as SessionContainer;
 
 /**
@@ -368,7 +368,7 @@ class ResultScroller extends AbstractPlugin
         $baseUrl = $this->getController()->url()->fromRoute(
             $search->getOptions()->getSearchAction()
         );
-        Memory::rememberSearch(
+        $this->getController()->getSearchMemory()->rememberSearch(
             $baseUrl . $search->getUrlQuery()->getParams(false)
         );
     }

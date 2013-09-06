@@ -321,6 +321,7 @@ $config = array(
         'invokables' => array(
             'VuFind\SessionManager' => 'Zend\Session\SessionManager',
             'VuFind\Search'         => 'VuFindSearch\Service',
+            'VuFind\Search\Memory'  => 'VuFind\Search\Memory',
         ),
         'initializers' => array(
             array('VuFind\ServiceManager\Initializer', 'initInstance'),
