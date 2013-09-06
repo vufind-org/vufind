@@ -64,6 +64,38 @@ class Results extends \VuFind\Search\Base\Results
     protected $spellingQuery = '';
 
     /**
+     * Class to process spelling.
+     *
+     * @var SpellingProcessor
+     */
+    protected $spellingProcessor = null;
+
+    /**
+     * Get spelling processor.
+     *
+     * @return SpellingProcessor
+     */
+    public function getSpellingProcessor()
+    {
+        if (null === $this->spellingProcessor) {
+            $this->spellingProcessor = new SpellingProcessor();
+        }
+        return $this->spellingProcessor;
+    }
+
+    /**
+     * Set spelling processor.
+     *
+     * @param SpellingProcessor $processor Spelling processor
+     *
+     * @return void
+     */
+    public function setSpellingProcessor(SpellingProcessor $processor)
+    {
+        $this->spellingProcessor = $processor;
+    }
+
+    /**
      * Support method for performAndProcessSearch -- perform a search based on the
      * parameters passed to the object.
      *
@@ -99,7 +131,10 @@ class Results extends \VuFind\Search\Base\Results
         $this->resultTotal = $collection->getTotal();
 
         // Process spelling suggestions
-        $this->processSpelling($collection->getSpellcheck());
+        $spellcheck = $collection->getSpellcheck();
+        $this->spellingQuery = $spellcheck->getQuery();
+        $this->suggestions = $this->getSpellingProcessor()
+            ->getSuggestions($spellcheck, $this->getParams()->getQuery());
 
         // Construct record drivers for all the items in the response:
         $this->results = $collection->getRecords();
@@ -168,56 +203,6 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Process SOLR spelling suggestions.
-     *
-     * @param Spellcheck $spellcheck Spellcheck information
-     *
-     * @return void
-     */
-    protected function processSpelling(Spellcheck $spellcheck)
-    {
-        $this->spellingQuery = $spellcheck->getQuery();
-        $this->suggestions = array();
-        foreach ($spellcheck as $term => $info) {
-            // TODO: Avoid reference to Options
-            if ($this->getOptions()->shouldSkipNumericSpelling()
-                && is_numeric($term)
-            ) {
-                continue;
-            }
-            // Term is not part of the query
-            if (!$this->getParams()->getQuery()->containsTerm($term)) {
-                continue;
-            }
-            // Filter out suggestions that are already part of the query
-            // TODO: Avoid reference to Options
-            $suggestionLimit = $this->getOptions()->getSpellingLimit();
-            $suggestions     = array();
-            foreach ($info['suggestion'] as $suggestion) {
-                if (count($suggestions) >= $suggestionLimit) {
-                    break;
-                }
-                $word = $suggestion['word'];
-                if (!$this->getParams()->getQuery()->containsTerm($word)) {
-                    // TODO: Avoid reference to Options
-                    // Note: !a || !b eq !(a && b)
-                    if (!is_numeric($word)
-                        || !$this->getOptions()->shouldSkipNumericSpelling()
-                    ) {
-                        $suggestions[$word] = $suggestion['freq'];
-                    }
-                }
-            }
-            if ($suggestions) {
-                $this->suggestions[$term] = array(
-                    'freq' => $info['origFreq'],
-                    'suggestions' => $suggestions
-                );
-            }
-        }
-    }
-
-    /**
      * Turn the list of spelling suggestions into an array of urls
      *   for on-screen use to implement the suggestions.
      *
@@ -228,89 +213,8 @@ class Results extends \VuFind\Search\Base\Results
         $returnArray = array();
         $suggestions = $this->getRawSuggestions();
         $tokens = $this->spellingTokens($this->spellingQuery);
-
-        foreach ($suggestions as $term => $details) {
-            // Find out if our suggestion is part of a token
-            $inToken = false;
-            $targetTerm = "";
-            foreach ($tokens as $token) {
-                // TODO - Do we need stricter matching here, similar to that in
-                // \VuFindSearch\Query\Query::replaceTerm()?
-                if (stripos($token, $term) !== false) {
-                    $inToken = true;
-                    // We need to replace the whole token
-                    $targetTerm = $token;
-                    // Go and replace this token
-                    $returnArray = $this->doSpellingReplace(
-                        $term, $targetTerm, $inToken, $details, $returnArray
-                    );
-                }
-            }
-            // If no tokens were found, just look for the suggestion 'as is'
-            if ($targetTerm == "") {
-                $targetTerm = $term;
-                $returnArray = $this->doSpellingReplace(
-                    $term, $targetTerm, $inToken, $details, $returnArray
-                );
-            }
-        }
-        return $returnArray;
-    }
-
-    /**
-     * Process one instance of a spelling replacement and modify the return
-     *   data structure with the details of what was done.
-     *
-     * @param string $term        The actually term we're replacing
-     * @param string $targetTerm  The term above, or the token it is inside
-     * @param bool   $inToken     Flag for whether the token or term is used
-     * @param array  $details     The spelling suggestions
-     * @param array  $returnArray Return data structure so far
-     *
-     * @return array              $returnArray modified
-     */
-    protected function doSpellingReplace($term, $targetTerm, $inToken, $details,
-        $returnArray
-    ) {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
-
-        $returnArray[$targetTerm]['freq'] = $details['freq'];
-        foreach ($details['suggestions'] as $word => $freq) {
-            // If the suggested word is part of a token
-            if ($inToken) {
-                // We need to make sure we replace the whole token
-                $replacement = str_replace($term, $word, $targetTerm);
-            } else {
-                $replacement = $word;
-            }
-            //  Do we need to show the whole, modified query?
-            if ($config->Spelling->phrase) {
-                $label = $this->getParams()->getDisplayQueryWithReplacedTerm(
-                    $targetTerm, $replacement
-                );
-            } else {
-                $label = $replacement;
-            }
-            // Basic spelling suggestion data
-            $returnArray[$targetTerm]['suggestions'][$label] = array(
-                'freq' => $freq,
-                'new_term' => $replacement
-            );
-
-            // Only generate expansions if enabled in config
-            if ($config->Spelling->expand) {
-                // Parentheses differ for shingles
-                if (strstr($targetTerm, " ") !== false) {
-                    $replacement = "(($targetTerm) OR ($replacement))";
-                } else {
-                    $replacement = "($targetTerm OR $replacement)";
-                }
-                $returnArray[$targetTerm]['suggestions'][$label]['expand_term']
-                    = $replacement;
-            }
-        }
-
-        return $returnArray;
+        return $this->getSpellingProcessor()
+            ->processSuggestions($suggestions, $tokens, $this->getParams());
     }
 
     /**

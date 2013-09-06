@@ -39,20 +39,6 @@ namespace VuFind\Search\Solr;
 class Options extends \VuFind\Search\Base\Options
 {
     /**
-     * Spelling limit
-     *
-     * @var int
-     */
-    protected $spellingLimit = 3;
-
-    /**
-     * Spell check words with numbers in them?
-     *
-     * @var bool
-     */
-    protected $spellSkipNumeric = true;
-
-    /**
      * Pre-assigned filters
      *
      * @var array
@@ -150,12 +136,6 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($config->Spelling->enabled)) {
             $this->spellcheck = $config->Spelling->enabled;
         }
-        if (isset($config->Spelling->limit)) {
-            $this->spellingLimit = $config->Spelling->limit;
-        }
-        if (isset($config->Spelling->skip_numeric)) {
-            $this->spellSkipNumeric = $config->Spelling->skip_numeric;
-        }
 
         // Turn on highlighting if the user has requested highlighting or snippet
         // functionality:
@@ -222,28 +202,6 @@ class Options extends \VuFind\Search\Base\Options
     public function getHiddenFilters()
     {
         return $this->hiddenFilters;
-    }
-
-
-    /**
-     * Are we skipping numeric words?
-     *
-     * @return bool
-     */
-    public function shouldSkipNumericSpelling()
-    {
-        return $this->spellSkipNumeric;
-    }
-
-
-    /**
-     * Get the spelling limit.
-     *
-     * @return int
-     */
-    public function getSpellingLimit()
-    {
-        return $this->spellingLimit;
     }
 
     /**
