@@ -180,16 +180,11 @@ class CartController extends AbstractBase
         if (!is_array($ids) || empty($ids)) {
             return $this->redirectToSource('error', 'bulk_noitems_advice');
         }
-        $view = $this->createViewModel();
+        $view = $this->createEmailViewModel();
         $view->records = $this->getRecordLoader()->loadBatch($ids);
 
         // Process form submission:
         if ($this->params()->fromPost('submit')) {
-            // Send parameters back to view so form can be re-populated:
-            $view->to = $this->params()->fromPost('to');
-            $view->from = $this->params()->fromPost('from');
-            $view->message = $this->params()->fromPost('message');
-
             // Build the URL to share:
             $params = array();
             foreach ($ids as $current) {

@@ -63,6 +63,65 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Create a new ViewModel to use as an email form.
+     *
+     * @param array $params Parameters to pass to ViewModel constructor.
+     *
+     * @return ViewModel
+     */
+    protected function createEmailViewModel($params = null)
+    {
+        // Build view:
+        $view = $this->createViewModel($params);
+
+        // Load configuration and current user for convenience:
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $view->disableFrom
+            = (isset($config->Mail->disable_from) && $config->Mail->disable_from);
+        $user = $this->getUser();
+
+        // Send parameters back to view so form can be re-populated:
+        if ($this->getRequest()->isPost()) {
+            $view->to = $this->params()->fromPost('to');
+            if (!$view->disableFrom) {
+                $view->from = $this->params()->fromPost('from');
+            }
+            $view->message = $this->params()->fromPost('message');
+        }
+
+        // Set default values if applicable:
+        if ((!isset($view->to) || empty($view->to)) && $user
+            && isset($config->Mail->user_email_in_to)
+            && $config->Mail->user_email_in_to
+        ) {
+            $view->to = $user->email;
+        }
+        if (!isset($view->from) || empty($view->from)) {
+            if ($user && isset($config->Mail->user_email_in_from)
+                && $config->Mail->user_email_in_from
+            ) {
+                $view->from = $user->email;
+            } else if (isset($config->Mail->default_from)
+                && $config->Mail->default_from
+            ) {
+                $view->from = $config->Mail->default_from;
+            }
+        }
+
+        // Fail if we're missing a from and the form element is disabled:
+        if ($view->disableFrom) {
+            if (empty($view->from)) {
+                $view->from = $config->Site->email;
+            }
+            if (empty($view->from)) {
+                throw new \Exception('Unable to determine email from address');
+            }
+        }
+
+        return $view;
+    }
+
+    /**
      * Get the account manager object.
      *
      * @return \VuFind\Auth\Manager

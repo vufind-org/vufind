@@ -12,8 +12,10 @@
         <div data-role="fieldcontain">
           <label for="email_to"><?=$this->transEsc('To')?>:</label>
           <input id="email_to" type="text" name="to" value="<?=isset($this->to) ? $this->to : ''?>" size="40" class="mainFocus <?=$this->jqueryValidation(array('required'=>'This field is required', 'email'=>'Email address is invalid'))?>"/>
-          <label for="email_from"><?=$this->transEsc('From')?>:</label>
-          <input id="email_from" type="text" name="from" value="<?=isset($this->from) ? $this->from : ''?>" size="40" class="<?=$this->jqueryValidation(array('required'=>'This field is required', 'email'=>'Email address is invalid'))?>"/>
+          <? if (!$this->disableFrom): ?>
+            <label for="email_from"><?=$this->transEsc('From')?>:</label>
+            <input id="email_from" type="text" name="from" value="<?=isset($this->from) ? $this->from : ''?>" size="40" class="<?=$this->jqueryValidation(array('required'=>'This field is required', 'email'=>'Email address is invalid'))?>"/>
+          <? endif; ?>
           <label for="email_message"><?=$this->transEsc('Message')?>:</label>
           <textarea id="email_message" name="message"><?=isset($this->message) ? $this->message : ''?></textarea>
         </div>

@@ -2,17 +2,19 @@
     // Set page title.
     $this->headTitle($this->translate('Email this Search'));
 ?>
-<?=$this->flashmessages()?>
 <div data-role="page">
   <?=$this->mobileMenu()->header()?>
   <div data-role="content">
+    <?=$this->flashmessages()?>
     <form method="post" name="emailSearch" data-ajax="false">
       <input type="hidden" name="url" value="<?=$this->escapeHtml($this->url)?>" />
       <div data-role="fieldcontain">
         <label for="email_to"><?=$this->transEsc('To')?>:</label>
         <input id="email_to" type="text" name="to" value="<?=isset($this->to) ? $this->to : ''?>" size="40" />
-        <label for="email_from"><?=$this->transEsc('From')?>:</label>
-        <input id="email_from" type="text" name="from" value="<?=isset($this->from) ? $this->from : ''?>" size="40" />
+        <? if (!$this->disableFrom): ?>
+          <label for="email_from"><?=$this->transEsc('From')?>:</label>
+          <input id="email_from" type="text" name="from" value="<?=isset($this->from) ? $this->from : ''?>" size="40" />
+        <? endif; ?>
         <label for="email_message"><?=$this->transEsc('Message')?>:</label>
         <textarea id="email_message" name="message"><?=isset($this->message) ? $this->message : ''?></textarea>
       </div>

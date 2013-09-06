@@ -354,13 +354,8 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Process form submission:
-        $view = $this->createViewModel();
+        $view = $this->createEmailViewModel();
         if ($this->params()->fromPost('submit')) {
-            // Send parameters back to view so form can be re-populated:
-            $view->to = $this->params()->fromPost('to');
-            $view->from = $this->params()->fromPost('from');
-            $view->message = $this->params()->fromPost('message');
-
             // Attempt to send the email and show an appropriate flash message:
             try {
                 $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
