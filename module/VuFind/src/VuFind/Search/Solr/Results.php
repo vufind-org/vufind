@@ -210,7 +210,6 @@ class Results extends \VuFind\Search\Base\Results
      */
     public function getSpellingSuggestions()
     {
-        $returnArray = array();
         $suggestions = $this->getRawSuggestions();
         $tokens = $this->spellingTokens($this->spellingQuery);
         return $this->getSpellingProcessor()

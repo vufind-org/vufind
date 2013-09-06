@@ -167,6 +167,7 @@ class SpellingProcessor
      */
     public function processSuggestions($suggestions, $tokens, Params $params)
     {
+        $returnArray = array();
         foreach ($suggestions as $term => $details) {
             // Find out if our suggestion is part of a token
             $inToken = false;
