@@ -44,6 +44,68 @@ use VuFind\Exception\Auth as AuthException,
 class MyResearchController extends AbstractBase
 {
     /**
+     * Process an authentication error.
+     *
+     * @param AuthException $e Exception to process.
+     *
+     * @return void
+     */
+    protected function processAuthenticationException(AuthException $e)
+    {
+        $msg = $e->getMessage();
+        // If a Shibboleth-style login has failed and the user just logged
+        // out, we need to override the error message with a more relevant
+        // one:
+        if ($msg == 'authentication_error_admin'
+            && $this->getAuthManager()->userHasLoggedOut()
+            && $this->getSessionInitiator()
+        ) {
+            $msg = 'authentication_error_loggedout';
+        }
+        $this->flashMessenger()->setNamespace('error')->addMessage($msg);
+    }
+
+    /**
+     * Store a referer (if appropriate) to keep post-login redirect pointing
+     * to an appropriate location.
+     *
+     * @return void
+     */
+    protected function storeRefererForPostLoginRedirect()
+    {
+        // Get the referer -- if it's empty, there's nothing to store!
+        $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
+        if (empty($referer)) {
+            return;
+        }
+
+        // Normalize the referer URL so that inconsistencies in protocol
+        // and trailing slashes do not break comparisons; this same normalization
+        // is applied to all URLs examined below.
+        $refererNorm = trim(end(explode('://', $referer, 2)), '/');
+
+        // If the referer lives outside of VuFind, don't store it! We only
+        // want internal post-login redirects.
+        $baseUrl = $this->url()->fromRoute('home');
+        $baseUrlNorm = trim(end(explode('://', $baseUrl, 2)), '/');
+        if (0 !== strpos($refererNorm, $baseUrlNorm)) {
+            return;
+        }
+
+        // If the referer is the MyResearch/Home action, it probably means
+        // that the user is repeatedly mistyping their password. We should
+        // ignore this and instead rely on any previously stored referer.
+        $myResearchHomeUrl = $this->url()->fromRoute('myresearch-home');
+        $mrhuNorm = trim(end(explode('://', $myResearchHomeUrl, 2)), '/');
+        if ($mrhuNorm === $refererNorm) {
+            return;
+        }
+
+        // If we got this far, we want to store the referer:
+        $this->followup()->store(array(), $referer);
+    }
+
+    /**
      * Prepare and direct the home page where it needs to go
      *
      * @return mixed
@@ -58,26 +120,13 @@ class MyResearchController extends AbstractBase
             try {
                 $this->getAuthManager()->login($this->getRequest());
             } catch (AuthException $e) {
-                $msg = $e->getMessage();
-                // If a Shibboleth-style login has failed and the user just logged
-                // out, we need to override the error message with a more relevant
-                // one:
-                if ($msg == 'authentication_error_admin'
-                    && $this->getAuthManager()->userHasLoggedOut()
-                    && $this->getSessionInitiator()
-                ) {
-                    $msg = 'authentication_error_loggedout';
-                }
-                $this->flashMessenger()->setNamespace('error')->addMessage($msg);
+                $this->processAuthenticationException($e);
             }
         }
 
         // Not logged in?  Force user to log in:
         if (!$this->getAuthManager()->isLoggedIn()) {
-            $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
-            if (!empty($referer)) {
-                $this->followup()->store(array(), $referer);
-            }
+            $this->storeRefererForPostLoginRedirect();
             return $this->forwardTo('MyResearch', 'Login');
         }
 
