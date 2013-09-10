@@ -68,6 +68,18 @@ class ConsoleRouterTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test assemble.
+     *
+     * @return void
+     */
+    public function testAssemble()
+    {
+        $this->setExpectedException('Exception');
+        $router = ConsoleRouter::factory();
+        $router->assemble();
+    }
+
+    /**
      * Test addRoutes.
      *
      * @return void
