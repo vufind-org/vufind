@@ -6,6 +6,9 @@
     <testsuite name="VuFindSearch">
       <directory>../../VuFindSearch/tests/unit-tests/src</directory>
     </testsuite>
+    <testsuite name="VuFindTheme">
+      <directory>../../VuFindTheme/tests/unit-tests/src</directory>
+    </testsuite>
     <testsuite name="VuFindUnit">
       <directory>unit-tests/src</directory>
     </testsuite>
