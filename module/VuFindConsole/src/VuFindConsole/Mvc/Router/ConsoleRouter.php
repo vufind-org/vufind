@@ -41,6 +41,27 @@ use Zend\Mvc\Router\Http\RouteMatch, Zend\Mvc\Router\RouteStackInterface,
 class ConsoleRouter implements RouteStackInterface
 {
     /**
+     * Present working directory
+     *
+     * @var string
+     */
+    protected $pwd = '';
+
+    /**
+     * Constructor
+     *
+     * @param string $pwd Present working directory
+     */
+    public function __construct($pwd = null)
+    {
+        if (null !== $pwd) {
+            $this->pwd = $pwd;
+        } else if (defined('CLI_DIR')) {
+            $this->pwd = CLI_DIR;
+        }
+    }
+
+    /**
      * Create a new route with given options.
      *
      * @param array|\Traversable $options Router options
@@ -49,7 +70,7 @@ class ConsoleRouter implements RouteStackInterface
      */
     public static function factory($options = array())
     {
-        return new ConsoleRouter();
+        return new ConsoleRouter(isset($options['pwd']) ? $options['pwd'] : null);
     }
 
     /**
@@ -64,13 +85,12 @@ class ConsoleRouter implements RouteStackInterface
         // Get command line arguments and present working directory from
         // server superglobal:
         $filename = $request->getScriptName();
-        $pwd = CLI_DIR;
 
         // Convert base filename (minus .php extension and underscores) and
         // containing directory name into action and controller, respectively:
         $baseFilename = str_replace('_', '', basename($filename));
         $baseFilename = substr($baseFilename, 0, strlen($baseFilename) - 4);
-        $baseDirname = basename(dirname(realpath($pwd . '/' . $filename)));
+        $baseDirname = basename(dirname(realpath($this->pwd . '/' . $filename)));
         $routeMatch = new RouteMatch(
             array('controller' => $baseDirname, 'action' => $baseFilename), 1
         );
