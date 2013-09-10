@@ -49,7 +49,7 @@ class RecordController extends AbstractRecord
         parent::__construct();
 
         // Load default tab setting:
-        $this->defaultTab = isset($config->Site->defaultRecordTab)
+        $this->fallbackDefaultTab = isset($config->Site->defaultRecordTab)
             ? $config->Site->defaultRecordTab : 'Holdings';
     }
 

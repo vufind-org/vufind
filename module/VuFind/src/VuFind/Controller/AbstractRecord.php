@@ -27,6 +27,7 @@
  */
 namespace VuFind\Controller;
 use VuFind\Exception\Mail as MailException,
+    VuFind\RecordDriver\AbstractBase as AbstractRecordDriver,
     Zend\Session\Container as SessionContainer;
 
 /**
@@ -48,11 +49,18 @@ class AbstractRecord extends AbstractBase
     protected $allTabs = null;
 
     /**
-     * Default tab to display
+     * Default tab to display (configured at record driver level)
      *
      * @var string
      */
-    protected $defaultTab = 'Holdings';
+    protected $defaultTab = null;
+
+    /**
+     * Default tab to display (fallback used if no record driver configuration)
+     *
+     * @var string
+     */
+    protected $fallbackDefaultTab = 'Holdings';
 
     /**
      * Type of record to display
@@ -71,7 +79,7 @@ class AbstractRecord extends AbstractBase
     /**
      * Record driver
      *
-     * @var \VuFind\RecordDriver\AbstractBase
+     * @var AbstractRecordDriver
      */
     protected $driver = null;
 
@@ -199,20 +207,15 @@ class AbstractRecord extends AbstractBase
      */
     public function homeAction()
     {
-        // Set up default tab (first fixing it if it is invalid):
-        $tabs = $this->getAllTabs();
-        if (!isset($tabs[$this->defaultTab])) {
-            $keys = array_keys($tabs);
-            $this->defaultTab = isset($keys[0]) ? $keys[0] : null;
-        }
-
         // Save statistics:
         if ($this->logStatistics) {
             $this->getServiceLocator()->get('VuFind\RecordStats')
                 ->log($this->loadRecord(), $this->getRequest());
         }
 
-        return $this->showTab($this->params()->fromRoute('tab', $this->defaultTab));
+        return $this->showTab(
+            $this->params()->fromRoute('tab', $this->getDefaultTab())
+        );
     }
 
     /**
@@ -224,7 +227,7 @@ class AbstractRecord extends AbstractBase
     {
         $this->loadRecord();
         return $this->showTab(
-            $this->params()->fromPost('tab', $this->defaultTab), true
+            $this->params()->fromPost('tab', $this->getDefaultTab()), true
         );
     }
 
@@ -493,7 +496,7 @@ class AbstractRecord extends AbstractBase
      * init() method since we don't want to perform an expensive search twice
      * when homeAction() forwards to another method.
      *
-     * @return \VuFind\RecordDriver\AbstractBase
+     * @return AbstractRecordDriver
      */
     protected function loadRecord()
     {
@@ -535,6 +538,67 @@ class AbstractRecord extends AbstractBase
     {
         $cfg = $this->getServiceLocator()->get('Config');
         return $cfg['vufind']['recorddriver_tabs'];
+    }
+
+    /**
+     * Get a default tab by looking up the provided record driver in the tab
+     * configuration array.
+     *
+     * @param AbstractRecordDriver $driver Record driver
+     * @param array                $config Tab configuration (associative array
+     * including 'defaultTab' setting)
+     *
+     * @return string
+     */
+    protected function getDefaultTabForRecord(AbstractRecordDriver $driver)
+    {
+        // Load configuration:
+        $config = $this->getTabConfiguration();
+
+        // Get the current record driver's class name, then start a loop
+        // in case we need to use a parent class' name to find the appropriate
+        // setting.
+        $className = get_class($driver);
+        while (true) {
+            if (isset($config[$className]['defaultTab'])) {
+                return $config[$className]['defaultTab'];
+            }
+            $className = get_parent_class($className);
+            if (empty($className)) {
+                // No setting found...
+                return null;
+            }
+        }
+    }
+
+    /**
+     * Get default tab for a given driver
+     *
+     * @return string
+     */
+    protected function getDefaultTab()
+    {
+        // Load default tab if not already retrieved:
+        if (null === $this->defaultTab) {
+            // Load record driver tab configuration:
+            $driver = $this->loadRecord();
+            $this->defaultTab = $this->getDefaultTabForRecord($driver);
+
+            // Missing/invalid record driver configuration? Fall back to configured
+            // default:
+            $tabs = $this->getAllTabs();
+            if (empty($this->defaultTab) || !isset($tabs[$this->defaultTab])) {
+                $this->defaultTab = $this->fallbackDefaultTab;
+            }
+
+            // Is configured tab also invalid? If so, pick first existing tab:
+            if (empty($this->defaultTab) || !isset($tabs[$this->defaultTab])) {
+                $keys = array_keys($tabs);
+                $this->defaultTab = isset($keys[0]) ? $keys[0] : '';
+            }
+        }
+
+        return $this->defaultTab;
     }
 
     /**
@@ -591,7 +655,7 @@ class AbstractRecord extends AbstractBase
         $view = $this->createViewModel();
         $view->tabs = $this->getAllTabs();
         $view->activeTab = strtolower($tab);
-        $view->defaultTab = strtolower($this->defaultTab);
+        $view->defaultTab = strtolower($this->getDefaultTab());
 
         // Set up next/previous record links (if appropriate)
         if ($this->resultScrollerActive()) {

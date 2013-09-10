@@ -935,24 +935,28 @@ $config = array(
                 'tabs' => array(
                     'CollectionList' => 'CollectionList',
                     'HierarchyTree' => 'CollectionHierarchyTree',
-                )
+                ),
+                'defaultTab' => null,
             ),
         ),
         // This section controls which tabs are used for which record driver classes.
         // Each sub-array is a map from a tab name (as used in a record URL) to a tab
         // service (found in recordtab_plugin_manager, below).  If a particular record
         // driver is not defined here, it will inherit configuration from a configured
-        // parent class.
+        // parent class.  The defaultTab setting may be used to specify the default
+        // active tab; if null, the value from the relevant .ini file will be used.
         'recorddriver_tabs' => array(
             'VuFind\RecordDriver\Pazpar2' => array(
                 'tabs' => array (
                     'Details' => 'StaffViewMARC',
                  ),
+                'defaultTab' => null,
             ),
             'VuFind\RecordDriver\SolrAuth' => array(
                 'tabs' => array (
                     'Details' => 'StaffViewMARC',
                  ),
+                'defaultTab' => null,
             ),
             'VuFind\RecordDriver\SolrDefault' => array(
                 'tabs' => array (
@@ -962,6 +966,7 @@ $config = array(
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
                     'Details' => 'StaffViewArray',
                 ),
+                'defaultTab' => null,
             ),
             'VuFind\RecordDriver\SolrMarc' => array(
                 'tabs' => array(
@@ -971,6 +976,7 @@ $config = array(
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
                     'Details' => 'StaffViewMARC',
                 ),
+                'defaultTab' => null,
             ),
             'VuFind\RecordDriver\Summon' => array(
                 'tabs' => array(
@@ -979,6 +985,7 @@ $config = array(
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
                     'Details' => 'StaffViewArray',
                 ),
+                'defaultTab' => null,
             ),
             'VuFind\RecordDriver\WorldCat' => array(
                 'tabs' => array (
@@ -987,6 +994,7 @@ $config = array(
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
                     'Details' => 'StaffViewMARC',
                 ),
+                'defaultTab' => null,
             ),
         ),
     ),

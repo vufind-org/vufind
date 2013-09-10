@@ -47,7 +47,7 @@ class SummonrecordController extends AbstractRecord
     {
         // Override some defaults:
         $this->searchClassId = 'Summon';
-        $this->defaultTab = 'Description';
+        $this->fallbackDefaultTab = 'Description';
 
         // Call standard record controller initialization:
         parent::__construct();

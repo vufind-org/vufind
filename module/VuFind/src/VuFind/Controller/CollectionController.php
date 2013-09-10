@@ -50,7 +50,7 @@ class CollectionController extends AbstractRecord
 
         // Set default tab, if specified:
         if (isset($config->Collections->defaultTab)) {
-            $this->defaultTab = $config->Collections->defaultTab;
+            $this->fallbackDefaultTab = $config->Collections->defaultTab;
         }
     }
 
