@@ -545,8 +545,6 @@ class AbstractRecord extends AbstractBase
      * configuration array.
      *
      * @param AbstractRecordDriver $driver Record driver
-     * @param array                $config Tab configuration (associative array
-     * including 'defaultTab' setting)
      *
      * @return string
      */
