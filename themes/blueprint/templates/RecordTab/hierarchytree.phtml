@@ -11,7 +11,8 @@
         . "    fullHierarchy: " . ($this->tab->isFullHierarchyVisible() ? 'true' : 'false') . "\n"
         . "};\n"
         . "vufindString.showTree = \"" . $this->transEsc('hierarchy_show_tree') . "\";\n"
-        . "vufindString.hideTree = \"" . $this->transEsc('hierarchy_hide_tree') . "\";\n"
+        . "vufindString.hideTree = \"" . $this->transEsc('hierarchy_hide_tree') . "\";\n",
+        'SET'
     );
     $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'jsTree/jquery.jstree.js');
     $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'hierarchyTree_JSTree.js');

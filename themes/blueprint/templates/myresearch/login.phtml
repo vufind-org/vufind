@@ -9,7 +9,7 @@
 
     // If we're in AJAX mode, load some extra Javascript inline:
     if ($this->layout()->getTemplate() == 'layout/lightbox') {
-        $this->inlineScript()->appendFile("rc4.js");
+        echo $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'rc4.js', 'SET');
     }
 
     // Convenience variables:
@@ -44,7 +44,7 @@
     <?
       // Set up form validation:
       $initJs = '$(document).ready(function() { $(\'#loginForm\').validate(); });';
-      echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $initJs);
+      echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $initJs, 'SET');
     ?>
     <? if ($account->supportsCreation()): ?>
       <a class="new_account" href="<?=$this->url('myresearch-account')?>"><?=$this->transEsc('Create New Account')?></a>

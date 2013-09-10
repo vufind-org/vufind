@@ -18,5 +18,5 @@
 <?
   // Set up form validation:
   $initJs = '$(document).ready(function() { $(\'#accountForm\').validate(); });';
-  echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $initJs);
+  echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $initJs, 'SET');
 ?>

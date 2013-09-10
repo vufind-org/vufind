@@ -5,5 +5,5 @@
 ?>
 <div id="EuropeanaDeferredRecommend">
     <p><?=$this->transEsc("Loading")?>... <img src="<?=$this->imageLink('ajax_loading.gif')?>" /></p>
-    <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $loadJs)?>
+    <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
 </div>
