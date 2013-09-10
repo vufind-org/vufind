@@ -58,7 +58,7 @@ use VuFindHttp\HttpService as Service;
  * @link     https://github.com/dmj/vf2-proxy
  */
 
-class ProxyServiceTest extends \PHPUnit_Framework_TestCase
+class ProxyServiceTest extends Unit\TestCase
 {
 
     protected $local = array('ipv4 localhost' => 'http://localhost',
@@ -235,4 +235,29 @@ class ProxyServiceTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(Service::isAssocParams($arr));
     }
 
+    /**
+     * Test default settings.
+     *
+     * @return void
+     */
+    public function testDefaults()
+    {
+        $service = new Service(array(), array('foo' => 'bar'));
+        $client = $service->createClient();
+        $clientConfig = $this->getProperty($client, 'config');
+        $this->assertEquals($clientConfig['foo'], 'bar');
+    }
+
+    /**
+     * Test timeout setting.
+     *
+     * @return void
+     */
+    public function testTimeout()
+    {
+        $service = new Service();
+        $client = $service->createClient(null, \Zend\Http\Request::METHOD_GET, 67);
+        $clientConfig = $this->getProperty($client, 'config');
+        $this->assertEquals($clientConfig['timeout'], 67);
+    }
 }
