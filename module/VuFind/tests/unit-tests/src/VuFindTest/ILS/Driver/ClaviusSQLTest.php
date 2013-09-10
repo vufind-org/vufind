@@ -37,26 +37,13 @@ use VuFind\ILS\Driver\ClaviusSQL;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class ClaviusSQLTest extends \VuFindTest\Unit\TestCase
+class ClaviusSQLTest extends \VuFindTest\Unit\ILSDriverTestCase
 {
-    protected $driver;
-
     /**
      * Constructor
      */
     public function __construct()
     {
         $this->driver = new ClaviusSQL();
-    }
-
-    /**
-     * Test that driver complains about missing configuration.
-     *
-     * @return void
-     */
-    public function testMissingConfiguration()
-    {
-        $this->setExpectedException('VuFind\Exception\ILS');
-        $this->driver->init();
     }
 }

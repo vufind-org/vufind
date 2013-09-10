@@ -37,26 +37,13 @@ use VuFind\ILS\Driver\Amicus;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class AmicusTest extends \VuFindTest\Unit\TestCase
+class AmicusTest extends \VuFindTest\Unit\ILSDriverTestCase
 {
-    protected $driver;
-
     /**
      * Constructor
      */
     public function __construct()
     {
         $this->driver = new Amicus();
-    }
-
-    /**
-     * Test that driver complains about missing configuration.
-     *
-     * @return void
-     */
-    public function testMissingConfiguration()
-    {
-        $this->setExpectedException('VuFind\Exception\ILS');
-        $this->driver->init();
     }
 }

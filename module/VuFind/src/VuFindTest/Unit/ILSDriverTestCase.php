@@ -1,10 +1,11 @@
 <?php
+
 /**
- * ILS driver test
+ * Abstract base class for ILS driver test cases.
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2011.
+ * Copyright (C) Villanova University 2010.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,29 +22,38 @@
  *
  * @category VuFind2
  * @package  Tests
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-namespace VuFindTest\ILS\Driver;
-use VuFind\ILS\Driver\Unicorn;
+namespace VuFindTest\Unit;
 
 /**
- * ILS driver test
+ * Abstract base class for ILS driver test cases.
  *
  * @category VuFind2
  * @package  Tests
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://www.vufind.org  Main Page
+ * @link     http://vufind.org/wiki/vufind2:unit_tests Wiki
  */
-class UnicornTest extends \VuFindTest\Unit\ILSDriverTestCase
+abstract class ILSDriverTestCase extends TestCase
 {
     /**
-     * Constructor
+     * ILS driver
+     *
+     * @var \VuFind\ILS\Driver\AbstractBase
      */
-    public function __construct()
+    protected $driver;
+
+    /**
+     * Test that driver complains about missing configuration.
+     *
+     * @return void
+     */
+    public function testMissingConfiguration()
     {
-        $this->driver = new Unicorn(new \VuFind\Date\Converter());
+        $this->setExpectedException('VuFind\Exception\ILS');
+        $this->driver->init();
     }
 }
