@@ -78,6 +78,6 @@ class GoogleAnalytics extends \Zend\View\Helper\AbstractHelper
             . "s.parentNode.insertBefore(ga, s);\n"
             . "})();";
         $inlineScript = $this->getView()->plugin('inlinescript');
-        return $inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $code);
+        return $inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $code, 'SET');
     }
 }
