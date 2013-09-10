@@ -928,6 +928,16 @@ $config = array(
                 ),
             ),
         ),
+        // This section behaves just like recorddriver_tabs below, but is used for
+        // the collection module instead of the standard record view.
+        'recorddriver_collection_tabs' => array(
+            'VuFind\RecordDriver\AbstractBase' => array(
+                'tabs' => array(
+                    'CollectionList' => 'CollectionList',
+                    'HierarchyTree' => 'CollectionHierarchyTree',
+                )
+            ),
+        ),
         // This section controls which tabs are used for which record driver classes.
         // Each sub-array is a map from a tab name (as used in a record URL) to a tab
         // service (found in recordtab_plugin_manager, below).  If a particular record

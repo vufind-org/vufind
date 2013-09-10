@@ -61,15 +61,8 @@ class CollectionController extends AbstractRecord
      */
     protected function getTabConfiguration()
     {
-        return array(
-            'VuFind\RecordDriver\AbstractBase'
-                => array(
-                    'tabs' => array(
-                        'CollectionList' => 'CollectionList',
-                        'HierarchyTree' => 'CollectionHierarchyTree',
-                    )
-                )
-        );
+        $cfg = $this->getServiceLocator()->get('Config');
+        return $cfg['vufind']['recorddriver_collection_tabs'];
     }
 
     /**
