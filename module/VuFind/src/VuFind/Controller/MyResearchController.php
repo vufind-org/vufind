@@ -726,7 +726,10 @@ class MyResearchController extends AbstractBase
             ->fromPost('listID', $this->params()->fromQuery('listID'));
 
         // Have we confirmed this?
-        if ($this->params()->fromPost('confirm')) {
+        $confirm = $this->params()->fromPost(
+            'confirm', $this->params()->fromQuery('confirm')
+        );
+        if ($confirm) {
             try {
                 $table = $this->getTable('UserList');
                 $list = $table->getExisting($listID);
