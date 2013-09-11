@@ -41,6 +41,11 @@ use VuFind\Exception\Mail as MailException,
 
 class CartController extends AbstractBase
 {
+    /**
+     * Session container
+     *
+     * @var SessionContainer
+     */
     protected $session;
 
     /**
@@ -335,7 +340,7 @@ class CartController extends AbstractBase
         // Load record information first (no need to prompt for login if we just
         // need to display a "no records" error message):
         $ids = is_null($this->params()->fromPost('selectAll'))
-            ? $this->params()->fromPost('ids')
+            ? $this->params()->fromPost('ids', $this->params()->fromQuery('ids'))
             : $this->params()->fromPost('idsAll');
         if (!is_array($ids) || empty($ids)) {
             return $this->redirectToSource('error', 'bulk_noitems_advice');
