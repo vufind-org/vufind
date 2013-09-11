@@ -162,6 +162,70 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Get a URL for a route with lightbox awareness.
+     *
+     * @param string $route              Route name
+     * @param array  $params             Route parameters
+     * @param array  $options            RouteInterface-specific options to use in
+     * url generation, if any
+     * @param bool   $reuseMatchedParams Whether to reuse matched parameters
+     *
+     * @return string
+     */
+    public function getLightboxAwareUrl($route, $params = array(),
+        $options = array(), $reuseMatchedParams = false
+    ) {
+        // Rearrange the parameters if we're in a lightbox:
+        if ($this->inLightbox()) {
+            // Make sure we have a query:
+            $options['query'] = isset($options['query'])
+                ? $options['query'] : array();
+
+            // Map ID route parameter into a GET parameter if necessary:
+            if (isset($params['id'])) {
+                $options['query']['id'] = $params['id'];
+            }
+
+            // Change the current route into submodule/subaction lightbox params:
+            $parts = explode('-', $route);
+            $options['query']['submodule'] = $parts[0];
+            $options['query']['subaction'] = isset($parts[1]) ? $parts[1] : 'home';
+            $options['query']['method'] = 'getLightbox';
+
+            // Override the current route with the lightbox action:
+            $route = 'default';
+            $params['controller'] = 'AJAX';
+            $params['action'] = 'JSON';
+        }
+
+        // Build the URL:
+        return $this->url()
+            ->fromRoute($route, $params, $options, $reuseMatchedParams);
+    }
+
+    /**
+     * Lightbox-aware redirect -- if we're in a lightbox, go to a route that
+     * keeps us there; otherwise, go to the normal route.
+     *
+     * @param string $route              Route name
+     * @param array  $params             Route parameters
+     * @param array  $options            RouteInterface-specific options to use in
+     * url generation, if any
+     * @param bool   $reuseMatchedParams Whether to reuse matched parameters
+     *
+     * @return \Zend\Http\Response
+     */
+    public function lightboxAwareRedirect($route, $params = array(),
+        $options = array(), $reuseMatchedParams = false
+    ) {
+        return $this->redirect()->toUrl(
+            $this->getLightboxAwareUrl(
+                $route, $params, $options, $reuseMatchedParams
+            )
+        );
+    }
+
+    /**
      * Redirect the user to the login screen.
      *
      * @param string $msg     Flash message to display on login screen
