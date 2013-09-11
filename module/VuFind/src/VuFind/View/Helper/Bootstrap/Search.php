@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-namespace VuFind\View\Helper\Blueprint;
+namespace VuFind\View\Helper\Bootstrap;
 
 /**
  * Helper class for displaying search-related HTML chunks.
@@ -45,7 +45,7 @@ class Search extends \VuFind\View\Helper\AbstractSearch
      */
     protected function getContainerClass()
     {
-        return 'corrections';
+        return 'alert alert-info';
     }
 
     /**
@@ -58,8 +58,7 @@ class Search extends \VuFind\View\Helper\AbstractSearch
      */
     protected function renderExpandLink($url, $view)
     {
-        return '<a href="' . $url . '"><img src="'
-            . $view->imageLink('silk/expand.png')
-            . '" alt="' . $view->transEsc('spell_expand_alt') . '"/></a>';
+        return '<a href="' . $url . '" title="' . $view->transEsc('spell_expand_alt')
+            . '"><i class="icon-circle-arrow-right"></i></a>';
     }
 }
