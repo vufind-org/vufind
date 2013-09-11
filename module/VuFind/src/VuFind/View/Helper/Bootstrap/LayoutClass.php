@@ -1,6 +1,6 @@
 <?php
 /**
- * Helper class for managing blueprint theme's high-level (body vs. sidebar) page
+ * Helper class for managing bootstrap theme's high-level (body vs. sidebar) page
  * layout.
  *
  * PHP version 5
@@ -26,10 +26,10 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-namespace VuFind\View\Helper\Blueprint;
+namespace VuFind\View\Helper\Bootstrap;
 
 /**
- * Helper class for managing blueprint theme's high-level (body vs. sidebar) page
+ * Helper class for managing bootstrap theme's high-level (body vs. sidebar) page
  * layout.
  *
  * @category VuFind2
@@ -53,11 +53,9 @@ class LayoutClass extends \VuFind\View\Helper\AbstractLayoutClass
     {
         switch ($class) {
         case 'mainbody':
-            return $this->left ? 'span-18 push-5 last' : 'span-18';
+            return $this->left ? 'span9' : 'span9 switch-margins pull-left';
         case 'sidebar':
-            return $this->left ? 'span-5 pull-18 sidebarOnLeft' : 'span-5 last';
-        default:
-            return '';
+            return $this->left ? 'span3 well well-small noprint' : 'span3 pull-right well well-small noprint';
         }
     }
 }
