@@ -720,12 +720,17 @@ class SolrMarc extends SolrDefault
                             continue;
                         }
                     }
+
+                    // Normalize blank relationship indicator to 0:
+                    $relationshipIndicator = $field->getIndicator('2');
+                    if ($relationshipIndicator == ' ') {
+                        $relationshipIndicator = '0';
+                    }
+
                     // The relationship type is one of the following and there is a
                     // 580 field, the 580 field should be shown instead see:
                     //     http://www.loc.gov/marc/bibliographic/bd580.html
                     $has580 = $this->marcRecord->getFields('580');
-
-                    $relationshipIndicator = $field->getIndicator('2');
                     if ($has580
                         && (($value == '780') && ($relationshipIndicator == '4'))
                         || (($value == '785') && (($relationshipIndicator == '6')
