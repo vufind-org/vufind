@@ -726,6 +726,7 @@ class SolrMarc extends SolrDefault
                     $has580 = $this->marcRecord->getFields('580');
 
                     $relationshipIndicator = $field->getIndicator('2');
+                    if ($relationshipIndicator == ' ') $relationshipIndicator = '0';
                     if ($has580
                         && (($value == '780') && ($relationshipIndicator == '4'))
                         || (($value == '785') && (($relationshipIndicator == '6')
