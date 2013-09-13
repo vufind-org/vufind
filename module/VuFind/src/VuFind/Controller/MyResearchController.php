@@ -663,8 +663,9 @@ class MyResearchController extends AbstractBase
                     $params[] = urlencode('ids[]') . '=' . urlencode($id);
                 }
                 $saveUrl = $this->getLightboxAwareUrl('cart-save');
+                $saveUrl .= (strpos($saveUrl, '?') === false) ? '?' : '&';
                 return $this->redirect()
-                    ->toUrl($saveUrl . '?' . implode('&', $params));
+                    ->toUrl($saveUrl . implode('&', $params));
             }
 
             return $this->lightboxAwareRedirect('userList', array('id' => $finalId));
