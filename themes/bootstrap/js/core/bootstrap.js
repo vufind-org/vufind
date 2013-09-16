@@ -1294,7 +1294,7 @@
         removeWithAnimation() :
         $tip.detach()
 
-      this.$element.trigger('hidden')
+      //this.$element.trigger('hidden')
 
       return this
     }

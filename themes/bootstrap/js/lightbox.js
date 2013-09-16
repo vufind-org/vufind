@@ -283,7 +283,7 @@ function changeModalContent(html) {
   registerModalForms($('#modal'));
 }
 // Close the lightbox and run update functions
-function closeLightbox(x) {
+function closeLightbox() {
   if(modalXHR) modalXHR.abort();
   lightboxShown = false;
   $('#modal').modal('hide');
