@@ -93,23 +93,30 @@ function getLightbox(controller, action, get, post, callback) {
 }
 // AJAX the content and put it into a lightbox
 // Callback if necessary
+var modalXHR;
 function getLightboxByUrl(url, post, callback) {
-  $.ajax({
-    type:'POST',
-    url:url,
-    data:post,
-    success:changeModalContent,
-    error:function(d,e) {
-      console.log(d,e);
-    }
-  });
   if(!lightboxShown) {
     $('#modal').modal('show');
     lightboxShown = true;
   }
+  modalXHR = $.ajax({
+    type:'POST',
+    url:url,
+    data:post,
+    success:function(html) {
+      // Check for a flash message error
+      if(typeof callback === "function" && html.indexOf("alert-error") == -1) {
+        callback(html);
+      } else {
+        changeModalContent(html);
+      }
+    },
+    error:function(d,e) {
+      console.log(d,e);
+    }
+  });
   lastLightboxURL = url;
   lastLightboxPOST = post;
-  if(callback) callback();
   return false;
 }
 
@@ -276,7 +283,8 @@ function changeModalContent(html) {
   registerModalForms($('#modal'));
 }
 // Close the lightbox and run update functions
-function closeLightbox() {
+function closeLightbox(x) {
+  if(modalXHR) modalXHR.abort();
   lightboxShown = false;
   $('#modal').modal('hide');
   // Reset content
