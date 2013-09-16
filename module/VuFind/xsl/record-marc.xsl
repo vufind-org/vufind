@@ -9,7 +9,7 @@
   </xsl:template>
 
   <xsl:template match="marc:record">
-      <table style="border: 0px;" class="citation">
+      <table style="border: 0px;" class="citation table table-striped">
         <tr>
           <th>LEADER</th>
           <td colspan="3"><xsl:value-of select="//marc:leader"/></td>
