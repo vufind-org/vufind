@@ -1,0 +1,19 @@
+$(document).ready(function() {
+  <? if (isset($this->searchDetails) && is_object($this->searchDetails)): ?>
+    <? foreach ($this->searchDetails->getQueries() as $searchGroup): ?>
+      <? $i = 0; foreach ($searchGroup->getQueries() as $search): ?>
+        <? if (++$i == 1): ?>
+          var new_group = addGroup('<?=addslashes($search->getString())?>', '<?=addslashes($search->getHandler())?>', '<?=$searchGroup->isNegated() ? 'NOT' : $searchGroup->getOperator()?>');
+        <? else: ?>
+          addSearch(new_group, '<?=addslashes($search->getString())?>', '<?=addslashes($search->getHandler())?>');
+        <? endif; ?>
+      <? endforeach; ?>
+    <? endforeach; ?>
+  <? else: ?>
+    var group = addGroup();
+    addSearch(group);
+    addSearch(group);
+  <? endif; ?>
+  // show the add group link
+  $("#addGroupLink").removeClass("offscreen");
+});

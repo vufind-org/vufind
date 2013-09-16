@@ -1,0 +1,57 @@
+<?
+    $this->headTitle($this->translate('Language'));
+?>
+
+<p class="lead">Comparing Languages Against <?=$this->escapeHtml($mainName)?></p>
+
+<p class="lead">Summary</p>
+
+<table class="table table-striped">
+  <tr><th>Language</th><th>Missing Lines</th><th>Extra Lines</th><th>Percent Translated</th><th>Extra Help Files</th></tr>
+  <? foreach ($details as $langCode => $diffs): ?>
+    <tr>
+      <td><?=$this->escapeHtml($langCode . ' (' . $diffs['name'] . ')')?></td>
+      <td><?=count($diffs['notInL2'])?></td>
+      <td><?=count($diffs['notInL1'])?></td>
+      <td><?=$this->escapeHtml($diffs['l2Percent'])?></td>
+      <td><?=count($diffs['helpFiles'])?></td>
+    </tr>
+  <? endforeach; ?>
+</table>
+<div class="accordion" id="accordion">
+  <? foreach ($details as $langCode => $diffs): ?>
+    <? if (count($diffs['notInL1']) > 0): ?>
+      <div class="accordion-group">
+        <div class="accordion-heading">
+          <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#extra_<?=$langCode ?>">
+            Extra Lines In <?=$this->escapeHtml($diffs['name'])?> (<?=$this->escapeHtml($langCode)?>.ini)
+          </a>
+        </div>
+        <div id="extra_<?=$langCode ?>" class="accordion-body collapse">
+          <div class="accordion-inner">
+          <? foreach ($diffs['notInL1'] as $key): ?>
+            <?=$this->escapeHtml($key)?> = "<?=$this->escapeHtml($diffs['object'][$key])?>"<br />
+          <? endforeach; ?>
+          </div>
+        </div>
+      </div>
+    <? endif; ?>
+    <? if (count($diffs['notInL2']) > 0): ?>
+      <div class="accordion-group">
+        <div class="accordion-heading">
+          <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#missing_<?=$langCode ?>">
+            Missing From <?=$this->escapeHtml($diffs['name'])?> (<?=$this->escapeHtml($langCode)?>.ini)
+            <span class="pull-right"></span>
+          </a>
+        </div>
+        <div id="missing_<?=$langCode ?>" class="accordion-body collapse">
+          <div class="accordion-inner">
+          <? foreach ($diffs['notInL2'] as $key): ?>
+            <?=$this->escapeHtml($key)?> = "<?=$this->escapeHtml($main[$key])?>"<br />
+          <? endforeach; ?>
+          </div>
+        </div>
+      </div>
+    <? endif; ?>
+  <? endforeach; ?>
+</div>

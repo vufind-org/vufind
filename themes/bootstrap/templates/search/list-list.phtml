@@ -1,0 +1,8 @@
+<? $i = 0; foreach ($this->results->getResults() as $current):
+  $recordNumber = $this->results->getStartRecord()+$i; ?>
+  <div id="result<?=$i++ ?>" class="row-fluid clearfix">
+    <label class="checkbox pull-left small"><? if ($this->cart()->isActive()): ?><?=$this->record($current)->getCheckbox()?><? endif; ?><?=$recordNumber?></label>
+    <?=$this->record($current)->getSearchResult('list')?>
+  </div>
+  <hr/>
+<? endforeach; ?>

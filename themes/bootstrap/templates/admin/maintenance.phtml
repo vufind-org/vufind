@@ -1,0 +1,22 @@
+<?
+  // Set page title.
+  $this->headTitle($this->translate('VuFind Administration - System Maintenance'));
+    
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('admin-home') . '">' . $this->translate('Admin') . '</a> <span class="divider">&gt;</span></li> <li class="active">System Maintenance</li>';
+?>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h2><?=$this->transEsc('System Maintenance')?></h2>
+  <p class="lead">Utilities</p>
+  <?=$this->flashMessages()?>
+  <form class="form-inline" method="get" action="<?=$this->url('admin-deleteexpiredsearches')?>">
+    <label for="del_daysOld">Delete unsaved user search histories older than</label>
+    <input class="input-mini" id="del_daysOld" type="text" name="daysOld" value="2"/>
+    <span class="help-inline">days.</span>
+    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Submit')?>"/>
+  </form>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->render("admin/menu.phtml")?>
+</div>

@@ -1,0 +1,57 @@
+<?
+  // Set up page title:
+  $this->headTitle($this->translate('Login'));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a> <span class="divider">&gt;</span></li>'
+    . '<li class="active">' . $this->transEsc('Login') . '</li>';
+
+  // If we're in AJAX mode, load some extra Javascript inline:
+  if ($this->layout()->getTemplate() == 'layout/lightbox') {
+    $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, "rc4.js", 'SET');
+  }
+
+  // Convenience variables:
+  $account = $this->auth()->getManager();
+  $hideLogin = !(is_object($account) && $account->loginEnabled());
+  $offlineMode = $this->ils()->getOfflineMode();
+?>
+
+<? if ($offlineMode == "ils-offline"): ?>
+  <div class="alert alert-warning">
+    <h2><?=$this->transEsc('ils_offline_title')?></h2>
+    <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
+    <p><?=$this->transEsc('ils_offline_login_message')?></p>
+    <? $supportEmail = $this->escapeHtml($this->systemEmail()); ?>
+    <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
+  </div>
+<? endif; ?>
+
+<p class="lead"><?=$this->transEsc('Login')?></p>
+<?=$this->flashmessages()?>
+
+<? if ($hideLogin): ?>
+  <div class="alert alert-error"><?=$this->transEsc('login_disabled')?></div>
+<? else: ?>
+  <? $sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home'))); ?>
+  <? if (!$sessionInitiator): // display default login form if no login URL provided ?>
+    <form method="post" action="<?=$this->url('myresearch-home')?>" name="loginForm" id="loginForm" class="form-horizontal">
+      <?=$this->auth()->getLoginFields()?>
+      <div class="control-group">
+        <div class="controls">
+          <input class="btn btn-primary" type="submit" name="processLogin" value="<?=$this->transEsc('Login')?>"/>
+          <? if ($account->supportsCreation()): ?>
+            <a class="btn btn-link" href="<?=$this->url('myresearch-account')?>"><?=$this->transEsc('Create New Account')?></a>
+          <? endif; ?>
+        </div>
+      </div>
+    </form>
+    <?
+      // Set up form validation:
+      $initJs = '$(document).ready(function() { $(\'#loginForm\').validate(); });';
+      echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $initJs);
+    ?>
+  <? else: ?>
+    <a href="<?=$this->escapeHtml($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
+  <? endif; ?>
+<? endif; ?>

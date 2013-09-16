@@ -1,0 +1,46 @@
+<?
+  // Set page title.
+  $this->headTitle($this->translate('email_selected_favorites'));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '<span class="divider">&gt;</span></li>')
+    . '<li><a href="' .$this->url('cart-home'). '">' .$this->transEsc('Cart'). '</a> <span class="divider">&gt;</span></li>'
+    . '<li class="active">' . $this->transEsc('email_selected_favorites') . '</li>';
+?>
+<?=$this->flashmessages()?>
+<form class="form-horizontal" action="<?=$this->url('cart-email')?>" method="post"  name="bulkEmail">
+  <? foreach ($this->records as $current): ?>
+    <div class="control-group">
+      <label class="control-label"><?=$this->transEsc('Title')?></label>
+      <div class="controls">
+        <span class="uneditable-input"><?=$this->escapeHtml($current->getBreadcrumb())?></span>
+        <input type="hidden" name="ids[]" value="<?=$this->escapeHtml($current->getResourceSource() . '|' . $current->getUniqueId())?>" />
+      </div>
+    </div>
+  <? endforeach; ?>
+  <div class="control-group">
+    <label class="control-label" for="email_to"><?=$this->transEsc('To')?>:</label>
+    <div class="controls">
+      <input id="email_to" type="text" name="to" value="<?=isset($this->to) ? $this->to : ''?>" size="40" class="mainFocus <?=$this->jqueryValidation(array('required'=>'This field is required', 'email'=>'Email address is invalid'))?>"/>
+    </div>
+  </div>
+  <? if (!$this->disableFrom): ?>
+    <div class="control-group">
+      <label class="control-label" for="email_from"><?=$this->transEsc('From')?>:</label>
+      <div class="controls">
+        <input id="email_from" type="text" name="from" value="<?=isset($this->from) ? $this->from : ''?>" size="40" class="<?=$this->jqueryValidation(array('required'=>'This field is required', 'email'=>'Email address is invalid'))?>"/>
+      </div>
+    </div>
+  <? endif; ?>
+  <div class="control-group">
+    <label class="control-label" for="email_message"><?=$this->transEsc('Message')?>:</label>
+    <div class="controls">
+      <textarea id="email_message" name="message" rows="3" cols="40"><?=isset($this->message) ? $this->message : ''?></textarea>
+    </div>
+  </div>
+  <div class="control-group">
+    <div class="controls">
+      <input class="btn" type="submit" name="submit" value="<?=$this->transEsc('Send')?>"/>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,26 @@
+<div class="alignleft">
+  <h3><?=$this->transEsc($this->title) ?></h3>
+
+  <?=$this->flashmessages();?>
+
+  <div id="popupDetails" class="confirmDialog">
+    <form class="pull-left pad" action="<?=$this->escapeHtml($this->confirm)?>" method="post">
+      <? if (isset($this->extras)): ?>
+        <? foreach ($this->extras as $extra=>$value): ?>
+          <? if (is_array($value)): ?>
+            <? foreach ($value as $current): ?>
+              <input type="hidden" name="<?=$this->escapeHtml($extra) ?>[]" value="<?=$this->escapeHtml($current) ?>" />
+            <? endforeach; ?>
+          <? else: ?>
+            <input type="hidden" name="<?=$this->escapeHtml($extra) ?>" value="<?=$this->escapeHtml($value) ?>" />
+          <? endif; ?>
+        <? endforeach; ?>
+      <? endif;?>
+      <input class="btn btn-primary" type="submit" name="confirm" value="<?=$this->transEsc('confirm_dialog_yes') ?>" />
+    </form>
+    <form class="pad"action="<?=$this->escapeHtml($this->cancel) ?>" method="post">
+      <input class="btn" type="submit" name="cancel" value="<?=$this->transEsc('confirm_dialog_no') ?>" />
+    </form>
+    <div class="clearer"></div>
+  </div>
+</div>

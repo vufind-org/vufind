@@ -1,0 +1,37 @@
+<?
+  // Set page title.
+  $this->headTitle($this->translate('Email this Search'));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', ' <span class="divider">&gt;</span></li>') .
+    '<li class="active">' . $this->transEsc('Email this Search') . '</li>';
+?>
+<?=$this->flashmessages()?>
+<form class="form-horizontal" action="" method="post"  name="emailSearch">
+  <input type="hidden" name="url" value="<?=$this->escapeHtml($this->url)?>" />
+  <div class="control-group">
+    <label class="control-label" for="email_to"><?=$this->transEsc('To')?>:</label>
+    <div class="controls">
+      <input class="input-xlarge" id="email_to" type="email" name="to" value="<?=isset($this->to) ? $this->to : ''?>"/>
+    </div>
+  </div>
+  <? if (!$this->disableFrom): ?>
+    <div class="control-group">
+      <label class="control-label" for="email_from"><?=$this->transEsc('From')?>:</label>
+      <div class="controls">
+        <input class="input-xlarge" id="email_from" type="email" name="from" value="<?=isset($this->from) ? $this->from : ''?>"/>
+      </div>
+    </div>
+  <? endif; ?>
+  <div class="control-group">
+    <label class="control-label" for="email_message"><?=$this->transEsc('Message')?>:</label>
+    <div class="controls">
+      <textarea class="input-xlarge" id="email_message" name="message" rows="3"><?=isset($this->message) ? $this->message : ''?></textarea>
+    </div>
+  </div>
+  <div class="control-group">
+    <div class="controls">
+      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Send Email')?>"/>
+    </div>
+  </div>
+</form>

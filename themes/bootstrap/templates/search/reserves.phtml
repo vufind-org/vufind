@@ -1,0 +1,56 @@
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('Reserves Search'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Reserves') . '</li>';
+?>
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <p class="lead"><?=$this->transEsc('Search For Items on Reserve')?></p>
+  <form method="get" action="" name="searchForm" class="form-horizontal">
+    <? if (is_array($this->courseList)): ?>
+      <div class="control-group">
+        <label class="control-label" for="reserves_by_course"><?=$this->transEsc('By Course')?>:</label>
+        <div class="controls">
+          <select name="course" id="reserves_by_course">
+            <option></option>
+            <? foreach ($this->courseList as $courseId => $courseName): ?>
+              <option value="<?=$this->escapeHtml($courseId)?>"><?=$this->escapeHtml($courseName)?></option>
+            <? endforeach; ?>
+          </select>
+          <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Find')?>"/>
+        </div>
+      </div>
+    <? endif; ?>
+
+    <? if (is_array($this->instList)): ?>
+      <div class="control-group">
+        <label class="control-label" for="reserves_by_inst"><?=$this->transEsc('By Instructor')?>:</label>
+        <div class="controls">
+          <select name="inst" id="reserves_by_inst">
+            <option></option>
+            <? foreach ($this->instList as $instId => $instName): ?>
+              <option value="<?=$this->escapeHtml($instId)?>"><?=$this->escapeHtml($instName)?></option>
+            <? endforeach; ?>
+          </select>
+          <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Find')?>"/>
+        </div>
+      </div>
+    <? endif; ?>
+
+    <? if (is_array($this->deptList)): ?>
+      <div class="control-group">
+        <label class="control-label" for="reserves_by_dept"><?=$this->transEsc('By Department')?>:</label>
+        <div class="controls">
+          <select name="dept" id="reserves_by_dept">
+            <option></option>
+            <? foreach ($this->deptList as $deptId => $deptName): ?>
+              <option value="<?=$this->escapeHtml($deptId)?>"><?=$this->escapeHtml($deptName)?></option>
+            <? endforeach; ?>
+          </select>
+          <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Find')?>"/>
+        </div>
+      </div>
+    <? endif; ?>
+  </form>
+</div>

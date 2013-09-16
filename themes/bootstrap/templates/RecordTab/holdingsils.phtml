@@ -1,0 +1,124 @@
+<?
+    // Set up convenience variables:
+    $account = $this->auth()->getManager();
+    $user = $account->isLoggedIn();
+    $holdings = $this->driver->getRealTimeHoldings();
+    $openUrl = $this->driver->openURLActive('holdings') ? $this->driver->getOpenURL() : false;
+    $offlineMode = $this->ils()->getOfflineMode();
+    // Account for replace_other_urls setting
+    $urls = ($openUrl && $this->driver->replaceURLsWithOpenURL()) ? array() : $this->record($this->driver)->getLinkDetails();
+
+    // Set page title.
+    $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
+?>
+<? if ($offlineMode == "ils-offline"): ?>
+  <div class="alert alert-warning">
+    <h2><?=$this->transEsc('ils_offline_title')?></h2>
+    <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
+    <p><?=$this->transEsc('ils_offline_holdings_message')?></p>
+    <? $supportEmail = $this->escapeHtml($this->systemEmail()); ?>
+    <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
+  </div>
+<? endif; ?>
+<? if (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings)) || $this->ils()->getTitleHoldsMode() == 'driver'): ?>
+  <? if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
+    <? if (!$user): ?>
+      <div class="alert alert-info">
+        <a href="<?=$this->currentPath()?>?login=true&catalogLogin=true"><?=$this->transEsc("Login")?></a> <?=$this->transEsc("hold_login")?>
+      </div>
+    <? elseif (!$user->cat_username): ?>
+      <div class="alert alert-info">
+        <?=$this->translate("hold_profile_html", array('%%url%%' => $this->currentPath() . '?catalogLogin=true'))?>
+      </div>
+    <? endif; ?>
+  <? endif; ?>
+<? endif; ?>
+<? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
+    <a class="holdPlace" href="<?=$this->recordLink()->getHoldUrl($holdingTitleHold)?>"><?=$this->transEsc('title_hold_place')?></a>
+<? endif; ?>
+<? if (!empty($urls) || $openUrl): ?>
+  <h3><?=$this->transEsc("Internet")?></h3>
+  <? if (!empty($urls)): ?>
+    <? foreach ($urls as $current): ?>
+      <a href="<?=$this->escapeHtml($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
+    <? endforeach; ?>
+  <? endif; ?>
+  <? if ($openUrl): ?><?=$this->openUrl($openUrl);?><? endif; ?>
+<? endif; ?>
+<? foreach ($holdings as $location => $holding): ?>
+<h3><?=$this->transEsc($location)?></h3>
+<table class="table table-striped" summary="<?=$this->transEsc('Holdings details from')?> <?=$this->transEsc($location)?>">
+  <? if (isset($holding['items'][0]['callnumber'])): ?>
+  <tr>
+    <th width="50%"><?=$this->transEsc("Call Number")?>: </th>
+    <td><?=$this->escapeHtml($holding['items'][0]['callnumber'])?></td>
+  </tr>
+  <? endif; ?>
+  <? if (!empty($holding['summary'])): ?>
+  <tr>
+    <th><?=$this->transEsc("Volume Holdings")?>: </th>
+    <td>
+      <? foreach ($holding['summary'] as $current): ?>
+        <?=$this->escapeHtml($current)?><br/>
+      <? endforeach; ?>
+    </td>
+  </tr>
+  <? endif; ?>
+  <? if (!empty($holding['notes'])): ?>
+  <tr>
+    <th><?=$this->transEsc("Notes")?>: </th>
+    <td>
+      <? foreach ($holding['notes'] as $data): ?>
+        <?=$this->escapeHtml($data)?><br/>
+      <? endforeach; ?>
+    </td>
+  </tr>
+  <? endif; ?>
+  <? foreach ($holding['items'] as $row): ?>
+    <? $check = (isset($row['check']) && $row['check']); ?>
+    <? if (isset($row['barcode']) && $row['barcode'] != ""): ?>
+      <tr>
+        <th><?=$this->transEsc("Copy")?> <?=$this->escapeHtml($row['number'])?></th>
+        <td>
+          <? if ($row['reserve'] == "Y"): ?>
+          <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?>
+          <? elseif (isset($row['use_unknown_message']) && $row['use_unknown_message']): ?>
+            <span class="muted"><?=$this->transEsc("status_unknown_message")?></span>
+          <? else: ?>
+            <? if ($row['availability']): ?>
+              <? /* Begin Available Items (Holds) */ ?>
+               <span class="text-success"><?=$this->transEsc("Available")?></span>
+              <? if (isset($row['link']) && $row['link']): ?>
+                <a<?=$check ? ' class="checkRequest"' : ''?> href="<?=$this->recordLink()->getHoldUrl($row['link'])?>"><?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
+              <? endif; ?>
+            <? else: ?>
+              <? /* Begin Unavailable Items (Recalls) */ ?>
+              <span class="text-error"><?=$this->transEsc($row['status'])?></span>
+              <? if (isset($row['returnDate']) && $row['returnDate']): ?>&ndash; <span class="small"><?=$this->escapeHtml($row['returnDate'])?></span><? endif; ?>
+              <? if (isset($row['duedate']) && $row['duedate']): ?>
+                &ndash; <span class="small"><?=$this->transEsc("Due")?>: <?=$this->escapeHtml($row['duedate'])?></span>
+              <? endif; ?>
+              <? if (isset($row['requests_placed']) && $row['requests_placed'] > 0): ?>
+                <span><?=$this->transEsc("Requests")?>: <?=$this->escapeHtml($row['requests_placed'])?></span>
+              <? endif; ?>
+              <? if (isset($row['link']) && $row['link']): ?>
+                <a<?=$check ? ' class="checkRequest"' : ''?> href="<?=$this->recordLink()->getHoldUrl($row['link'])?>"><?=$this->transEsc($check ? "Check Recall" : "Recall This")?></a>
+              <? endif; ?>
+            <? endif; ?>
+          <? endif; ?>
+        </td>
+      </tr>
+    <? endif; ?>
+  <? endforeach; ?>
+</table>
+<? endforeach; ?>
+
+<? $history = $this->driver->getRealTimeHistory(); ?>
+<? if (is_array($history) && !empty($history)): ?>
+<h3><?=$this->transEsc("Most Recent Received Issues")?></h3>
+<ul>
+  <? foreach ($history as $row): ?>
+    <li><?=$this->escapeHtml($row['issue'])?></li>
+  <? endforeach; ?>
+</ul>
+<? endif; ?>

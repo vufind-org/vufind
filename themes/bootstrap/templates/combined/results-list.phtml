@@ -1,0 +1,61 @@
+<?
+  $view = $currentSearch['view'];
+  $results = $view->results;
+  $params = $results->getParams();
+  $lookfor = $params->getDisplayQuery();
+  $recordTotal = $results->getResultTotal();
+  $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $results->getUrlQuery()->setPage(1);
+?>
+<div class="pull-right">
+  <a href="<?=$moreUrl?>" class="btn btn-link"><i class="icon-gears"></i> <?=$this->transEsc('More options')?></a>
+</div>
+<p class="lead"><?=$this->transEsc($currentSearch['label'])?></p>
+<? if (isset($currentSearch['sublabel'])): ?>
+  <p><i><?=$this->transEsc($currentSearch['sublabel'])?></i></p>
+<? endif; ?>
+<div class="clearfix">
+  <div class="pull-left help-block">
+    <? if ($recordTotal > 0): ?>
+      <?=$this->transEsc("Showing")?>
+      <strong><?=$results->getStartRecord()?></strong> - <strong><?=$results->getEndRecord()?></strong>
+      <? if (!isset($view->skipTotalCount)): ?>
+        <?=$this->transEsc('of')?> <strong><?=number_format($recordTotal)?></strong>
+      <? endif; ?>
+      <? if (isset($view->overrideSearchHeading)): ?>
+        <?=$view->overrideSearchHeading?>
+      <? elseif ($params->getSearchType() == 'basic'): ?>
+        <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($lookfor)?>'</strong>,
+      <? endif; ?>
+      <? if ($qtime = $results->getQuerySpeed()): ?>
+        <?=$this->transEsc('query time')?>: <?=$this->escapeHtml(round($qtime, 2))?>s
+      <? endif; ?>
+      <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $results, $this); ?>
+    <? else: ?>
+      <h3><?=$this->transEsc('nohit_heading')?></h3>
+    <? endif; ?>
+  </div>
+</div>
+<? /* End Listing Options */ ?>
+
+<? if ($recordTotal < 1): ?>
+  <p class="alert alert-error">
+    <? if (isset($view->overrideEmptyMessage)): ?>
+      <?=$view->overrideEmptyMessage?>
+    <? else: ?>
+      <?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($lookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?>
+    <? endif; ?>
+  </p>
+  <? if (isset($view->parseError)): ?>
+    <p class="alert alert-error"><?=$this->transEsc('nohit_parse_error')?></p>
+  <? endif; ?>
+  <?=$this->search()->renderSpellingSuggestions($this->transEsc('nohit_spelling') . ':', $results, $this); ?>
+  <? foreach ($results->getRecommendations('top') as $current): ?>
+    <?=$this->recommend($current)?>
+  <? endforeach; ?>
+  <? foreach ($results->getRecommendations('noresults') as $current): ?>
+    <?=$this->recommend($current)?>
+  <? endforeach; ?>
+<? else: ?>
+  <?=$this->render('search/list-' . $params->getView() . '.phtml', array('results' => $results, 'params' => $params))?>
+  <p><a href="<?=$moreUrl?>"><?=$this->transEsc($currentSearch['more_link'])?></a></p>
+<? endif; ?>

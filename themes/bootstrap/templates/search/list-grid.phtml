@@ -1,0 +1,10 @@
+<table class="table table-bordered">
+  <tr>
+    <? $i = 0; foreach ($this->results->getResults() as $current): ?>
+      <td id="result<?=$i++ ?>" width="25%">
+        <?=$this->record($current)->getSearchResult('grid')?>
+      </td>
+      <?=($i%4==0)?'</tr><tr>':''?>
+    <? endforeach; ?>
+  </tr>
+</table>

@@ -1,0 +1,7 @@
+<p>
+  <a href="<?=$this->escapeHtml($this->url)?>"<?=$this->export()->needsRedirect($this->format) ? ' target="_blank"' : ''?>><?=
+    $this->export()->needsRedirect($this->format)
+        ? $this->transEsc('export_redirect', array('%%service%%' => $this->translate($this->format)))
+        : $this->transEsc('export_download')
+  ?></a>
+</p>

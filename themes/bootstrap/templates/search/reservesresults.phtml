@@ -1,0 +1,20 @@
+<?
+    // Set some overrides, then call the standard search results action:
+    $this->overrideTitle = $this->translate('Reserves Search Results');
+    $this->overrideSearchHeading = $this->transEsc('Reserves');
+    if (isset($this->instructor) || isset($this->course)) {
+        $this->overrideSearchHeading .= ' (';
+        if (isset($this->instructor)) {
+            $this->overrideSearchHeading .= $this->transEsc('Instructor') . ': <strong>' . $this->escapeHtml($this->instructor) . '</strong>';
+            if (isset($this->course)) {
+                $this->overrideSearchHeading .= ', ';
+            }
+        }
+        if (isset($this->course)) {
+            $this->overrideSearchHeading .= $this->transEsc('Course') . ': <strong>' . $this->escapeHtml($this->course) . '</strong>';
+        }
+        $this->overrideSearchHeading .= ')';
+    }
+    $this->overrideEmptyMessage = $this->transEsc('course_reserves_empty_list');
+    echo $this->render('search/results.phtml');
+?>

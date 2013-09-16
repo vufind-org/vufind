@@ -1,0 +1,56 @@
+<?
+  $addThis = $this->addThis();
+  if (!empty($addThis)) {
+    $this->headScript()->appendFile('https://s7.addthis.com/js/250/addthis_widget.js?pub=' . urlencode($addThis));
+  }
+
+  // Set up some variables for convenience:
+  $id = $this->driver->getUniqueId();
+  $ajaxHref = '/AJAX/JSON?method=getLightbox&submodule=Record&id=' . $id;
+  $controllerClass = 'controller:' . $this->record($this->driver)->getController();
+  $cart = $this->cart();
+  $cartId = $this->driver->getResourceSource() . '|' . $id;
+?>
+<div class="centered-pills noprint">
+  <ul class="nav nav-pills">
+    <li><a id="cite-record" class="modal-link <?=$controllerClass?>" href="<?=$this->url('record-cite', array('id'=>$id)) ?>" title="<?=$this->transEsc('Cite this')?>"><i class="icon-asterisk"></i> <?=$this->transEsc('Cite this')?></a></li>
+    <? if (count($this->driver->getCitationFormats()) > 0): ?>
+    <? endif; ?>
+    <li><a id="sms-record" class="modal-link <?=$controllerClass?>" href="<?=$this->url('record-sms', array('id'=>$id)) ?>" title="<?=$this->transEsc('Text this')?>"><i class="icon-phone-sign"></i> <?=$this->transEsc('Text this')?></a></li>
+    <li><a id="mail-record" class="modal-link <?=$controllerClass?>" href="<?=$this->url('record-email', array('id'=>$id)) ?>" title="<?=$this->transEsc('Email this')?>"><i class="icon-envelope"></i> <?=$this->transEsc('Email this')?></a></li>
+    
+    <? $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>  
+    <? if(count($exportFormats) > 0): ?>  
+      <li class="dropdown">
+        <a class="export-toggle dropdown-toggle" data-toggle="dropdown" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>"><i class="icon-list-alt"></i> <?=$this->transEsc('Export Record') ?></a>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">
+          <? foreach ($exportFormats as $exportFormat): ?>
+            <li><a <? if ($this->export()->needsRedirect($exportFormat)): ?>target="<?=$this->escapeHtml($exportFormat)?>Main" <? endif; ?>href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>?style=<?=$this->escapeHtml($exportFormat)?>"><?=$this->transEsc('Export to')?> <?=$this->transEsc($exportFormat)?></a></li>
+          <? endforeach; ?>
+        </ul>
+      </li>      
+    <? endif; ?>
+    
+    <li><a id="save-record" class="modal-link <?=$controllerClass?>" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" title="<?=$this->transEsc('Add to favorites')?>"><i class="icon-plus-sign"></i> <?=$this->transEsc('Add to favorites')?></a></li>
+    <? if (!empty($addThis)): ?>
+      <li><a class="addThis addthis_button" href="https://www.addthis.com/bookmark.php?v=250&amp;pub=<?=urlencode($addThis)?>"><i class="icon-bookmark"></i> <?=$this->transEsc('Bookmark')?></a></li>
+    <? endif; ?>
+    <? if ($cart->isActive()): ?>
+      <li id="bookbag-menu">
+        <input id="cartId" type="hidden" name="ids[]" value="<?=$this->escapeHtml($cartId)?>" />
+        <a id="cart-add" class="<? if(!$cart->contains($cartId)): ?>correct <? endif ?>hidden" href="#"><i class="icon-plus-sign"></i> <?=$this->transEsc('Add to Book Bag') ?></a>
+        <a id="cart-remove" class="<? if($cart->contains($cartId)): ?>correct <? endif ?>hidden" href="#"><i class="icon-minus-sign"></i> <?=$this->transEsc('Remove from Book Bag') ?></a>
+        <noscript>
+          <form method="post" name="addForm" action="<?=$this->url('cart-home')?>">
+            <input id="cartId" type="hidden" name="ids[]" value="<?=$this->escapeHtml($cartId)?>" />
+            <? if ($cart->contains($cartId)): ?>
+              <input class="btn" type="submit" name="delete" value="<?=$this->transEsc('Remove from Book Bag')?>"/>
+            <? else: ?>
+              <input class="btn" type="submit" name="add" value="<?=$this->transEsc('Add to Book Bag')?>"/>
+            <? endif; ?>
+          </form>
+        </noscript>
+      </li>
+    <? endif; ?>
+  </ul>
+</div>

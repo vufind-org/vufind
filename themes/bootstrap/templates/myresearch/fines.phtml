@@ -1,0 +1,47 @@
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('My Fines'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a>' . '<span class="divider">&gt;</span></li>'
+        . '<li class="active">' . $this->transEsc('Fines') . '</li>';
+?>
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <? if (empty($this->fines)): ?>
+    <?=$this->transEsc('You do not have any fines')?>
+  <? else: ?>
+    <h2><?=$this->transEsc('Your Fines')?></h2>
+    <table class="table table-striped" summary="<?=$this->transEsc('Your Fines')?>">
+    <tr>
+      <th><?=$this->transEsc('Title')?></th>
+      <th><?=$this->transEsc('Checked Out')?></th>
+      <th><?=$this->transEsc('Due Date')?></th>
+      <th><?=$this->transEsc('Fine')?></th>
+      <th><?=$this->transEsc('Fee')?></th>
+      <th><?=$this->transEsc('Balance')?></th>
+    </tr>
+    <? foreach ($this->fines as $record): ?>
+      <tr>
+        <td>
+          <? if (empty($record['title'])): ?>
+            <?=$this->transEsc('not_applicable')?>
+          <? elseif (!isset($record['id'])): ?>
+            <?=$this->escapeHtml(trim($record['title'], '/:'))?>
+          <? else: ?>
+            <a href="<?=$this->url('record', array('id' => $record['id']))?>"><?=$this->escapeHtml(trim($record['title'], '/:'))?></a>
+          <? endif; ?>
+        </td>
+        <td><?=isset($record['checkout']) ? $this->escapeHtml($record['checkout']) : ''?></td>
+        <td><?=isset($record['duedate']) ? $this->escapeHtml($record['duedate']) : ''?></td>
+        <td><?=isset($record['fine']) ? $this->escapeHtml($record['fine']) : ''?></td>
+        <td><?=isset($record['amount']) ? $this->safeMoneyFormat($record['amount']/100.00) : ''?></td>
+        <td><?=isset($record['balance']) ? $this->safeMoneyFormat($record['balance']/100.00) : ''?></td>
+      </tr>
+    <? endforeach; ?>
+    </table>
+  <? endif; ?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'fines'))?>
+</div>

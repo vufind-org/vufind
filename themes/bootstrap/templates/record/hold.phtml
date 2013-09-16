@@ -1,0 +1,59 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('request_place_text') . ': ' . $this->driver->getBreadcrumb());
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '<span class="divider">&gt;</span> </li>')
+        . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '<span class="divider">&gt;</span> </li>'
+        . '<li class="active">' . $this->transEsc('request_place_text') . '</li>';
+?>
+<p class="lead"><?=$this->transEsc('request_place_text')?></p>
+<?=$this->flashmessages()?>
+<div class="hold-form">
+  <form action="" method="post">
+    <? if (in_array("comments", $this->extraHoldFields)): ?>
+      <div>
+      <strong><?=$this->transEsc("Comments")?>:</strong><br/>
+      <textarea rows="3" cols="20" name="gatheredDetails[comment]"><?=isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['comment']) : ''?></textarea>
+      </div>
+    <? endif; ?>
+
+    <? if (in_array("requiredByDate", $this->extraHoldFields)): ?>
+      <div>
+        <strong><?=$this->transEsc("hold_required_by")?>: </strong>
+        <div id="requiredByHolder">
+          <input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtml($this->gatheredDetails['requiredBy']) : $this->escapeHtml($this->defaultRequiredDate)?>" size="8" />
+          <strong>(<?=$this->dateTime()->getDisplayDateFormat()?>)</strong>
+        </div>
+      </div>
+    <? endif; ?>
+
+    <? if (in_array("pickUpLocation", $this->extraHoldFields)): ?>
+      <div>
+      <? if (count($this->pickup) > 1): ?>
+        <?
+          if (isset($this->gatheredDetails['pickUpLocation']) && $this->gatheredDetails['pickUpLocation'] !== "") {
+              $selected = $this->gatheredDetails['pickUpLocation'];
+          } elseif (isset($this->homeLibrary) && $this->homeLibrary !== "") {
+              $selected = $this->homeLibrary;
+          } else {
+              $selected = $this->defaultPickup;
+          }
+        ?>
+        <strong><?=$this->transEsc("pick_up_location")?>:</strong><br/>
+        <select name="gatheredDetails[pickUpLocation]">
+        <? foreach ($this->pickup as $lib): ?>
+          <option value="<?=$this->escapeHtml($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
+            <?=$this->escapeHtml($lib['locationDisplay'])?>
+          </option>
+        <? endforeach; ?>
+        </select>
+      <? else: ?>
+        <input type="hidden" name="gatheredDetails[pickUpLocation]" value="<?=$this->escapeHtml($this->defaultPickup)?>" />
+      <? endif; ?>
+      </div>
+    <? endif; ?>
+
+    <input type="submit" name="placeHold" value="<?=$this->transEsc('request_submit_text')?>"/>
+  </form>
+</div>

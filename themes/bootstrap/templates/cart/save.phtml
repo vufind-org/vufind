@@ -1,0 +1,73 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('bookbag_save_selected'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '<span class="divider">&gt;</span> </li>') .
+        '<li class="active">' . $this->transEsc('bookbag_save_selected') . '</li>';
+?>
+<h3 class="hideinlightbox"><?=$this->transEsc('bookbag_save_selected')?></h3>
+
+<?=$this->flashmessages()?>
+
+<form class="form-horizontal" method="post" action="<?=$this->url('cart-save')?>" name="bulkSave">
+  <? $idParams = array(); ?>
+  <div class="control-group">
+    <label class="control-label"><?=$this->transEsc('Title')?></label>
+    <div class="controls">
+    <? if(count($this->records) > 1): ?>
+      <div class="item-list">
+        <ul>
+          <? foreach ($this->records as $current): ?>
+            <? $idParams[] = urlencode('ids[]') . '=' . urlencode($current->getResourceSource() . '|' . $current->getUniqueId()) ?>
+            <li><?=$this->escapeHtml($current->getBreadcrumb())?></li>
+            <input type="hidden" name="ids[]" value="<?=$this->escapeHtml($current->getResourceSource() . '|' . $current->getUniqueId())?>" />
+          <? endforeach; ?>
+        </ul>
+      </div>
+    <? else: ?>
+      <span class="uneditable-input"><?=$this->records[0]->getBreadcrumb() ?></span>
+      <input type="hidden" name="ids[]" value="<?=$this->escapeHtml($this->records[0]->getResourceSource() . '|' . $this->records[0]->getUniqueId())?>" />
+    <? endif; ?>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label" for="save_list"><?=$this->transEsc('Choose a List') ?></label>
+    <div class="controls">
+      <select id="save_list" class="pull-left" name="list">
+        <? if (count($this->lists) > 0): ?>
+          <? foreach ($this->lists as $list): ?>
+            <option value="<?=$list['id'] ?>"<? if ($list['id']==$this->userList()->lastUsed()): ?> selected="selected"<? endif; ?>><?=$this->escapeHtml($list['title'])?></option>
+          <? endforeach; ?>
+        <? else: ?>
+          <option value=""><?=$this->transEsc('My Favorites') ?></option>
+        <? endif; ?>
+      </select>
+      <a class="btn btn-link" id="make-list"  href="<?=$this->url('editList', array('id' => 'NEW')) . '?' . implode('&', $idParams) ?>" title="<?=$this->transEsc('Create a List') ?>"><?=count($this->lists) > 0 ? $this->transEsc('or').' '.$this->transEsc('Create a List') : $this->transEsc('Create a List'); ?></a>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label" for="add_mytags"><?=$this->transEsc('Add Tags') ?></label>
+    <div class="controls">
+      <input class="mainFocus" id="add_mytags" type="text" name="mytags" value=""/>
+    </div>
+  </div>
+  <div class="control-group">
+    <div class="controls">
+      <input class="btn" type="submit" name="submit" value="<?=$this->transEsc('Save') ?>"/>
+    </div>
+  </div>
+</form>
+
+<? /* TODO: Prevent popover from closing modal
+  $items = $this->transEsc('items');
+  $script = <<<JS
+    var list = $('.item-list');
+    var items = list.find('li').length;
+    var bubble = list.html();
+    list.html('<span class="btn">'+items+' {$items}</span>');
+    list.find('.btn').popover({html:true,title:bubble});
+JS;
+echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET') */ ?>

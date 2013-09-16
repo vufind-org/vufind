@@ -1,0 +1,10 @@
+<h4><?=$this->transEsc('Your Account')?></h4>
+<ul class="nav nav-list">
+  <li<?=$this->active == 'favorites' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-favorites')?>"><?=$this->transEsc('Favorites')?> <i class="icon-star pull-right"></i></a></li>
+  <li<?=$this->active == 'checkedout' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-checkedout')?>"><?=$this->transEsc('Checked Out Items')?> <i class="icon-book pull-right"></i></a></li>
+  <li<?=$this->active == 'holds' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-holds')?>"><?=$this->transEsc('Holds and Recalls')?> <i class="icon-flag pull-right"></i></a></li>
+  <li<?=$this->active == 'fines' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-fines')?>"><?=$this->transEsc('Fines')?> <i class="icon-usd pull-right"></i></a></li>
+  <li<?=$this->active == 'profile' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-profile')?>"><?=$this->transEsc('Profile')?> <i class="icon-user pull-right"></i></a></li>
+  <li<?=$this->active == 'history' ? ' class="active"' : ''?>><a href="<?=$this->url('search-history')?>?require_login"><?=$this->transEsc('history_saved_searches')?> <i class="icon-search pull-right"></i></a></li>
+  <li><a href="<?=$this->url('myresearch-logout')?>"><?=$this->transEsc("Log Out")?> <i class="icon-signout pull-right"></i></a></li>
+</ul>

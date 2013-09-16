@@ -1,0 +1,83 @@
+<? if (!empty($this->facetList)): ?>
+  <p class="lead"><?=$this->transEsc('Limit To')?></p>
+  <div class="row-fluid">
+    <? foreach ($this->facetList as $field => $list): ?>
+      <div class="span4">
+        <label class="displayBlock" for="limit_<?=$this->escapeHtml(str_replace(' ', '', $field))?>"><?=$this->transEsc($list['label'])?>:</label>
+        <select class="span12" id="limit_<?=$this->escapeHtml(str_replace(' ', '', $field))?>" name="filter[]" multiple="multiple" size="10">
+          <?
+            // Sort the current facet list alphabetically; we'll use this data
+            // along with the foreach below to display facet options in the
+            // correct order.
+            $sorted = array();
+            foreach ($list['list'] as $i => $value) {
+              $sorted[$i] = $value['displayText'];
+            }
+            natcasesort($sorted);
+          ?>
+          <? foreach ($sorted as $i => $display): ?>
+            <? $value = $list['list'][$i]; ?>
+            <option value="<?=$this->escapeHtml($field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected'])?' selected="selected"':''?>><?=$this->escapeHtml($display)?></option>
+          <? endforeach; ?>
+        </select>
+      </div>
+    <? endforeach; ?>
+  </div>
+<? endif; ?>
+<? if (isset($this->illustratedLimit)): ?>
+  <div class="row-fluid">
+    <fieldset class="span4">
+      <legend><?=$this->transEsc("Illustrated")?>:</legend>
+      <? foreach ($this->illustratedLimit as $current): ?>
+        <input id="illustrated_<?=$this->escapeHtml($current['value'])?>" type="radio" name="illustration" value="<?=$this->escapeHtml($current['value'])?>"<?=$current['selected']?' checked="checked"':''?>/>
+        <label for="illustrated_<?=$this->escapeHtml($current['value'])?>"><?=$this->transEsc($current['text'])?></label><br/>
+      <? endforeach; ?>
+    </fieldset>
+  <? endif; ?>
+  <?=$this->render('search/advanced/limit.phtml')?>
+  <? if (isset($this->dateRangeLimit)): ?>
+    <? /* Load the publication date slider UI widget */ $this->headScript()->appendFile('pubdate_slider.js'); ?>
+    <fieldset class="span4 text-center">
+      <legend class="text-left"><?=$this->transEsc('adv_search_year')?></legend>
+      <input type="hidden" name="daterange[]" value="publishDate"/>
+      <label for="publishDatefrom"><?=$this->transEsc('date_from')?>:</label>
+      <input type="text" maxlength="4" class="yearbox span4" name="publishDatefrom" id="publishDatefrom" value="<?=isset($dateFacets['publishDate'][0])?$this->escapeHtml($dateFacets['publishDate'][0]):''?>" />
+      <label for="publishDateto"><?=$this->transEsc('date_to')?>:</label>
+      <input type="text" maxlength="4" class="yearbox span4" name="publishDateto" id="publishDateto" value="<?=isset($dateFacets['publishDate'][1])?$this->escapeHtml($dateFacets['publishDate'][1]):''?>" />
+      <div class="pad"><input type="text" id="dateSlider"></div>
+    </fieldset>
+    <?
+      $this->headScript()->appendFile('bootstrap-slider.js');
+      $min = !empty($dateFacets['publishDate'][0]) ? $dateFacets['publishDate'][0] : 1400;
+      $max = !empty($dateFacets['publishDate'][1]) ? $dateFacets['publishDate'][1] : date('Y', time()+31536000);
+      $low  = !empty($this->dateRangeLimit[0]) ? $this->dateRangeLimit[0] : $min;
+      $high = !empty($this->dateRangeLimit[1]) ? $this->dateRangeLimit[1] : $max;
+      $min = intval($min);
+      $max = intval($max);
+      $low = intval($low);
+      $high = intval($high);
+      $init = !empty($this->dateRangeLimit[0]) ? 'fillTexts()' : '';
+      $script = <<<JS
+        $(document).ready(function() {
+          var fillTexts = function() {
+            var v = dateSlider.getValue();
+            $('#publishDatefrom').val(v[0]);
+            $('#publishDateto').val(v[1]);
+          };
+          var dateSlider = $('#dateSlider')
+            .slider({
+               'min':{$min},
+               'max':{$max},
+               'handle':"square",
+               'tooltip':"hide",
+               'value':[{$low},{$high}]
+            })
+            .on('slide', fillTexts)
+            .data('slider');
+          {$init}
+        });
+JS;
+    ?>
+    <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+  <? endif; ?>
+  </div>

@@ -1,0 +1,30 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Export Favorites'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '<span class="divider">&gt;</span></li>')
+    . '<li><a href="' .$this->url('cart-home'). '">' .$this->transEsc('Cart'). '</a> <span class="divider">&gt;</span></li>'
+    . '<li class="active">' . $this->transEsc('Export Favorites') . '</li>';
+?>
+<h3 class="hideinlightbox"><?=$this->transEsc('Export Favorites')?></h3>
+
+<?=$this->flashmessages()?>
+
+<? if (!empty($this->exportOptions)): ?>
+  <form class="form-inline" method="post" action="<?=$this->url('cart-export')?>" name="exportForm" title="<?=$this->transEsc('Export Items')?>">
+    <? foreach ($this->records as $current): ?>
+      <strong><?=$this->transEsc('Title')?>:</strong> <?=$this->escapeHtml($current->getBreadcrumb())?><br />
+      <input type="hidden" name="ids[]" value="<?=$this->escapeHtml($current->getResourceSource() . '|' . $current->getUniqueId())?>" />
+    <? endforeach; ?>
+    <br />
+    <label for="format"><?=$this->transEsc('Format')?>:</label>
+    <select name="format" id="format">
+      <? foreach ($this->exportOptions as $exportOption): ?>
+        <option value="<?=$this->escapeHtml($exportOption)?>"><?=$this->transEsc($exportOption)?></option>
+      <? endforeach; ?>
+    </select>
+    <br/><br/>
+    <input class="btn" type="submit" name="submit" value="<?=$this->transEsc('Export') ?>"/>
+  </form>
+<? endif; ?>

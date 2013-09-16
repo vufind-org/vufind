@@ -1,0 +1,37 @@
+<? $results = $this->recommend->getResults(); ?>
+<? $sideFacetSet = $this->recommend->getFacetSet(); ?>
+
+<? if (isset($sideFacetSet['lists']) && !empty($sideFacetSet['lists']['list'])): ?>
+  <h4 class="list"><?=$this->transEsc($sideFacetSet['lists']['label'])?></h4>
+  <ul class="nav nav-list">
+  <? foreach ($sideFacetSet['lists']['list'] as $current): ?>
+    <li<? if ($current['isApplied']): ?> class="active"<? endif ?>>
+      <a href="<?=$this->url('userList', array('id' => $current['value']))?>"><?=$this->escapeHtml($current['displayText'])?> <span class="pull-right"><?=$this->escapeHtml($current['count'])?></span></a>
+    </li>
+  <? endforeach; ?>
+  </ul>
+<? endif; ?>
+
+<? if (isset($sideFacetSet['tags']) && !empty($sideFacetSet['tags']['list'])): ?>
+  <h4 class="tag"><?=$this->transEsc($sideFacetSet['tags']['label'])?></h4>
+  <ul class="nav nav-list">
+  <? $filterList = $results->getParams()->getFilterList(true);
+     $tagFilterList = isset($filterList[$sideFacetSet['tags']['label']]) ? $filterList[$sideFacetSet['tags']['label']] : null; ?>
+    <? if (!empty($tagFilterList)): ?>
+      <? $field = $sideFacetSet['tags']['label']; ?>
+      <? foreach ($tagFilterList as $filter): ?>
+        <? $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($filter['field'], $filter['value']); ?>
+        <li class="active">
+          <a href="<?=$removeLink?>"><i class="icon-remove"></i> <?=$this->escapeHtml($filter['displayText'])?> <span class="pull-right"><?=$this->escapeHtml($filter['count'])?></span></a>
+        </li>
+      <? endforeach; ?>
+    <? endif; ?>
+    <? foreach($sideFacetSet['tags']['list'] as $thisFacet): ?>      
+      <? if(!$thisFacet['isApplied']): ?>
+        <li>
+          <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet('tags', $thisFacet['value'])?>"><i class="icon-plus"></i> <?=$this->escapeHtml($thisFacet['displayText'])?> <span class="pull-right"><?=$this->escapeHtml($thisFacet['count'])?></span></a>
+        </li>
+      <? endif ?>
+    <? endforeach; ?>
+  </ul>
+<? endif; ?>

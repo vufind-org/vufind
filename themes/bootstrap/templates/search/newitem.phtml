@@ -1,0 +1,29 @@
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('New Item Search'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('New Items') . '</li>';
+?>
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <p class="lead"><?=$this->transEsc('Find New Items')?></p>
+  <form method="get" action="" class="form-inline">
+    <p class="help-inline pad"><?=$this->transEsc('Range')?>:</p>
+    <? foreach ($this->ranges as $key => $range): ?>
+      <label class="radio pad">
+        <input id="newitem_range_<?=$this->escapeHtml($key)?>" type="radio" name="range" value="<?=$this->escapeHtml($range)?>"<?= ($key == 0) ? ' checked="checked"' : ''?>/>
+        <?=($range == 1) ? $this->transEsc('Yesterday') : $this->transEsc('Past') . ' ' . $this->escapeHtml($range) . ' ' . $this->transEsc('Days')?>
+      </label>
+    <? endforeach; ?>
+    <? if (is_array($this->fundList) && !empty($this->fundList)): ?>
+        <label class="displayBlock" for="newitem_department"><?=$this->transEsc('Department')?>:</label>
+        <select id="newitem_department" name="department" size="10">
+        <? foreach ($this->fundList as $fundId => $fund): ?>
+          <option value="<?=$this->escapeHtml($fundId)?>"><?=$this->transEsc($fund)?></option>
+        <? endforeach; ?>
+        </select>
+    <? endif; ?>
+    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Find')?>"/>
+  </form>
+</div>
+<div class="clear"></div>

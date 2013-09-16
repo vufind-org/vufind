@@ -1,0 +1,147 @@
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('My Holds'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a> <span class="divider">&gt;</span></li>'
+        . '<li class="active">' . $this->transEsc('My Holds') . '</li>';
+?>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h2><?=$this->translate('Your Holds and Recalls') ?></h2>
+
+  <?=$this->flashmessages()?>
+
+  <? if (!empty($this->recordList)): ?>
+    <? if ($this->cancelForm): ?>
+      <form name="cancelForm" action="" method="post" id="cancelHold">
+        <input type="submit" class="btn" name="cancelSelected" value="<?=$this->translate("hold_cancel_selected") ?>" onClick="return confirm('<?=$this->translate("confirm_hold_cancel_selected_text") ?>')" />
+        <input type="submit" class="btn" name="cancelAll" value="<?=$this->translate("hold_cancel_all") ?>" onClick="return confirm('<?=$this->translate("confirm_hold_cancel_all_text") ?>')" />
+        <hr/>
+    <? endif; ?>
+
+    <? $iteration = 0; ?>
+    <? foreach ($this->recordList as $resource): ?>
+      <hr/>
+      <? $iteration++; ?>
+      <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
+      <div id="record<?=$this->escapeHtml($resource->getUniqueId()) ?>" class="row-fluid">
+        <? if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
+          <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
+          <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtml($ilsDetails['cancel_details']) ?>" />
+          <div class="pull-left">
+            <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtml($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>" />
+          </div>
+        <? endif; ?>
+        <div class="span2 text-center">
+          <? if ($summThumb = $this->record($resource)->getThumbnail()): ?>
+            <img src="<?=$this->escapeHtml($summThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+          <? else: ?>
+            <img src="<?=$this->url('cover-unavailable')?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+          <? endif; ?>
+        </div>
+        <div class="span9">
+          <?
+            // If this is a non-missing Solr record, we should display a link:
+            if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
+              $title = $resource->getTitle();
+              $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
+              echo '<a href="' . $this->recordLink()->getUrl($resource)
+                . '" class="title">' . $title . '</a>';
+            } else if (isset($ilsDetails['title']) && !empty($ilsDetails['title'])){
+              // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
+              echo $this->escapeHtml($ilsDetails['title']);
+            } else {
+              // Last resort -- indicate that no title could be found.
+              echo $this->transEsc('Title not available');
+            }
+          ?><br/>
+          <? $listAuthor = $resource->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
+            <?=$this->transEsc('by')?>:
+            <a href="<?=$this->record($resource)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><br/>
+          <? endif; ?>
+          <? /* TODO: tags
+          {if $resource.tags}
+            <?=$this->transEsc('Your Tags')?>:
+            {foreach from=$resource.tags item=tag name=tagLoop}
+              <a href="{$url}/Search/Results?tag={$tag->tag|escape:"url"}">{$tag->tag|escape}</a>{if !$smarty.foreach.tagLoop.last},{/if}
+            {/foreach}
+            <br/>
+          {/if}
+           */ ?>
+          <? /* TODO: notes
+          {if $resource.notes}
+            <?=$this->transEsc('Notes')?>: {$resource.notes|escape}<br/>
+          {/if}
+           */ ?>
+
+          <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
+            <?=str_replace('class="', 'class="label label-info ', $this->record($resource)->getFormatList())?>
+            <br/>
+          <? endif; ?>
+          <? if (isset($ilsDetails['volume']) && !empty($ilsDetails['volume'])): ?>
+            <strong><?=$this->transEsc('Volume')?>:</strong> <?=$this->escapeHtml($ilsDetails['volume'])?>
+            <br />
+          <? endif; ?>
+
+          <? if (isset($ilsDetails['publication_year']) && !empty($ilsDetails['publication_year'])): ?>
+            <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
+            <br />
+          <? endif; ?>
+
+          <? /* Depending on the ILS driver, the "location" value may be a string or an ID; figure out the best
+             value to display... */ ?>
+          <? $pickupDisplay = ''; ?>
+          <? $pickupTranslate = false; ?>
+          <? if (isset($ilsDetails['location'])): ?>
+            <? if ($this->pickup): ?>
+              <? foreach ($this->pickup as $library): ?>
+                <? if ($library['locationID'] == $ilsDetails['location']): ?>
+                  <? $pickupDisplay = $library['locationDisplay']; ?>
+                  <? $pickupTranslate = true; ?>
+                <? endif; ?>
+              <? endforeach; ?>
+            <? endif; ?>
+            <? if (empty($pickupDisplay)): ?>
+              <? $pickupDisplay = $ilsDetails['location']; ?>
+            <? endif; ?>
+          <? endif; ?>
+          <? if (!empty($pickupDisplay)): ?>
+            <strong><?=$this->transEsc('pick_up_location') ?>:</strong>
+            <?=$pickupTranslate ? $this->transEsc($pickupDisplay) : $this->escapeHtml($pickupDisplay)?>
+            <br />
+          <? endif; ?>
+
+          <strong><?=$this->transEsc('Created') ?>:</strong> <?=$this->escapeHtml($ilsDetails['create']) ?> |
+          <strong><?=$this->transEsc('Expires') ?>:</strong> <?=$this->escapeHtml($ilsDetails['expire']) ?>
+          <br />
+
+          <? if (isset($this->cancelResults['items'])): ?>
+            <? foreach ($this->cancelResults['items'] as $itemId=>$cancelResult): ?>
+              <? if ($itemId == $ilsDetails['item_id'] && $cancelResult['success'] == false): ?>
+                <div class="alert alert-error"><?=$this->transEsc($cancelResult['status']) ?><? if ($cancelResult['sysMessage']) echo ' : ' . $this->transEsc($cancelResult['sysMessage']); ?></div>
+              <? endif; ?>
+            <? endforeach; ?>
+          <? endif; ?>
+
+          <? if (isset($ilsDetails['available']) && $ilsDetails['available'] == true): ?>
+            <div class="text-success"><?=$this->transEsc("hold_available") ?></div>
+          <? elseif (isset($ilsDetails['position'])): ?>
+            <p><strong><?=$this->transEsc("hold_queue_position") ?>:</strong> <?=$this->escapeHtml($ilsDetails['position']) ?></p>
+          <? endif; ?>
+          <? if (isset($ilsDetails['cancel_link'])): ?>
+            <p><a href="<?=$this->escapeHtml($ilsDetails['cancel_link']) ?>"><?=$this->transEsc("hold_cancel") ?></a></p>
+          <? endif; ?>
+
+        </div>
+      </div>
+    <? endforeach; ?>
+    <? if ($this->cancelForm): ?></form><? endif; ?>
+  <? else: ?>
+    <?=$this->transEsc('You do not have any holds or recalls placed') ?>.
+  <? endif; ?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'holds'))?>
+</div>

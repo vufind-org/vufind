@@ -1,0 +1,16 @@
+<?
+  // Set page title.
+  $this->headTitle($this->translate('Comments') . ': ' . $this->driver->getBreadcrumb());
+?>
+
+<div id="commentList">
+  <?=$this->render('record/comments-list.phtml')?>
+</div>
+
+<form name="commentRecord" id="commentRecord" action="<?=$this->recordLink()->getActionUrl($this->driver, 'AddComment')?>" method="post">
+  <input type="hidden" name="id" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>"/>
+  <input type="hidden" name="source" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>"/>
+  <label for="comment" class="offscreen"><?=$this->transEsc("Your Comment")?>:</label>
+  <textarea id="comment" name="comment" class="span10 <?=$this->jqueryValidation(array('required'=>'This field is required'))?>"></textarea><br/>
+  <input class="btn" data-loading-text="Submitting..." type="submit" value="<?=$this->transEsc("Add your comment")?>"/>
+</form>

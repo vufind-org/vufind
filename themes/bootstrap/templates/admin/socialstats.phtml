@@ -1,0 +1,32 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('VuFind Administration - Social Statistics'));
+    
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('admin-home') . '">' . $this->translate('Admin') . '</a> <span class="divider">&gt;</span></li> <li class="active">Social Statistics</li>';
+?>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <h2><?=$this->transEsc('Social Statistics')?></h2>
+  <hr/>
+  <p class="lead">Comments</p>
+  <table class="table table-striped">
+    <tr><th>Total Users</th><th>Total Resources</th><th>Total Comments</th></tr>
+    <tr><td><?=$comments['users']?></td><td><?=$comments['resources']?></td><td><?=$comments['total']?></td></tr>
+  </table>
+
+  <p class="lead">Favorites</p>
+  <table class="table table-striped">
+    <tr><th>Total Users</th><th>Total Resources</th><th>Total Lists</th><th>Total Saved Items</th></tr>
+    <tr><td><?=$favorites['users']?></td><td><?=$favorites['resources']?></td><td><?=$favorites['lists']?></td><td><?=$favorites['total']?></td></tr>
+  </table>
+
+  <p class="lead">Tags</p>
+  <table class="table table-striped">
+    <tr><th>Total Users</th><th>Total Resources</th><th>Total Tags</th></tr>
+    <tr><td><?=$tags['users']?></td><td><?=$tags['resources']?></td><td><?=$tags['total']?></td></tr>
+  </table>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <?=$this->render("admin/menu.phtml")?>
+</div>

@@ -1,0 +1,19 @@
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('User Account'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a> <span class="divider">&gt;</span></li>'
+    . '<li class="active">' . $this->transEsc('Account') . '</li>';
+?>
+<h2><?=$this->transEsc('User Account')?></h2>
+<?=$this->flashmessages()?>
+
+<form method="post" action="" name="accountForm" id="accountForm" class="form-horizontal">
+  <?=$this->auth()->getCreateFields()?>
+  <div class="control-group">
+    <div class="controls">
+      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Submit')?>"/>
+    </div>
+  </div>
+</form>

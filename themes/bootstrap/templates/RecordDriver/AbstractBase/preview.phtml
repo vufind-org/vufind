@@ -1,0 +1,88 @@
+<?
+    $previews = isset($this->config->Content->previews)
+        ? explode(',', $this->config->Content->previews) : array();
+    if (!empty($previews)) {
+        // Extract identifiers from record driver if it supports appropriate methods:
+        $isbn = is_callable(array($this->driver, 'getCleanISBN'))
+            ? $this->driver->getCleanISBN() : '';
+        $lccn = is_callable(array($this->driver, 'getLCCN'))
+            ? $this->driver->getLCCN() : '';
+        $oclc = is_callable(array($this->driver, 'getOCLC'))
+            ? $this->driver->getOCLC() : array();
+
+        // Turn identifiers into class names to communicate with jQuery logic:
+        $idClasses = array();
+        if (!empty($isbn)) {
+            $idClasses[] = 'ISBN' . $isbn;
+        }
+        if (!empty($lccn)) {
+            $idClasses[] = 'LCCN' . $lccn;
+        }
+        if (!empty($oclc)) {
+            foreach ($oclc as $oclcNum) {
+                if (!empty($oclcNum)) {
+                    $idClasses[] = 'OCLC' . $oclcNum;
+                }
+            }
+        }
+
+        // If we found at least one identifier, we can build the placeholder HTML:
+        $html = '';
+        if (!empty($idClasses)) {
+            // Convert to string:
+            $idClasses = implode(' ', $idClasses);
+
+            // Loop through configured options and build appropriate HTML:
+            foreach ($previews as $current) {
+                switch (trim(strtolower($current))) {
+                case 'google':
+                    $name = 'Google Books';
+                    $divClass = 'googlePreviewDiv';
+                    $linkClass = 'previewGBS';
+                    $icon = 'https://www.google.com/intl/en/googlebooks/images/gbs_preview_button1.png';
+                    $options = isset($this->config->Content->GoogleOptions)
+                        ? str_replace(' ', '', $this->config->Content->GoogleOptions)
+                        : "full,partial";
+                    break;
+                case 'openlibrary':
+                    $name = 'Open Library';
+                    $divClass = 'olPreviewDiv';
+                    $linkClass = 'previewOL';
+                    $icon = $this->imageLink('preview_ol.gif');
+                    $options = isset($this->config->Content->OpenLibraryOptions)
+                        ? str_replace(' ', '', $this->config->Content->OpenLibraryOptions)
+                        : "full,partial";
+                    break;
+                case 'hathitrust':
+                    $name = 'HathiTrust';
+                    $divClass = 'hathiPreviewDiv';
+                    $linkClass = 'previewHT';
+                    $icon = $this->imageLink('preview_ht.gif');
+                    $options = isset($this->config->Content->HathiRights)
+                        ? str_replace(' ', '', $this->config->Content->HathiRights)
+                        : "pd,ic-world";
+                    break;
+                default:
+                    $name = $divClass = $linkClass = $icon = $options = false;
+                    break;
+                }
+                if ($name) {
+                    $title = $this->transEsc('Preview from') . ' ' . $name;
+                    $html .= '<div class="' . $divClass . '__' . $options . '">'
+                        . '<a title="' . $title . '" class="hide ' . $linkClass . ' ' . $idClasses . '" target="_blank">'
+                        . '<img src="' . $icon . '" alt="' . $this->transEsc('Preview') . '" />'
+                        . '</a>'
+                        . '</div>';
+                }
+            }
+
+            // If we built some HTML, we should load the supporting Javascript and
+            // add the necessary identifier code:
+            if (!empty($html)) {
+                $html .= '<span class="previewBibkeys ' . $idClasses . '"></span>';
+                $this->headScript()->appendFile("preview.js");
+                echo $html;
+            }
+        }
+    }
+?>

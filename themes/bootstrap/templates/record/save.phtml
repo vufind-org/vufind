@@ -1,0 +1,62 @@
+<?
+  // Set page title.
+  $this->headTitle($this->translate('Save'));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '<span class="divider">&gt;</span></li>')
+    . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '<span class="divider">&gt;</span></li><li class="active">' . $this->transEsc('Save') . '</li>';
+?>
+<p class="lead"><?=$this->transEsc("add_favorite_prefix") ?> <?=$this->escapeHtml($this->driver->getBreadcrumb())?> <?=$this->transEsc("add_favorite_suffix") ?></p>
+<form id="edit-save-form" class="form-horizontal" method="post" action="<?=$this->url('record-save', array('id'=>$this->driver->getUniqueId())) ?>" name="saveRecord">
+  <input type="hidden" name="submit" value="1" />
+  <input type="hidden" name="id" value="<?=$this->escapeHtml($this->driver->getUniqueId()) ?>" />
+  <input type="hidden" name="source" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>" />
+  <? if (!empty($this->containingLists)): ?>
+    <p><?=$this->transEsc('This item is already part of the following list/lists') ?>: 
+    <? foreach ($this->containingLists as $i=>$list): ?>
+      <a href="<?=$this->url('userList', array('id' => $list['id'])) ?>"><?=$this->escapeHtml($list['title'])?></a><? if($i<count($this->containingLists)-1): ?>, <? endif; ?>
+    <? endforeach; ?>
+    </p><hr/>
+  <? endif; ?>
+
+  <?/* Only display the list drop-down if the user has lists that do not contain
+  this item OR if they have no lists at all and need to create a default list */?>
+  <? $showLists = (!empty($this->nonContainingLists) || (empty($this->containingLists) && empty($this->nonContainingLists))); ?>
+
+  <div class="control-group">
+    <label class="control-label" for="save_list"><?=$this->transEsc('Choose a List') ?></label>
+    <div class="controls">
+    <? if ($showLists): ?>
+      <select class="pull-left" id="save_list" name="list">
+      <? if ($this->nonContainingLists): ?>
+        <? foreach ($this->nonContainingLists as $list): ?>
+          <option value="<?=$list['id'] ?>"<? if ($list['id']==$this->userList()->lastUsed()): ?> selected="selected"<? endif; ?>><?=$this->escapeHtml($list['title'])?></option>
+        <? endforeach; ?>
+      <? else: ?>
+        <option value=""><?=$this->transEsc('My Favorites') ?></option>
+      <? endif; ?>
+      </select>
+    <? endif; ?>
+      <a class="btn btn-link" id="make-list" href="<?=$this->url('editList', array('id' => 'NEW'))?>?recordId=<?=urlencode($this->driver->getUniqueId())?>&amp;recordSource=<?=urlencode($this->driver->getResourceSource())?>" title="<?=$this->transEsc('Create a List') ?>"><?=$showLists ? $this->transEsc('or').' '.$this->transEsc('Create a List') : $this->transEsc('Create a List'); ?></a>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label" for="add_mytags"><?=$this->transEsc('Add Tags') ?></label>
+    <div class="controls">
+      <input class="input-xlarge" id="add_mytags" type="text" name="mytags" value=""/>
+      <span class="help-block"><?=$this->transEsc("add_tag_note") ?></span>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="add_notes"><?=$this->transEsc('Add a Note') ?></label>
+    <div class="controls">
+      <textarea class="input-xlarge" id="add_notes" name="notes" rows="3"></textarea>
+    </div>
+  </div>
+  <div class="control-group">
+    <div class="controls">
+      <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Save to List') ?>"/>
+    </div>
+  </div>
+</form>

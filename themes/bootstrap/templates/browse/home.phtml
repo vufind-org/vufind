@@ -1,0 +1,67 @@
+<?
+  $this->headTitle($this->translate('Browse the Catalog'));
+  $this->layout()->breadcrumbs = '<a href="' . $this->url('browse-home') . '">' . $this->transEsc('Browse') . '</a>';
+
+  $BROWSE_BASE = $this->url('browse-' . strtolower($this->currentAction));
+  $SEARCH_BASE = $this->url($this->currentAction == 'Tag' ? 'tag-home' : 'search-results');
+?>
+
+<? if (!isset($this->currentAction)): ?>
+  <h2><?=$this->transEsc('Choose a Category to Begin Browsing') ?>:</h2>
+<? endif; ?>
+
+<div class="row-fluid">
+  <div class="span3">
+    <ul class="well well-small  nav nav-list" id="list1">
+    <? foreach ($this->browseOptions as $item=>$currentOption): ?>
+      <li<? if($currentOption['action'] == $this->currentAction): ?> class="active"<? endif; ?>>
+        <a href="<?=$this->url('browse-' . strtolower($currentOption['action'])); ?>"><?=$this->transEsc($currentOption['description']) ?> <i class="icon-angle-right pull-right"></i></a>
+      </li>
+    <? endforeach; ?>
+    </ul>
+  </div>
+
+  <? if (!empty($this->categoryList)): ?>
+  <div class="span3">
+    <ul class="well well-small nav nav-list" id="list2">
+    <? foreach($this->categoryList as $findby=>$category): ?>
+      <li<? if ($this->findby == $findby): ?> class="active"<? endif; ?>>
+        <a href="<?=$BROWSE_BASE ?>?findby=<?=urlencode($findby) ?>&query_field=<?=$this->browse()->getSolrField($findby, $this->currentAction) ?>"><?=$this->transEsc($category)/*html*/?> <i class="icon-angle-right pull-right"></i></a>
+      </li>
+    <? endforeach; ?>
+    </ul>
+  </div>
+  <? endif; ?>
+
+  <? if (!empty($this->secondaryList)): ?>
+  <div class="span3">
+    <ul class="well well-small nav nav-list" id="list3">
+    <? foreach($this->secondaryList as $secondary): ?>
+      <li<? if ($this->query == $secondary['value'].'' || $this->query == $secondary['value'].'*'): ?> class="active"<? endif; ?>>
+        <? if (!empty($this->categoryList) && $this->currentAction != 'Tag' && $this->findby != 'alphabetical'):?>
+          <small><a class="pull-right muted" href="<?=$SEARCH_BASE ?>?lookfor=<? if ($this->filter): ?>&filter[]=<?=urlencode($this->filter) ?>%3A<?=str_replace('+AND+','&filter[]=', urlencode($secondary['value'])) ?><? endif; ?>&filter[]=<?=$this->browse()->getSolrField($this->currentAction) ?>%3A[* TO *]"><?=$this->transEsc('View Records') ?></a></small>
+        <? endif; ?>
+        <a href="<?=$BROWSE_BASE ?>?findby=<?=urlencode($this->findby) ?>&category=<?=urlencode($this->category) ?>&query=<?=urlencode($secondary['value']) ?><? if ($this->facetPrefix): ?>&facet_prefix=<?=urlencode($secondary['displayText']) ?><? endif; ?><? if ($this->secondaryParams): foreach($this->secondaryParams as $var=>$val): ?>&<?=$var ?>=<?=urlencode($val) ?><? endforeach;endif; ?>"><?=$this->escapeHtml($secondary['displayText']) ?><? if ($this->findby != 'alphabetical'): ?> (<?=$secondary['count'] ?>)<? endif; ?>
+        <i class="icon-angle-right pull-right"></i></a>
+      </li>
+    <? endforeach; ?>
+    </ul>
+  </div>
+  <? endif; ?>
+
+  <? if (!empty($this->resultList)): ?>
+    <div class="span3">
+      <ul class="well well-small nav nav-list" id="list4">
+      <? foreach($this->resultList as $result): ?>
+        <li><a href="<?=$SEARCH_BASE ?>?<?=$this->paramTitle ?><?=urlencode($result['result']) ?><? if ($this->searchParams): foreach($this->searchParams as $var=>$val): ?>&<?=$var ?>=<?=urlencode($val) ?><? endforeach;endif; ?>"><?=$this->escapeHtml($result['result'])/*html*/?> (<?=$result['count'] ?>)</a></li>
+      <? endforeach; ?>
+      </ul>
+    </div>
+  <? elseif (isset($this->query)): ?>
+    <div class="span3">
+      <ul class="well well-small nav nav-list" id="list4">
+        <li><a href=""><?=$this->transEsc('nohit_heading') ?></a></li>
+      </ul>
+    </div>
+  <? endif; ?>
+</div>

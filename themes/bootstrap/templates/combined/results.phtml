@@ -1,0 +1,57 @@
+<?
+  // Set up page title:
+  $lookfor = $this->params->getDisplayQuery();
+  if (isset($this->overrideTitle)) {
+    $this->headTitle($this->overrideTitle);
+  } else {
+      $this->headTitle($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
+  }
+
+  // Set up search box:
+  $this->layout()->searchbox = $this->context($this)->renderInContext(
+    'search/searchbox.phtml',
+    array(
+      'lookfor' => $lookfor,
+      'searchIndex' => $this->params->getSearchHandler(),
+      'searchType' => $this->params->getSearchType(),
+      'searchId' => $this->results->getSearchId(),
+      'searchClassId' => $this->params->getsearchClassId(),
+      'checkboxFilters' => $this->params->getCheckboxFacets(),
+      'filterList' => $this->params->getFilters(),
+      'selectedShards' => $this->params->getSelectedShards()
+    )
+  );
+
+  // Set up breadcrumbs:
+  if (isset($this->overrideTitle)) {
+    $this->layout()->breadcrumbs = '<li class="active">' . $this->escapeHtml($this->overrideTitle) . '</li>';
+  } else {
+    $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Combined Search') . ': ' .
+      $this->escapeHtml($lookfor) . '</li>';
+  }
+
+  // Load Javascript dependencies into header:
+  $this->headScript()->appendFile("check_item_statuses.js");
+  $this->headScript()->appendFile("check_save_statuses.js");
+  // Style
+  $this->headLink()->appendStylesheet('combined.css');
+?>
+<?=$this->flashmessages()?>
+<form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>">
+  <? if ($this->cart()->isActive()): ?>
+    <div class="clearfix">
+      <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
+    </div>
+  <? endif; ?>
+  <div class="row-fluid">
+    <? foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
+      <div class="span6 combined-list" id="combined_<?=$this->escapeHtml($searchClassId)?>">
+        <? if (isset($currentSearch['ajax']) && $currentSearch['ajax']): ?>
+          <?=$this->render('combined/results-ajax.phtml', array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch))?>
+        <? else: ?>
+          <?=$this->render('combined/results-list.phtml', array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch))?>
+        <? endif; ?>
+      </div>
+    <? endforeach; ?>
+  </div>
+</form>

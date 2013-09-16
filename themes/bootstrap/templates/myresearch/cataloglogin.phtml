@@ -1,0 +1,32 @@
+<?
+    // Set up page title:
+    $this->headTitle($this->translate('Login'));
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a> <span class="divider">&gt;</span></li>'
+        . '<li class="active">' . $this->transEsc('Login') . '</li>';
+
+    // Convenience variable:
+    $offlineMode = $this->ils()->getOfflineMode();
+?>
+<? if ($offlineMode == "ils-offline"): ?>
+  <div class="alert alert-warning">
+    <h2><?=$this->transEsc('ils_offline_title')?></h2>
+    <p><strong><?=$this->transEsc('ils_offline_status')?></strong></p>
+    <p><?=$this->transEsc('ils_offline_login_message')?></p>
+    <? $supportEmail = $this->escapeHtml($this->systemEmail()); ?>
+    <p><a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a></p>
+  </div>
+<? else: ?>
+  <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
+  <?=$this->flashmessages()?>
+  <p><?=$this->transEsc('cat_establish_account')?></p>
+  <form method="post" action="">
+    <label for="profile_cat_username"><?=$this->transEsc('Library Catalog Username')?>:</label>
+    <input id="profile_cat_username" type="text" name="cat_username" value=""/>
+    <label for="profile_cat_password"><?=$this->transEsc('Library Catalog Password')?>:</label>
+    <input id="profile_cat_password" type="text" name="cat_password" value=""/>
+    <br/>
+    <input class="btn" type="submit" name="submit" value="<?=$this->transEsc('Save')?>"/>
+  </form>
+<? endif; ?>

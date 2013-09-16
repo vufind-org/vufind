@@ -1,0 +1,45 @@
+<?
+  // Set up page title:
+  $pageTitle = empty($this->list->id) ? 'Create a List' : "edit_list";
+  $this->headTitle($this->translate($pageTitle));
+
+  // Set up breadcrumbs:
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a> <span class="divider">&gt;</span></li>'
+    . '<li>' . $this->transEsc($pageTitle) . '</li>';
+?>
+
+<?=$this->flashmessages()?>
+
+<p class="lead"><?=$this->transEsc($pageTitle); ?></p>
+
+<form class="form-horizontal edit-list-form" method="post" name="<?=empty($this->list->id) ? 'newList' : 'editListForm'?>" action="">
+  <input type="hidden" name="id" value="<?=empty($this->list->id) ? 'NEW' : $this->list->id ?>"/>
+  <div class="control-group">
+    <label class="control-label" for="list_title"><?=$this->transEsc('List'); ?>:</label>
+    <div class="controls">
+      <input id="list_title" class="input-xlarge" type="text" name="title" value="<?=$this->escapeHtml($this->list['title']); ?>"/>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="list_desc"><?=$this->transEsc('Description') ?></label>
+    <div class="controls">
+      <textarea id="list_desc" class="input-xlarge" name="desc" rows="3"><?=$this->escapeHtml($this->list['description']) ?></textarea>
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label"><?=$this->transEsc('Access') ?></label>
+    <div class="controls">
+      <label class="radio inline">
+        <input id="list_public_1" type="radio" name="public" value="1"<? if ($this->list->isPublic()): ?> checked="checked"<? endif; ?>/> <?=$this->transEsc('Public') ?>
+      </label>
+      <label class="radio inline">
+        <input id="list_public_0" type="radio" name="public" value="0"<? if (!$this->list->isPublic()): ?> checked="checked"<? endif; ?>/> <?=$this->transEsc('Private') ?>
+      </label> 
+    </div>
+  </div>
+  <div class="control-group">
+    <div class="controls">
+      <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Save') ?>"/>
+    </div>
+  </div>
+</form>
