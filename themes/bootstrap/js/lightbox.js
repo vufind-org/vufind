@@ -19,7 +19,7 @@ function registerModalEvents(modal) {
   // Highlight which submit button clicked
   $(modal).find("form input[type=submit]").click(function() {
     $(this).attr("clicked", "true");
-    $(this).prepend('<i class="icon-spinner icon-spin"></i> ');
+    $(this).after(' <i class="icon-spinner icon-spin"></i> ');
 });
 }
 // Prevent forms from submitting in the lightbox
