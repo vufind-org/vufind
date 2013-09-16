@@ -61,13 +61,14 @@
   </div>
 </form>
 
-<? /* TODO: Prevent popover from closing modal
+<?
   $items = $this->transEsc('items');
   $script = <<<JS
     var list = $('.item-list');
     var items = list.find('li').length;
     var bubble = list.html();
     list.html('<span class="btn">'+items+' {$items}</span>');
-    list.find('.btn').popover({html:true,title:bubble});
+    list.find('.btn').popover({html:true,content:bubble});
 JS;
-echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET') */ ?>
+?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>
