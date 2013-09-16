@@ -672,9 +672,6 @@ class ClaviusSQL extends AbstractBase
         } else {
             $coding = array_combine($from, $to);
         }
-        //echo "<pre>";
-        //var_dump($coding);
-        //echo "</pre>";
         $toCodeArray = str_split($stringToCode);
         $output = "";
         foreach ($toCodeArray as $char) {
