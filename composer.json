@@ -51,6 +51,7 @@
         }
     ],
     "require": {
+        "aferrandini/phpqrcode": "dev-master",
         "johnwohlers/sip2": "dev-master",
         "mobileesp/mdetect": "dev-master",
         "pear-pear.php.net/file_marc": "*",
