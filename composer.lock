@@ -91,10 +91,10 @@
         },
         {
             "name": "pear-pear.php.net/File_MARC",
-            "version": "0.7.1",
+            "version": "0.7.3",
             "dist": {
                 "type": "file",
-                "url": "http://pear.php.net/get/File_MARC-0.7.1.tgz",
+                "url": "http://pear.php.net/get/File_MARC-0.7.3.tgz",
                 "reference": null,
                 "shasum": null
             },
@@ -103,7 +103,7 @@
                 "php": ">=5.2.0.0"
             },
             "replace": {
-                "pear-pear/file_marc": "== 0.7.1.0"
+                "pear-pear/file_marc": "== 0.7.3.0"
             },
             "type": "pear-library",
             "autoload": {
@@ -114,7 +114,7 @@
             "include-path": [
                 "/"
             ],
-            "description": "The standard for machine-readable cataloging (MARC) records is documented at http://loc.gov/marc/. This package enables you to read existing MARC records from a file, string, or (using the YAZ extension), from a Z39.50 source. You can also use this package to create new MARC records.\n\nThis package is based on the PHP MARC package, originally called &quot;php-marc&quot;, that is part of the Emilda Project (http://www.emilda.org).  Christoffer Landtman generously agreed to make the &quot;php-marc&quot; code available under the GNU LGPL so it could be used as the basis of this PEAR package."
+            "description": "The standard for machine-readable cataloging (MARC) records is documented at http://loc.gov/marc/. This package enables you to read existing MARC records from a file, string, or (using the YAZ extension), from a Z39.50 source. You can also use this package to create new MARC records.\n\nThis package is based on the PHP MARC package, originally called \"php-marc\", that is part of the Emilda Project (http://www.emilda.org).  Christoffer Landtman generously agreed to make the \"php-marc\" code available under the GNU LGPL so it could be used as the basis of this PEAR package."
         },
         {
             "name": "pear-pear.php.net/PEAR",

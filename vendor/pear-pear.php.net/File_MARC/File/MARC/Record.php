@@ -32,7 +32,7 @@
  * @author    Dan Scott <dscott@laurentian.ca>
  * @copyright 2003-2008 Oy Realnode Ab, Dan Scott
  * @license   http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
- * @version   CVS: $Id: Record.php 308146 2011-02-08 20:36:20Z dbs $
+ * @version   CVS: $Id$
  * @link      http://pear.php.net/package/File_MARC
  */
 
@@ -629,9 +629,14 @@ class File_MARC_Record
     {
         $this->marcxml->setIndent($indent);
         if ($single) {
-            $this->marc->toXMLHeader();
+            $this->marcxml->startElement("collection");
+            $this->marcxml->writeAttribute("xmlns", "http://www.loc.gov/MARC21/slim");
+            $this->marcxml->startElement("record");
+        } else {
+            $this->marcxml->startElement("record");
+            $this->marcxml->writeAttribute("xmlns", "http://www.loc.gov/MARC21/slim");
         }
-        $this->marcxml->startElement("record");
+        
 
         // MARCXML schema has some strict requirements
         // We'll set reasonable defaults to avoid invalid MARCXML
@@ -680,10 +685,11 @@ class File_MARC_Record
 
         $this->marcxml->endElement(); // end record
         if ($single) {
-            return $this->marc->toXMLFooter();
+            $this->marcxml->endElement(); // end collection
+            $this->marcxml->endDocument();
         }
+        return $this->marcxml->outputMemory();
     }
-
     // }}}
 
 }

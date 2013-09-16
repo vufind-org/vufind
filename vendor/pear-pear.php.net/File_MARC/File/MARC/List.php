@@ -32,7 +32,7 @@
  * @author    Dan Scott <dscott@laurentian.ca>
  * @copyright 2003-2008 Oy Realnode Ab, Dan Scott
  * @license   http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
- * @version   CVS: $Id: List.php 268035 2008-10-30 17:01:14Z dbs $
+ * @version   CVS: $Id$
  * @link      http://pear.php.net/package/File_MARC
  */
 
