@@ -32,7 +32,7 @@
  * @author    Dan Scott <dscott@laurentian.ca>
  * @copyright 2003-2010 Oy Realnode Ab, Dan Scott
  * @license   http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
- * @version   CVS: $Id: MARC.php 308144 2011-02-08 20:28:20Z dbs $
+ * @version   CVS: $Id$
  * @link      http://pear.php.net/package/File_MARC
  * @example   read.php Retrieve specific fields and subfields from a record
  * @example   subfields.php Create new subfields and add them in specific order

@@ -11,4 +11,5 @@ return array(
     'ZendRest' => array($vendorDir . '/zendframework/zendrest/library'),
     'Symfony\\Component\\Yaml\\' => array($vendorDir . '/symfony/yaml'),
     'SerialsSolutions' => array($vendorDir . '/serialssolutions/summon'),
+    'PHPQRCode' => array($vendorDir . '/aferrandini/phpqrcode/lib'),
 );

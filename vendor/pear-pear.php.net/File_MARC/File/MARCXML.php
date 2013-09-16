@@ -31,7 +31,7 @@
  * @author    Dan Scott <dscott@laurentian.ca>
  * @copyright 2007-2010 Dan Scott
  * @license   http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
- * @version   CVS: $Id: MARCXML.php 302267 2010-08-15 13:42:59Z dbs $
+ * @version   CVS: $Id$
  * @link      http://pear.php.net/package/File_MARC
  * @example   read.php Retrieve specific fields and subfields from a record
  * @example   subfields.php Create new subfields and add them in specific order
