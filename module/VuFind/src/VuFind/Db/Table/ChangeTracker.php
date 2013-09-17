@@ -38,7 +38,12 @@ namespace VuFind\Db\Table;
  */
 class ChangeTracker extends Gateway
 {
-    protected $dateFormat = 'Y-m-d H:i:s';   // date/time format for database
+    /**
+     * date/time format for database
+     *
+     * @var string
+     */
+    protected $dateFormat = 'Y-m-d H:i:s';
 
     /**
      * Constructor
