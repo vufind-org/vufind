@@ -340,6 +340,53 @@ class Record extends AbstractHelper
     }
 
     /**
+     * Generate a qrcode URL (return false if unsupported).
+     *
+     * @param string $context Context of code being generated (core or results)
+     * @param array  $extra   Extra details to pass to the QR code template
+     * @param string $level   QR code level
+     * @param int    $size    QR code size
+     * @param int    $margin  QR code margin
+     *
+     * @return string|bool
+     */
+    public function getQrCode($context, $extra = array(), $level = "L", $size = 3,
+        $margin = 4
+    ) {
+        if (!isset($this->config->QRCode)) {
+            return false;
+        }
+
+        switch($context) {
+        case "core" :
+        case "results" :
+            $key = 'showIn' . ucwords(strtolower($context));
+            break;
+        default:
+            return false;
+        }
+
+        if (!isset($this->config->QRCode->$key)
+            || !$this->config->QRCode->$key
+        ) {
+            return false;
+        }
+
+        $template = $context . "-qrcode.phtml";
+
+        // Try to build text:
+        $text = $this->renderTemplate(
+            $template, $extra + array('driver' => $this->driver)
+        );
+        $qrcode = array(
+            "text" => $text, 'level' => $level, 'size' => $size, 'margin' => $margin
+        );
+
+        $urlHelper = $this->getView()->plugin('url');
+        return $urlHelper('qrcode-show') . '?' . http_build_query($qrcode);
+    }
+
+    /**
      * Generate a thumbnail URL (return false if unsupported).
      *
      * @param string $size Size of thumbnail (small, medium or large -- small is

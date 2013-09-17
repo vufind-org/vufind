@@ -53,6 +53,17 @@ $(document).ready(function() {
   $('.checkbox-select-all').change(function() {
     $(this).closest('form').find('.checkbox-select-item').attr('checked', this.checked);
   });
+  
+  // handle QR code links
+  $('a.qrcodeLink').click(function() {
+    if ($(this).hasClass("active")) {
+      $(this).html(vufindString.qrcode_show).removeClass("active");
+    } else {
+      $(this).html(vufindString.qrcode_hide).addClass("active");
+    }
+    $(this).next('.qrcode').toggle();
+    return false;
+  });
 
   // Print
   var url = window.location.href;

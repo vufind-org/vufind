@@ -329,6 +329,17 @@ $(document).ready(function(){
         var $dialog = getLightbox('Cart', 'Home', null, null, this.title, '', '', '', {viewCart:"1"});
         return false;
     });
+    
+    // handle QR code links
+    $('a.qrcodeLink').click(function() {
+        if ($(this).hasClass("active")) {
+            $(this).html(vufindString.qrcode_show).removeClass("active");
+        } else {
+            $(this).html(vufindString.qrcode_hide).addClass("active");
+        }
+        $(this).next('.qrcodeHolder').toggle();
+        return false;
+    });
 
     // Print
     var url = window.location.href;
