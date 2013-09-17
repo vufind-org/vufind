@@ -61,7 +61,7 @@ class User extends Gateway
         if ($create && empty($row)) {
             $row = $this->createRow();
             $row->username = $username;
-            $row->created = date('Y-m-d h:i:s');
+            $row->created = date('Y-m-d H:i:s');
         }
         return $row;
     }

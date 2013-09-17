@@ -153,7 +153,7 @@ class Database extends AbstractBase
             'firstname' => $params['firstname'],
             'lastname'  => $params['lastname'],
             'email'     => $params['email'],
-            'created'   => date('Y-m-d h:i:s')
+            'created'   => date('Y-m-d H:i:s')
         );
 
         if ($this->passwordHashingEnabled()) {

@@ -62,7 +62,7 @@ class Session extends Gateway
         if ($create && empty($row)) {
             $row = $this->createRow();
             $row->session_id = $sid;
-            $row->created = date('Y-m-d h:i:s');
+            $row->created = date('Y-m-d H:i:s');
         }
         return $row;
     }
