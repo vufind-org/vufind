@@ -9,10 +9,11 @@
         "var hierarchySettings = {\n"
         . "    lightboxMode: " . ($this->layout()->getTemplate() == 'layout/lightbox' ? 'true' : 'false') . ",\n"
         . "    fullHierarchy: " . ($this->tab->isFullHierarchyVisible() ? 'true' : 'false') . "\n"
-        . "};\n"
-        . "vufindString.showTree = \"" . $this->transEsc('hierarchy_show_tree') . "\";\n"
-        . "vufindString.hideTree = \"" . $this->transEsc('hierarchy_hide_tree') . "\";\n",
+        . "};\n",
         'SET'
+    );
+    $this->jsTranslations()->addStrings(
+        array('showTree' => 'hierarchy_show_tree', 'hideTree' => 'hierarchy_hide_tree')
     );
     $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'jsTree/jquery.jstree.js');
     $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'hierarchyTree_JSTree.js');

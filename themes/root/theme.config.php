@@ -84,6 +84,9 @@ return array(
                     $sm->getServiceLocator()->get('VuFind\ILSConnection')
                 );
             },
+            'jstranslations' => function($sm) {
+                return new \VuFind\View\Helper\Root\JsTranslations($sm->get('transesc'));
+            },
             'proxyurl' => function ($sm) {
                 return new \VuFind\View\Helper\Root\ProxyUrl(
                     $sm->getServiceLocator()->get('VuFind\Config')->get('config')
