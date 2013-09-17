@@ -23,7 +23,11 @@
   <? if (count($hierarchyTreeList) > 1): ?>
     <div id="treeSelector">
       <? foreach ($hierarchyTreeList as $hierarchy => $hierarchyTitle): ?>
-        <a class="tree<?=($activeTree == $hierarchy) ? ' currentTree' : ''?>" href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchy)?>"><?=$this->escapeHtml($hierarchyTitle)?></a>
+        <? if($activeTree == $hierarchy): ?>
+          <i class="icon-sitemap"></i> <?=$this->escapeHtml($hierarchyTitle)?>
+        <? else: ?>
+          <i class="icon-sitemap muted"></i> <a href="<?=$this->recordLink()->getTabUrl($this->driver, 'HierarchyTree')?>?hierarchy=<?=urlencode($hierarchy)?>"><?=$this->escapeHtml($hierarchyTitle)?></a>
+        <? endif; ?>
       <? endforeach; ?>
     </div>
   <? endif; ?>
