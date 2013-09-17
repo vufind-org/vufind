@@ -1,15 +1,16 @@
 <div class="row-fluid">
-  <div class="span3 text-center">
-    <? /* Display thumbnail if appropriate: */ ?>
-    <? $mediumThumb = $this->record($this->driver)->getThumbnail('medium'); $largeThumb = $this->record($this->driver)->getThumbnail('large'); ?>
-    <? if ($mediumThumb): ?>
-      <? if ($largeThumb): ?><a href="<?=$this->escapeHtml($largeThumb)?>"><? endif; ?>
-        <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover img-polaroid" src="<?=$this->escapeHtml($mediumThumb);?>"/>
-      <? if ($largeThumb): ?></a><? endif; ?>
-    <? else: ?>
-      <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
-    <? endif; ?>
-
+  <div class="span3">
+    <div class="text-center pad">
+      <? /* Display thumbnail if appropriate: */ ?>
+      <? $mediumThumb = $this->record($this->driver)->getThumbnail('medium'); $largeThumb = $this->record($this->driver)->getThumbnail('large'); ?>
+      <? if ($mediumThumb): ?>
+        <? if ($largeThumb): ?><a href="<?=$this->escapeHtml($largeThumb)?>"><? endif; ?>
+          <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover img-polaroid" src="<?=$this->escapeHtml($mediumThumb);?>"/>
+        <? if ($largeThumb): ?></a><? endif; ?>
+      <? else: ?>
+        <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+      <? endif; ?>
+    </div>
     <? /* Display the lists that this record is saved to */ ?>
     <div class="savedLists hide alert alert-info" id="savedLists">
       <strong><?=$this->transEsc("Saved in")?>:</strong>
