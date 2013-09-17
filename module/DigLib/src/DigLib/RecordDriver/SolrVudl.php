@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
-namespace VuFind\RecordDriver;
+namespace DigLib\RecordDriver;
 
 /**
  * Model for VuDL records in Solr.
@@ -36,7 +36,7 @@ namespace VuFind\RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
-class SolrVudl extends SolrDefault
+class SolrVudl extends \VuFind\RecordDriver\SolrDefault
 {
     /**
      * Full VuDL record
@@ -44,6 +44,23 @@ class SolrVudl extends SolrDefault
      * @var \SimpleXML
      */
     protected $fullRecord = null;
+
+    /**
+     * Module config
+     *
+     * @var module.config.php
+     */
+    protected $moduleConfig = null;
+
+    /**
+     * Set module.config.php
+     *
+     * @return void
+     */
+    public function setModuleConfig($mc)
+    {
+        $this->moduleConfig = $mc;
+    }
 
     /**
      * Parse the full record, if required, and return it.
@@ -72,6 +89,13 @@ class SolrVudl extends SolrDefault
      */
     public function getThumbnail($size = 'small')
     {
+        return array(
+            'route' => 'files',
+            'routeParams' => array(
+                'id' => $this->getUniqueID(),
+                'type'=>'THUMBNAIL'
+            )
+        );
         // We are currently storing only one size of thumbnail; we'll use this for
         // small and medium sizes in the interface, flagging "large" as unavailable
         // for now.
@@ -99,12 +123,14 @@ class SolrVudl extends SolrDefault
      */
     public function getURLs()
     {
-        return array(
+        return array(); /*
             array(
-                'route' => 'vudl-record',
-                'routeParams' => array('id' => $this->getUniqueID())
+                'route' => $this->isCollection() ? 'vudl-collection' : 'vudl-record',
+                'routeParams' => array(
+                    'id' => $this->getUniqueID()
+                )
             )
-        );
+        ); */
     }
 
     /**
@@ -123,5 +149,32 @@ class SolrVudl extends SolrDefault
             }
         }
         return $retVal;
+    }
+        
+    /**
+     *
+     */
+    public function isProtected()
+    {
+        // Is license_str set?
+        if (!isset($this->fields['license_str'])) {
+            return false;
+        }
+        // Check IP range
+        $userIP = $_SERVER['REMOTE_ADDR'];
+        foreach($this->moduleConfig['access']['ip_range'] as $ip) {
+            if(strpos($userIP, $ip) === 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
+     *
+     */
+    public function getProxyURL()
+    {
+        return $this->moduleConfig['access']['proxy_url'];
     }
 }

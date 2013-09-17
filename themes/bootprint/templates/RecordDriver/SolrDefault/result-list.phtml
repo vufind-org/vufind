@@ -144,7 +144,7 @@
       <strong><?=$this->transEsc("Saved in")?>:</strong>
     </div>
     
-    <? if($this->record($this->driver)->isCollection()): ?>
+    <? if($this->driver->isCollection()): ?>
       <i class="icon-inbox"></i> <a class="hierarchyTreeLinkText" href="<?=$this->recordLink()->getUrl($this->driver)?>" title="<?=$this->transEsc('hierarchy_tree')?>"><?=$this->transEsc('View Content')?></a><br/>
     <? else: ?>
       <i class="icon-list-alt"></i> <a href="<?=$this->recordLink()->getUrl($this->driver)?>"><?=$this->transEsc('View Details') ?></a><br/>
