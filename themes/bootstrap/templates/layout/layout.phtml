@@ -25,6 +25,11 @@
         if (!isset($this->renderingError)) {
             $cart = $this->cart();
             $script = 'var vufindString = {loading:"' . $this->transEsc('Loading') . '..."};';
+            if (isset($this->javascriptTranslations) && is_array($this->javascriptTranslations)) {
+              foreach ($this->javascriptTranslations as $key => $value) {
+                $script .= 'vufindString.' . $key . ' = "' . addslashes($value) . '";';
+              }
+            }
             if ($cart->isActive()) {
                 $this->headScript()->appendFile("cart.js");
                 $script .= 'vufindString.bulk_noitems_advice = "' . $this->transEsc('bulk_noitems_advice') . '";'
