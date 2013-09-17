@@ -1,0 +1,104 @@
+<?
+	// Set default value if necessary:
+	if (!isset($this->searchClassId)) {
+			$this->searchClassId = 'Solr';
+	}
+
+	// Load search actions and settings (if any):
+	$options = $this->searchOptions($this->searchClassId);
+	$basicSearch = $options->getSearchAction();
+	$searchHome = $options->getSearchHomeAction();
+	$advSearch = $options->getAdvancedSearchAction();
+	$lastSort = $options->getLastSort();
+	$lastLimit = $options->getLastLimit();
+  
+  /* Do we have any checkbox filters? */
+  $hasCheckboxFilters = false;
+  if (isset($this->checkboxFilters) && count($this->checkboxFilters) > 0) {
+    foreach ($this->checkboxFilters as $current) {
+      if ($current['selected']) {
+        $hasCheckboxFilters = true;
+        break;
+      }
+    }
+  }
+?>
+<? $searchTabs = $this->searchtabs($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType); ?>
+<ul class="nav nav-tabs">
+  <? if (count($searchTabs) > 0): ?>
+    <? foreach ($searchTabs as $tab): ?>
+      <li<?=$tab['selected'] ? ' class="active"' : ''?>>
+        <a href="<?=$tab['selected'] ? '' : $this->escapeHtml($tab['url'])?>"><?=$this->transEsc($tab['label']); ?></a>
+      </li>
+    <? endforeach; ?>        
+  <? endif; ?>
+  <? if($this->layout()->searchbox !== false): ?>
+    <? if ((isset($this->filterList) && is_array($this->filterList) && count($this->filterList) > 0) || $hasCheckboxFilters): ?>
+      <? $defaultFilterState = $options->getRetainFilterSetting() ? ' checked="checked"' : ''; ?>
+      <li><label class="checkbox">
+        <input onChange="$('.applied-filter').click()" type="checkbox"<?=$defaultFilterState?> id="searchFormKeepFilters"/>
+          <?=$this->transEsc("basic_search_keep_filters")?>
+      </label></li>
+    <? endif; ?>
+  <? endif; ?>
+</ul>
+<? if ($this->searchType == 'advanced'): ?>
+  <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtml($this->searchId)?>" class="small"><?=$this->transEsc("Edit this Advanced Search")?></a> |
+  <a href="<?=$this->url($advSearch)?>" class="btn btn-link small"><?=$this->transEsc("Start a new Advanced Search")?></a> |
+  <a href="<?=$this->url($searchHome)?>" class="btn btn-link small"><?=$this->transEsc("Start a new Basic Search")?></a>
+  <br/><?=$this->transEsc("Your search terms")?> : "<strong><?=$this->escapeHtml($this->lookfor)?></strong>"
+<? else: ?>
+  <form class="form-inline row-fluid" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" id="searchForm">
+    <input class="<?=$this->layout()->searchbox === false ? 'span8' : 'span5' ?>" id="searchForm_lookfor" type="text" name="lookfor" value="<?=$this->escapeHtml($this->lookfor)?>"/>
+    <input class="btn" type="submit" name="submit" value="<?=$this->transEsc("Find")?>"/>
+    <? if ($advSearch): ?>
+      <a class="help-inline" href="<?=$this->url($advSearch)?>"><?=$this->transEsc("Advanced")?></a>
+    <? endif; ?>
+    <? $shards = $options->getShards(); if ($options->showShardCheckboxes() && !empty($shards)): ?>
+      <?
+      $selectedShards = isset($this->selectedShards)
+          ? $this->selectedShards : $options->getDefaultSelectedShards();
+      ?>
+      <br />
+      <? foreach ($shards as $shard => $val): ?>
+        <? $isSelected = empty($selectedShards) || in_array($shard, $selectedShards); ?>
+        <input type="checkbox" <?=$isSelected ? 'checked="checked" ' : ''?>name="shard[]" value='<?=$this->escapeHtml($shard)?>' /> <?=$this->transEsc($shard)?>
+      <? endforeach; ?>
+    <? endif; ?>
+    <? if ((isset($this->filterList) && is_array($this->filterList) && count($this->filterList) > 0) || $hasCheckboxFilters): ?>
+      <? $defaultFilterState = $options->getRetainFilterSetting() ? ' checked="checked"' : ''; ?>
+      <div class="hidden">
+        <? if (isset($this->filterList) && is_array($this->filterList)): ?>
+          <? $i = 0; foreach ($this->filterList as $field => $data): ?>
+            <? foreach ($data as $value): ?>                  
+              <label class="checkbox">
+                <input class="applied-filter" id="applied_filter_<?=++$i?>" type="checkbox"<?=$defaultFilterState?> name="filter[]" value="<?=$this->escapeHtml($field)?>:&quot;<?=$this->escapeHtml($value)?>&quot;" />
+                <?=$this->escapeHtml($field)?>:&quot;<?=$this->escapeHtml($value)?>&quot;
+              </label>
+            <? endforeach; ?>
+          <? endforeach; ?>
+        <? endif; ?>
+        <? if ($hasCheckboxFilters): ?>
+          <? $i = 0; foreach ($checkboxFilters as $current): ?>
+            <? if ($current['selected']): ?>
+              <label class="checkbox">
+                <input class="applied-filter" id="applied_checkbox_filter_<?=++$i?>" type="checkbox"<?=$defaultFilterState?> name="filter[]" value="<?=$this->escapeHtml($current['filter'])?>" />
+                  <?=$this->escapeHtml($current['filter'])?>
+              </label>
+            <? endif; ?>
+          <? endforeach; ?>
+        <? endif; ?>
+      </div>
+    <? endif; ?>
+    <?
+    /* Load hidden limit preference from Session */
+    if (!empty($lastLimit)) {
+      echo '<input type="hidden" name="limit" value="' . $this->escapeHtml($lastLimit) . '" />';
+    }
+    if (!empty($lastSort)) {
+      echo '<input type="hidden" name="sort" value="' . $this->escapeHtml($lastSort) . '" />';
+    }
+    ?>
+  </form>
+  <script type="text/javascript">$("#searchForm_lookfor").focus()</script>
+<? endif; ?>
