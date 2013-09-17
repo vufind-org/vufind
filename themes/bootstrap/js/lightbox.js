@@ -1,83 +1,48 @@
-/***********************/
-/* ====== SETUP ====== */
-/***********************/
-// Checkbox actions and link hijacking
-function registerModalEvents(modal) {
-  // New list
-  $('#make-list').click(function() {
-    var id = $(this).find('#edit-save-form input[name="id"]').val();
-    var source = $(this).find('#edit-save-form input[name="source"]').val();
-    var parts = this.href.split('?');
-    var get = deparam(parts[1]);
-    get['id'] = 'NEW';
-    return getLightbox('MyResearch', 'EditList', get);
-  });  
-  // Select all checkboxes
-  $(modal).find('.checkbox-select-all').change(function() {
-    $(this).closest('.modal-body').find('.checkbox-select-item').attr('checked', this.checked);
-  });
-  // Highlight which submit button clicked
-  $(modal).find("form input[type=submit]").click(function() {
-    $(this).attr("clicked", "true");
-    $(this).after(' <i class="icon-spinner icon-spin"></i> ');
-});
+/* global deparam, htmlEncode, path, rc4Encrypt, vufindString */
+
+/**********************************/
+/* ====== LIGHTBOX ACTIONS ====== */
+/**********************************/
+// Cart actions based on submission
+// Change the content of the lightbox
+function changeModalContent(html) {
+  $('#modal .modal-body').html(html);
+  registerModalEvents($('#modal'));
+  registerModalForms($('#modal'));
 }
-// Prevent forms from submitting in the lightbox
-// Go through AJAX instead
-function registerModalForms(modal) {
-  $(modal).find('form').submit(function(){
-    ajaxSubmit($(this), closeLightbox);
-    return false
-  });
-  $(modal).find('form[name="cartForm"]').unbind('submit').submit(function(){
-    cartSubmit($(this));
-    return false
-  });
-  $(modal).find('form[name="newList"]').unbind('submit').submit(function(){
-    ajaxSubmit($(this), changeModalContent);
-    return false
-  });
-  $(modal).find('form[name="loginForm"]').unbind('submit')
-    .submit(function(){ajaxLogin(this);return false});
+// Close the lightbox and run update functions
+function closeLightbox() {
+  if(modalXHR) modalXHR.abort();
+  lightboxShown = false;
+  $('#modal').modal('hide');
+  // Reset content
+  $('#modal').removeData('modal');
+  $('#modal').find('.modal-body').html(vufindString.loading + "...");
+  // Perform checks to update the page
+  if(checkSaveStatuses) checkSaveStatuses();
+  // Update cart items
+  var cart = getFullCartItems();
+  var id = $('#cartId');
+  if(id.length > 0) {
+    id = id.val();
+    $('#cart-add,#cart-remove').addClass('hidden');
+    if(cart.indexOf(id) > -1) {
+      $('#cart-remove').removeClass('hidden');
+    } else {
+      $('#cart-add').removeClass('hidden');
+    }
+  }
+  $('#cartItems strong').html(cart.length);
 }
-// Default lightbox behaviour
-// Tell links to open lightboxes
-$(document).ready(function() {
-  // Hijack modal forms
-  $('#modal').on('show', function() {
-    registerModalForms(this);
-    registerModalEvents(this);
-  });  
-  // Reset Content
-  $('#modal').on('hidden', function() {
-    closeLightbox();
-  });
-  /* --- MODAL LINK EVENTS --- */
-  // Save record links
-  $('.save-record').click(function() {
-    var parts = this.href.split('/');
-    return getLightbox(parts[parts.length-3],'Save',{id:$(this).attr('id')});
-  });  
-  // Cart lightbox
-  $('#cartItems').click(function() {
-    return getLightbox('Cart','Cart');
-  });
-  // Hierarchy links
-  $('.hierarchyTreeLink a').click(function() {
-    var id = $(this).parent().parent().parent().find(".hiddenId")[0].value;
-    var hierarchyID = $(this).parent().find(".hiddenHierarchyId")[0].value;
-    return getLightbox('Record','AjaxTab',{id:id},{hierarchy:hierarchyID,tab:'HierarchyTree'});
-  });
-  // Hierarchy links
-  $('.help-link').click(function() {
-    var split = this.href.split('=');
-    return getLightbox('Help','Home',{topic:split[1]});
-  });  
-  // Modal title
-  $('.modal-link,.help-link').click(function() {
-    $('#modal .modal-header h3').html($(this).attr('title'));
-  });
-});
+// Make an error box appear in the lightbox, or insert one
+function displayLightboxError(message) {
+  var alert = $('#modal .modal-body .alert');
+  if(alert.length > 0) {
+    $(alert).html(message);
+  } else {
+    $('#modal .modal-body').prepend('<div class="alert alert-error">'+message+'</div>');
+  }
+}
 
 /****************************/
 /* ====== GET LIGHTBOX ====== */
@@ -85,12 +50,6 @@ $(document).ready(function() {
 // Get a template and display it in a lightbox
 var lastLightboxURL,lastLightboxPOST; // Replacement for empty form actions
 var lightboxShown = false; // is the lightbox deployed?
-// Make a URL and pass it down
-function getLightbox(controller, action, get, post, callback) {
-  var url = path+'/AJAX/JSON?method=getLightbox&submodule='+controller+'&subaction='+action;
-  if(get && get !== {}) url += '&'+$.param(get);
-  return getLightboxByUrl(url, post, callback);
-}
 // AJAX the content and put it into a lightbox
 // Callback if necessary
 var modalXHR;
@@ -118,6 +77,12 @@ function getLightboxByUrl(url, post, callback) {
   lastLightboxURL = url;
   lastLightboxPOST = post;
   return false;
+}
+// Make a URL and pass it down
+function getLightbox(controller, action, get, post, callback) {
+  var url = path+'/AJAX/JSON?method=getLightbox&submodule='+controller+'&subaction='+action;
+  if(get && get !== {}) url += '&'+$.param(get);
+  return getLightboxByUrl(url, post, callback);
 }
 
 /****************************/
@@ -158,13 +123,13 @@ function ajaxSubmit($form, callback) {
         data[currentName] = inputs[i].value;
       }
     }
-  };
+  }
   // If we have an action: parse
   var POST = $form.attr('method') && $form.attr('method').toUpperCase() == 'POST';
   if($form.attr('action')) {
     // Parse action location
-    action = $form.attr('action').substring($form.attr('action').indexOf(path)+path.length+1);
-    params = action.split('?');
+    var action = $form.attr('action').substring($form.attr('action').indexOf(path)+path.length+1);
+    var params = action.split('?');
     action = action.split('/');
     var get = params.length > 1 ? deparam(params[1]) : data['id'] ? {id:data['id']} : {};
     if(POST) {
@@ -236,7 +201,7 @@ function ajaxLogin(form) {
     }
   });
 }
-
+// AJAX action specifically for the cart and its many submit buttons
 function cartSubmit($form) {
   var submit = $form.find('input[type="submit"][clicked=true]').attr('name');
   switch(submit) {
@@ -272,63 +237,83 @@ function cartSubmit($form) {
   }
 }
 
-/**********************************/
-/* ====== LIGHTBOX ACTIONS ====== */
-/**********************************/
-// Cart actions based on submission
-// Change the content of the lightbox
-function changeModalContent(html) {
-  $('#modal .modal-body').html(html);
-  registerModalEvents($('#modal'));
-  registerModalForms($('#modal'));
+/***********************/
+/* ====== SETUP ====== */
+/***********************/
+// Checkbox actions and link hijacking
+function registerModalEvents(modal) {
+  // New list
+  $('#make-list').click(function() {
+    var id = $(this).find('#edit-save-form input[name="id"]').val();
+    var source = $(this).find('#edit-save-form input[name="source"]').val();
+    var parts = this.href.split('?');
+    var get = deparam(parts[1]);
+    get['id'] = 'NEW';
+    return getLightbox('MyResearch', 'EditList', get);
+  });  
+  // Select all checkboxes
+  $(modal).find('.checkbox-select-all').change(function() {
+    $(this).closest('.modal-body').find('.checkbox-select-item').attr('checked', this.checked);
+  });
+  // Highlight which submit button clicked
+  $(modal).find("form input[type=submit]").click(function() {
+    $(this).attr("clicked", "true");
+    $(this).after(' <i class="icon-spinner icon-spin"></i> ');
+});
 }
-// Close the lightbox and run update functions
-function closeLightbox() {
-  if(modalXHR) modalXHR.abort();
-  lightboxShown = false;
-  $('#modal').modal('hide');
-  // Reset content
-  $('#modal').removeData('modal');
-  $('#modal').find('.modal-body').html(vufindString.loading + "...");
-  // Perform checks to update the page
-  if(checkSaveStatuses) checkSaveStatuses();
-  // Update cart items
-  var cart = getFullCartItems();
-  var id = $('#cartId');
-  if(id.length > 0) {
-    id = id.val();
-    $('#cart-add,#cart-remove').addClass('hidden');
-    if(cart.indexOf(id) > -1) {
-      $('#cart-remove').removeClass('hidden');
-    } else {
-      $('#cart-add').removeClass('hidden');
-    }
-  }
-  $('#cartItems strong').html(cart.length);
+// Prevent forms from submitting in the lightbox
+// Go through AJAX instead
+function registerModalForms(modal) {
+  $(modal).find('form').submit(function(){
+    ajaxSubmit($(this), closeLightbox);
+    return false;
+  });
+  $(modal).find('form[name="cartForm"]').unbind('submit').submit(function(){
+    cartSubmit($(this));
+    return false;
+  });
+  $(modal).find('form[name="newList"]').unbind('submit').submit(function(){
+    ajaxSubmit($(this), changeModalContent);
+    return false
+  });
+  $(modal).find('form[name="loginForm"]').unbind('submit')
+    .submit(function(){ajaxLogin(this);return false});
 }
-// Make an error box appear in the lightbox, or insert one
-function displayLightboxError(message) {
-  var alert = $('#modal .modal-body .alert');
-  if(alert.length > 0) {
-    $(alert).html(message);
-  } else {
-    $('#modal .modal-body').prepend('<div class="alert alert-error">'+message+'</div>');
-  }
-}
-
-/* ====== SUPPORT ====== */
-function deparam(url) {
-  var request = {};
-  var pairs = url.substring(url.indexOf('?') + 1).split('&');
-  for (var i = 0; i < pairs.length; i++) {
-    var pair = pairs[i].split('=');
-    var name = decodeURIComponent(pair[0]);
-    if(pair[0].substring(pair[0].length-2) == '[]') {
-      if(!request[name]) request[name] = [];
-      request[name][request[name].length] = pair[1];
-    } else {
-      request[name] = decodeURIComponent(pair[1]);
-    }
-  }
-  return request;
-}
+// Default lightbox behaviour
+// Tell links to open lightboxes
+$(document).ready(function() {
+  // Hijack modal forms
+  $('#modal').on('show', function() {
+    registerModalForms(this);
+    registerModalEvents(this);
+  });  
+  // Reset Content
+  $('#modal').on('hidden', function() {
+    closeLightbox();
+  });
+  /* --- MODAL LINK EVENTS --- */
+  // Save record links
+  $('.save-record').click(function() {
+    var parts = this.href.split('/');
+    return getLightbox(parts[parts.length-3],'Save',{id:$(this).attr('id')});
+  });  
+  // Cart lightbox
+  $('#cartItems').click(function() {
+    return getLightbox('Cart','Cart');
+  });
+  // Hierarchy links
+  $('.hierarchyTreeLink a').click(function() {
+    var id = $(this).parent().parent().parent().find(".hiddenId")[0].value;
+    var hierarchyID = $(this).parent().find(".hiddenHierarchyId")[0].value;
+    return getLightbox('Record','AjaxTab',{id:id},{hierarchy:hierarchyID,tab:'HierarchyTree'});
+  });
+  // Hierarchy links
+  $('.help-link').click(function() {
+    var split = this.href.split('=');
+    return getLightbox('Help','Home',{topic:split[1]});
+  });  
+  // Modal title
+  $('.modal-link,.help-link').click(function() {
+    $('#modal .modal-header h3').html($(this).attr('title'));
+  });
+});

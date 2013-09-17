@@ -1,3 +1,51 @@
+/* global path, vufindString */
+
+/* --- GLOBAL FUNCTIONS --- */
+function htmlEncode(value){
+  if (value) {
+    return jQuery('<div />').text(value).html();
+  } else {
+    return '';
+  }
+}
+function extractClassParams(str) {
+  str = $(str).attr('class');
+  var params = {};
+  var classes = str.split(/\s+/);
+  for(var i = 0; i < classes.length; i++) {
+    if (classes[i].indexOf(':') > 0) {
+      var pair = classes[i].split(':');
+      params[pair[0]] = pair[1];
+    }
+  }
+  return params;
+}
+// Turn GET string into array
+function deparam(url) {
+  var request = {};
+  var pairs = url.substring(url.indexOf('?') + 1).split('&');
+  for (var i = 0; i < pairs.length; i++) {
+    var pair = pairs[i].split('=');
+    var name = decodeURIComponent(pair[0]);
+    if(pair[0].substring(pair[0].length-2) == '[]') {
+      if(!request[name]) request[name] = [];
+      request[name][request[name].length] = pair[1];
+    } else {
+      request[name] = decodeURIComponent(pair[1]);
+    }
+  }
+  return request;
+}
+
+function moreFacets(id) {
+  $('#narrowGroupHidden_'+id).removeClass('hidden');
+  $('#more'+id).addClass('hidden');
+}
+function lessFacets(id) {
+  $('#narrowGroupHidden_'+id).addClass('hidden');
+  $('#more'+id).removeClass('hidden');
+}
+
 $(document).ready(function() {
   // Highlight previous links, grey out following
   $('.backlink')
@@ -28,7 +76,7 @@ $(document).ready(function() {
         t.css({'color':''});
         t = t.next();
       } while(t.length > 0);
-    })
+    });
 
   // Search autocomplete
   $('.autocomplete').typeahead({
@@ -72,34 +120,3 @@ $(document).ready(function() {
     window.print();
   }
 });
-
-/* --- GLOBAL FUNCTIONS --- */
-function htmlEncode(value){
-  if (value) {
-    return jQuery('<div />').text(value).html();
-  } else {
-    return '';
-  }
-}
-
-function extractClassParams(str) {
-  str = $(str).attr('class');
-  var params = {};
-  var classes = str.split(/\s+/);
-  for(var i = 0; i < classes.length; i++) {
-    if (classes[i].indexOf(':') > 0) {
-      var pair = classes[i].split(':');
-      params[pair[0]] = pair[1];
-    }
-  }
-  return params;
-}
-
-function moreFacets(id) {
-  $('#narrowGroupHidden_'+id).removeClass('hidden');
-  $('#more'+id).addClass('hidden');
-}
-function lessFacets(id) {
-  $('#narrowGroupHidden_'+id).addClass('hidden');
-  $('#more'+id).removeClass('hidden');
-}

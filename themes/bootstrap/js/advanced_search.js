@@ -1,4 +1,4 @@
-/*global addSearchString, deleteSearchGroupString, searchFieldLabel, searchFields, searchJoins, searchLabel, searchMatch*/
+/* global addSearchString, searchFields, searchLabel */
 
 var nextGroup = 0;
 
@@ -57,13 +57,19 @@ function addGroup(firstTerm, firstField, join)
     + '<label for="search_bool'+nextGroup+'">Match:&nbsp;</label>'
     + '<select class="span8" id="search_bool'+nextGroup+'" name="bool'+nextGroup+'[]">'
     + '<option value="AND"';
-  if(join == 'AND') newGroup += ' selected';
+  if(join == 'AND') {
+    newGroup += ' selected';
+  }
   newGroup += '>ALL Terms</option>'
     + '<option value="OR"';
-  if(join == 'OR') newGroup += ' selected';
+  if(join == 'OR') {
+    newGroup += ' selected';
+  }
   newGroup += '>ANY Terms</option>'
     + '<option value="NOT"';
-  if(join == 'NOT') newGroup += ' selected';
+  if(join == 'NOT') {
+    newGroup += ' selected';
+  }
   newGroup += '>NO Terms</option>'
     + '</select><a href="#" onClick="deleteGroup('+nextGroup+')" class="close hide" title="Remove Group">&times;</a></div><div class="span8 pull-left switch-margins row-fluid"><div class="span3 text-right">'+searchLabel+':</div>'
     + '<div class="span9"><i id="group'+nextGroup+'Holder" class="icon-plus-sign"></i> <a href="#" onClick="addSearch('+nextGroup+')">'+addSearchString+'</a></div></div></div>';
