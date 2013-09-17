@@ -226,4 +226,58 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
         $hlQ = $response->get('hl.q');
         $this->assertEquals('*:*', $hlQ[0]);
     }
+
+    /**
+     * Test advanced query detection
+     *
+     * @return void
+     */
+    public function testContainsAdvancedLuceneSyntax()
+    {
+        $qb = new QueryBuilder();
+        $this->assertTrue($qb->containsAdvancedLuceneSyntax('*:*'));
+        $this->assertTrue($qb->containsAdvancedLuceneSyntax('this:that'));
+        $this->assertTrue($qb->containsAdvancedLuceneSyntax('(this) (that)'));
+        $this->assertFalse($qb->containsAdvancedLuceneSyntax('\(this\) \(that\)'));
+        $this->assertTrue($qb->containsAdvancedLuceneSyntax('(this) (that)'));
+
+        // Default: case sensitive ranges:
+        $this->assertTrue($qb->containsAdvancedLuceneSyntax('[this TO that]'));
+        $this->assertFalse($qb->containsAdvancedLuceneSyntax('[this to that]'));
+
+        // Case insensitive ranges:
+        $qb->caseSensitiveRanges = false;
+        $this->assertTrue($qb->containsAdvancedLuceneSyntax('[this TO that]'));
+        $this->assertTrue($qb->containsAdvancedLuceneSyntax('[this to that]'));
+
+        // Default: case sensitive booleans:
+        $this->assertTrue($qb->containsAdvancedLuceneSyntax('this AND that'));
+        $this->assertTrue($qb->containsAdvancedLuceneSyntax('this OR that'));
+        $this->assertTrue($qb->containsAdvancedLuceneSyntax('this NOT that'));
+        $this->assertFalse($qb->containsAdvancedLuceneSyntax('this and that'));
+        $this->assertFalse($qb->containsAdvancedLuceneSyntax('this or that'));
+        $this->assertFalse($qb->containsAdvancedLuceneSyntax('this not that'));
+
+        // Case insensitive booleans:
+        $qb->caseSensitiveBooleans = false;
+        $this->assertTrue($qb->containsAdvancedLuceneSyntax('this AND that'));
+        $this->assertTrue($qb->containsAdvancedLuceneSyntax('this OR that'));
+        $this->assertTrue($qb->containsAdvancedLuceneSyntax('this NOT that'));
+        $this->assertTrue($qb->containsAdvancedLuceneSyntax('this and that'));
+        $this->assertTrue($qb->containsAdvancedLuceneSyntax('this or that'));
+        $this->assertTrue($qb->containsAdvancedLuceneSyntax('this not that'));
+
+        // Wildcards:
+        $this->assertTrue($qb->containsAdvancedLuceneSyntax('this*'));
+        $this->assertTrue($qb->containsAdvancedLuceneSyntax('th?s'));
+
+        // Proximity:
+        $this->assertTrue($qb->containsAdvancedLuceneSyntax('this~4'));
+
+        // Boosts:
+        $this->assertTrue($qb->containsAdvancedLuceneSyntax('this^4'));
+
+        // Plain search:
+        $this->assertFalse($qb->containsAdvancedLuceneSyntax('this that the other'));
+    }
 }
