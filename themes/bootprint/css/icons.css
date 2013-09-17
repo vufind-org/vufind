@@ -12,6 +12,7 @@
 .icon-ok,
 .icon-phone-sign,
 .icon-plus-sign,
+.icon-remove,
 .icon-rss,
 .icon-shopping-cart,
 .icon-signin,
@@ -26,6 +27,7 @@
   content:'';
   display:inline-block;
   height:16px;
+  vertical-align:top;
   width:16px;
 }
 .nav-pills [class^="icon-"] {
@@ -51,6 +53,7 @@
 .small .icon-ok,
 .small .icon-phone-sign,
 .small .icon-plus-sign,
+.small .icon-remove,
 .small .icon-rss,
 .small .icon-shopping-cart,
 .small .icon-signin,
@@ -58,9 +61,9 @@
 .small .icon-spinner,
 .small .icon-trash,
 .small .icon-user {
-  background-size:100% 13px;
+  background-size:13px 13px;
   height:13px;
-  width:13px
+  width:13px;
 }
 .icon-asterisk {background:url('../images/icons/list.png')}
 .icon-book {background:url('../images/icons/book.png')}
@@ -76,6 +79,7 @@
 .icon-ok {background:url('../images/icons/tick.png')}
 .icon-phone-sign {background:url('../images/icons/phone.png')}
 .icon-plus-sign {background:url('../images/icons/add.png')}
+.icon-remove {background:url('../images/icons/delete.png')}
 .icon-rss {background:url('../images/icons/feed.png')}
 .icon-shopping-cart {background:url('../images/icons/cart.png')}
 .icon-signin {background:url('../images/icons/door_in.png')}

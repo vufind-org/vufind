@@ -1,15 +1,16 @@
-body {background:#619144}
-body a {color:#6AF}
+body {background:#619144;font-size:12px}
+body * {font-size:12px}
+body a {color:#0066CC}
+body a:hover {color:#0099FF}
 .container {background:#FFF;border:1px solid #DDD;border-radius:5px;margin-top:18px;max-width:950px}
-h1,h2,h3,h4,h5,h6 {font-family:Times New Roman, serif}
 
 /* --- Bootstrap MODS ---*/
 .accordion-heading .accordion-toggle {padding:4px 15px}
 .btn-link {color:#06C;text-shadow:none}
-.container a:not(.btn) {color:#06C}
+.container a:not(.btn,.text-error) {color:#06C}
 .hero-unit {margin:-5px}
-input[type="text"] {border-color:#C6D880}
-input[type="text"]:focus {border-color:rgb(97,145,68);box-shadow:0px 0px 8px rgba(97,145,68,0.6)}
+input[type="text"] {border-color:#C6D880;font-size:12px}
+input[type="text"]:focus {border-color:rgb(97,145,68);box-shadow:inset 0px 1px 2px rgba(0,0,0,.14)}
 .modal a {color:#08C}
 .nav-list li.active > a {border-color:#C6D880;color:#FFF}
 .nav-tabs {margin:0}
@@ -17,6 +18,8 @@ input[type="text"]:focus {border-color:rgb(97,145,68);box-shadow:0px 0px 8px rgb
 .nav-tabs li.active a:hover,
 .nav-tabs li.active a {color:#555}
 .tab-container {margin:0}
+select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {height:24px;padding:1px 4px}
+select {border:1px solid #7E7E7E;border-radius:2px;vertical-align:top}
 
 /* --- HEADER --- */
 .header {border-bottom:1px solid #DDD;color:#000;padding:7px 9px}
@@ -24,7 +27,7 @@ input[type="text"]:focus {border-color:rgb(97,145,68);box-shadow:0px 0px 8px rgb
 #langForm_mylang {height:20px;padding:0;width:100px}
 
 /* --- SEARCHBOX --- */
-.searchbox {border-bottom:1px solid #DDD;margin:0;padding:3px 3px 3px 1em}
+.searchbox {border-bottom:1px solid #DDD;margin:0;padding:3px 3px 1px 1em}
 .searchbox .nav-tabs {border:0;margin:0 0 0 4px}
 .searchbox .nav-tabs li a.advanced {border:0;font-size:12px}
 .searchbox .nav-tabs li a:hover {background:rgba(255,255,255,.3);border-color:#C6D880}
@@ -49,6 +52,9 @@ input[type="text"]:focus {border-color:rgb(97,145,68);box-shadow:0px 0px 8px rgb
 .unstyled li {margin-bottom:6px}
 .unstyled li a {text-decoration:underline}
 
+.filters li a {background:#FFA500;color:#FFF;display:block;padding:2px 0;text-decoration:none;width:100%}
+.filters li a:hover {color:#FFF}
+.filters li a i {display:inline-block;margin:2px 0 0 3px;vertical-align:top}
 /* --- MAIN --- */
 .centered-pills {border-bottom:1px solid #DDD;font-size:12px}
 .nav-pills {margin:0}
@@ -65,3 +71,7 @@ input[type="text"]:focus {border-color:rgb(97,145,68);box-shadow:0px 0px 8px rgb
 .searchHome .browse .lead {border-bottom:1px solid #619144;font-size:17px;margin:0 0 6px 0}
 .searchHome .browse .unstyled {margin:0}
 .searchHome .browse .unstyled li a {font-size:12px;line-height:16px}
+
+/* --- SEARCH --- */
+.result {padding:6px 2px}
+.result:nth-child(even) {background:#EEE}

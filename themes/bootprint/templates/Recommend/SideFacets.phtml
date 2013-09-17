@@ -17,8 +17,8 @@
   <? endif; ?>
   <? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : array(); ?>
   <? $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); if (!empty($filterList)): ?>
-    <dl>
-      <dt><?=$this->transEsc('Remove Filters')?></dt>
+    <strong><?=$this->transEsc('Remove Filters')?></strong>
+    <ul class="filters unstyled">
       <? foreach ($filterList as $field => $filters): ?>
         <? foreach ($filters as $filter): ?>
           <? if (isset($filter['specialType']) && $filter['specialType'] == 'keyword') {
@@ -30,12 +30,10 @@
               $filter['displayText'] = $this->translate('filter_wildcard');
             }
           ?>
-          <dd>
-            <a href="<?=$removeLink?>" class="text-error"><i class="icon-remove"></i> <?=$this->transEsc($field)?>: <?=$this->escapeHtml($filter['displayText'])?></a>
-          </dd>
+          <li><a href="<?=$removeLink?>" class="active-filter"><i class="icon-remove"></i> <?=$this->transEsc($field)?>: <?=$this->escapeHtml($filter['displayText'])?></a></li>
         <? endforeach; ?>
       <? endforeach; ?>
-    </dl>
+    </ul>
   <? endif; ?>
   <?= isset($this->sideFacetExtraControls) ? $this->sideFacetExtraControls : '' ?>
   <? $sideFacetSet = $this->recommend->getFacetSet(); $dateFacets = $this->recommend->getDateFacets(); ?>

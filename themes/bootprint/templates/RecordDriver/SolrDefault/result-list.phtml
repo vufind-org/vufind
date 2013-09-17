@@ -1,7 +1,7 @@
 <div class="row-fluid">
   <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueID())?>" class="hiddenId" />
   <input type="hidden" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>" class="hiddenSource" />
-  <div class="span2 text-center">
+  <div class="span2 text-center switch-margins">
     <a href="<?=$this->url('vudl-record', array('id'=>$this->driver->getUniqueID()))?>">
       <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
         <img src="<?=$this->escapeHtml($summThumb)?>" class="img-polaroid" alt="<?=$this->transEsc('Cover Image')?>"/>
@@ -73,7 +73,7 @@
       <? endif; ?>
     </div>
 
-    <div class="last">
+    <div>
       <? if(!$this->driver->isCollection()) {
           if ($snippet = $this->driver->getHighlightedSnippet()) {
             if (!empty($snippet['caption'])) {
@@ -137,7 +137,7 @@
     </div>
   </div>
 
-  <div class="span2 small">
+  <div class="span3 switch-margins">
     <i class="icon-heart"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br/>
 
     <div class="savedLists info hide">

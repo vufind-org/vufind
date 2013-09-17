@@ -32,15 +32,6 @@
       </li>
     <? endforeach; ?>        
   <? endif; ?>
-  <? if($this->layout()->searchbox !== false): ?>
-    <? if ((isset($this->filterList) && is_array($this->filterList) && count($this->filterList) > 0) || $hasCheckboxFilters): ?>
-      <? $defaultFilterState = $options->getRetainFilterSetting() ? ' checked="checked"' : ''; ?>
-      <li><label class="checkbox">
-        <input onChange="$('.applied-filter').click()" type="checkbox"<?=$defaultFilterState?> id="searchFormKeepFilters"/>
-          <?=$this->transEsc("basic_search_keep_filters")?>
-      </label></li>
-    <? endif; ?>
-  <? endif; ?>
 </ul>
 <? if ($this->searchType == 'advanced'): ?>
   <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtml($this->searchId)?>" class="small"><?=$this->transEsc("Edit this Advanced Search")?></a> |
@@ -99,6 +90,13 @@
       echo '<input type="hidden" name="sort" value="' . $this->escapeHtml($lastSort) . '" />';
     }
     ?>
+    <? if ((isset($this->filterList) && is_array($this->filterList) && count($this->filterList) > 0) || $hasCheckboxFilters): ?>
+      <? $defaultFilterState = $options->getRetainFilterSetting() ? ' checked="checked"' : ''; ?>
+      <label class="checkbox">
+        <input onChange="$('.applied-filter').click()" type="checkbox"<?=$defaultFilterState?> id="searchFormKeepFilters"/>
+          <?=$this->transEsc("basic_search_keep_filters")?>
+      </label>
+    <? endif; ?>
   </form>
   <script type="text/javascript">$("#searchForm_lookfor").focus()</script>
 <? endif; ?>

@@ -2,7 +2,7 @@
 <a class="vu-logo pull-left" href="<?=$this->url('home') ?>"><img src="<?=$this->imageLink('vufind_logo.jpg') ?>" alt="Villanova Home"/></a>
 <? if (!isset($this->layout()->renderingError)): ?>
   <div class="pull-right text-right">
-    <div class="control-group small">
+    <div class="control-group">
     <? if ($this->feedback()->tabEnabled()): ?>
       <i class="icon-envelope-alt"></i> <a href="#contact_form" role="button" data-toggle="modal"><?=$this->transEsc("Feedback")?></a>
       <span class="muted">&nbsp;/&nbsp;</span>
@@ -50,8 +50,8 @@
     <? endif; ?>
     <? if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
     <form class="form-inline" method="post" name="langForm" action="" id="langForm">
-      <label class="small" for="langForm_mylang"><?=$this->transEsc("Language")?>:</label>
-      <select class="small" onChange="document.langForm.submit()" id="langForm_mylang" name="mylang">
+      <strong class="help-inline"><?=$this->transEsc("Language")?>:</strong>
+      <select onChange="document.langForm.submit()" id="langForm_mylang" name="mylang">
       <? foreach ($this->layout()->allLangs as $langCode => $langName): ?>
         <option value="<?=$langCode?>"<?=$this->layout()->userLang == $langCode ? ' selected="selected"' : ''?>><?=$this->displayLanguageOption($langName)?></option>
       <? endforeach; ?>
