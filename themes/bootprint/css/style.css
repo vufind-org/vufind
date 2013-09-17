@@ -11,6 +11,7 @@ body a:hover {color:#0099FF}
 .hero-unit {margin:-5px}
 input[type="text"] {border-color:#C6D880;font-size:12px}
 input[type="text"]:focus {border-color:rgb(97,145,68);box-shadow:inset 0px 1px 2px rgba(0,0,0,.14)}
+.label {font-size:11px}
 .modal a {color:#08C}
 .nav-list li.active > a {border-color:#C6D880;color:#FFF}
 .nav-tabs {margin:0}
@@ -42,12 +43,13 @@ select {border:1px solid #7E7E7E;border-radius:2px;vertical-align:top}
 .breadcrumb span.divider {color:#888}
 
 /* --- SIDEGROUP --- */
+.row-fluid .span3.sidebar {margin-left:1%}
 .sidegroup {font-size:12px}
 .sidegroup dd {border-bottom:1px solid #DDD;margin-left:0;padding:0 6px}
 .sidegroup dt {background:#EEE;padding:2px 4px}
 .sidegroup h4 {border-bottom:2px solid #DDD;font-size:14px;font-weight:normal;margin-bottom:4px}
-#publishDateFilter input[type="text"] {border-color:#CCC;border-radius:0;display:inline-block;height:20px;padding:0}
-#publishDateFilter input[type="text"]:focus {box-shadow:none}
+#publishDateFilter input[type="text"] {border-color:#CCC;margin-top:.5em;padding:0}
+#publishDateFilter input[type="text"]:focus {border-color:#999;box-shadow:none}
 #publishDateFilter .slider-handle {background:#CCC;border:1px solid #AAA}
 .unstyled li {margin-bottom:6px}
 .unstyled li a {text-decoration:underline}

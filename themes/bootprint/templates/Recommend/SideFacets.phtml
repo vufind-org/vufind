@@ -41,7 +41,7 @@
     <? foreach ($sideFacetSet as $title => $cluster): ?>
       <? if (isset($dateFacets[$title])): ?>
         <dt><?=$this->transEsc($cluster['label'])?></dt>
-        <form class="form-inline text-center" action="" name="<?=$this->escapeHtml($title)?>Filter" id="<?=$this->escapeHtml($title)?>Filter">
+        <form class="form-inline text-center" action="" name="<?=$this->escapeHtml($title)?>Filter" id="<?=$this->escapeHtml($title)?>Filter" style="margin-right:10px">
         <? /* Load the publication date slider UI widget */ $this->headScript()->appendFile('pubdate_slider.js'); ?>
           <?=$results->getUrlQuery()->asHiddenFields(array('filter' => "/^{$title}:.*/"))?>
           <input type="hidden" name="daterange[]" value="<?=$this->escapeHtml($title)?>"/>

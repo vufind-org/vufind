@@ -55,7 +55,7 @@ class LayoutClass extends \VuFind\View\Helper\AbstractLayoutClass
         case 'mainbody':
             return $this->left ? 'span9 pull-right' : 'span9 switch-margins';
         case 'sidebar':
-            return $this->left ? 'span3 switch-margins noprint' : 'span3 noprint';
+            return $this->left ? 'span3 switch-margins noprint sidebar' : 'span3 noprint sidebar';
         }
     }
 }
