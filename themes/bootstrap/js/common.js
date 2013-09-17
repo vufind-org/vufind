@@ -1,4 +1,4 @@
-/* global path, vufindString */
+/*global path, vufindString */
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value){
@@ -28,7 +28,9 @@ function deparam(url) {
     var pair = pairs[i].split('=');
     var name = decodeURIComponent(pair[0]);
     if(pair[0].substring(pair[0].length-2) == '[]') {
-      if(!request[name]) request[name] = [];
+      if(!request[name]) {
+        request[name] = [];
+      }
       request[name][request[name].length] = pair[1];
     } else {
       request[name] = decodeURIComponent(pair[1]);

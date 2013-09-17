@@ -1,4 +1,4 @@
-/* global Cookies, vufindString */
+/*global Cookies, vufindString */
 
 var _CART_COOKIE = 'vufind_cart';
 var _CART_COOKIE_SOURCES = 'vufind_cart_src';
@@ -34,7 +34,9 @@ function getFullCartItems() {
 }
 
 function addItemToCart(id,source) {
-  if(!source) source = 'VuFind';
+  if(!source) {
+    source = 'VuFind';
+  }
   var cartItems = getCartItems();
   var cartSources = getCartSources();
   var sIndex = cartSources.indexOf(source);
@@ -76,7 +78,7 @@ function removeItemFromCart(id,source) {
         Cookies.removeItem(_CART_COOKIE, '/');
         Cookies.removeItem(_CART_COOKIE_SOURCES, '/');
       }
-      $('#cartItems strong').html(parseInt($('#cartItems strong').html())-1);
+      $('#cartItems strong').html(parseInt($('#cartItems strong').html(), 10)-1);
       return true;
     }
   }

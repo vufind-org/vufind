@@ -1,4 +1,7 @@
-/* global deparam, htmlEncode, path, rc4Encrypt, vufindString */
+/*global deparam, htmlEncode, path, rc4Encrypt, vufindString */
+
+var lastLightboxURL,lastLightboxPOST; // Replacement for empty form actions
+var lightboxShown = false; // is the lightbox deployed?
 
 /**********************************/
 /* ====== LIGHTBOX ACTIONS ====== */
@@ -12,14 +15,18 @@ function changeModalContent(html) {
 }
 // Close the lightbox and run update functions
 function closeLightbox() {
-  if(modalXHR) modalXHR.abort();
+  if(modalXHR) {
+    modalXHR.abort();
+  }
   lightboxShown = false;
   $('#modal').modal('hide');
   // Reset content
   $('#modal').removeData('modal');
   $('#modal').find('.modal-body').html(vufindString.loading + "...");
   // Perform checks to update the page
-  if(checkSaveStatuses) checkSaveStatuses();
+  if(checkSaveStatuses) {
+    checkSaveStatuses();
+  }
   // Update cart items
   var cart = getFullCartItems();
   var id = $('#cartId');
@@ -47,9 +54,6 @@ function displayLightboxError(message) {
 /****************************/
 /* ====== GET LIGHTBOX ====== */
 /****************************/
-// Get a template and display it in a lightbox
-var lastLightboxURL,lastLightboxPOST; // Replacement for empty form actions
-var lightboxShown = false; // is the lightbox deployed?
 // AJAX the content and put it into a lightbox
 // Callback if necessary
 var modalXHR;
@@ -78,10 +82,12 @@ function getLightboxByUrl(url, post, callback) {
   lastLightboxPOST = post;
   return false;
 }
-// Make a URL and pass it down
+// Get a template and display it in a lightbox
 function getLightbox(controller, action, get, post, callback) {
   var url = path+'/AJAX/JSON?method=getLightbox&submodule='+controller+'&subaction='+action;
-  if(get && get !== {}) url += '&'+$.param(get);
+  if(get && get !== {}) {
+    url += '&'+$.param(get);
+  }
   return getLightboxByUrl(url, post, callback);
 }
 
@@ -91,7 +97,9 @@ function getLightbox(controller, action, get, post, callback) {
 // Submit a form via AJAX and show the result
 function ajaxSubmit($form, callback) {
   // Default callback is to close
-  if(!callback) callback = closeLightbox;
+  if(!callback) {
+    callback = closeLightbox;
+  }
   // Gather all the data
   var inputs = $form.find('*[name]');
   var data = {};
@@ -227,7 +235,7 @@ function cartSubmit($form) {
         success:function(html) {
           var newDoc = document.open("text/html", "replace");
           newDoc.write(html);
-          newDoc.close()
+          newDoc.close();
         },
         error:function(d,e) {
           console.log(d,e);
