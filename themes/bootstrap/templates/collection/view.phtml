@@ -39,7 +39,7 @@
 
 <?=$this->record($this->driver)->getToolbar()?>
 
-<div class="<?=isset($activeTabObj) && is_callable(array($activeTabObj, 'getSideRecommendations')) ? $this->layoutClass('mainbody') : 'span11' ?>">
+<div class="<?=$this->layoutClass('mainbody') ?>">
   <div class="record recordId source<?=$this->escapeHtml($this->driver->getResourceSource())?>" id="record">
     <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
     <?=$this->flashmessages()?>

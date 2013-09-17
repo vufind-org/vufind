@@ -14,6 +14,7 @@ input[type="text"]:focus {border-color:rgb(97,145,68);box-shadow:inset 0px 1px 2
 .label {font-size:11px}
 .modal a {color:#08C}
 .nav-list li.active > a {border-color:#C6D880;color:#FFF}
+.nav-pills > li > a {padding-bottom:4px}
 .nav-tabs {margin:0}
 .nav-tabs li a {margin:2px 4px 0 0;padding:3px 5px}
 .nav-tabs li.active a:hover,
@@ -43,7 +44,7 @@ select {border:1px solid #7E7E7E;border-radius:2px;vertical-align:top}
 .breadcrumb span.divider {color:#888}
 
 /* --- SIDEGROUP --- */
-.row-fluid .span3.sidebar {margin-left:1%}
+.row-fluid .span3.sidebar {margin-left:1.5%}
 .sidegroup {font-size:12px}
 .sidegroup dd {border-bottom:1px solid #DDD;margin-left:0;padding:0 6px}
 .sidegroup dt {background:#EEE;padding:2px 4px}
@@ -76,4 +77,4 @@ select {border:1px solid #7E7E7E;border-radius:2px;vertical-align:top}
 
 /* --- SEARCH --- */
 .result {padding:6px 2px}
-.result:nth-child(even) {background:#EEE}
+.result:nth-child(odd) {background:#EEE}

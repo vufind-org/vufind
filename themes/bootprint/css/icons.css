@@ -17,8 +17,11 @@
 .icon-shopping-cart,
 .icon-signin,
 .icon-signout,
+.icon-sitemap,
 .icon-spinner,
 .icon-trash,
+.icon-tree,
+.icon-tree-muted,
 .icon-user {
   background-position:center top;
   background-repeat:no-repeat;
@@ -58,8 +61,11 @@
 .small .icon-shopping-cart,
 .small .icon-signin,
 .small .icon-signout,
+.small .icon-sitemap,
 .small .icon-spinner,
 .small .icon-trash,
+.small .icon-tree,
+.small .icon-tree-muted,
 .small .icon-user {
   background-size:13px 13px;
   height:13px;
@@ -73,7 +79,7 @@
 .icon-envelope-alt {background:url('../images/icons/email.png')}
 .icon-heart {background:url('../images/icons/heart.png')}
 .icon-inbox {background:url('../images/icons/box.png')}
-.icon-leaf {background:url('../images/icons/treeCurrent.png')}
+.icon-leaf,.icon-sitemap {background:url('../images/icons/treeCurrent.png')}
 .icon-list-alt {background:url('../images/icons/application_add.png')}
 .icon-minus-sign {background:url('../images/icons/delete.png')}
 .icon-ok {background:url('../images/icons/tick.png')}
@@ -86,4 +92,6 @@
 .icon-signout {background:url('../images/icons/door_out.png')}
 .icon-spinner {background:url('../images/icons/ajax_loading.gif')}
 .icon-trash {background:url('../images/icons/bin.gif')}
+.icon-tree {background:url('../images/icons/treeCurrent.png')}
+.icon-tree-muted {background:url('../images/icons/treeMuted.png')}
 .icon-user {background:url('../images/icons/user.png')}
