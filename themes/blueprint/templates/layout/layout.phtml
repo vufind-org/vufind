@@ -30,27 +30,25 @@
         // Deal with cart stuff:
         if (!isset($this->renderingError)) {
             $cart = $this->cart();
-            $script = 'var vufindString = {};';
-            if (isset($this->javascriptTranslations) && is_array($this->javascriptTranslations)) {
-                foreach ($this->javascriptTranslations as $key => $value) {
-                    $script .= 'vufindString.' . $key . ' = "' . addslashes($value) . '";';
-                }
-            }
             if ($cart->isActive()) {
                 $this->headScript()->appendFile("jquery.cookie.js");
                 $this->headScript()->appendFile("cart.js");
-                $script .= 'vufindString.bulk_noitems_advice = "' . $this->transEsc('bulk_noitems_advice') . '";'
-                    . 'vufindString.confirmEmpty = "' . $this->transEsc('bookbag_confirm_empty') . '";'
-                    . 'vufindString.viewBookBag = "' . $this->transEsc('View Book Bag') . '";'
-                    . 'vufindString.addBookBag = "' . $this->transEsc('Add to Book Bag') . '";'
-                    . 'vufindString.removeBookBag = "' . $this->transEsc('Remove from Book Bag') . '";'
-                    . 'vufindString.itemsAddBag = "' . $this->transEsc('items_added_to_bookbag') . '";'
-                    . 'vufindString.itemsInBag = "' . $this->transEsc('items_already_in_bookbag') . '";'
-                    . 'vufindString.bookbagMax = "' . $cart->getMaxSize() . '";'
-                    . 'vufindString.bookbagFull = "' . $this->transEsc('bookbag_full_msg') . '";'
-                    . 'vufindString.bookbagStatusFull = "' . $this->transEsc('bookbag_full') . '";';
+                $this->jsTranslations()->addStrings(
+                    array(
+                        'bulk_noitems_advice' => 'bulk_noitems_advice',
+                        'confirmEmpty' => 'bookbag_confirm_empty',
+                        'viewBookBag' => 'View Book Bag',
+                        'addBookBag' => 'Add to Book Bag',
+                        'removeBookBag' => 'Remove from Book Bag',
+                        'itemsAddBag' => 'items_added_to_bookbag',
+                        'itemsInBag' => 'items_already_in_bookbag',
+                        'bookbagMax' => $cart->getMaxSize(),
+                        'bookbagFull' => 'bookbag_full_msg',
+                        'bookbagStatusFull' => 'bookbag_full',
+                    )
+                );
             }
-            $this->headScript()->appendScript($script);
+            $this->headScript()->appendScript($this->jsTranslations()->getScript());
         }
         if ($feedback) {
             $this->headScript()->appendFile("jquery.tabSlideOut.v2.0.js");

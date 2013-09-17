@@ -178,7 +178,7 @@ function ajaxSubmit($form, callback) {
   } else {
     getLightboxByUrl(lastLightboxURL, {}, callback);
   }
-  $(this).find('.modal-body').html(vufindString.loading);
+  $(this).find('.modal-body').html(vufindString.loading + "...");
 }
 // AJAX action specifically for logging in (encrypted)
 function ajaxLogin(form) {
@@ -289,7 +289,7 @@ function closeLightbox() {
   $('#modal').modal('hide');
   // Reset content
   $('#modal').removeData('modal');
-  $('#modal').find('.modal-body').html(vufindString.loading);
+  $('#modal').find('.modal-body').html(vufindString.loading + "...");
   // Perform checks to update the page
   if(checkSaveStatuses) checkSaveStatuses();
   // Update cart items

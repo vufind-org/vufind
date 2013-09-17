@@ -131,13 +131,7 @@
     <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
       <?
         // Add JS Variables for QrCode
-        if (!isset($this->layout()->javascriptTranslations) || !is_array($this->layout()->javascriptTranslations)) {
-          $this->layout()->javascriptTranslations = array();
-        }
-        $tr = $this->layout()->javascriptTranslations;
-        $tr['qrcode_hide'] = $this->transEsc('qrcode_hide');
-        $tr['qrcode_show'] = $this->transEsc('qrcode_show');
-        $this->layout()->javascriptTranslations = $tr;
+        $this->jsTranslations()->addStrings(array('qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show'));
       ?>
       <i class="icon-qrcode"></i> <a href="<?=$this->escapeHtml($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>
       <div class="qrcode hide">
