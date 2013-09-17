@@ -112,6 +112,25 @@
   </div>
 
   <div class="span-4 last">
+
+    <? /* Display qrcode if appropriate: */ ?>
+    <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
+      <?
+        // Add JS Variables for QrCode
+        if (!isset($this->layout()->javascriptTranslations) || !is_array($this->layout()->javascriptTranslations)) {
+            $this->layout()->javascriptTranslations = array();
+        }
+        $tr = $this->layout()->javascriptTranslations;
+        $tr['qrcode_hide'] = $this->transEsc('qrcode_hide');
+        $tr['qrcode_show'] = $this->transEsc('qrcode_show');
+        $this->layout()->javascriptTranslations = $tr;
+      ?>
+      <a href="<?=$this->escapeHtml($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>
+      <div class="qrcodeHolder">
+        <img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtml($QRCode);?>"/>
+      </div>
+    <? endif; ?>
+
     <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="fav tool saveRecord controller<?=$this->record($this->driver)->getController()?>" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a>
 
     <div class="savedLists info hide">

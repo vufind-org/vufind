@@ -167,7 +167,7 @@
         <th><?=$this->transEsc('Related Items')?></th>
         <td>
           <? foreach ($recordLinks as $recordLink): ?>
-            <?=$this->transEsc($recordLink['title'])?>: 
+            <?=$this->transEsc($recordLink['title'])?>:
             <a href="<?=$this->recordLink()->related($recordLink['link'])?>"><?=$this->escapeHtml($recordLink['value'])?></a><br />
           <? endforeach; ?>
         </td>
@@ -203,6 +203,12 @@
     <? if ($largeThumb): ?></a><? endif; ?>
   <? else: ?>
     <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+  <? endif; ?>
+
+  <? /* Display qrcode if appropriate: */ ?>
+  <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
+  <? if($QRCode): ?>
+    <img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtml($QRCode);?>"/>
   <? endif; ?>
 
   <? /* Display the lists that this record is saved to */ ?>

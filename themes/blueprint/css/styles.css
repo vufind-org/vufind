@@ -481,6 +481,11 @@ li.result blockquote {
 .groupCallnumber {
     margin-left: 18px;
 }
+.result .qrcodeHolder, .recordsubcontent  .qrcodeHolder {
+    border: 1px solid #cfcfcf;
+    position: absolute;
+    display: none;
+}
 
 /** Side facets */
 
@@ -858,6 +863,12 @@ h3.list {
     padding:0 .5em .5em 20px;
     margin-right:1em;
 }
+.qrcodeLink {
+    background-image:url(../images/fugue/qrcode.png);
+    background-repeat:no-repeat;
+    padding:0 .5em .5em 20px;
+    display: block;
+}
 .software {
     background-image:url(../images/silk/disk_multiple.png);
     background-repeat:no-repeat;
@@ -959,11 +970,18 @@ div.recordsubcontent {
     padding:1em 1.5em 1em 1.5em;
 }
 .recordcover {
+    display: block;
     padding:3px;
     background-color:#eee;
     border:1px solid #cfcfcf;
-    margin-top: 1em;
+    margin: 1em auto 0;
     max-width: 120px;
+}
+
+div.record img.qrcode {
+    display: block;
+    margin: 1em auto 0;
+    border:1px solid #cfcfcf;
 }
 .holdsMessage {
     margin-top: 1em;
@@ -1186,6 +1204,15 @@ table.datagrid tr.evenrow {
 
 table.datagrid tr.oddrow {
     background-color: #DDDDDD;
+}
+
+.qrcodeHoldings {
+    float: right;
+    text-align: left;
+}
+
+.qrcodeHoldings a {
+    float: none;
 }
 
 /* Comments */
