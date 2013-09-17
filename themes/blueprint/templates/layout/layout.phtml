@@ -31,6 +31,11 @@
         if (!isset($this->renderingError)) {
             $cart = $this->cart();
             $script = 'var vufindString = {};';
+            if (isset($this->javascriptTranslations) && is_array($this->javascriptTranslations)) {
+                foreach ($this->javascriptTranslations as $key => $value) {
+                    $script .= 'vufindString.' . $key . ' = "' . addslashes($value) . '";';
+                }
+            }
             if ($cart->isActive()) {
                 $this->headScript()->appendFile("jquery.cookie.js");
                 $this->headScript()->appendFile("cart.js");

@@ -127,12 +127,33 @@
   </div>
 
   <div class="span2 noprint">
+    <? /* Display qrcode if appropriate: */ ?>
+    <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
+      <?
+        // Add JS Variables for QrCode
+        if (!isset($this->layout()->javascriptTranslations) || !is_array($this->layout()->javascriptTranslations)) {
+          $this->layout()->javascriptTranslations = array();
+        }
+        $tr = $this->layout()->javascriptTranslations;
+        $tr['qrcode_hide'] = $this->transEsc('qrcode_hide');
+        $tr['qrcode_show'] = $this->transEsc('qrcode_show');
+        $this->layout()->javascriptTranslations = $tr;
+      ?>
+      <i class="icon-qrcode"></i> <a href="<?=$this->escapeHtml($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>
+      <div class="qrcode hide">
+        <img alt="<?=$this->transEsc('QR Code')?>" class="img-polaroid" src="<?=$this->escapeHtml($QRCode);?>"/>
+      </div>
+    <? endif; ?>
+    
+    <? /* Add to favorites */ ?>
     <i class="icon-heart"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br/>
 
+    <? /* Saved lists */ ?>
     <div class="savedLists info hide">
       <strong><?=$this->transEsc("Saved in")?>:</strong>
     </div>
 
+    <? /* Hierarchy tree link */ ?>
     <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
       <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
         <div class="hierarchyTreeLink">

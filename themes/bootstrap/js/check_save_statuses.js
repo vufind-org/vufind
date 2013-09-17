@@ -1,7 +1,7 @@
 /*global path*/
 
 function checkSaveStatuses() {
-  var data = $.map($('.result'), function(i) {
+  var data = $.map($('.result,.record'), function(i) {
     if($(i).find('.hiddenId').length == 0 || $(i).find('.hiddenSource').length == 0) return false;
     return {'id':$(i).find('.hiddenId').val(), 'source':$(i).find('.hiddenSource')[0].value};
   });
