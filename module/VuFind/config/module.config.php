@@ -618,6 +618,11 @@ $config = array(
                             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
                         );
                     },
+                    'switchquery' => function ($sm) {
+                        return new \VuFind\Recommend\SwitchQuery(
+                            $sm->getServiceLocator()->get('VuFind\Search\BackendManager')
+                        );
+                    },
                     'topfacets' => function ($sm) {
                         return new \VuFind\Recommend\TopFacets(
                             $sm->getServiceLocator()->get('VuFind\Config')
