@@ -163,7 +163,6 @@ class SwitchQuery implements RecommendInterface
     /**
      * Does the query contain lowercase boolean operators that should be uppercased?
      *
-     *
      * @param string $query Query to check
      *
      * @return string|bool
