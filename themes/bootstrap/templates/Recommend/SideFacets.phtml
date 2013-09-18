@@ -98,7 +98,12 @@ JS;
         <? if ($thisFacet['isApplied']): ?>
           <dd><?=$this->escapeHtml($thisFacet['displayText'])?> <i class="icon-ok pull-right"></i></dd>
         <? else: ?>
-          <dd class="clearfix"><a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> <span class="pull-right"><?=number_format($thisFacet['count'])?></span></dd>
+          <dd class="clearfix">
+            <div class="span8">
+              <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a>
+            </div>
+            <span class="pull-right small"><?=number_format($thisFacet['count'])?></span>
+          </dd>
         <? endif; ?>
       <? endforeach; ?>
       <? if ($i > 5): ?><dd><a href="javascript:lessFacets('<?=$title ?>')"><?=$this->transEsc('less')?> ...</a></dd></span><? endif; ?>

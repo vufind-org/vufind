@@ -1,1 +1,2 @@
 body {margin-top:1em}
+dd.clearfix [class*="span"] {min-height:1px}
