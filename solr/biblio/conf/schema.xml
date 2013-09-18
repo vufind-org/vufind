@@ -93,7 +93,7 @@
         <filter class="solr.LengthFilterFactory" min="1" max="100" />
       </analyzer>
     </fieldType>
-    <fieldType name="date" class="solr.DateField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="date" class="solr.TrieDateField" sortMissingLast="true" omitNorms="true" precisionStep="6"/>
   </types>
  <fields>
    <!-- Required by Solr 4.x -->
