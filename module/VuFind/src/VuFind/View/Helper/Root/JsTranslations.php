@@ -97,6 +97,6 @@ class JsTranslations extends AbstractHelper
         foreach ($this->strings as $k => $v) {
             $parts[] = $k . ': "' . addslashes($this->transEsc->__invoke($v)) . '"';
         }
-        return $this->varName . ' = {' . implode(',' , $parts) . '};';
+        return $this->varName . ' = {' . implode(',', $parts) . '};';
     }
 }
