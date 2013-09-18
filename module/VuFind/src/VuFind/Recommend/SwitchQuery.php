@@ -161,6 +161,31 @@ class SwitchQuery implements RecommendInterface
     }
 
     /**
+     * Does the query contain lowercase boolean operators that should be uppercased?
+     *
+     *
+     * @param string $query Query to check
+     *
+     * @return string|bool
+     */
+    protected function checkLowercaseBools($query)
+    {
+        // This test only applies if booleans are case-sensitive and there is a
+        // capitalizaton method available:
+        $qb = $this->getQueryBuilder();
+        if (!$qb || !isset($qb->caseSensitiveBooleans)
+            || !is_callable(array($qb, 'capitalizeBooleans'))
+            || !$qb->caseSensitiveBooleans
+        ) {
+            return false;
+        }
+
+        // Try to capitalize booleans, return new query if a change is found:
+        $newQuery = $qb->capitalizeBooleans($query);
+        return ($query == $newQuery) ? false : $newQuery;
+    }
+
+    /**
      * Does the query contain terms that are being treated as boolean operators,
      * perhaps unintentionally?
      *
