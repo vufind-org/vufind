@@ -1,4 +1,4 @@
-/*global deparam, htmlEncode, path, rc4Encrypt, vufindString */
+/*global deparam, htmlEncode, path, rc4Encrypt, refreshCommentList, vufindString */
 
 var lastLightboxURL,lastLightboxPOST; // Replacement for empty form actions
 var lightboxShown = false; // is the lightbox deployed?
