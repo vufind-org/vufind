@@ -2,7 +2,8 @@ body {background:#619144;font-size:12px}
 body * {font-size:12px}
 body a {color:#0066CC}
 body a:hover {color:#0099FF}
-.container {background:#FFF;border:1px solid #DDD;border-radius:5px;margin-top:18px;max-width:950px}
+.container {background:#FFF;border-radius:5px;margin-top:18px;max-width:950px}
+.main {padding:6px}
 
 /* --- Bootstrap MODS ---*/
 .accordion-heading .accordion-toggle {padding:4px 15px}
@@ -63,17 +64,9 @@ select {border:1px solid #7E7E7E;border-radius:2px;vertical-align:top}
 .nav-pills {margin:0}
 
 /* --- HOME --- */
-.searchHome .content {
-  background:#E6EFC2;
-  border:2px solid #C6D880;
-  border-radius:5px;
-  margin:2em 0;
-  padding:2em;
-}
-.searchHome .content .nav-tabs li a {padding:4px 8px}
-.searchHome .browse .lead {border-bottom:1px solid #619144;font-size:17px;margin:0 0 6px 0}
-.searchHome .browse .unstyled {margin:0}
-.searchHome .browse .unstyled li a {font-size:12px;line-height:16px}
+.searchHomeContent {margin:2em auto;width:80%}
+.searchHomeContent .hero-unit {background:#E6EFC2;border:2px solid #C6D880;border-radius:5px}
+.searchHomeContent .nav-tabs {border:0}
 
 /* --- SEARCH --- */
 .result {padding:6px 2px}
