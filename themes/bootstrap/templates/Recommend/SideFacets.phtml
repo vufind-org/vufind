@@ -63,9 +63,9 @@
       </dd>
       <? $this->headScript()->appendFile('bootstrap-slider.js'); ?>
       <?
-	$min = !empty($dateFacets[$title][0]) ? $dateFacets[$title][0] : 1400;
-	$max = !empty($dateFacets[$title][1]) ? $dateFacets[$title][1] : date('Y', time()+31536000);
-	$script = <<<JS
+        $min = !empty($dateFacets[$title][0]) ? $dateFacets[$title][0] : 1400;
+        $max = !empty($dateFacets[$title][1]) ? $dateFacets[$title][1] : date('Y', time()+31536000);
+        $script = <<<JS
         $(document).ready(function() {
           var fillTexts = function() {
             var v = dateSlider.getValue();
@@ -96,10 +96,13 @@ JS;
           <span class="hidden" id="narrowGroupHidden_<?=$this->escapeHtml($title)?>">
         <? endif; ?>
         <? if ($thisFacet['isApplied']): ?>
-          <dd><?=$this->escapeHtml($thisFacet['displayText'])?> <i class="icon-ok pull-right"></i></dd>
+          <dd class="clearfix">
+            <div class="facet"><?=$this->escapeHtml($thisFacet['displayText'])?></div>
+            <i class="icon-ok pull-right"></i>
+          </dd>
         <? else: ?>
           <dd class="clearfix">
-            <div class="span8">
+            <div class="facet">
               <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a>
             </div>
             <span class="pull-right small"><?=number_format($thisFacet['count'])?></span>
