@@ -21,14 +21,14 @@
   <div class="control-group">
     <label class="control-label" for="email_to"><?=$this->transEsc('To')?>:</label>
     <div class="controls">
-      <input id="email_to" type="text" name="to" value="<?=isset($this->to) ? $this->to : ''?>" size="40" class="mainFocus <?=$this->jqueryValidation(array('required'=>'This field is required', 'email'=>'Email address is invalid'))?>"/>
+      <input id="email_to" type="email" name="to" value="<?=isset($this->to) ? $this->to : ''?>" size="40" class="mainFocus <?=$this->jqueryValidation(array('required'=>'This field is required', 'email'=>'Email address is invalid'))?>"/>
     </div>
   </div>
   <? if (!$this->disableFrom): ?>
     <div class="control-group">
       <label class="control-label" for="email_from"><?=$this->transEsc('From')?>:</label>
       <div class="controls">
-        <input id="email_from" type="text" name="from" value="<?=isset($this->from) ? $this->from : ''?>" size="40" class="<?=$this->jqueryValidation(array('required'=>'This field is required', 'email'=>'Email address is invalid'))?>"/>
+        <input id="email_from" type="email" name="from" value="<?=isset($this->from) ? $this->from : ''?>" size="40" class="<?=$this->jqueryValidation(array('required'=>'This field is required', 'email'=>'Email address is invalid'))?>"/>
       </div>
     </div>
   <? endif; ?>
