@@ -2,6 +2,7 @@
 
 var lastLightboxURL,lastLightboxPOST; // Replacement for empty form actions
 var lightboxShown = false; // is the lightbox deployed?
+var modalXHR; // Used for current in-progress XHR lightbox request
 
 /**********************************/
 /* ====== LIGHTBOX ACTIONS ====== */
@@ -56,7 +57,6 @@ function displayLightboxError(message) {
 /****************************/
 // AJAX the content and put it into a lightbox
 // Callback if necessary
-var modalXHR;
 function getLightboxByUrl(url, post, callback) {
   if(!lightboxShown) {
     $('#modal').modal('show');
@@ -282,10 +282,10 @@ function registerModalForms(modal) {
   });
   $(modal).find('form[name="newList"]').unbind('submit').submit(function(){
     ajaxSubmit($(this), changeModalContent);
-    return false
+    return false;
   });
   $(modal).find('form[name="loginForm"]').unbind('submit')
-    .submit(function(){ajaxLogin(this);return false});
+    .submit(function(){ajaxLogin(this);return false;});
 }
 // Default lightbox behaviour
 // Tell links to open lightboxes

@@ -1,4 +1,4 @@
-/*global getLightbox, path*/
+/*global getLightbox, path, vufindString*/
 
 /**
  * Initialize common functions and event handlers.
