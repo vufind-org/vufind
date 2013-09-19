@@ -3,6 +3,10 @@
 .centered-pills ul.nav-pills { display:inline-block }
 .centered-pills li { display:inline }
 .centered-pills a { float:left }
+dd,dd label {font-size:13px}
+dd .facet {float:left;width:170px}
+dd .small {font-size:12px}
+dd.clearfix [class*="span"] {min-height:1px}
 .front { position:absolute;top:0;left:0;width:100%;padding-top:20%;z-index:5 }
 li a.hidden {display:none}
 * html .centered-pills ul.nav-pills { display:inline } /* IE6 */
