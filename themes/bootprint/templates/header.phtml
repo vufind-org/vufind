@@ -2,7 +2,7 @@
 <a class="vu-logo pull-left" href="<?=$this->url('home') ?>"><img src="<?=$this->imageLink('vufind_logo.jpg') ?>" alt="Villanova Home"/></a>
 <? if (!isset($this->layout()->renderingError)): ?>
   <div class="pull-right text-right">
-    <div class="control-group">
+    <div class="header-right">
     <? if ($this->feedback()->tabEnabled()): ?>
       <a href="#contact_form" role="button" data-toggle="modal" class="btn btn-primary btn-mini">
         <i class="icon-envelope-alt"></i> <?=$this->transEsc("Feedback")?>

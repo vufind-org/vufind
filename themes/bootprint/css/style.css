@@ -2,8 +2,8 @@ body {background:#619144;font-size:12px}
 body * {font-size:12px}
 body a {color:#0066CC}
 body a:hover {color:#0099FF}
-.container {background:#FFF;border-radius:5px;margin-top:18px;max-width:950px}
-.main {padding:6px}
+.container {background:#FFF;border-radius:5px;margin-top:18px;max-width:952px}
+.main {padding:0 6px}
 
 /* --- Bootstrap MODS ---*/
 .accordion-heading .accordion-toggle {padding:4px 15px}
@@ -20,7 +20,7 @@ input[type="text"]:focus {border-color:rgb(97,145,68);box-shadow:inset 0px 1px 2
 .label {font-size:11px}
 .modal a {color:#08C}
 .nav-list li.active > a {border-color:#C6D880;color:#FFF}
-.nav-pills > li > a {padding-bottom:4px}
+.nav-pills > li > a {border-radius:2px;margin:0;padding-bottom:4px}
 .nav-tabs {margin:0}
 .nav-tabs li a {margin:2px 4px 0 0;padding:3px 5px}
 .nav-tabs li.active a:hover,
@@ -38,7 +38,8 @@ select, .btn:not(.btn-link){vertical-align:top}
 .controls select {margin-top:4px;width:100%}
 
 /* --- HEADER --- */
-#header {border-bottom:1px solid #DDD;color:#000;padding:7px 9px}
+#header {border-bottom:1px solid #DDD;color:#000;padding:8px 12px 6px 10px}
+.header-right {padding-top:10px}
 #langForm {margin:0}
 #langForm_mylang {height:20px;padding:0;width:100px}
 
@@ -82,7 +83,7 @@ select, .btn:not(.btn-link){vertical-align:top}
 .filters li a i {display:inline-block;margin:2px 0 0 3px;vertical-align:top}
 /* --- MAIN --- */
 .centered-pills {border-bottom:1px solid #DDD;font-size:12px}
-.nav-pills {margin:0}
+.nav-pills {border-bottom:1px solid #DDD;margin:0 0 6px 0;width:98.7%}
 
 /* --- HOME --- */
 .searchHomeContent {margin:2em auto;width:80%}
