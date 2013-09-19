@@ -7,11 +7,14 @@ body a:hover {color:#0099FF}
 
 /* --- Bootstrap MODS ---*/
 .accordion-heading .accordion-toggle {padding:4px 15px}
-.btn-link {color:#06C;text-shadow:none}
 .container a:not(.btn,.text-error) {color:#06C}
+dd,dd label {font-size:13px}
+dd .facet {float:left;width:170px}
+dd .small {font-size:12px}
+dd.clearfix [class*="span"] {min-height:1px}
 .hero-unit {margin:-5px}
 hr {margin:4px 0}
-input[type="text"] {border-color:#C6D880;font-size:12px}
+input[type="text"] {border-color:#AAA;font-size:12px}
 input[type="text"]:focus {border-color:rgb(97,145,68);box-shadow:inset 0px 1px 2px rgba(0,0,0,.14)}
 .label {font-size:11px}
 .modal a {color:#08C}
@@ -21,28 +24,36 @@ input[type="text"]:focus {border-color:rgb(97,145,68);box-shadow:inset 0px 1px 2
 .nav-tabs li a {margin:2px 4px 0 0;padding:3px 5px}
 .nav-tabs li.active a:hover,
 .nav-tabs li.active a {color:#555}
+.slider.slider-horizontal .slider-handle {background:#C6D880;border:1px solid #619144;margin-top:-6px}
 .tab-container {margin:0}
+
 select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {height:24px;padding:1px 4px}
-select, .btn:not(.btn-link){border:1px solid #7E7E7E;border-radius:2px;vertical-align:top}
+select, .btn:not(.btn-link){border:1px solid #AAA;border-radius:2px;vertical-align:top}
+.btn-link {color:#06C;text-shadow:none}
+.btn.btn-primary {background:#C6D880;border:1px solid #619144;color:#111;text-shadow:none}
+.btn.btn-primary:hover,
+.btn.btn-primary:focus,
+.btn.btn-primary:active {background:#619144;color:#FFF}
 
 /* --- HEADER --- */
-.header {border-bottom:1px solid #DDD;color:#000;padding:7px 9px}
+#header {border-bottom:1px solid #DDD;color:#000;padding:7px 9px}
 #langForm {margin:0}
 #langForm_mylang {height:20px;padding:0;width:100px}
 
 /* --- SEARCHBOX --- */
 .searchbox {border-bottom:1px solid #DDD;margin:0;padding:3px 3px 1px 1em}
-.searchbox .navbar {height:auto;margin:0 0 8px 0}
+.searchbox .navbar {height:auto;margin:0}
 .searchbox .nav-tabs {border:0;margin:0 0 0 4px}
 .searchbox .nav-tabs li a.advanced {border:0;font-size:12px}
 .searchbox .nav-tabs li a:hover {background:rgba(255,255,255,.3);border-color:#C6D880}
 .searchbox .nav-tabs li.active a:hover,
 .searchbox .nav-tabs li.active a {border-color:#C6D880;border-bottom-color:#FFF}
 #searchForm {margin-bottom:2px}
-#searchForm .btn {font-size:12px;height:24px;padding:2px 6px;vertical-align:middle}
-#searchForm .btn-link {margin-top:8px}
-#searchForm_lookfor {border-radius:5px;height:22px;margin:6px 0 2px 0;padding:1px 8px}
-#searchForm_type {height:24px;padding:2px 4px}
+#searchForm .btn {height:26px;margin-top:0;padding:2px 6px;vertical-align:middle}
+#searchForm .btn-link {font-size:12px;padding-top:8px}
+#searchForm .btn i {font-size:14px}
+#searchForm_lookfor {border-radius:5px;height:22px;margin:2px 0;padding:1px 8px}
+#searchForm_type {font-size:14px;height:26px;margin-top:0;padding:2px 4px}
 
 .group .search {margin:1px 0}
 
@@ -79,3 +90,4 @@ select, .btn:not(.btn-link){border:1px solid #7E7E7E;border-radius:2px;vertical-
 /* --- SEARCH --- */
 .result {padding:6px 2px}
 .result:nth-child(odd) {background:#EEE}
+.result .span3 {margin-left:5px}

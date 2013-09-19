@@ -12,6 +12,7 @@
 .icon-ok,
 .icon-phone-sign,
 .icon-plus-sign,
+.icon-qrcode,
 .icon-remove,
 .icon-rss,
 .icon-shopping-cart,
@@ -30,7 +31,7 @@
   content:'';
   display:inline-block;
   height:16px;
-  vertical-align:top;
+  vertical-align:text-bottom;
   width:16px;
 }
 .nav-pills [class^="icon-"] {
@@ -56,6 +57,7 @@
 .small .icon-ok,
 .small .icon-phone-sign,
 .small .icon-plus-sign,
+.small .icon-qrcode,
 .small .icon-remove,
 .small .icon-rss,
 .small .icon-shopping-cart,
@@ -85,6 +87,7 @@
 .icon-ok {background:url('../images/icons/tick.png')}
 .icon-phone-sign {background:url('../images/icons/phone.png')}
 .icon-plus-sign {background:url('../images/icons/add.png')}
+.icon-qrcode {background:url('../images/icons/qrcode.png')}
 .icon-remove {background:url('../images/icons/delete.png')}
 .icon-rss {background:url('../images/icons/feed.png')}
 .icon-shopping-cart {background:url('../images/icons/cart.png')}
