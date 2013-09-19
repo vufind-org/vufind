@@ -18,11 +18,6 @@
       <? endif; ?>
     </div>
 
-    <? /* Display the lists that this record is saved to */ ?>
-    <div class="savedLists hide alert alert-info" id="savedLists">
-      <strong><?=$this->transEsc("Saved in")?>:</strong>
-    </div>
-
     <?=$this->record($this->driver)->getPreviews()?>
   </div>
 
@@ -32,6 +27,12 @@
     <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $summary[0] : false; ?>
     <? if ($summary): ?>
       <p><?=$this->truncate($summary, 300)?></p>
+
+      <? /* Display the lists that this record is saved to */ ?>
+      <div class="savedLists hide alert alert-info" id="savedLists">
+        <strong><?=$this->transEsc("Saved in")?>:</strong>
+      </div>
+      
       <? if(strlen($summary) > 300): ?>
         <p><a href='<?=$this->recordLink()->getTabUrl($this->driver, 'Description')?>#tabnav'><?=$this->transEsc('Full description')?></a></p>
       <? endif; ?>

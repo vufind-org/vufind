@@ -1,5 +1,6 @@
-<? $i = 0; foreach ($this->results->getResults() as $current):
-  $recordNumber = $this->results->getStartRecord()+$i; ?>
+<? if (!isset($this->indexStart)) $this->indexStart = 0; ?>
+<? $i = $this->indexStart; foreach ($this->results->getResults() as $current):
+  $recordNumber = $this->results->getStartRecord()+$i-$this->indexStart; ?>
   <hr/>
   <div id="result<?=$i++ ?>" class="row-fluid clearfix">
     <label class="checkbox pull-left small"><? if ($this->cart()->isActive()): ?><?=$this->record($current)->getCheckbox()?><? endif; ?><?=$recordNumber?></label>
