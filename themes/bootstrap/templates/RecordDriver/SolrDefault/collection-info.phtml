@@ -55,6 +55,17 @@
       </tr>
       <? endif; ?>
 
+      <? if (count($summary) > 1): ?>
+        <tr>
+          <th><?=$this->transEsc('Summary')?>: </th>
+          <td>
+            <? foreach (array_slice($summary, 1) as $field): ?>
+              <?=$this->escapeHtml($field)?><br/>
+            <? endforeach; ?>
+          </td>
+        </tr>
+      <? endif; ?>
+
       <? $formats = $this->driver->getFormats(); if (!empty($formats)): ?>
         <tr>
           <th><?=$this->transEsc('Format')?>: </th>
