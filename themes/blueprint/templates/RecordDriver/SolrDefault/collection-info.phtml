@@ -12,6 +12,12 @@
 <? $summ = $this->driver->getSummary(); if (!empty($summ)): ?>
   <p><?=$this->escapeHtml($summ[0])?></p>
 <? endif; ?>
+
+<? /* Display the lists that this record is saved to */ ?>
+<div class="savedLists info hide" id="savedLists" style="max-width:30%">
+  <strong><?=$this->transEsc("Saved in")?>:</strong>
+</div>
+
 <a id="moreInfoToggle" href="#" style="display:none"><?=$this->transEsc('more_info_toggle')?></a>
 <div id="collectionInfo" class="collectionInfo">
 <table cellpadding="2" cellspacing="0" border="0" class="citation" summary="{translate text='Bibliographic Details'}">
