@@ -23,7 +23,7 @@ input[type="text"]:focus {border-color:rgb(97,145,68);box-shadow:inset 0px 1px 2
 .nav-tabs li.active a {color:#555}
 .tab-container {margin:0}
 select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {height:24px;padding:1px 4px}
-select {border:1px solid #7E7E7E;border-radius:2px;vertical-align:top}
+select, .btn:not(.btn-link){border:1px solid #7E7E7E;border-radius:2px;vertical-align:top}
 
 /* --- HEADER --- */
 .header {border-bottom:1px solid #DDD;color:#000;padding:7px 9px}
@@ -32,12 +32,19 @@ select {border:1px solid #7E7E7E;border-radius:2px;vertical-align:top}
 
 /* --- SEARCHBOX --- */
 .searchbox {border-bottom:1px solid #DDD;margin:0;padding:3px 3px 1px 1em}
+.searchbox .navbar {height:auto;margin:0 0 8px 0}
 .searchbox .nav-tabs {border:0;margin:0 0 0 4px}
 .searchbox .nav-tabs li a.advanced {border:0;font-size:12px}
 .searchbox .nav-tabs li a:hover {background:rgba(255,255,255,.3);border-color:#C6D880}
 .searchbox .nav-tabs li.active a:hover,
 .searchbox .nav-tabs li.active a {border-color:#C6D880;border-bottom-color:#FFF}
 #searchForm {margin-bottom:2px}
+#searchForm .btn {font-size:12px;height:24px;padding:2px 6px;vertical-align:middle}
+#searchForm .btn-link {margin-top:8px}
+#searchForm_lookfor {border-radius:5px;height:22px;margin:6px 0 2px 0;padding:1px 8px}
+#searchForm_type {height:24px;padding:2px 4px}
+
+.group .search {margin:1px 0}
 
 /* --- BREADCRUMBS --- */
 .breadcrumb {background:#FFF;border-bottom:1px solid #DDD;border-radius:0;margin:0;padding:6px 6px 6px 1em}
