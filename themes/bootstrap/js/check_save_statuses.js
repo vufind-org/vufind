@@ -14,13 +14,11 @@ function checkSaveStatuses() {
       ids[i] = data[i].id;
       srcs[i] = data[i].source;
     }
-    console.log(ids);
     $.ajax({
       dataType: 'json',
       url: path + '/AJAX/JSON?method=getSaveStatuses',
       data: {id:ids, 'source':srcs},
       success: function(response) {
-        console.log(response);
         if(response.status == 'OK') {
           $('.savedLists > ul').empty();
           $.each(response.data, function(i, result) {
