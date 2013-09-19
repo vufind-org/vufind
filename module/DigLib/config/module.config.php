@@ -4,7 +4,8 @@ namespace DigLib\Module\Configuration;
 $config = array(
     'controllers' => array(
         'invokables' => array(
-            'redirect' => 'DigLib\Controller\RedirectController'
+            'redirect' => 'DigLib\Controller\RedirectController',
+            'vudl' => 'DigLib\Controller\VudlController'
         ),
     ),
     'vufind' => array(

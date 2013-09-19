@@ -15,67 +15,65 @@
   $this->layout()->showBreadcrumbs = false;
 ?>
 <? $facetList = is_object($this->results) ? $this->results->getFacetList() : array(); if (isset($facetList) && is_array($facetList)): ?>
-<div class="pad">
-  <div class="well clearfix">
-    <div id="grid-container">
-      <div id="grid">
-        <?  foreach($this->thumbnails as $thumbnail): ?>
-          <a href="<?=$this->url('vudl-collection', array('id'=>$thumbnail['id'])) ?>" title="<?=$thumbnail['label'] ?>" class="item"><img style="width:<?=(40*rand(2,4))-4 ?>px;margin:2px 0" src="<?=$thumbnail['img'] ?>"></a>
-        <?  endforeach; ?>
-      </div>
+<div class="hero-unit">
+  <div id="grid-container">
+    <div id="grid">
+      <?  foreach($this->thumbnails as $thumbnail): ?>
+        <a href="<?=$this->url('vudl-collection', array('id'=>$thumbnail['id'])) ?>" title="<?=$thumbnail['label'] ?>" class="item"><img style="width:<?=(40*rand(2,4))-4 ?>px;margin:2px 0" src="<?=$thumbnail['img'] ?>"></a>
+      <?  endforeach; ?>
     </div>
-    <script src="<?=$this->imageLink('../js/masonry.min.js') ?>"></script>
-    <script>
-      window.onload = function() {
-        var container = document.getElementById('grid');
-        var limit = 10;
-        do {
-          new Masonry( container , {
-            columnWidth: 40,
-            isFitWidth: true
-          });
-        } while(limit-- && container.offsetHeight > 370);
-      };
-    </script>
-    <a class="pull-right btn btn-primary btn-large" alt="<?=$this->transEsc('Browse the Collection')?>" href="<?=$this->url('vudl-default-collection') ?>"><?=$this->transEsc('Browse the Collection')?> <i class="icon-double-angle-right"></i></a>
   </div>
+  <script src="<?=$this->imageLink('../js/masonry.min.js') ?>"></script>
+  <script>
+    window.onload = function() {
+      var container = document.getElementById('grid');
+      var limit = 10;
+      do {
+        new Masonry( container , {
+          columnWidth: 40,
+          isFitWidth: true
+        });
+      } while(limit-- && container.offsetHeight > 370);
+    };
+  </script>
+  <a class="pull-right btn btn-primary btn-large" alt="<?=$this->transEsc('Browse the Collection')?>" href="<?=$this->url('vudl-default-collection') ?>"><?=$this->transEsc('Browse the Collection')?> <i class="icon-double-angle-right"></i></a>
+</div>
 
-  <div class="row-fluid">
-    <div class="span4">
-      <h3>About the Collections</h3>
-      <p>Villanova University's Digital Library initiative assembles, presents, and preserves digital collections that support the teaching and research of the campus and the global community of scholars. We work with faculty, staff and regional partners to select and develop resources that enhance access for a wide range of disciplines and audiences.</p>
-      <p><a href="<?=$this->url('vudl-about') ?>">Learn more about the Digital Library</a></p>
-      <p><a href="http://exhibits.library.villanova.edu/">Learn more about Exhibits at Falvey Library</a></p>
-      <p>
-        <a class="btn btn-link" href="https://www.facebook.com/pages/Villanova-University-Digital-Library/114144432005449" title="Facebook"><i class="icon-facebook"></i></a>
-        <a class="btn btn-link" href="http://www.flickr.com/photos/vudigitallibrary/" title="Flickr"><i class="icon-flickr"></i></a>
-        <a class="btn btn-link" href="http://twitter.com/VillanovaDigLib" title="Twitter"><i class="icon-twitter"></i></a>
-        <a class="btn btn-link" href="http://blue-electrode.tumblr.com/" title="Tumblr"><i class="icon-tumblr"></i></a>
-        <a class="btn btn-link" href="http://pinterest.com/villanovadiglib" title="PInterest"><i class="icon-pinterest"></i></a>
-      </p>
-    </div>
-    
-    <div class="span4">
-      <h3>Contributions</h3>
-      <p>We work with faculty, staff and regional partners to select and develop tools that enhance access to a wide range of resources for specific disciplines and audiences. Ranging from digitization of Villanova Dissertations and Theses, to digital preservation of faculty fulltext publications, the Digital Library actively solicits project ideas and materials for digitization from community members; please contact the Digital Library Team with your idea for a new digital project.</p>
-      <i class="icon-rss"></i> <a href="http://digital.library.villanova.edu/Search/Results?type=AllFields&view=rss">RSS Feed of New Releases</a><br/><br/>
-    </div>
-    
-    <div class="span4">
-      <h3>News &amp; Updates</h3>
-      <ul class="news unstyled">
-      <?
-        $value = file_get_contents('http://blog.library.villanova.edu/digitallibrary/feed/');
-        preg_match_all('/<item>[\s]*<title>(.*?)<\/title>[\s]*<link>(.*?)<\/link>/', $value, $data);
-        list(, $titles, $links) = $data;
-        preg_match_all('/<pubDate>(.*?)<\/pubDate>/', $value, $dates);
-      ?>
-      <? for($i=0;$i<5;$i++): ?>
-        <li class="row-fluid"><a href="<?=$links[$i] ?>"><?=$titles[$i] ?></a><small class="pull-right muted"><?=date('m/d/Y', strtotime($dates[1][$i])) ?></small></li>
-      <? endfor; ?>
-      </ul>
-      <p>For more articles visit <a href="http://blog.library.villanova.edu/digitallibrary/">Blue Electrode</a>, the Digital Library blog.</p>
-    </div>
+<div class="row-fluid">
+  <div class="span4">
+    <h2>About the Collections</h2>
+    <p>Villanova University's Digital Library initiative assembles, presents, and preserves digital collections that support the teaching and research of the campus and the global community of scholars. We work with faculty, staff and regional partners to select and develop resources that enhance access for a wide range of disciplines and audiences.</p>
+    <p><a href="<?=$this->url('vudl-about') ?>">Learn more about the Digital Library</a></p>
+    <p><a href="http://exhibits.library.villanova.edu/">Learn more about Exhibits at Falvey Library</a></p>
+    <p>
+      <a class="btn btn-link" href="https://www.facebook.com/pages/Villanova-University-Digital-Library/114144432005449" title="Facebook"><i class="icon-facebook"></i></a>
+      <a class="btn btn-link" href="http://www.flickr.com/photos/vudigitallibrary/" title="Flickr"><i class="icon-flickr"></i></a>
+      <a class="btn btn-link" href="http://twitter.com/VillanovaDigLib" title="Twitter"><i class="icon-twitter"></i></a>
+      <a class="btn btn-link" href="http://blue-electrode.tumblr.com/" title="Tumblr"><i class="icon-tumblr"></i></a>
+      <a class="btn btn-link" href="http://pinterest.com/villanovadiglib" title="PInterest"><i class="icon-pinterest"></i></a>
+    </p>
+  </div>
+  
+  <div class="span4">
+    <h2>Contributions</h2>
+    <p>We work with faculty, staff and regional partners to select and develop tools that enhance access to a wide range of resources for specific disciplines and audiences. Ranging from digitization of Villanova Dissertations and Theses, to digital preservation of faculty fulltext publications, the Digital Library actively solicits project ideas and materials for digitization from community members; please contact the Digital Library Team with your idea for a new digital project.</p>
+    <i class="icon-rss"></i> <a href="http://digital.library.villanova.edu/Search/Results?type=AllFields&view=rss">RSS Feed of New Releases</a><br/><br/>
+  </div>
+  
+  <div class="span4">
+    <h2>News &amp; Updates</h2>
+    <ul class="news unstyled">
+    <?
+      $value = file_get_contents('http://blog.library.villanova.edu/digitallibrary/feed/');
+      preg_match_all('/<item>[\s]*<title>(.*?)<\/title>[\s]*<link>(.*?)<\/link>/', $value, $data);
+      list(, $titles, $links) = $data;
+      preg_match_all('/<pubDate>(.*?)<\/pubDate>/', $value, $dates);
+    ?>
+    <? for($i=0;$i<5;$i++): ?>
+      <li class="row-fluid"><a href="<?=$links[$i] ?>"><?=$titles[$i] ?></a><small class="pull-right muted"><?=date('m/d/Y', strtotime($dates[1][$i])) ?></small><hr/></li>
+    <? endfor; ?>
+    </ul>
+    <p>For more articles visit <a href="http://blog.library.villanova.edu/digitallibrary/">Blue Electrode</a>, the Digital Library blog.</p>
   </div>
 </div>
 <? endif; ?>
