@@ -4,30 +4,35 @@
   <div class="pull-right text-right">
     <div class="control-group">
     <? if ($this->feedback()->tabEnabled()): ?>
-      <i class="icon-envelope-alt"></i> <a href="#contact_form" role="button" data-toggle="modal"><?=$this->transEsc("Feedback")?></a>
+      <a href="#contact_form" role="button" data-toggle="modal" class="btn btn-primary btn-mini">
+        <i class="icon-envelope-alt"></i> <?=$this->transEsc("Feedback")?>
+      </a>
       <span class="muted">&nbsp;/&nbsp;</span>
     <? endif; ?>
     <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
-      <? if($account->isLoggedIn()): ?>
-        <i class="icon-user"></i> <a href="<?=$this->url('myresearch-home')?>"><?=$this->transEsc("Your Account")?></a> <span class="muted">&nbsp;/&nbsp;</span>
-      <? endif; ?>
+      <span class="logoutOptions<? if(!$account->isLoggedIn()): ?> hide<? endif ?>">
+        <i class="icon-user"></i> <a href="<?=$this->url('myresearch-home')?>"><?=$this->transEsc("Your Account")?></a>
+        <span class="muted">&nbsp;/&nbsp;</span>
+      </span>
     <? endif; ?>
     <? $cart = $this->cart(); if ($cart->isActive()): ?>
       <span id="cartSummary">
-        <i class="icon-shopping-cart"></i> <a id="cartItems" title="<?=$this->transEsc('View Book Bag')?>" href="<?=$this->url('cart-home')?>"><strong><?=count($cart->getItems())?></strong> <?=$this->transEsc('items')?> <?=$cart->isFull() ? '(' .  $this->transEsc('bookbag_full') . ')' : ''?></a>
+        <i class="icon-shopping-cart"></i> <a id="cartItems" class="modal-link" title="<?=$this->transEsc('View Book Bag')?>" href="<?=$this->url('cart-home')?>"><strong><?=count($cart->getItems())?></strong> <?=$this->transEsc('items')?><?=$cart->isFull() ? ' (' .  $this->transEsc('bookbag_full') . ')' : ''?></a>
         <span class="muted">&nbsp;/&nbsp;</span>
       </span>
     <? endif; ?>
     <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
-      <? if($account->isLoggedIn()): ?>
-        <i class="icon-signout"></i> <a href="<?=$this->url('myresearch-logout')?>"><?=$this->transEsc("Log Out")?></a>
-      <? else: ?>
+      <span class="logoutOptions<? if(!$account->isLoggedIn()): ?> hide<? endif ?>">
+        <i class="icon-signout"></i><a href="<?=$this->url('myresearch-logout')?>"><?=$this->transEsc("Log Out")?></a>
+      </span>
+      <span id="loginOptions"<? if($account->isLoggedIn()): ?> class="hide"<? endif ?>>
+        <i class="icon-signin"></i> 
         <? if ($sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
-          <i class="icon-signin"></i> <a href="<?=$this->escapeHtml($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
+          <a href="<?=$this->escapeHtml($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
         <? else: ?>
-          <i class="icon-signin"></i> <a href="<?=$this->url('myresearch-home')?>"><?=$this->transEsc("Login")?></a>
+          <a href="<?=$this->url('myresearch-home')?>"><?=$this->transEsc("Login")?></a>
         <? endif; ?>
-      <? endif; ?>
+      </span>
     <? endif; ?>
     </div>
     <? if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
@@ -49,22 +54,17 @@
       <?=$this->render('feedback/form.phtml'); ?>
     <? endif; ?>
     <? if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
-    <form class="form-inline" method="post" name="langForm" action="" id="langForm">
-      <strong class="help-inline"><?=$this->transEsc("Language")?>:</strong>
-      <select onChange="document.langForm.submit()" id="langForm_mylang" name="mylang">
-      <? foreach ($this->layout()->allLangs as $langCode => $langName): ?>
-        <option value="<?=$langCode?>"<?=$this->layout()->userLang == $langCode ? ' selected="selected"' : ''?>><?=$this->displayLanguageOption($langName)?></option>
-      <? endforeach; ?>
-      </select>
-      <noscript><input type="submit" class="btn" value="<?=$this->transEsc("Set")?>" /></noscript>
+    <form class="form-horizontal" method="post" name="langForm" action="" id="langForm">
+      <label class="control-label" for="langForm_mylang"><?=$this->transEsc("Language")?>:</label>
+      <div class="controls">
+        <select onChange="document.langForm.submit()" id="langForm_mylang" name="mylang" class="jumpMenu">
+        <? foreach ($this->layout()->allLangs as $langCode => $langName): ?>
+          <option value="<?=$langCode?>"<?=$this->layout()->userLang == $langCode ? ' selected="selected"' : ''?>><?=$this->displayLanguageOption($langName)?></option>
+        <? endforeach; ?>
+        </select>
+        <noscript><input type="submit" class="btn" value="<?=$this->transEsc("Set")?>" /></noscript>
+      </div>
     </form>
     <? endif; ?>
   </div>
-  <script type="text/javascript">
-    // Cart lightbox
-    $('#cartItems').click(function() {
-      $('#modal .modal-header h3').html('Cart Contents');
-      $('#modal').modal({'remote':'/AJAX/JSON?method=getLightbox&submodule=Cart&subaction=Cart'});
-    }).attr('href','#');
-  </script>
 <? endif; ?>
