@@ -86,8 +86,17 @@ select, .btn:not(.btn-link){border:1px solid #AAA;border-radius:2px;vertical-ali
 .searchHomeContent {margin:2em auto;width:80%}
 .searchHomeContent .hero-unit {background:#E6EFC2;border:2px solid #C6D880;border-radius:5px}
 .searchHomeContent .nav-tabs {border:0}
+.searchHomeContent .navbar {height:auto;margin:0}
+.searchHomeContent #searchForm {margin-bottom:2px}
+.searchHomeContent #searchForm .btn {height:30px;padding:2px 8px}
+.searchHomeContent #searchForm .btn-link {font-size:14px;padding-top:12px}
+.searchHomeContent #searchForm_lookfor {height:30px}
+.searchHomeContent #searchForm_type {height:30px}
 
 /* --- SEARCH --- */
 .result {padding:6px 2px}
 .result:nth-child(odd) {background:#EEE}
 .result .span3 {margin-left:5px}
+
+/* --- VUDL --- */
+.table.details {font-size:10px;border-bottom:1px solid #DDD}

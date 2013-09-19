@@ -1,0 +1,10 @@
+<? if(isset($this->master)): ?>
+  <a id="download-button" class="btn btn-large btn-primary" href="<?=$this->url('files', array('id'=>$this->id, 'type'=>'MASTER')) ?>?download=true" style="width:300px;margin-top:12px">
+    <i class="icon-download-alt icon-2x pull-left"></i> Download Master File<br>
+    <small><?=$this->mimetype ?><?if(isset($this->techinfo['size'])):?> ~ <?=$this->techinfo['size'] ?><? endif ?></small>
+  </a>
+<? else: ?>
+  <p class="big">Original Image File Not Available.</p>
+<? endif; ?>
+<br/><br/>
+<div class="accordion" id="techinfo"><?=$this->techinfo['div'] ?></div>

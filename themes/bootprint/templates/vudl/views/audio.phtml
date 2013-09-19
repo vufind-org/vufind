@@ -1,0 +1,69 @@
+<script>
+  var mobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
+  updateFunction = mobile ? false : function(data, tab) {
+    var media = {"config":"<?=$this->imageLink('flash/config.txt') ?>"};
+    if(data['ogg']) media.ogg = data['ogg'];
+    if(data['mp3']) media.mp3 = data['mp3'];
+    if(!data['ogg'] && !data['mp3']) data[data['fulltype']] = data['master'];
+    swfobject.embedSWF(
+      "<?=$this->imageLink('flash/audio_player.swf') ?>", 
+      "player_fallback", 
+      "300", 
+      "30", 
+      "9.0.0", 
+      "", 
+      media, 
+      {"bgcolor":"#F7F7F9"}
+    );
+  };
+</script>
+<? if($this->counts[0] > 1): ?>
+	<div class="row-fluid btn-group visible-phone text-center">
+		<a href="javascript:prevPage()" class="btn">Prev Page</a>
+		<a href="javascript:nextPage()" class="btn">Next Page</a>
+		<br/><br/>
+	</div>
+<? endif; ?>
+<ul class="nav nav-tabs">
+  <li class="active"><a>Original</a></li>
+	<? if($this->counts[0] > 1): ?>
+		<div class="btn-group pull-right hidden-phone">
+			<a href="javascript:prevPage()" class="btn btn-small">Prev Page</a>
+			<a href="javascript:nextPage()" class="btn btn-small">Next Page</a>
+		</div>
+	<? endif; ?>
+</ul>
+<div class="tab-container text-center tab-content">
+	<br/>
+  <audio controls="controls" preload="auto">
+    <? if(isset($this->ogg)): ?><source src="<?=$this->ogg ?>?download=true"/><?endif?>
+    <? if(isset($this->mp3)): ?><source src="<?=$this->mp3 ?>?download=true"/><?endif?>
+    <? if(!isset($this->mp3) && !isset($this->ogg)): ?><source src="<?=$this->master ?>?download=true"/><?endif?>
+  </audio>
+  <div id="player_fallback"></div>
+	<br/><br/>
+  <?=$this->context($this)->renderInContext('vudl/master-tab.phtml', array())?>
+</div>
+<script>
+  if (!document.createElement('video').canPlayType('audio/ogg')
+	&& !document.createElement('video').canPlayType('audio/mpeg')) {
+    swfobject.embedSWF(
+      "<?=$this->imageLink('flash/audio_player.swf') ?>", 
+      "player_fallback", 
+      "300", 
+      "30", 
+      "9.0.0", 
+      "", 
+      {
+        <? if(isset($this->ogg)): ?>"ogg":"<?=$this->ogg ?>?download=true",<?endif?>
+        <? if(isset($this->mp3)): ?>"mp3":"<?=$this->mp3 ?>?download=true",<?endif?>
+        <? if(!isset($this->mp3) && !isset($this->ogg)): ?>"<?=$this->fulltype ?>":"<?=$this->master ?>?download=true",<?endif?>
+        "ogg":"<?=$this->ogg ?>?download=true",
+        "mp3":"<?=$this->mp3 ?>?download=true",        
+        "config":"<?=$this->imageLink('flash/config.txt') ?>"
+      }, 
+      {"bgcolor":"#5C595A"}
+    );
+    $('audio').trigger('pause').remove();
+  }
+</script>

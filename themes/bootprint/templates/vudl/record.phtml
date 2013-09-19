@@ -1,12 +1,12 @@
 <?
   $this->headTitle($this->translate('VU Digital Library - ').$this->details['title']);
-  $this->layout()->breadcrumbs = str_replace('<span>', '<span class="divider">', str_replace('</span>', '</span></li>', str_replace('<a href', '<li><a href', $this->breadcrumbs)));
+  $this->layout()->breadcrumbs = $this->breadcrumbs;
   
   // Get first list name
   foreach($this->outline as $list=>$v) {
-		if($list == 'counts') continue;
-		$listName = $list;
-		break;
+    if($list == 'counts') continue;
+    $listName = $list;
+    break;
   }
 
   // Facebook image meta
@@ -28,7 +28,7 @@
   // AUDIO
   //$this->headLink()->appendStylesheet('jplayer.css');
   $this->headScript()->appendFile('http://www.google.com/jsapi');
-	
+  
   // Compact header
   $this->layout()->headerType = 'record';
   $this->layout()->vudlID = $this->id;
@@ -85,12 +85,12 @@
           <? foreach($list as $j=>$item): ?>
             <a title="<?=$item['id'] ?>" onClick="ajaxGetView(<?=json_php_encode($item, true) ?>, this)" class="well well-small block text-center page-link pointer<?=$key == 0 && $j == $this->initPage ?' alert-info':''?>" id="item<?=$j?>">
             <? if(isset($item['thumbnail'])): ?>
-              <img class="img-polaroid" src="<?=$item['thumbnail'] ?>" alt="<?=$item['label'] ?>"/>
+              <img class="img-polaroid" src="<?=$item['thumbnail'] ?>" alt="<?=$item['label'] ?>"/><br/>
             <? else: ?>
               <? $imgSrc = $item['filetype'] == 'download' ? $item['fulltype'] : $item['filetype']; ?>
-              <img src="<?=$this->imageLink('vudl/'.$imgSrc.'.png') ?>"/>
+              <img src="<?=$this->imageLink('vudl/'.$imgSrc.'.png') ?>"/><br/>
             <? endif; ?>
-              <br/><?=$item['label'] ?>
+              <?=$item['label'] ?>
             </a>
           <? endforeach; ?>
           <!-- POST LOADING PLACEHOLDERS -->
