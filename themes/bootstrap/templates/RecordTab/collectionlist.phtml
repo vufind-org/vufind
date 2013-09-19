@@ -5,7 +5,7 @@
   // Get search results
   $results = $this->tab->getResults();
   $params = $this->tab->getParams();
-  $searchDetails = array('results' => $results, 'params' => $params);
+  $searchDetails = array('results' => $results, 'params' => $params, 'indexStart' => 1);
 ?>
 <? if (($recordTotal = $results->getResultTotal()) > 0): // only display these at very top if we have results ?>
   <? foreach ($results->getRecommendations('top') as $current): ?>
