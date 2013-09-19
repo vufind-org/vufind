@@ -12,6 +12,7 @@ dd,dd label {font-size:13px}
 dd .facet {float:left;width:170px}
 dd .small {font-size:12px}
 dd.clearfix [class*="span"] {min-height:1px}
+.form-horizontal .controls {margin-left:165px}
 .hero-unit {margin:-5px}
 hr {margin:4px 0}
 input[type="text"] {border-color:#AAA;font-size:12px}
@@ -27,13 +28,14 @@ input[type="text"]:focus {border-color:rgb(97,145,68);box-shadow:inset 0px 1px 2
 .slider.slider-horizontal .slider-handle {background:#C6D880;border:1px solid #619144;margin-top:-6px}
 .tab-container {margin:0}
 
-select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {height:24px;padding:1px 4px}
-select, .btn:not(.btn-link){border:1px solid #AAA;border-radius:2px;vertical-align:top}
+select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {border:1px solid #AAA;border-radius:2px;font-size:12px;height:24px;padding:1px 4px}
+select, .btn:not(.btn-link){vertical-align:top}
 .btn-link {color:#06C;text-shadow:none}
 .btn.btn-primary {background:#C6D880;border:1px solid #619144;color:#111;text-shadow:none}
 .btn.btn-primary:hover,
 .btn.btn-primary:focus,
 .btn.btn-primary:active {background:#619144;color:#FFF}
+.controls select {margin-top:4px;width:100%}
 
 /* --- HEADER --- */
 #header {border-bottom:1px solid #DDD;color:#000;padding:7px 9px}
