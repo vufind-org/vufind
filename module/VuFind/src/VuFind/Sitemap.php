@@ -26,7 +26,8 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind;
-use VuFindSearch\Backend\Solr\Backend, Zend\Config\Config;
+use VuFindSearch\Backend\Solr\Backend, VuFind\Search\BackendManager,
+    Zend\Config\Config;
 
 /**
  * Class for generating sitemaps
@@ -40,11 +41,11 @@ use VuFindSearch\Backend\Solr\Backend, Zend\Config\Config;
 class Sitemap
 {
     /**
-     * Search backend from which to retrieve record IDs.
+     * Search backend manager.
      *
-     * @var Backend
+     * @var BackendManager
      */
-    protected $backend;
+    protected $backendManager;
 
     /**
      * Base URL for site
@@ -54,11 +55,11 @@ class Sitemap
     protected $baseUrl;
 
     /**
-     * Base URL for record
+     * Settings specifying which backends to index.
      *
-     * @var string
+     * @var array
      */
-    protected $resultUrl;
+    protected $backendSettings;
 
     /**
      * Sitemap configuration (sitemap.ini)
@@ -105,16 +106,29 @@ class Sitemap
     /**
      * Constructor
      *
-     * @param Backend $backend Search backend
-     * @param string  $baseUrl VuFind base URL
-     * @param Config  $config  Sitemap configuration settings
+     * @param BackendManager $bm      Search backend
+     * @param string         $baseUrl VuFind base URL
+     * @param Config         $config  Sitemap configuration settings
      */
-    public function __construct(Backend $backend, $baseUrl, Config $config)
+    public function __construct(BackendManager $bm, $baseUrl, Config $config)
     {
-        $this->backend = $backend;
+        // Save incoming parameters:
+        $this->backendManager = $bm;
         $this->baseUrl = $baseUrl;
-        $this->resultUrl = $this->baseUrl . '/Record/';
         $this->config = $config;
+
+        // Process backend configuration:
+        $backendConfig = isset($this->config->Sitemap->index)
+            ? $this->config->Sitemap->index : array('Solr,/Record/');
+        $backendConfig = is_callable(array($backendConfig, 'toArray'))
+            ? $backendConfig->toArray() : (array)$backendConfig;
+        $callback = function ($n) {
+            $parts = array_map('trim', explode(',', $n));
+            return array('id' => $parts[0], 'url' => $parts[1]);
+        };
+        $this->backendSettings = array_map($callback, $backendConfig);
+
+        // Store other key config settings:
         $this->frequency = $this->config->Sitemap->frequency;
         $this->countPerPage = $this->config->Sitemap->countPerPage;
         $this->fileStart = $this->config->Sitemap->fileLocation . "/" .
@@ -132,33 +146,18 @@ class Sitemap
      */
     public function generate()
     {
+        // Initialize variable
         $currentPage = 1;
-        $last_term = '';
 
-        while (true) {
-            // Get
-            $currentPageInfo
-                = $this->backend->terms('id', $last_term, $this->countPerPage)
-                    ->getFieldTerms('id');
-            if (null === $currentPageInfo || count($currentPageInfo) < 1) {
-                break;
-            } else {
-                $filename = $this->getFilenameForPage($currentPage);
-                $smf = $this->openSitemapFile($filename, 'urlset');
-                foreach ($currentPageInfo as $item => $count) {
-                    $loc = htmlspecialchars($this->resultUrl . urlencode($item));
-                    if (strpos($loc, 'http') === false) {
-                        $loc = 'http://'.$loc;
-                    }
-                    $this->writeSitemapEntry($smf, $loc);
-                    $last_term = $item;
-                }
-
-                fwrite($smf, '</urlset>');
-                fclose($smf);
+        // Loop through all backends
+        foreach ($this->backendSettings as $current) {
+            $backend = $this->backendManager->get($current['id']);
+            if (!($backend instanceof Backend)) {
+                throw new \Exception('Unsupported backend: ' . get_class($backend));
             }
-
-            $currentPage++;
+            $recordUrl = $this->baseUrl . $current['url'];
+            $currentPage = $this
+                ->generateForBackend($backend, $recordUrl, $currentPage);
         }
 
         // Set-up Sitemap Index
@@ -173,6 +172,47 @@ class Sitemap
     public function getWarnings()
     {
         return $this->warnings;
+    }
+
+    /**
+     * Generate sitemap files for a single search backend.
+     *
+     * @param Backend $backend     Search backend
+     * @param string  $recordUrl   Base URL for record links
+     * @param int     $currentPage Sitemap page number to start generating
+     *
+     * @return int                 Next sitemap page number to generate
+     */
+    protected function generateForBackend(Backend $backend, $recordUrl, $currentPage)
+    {
+        $last_term = '';
+        $key = $backend->getConnector()->getUniqueKey();
+
+        while (true) {
+            // Get
+            $currentPageInfo = $backend->terms($key, $last_term, $this->countPerPage)
+                ->getFieldTerms($key);
+            if (null === $currentPageInfo || count($currentPageInfo) < 1) {
+                break;
+            } else {
+                $filename = $this->getFilenameForPage($currentPage);
+                $smf = $this->openSitemapFile($filename, 'urlset');
+                foreach ($currentPageInfo as $item => $count) {
+                    $loc = htmlspecialchars($recordUrl . urlencode($item));
+                    if (strpos($loc, 'http') === false) {
+                        $loc = 'http://'.$loc;
+                    }
+                    $this->writeSitemapEntry($smf, $loc);
+                    $last_term = $item;
+                }
+
+                fwrite($smf, '</urlset>');
+                fclose($smf);
+            }
+
+            $currentPage++;
+        }
+        return $currentPage;
     }
 
     /**

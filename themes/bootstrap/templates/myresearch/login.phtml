@@ -46,11 +46,6 @@
         </div>
       </div>
     </form>
-    <?
-      // Set up form validation:
-      $initJs = '$(document).ready(function() { $(\'#loginForm\').validate(); });';
-      echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $initJs);
-    ?>
   <? else: ?>
     <a href="<?=$this->escapeHtml($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
   <? endif; ?>

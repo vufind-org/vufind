@@ -2,7 +2,7 @@
   <p class="lead"><?=$this->transEsc('Limit To')?></p>
   <div class="row-fluid">
     <? foreach ($this->facetList as $field => $list): ?>
-      <div class="span4">
+      <div class="span<?=floor(12/count($this->facetList)) ?>">
         <label class="displayBlock" for="limit_<?=$this->escapeHtml(str_replace(' ', '', $field))?>"><?=$this->transEsc($list['label'])?>:</label>
         <select class="span12" id="limit_<?=$this->escapeHtml(str_replace(' ', '', $field))?>" name="filter[]" multiple="multiple" size="10">
           <?

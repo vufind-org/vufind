@@ -23,7 +23,6 @@
   </div>
   <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>">
     <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', $searchDetails + array('idPrefix' => ''))?>
-    <hr/>
     <?=$this->render('search/list-' . $results->getParams()->getView() . '.phtml', $searchDetails)?>
     <?=$this->paginationControl($results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $results))?>
   </form>

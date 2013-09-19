@@ -26,6 +26,7 @@
             $cart = $this->cart();
             $this->jsTranslations()->addStrings(array('loading' => 'Loading'));
             if ($cart->isActive()) {
+                $this->headScript()->appendFile("cookies.js");
                 $this->headScript()->appendFile("cart.js");
                 $this->jsTranslations()->addStrings(
                     array(

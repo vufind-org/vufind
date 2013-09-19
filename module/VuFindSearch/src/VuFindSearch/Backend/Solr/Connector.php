@@ -164,6 +164,16 @@ class Connector
     }
 
     /**
+     * Get unique key.
+     *
+     * @return string
+     */
+    public function getUniqueKey()
+    {
+        return $this->uniqueKey;
+    }
+
+    /**
      * Return document specified by id.
      *
      * @param string   $id     The document to retrieve from Solr

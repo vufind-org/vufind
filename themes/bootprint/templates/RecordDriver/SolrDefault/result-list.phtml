@@ -13,7 +13,7 @@
   <div class="span7">
     <div class="resultItemLine1">
       <? if ($this->driver->isCollection()): ?>
-        <a href="<?=$this->url('vudl-collection', array('id'=>$this->driver->getUniqueID()))?>" class="title">
+        <a href="<?=$this->url('collection', array('id'=>$this->driver->getUniqueID()))?>" class="title">
       <? elseif ($this->driver->isProtected()): ?>
         <a href="<?=$this->driver->getProxyUrl() . $this->serverUrl() . $this->url('vudl-record',array('id'=>$this->driver->getUniqueID()))?>">
       <? elseif (isset($this->layout()->from)): ?>
@@ -145,7 +145,7 @@
     </div>
     
     <? if($this->driver->isCollection()): ?>
-      <i class="icon-inbox"></i> <a class="hierarchyTreeLinkText" href="<?=$this->recordLink()->getUrl($this->driver)?>" title="<?=$this->transEsc('hierarchy_tree')?>"><?=$this->transEsc('View Content')?></a><br/>
+      <i class="icon-inbox"></i> <a class="hierarchyTreeLinkText" href="<?=$this->url('collection', array('id'=>$this->driver->getUniqueID()))?>" title="<?=$this->transEsc('hierarchy_tree')?>"><?=$this->transEsc('View Content')?></a><br/>
     <? else: ?>
       <i class="icon-list-alt"></i> <a href="<?=$this->recordLink()->getUrl($this->driver)?>"><?=$this->transEsc('View Details') ?></a><br/>
     <? endif; ?>

@@ -203,6 +203,40 @@ class QueryBuilder implements QueryBuilderInterface
     }
 
     /**
+     * Return true if the search string contains boolean operators.
+     *
+     * @param string $searchString Search string
+     *
+     * @return bool
+     */
+    public function containsBooleans($searchString)
+    {
+        // Build a regular expression to detect booleans -- AND/OR/NOT surrounded
+        // by whitespace, or NOT leading the query and followed by whitespace.
+        $boolReg = '/((\s+(AND|OR|NOT)\s+)|^NOT\s+)/';
+        if (!$this->caseSensitiveBooleans) {
+            $boolReg .= "i";
+        }
+        return preg_match($boolReg, $searchString) ? true : false;
+    }
+
+    /**
+     * Return true if the search string contains ranges.
+     *
+     * @param string $searchString Search string
+     *
+     * @return bool
+     */
+    public function containsRanges($searchString)
+    {
+        $rangeReg = self::SOLR_RANGE_RE;
+        if (!$this->caseSensitiveRanges) {
+            $rangeReg .= "i";
+        }
+        return preg_match($rangeReg, $searchString) ? true : false;
+    }
+
+    /**
      * Return true if the search string contains advanced Lucene syntax.
      *
      * @param string $searchString Search string
@@ -234,26 +268,11 @@ class QueryBuilder implements QueryBuilderInterface
         if (strstr($stripped, '(') && strstr($stripped, ')')) {
             return true;
         }
-        $rangeReg = self::SOLR_RANGE_RE;
-        if (!$this->caseSensitiveRanges) {
-            $rangeReg .= "i";
-        }
-        if (preg_match($rangeReg, $searchString)) {
-            return true;
-        }
 
-        // Build a regular expression to detect booleans -- AND/OR/NOT surrounded
-        // by whitespace, or NOT leading the query and followed by whitespace.
-        $boolReg = '/((\s+(AND|OR|NOT)\s+)|^NOT\s+)/';
-        if (!$this->caseSensitiveBooleans) {
-            $boolReg .= "i";
-        }
-        if (preg_match($boolReg, $searchString)) {
-            return true;
-        }
-
-        // Check for wildcards and fuzzy matches:
-        if (strstr($searchString, '*') || strstr($searchString, '?')
+        // Check for ranges, booleans, wildcards and fuzzy matches:
+        if ($this->containsRanges($searchString)
+            || $this->containsBooleans($searchString)
+            || strstr($searchString, '*') || strstr($searchString, '?')
             || strstr($searchString, '~')
         ) {
             return true;

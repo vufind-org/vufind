@@ -25,7 +25,7 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
                 show: true,
                 align: "center",
                 fill: true,
-                fillColor: "rgb(0,0,0)"
+                fillColor: "rgb(234,234,234)"
             }
         },
         colors: ["#0088CC"],

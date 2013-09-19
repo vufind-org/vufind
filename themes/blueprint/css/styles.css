@@ -1283,6 +1283,10 @@ p.citationText {
     /* Needed for IE7 compatibility: */
     width: 96%;
 }
+.advSearchContent div[class*="span-"] select {
+    display:block;
+    width:100%;
+}
 .groupSearchHolder {
     clear: both;
     padding: 10px 10px 5px;
