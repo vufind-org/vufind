@@ -37,6 +37,7 @@
   <? $sideFacetSet = $this->recommend->getFacetSet(); $dateFacets = $this->recommend->getDateFacets(); ?>
   <? if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
     <? foreach ($sideFacetSet as $title => $cluster): ?>
+      <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
       <? if (isset($dateFacets[$title])): ?>
         <? /* Load the publication date slider UI widget */ $this->headScript()->appendFile('pubdate_slider.js'); ?>
         <form action="" name="<?=$this->escapeHtml($title)?>Filter" id="<?=$this->escapeHtml($title)?>Filter">
@@ -66,7 +67,9 @@
             <? else: ?>
               <dd>
                 <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> (<?=$this->escapeHtml($thisFacet['count'])?>)
-                <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>"><?=$this->transEsc('exclude_facet')?></a>
+                <? if ($allowExclude): ?>
+                  <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>"><?=$this->transEsc('exclude_facet')?></a>
+                <? endif; ?>
               </dd>
             <? endif; ?>
           <? endforeach; ?>
