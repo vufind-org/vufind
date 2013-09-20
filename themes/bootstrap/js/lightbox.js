@@ -29,18 +29,21 @@ function closeLightbox() {
     checkSaveStatuses();
   }
   // Update cart items
-  var cart = getFullCartItems();
-  var id = $('#cartId');
-  if(id.length > 0) {
-    id = id.val();
-    $('#cart-add,#cart-remove').addClass('hidden');
-    if(cart.indexOf(id) > -1) {
-      $('#cart-remove').removeClass('hidden');
-    } else {
-      $('#cart-add').removeClass('hidden');
+  var cartCount = $('#cartItems strong');
+  if(cartCount.length > 0) {
+    var cart = getFullCartItems();
+    var id = $('#cartId');
+    if(id.length > 0) {
+      id = id.val();
+      $('#cart-add,#cart-remove').addClass('hidden');
+      if(cart.indexOf(id) > -1) {
+        $('#cart-remove').removeClass('hidden');
+      } else {
+        $('#cart-add').removeClass('hidden');
+      }
     }
+    cartCount.html(cart.length)
   }
-  $('#cartItems strong').html(cart.length);
 }
 // Make an error box appear in the lightbox, or insert one
 function displayLightboxError(message) {

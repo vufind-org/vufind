@@ -1,4 +1,4 @@
-/*global addSearchString, searchFields, searchLabel */
+/*global addSearchString, searchFields, searchFieldLabel, searchLabel, searchMatch */
 
 var nextGroup = 0;
 
@@ -12,7 +12,7 @@ function addSearch(group, term, field)
   var inputIndex = $('#group'+group+' input').length;
   var inputID = group+'_'+$('#group'+group+' input').length;
   var newSearch = '<div class="search" id="search'+inputID+'"><input class="span7" id="search_lookfor'+inputID+'" type="text" name="lookfor'+group+'[]" value="'+term+'">'
-    + '<span class="help-inline">in</span> '
+    + '<span class="help-inline">'+searchFieldLabel+'</span> '
     + '<select class="span4" id="search_type'+inputID+'" name="type'+group+'[]">';
   for (var key in searchFields) {
     newSearch += '<option value="' + key + '"';
@@ -54,7 +54,7 @@ function addGroup(firstTerm, firstField, join)
   
   var newGroup = '<div id="group'+nextGroup+'" class="group well clearfix">'
     + '<div class="span4 pull-right">'
-    + '<label for="search_bool'+nextGroup+'"><span class="help-inline">Match:</span>&nbsp;</label>'
+    + '<label for="search_bool'+nextGroup+'"><span class="help-inline">'+searchMatch+':</span>&nbsp;</label>'
     + '<select class="span8" id="search_bool'+nextGroup+'" name="bool'+nextGroup+'[]">'
     + '<option value="AND"';
   if(join == 'AND') {
