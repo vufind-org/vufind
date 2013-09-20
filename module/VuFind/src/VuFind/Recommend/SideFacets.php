@@ -56,6 +56,13 @@ class SideFacets implements RecommendInterface
     protected $mainFacets = array();
 
     /**
+     * Facets with "exclude" links enabled
+     *
+     * @var array
+     */
+    protected $excludableFacets = array();
+
+    /**
      * Checkbox facet configuration
      *
      * @var array
@@ -109,6 +116,17 @@ class SideFacets implements RecommendInterface
         // All standard facets to display:
         $this->mainFacets = isset($config->$mainSection) ?
             $config->$mainSection->toArray() : array();
+
+        // Which facets are excludable?
+        if (isset($config->Results_Settings->exclude)) {
+            if ($config->Results_Settings->exclude === '*') {
+                $this->excludableFacets = array_keys($this->mainFacets);
+            } else {
+                $this->excludableFacets = array_map(
+                    'trim', explode(',', $config->Results_Settings->exclude)
+                );
+            }
+        }
 
         // Get a list of fields that should be displayed as date ranges rather than
         // standard facet lists.
@@ -207,6 +225,18 @@ class SideFacets implements RecommendInterface
             $result[$current] = array($from, $to);
         }
         return $result;
+    }
+
+    /**
+     * Is the specified field allowed to be excluded?
+     *
+     * @param string $field Field name
+     *
+     * @return bool
+     */
+    public function excludeAllowed($field)
+    {
+        return in_array($field, $this->excludableFacets);
     }
 
     /**
