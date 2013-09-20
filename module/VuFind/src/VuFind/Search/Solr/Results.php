@@ -265,7 +265,8 @@ class Results extends \VuFind\Search\Base\Results
                     = $translate ? $this->translate($value) : $value;
                 $currentSettings['count'] = $count;
                 $currentSettings['isApplied']
-                    = $this->getParams()->hasFilter("$field:".$value);
+                    = $this->getParams()->hasFilter("$field:".$value)
+                    || $this->getParams()->hasFilter("~$field:".$value);
 
                 // Store the collected values:
                 $list[$field]['list'][] = $currentSettings;
