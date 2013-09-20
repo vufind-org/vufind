@@ -328,14 +328,11 @@ class Backend implements BackendInterface
 
         // Convert the options:
         $options = array();
+        // Most parameters need to be flattened from array format, but a few
+        // should remain as arrays:
+        $arraySettings = array('facets', 'filters', 'groupFilters', 'rangeFilters');
         foreach ($params as $key => $param) {
-            // Most parameters need to be flattened from array format, but a few
-            // should remain as arrays:
-            if (in_array($key, array('facets', 'filters', 'rangeFilters'))) {
-                $options[$key] = $param;
-            } else {
-                $options[$key] = $param[0];
-            }
+            $options[$key] = in_array($key, $arraySettings) ? $param : $param[0];
         }
 
         return new SummonQuery($query, $options);
