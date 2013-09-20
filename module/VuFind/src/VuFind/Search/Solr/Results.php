@@ -264,6 +264,8 @@ class Results extends \VuFind\Search\Base\Results
                 $currentSettings['displayText']
                     = $translate ? $this->translate($value) : $value;
                 $currentSettings['count'] = $count;
+                $currentSettings['operator']
+                    = $this->getParams()->getFacetOperator($field);
                 $currentSettings['isApplied']
                     = $this->getParams()->hasFilter("$field:".$value)
                     || $this->getParams()->hasFilter("~$field:".$value);

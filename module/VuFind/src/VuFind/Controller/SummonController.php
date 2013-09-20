@@ -138,10 +138,28 @@ class SummonController extends AbstractSearch
         $cache = $this->getServiceLocator()->get('VuFind\CacheManager')
             ->getCache('object');
         if (!($results = $cache->getItem('summonSearchAdvancedFacets'))) {
+            $config = $this->getServiceLocator()->get('VuFind\Config')
+                ->get('Summon');
+            $limit = isset($config->Advanced_Facet_Settings->facet_limit)
+                ? $config->Advanced_Facet_Settings->facet_limit : 100;
             $results = $this->getResultsManager()->get('Summon');
             $params = $results->getParams();
-            $params->addFacet('Language,or,1,20');
-            $params->addFacet('ContentType,or,1,20', 'Format');
+            $facetsToShow = isset($config->Advanced_Facets)
+                 ? $config->Advanced_Facets
+                 : array('Language' => 'Language', 'ContentType' => 'Format');
+            if (isset($config->Advanced_Facet_Settings->orFacets)) {
+                $orFields = array_map(
+                    'trim', explode(',', $config->Advanced_Facet_Settings->orFacets)
+                );
+            } else {
+                $orFields = array();
+            }
+            foreach ($facetsToShow as $facet => $label) {
+                $params->addFacet(
+                    $facet . ',or,1,' . $limit, $label,
+                    $orFields[0] == '*' || in_array($facet, $orFields)
+                );
+            }
 
             // We only care about facet lists, so don't get any results:
             $params->setLimit(0);
@@ -184,7 +202,8 @@ class SummonController extends AbstractSearch
         foreach ($facetList as $facet => $list) {
             foreach ($list['list'] as $key => $value) {
                 // Build the filter string for the URL:
-                $fullFilter = $facet.':"'.$value['value'].'"';
+                $fullFilter = ($value['operator'] == 'OR' ? '~' : '')
+                    . $facet.':"'.$value['value'].'"';
 
                 // If we haven't already found a selected facet and the current
                 // facet has been applied to the search, we should store it as
