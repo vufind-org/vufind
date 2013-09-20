@@ -85,10 +85,10 @@
           <? foreach($list as $j=>$item): ?>
             <a title="<?=$item['id'] ?>" onClick="ajaxGetView(<?=json_php_encode($item, true) ?>, this)" class="well well-small block text-center page-link pointer<?=$key == 0 && $j == $this->initPage ?' alert-info':''?>" id="item<?=$j?>">
             <? if(isset($item['thumbnail'])): ?>
-              <img class="img-polaroid" src="<?=$item['thumbnail'] ?>" alt="<?=$item['label'] ?>"/><br/>
+              <img src="<?=$item['thumbnail'] ?>" alt="<?=$item['label'] ?>"/><br/>
             <? else: ?>
               <? $imgSrc = $item['filetype'] == 'download' ? $item['fulltype'] : $item['filetype']; ?>
-              <img src="<?=$this->imageLink('vudl/'.$imgSrc.'.png') ?>"/><br/>
+              <img src="<?=$this->imageLink('vudl/'.$imgSrc.'.png') ?>" alt="<?=$imgSrc ?>"/><br/>
             <? endif; ?>
               <?=$item['label'] ?>
             </a>
