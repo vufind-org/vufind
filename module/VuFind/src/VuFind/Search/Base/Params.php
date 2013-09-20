@@ -73,6 +73,7 @@ class Params implements ServiceLocatorAwareInterface
     protected $facetConfig = array();
     protected $checkboxFacets = array();
     protected $filterList = array();
+    protected $orFacets = array();
 
     /**
      * Override Query
@@ -852,15 +853,31 @@ class Params implements ServiceLocatorAwareInterface
      *
      * @param string $newField Field name
      * @param string $newAlias Optional on-screen display label
+     * @param bool   $ored     Should we treat this as an ORed facet?
      *
      * @return void
      */
-    public function addFacet($newField, $newAlias = null)
+    public function addFacet($newField, $newAlias = null, $ored = false)
     {
         if ($newAlias == null) {
             $newAlias = $newField;
         }
         $this->facetConfig[$newField] = $newAlias;
+        if ($ored) {
+            $this->orFacets[] = $newField;
+        }
+    }
+
+    /**
+     * Get facet operator for the specified field
+     *
+     * @param string $field Field name
+     *
+     * @return string
+     */
+    public function getFacetOperator($field)
+    {
+        return in_array($field, $this->orFacets) ? 'OR' : 'AND';
     }
 
     /**

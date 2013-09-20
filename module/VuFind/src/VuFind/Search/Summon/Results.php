@@ -184,6 +184,10 @@ class Results extends \VuFind\Search\Base\Results
                         // Inject "applied" value into Summon results:
                         $current['counts'][$facetIndex]['isApplied'] = $isApplied;
 
+                        // Set operator:
+                        $current['counts'][$facetIndex]['operator']
+                            = $this->getParams()->getFacetOperator($field);
+
                         // Create display value:
                         $current['counts'][$facetIndex]['displayText'] = $translate
                             ? $this->translate($facetDetails['value'])
