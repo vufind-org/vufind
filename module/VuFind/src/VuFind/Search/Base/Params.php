@@ -955,6 +955,9 @@ class Params implements ServiceLocatorAwareInterface
             if ($firstChar == '-') {
                 $operator = 'NOT';
                 $field = substr($field, 1);
+            } else if ($firstChar == '~') {
+                $operator = 'OR';
+                $field = substr($field, 1);
             } else {
                 $operator = 'AND';
             }

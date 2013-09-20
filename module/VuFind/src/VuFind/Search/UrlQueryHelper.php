@@ -297,6 +297,8 @@ class UrlQueryHelper
         // Account for operators:
         if ($operator == 'NOT') {
             $field = '-' . $field;
+        } else if ($operator == 'OR') {
+            $field = '~' . $field;
         }
 
         // Remove the filter:

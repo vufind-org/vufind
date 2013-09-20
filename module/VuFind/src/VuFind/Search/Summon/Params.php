@@ -211,6 +211,8 @@ class Params extends \VuFind\Search\Base\Params
         // Which filters should be applied to our query?
         $filterList = $this->getFilterList();
         if (!empty($filterList)) {
+            $orFacets = array();
+
             // Loop through all filters and add appropriate values to request:
             foreach ($filterList as $filterArray) {
                 foreach ($filterArray as $filt) {
@@ -232,6 +234,11 @@ class Params extends \VuFind\Search\Base\Params
                         $to = SummonQuery::escapeParam($range['to']);
                         $params
                             ->add('rangeFilters', "{$filt['field']},{$from}:{$to}");
+                    } else if ($filt['operator'] == 'OR') {
+                        // Special case -- OR facets:
+                        $orFacets[$filt['field']] = isset($orFacets[$filt['field']])
+                            ? $orFacets[$filt['field']] : array();
+                        $orFacets[$filt['field']][] = $safeValue;
                     } else {
                         // Standard case:
                         $fq = "{$filt['field']},{$safeValue}";
@@ -240,6 +247,13 @@ class Params extends \VuFind\Search\Base\Params
                         }
                         $params->add('filters', $fq);
                     }
+                }
+
+                // Deal with OR facets:
+                foreach ($orFacets as $field => $values) {
+                    $params->add(
+                        'groupFilters', $field . ',or,' . implode(',', $values)
+                    );
                 }
             }
         }

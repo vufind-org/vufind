@@ -95,17 +95,31 @@ class Params extends \VuFind\Search\Base\Params
     {
         // Define Filter Query
         $filterQuery = $this->getOptions()->getHiddenFilters();
+        $orFilters = array();
         foreach ($this->filterList as $field => $filter) {
+            if ($orFacet = (substr($field, 0, 1) == '~')) {
+                $field = substr($field, 1);
+            }
             foreach ($filter as $value) {
                 // Special case -- allow trailing wildcards and ranges:
                 if (substr($value, -1) == '*'
                     || preg_match('/\[[^\]]+\s+TO\s+[^\]]+\]/', $value)
                 ) {
-                    $filterQuery[] = $field.':'.$value;
+                    $q = $field.':'.$value;
                 } else {
-                    $filterQuery[] = $field.':"'.addcslashes($value, '"\\').'"';
+                    $q = $field.':"'.addcslashes($value, '"\\').'"';
+                }
+                if ($orFacet) {
+                    $orFilters[$field] = isset($orFilters[$field])
+                        ? $orFilters[$field] : array();
+                    $orFilters[$field][] = $q;
+                } else {
+                    $filterQuery[] = $q;
                 }
             }
+        }
+        foreach ($orFilters as $field => $parts) {
+            $filterQuery[] = $field . ':(' . implode(' OR ', $parts) . ')';
         }
         return $filterQuery;
     }
