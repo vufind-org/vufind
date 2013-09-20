@@ -5,11 +5,11 @@
     <? $i = 0; foreach ($filterList as $field => $filters): ?>
       <? foreach ($filters as $filter): ?>
         <?
-            $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($filter['field'], $filter['value']);
+            $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($filter['field'], $filter['value'], true, $filter['operator']);
             if ($filter['displayText'] == '[* TO *]') $filter['displayText'] = $this->translate('filter_wildcard');
         ?>
         <li data-icon="minus">
-          <a data-icon="minus" rel="external" href="<?=$removeLink?>"><?=$i++ > 0 ? $this->transEsc("AND") . ' ' : ''?><?=$this->transEsc($field)?>: <?=$this->escapeHtml($filter['displayText'])?></a>
+          <a data-icon="minus" rel="external" href="<?=$removeLink?>"><?=$i++ > 0 ? $this->transEsc("AND") . ' ' : ''?><? if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; ?><?=$this->transEsc($field)?>: <?=$this->escapeHtml($filter['displayText'])?></a>
         </li>
       <? endforeach; ?>
     <? endforeach; ?>

@@ -951,6 +951,13 @@ class Params implements ServiceLocatorAwareInterface
         $list = array();
         // Loop through all the current filter fields
         foreach ($this->filterList as $field => $values) {
+            $firstChar = substr($field, 0, 1);
+            if ($firstChar == '-') {
+                $operator = 'NOT';
+                $field = substr($field, 1);
+            } else {
+                $operator = 'AND';
+            }
             // and each value currently used for that field
             $translate
                 = in_array($field, $this->getOptions()->getTranslatedFacets());
@@ -964,7 +971,8 @@ class Params implements ServiceLocatorAwareInterface
                         'value'       => $value,
                         'displayText' =>
                             $translate ? $this->translate($value) : $value,
-                        'field'       => $field
+                        'field'       => $field,
+                        'operator'    => $operator,
                     );
                 }
             }

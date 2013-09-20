@@ -234,7 +234,11 @@ class Params extends \VuFind\Search\Base\Params
                             ->add('rangeFilters', "{$filt['field']},{$from}:{$to}");
                     } else {
                         // Standard case:
-                        $params->add('filters', "{$filt['field']},{$safeValue}");
+                        $fq = "{$filt['field']},{$safeValue}";
+                        if ($filt['operator'] == 'NOT') {
+                            $fq .= ',true';
+                        }
+                        $params->add('filters', $fq);
                     }
                 }
             }
