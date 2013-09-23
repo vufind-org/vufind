@@ -9,12 +9,6 @@
       </a>
       <span class="muted">&nbsp;/&nbsp;</span>
     <? endif; ?>
-    <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
-      <span class="logoutOptions<? if(!$account->isLoggedIn()): ?> hide<? endif ?>">
-        <i class="icon-user"></i> <a href="<?=$this->url('myresearch-home')?>"><?=$this->transEsc("Your Account")?></a>
-        <span class="muted">&nbsp;/&nbsp;</span>
-      </span>
-    <? endif; ?>
     <? $cart = $this->cart(); if ($cart->isActive()): ?>
       <span id="cartSummary">
         <i class="icon-shopping-cart"></i> <a id="cartItems" class="modal-link" title="<?=$this->transEsc('View Book Bag')?>" href="<?=$this->url('cart-home')?>"><strong><?=count($cart->getItems())?></strong> <?=$this->transEsc('items')?><?=$cart->isFull() ? ' (' .  $this->transEsc('bookbag_full') . ')' : ''?></a>
@@ -23,14 +17,14 @@
     <? endif; ?>
     <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
       <span class="logoutOptions<? if(!$account->isLoggedIn()): ?> hide<? endif ?>">
-        <i class="icon-signout"></i><a href="<?=$this->url('myresearch-logout')?>"><?=$this->transEsc("Log Out")?></a>
+        <i class="icon-signout"></i><a href="<?=$this->url('myresearch-logout')?>" class="modal-link" title="<?=$this->transEsc("Log Out")?>"><?=$this->transEsc("Log Out")?></a>
       </span>
       <span id="loginOptions"<? if($account->isLoggedIn()): ?> class="hide"<? endif ?>>
         <i class="icon-signin"></i> 
         <? if ($sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
           <a href="<?=$this->escapeHtml($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
         <? else: ?>
-          <a href="<?=$this->url('myresearch-home')?>"><?=$this->transEsc("Login")?></a>
+          <a href="<?=$this->url('myresearch-home')?>" class="modal-link" title="<?=$this->transEsc("Login")?>"><?=$this->transEsc("Login")?></a>
         <? endif; ?>
       </span>
     <? endif; ?>

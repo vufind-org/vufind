@@ -15,7 +15,8 @@ return array(
         'core/jquery.min.js',
         'core/bootstrap.js',
         'common.js',
-        'lightbox.js'
+        'lightbox.js',
+        'rc4.js'
     ),
     'favicon' => 'vufind-favicon.ico',
     'helpers' => array(

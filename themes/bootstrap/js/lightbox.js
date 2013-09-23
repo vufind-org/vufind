@@ -200,7 +200,11 @@ function ajaxLogin(form) {
               });
 
               // and we update the modal
-              getLightboxByUrl(lastLightboxURL, lastLightboxPOST);
+              if(lastLightboxPOST['loggingin']) {
+                closeLightbox();
+              } else {
+                getLightboxByUrl(lastLightboxURL, lastLightboxPOST);
+              }
             } else {
               displayLightboxError(response.data);
             }
@@ -269,7 +273,9 @@ function registerModalEvents(modal) {
   // Highlight which submit button clicked
   $(modal).find("form input[type=submit]").click(function() {
     $(this).attr("clicked", "true");
-    $(this).after(' <i class="icon-spinner icon-spin"></i> ');
+  });
+  $(modal).find("form").submit(function() {
+    $(this).find('*[clicked="true"]').after(' <i class="icon-spinner icon-spin"></i> ');
 });
 }
 // Prevent forms from submitting in the lightbox
@@ -287,8 +293,10 @@ function registerModalForms(modal) {
     ajaxSubmit($(this), changeModalContent);
     return false;
   });
-  $(modal).find('form[name="loginForm"]').unbind('submit')
-    .submit(function(){ajaxLogin(this);return false;});
+  $(modal).find('form[name="loginForm"]').unbind('submit').submit(function(){
+    ajaxLogin(this);
+    return false;
+  });
 }
 // Default lightbox behaviour
 // Tell links to open lightboxes
@@ -318,11 +326,15 @@ $(document).ready(function() {
     var hierarchyID = $(this).parent().find(".hiddenHierarchyId")[0].value;
     return getLightbox('Record','AjaxTab',{id:id},{hierarchy:hierarchyID,tab:'HierarchyTree'});
   });
-  // Hierarchy links
+  // Help links
   $('.help-link').click(function() {
     var split = this.href.split('=');
     return getLightbox('Help','Home',{topic:split[1]});
-  });  
+  });
+  // Login link
+  $('#loginOptions a').click(function() {
+    return getLightbox('MyResearch','Login',{},{'loggingin':true});
+  });
   // Modal title
   $('.modal-link,.help-link').click(function() {
     $('#modal .modal-header h3').html($(this).attr('title'));
