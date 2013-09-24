@@ -39,7 +39,7 @@ use VuFind\Solr\Utils as SolrUtils;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
-class SideFacets implements RecommendInterface
+class SideFacets extends AbstractFacets
 {
     /**
      * Date facet configuration
@@ -56,49 +56,11 @@ class SideFacets implements RecommendInterface
     protected $mainFacets = array();
 
     /**
-     * Facets with "exclude" links enabled
-     *
-     * @var array
-     */
-    protected $excludableFacets = array();
-
-    /**
-     * Facets that are "ORed" instead of "ANDed."
-     *
-     * @var array
-     */
-    protected $orFacets = array();
-
-    /**
      * Checkbox facet configuration
      *
      * @var array
      */
     protected $checkboxFacets = array();
-
-    /**
-     * Search results
-     *
-     * @var \VuFind\Search\Base\Results
-     */
-    protected $results;
-
-    /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
-    {
-        $this->configLoader = $configLoader;
-    }
 
     /**
      * setConfig
@@ -124,27 +86,8 @@ class SideFacets implements RecommendInterface
         $this->mainFacets = isset($config->$mainSection) ?
             $config->$mainSection->toArray() : array();
 
-        // Which facets are excludable?
-        if (isset($config->Results_Settings->exclude)) {
-            if ($config->Results_Settings->exclude === '*') {
-                $this->excludableFacets = array_keys($this->mainFacets);
-            } else {
-                $this->excludableFacets = array_map(
-                    'trim', explode(',', $config->Results_Settings->exclude)
-                );
-            }
-        }
-
-        // Which facets are ORed?
-        if (isset($config->Results_Settings->orFacets)) {
-            if ($config->Results_Settings->orFacets === '*') {
-                $this->orFacets = array_keys($this->mainFacets);
-            } else {
-                $this->orFacets = array_map(
-                    'trim', explode(',', $config->Results_Settings->orFacets)
-                );
-            }
-        }
+        // Load boolean configurations:
+        $this->loadBooleanConfigs($config, array_keys($this->mainFacets));
 
         // Get a list of fields that should be displayed as date ranges rather than
         // standard facet lists.
@@ -191,22 +134,6 @@ class SideFacets implements RecommendInterface
     }
 
     /**
-     * process
-     *
-     * Called after the Search Results object has performed its main search.  This
-     * may be used to extract necessary information from the Search Results object
-     * or to perform completely unrelated processing.
-     *
-     * @param \VuFind\Search\Base\Results $results Search results object
-     *
-     * @return void
-     */
-    public function process($results)
-    {
-        $this->results = $results;
-    }
-
-    /**
      * getFacetSet
      *
      * Get facet information from the search results.
@@ -243,27 +170,5 @@ class SideFacets implements RecommendInterface
             $result[$current] = array($from, $to);
         }
         return $result;
-    }
-
-    /**
-     * Is the specified field allowed to be excluded?
-     *
-     * @param string $field Field name
-     *
-     * @return bool
-     */
-    public function excludeAllowed($field)
-    {
-        return in_array($field, $this->excludableFacets);
-    }
-
-    /**
-     * Get results stored in the object.
-     *
-     * @return \VuFind\Search\Base\Results
-     */
-    public function getResults()
-    {
-        return $this->results;
     }
 }
