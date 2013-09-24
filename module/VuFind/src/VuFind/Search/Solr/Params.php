@@ -119,7 +119,8 @@ class Params extends \VuFind\Search\Base\Params
             }
         }
         foreach ($orFilters as $field => $parts) {
-            $filterQuery[] = $field . ':(' . implode(' OR ', $parts) . ')';
+            $filterQuery[] = '{!tag=' . $field . '_filter}' . $field
+                . ':(' . implode(' OR ', $parts) . ')';
         }
         return $filterQuery;
     }
@@ -136,6 +137,9 @@ class Params extends \VuFind\Search\Base\Params
         if (!empty($this->facetConfig)) {
             $facetSet['limit'] = $this->facetLimit;
             foreach ($this->facetConfig as $facetField => $facetName) {
+                if ($this->getFacetOperator($facetField) == 'OR') {
+                    $facetField = '{!ex=' . $facetField . '_filter}' . $facetField;
+                }
                 $facetSet['field'][] = $facetField;
             }
             if ($this->facetOffset != null) {
@@ -288,17 +292,8 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function initBasicFacets()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('facets');
-        if (isset($config->ResultsTop)) {
-            foreach ($config->ResultsTop as $key => $value) {
-                $this->addFacet($key, $value);
-            }
-        }
-        if (isset($config->Results)) {
-            foreach ($config->Results as $key => $value) {
-                $this->addFacet($key, $value);
-            }
-        }
+        $this->initFacetList('ResultsTop', 'Results_Settings');
+        $this->initFacetList('Results', 'Results_Settings');
     }
 
     /**
