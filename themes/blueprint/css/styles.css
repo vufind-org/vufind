@@ -530,6 +530,10 @@ dl.narrowList a {
     padding:0.2em 0.4em;
     background-color: #eee;
 }
+dd input[type="checkbox"] {
+    margin:0 4px 0 0;
+    vertical-align:text-bottom;
+}
 
 /* Icon Classes */
 
