@@ -200,7 +200,7 @@ function ajaxLogin(form) {
               });
 
               // and we update the modal
-              if(lastLightboxPOST['loggingin']) {
+              if(lastLightboxPOST && lastLightboxPOST['loggingin']) {
                 closeLightbox();
               } else {
                 getLightboxByUrl(lastLightboxURL, lastLightboxPOST);
