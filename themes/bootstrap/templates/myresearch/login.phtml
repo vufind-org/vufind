@@ -6,9 +6,6 @@
   $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a> <span class="divider">&gt;</span></li>'
     . '<li class="active">' . $this->transEsc('Login') . '</li>';
 
-  // If we're in AJAX mode, load some extra Javascript inline:
-  $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, "rc4.js", 'SET');
-
   // Convenience variables:
   $account = $this->auth()->getManager();
   $hideLogin = !(is_object($account) && $account->loginEnabled());
