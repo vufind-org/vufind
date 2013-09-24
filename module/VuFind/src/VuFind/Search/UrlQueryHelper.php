@@ -242,7 +242,7 @@ class UrlQueryHelper
     public function addFacet($field, $value, $operator = 'AND')
     {
         // Facets are just a special case of filters:
-        $prefix = ($operator == 'NOT') ? '-' : '';
+        $prefix = ($operator == 'NOT') ? '-' : ($operator == 'OR' ? '~' : '');
         return $this->addFilter($prefix . $field . ':"' . $value . '"');
     }
 

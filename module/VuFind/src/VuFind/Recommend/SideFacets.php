@@ -63,6 +63,13 @@ class SideFacets implements RecommendInterface
     protected $excludableFacets = array();
 
     /**
+     * Facets that are "ORed" instead of "ANDed."
+     *
+     * @var array
+     */
+    protected $orFacets = array();
+
+    /**
      * Checkbox facet configuration
      *
      * @var array
@@ -128,6 +135,17 @@ class SideFacets implements RecommendInterface
             }
         }
 
+        // Which facets are ORed?
+        if (isset($config->Results_Settings->orFacets)) {
+            if ($config->Results_Settings->orFacets === '*') {
+                $this->orFacets = array_keys($this->mainFacets);
+            } else {
+                $this->orFacets = array_map(
+                    'trim', explode(',', $config->Results_Settings->orFacets)
+                );
+            }
+        }
+
         // Get a list of fields that should be displayed as date ranges rather than
         // standard facet lists.
         if (isset($config->SpecialFacets->dateRange)) {
@@ -165,7 +183,7 @@ class SideFacets implements RecommendInterface
     {
         // Turn on side facets in the search results:
         foreach ($this->mainFacets as $name => $desc) {
-            $params->addFacet($name, $desc);
+            $params->addFacet($name, $desc, in_array($name, $this->orFacets));
         }
         foreach ($this->checkboxFacets as $name => $desc) {
             $params->addCheckboxFacet($name, $desc);
