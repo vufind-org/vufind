@@ -578,9 +578,12 @@ class QueryBuilder implements QueryBuilderInterface
             '[', ']', '{', '}');
         $input = preg_replace($patterns, $matches, $input);
 
-        // Freestanding hyphens can cause problems:
+        // Freestanding hyphens and slashes can cause problems:
         $lookahead = self::$insideQuotes;
-        $input = preg_replace('/\s+-\s+' . $lookahead . '/', ' ', $input);
+        $input = preg_replace(
+            '/(\s+[-\/]$|\s+[-\/]\s+|^[-\/]\s+)' . $lookahead . '/',
+            ' ', $input
+        );
 
         // A proximity of 1 is illegal and meaningless -- remove it:
         $input = preg_replace('/~1(\.0*)?$/', '', $input);
