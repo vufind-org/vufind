@@ -1213,7 +1213,7 @@ class Params implements ServiceLocatorAwareInterface
      */
     public function activateAllFacets($preferredSection = false)
     {
-        // By default, there is only set of facet settings, so this function isn't
+        // By default, there is only 1 set of facet settings, so this function isn't
         // really necessary.  However, in the Search History screen, we need to
         // use this for Solr-based Search Objects, so we need this dummy method to
         // allow other types of Search Objects to co-exist with Solr-based ones.
