@@ -186,6 +186,8 @@ function ajaxLogin(form) {
               // Hide "log in" options and show "log out" options:
               $('#loginOptions').hide();
               $('.logoutOptions').show();
+              
+              var recordId = $('#record_id').val();
 
               // Update user save statuses if the current context calls for it:
               if (typeof(checkSaveStatuses) == 'function') {
@@ -194,10 +196,26 @@ function ajaxLogin(form) {
 
               // refresh the comment list so the "Delete" links will show
               $('.commentList').each(function(){
-                var recordId = $('#record_id').val();
                 var recordSource = extractSource($('#record'));
                 refreshCommentList(recordId, recordSource);
               });
+              
+              // Refresh tab content
+              var recordTabs = $('.recordTabs');
+              if(recordTabs.length > 0) {
+                var tab = recordTabs.find('.active a').attr('id');
+                $.ajax({
+                  type:'POST',
+                  url:path+'/AJAX/JSON?method=getLightbox&submodule=Record&subaction=AjaxTab&id='+recordId,
+                  data:{tab:tab},
+                  success:function(html) {
+                    recordTabs.next('.tab-container').html(html);
+                  },
+                  error:function(d,e) {
+                    console.log(d,e);
+                  }
+                });
+              }
 
               // and we update the modal
               if(lastLightboxPOST && lastLightboxPOST['loggingin']) {
