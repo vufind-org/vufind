@@ -12,6 +12,7 @@ li a.hidden {display:none}
 * html .centered-pills ul.nav-pills { display:inline } /* IE6 */
 *+html .centered-pills ul.nav-pills { display:inline } /* IE7 */
 .modal-body { max-height:600px }
+.nav-list i[class^="icon-"] { margin:0;padding:0;text-align:center;width:16px }
 .pad { padding:12px }
 .pager { margin:0 0 8px 0 }
 .pointer { cursor:pointer }
