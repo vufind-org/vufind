@@ -80,17 +80,24 @@ class WorldCatEditions extends Editions
     protected function getQueryParts($driver)
     {
         $parts = array();
-        if (method_exists($driver, 'getCleanISBN')) {
-            $isbn = $driver->getCleanISBN();
-            if (!empty($isbn)) {
-                $isbnList = $this->wcUtils->getXISBN($isbn);
+        $oclcNum = $driver->tryMethod('getCleanOCLCNum');
+        if (!empty($oclcNum)) {
+            $oclcList = $this->wcUtils->getXOCLCNUM($oclcNum);
+            if (!empty($oclcList)) {
+                $parts[] = '(srw.no any "' . implode(' ', $oclcList) . '")';
+            }
+        }
+        $isbn = $driver->tryMethod('getCleanISBN');
+        if (!empty($isbn)) {
+            $isbnList = $this->wcUtils->getXISBN($isbn);
+            if (!empty($isbnList)) {
                 $parts[] = '(srw.bn any "' . implode(' ', $isbnList) . '")';
             }
         }
-        if (method_exists($driver, 'getCleanISSN')) {
-            $issn = $driver->getCleanISSN();
-            if (!empty($issn)) {
-                $issnList = $this->wcUtils->getXISSN($issn);
+        $issn = $driver->tryMethod('getCleanISSN');
+        if (!empty($issn)) {
+            $issnList = $this->wcUtils->getXISSN($issn);
+            if (!empty($issnList)) {
                 $parts[] = '(srw.sn any "' . implode(' ', $issnList) . '")';
             }
         }
