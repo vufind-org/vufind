@@ -16,6 +16,12 @@
             (<?=$this->escapeHtml($current['count'])?>)
           </li>
         <? endforeach; ?>
+        <li>
+          <a href="<?=$this->url('editList', array('id'=>'NEW'))?>" title="<?=$this->transEsc('Create a List') ?>">
+            <?=$this->transEsc('Create a List') ?> 
+          </a>
+          <img src="<?=$this->imageLink('silk/add.png')?>" style="margin-left:2px;vertical-align:text-bottom"/>
+        </li>
       </ul>
     </div>
   <? endif; ?>
