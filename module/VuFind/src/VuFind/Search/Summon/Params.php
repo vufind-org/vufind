@@ -158,6 +158,10 @@ class Params extends \VuFind\Search\Base\Params
 
         $backendParams->set('didYouMean', $options->spellcheckEnabled());
 
+        // Get the language setting:
+        $lang = $this->getServiceLocator()->get('VuFind\Translator')->getLocale();
+        $backendParams->set('language', substr($lang, 0, 2));
+
         if ($options->highlightEnabled()) {
             $backendParams->set('highlight', true);
             $backendParams->set('highlightStart', '{{{{START_HILITE}}}}');
