@@ -12,8 +12,8 @@ li a.hidden {display:none}
 .pad { padding:12px }
 .pager { margin:0 0 8px 0 }
 .pointer { cursor:pointer }
-.sidebar { padding:0 }
-.sidebar h4 { margin:10px 8px 4px 8px }
+.sidebar { padding:4px 0 0 0 }
+.sidebar h4 { margin:6px 8px }
 .sidebar .small { color:#333;margin-top:1px }
 .small { font-size:85% }
 .switch-margins,.row .switch-margins,.row-fluid .switch-margins { display: inline-block; margin:auto 0 }

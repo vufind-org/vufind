@@ -1,16 +1,10 @@
-<div class="sidegroup">
-  <h4><?=$this->transEsc('Similar Items')?></h4>
-  <? $similarRecords = $this->related->getResults(); if (!empty($similarRecords)): ?>
-    <ul class="unstyled">
-      <? foreach ($similarRecords as $data): ?>
-        <li>
-          <? $formats = $data->getFormats(); if (count($formats) > 0): ?>
-            <span class="<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?>">
-          <? else: ?>
-            <span>
-          <? endif; ?>
-          <a href="<?=$this->recordLink()->getUrl($data)?>"><?=$this->escapeHtml($data->getTitle())?></a>
-          </span>
+<h4><?=$this->transEsc('Similar Items')?></h4>
+<? $similarRecords = $this->related->getResults(); ?>
+<? if (!empty($similarRecords)): ?>
+  <ul class="nav nav-list">
+    <? foreach ($similarRecords as $data): ?>
+      <li>
+        <a href="<?=$this->recordLink()->getUrl($data)?>"><?=$this->escapeHtml($data->getTitle())?>
           <span class="small">
             <? $author = $data->getPrimaryAuthor(); if (!empty($author)): ?>
               <?=$this->transEsc('by')?>: <?=$this->escapeHtml($author);?>
@@ -19,10 +13,10 @@
               <?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
             <? endif; ?>
           </span>
-        </li>
-      <? endforeach; ?>
-    </ul>
-  <? else: ?>
-    <p><?=$this->transEsc('Cannot find similar records')?></p>
-  <? endif; ?>
-</div>
+        </a>
+      </li>
+    <? endforeach; ?>
+  </ul>
+<? else: ?>
+  <p><?=$this->transEsc('Cannot find similar records')?></p>
+<? endif; ?>
