@@ -41,81 +41,82 @@
 <? if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
   <? foreach ($sideFacetSet as $title => $cluster): ?>
     <ul class="nav nav-list">
-    <? if (isset($dateFacets[$title])): ?>
-      <li class="nav-header"><?=$this->transEsc($cluster['label'])?></dt>
-      <li>
-        <form class="form-inline text-center" action="" name="<?=$this->escapeHtml($title)?>Filter" id="<?=$this->escapeHtml($title)?>Filter">
-          <?=$results->getUrlQuery()->asHiddenFields(array('filter' => "/^{$title}:.*/"))?>
-          <input type="hidden" name="daterange[]" value="<?=$this->escapeHtml($title)?>"/>
-          <div class="row-fluid">
-            <label class="span6" for="<?=$this->escapeHtml($title)?>from">
-              <?=$this->transEsc('date_from')?>:<br/>
-              <input type="text" maxlength="4" class="span12" name="<?=$this->escapeHtml($title)?>from" id="<?=$this->escapeHtml($title)?>from" value="<?=isset($dateFacets[$title][0])?$dateFacets[$title][0]:''?>" />
-            </label>
-            <label class="span6" for="<?=$this->escapeHtml($title)?>to">
-              <?=$this->transEsc('date_to')?>:<br/>
-              <input type="text" maxlength="4" class="span12" name="<?=$this->escapeHtml($title)?>to" id="<?=$this->escapeHtml($title)?>to" value="<?=isset($dateFacets[$title][1])?$dateFacets[$title][1]:''?>" />
-            </label>
-          </div>
-          <div class="row-fluid"><input type="text" class="span10 hidden" id="dateSlider"/></div>
-          <input class="btn" type="submit" value="<?=$this->transEsc('Set')?>"/>
-        </form>
-      </li>
-      <? $this->headScript()->appendFile('bootstrap-slider.js'); ?>
-      <?
-        $min = !empty($dateFacets[$title][0]) ? $dateFacets[$title][0] : 1400;
-        $max = !empty($dateFacets[$title][1]) ? $dateFacets[$title][1] : date('Y', time()+31536000);
-        $script = <<<JS
-        $(document).ready(function() {
-          var fillTexts = function() {
-            var v = dateSlider.getValue();
-            $('#{$this->escapeHtml($title)}from').val(v[0]);
-            $('#{$this->escapeHtml($title)}to').val(v[1]);
-          };
-          var min = {$min};
-          var max = {$max}; // Next year
-          var dateSlider = $('#dateSlider')
-            .slider({
-               'min':min,
-               'max':max,
-               'handle':"square",
-               'tooltip':"hide",
-               'value':[min,max]
-            })
-            .on('slide', fillTexts)
-            .data('slider');
-        });
-JS;
-      ?>
-      <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
-    <? else: ?>
-      <li class="nav-header"><?=$this->transEsc($cluster['label'])?></li>
-      <? foreach ($cluster['list'] as $i=>$thisFacet): ?>
+      <? if (isset($dateFacets[$title])): ?>
+        <li class="nav-header"><?=$this->transEsc($cluster['label'])?></dt>
+        <li>
+          <form class="form-inline text-center" action="" name="<?=$this->escapeHtml($title)?>Filter" id="<?=$this->escapeHtml($title)?>Filter">
+            <?=$results->getUrlQuery()->asHiddenFields(array('filter' => "/^{$title}:.*/"))?>
+            <input type="hidden" name="daterange[]" value="<?=$this->escapeHtml($title)?>"/>
+            <div class="row-fluid">
+              <label class="span6" for="<?=$this->escapeHtml($title)?>from">
+                <?=$this->transEsc('date_from')?>:<br/>
+                <input type="text" maxlength="4" class="span12" name="<?=$this->escapeHtml($title)?>from" id="<?=$this->escapeHtml($title)?>from" value="<?=isset($dateFacets[$title][0])?$dateFacets[$title][0]:''?>" />
+              </label>
+              <label class="span6" for="<?=$this->escapeHtml($title)?>to">
+                <?=$this->transEsc('date_to')?>:<br/>
+                <input type="text" maxlength="4" class="span12" name="<?=$this->escapeHtml($title)?>to" id="<?=$this->escapeHtml($title)?>to" value="<?=isset($dateFacets[$title][1])?$dateFacets[$title][1]:''?>" />
+              </label>
+            </div>
+            <div class="row-fluid"><input type="text" class="span10 hidden" id="dateSlider"/></div>
+            <input class="btn" type="submit" value="<?=$this->transEsc('Set')?>"/>
+          </form>
+        </li>
+        <? $this->headScript()->appendFile('bootstrap-slider.js'); ?>
         <?
-          if(strlen($thisFacet['displayText']) == 0) {
-            $thisFacet['displayText'] = "-";
-          }
+          $min = !empty($dateFacets[$title][0]) ? $dateFacets[$title][0] : 1400;
+          $max = !empty($dateFacets[$title][1]) ? $dateFacets[$title][1] : date('Y', time()+31536000);
+          $script = <<<JS
+          $(document).ready(function() {
+            var fillTexts = function() {
+              var v = dateSlider.getValue();
+              $('#{$this->escapeHtml($title)}from').val(v[0]);
+              $('#{$this->escapeHtml($title)}to').val(v[1]);
+            };
+            var min = {$min};
+            var max = {$max}; // Next year
+            var dateSlider = $('#dateSlider')
+              .slider({
+                 'min':min,
+                 'max':max,
+                 'handle':"square",
+                 'tooltip':"hide",
+                 'value':[min,max]
+              })
+              .on('slide', fillTexts)
+              .data('slider');
+          });
+JS;
         ?>
-        <? $moreClass = ' class="narrowGroupHidden_'.$this->escapeHtml($title).' hidden"'; ?>
-        <? if ($i == 6): ?>
-          <li id="more<?=$this->escapeHtml($title)?>"><a href="javascript:moreFacets('<?=$title ?>')"><?=$this->transEsc('more')?> ...</a></li>
-        <? endif; ?>
-        <? if ($thisFacet['isApplied']): ?>
-          <li<? if($i>5) echo $moreClass ?>>
-            <i class="icon-ok pull-right small"></i>
-            <?=$this->escapeHtml($thisFacet['displayText'])?>
-          </li>
-        <? else: ?>
-          <li<? if($i>5) echo $moreClass ?>>
-            <a title="<?=$this->escapeHtml($thisFacet['displayText'])?>" href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'])?>">
-              <span class="pull-right small"><?=number_format($thisFacet['count'])?></span>
-              <?=$this->escapeHtml($thisFacet['displayText']) ?>
-            </a>
-          </li>
-        <? endif; ?>
-      <? endforeach; ?>
-      <? if ($i > 5): ?><li<? if($i>5) echo $moreClass ?>><a href="javascript:lessFacets('<?=$title ?>')"><?=$this->transEsc('less')?> ...</a></li><? endif; ?>
-    <? endif; ?>
+        <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+      <? else: ?>
+        <li class="nav-header"><?=$this->transEsc($cluster['label'])?></li>
+        <? foreach ($cluster['list'] as $i=>$thisFacet): ?>
+          <?
+            if(strlen($thisFacet['displayText']) == 0) {
+              $thisFacet['displayText'] = "-";
+            }
+          ?>
+          <? $moreClass = ' class="narrowGroupHidden_'.$this->escapeHtml($title).' hidden"'; ?>
+          <? if ($i == 6): ?>
+            <li id="more<?=$this->escapeHtml($title)?>"><a href="javascript:moreFacets('<?=$title ?>')"><?=$this->transEsc('more')?> ...</a></li>
+          <? endif; ?>
+          <? if ($thisFacet['isApplied']): ?>
+            <li<? if($i>5) echo $moreClass ?>>
+              <i class="icon-ok pull-right small"></i>
+              <?=$this->escapeHtml($thisFacet['displayText'])?>
+            </li>
+          <? else: ?>
+            <li<? if($i>5) echo $moreClass ?>>
+              <a title="<?=$this->escapeHtml($thisFacet['displayText'])?>" href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'])?>">
+                <span class="pull-right small"><?=number_format($thisFacet['count'])?></span>
+                <?=$this->escapeHtml($thisFacet['displayText']) ?>
+              </a>
+            </li>
+          <? endif; ?>
+        <? endforeach; ?>
+        <? if ($i > 5): ?><li<? if($i>5) echo $moreClass ?>><a href="javascript:lessFacets('<?=$title ?>')"><?=$this->transEsc('less')?> ...</a></li><? endif; ?>
+      <? endif; ?>
+      <li class="divider"></li>
     </ul>
   <? endforeach; ?>
 <? endif; ?>
