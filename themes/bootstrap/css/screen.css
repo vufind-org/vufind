@@ -3,10 +3,6 @@
 .centered-pills ul.nav-pills { display:inline-block }
 .centered-pills li { display:inline }
 .centered-pills a { float:left }
-dd,dd label {font-size:13px}
-dd .facet {float:left;width:170px}
-dd .small {font-size:12px}
-dd.clearfix [class*="span"] {min-height:1px}
 .front { position:absolute;top:0;left:0;width:100%;padding-top:20%;z-index:5 }
 li a.hidden {display:none}
 * html .centered-pills ul.nav-pills { display:inline } /* IE6 */
@@ -16,6 +12,9 @@ li a.hidden {display:none}
 .pad { padding:12px }
 .pager { margin:0 0 8px 0 }
 .pointer { cursor:pointer }
+.sidebar { padding:0 }
+.sidebar h4 { margin:10px 8px 4px 8px }
+.sidebar .small { color:#333;margin-top:1px }
 .small { font-size:85% }
 .switch-margins,.row .switch-margins,.row-fluid .switch-margins { display: inline-block; margin:auto 0 }
 .tab-container { border:1px solid #DDD;border-top:0;border-radius:0 0 4px 4px;margin-top:-20px;padding:8px 12px;position:relative }
