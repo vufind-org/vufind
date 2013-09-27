@@ -183,6 +183,15 @@ function ajaxLogin(form) {
           data: {username:username, password:password},
           success: function(response) {
             if (response.status == 'OK') {
+              // If summon, reload
+              $('.hiddenSource').each(function(i, e) {
+                console.log(e.value);
+                if(e.value == 'Summon') {
+                  document.location.reload(true);
+                  return;
+                }
+              });
+              
               // Hide "log in" options and show "log out" options:
               $('#loginOptions').hide();
               $('.logoutOptions').show();
