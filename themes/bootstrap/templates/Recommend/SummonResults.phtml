@@ -1,39 +1,34 @@
 <? $searchObject = $this->recommend->getResults(); $results = $searchObject->getResults(); if (!empty($results)): ?>
-<div class="sidegroup">
   <h4><?=$this->transEsc('Summon Results')?></h4>
-  
-  <ul class="unstyled">
+  <ul class="nav nav-list">
     <? foreach ($results as $driver): ?>
-    <li>
-      <? $formats = $driver->getFormats(); $format = isset($formats[0]) ? $formats[0] : ''; ?>
-      <span class="<?=$this->record($driver)->getFormatClass($format)?>">
-      <a href="<?=$this->recordLink()->getUrl($driver)?>" class="title"><?
-        $summHighlightedTitle = $driver->getHighlightedTitle();
-        $summTitle = $driver->getTitle();
-        if (!empty($summHighlightedTitle)) {
-            echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
-        } else if (!empty($summTitle)) {
-            echo $this->escapeHtml($this->truncate($summTitle, 180));
-        } else {
-            echo $this->transEsc('Title not available');
-        }
-      ?></a>
-      </span>
-      <span class="small">
-      <? $summAuthor = $driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
-      <br />
-      <?=$this->transEsc('by')?>
-      <a href="<?=$this->record($driver)->getLink('author', $summAuthor)?>"><?
-        $summHighlightedAuthor = $driver->getHighlightedAuthor();
-        echo !empty($summHighlightedAuthor)
-            ? $this->highlight($summHighlightedAuthor)
-            : $this->escapeHtml($summAuthor);
-      ?></a>
-      <? endif; ?>
-      </span>
-    </li>
+      <li>
+        <? $formats = $driver->getFormats(); $format = isset($formats[0]) ? $formats[0] : ''; ?>
+        <a href="<?=$this->recordLink()->getUrl($driver)?>" class="title <?=$this->record($driver)->getFormatClass($format)?>">
+          <?
+            $summHighlightedTitle = $driver->getHighlightedTitle();
+            $summTitle = $driver->getTitle();
+            if (!empty($summHighlightedTitle)) {
+                echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
+            } else if (!empty($summTitle)) {
+                echo $this->escapeHtml($this->truncate($summTitle, 180));
+            } else {
+                echo $this->transEsc('Title not available');
+            }
+          ?>
+        </a>
+        <? $summAuthor = $driver->getPrimaryAuthor(); if (!empty($summAuthor)): ?>
+        <a class="small text-right" href="<?=$this->record($driver)->getLink('author', $summAuthor)?>">
+          <?=$this->transEsc('by')?>
+          <?
+            $summHighlightedAuthor = $driver->getHighlightedAuthor();
+            echo !empty($summHighlightedAuthor)
+                ? $this->highlight($summHighlightedAuthor)
+                : $this->escapeHtml($summAuthor);
+          ?>
+        </a>
+      </li>
     <? endforeach; ?>
+    <li><a href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('More Summon results')?>...</a></li>
   </ul>
-  <p><a href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('More Summon results')?>...</a></p>
-</div>
 <? endif ?>

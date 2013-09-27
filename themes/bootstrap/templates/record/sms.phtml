@@ -7,7 +7,6 @@
     . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '<span class="divider">&gt;</span> </li>'
     . '<li class="active">' . $this->transEsc('Text this') . '</li>';
   
-  $phone_pattern = '[\d-()\. ]*'; // Default that prevents invalid characters from submitting
   if ($this->validation == 'US') {
     $phone_pattern = '^(\([2-9]\d{2}\)|[2-9]\d{2})[ -\.]?[2-9]\d{2}[-\.]?\d{4}$';
   }
@@ -19,7 +18,7 @@
   <div class="control-group">
     <label class="control-label" for="sms_to"><?=$this->transEsc('Number')?>:</label>
     <div class="controls">
-      <input id="sms_to" type="tel" pattern="<?=$phone_pattern ?>" name="to" placeholder="<?=$this->transEsc('sms_phone_number')?>"/>
+      <input id="sms_to" type="tel"<? if(isset($phone_pattern)): ?> pattern="<?=$phone_pattern ?>"<? endif ?> name="to" placeholder="<?=$this->transEsc('sms_phone_number')?>"/>
     </div>
   </div>
   <? if (is_array($this->carriers) && count($this->carriers) > 1): ?>

@@ -154,7 +154,12 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
             array('^10', '10'),                     // invalid boosts
             array('test^ test^6', 'test test6'),    // invalid boosts
             array('test^1 test^2', 'test^1 test^2'),// valid boosts
+            array('this / that', 'this that'),     // freestanding slash
+            array('/ this', 'this'),                // leading slash
             array('title /', 'title'),              // trailing slash
+            array('this - that', 'this that'),     // freestanding hyphen
+            array('- this', 'this'),                // leading hyphen
+            array('title -', 'title'),              // trailing hyphen
         );
         // @codingStandardsIgnoreEnd
 

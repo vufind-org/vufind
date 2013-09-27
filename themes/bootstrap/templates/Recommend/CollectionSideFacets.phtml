@@ -17,20 +17,21 @@
     }
   ?>
   <? ob_start() ?>
-    <dl class="narrowList navmenu">
-      <dt><?=$this->transEsc('Keyword Filter')?></dt>
-      <dd>
-      <form method="get" action="" name="keywordFilterForm" id="keywordFilterForm" class="keywordFilterForm">
-        <input id="keywordFilter_lookfor" type="text" name="lookfor" value="<?=$this->escapeHtml($keywordFilter)?>"/>
-        <? foreach ($this->recommend->getResults()->getParams()->getFilterList(true) as $field => $filters): ?>
-          <? foreach ($filters as $filter): ?>
-            <input type="hidden" name="filter[]" value="<?=$this->escapeHtml($filter['field'])?>:&quot;<?=$this->escapeHtml($filter['value'])?>&quot;" />
+    <ul class="nav nav-list">
+      <li class="nav-header"><?=$this->transEsc('Keyword Filter')?></li>
+      <li>
+        <form method="get" action="" name="keywordFilterForm" id="keywordFilterForm" class="keywordFilterForm">
+          <input id="keywordFilter_lookfor" type="text" name="lookfor" value="<?=$this->escapeHtml($keywordFilter)?>"/>
+          <? foreach ($this->recommend->getResults()->getParams()->getFilterList(true) as $field => $filters): ?>
+            <? foreach ($filters as $filter): ?>
+              <input type="hidden" name="filter[]" value="<?=$this->escapeHtml($filter['field'])?>:&quot;<?=$this->escapeHtml($filter['value'])?>&quot;" />
+            <? endforeach; ?>
           <? endforeach; ?>
-        <? endforeach; ?>
-        <input class="btn" type="submit" name="submit" value="<?=$this->transEsc('Set')?>"/>
-      </form>
-      </dd>
-    </dl>
+          <input class="btn" type="submit" name="submit" value="<?=$this->transEsc('Set')?>"/>
+        </form>
+      </li>
+      <li class="divider"></li>
+    </ul>
   <? $this->sideFacetExtraControls = ob_get_contents(); ?>
   <? ob_end_clean(); ?>
 <? endif; ?>

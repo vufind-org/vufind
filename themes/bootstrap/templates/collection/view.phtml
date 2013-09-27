@@ -50,7 +50,7 @@
   <div class="pad">
     <? if (count($this->tabs) > 0): ?>
       <a name="tabnav"></a>
-      <ul class="nav nav-tabs">
+      <ul class="recordTabs nav nav-tabs">
         <? foreach ($this->tabs as $tab => $obj): ?>
         <? // add current tab to breadcrumbs if applicable:
           $desc = $obj->getDescription();
@@ -61,13 +61,11 @@
           }
         ?>
         <li<?=$isCurrent ? ' class="active"' : ''?>>
-          <a href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
+          <a id="<?=$tab ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
         </li>
         <? endforeach; ?>
       </ul>
     <? endif; ?>
-
-
     <div class="collectionDetails<?=$tree ? 'Tree' : ''?>">
       <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
     </div>

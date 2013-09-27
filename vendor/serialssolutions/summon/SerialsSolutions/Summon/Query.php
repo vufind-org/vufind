@@ -64,6 +64,12 @@ class SerialsSolutions_Summon_Query
     protected $filters = array();
 
     /**
+     * An array of group filters to be applied
+     * @var array
+     */
+    protected $groupFilters = array();
+
+    /**
      * An array of range filters to be applied
      * @var array
      */
@@ -112,6 +118,12 @@ class SerialsSolutions_Summon_Query
     protected $highlightEnd = '';
 
     /**
+     * Preferred search language (affects relevancy ranking)
+     * @var string
+     */
+    protected $language = 'en';
+
+    /**
      * Constructor
      *
      * Sets up the Summon API Client
@@ -153,13 +165,17 @@ class SerialsSolutions_Summon_Query
             's.ps' => $this->pageSize,
             's.pn' => $this->pageNumber,
             's.ho' => $this->holdings ? 'true' : 'false',
-            's.dym' => $this->didYouMean ? 'true' : 'false'
+            's.dym' => $this->didYouMean ? 'true' : 'false',
+            's.l' => $this->language,
         );
         if (!empty($this->facets)) {
             $options['s.ff'] = $this->facets;
         }
         if (!empty($this->filters)) {
             $options['s.fvf'] = $this->filters;
+        }
+        if (!empty($this->groupFilters)) {
+            $options['s.fvgf'] = $this->groupFilters;
         }
         if (!empty($this->rangeFilters)) {
             $options['s.rf'] = $this->rangeFilters;
@@ -188,6 +204,18 @@ class SerialsSolutions_Summon_Query
     public function addFilter($f)
     {
         $this->filters[] = $f;
+    }
+
+    /**
+     * Add a group filter
+     *
+     * @param string $f Filter to apply
+     *
+     * @return void
+     */
+    public function addGroupFilter($f)
+    {
+        $this->groupFilters[] = $f;
     }
 
     /**

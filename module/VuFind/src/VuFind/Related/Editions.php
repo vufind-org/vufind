@@ -147,31 +147,25 @@ class Editions implements RelatedInterface
     protected function getQueryParts($driver)
     {
         $parts = array();
-        if (method_exists($driver, 'getCleanOCLCNum')) {
-            $oclcNum = $driver->getCleanOCLCNum();
-            if (!empty($oclcNum)) {
-                $oclcList = $this->wcUtils->getXOCLCNUM($oclcNum);
-                foreach ($oclcList as $current) {
-                    $parts[] = "oclc_num:" . $current;
-                }
+        $oclcNum = $driver->tryMethod('getCleanOCLCNum');
+        if (!empty($oclcNum)) {
+            $oclcList = $this->wcUtils->getXOCLCNUM($oclcNum);
+            foreach ($oclcList as $current) {
+                $parts[] = "oclc_num:" . $current;
             }
         }
-        if (method_exists($driver, 'getCleanISBN')) {
-            $isbn = $driver->getCleanISBN();
-            if (!empty($isbn)) {
-                $isbnList = $this->wcUtils->getXISBN($isbn);
-                foreach ($isbnList as $current) {
-                    $parts[] = 'isbn:' . $current;
-                }
+        $isbn = $driver->tryMethod('getCleanISBN');
+        if (!empty($isbn)) {
+            $isbnList = $this->wcUtils->getXISBN($isbn);
+            foreach ($isbnList as $current) {
+                $parts[] = 'isbn:' . $current;
             }
         }
-        if (method_exists($driver, 'getCleanISSN')) {
-            $issn = $driver->getCleanISSN();
-            if (!empty($issn)) {
-                $issnList = $this->wcUtils->getXISSN($issn);
-                foreach ($issnList as $current) {
-                    $parts[] = 'issn:' . $current;
-                }
+        $issn = $driver->tryMethod('getCleanISSN');
+        if (!empty($issn)) {
+            $issnList = $this->wcUtils->getXISSN($issn);
+            foreach ($issnList as $current) {
+                $parts[] = 'issn:' . $current;
             }
         }
         return $parts;
