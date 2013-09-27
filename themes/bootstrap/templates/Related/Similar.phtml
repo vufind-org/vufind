@@ -4,7 +4,8 @@
   <ul class="nav nav-list">
     <? foreach ($similarRecords as $data): ?>
       <li>
-        <a href="<?=$this->recordLink()->getUrl($data)?>"><?=$this->escapeHtml($data->getTitle())?>
+        <a href="<?=$this->recordLink()->getUrl($data)?>">
+          <?=$this->escapeHtml($data->getTitle())?>
           <span class="small">
             <? $author = $data->getPrimaryAuthor(); if (!empty($author)): ?>
               <?=$this->transEsc('by')?>: <?=$this->escapeHtml($author);?>

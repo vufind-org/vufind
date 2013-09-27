@@ -14,7 +14,10 @@ li a.hidden {display:none}
 .pointer { cursor:pointer }
 .sidebar { padding:4px 0 0 0 }
 .sidebar h4 { margin:6px 8px }
+.sidebar .checkbox { margin-left:10px }
 .sidebar .small { color:#333;margin-top:1px }
+.sidebar a.small { color:#08C }
+.sidebar a.small span { color:#333 }
 .small { font-size:85% }
 .switch-margins,.row .switch-margins,.row-fluid .switch-margins { display: inline-block; margin:auto 0 }
 .tab-container { border:1px solid #DDD;border-top:0;border-radius:0 0 4px 4px;margin-top:-20px;padding:8px 12px;position:relative }
