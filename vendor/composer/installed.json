@@ -657,5 +657,58 @@
             "source": "https://github.com/summon/Summon.php/tree/master",
             "issues": "https://github.com/summon/Summon.php/issues"
         }
+    },
+    {
+        "name": "jasig/phpcas",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/Jasig/phpCAS.git",
+            "reference": "13c17276481a5fb55de2ce4c0cf513197fb1ee24"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/Jasig/phpCAS/zipball/13c17276481a5fb55de2ce4c0cf513197fb1ee24",
+            "reference": "13c17276481a5fb55de2ce4c0cf513197fb1ee24",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.0.0"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "~3.7.10"
+        },
+        "time": "2013-07-25 07:36:06",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "classmap": [
+                "source/"
+            ]
+        },
+        "license": [
+            "Apache-2.0"
+        ],
+        "authors": [
+            {
+                "name": "Joachim Fritschi",
+                "homepage": "https://wiki.jasig.org/display/~fritschi"
+            },
+            {
+                "name": "Adam Franco",
+                "homepage": "https://wiki.jasig.org/display/~adamfranco"
+            }
+        ],
+        "description": "Provides a simple API for authenticating users against a CAS server",
+        "homepage": "https://wiki.jasig.org/display/CASC/phpCAS",
+        "keywords": [
+            "cas",
+            "jasig"
+        ],
+        "support": {
+            "source": "https://github.com/Jasig/phpCAS/tree/master",
+            "issues": "https://github.com/Jasig/phpCAS/issues"
+        }
     }
 ]

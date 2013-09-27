@@ -1,4 +1,4 @@
-/*global deparam, htmlEncode, path, rc4Encrypt, refreshCommentList, vufindString */
+/*global checkSaveStatuses, console, deparam, extractSource, getFullCartItems, hexEncode, htmlEncode, path, rc4Encrypt, refreshCommentList, vufindString */
 
 var lastLightboxURL,lastLightboxPOST; // Replacement for empty form actions
 var lightboxShown = false; // is the lightbox deployed?
@@ -42,7 +42,7 @@ function closeLightbox() {
         $('#cart-add').removeClass('hidden');
       }
     }
-    cartCount.html(cart.length)
+    cartCount.html(cart.length);
   }
 }
 // Make an error box appear in the lightbox, or insert one
