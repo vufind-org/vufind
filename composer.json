@@ -22,6 +22,10 @@
             "url": "https://github.com/summon/Summon.php"
         },
         {
+            "type": "vcs",
+            "url": "https://github.com/Jasig/phpCAS"
+        },
+        {
             "type": "package",
             "package": {
                 "name": "mobileesp/mdetect",
@@ -61,6 +65,7 @@
         "symfony/yaml": "*",
         "zendframework/zendframework": "2.2.4",
         "zendframework/zendrest": "2.*",
-        "zendframework/zendservice-amazon": "2.*"
+        "zendframework/zendservice-amazon": "2.*",
+        "jasig/phpCAS": "dev-master"
     }
 }
