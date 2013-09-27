@@ -1,6 +1,6 @@
 <?php
 /**
- * Template for ZF2 module for storing local overrides.
+ * VuDL interface module.
  *
  * PHP version 5
  *
@@ -30,7 +30,7 @@ use Zend\ModuleManager\ModuleManager,
     Zend\Mvc\MvcEvent;
 
 /**
- * Template for ZF2 module for storing local overrides.
+ * VuDL interface module.
  *
  * @category VuFind2
  * @package  Module
