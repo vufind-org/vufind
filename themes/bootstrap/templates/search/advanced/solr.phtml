@@ -17,7 +17,7 @@
           ?>
           <? foreach ($sorted as $i => $display): ?>
             <? $value = $list['list'][$i]; ?>
-            <option value="<?=$this->escapeHtml($field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected'])?' selected="selected"':''?>><?=$this->escapeHtml($display)?></option>
+            <option value="<?=$this->escapeHtml(($value['operator'] == 'OR' ? '~' : '') . $field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected'])?' selected="selected"':''?>><?=$this->escapeHtml($display)?></option>
           <? endforeach; ?>
         </select>
       </div>
