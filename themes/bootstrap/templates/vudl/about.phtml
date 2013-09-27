@@ -1,0 +1,17 @@
+<?php
+  $this->headTitle('VU Digital Library - About');
+  $this->layout()->breadcrumbs = false;
+?>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <div class="alert alert-info">
+    <h2><?=$this->transEsc('Powered By') ?> <a href="http://vudl.org">VuDL</a></h2>
+  </div>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <ul class="nav nav-list">
+    <li class="nav-header"><?=$this->transEsc('Content') ?></li>
+    <li><a href="http://vudl.org">VuDL</a></li>
+  </ul>
+</div>
