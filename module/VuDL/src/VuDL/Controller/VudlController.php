@@ -37,55 +37,28 @@ namespace VuDL\Controller;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class VudlController extends \VuFind\Controller\AbstractBase
+class VudlController extends AbstractVuDL
 {
     /**
-     * The config from module.config.php
-     */
-    protected $module_config;
-    /**
-     * The config from module.config.php
+     * Structmap data
+     *
+     * @var array
      */
     protected $structmaps = array();
-    /**
-     * The config from module.config.php
-     */
-    protected $datastreams = array();
-    /**
-     * The parents lists
-     */
-    protected $parentLists = array();
 
     /**
-     * Get properties from module.config.php
+     * Datastreams
      *
-     * Parameters can be added to get array nested content.
-     * - get() will return the whole config array.
-     * - get('suffixes') will return the value under $config['suffixes'].
-     * - get('suffixes','tiff') will be the equivelant of $config['suffixes']['tiff']
-     * - etc.
-     *
-     * @return mixed
+     * @var array
      */
-    protected function get()
-    {
-        if (!isset($this->module_config)) {
-            $this->module_config = $this->getServiceLocator()->get('config');
-            $this->module_config = $this->module_config['vudl'];
-        }
-        $args = func_get_args();
-        if (empty($args)) {
-            return $this->module_config;
-        }
-        $return = $this->module_config[array_shift($args)];
-        while (count($args) > 0) {
-            if (!isset($return[$args[0]])) {
-                return array();
-            }
-            $return = $return[array_shift($args)];
-        }
-        return $return;
-    }
+    protected $datastreams = array();
+
+    /**
+     * The parents lists
+     *
+     * @var array
+     */
+    protected $parentLists = array();
 
     /**
      * Compares the cache date against a given date. If given date is newer,
@@ -138,7 +111,7 @@ class VudlController extends \VuFind\Controller\AbstractBase
 
     /**
      * Returns file contents of the structmap, our most common call
-     * 
+     *
      * @param string  $id  Record id
      * @param boolean $xml Return data as SimpleXMLElement?
      *
@@ -148,7 +121,7 @@ class VudlController extends \VuFind\Controller\AbstractBase
     {
         if (!isset($this->datastreams[$id])) {
             $this->datastreams[$id] = file_get_contents(
-                $this->get('url_base') . $id . '/datastreams?format=xml'
+                $this->getFedoraBase() . $id . '/datastreams?format=xml'
             );
         }
         if ($xml) {
@@ -169,7 +142,7 @@ class VudlController extends \VuFind\Controller\AbstractBase
     {
         if (!isset($this->structmaps[$id])) {
             if(!$this->structmaps[$id] = file_get_contents(
-                $this->get('url_base') . $id . '/datastreams/STRUCTMAP/content'
+                $this->getFedoraBase() . $id . '/datastreams/STRUCTMAP/content'
             )) {
                 $structmap = array();
                 $memberList = $this->memberList($id);
@@ -209,8 +182,8 @@ class VudlController extends \VuFind\Controller\AbstractBase
                             'publisher',
                             'series',
                             'dc_source_str_mv',
-                            'title', 
-                            'title_alt', 
+                            'title',
+                            'title_alt',
                             'topic'
                         ),
                         array_keys($record)
@@ -241,7 +214,7 @@ class VudlController extends \VuFind\Controller\AbstractBase
         preg_match_all(
             '/<[^\/]*dc:([^ >]+)>([^<]+)/',
             file_get_contents(
-                $this->get('url_base') . $id . '/datastreams/DC/content'
+                $this->getFedoraBase() . $id . '/datastreams/DC/content'
             ),
             $dc
         );
@@ -262,7 +235,7 @@ class VudlController extends \VuFind\Controller\AbstractBase
     protected function getClasses($id)
     {
         $data = file_get_contents(
-            $this->get('url_base') . $id . '/datastreams/RELS-EXT/content'
+            $this->getFedoraBase() . $id . '/datastreams/RELS-EXT/content'
         );
         $matches = array();
         preg_match_all(
@@ -331,13 +304,13 @@ class VudlController extends \VuFind\Controller\AbstractBase
     protected function getOutline($root, $start = 0, $pageLength = NULL)
     {
         if($pageLength == NULL) {
-            $pageLength = $this->get('page_length');
+            $pageLength = $this->getFedoraPageLength();
         }
         // Check Zend cache
         $manager = $this->getServiceLocator();
         $cache = $manager->get('VuFind\CacheManager')->getCache('object');
         // Check modification date
-        $xml = simplexml_load_file($this->get('url_base') . $root . '?format=xml');
+        $xml = simplexml_load_file($this->getFedoraBase() . $root . '?format=xml');
         $rootModDate = (string)$xml[0]->objLastModDate;
         // Get lists
         $data = $this->getStructmap($root);
@@ -350,7 +323,7 @@ class VudlController extends \VuFind\Controller\AbstractBase
         foreach ($lists[0] as $i=>$list_id) {
             // Get list name
             $xml = simplexml_load_file(
-                $this->get('url_base') . $list_id . '?format=xml'
+                $this->getFedoraBase() . $list_id . '?format=xml'
             );
             $outline['names'][] = (String) $xml[0]->objLabel;
             $moddate[$i] = max((string)$xml[0]->objLastModDate, $rootModDate);
@@ -367,7 +340,7 @@ class VudlController extends \VuFind\Controller\AbstractBase
             if (count($items) < $start) {
                 continue;
             }
-            $routes = $this->get('routes');
+            $routes = $this->getVuDLRoutes();
             $outline['lists'][$parent] = array();
             for ($i=$start;$i < $start + $pageLength;$i++) {
                 if ($i >= count($items)) {
@@ -545,7 +518,7 @@ class VudlController extends \VuFind\Controller\AbstractBase
 
         $ret = array();
         $div = '';
-        
+
         $preTitle = '<div class="accordion-group"><div class="accordion-heading"><a class="accordion-toggle" data-toggle="collapse" data-parent="#techinfo" ';
         $postID = '</a></div><div ';
         $postTitle = ' class="accordion-body collapse"><div class="accordion-inner">';
@@ -573,7 +546,7 @@ class VudlController extends \VuFind\Controller\AbstractBase
 
         // OCR
         if (isset($record['ocr-dirty'])) {
-            $ocrURL = $this->get('url_base')
+            $ocrURL = $this->getFedoraBase()
                 . $record['id']
                 . '/datastreams/OCR-DIRTY/content';
             $div .= $preTitle . 'href="#ocr">Computer Generated Transcription (OCR)' . $postID . 'id="ocr"' . $postTitle
@@ -608,7 +581,7 @@ class VudlController extends \VuFind\Controller\AbstractBase
                 $old,
                 $new,
                 file_get_contents(
-                    $this->get('url_base')
+                    $this->getFedoraBase()
                     . $record['id']
                     . '/datastreams/MASTER-MD/content'
                 )
@@ -713,7 +686,7 @@ class VudlController extends \VuFind\Controller\AbstractBase
                 . 'please report the problem.<br/><br/>');
         }
         // Copyright information
-        $licenseUrl = $this->get('url_base') .$root. '/datastreams/LICENSE/content';
+        $licenseUrl = $this->getFedoraBase() .$root. '/datastreams/LICENSE/content';
         $check = get_headers($licenseUrl);
         if (!strpos($check[0], '404')) {
             $xml = file_get_contents($licenseUrl);
@@ -721,7 +694,7 @@ class VudlController extends \VuFind\Controller\AbstractBase
             // var_dump($license[1]);
             $fileDetails['license'] = $license[1];
             $fileDetails['special_license'] = false;
-            $licenseValues = $this->get('licenses');
+            $licenseValues = $this->getLicenses();
             foreach ($licenseValues as $tell=>$value) {
                 if (strpos($fileDetails['license'], $tell)) {
                     $fileDetails['special_license'] = $value;
@@ -734,7 +707,7 @@ class VudlController extends \VuFind\Controller\AbstractBase
         // Get ids for all files
         $outline = $this->getOutline(
             $root,
-            max(0, $view->initPage-($this->get('page_length')/2))
+            max(0, $view->initPage-($this->getFedoraPageLength()/2))
         );
 
         // Send the data for the first pages
@@ -749,7 +722,7 @@ class VudlController extends \VuFind\Controller\AbstractBase
             $view->parentID = $root;
             $view->breadcrumbEnd = $outline['lists'][0][$view->page]['label'];
         }
-        $view->pagelength = $this->get('page_length');
+        $view->pagelength = $this->getFedoraPageLength();
         return $view;
     }
 
@@ -761,7 +734,7 @@ class VudlController extends \VuFind\Controller\AbstractBase
     public function homeAction()
     {
         $view = $this->createViewModel();
-        $data =$this->memberList($this->get('root_id'));
+        $data =$this->memberList($this->getFedoraRootID());
         $outline = array();
         foreach ($data as $item) {
             $outline[] = array(
@@ -876,7 +849,7 @@ class VudlController extends \VuFind\Controller\AbstractBase
         foreach ($options as $key=>$value) {
             $data[$key] = $value;
         }
-        $client = new \Zend\Http\Client($this->get('query_url'));
+        $client = new \Zend\Http\Client($this->getFedoraQueryURL());
         $client->setMethod('POST');
         $client->setAuth('fedoraAdmin', 'fedoraAdmin');
         $client->setParameterPost($data);
@@ -913,7 +886,7 @@ class VudlController extends \VuFind\Controller\AbstractBase
             }
             list($child, $parent, $title) = explode(',', substr($list[$i], 12), 3);
             $parent = substr($parent, 12);
-            if($parent == $this->get('root_id')) {
+            if($parent == $this->getFedoraRootID()) {
                 $roots[] = $child;
                 continue;
             }
@@ -932,7 +905,7 @@ class VudlController extends \VuFind\Controller\AbstractBase
         foreach ($roots as $root) {
             $queue[] = array($root, array());
         }
-        while ($path = array_pop($queue)) {            
+        while ($path = array_pop($queue)) {
             $tid = $path[0];
             while ($tid != $id) {
                 $path[1][$tid] = $items[$tid];

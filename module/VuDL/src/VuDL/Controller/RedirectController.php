@@ -39,7 +39,7 @@ use Zend\Mvc\Controller\AbstractActionController;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
-class RedirectController extends \VuFind\Controller\AbstractBase
+class RedirectController extends AbstractVuDL
 {
     /**
      *
@@ -58,8 +58,7 @@ class RedirectController extends \VuFind\Controller\AbstractBase
             'query' => 'select $object from <#ri> where $object <http://digital.library.villanova.edu/rdf/relations#hasLegacyURL> '.
                 "'http://digital.library.villanova.edu/" . $collection . '/' . $file . "'"
         );
-        $module_config = $this->getServiceLocator()->get('config');
-        $client = new \Zend\Http\Client($module_config['vudl']['query_url']);
+        $client = new \Zend\Http\Client($this->getFedoraQueryURL());
         $client->setMethod('POST');
         $client->setAuth('fedoraAdmin', 'fedoraAdmin');
         $client->setParameterPost($data);
@@ -83,14 +82,14 @@ class RedirectController extends \VuFind\Controller\AbstractBase
             throw new \Exception('Could not map legacy URL to ID. Please search for your desired record above.');
         }
     }
-    
+
     public function aboutAction()
     {
-        return $this->redirect()->toRoute('vudl-about');        
+        return $this->redirect()->toRoute('vudl-about');
     }
-    
+
     public function collectionAction()
     {
-        return $this->redirect()->toRoute('vudl-default-collection');        
+        return $this->redirect()->toRoute('vudl-default-collection');
     }
 }

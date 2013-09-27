@@ -46,20 +46,22 @@ class SolrVudl extends \VuFind\RecordDriver\SolrDefault
     protected $fullRecord = null;
 
     /**
-     * Module config
+     * VuDL config
      *
-     * @var module.config.php
+     * @var \Zend\Config\Config
      */
-    protected $moduleConfig = null;
+    protected $vuDLConfig = null;
 
     /**
      * Set module.config.php
      *
+     * @param \Zend\Config\Config $vc Configuration
+     *
      * @return void
      */
-    public function setModuleConfig($mc)
+    public function setVuDLConfig(\Zend\Config\Config $vc)
     {
-        $this->moduleConfig = $mc;
+        $this->vuDLConfig = $vc;
     }
 
     /**
@@ -154,7 +156,7 @@ class SolrVudl extends \VuFind\RecordDriver\SolrDefault
         }
         return $retVal;
     }
-        
+
     /**
      *
      */
@@ -166,19 +168,22 @@ class SolrVudl extends \VuFind\RecordDriver\SolrDefault
         }
         // Check IP range
         $userIP = $_SERVER['REMOTE_ADDR'];
-        foreach($this->moduleConfig['access']['ip_range'] as $ip) {
-            if(strpos($userIP, $ip) === 0) {
+        $range = isset($this->vuDLConfig->Access->ip_range)
+            ? $this->vuDLConfig->Access->ip_range->toArray() : array();
+        foreach ($range as $ip) {
+            if (strpos($userIP, $ip) === 0) {
                 return false;
             }
         }
         return true;
     }
-    
+
     /**
      *
      */
     public function getProxyURL()
     {
-        return $this->moduleConfig['access']['proxy_url'];
+        return isset($this->vuDLConfig->Access->proxy_url)
+            ? $this->vuDLConfig->Access->proxy_url : '';
     }
 }

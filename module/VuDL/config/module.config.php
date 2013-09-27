@@ -13,11 +13,15 @@ $config = array(
             'recorddriver' => array(
                 'factories' => array(
                     'solrvudl' => function ($sm) {
-                        return new \VuDL\RecordDriver\SolrVudl(
+                        $driver = new \VuDL\RecordDriver\SolrVudl(
                             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
                             null,
                             $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
                         );
+                        $driver->setVuDLConfig(
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('VuDL')
+                        );
+                        return $driver;
                     }
                 )
             )
@@ -128,35 +132,6 @@ $config = array(
             ),
         )
     ),
-    'vudl' => array(
-        'page_length' => 16,
-        'licenses' => array(
-            'creativecommons.org' => 'CC'
-        ),
-        'routes' => array(
-            'tiff'  => 'page',
-            'flac' => 'audio',
-            'mp3' => 'audio',
-            'mpeg' => 'audio',
-            'octet-stream' => 'audio',
-            'ogg' => 'audio',
-            'x-flac' => 'audio',
-            'mp4' => 'video',
-            'ogv' => 'video',
-            'webmv' => 'video',
-            'pdf' => 'download',
-            'msword' => 'download'
-        ),        
-        'url_base' => 'http://link.to.vudl.fedora:port/fedora/objects/',
-        'query_url' => 'http://link.to.vudl.fedora:port/fedora/risearch',
-        'root_id' => 'root:id'
-    ),
-    'access' => array(
-        'ip_range' => array(
-            '127.0.0.1','::1'
-        ),
-        'proxy_url' => 'http://ezproxy.myuniversity.edu/login?url='
-    )
 );
 
 return $config;
