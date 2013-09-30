@@ -42,9 +42,9 @@ use Zend\Mvc\Controller\AbstractActionController;
 class RedirectController extends AbstractVuDL
 {
     /**
+     * Redirect old-style URLs to new-style URLs.
      *
-     *
-     *
+     * @return mixed
      */
     public function redirectAction()
     {
@@ -83,11 +83,21 @@ class RedirectController extends AbstractVuDL
         }
     }
 
+    /**
+     * Redirect the old about.php to the new About action
+     *
+     * @return mixed
+     */
     public function aboutAction()
     {
         return $this->redirect()->toRoute('vudl-about');
     }
 
+    /**
+     * Redirect the old collections.php to the new Collection view
+     *
+     * @return mixed
+     */
     public function collectionAction()
     {
         return $this->redirect()->toRoute('vudl-default-collection');
