@@ -72,7 +72,7 @@ class VudlController extends AbstractVuDL
      */
     protected function getCache($cache, $key, $moddate = null)
     {
-        if(strtolower($this->params()->fromQuery('cache')) == 'no') {
+        if (strtolower($this->params()->fromQuery('cache')) == 'no') {
             return false;
         }
         if ($cache && $cache_item = $cache->getItem($key)) {
@@ -134,20 +134,21 @@ class VudlController extends AbstractVuDL
     /**
      * Returns file contents of the structmap, our most common call
      *
-     * @param string $id - record id
+     * @param string $id record id
      *
      * @return string $id
      */
     protected function getStructmap($id)
     {
         if (!isset($this->structmaps[$id])) {
-            if(!$this->structmaps[$id] = file_get_contents(
+            if (!$this->structmaps[$id] = file_get_contents(
                 $this->getFedoraBase() . $id . '/datastreams/STRUCTMAP/content'
             )) {
                 $structmap = array();
                 $memberList = $this->memberList($id);
                 foreach ($memberList as $i=>$member) {
-                    $structmap[$i] = 'div ORDER="' . ($i+1) . '"<"' . $member['id'] . '"';
+                    $structmap[$i] = 'div ORDER="' . ($i+1) . '"<"' . $member['id']
+                        . '"';
                 }
                 $this->structmaps[$id] = implode($structmap);
             }
@@ -158,7 +159,8 @@ class VudlController extends AbstractVuDL
     /**
      * Gathers details on a file based on the id
      *
-     * @param string $id - record id
+     * @param string $id       record id
+     * @param bool   $skipSolr Should we skip accessing the Solr index for details?
      *
      * @return associative array
      */
@@ -228,7 +230,7 @@ class VudlController extends AbstractVuDL
     /**
      * Returns an array of classes for this object
      *
-     * @param string $id - record id
+     * @param string $id record id
      *
      * @return array
      */
@@ -251,7 +253,7 @@ class VudlController extends AbstractVuDL
      * Returns the root id for any parent this item may have
      * ie. If we're requesting a specific page, return the book
      *
-     * @param string $id - record id
+     * @param string $id record id
      *
      * @return string $id
      */
@@ -269,8 +271,8 @@ class VudlController extends AbstractVuDL
     /**
      * Returns the page number of the child in a parent
      *
-     * @param string $parent - parent record id
-     * @param string $child  - child record id
+     * @param string $parent parent record id
+     * @param string $child  child record id
      *
      * @return string $id
      */
@@ -296,14 +298,15 @@ class VudlController extends AbstractVuDL
     /**
      * Generate an array of all child pages and their information/images
      *
-     * @param string $root  - record id to search under
-     * @param string $start - page/doc to start with for the return
+     * @param string $root       record id to search under
+     * @param string $start      page/doc to start with for the return
+     * @param int    $pageLength page length (leave null to use default)
      *
      * @return associative array of the lists with their members
      */
-    protected function getOutline($root, $start = 0, $pageLength = NULL)
+    protected function getOutline($root, $start = 0, $pageLength = null)
     {
-        if($pageLength == NULL) {
+        if ($pageLength == null) {
             $pageLength = $this->getFedoraPageLength();
         }
         // Check Zend cache
@@ -368,7 +371,10 @@ class VudlController extends AbstractVuDL
                     if (!$masterIndex) {
                         $type = 'page';
                     } else {
-                        $type = substr($list[2][$masterIndex], strpos($list[2][$masterIndex], '/')+1);
+                        $type = substr(
+                            $list[2][$masterIndex],
+                            strpos($list[2][$masterIndex], '/') + 1
+                        );
                     }
                     $item = array(
                         'id' => $id,
@@ -403,7 +409,6 @@ class VudlController extends AbstractVuDL
                 }
             }
         }
-//        var_dump($outline);
         return $outline;
     }
 
@@ -519,15 +524,21 @@ class VudlController extends AbstractVuDL
         $ret = array();
         $div = '';
 
-        $preTitle = '<div class="accordion-group"><div class="accordion-heading"><a class="accordion-toggle" data-toggle="collapse" data-parent="#techinfo" ';
+        $preTitle = '<div class="accordion-group"><div class="accordion-heading">'
+            . '<a class="accordion-toggle" data-toggle="collapse" '
+            . 'data-parent="#techinfo" ';
         $postID = '</a></div><div ';
-        $postTitle = ' class="accordion-body collapse"><div class="accordion-inner">';
+        $postTitle
+            = ' class="accordion-body collapse"><div class="accordion-inner">';
         $closer = '</div></div></div>';
 
         // ALL FILES
-        $div .= $preTitle . 'href="#allFiles">All Files' . $postID . 'id="allFiles"' . $postTitle;
+        $div .= $preTitle . 'href="#allFiles">All Files' . $postID . 'id="allFiles"'
+            . $postTitle;
         foreach ($record as $key=>$link) {
-            if (is_array($record[$key]) || strpos($key, '-') !== false  || $link == $record['id']) {
+            if (is_array($record[$key]) || strpos($key, '-') !== false
+                || $link == $record['id']
+            ) {
                 continue;
             }
             $div .= '<a class="btn btn-block" href="'
@@ -538,8 +549,10 @@ class VudlController extends AbstractVuDL
                         'type'=>strtoupper($key)
                     )
                 ) . '?download=true">' . strToUpper($key);
-            if(isset($record['mimetypes'])) {
-                $div .= '<span class="pull-right">' . $record['mimetypes'][array_search(strToUpper($key), $record['datastreams'])] .'</span></a>';
+            if (isset($record['mimetypes'])) {
+                $mtKey = array_search(strToUpper($key), $record['datastreams']);
+                $div .= '<span class="pull-right">' . $record['mimetypes'][$mtKey]
+                    .'</span></a>';
             }
         }
         $div .= $closer;
@@ -549,11 +562,13 @@ class VudlController extends AbstractVuDL
             $ocrURL = $this->getFedoraBase()
                 . $record['id']
                 . '/datastreams/OCR-DIRTY/content';
-            $div .= $preTitle . 'href="#ocr">Computer Generated Transcription (OCR)' . $postID . 'id="ocr"' . $postTitle
+            $div .= $preTitle . 'href="#ocr">Computer Generated Transcription (OCR)'
+                . $postID . 'id="ocr"' . $postTitle
                 . '<pre>' . file_get_contents($ocrURL) . '</pre>' . $closer;
         }
         if (isset($record['master-md'])) {
-            $div .= $preTitle . 'href="#xml">Technical Information (Master File)' . $postID . 'id="xml"' . $postTitle;
+            $div .= $preTitle . 'href="#xml">Technical Information (Master File)'
+                . $postID . 'id="xml"' . $postTitle;
             $old = array(
                 '/<(\/[^>]+)>/',
                 '/<([^>]+)>/',
@@ -637,7 +652,8 @@ class VudlController extends AbstractVuDL
                 . $this->url()->fromRoute('vudl-collection', array('id'=>$id))
                 . '">' . $title . '</a> <span class="divider">&gt;</span></li>';
         }
-        $breadcrumbs .= '<span class="active" title="'.str_replace('"', "'", $details['title']).'">';
+        $breadcrumbs .= '<span class="active" title="'
+            . str_replace('"', "'", $details['title']).'">';
         $breadcrumbs .= strlen($details['title']) > 100
             ? substr($details['title'], 0, 100) . '...'
             : $details['title'];
@@ -681,9 +697,11 @@ class VudlController extends AbstractVuDL
         // File information / description
         $fileDetails = $this->getDetails($root);
         if (!$fileDetails) {
-            throw new \Exception('Record not found. Please use the search bar to'
-		. 'try to find what you were looking for.<br/><br/>If this problem persists, '
-                . 'please report the problem.<br/><br/>');
+            throw new \Exception(
+                'Record not found. Please use the search bar to'
+                . 'try to find what you were looking for.<br/><br/>'
+                . 'If this problem persists,  please report the problem.<br/><br/>'
+            );
         }
         // Copyright information
         $licenseUrl = $this->getFedoraBase() .$root. '/datastreams/LICENSE/content';
@@ -798,22 +816,28 @@ class VudlController extends AbstractVuDL
     public function aboutAction()
     {
         $view = $this->createViewModel();
-        $connector = $this->getServiceLocator()->get('VuFind\Search\BackendManager')->get('Solr')->getConnector();
-        $params = new \VuFindSearch\ParamBag(array('q'=>'modeltype_str_mv:"vudl-system:FolderCollection"'));
-        $response = $connector->search($params);
-        $params = new \VuFindSearch\ParamBag(array('q'=>'modeltype_str_mv:"vudl-system:ResourceCollection"'));
-        $response .= $connector->search($params);
-        $params = new \VuFindSearch\ParamBag(array('q'=>'modeltype_str_mv:"vudl-system:ImageData"'));
-        $response .= $connector->search($params);
-        $params = new \VuFindSearch\ParamBag(array('q'=>'modeltype_str_mv:"vudl-system:PDFData"'));
-        $response .= $connector->search($params);
+        $connector = $this->getServiceLocator()->get('VuFind\Search\BackendManager')
+            ->get('Solr')->getConnector();
+        $queries = array(
+            'modeltype_str_mv:"vudl-system:FolderCollection"',
+            'modeltype_str_mv:"vudl-system:ResourceCollection"',
+            // TODO: make these work:
+            //'modeltype_str_mv:"vudl-system:ImageData"',
+            //'modeltype_str_mv:"vudl-system:PDFData"',
+        );
+        $response = '';
+        foreach ($queries as $q) {
+            $params = new \VuFindSearch\ParamBag(array('q'=>$q));
+            $response .= $connector->search($params);
+        }
         $result = array();
         preg_match_all('/numFound="([^"]*)"/', $response, $result);
         $view->totals = array(
             'folders'=>intval($result[1][0]),
             'resources'=>intval($result[1][1]),
-            'images'=>intval($result[1][2]),
-            'pdfs'=>intval($result[1][3])
+            // TODO: make these work:
+            //'images'=>intval($result[1][2]),
+            //'pdfs'=>intval($result[1][3])
         );
         return $view;
     }
@@ -865,8 +889,8 @@ class VudlController extends AbstractVuDL
      */
     protected function getParentList($id)
     {
-	if(isset($this->parentLists[$id])) {
-	    return $this->parentLists[$id];
+        if (isset($this->parentLists[$id])) {
+            return $this->parentLists[$id];
         }
         $query = 'select $child $parent $parentTitle from <#ri> '
                 . 'where walk ('
@@ -886,11 +910,11 @@ class VudlController extends AbstractVuDL
             }
             list($child, $parent, $title) = explode(',', substr($list[$i], 12), 3);
             $parent = substr($parent, 12);
-            if($parent == $this->getFedoraRootID()) {
+            if ($parent == $this->getFedoraRootID()) {
                 $roots[] = $child;
                 continue;
             }
-            if($parent == 'vudl:1') {
+            if ($parent == 'vudl:1') {
                 continue;
             }
             if (isset($tree[$parent])) {
@@ -916,20 +940,23 @@ class VudlController extends AbstractVuDL
             }
             $ret[] = array_reverse($path[1]);
         }
-	$this->parentLists[$id] = $ret;
+        $this->parentLists[$id] = $ret;
         return $ret;
     }
 
     /**
+     * Redirect to the appropriate sibling.
      *
-     *
-     *
+     * @return mixed
      */
     protected function siblingAction()
     {
         $params = $this->params()->fromQuery();
         $members = $data = array();
-        preg_match_all('/div ORDER="([^"]*)[^<]*<[^<]*"(vudl:[^"]*)/i', $this->getStructMap($params['trail']), $data);
+        preg_match_all(
+            '/div ORDER="([^"]*)[^<]*<[^<]*"(vudl:[^"]*)/i',
+            $this->getStructMap($params['trail']), $data
+        );
         for ($i=0;$i<count($data[0]);$i++) {
             $members[intval($data[1][$i])-1] = $data[2][$i];
         }
@@ -944,11 +971,16 @@ class VudlController extends AbstractVuDL
             }
         }
         if ($index == -1) {
-            return $this->redirect()->toRoute('vudl-collection', array('id'=>$params['trail']));
+            return $this->redirect()
+                ->toRoute('vudl-collection', array('id'=>$params['trail']));
         } elseif (isset($params['prev_x'])) {
-            return $this->redirect()->toRoute('vudl-record', array('id'=>$members[($index-1)%count($members)]));
+            return $this->redirect()->toRoute(
+                'vudl-record', array('id'=>$members[($index-1)%count($members)])
+            );
         } else {
-            return $this->redirect()->toRoute('vudl-record', array('id'=>$members[($index+1)%count($members)]));
+            return $this->redirect()->toRoute(
+                'vudl-record', array('id'=>$members[($index+1)%count($members)])
+            );
         }
     }
 
