@@ -961,7 +961,10 @@ class VudlController extends AbstractVuDL
             $members[intval($data[1][$i])-1] = $data[2][$i];
         }
         if (count($members) < 2) {
-            return $this->redirect()->toRoute('Collection', 'Home', array('id'=>$params['trail']));
+            // TODO: better behavior for prev/next in collection w/ 1 item:
+            return $this->redirect()->toRoute(
+                'collection-home', array('id'=>$params['trail'])
+            );
         }
         $index = -1;
         foreach ($members as $i=>$member) {
