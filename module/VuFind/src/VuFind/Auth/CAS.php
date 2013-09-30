@@ -47,7 +47,7 @@ class CAS extends AbstractBase
      *
      * @var boolean
      */
-    protected $phpCASSetup = FALSE;
+    protected $phpCASSetup = false;
 
     /**
      * Validate configuration parameters.  This is a support method for getConfig(),
@@ -57,7 +57,7 @@ class CAS extends AbstractBase
      * @throws AuthException
      * @return void
      */
-    
+
 
     protected function validateConfig()
     {
@@ -126,7 +126,7 @@ class CAS extends AbstractBase
         // Configure phpCAS
         $cas = $this->getConfig()->CAS;
         $casauth = $this->setupCAS();
-        $casauth->forceAuthentication();        
+        $casauth->forceAuthentication();
 
 
         // Check if username is set.
@@ -141,7 +141,7 @@ class CAS extends AbstractBase
 
         // Has the user configured attributes to use for populating the user table?
         $attribsToCheck = array(
-            "cat_username", "cat_password", "email", "lastname", "firstname", 
+            "cat_username", "cat_password", "email", "lastname", "firstname",
             "college", "major", "home_library"
         );
         foreach ($attribsToCheck as $attribute) {
@@ -150,15 +150,14 @@ class CAS extends AbstractBase
                 if ($attribute != 'cat_password') {
                     $user->$attribute = $value;
                 } else {
-                   $catPassword = $value;
+                    $catPassword = $value;
                 }
             }
         }
 
         // Save credentials if applicable:
         if (!empty ($catPassword) && !empty($user->cat_username)) {
-           $user->saveCredentials($user->cat_username, $catPassword);
-
+            $user->saveCredentials($user->cat_username, $catPassword);
         }
 
         // Save and return the user object:
@@ -200,10 +199,10 @@ class CAS extends AbstractBase
         if (isset($config->CAS->username)
             && isset($config->CAS->logout)
         ) {
-             $casauth = $this->setupCAS();
-           if($casauth->checkAuthentication() !== TRUE) {
-              return empty($username);
-           }
+            $casauth = $this->setupCAS();
+            if ($casauth->checkAuthentication() !== true) {
+                return empty($username);
+            }
         }
         return false;
     }
@@ -266,19 +265,24 @@ class CAS extends AbstractBase
      */
     protected function setupCAS()
     {
-       $casauth = new \phpCAS();
+        $casauth = new \phpCAS();
 
-       // Check to see if phpCAS has already been setup. If it has, than skip as client can only be called once.
-       if (!$this->phpCASSetup) {
-           $cas = $this->getConfig()->CAS;
-           if (isset($cas->log) && !empty($cas->log) && isset($cas->debug) && ($cas->debug)) {
-               $casauth->setDebug($cas->log);
-           }
-           $casauth->client(SAML_VERSION_1_1, $cas->server, (int)$cas->port, $cas->context, FALSE);
-           $casauth->setCasServerCACert($cas->CACert);
-           $this->phpCASSetup = TRUE;
-       }
-       
-       return $casauth;
+        // Check to see if phpCAS has already been setup. If it has, than skip as
+        // client can only be called once.
+        if (!$this->phpCASSetup) {
+            $cas = $this->getConfig()->CAS;
+            if (isset($cas->log)
+                && !empty($cas->log) && isset($cas->debug) && ($cas->debug)
+            ) {
+                $casauth->setDebug($cas->log);
+            }
+            $casauth->client(
+                SAML_VERSION_1_1, $cas->server, (int)$cas->port, $cas->context, false
+            );
+            $casauth->setCasServerCACert($cas->CACert);
+            $this->phpCASSetup = true;
+        }
+
+        return $casauth;
     }
 }
