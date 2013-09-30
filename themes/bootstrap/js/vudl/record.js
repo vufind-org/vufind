@@ -128,7 +128,7 @@ $(document).ready(function() {
   });
   // Accordion size  
   $('.item-list').css({
-    'height':Math.max(150, $('#view').height()-$('#side-nav').position()-2),
+    'height':Math.max(200, $('#view').height()-$('#side-nav').position()-2),
     'overflow-y':'auto'
   })
   // Initial events
