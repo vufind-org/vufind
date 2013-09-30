@@ -76,7 +76,6 @@ class RedirectController extends AbstractVuDL
                 . " 'http://digital.library.villanova.edu/"
                 . str_replace('%2F', '/', rawurlencode(implode('/', $parts)))
                 . '/' . $file . "'";
-            //var_dump($data['query']);
             $client->setParameterPost($data);
             $response = $client->send();
             preg_match('/info:fedora\/([^>]+)/', $response->getBody(), $id);
