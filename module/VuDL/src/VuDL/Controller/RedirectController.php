@@ -55,8 +55,10 @@ class RedirectController extends AbstractVuDL
             'flush' => false,
             'lang'  => 'itql',
             'format'=> 'Simple',
-            'query' => 'select $object from <#ri> where $object <http://digital.library.villanova.edu/rdf/relations#hasLegacyURL> '.
-                "'http://digital.library.villanova.edu/" . $collection . '/' . $file . "'"
+            'query' => 'select $object from <#ri> where $object '
+                . '<http://digital.library.villanova.edu/rdf/relations#hasLegacyURL>'
+                . " 'http://digital.library.villanova.edu/" . $collection . '/'
+                . $file . "'"
         );
         $client = new \Zend\Http\Client($this->getFedoraQueryURL());
         $client->setMethod('POST');
@@ -69,8 +71,11 @@ class RedirectController extends AbstractVuDL
             $parts = explode('/', $file);
             $file = array_pop($parts);
             array_unshift($parts, $collection);
-            $data['query'] = 'select $object from <#ri> where $object <http://digital.library.villanova.edu/rdf/relations#hasLegacyURL> '.
-                "'http://digital.library.villanova.edu/" . str_replace('%2F', '/', rawurlencode(implode('/', $parts))) . '/' . $file . "'";
+            $data['query'] = 'select $object from <#ri> where $object '
+                . '<http://digital.library.villanova.edu/rdf/relations#hasLegacyURL>'
+                . " 'http://digital.library.villanova.edu/"
+                . str_replace('%2F', '/', rawurlencode(implode('/', $parts)))
+                . '/' . $file . "'";
             //var_dump($data['query']);
             $client->setParameterPost($data);
             $response = $client->send();
@@ -79,7 +84,10 @@ class RedirectController extends AbstractVuDL
         if (count($id) > 1) {
             return $this->redirect()->toRoute('vudl-record', array('id'=>$id[1]));
         } else {
-            throw new \Exception('Could not map legacy URL to ID. Please search for your desired record above.');
+            throw new \Exception(
+                'Could not map legacy URL to ID. '
+                . 'Please search for your desired record above.'
+            );
         }
     }
 
