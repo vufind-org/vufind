@@ -8,6 +8,14 @@ $config = array(
             'vudl' => 'VuDL\Controller\VudlController'
         ),
     ),
+    'service_manager' => array(
+        'factories' => array(
+            'VuDL\Fedora' => function ($sm) {
+                return new \VuDL\Fedora(
+                    $sm->get('VuFind\Config')->get('VuDL')
+                );
+            })
+    ),
     'vufind' => array(
         'plugin_managers' => array(
             'recorddriver' => array(

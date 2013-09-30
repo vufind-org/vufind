@@ -60,51 +60,17 @@ class AbstractVuDL extends \VuFind\Controller\AbstractBase
         }
         return $this->vuDLConfig;
     }
-
+    
     /**
-     * Get Fedora Base URL.
+     * Get VuDL Licenses.
      *
-     * @return string
+     * @return array
      */
-    protected function getFedoraBase()
+    protected function getFedora()
     {
-        $cfg = $this->getVuDLConfig();
-        return isset($cfg->Fedora->url_base) ? $cfg->Fedora->url_base : null;
+        return $this->getServiceLocator()->get('VuDL\Fedora');
     }
-
-    /**
-     * Get Fedora Page Length.
-     *
-     * @return string
-     */
-    protected function getFedoraPageLength()
-    {
-        $cfg = $this->getVuDLConfig();
-        return isset($cfg->Fedora->page_length) ? $cfg->Fedora->page_length : 16;
-    }
-
-    /**
-     * Get Fedora Query URL.
-     *
-     * @return string
-     */
-    protected function getFedoraQueryURL()
-    {
-        $cfg = $this->getVuDLConfig();
-        return isset($cfg->Fedora->query_url) ? $cfg->Fedora->query_url : null;
-    }
-
-    /**
-     * Get Fedora Root ID.
-     *
-     * @return string
-     */
-    protected function getFedoraRootID()
-    {
-        $cfg = $this->getVuDLConfig();
-        return isset($cfg->Fedora->root_id) ? $cfg->Fedora->root_id : null;
-    }
-
+    
     /**
      * Get VuDL Licenses.
      *

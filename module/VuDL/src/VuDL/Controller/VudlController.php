@@ -121,7 +121,7 @@ class VudlController extends AbstractVuDL
     {
         if (!isset($this->datastreams[$id])) {
             $this->datastreams[$id] = file_get_contents(
-                $this->getFedoraBase() . $id . '/datastreams?format=xml'
+                $this->getFedora()->getBase() . $id . '/datastreams?format=xml'
             );
         }
         if ($xml) {
@@ -142,7 +142,7 @@ class VudlController extends AbstractVuDL
     {
         if (!isset($this->structmaps[$id])) {
             if (!$this->structmaps[$id] = file_get_contents(
-                $this->getFedoraBase() . $id . '/datastreams/STRUCTMAP/content'
+                $this->getFedora()->getBase() . $id . '/datastreams/STRUCTMAP/content'
             )) {
                 $structmap = array();
                 $memberList = $this->memberList($id);
@@ -216,7 +216,7 @@ class VudlController extends AbstractVuDL
         preg_match_all(
             '/<[^\/]*dc:([^ >]+)>([^<]+)/',
             file_get_contents(
-                $this->getFedoraBase() . $id . '/datastreams/DC/content'
+                $this->getFedora()->getBase() . $id . '/datastreams/DC/content'
             ),
             $dc
         );
@@ -237,7 +237,7 @@ class VudlController extends AbstractVuDL
     protected function getClasses($id)
     {
         $data = file_get_contents(
-            $this->getFedoraBase() . $id . '/datastreams/RELS-EXT/content'
+            $this->getFedora()->getBase() . $id . '/datastreams/RELS-EXT/content'
         );
         $matches = array();
         preg_match_all(
@@ -307,13 +307,13 @@ class VudlController extends AbstractVuDL
     protected function getOutline($root, $start = 0, $pageLength = null)
     {
         if ($pageLength == null) {
-            $pageLength = $this->getFedoraPageLength();
+            $pageLength = $this->getFedora()->getPageLength();
         }
         // Check Zend cache
         $manager = $this->getServiceLocator();
         $cache = $manager->get('VuFind\CacheManager')->getCache('object');
         // Check modification date
-        $xml = simplexml_load_file($this->getFedoraBase() . $root . '?format=xml');
+        $xml = simplexml_load_file($this->getFedora()->getBase() . $root . '?format=xml');
         $rootModDate = (string)$xml[0]->objLastModDate;
         // Get lists
         $data = $this->getStructmap($root);
@@ -326,7 +326,7 @@ class VudlController extends AbstractVuDL
         foreach ($lists[0] as $i=>$list_id) {
             // Get list name
             $xml = simplexml_load_file(
-                $this->getFedoraBase() . $list_id . '?format=xml'
+                $this->getFedora()->getBase() . $list_id . '?format=xml'
             );
             $outline['names'][] = (String) $xml[0]->objLabel;
             $moddate[$i] = max((string)$xml[0]->objLastModDate, $rootModDate);
@@ -559,7 +559,7 @@ class VudlController extends AbstractVuDL
 
         // OCR
         if (isset($record['ocr-dirty'])) {
-            $ocrURL = $this->getFedoraBase()
+            $ocrURL = $this->getFedora()->getBase()
                 . $record['id']
                 . '/datastreams/OCR-DIRTY/content';
             $div .= $preTitle . 'href="#ocr">Computer Generated Transcription (OCR)'
@@ -596,7 +596,7 @@ class VudlController extends AbstractVuDL
                 $old,
                 $new,
                 file_get_contents(
-                    $this->getFedoraBase()
+                    $this->getFedora()->getBase()
                     . $record['id']
                     . '/datastreams/MASTER-MD/content'
                 )
@@ -704,7 +704,7 @@ class VudlController extends AbstractVuDL
             );
         }
         // Copyright information
-        $licenseUrl = $this->getFedoraBase() .$root. '/datastreams/LICENSE/content';
+        $licenseUrl = $this->getFedora()->getBase() .$root. '/datastreams/LICENSE/content';
         $check = get_headers($licenseUrl);
         if (!strpos($check[0], '404')) {
             $xml = file_get_contents($licenseUrl);
@@ -725,7 +725,7 @@ class VudlController extends AbstractVuDL
         // Get ids for all files
         $outline = $this->getOutline(
             $root,
-            max(0, $view->initPage-($this->getFedoraPageLength()/2))
+            max(0, $view->initPage-($this->getFedora()->getPageLength()/2))
         );
 
         // Send the data for the first pages
@@ -740,7 +740,7 @@ class VudlController extends AbstractVuDL
             $view->parentID = $root;
             $view->breadcrumbEnd = $outline['lists'][0][$view->page]['label'];
         }
-        $view->pagelength = $this->getFedoraPageLength();
+        $view->pagelength = $this->getFedora()->getPageLength();
         return $view;
     }
 
@@ -752,7 +752,7 @@ class VudlController extends AbstractVuDL
     public function homeAction()
     {
         $view = $this->createViewModel();
-        $data =$this->memberList($this->getFedoraRootID());
+        $data =$this->memberList($this->getFedora()->getRootID());
         $outline = array();
         foreach ($data as $item) {
             $outline[] = array(
@@ -854,33 +854,6 @@ class VudlController extends AbstractVuDL
     }
 
     /**
-     * Consolidation of Zend Client calls
-     *
-     * @param string $query   Query for call
-     * @param array  $options Additional options
-     *
-     * @return Response
-     */
-    protected function query($query, $options = array())
-    {
-        $data = array(
-            'type'  => 'tuples',
-            'flush' => false,
-            'lang'  => 'itql',
-            'format'=> 'Simple',
-            'query' => $query
-        );
-        foreach ($options as $key=>$value) {
-            $data[$key] = $value;
-        }
-        $client = new \Zend\Http\Client($this->getFedoraQueryURL());
-        $client->setMethod('POST');
-        $client->setAuth('fedoraAdmin', 'fedoraAdmin');
-        $client->setParameterPost($data);
-        return $client->send();
-    }
-
-    /**
      * Tuple call to return and parse a list of parents...
      *
      * @param string $id ...for this id
@@ -899,7 +872,7 @@ class VudlController extends AbstractVuDL
                         . '$parent '
                     . 'and $child <fedora-rels-ext:isMemberOf> $parent) '
                 . 'and $parent <fedora-model:label> $parentTitle';
-        $response = $this->query($query, array('format'=>'CSV'));
+        $response = $this->getFedora()->query($query, array('format'=>'CSV'));
         $list = explode("\n", $response->getBody());
         $tree = array();
         $items = array();
@@ -910,7 +883,7 @@ class VudlController extends AbstractVuDL
             }
             list($child, $parent, $title) = explode(',', substr($list[$i], 12), 3);
             $parent = substr($parent, 12);
-            if ($parent == $this->getFedoraRootID()) {
+            if ($parent == $this->getFedora()->getRootID()) {
                 $roots[] = $child;
                 continue;
             }
@@ -997,7 +970,7 @@ class VudlController extends AbstractVuDL
             . 'where $member <fedora-rels-ext:isMemberOf> <info:fedora/' .$root. '> '
             . 'and $member <fedora-model:label> $memberTitle '
             . 'and $member <dc:identifier> $memberPID';
-        $response = $this->query($query, array('format'=>'CSV'));
+        $response = $this->getFedora()->query($query, array('format'=>'CSV'));
         $list = explode("\n", $response->getBody());
         $items = array();
         for ($i=1;$i<count($list);$i++) {
