@@ -158,7 +158,9 @@ class SolrVudl extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
+     * Does this record need to be protected from public access?
      *
+     * @return bool
      */
     public function isProtected()
     {
@@ -179,7 +181,9 @@ class SolrVudl extends \VuFind\RecordDriver\SolrDefault
     }
 
     /**
+     * Get the proxy prefix for protecting this record.
      *
+     * @return string
      */
     public function getProxyURL()
     {
