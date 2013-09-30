@@ -76,20 +76,6 @@ $config = array(
                     )
                 )
             ),
-            'vudl-redirect' => array(
-                'type'    => 'Zend\Mvc\Router\Http\Segment',
-                'options' => array(
-                    'route'    => '/:collection[/:file]',
-                    'constraints' => array(
-                        'collection' => '',
-                        'file'       => '.*',
-                    ),
-                    'defaults' => array(
-                        'controller' => 'Redirect',
-                        'action'     => 'redirect',
-                    )
-                )
-            ),
             'vudl-about-php' => array(
                 'type' => 'Zend\Mvc\Router\Http\Literal',
                 'options' => array(
