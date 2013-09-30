@@ -99,7 +99,7 @@ function prevPage() {
   $('.page-link.alert-info').prev('.page-link').click();
   scrollToSelected();
 }
-function nextPage() {	
+function nextPage() {  
   $('.page-link.alert-info').next('.page-link').click();
   scrollToSelected();
 }
@@ -107,38 +107,31 @@ function scrollToSelected() {
   $('#list0').scrollTop($('#list0').scrollTop()+$('#list0 .alert-info').offset().top-400);
 }
 
-function sizeAccordion(offset) {
-	if(!offset) offset = 1.5;
-	$('#side-nav .accordion-inner').css({
-		'height':Math.max(150, $(window).height()-$('#side-nav').position().top-(36*($('.accordion-heading').length+offset))),
-		'overflow-y':'auto'
-	})
-}
-
 $(document).ready(function() {
-	$('.page-link').click(function() {
-		$('.page-link.alert-info').removeClass('alert-info');
-		$(this).addClass('alert-info');
-	});  
-	// Scroll Event
-	$('.item-list').scroll(function() {
-		// Flag pages on screen		
-		$('.page-link').removeClass('onscreen').each(function(index, value) {
-			if($(value).offset().top > 0
-			&& $(value).offset().top < $('#list0').height()+300
-			&& $(value).hasClass('loading')) {
-				$(value).addClass('onscreen').removeClass('muted');
-			}
-		});
-		if(loadWait) return;
-		loadWait = true;
-		findVisible();
-	});
-	// Initial events
-	ajaxGetView(initPage);
-	sizeAccordion();
-	scrollToSelected();
-});
-$(window).resize(function() {
-	sizeAccordion(-.5);
+  $('.page-link').click(function() {
+    $('.page-link.alert-info').removeClass('alert-info');
+    $(this).addClass('alert-info');
+  });  
+  // Scroll Event
+  $('.item-list').scroll(function() {
+    // Flag pages on screen    
+    $('.page-link').removeClass('onscreen').each(function(index, value) {
+      if($(value).offset().top > 0
+      && $(value).offset().top < $('#list0').height()+300
+      && $(value).hasClass('loading')) {
+        $(value).addClass('onscreen').removeClass('muted');
+      }
+    });
+    if(loadWait) return;
+    loadWait = true;
+    findVisible();
+  });
+  // Accordion size  
+  $('.item-list').css({
+    'height':Math.max(150, $('#view').height()-$('#side-nav').position()-2),
+    'overflow-y':'auto'
+  })
+  // Initial events
+  ajaxGetView(initPage);
+  scrollToSelected();
 });

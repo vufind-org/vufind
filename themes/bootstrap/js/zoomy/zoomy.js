@@ -1,23 +1,7 @@
 (function($){
   var Zoomy = function(src, thumb) {
     var state,
-    legacy = navigator.appVersion.match(/MSIE ([^;]+)/) // If we're in an old version of IE or on a mobile device,
-      ? parseFloat(navigator.appVersion.match(/MSIE ([^;]+)/)[1]) < 10 // no fancy loading bar magic (memory issues).
-      : false;
-    if(!legacy) legacy = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
-		legacy = true;
     core = {
-      decode: function(bytes) {
-        var binary = '';
-        var bytes = new Uint8Array(bytes);
-        var len = bytes.byteLength;
-        for (var i=0;i<len;i+=8) {
-          binary += String.fromCharCode(
-            bytes[i],bytes[i+1],bytes[i+2],bytes[i+3],bytes[i+4],bytes[i+5],bytes[i+6],bytes[i+7]
-          );
-        } 
-        return window.btoa(binary);
-      },
       load: function(src, thumb) {
         state = {
           'container':{
@@ -50,44 +34,14 @@
           'oldzoom':state ? state.page.zoom : undefined
         };
         // Load image into page and map
-        state.bar.css({width:'1px'}).html('loading...');
-        var req = null;
-        if (window.XMLHttpRequest) {
-            req = new XMLHttpRequest();
-        } else if (window.ActiveXObject) { // Older IE.
-            req = new ActiveXObject("MSXML2.XMLHTTP.3.0");
-        }
-        req.onprogress = function(evt) {
-          if (evt.lengthComputable) {
-            var percent = evt.loaded / evt.total;
-            state.bar.css({'width':200*percent});
-            //console.log(percent);
-          }
-        };
-        req.onreadystatechange = function(evt) {
-          if(req.readyState == 4 && req.status == 200) {
-            // Decode and plant images
-            state.bar.html('decoding...')
-            //console.log(req.response);
-            var code = core.decode(req.response);
-            if(!thumb) {
-              state.minimap.attr('src', 'data:image/jpg;base64,'+code);
-            }
-            state.img.attr('src', 'data:image/jpg;base64,'+code);
-            code = null;
-            req = null;
-          }
-        };
-
         state.img.bind('load', function() {
           // Fix width and height
-          if(legacy) {
-            var img = new Image();
-            img.src = state.img.attr('src');
-            state.page.width  = img.width;
-            state.page.height = img.height;
-            $('.zoomy-container .loading').hide();
-          } else {
+          var img = new Image();
+          img.src = state.img.attr('src');
+          state.page.width  = img.width;
+          state.page.height = img.height;
+          $('.zoomy-container .loading').hide();
+          if(state.page.width == 0 || state.page.height == 0) {
             state.page.width  = state.img[0].naturalWidth;
             state.page.height = state.img[0].naturalHeight;
           }
@@ -101,12 +55,8 @@
             );
           state.page.zoom = state.oldzoom ? state.oldzoom : state.page.minzoom;
           state.map.zoom = state.map.size/Math.max(state.page.width, state.page.height);
-          state.map.width = state.map.actual
-            ? state.minimap[0].width
-            : Math.floor(state.page.width *state.map.zoom);
-          state.map.height = state.map.actual
-            ? state.minimap[0].height
-            : Math.floor(state.page.height*state.map.zoom);
+          state.map.width = Math.floor(state.page.width *state.map.zoom);
+          state.map.height = Math.floor(state.page.height*state.map.zoom);
           var center = {
             'width' :state.page.zwidth  = state.page.width *state.page.zoom,
             'height':state.page.zheight = state.page.height*state.page.zoom,
@@ -146,7 +96,7 @@
               var height = state.page.sideways ? state.page.zwidth : state.page.zheight;
               var top = height < state.container.height
                        ? (height-state.container.height)/2
-                       : ($(this).offset().top -state.map.elem.offset().top -1)/state.map.zoom*state.page.zoom;						
+                       : ($(this).offset().top -state.map.elem.offset().top -1)/state.map.zoom*state.page.zoom;            
               state.page.elem.css({
                 'left':-left,
                 'top' :-top
@@ -165,36 +115,17 @@
         state.page.elem.hide();
         $('.zoomy-container .zoom').hide();
         $('.zoomy-container .control').hide();
-        if(!legacy) {
+        // Kick off loading
+        if(state.bar) {
           state.bar.parent().show();
-          req.open('GET', src, true);
-          req.responseType = "arraybuffer";
-          req.send();
-        } else {
-          //console.log('Legacy');
-          if(state.bar) {
-            state.bar.parent().show();
-          }
-          $('.zoomy-container .loading').show();
-          state.img.attr('src', src);
-          state.minimap.attr('src', thumb || src);
-        }        
+        }
+        $('.zoomy-container .loading').show();
+        state.img.attr('src', src);
+        // If we have a seperate thumbnail
         if(thumb) {
-          state.minimap.bind('load', function() {
-            if(legacy) {
-              state.map.actual = false;
-              return;
-            }
-            var size = Math.min(Math.max(state.minimap[0].naturalWidth,state.minimap[0].naturalHeight),state.map.size);
-            if(state.map.size != size) {
-              state.map.margin += state.map.size-size-3;
-              state.map.size = size;
-              state.map.actual = true;
-            } else {
-              state.map.actual = false;
-            }
-          });
           state.minimap.attr('src', thumb);
+        } else {
+          state.minimap.attr('src', src);
         }
       },
       rotateLeft: function() {
@@ -375,9 +306,9 @@
       toggleUI: function() {
         $('.zoomy-container .ui').toggle();
         if($('.zoomy-container .ui').is(':hidden')) {
-					$('.zoomy-container #toggle').html('<i class="icon-resize-full icon-rotate-90"></i>');
+          $('.zoomy-container #toggle').html('<i class="icon-resize-full icon-rotate-90"></i>');
         } else {
-					$('.zoomy-container #toggle').html('<i class="icon-resize-small icon-rotate-90"></i>');
+          $('.zoomy-container #toggle').html('<i class="icon-resize-small icon-rotate-90"></i>');
         }
       }
     };

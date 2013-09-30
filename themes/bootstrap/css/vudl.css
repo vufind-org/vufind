@@ -1,3 +1,6 @@
+.item-list {
+  height:600px;
+}
 .page_grid .audio {
   background:url('../images/small/mp3.png');
   box-shadow:none;

@@ -35,6 +35,16 @@ $config = array(
                     'route'    => '/files/:id/:type'
                 )
             ),
+            'vudl-sibling' => array(
+                'type' => 'Zend\Mvc\Router\Http\Segment',
+                'options' => array(
+                    'route'    => '/Vudl/Sibling/',
+                    'defaults' => array(
+                        'controller' => 'VuDL',
+                        'action'     => 'Sibling'
+                    )
+                )
+            ),
             'vudl-collection' => array(
                 'type' => 'Zend\Mvc\Router\Http\Segment',
                 'options' => array(
