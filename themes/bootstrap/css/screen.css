@@ -17,6 +17,7 @@ li a.hidden {display:none}
 .sidebar .checkbox { margin-left:10px }
 .sidebar .small { color:#333;margin-top:1px }
 .sidebar a.small { color:#08C }
+.sidebar a.small .icon { color:transparent }
 .sidebar a.small span { color:#333 }
 .small { font-size:85% }
 .switch-margins,.row .switch-margins,.row-fluid .switch-margins { display: inline-block; margin:auto 0 }

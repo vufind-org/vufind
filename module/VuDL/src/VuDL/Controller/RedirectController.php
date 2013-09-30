@@ -26,7 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
-namespace DigLib\Controller;
+namespace VuDL\Controller;
 use Zend\Mvc\Controller\AbstractActionController;
 
 /**

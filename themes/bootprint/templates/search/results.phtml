@@ -34,7 +34,7 @@
   $this->headScript()->appendFile("check_save_statuses.js");
 ?>
 
-<div class="<?=$this->layoutClass('mainbody')?> pad">
+<div class="<?=$this->layoutClass('mainbody')?>">
   <? if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
     <? foreach ($this->results->getRecommendations('top') as $current): ?>
       <?=$this->recommend($current)?>

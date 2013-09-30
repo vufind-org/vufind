@@ -1,29 +1,29 @@
-.icon-asterisk,
-.icon-book,
-.icon-bookmark,
-.icon-edit,
-.icon-envelope,
-.icon-envelope-alt,
-.icon-heart,
-.icon-inbox,
-.icon-leaf,
-.icon-list-alt,
-.icon-minus-sign,
-.icon-ok,
-.icon-phone-sign,
-.icon-plus-sign,
-.icon-qrcode,
-.icon-remove,
-.icon-rss,
-.icon-shopping-cart,
-.icon-signin,
-.icon-signout,
-.icon-sitemap,
-.icon-spinner,
-.icon-trash,
-.icon-tree,
-.icon-tree-muted,
-.icon-user {
+i.icon-asterisk,
+i.icon-book,
+i.icon-bookmark,
+i.icon-edit,
+i.icon-envelope,
+i.icon-envelope-alt,
+i.icon-heart,
+i.icon-inbox,
+i.icon-leaf,
+i.icon-list-alt,
+i.icon-minus-sign,
+i.icon-ok,
+i.icon-phone-sign,
+i.icon-plus-sign,
+i.icon-qrcode,
+i.icon-remove,
+i.icon-rss,
+i.icon-shopping-cart,
+i.icon-signin,
+i.icon-signout,
+i.icon-sitemap,
+i.icon-spinner,
+i.icon-trash,
+i.icon-tree,
+i.icon-tree-muted,
+i.icon-user {
   background-position:center top;
   background-repeat:no-repeat;
   background-size:16px 16px;
@@ -31,6 +31,16 @@
   content:'';
   display:inline-block;
   height:16px;
+  margin:0;
+  padding:0;
+  vertical-align:text-bottom;
+  width:16px;
+}
+.nav-list [class^="icon-"] {
+  background-position:center bottom;
+  margin:0;
+  padding:2px 0 0 0;
+  text-align:center;
   vertical-align:text-bottom;
   width:16px;
 }
@@ -43,58 +53,58 @@
   height:16px;
   width:16px
 }
-.small .icon-asterisk,
-.small .icon-book,
-.small .icon-bookmark,
-.small .icon-edit,
-.small .icon-envelope,
-.small .icon-envelope-alt,
-.small .icon-heart,
-.small .icon-inbox,
-.small .icon-leaf,
-.small .icon-list-alt,
-.small .icon-minus-sign,
-.small .icon-ok,
-.small .icon-phone-sign,
-.small .icon-plus-sign,
-.small .icon-qrcode,
-.small .icon-remove,
-.small .icon-rss,
-.small .icon-shopping-cart,
-.small .icon-signin,
-.small .icon-signout,
-.small .icon-sitemap,
-.small .icon-spinner,
-.small .icon-trash,
-.small .icon-tree,
-.small .icon-tree-muted,
-.small .icon-user {
+.small i.icon-asterisk,
+.small i.icon-book,
+.small i.icon-bookmark,
+.small i.icon-edit,
+.small i.icon-envelope,
+.small i.icon-envelope-alt,
+.small i.icon-heart,
+.small i.icon-inbox,
+.small i.icon-leaf,
+.small i.icon-list-alt,
+.small i.icon-minus-sign,
+.small i.icon-ok,
+.small i.icon-phone-sign,
+.small i.icon-plus-sign,
+.small i.icon-qrcode,
+.small i.icon-remove,
+.small i.icon-rss,
+.small i.icon-shopping-cart,
+.small i.icon-signin,
+.small i.icon-signout,
+.small i.icon-sitemap,
+.small i.icon-spinner,
+.small i.icon-trash,
+.small i.icon-tree,
+.small i.icon-tree-muted,
+.small i.icon-user {
   background-size:13px 13px;
   height:13px;
   width:13px;
 }
-.icon-asterisk {background:url('../images/icons/list.png')}
-.icon-book {background:url('../images/icons/book.png')}
-.icon-bookmark {background:url('../images/icons/bookmark_add.png')}
-.icon-edit {background:url('../images/icons/edit.png')}
-.icon-envelope,
-.icon-envelope-alt {background:url('../images/icons/email.png')}
-.icon-heart {background:url('../images/icons/heart.png')}
-.icon-inbox {background:url('../images/icons/box.png')}
-.icon-leaf,.icon-sitemap {background:url('../images/icons/treeCurrent.png')}
-.icon-list-alt {background:url('../images/icons/application_add.png')}
-.icon-minus-sign {background:url('../images/icons/delete.png')}
-.icon-ok {background:url('../images/icons/tick.png')}
-.icon-phone-sign {background:url('../images/icons/phone.png')}
-.icon-plus-sign {background:url('../images/icons/add.png')}
-.icon-qrcode {background:url('../images/icons/qrcode.png')}
-.icon-remove {background:url('../images/icons/delete.png')}
-.icon-rss {background:url('../images/icons/feed.png')}
-.icon-shopping-cart {background:url('../images/icons/cart.png')}
-.icon-signin {background:url('../images/icons/door_in.png')}
-.icon-signout {background:url('../images/icons/door_out.png')}
-.icon-spinner {background:url('../images/icons/ajax_loading.gif')}
-.icon-trash {background:url('../images/icons/bin.gif')}
-.icon-tree {background:url('../images/icons/treeCurrent.png')}
-.icon-tree-muted {background:url('../images/icons/treeMuted.png')}
-.icon-user {background:url('../images/icons/user.png')}
+i.icon-asterisk {background:url('../images/icons/list.png')}
+i.icon-book {background:url('../images/icons/book.png')}
+i.icon-bookmark {background:url('../images/icons/bookmark_add.png')}
+i.icon-edit {background:url('../images/icons/edit.png')}
+i.icon-envelope,
+i.icon-envelope-alt {background:url('../images/icons/email.png')}
+i.icon-heart {background:url('../images/icons/heart.png')}
+i.icon-inbox {background:url('../images/icons/box.png')}
+i.icon-leaf,.icon-sitemap {background:url('../images/icons/treeCurrent.png')}
+i.icon-list-alt {background:url('../images/icons/application_add.png')}
+i.icon-minus-sign {background:url('../images/icons/delete.png')}
+i.icon-ok {background:url('../images/icons/tick.png')}
+i.icon-phone-sign {background:url('../images/icons/phone.png')}
+i.icon-plus-sign {background:url('../images/icons/add.png')}
+i.icon-qrcode {background:url('../images/icons/qrcode.png')}
+i.icon-remove {background:url('../images/icons/delete.png')}
+i.icon-rss {background:url('../images/icons/feed.png')}
+i.icon-shopping-cart {background:url('../images/icons/cart.png')}
+i.icon-signin {background:url('../images/icons/door_in.png')}
+i.icon-signout {background:url('../images/icons/door_out.png')}
+i.icon-spinner {background:url('../images/icons/ajax_loading.gif')}
+i.icon-trash {background:url('../images/icons/bin.png')}
+i.icon-tree {background:url('../images/icons/treeCurrent.png')}
+i.icon-tree-muted {background:url('../images/icons/treeMuted.png')}
+i.icon-user {background:url('../images/icons/user.png')}

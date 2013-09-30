@@ -1,11 +1,11 @@
 <?php
-namespace DigLib\Module\Configuration;
+namespace VuDL\Module\Configuration;
 
 $config = array(
     'controllers' => array(
         'invokables' => array(
-            'redirect' => 'DigLib\Controller\RedirectController',
-            'vudl' => 'DigLib\Controller\VudlController'
+            'redirect' => 'VuDL\Controller\RedirectController',
+            'vudl' => 'VuDL\Controller\VudlController'
         ),
     ),
     'vufind' => array(
@@ -13,7 +13,7 @@ $config = array(
             'recorddriver' => array(
                 'factories' => array(
                     'solrvudl' => function ($sm) {
-                        return new \DigLib\RecordDriver\SolrVudl(
+                        return new \VuDL\RecordDriver\SolrVudl(
                             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
                             null,
                             $sm->getServiceLocator()->get('VuFind\Config')->get('searches')

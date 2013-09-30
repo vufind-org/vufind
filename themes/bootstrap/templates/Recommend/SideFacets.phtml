@@ -101,7 +101,7 @@ JS;
             <li id="more<?=$this->escapeHtml($title)?>"><a href="javascript:moreFacets('<?=$title ?>')"><?=$this->transEsc('more')?> ...</a></li>
           <? endif; ?>
           <? if ($thisFacet['isApplied']): ?>
-            <li<? if($i>5) echo $moreClass ?>>
+            <li class="applied<? if($i>5) echo ' narrowGroupHidden_'.$this->escapeHtml($title).' hidden' ?>">
               <i class="icon-ok pull-right small"></i>
               <?=$this->escapeHtml($thisFacet['displayText'])?>
             </li>

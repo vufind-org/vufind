@@ -26,7 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-namespace DigLib\Controller;
+namespace VuDL\Controller;
 
 /**
  * This controller is for the viewing of the digital library files.

@@ -36,7 +36,7 @@
     <? endif; ?>
     </div>
     <? if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
-    <form class="form-horizontal" method="post" name="themeForm" action="" id="themeForm">
+    <form onChange="document.themeForm.submit()" class="form-horizontal" method="post" name="themeForm" action="" id="themeForm">
       <div class="control-group">
         <label class="control-label" for="themeForm_ui"><?=$this->transEsc("Theme")?>:</label>
         <div class="controls">
