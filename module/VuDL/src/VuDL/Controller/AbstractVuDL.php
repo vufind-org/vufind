@@ -47,6 +47,11 @@ class AbstractVuDL extends \VuFind\Controller\AbstractBase
      */
     protected $vuDLConfig = null;
 
+    /**
+     * Get the VuDL configuration object.
+     *
+     * @return \Zend\Config\Config
+     */
     protected function getVuDLConfig()
     {
         if (null === $this->vuDLConfig) {
