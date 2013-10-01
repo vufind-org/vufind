@@ -53,7 +53,7 @@ select, .btn:not(.btn-link){vertical-align:top}
 .searchbox .nav-tabs {border:0;margin:0 0 0 4px}
 .searchbox .nav-tabs li a {padding:0 5px}
 .searchbox .nav-tabs li a.advanced {border:0;font-size:12px}
-.searchbox .nav-tabs li a:hover {border-color:#C6D880}
+.searchbox .nav-tabs li a:hover {background:none;border-color:#C6D880}
 .searchbox .nav-tabs li.active a:hover,
 .searchbox .nav-tabs li.active a {border-color:#619144;border-bottom-color:#FFF}
 #searchForm {margin-bottom:2px;vertical-align:bottom}
@@ -114,7 +114,7 @@ select, .btn:not(.btn-link){vertical-align:top}
 
 /* --- SEARCH --- */
 .bulkActionButtons {border-bottom:1px solid #DDD;margin-top:6px;padding-bottom:6px}
-.result {padding:6px 0}
+.result {padding:6px 0 3px 0}
 .result:nth-child(odd) {background:#EEE}
 .result>.checkbox {font-weight:bold;margin:2px 0 2px 1%;max-width:6%}
 .result>.checkbox input[type="checkbox"] {margin:3px auto}
