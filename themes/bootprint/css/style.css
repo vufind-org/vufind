@@ -113,12 +113,15 @@ select, .btn:not(.btn-link){vertical-align:top}
 .searchHomeContent #searchForm_type {height:30px}
 
 /* --- SEARCH --- */
-.bulkActionButtons {border-bottom:1px solid #DDD;padding-bottom:6px}
+.bulkActionButtons {border-bottom:1px solid #DDD;margin-top:6px;padding-bottom:6px}
 .result {padding:6px 0}
 .result:nth-child(odd) {background:#EEE}
 .result>.checkbox {font-weight:bold;margin:2px 0 2px 1%;max-width:6%}
 .result>.checkbox input[type="checkbox"] {margin:3px auto}
 .result>.span7 {margin-left:1%;width:52%}
+.result .savedLists {margin:2px 0;padding:6px}
+.result .savedLists ul {margin-bottom:0}
+.span9>.noprint>.help-block {margin-bottom:0}
 
 /* --- VUDL --- */
 #download-button {background:linear-gradient(to bottom, #D7E991 0%,#B5C770 100%);padding:10px 8px 6px 16px}
