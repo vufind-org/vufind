@@ -488,6 +488,7 @@ $config = array(
                 'factories' => array(
                     'aleph' => function ($sm) {
                         return new \VuFind\ILS\Driver\Aleph(
+                            $sm->getServiceLocator()->get('VuFind\DateConverter'),
                             $sm->getServiceLocator()->get('VuFind\CacheManager')
                         );
                     },
