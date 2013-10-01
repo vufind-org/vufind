@@ -99,7 +99,9 @@ class AlephTranslator
                 $line = str_pad($line, 80);
                 $matches = "";
                 if (preg_match($rgxp, $line, $matches)) {
-                    call_user_func_array($callback, array($matches, &$result, $this->charset));
+                    call_user_func_array(
+                        $callback, array($matches, &$result, $this->charset)
+                    );
                 }
             }
         }
@@ -284,7 +286,6 @@ class AlephRestfulException extends ILSException
     {
         return $this->xmlResponse;
     }
-
 }
 
 /**
@@ -337,7 +338,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      * @var \VuFindHttp\HttpServiceInterface
      */
     protected $httpService = null;
-    
+
     /**
      * Date converter object
      *
@@ -348,10 +349,12 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     /**
      * Constructor
      *
-     * @param \VuFind\Cache\Manager $cacheManager Cache manager (optional)
+     * @param \VuFind\Date\Converter $dateConverter Date converter
+     * @param \VuFind\Cache\Manager  $cacheManager  Cache manager (optional)
      */
-    public function __construct(\VuFind\Date\Converter $dateConverter, \VuFind\Cache\Manager $cacheManager = null)
-    {
+    public function __construct(\VuFind\Date\Converter $dateConverter,
+        \VuFind\Cache\Manager $cacheManager = null
+    ) {
         $this->dateConverter = $dateConverter;
         $this->cacheManager = $cacheManager;
     }
@@ -519,8 +522,12 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         $replyCode = (string) $result->{'reply-code'};
         if ($replyCode != "0000") {
             $replyText = (string) $result->{'reply-text'};
-            $this->logger->err("DLF request failed", array('url' => $url,
-                'reply-code' => $replyCode, 'reply-message' => $replyText));
+            $this->logger->err(
+                "DLF request failed", array(
+                    'url' => $url, 'reply-code' => $replyCode,
+                    'reply-message' => $replyText
+                )
+            );
             $ex = new AlephRestfulException($replyText, $replyCode);
             $ex->setXmlResponse($result);
             throw $ex;
@@ -654,20 +661,21 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      * @param array  $ids IDs to search within library
      *
      * @return array
-     * 
+     *
      * Description of AVA tag:
-     * http://igelu.org/wp-content/uploads/2011/09/Staff-vs-Public-Data-views.pdf (page 28)
-     * 
+     * http://igelu.org/wp-content/uploads/2011/09/Staff-vs-Public-Data-views.pdf
+     * (page 28)
+     *
      * a  ADM code - Institution Code
      * b  Sublibrary code - Library Code
      * c  Collection (first found) - Collection Code
      * d  Call number (first found)
-     * e  Availability status  - If it is on loan (it has a Z36), if it is on hold shelf
-     *    (it has  Z37=S) or if it has a processing status. 
+     * e  Availability status  - If it is on loan (it has a Z36), if it is on hold
+     *    shelf (it has  Z37=S) or if it has a processing status.
      * f  Number of items (for entire sublibrary)
      * g  Number of unavailable loans
-     * h  Multi-volume flag (Y/N) If first Z30-ENUMERATION-A is not blank or 0, then the 
-     *    flag=Y, otherwise the flag=N. 
+     * h  Multi-volume flag (Y/N) If first Z30-ENUMERATION-A is not blank or 0, then
+     *    the flag=Y, otherwise the flag=N.
      * i  Number of loans (for ranking/sorting)
      * j  Collection code
      */
@@ -775,15 +783,16 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         } else if (isset($this->defaultPatronId)) {
             $params['patron'] = $this->defaultPatronId;
         }
-        $xml = $this->doRestDLFRequest( array('record', $resource, 'items'), $params);
+        $xml = $this->doRestDLFRequest(array('record', $resource, 'items'), $params);
         foreach ($xml->{'items'}->{'item'} as $item) {
             $item_status         = (string) $item->{'z30-item-status-code'}; // $isc
-            $item_process_status = (string) $item->{'z30-item-process-status-code'}; // $ipsc
+            // $ipsc:
+            $item_process_status = (string) $item->{'z30-item-process-status-code'};
             $sub_library_code    = (string) $item->{'z30-sub-library-code'}; // $slc
             $z30 = $item->z30;
             if ($this->translator) {
-                $item_status = $this->translator->tab15Translate($sub_library_code, 
-                    $item_status, $item_process_status
+                $item_status = $this->translator->tab15Translate(
+                    $sub_library_code, $item_status, $item_process_status
                 );
             } else {
                 $item_status = array(
@@ -865,7 +874,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
                 'number'            => (string) $z30->{'z30-inventory-number'},
                 'barcode'           => (string) $z30->{'z30-barcode'},
                 'description'       => (string) $z30->{'z30-description'},
-                'notes'             => ($note == null) ? null : array($note), 
+                'notes'             => ($note == null) ? null : array($note),
                 'is_holdable'       => true,
                 'addLink'           => $addLink,
                 'holdtype'          => 'hold',
@@ -1488,7 +1497,8 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         }
         $comment = $details['comment'];
         try {
-            $requiredBy = $this->dateConverter->convertFromDisplayDate('Ymd', $details['requiredBy']);
+            $requiredBy = $this->dateConverter
+                ->convertFromDisplayDate('Ymd', $details['requiredBy']);
         } catch (DateException $de) {
             return array(
                 'success'    => false,
@@ -1496,8 +1506,10 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             );
         }
         $patronId = $patron['id'];
-        $body = new \SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?>'
-             . '<hold-request-parameters></hold-request-parameters>');
+        $body = new \SimpleXMLElement(
+            '<?xml version="1.0" encoding="UTF-8"?>'
+            . '<hold-request-parameters></hold-request-parameters>'
+        );
         $body->addChild('pickup-location', $pickupLocation);
         $body->addChild('last-interest-date', $requiredBy);
         $body->addChild('note-l', $comment);
@@ -1511,7 +1523,8 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             );
         } catch (AlephRestfulException $exception) {
             $message = $exception->getMessage();
-            $note = $exception->getXmlResponse()->xpath('/put-item-hold/create-hold/note[@type="error"]');
+            $note = $exception->getXmlResponse()
+                ->xpath('/put-item-hold/create-hold/note[@type="error"]');
             $note = $note[0];
             return array(
                 'success' => false,
@@ -1571,9 +1584,11 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             return "";
         } else if (preg_match("/^[0-9]{8}$/", $date) === 1) { // 20120725
             return $this->dateConverter->convertToDisplayDate('Ynd', $date);
-        } else if (preg_match("/^[0-9]+\/[A-Za-z]{3}\/[0-9]{4}$/", $date) === 1) { // 13/jan/2012
+        } else if (preg_match("/^[0-9]+\/[A-Za-z]{3}\/[0-9]{4}$/", $date) === 1) {
+            // 13/jan/2012
             return $this->dateConverter->convertToDisplayDate('d/M/Y', $date);
-        } else if (preg_match("/^[0-9]+\/[0-9]+\/[0-9]{4}$/", $date) === 1) { // 13/7/2012
+        } else if (preg_match("/^[0-9]+\/[0-9]+\/[0-9]{4}$/", $date) === 1) {
+            // 13/7/2012
             return $this->dateConverter->convertToDisplayDate('d/M/Y', $date);
         } else {
             throw new \Exception("Invalid date: $date");
