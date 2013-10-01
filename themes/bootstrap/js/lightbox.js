@@ -10,9 +10,7 @@ var modalXHR; // Used for current in-progress XHR lightbox request
 // Cart actions based on submission
 // Change the content of the lightbox
 function changeModalContent(html) {
-  $('#modal .modal-body').html(html);
-  registerModalEvents($('#modal'));
-  registerModalForms($('#modal'));
+  $('#modal .modal-body').html(html).modal('show');
 }
 // Close the lightbox and run update functions
 function closeLightbox() {

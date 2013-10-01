@@ -27,7 +27,7 @@
   $this->headScript()->appendFile('zoomy/jquery.ui.touch.js');
   // AUDIO
   //$this->headLink()->appendStylesheet('jplayer.css');
-  $this->headScript()->appendFile('http://www.google.com/jsapi');
+  //$this->headScript()->appendFile('http://www.google.com/jsapi');
   
   // Compact header
   $this->layout()->headerType = 'record';
@@ -48,7 +48,7 @@
   }
 ?>
 <script>
-  google.load("swfobject", "2.2");
+  //google.load("swfobject", "2.2");
   var documentID = '<?=$this->id ?>';
   var initPage = $.parseJSON('<?=json_encode($this->outline['lists'][$this->initList][$this->initPage], JSON_UNESCAPED_SLASHES | JSON_HEX_APOS | JSON_HEX_AMP) ?>');
   

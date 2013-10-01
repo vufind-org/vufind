@@ -1,0 +1,91 @@
+<script>
+  // Mandatory update function
+  updateFunction = function(data, tab) {
+    $('#techinfo').html('<span style="color:#FFF;margin:20px;display:block">Loading...</span>');
+    if(!data['zoom'] && data['large']) data['zoom'] = data['large'];
+    pageData = data;
+    //console.log(data);
+    $('#view .nav-tabs li a').hide();
+    for(var i in data) {
+      $('#'+i+'-tab').show();
+    }
+    $('.download').attr('href', data['master']);
+    $('#zoom').zoomy(data['large']+'?download=true');
+    $('#'+tab).click();
+  };
+  // Load an image into the preview (to be deprecated by the new template system)
+  var currentPreview = "";
+  function showPreview(index, tab) {
+    if(currentPreview !== pageData[index]) {
+      currentPreview = pageData[index];
+      $('.loading-bar').show();
+      $('#preview')
+        .load(function() {
+          $('#preview').css('opacity','1');
+          $('.loading-bar').hide();
+        })
+        .css('opacity','.3')
+        .attr({
+          'src':pageData[index]
+        })
+    }
+  }  
+  function showZoom(tab) {
+    $('#zoom').zoomy(pageData['large']);
+  }
+  
+  $(document).ready(function() {
+    $('#view .nav-tabs li a').click(function (e) {
+      e.preventDefault();
+      $(this).tab('show');
+      currTab = $(this).attr('id');
+    });
+    
+    var pageData = {
+      'id'       :'<?=$this->id ?>',
+      'medium'   :'<?=$this->medium ?>',
+      'large'    :'<?=$this->large ?>',
+      'zoom'     :'<?=$this->zoom ?: $this->large ?>',
+      'master'   :'<?=$this->master ?>',
+      'thumbnail':'<?=$this->thumbnail ?>',
+      'mimetype' :'<?=$this->mimetype ?>'
+    };
+    updateFunction(pageData, 'medium-tab');
+    updateTechInfo(pageData['id'])
+  });
+</script>
+<? if($this->counts[0] > 1): ?>
+  <div class="row-fluid btn-group visible-phone text-center">
+    <a href="javascript:prevPage()" class="btn">Prev Page</a>
+    <a href="javascript:nextPage()" class="btn">Next Page</a>
+    <br/><br/>
+  </div>
+<? endif; ?>
+<ul class="nav nav-tabs">
+  <li><a href="#image" id="medium-tab" onClick="showPreview('medium', this)">Medium</a></li>
+  <li class="hidden-phone"><a href="#image" id="large-tab" onClick="showPreview('large', this)">Large</a></li>
+  <li><a href="#zoom" id="zoom-tab" onClick="showZoom(this)">Zoom</a></li>
+  <li><a href="#master" id="master-tab">Original</a></li>
+  <? if($this->counts[0] > 1): ?>
+    <div class="btn-group pull-right hidden-phone">
+      <a href="javascript:prevPage()" class="btn btn-small">Prev Page</a>
+      <a href="javascript:nextPage()" class="btn btn-small">Next Page</a>
+    </div>
+  <? endif; ?>
+</ul>
+<div class="tab-container tab-content">
+  <div class="tab-pane text-center" id="image">
+    <div class="loading-bar front">
+      <div class="progress progress-striped active" style="width:40%;margin:auto;border:1px solid #FFF">
+        <div class="bar" style="width:100%;">Loading...</div>
+      </div>
+    </div>
+    <img id="preview" src="<?=isset($this->medium) ? $this->medium : '' ?>">
+  </div>
+  <div class="tab-pane text-center" id="zoom">
+    Javascript Required to Use Zoom Feature
+  </div>
+  <div class="tab-pane text-center" id="master">
+    <?=$this->context($this)->renderInContext('vudl/master-tab.phtml', array())?>
+  </div>
+</div>

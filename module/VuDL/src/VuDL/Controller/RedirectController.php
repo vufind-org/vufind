@@ -39,12 +39,12 @@ use Zend\Mvc\Controller\AbstractActionController;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_a_controller Wiki
  */
-class RedirectController extends \VuFind\Controller\AbstractBase
+class RedirectController extends AbstractVuDL
 {
     /**
+     * Redirect old-style URLs to new-style URLs.
      *
-     *
-     *
+     * @return mixed
      */
     public function redirectAction()
     {
@@ -55,11 +55,12 @@ class RedirectController extends \VuFind\Controller\AbstractBase
             'flush' => false,
             'lang'  => 'itql',
             'format'=> 'Simple',
-            'query' => 'select $object from <#ri> where $object <http://digital.library.villanova.edu/rdf/relations#hasLegacyURL> '.
-                "'http://digital.library.villanova.edu/" . $collection . '/' . $file . "'"
+            'query' => 'select $object from <#ri> where $object '
+                . '<http://digital.library.villanova.edu/rdf/relations#hasLegacyURL>'
+                . " 'http://digital.library.villanova.edu/" . $collection . '/'
+                . $file . "'"
         );
-        $module_config = $this->getServiceLocator()->get('config');
-        $client = new \Zend\Http\Client($module_config['vudl']['query_url']);
+        $client = new \Zend\Http\Client($this->getFedoraQueryURL());
         $client->setMethod('POST');
         $client->setAuth('fedoraAdmin', 'fedoraAdmin');
         $client->setParameterPost($data);
@@ -70,9 +71,11 @@ class RedirectController extends \VuFind\Controller\AbstractBase
             $parts = explode('/', $file);
             $file = array_pop($parts);
             array_unshift($parts, $collection);
-            $data['query'] = 'select $object from <#ri> where $object <http://digital.library.villanova.edu/rdf/relations#hasLegacyURL> '.
-                "'http://digital.library.villanova.edu/" . str_replace('%2F', '/', rawurlencode(implode('/', $parts))) . '/' . $file . "'";
-            //var_dump($data['query']);
+            $data['query'] = 'select $object from <#ri> where $object '
+                . '<http://digital.library.villanova.edu/rdf/relations#hasLegacyURL>'
+                . " 'http://digital.library.villanova.edu/"
+                . str_replace('%2F', '/', rawurlencode(implode('/', $parts)))
+                . '/' . $file . "'";
             $client->setParameterPost($data);
             $response = $client->send();
             preg_match('/info:fedora\/([^>]+)/', $response->getBody(), $id);
@@ -80,17 +83,30 @@ class RedirectController extends \VuFind\Controller\AbstractBase
         if (count($id) > 1) {
             return $this->redirect()->toRoute('vudl-record', array('id'=>$id[1]));
         } else {
-            throw new \Exception('Could not map legacy URL to ID. Please search for your desired record above.');
+            throw new \Exception(
+                'Could not map legacy URL to ID. '
+                . 'Please search for your desired record above.'
+            );
         }
     }
-    
+
+    /**
+     * Redirect the old about.php to the new About action
+     *
+     * @return mixed
+     */
     public function aboutAction()
     {
-        return $this->redirect()->toRoute('vudl-about');        
+        return $this->redirect()->toRoute('vudl-about');
     }
-    
+
+    /**
+     * Redirect the old collections.php to the new Collection view
+     *
+     * @return mixed
+     */
     public function collectionAction()
     {
-        return $this->redirect()->toRoute('vudl-default-collection');        
+        return $this->redirect()->toRoute('vudl-default-collection');
     }
 }
