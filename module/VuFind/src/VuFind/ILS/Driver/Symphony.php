@@ -135,10 +135,23 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
         static $soapClients = array();
 
         if (!isset($soapClients[$service])) {
-            $soapClients[$service] = new SoapClient(
-                $this->config['WebServices']['baseURL']."/soap/$service?wsdl",
-                $this->config['WebServices']['soapOptions']
-            );
+            try {
+                $soapClients[$service] = new SoapClient(
+                    $this->config['WebServices']['baseURL']."/soap/$service?wsdl",
+                    $this->config['WebServices']['soapOptions']
+                );
+            } catch (SoapFault $e) {
+                // This SoapFault may have happened because, e.g., PHP's
+                // SoapClient won't load SymWS 3.1's Patron service WSDL.
+                // However, we can't check the SymWS version if this fault
+                // happened with the Standard service (which contains the
+                // 'version' operation).
+                if ($service != 'standard') {
+                    $this->checkSymwsVersion();
+                }
+
+                throw $e;
+            }
         }
 
         return $soapClients[$service];
@@ -281,8 +294,40 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
                 return $soapClient->$operation($parameters);
             } elseif ($operation == 'logoutUser') {
                 return null;
+            } elseif ($operation == 'lookupSessionInfo') {
+                // lookupSessionInfo did not exist in SymWS 3.0.
+                $this->checkSymwsVersion();
+                throw $e;
             } else {
                 throw $e;
+            }
+        }
+    }
+
+    /**
+     * Check the SymWS version, and throw an Exception if it's too old.
+     *
+     * Always checking at initialization would result in many unnecessary
+     * roundtrips with the SymWS server, so this method is intended to be
+     * called when an error happens that might be correctable by upgrading
+     * SymWS. In such a case it will produce a potentially more helpful error
+     * message than the original error would have.
+     * 
+     * @throws Exception if the SymWS version is too old
+     * @return void
+     */
+    protected function checkSymwsVersion()
+    {
+        $resp = $this->makeRequest('standard', 'version', array());
+        foreach ($resp->version as $v) {
+            if ($v->product == 'SYM-WS') {
+                if (version_compare($v->version, 'v3.2', '<')) {
+                    // ILSException didn't seem to produce an error message
+                    // when checkSymwsVersion() was called from the catch
+                    // block in makeRequest().
+                    throw new \Exception("SymWS version too old");
+                }
+                break;
             }
         }
     }
