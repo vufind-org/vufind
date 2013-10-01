@@ -551,7 +551,7 @@ class VudlController extends AbstractVuDL
                 ) . '?download=true">' . strToUpper($key);
             if (isset($record['mimetypes'])) {
                 $mtKey = array_search(strToUpper($key), $record['datastreams']);
-                $div .= '<span class="pull-right">' . $record['mimetypes'][$mtKey]
+                $div .= '<span class="pull-right small">' . $record['mimetypes'][$mtKey]
                     .'</span></a>';
             }
         }
@@ -934,10 +934,7 @@ class VudlController extends AbstractVuDL
             $members[intval($data[1][$i])-1] = $data[2][$i];
         }
         if (count($members) < 2) {
-            // TODO: better behavior for prev/next in collection w/ 1 item:
-            return $this->redirect()->toRoute(
-                'collection-home', array('id'=>$params['trail'])
-            );
+            return $this->redirect()->toRoute('Collection', 'Home', array('id'=>$params['trail']));
         }
         $index = -1;
         foreach ($members as $i=>$member) {
