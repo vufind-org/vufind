@@ -51,6 +51,13 @@ class Fedora implements \VuFindHttp\HttpServiceAwareInterface {
      * @var HttpServiceInterface
      */
     protected $httpService = false;
+    
+    /**
+     * Structmap data cache
+     *
+     * @var array
+     */
+    protected $structmaps = array();
 
     /**
      * Constructor
@@ -119,6 +126,31 @@ class Fedora implements \VuFindHttp\HttpServiceAwareInterface {
         return isset($this->config->Fedora->root_id)
             ? $this->config->Fedora->root_id
             : null;
+    }
+
+    /**
+     * Returns file contents of the structmap, our most common call
+     *
+     * @param string $id record id
+     *
+     * @return string $id
+     */
+    public function getStructmap($id)
+    {
+        if (!isset($this->structmaps[$id])) {
+            if (!$this->structmaps[$id] = file_get_contents(
+                $this->getBase() . $id . '/datastreams/STRUCTMAP/content'
+            )) {
+                $structmap = array();
+                $memberList = $this->getMemberList($id);
+                foreach ($memberList as $i=>$member) {
+                    $structmap[$i] = 'div ORDER="' . ($i+1) . '"<"' . $member['id']
+                        . '"';
+                }
+                $this->structmaps[$id] = implode($structmap);
+            }
+        }
+        return $this->structmaps[$id];
     }
 
     /**

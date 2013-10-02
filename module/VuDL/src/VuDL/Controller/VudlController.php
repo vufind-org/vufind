@@ -40,25 +40,11 @@ namespace VuDL\Controller;
 class VudlController extends AbstractVuDL
 {
     /**
-     * Structmap data
-     *
-     * @var array
-     */
-    protected $structmaps = array();
-
-    /**
      * Datastreams
      *
      * @var array
      */
     protected $datastreams = array();
-
-    /**
-     * The parents lists
-     *
-     * @var array
-     */
-    protected $parentLists = array();
 
     /**
      * Compares the cache date against a given date. If given date is newer,
@@ -129,31 +115,6 @@ class VudlController extends AbstractVuDL
         } else {
             return $this->datastreams[$id];
         }
-    }
-
-    /**
-     * Returns file contents of the structmap, our most common call
-     *
-     * @param string $id record id
-     *
-     * @return string $id
-     */
-    protected function getStructmap($id)
-    {
-        if (!isset($this->structmaps[$id])) {
-            if (!$this->structmaps[$id] = file_get_contents(
-                $this->getFedora()->getBase() . $id . '/datastreams/STRUCTMAP/content'
-            )) {
-                $structmap = array();
-                $memberList = $this->getFedora()->getMemberList($id);
-                foreach ($memberList as $i=>$member) {
-                    $structmap[$i] = 'div ORDER="' . ($i+1) . '"<"' . $member['id']
-                        . '"';
-                }
-                $this->structmaps[$id] = implode($structmap);
-            }
-        }
-        return $this->structmaps[$id];
     }
 
     /**
@@ -279,12 +240,12 @@ class VudlController extends AbstractVuDL
     protected function getPage($parent, $child)
     {
         // GET LISTS
-        $data = $this->getStructmap($parent);
+        $data = $this->getFedora()->getStructmap($parent);
         $lists = array();
         preg_match_all('/vudl:[^"]+/', $data, $lists);
         // GET LIST ITEMS
         foreach ($lists[0] as $list=>$list_id) {
-            $data = $this->getStructmap($list_id);
+            $data = $this->getFedora()->getStructmap($list_id);
             $items = array();
             preg_match_all('/vudl:[^"]+/', $data, $items);
             foreach ($items[0] as $i=>$id) {
@@ -316,7 +277,7 @@ class VudlController extends AbstractVuDL
         $xml = simplexml_load_file($this->getFedora()->getBase() . $root . '?format=xml');
         $rootModDate = (string)$xml[0]->objLastModDate;
         // Get lists
-        $data = $this->getStructmap($root);
+        $data = $this->getFedora()->getStructmap($root);
         $lists = array();
         preg_match_all('/vudl:[^"]+/', $data, $lists);
         $queue = array();
@@ -330,7 +291,7 @@ class VudlController extends AbstractVuDL
             );
             $outline['names'][] = (String) $xml[0]->objLabel;
             $moddate[$i] = max((string)$xml[0]->objLastModDate, $rootModDate);
-            $data = $this->getStructmap($list_id);
+            $data = $this->getFedora()->getStructmap($list_id);
             $list = array();
             preg_match_all('/vudl:[^"]+/', $data, $list);
             $queue[$i] = $list[0];
@@ -821,7 +782,7 @@ class VudlController extends AbstractVuDL
         $members = $data = array();
         preg_match_all(
             '/div ORDER="([^"]*)[^<]*<[^<]*"(vudl:[^"]*)/i',
-            $this->getStructMap($params['trail']), $data
+            $this->getFedora()->getStructmap($params['trail']), $data
         );
         for ($i=0;$i<count($data[0]);$i++) {
             $members[intval($data[1][$i])-1] = $data[2][$i];
