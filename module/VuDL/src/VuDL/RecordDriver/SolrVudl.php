@@ -128,7 +128,7 @@ class SolrVudl extends \VuFind\RecordDriver\SolrDefault
         if ($this->isCollection()) {
             return array();
         } else {
-            return array(
+            $retval = array(
                 array(
                     'route' => 'vudl-record',
                     'routeParams' => array(
@@ -136,25 +136,11 @@ class SolrVudl extends \VuFind\RecordDriver\SolrDefault
                     )
                 )
             );
-        }
-    }
-
-    /**
-     * Get all subject headings associated with this record.  Each heading is
-     * returned as an array of chunks, increasing from least specific to most
-     * specific.
-     *
-     * @return array
-     */
-    public function getAllSubjectHeadings()
-    {
-        $retVal = array();
-        if (isset($this->fields['topic'])) {
-            foreach ($this->fields['topic'] as $current) {
-                $retVal[] = explode(' -- ', $current);
+            if ($this->isProtected()) {
+                $retval[0]['prefix'] = $this->getProxyUrl();
             }
+            return $retval;
         }
-        return $retVal;
     }
 
     /**
@@ -185,9 +171,27 @@ class SolrVudl extends \VuFind\RecordDriver\SolrDefault
      *
      * @return string
      */
-    public function getProxyURL()
+    protected function getProxyURL()
     {
         return isset($this->vuDLConfig->Access->proxy_url)
             ? $this->vuDLConfig->Access->proxy_url : '';
+    }
+
+    /**
+     * Get all subject headings associated with this record.  Each heading is
+     * returned as an array of chunks, increasing from least specific to most
+     * specific.
+     *
+     * @return array
+     */
+    public function getAllSubjectHeadings()
+    {
+        $retVal = array();
+        if (isset($this->fields['topic'])) {
+            foreach ($this->fields['topic'] as $current) {
+                $retVal[] = explode(' -- ', $current);
+            }
+        }
+        return $retVal;
     }
 }
