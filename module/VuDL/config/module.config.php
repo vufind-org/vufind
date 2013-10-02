@@ -68,9 +68,8 @@ $config = array(
                 'options' => array(
                     'route'    => '/Collection[/]',
                     'defaults' => array(
-                        'controller' => 'Collection',
-                        'action'     => 'Home',
-                        'id'         => 'root:id'
+                        'controller' => 'VuDL',
+                        'action'     => 'Collections'
                     )
                 )
             ),
