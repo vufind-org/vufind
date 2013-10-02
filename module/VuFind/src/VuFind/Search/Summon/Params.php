@@ -60,10 +60,11 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @param string $newField Field name
      * @param string $newAlias Optional on-screen display label
+     * @param bool   $ored     Should we treat this as an ORed facet?
      *
      * @return void
      */
-    public function addFacet($newField, $newAlias = null)
+    public function addFacet($newField, $newAlias = null, $ored = false)
     {
         // Save the full field name (which may include extra parameters);
         // we'll need these to do the proper search using the Summon class:
@@ -78,7 +79,7 @@ class Params extends \VuFind\Search\Base\Params
 
         // Field name may have parameters attached -- remove them:
         $parts = explode(',', $newField);
-        return parent::addFacet($parts[0], $newAlias);
+        return parent::addFacet($parts[0], $newAlias, $ored);
     }
 
     /**
@@ -190,7 +191,8 @@ class Params extends \VuFind\Search\Base\Params
             // if not, override them with defaults.
             $parts = explode(',', $facet);
             $facetName = $parts[0];
-            $facetMode = isset($parts[1]) ? $parts[1] : 'and';
+            $defaultMode = ($this->getFacetOperator($facet) == 'OR') ? 'or' : 'and';
+            $facetMode = isset($parts[1]) ? $parts[1] : $defaultMode;
             $facetPage = isset($parts[2]) ? $parts[2] : 1;
             $facetLimit = isset($parts[3]) ? $parts[3] : $defaultFacetLimit;
             $facetParams = "{$facetMode},{$facetPage},{$facetLimit}";
@@ -211,6 +213,8 @@ class Params extends \VuFind\Search\Base\Params
         // Which filters should be applied to our query?
         $filterList = $this->getFilterList();
         if (!empty($filterList)) {
+            $orFacets = array();
+
             // Loop through all filters and add appropriate values to request:
             foreach ($filterList as $filterArray) {
                 foreach ($filterArray as $filt) {
@@ -232,10 +236,26 @@ class Params extends \VuFind\Search\Base\Params
                         $to = SummonQuery::escapeParam($range['to']);
                         $params
                             ->add('rangeFilters', "{$filt['field']},{$from}:{$to}");
+                    } else if ($filt['operator'] == 'OR') {
+                        // Special case -- OR facets:
+                        $orFacets[$filt['field']] = isset($orFacets[$filt['field']])
+                            ? $orFacets[$filt['field']] : array();
+                        $orFacets[$filt['field']][] = $safeValue;
                     } else {
                         // Standard case:
-                        $params->add('filters', "{$filt['field']},{$safeValue}");
+                        $fq = "{$filt['field']},{$safeValue}";
+                        if ($filt['operator'] == 'NOT') {
+                            $fq .= ',true';
+                        }
+                        $params->add('filters', $fq);
                     }
+                }
+
+                // Deal with OR facets:
+                foreach ($orFacets as $field => $values) {
+                    $params->add(
+                        'groupFilters', $field . ',or,' . implode(',', $values)
+                    );
                 }
             }
         }
