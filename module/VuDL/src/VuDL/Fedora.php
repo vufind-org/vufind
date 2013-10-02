@@ -144,7 +144,7 @@ class Fedora implements \VuFindHttp\HttpServiceAwareInterface {
      *
      * @return Response
      */
-    public function query($query, $options = array())
+    protected function query($query, $options = array())
     {
         $data = array(
             'type'  => 'tuples',
@@ -161,5 +161,99 @@ class Fedora implements \VuFindHttp\HttpServiceAwareInterface {
         $client->setAuth($this->config->Fedora->adminUser, $this->config->Fedora->adminPass);
         $client->setParameterPost($data);
         return $client->send();
+    }
+    
+    /**
+     * Tuple call to return and parse a list of members...
+     *
+     * @param string $root ...for this id
+     *
+     * @return array of members in order
+     */
+    public function getMemberList($root)
+    {
+        $query = 'select $memberPID $memberTitle from <#ri> '
+            . 'where $member <fedora-rels-ext:isMemberOf> <info:fedora/' .$root. '> '
+            . 'and $member <fedora-model:label> $memberTitle '
+            . 'and $member <dc:identifier> $memberPID';
+        $response = $this->query($query, array('format'=>'CSV'));
+        $list = explode("\n", $response->getBody());
+        $items = array();
+        for ($i=1;$i<count($list);$i++) {
+            if (empty($list[$i])) {
+                continue;
+            }
+            list($id, $title) = explode(',', $list[$i], 2);
+            $items[] = array(
+                'id' => $id,
+                'title' => trim($title, '"')
+            );
+        }
+        return $items;
+    }
+
+    /**
+     * Tuple call to return and parse a list of parents...
+     *
+     * @param string $id ...for this id
+     *
+     * @return array of parents in order from top-down
+     */
+    public function getParentList($id)
+    {
+        /* disable cache
+        if (isset($this->parentLists[$id])) {
+            return $this->parentLists[$id];
+        } */
+        $query = 'select $child $parent $parentTitle from <#ri> '
+                . 'where walk ('
+                        . '<info:fedora/' .$id. '> '
+                        . '<fedora-rels-ext:isMemberOf> '
+                        . '$parent '
+                    . 'and $child <fedora-rels-ext:isMemberOf> $parent) '
+                . 'and $parent <fedora-model:label> $parentTitle';
+        $response = $this->query($query, array('format'=>'CSV'));
+        $list = explode("\n", $response->getBody());
+        $tree = array();
+        $items = array();
+        $roots = array();
+        for ($i=1;$i<count($list);$i++) {
+            if (empty($list[$i])) {
+                continue;
+            }
+            list($child, $parent, $title) = explode(',', substr($list[$i], 12), 3);
+            $parent = substr($parent, 12);
+            if ($parent == $this->getRootId()) {
+                $roots[] = $child;
+                continue;
+            }
+            if ($child == $this->getRootId()) {
+                continue;
+            }
+            if (isset($tree[$parent])) {
+                $tree[$parent][] = $child;
+            } else {
+                $tree[$parent] = array($child);
+            }
+            $items[$parent] = trim($title, '" ');
+        }
+        $ret = array();
+        $queue = array();
+        foreach ($roots as $root) {
+            $queue[] = array($root, array());
+        }
+        while ($path = array_pop($queue)) {
+            $tid = $path[0];
+            while ($tid != $id) {
+                $path[1][$tid] = $items[$tid];
+                for ($i=1;$i<count($tree[$tid]);$i++) {
+                    $queue[] = array($tree[$tid][$i], $path[1]);
+                }
+                $tid = $tree[$tid][0];
+            }
+            $ret[] = array_reverse($path[1]);
+        }
+        // $this->parentLists[$id] = $ret;
+        return $ret;
     }
 }

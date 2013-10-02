@@ -145,7 +145,7 @@ class VudlController extends AbstractVuDL
                 $this->getFedora()->getBase() . $id . '/datastreams/STRUCTMAP/content'
             )) {
                 $structmap = array();
-                $memberList = $this->memberList($id);
+                $memberList = $this->getFedora()->getMemberList($id);
                 foreach ($memberList as $i=>$member) {
                     $structmap[$i] = 'div ORDER="' . ($i+1) . '"<"' . $member['id']
                         . '"';
@@ -259,7 +259,7 @@ class VudlController extends AbstractVuDL
      */
     protected function getRoot($id)
     {
-        $parents = $this->getParentList($id);
+        $parents = $this->getFedora()->getParentList($id);
         foreach ($parents[0] as $i=>$parent) {
             if (in_array('ResourceCollection', $this->getClasses($i))) {
                 return $i;
@@ -688,7 +688,7 @@ class VudlController extends AbstractVuDL
         // Send the data for the first pages
         // (Original, Large, Medium, Thumbnail srcs) and THE DOCUMENTS
         $view->outline = $outline;
-        $parents = $this->getParentList($root);
+        $parents = $this->getFedora()->getParentList($root);
         //$keys = array_keys($parents);
         //$view->hierarchyID = end($keys);
         $view->breadcrumbs = $this->getBreadcrumbs($parents, $fileDetails);
@@ -709,7 +709,7 @@ class VudlController extends AbstractVuDL
     public function homeAction()
     {
         $view = $this->createViewModel();
-        $data =$this->memberList($this->getRootId());
+        $data =$this->getFedora()->getMemberList($this->getRootId());
         $outline = array();
         foreach ($data as $item) {
             $outline[] = array(
@@ -757,7 +757,7 @@ class VudlController extends AbstractVuDL
         // Send the data for the first pages
         // (Original, Large, Medium, Thumbnail srcs) and THE DOCUMENTS
         $view->outline = $outline;
-        $parents = $this->getParentList($root);
+        $parents = $this->getFedora()->getParentList($root);
         //$keys = array_keys($parents);
         //$view->hierarchyID = end($keys);
         $view->breadcrumbs = $this->getBreadcrumbs($parents, $view->details);
@@ -811,70 +811,6 @@ class VudlController extends AbstractVuDL
     }
 
     /**
-     * Tuple call to return and parse a list of parents...
-     *
-     * @param string $id ...for this id
-     *
-     * @return array of parents in order from top-down
-     */
-    protected function getParentList($id)
-    {
-        if (isset($this->parentLists[$id])) {
-            return $this->parentLists[$id];
-        }
-        $query = 'select $child $parent $parentTitle from <#ri> '
-                . 'where walk ('
-                        . '<info:fedora/' .$id. '> '
-                        . '<fedora-rels-ext:isMemberOf> '
-                        . '$parent '
-                    . 'and $child <fedora-rels-ext:isMemberOf> $parent) '
-                . 'and $parent <fedora-model:label> $parentTitle';
-        $response = $this->getFedora()->query($query, array('format'=>'CSV'));
-        $list = explode("\n", $response->getBody());
-        $tree = array();
-        $items = array();
-        $roots = array();
-        for ($i=1;$i<count($list);$i++) {
-            if (empty($list[$i])) {
-                continue;
-            }
-            list($child, $parent, $title) = explode(',', substr($list[$i], 12), 3);
-            $parent = substr($parent, 12);
-            if ($parent == $this->getRootId()) {
-                $roots[] = $child;
-                continue;
-            }
-            if ($parent == 'vudl:1') {
-                continue;
-            }
-            if (isset($tree[$parent])) {
-                $tree[$parent][] = $child;
-            } else {
-                $tree[$parent] = array($child);
-            }
-            $items[$parent] = trim($title, '" ');
-        }
-        $ret = array();
-        $queue = array();
-        foreach ($roots as $root) {
-            $queue[] = array($root, array());
-        }
-        while ($path = array_pop($queue)) {
-            $tid = $path[0];
-            while ($tid != $id) {
-                $path[1][$tid] = $items[$tid];
-                for ($i=1;$i<count($tree[$tid]);$i++) {
-                    $queue[] = array($tree[$tid][$i], $path[1]);
-                }
-                $tid = $tree[$tid][0];
-            }
-            $ret[] = array_reverse($path[1]);
-        }
-        $this->parentLists[$id] = $ret;
-        return $ret;
-    }
-
-    /**
      * Redirect to the appropriate sibling.
      *
      * @return mixed
@@ -917,34 +853,5 @@ class VudlController extends AbstractVuDL
     protected function collectionsAction()
     {
       return $this->forwardTo('Collection', 'Home', array('id'=>$this->getRootId()));
-    }
-    
-    /**
-     * Tuple call to return and parse a list of members...
-     *
-     * @param string $root ...for this id
-     *
-     * @return array of members in order
-     */
-    protected function memberList($root)
-    {
-        $query = 'select $memberPID $memberTitle from <#ri> '
-            . 'where $member <fedora-rels-ext:isMemberOf> <info:fedora/' .$root. '> '
-            . 'and $member <fedora-model:label> $memberTitle '
-            . 'and $member <dc:identifier> $memberPID';
-        $response = $this->getFedora()->query($query, array('format'=>'CSV'));
-        $list = explode("\n", $response->getBody());
-        $items = array();
-        for ($i=1;$i<count($list);$i++) {
-            if (empty($list[$i])) {
-                continue;
-            }
-            list($id, $title) = explode(',', $list[$i], 2);
-            $items[] = array(
-                'id' => $id,
-                'title' => trim($title, '"')
-            );
-        }
-        return $items;
     }
 }
