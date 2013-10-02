@@ -18,7 +18,7 @@
   <div id="grid-container">
     <div id="grid">
       <?  foreach($this->thumbnails as $thumbnail): ?>
-        <a href="<?=$this->url('vudl-collection', array('id'=>$thumbnail['id'])) ?>" title="<?=$thumbnail['label'] ?>" class="item"><img style="width:<?=(40*rand(2,4))-4 ?>px;margin:2px 0" src="<?=$thumbnail['img'] ?>"></a>
+        <a href="<?=$this->url('collection', array('id'=>$thumbnail['id'])) ?>" title="<?=$thumbnail['label'] ?>" class="item"><img style="width:<?=(40*rand(2,4))-4 ?>px;margin:2px 0" src="<?=$thumbnail['img'] ?>"></a>
       <?  endforeach; ?>
     </div>
   </div>
