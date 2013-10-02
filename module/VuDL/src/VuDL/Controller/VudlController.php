@@ -521,53 +521,16 @@ class VudlController extends AbstractVuDL
         }
 
         $ret = array();
-        $div = '';
-
-        $preTitle = '<div class="accordion-group"><div class="accordion-heading">'
-            . '<a class="accordion-toggle" data-toggle="collapse" '
-            . 'data-parent="#techinfo" ';
-        $postID = '</a></div><div ';
-        $postTitle
-            = ' class="accordion-body collapse"><div class="accordion-inner">';
-        $closer = '</div></div></div>';
-
-        // ALL FILES
-        $div .= $preTitle . 'href="#allFiles">All Files' . $postID . 'id="allFiles"'
-            . $postTitle;
-        foreach ($record as $key=>$link) {
-            if (is_array($record[$key]) || strpos($key, '-') !== false
-                || $link == $record['id']
-            ) {
-                continue;
-            }
-            $div .= '<a class="btn btn-block" href="'
-                . $this->url()->fromRoute(
-                    'files',
-                    array(
-                        'id'=>$record['id'],
-                        'type'=>strtoupper($key)
-                    )
-                ) . '?download=true">' . strToUpper($key);
-            if (isset($record['mimetypes'])) {
-                $mtKey = array_search(strToUpper($key), $record['datastreams']);
-                $div .= '<span class="pull-right small">' . $record['mimetypes'][$mtKey]
-                    .'</span></a>';
-            }
-        }
-        $div .= $closer;
 
         // OCR
         if (isset($record['ocr-dirty'])) {
             $ocrURL = $this->getFedora()->getBase()
                 . $record['id']
                 . '/datastreams/OCR-DIRTY/content';
-            $div .= $preTitle . 'href="#ocr">Computer Generated Transcription (OCR)'
-                . $postID . 'id="ocr"' . $postTitle
-                . '<pre>' . file_get_contents($ocrURL) . '</pre>' . $closer;
+            $record['ocr-dirty'] = file_get_contents($ocrURL);
         }
+        // Technical Information
         if (isset($record['master-md'])) {
-            $div .= $preTitle . 'href="#xml">Technical Information (Master File)'
-                . $postID . 'id="xml"' . $postTitle;
             $old = array(
                 '/<(\/[^>]+)>/',
                 '/<([^>]+)>/',
@@ -591,7 +554,7 @@ class VudlController extends AbstractVuDL
                     . '">\1</a><div>',
                 '<div class="xml">'
             );
-            $div .= preg_replace(
+            $record['techinfo'] = preg_replace(
                 $old,
                 $new,
                 file_get_contents(
@@ -600,15 +563,9 @@ class VudlController extends AbstractVuDL
                     . '/datastreams/MASTER-MD/content'
                 )
             );
-            $div .= $closer;
-            /*/ Close all tags
-            $div .= str_repeat(
-                '</div>',
-                substr_count($div, '<div') - substr_count($div, '</div')
-            ); //*/
             $data = $type = array();
-            preg_match('/&lt;size[^&]*&gt;([^&]*)/', $div, $data);
-            preg_match('/mimetype="([^"]*)/', $div, $type);
+            preg_match('/&lt;size[^&]*&gt;([^&]*)/', $record['techinfo'], $data);
+            preg_match('/mimetype="([^"]*)/', $record['techinfo'], $type);
             $size_index = 0;
             if (count($data) > 1) {
                 $bytes = intval($data[1]);
@@ -623,7 +580,8 @@ class VudlController extends AbstractVuDL
                 );
             }
         }
-        $ret['div'] = $div . '</div>';
+        $renderer = $this->getViewRenderer();
+        $ret['div'] = $renderer->render('vudl/techinfo.phtml', array('record'=>$record));
         return $ret;
     }
 
@@ -648,7 +606,7 @@ class VudlController extends AbstractVuDL
                 continue;
             }
             $breadcrumbs .= ' <li><a href="'
-                . $this->url()->fromRoute('vudl-collection', array('id'=>$id))
+                . $this->url()->fromRoute('collection', array('id'=>$id))
                 . '">' . $title . '</a> <span class="divider">&gt;</span></li>';
         }
         $breadcrumbs .= '<span class="active" title="'
@@ -751,7 +709,7 @@ class VudlController extends AbstractVuDL
     public function homeAction()
     {
         $view = $this->createViewModel();
-        $data =$this->memberList($this->getFedora()->getRootID());
+        $data =$this->memberList($this->getRootId());
         $outline = array();
         foreach ($data as $item) {
             $outline[] = array(
@@ -882,7 +840,7 @@ class VudlController extends AbstractVuDL
             }
             list($child, $parent, $title) = explode(',', substr($list[$i], 12), 3);
             $parent = substr($parent, 12);
-            if ($parent == $this->getFedora()->getRootID()) {
+            if ($parent == $this->getRootId()) {
                 $roots[] = $child;
                 continue;
             }
@@ -944,7 +902,7 @@ class VudlController extends AbstractVuDL
         }
         if ($index == -1) {
             return $this->redirect()
-                ->toRoute('vudl-collection', array('id'=>$params['trail']));
+                ->toRoute('collection', array('id'=>$params['trail']));
         } elseif (isset($params['prev_x'])) {
             return $this->redirect()->toRoute(
                 'vudl-record', array('id'=>$members[($index-1)%count($members)])
@@ -956,6 +914,11 @@ class VudlController extends AbstractVuDL
         }
     }
 
+    protected function collectionsAction()
+    {
+      return $this->forwardTo('Collection', 'Home', array('id'=>$this->getRootId()));
+    }
+    
     /**
      * Tuple call to return and parse a list of members...
      *
