@@ -233,15 +233,17 @@ class UrlQueryHelper
     /**
      * Add a facet to the parameters.
      *
-     * @param string $field Facet field
-     * @param string $value Facet value
+     * @param string $field    Facet field
+     * @param string $value    Facet value
+     * @param string $operator Facet type to add (AND, OR, NOT)
      *
      * @return string
      */
-    public function addFacet($field, $value)
+    public function addFacet($field, $value, $operator = 'AND')
     {
         // Facets are just a special case of filters:
-        return $this->addFilter($field . ':"' . $value . '"');
+        $prefix = ($operator == 'NOT') ? '-' : ($operator == 'OR' ? '~' : '');
+        return $this->addFilter($prefix . $field . ':"' . $value . '"');
     }
 
     /**
@@ -288,9 +290,16 @@ class UrlQueryHelper
      *
      * @return string
      */
-    public function removeFacet($field, $value, $escape = true)
+    public function removeFacet($field, $value, $escape = true, $operator = 'AND')
     {
         $params = $this->getParamArray();
+
+        // Account for operators:
+        if ($operator == 'NOT') {
+            $field = '-' . $field;
+        } else if ($operator == 'OR') {
+            $field = '~' . $field;
+        }
 
         // Remove the filter:
         $newFilter = array();

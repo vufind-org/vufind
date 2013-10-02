@@ -73,6 +73,7 @@ class Params implements ServiceLocatorAwareInterface
     protected $facetConfig = array();
     protected $checkboxFacets = array();
     protected $filterList = array();
+    protected $orFacets = array();
 
     /**
      * Override Query
@@ -852,15 +853,31 @@ class Params implements ServiceLocatorAwareInterface
      *
      * @param string $newField Field name
      * @param string $newAlias Optional on-screen display label
+     * @param bool   $ored     Should we treat this as an ORed facet?
      *
      * @return void
      */
-    public function addFacet($newField, $newAlias = null)
+    public function addFacet($newField, $newAlias = null, $ored = false)
     {
         if ($newAlias == null) {
             $newAlias = $newField;
         }
         $this->facetConfig[$newField] = $newAlias;
+        if ($ored) {
+            $this->orFacets[] = $newField;
+        }
+    }
+
+    /**
+     * Get facet operator for the specified field
+     *
+     * @param string $field Field name
+     *
+     * @return string
+     */
+    public function getFacetOperator($field)
+    {
+        return in_array($field, $this->orFacets) ? 'OR' : 'AND';
     }
 
     /**
@@ -951,6 +968,16 @@ class Params implements ServiceLocatorAwareInterface
         $list = array();
         // Loop through all the current filter fields
         foreach ($this->filterList as $field => $values) {
+            $firstChar = substr($field, 0, 1);
+            if ($firstChar == '-') {
+                $operator = 'NOT';
+                $field = substr($field, 1);
+            } else if ($firstChar == '~') {
+                $operator = 'OR';
+                $field = substr($field, 1);
+            } else {
+                $operator = 'AND';
+            }
             // and each value currently used for that field
             $translate
                 = in_array($field, $this->getOptions()->getTranslatedFacets());
@@ -964,7 +991,8 @@ class Params implements ServiceLocatorAwareInterface
                         'value'       => $value,
                         'displayText' =>
                             $translate ? $this->translate($value) : $value,
-                        'field'       => $field
+                        'field'       => $field,
+                        'operator'    => $operator,
                     );
                 }
             }

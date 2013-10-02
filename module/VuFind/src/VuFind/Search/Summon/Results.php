@@ -173,13 +173,20 @@ class Results extends \VuFind\Search\Base\Results
                         // value is an applied filter.  First, is the current field
                         // present in the filter list?  Second, is the current value
                         // an active filter for the current field?
-                        $isApplied = in_array($field, array_keys($filterList))
-                            && in_array(
-                                $facetDetails['value'], $filterList[$field]
-                            );
+                        $orField = '~' . $field;
+                        $itemsToCheck = isset($filterList[$field])
+                            ? $filterList[$field] : array();
+                        if (isset($filterList[$orField])) {
+                            $itemsToCheck += $filterList[$orField];
+                        }
+                        $isApplied = in_array($facetDetails['value'], $itemsToCheck);
 
                         // Inject "applied" value into Summon results:
                         $current['counts'][$facetIndex]['isApplied'] = $isApplied;
+
+                        // Set operator:
+                        $current['counts'][$facetIndex]['operator']
+                            = $this->getParams()->getFacetOperator($field);
 
                         // Create display value:
                         $current['counts'][$facetIndex]['displayText'] = $translate

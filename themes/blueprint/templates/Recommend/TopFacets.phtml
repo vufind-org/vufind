@@ -4,6 +4,7 @@
 ?>
 <? if (isset($topFacetSet)): ?>
   <? foreach($topFacetSet as $title => $cluster): ?>
+    <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
     <div class="authorbox">
       <strong><?=$this->transEsc($cluster['label'])?></strong><?=$this->transEsc("top_facet_suffix") ?>
       <? $iter=1;$corner=$topFacetSettings['rows']*$topFacetSettings['cols']; ?>
@@ -20,7 +21,10 @@
           <? if ($thisFacet['isApplied']): ?>
             <?=$this->escapeHtml($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="<?=$this->transEsc('Selected') ?>"/>
           <? else: ?>
-            <a href="<?=$this->currentPath().$this->recommend->getResults()->getUrlQuery()->addFacet($title, $thisFacet['value'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> (<?=$thisFacet['count'] ?>)
+            <a href="<?=$this->currentPath().$this->recommend->getResults()->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> (<?=$thisFacet['count'] ?>)
+            <? if ($allowExclude): ?>
+              <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>"><?=$this->transEsc('exclude_facet')?></a>
+            <? endif; ?>
           <? endif; ?>
         </span>
         <? if (count($cluster['list']) > $corner && $iter == count($cluster['list'])): ?>
