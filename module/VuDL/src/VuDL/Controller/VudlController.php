@@ -335,7 +335,6 @@ class VudlController extends AbstractVuDL
             preg_match_all('/vudl:[^"]+/', $data, $list);
             $queue[$i] = $list[0];
         }
-        $renderer = $this->getViewRenderer();
         $type_templates = array();
         // Get data on all pages and docs
         foreach ($queue as $parent=>$items) {
