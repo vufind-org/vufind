@@ -62,6 +62,17 @@ class AbstractVuDL extends \VuFind\Controller\AbstractBase
     }
     
     /**
+     * Get root id from config
+     *
+     * @return string
+     */
+    protected function getRootId()
+    {
+        $cfg = $this->getVuDLConfig();
+        return isset($cfg->Fedora->root_id) ? $cfg->Fedora->root_id : null;
+    }
+    
+    /**
      * Get VuDL Licenses.
      *
      * @return array

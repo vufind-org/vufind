@@ -114,7 +114,7 @@ class Fedora implements \VuFindHttp\HttpServiceAwareInterface {
      *
      * @return string
      */
-    public function getRootID()
+    public function getRootId()
     {
         return isset($this->config->Fedora->root_id)
             ? $this->config->Fedora->root_id
