@@ -3,11 +3,6 @@
 .centered-pills ul.nav-pills { display:inline-block }
 .centered-pills li { display:inline }
 .centered-pills a { float:left }
-dd,dd label {font-size:13px}
-dd .facet {float:left;width:170px}
-dd .facet input[type="checkbox"] {vertical-align:text-bottom}
-dd .small {font-size:12px}
-dd.clearfix [class*="span"] {min-height:1px}
 .front { position:absolute;top:0;left:0;width:100%;padding-top:20%;z-index:5 }
 li a.hidden {display:none}
 * html .centered-pills ul.nav-pills { display:inline } /* IE6 */
@@ -20,9 +15,13 @@ li a.hidden {display:none}
 .sidebar { padding:4px 0 0 0 }
 .sidebar h4 { margin:6px 8px }
 .sidebar .checkbox { margin-left:10px }
-.sidebar .small { color:#333;margin-top:1px }
+.sidebar .nav-list li:not(.divider) { min-height:26px }
+.sidebar .nav-list li span { display:inline-block;padding:3px 0 }
+.sidebar .nav-list li input[type="checkbox"] { float:left;margin:4px 3px 0 0}
+.sidebar .nav-list li .icon-ok { margin-top:3px }
+.sidebar .nav-list li .icon-remove { margin-left:3px }
+.sidebar .small { color:#333;margin-top:6px;line-height:85% }
 .sidebar a.small { color:#08C }
-.sidebar a.small span { color:#333 }
 .small { font-size:85% }
 .switch-margins,.row .switch-margins,.row-fluid .switch-margins { display: inline-block; margin:auto 0 }
 .tab-container { border:1px solid #DDD;border-top:0;border-radius:0 0 4px 4px;margin-top:-20px;padding:8px 12px;position:relative }

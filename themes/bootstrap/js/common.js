@@ -61,9 +61,9 @@ function setupOrFacets() {
   for(var i=0;i<facets.length;i++) {
     $facet = $(facets[i]);
     if($facet.hasClass('applied')) {
-      $facet.prepend('<input type="checkbox" checked onChange="updateOrFacets($(this).parent().attr(\'href\'), this)"/>');
+      $facet.find('span:not(.pull-right)').prepend('<input type="checkbox" checked onChange="updateOrFacets($(this).parent().parent().attr(\'href\'), this)"/>');
     } else {
-      $facet.prepend('<input type="checkbox" onChange="updateOrFacets($(this).next(\'a\').attr(\'href\'), this)"/>');
+      $facet.find('a.main').prepend('<input type="checkbox" onChange="updateOrFacets($(this).parent().attr(\'href\'), this)"/> ');
     }
   }
 }
