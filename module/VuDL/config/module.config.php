@@ -43,23 +43,13 @@ $config = array(
                     'route'    => '/files/:id/:type'
                 )
             ),
-            'vudl-sibling' => array(
-                'type' => 'Zend\Mvc\Router\Http\Segment',
+            'vudl-about' => array(
+                'type' => 'Zend\Mvc\Router\Http\Literal',
                 'options' => array(
-                    'route'    => '/Vudl/Sibling/',
+                    'route'    => '/VuDL/About',
                     'defaults' => array(
                         'controller' => 'VuDL',
-                        'action'     => 'Sibling'
-                    )
-                )
-            ),
-            'vudl-collection' => array(
-                'type' => 'Zend\Mvc\Router\Http\Segment',
-                'options' => array(
-                    'route'    => '/Collection/:id',
-                    'defaults' => array(
-                        'controller' => 'Collection',
-                        'action'     => 'Home'
+                        'action'     => 'About',
                     )
                 )
             ),
@@ -68,9 +58,8 @@ $config = array(
                 'options' => array(
                     'route'    => '/Collection[/]',
                     'defaults' => array(
-                        'controller' => 'Collection',
-                        'action'     => 'Home',
-                        'id'         => 'root:id'
+                        'controller' => 'VuDL',
+                        'action'     => 'Collections'
                     )
                 )
             ),
@@ -84,6 +73,16 @@ $config = array(
                     )
                 )
             ),
+            'vudl-home' => array(
+                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'options' => array(
+                    'route'    => '/VuDL/Home[/]',
+                    'defaults' => array(
+                        'controller' => 'VuDL',
+                        'action'     => 'Home',
+                    )
+                )
+            ),
             'vudl-record' => array(
                 'type' => 'Zend\Mvc\Router\Http\Segment',
                 'options' => array(
@@ -94,43 +93,13 @@ $config = array(
                     )
                 )
             ),
-            'vudl-about-php' => array(
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+            'vudl-sibling' => array(
+                'type' => 'Zend\Mvc\Router\Http\Segment',
                 'options' => array(
-                    'route'    => '/about.php',
-                    'defaults' => array(
-                        'controller' => 'Redirect',
-                        'action'     => 'About',
-                    )
-                )
-            ),
-            'vudl-collection-link' => array(
-                'type' => 'Zend\Mvc\Router\Http\Literal',
-                'options' => array(
-                    'route'    => '/collections.php',
-                    'defaults' => array(
-                        'controller' => 'Redirect',
-                        'action'     => 'Collection'
-                    )
-                )
-            ),
-            'vudl-home' => array(
-                'type' => 'Zend\Mvc\Router\Http\Literal',
-                'options' => array(
-                    'route'    => '/VuDL/Home',
+                    'route'    => '/Vudl/Sibling/',
                     'defaults' => array(
                         'controller' => 'VuDL',
-                        'action'     => 'Home',
-                    )
-                )
-            ),
-            'vudl-about' => array(
-                'type' => 'Zend\Mvc\Router\Http\Literal',
-                'options' => array(
-                    'route'    => '/VuDL/About',
-                    'defaults' => array(
-                        'controller' => 'VuDL',
-                        'action'     => 'About',
+                        'action'     => 'Sibling'
                     )
                 )
             ),

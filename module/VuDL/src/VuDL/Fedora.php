@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/
  */
 namespace VuDL;
+use VuFindHttp\HttpServiceInterface;
 
 /**
  * VuDL-Fedora connection class
@@ -36,14 +37,21 @@ namespace VuDL;
  * @license  http://opensource.org/licenses/gpl-3.0.php GNU General Public License
  * @link     http://vufind.org/wiki/
  */
-class Fedora {
+class Fedora implements \VuFindHttp\HttpServiceAwareInterface {
     /**
      * VuDL config
      *
      * @var \Zend\Config\Config
      */
     protected $config = null;
-    
+
+    /**
+     * HTTP service
+     *
+     * @var HttpServiceInterface
+     */
+    protected $httpService = false;
+
     /**
      * Constructor
      *
@@ -52,7 +60,19 @@ class Fedora {
     public function __construct($config) {
         $this->config = $config;
     }
-    
+
+    /**
+     * Set the HTTP service to be used for HTTP requests.
+     *
+     * @param HttpServiceInterface $service HTTP service
+     *
+     * @return void
+     */
+    public function setHttpService(HttpServiceInterface $service)
+    {
+        $this->httpService = $service;
+    }
+
     /**
      * Get Fedora Base URL.
      *
@@ -94,13 +114,28 @@ class Fedora {
      *
      * @return string
      */
-    public function getRootID()
+    public function getRootId()
     {
         return isset($this->config->Fedora->root_id)
             ? $this->config->Fedora->root_id
             : null;
     }
-    
+
+    /**
+     * Get an HTTP client
+     *
+     * @param string $url URL for client to access
+     *
+     * @return \Zend\Http\Client
+     */
+    public function getHttpClient($url)
+    {
+        if ($this->httpService) {
+            return $this->httpService->createClient($url);
+        }
+        return new \Zend\Http\Client($url);
+    }
+
     /**
      * Consolidation of Zend Client calls
      *
@@ -121,7 +156,7 @@ class Fedora {
         foreach ($options as $key=>$value) {
             $data[$key] = $value;
         }
-        $client = new \Zend\Http\Client($this->getQueryURL());
+        $client = $this->getHttpClient($this->getQueryURL());
         $client->setMethod('POST');
         $client->setAuth($this->config->Fedora->adminUser, $this->config->Fedora->adminPass);
         $client->setParameterPost($data);

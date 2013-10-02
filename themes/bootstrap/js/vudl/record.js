@@ -104,7 +104,7 @@ function nextPage() {
   scrollToSelected();
 }
 function scrollToSelected() {
-  $('#list0').scrollTop($('#list0').scrollTop()+$('#list0 .alert-info').offset().top-400);
+  $('#list0').scrollTop($('#list0').scrollTop()+$('#list0 .alert-info').offset().top-500);
 }
 
 $(document).ready(function() {

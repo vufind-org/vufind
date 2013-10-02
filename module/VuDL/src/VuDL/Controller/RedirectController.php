@@ -50,34 +50,25 @@ class RedirectController extends AbstractVuDL
     {
         $collection = $this->params()->fromRoute('collection');
         $file = $this->params()->fromRoute('file');
-        $data = array(
-            'type'  => 'tuples',
-            'flush' => false,
-            'lang'  => 'itql',
-            'format'=> 'Simple',
-            'query' => 'select $object from <#ri> where $object '
-                . '<http://digital.library.villanova.edu/rdf/relations#hasLegacyURL>'
-                . " 'http://digital.library.villanova.edu/" . $collection . '/'
-                . $file . "'"
+        $response = $this->getFedora()->query(
+            'select $object from <#ri> where $object '
+            . '<http://digital.library.villanova.edu/rdf/relations#hasLegacyURL>'
+            . " 'http://digital.library.villanova.edu/" . $collection . '/'
+            . $file . "'"
         );
-        $client = new \Zend\Http\Client($this->getFedoraQueryURL());
-        $client->setMethod('POST');
-        $client->setAuth('fedoraAdmin', 'fedoraAdmin');
-        $client->setParameterPost($data);
-        $response = $client->send();
         $id = array();
         preg_match('/info:fedora\/([^>]+)/', $response->getBody(), $id);
         if (count($id) < 2) {
             $parts = explode('/', $file);
             $file = array_pop($parts);
             array_unshift($parts, $collection);
-            $data['query'] = 'select $object from <#ri> where $object '
+            $response = $this->getFedora()->query(
+                'select $object from <#ri> where $object '
                 . '<http://digital.library.villanova.edu/rdf/relations#hasLegacyURL>'
                 . " 'http://digital.library.villanova.edu/"
                 . str_replace('%2F', '/', rawurlencode(implode('/', $parts)))
-                . '/' . $file . "'";
-            $client->setParameterPost($data);
-            $response = $client->send();
+                . '/' . $file . "'"
+            );
             preg_match('/info:fedora\/([^>]+)/', $response->getBody(), $id);
         }
         if (count($id) > 1) {
