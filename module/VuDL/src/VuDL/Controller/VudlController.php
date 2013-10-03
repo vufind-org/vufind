@@ -443,65 +443,46 @@ class VudlController extends AbstractVuDL
 
         // OCR
         if (isset($record['ocr-dirty'])) {
-            $ocrURL = $this->getFedora()->getBase()
-                . $record['id']
-                . '/datastreams/OCR-DIRTY/content';
-            $record['ocr-dirty'] = file_get_contents($ocrURL);
+            $record['ocr-dirty'] = $this->getFedora()
+                ->getDatastreamContent($record['id'], 'OCR-DIRTY');
         }
         // Technical Information
         if (isset($record['master-md'])) {
-            $old = array(
-                '/<(\/[^>]+)>/',
-                '/<([^>]+)>/',
-                '/\/&gt;/',
-                '/&lt;\/div&gt;/',
-                '/<div>\s*<\/div>/',
-                '/(?<=<div>)([^<]+)<div>/',
-                '/<div>/'
-            );
-            $new = array(
-                '&lt;\1&gt;</div>',
-                '<div>&lt;\1&gt;',
-                '/&gt;</div>',
-                '</div>',
-                '</div>',
-                '<a class="xmlt" onClick="'
-                    . 'var p=this.parentNode;'
-                    . "p.className=p.className.indexOf('collapsed')<0"
-                    . " ? 'xml collapsed'"
-                    . " : 'xml'"
-                    . '">\1</a><div>',
-                '<div class="xml">'
-            );
-            $record['techinfo'] = preg_replace(
-                $old,
-                $new,
-                file_get_contents(
-                    $this->getFedora()->getBase()
-                    . $record['id']
-                    . '/datastreams/MASTER-MD/content'
-                )
-            );
-            $data = $type = array();
-            preg_match('/&lt;size[^&]*&gt;([^&]*)/', $record['techinfo'], $data);
-            preg_match('/mimetype="([^"]*)/', $record['techinfo'], $type);
-            $size_index = 0;
-            if (count($data) > 1) {
-                $bytes = intval($data[1]);
-                $sizes = array('bytes','KB','MB');
-                while ($size_index < count($sizes)-1 && $bytes > 1024) {
-                    $bytes /= 1024;
-                    $size_index++;
-                }
-                $ret = array(
-                    'size' => round($bytes, 1) . ' ' . $sizes[$size_index],
-                    'type' => $type[1]
-                );
-            }
+            $record['techinfo'] = $this->getFedora()
+                ->getDatastreamContent($record['id'], 'MASTER-MD');
+            $ret += $this->getSizeAndTypeInfo($record['techinfo']);
         }
         $renderer = $this->getViewRenderer();
         $ret['div'] = $renderer->render('vudl/techinfo.phtml', array('record'=>$record));
         return $ret;
+    }
+
+    /**
+     * Get size/type information out of the technical metadata.
+     *
+     * @param string $techInfo Technical metadata
+     *
+     * @return array
+     */
+    protected function getSizeAndTypeInfo($techInfo)
+    {
+        $data = $type = array();
+        preg_match('/<size[^>]*>([^<]*)/', $techInfo, $data);
+        preg_match('/mimetype="([^"]*)/', $techInfo, $type);
+        $size_index = 0;
+        if (count($data) > 1) {
+            $bytes = intval($data[1]);
+            $sizes = array('bytes','KB','MB');
+            while ($size_index < count($sizes)-1 && $bytes > 1024) {
+                $bytes /= 1024;
+                $size_index++;
+            }
+            return array(
+                'size' => round($bytes, 1) . ' ' . $sizes[$size_index],
+                'type' => $type[1]
+            );
+        }
+        return array();
     }
 
     /**
@@ -580,10 +561,9 @@ class VudlController extends AbstractVuDL
             );
         }
         // Copyright information
-        $licenseUrl = $this->getFedora()->getBase() .$root. '/datastreams/LICENSE/content';
-        $check = get_headers($licenseUrl);
+        $check = $this->getFedora()->getDatastreamHeaders($root, 'LICENSE');
         if (!strpos($check[0], '404')) {
-            $xml = file_get_contents($licenseUrl);
+            $xml = $this->getFedora()->getDatastreamContent($root, 'LICENSE');
             preg_match('/xlink:href="(.*?)"/', $xml, $license);
             // var_dump($license[1]);
             $fileDetails['license'] = $license[1];
