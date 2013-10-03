@@ -4,7 +4,10 @@ namespace VuDL\Module\Configuration;
 $config = array(
     'controllers' => array(
         'invokables' => array(
+<<<<<<< HEAD
             'redirect' => 'VuDL\Controller\RedirectController',
+=======
+>>>>>>> master
             'vudl' => 'VuDL\Controller\VudlController'
         ),
     ),
