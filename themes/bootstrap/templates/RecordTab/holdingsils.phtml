@@ -77,23 +77,24 @@
   <? foreach ($holding['items'] as $row): ?>
     <? $check = (isset($row['check']) && $row['check']); ?>
     <? if (isset($row['barcode']) && $row['barcode'] != ""): ?>
-      <tr>
+      <tr vocab="http://schema.org/" typeof="Offer">
         <th><?=$this->transEsc("Copy")?> <?=$this->escapeHtml($row['number'])?></th>
         <td>
           <? if ($row['reserve'] == "Y"): ?>
+            <link property="availability" href="http://schema.org/InStoreOnly">
           <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?>
           <? elseif (isset($row['use_unknown_message']) && $row['use_unknown_message']): ?>
             <span class="muted"><?=$this->transEsc("status_unknown_message")?></span>
           <? else: ?>
             <? if ($row['availability']): ?>
               <? /* Begin Available Items (Holds) */ ?>
-               <span class="text-success"><?=$this->transEsc("Available")?></span>
+               <span class="text-success"><?=$this->transEsc("Available")?><link property="availability" href="http://schema.org/InStock"></span>
               <? if (isset($row['link']) && $row['link']): ?>
                 <a<?=$check ? ' class="checkRequest"' : ''?> href="<?=$this->recordLink()->getHoldUrl($row['link'])?>"><?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
               <? endif; ?>
             <? else: ?>
               <? /* Begin Unavailable Items (Recalls) */ ?>
-              <span class="text-error"><?=$this->transEsc($row['status'])?></span>
+              <span class="text-error"><?=$this->transEsc($row['status'])?><link property="availability" href="http://schema.org/OutOfStock"></span>
               <? if (isset($row['returnDate']) && $row['returnDate']): ?>&ndash; <span class="small"><?=$this->escapeHtml($row['returnDate'])?></span><? endif; ?>
               <? if (isset($row['duedate']) && $row['duedate']): ?>
                 &ndash; <span class="small"><?=$this->transEsc("Due")?>: <?=$this->escapeHtml($row['duedate'])?></span>
@@ -106,6 +107,19 @@
               <? endif; ?>
             <? endif; ?>
           <? endif; ?>
+          <? /* Embed item structured data: library, barcode, call number */ ?>
+          <? if ($row['location']): ?>
+            <meta property="seller" content="<?=$this->escapeHtml($row['location'])?>">
+          <? endif; ?>
+          <? if ($row['barcode']): ?>
+            <meta property="serialNumber" content="<?=$this->escapeHtml($row['barcode'])?>">
+          <? endif; ?>
+          <? if ($row['callnumber']): ?>
+            <meta property="sku" content="<?=$this->escapeHtml($row['callnumber'])?>">
+          <? endif; ?>
+          <? /* Declare that the item is to be borrowed, not for sale */ ?>
+            <link property="businessFunction" href="http://purl.org/goodrelations/v1#LeaseOut">
+            <link property="itemOffered" href="#record">
         </td>
       </tr>
     <? endif; ?>
