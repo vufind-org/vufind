@@ -12,15 +12,7 @@
   </div>
   <div class="span7">
     <div>
-      <? if ($this->driver->isCollection()): ?>
-        <a href="<?=$this->url('collection', array('id'=>$this->driver->getUniqueID()))?>" class="title">
-      <? elseif ($this->driver->isProtected()): ?>
-        <a href="<?=$this->driver->getProxyUrl() . $this->serverUrl() . $this->url('vudl-record',array('id'=>$this->driver->getUniqueID()))?>">
-      <? elseif (isset($this->layout()->from)): ?>
-        <a href="<?=$this->escapeHTML($this->url('vudl-record',array('id'=>$this->driver->getUniqueID(), 'from'=>$this->layout()->from)))?>">
-      <? else: ?>
-        <a href="<?=$this->url('vudl-record',array('id'=>$this->driver->getUniqueID())) ?>">
-      <? endif; ?>
+      <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
       <?
         $summHighlightedTitle = $this->driver->getHighlightedTitle();
         $summTitle = $this->driver->getTitle();
@@ -31,10 +23,8 @@
         } else {
           echo $this->transEsc('Title not available');
         }
-      ?></a>
-      <? if($this->driver->isProtected()): ?>
-        <span class="muted small"> <i class="icon-lock"></i> Login Required</span></span>
-      <? endif; ?>
+      ?>
+      </a>
     </div>
 
     <div>
@@ -120,7 +110,11 @@
         <? if (!is_array($urls)) $urls = array();
           if(!$this->driver->isCollection()):
             foreach ($urls as $current): ?>
-              <a href="<?=$this->escapeHtml($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="icon-external-link"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a><br/>
+              <a href="<?=$this->escapeHtml($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="icon-external-link"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
+              <? if($this->driver->isProtected()): ?>
+                <span class="muted small"> <i class="icon-lock"></i> <?=$this->transEsc('Login Required') ?></span></span>
+              <? endif; ?>
+              <br/>
           <? endforeach; ?>
         <? endif; ?>
       <? endif; ?>
@@ -156,16 +150,9 @@
     <div class="savedLists alert alert-info hide">
       <strong><?=$this->transEsc("Saved in")?>:</strong>
     </div>
-    
-    <? if($this->driver->isCollection()): ?>
-      <i class="icon-inbox"></i> <a class="hierarchyTreeLinkText" href="<?=$this->url('collection', array('id'=>$this->driver->getUniqueID()))?>" title="<?=$this->transEsc('hierarchy_tree')?>"><?=$this->transEsc('View Content')?></a><br/>
-    <? else: ?>
-      <i class="icon-list-alt"></i> <a href="<?=$this->recordLink()->getUrl($this->driver)?>"><?=$this->transEsc('View Details') ?></a><br/>
-    <? endif; ?>
 
     <? /* Hierarchy tree link */ ?>
     <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>
-      <? $this->headScript()->appendFile('search_hierarchyTree.js'); ?>
       <? foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
         <div class="hierarchyTreeLink">
           <input type="hidden" value="<?=$this->escapeHtml($hierarchyID)?>" class="hiddenHierarchyId" />

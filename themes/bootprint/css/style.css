@@ -77,11 +77,13 @@ select, .btn:not(.btn-link){vertical-align:top}
 .sidebar .nav-list {font-size:12px;margin-bottom:6px;padding:0 8px}
 .sidebar .nav-list .divider {display:none}
 .sidebar .nav-list li {border-bottom:1px solid #DDD;margin:0;padding:0}
-.sidebar .nav-list li.applied {padding:3px}
+.sidebar .nav-list li.applied {padding-left:3px}
 .sidebar .nav-list li.applied [class*="icon"] {color:transparent;margin-top:1px}
 .sidebar .nav-list li.active a {background:#FFA500;text-shadow:none}
 .sidebar .nav-list li.active a i.icon-remove {background:url('../images/icons/delete.png')}
 .sidebar .nav-list li a {margin:0;padding:3px}
+.sidebar .nav-list li a:hover {background:none}
+.sidebar .nav-list li span.main {width:auto}
 .sidebar .nav-list .nav-header {background:#EEE;border-color:#DDD;padding:2px 4px}
 #publishDateFilter input[type="text"] {border-color:#CCC;margin-top:.5em;padding:0}
 #publishDateFilter input[type="text"]:focus {border-color:#999;box-shadow:none}
