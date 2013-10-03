@@ -446,26 +446,39 @@ class VudlController extends AbstractVuDL
                 . $record['id']
                 . '/datastreams/MASTER-MD/content'
             );
-            $data = $type = array();
-            preg_match('/<size[^>]*>([^<]*)/', $record['techinfo'], $data);
-            preg_match('/mimetype="([^"]*)/', $record['techinfo'], $type);
-            $size_index = 0;
-            if (count($data) > 1) {
-                $bytes = intval($data[1]);
-                $sizes = array('bytes','KB','MB');
-                while ($size_index < count($sizes)-1 && $bytes > 1024) {
-                    $bytes /= 1024;
-                    $size_index++;
-                }
-                $ret = array(
-                    'size' => round($bytes, 1) . ' ' . $sizes[$size_index],
-                    'type' => $type[1]
-                );
-            }
+            $ret += $this->getSizeAndTypeInfo($record['techinfo']);
         }
         $renderer = $this->getViewRenderer();
         $ret['div'] = $renderer->render('vudl/techinfo.phtml', array('record'=>$record));
         return $ret;
+    }
+
+    /**
+     * Get size/type information out of the technical metadata.
+     *
+     * @param string $techInfo Technical metadata
+     *
+     * @return array
+     */
+    protected function getSizeAndTypeInfo($techInfo)
+    {
+        $data = $type = array();
+        preg_match('/<size[^>]*>([^<]*)/', $techInfo, $data);
+        preg_match('/mimetype="([^"]*)/', $techInfo, $type);
+        $size_index = 0;
+        if (count($data) > 1) {
+            $bytes = intval($data[1]);
+            $sizes = array('bytes','KB','MB');
+            while ($size_index < count($sizes)-1 && $bytes > 1024) {
+                $bytes /= 1024;
+                $size_index++;
+            }
+            return array(
+                'size' => round($bytes, 1) . ' ' . $sizes[$size_index],
+                'type' => $type[1]
+            );
+        }
+        return array();
     }
 
     /**
