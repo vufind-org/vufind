@@ -17,6 +17,6 @@
   <li title="<?=$this->title ?>"><?=$this->truncate($this->title, 100) ?> <span class="divider">&gt;</span></li>
   <li class="active"><?=$this->layout()->end ?></li>
 <? else: ?>
-  <li class="active" title="<?=$this->title ?>"><?=$this->truncate($this->title, 100) ?></li>
+  <li class="active" title="<?=$this->title ?>"><?=$this->title ?></li>
 <? endif; ?>
 <script>$('.dropdown-toggle').dropdown()</script>
