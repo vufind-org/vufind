@@ -51,53 +51,6 @@ class VudlController extends AbstractVuDL
     }
 
     /**
-     * Compares the cache date against a given date. If given date is newer,
-     * return false in order to refresh cache. Else return cache!
-     *
-     * @param string                $key     Unique key of cache object
-     * @param string|Date           $moddate Date to test cache time freshness
-     *
-     * @return cache object or false
-     */
-    protected function getOutlineCache($key, $moddate = null)
-    {
-        if (strtolower($this->params()->fromQuery('cache')) == 'no') {
-            return false;
-        }
-        if (($cache = $this->getCache()) && $cache_item = $cache->getItem($key)) {
-            if ($moddate == null || (isset($cache_item['moddate'])
-                && date_create($cache_item['moddate']) >= date_create($moddate))
-            ) {
-                return $cache_item['outline'];
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Save cache object with date to test for freshness
-     *
-     * @param string                $key   Unique key of cache object
-     * @param object                $data  Object to save
-     *
-     * @return cache object or false
-     */
-    protected function setOutlineCache($key, $data)
-    {
-        if ($cache = $this->getCache()) {
-            $cache->setItem(
-                $key,
-                array(
-                    'moddate'=>date(DATE_ATOM),
-                    'outline'=>$data
-                )
-            );
-            return $data;
-        }
-        return false;
-    }
-
-    /**
      * Gathers details on a file based on the id
      *
      * @param string $id       record id
@@ -223,102 +176,13 @@ class VudlController extends AbstractVuDL
      */
     protected function getOutline($root, $start = 0, $pageLength = null)
     {
-        if ($pageLength == null) {
-            $pageLength = $this->getFedora()->getPageLength();
-        }
-        // Check modification date
-        $xml = $this->getFedora()->getObjectAsXML($root);
-        $rootModDate = (string)$xml[0]->objLastModDate;
-        // Get lists
-        $data = $this->getFedora()->getStructmap($root);
-        $lists = array();
-        preg_match_all('/vudl:[^"]+/', $data, $lists);
-        $queue = array();
-        $moddate = array();
-        $outline = array('counts'=>array(), 'names'=>array());
-        // Get list items
-        foreach ($lists[0] as $i=>$list_id) {
-            // Get list name
-            $xml = $this->getFedora()->getObjectAsXML($list_id);
-            $outline['names'][] = (String) $xml[0]->objLabel;
-            $moddate[$i] = max((string)$xml[0]->objLastModDate, $rootModDate);
-            $data = $this->getFedora()->getStructmap($list_id);
-            $list = array();
-            preg_match_all('/vudl:[^"]+/', $data, $list);
-            $queue[$i] = $list[0];
-        }
-        $type_templates = array();
-        // Get data on all pages and docs
-        foreach ($queue as $parent=>$items) {
-            $outline['counts'][$parent] = count($items);
-            if (count($items) < $start) {
-                continue;
-            }
-            $routes = $this->getVuDLRoutes();
-            $outline['lists'][$parent] = array();
-            for ($i=$start;$i < $start + $pageLength;$i++) {
-                if ($i >= count($items)) {
-                    break;
-                }
-                $id = $items[$i];
-                // If there's a cache of this page...
-                $pageCache = $this->getOutlineCache(md5($id), $moddate[$parent]);
-                if ($pageCache) {
-                    $outline['lists'][$parent][$i] = $pageCache;
-                } else {
-                    // Else, get all the data and save it to the cache
-                    $details = $this->getDetails($id, true);
-                    $list = array();
-                    // Get the file type
-                    $file = $this->getFedora()->getDatastreams($id);
-                    preg_match_all(
-                        '/dsid="([^"]+)"[^>]*mimeType="([^"]+)/',
-                        $file,
-                        $list
-                    );
-                    $masterIndex = array_search('MASTER', $list[1]);
-                    $mimetype = $masterIndex ? $list[2][$masterIndex] : 'N/A';
-                    if (!$masterIndex) {
-                        $type = 'page';
-                    } else {
-                        $type = substr(
-                            $list[2][$masterIndex],
-                            strpos($list[2][$masterIndex], '/') + 1
-                        );
-                    }
-                    $item = array(
-                        'id' => $id,
-                        'fulltype' => $type,
-                        'mimetype' => $mimetype,
-                        'filetype' => isset($routes[$type])
-                            ? $routes[$type]
-                            : $type,
-                        'label' => isset($details['title'])
-                            ? $details['title']
-                            : $id,
-                        'datastreams' => $list[1],
-                        'mimetypes' => $list[2]
-                    );
-                    $this->setOutlineCache(md5($id), $item);
-                    $outline['lists'][$parent][$i] = $item;
-                }
-            }
-        }
-        $url = $this->url();
-        foreach ($outline['lists'] as $key=>$list) {
-            foreach ($list as $id=>$item) {
-                foreach ($item['datastreams'] as $ds) {
-                    $outline['lists'][$key][$id][strtolower($ds)] = $url->fromRoute(
-                        'files',
-                        array(
-                            'id'   => $item['id'],
-                            'type' => $ds
-                        )
-                    );
-                }
-            }
-        }
-        return $outline;
+        $cache = (strtolower($this->params()->fromQuery('cache')) == 'no');
+
+        $generator = new \VuDL\OutlineGenerator(
+            $this->getFedora(), $this->url(), $this->getVuDLRoutes(),
+            $cache ? $this->getCache() : false
+        );
+        return $generator->getOutline($root, $start, $pageLength);
     }
 
     /**
