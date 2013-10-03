@@ -1,5 +1,5 @@
 <?
-  $this->headTitle($this->translate('VU Digital Library - ').$this->details['title']);
+  $this->headTitle($this->translate('VU Digital Library - ').$this->details['title']['value']);
   $this->layout()->breadcrumbs = $this->breadcrumbs;
   
   // Get first list name
@@ -11,7 +11,7 @@
 
   // Facebook image meta
   $this->layout()->facebookImage = $this->outline['lists'][0][$this->page]['medium'];
-  $this->layout()->facebookTitle = $this->details['title'];
+  $this->layout()->facebookTitle = $this->details['title']['value'];
 
   // HEADER FILES
   $this->headLink()->appendStylesheet('vudl.css');
@@ -33,7 +33,7 @@
   $this->layout()->headerType = 'record';
   $this->layout()->vudlID = $this->id;
   $this->layout()->hierarchyID = $this->hierarchyID;
-  $this->layout()->title = $this->details['title'];
+  $this->layout()->title = $this->details['title']['value'];
   $this->layout()->parents = $this->parents;
   $this->layout()->siblings = $this->siblings;
   $this->layout()->breadcrumbEnd = $this->breadcrumbEnd;
@@ -53,13 +53,6 @@
   var initPage = $.parseJSON('<?=json_encode($this->outline['lists'][$this->initList][$this->initPage], JSON_HEX_APOS | JSON_HEX_AMP) ?>');
   
   counts = $.parseJSON('<?=json_encode($this->outline['counts'], JSON_HEX_APOS | JSON_HEX_AMP) ?>');
-  metaData = {
-    <? $i=0; ?>
-    <? foreach($this->details as $title=>$data): ?>
-      <? if($i++>0):?>,<?endif?>
-      '<?=$title ?>':'<?=str_replace("\n", "<br>", str_replace("'", "\'", is_array($data) ? implode(',', $data) : $data)) ?>'
-    <? endforeach; ?>
-  };
   <? if(count($this->outline['lists'][0]) >= $this->outline['counts'][0]): ?>
     loading_pages = false;
   <? endif; ?>
