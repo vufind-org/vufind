@@ -1,18 +1,8 @@
 <?php
-  $titles = array(
-    'dc:date' => 'Full Date',
-    'first_indexed' => 'Date Added',
-    'publishDate' => 'Publish Year',
-    'title_alt' => 'Alternate Title',
-    'topic' => 'Subject',
-    'dc_collection_str_mv' => 'Collection',
-    'dc_contributor_str_mv' => 'Contributor',
-    'dc_source_str_mv' => 'Source', 
-  );
   $skip = array(
     'license', 'special_license', 'description', 'title', 'title_alt'
   );
-  $no_link = array('title', 'dc:date');
+  $no_link = array('title', 'description');
 ?>
 <div class="accordion-group">
   <div class="accordion-heading">
@@ -25,41 +15,37 @@
       <? foreach ($this->details as $attr=>$val):
         // Skip items not placed in this table
         if(in_array($attr, $skip)) continue; ?>
-        <tr><td><?=isset($titles[$attr]) ? $titles[$attr] : ucfirst($attr) ?>:</td><td>
-          <? // Special format for date ?>
-          <? if($attr == 'date'): $date = explode('-', $val, 2); ?>
-            <a href="<?=$this->url('search-results') ?>?filter[]=publishDate:<?=urlencode($date[0]) ?>"><?=$date[0] ?></a><? if(count($date) > 1): ?>-<?=$date[1] ?><? endif; ?>
-          
+        <tr><td><?=$this->transEsc($val['title']) ?></td><td>
           <? // Special format for first_indexed ?>
-          <? elseif($attr == 'first_indexed'): ?>
-            <?=date_create($val)->format('j F Y') ?>
+          <? if($attr == 'first_indexed'): ?>
+            <?=date_create($val['value'])->format('j F Y') ?>
             
           <? // If we need exploding and backlinking ?>
           <? elseif($attr == 'topic' || $attr == 'series'): ?>
-            <? if(count($val) > 1): ?><ul class="unstyled"><? endif ?>
-            <? foreach($val as $v): ?>
-              <? if(count($val) > 1): ?><li><? endif ?>
+            <? if(count($val['value']) > 1): ?><ul class="unstyled"><? endif ?>
+            <? foreach($val['value'] as $v): ?>
+              <? if(count($val['value']) > 1): ?><li><? endif ?>
              <? $parts = explode(' -- ', $v);
                 $filter = '';
                 foreach($parts as $i=>$p):
                   $filter .= ' '.$p; ?>
                   <?=$i>0 ? ' &gt; ' : '' ?><a class="backlink" href="<?=$this->url('search-results') ?>?filter[]=<?=$attr ?>:<?=urlencode(trim($filter)) ?>"><?=$p ?></a>
              <? endforeach; ?>
-              <? if(count($val) > 1): ?></li><? endif ?>
+              <? if(count($val['value']) > 1): ?></li><? endif ?>
             <? endforeach; ?>
-            <? if(count($val) > 1): ?></ul><? endif ?>
+            <? if(count($val['value']) > 1): ?></ul><? endif ?>
             
           <? // Items not useful to link ?>
           <? elseif(in_array($attr, $no_link)): ?>
-            <?=is_array($val) ? implode('<br/>', $val) : $val ?>
+            <?=is_array($val['value']) ? implode('<br/>', $val['value']) : $val['value'] ?>
             
           <? // Array handling ?>
-          <? elseif(is_array($val)): ?>
-            <? if(count($val) == 1): ?>
-              <a href="<?=$this->url('search-results') ?>?filter[]=<?=$attr ?>:<?=urlencode($val[0]) ?>"><?=$val[0] ?></a>
+          <? elseif(is_array($val['value'])): ?>
+            <? if(count($val['value']) == 1): ?>
+              <a href="<?=$this->url('search-results') ?>?filter[]=<?=$attr ?>:<?=urlencode($val['value'][0]) ?>"><?=$val['value'][0] ?></a>
             <? else: ?>
               <ul class="unstyled">
-              <? foreach($val as $v): ?>
+              <? foreach($val['value'] as $v): ?>
                  <li><a href="<?=$this->url('search-results') ?>?filter[]=<?=$attr ?>:<?=urlencode($v) ?>"><?=$v ?></a></li>
               <? endforeach; ?>
               </ul>
@@ -67,7 +53,7 @@
           
           <? // The rest are linked ?>
           <? else: ?>
-            <a href="<?=$this->url('search-results') ?>?filter[]=<?=$attr ?>:<?=urlencode($val) ?>"><?=$val ?></a>
+            <a href="<?=$this->url('search-results') ?>?filter[]=<?=$attr ?>:<?=urlencode($val['value']) ?>"><?=$val['value'] ?></a>
           <? endif; ?>
         </td></tr>
       <? endforeach; ?>
@@ -97,7 +83,7 @@
       <? endif; ?>
       <a href="<?=$this->url('vudl-record', array('id'=>$this->id))?>"><i class="icon-link"></i> Permanent Link</a>
       <br/><br/>
-      <? if(isset($this->details['description'])): ?><p class="text-left"><?=$this->details['description'] ?></p><? endif ?>
+      <? if(isset($this->details['description'])): ?><p class="text-left"><?=$this->details['description']['value'] ?></p><? endif ?>
     </div>
   </div>
 </div>

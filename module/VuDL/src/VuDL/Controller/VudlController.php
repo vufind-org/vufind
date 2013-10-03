@@ -100,65 +100,74 @@ class VudlController extends AbstractVuDL
     {
         if (!$skipSolr) {
             try {
-                $record = $this->getRecordLoader()->load($id)->getRawData();
-                if (!is_null($record)) {
-                    $keys = array_intersect(
-                        array(
-                            'author',
-                            'author2',
-                            'dc_collection_str_mv',
-                            'dc_contributor_str_mv',
-                            'description',
-                            'first_indexed',
-                            'format',
-                            'language',
-                            'publishDate',
-                            'publisher',
-                            'series',
-                            'dc_source_str_mv',
-                            'title',
-                            'title_alt',
-                            'topic'
-                        ),
-                        array_keys($record)
-                    );
-                    $data = array();
-                    foreach ($keys as $key) {
-                        if ($key == 'author2') {
-                            continue;
-                        }
-                        $data[$key] = $record[$key];
-                    }
-                    if (isset($record['author2'])) {
-                        $data['author'] = array($data['author']);
-                        foreach ($record['author2'] as $a2) {
-                            $data['author'][] = $a2;
-                        }
-                    }
-                    if (isset($details['date'])) {
-                        $data['dc:date'] = $details['date'];
-                    }
-                    return $data;
-                }
+                return $this->getSolrDetails($id);
             } catch (\Exception $e) {
                 // Do nothing, handled in fedora below
             }
         }
-        $dc = array();
-        preg_match_all(
-            '/<[^\/]*dc:([^ >]+)>([^<]+)/',
-            file_get_contents(
-                $this->getFedora()->getBase() . $id . '/datastreams/DC/content'
-            ),
-            $dc
-        );
-        $details = array();
-        foreach ($dc[2] as $i=>$detail) {
-            $details[$dc[1][$i]] = $detail;
-        }
-        return $details;
+        return $this->getFedora()->getRecordDetails($id);
     }
 
+    /**
+     * Get details from Solr
+     *
+     * return array
+     */
+    protected function getSolrDetails($id)
+    {
+        // Get config for which details we want
+        $detailList = $this->getDetailsList();
+        $fields = array();
+        $combinedFields = array(); // Save to combine later
+        foreach ($detailList as $key=>$title) {
+            $keys = explode(',', $key);
+            foreach ($keys as $k) {
+                $fields[$k] = $title;
+            }
+            // Link up to top combined field
+            if (count($keys) > 1) {
+                $combinedFields[] = $keys;
+            }
+        }
+        // Get record data
+        if ($record = $this->getRecordLoader()->load($id)->getRawData()) {
+            // Pool details
+            $details = array();
+            foreach ($fields as $key=>$title) {
+              if (isset($record[$key])) {
+                  $details[$key] = array(
+                    'title' => $title,
+                    'value' => $record[$key]
+                  );
+              }
+            }
+            // Rearrange combined fields
+            foreach ($combinedFields as $fields) {
+                $main = false;
+                foreach ($fields as $i=>$field) {
+                    if (isset($details[$field])) {
+                        $main = $i;
+                        break;
+                    }
+                }
+                if($main !== false) {
+                    $field = $fields[$main];
+                    for ($i=$main+1;$i<count($fields);$i++) {
+                        if (isset($details[$fields[$i]])) {
+                            if (!is_array($details[$field]['value'])) {
+                                $details[$field]['value'] = array($details[$field]['value']);
+                            }
+                            $details[$field]['value'][] = $details[$fields[$i]]['value'];
+                        }
+                    }
+                }
+            }
+            return $details;
+        } else {
+          throw new \Exception('Solr details unavailable');
+        }
+    }
+    
     /**
      * Returns the root id for any parent this item may have
      * ie. If we're requesting a specific page, return the book
@@ -760,6 +769,11 @@ class VudlController extends AbstractVuDL
         }
     }
 
+    /**
+     * Redirect to the appropriate sibling.
+     *
+     * @return View Object
+     */
     protected function collectionsAction()
     {
       return $this->forwardTo('Collection', 'Home', array('id'=>$this->getRootId()));

@@ -145,6 +145,28 @@ class Fedora implements \VuFindHttp\HttpServiceAwareInterface {
     }
 
     /**
+     * Get details for the sidebar on a record.
+     *
+     * @return string
+     */
+    public function getRecordDetails()
+    {
+        $dc = array();
+        preg_match_all(
+            '/<[^\/]*dc:([^ >]+)>([^<]+)/',
+            file_get_contents(
+                $this->getBase() . $id . '/datastreams/DC/content'
+            ),
+            $dc
+        );
+        $details = array();
+        foreach ($dc[2] as $i=>$detail) {
+            $details[$dc[1][$i]] = $detail;
+        }
+        return $details;
+    }
+    
+    /**
      * Get Fedora Query URL.
      *
      * @return string
