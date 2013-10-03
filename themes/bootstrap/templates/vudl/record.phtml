@@ -1,6 +1,11 @@
 <?
   $this->headTitle($this->translate('VU Digital Library - ').$this->details['title']['value']);
+  
+  // Multiple breadcrumbs
   $this->layout()->breadcrumbs = $this->breadcrumbs;
+  $this->layout()->title = $this->details['title']['value'];
+  $this->layout()->breadcrumbEnd = $this->breadcrumbEnd;
+  $this->layout()->from = $this->from;
   
   // Get first list name
   foreach($this->outline as $list=>$v) {
@@ -33,11 +38,8 @@
   $this->layout()->headerType = 'record';
   $this->layout()->vudlID = $this->id;
   $this->layout()->hierarchyID = $this->hierarchyID;
-  $this->layout()->title = $this->details['title']['value'];
   $this->layout()->parents = $this->parents;
   $this->layout()->siblings = $this->siblings;
-  $this->layout()->breadcrumbEnd = $this->breadcrumbEnd;
-  $this->layout()->from = $this->from;
   
   function json_php_encode($op, $quotes = false) {
     if($quotes) {

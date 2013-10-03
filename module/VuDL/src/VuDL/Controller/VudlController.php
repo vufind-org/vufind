@@ -127,7 +127,7 @@ class VudlController extends AbstractVuDL
     {
         // Blow up now if we can't retrieve the record:
         if (!($record = $this->getRecordLoader()->load($id)->getRawData())) {
-          throw new \Exception('Solr details unavailable');
+            throw new \Exception('Solr details unavailable');
         }
 
         // Get config for which details we want
@@ -146,29 +146,20 @@ class VudlController extends AbstractVuDL
         // Pool details
         $details = array();
         foreach ($fields as $key=>$title) {
-          if (isset($record[$key])) {
-              $details[$key] = array('title' => $title, 'value' => $record[$key]);
-          }
+            if (isset($record[$key])) {
+                $details[$key] = array('title' => $title, 'value' => $record[$key]);
+            }
         }
 
         // Rearrange combined fields
         foreach ($combinedFields as $fields) {
-            $main = false;
-            foreach ($fields as $i=>$field) {
-                if (isset($details[$field])) {
-                    $main = $i;
-                    break;
-                }
-            }
-            if($main !== false) {
-                $field = $fields[$main];
-                for ($i=$main+1;$i<count($fields);$i++) {
-                    if (isset($details[$fields[$i]])) {
-                        if (!is_array($details[$field]['value'])) {
-                            $details[$field]['value'] = array($details[$field]['value']);
-                        }
-                        $details[$field]['value'][] = $details[$fields[$i]]['value'];
+            $main = $fields[0];
+            for ($i=1;$i<count($fields);$i++) {
+                if (isset($details[$fields[$i]])) {
+                    if (!is_array($details[$main]['value'])) {
+                        $details[$main]['value'] = array($details[$main]['value']);
                     }
+                    $details[$main]['value'][] = $details[$fields[$i]]['value'];
                 }
             }
         }
@@ -514,10 +505,10 @@ class VudlController extends AbstractVuDL
                 . '">' . $title . '</a> <span class="divider">&gt;</span></li>';
         }
         $breadcrumbs .= '<span class="active" title="'
-            . str_replace('"', "'", $details['title']).'">';
-        $breadcrumbs .= strlen($details['title']) > 100
-            ? substr($details['title'], 0, 100) . '...'
-            : $details['title'];
+            . str_replace('"', "'", $details['title']['value']).'">';
+        $breadcrumbs .= strlen($details['title']['value']) > 100
+            ? substr($details['title']['value'], 0, 100) . '...'
+            : $details['title']['value'];
         return $breadcrumbs . '</span>';
     }
 
