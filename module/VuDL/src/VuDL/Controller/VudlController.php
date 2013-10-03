@@ -147,9 +147,7 @@ class VudlController extends AbstractVuDL
         $dc = array();
         preg_match_all(
             '/<[^\/]*dc:([^ >]+)>([^<]+)/',
-            file_get_contents(
-                $this->getFedora()->getBase() . $id . '/datastreams/DC/content'
-            ),
+            $this->getFedora()->getDatastreamContent($id, 'DC'),
             $dc
         );
         $details = array();
@@ -434,18 +432,13 @@ class VudlController extends AbstractVuDL
 
         // OCR
         if (isset($record['ocr-dirty'])) {
-            $ocrURL = $this->getFedora()->getBase()
-                . $record['id']
-                . '/datastreams/OCR-DIRTY/content';
-            $record['ocr-dirty'] = file_get_contents($ocrURL);
+            $record['ocr-dirty'] = $this->getFedora()
+                ->getDatastreamContent($record['id'], 'OCR-DIRTY');
         }
         // Technical Information
         if (isset($record['master-md'])) {
-            $record['techinfo'] = file_get_contents(
-                $this->getFedora()->getBase()
-                . $record['id']
-                . '/datastreams/MASTER-MD/content'
-            );
+            $record['techinfo'] = $this->getFedora()
+                ->getDatastreamContent($record['id'], 'MASTER-MD');
             $ret += $this->getSizeAndTypeInfo($record['techinfo']);
         }
         $renderer = $this->getViewRenderer();
@@ -557,10 +550,9 @@ class VudlController extends AbstractVuDL
             );
         }
         // Copyright information
-        $licenseUrl = $this->getFedora()->getBase() .$root. '/datastreams/LICENSE/content';
-        $check = get_headers($licenseUrl);
+        $check = $this->getFedora()->getDatastreamHeaders($root, 'LICENSE');
         if (!strpos($check[0], '404')) {
-            $xml = file_get_contents($licenseUrl);
+            $xml = $this->getFedora()->getDatastreamContent($root, 'LICENSE');
             preg_match('/xlink:href="(.*?)"/', $xml, $license);
             // var_dump($license[1]);
             $fileDetails['license'] = $license[1];

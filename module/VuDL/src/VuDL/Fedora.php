@@ -193,7 +193,35 @@ class Fedora implements \VuFindHttp\HttpServiceAwareInterface {
         return $this->structmaps[$id];
     }
 
-    
+    /**
+     * Return the content of a datastream.
+     *
+     * @param string $id     Record id
+     * @param string $stream Name of stream to retrieve
+     *
+     * @return string
+     */
+    public function getDatastreamContent($id, $stream)
+    {
+        return file_get_contents(
+            $this->getBase() . $id . '/datastreams/' . $stream . '/content'
+        );
+    }
+
+    /**
+     * Return the headers of a datastream.
+     *
+     * @param string $id     Record id
+     * @param string $stream Name of stream to retrieve
+     *
+     * @return string
+     */
+    public function getDatastreamHeaders($id, $stream)
+    {
+        return get_headers(
+            $this->getBase() . $id . '/datastreams/' . $stream . '/content'
+        );
+    }
 
     /**
      * Returns file contents of the structmap, our most common call
