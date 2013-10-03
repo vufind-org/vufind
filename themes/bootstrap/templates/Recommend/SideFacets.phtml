@@ -110,7 +110,7 @@ JS;
             <? else: ?>
               <i class="icon-ok pull-right"></i>
             <? endif; ?>
-            <span><?=$this->escapeHtml($thisFacet['displayText'])?></span>
+            <span class="main"><?=$this->escapeHtml($thisFacet['displayText'])?></span>
           </li>
         <? else: ?>
           <li class="facet<?=$thisFacet['operator'] ?><? if ($i>5): ?> <?=$moreClass ?><?endif ?>">
