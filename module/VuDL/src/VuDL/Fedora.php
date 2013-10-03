@@ -147,9 +147,11 @@ class Fedora implements \VuFindHttp\HttpServiceAwareInterface {
     /**
      * Get details for the sidebar on a record.
      *
+     * @param string $id ID to retrieve
+     *
      * @return string
      */
-    public function getRecordDetails()
+    public function getRecordDetails($id)
     {
         $dc = array();
         preg_match_all(
