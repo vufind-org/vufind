@@ -227,7 +227,7 @@ class VudlController extends AbstractVuDL
             $pageLength = $this->getFedora()->getPageLength();
         }
         // Check modification date
-        $xml = simplexml_load_file($this->getFedora()->getBase() . $root . '?format=xml');
+        $xml = $this->getFedora()->getObjectAsXML($root);
         $rootModDate = (string)$xml[0]->objLastModDate;
         // Get lists
         $data = $this->getFedora()->getStructmap($root);
@@ -239,9 +239,7 @@ class VudlController extends AbstractVuDL
         // Get list items
         foreach ($lists[0] as $i=>$list_id) {
             // Get list name
-            $xml = simplexml_load_file(
-                $this->getFedora()->getBase() . $list_id . '?format=xml'
-            );
+            $xml = $this->getFedora()->getObjectAsXML($list_id);
             $outline['names'][] = (String) $xml[0]->objLabel;
             $moddate[$i] = max((string)$xml[0]->objLastModDate, $rootModDate);
             $data = $this->getFedora()->getStructmap($list_id);

@@ -214,6 +214,18 @@ class Fedora implements \VuFindHttp\HttpServiceAwareInterface {
     }
 
     /**
+     * Return the object as XML.
+     *
+     * @param string $id Record id
+     *
+     * @return \SimpleXMLElement
+     */
+    public function getObjectAsXML($id)
+    {
+        return simplexml_load_file($this->getBase() . $id . '?format=xml');
+    }
+
+    /**
      * Return the content of a datastream.
      *
      * @param string $id     Record id
@@ -249,7 +261,7 @@ class Fedora implements \VuFindHttp\HttpServiceAwareInterface {
      * @param string  $id  Record id
      * @param boolean $xml Return data as SimpleXMLElement?
      *
-     * @return string|SimpleXMLElement
+     * @return string|\SimpleXMLElement
      */
     public function getDatastreams($id, $xml = false)
     {
