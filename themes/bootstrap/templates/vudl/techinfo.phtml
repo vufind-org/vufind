@@ -1,0 +1,61 @@
+<!-- ALL FILES -->
+<div class="accordion-group">
+  <div class="accordion-heading">
+    <a class="accordion-toggle" data-toggle="collapse" data-parent="#techinfo" href="#allFiles">
+      <?=$this->transEsc('All Files')?>
+    </a>
+  </div>
+  <div id="allFiles" class="accordion-body collapse">
+    <div class="accordion-inner">
+      <? foreach ($this->record as $key=>$link): ?>
+        <? if (is_array($this->record[$key]) || strpos($key, '-') !== false
+        || $link == $this->record['id']|| $key == 'techinfo') continue; ?>
+        <a class="btn btn-block" href="<?=$this->url(
+          'files',
+          array(
+            'id'=>$this->record['id'],
+            'type'=>strtoupper($key)
+          )
+        )?>?download=true">
+          <?=strToUpper($this->transEsc($key)) ?>
+          <? if (isset($this->record['mimetypes'])): ?>
+            <? $mtKey = array_search(strToUpper($key), $this->record['datastreams']); ?>
+            <span class="pull-right small"><?=$this->record['mimetypes'][$mtKey] ?></span>
+          <? endif; ?>
+        </a>
+      <? endforeach; ?>
+    </div>
+  </div>
+</div>
+
+<!-- OCR --->
+<? if (isset($this->record['ocr-dirty'])): ?>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#techinfo" href="#ocr">
+        <?=$this->transEsc('Computer Generated Transcription (OCR)')?>
+      </a>
+    </div>
+    <div id="ocr" class="accordion-body collapse">
+      <div class="accordion-inner">
+        <pre><?=$this->record['ocr-dirty'] ?></pre>
+      </div>
+    </div>
+  </div>
+<? endif; ?>
+
+<!-- Technical Information XML --->
+<? if (isset($this->record['techinfo'])): ?>
+  <div class="accordion-group">
+    <div class="accordion-heading">
+      <a class="accordion-toggle" data-toggle="collapse" data-parent="#techinfo" href="#xml">
+        <?=$this->transEsc('Technical Information (Master File)')?>
+      </a>
+    </div>
+    <div id="xml" class="accordion-body collapse">
+      <div class="accordion-inner">
+        <?=$this->vudl()->formatTechInfo($this->record['techinfo'])?>
+      </div>
+    </div>
+  </div>
+<? endif; ?>

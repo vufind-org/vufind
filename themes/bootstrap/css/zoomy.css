@@ -1,0 +1,36 @@
+.zoomy-container{background:#EEE;height:600px;margin:0 auto;overflow:hidden;position:relative;width:100%}
+.zoomy-container *{margin:0;padding:0}
+.zoomy-container .bounds{height:600px;position:absolute;width:800px}
+.zoomy-container .control #toggle{bottom:4px;color:#999;font:12pt Verdana;padding:0 3px;right:0}
+.zoomy-container .control .turn-left{bottom:54px;right:2px}
+.zoomy-container .control .turn-left,
+  .zoomy-container .control .turn-right,
+  .zoomy-container .control #toggle {position:absolute}
+.zoomy-container .control .turn-right{bottom:54px;right:151px}
+.zoomy-container .loading-bar{padding-top:20%}
+.zoomy-container .map{background:#FFF;border:1px solid #EEE;position:absolute;z-index:1}
+.zoomy-container .map img{max-width:none;position:absolute}
+.zoomy-container .page img{cursor:move;height:100%;max-width:none;position:absolute;width:100%}
+.zoomy-container .scope{background:rgba(255,255,255,.2);border:1px solid #006DCC;cursor:move;position:absolute;z-index:2}
+.zoomy-container .scope:hover,
+  .zoomy-container .scope.ui-draggable-dragging {background:rgba(255,255,255,.4)}
+.zoomy-container .zoom{background:#EEE;border-radius:5px;bottom:1px;color:#444;font:10pt Courier;margin:0 -10px 1px 0;padding:2px;position:absolute;right:48px}
+.zoomy-container .zoom .level{background:#EEE;border:0;color:#444;font:10pt Courier;padding:0 0 2px;text-align:center;width:40px}
+.zoomy-container .zoom a i{padding:2px}
+.zoomy-container .zoom a,
+  .zoomy-container .control .turn-left,
+  .zoomy-container .control .turn-right,
+  .zoomy-container .control #toggle {color:#444;cursor:pointer;text-decoration:none}
+@media screen and (max-width: 974px) {
+  .zoomy-container .control{bottom:0;height:100px;position:absolute;right:0;width:300px}
+  .zoomy-container .control .turn-left{bottom:15px;right:215px;z-index:1}
+  .zoomy-container .control .turn-right{bottom:15px;right:2px;z-index:1}
+  .zoomy-container .map,
+    .zoomy-container .map .scope,
+    .zoomy-container .map img,
+    .zoomy-container .control #toggle {border:0;display:none}
+  .zoomy-container .zoom{bottom:8px;right:40px;z-index:10}
+  .zoomy-container .zoom .level{padding:10px 0;width:50px}
+  .zoomy-container .zoom a{padding:10px}
+  .zoomy-container .zoom,.zoomy-container .zoom .level{font:18pt Courier}
+}

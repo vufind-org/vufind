@@ -1,0 +1,25 @@
+<script>
+  // Mandatory update function
+  updateFunction = function(data, tab) {
+    //$('#xml').html(data['techinfo']);
+  };
+</script>
+<? if($this->counts[0] > 1): ?>
+	<div class="row-fluid btn-group visible-phone text-center">
+		<a href="javascript:prevPage()" class="btn">Prev Page</a>
+		<a href="javascript:nextPage()" class="btn">Next Page</a>
+		<br/><br/>
+	</div>
+<? endif; ?>
+<ul class="nav nav-tabs">
+  <li class="active"><a href="#master" id="master-tab">Original</a></li>
+	<? if($this->counts[0] > 1): ?>
+		<div class="btn-group pull-right hidden-phone">
+			<a href="javascript:prevPage()" class="btn btn-small">Prev Page</a>
+			<a href="javascript:nextPage()" class="btn btn-small">Next Page</a>
+		</div>
+	<? endif; ?>
+</ul>
+<div class="tab-container text-center tab-content">  
+  <?=$this->context($this)->renderInContext('vudl/master-tab.phtml', array())?>
+</div>
