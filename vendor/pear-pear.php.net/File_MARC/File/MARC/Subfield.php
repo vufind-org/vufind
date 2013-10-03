@@ -36,7 +36,7 @@
  * @link      http://pear.php.net/package/File_MARC
  */
 
-// {{{ class File_MARC_Subfield extends Structures_LinkedList_DoubleNode
+// {{{ class File_MARC_Subfield
 /**
  * The File_MARC_Subfield class represents a single subfield in a MARC
  * record field.
@@ -53,7 +53,7 @@
  * @license  http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
  * @link     http://pear.php.net/package/File_MARC
  */
-class File_MARC_Subfield extends Structures_LinkedList_DoubleNode
+class File_MARC_Subfield
 {
     // {{{ properties
     /**
@@ -67,6 +67,13 @@ class File_MARC_Subfield extends Structures_LinkedList_DoubleNode
      * @var string
      */
     protected $data;
+
+    /**
+     * Position of the subfield
+     * @var int
+     */
+    protected $position;
+
     // }}}
 
     // {{{ Constructor: function __construct()
@@ -93,7 +100,7 @@ class File_MARC_Subfield extends Structures_LinkedList_DoubleNode
     {
         $this->code = null;
         $this->data = null;
-        parent::__destruct();
+        $this->position = null;
     }
     // }}}
 
@@ -130,6 +137,18 @@ class File_MARC_Subfield extends Structures_LinkedList_DoubleNode
     function getData()
     {
         return (string)$this->data;
+    }
+    // }}}
+
+    // {{{ getPosition()
+    /**
+     * Return position of the subfield
+     *
+     * @return int data
+     */
+    function getPosition()
+    {
+        return $this->position;
     }
     // }}}
 
@@ -192,6 +211,20 @@ class File_MARC_Subfield extends Structures_LinkedList_DoubleNode
     {
         $this->data = $data;
         return true;
+    }
+    // }}}
+
+    // {{{ setPosition()
+    /**
+     * Sets position of the subfield
+     *
+     * @param string $pos new position of the subfield
+     *
+     * @return void
+     */
+    function setPosition($pos)
+    {
+        $this->position = $pos;
     }
     // }}}
 

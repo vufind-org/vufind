@@ -40,7 +40,7 @@
 <? $sideFacetSet = $this->recommend->getFacetSet(); $dateFacets = $this->recommend->getDateFacets(); ?>
 <? if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
   <? foreach ($sideFacetSet as $title => $cluster): ?>
-    <? $allowExclude = false && $this->recommend->excludeAllowed($title); ?>
+    <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
     <ul class="nav nav-list">
       <? if (isset($dateFacets[$title])): ?>
         <li class="nav-header"><?=$this->transEsc($cluster['label'])?></dt>
@@ -110,7 +110,7 @@ JS;
             <? else: ?>
               <i class="icon-ok pull-right"></i>
             <? endif; ?>
-            <span><?=$this->escapeHtml($thisFacet['displayText'])?></span>
+            <span class="main"><?=$this->escapeHtml($thisFacet['displayText'])?></span>
           </li>
         <? else: ?>
           <li class="facet<?=$thisFacet['operator'] ?><? if ($i>5): ?> <?=$moreClass ?><?endif ?>">

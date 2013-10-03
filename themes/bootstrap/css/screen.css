@@ -16,7 +16,7 @@ li a.hidden {display:none}
 .sidebar h4 { margin:6px 8px }
 .sidebar .checkbox { margin-left:10px }
 .sidebar .nav-list li:not(.divider) { min-height:26px }
-.sidebar .nav-list li span { display:inline-block;padding:3px 0 }
+.sidebar .nav-list li span.main { display:inline-block;padding:3px 0 }
 .sidebar .nav-list li input[type="checkbox"] { float:left;margin:4px 3px 0 0}
 .sidebar .nav-list li .icon-ok { margin-top:3px }
 .sidebar .nav-list li .icon-remove { margin-left:3px }

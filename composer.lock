@@ -55,12 +55,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Jasig/phpCAS.git",
-                "reference": "13c17276481a5fb55de2ce4c0cf513197fb1ee24"
+                "reference": "673feb404d3c07869ed7e186128d70a8c85473d6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Jasig/phpCAS/zipball/13c17276481a5fb55de2ce4c0cf513197fb1ee24",
-                "reference": "13c17276481a5fb55de2ce4c0cf513197fb1ee24",
+                "url": "https://api.github.com/repos/Jasig/phpCAS/zipball/673feb404d3c07869ed7e186128d70a8c85473d6",
+                "reference": "673feb404d3c07869ed7e186128d70a8c85473d6",
                 "shasum": ""
             },
             "require": {
@@ -98,7 +98,7 @@
                 "source": "https://github.com/Jasig/phpCAS/tree/master",
                 "issues": "https://github.com/Jasig/phpCAS/issues"
             },
-            "time": "2013-07-25 07:36:06"
+            "time": "2013-10-01 20:06:01"
         },
         {
             "name": "johnwohlers/sip2",
@@ -186,19 +186,18 @@
         },
         {
             "name": "pear-pear.php.net/File_MARC",
-            "version": "0.7.3",
+            "version": "0.8.0",
             "dist": {
                 "type": "file",
-                "url": "http://pear.php.net/get/File_MARC-0.7.3.tgz",
+                "url": "http://pear.php.net/get/File_MARC-0.8.0.tgz",
                 "reference": null,
                 "shasum": null
             },
             "require": {
-                "pear-pear.php.net/structures_linkedlist": "*",
-                "php": ">=5.2.0.0"
+                "php": ">=5.3.0.0"
             },
             "replace": {
-                "pear-pear/file_marc": "== 0.7.3.0"
+                "pear-pear/file_marc": "== 0.8.0.0"
             },
             "type": "pear-library",
             "autoload": {
@@ -272,32 +271,6 @@
                 "/"
             ],
             "description": "Structures_Graph is a package for creating and manipulating graph datastructures. It allows building of directed\nand undirected graphs, with data and metadata stored in nodes. The library provides functions for graph traversing\nas well as for characteristic extraction from the graph topology."
-        },
-        {
-            "name": "pear-pear.php.net/Structures_LinkedList",
-            "version": "0.2.2",
-            "dist": {
-                "type": "file",
-                "url": "http://pear.php.net/get/Structures_LinkedList-0.2.2.tgz",
-                "reference": null,
-                "shasum": null
-            },
-            "require": {
-                "php": ">=5.0.0.0"
-            },
-            "replace": {
-                "pear-pear/structures_linkedlist": "== 0.2.2.0"
-            },
-            "type": "pear-library",
-            "autoload": {
-                "classmap": [
-                    ""
-                ]
-            },
-            "include-path": [
-                "/"
-            ],
-            "description": "A singly-linked list offers the ability to insert or delete\n nodes at any point within the list. A doubly-linked list also offers the\n ability to request previous nodes in the list."
         },
         {
             "name": "pear-pear.php.net/Validate",
@@ -417,17 +390,17 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.3.4",
+            "version": "v2.3.5",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "5a279f1b5f5e1045a6c432354d9ea727ff3a9847"
+                "reference": "6bb881b948368482e1abf1a75c08bcf88a1c5fc3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/5a279f1b5f5e1045a6c432354d9ea727ff3a9847",
-                "reference": "5a279f1b5f5e1045a6c432354d9ea727ff3a9847",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/6bb881b948368482e1abf1a75c08bcf88a1c5fc3",
+                "reference": "6bb881b948368482e1abf1a75c08bcf88a1c5fc3",
                 "shasum": ""
             },
             "require": {
@@ -460,7 +433,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com",
-            "time": "2013-08-24 15:26:22"
+            "time": "2013-09-22 18:04:39"
         },
         {
             "name": "zendframework/zendframework",

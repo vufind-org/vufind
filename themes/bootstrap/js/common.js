@@ -50,10 +50,9 @@ function lessFacets(id) {
 
 // Advanced facets
 function updateOrFacets(url, op) {
-  console.log(url);
   window.location.assign(url);
-  var list = $(op).parents('dl');
-  var header = $(list).find('dt');
+  var list = $(op).parents('ul');
+  var header = $(list).find('li.nav-header');
   list.html(header[0].outerHTML+'<div class="alert alert-info">'+vufindString.loading+'...</div>');
 }
 function setupOrFacets() {
