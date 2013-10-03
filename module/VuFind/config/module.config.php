@@ -110,7 +110,6 @@ $config = array(
             'summonrecord' => 'VuFind\Controller\SummonrecordController',
             'tag' => 'VuFind\Controller\TagController',
             'upgrade' => 'VuFind\Controller\UpgradeController',
-            'vudl' => 'VuFind\Controller\VudlController',
             'web' => 'VuFind\Controller\WebController',
             'worldcat' => 'VuFind\Controller\WorldcatController',
             'worldcatrecord' => 'VuFind\Controller\WorldcatrecordController',
@@ -706,13 +705,6 @@ $config = array(
                             $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
                         );
                     },
-                    'solrvudl' => function ($sm) {
-                        return new \VuFind\RecordDriver\SolrVudl(
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
-                            null,
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
-                        );
-                    },
                     'solrweb' => function ($sm) {
                         return new \VuFind\RecordDriver\SolrWeb(
                             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
@@ -1059,7 +1051,6 @@ $staticRoutes = array(
     'Upgrade/GetDBCredentials', 'Upgrade/GetDbEncodingPreference',
     'Upgrade/GetSourceDir', 'Upgrade/GetSourceVersion', 'Upgrade/Reset',
     'Upgrade/ShowSQL',
-    'VuDL/Browse', 'VuDL/DSRecord', 'VuDL/Record',
     'Web/Home', 'Web/Results',
     'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search'
 );
