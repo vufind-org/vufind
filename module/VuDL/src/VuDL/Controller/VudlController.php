@@ -481,38 +481,6 @@ class VudlController extends AbstractVuDL
     }
 
     /**
-     * Generate breadcrumbs HTML
-     *
-     * @param array $parents Parents of the record by id and title
-     * @param array $details Details for the record
-     *
-     * @return html text
-     */
-    public function getBreadcrumbs($parents, $details)
-    {
-        if (count($parents) > 1) {
-            return $parents;
-        }
-        $breadcrumbs = '<li><a href="'
-            . $this->url()->fromRoute('vudl-default-collection')
-            . '">Collections</a> <span class="divider">&gt;</span></li>';
-        foreach (array_reverse($parents[0]) as $id=>$title) {
-            if ($id == 'vudl:1' || $id == 'vudl:3') {
-                continue;
-            }
-            $breadcrumbs .= ' <li><a href="'
-                . $this->url()->fromRoute('collection', array('id'=>$id))
-                . '">' . $title . '</a> <span class="divider">&gt;</span></li>';
-        }
-        $breadcrumbs .= '<span class="active" title="'
-            . str_replace('"', "'", $details['title']['value']).'">';
-        $breadcrumbs .= strlen($details['title']['value']) > 100
-            ? substr($details['title']['value'], 0, 100) . '...'
-            : $details['title']['value'];
-        return $breadcrumbs . '</span>';
-    }
-
-    /**
      * Display record in VuDL from Fedora
      *
      * @return View Object
@@ -585,7 +553,6 @@ class VudlController extends AbstractVuDL
         $parents = $this->getFedora()->getParentList($root);
         //$keys = array_keys($parents);
         //$view->hierarchyID = end($keys);
-        $view->breadcrumbs = $this->getBreadcrumbs($parents, $fileDetails);
         $view->parents = $parents;
         if ($id != $root) {
             $view->parentID = $root;
@@ -654,7 +621,6 @@ class VudlController extends AbstractVuDL
         $parents = $this->getFedora()->getParentList($root);
         //$keys = array_keys($parents);
         //$view->hierarchyID = end($keys);
-        $view->breadcrumbs = $this->getBreadcrumbs($parents, $view->details);
         $view->parents = $parents;
         return $view;
     }

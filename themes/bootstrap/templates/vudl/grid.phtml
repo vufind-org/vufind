@@ -1,6 +1,11 @@
 <?
   $this->headTitle($this->translate('VU Digital Library - ').$this->details['title']['value']);
-  $this->layout()->breadcrumbs = str_replace('<a', '<li><a', str_replace('<li>&gt;', '<span class="divider">&gt;</span>', preg_replace('/<([\/]?)span/', '<\1li', $this->breadcrumbs)));
+  
+  // Multiple breadcrumbs
+  $this->layout()->breadcrumbs = $this->parents;
+  $this->layout()->title = $this->details['title']['value'];
+  $this->layout()->breadcrumbEnd = $this->breadcrumbEnd;
+  $this->layout()->from = $this->from;
 
   // Facebook image meta
   $this->layout()->facebookImage = $this->outline['lists'][0][$this->page]['medium'];
@@ -15,7 +20,6 @@
   $this->layout()->vudlID = $this->id;
   $this->layout()->hierarchyID = $this->hierarchyID;
   $this->layout()->siblings = $this->siblings;
-  $this->layout()->title = $this->details['title']['value'];
   $this->layout()->parents = $this->parents;
 
   function json_php_encode($op, $quotes = false) {
