@@ -510,10 +510,10 @@ class VudlController extends AbstractVuDL
                 . '">' . $title . '</a> <span class="divider">&gt;</span></li>';
         }
         $breadcrumbs .= '<span class="active" title="'
-            . str_replace('"', "'", $details['title']).'">';
-        $breadcrumbs .= strlen($details['title']) > 100
-            ? substr($details['title'], 0, 100) . '...'
-            : $details['title'];
+            . str_replace('"', "'", $details['title']['value']).'">';
+        $breadcrumbs .= strlen($details['title']['value']) > 100
+            ? substr($details['title']['value'], 0, 100) . '...'
+            : $details['title']['value'];
         return $breadcrumbs . '</span>';
     }
 
