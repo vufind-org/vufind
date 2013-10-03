@@ -44,6 +44,6 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function __construct()
     {
-        $this->driver = new Aleph();
+        $this->driver = new Aleph(new \VuFind\Date\Converter());
     }
 }

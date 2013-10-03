@@ -179,15 +179,14 @@ class File_MARC_Data_Field extends File_MARC_Field
      */
     function appendSubfield(File_MARC_Subfield $new_subfield)
     {
-        /* Append as the last field in the record */
+        /* Append as the last subfield in the field */
         $this->subfields->appendNode($new_subfield);
-        return $new_subfield;
     }
     // }}}
 
     // {{{ prependSubfield()
     /**
-     * Prepends subfield to subfield liss 
+     * Prepends subfield to subfield list
      *
      * Adds a File_MARC_Subfield object to the  start of the existing list
      * of subfields.
@@ -198,7 +197,15 @@ class File_MARC_Data_Field extends File_MARC_Field
      */
     function prependSubfield(File_MARC_Subfield $new_subfield)
     {
-        $this->subfields->prependNode($new_subfield);
+        $pos = 0;
+        $new_subfield->setPosition($pos);
+        $this->subfields->shift($new_subfield);
+        $node = null;
+        $this->subfields->rewind();
+        while ($node = $this->subfields->next()) {
+            $pos++;
+            $node->setPosition($pos);
+        }
         return $new_subfield;
     }
     // }}}
@@ -279,14 +286,11 @@ class File_MARC_Data_Field extends File_MARC_Field
      *
      * @param File_MARC_Subfield $subfield The subfield to delete
      *
-     * @return bool                         Success or failure
+     * @return void
      */
     function deleteSubfield(File_MARC_Subfield $subfield)
     {
-        if ($this->subfields->deleteNode($subfield)) {
-            return true;
-        }
-        return false;
+        $this->subfields->deleteNode($subfield);
     }
     // }}}
 

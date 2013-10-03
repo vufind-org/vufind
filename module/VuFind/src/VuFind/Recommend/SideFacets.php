@@ -39,7 +39,7 @@ use VuFind\Solr\Utils as SolrUtils;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
-class SideFacets implements RecommendInterface
+class SideFacets extends AbstractFacets
 {
     /**
      * Date facet configuration
@@ -61,30 +61,6 @@ class SideFacets implements RecommendInterface
      * @var array
      */
     protected $checkboxFacets = array();
-
-    /**
-     * Search results
-     *
-     * @var \VuFind\Search\Base\Results
-     */
-    protected $results;
-
-    /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
-    {
-        $this->configLoader = $configLoader;
-    }
 
     /**
      * setConfig
@@ -109,6 +85,9 @@ class SideFacets implements RecommendInterface
         // All standard facets to display:
         $this->mainFacets = isset($config->$mainSection) ?
             $config->$mainSection->toArray() : array();
+
+        // Load boolean configurations:
+        $this->loadBooleanConfigs($config, array_keys($this->mainFacets));
 
         // Get a list of fields that should be displayed as date ranges rather than
         // standard facet lists.
@@ -147,27 +126,11 @@ class SideFacets implements RecommendInterface
     {
         // Turn on side facets in the search results:
         foreach ($this->mainFacets as $name => $desc) {
-            $params->addFacet($name, $desc);
+            $params->addFacet($name, $desc, in_array($name, $this->orFacets));
         }
         foreach ($this->checkboxFacets as $name => $desc) {
             $params->addCheckboxFacet($name, $desc);
         }
-    }
-
-    /**
-     * process
-     *
-     * Called after the Search Results object has performed its main search.  This
-     * may be used to extract necessary information from the Search Results object
-     * or to perform completely unrelated processing.
-     *
-     * @param \VuFind\Search\Base\Results $results Search results object
-     *
-     * @return void
-     */
-    public function process($results)
-    {
-        $this->results = $results;
     }
 
     /**
@@ -207,15 +170,5 @@ class SideFacets implements RecommendInterface
             $result[$current] = array($from, $to);
         }
         return $result;
-    }
-
-    /**
-     * Get results stored in the object.
-     *
-     * @return \VuFind\Search\Base\Results
-     */
-    public function getResults()
-    {
-        return $this->results;
     }
 }

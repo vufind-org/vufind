@@ -16,18 +16,18 @@
     <strong><?=$this->transEsc('Remove Filters')?></strong>
     <ul class="filters">
     <? foreach ($filterList as $field => $filters): ?>
-      <? foreach ($filters as $filter): ?>
+      <? foreach ($filters as $i => $filter): ?>
         <?
             if (isset($filter['specialType']) && $filter['specialType'] == 'keyword') {
                 $removeLink = $this->currentPath().$results->getUrlQuery()->replaceTerm($filter['value'], '');
             } else {
-                $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($filter['field'], $filter['value']);
+                $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($filter['field'], $filter['value'], true, $filter['operator']);
             }
             if ($filter['displayText'] == '[* TO *]') $filter['displayText'] = $this->translate('filter_wildcard');
         ?>
         <li>
           <a href="<?=$removeLink?>"><img src="<?=$this->imageLink('silk/delete.png')?>" alt="Delete"/></a>
-          <a href="<?=$removeLink?>"><?=$this->transEsc($field)?>: <?=$this->escapeHtml($filter['displayText'])?></a>
+          <a href="<?=$removeLink?>"><? if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $i > 0) echo $this->transEsc('OR') . ' '; ?><?=$this->transEsc($field)?>: <?=$this->escapeHtml($filter['displayText'])?></a>
         </li>
       <? endforeach; ?>
     <? endforeach; ?>
@@ -37,6 +37,7 @@
   <? $sideFacetSet = $this->recommend->getFacetSet(); $dateFacets = $this->recommend->getDateFacets(); ?>
   <? if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
     <? foreach ($sideFacetSet as $title => $cluster): ?>
+      <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
       <? if (isset($dateFacets[$title])): ?>
         <? /* Load the publication date slider UI widget */ $this->headScript()->appendFile('pubdate_slider.js'); ?>
         <form action="" name="<?=$this->escapeHtml($title)?>Filter" id="<?=$this->escapeHtml($title)?>Filter">
@@ -62,9 +63,14 @@
           <dl class="narrowList navmenu offscreen" id="narrowGroupHidden_<?=$this->escapeHtml($title)?>">
             <? endif; ?>
             <? if ($thisFacet['isApplied']): ?>
-              <dd><?=$this->escapeHtml($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="Selected"/></dd>
+              <dd class="facet<?=$thisFacet['operator'] ?> applied"<? if($thisFacet['operator'] == 'OR'): ?> href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>"<? endif ?>><?=$this->escapeHtml($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="Selected"/></dd>
             <? else: ?>
-              <dd><a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> (<?=$this->escapeHtml($thisFacet['count'])?>)</dd>
+              <dd>
+                <a class="facet<?=$thisFacet['operator'] ?>" href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> (<?=$this->escapeHtml($thisFacet['count'])?>)
+                <? if ($allowExclude): ?>
+                  <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>" title="<?=$this->transEsc('exclude_facet')?>"><img src="<?=$this->imageLink('fugue/cross-small.png')?>" alt="Delete"/></a>
+                <? endif; ?>
+              </dd>
             <? endif; ?>
           <? endforeach; ?>
           <? if ($i > 5): ?><dd><a href="#" onclick="lessFacets('<?=$this->escapeHtml($title)?>'); return false;"><?=$this->transEsc('less')?> ...</a></dd><? endif; ?>

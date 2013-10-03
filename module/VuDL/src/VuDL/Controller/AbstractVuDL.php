@@ -73,6 +73,17 @@ class AbstractVuDL extends \VuFind\Controller\AbstractBase
     }
     
     /**
+     * Get VuDL detail fields.
+     *
+     * @return array
+     */
+    protected function getDetailsList()
+    {
+        $cfg = $this->getVuDLConfig();
+        return isset($cfg->Details) ? $cfg->Details->toArray() : array();
+    }
+    
+    /**
      * Get VuDL Licenses.
      *
      * @return array

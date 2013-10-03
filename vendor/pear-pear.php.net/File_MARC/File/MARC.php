@@ -40,7 +40,6 @@
  */
 
 require_once 'PEAR/Exception.php';
-require_once 'Structures/LinkedList/Double.php';
 require_once 'File/MARCBASE.php';
 require_once 'File/MARC/Record.php';
 require_once 'File/MARC/Field.php';

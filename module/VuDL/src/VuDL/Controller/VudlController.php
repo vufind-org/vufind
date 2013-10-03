@@ -40,120 +40,14 @@ namespace VuDL\Controller;
 class VudlController extends AbstractVuDL
 {
     /**
-     * Structmap data
+     * Retrieve the object cache.
      *
-     * @var array
+     * @return object
      */
-    protected $structmaps = array();
-
-    /**
-     * Datastreams
-     *
-     * @var array
-     */
-    protected $datastreams = array();
-
-    /**
-     * The parents lists
-     *
-     * @var array
-     */
-    protected $parentLists = array();
-
-    /**
-     * Compares the cache date against a given date. If given date is newer,
-     * return false in order to refresh cache. Else return cache!
-     *
-     * @param Zend_Cache_Filesystem $cache   Zend object to locate cache
-     * @param string                $key     Unique key of cache object
-     * @param string|Date           $moddate Date to test cache time freshness
-     *
-     * @return cache object or false
-     */
-    protected function getCache($cache, $key, $moddate = null)
+    protected function getCache()
     {
-        if (strtolower($this->params()->fromQuery('cache')) == 'no') {
-            return false;
-        }
-        if ($cache && $cache_item = $cache->getItem($key)) {
-            if ($moddate == null || (isset($cache_item['moddate'])
-                && date_create($cache_item['moddate']) >= date_create($moddate))
-            ) {
-                return $cache_item['outline'];
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Save cache object with date to test for freshness
-     *
-     * @param Zend_Cache_Filesystem $cache Zend object to locate cache
-     * @param string                $key   Unique key of cache object
-     * @param object                $data  Object to save
-     *
-     * @return cache object or false
-     */
-    protected function setCache($cache, $key, $data)
-    {
-        if ($cache) {
-            $cache->setItem(
-                $key,
-                array(
-                    'moddate'=>date(DATE_ATOM),
-                    'outline'=>$data
-                )
-            );
-            return $data;
-        }
-        return false;
-    }
-
-    /**
-     * Returns file contents of the structmap, our most common call
-     *
-     * @param string  $id  Record id
-     * @param boolean $xml Return data as SimpleXMLElement?
-     *
-     * @return string|SimpleXMLElement
-     */
-    protected function getDatastreams($id, $xml = false)
-    {
-        if (!isset($this->datastreams[$id])) {
-            $this->datastreams[$id] = file_get_contents(
-                $this->getFedora()->getBase() . $id . '/datastreams?format=xml'
-            );
-        }
-        if ($xml) {
-            return simplexml_load_string($this->datastreams[$id]);
-        } else {
-            return $this->datastreams[$id];
-        }
-    }
-
-    /**
-     * Returns file contents of the structmap, our most common call
-     *
-     * @param string $id record id
-     *
-     * @return string $id
-     */
-    protected function getStructmap($id)
-    {
-        if (!isset($this->structmaps[$id])) {
-            if (!$this->structmaps[$id] = file_get_contents(
-                $this->getFedora()->getBase() . $id . '/datastreams/STRUCTMAP/content'
-            )) {
-                $structmap = array();
-                $memberList = $this->memberList($id);
-                foreach ($memberList as $i=>$member) {
-                    $structmap[$i] = 'div ORDER="' . ($i+1) . '"<"' . $member['id']
-                        . '"';
-                }
-                $this->structmaps[$id] = implode($structmap);
-            }
-        }
-        return $this->structmaps[$id];
+        return $this->getServiceLocator()->get('VuFind\CacheManager')
+            ->getCache('object');
     }
 
     /**
@@ -168,87 +62,63 @@ class VudlController extends AbstractVuDL
     {
         if (!$skipSolr) {
             try {
-                $record = $this->getRecordLoader()->load($id)->getRawData();
-                if (!is_null($record)) {
-                    $keys = array_intersect(
-                        array(
-                            'author',
-                            'author2',
-                            'dc_collection_str_mv',
-                            'dc_contributor_str_mv',
-                            'description',
-                            'first_indexed',
-                            'format',
-                            'language',
-                            'publishDate',
-                            'publisher',
-                            'series',
-                            'dc_source_str_mv',
-                            'title',
-                            'title_alt',
-                            'topic'
-                        ),
-                        array_keys($record)
-                    );
-                    $data = array();
-                    foreach ($keys as $key) {
-                        if ($key == 'author2') {
-                            continue;
-                        }
-                        $data[$key] = $record[$key];
-                    }
-                    if (isset($record['author2'])) {
-                        $data['author'] = array($data['author']);
-                        foreach ($record['author2'] as $a2) {
-                            $data['author'][] = $a2;
-                        }
-                    }
-                    if (isset($details['date'])) {
-                        $data['dc:date'] = $details['date'];
-                    }
-                    return $data;
-                }
+                return $this->getSolrDetails($id);
             } catch (\Exception $e) {
                 // Do nothing, handled in fedora below
             }
         }
-        $dc = array();
-        preg_match_all(
-            '/<[^\/]*dc:([^ >]+)>([^<]+)/',
-            file_get_contents(
-                $this->getFedora()->getBase() . $id . '/datastreams/DC/content'
-            ),
-            $dc
-        );
-        $details = array();
-        foreach ($dc[2] as $i=>$detail) {
-            $details[$dc[1][$i]] = $detail;
-        }
-        return $details;
+        return $this->getFedora()->getRecordDetails($id);
     }
 
     /**
-     * Returns an array of classes for this object
-     *
-     * @param string $id record id
+     * Get details from Solr
      *
      * @return array
+     * @throws \Exception
      */
-    protected function getClasses($id)
+    protected function getSolrDetails($id)
     {
-        $data = file_get_contents(
-            $this->getFedora()->getBase() . $id . '/datastreams/RELS-EXT/content'
-        );
-        $matches = array();
-        preg_match_all(
-            '/rdf:resource="info:fedora\/vudl-system:([^"]+)/',
-            $data,
-            $matches
-        );
-        $classes = array();
-        return $matches[1];
-    }
+        // Blow up now if we can't retrieve the record:
+        if (!($record = $this->getRecordLoader()->load($id)->getRawData())) {
+            throw new \Exception('Solr details unavailable');
+        }
 
+        // Get config for which details we want
+        $fields = $combinedFields = array(); // Save to combine later
+        foreach ($this->getDetailsList() as $key=>$title) {
+            $keys = explode(',', $key);
+            foreach ($keys as $k) {
+                $fields[$k] = $title;
+            }
+            // Link up to top combined field
+            if (count($keys) > 1) {
+                $combinedFields[] = $keys;
+            }
+        }
+
+        // Pool details
+        $details = array();
+        foreach ($fields as $key=>$title) {
+            if (isset($record[$key])) {
+                $details[$key] = array('title' => $title, 'value' => $record[$key]);
+            }
+        }
+
+        // Rearrange combined fields
+        foreach ($combinedFields as $fields) {
+            $main = $fields[0];
+            for ($i=1;$i<count($fields);$i++) {
+                if (isset($details[$fields[$i]])) {
+                    if (!is_array($details[$main]['value'])) {
+                        $details[$main]['value'] = array($details[$main]['value']);
+                    }
+                    $details[$main]['value'][] = $details[$fields[$i]]['value'];
+                }
+            }
+        }
+        return $details;
+    }
+    
     /**
      * Returns the root id for any parent this item may have
      * ie. If we're requesting a specific page, return the book
@@ -259,9 +129,9 @@ class VudlController extends AbstractVuDL
      */
     protected function getRoot($id)
     {
-        $parents = $this->getParentList($id);
+        $parents = $this->getFedora()->getParentList($id);
         foreach ($parents[0] as $i=>$parent) {
-            if (in_array('ResourceCollection', $this->getClasses($i))) {
+            if (in_array('ResourceCollection', $this->getFedora()->getClasses($i))) {
                 return $i;
             }
         }
@@ -279,12 +149,12 @@ class VudlController extends AbstractVuDL
     protected function getPage($parent, $child)
     {
         // GET LISTS
-        $data = $this->getStructmap($parent);
+        $data = $this->getFedora()->getStructmap($parent);
         $lists = array();
         preg_match_all('/vudl:[^"]+/', $data, $lists);
         // GET LIST ITEMS
         foreach ($lists[0] as $list=>$list_id) {
-            $data = $this->getStructmap($list_id);
+            $data = $this->getFedora()->getStructmap($list_id);
             $items = array();
             preg_match_all('/vudl:[^"]+/', $data, $items);
             foreach ($items[0] as $i=>$id) {
@@ -306,109 +176,13 @@ class VudlController extends AbstractVuDL
      */
     protected function getOutline($root, $start = 0, $pageLength = null)
     {
-        if ($pageLength == null) {
-            $pageLength = $this->getFedora()->getPageLength();
-        }
-        // Check Zend cache
-        $manager = $this->getServiceLocator();
-        $cache = $manager->get('VuFind\CacheManager')->getCache('object');
-        // Check modification date
-        $xml = simplexml_load_file($this->getFedora()->getBase() . $root . '?format=xml');
-        $rootModDate = (string)$xml[0]->objLastModDate;
-        // Get lists
-        $data = $this->getStructmap($root);
-        $lists = array();
-        preg_match_all('/vudl:[^"]+/', $data, $lists);
-        $queue = array();
-        $moddate = array();
-        $outline = array('counts'=>array(), 'names'=>array());
-        // Get list items
-        foreach ($lists[0] as $i=>$list_id) {
-            // Get list name
-            $xml = simplexml_load_file(
-                $this->getFedora()->getBase() . $list_id . '?format=xml'
-            );
-            $outline['names'][] = (String) $xml[0]->objLabel;
-            $moddate[$i] = max((string)$xml[0]->objLastModDate, $rootModDate);
-            $data = $this->getStructmap($list_id);
-            $list = array();
-            preg_match_all('/vudl:[^"]+/', $data, $list);
-            $queue[$i] = $list[0];
-        }
-        $type_templates = array();
-        // Get data on all pages and docs
-        foreach ($queue as $parent=>$items) {
-            $outline['counts'][$parent] = count($items);
-            if (count($items) < $start) {
-                continue;
-            }
-            $routes = $this->getVuDLRoutes();
-            $outline['lists'][$parent] = array();
-            for ($i=$start;$i < $start + $pageLength;$i++) {
-                if ($i >= count($items)) {
-                    break;
-                }
-                $id = $items[$i];
-                // If there's a cache of this page...
-                $pageCache = $this->getCache($cache, md5($id), $moddate[$parent]);
-                if ($pageCache) {
-                    //var_dump('get page cache');
-                    $outline['lists'][$parent][$i] = $pageCache;
-                } else {
-                    // Else, get all the data and save it to the cache
-                    $details = $this->getDetails($id, true);
-                    $list = array();
-                    // Get the file type
-                    $file = $this->getDatastreams($id);
-                    preg_match_all(
-                        '/dsid="([^"]+)"[^>]*mimeType="([^"]+)/',
-                        $file,
-                        $list
-                    );
-                    $masterIndex = array_search('MASTER', $list[1]);
-                    $mimetype = $masterIndex ? $list[2][$masterIndex] : 'N/A';
-                    if (!$masterIndex) {
-                        $type = 'page';
-                    } else {
-                        $type = substr(
-                            $list[2][$masterIndex],
-                            strpos($list[2][$masterIndex], '/') + 1
-                        );
-                    }
-                    $item = array(
-                        'id' => $id,
-                        'fulltype' => $type,
-                        'mimetype' => $mimetype,
-                        'filetype' => isset($routes[$type])
-                            ? $routes[$type]
-                            : $type,
-                        'label' => isset($details['title'])
-                            ? $details['title']
-                            : $id,
-                        'datastreams' => $list[1],
-                        'mimetypes' => $list[2]
-                    );
-                    //var_dump('set page cache');
-                    $this->setCache($cache, md5($id), $item);
-                    $outline['lists'][$parent][$i] = $item;
-                }
-            }
-        }
-        $url = $this->url();
-        foreach ($outline['lists'] as $key=>$list) {
-            foreach ($list as $id=>$item) {
-                foreach ($item['datastreams'] as $ds) {
-                    $outline['lists'][$key][$id][strtolower($ds)] = $url->fromRoute(
-                        'files',
-                        array(
-                            'id'   => $item['id'],
-                            'type' => $ds
-                        )
-                    );
-                }
-            }
-        }
-        return $outline;
+        $cache = (strtolower($this->params()->fromQuery('cache')) == 'no');
+
+        $generator = new \VuDL\OutlineGenerator(
+            $this->getFedora(), $this->url(), $this->getVuDLRoutes(),
+            $cache ? $this->getCache() : false
+        );
+        return $generator->getOutline($root, $start, $pageLength);
     }
 
     /**
@@ -513,7 +287,7 @@ class VudlController extends AbstractVuDL
             $list = array();
             preg_match_all(
                 '/dsid="([^"]+)"/',
-                strtolower($this->getDatastreams($id)),
+                strtolower($this->getFedora()->getDatastreams($id)),
                 $list
             );
             $record = array_flip($list[1]);
@@ -524,61 +298,14 @@ class VudlController extends AbstractVuDL
 
         // OCR
         if (isset($record['ocr-dirty'])) {
-            $ocrURL = $this->getFedora()->getBase()
-                . $record['id']
-                . '/datastreams/OCR-DIRTY/content';
-            $record['ocr-dirty'] = file_get_contents($ocrURL);
+            $record['ocr-dirty'] = $this->getFedora()
+                ->getDatastreamContent($record['id'], 'OCR-DIRTY');
         }
         // Technical Information
         if (isset($record['master-md'])) {
-            $old = array(
-                '/<(\/[^>]+)>/',
-                '/<([^>]+)>/',
-                '/\/&gt;/',
-                '/&lt;\/div&gt;/',
-                '/<div>\s*<\/div>/',
-                '/(?<=<div>)([^<]+)<div>/',
-                '/<div>/'
-            );
-            $new = array(
-                '&lt;\1&gt;</div>',
-                '<div>&lt;\1&gt;',
-                '/&gt;</div>',
-                '</div>',
-                '</div>',
-                '<a class="xmlt" onClick="'
-                    . 'var p=this.parentNode;'
-                    . "p.className=p.className.indexOf('collapsed')<0"
-                    . " ? 'xml collapsed'"
-                    . " : 'xml'"
-                    . '">\1</a><div>',
-                '<div class="xml">'
-            );
-            $record['techinfo'] = preg_replace(
-                $old,
-                $new,
-                file_get_contents(
-                    $this->getFedora()->getBase()
-                    . $record['id']
-                    . '/datastreams/MASTER-MD/content'
-                )
-            );
-            $data = $type = array();
-            preg_match('/&lt;size[^&]*&gt;([^&]*)/', $record['techinfo'], $data);
-            preg_match('/mimetype="([^"]*)/', $record['techinfo'], $type);
-            $size_index = 0;
-            if (count($data) > 1) {
-                $bytes = intval($data[1]);
-                $sizes = array('bytes','KB','MB');
-                while ($size_index < count($sizes)-1 && $bytes > 1024) {
-                    $bytes /= 1024;
-                    $size_index++;
-                }
-                $ret = array(
-                    'size' => round($bytes, 1) . ' ' . $sizes[$size_index],
-                    'type' => $type[1]
-                );
-            }
+            $record['techinfo'] = $this->getFedora()
+                ->getDatastreamContent($record['id'], 'MASTER-MD');
+            $ret += $this->getSizeAndTypeInfo($record['techinfo']);
         }
         $renderer = $this->getViewRenderer();
         $ret['div'] = $renderer->render('vudl/techinfo.phtml', array('record'=>$record));
@@ -586,35 +313,31 @@ class VudlController extends AbstractVuDL
     }
 
     /**
-     * Generate breadcrumbs HTML
+     * Get size/type information out of the technical metadata.
      *
-     * @param array $parents Parents of the record by id and title
-     * @param array $details Details for the record
+     * @param string $techInfo Technical metadata
      *
-     * @return html text
+     * @return array
      */
-    public function getBreadcrumbs($parents, $details)
+    protected function getSizeAndTypeInfo($techInfo)
     {
-        if (count($parents) > 1) {
-            return $parents;
-        }
-        $breadcrumbs = '<li><a href="'
-            . $this->url()->fromRoute('vudl-default-collection')
-            . '">Collections</a> <span class="divider">&gt;</span></li>';
-        foreach (array_reverse($parents[0]) as $id=>$title) {
-            if ($id == 'vudl:1' || $id == 'vudl:3') {
-                continue;
+        $data = $type = array();
+        preg_match('/<size[^>]*>([^<]*)/', $techInfo, $data);
+        preg_match('/mimetype="([^"]*)/', $techInfo, $type);
+        $size_index = 0;
+        if (count($data) > 1) {
+            $bytes = intval($data[1]);
+            $sizes = array('bytes','KB','MB');
+            while ($size_index < count($sizes)-1 && $bytes > 1024) {
+                $bytes /= 1024;
+                $size_index++;
             }
-            $breadcrumbs .= ' <li><a href="'
-                . $this->url()->fromRoute('collection', array('id'=>$id))
-                . '">' . $title . '</a> <span class="divider">&gt;</span></li>';
+            return array(
+                'size' => round($bytes, 1) . ' ' . $sizes[$size_index],
+                'type' => $type[1]
+            );
         }
-        $breadcrumbs .= '<span class="active" title="'
-            . str_replace('"', "'", $details['title']).'">';
-        $breadcrumbs .= strlen($details['title']) > 100
-            ? substr($details['title'], 0, 100) . '...'
-            : $details['title'];
-        return $breadcrumbs . '</span>';
+        return array();
     }
 
     /**
@@ -630,7 +353,7 @@ class VudlController extends AbstractVuDL
             return $this->forwardTo('VuDL', 'Home');
         }
 
-        $classes = $this->getClasses($id);
+        $classes = $this->getFedora()->getClasses($id);
         if (in_array('FolderCollection', $classes)) {
             return $this->forwardTo('Collection', 'Home', array('id'=>$id));
         }
@@ -655,18 +378,16 @@ class VudlController extends AbstractVuDL
         $fileDetails = $this->getDetails($root);
         if (!$fileDetails) {
             throw new \Exception(
-                'Record not found. Please use the search bar to'
+                'Record not found. Please use the search bar to '
                 . 'try to find what you were looking for.<br/><br/>'
                 . 'If this problem persists,  please report the problem.<br/><br/>'
             );
         }
         // Copyright information
-        $licenseUrl = $this->getFedora()->getBase() .$root. '/datastreams/LICENSE/content';
-        $check = get_headers($licenseUrl);
+        $check = $this->getFedora()->getDatastreamHeaders($root, 'LICENSE');
         if (!strpos($check[0], '404')) {
-            $xml = file_get_contents($licenseUrl);
+            $xml = $this->getFedora()->getDatastreamContent($root, 'LICENSE');
             preg_match('/xlink:href="(.*?)"/', $xml, $license);
-            // var_dump($license[1]);
             $fileDetails['license'] = $license[1];
             $fileDetails['special_license'] = false;
             $licenseValues = $this->getLicenses();
@@ -688,10 +409,9 @@ class VudlController extends AbstractVuDL
         // Send the data for the first pages
         // (Original, Large, Medium, Thumbnail srcs) and THE DOCUMENTS
         $view->outline = $outline;
-        $parents = $this->getParentList($root);
+        $parents = $this->getFedora()->getParentList($root);
         //$keys = array_keys($parents);
         //$view->hierarchyID = end($keys);
-        $view->breadcrumbs = $this->getBreadcrumbs($parents, $fileDetails);
         $view->parents = $parents;
         if ($id != $root) {
             $view->parentID = $root;
@@ -709,7 +429,7 @@ class VudlController extends AbstractVuDL
     public function homeAction()
     {
         $view = $this->createViewModel();
-        $data =$this->memberList($this->getRootId());
+        $data =$this->getFedora()->getMemberList($this->getRootId());
         $outline = array();
         foreach ($data as $item) {
             $outline[] = array(
@@ -757,10 +477,9 @@ class VudlController extends AbstractVuDL
         // Send the data for the first pages
         // (Original, Large, Medium, Thumbnail srcs) and THE DOCUMENTS
         $view->outline = $outline;
-        $parents = $this->getParentList($root);
+        $parents = $this->getFedora()->getParentList($root);
         //$keys = array_keys($parents);
         //$view->hierarchyID = end($keys);
-        $view->breadcrumbs = $this->getBreadcrumbs($parents, $view->details);
         $view->parents = $parents;
         return $view;
     }
@@ -811,70 +530,6 @@ class VudlController extends AbstractVuDL
     }
 
     /**
-     * Tuple call to return and parse a list of parents...
-     *
-     * @param string $id ...for this id
-     *
-     * @return array of parents in order from top-down
-     */
-    protected function getParentList($id)
-    {
-        if (isset($this->parentLists[$id])) {
-            return $this->parentLists[$id];
-        }
-        $query = 'select $child $parent $parentTitle from <#ri> '
-                . 'where walk ('
-                        . '<info:fedora/' .$id. '> '
-                        . '<fedora-rels-ext:isMemberOf> '
-                        . '$parent '
-                    . 'and $child <fedora-rels-ext:isMemberOf> $parent) '
-                . 'and $parent <fedora-model:label> $parentTitle';
-        $response = $this->getFedora()->query($query, array('format'=>'CSV'));
-        $list = explode("\n", $response->getBody());
-        $tree = array();
-        $items = array();
-        $roots = array();
-        for ($i=1;$i<count($list);$i++) {
-            if (empty($list[$i])) {
-                continue;
-            }
-            list($child, $parent, $title) = explode(',', substr($list[$i], 12), 3);
-            $parent = substr($parent, 12);
-            if ($parent == $this->getRootId()) {
-                $roots[] = $child;
-                continue;
-            }
-            if ($parent == 'vudl:1') {
-                continue;
-            }
-            if (isset($tree[$parent])) {
-                $tree[$parent][] = $child;
-            } else {
-                $tree[$parent] = array($child);
-            }
-            $items[$parent] = trim($title, '" ');
-        }
-        $ret = array();
-        $queue = array();
-        foreach ($roots as $root) {
-            $queue[] = array($root, array());
-        }
-        while ($path = array_pop($queue)) {
-            $tid = $path[0];
-            while ($tid != $id) {
-                $path[1][$tid] = $items[$tid];
-                for ($i=1;$i<count($tree[$tid]);$i++) {
-                    $queue[] = array($tree[$tid][$i], $path[1]);
-                }
-                $tid = $tree[$tid][0];
-            }
-            $ret[] = array_reverse($path[1]);
-        }
-        $this->parentLists[$id] = $ret;
-        return $ret;
-    }
-
-    /**
      * Redirect to the appropriate sibling.
      *
      * @return mixed
@@ -885,7 +540,7 @@ class VudlController extends AbstractVuDL
         $members = $data = array();
         preg_match_all(
             '/div ORDER="([^"]*)[^<]*<[^<]*"(vudl:[^"]*)/i',
-            $this->getStructMap($params['trail']), $data
+            $this->getFedora()->getStructmap($params['trail']), $data
         );
         for ($i=0;$i<count($data[0]);$i++) {
             $members[intval($data[1][$i])-1] = $data[2][$i];
@@ -914,37 +569,13 @@ class VudlController extends AbstractVuDL
         }
     }
 
+    /**
+     * Redirect to the appropriate sibling.
+     *
+     * @return View Object
+     */
     protected function collectionsAction()
     {
       return $this->forwardTo('Collection', 'Home', array('id'=>$this->getRootId()));
-    }
-    
-    /**
-     * Tuple call to return and parse a list of members...
-     *
-     * @param string $root ...for this id
-     *
-     * @return array of members in order
-     */
-    protected function memberList($root)
-    {
-        $query = 'select $memberPID $memberTitle from <#ri> '
-            . 'where $member <fedora-rels-ext:isMemberOf> <info:fedora/' .$root. '> '
-            . 'and $member <fedora-model:label> $memberTitle '
-            . 'and $member <dc:identifier> $memberPID';
-        $response = $this->getFedora()->query($query, array('format'=>'CSV'));
-        $list = explode("\n", $response->getBody());
-        $items = array();
-        for ($i=1;$i<count($list);$i++) {
-            if (empty($list[$i])) {
-                continue;
-            }
-            list($id, $title) = explode(',', $list[$i], 2);
-            $items[] = array(
-                'id' => $id,
-                'title' => trim($title, '"')
-            );
-        }
-        return $items;
     }
 }

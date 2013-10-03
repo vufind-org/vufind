@@ -40,7 +40,7 @@ namespace VuFind\Recommend;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
-class TopFacets implements RecommendInterface
+class TopFacets extends AbstractFacets
 {
     /**
      * Facet configuration
@@ -55,30 +55,6 @@ class TopFacets implements RecommendInterface
      * @var array
      */
     protected $baseSettings;
-
-    /**
-     * Search results
-     *
-     * @var \VuFind\Search\Base\Results
-     */
-    protected $results;
-
-    /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
-    {
-        $this->configLoader = $configLoader;
-    }
 
     /**
      * setConfig
@@ -109,6 +85,9 @@ class TopFacets implements RecommendInterface
             'rows' => $config->Results_Settings->top_rows,
             'cols' => $config->Results_Settings->top_cols
         );
+
+        // Load boolean configurations:
+        $this->loadBooleanConfigs($config, array_keys($this->facets));
     }
 
     /**
@@ -129,34 +108,8 @@ class TopFacets implements RecommendInterface
     {
         // Turn on top facets in the search results:
         foreach ($this->facets as $name => $desc) {
-            $params->addFacet($name, $desc);
+            $params->addFacet($name, $desc, in_array($name, $this->orFacets));
         }
-    }
-
-    /**
-     * process
-     *
-     * Called after the Search Results object has performed its main search.  This
-     * may be used to extract necessary information from the Search Results object
-     * or to perform completely unrelated processing.
-     *
-     * @param \VuFind\Search\Base\Results $results Search results object
-     *
-     * @return void
-     */
-    public function process($results)
-    {
-        $this->results = $results;
-    }
-
-    /**
-     * Get results stored in the object.
-     *
-     * @return \VuFind\Search\Base\Results
-     */
-    public function getResults()
-    {
-        return $this->results;
     }
 
     /**

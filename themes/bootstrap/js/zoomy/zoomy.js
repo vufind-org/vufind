@@ -24,7 +24,7 @@
             'size':120,
             'margin':60
           },
-          'bar'    :$('.zoomy-container .loading .bar'),
+          'loading'    :$('.zoomy-container .loading-bar'),
           'bounds' :$('.zoomy-container .bounds'),
           'img'    :$('.zoomy-container .page img'),
           'minimap':$('.zoomy-container .mini_map'),
@@ -40,7 +40,7 @@
           img.src = state.img.attr('src');
           state.page.width  = img.width;
           state.page.height = img.height;
-          $('.zoomy-container .loading').hide();
+          state.loading.hide();
           if(state.page.width == 0 || state.page.height == 0) {
             state.page.width  = state.img[0].naturalWidth;
             state.page.height = state.img[0].naturalHeight;
@@ -107,7 +107,7 @@
           state.page.elem.show();
           $('.zoomy-container .zoom').show();
           $('.zoomy-container .control').show();
-          state.bar.parent().hide();
+          state.loading.hide();
           core.rotate(360);
           core.zoom({init:state.page.zoom},0);
         });
@@ -117,9 +117,9 @@
         $('.zoomy-container .control').hide();
         // Kick off loading
         if(state.bar) {
-          state.bar.parent().show();
+          state.loading.show();
         }
-        $('.zoomy-container .loading').show();
+        state.loading.show();
         state.img.attr('src', src);
         // If we have a seperate thumbnail
         if(thumb) {
@@ -169,13 +169,13 @@
           state.map.elem.css({
               'width' :state.map.height, 'height':state.map.width,
               'right' :(state.map.size+state.map.margin-state.map.height)/2,
-              'bottom':(state.map.size+state.map.margin-state.map.width)/2
+              'bottom':(state.map.size+state.map.margin-state.map.width)/2-21
             });
         } else {
           state.map.elem.css({
               'width' :state.map.width, 'height':state.map.height,
               'right' :(state.map.size+state.map.margin-state.map.width)/2,
-              'bottom':(state.map.size+state.map.margin-state.map.height)/2
+              'bottom':(state.map.size+state.map.margin-state.map.height)/2-21
             });
         }
         var moffset = state.page.sideways && $.browser != "msie"
@@ -329,7 +329,7 @@
     var elem = this,
         instance = elem.data('zoomy');            
     if(!instance) { // init
-      $(this).html('<div class="bounds"></div><div class="page"><img src=""></div><div class="map ui"><img src="" class="mini_map"><div class="scope"></div></div><div class="loading">Loading...</div><div class="control"><a class="turn-right ui"><span class="icon-stack"><i class="icon-sign-blank icon-muted icon-stack-base"></i><i class="icon-rotate-left"></i></span></i></a><a class="turn-left ui"><span class="icon-stack"><i class="icon-sign-blank icon-muted icon-stack-base"></i><i class="icon-rotate-right"></i></span></a><a id="toggle"><i class="icon-resize-small icon-rotate-90"></i></a></div><div class="zoom ui"><a class="zoom-out"><span class="icon-stack"><i class="icon-sign-blank icon-muted icon-stack-base"></i><i class="icon-plus"></i></span></a><input class="level">%<a class="zoom-in"><span class="icon-stack"><i class="icon-sign-blank icon-muted icon-stack-base"></i><i class="icon-minus"></i></span></a></div>');
+      $(this).html('<div class="bounds"></div><div class="page"><img src=""></div><div class="map ui"><img src="" class="mini_map"><div class="scope"></div></div><div class="loading-bar"><div class="progress progress-striped active" style="width:40%;margin:auto;border:1px solid #FFF"><div class="bar" style="width:100%;">Loading...</div></div></div><div class="control"><a class="turn-right ui"><span class="icon-stack"><i class="icon-sign-blank icon-muted icon-stack-base"></i><i class="icon-rotate-left"></i></span></i></a><a class="turn-left ui"><span class="icon-stack"><i class="icon-sign-blank icon-muted icon-stack-base"></i><i class="icon-rotate-right"></i></span></a><a id="toggle"><i class="icon-resize-small icon-rotate-90"></i></a></div><div class="zoom ui"><a class="zoom-out"><span class="icon-stack"><i class="icon-sign-blank icon-muted icon-stack-base"></i><i class="icon-plus"></i></span></a><input class="level">%<a class="zoom-in"><span class="icon-stack"><i class="icon-sign-blank icon-muted icon-stack-base"></i><i class="icon-minus"></i></span></a></div>');
       $(this).addClass('zoomy-container');
       instance = new Zoomy(src, thumb);
       elem.data('zoomy', instance);

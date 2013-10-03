@@ -19,18 +19,18 @@
   <ul class="nav nav-list">
     <li class="nav-header"><?=$this->transEsc('Remove Filters')?></li>
     <? foreach ($filterList as $field => $filters): ?>
-      <? foreach ($filters as $filter): ?>
+      <? foreach ($filters as $i => $filter): ?>
         <? if (isset($filter['specialType']) && $filter['specialType'] == 'keyword') {
             $removeLink = $this->currentPath().$results->getUrlQuery()->replaceTerm($filter['value'], '');
           } else {
-            $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($filter['field'], $filter['value']);
+            $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($filter['field'], $filter['value'], true, $filter['operator']);
           }
           if ($filter['displayText'] == '[* TO *]') {
             $filter['displayText'] = $this->translate('filter_wildcard');
           }
         ?>
         <li class="active">
-          <a href="<?=$removeLink?>" class="text-error"><i class="icon-remove"></i> <?=$this->transEsc($field)?>: <?=$this->escapeHtml($filter['displayText'])?></a>
+          <a href="<?=$removeLink?>" class="text-error"><i class="icon-remove"></i> <? if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $i > 0) echo $this->transEsc('OR') . ' '; ?><?=$this->transEsc($field)?>: <?=$this->escapeHtml($filter['displayText'])?></a>
         </li>
       <? endforeach; ?>
     <? endforeach; ?>
@@ -40,6 +40,7 @@
 <? $sideFacetSet = $this->recommend->getFacetSet(); $dateFacets = $this->recommend->getDateFacets(); ?>
 <? if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
   <? foreach ($sideFacetSet as $title => $cluster): ?>
+    <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
     <ul class="nav nav-list">
       <? if (isset($dateFacets[$title])): ?>
         <li class="nav-header"><?=$this->transEsc($cluster['label'])?></dt>
@@ -96,25 +97,37 @@ JS;
               $thisFacet['displayText'] = "-";
             }
           ?>
-          <? $moreClass = ' class="narrowGroupHidden_'.$this->escapeHtml($title).' hidden"'; ?>
-          <? if ($i == 6): ?>
-            <li id="more<?=$this->escapeHtml($title)?>"><a href="javascript:moreFacets('<?=$title ?>')"><?=$this->transEsc('more')?> ...</a></li>
-          <? endif; ?>
-          <? if ($thisFacet['isApplied']): ?>
-            <li class="applied<? if($i>5) echo ' narrowGroupHidden_'.$this->escapeHtml($title).' hidden' ?>">
-              <i class="icon-ok pull-right small"></i>
+          <? $moreClass = 'narrowGroupHidden_'.$this->escapeHtml($title).' hidden'; ?>
+        <? if ($i == 6): ?>
+          <li id="more<?=$this->escapeHtml($title)?>"><a href="javascript:moreFacets('<?=$title ?>')"><?=$this->transEsc('more')?> ...</a></li>
+        <? endif; ?>
+        <? if ($thisFacet['isApplied']): ?>
+          <li class="<? if ($i>5): ?><?=$moreClass ?><?endif ?><? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?><? endif ?>">
+            <? if ($allowExclude): ?>
+              <span class="pull-right small">
+                <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="icon-remove"></i></a>
+              </span>
+            <? else: ?>
+              <i class="icon-ok pull-right"></i>
+            <? endif; ?>
+            <span class="main"><?=$this->escapeHtml($thisFacet['displayText'])?></span>
+          </li>
+        <? else: ?>
+          <li class="facet<?=$thisFacet['operator'] ?><? if ($i>5): ?> <?=$moreClass ?><?endif ?>">
+            <span class="pull-right small">
+              <? if ($allowExclude): ?>
+                <?=number_format($thisFacet['count'])?><a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="icon-remove"></i></a>
+              <? else: ?>
+                <?=number_format($thisFacet['count'])?>
+              <? endif; ?>
+            </span>
+            <a class="main" href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>">
               <?=$this->escapeHtml($thisFacet['displayText'])?>
-            </li>
-          <? else: ?>
-            <li<? if($i>5) echo $moreClass ?>>
-              <a title="<?=$this->escapeHtml($thisFacet['displayText'])?>" href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'])?>">
-                <span class="pull-right small"><?=number_format($thisFacet['count'])?></span>
-                <?=$this->escapeHtml($thisFacet['displayText']) ?>
-              </a>
-            </li>
-          <? endif; ?>
-        <? endforeach; ?>
-        <? if ($i > 5): ?><li<? if($i>5) echo $moreClass ?>><a href="javascript:lessFacets('<?=$title ?>')"><?=$this->transEsc('less')?> ...</a></li><? endif; ?>
+            </a>
+          </li>
+        <? endif; ?>
+      <? endforeach; ?>
+        <? if ($i > 5): ?><li class="<?=$moreClass ?>"><a href="javascript:lessFacets('<?=$title ?>')"><?=$this->transEsc('less')?> ...</a></li><? endif; ?>
       <? endif; ?>
       <li class="divider"></li>
     </ul>
