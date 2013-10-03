@@ -111,15 +111,19 @@ class VudlController extends AbstractVuDL
     /**
      * Get details from Solr
      *
-     * return array
+     * @return array
+     * @throws \Exception
      */
     protected function getSolrDetails($id)
     {
+        // Blow up now if we can't retrieve the record:
+        if (!($record = $this->getRecordLoader()->load($id)->getRawData())) {
+          throw new \Exception('Solr details unavailable');
+        }
+
         // Get config for which details we want
-        $detailList = $this->getDetailsList();
-        $fields = array();
-        $combinedFields = array(); // Save to combine later
-        foreach ($detailList as $key=>$title) {
+        $fields = $combinedFields = array(); // Save to combine later
+        foreach ($this->getDetailsList() as $key=>$title) {
             $keys = explode(',', $key);
             foreach ($keys as $k) {
                 $fields[$k] = $title;
@@ -129,43 +133,37 @@ class VudlController extends AbstractVuDL
                 $combinedFields[] = $keys;
             }
         }
-        // Get record data
-        if ($record = $this->getRecordLoader()->load($id)->getRawData()) {
-            // Pool details
-            $details = array();
-            foreach ($fields as $key=>$title) {
-              if (isset($record[$key])) {
-                  $details[$key] = array(
-                    'title' => $title,
-                    'value' => $record[$key]
-                  );
-              }
-            }
-            // Rearrange combined fields
-            foreach ($combinedFields as $fields) {
-                $main = false;
-                foreach ($fields as $i=>$field) {
-                    if (isset($details[$field])) {
-                        $main = $i;
-                        break;
-                    }
-                }
-                if($main !== false) {
-                    $field = $fields[$main];
-                    for ($i=$main+1;$i<count($fields);$i++) {
-                        if (isset($details[$fields[$i]])) {
-                            if (!is_array($details[$field]['value'])) {
-                                $details[$field]['value'] = array($details[$field]['value']);
-                            }
-                            $details[$field]['value'][] = $details[$fields[$i]]['value'];
-                        }
-                    }
-                }
-            }
-            return $details;
-        } else {
-          throw new \Exception('Solr details unavailable');
+
+        // Pool details
+        $details = array();
+        foreach ($fields as $key=>$title) {
+          if (isset($record[$key])) {
+              $details[$key] = array('title' => $title, 'value' => $record[$key]);
+          }
         }
+
+        // Rearrange combined fields
+        foreach ($combinedFields as $fields) {
+            $main = false;
+            foreach ($fields as $i=>$field) {
+                if (isset($details[$field])) {
+                    $main = $i;
+                    break;
+                }
+            }
+            if($main !== false) {
+                $field = $fields[$main];
+                for ($i=$main+1;$i<count($fields);$i++) {
+                    if (isset($details[$fields[$i]])) {
+                        if (!is_array($details[$field]['value'])) {
+                            $details[$field]['value'] = array($details[$field]['value']);
+                        }
+                        $details[$field]['value'][] = $details[$fields[$i]]['value'];
+                    }
+                }
+            }
+        }
+        return $details;
     }
     
     /**
@@ -555,7 +553,7 @@ class VudlController extends AbstractVuDL
         $fileDetails = $this->getDetails($root);
         if (!$fileDetails) {
             throw new \Exception(
-                'Record not found. Please use the search bar to'
+                'Record not found. Please use the search bar to '
                 . 'try to find what you were looking for.<br/><br/>'
                 . 'If this problem persists,  please report the problem.<br/><br/>'
             );
