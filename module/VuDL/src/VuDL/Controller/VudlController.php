@@ -266,7 +266,6 @@ class VudlController extends AbstractVuDL
                 // If there's a cache of this page...
                 $pageCache = $this->getOutlineCache(md5($id), $moddate[$parent]);
                 if ($pageCache) {
-                    //var_dump('get page cache');
                     $outline['lists'][$parent][$i] = $pageCache;
                 } else {
                     // Else, get all the data and save it to the cache
@@ -302,7 +301,6 @@ class VudlController extends AbstractVuDL
                         'datastreams' => $list[1],
                         'mimetypes' => $list[2]
                     );
-                    //var_dump('set page cache');
                     $this->setOutlineCache(md5($id), $item);
                     $outline['lists'][$parent][$i] = $item;
                 }
@@ -560,7 +558,6 @@ class VudlController extends AbstractVuDL
         if (!strpos($check[0], '404')) {
             $xml = $this->getFedora()->getDatastreamContent($root, 'LICENSE');
             preg_match('/xlink:href="(.*?)"/', $xml, $license);
-            // var_dump($license[1]);
             $fileDetails['license'] = $license[1];
             $fileDetails['special_license'] = false;
             $licenseValues = $this->getLicenses();
