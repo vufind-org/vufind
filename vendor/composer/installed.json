@@ -36,34 +36,6 @@
         }
     },
     {
-        "name": "pear-pear.php.net/Structures_LinkedList",
-        "version": "0.2.2",
-        "version_normalized": "0.2.2.0",
-        "dist": {
-            "type": "file",
-            "url": "http://pear.php.net/get/Structures_LinkedList-0.2.2.tgz",
-            "reference": null,
-            "shasum": null
-        },
-        "require": {
-            "php": ">=5.0.0.0"
-        },
-        "replace": {
-            "pear-pear/structures_linkedlist": "== 0.2.2.0"
-        },
-        "type": "pear-library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                ""
-            ]
-        },
-        "include-path": [
-            "/"
-        ],
-        "description": "A singly-linked list offers the ability to insert or delete\n nodes at any point within the list. A doubly-linked list also offers the\n ability to request previous nodes in the list."
-    },
-    {
         "name": "pear-pear.php.net/XML_Util",
         "version": "1.2.1",
         "version_normalized": "1.2.1.0",
@@ -378,55 +350,6 @@
         }
     },
     {
-        "name": "symfony/yaml",
-        "version": "v2.3.4",
-        "version_normalized": "2.3.4.0",
-        "target-dir": "Symfony/Component/Yaml",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/symfony/Yaml.git",
-            "reference": "5a279f1b5f5e1045a6c432354d9ea727ff3a9847"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/symfony/Yaml/zipball/5a279f1b5f5e1045a6c432354d9ea727ff3a9847",
-            "reference": "5a279f1b5f5e1045a6c432354d9ea727ff3a9847",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.3"
-        },
-        "time": "2013-08-24 15:26:22",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.3-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "Symfony\\Component\\Yaml\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Fabien Potencier",
-                "email": "fabien@symfony.com"
-            },
-            {
-                "name": "Symfony Community",
-                "homepage": "http://symfony.com/contributors"
-            }
-        ],
-        "description": "Symfony Yaml Component",
-        "homepage": "http://symfony.com"
-    },
-    {
         "name": "zendframework/zendframework",
         "version": "2.2.4",
         "version_normalized": "2.2.4.0",
@@ -546,35 +469,6 @@
         }
     },
     {
-        "name": "pear-pear.php.net/File_MARC",
-        "version": "0.7.3",
-        "version_normalized": "0.7.3.0",
-        "dist": {
-            "type": "file",
-            "url": "http://pear.php.net/get/File_MARC-0.7.3.tgz",
-            "reference": null,
-            "shasum": null
-        },
-        "require": {
-            "pear-pear.php.net/structures_linkedlist": "*",
-            "php": ">=5.2.0.0"
-        },
-        "replace": {
-            "pear-pear/file_marc": "== 0.7.3.0"
-        },
-        "type": "pear-library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                ""
-            ]
-        },
-        "include-path": [
-            "/"
-        ],
-        "description": "The standard for machine-readable cataloging (MARC) records is documented at http://loc.gov/marc/. This package enables you to read existing MARC records from a file, string, or (using the YAZ extension), from a Z39.50 source. You can also use this package to create new MARC records.\n\nThis package is based on the PHP MARC package, originally called \"php-marc\", that is part of the Emilda Project (http://www.emilda.org).  Christoffer Landtman generously agreed to make the \"php-marc\" code available under the GNU LGPL so it could be used as the basis of this PEAR package."
-    },
-    {
         "name": "aferrandini/phpqrcode",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
@@ -659,18 +553,95 @@
         }
     },
     {
+        "name": "pear-pear.php.net/File_MARC",
+        "version": "0.8.0",
+        "version_normalized": "0.8.0.0",
+        "dist": {
+            "type": "file",
+            "url": "http://pear.php.net/get/File_MARC-0.8.0.tgz",
+            "reference": null,
+            "shasum": null
+        },
+        "require": {
+            "php": ">=5.3.0.0"
+        },
+        "replace": {
+            "pear-pear/file_marc": "== 0.8.0.0"
+        },
+        "type": "pear-library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                ""
+            ]
+        },
+        "include-path": [
+            "/"
+        ],
+        "description": "The standard for machine-readable cataloging (MARC) records is documented at http://loc.gov/marc/. This package enables you to read existing MARC records from a file, string, or (using the YAZ extension), from a Z39.50 source. You can also use this package to create new MARC records.\n\nThis package is based on the PHP MARC package, originally called \"php-marc\", that is part of the Emilda Project (http://www.emilda.org).  Christoffer Landtman generously agreed to make the \"php-marc\" code available under the GNU LGPL so it could be used as the basis of this PEAR package."
+    },
+    {
+        "name": "symfony/yaml",
+        "version": "v2.3.5",
+        "version_normalized": "2.3.5.0",
+        "target-dir": "Symfony/Component/Yaml",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/symfony/Yaml.git",
+            "reference": "6bb881b948368482e1abf1a75c08bcf88a1c5fc3"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/symfony/Yaml/zipball/6bb881b948368482e1abf1a75c08bcf88a1c5fc3",
+            "reference": "6bb881b948368482e1abf1a75c08bcf88a1c5fc3",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.3"
+        },
+        "time": "2013-09-22 18:04:39",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.3-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "Symfony\\Component\\Yaml\\": ""
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "http://symfony.com/contributors"
+            }
+        ],
+        "description": "Symfony Yaml Component",
+        "homepage": "http://symfony.com"
+    },
+    {
         "name": "jasig/phpcas",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
         "source": {
             "type": "git",
             "url": "https://github.com/Jasig/phpCAS.git",
-            "reference": "13c17276481a5fb55de2ce4c0cf513197fb1ee24"
+            "reference": "673feb404d3c07869ed7e186128d70a8c85473d6"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/Jasig/phpCAS/zipball/13c17276481a5fb55de2ce4c0cf513197fb1ee24",
-            "reference": "13c17276481a5fb55de2ce4c0cf513197fb1ee24",
+            "url": "https://api.github.com/repos/Jasig/phpCAS/zipball/673feb404d3c07869ed7e186128d70a8c85473d6",
+            "reference": "673feb404d3c07869ed7e186128d70a8c85473d6",
             "shasum": ""
         },
         "require": {
@@ -679,7 +650,7 @@
         "require-dev": {
             "phpunit/phpunit": "~3.7.10"
         },
-        "time": "2013-07-25 07:36:06",
+        "time": "2013-10-01 20:06:01",
         "type": "library",
         "installation-source": "source",
         "autoload": {

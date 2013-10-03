@@ -36,7 +36,9 @@
  * @link      http://pear.php.net/package/File_MARC
  */
 
-// {{{ class File_MARC_Field extends Structures_LinkedList_DoubleNode
+require_once 'File/MARC/List.php';
+
+// {{{ class File_MARC_Field extends File_MARC_List
 /**
  * The File_MARC_Field class is expected to be extended to reflect the
  * requirements of control and data fields.
@@ -50,7 +52,7 @@
  * @license  http://www.gnu.org/copyleft/lesser.html  LGPL License 2.1
  * @link     http://pear.php.net/package/File_MARC
  */
-class File_MARC_Field extends Structures_LinkedList_DoubleNode
+class File_MARC_Field extends File_MARC_List
 {
 
     // {{{ properties
@@ -93,7 +95,6 @@ class File_MARC_Field extends Structures_LinkedList_DoubleNode
     function __destruct()
     {
         $this->tag = null;
-        parent::__destruct();
     }
     // }}}
 
