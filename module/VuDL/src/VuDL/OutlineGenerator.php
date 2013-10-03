@@ -68,6 +68,27 @@ class OutlineGenerator
     protected $cache;
 
     /**
+     * Queues
+     *
+     * @var array
+     */
+    protected $queue;
+
+    /**
+     * Modification date information
+     *
+     * @var array
+     */
+    protected $moddate;
+
+    /**
+     * Outline currently under construction
+     *
+     * @var array
+     */
+    protected $outline;
+
+    /**
      * Constructor
      *
      * @param Fedora      $fedora Fedora connection
@@ -130,6 +151,140 @@ class OutlineGenerator
     }
 
     /**
+     * Load information on lists within the specified record.
+     *
+     * @param string $root record ID
+     *
+     * @return void
+     */
+    protected function loadLists($root)
+    {
+        // Reset the state of the class:
+        $this->queue = $this->moddate = array();
+        $this->outline = array('counts'=>array(), 'names'=>array());
+
+        // Check modification date
+        $xml = $this->fedora->getObjectAsXML($root);
+        $rootModDate = (string)$xml[0]->objLastModDate;
+        // Get lists
+        $data = $this->fedora->getStructmap($root);
+        $lists = array();
+        preg_match_all('/vudl:[^"]+/', $data, $lists);
+
+        // Get list items
+        foreach ($lists[0] as $i=>$list_id) {
+            // Get list name
+            $xml = $this->fedora->getObjectAsXML($list_id);
+            $this->outline['names'][] = (String) $xml[0]->objLabel;
+            $this->moddate[$i] = max((string)$xml[0]->objLastModDate, $rootModDate);
+            $data = $this->fedora->getStructmap($list_id);
+            $list = array();
+            preg_match_all('/vudl:[^"]+/', $data, $list);
+            $this->queue[$i] = $list[0];
+        }
+    }
+
+    /**
+     * Build a single item within the outline.
+     *
+     * @param string $id ID of record to retrieve
+     *
+     * @return array
+     */
+    protected function buildItem($id)
+    {
+        // Else, get all the data and save it to the cache
+        $details = $this->fedora->getRecordDetails($id);
+        $list = array();
+        // Get the file type
+        $file = $this->fedora->getDatastreams($id);
+        preg_match_all(
+            '/dsid="([^"]+)"[^>]*mimeType="([^"]+)/',
+            $file,
+            $list
+        );
+        $masterIndex = array_search('MASTER', $list[1]);
+        $mimetype = $masterIndex ? $list[2][$masterIndex] : 'N/A';
+        if (!$masterIndex) {
+            $type = 'page';
+        } else {
+            $type = substr(
+                $list[2][$masterIndex],
+                strpos($list[2][$masterIndex], '/') + 1
+            );
+        }
+        return array(
+            'id' => $id,
+            'fulltype' => $type,
+            'mimetype' => $mimetype,
+            'filetype' => isset($this->routes[$type])
+                ? $this->routes[$type]
+                : $type,
+            'label' => isset($details['title'])
+                ? $details['title']
+                : $id,
+            'datastreams' => $list[1],
+            'mimetypes' => $list[2]
+        );
+    }
+
+    /**
+     * Load all pages and docs.
+     *
+     * @param string $start      page/doc to start with for the return
+     * @param int    $pageLength page length (leave null to use default)
+     *
+     * @return void
+     */
+    protected function loadPagesAndDocs($start, $pageLength)
+    {
+        // Set default page length if necessary
+        if ($pageLength == null) {
+            $pageLength = $this->fedora->getPageLength();
+        }
+
+        // Get data on all pages and docs
+        foreach ($this->queue as $parent=>$items) {
+            $this->outline['counts'][$parent] = count($items);
+            if (count($items) < $start) {
+                continue;
+            }
+            $this->outline['lists'][$parent] = array();
+            for ($i=$start;$i < $start + $pageLength;$i++) {
+                if ($i >= count($items)) {
+                    break;
+                }
+                $id = $items[$i];
+                // If there's a cache of this page...
+                $item = $this->getCache(md5($id), $this->moddate[$parent]);
+                if (!$item) {
+                    $item = $this->buildItem($id);
+                    $this->setCache(md5($id), $item);
+                }
+                $this->outline['lists'][$parent][$i] = $item;
+            }
+        }
+    }
+
+    /**
+     * Add URLs to the outline.
+     *
+     * @return void
+     */
+    protected function injectUrls()
+    {
+        foreach ($this->outline['lists'] as $key=>$list) {
+            foreach ($list as $id=>$item) {
+                foreach ($item['datastreams'] as $ds) {
+                    $routeParams = array('id' => $item['id'], 'type' => $ds);
+                    $this->outline['lists'][$key][$id][strtolower($ds)]
+                        = $this->url->fromRoute('files', $routeParams);
+                }
+            }
+        }
+    }
+
+    /**
      * Generate an array of all child pages and their information/images
      *
      * @param string $root       record id to search under
@@ -140,96 +295,9 @@ class OutlineGenerator
      */
     public function getOutline($root, $start = 0, $pageLength = null)
     {
-        if ($pageLength == null) {
-            $pageLength = $this->fedora->getPageLength();
-        }
-        // Check modification date
-        $xml = $this->fedora->getObjectAsXML($root);
-        $rootModDate = (string)$xml[0]->objLastModDate;
-        // Get lists
-        $data = $this->fedora->getStructmap($root);
-        $lists = array();
-        preg_match_all('/vudl:[^"]+/', $data, $lists);
-        $queue = array();
-        $moddate = array();
-        $outline = array('counts'=>array(), 'names'=>array());
-        // Get list items
-        foreach ($lists[0] as $i=>$list_id) {
-            // Get list name
-            $xml = $this->fedora->getObjectAsXML($list_id);
-            $outline['names'][] = (String) $xml[0]->objLabel;
-            $moddate[$i] = max((string)$xml[0]->objLastModDate, $rootModDate);
-            $data = $this->fedora->getStructmap($list_id);
-            $list = array();
-            preg_match_all('/vudl:[^"]+/', $data, $list);
-            $queue[$i] = $list[0];
-        }
-        $type_templates = array();
-        // Get data on all pages and docs
-        foreach ($queue as $parent=>$items) {
-            $outline['counts'][$parent] = count($items);
-            if (count($items) < $start) {
-                continue;
-            }
-            $routes = $this->routes;
-            $outline['lists'][$parent] = array();
-            for ($i=$start;$i < $start + $pageLength;$i++) {
-                if ($i >= count($items)) {
-                    break;
-                }
-                $id = $items[$i];
-                // If there's a cache of this page...
-                $pageCache = $this->getCache(md5($id), $moddate[$parent]);
-                if ($pageCache) {
-                    $outline['lists'][$parent][$i] = $pageCache;
-                } else {
-                    // Else, get all the data and save it to the cache
-                    $details = $this->fedora->getRecordDetails($id);
-                    $list = array();
-                    // Get the file type
-                    $file = $this->fedora->getDatastreams($id);
-                    preg_match_all(
-                        '/dsid="([^"]+)"[^>]*mimeType="([^"]+)/',
-                        $file,
-                        $list
-                    );
-                    $masterIndex = array_search('MASTER', $list[1]);
-                    $mimetype = $masterIndex ? $list[2][$masterIndex] : 'N/A';
-                    if (!$masterIndex) {
-                        $type = 'page';
-                    } else {
-                        $type = substr(
-                            $list[2][$masterIndex],
-                            strpos($list[2][$masterIndex], '/') + 1
-                        );
-                    }
-                    $item = array(
-                        'id' => $id,
-                        'fulltype' => $type,
-                        'mimetype' => $mimetype,
-                        'filetype' => isset($routes[$type])
-                            ? $routes[$type]
-                            : $type,
-                        'label' => isset($details['title'])
-                            ? $details['title']
-                            : $id,
-                        'datastreams' => $list[1],
-                        'mimetypes' => $list[2]
-                    );
-                    $this->setCache(md5($id), $item);
-                    $outline['lists'][$parent][$i] = $item;
-                }
-            }
-        }
-        foreach ($outline['lists'] as $key=>$list) {
-            foreach ($list as $id=>$item) {
-                foreach ($item['datastreams'] as $ds) {
-                    $routeParams = array('id' => $item['id'], 'type' => $ds);
-                    $outline['lists'][$key][$id][strtolower($ds)]
-                        = $this->url->fromRoute('files', $routeParams);
-                }
-            }
-        }
-        return $outline;
+        $this->loadLists($root);
+        $this->loadPagesAndDocs($start, $pageLength);
+        $this->injectUrls();
+        return $this->outline;
     }
 }
