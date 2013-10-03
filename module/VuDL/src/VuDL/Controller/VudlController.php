@@ -40,21 +40,31 @@ namespace VuDL\Controller;
 class VudlController extends AbstractVuDL
 {
     /**
+     * Retrieve the object cache.
+     *
+     * @return object
+     */
+    protected function getCache()
+    {
+        return $this->getServiceLocator()->get('VuFind\CacheManager')
+            ->getCache('object');
+    }
+
+    /**
      * Compares the cache date against a given date. If given date is newer,
      * return false in order to refresh cache. Else return cache!
      *
-     * @param Zend_Cache_Filesystem $cache   Zend object to locate cache
      * @param string                $key     Unique key of cache object
      * @param string|Date           $moddate Date to test cache time freshness
      *
      * @return cache object or false
      */
-    protected function getCache($cache, $key, $moddate = null)
+    protected function getOutlineCache($key, $moddate = null)
     {
         if (strtolower($this->params()->fromQuery('cache')) == 'no') {
             return false;
         }
-        if ($cache && $cache_item = $cache->getItem($key)) {
+        if (($cache = $this->getCache()) && $cache_item = $cache->getItem($key)) {
             if ($moddate == null || (isset($cache_item['moddate'])
                 && date_create($cache_item['moddate']) >= date_create($moddate))
             ) {
@@ -67,15 +77,14 @@ class VudlController extends AbstractVuDL
     /**
      * Save cache object with date to test for freshness
      *
-     * @param Zend_Cache_Filesystem $cache Zend object to locate cache
      * @param string                $key   Unique key of cache object
      * @param object                $data  Object to save
      *
      * @return cache object or false
      */
-    protected function setCache($cache, $key, $data)
+    protected function setOutlineCache($key, $data)
     {
-        if ($cache) {
+        if ($cache = $this->getCache()) {
             $cache->setItem(
                 $key,
                 array(
@@ -226,9 +235,6 @@ class VudlController extends AbstractVuDL
         if ($pageLength == null) {
             $pageLength = $this->getFedora()->getPageLength();
         }
-        // Check Zend cache
-        $manager = $this->getServiceLocator();
-        $cache = $manager->get('VuFind\CacheManager')->getCache('object');
         // Check modification date
         $xml = simplexml_load_file($this->getFedora()->getBase() . $root . '?format=xml');
         $rootModDate = (string)$xml[0]->objLastModDate;
@@ -267,7 +273,7 @@ class VudlController extends AbstractVuDL
                 }
                 $id = $items[$i];
                 // If there's a cache of this page...
-                $pageCache = $this->getCache($cache, md5($id), $moddate[$parent]);
+                $pageCache = $this->getOutlineCache(md5($id), $moddate[$parent]);
                 if ($pageCache) {
                     //var_dump('get page cache');
                     $outline['lists'][$parent][$i] = $pageCache;
@@ -306,7 +312,7 @@ class VudlController extends AbstractVuDL
                         'mimetypes' => $list[2]
                     );
                     //var_dump('set page cache');
-                    $this->setCache($cache, md5($id), $item);
+                    $this->setOutlineCache(md5($id), $item);
                     $outline['lists'][$parent][$i] = $item;
                 }
             }
