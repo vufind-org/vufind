@@ -1,0 +1,127 @@
+<?
+  $this->headTitle($this->translate('VU Digital Library - ').$this->details['title']['value']);
+  
+  // Multiple breadcrumbs
+  $this->layout()->breadcrumbs = $this->parents;
+  $this->layout()->title = $this->details['title']['value'];
+  $this->layout()->breadcrumbEnd = $this->breadcrumbEnd;
+  $this->layout()->from = $this->from;
+  
+  // Get first list name
+  foreach($this->outline as $list=>$v) {
+    if($list == 'counts') continue;
+    $listName = $list;
+    break;
+  }
+
+  // Facebook image meta
+  $this->layout()->facebookImage = $this->outline['lists'][0][$this->initPage]['medium'];
+  $this->layout()->facebookTitle = $this->details['title']['value'];
+
+  // HEADER FILES
+  $this->headLink()->appendStylesheet('vudl.css');
+  $this->headScript()->appendFile('vudl/record.js');
+  $this->headScript()->appendFile('jquery.swipe.min.js');
+  //$this->headScript()->appendFile('scrollto.js'); // scrolling stuff
+  // INSPECTOR - WRITTEN BY CHRIS HALLBERG
+  $this->headLink()->appendStylesheet('zoomy.css'); // inspector css
+  $this->headScript()->appendFile('zoomy/jquery-ui.js');
+  $this->headScript()->appendFile('zoomy/zoomy.js');  // inspector plugin
+  $this->headScript()->appendFile('zoomy/mousewheel.js'); // mousewheel plugin
+  $this->headScript()->appendFile('zoomy/img-rotate.js'); // image rotation plugin
+  $this->headScript()->appendFile('zoomy/jquery.ui.touch.js');
+  // AUDIO
+  //$this->headLink()->appendStylesheet('jplayer.css');
+  $this->headScript()->appendFile('http://www.google.com/jsapi');
+  
+  // Compact header
+  $this->layout()->headerType = 'record';
+  $this->layout()->vudlID = $this->id;
+  $this->layout()->hierarchyID = $this->hierarchyID;
+  $this->layout()->parents = $this->parents;
+  $this->layout()->siblings = $this->siblings;
+  
+  function json_php_encode($op, $quotes = false) {
+    if($quotes) {
+      return str_replace('"', "'", str_replace('&apos;', "\'", str_replace('\/', '/', json_encode($op))));
+    } else {
+      return str_replace('\/', '/', json_encode($op));
+    }
+  }
+?>
+<script>
+  google.load("swfobject", "2.2");
+  var documentID = '<?=$this->id ?>';
+  var initPage = $.parseJSON('<?=json_encode($this->outline['lists'][$this->initList][$this->initPage], JSON_HEX_APOS | JSON_HEX_AMP) ?>');
+  
+  counts = $.parseJSON('<?=json_encode($this->outline['counts'], JSON_HEX_APOS | JSON_HEX_AMP) ?>');
+  <? if(count($this->outline['lists'][0]) >= $this->outline['counts'][0]): ?>
+    loading_pages = false;
+  <? endif; ?>
+</script>
+<form class="form-horizontal text-center" action="<?=$this->url('vudl-sibling') ?>" method="get">
+  <input type="hidden" name="id" value="<?=$this->layout()->vudlID ?>"/>
+  <button class="btn" type="submit" name="prev_x" title="<?=$this->transEsc('Prev Item in Collection')?>">&larr; <?=$this->transEsc('Prev Item')?></button>
+  <? $uniqueParents = array(); ?>
+  <? foreach($this->parents as $trail): ?>
+     <? foreach($trail as $id=>$parent):
+        if(in_array($id, $uniqueParents)) break;
+        $uniqueParents[] = $id;?>
+     <? break;endforeach; ?>
+  <? endforeach; ?>
+  <? if(count($uniqueParents) > 1): ?>
+    <select name="trail" id="trail">
+      <? foreach($this->parents as $trail): ?>
+        <? foreach($trail as $id=>$parent):
+          if(!in_array($id, $uniqueParents)) break; ?>
+          <option value="<?=$id ?>"><?=$this->truncate($parent, 16) ?></option>
+        <? break;endforeach; ?>
+      <? endforeach; ?>
+    </select>
+  <? else: ?>
+    <input type="hidden" name="trail" value="<?=current(array_keys($this->parents[0]))?>"/>
+  <? endif; ?>
+  <button class="btn" type="submit" name="next_x" title="<?=$this->transEsc('Next Item in Collection')?>"><?=$this->transEsc('Next Item')?> &rarr;</button>
+</form>
+<div class="inspector_container row-fluid">
+  <div id="side-nav" class="accordion span3">
+    <?=$this->context($this)->renderInContext('vudl/details.phtml', array())?>
+    <? $i=0; ?>
+    <? foreach($this->outline['lists'] as $key=>$list): ?>
+    <div class="accordion-group">
+      <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#side-nav" href="#collapse<?=($i+1)?>">
+          <?=$this->outline['names'][$key] ?>
+        </a>
+      </div>
+      <div id="collapse<?=($i+1)?>" class="accordion-body collapse<? if($i==0): ?> in<? endif; ?>">
+        <div class="accordion-inner item-list" id="list<?=$key ?>">
+          <!-- PRE LOADING PLACEHOLDERS -->
+          <? for($i=0;$i<current(array_keys($list))-1;$i++): ?>
+            <a class="well well-small block text-center page-link loading muted" id="item<?=$i ?>" title="<?=$i ?>">Loading...</a>
+          <? endfor; ?>
+          <!-- LOADED ITEMS -->
+          <? foreach($list as $j=>$item): ?>
+            <a title="<?=$item['id'] ?>" onClick="ajaxGetView(<?=json_php_encode($item, true) ?>, this)" class="well well-small block text-center page-link pointer<?=$key == 0 && $j == $this->initPage ?' alert-info':''?>" id="item<?=$j?>">
+            <? if(isset($item['thumbnail'])): ?>
+              <img src="<?=$item['thumbnail'] ?>" alt="<?=$item['label'] ?>"/><br/>
+            <? else: ?>
+              <? $imgSrc = $item['filetype'] == 'download' ? $item['fulltype'] : $item['filetype']; ?>
+              <img src="<?=$this->imageLink('vudl/'.$imgSrc.'.png') ?>" alt="<?=$imgSrc ?>"/><br/>
+            <? endif; ?>
+              <?=$item['label'] ?>
+            </a>
+          <? endforeach; ?>
+          <!-- POST LOADING PLACEHOLDERS -->
+          <? if(isset($this->outline['counts'][$key])): ?>
+            <? for($i=$this->page+count($list);$i<$this->outline['counts'][$key];$i++): ?>
+              <a class="well well-small block text-center page-link loading muted" id="item<?=($i) ?>" title="<?=$i ?>">Loading...</a>
+            <? endfor; ?>
+          <? endif; ?>
+        </div>
+      </div>
+    </div>
+    <? endforeach; ?>
+  </div>
+  <div id="view" class="span9"></div>
+</div>

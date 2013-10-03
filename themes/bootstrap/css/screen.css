@@ -25,6 +25,8 @@ li a.hidden {display:none}
 .small { font-size:85% }
 .switch-margins,.row .switch-margins,.row-fluid .switch-margins { display: inline-block; margin:auto 0 }
 .tab-container { border:1px solid #DDD;border-top:0;border-radius:0 0 4px 4px;margin-top:-20px;padding:8px 12px;position:relative }
-div.xml { display:block;font:10pt Courier;text-align:left;padding-left:1.5em }
-div.xml.collapsed > div { display:none }
-.xmlt { cursor:pointer }
+div.xml { display:block;font:10pt Courier;text-align:left;padding-left:1em }
+div.xml.collapsed > div { display:none;margin-left:2px }
+.xmlt { cursor:pointer;margin-left:-16px }
+.xmlt:before { content:'- ' }
+.collapsed .xmlt:before { content:'+ ' }

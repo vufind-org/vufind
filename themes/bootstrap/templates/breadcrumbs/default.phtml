@@ -1,0 +1,12 @@
+<li><a href="<?=$this->url('home')?>"><?=$this->transEsc('Home')?></a> <span class="divider">&gt;</span></li>
+<li><a href="<?=$this->url('vudl-default-collection')?>"><?=$this->transEsc('Collections') ?></a> <span class="divider">&gt;</span></li>
+<? $current = $this->layout()->breadcrumbs; $current = current($current); ?>
+<? foreach(array_reverse($current) as $id=>$parent): ?>
+  <li><a href="<?=$this->url('collection', array('id'=>$id)) ?>"><?=$parent ?></a> <span class="divider">&gt;</span></li>
+<? endforeach; ?>
+<? if(isset($this->layout()->end)): ?>
+  <li title="<?=$this->title ?>"><?=$this->truncate($this->title, 100) ?> <span class="divider">&gt;</span></li>
+  <li class="active"><?=$this->layout()->end ?></li>
+<? else: ?>
+  <li class="active" title="<?=$this->title ?>"><?=$this->title ?></li>
+<? endif; ?>

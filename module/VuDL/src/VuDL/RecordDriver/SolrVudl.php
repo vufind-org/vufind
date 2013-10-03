@@ -25,7 +25,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
-namespace VuFind\RecordDriver;
+namespace VuDL\RecordDriver;
 
 /**
  * Model for VuDL records in Solr.
@@ -36,7 +36,7 @@ namespace VuFind\RecordDriver;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
-class SolrVudl extends SolrDefault
+class SolrVudl extends \VuFind\RecordDriver\SolrDefault
 {
     /**
      * Full VuDL record
@@ -44,6 +44,25 @@ class SolrVudl extends SolrDefault
      * @var \SimpleXML
      */
     protected $fullRecord = null;
+
+    /**
+     * VuDL config
+     *
+     * @var \Zend\Config\Config
+     */
+    protected $vuDLConfig = null;
+
+    /**
+     * Set module.config.php
+     *
+     * @param \Zend\Config\Config $vc Configuration
+     *
+     * @return void
+     */
+    public function setVuDLConfig(\Zend\Config\Config $vc)
+    {
+        $this->vuDLConfig = $vc;
+    }
 
     /**
      * Parse the full record, if required, and return it.
@@ -72,6 +91,13 @@ class SolrVudl extends SolrDefault
      */
     public function getThumbnail($size = 'small')
     {
+        return array(
+            'route' => 'files',
+            'routeParams' => array(
+                'id' => $this->getUniqueID(),
+                'type'=>'THUMBNAIL'
+            )
+        );
         // We are currently storing only one size of thumbnail; we'll use this for
         // small and medium sizes in the interface, flagging "large" as unavailable
         // for now.
@@ -99,12 +125,56 @@ class SolrVudl extends SolrDefault
      */
     public function getURLs()
     {
-        return array(
-            array(
-                'route' => 'vudl-record',
-                'queryString' => '?id=' . urlencode($this->getUniqueID())
-            )
-        );
+        if ($this->isCollection()) {
+            return array();
+        } else {
+            $retval = array(
+                array(
+                    'route' => 'vudl-record',
+                    'routeParams' => array(
+                        'id' => $this->getUniqueID()
+                    )
+                )
+            );
+            if ($this->isProtected()) {
+                $retval[0]['prefix'] = $this->getProxyUrl();
+            }
+            return $retval;
+        }
+    }
+
+    /**
+     * Does this record need to be protected from public access?
+     *
+     * @return bool
+     */
+    public function isProtected()
+    {
+        // Is license_str set?
+        if (!isset($this->fields['license_str'])) {
+            return false;
+        }
+        // Check IP range
+        $userIP = $_SERVER['REMOTE_ADDR'];
+        $range = isset($this->vuDLConfig->Access->ip_range)
+            ? $this->vuDLConfig->Access->ip_range->toArray() : array();
+        foreach ($range as $ip) {
+            if (strpos($userIP, $ip) === 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Get the proxy prefix for protecting this record.
+     *
+     * @return string
+     */
+    protected function getProxyURL()
+    {
+        return isset($this->vuDLConfig->Access->proxy_url)
+            ? $this->vuDLConfig->Access->proxy_url : '';
     }
 
     /**

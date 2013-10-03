@@ -1,0 +1,89 @@
+<?php
+  $skip = array(
+    'license', 'special_license', 'description', 'title', 'title_alt'
+  );
+  $no_link = array('title', 'description');
+?>
+<div class="accordion-group">
+  <div class="accordion-heading">
+    <a class="accordion-toggle" data-toggle="collapse" data-parent="#side-nav" href="#collapse0">
+      <?=$this->transEsc('Summary & Rights') ?>
+    </a>
+  </div>
+  <div id="collapse0" class="accordion-body collapse">
+    <table class="table table-striped small details">
+      <? foreach ($this->details as $attr=>$val):
+        // Skip items not placed in this table
+        if(in_array($attr, $skip)) continue; ?>
+        <tr><td><?=$this->transEsc($val['title']) ?></td><td>
+          <? // Special format for first_indexed ?>
+          <? if($attr == 'first_indexed'): ?>
+            <?=date_create($val['value'])->format('j F Y') ?>
+            
+          <? // If we need exploding and backlinking ?>
+          <? elseif($attr == 'topic' || $attr == 'series'): ?>
+            <? if(count($val['value']) > 1): ?><ul class="unstyled"><? endif ?>
+            <? foreach($val['value'] as $v): ?>
+              <? if(count($val['value']) > 1): ?><li><? endif ?>
+             <? $parts = explode(' -- ', $v);
+                $filter = '';
+                foreach($parts as $i=>$p):
+                  $filter .= ' '.$p; ?>
+                  <?=$i>0 ? ' &gt; ' : '' ?><a class="backlink" href="<?=$this->url('search-results') ?>?filter[]=<?=$attr ?>:<?=urlencode(trim($filter)) ?>"><?=$p ?></a>
+             <? endforeach; ?>
+              <? if(count($val['value']) > 1): ?></li><? endif ?>
+            <? endforeach; ?>
+            <? if(count($val['value']) > 1): ?></ul><? endif ?>
+            
+          <? // Items not useful to link ?>
+          <? elseif(in_array($attr, $no_link)): ?>
+            <?=is_array($val['value']) ? implode('<br/>', $val['value']) : $val['value'] ?>
+            
+          <? // Array handling ?>
+          <? elseif(is_array($val['value'])): ?>
+            <? if(count($val['value']) == 1): ?>
+              <a href="<?=$this->url('search-results') ?>?filter[]=<?=$attr ?>:<?=urlencode($val['value'][0]) ?>"><?=$val['value'][0] ?></a>
+            <? else: ?>
+              <ul class="unstyled">
+              <? foreach($val['value'] as $v): ?>
+                 <li><a href="<?=$this->url('search-results') ?>?filter[]=<?=$attr ?>:<?=urlencode($v) ?>"><?=$v ?></a></li>
+              <? endforeach; ?>
+              </ul>
+            <? endif; ?>
+          
+          <? // The rest are linked ?>
+          <? else: ?>
+            <a href="<?=$this->url('search-results') ?>?filter[]=<?=$attr ?>:<?=urlencode($val['value']) ?>"><?=$val['value'] ?></a>
+          <? endif; ?>
+        </td></tr>
+      <? endforeach; ?>
+      <? if(isset($this->details['license'])): ?>
+        <? if(!$this->details['special_license']): ?>
+          <tr><td>License</td><td><a href="<?=$this->details['license'] ?>"><?=$this->details['license'] ?></a></td></tr>
+        <? endif; ?>
+      <? endif; ?>
+    </table>
+    <div class="pad text-center small">
+      <? if(isset($this->details['license'])): ?>
+        <div class="block text-center">
+        <?  switch($this->details['special_license']):
+            case 'CC': 
+                $cctype = array();
+                preg_match('/licenses\/([^\/]*)/', $this->details['license'], $cctype);
+                $cctype = $cctype[1];
+                ?>
+            This work is licensed under a <a target="_new" rel="license" href="<?=$this->details['license'] ?>deed.en_US">Creative Commons <?=strpos($cctype, 'by') == 0 ? 'Attribution-' : '' ?><?=strpos($cctype, 'nc') ? 'NonCommercial-' : '' ?><?=strpos($cctype, 'nd') ? 'NoDerivs' : '' ?><?=strpos($cctype, 'sa') ? 'ShareAlike' : '' ?> 3.0 Unported License</a>.<br/><br/><a target="_new" rel="license" href="<?=$this->details['license'] ?>deed.en_US"><img alt="Creative Commons License" style="border-width:0" src="http://i.creativecommons.org/l/<?=$cctype ?>/3.0/80x15.png" /></a>
+          <?  break;
+            case 'VU': ?>
+            This work is under <a target="_new" href="http://digital.library.villanova.edu/copyright.html">Villanova University Copyright License</a> of the original publisher.
+          <?  break;
+          endswitch; ?>
+        </div>
+        <br/><br/>
+      <? endif; ?>
+      <a href="<?=$this->url('vudl-record', array('id'=>$this->id))?>"><i class="icon-link"></i> Permanent Link</a>
+      <br/><br/>
+      <? if(isset($this->details['description'])): ?><p class="text-left"><?=$this->details['description']['value'] ?></p><? endif ?>
+    </div>
+  </div>
+</div>

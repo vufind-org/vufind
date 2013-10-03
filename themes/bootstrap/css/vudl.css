@@ -1,0 +1,25 @@
+.item-list {
+  height:600px;
+}
+.page_grid .audio {
+  background:url('../images/small/mp3.png');
+  box-shadow:none;
+  margin:auto;
+  width:128px;
+  height:128px;
+}
+.page_grid .pdf {
+  background:url('../images/small/pdf.png');
+  box-shadow:none;
+  height:87px;
+  margin:auto;
+  width:70px;
+}
+.page_grid .doc,
+.page_grid .msword {
+  background:url('../images/small/doc.png');
+  box-shadow:none;
+  margin:auto;
+  width:116px;
+  height:85px;
+}
