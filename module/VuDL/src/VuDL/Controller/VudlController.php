@@ -441,40 +441,13 @@ class VudlController extends AbstractVuDL
         }
         // Technical Information
         if (isset($record['master-md'])) {
-            $old = array(
-                '/<(\/[^>]+)>/',
-                '/<([^>]+)>/',
-                '/\/&gt;/',
-                '/&lt;\/div&gt;/',
-                '/<div>\s*<\/div>/',
-                '/(?<=<div>)([^<]+)<div>/',
-                '/<div>/'
-            );
-            $new = array(
-                '&lt;\1&gt;</div>',
-                '<div>&lt;\1&gt;',
-                '/&gt;</div>',
-                '</div>',
-                '</div>',
-                '<a class="xmlt" onClick="'
-                    . 'var p=this.parentNode;'
-                    . "p.className=p.className.indexOf('collapsed')<0"
-                    . " ? 'xml collapsed'"
-                    . " : 'xml'"
-                    . '">\1</a><div>',
-                '<div class="xml">'
-            );
-            $record['techinfo'] = preg_replace(
-                $old,
-                $new,
-                file_get_contents(
-                    $this->getFedora()->getBase()
-                    . $record['id']
-                    . '/datastreams/MASTER-MD/content'
-                )
+            $record['techinfo'] = file_get_contents(
+                $this->getFedora()->getBase()
+                . $record['id']
+                . '/datastreams/MASTER-MD/content'
             );
             $data = $type = array();
-            preg_match('/&lt;size[^&]*&gt;([^&]*)/', $record['techinfo'], $data);
+            preg_match('/<size[^>]*>([^<]*)/', $record['techinfo'], $data);
             preg_match('/mimetype="([^"]*)/', $record['techinfo'], $type);
             $size_index = 0;
             if (count($data) > 1) {

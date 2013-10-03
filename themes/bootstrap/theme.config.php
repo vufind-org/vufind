@@ -35,6 +35,7 @@ return array(
         ),
         'invokables' => array(
             'search' => 'VuFind\View\Helper\Bootstrap\Search',
+            'vudl' => 'VuDL\View\Helper\Bootstrap\VuDL',
         )
     )
 );
