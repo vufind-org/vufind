@@ -2,7 +2,7 @@
   $this->headTitle($this->translate('VU Digital Library - ').$this->details['title']['value']);
   
   // Multiple breadcrumbs
-  $this->layout()->breadcrumbs = $this->breadcrumbs;
+  $this->layout()->breadcrumbs = $this->parents;
   $this->layout()->title = $this->details['title']['value'];
   $this->layout()->breadcrumbEnd = $this->breadcrumbEnd;
   $this->layout()->from = $this->from;
@@ -15,7 +15,7 @@
   }
 
   // Facebook image meta
-  $this->layout()->facebookImage = $this->outline['lists'][0][$this->page]['medium'];
+  $this->layout()->facebookImage = $this->outline['lists'][0][$this->initPage]['medium'];
   $this->layout()->facebookTitle = $this->details['title']['value'];
 
   // HEADER FILES
