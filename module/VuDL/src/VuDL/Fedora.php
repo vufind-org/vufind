@@ -52,12 +52,30 @@ class Fedora implements \VuFindHttp\HttpServiceAwareInterface {
      */
     protected $httpService = false;
     
+    /*************************************************************/
+    /* The following are storage for frequenly called functions  */
+    /* TODO: Move these and their functions to their own models? */
+    /*************************************************************/
     /**
      * Structmap data cache
      *
      * @var array
      */
     protected $structmaps = array();
+    
+    /**
+     * Datastreams data cache
+     *
+     * @var array
+     */
+    protected $datastreams = array();
+    
+    /**
+     * Parent List data cache
+     *
+     * @var array
+     */
+    protected $parentLists = array();
 
     /**
      * Constructor
@@ -92,6 +110,28 @@ class Fedora implements \VuFindHttp\HttpServiceAwareInterface {
             : null;
     }
 
+    /**
+     * Returns an array of classes for this object
+     *
+     * @param string $id record id
+     *
+     * @return array
+     */
+    public function getClasses($id)
+    {
+        $data = file_get_contents(
+            $this->getBase() . $id . '/datastreams/RELS-EXT/content'
+        );
+        $matches = array();
+        preg_match_all(
+            '/rdf:resource="info:fedora\/vudl-system:([^"]+)/',
+            $data,
+            $matches
+        );
+        $classes = array();
+        return $matches[1];
+    }
+    
     /**
      * Get Fedora Page Length.
      *
@@ -153,6 +193,30 @@ class Fedora implements \VuFindHttp\HttpServiceAwareInterface {
         return $this->structmaps[$id];
     }
 
+    
+
+    /**
+     * Returns file contents of the structmap, our most common call
+     *
+     * @param string  $id  Record id
+     * @param boolean $xml Return data as SimpleXMLElement?
+     *
+     * @return string|SimpleXMLElement
+     */
+    public function getDatastreams($id, $xml = false)
+    {
+        if (!isset($this->datastreams[$id])) {
+            $this->datastreams[$id] = file_get_contents(
+                $this->getBase() . $id . '/datastreams?format=xml'
+            );
+        }
+        if ($xml) {
+            return simplexml_load_string($this->datastreams[$id]);
+        } else {
+            return $this->datastreams[$id];
+        }
+    }
+    
     /**
      * Get an HTTP client
      *
@@ -233,10 +297,9 @@ class Fedora implements \VuFindHttp\HttpServiceAwareInterface {
      */
     public function getParentList($id)
     {
-        /* disable cache
         if (isset($this->parentLists[$id])) {
             return $this->parentLists[$id];
-        } */
+        }
         $query = 'select $child $parent $parentTitle from <#ri> '
                 . 'where walk ('
                         . '<info:fedora/' .$id. '> '
@@ -285,7 +348,7 @@ class Fedora implements \VuFindHttp\HttpServiceAwareInterface {
             }
             $ret[] = array_reverse($path[1]);
         }
-        // $this->parentLists[$id] = $ret;
+        $this->parentLists[$id] = $ret;
         return $ret;
     }
 }

@@ -40,13 +40,6 @@ namespace VuDL\Controller;
 class VudlController extends AbstractVuDL
 {
     /**
-     * Datastreams
-     *
-     * @var array
-     */
-    protected $datastreams = array();
-
-    /**
      * Compares the cache date against a given date. If given date is newer,
      * return false in order to refresh cache. Else return cache!
      *
@@ -93,28 +86,6 @@ class VudlController extends AbstractVuDL
             return $data;
         }
         return false;
-    }
-
-    /**
-     * Returns file contents of the structmap, our most common call
-     *
-     * @param string  $id  Record id
-     * @param boolean $xml Return data as SimpleXMLElement?
-     *
-     * @return string|SimpleXMLElement
-     */
-    protected function getDatastreams($id, $xml = false)
-    {
-        if (!isset($this->datastreams[$id])) {
-            $this->datastreams[$id] = file_get_contents(
-                $this->getFedora()->getBase() . $id . '/datastreams?format=xml'
-            );
-        }
-        if ($xml) {
-            return simplexml_load_string($this->datastreams[$id]);
-        } else {
-            return $this->datastreams[$id];
-        }
     }
 
     /**
@@ -189,28 +160,6 @@ class VudlController extends AbstractVuDL
     }
 
     /**
-     * Returns an array of classes for this object
-     *
-     * @param string $id record id
-     *
-     * @return array
-     */
-    protected function getClasses($id)
-    {
-        $data = file_get_contents(
-            $this->getFedora()->getBase() . $id . '/datastreams/RELS-EXT/content'
-        );
-        $matches = array();
-        preg_match_all(
-            '/rdf:resource="info:fedora\/vudl-system:([^"]+)/',
-            $data,
-            $matches
-        );
-        $classes = array();
-        return $matches[1];
-    }
-
-    /**
      * Returns the root id for any parent this item may have
      * ie. If we're requesting a specific page, return the book
      *
@@ -222,7 +171,7 @@ class VudlController extends AbstractVuDL
     {
         $parents = $this->getFedora()->getParentList($id);
         foreach ($parents[0] as $i=>$parent) {
-            if (in_array('ResourceCollection', $this->getClasses($i))) {
+            if (in_array('ResourceCollection', $this->getFedora()->getClasses($i))) {
                 return $i;
             }
         }
@@ -320,7 +269,7 @@ class VudlController extends AbstractVuDL
                     $details = $this->getDetails($id, true);
                     $list = array();
                     // Get the file type
-                    $file = $this->getDatastreams($id);
+                    $file = $this->getFedora()->getDatastreams($id);
                     preg_match_all(
                         '/dsid="([^"]+)"[^>]*mimeType="([^"]+)/',
                         $file,
@@ -474,7 +423,7 @@ class VudlController extends AbstractVuDL
             $list = array();
             preg_match_all(
                 '/dsid="([^"]+)"/',
-                strtolower($this->getDatastreams($id)),
+                strtolower($this->getFedora()->getDatastreams($id)),
                 $list
             );
             $record = array_flip($list[1]);
@@ -591,7 +540,7 @@ class VudlController extends AbstractVuDL
             return $this->forwardTo('VuDL', 'Home');
         }
 
-        $classes = $this->getClasses($id);
+        $classes = $this->getFedora()->getClasses($id);
         if (in_array('FolderCollection', $classes)) {
             return $this->forwardTo('Collection', 'Home', array('id'=>$id));
         }
