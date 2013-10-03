@@ -8,7 +8,7 @@
   $this->layout()->from = $this->from;
 
   // Facebook image meta
-  $this->layout()->facebookImage = $this->outline['lists'][0][$this->page]['medium'];
+  $this->layout()->facebookImage = $this->outline['lists'][0][$this->initPage]['medium'];
   $this->layout()->facebookTitle = $this->details['title']['value'];
 
   // HEADER FILES
@@ -32,7 +32,7 @@
 ?>
 <script>
   var documentID = '<?=$this->id ?>';
-  var initPage = <?=isset($this->page) ? $this->page : 0 ?>;
+  var initPage = <?=isset($this->initPage) ? $this->initPage : 0 ?>;
 </script>
 <div class="inspector_container row-fluid">
   <div class="span3">
@@ -60,7 +60,7 @@
         <? endforeach; ?>
         <!-- POST LOADING PLACEHOLDERS -->
         <? if(isset($this->outline['counts'][$key])): ?>
-          <? for($i=$this->page+count($list);$i<$this->outline['counts'][$key];$i++): ?>
+          <? for($i=$this->initPage+count($list);$i<$this->outline['counts'][$key];$i++): ?>
             <a class="span3 pull-left well text-center page-link pointer" id="item<?=$i ?>" title="<?=$i ?>">Loading...</a>
             <? if((++$index)%4 == 0 && $index > 1): ?></div><div class="row-fluid"><? endif; ?>
           <? endfor; ?>
