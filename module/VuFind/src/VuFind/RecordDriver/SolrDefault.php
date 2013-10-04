@@ -859,15 +859,12 @@ class SolrDefault extends AbstractBase
         $i = 0;
         $retval = array();
         while (isset($places[$i]) || isset($names[$i]) || isset($dates[$i])) {
-            // Put all the pieces together, and do a little processing to clean up
-            // unwanted whitespace.
-            $retval[] = trim(
-                str_replace(
-                    '  ', ' ',
-                    ((isset($places[$i]) ? $places[$i] . ' ' : '') .
-                    (isset($names[$i]) ? $names[$i] . ' ' : '') .
-                    (isset($dates[$i]) ? $dates[$i] : ''))
-                )
+            // Build objects to represent each set of data; these will
+            // transform seamlessly into strings in the view layer.
+            $retval[] = new Response\PublicationDetails(
+                isset($places[$i]) ? $places[$i] : '',
+                isset($names[$i]) ? $names[$i] : '',
+                isset($dates[$i]) ? $dates[$i] : ''
             );
             $i++;
         }
@@ -1507,5 +1504,52 @@ class SolrDefault extends AbstractBase
     {
         return isset($this->fields['long_lat'])
             ? $this->fields['long_lat'] : false;
+    }
+
+    /**
+     * Get schema.org type mapping, an array of sub-types of
+     * http://schema.org/CreativeWork, defaulting to CreativeWork
+     * itself if nothing else matches.
+     *
+     * @return array
+     */
+    public function getSchemaOrgFormatsArray()
+    {
+        $types = array();
+        foreach ($this->getFormats() as $format) {
+            switch ($format) {
+            case 'Book':
+            case 'eBook':
+                $types['Book'] = 1;
+                break;
+            case 'Video':
+            case 'VHS':
+                $types['Movie'] = 1;
+                break;
+            case 'Photo':
+                $types['Photograph'] = 1;
+                break;
+            case 'Map':
+                $types['Map'] = 1;
+                break;
+            case 'Audio':
+                $types['MusicRecording'] = 1;
+                break;
+            default:
+                $types['CreativeWork'] = 1;
+            }
+        }
+        return array_keys($types);
+    }
+    /**
+     * Get schema.org type mapping, expected to be a space-delimited string of
+     * sub-types of http://schema.org/CreativeWork, defaulting to CreativeWork
+     * itself if nothing else matches.
+     *
+     * @return string
+     */
+    public function getSchemaOrgFormats()
+    {
+        return implode(' ', $this->getSchemaOrgFormatsArray());
     }
 }
