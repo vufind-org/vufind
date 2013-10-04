@@ -85,6 +85,7 @@ select, .btn:not(.btn-link){vertical-align:top}
 .sidebar .nav-list li a:hover {background:none}
 .sidebar .nav-list li span.main {width:auto}
 .sidebar .nav-list .nav-header {background:#EEE;border-color:#DDD;padding:2px 4px}
+.sidebar .small {margin-top:10px}
 #publishDateFilter input[type="text"] {border-color:#CCC;margin-top:.5em;padding:0}
 #publishDateFilter input[type="text"]:focus {border-color:#999;box-shadow:none}
 #publishDateFilter .slider-handle {background:#CCC;border:1px solid #AAA}
@@ -96,6 +97,7 @@ select, .btn:not(.btn-link){vertical-align:top}
 .slider.slider-horizontal .slider-track {margin-left:5%;width:89%}
 .filters li a:hover {color:#FFF}
 .filters li a i {display:inline-block;margin:2px 0 0 3px;vertical-align:top}
+
 /* --- MAIN --- */
 .centered-pills {border-bottom:1px solid #DDD;font-size:12px}
 .nav-pills {border-bottom:1px solid #DDD;margin:0 0 6px 0}
@@ -116,14 +118,15 @@ select, .btn:not(.btn-link){vertical-align:top}
 
 /* --- SEARCH --- */
 .bulkActionButtons {border-bottom:1px solid #DDD;margin-top:6px;padding-bottom:6px}
-.result {padding:6px 0 3px 0}
+.result {padding:6px 0}
 .result:nth-child(odd) {background:#EEE}
 .result>.checkbox {font-weight:bold;margin:2px 0 2px 1%;max-width:6%}
 .result>.checkbox input[type="checkbox"] {margin:3px auto}
-.result>.span7 {margin-left:1%;width:52%}
+.result .span7 {margin-left:1%;width:52%}
 .result .savedLists {margin:2px 0;padding:6px}
 .result .savedLists ul {margin-bottom:0}
 .span9>.noprint>.help-block {margin-bottom:0}
+.top-row [class*="span"] {min-height:1px;padding:0 3px}
 
 /* --- VUDL --- */
 #download-button {background:linear-gradient(to bottom, #D7E991 0%,#B5C770 100%);padding:10px 8px 6px 16px}

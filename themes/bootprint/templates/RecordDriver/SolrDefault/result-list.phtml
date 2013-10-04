@@ -1,4 +1,4 @@
-<div class="row-fluid result<?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
+<div class="row-fluid<?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
   <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueID())?>" class="hiddenId" />
   <input type="hidden" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>" class="hiddenSource" />
   <div class="span2 text-center switch-margins">
@@ -110,11 +110,7 @@
         <? if (!is_array($urls)) $urls = array();
           if(!$this->driver->isCollection()):
             foreach ($urls as $current): ?>
-              <a href="<?=$this->escapeHtml($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="icon-external-link"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
-              <? if($this->driver->isProtected()): ?>
-                <span class="muted small"> <i class="icon-lock"></i> <?=$this->transEsc('Login Required') ?></span></span>
-              <? endif; ?>
-              <br/>
+              <a href="<?=$this->escapeHtml($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="icon-external-link"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a><br/>
           <? endforeach; ?>
         <? endif; ?>
       <? endif; ?>
@@ -130,7 +126,7 @@
     </div>
   </div>
 
-  <div class="span3">
+  <div class="span3 noprint">
     <? /* Display qrcode if appropriate: */ ?>
     <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
       <?
