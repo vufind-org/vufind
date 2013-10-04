@@ -18,35 +18,35 @@
   };
 </script>
 <? if($this->counts[0] > 1): ?>
-	<div class="row-fluid btn-group visible-phone text-center">
-		<a href="javascript:prevPage()" class="btn">Prev Page</a>
-		<a href="javascript:nextPage()" class="btn">Next Page</a>
-		<br/><br/>
-	</div>
+  <div class="row-fluid btn-group visible-phone text-center">
+    <a href="javascript:prevPage()" class="btn">Prev Page</a>
+    <a href="javascript:nextPage()" class="btn">Next Page</a>
+    <br/><br/>
+  </div>
 <? endif; ?>
 <ul class="nav nav-tabs">
   <li class="active"><a>Original</a></li>
-	<? if($this->counts[0] > 1): ?>
-		<div class="btn-group pull-right hidden-phone">
-			<a href="javascript:prevPage()" class="btn btn-small">Prev Page</a>
-			<a href="javascript:nextPage()" class="btn btn-small">Next Page</a>
-		</div>
-	<? endif; ?>
+  <? if($this->counts[0] > 1): ?>
+    <div class="btn-group pull-right hidden-phone">
+      <a href="javascript:prevPage()" class="btn btn-small">Prev Page</a>
+      <a href="javascript:nextPage()" class="btn btn-small">Next Page</a>
+    </div>
+  <? endif; ?>
 </ul>
 <div class="tab-container text-center tab-content">
-	<br/>
+  <br/>
   <audio controls="controls" preload="auto">
     <? if(isset($this->ogg)): ?><source src="<?=$this->ogg ?>?download=true"/><?endif?>
     <? if(isset($this->mp3)): ?><source src="<?=$this->mp3 ?>?download=true"/><?endif?>
     <? if(!isset($this->mp3) && !isset($this->ogg)): ?><source src="<?=$this->master ?>?download=true"/><?endif?>
   </audio>
   <div id="player_fallback"></div>
-	<br/><br/>
+  <br/><br/>
   <?=$this->context($this)->renderInContext('vudl/master-tab.phtml', array())?>
 </div>
 <script>
   if (!document.createElement('video').canPlayType('audio/ogg')
-	&& !document.createElement('video').canPlayType('audio/mpeg')) {
+  && !document.createElement('video').canPlayType('audio/mpeg')) {
     swfobject.embedSWF(
       "<?=$this->imageLink('flash/audio_player.swf') ?>", 
       "player_fallback", 
