@@ -1510,18 +1510,16 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get schema.org type mapping, expected to be a space-delimited string of
-     * sub-types of http://schema.org/CreativeWork, defaulting to CreativeWork
+     * Get schema.org type mapping, an array of sub-types of
+     * http://schema.org/CreativeWork, defaulting to CreativeWork
      * itself if nothing else matches.
      *
-     * @return string
+     * @return array
      */
-    public function getSchemaOrgFormats()
+    public function getSchemaOrgFormatsArray()
     {
         $types = array();
-        $formats = isset($this->fields['format'])
-            ? array_unique($this->fields['format']) : array();
-        foreach ($formats as $format) {
+        foreach ($this->getFormats() as $format) {
             switch ($format) {
             case 'Book':
             case 'eBook':
@@ -1544,6 +1542,17 @@ class SolrDefault extends AbstractBase
                 $types['CreativeWork'] = 1;
             }
         }
-        return implode(" ", array_keys($types));
+        return array_keys($types);
+    }
+    /**
+     * Get schema.org type mapping, expected to be a space-delimited string of
+     * sub-types of http://schema.org/CreativeWork, defaulting to CreativeWork
+     * itself if nothing else matches.
+     *
+     * @return string
+     */
+    public function getSchemaOrgFormats()
+    {
+        return implode(' ', $this->getSchemaOrgFormatsArray());
     }
 }
