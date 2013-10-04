@@ -50,8 +50,8 @@
 <table class="table table-striped" summary="<?=$this->transEsc('Holdings details from')?> <?=$this->transEsc($location)?>">
   <? if (isset($holding['items'][0]['callnumber'])): ?>
   <tr>
-    <th width="50%"><?=$this->transEsc("Call Number")?>: </th>
-    <td><?=$this->escapeHtml($holding['items'][0]['callnumber'])?></td>
+    <th><?=$this->transEsc("Call Number")?>: </th>
+    <td width="50%"><?=$this->escapeHtml($holding['items'][0]['callnumber'])?></td>
   </tr>
   <? endif; ?>
   <? if (!empty($holding['summary'])): ?>
