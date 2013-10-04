@@ -39,7 +39,7 @@
 <div class="<?=$this->layoutClass('mainbody')?>">
   <div class="record recordId source<?=$this->escapeHtml($this->driver->getResourceSource())?>" id="record">
     <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
-    <input type="hidden" value="<?=$this->escapeHtml($this->driver->getResourceSource()) ?>" class="hiddenSource" id="record_id" />
+    <input type="hidden" value="<?=$this->escapeHtml($this->driver->getResourceSource()) ?>" class="hiddenSource" />
     <?=$this->flashmessages()?>
     <?=$this->record($this->driver)->getCoreMetadata()?>
   </div>

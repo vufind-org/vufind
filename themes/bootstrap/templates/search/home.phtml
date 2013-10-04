@@ -15,7 +15,7 @@
   $basicSearch = $options->getSearchAction();
   $advSearch = $options->getAdvancedSearchAction();
   
-  $this->layout()->breadcrumbs .= '<li class="active">Search</li>';
+  $this->layout()->breadcrumbs = false;
 ?>
 <div class="searchHomeContent">
   <? if ($this->ils()->getOfflineMode() == "ils-offline"): ?>
