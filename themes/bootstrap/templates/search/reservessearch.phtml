@@ -11,10 +11,10 @@
 
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h3><?=$this->transEsc('Search For Items on Reserve')?></h3>
-  <form method="get" action="" name="reservesSearchForm" class="search">
-    <label for="reservesSearchForm_lookfor" class="offscreen"><?=$this->transEsc("Your search terms")?></label>
+  <form class="form-inline" method="get" action="" name="reservesSearchForm">
+    <label class="help-inline" for="reservesSearchForm_lookfor"><?=$this->transEsc("Your search terms")?></label>
     <input id="reservesSearchForm_lookfor" type="text" name="lookfor" size="40" value="<?=$this->escapeHtml($reservesLookfor)?>" <?=$this->searchOptions('SolrReserves')->autocompleteEnabled() ? ' class="autocomplete searcher:SolrReserves type:Reserves"' : ''?> />
-    <input type="submit" name="submit" value="<?=$this->transEsc("Find")?>"/>
+    <input class="btn" type="submit" name="submit" value="<?=$this->transEsc("Find")?>"/>
   </form>
   <script type="text/javascript">$("#reservesSearchForm_lookfor").focus()</script>
   
@@ -34,16 +34,14 @@
     <div class="pull-right">
       <?=$this->render('search/controls/sort.phtml')?>
     </div>
-    <div class="clearfix"></div>
   </div>
-  
   <? if ($recordTotal < 1): ?>
     <p class="error"><?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($reservesLookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?></p>
     <? if (isset($this->parseError)): ?>
       <p class="error"><?=$this->transEsc('nohit_parse_error')?></p>
     <? endif; ?>
   <? else: ?>
-    <table class="datagrid reserves">
+    <table class="table table-striped">
     <tr>
       <th class="department"><?=$this->transEsc('Department')?></th>
       <th class="course"><?=$this->transEsc('Course')?></th>
