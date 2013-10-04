@@ -859,15 +859,12 @@ class SolrDefault extends AbstractBase
         $i = 0;
         $retval = array();
         while (isset($places[$i]) || isset($names[$i]) || isset($dates[$i])) {
-            // Put all the pieces together, and do a little processing to clean up
-            // unwanted whitespace.
-            $retval[] = trim(
-                str_replace(
-                    '  ', ' ',
-                    ((isset($places[$i]) ? $places[$i] . ' ' : '') .
-                    (isset($names[$i]) ? $names[$i] . ' ' : '') .
-                    (isset($dates[$i]) ? $dates[$i] : ''))
-                )
+            // Build objects to represent each set of data; these will
+            // transform seamlessly into strings in the view layer.
+            $retval[] = new Response\PublicationDetails(
+                isset($places[$i]) ? $places[$i] : '',
+                isset($names[$i]) ? $names[$i] : '',
+                isset($dates[$i]) ? $dates[$i] : ''
             );
             $i++;
         }
