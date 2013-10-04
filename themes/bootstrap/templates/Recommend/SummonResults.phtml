@@ -27,6 +27,7 @@
                 : $this->escapeHtml($summAuthor);
           ?>
         </a>
+        <? endif; ?>
       </li>
     <? endforeach; ?>
     <li><a href="<?=$this->url($searchObject->getOptions()->getSearchAction()) . $searchObject->getUrlQuery()->setLimit($searchObject->getOptions()->getDefaultLimit())?>"><?=$this->transEsc('More Summon results')?>...</a></li>
