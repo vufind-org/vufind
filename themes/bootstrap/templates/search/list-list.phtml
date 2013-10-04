@@ -3,6 +3,7 @@
   $recordNumber = $this->results->getStartRecord()+$i-$this->indexStart; ?>
   <hr/>
   <div id="result<?=$i++ ?>" class="row-fluid clearfix">
+    <input type="hidden" name="idsAll[]" value="<?=$this->id ?>"/>
     <label class="checkbox pull-left small"><? if ($this->cart()->isActive()): ?><?=$this->record($current)->getCheckbox()?><? endif; ?><?=$recordNumber?></label>
     <?=$this->record($current)->getSearchResult('list')?>
   </div>
