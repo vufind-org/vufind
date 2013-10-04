@@ -43,7 +43,7 @@
     <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
     <ul class="nav nav-list">
       <? if (isset($dateFacets[$title])): ?>
-        <li class="nav-header"><?=$this->transEsc($cluster['label'])?></dt>
+        <li class="nav-header"><?=$this->transEsc($cluster['label'])?></li>
         <li>
           <form class="form-inline text-center" action="" name="<?=$this->escapeHtml($title)?>Filter" id="<?=$this->escapeHtml($title)?>Filter">
             <?=$results->getUrlQuery()->asHiddenFields(array('filter' => "/^{$title}:.*/"))?>

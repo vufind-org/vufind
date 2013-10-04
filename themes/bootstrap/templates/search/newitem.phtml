@@ -7,23 +7,35 @@
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
   <p class="lead"><?=$this->transEsc('Find New Items')?></p>
-  <form method="get" action="" class="form-inline">
-    <p class="help-inline pad"><?=$this->transEsc('Range')?>:</p>
-    <? foreach ($this->ranges as $key => $range): ?>
-      <label class="radio pad">
-        <input id="newitem_range_<?=$this->escapeHtml($key)?>" type="radio" name="range" value="<?=$this->escapeHtml($range)?>"<?= ($key == 0) ? ' checked="checked"' : ''?>/>
-        <?=($range == 1) ? $this->transEsc('Yesterday') : $this->transEsc('Past') . ' ' . $this->escapeHtml($range) . ' ' . $this->transEsc('Days')?>
-      </label>
-    <? endforeach; ?>
-    <? if (is_array($this->fundList) && !empty($this->fundList)): ?>
-        <label class="displayBlock" for="newitem_department"><?=$this->transEsc('Department')?>:</label>
-        <select id="newitem_department" name="department" size="10">
-        <? foreach ($this->fundList as $fundId => $fund): ?>
-          <option value="<?=$this->escapeHtml($fundId)?>"><?=$this->transEsc($fund)?></option>
+  <form method="get" action="" class="form-horizontal">
+    <div class="control-group">
+      <p class="control-label"><?=$this->transEsc('Range')?>:</p>
+      <div class="controls">
+        <? foreach ($this->ranges as $key => $range): ?>
+          <label class="radio inline pad">
+            <input id="newitem_range_<?=$this->escapeHtml($key)?>" type="radio" name="range" value="<?=$this->escapeHtml($range)?>"<?= ($key == 0) ? ' checked="checked"' : ''?>/>
+            <?=($range == 1) ? $this->transEsc('Yesterday') : $this->transEsc('Past') . ' ' . $this->escapeHtml($range) . ' ' . $this->transEsc('Days')?>
+          </label>
         <? endforeach; ?>
-        </select>
+      </div>
+    </div>
+    <? if (is_array($this->fundList) && !empty($this->fundList)): ?>
+      <div class="control-group">
+        <label class="control-label" for="newitem_department"><?=$this->transEsc('Department')?>:</label>
+        <div class="controls">
+          <select id="newitem_department" name="department" size="10">
+          <? foreach ($this->fundList as $fundId => $fund): ?>
+            <option value="<?=$this->escapeHtml($fundId)?>"><?=$this->transEsc($fund)?></option>
+          <? endforeach; ?>
+          </select>
+        </div>
+      </div>
     <? endif; ?>
-    <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Find')?>"/>
+    <div class="control-group">
+      <div class="controls">
+        <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Find')?>"/>
+      </div>
+    </div>
   </form>
 </div>
 <div class="clear"></div>
