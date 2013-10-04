@@ -130,6 +130,7 @@ $(document).ready(function() {
     } else {
       $(this).html(vufindString.qrcode_hide).addClass("active");
     }
+    console.log($(this).next('.qrcode'));
     $(this).next('.qrcode').toggle();
     return false;
   });

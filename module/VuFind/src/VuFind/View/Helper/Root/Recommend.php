@@ -69,6 +69,7 @@ class Recommend extends AbstractHelper
                 $contextHelper($this->getView())->restore($oldContext);
                 return $html;
             } catch (RuntimeException $e) {
+                error_log($e->getMessage());
                 // If the template doesn't exist, let's see if we can inherit a
                 // template from a parent recommendation class:
                 $className = get_parent_class($className);

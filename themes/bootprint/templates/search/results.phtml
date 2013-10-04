@@ -1,0 +1,131 @@
+<?
+  // Set up page title:
+  $lookfor = $this->params->getDisplayQuery();
+  if (isset($this->overrideTitle)) {
+      $this->headTitle($this->overrideTitle);
+  } else {
+      $this->headTitle($this->translate('Search Results') . (empty($lookfor) ? '' : " - {$lookfor}"));
+  }
+
+  // Set up search box:
+  $this->layout()->searchbox = $this->context($this)->renderInContext(
+      'search/searchbox.phtml',
+      array(
+        'lookfor' => $lookfor,
+        'searchIndex' => $this->params->getSearchHandler(),
+        'searchType' => $this->params->getSearchType(),
+        'searchId' => $this->results->getSearchId(),
+        'searchClassId' => $this->params->getsearchClassId(),
+        'checkboxFilters' => $this->params->getCheckboxFacets(),
+        'filterList' => $this->params->getFilters(),
+        'selectedShards' => $this->params->getSelectedShards()
+      )
+  );
+
+  // Set up breadcrumbs:
+  if (isset($this->overrideTitle)) {
+    $this->layout()->breadcrumbs .= '<li class="active">' . $this->escapeHtml($this->overrideTitle) . '</li>';
+  } else {
+    $this->layout()->breadcrumbs .= '<li class="active">' . $this->transEsc('Search') . ': ' . $this->escapeHtml($lookfor) . '</li>';
+  }
+
+  // Load Javascript dependencies into header:
+  $this->headScript()->appendFile("check_item_statuses.js");
+  $this->headScript()->appendFile("check_save_statuses.js");
+?>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <? if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
+    <? foreach ($this->results->getRecommendations('top') as $current): ?>
+      <?=$this->recommend($current)?>
+    <? endforeach; ?>
+  <? endif; ?>
+  <?=$this->flashmessages()?>
+  <div class="clearfix noprint" style="padding:4px 0  4px 4px">
+    <div class="pull-left help-block">
+      <? if ($recordTotal > 0): ?>
+        <?=$this->transEsc("Showing")?>
+        <strong><?=number_format($this->results->getStartRecord())?></strong> - <strong><?=number_format($this->results->getEndRecord())?></strong>
+        <? if (!isset($this->skipTotalCount)): ?>
+          <?=$this->transEsc('of')?> <strong><?=number_format($recordTotal)?></strong>
+        <? endif; ?>
+        <? if (isset($this->overrideSearchHeading)): ?>
+          <?=$this->overrideSearchHeading?>
+        <? elseif ($this->params->getSearchType() == 'basic'): ?>
+          <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($lookfor)?>'</strong>,
+        <? endif; ?>
+        <? if ($qtime = $this->results->getQuerySpeed()): ?>
+          <?=$this->transEsc('query time')?>: <?=$this->escapeHtml(round($qtime, 2))?>s
+        <? endif; ?>
+        <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $this->results, $this); ?>
+      <? else: ?>
+        <p class="lead"><?=$this->transEsc('nohit_heading')?></p>
+      <? endif; ?>
+    </div>
+
+    <? if ($recordTotal > 0): ?>
+      <div class="pull-right">
+        <?=$this->render('search/controls/limit.phtml')?>
+        <?=$this->render('search/controls/sort.phtml')?>
+        <br/>
+        <?=$this->render('search/controls/view.phtml')?>
+      </div>
+    <? endif; ?>
+  </div>
+  <? /* End Listing Options */ ?>
+
+  <? if ($recordTotal < 1): ?>
+    <p>
+      <? if (isset($this->overrideEmptyMessage)): ?>
+        <?=$this->overrideEmptyMessage?>
+      <? else: ?>
+        <?=$this->transEsc('nohit_prefix')?> - <strong><?=$this->escapeHtml($lookfor)?></strong> - <?=$this->transEsc('nohit_suffix')?>
+      <? endif; ?>
+    </p>
+    <? if (isset($this->parseError)): ?>
+      <p class="alert-error"><?=$this->transEsc('nohit_parse_error')?></p>
+    <? endif; ?>
+    <?=$this->search()->renderSpellingSuggestions($this->transEsc('nohit_spelling') . ':', $this->results, $this); ?>
+    <? foreach ($this->results->getRecommendations('top') as $current): ?>
+      <?=$this->recommend($current)?>
+    <? endforeach; ?>
+    <? foreach ($this->results->getRecommendations('noresults') as $current): ?>
+      <?=$this->recommend($current)?>
+    <? endforeach; ?>
+  <? else: ?>
+    <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>">
+      <? if ($this->cart()->isActive()): ?>
+        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
+      <? endif; ?>
+      <?=$this->render('search/list-' . $this->params->getView() . '.phtml')?>
+      <? if ($this->cart()->isActive()): ?>
+        <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => 'bottom_'))?>
+      <? endif; ?>
+      <?=$this->paginationControl($this->results->getPaginator(), 'Sliding', 'search/pagination.phtml', array('results' => $this->results))?>
+    </form>
+
+    <div class="searchtools small text-center noprint">
+      <strong><?=$this->transEsc('Search Tools')?>:</strong>
+      <i class="icon-bell"></i> <a href="<?=$this->results->getUrlQuery()->setViewParam('rss')?>"><?=$this->transEsc('Get RSS Feed')?></a>
+      &mdash;
+      <i class="icon-envelope"></i> <a href="<?=$this->url('search-email')?>" class="mailSearch" id="mailSearch<?=$this->escapeHtml($this->results->getSearchId())?>" title="<?=$this->transEsc('Email this Search')?>"><?=$this->transEsc('Email this Search')?></a>
+      &mdash;
+      <? if (is_numeric($this->results->getSearchId())): ?>
+        <? if ($this->results->isSavedSearch()): ?>
+          <i class="icon-minus-sign"></i> <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($this->results->getSearchId())?>"><?=$this->transEsc('save_search_remove')?></a>
+        <? else: ?>
+          <i class="icon-plus-sign"></i> <a href="<?=$this->url('myresearch-savesearch')?>?save=<?=urlencode($this->results->getSearchId())?>"><?=$this->transEsc('save_search')?></a>
+        <? endif; ?>
+      <? endif; ?>
+    </div>
+  <? endif; ?>
+</div>
+<? /* End Main Listing */ ?>
+
+<? /* Narrow Search Options */ ?>
+<div class="<?=$this->layoutClass('sidebar')?>">
+  <? foreach ($this->results->getRecommendations('side') as $current): ?>
+    <?=$this->recommend($current)?>
+  <? endforeach; ?>
+</div>
+<? /* End Narrow Search Options */ ?>
