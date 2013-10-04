@@ -175,6 +175,20 @@ class OAI
     protected $verbose = false;
 
     /**
+     * Should we sanitize XML?
+     *
+     * @var bool
+     */
+    protected $sanitize = false;
+
+    /**
+     * Filename for logging bad XML responses (false for none)
+     *
+     * @var string|bool
+     */
+    protected $badXMLLog = false;
+
+    /**
      * As we harvest records, we want to track the most recent date encountered
      * so we can set a start point for the next harvest.  (Unix timestamp format)
      *
@@ -256,6 +270,12 @@ class OAI
         }
         if (isset($settings['verbose'])) {
             $this->verbose = $settings['verbose'];
+        }
+        if (isset($settings['sanitize'])) {
+            $this->sanitize = $settings['sanitize'];
+        }
+        if (isset($settings['badXMLLog'])) {
+            $this->badXMLLog = $settings['badXMLLog'];
         }
         if ($this->granularity == 'auto') {
             $this->loadGranularity();
@@ -427,6 +447,43 @@ class OAI
     }
 
     /**
+     * Log a bad XML response.
+     *
+     * @param string $xml Bad XML
+     *
+     * @return void
+     */
+    protected function logBadXML($xml)
+    {
+        $file = fopen($this->basePath . $this->badXMLLog, 'a');
+        if (!$file) {
+            throw new \Exception("Problem opening {$this->badXMLLog}.");
+        }
+        fputs($file, $xml . "\n\n");
+        fclose($file);
+    }
+
+    /**
+     * Sanitize XML.
+     *
+     * @param string $xml XML to sanitize
+     *
+     * @return string
+     */
+    protected function sanitizeXML($xml)
+    {
+        // Sanitize the XML if requested:
+        $regex = '/[^\x{0009}\x{000a}\x{000d}\x{0020}-\x{D7FF}\x{E000}-\x{FFFD}]+/u';
+        $newXML = trim(preg_replace($regex, ' ', $xml, -1, $count));
+
+        if ($count > 0 && $this->badXMLLog) {
+            $this->logBadXML($xml);
+        }
+
+        return $newXML;
+    }
+
+    /**
      * Process an OAI-PMH response into a SimpleXML object.  Die if an error is
      * detected.
      *
@@ -436,6 +493,11 @@ class OAI
      */
     protected function processResponse($xml)
     {
+        // Sanitize if necessary:
+        if ($this->sanitize) {
+            $xml = $this->sanitizeXML($xml);
+        }
+
         // Parse the XML:
         $result = simplexml_load_string($xml);
         if (!$result) {
