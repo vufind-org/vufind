@@ -2,8 +2,7 @@
 return array(
     'extends' => 'bootstrap',
     'css' => array(
-        'style.css',
-        'icons.css'
+        'icons.css',
     ),
     'helpers' => array(
         'factories' => array(
