@@ -81,10 +81,11 @@
   <? foreach ($holding['items'] as $row): ?>
     <? $check = (isset($row['check']) && $row['check']); ?>
     <? if (isset($row['barcode']) && $row['barcode'] != ""): ?>
-      <tr>
+      <tr vocab="http://schema.org/" typeof="Offer">
         <th><?=$this->transEsc("Copy")?> <?=$this->escapeHtml($row['number'])?></th>
         <td>
           <? if ($row['reserve'] == "Y"): ?>
+            <link property="availability" href="http://schema.org/InStoreOnly">
           <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?>
           <? elseif (isset($row['use_unknown_message']) && $row['use_unknown_message']): ?>
             <span class="unknown"><?=$this->transEsc("status_unknown_message")?></span>
@@ -92,6 +93,7 @@
             <? if ($row['availability']): ?>
               <? /* Begin Available Items (Holds) */ ?>
               <div>
+                <link property="availability" href="http://schema.org/InStock">
                <span class="available"><?=$this->transEsc("Available")?></span>
               <? if (isset($row['link']) && $row['link']): ?>
                 <a class="holdPlace<?=$check ? ' checkRequest' : ''?>" href="<?=$this->recordLink()->getHoldUrl($row['link'])?>"><span><?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></span></a>
@@ -100,7 +102,7 @@
             <? else: ?>
               <? /* Begin Unavailable Items (Recalls) */ ?>
               <div>
-              <span class="checkedout"><?=$this->transEsc($row['status'])?></span>
+              <span class="checkedout"><?=$this->transEsc($row['status'])?><link property="availability" href="http://schema.org/OutOfStock"></span>
               <? if (isset($row['returnDate']) && $row['returnDate']): ?> <span class="statusExtra"><?=$this->escapeHtml($row['returnDate'])?></span><? endif; ?>
               <? if (isset($row['duedate']) && $row['duedate']): ?>
                 <span class="statusExtra"><?=$this->transEsc("Due")?>: <?=$this->escapeHtml($row['duedate'])?></span>
@@ -114,6 +116,19 @@
               </div>
             <? endif; ?>
           <? endif; ?>
+          <? /* Embed item structured data: library, barcode, call number */ ?>
+          <? if ($row['location']): ?>
+            <meta property="seller" content="<?=$this->escapeHtml($row['location'])?>">
+          <? endif; ?>
+          <? if ($row['barcode']): ?>
+            <meta property="serialNumber" content="<?=$this->escapeHtml($row['barcode'])?>">
+          <? endif; ?>
+          <? if ($row['callnumber']): ?>
+            <meta property="sku" content="<?=$this->escapeHtml($row['callnumber'])?>">
+          <? endif; ?>
+          <? /* Declare that the item is to be borrowed, not for sale */ ?>
+            <link property="businessFunction" href="http://purl.org/goodrelations/v1#LeaseOut">
+            <link property="itemOffered" href="#record">
         </td>
       </tr>
     <? endif; ?>
