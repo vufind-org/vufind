@@ -1,0 +1,40 @@
+<?
+  $topFacetSet = $this->recommend->getTopFacetSet();
+  $topFacetSettings = $this->recommend->getTopFacetSettings();
+?>
+<? if (isset($topFacetSet)): ?>
+  <? $row=0; foreach($topFacetSet as $title => $cluster): ?>
+    <? $moreClass = ' narrowGroupHidden_'.$this->escapeHtml($title).' hidden'; ?>
+    <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
+    <strong><?=$this->transEsc($cluster['label'])?></strong><?=$this->transEsc("top_facet_suffix") ?>
+    <div class="row-fluid top-row">
+    <? $iter=1;$corner=$topFacetSettings['rows']*$topFacetSettings['cols']; ?>
+    <? foreach($cluster['list'] as $thisFacet): ?>
+      <? /* More link */ ?>
+      <? if ($iter == $corner+1): ?>
+        </div><div class="row-fluid top-row">
+          <span class="span12"><a id="more<?=$this->escapeHtml($title)?>" href="#" onclick="moreFacets('<?=$this->escapeHtml($title)?>'); return false;"><?=$this->transEsc('more') ?> ...</a></span>
+        </div><div class="row-fluid top-row<?=$moreClass ?>">
+      <? endif; ?>
+      <? /* Columns */ ?>
+      <span class="span<?=floor(12/$topFacetSettings['cols'])?><? if ($iter == $corner+1) echo $moreClass ?>">
+        <? if ($thisFacet['isApplied']): ?>
+          <?=$this->escapeHtml($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="<?=$this->transEsc('Selected') ?>"/>
+        <? else: ?>
+          <a href="<?=$this->currentPath().$this->recommend->getResults()->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> (<?=$thisFacet['count'] ?>)
+          <? if ($allowExclude): ?>
+            <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>"><?=$this->transEsc('exclude_facet')?></a>
+          <? endif; ?>
+        <? endif; ?>
+      </span>
+      <? /* Close rows */ ?>
+      <? if ($iter%$topFacetSettings['cols'] == 0 && $iter > 0): ?></div><div class="row-fluid top-row<? if(++$row > $topFacetSettings['rows']) echo $moreClass ?>"><? endif; ?>
+      <? /* Less link */ ?>
+      <? if (count($cluster['list']) > $corner && $iter == count($cluster['list'])): ?>
+        <a class="span12" href="#" onclick="lessFacets('<?=$title ?>'); return false;"><?=$this->transEsc('less') ?> ...</a>
+        </div>
+      <? endif; ?>
+      <? $iter++; ?>
+    <? endforeach; ?>
+  <? endforeach; ?>
+<? endif; ?>

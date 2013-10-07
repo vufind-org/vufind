@@ -1,0 +1,64 @@
+<? $account = $this->auth()->getManager(); ?>
+<a class="vu-logo pull-left" href="<?=$this->url('home') ?>"><img src="<?=$this->imageLink('vufind_logo.jpg') ?>" alt="VuFind"/></a>
+<? if (!isset($this->layout()->renderingError)): ?>
+  <div class="pull-right text-right">
+    <div class="control-group">
+    <? if ($this->feedback()->tabEnabled()): ?>
+      <a href="#contact_form" role="button" data-toggle="modal" class="btn btn-primary btn-mini">
+        <i class="icon-envelope-alt"></i> <?=$this->transEsc("Feedback")?>
+      </a>
+      <span class="muted">&nbsp;/&nbsp;</span>
+    <? endif; ?>
+    <? $cart = $this->cart(); if ($cart->isActive()): ?>
+      <span id="cartSummary">
+        <i class="icon-shopping-cart"></i> <a id="cartItems" class="modal-link" title="<?=$this->transEsc('View Book Bag')?>" href="<?=$this->url('cart-home')?>"><strong><?=count($cart->getItems())?></strong> <?=$this->transEsc('items')?><?=$cart->isFull() ? ' (' .  $this->transEsc('bookbag_full') . ')' : ''?></a>
+        <span class="muted">&nbsp;/&nbsp;</span>
+      </span>
+    <? endif; ?>
+    <? if (is_object($account) && $account->loginEnabled()): // hide login/logout if unavailable ?>
+      <span class="logoutOptions<? if(!$account->isLoggedIn()): ?> hide<? endif ?>">
+        <i class="icon-signout"></i><a href="<?=$this->url('myresearch-logout')?>" class="modal-link" title="<?=$this->transEsc("Log Out")?>"><?=$this->transEsc("Log Out")?></a>
+      </span>
+      <span id="loginOptions"<? if($account->isLoggedIn()): ?> class="hide"<? endif ?>>
+        <i class="icon-signin"></i> 
+        <? if ($sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
+          <a href="<?=$this->escapeHtml($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
+        <? else: ?>
+          <a href="<?=$this->url('myresearch-home')?>" class="modal-link" title="<?=$this->transEsc("Login")?>"><?=$this->transEsc("Login")?></a>
+        <? endif; ?>
+      </span>
+    <? endif; ?>
+    </div>
+    <? if (isset($this->layout()->themeOptions) && count($this->layout()->themeOptions) > 1): ?>
+    <form class="form-horizontal" method="post" name="themeForm" action="" id="themeForm">
+      <div class="control-group">
+        <label class="control-label" for="themeForm_ui"><?=$this->transEsc("Theme")?>:</label>
+        <div class="controls">
+          <select onChange="document.themeForm.submit()" id="themeForm_ui" name="ui">
+          <? foreach ($this->layout()->themeOptions as $current): ?>
+            <option value="<?=$this->escapeHtml($current['name'])?>"<?=$current['selected'] ? ' selected="selected"' : ''?>><?=$this->transEsc($current['desc'])?></option>
+          <? endforeach; ?>
+          </select>
+          <noscript><input type="submit" value="<?=$this->transEsc("Set")?>" /></noscript>
+        </div>
+      </div>
+    </form>
+    <? endif; ?>
+    <? if ($this->feedback()->tabEnabled()): ?>
+      <?=$this->render('feedback/form.phtml'); ?>
+    <? endif; ?>
+    <? if (isset($this->layout()->allLangs) && count($this->layout()->allLangs) > 1): ?>
+    <form class="form-horizontal" method="post" name="langForm" action="" id="langForm">
+      <label class="control-label" for="langForm_mylang"><?=$this->transEsc("Language")?>:</label>
+      <div class="controls">
+        <select onChange="document.langForm.submit()" id="langForm_mylang" name="mylang" class="jumpMenu">
+        <? foreach ($this->layout()->allLangs as $langCode => $langName): ?>
+          <option value="<?=$langCode?>"<?=$this->layout()->userLang == $langCode ? ' selected="selected"' : ''?>><?=$this->displayLanguageOption($langName)?></option>
+        <? endforeach; ?>
+        </select>
+        <noscript><input type="submit" class="btn" value="<?=$this->transEsc("Set")?>" /></noscript>
+      </div>
+    </form>
+    <? endif; ?>
+  </div>
+<? endif; ?>
