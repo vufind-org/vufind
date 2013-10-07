@@ -212,11 +212,6 @@ class HandlerMap extends AbstractHandlerMap
      */
     public function addParameter($handler, $type, $name, $value)
     {
-        if ($key != 'invariants' && $key != 'appends' && $key != 'defaults') {
-            throw new InvalidArgumentException(
-                sprintf('Invalid parameter type: %s', $key)
-            );
-        }
         $this->getParameters($handler, $type)->add($name, $value);
     }
 
@@ -247,7 +242,7 @@ class HandlerMap extends AbstractHandlerMap
      * @param string $type    Parameter type, one of 'defaults', 'appends',
      *                        or 'invariants'
      *
-     * @return array
+     * @return ParamBag
      *
      * @throws InvalidArgumentException Invalid parameter key
      */
