@@ -27,6 +27,7 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuDL\Controller;
+use VuFind\Exception\RecordMissing as RecordMissingException;
 
 /**
  * This controller is for the viewing of the digital library files.
@@ -60,14 +61,21 @@ class VudlController extends AbstractVuDL
      */
     protected function getDetails($id, $skipSolr = false)
     {
+        $record = false;
         if (!$skipSolr) {
             try {
-                return $this->getSolrDetails($id);
-            } catch (\Exception $e) {
+                $record = $this->getSolrDetails($id);
+            } catch (RecordMissingException $e) {
                 // Do nothing, handled in fedora below
             }
         }
-        return $this->getFedora()->getRecordDetails($id);
+        if (!$record) {
+            $record = $this->getFedora()->getRecordDetails($id);
+        }
+        if (empty($record)) {
+            throw new RecordMissingException('Record not found.');
+        }
+        return $record;
     }
 
     /**
@@ -82,12 +90,16 @@ class VudlController extends AbstractVuDL
     {
         // Blow up now if we can't retrieve the record:
         if (!($record = $this->getRecordLoader()->load($id)->getRawData())) {
-            throw new \Exception('Solr details unavailable');
+            throw new RecordMissingException('Solr details unavailable');
         }
 
         // Get config for which details we want
         $fields = $combinedFields = array(); // Save to combine later
-        foreach ($this->getDetailsList() as $key=>$title) {
+        $detailsList = $this->getDetailsList();
+        if (empty($detailsList)) {
+            throw new \Exception('Missing [Details] in VuDL.ini');
+        }
+        foreach ($detailsList as $key=>$title) {
             $keys = explode(',', $key);
             foreach ($keys as $k) {
                 $fields[$k] = $title;
@@ -379,13 +391,7 @@ class VudlController extends AbstractVuDL
 
         // File information / description
         $fileDetails = $this->getDetails($root);
-        if (!$fileDetails) {
-            throw new \Exception(
-                'Record not found. Please use the search bar to '
-                . 'try to find what you were looking for.<br/><br/>'
-                . 'If this problem persists,  please report the problem.<br/><br/>'
-            );
-        }
+
         // Copyright information
         $check = $this->getFedora()->getDatastreamHeaders($root, 'LICENSE');
         if (!strpos($check[0], '404')) {
@@ -469,9 +475,6 @@ class VudlController extends AbstractVuDL
 
         // File information / description
         $fileDetails = $this->getDetails($root);
-        if (!$fileDetails) {
-            die('Record not found. Yell at Chris.');
-        }
         $view->details = $fileDetails;
 
         // Get ids for all files
