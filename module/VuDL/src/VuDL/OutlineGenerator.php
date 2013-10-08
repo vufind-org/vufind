@@ -110,8 +110,8 @@ class OutlineGenerator
      * Compares the cache date against a given date. If given date is newer,
      * return false in order to refresh cache. Else return cache!
      *
-     * @param string                $key     Unique key of cache object
-     * @param string|Date           $moddate Date to test cache time freshness
+     * @param string      $key     Unique key of cache object
+     * @param string|Date $moddate Date to test cache time freshness
      *
      * @return cache object or false
      */
@@ -130,8 +130,8 @@ class OutlineGenerator
     /**
      * Save cache object with date to test for freshness
      *
-     * @param string                $key   Unique key of cache object
-     * @param object                $data  Object to save
+     * @param string $key  Unique key of cache object
+     * @param object $data Object to save
      *
      * @return cache object or false
      */

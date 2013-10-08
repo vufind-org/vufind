@@ -73,6 +73,8 @@ class VudlController extends AbstractVuDL
     /**
      * Get details from Solr
      *
+     * @param string $id ID to look up
+     *
      * @return array
      * @throws \Exception
      */
@@ -308,7 +310,8 @@ class VudlController extends AbstractVuDL
             $ret += $this->getSizeAndTypeInfo($record['techinfo']);
         }
         $renderer = $this->getViewRenderer();
-        $ret['div'] = $renderer->render('vudl/techinfo.phtml', array('record'=>$record));
+        $ret['div'] = $renderer
+            ->render('vudl/techinfo.phtml', array('record'=>$record));
         return $ret;
     }
 
@@ -546,7 +549,8 @@ class VudlController extends AbstractVuDL
             $members[intval($data[1][$i])-1] = $data[2][$i];
         }
         if (count($members) < 2) {
-            return $this->redirect()->toRoute('Collection', 'Home', array('id'=>$params['trail']));
+            return $this->redirect()
+                ->toRoute('Collection', 'Home', array('id'=>$params['trail']));
         }
         $index = -1;
         foreach ($members as $i=>$member) {
@@ -576,6 +580,7 @@ class VudlController extends AbstractVuDL
      */
     protected function collectionsAction()
     {
-      return $this->forwardTo('Collection', 'Home', array('id'=>$this->getRootId()));
+        return $this
+            ->forwardTo('Collection', 'Home', array('id' => $this->getRootId()));
     }
 }

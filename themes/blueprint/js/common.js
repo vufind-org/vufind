@@ -287,7 +287,7 @@ function updateOrFacets(url, op) {
 function setupOrFacets() {
   var facets = $('.facetOR');
   for(var i=0;i<facets.length;i++) {
-    $facet = $(facets[i]);
+    var $facet = $(facets[i]);
     if($facet.hasClass('applied')) {
       $facet.prepend('<input type="checkbox" checked onChange="updateOrFacets($(this).parent().attr(\'href\'), this)"/>');
     } else {

@@ -37,7 +37,8 @@ use VuFindHttp\HttpServiceInterface;
  * @license  http://opensource.org/licenses/gpl-3.0.php GNU General Public License
  * @link     http://vufind.org/wiki/
  */
-class Fedora implements \VuFindHttp\HttpServiceAwareInterface {
+class Fedora implements \VuFindHttp\HttpServiceAwareInterface
+{
     /**
      * VuDL config
      *
@@ -82,7 +83,8 @@ class Fedora implements \VuFindHttp\HttpServiceAwareInterface {
      *
      * @param \Zend\Config\Config $config config
      */
-    public function __construct($config) {
+    public function __construct($config)
+    {
         $this->config = $config;
     }
 
@@ -316,7 +318,9 @@ class Fedora implements \VuFindHttp\HttpServiceAwareInterface {
         }
         $client = $this->getHttpClient($this->getQueryURL());
         $client->setMethod('POST');
-        $client->setAuth($this->config->Fedora->adminUser, $this->config->Fedora->adminPass);
+        $client->setAuth(
+            $this->config->Fedora->adminUser, $this->config->Fedora->adminPass
+        );
         $client->setParameterPost($data);
         return $client->send();
     }

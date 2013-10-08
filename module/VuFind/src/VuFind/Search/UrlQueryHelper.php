@@ -284,9 +284,10 @@ class UrlQueryHelper
     /**
      * Remove a facet from the parameters.
      *
-     * @param string $field  Facet field
-     * @param string $value  Facet value
-     * @param bool   $escape Should we escape the string for use in the view?
+     * @param string $field    Facet field
+     * @param string $value    Facet value
+     * @param bool   $escape   Should we escape the string for use in the view?
+     * @param string $operator Facet type to add (AND, OR, NOT)
      *
      * @return string
      */
