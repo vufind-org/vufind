@@ -101,6 +101,29 @@ class BackendTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test retrieving similar records.
+     *
+     * @return void
+     */
+    public function testSimilar()
+    {
+        $resp = $this->loadResponse('morelikethis');
+        $conn = $this->getConnectorMock(array('similar'));
+        $conn->expects($this->once())
+            ->method('similar')
+            ->will($this->returnValue($resp->getBody()));
+
+        $back = new Backend($conn);
+        $back->setIdentifier('test');
+        $coll = $back->similar('704640');
+        $this->assertCount(5, $coll);
+        $this->assertEquals('test', $coll->getSourceIdentifier());
+        $rec  = $coll->first();
+        $this->assertEquals('test', $rec->getSourceIdentifier());
+        $this->assertEquals('704635', $rec->id);
+    }
+
+    /**
      * Test terms component.
      *
      * @return void
