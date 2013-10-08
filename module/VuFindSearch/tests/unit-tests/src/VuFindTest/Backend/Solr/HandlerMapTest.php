@@ -96,6 +96,34 @@ class HandlerMapTest extends TestCase
     }
 
     /**
+     * Test exception on unexpected type.
+     *
+     * @return void
+     *
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Invalid parameter key: bad
+     */
+    public function testGetParametersThrowsOnUndefinedType()
+    {
+        $map = new HandlerMap(array('h1' => array('functions' => array('foo'))));
+        $map->getParameters('h1', 'bad');
+    }
+
+    /**
+     * Test exception on unexpected type.
+     *
+     * @return void
+     *
+     * @expectedException InvalidArgumentException
+     * @expectedExceptionMessage Invalid parameter key: bad
+     */
+    public function testSetParametersThrowsOnUndefinedType()
+    {
+        $map = new HandlerMap(array('h1' => array('functions' => array('foo'))));
+        $map->setParameters('h1', 'bad', array());
+    }
+
+    /**
      * Test retrieve defaults, appends, invariants.
      *
      * @return void
