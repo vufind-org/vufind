@@ -72,6 +72,35 @@ class BackendTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test retrieving a batch of records.
+     *
+     * @return void
+     */
+    public function testRetrieveBatch()
+    {
+        $resp = $this->loadResponse('multi-record');
+        $conn = $this->getConnectorMock(array('search'));
+        $conn->expects($this->once())
+            ->method('search')
+            ->will($this->returnValue($resp->getBody()));
+
+        $back = new Backend($conn);
+        $back->setIdentifier('test');
+        $coll = $back->retrieveBatch(array('12345', '125456', '234547'));
+        $this->assertCount(3, $coll);
+        $this->assertEquals('test', $coll->getSourceIdentifier());
+        $rec  = $coll->first();
+        $this->assertEquals('test', $rec->getSourceIdentifier());
+        $this->assertEquals('12345', $rec->id);
+        $recs = $coll->getRecords();
+        $this->assertEquals('test', $recs[1]->getSourceIdentifier());
+        $this->assertEquals('125456', $recs[1]->id);
+        $rec  = $coll->next();
+        $this->assertEquals('test', $recs[2]->getSourceIdentifier());
+        $this->assertEquals('234547', $recs[2]->id);
+    }
+
+    /**
      * Test terms component.
      *
      * @return void
@@ -121,6 +150,8 @@ class BackendTest extends PHPUnit_Framework_TestCase
         $back->retrieve('foobar', new ParamBag(array('json.nl' => array('bad'))));
     }
 
+    /// Internal API
+
     /**
      * Load a SOLR response as fixture.
      *
@@ -139,8 +170,6 @@ class BackendTest extends PHPUnit_Framework_TestCase
         return Response::fromString(file_get_contents($file));
     }
 
-    /// Internal API
-
     /**
      * Return connector mock.
      *
@@ -154,5 +183,4 @@ class BackendTest extends PHPUnit_Framework_TestCase
         return $this->getMock('VuFindSearch\Backend\Solr\Connector', $mock, array('http://example.org/', $map));
         return new Connector('http://example.org/', $map);
     }
-
 }

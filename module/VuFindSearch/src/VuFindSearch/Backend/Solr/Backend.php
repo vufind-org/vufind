@@ -207,7 +207,7 @@ class Backend implements BackendInterface, SimilarInterface, RetrieveBatchInterf
                 }
             }
         }
-
+        $this->injectSourceIdentifier($results);
         return $results;
     }
 
