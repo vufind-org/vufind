@@ -150,6 +150,19 @@ class BackendTest extends PHPUnit_Framework_TestCase
         $back->retrieve('foobar', new ParamBag(array('json.nl' => array('bad'))));
     }
 
+    /**
+     * Test getting a connector.
+     *
+     *
+     * @return void
+     */
+    public function testGetConnector()
+    {
+        $conn = $this->getConnectorMock();
+        $back = new Backend($conn);
+        $this->assertEquals($conn, $back->getConnector());
+    }
+
     /// Internal API
 
     /**
