@@ -486,7 +486,7 @@ class Backend implements BackendInterface, SimilarInterface, RetrieveBatchInterf
             throw new InvalidArgumentException(
                 sprintf(
                     'Invalid response writer type: %s',
-                    print_r($params->get('wt'), true)
+                    implode(', ', $params->get('wt'))
                 )
             );
         }
@@ -494,7 +494,7 @@ class Backend implements BackendInterface, SimilarInterface, RetrieveBatchInterf
             throw new InvalidArgumentException(
                 sprintf(
                     'Invalid named list implementation type: %s',
-                    print_r($params->get('json.nl'), true)
+                    implode(', ', $params->get('json.nl'))
                 )
             );
         }

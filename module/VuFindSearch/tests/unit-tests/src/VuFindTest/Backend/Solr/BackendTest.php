@@ -97,12 +97,28 @@ class BackendTest extends PHPUnit_Framework_TestCase
      * @return void
      *
      * @expectedException VuFindSearch\Exception\InvalidArgumentException
+     * @expectedExceptionMessage Invalid response writer type: xml
      */
-    public function testInjectResponseWriterTrhownOnIncompabileResponseWriter()
+    public function testInjectResponseWriterThrownOnIncompabileResponseWriter()
     {
         $conn = $this->getConnectorMock();
         $back = new Backend($conn);
         $back->retrieve('foobar', new ParamBag(array('wt' => array('xml'))));
+    }
+
+    /**
+     * Test injectResponseWriter throws on incompatible named list setting.
+     *
+     * @return void
+     *
+     * @expectedException VuFindSearch\Exception\InvalidArgumentException
+     * @expectedExceptionMessage Invalid named list implementation type: bad
+     */
+    public function testInjectResponseWriterThrownOnIncompabileNamedListSetting()
+    {
+        $conn = $this->getConnectorMock();
+        $back = new Backend($conn);
+        $back->retrieve('foobar', new ParamBag(array('json.nl' => array('bad'))));
     }
 
     /**
