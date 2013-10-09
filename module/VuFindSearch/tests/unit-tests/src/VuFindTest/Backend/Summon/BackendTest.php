@@ -35,6 +35,8 @@ use SerialsSolutions_Summon_Exception as SummonException;
 
 use PHPUnit_Framework_TestCase as TestCase;
 
+use InvalidArgumentException;
+
 /**
  * Unit tests for Summon Backend class.
  *
@@ -95,6 +97,33 @@ class BackendTest extends TestCase
              ->will($this->throwException(new SummonException()));
         $back = new Backend($conn, $fact);
         $back->retrieve('id');
+    }
+
+    /**
+     * Test performing a search.
+     *
+     * @return void
+     */
+    public function testSearch()
+    {
+        $conn = $this->getConnectorMock(array('query'));
+        $conn->expects($this->once())
+            ->method('query')
+            ->will($this->returnValue($this->loadResponse('search')));
+
+        $back = new Backend($conn);
+        $back->setIdentifier('test');
+        $coll = $back->search(new Query('foobar'), 0, 3);
+        $this->assertCount(3, $coll);
+        $this->assertEquals('test', $coll->getSourceIdentifier());
+        $rec  = $coll->first();
+        $this->assertEquals('test', $rec->getSourceIdentifier());
+        $this->assertEquals('FETCH-proquest_dll_23240310011', $rec->ID[0]);
+        $recs = $coll->getRecords();
+        $this->assertEquals('test', $recs[1]->getSourceIdentifier());
+        $this->assertEquals('FETCH-proquest_dll_19947616111', $recs[1]->ID[0]);
+        $this->assertEquals('test', $recs[2]->getSourceIdentifier());
+        $this->assertEquals('FETCH-britannica_eb_129163132475image1', $recs[2]->ID[0]);
     }
 
     /**
