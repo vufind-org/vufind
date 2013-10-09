@@ -32,6 +32,7 @@ namespace VuFindTest\Backend\WorldCat;
 use VuFindSearch\Backend\WorldCat\Backend;
 use VuFindSearch\Backend\WorldCat\Response\XML\RecordCollectionFactory;
 use VuFindSearch\ParamBag;
+use VuFindSearch\Query\Query;
 use PHPUnit_Framework_TestCase;
 use InvalidArgumentException;
 
@@ -68,6 +69,33 @@ class BackendTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('690250223', $rec->getMarc()->getField('001')->getData());
     }
 
+    /**
+     * Test performing a search.
+     *
+     * @return void
+     */
+    public function testSearch()
+    {
+        $conn = $this->getConnectorMock(array('search'));
+        $conn->expects($this->once())
+            ->method('search')
+            ->will($this->returnValue($this->loadResponse('search')));
+
+        $back = new Backend($conn);
+        $back->setIdentifier('test');
+        $coll = $back->search(new Query('foobar'), 0, 3);
+        $this->assertCount(3, $coll);
+        $this->assertEquals('test', $coll->getSourceIdentifier());
+        $rec  = $coll->first();
+        $this->assertEquals('test', $rec->getSourceIdentifier());
+        $this->assertEquals('793503125', $rec->getMarc()->getField('001')->getData());
+        $recs = $coll->getRecords();
+        $this->assertEquals('test', $recs[1]->getSourceIdentifier());
+        $this->assertEquals('798169104', $recs[1]->getMarc()->getField('001')->getData());
+        $this->assertEquals('test', $recs[2]->getSourceIdentifier());
+        $this->assertEquals('44310183', $recs[2]->getMarc()->getField('001')->getData());
+    }
+
     /// Internal API
 
     /**
@@ -83,7 +111,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
     {
         $file = realpath(sprintf('%s/worldcat/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
         if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
-            throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $file));
+            throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $fixture));
         }
         return unserialize(file_get_contents($file));
     }
