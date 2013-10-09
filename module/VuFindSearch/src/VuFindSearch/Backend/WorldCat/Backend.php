@@ -130,6 +130,9 @@ class Backend implements BackendInterface
     public function search(AbstractQuery $query, $offset, $limit,
         ParamBag $params = null
     ) {
+        if (null === $params) {
+            $params = new ParamBag();
+        }
         $params->mergeWith($this->getQueryBuilder()->build($query));
         $response   = $this->connector->search($params, $offset, $limit);
         $collection = $this->createRecordCollection($response);
