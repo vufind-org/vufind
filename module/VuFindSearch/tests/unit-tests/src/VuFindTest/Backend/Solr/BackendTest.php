@@ -217,6 +217,5 @@ class BackendTest extends PHPUnit_Framework_TestCase
     {
         $map = new HandlerMap(array('select' => array('fallback' => true)));
         return $this->getMock('VuFindSearch\Backend\Solr\Connector', $mock, array('http://example.org/', $map));
-        return new Connector('http://example.org/', $map);
     }
 }
