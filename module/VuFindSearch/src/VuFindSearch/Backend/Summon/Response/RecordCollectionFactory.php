@@ -31,6 +31,7 @@ namespace VuFindSearch\Backend\Summon\Response;
 
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Exception\InvalidArgumentException;
+use VuFindSearch\Backend\Solr\Response\Json\Record;
 
 /**
  * Simple factory for record collection.
@@ -60,14 +61,19 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
     /**
      * Constructor.
      *
-     * @param Callable $recordFactory   Record factory callback
+     * @param Callable $recordFactory   Record factory callback (null for default)
      * @param string   $collectionClass Class of collection
      *
      * @return void
      */
     public function __construct($recordFactory = null, $collectionClass = null)
     {
-        if (!is_callable($recordFactory)) {
+        // Set default record factory if none provided:
+        if (null === $recordFactory) {
+            $recordFactory = function ($i) {
+                return new Record($i);
+            };
+        } else if (!is_callable($recordFactory)) {
             throw new InvalidArgumentException('Record factory must be callable.');
         }
         $this->recordFactory = $recordFactory;
