@@ -1,0 +1,106 @@
+<?php
+
+/**
+ * Unit tests for WorldCat backend.
+ *
+ * PHP version 5
+ *
+ * Copyright (C) Villanova University 2010.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @category VuFind2
+ * @package  Search
+ * @author   David Maus <maus@hab.de>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org
+ */
+
+namespace VuFindTest\Backend\WorldCat;
+
+use VuFindSearch\Backend\WorldCat\Backend;
+use VuFindSearch\Backend\WorldCat\Response\XML\RecordCollectionFactory;
+use VuFindSearch\ParamBag;
+use PHPUnit_Framework_TestCase;
+use InvalidArgumentException;
+
+/**
+ * Unit tests for WorldCat backend.
+ *
+ * @category VuFind2
+ * @package  Search
+ * @author   David Maus <maus@hab.de>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org
+ */
+class BackendTest extends PHPUnit_Framework_TestCase
+{
+    /**
+     * Test retrieving a record.
+     *
+     * @return void
+     */
+    public function testRetrieve()
+    {
+        $conn = $this->getConnectorMock(array('getRecord'));
+        $conn->expects($this->once())
+            ->method('getRecord')
+            ->will($this->returnValue($this->loadResponse('single-record')));
+
+        $back = new Backend($conn);
+        $back->setIdentifier('test');
+        $coll = $back->retrieve('foobar');
+        $this->assertCount(1, $coll);
+        $this->assertEquals('test', $coll->getSourceIdentifier());
+        $rec  = $coll->first();
+        $this->assertEquals('test', $rec->getSourceIdentifier());
+        $this->assertEquals('690250223', $rec->getMarc()->getField('001')->getData());
+    }
+
+    /// Internal API
+
+    /**
+     * Load a WorldCat response as fixture.
+     *
+     * @param string $fixture Fixture file
+     *
+     * @return mixed
+     *
+     * @throws InvalidArgumentException Fixture files does not exist
+     */
+    protected function loadResponse($fixture)
+    {
+        $file = realpath(sprintf('%s/worldcat/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
+        if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
+            throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $file));
+        }
+        return unserialize(file_get_contents($file));
+    }
+
+    /**
+     * Return connector mock.
+     *
+     * @param array $mock Functions to mock
+     *
+     * @return array
+     */
+    protected function getConnectorMock(array $mock = array())
+    {
+        $client = $this->getMock('Zend\Http\Client');
+        return $this->getMock(
+            'VuFindSearch\Backend\WorldCat\Connector',
+            $mock, array('fake', '', $client)
+        );
+    }
+}
