@@ -69,7 +69,7 @@ abstract class AbstractBackend implements BackendInterface
     /**
      * Query builder.
      *
-     * @var QueryBuilderInterface
+     * @var object
      */
     protected $queryBuilder = null;
 
@@ -102,18 +102,18 @@ abstract class AbstractBackend implements BackendInterface
      *
      * Lazy loads an empty default QueryBuilder if none was set.
      *
-     * @return QueryBuilderInterface
+     * @return object
      */
     abstract public function getQueryBuilder();
 
     /**
      * Set the query builder.
      *
-     * @param QueryBuilderInterface $queryBuilder Query builder
+     * @param object $queryBuilder Query builder
      *
      * @return void
      */
-    public function setQueryBuilder(QueryBuilderInterface $queryBuilder)
+    public function setQueryBuilder($queryBuilder)
     {
         $this->queryBuilder = $queryBuilder;
     }
