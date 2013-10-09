@@ -56,7 +56,7 @@ class Backend implements BackendInterface
      *
      * @var RecordCollectionFactoryInterface
      */
-    protected $collectionFactory;
+    protected $collectionFactory = null;
 
     /**
      * Logger, if any.
@@ -91,13 +91,16 @@ class Backend implements BackendInterface
      *
      * @param Connector                        $connector WorldCat connector
      * @param RecordCollectionFactoryInterface $factory   Record collection factory
+     * (null for default)
      *
      * @return void
      */
     public function __construct(Connector $connector,
-        RecordCollectionFactoryInterface $factory
+        RecordCollectionFactoryInterface $factory = null
     ) {
-        $this->setRecordCollectionFactory($factory);
+        if (null !== $factory) {
+            $this->setRecordCollectionFactory($factory);
+        }
         $this->connector    = $connector;
         $this->identifier   = null;
     }
@@ -223,6 +226,9 @@ class Backend implements BackendInterface
      */
     public function getRecordCollectionFactory()
     {
+        if ($this->collectionFactory === null) {
+            $this->collectionFactory = new Response\XML\RecordCollectionFactory();
+        }
         return $this->collectionFactory;
     }
 
