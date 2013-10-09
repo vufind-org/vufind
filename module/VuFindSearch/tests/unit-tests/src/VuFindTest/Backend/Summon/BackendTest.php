@@ -46,6 +46,11 @@ use PHPUnit_Framework_TestCase as TestCase;
  */
 class BackendTest extends TestCase
 {
+    /**
+     * Setup method.
+     *
+     * @return void
+     */
     protected function setup()
     {
         if (!class_exists('SerialsSolutions_Summon_Exception', true)) {
@@ -54,6 +59,9 @@ class BackendTest extends TestCase
     }
 
     /**
+     * Test retrieve exception handling.
+     *
+     * @return void
      * @expectedException VuFindSearch\Backend\Exception\BackendException
      */
     public function testRetrieveWrapsSummonException()
@@ -68,6 +76,9 @@ class BackendTest extends TestCase
     }
 
     /**
+     * Test search exception handling.
+     *
+     * @return void
      * @expectedException VuFindSearch\Backend\Exception\BackendException
      */
     public function testSearchWrapsSummonException()
