@@ -59,6 +59,28 @@ class BackendTest extends TestCase
     }
 
     /**
+     * Test retrieving a record.
+     *
+     * @return void
+     */
+    public function testRetrieve()
+    {
+        $conn = $this->getConnectorMock(array('getRecord'));
+        $conn->expects($this->once())
+            ->method('getRecord')
+            ->will($this->returnValue($this->loadResponse('single-record')));
+
+        $back = new Backend($conn);
+        $back->setIdentifier('test');
+        $coll = $back->retrieve('FETCH-gale_primary_3281657081');
+        $this->assertCount(1, $coll);
+        $this->assertEquals('test', $coll->getSourceIdentifier());
+        $rec  = $coll->first();
+        $this->assertEquals('test', $rec->getSourceIdentifier());
+        $this->assertEquals('FETCH-gale_primary_3281657081', $rec->ID[0]);
+    }
+
+    /**
      * Test retrieve exception handling.
      *
      * @return void
@@ -67,7 +89,7 @@ class BackendTest extends TestCase
     public function testRetrieveWrapsSummonException()
     {
         $fact = $this->getMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
-        $conn = $this->getMock('SerialsSolutions\Summon\Zend2', array('getRecord'), array('id', 'key'));
+        $conn = $this->getConnectorMock(array('getRecord'));
         $conn->expects($this->once())
              ->method('getRecord')
              ->will($this->throwException(new SummonException()));
@@ -84,11 +106,44 @@ class BackendTest extends TestCase
     public function testSearchWrapsSummonException()
     {
         $fact = $this->getMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
-        $conn = $this->getMock('SerialsSolutions\Summon\Zend2', array('query'), array('id', 'key'));
+        $conn = $this->getConnectorMock(array('query'));
         $conn->expects($this->once())
              ->method('query')
              ->will($this->throwException(new SummonException()));
         $back = new Backend($conn, $fact);
         $back->search(new Query(), 1, 1);
     }
-}
+
+    /// Internal API
+
+    /**
+     * Load a Summon response as fixture.
+     *
+     * @param string $fixture Fixture file
+     *
+     * @return mixed
+     *
+     * @throws InvalidArgumentException Fixture files does not exist
+     */
+    protected function loadResponse($fixture)
+    {
+        $file = realpath(sprintf('%s/summon/response/%s', PHPUNIT_SEARCH_FIXTURES, $fixture));
+        if (!is_string($file) || !file_exists($file) || !is_readable($file)) {
+            throw new InvalidArgumentException(sprintf('Unable to load fixture file: %s', $fixture));
+        }
+        return unserialize(file_get_contents($file));
+    }
+
+    /**
+     * Return connector mock.
+     *
+     * @param array $mock Functions to mock
+     *
+     * @return array
+     */
+    protected function getConnectorMock(array $mock = array())
+    {
+        return $this->getMock(
+            'SerialsSolutions\Summon\Zend2', $mock, array('id', 'key')
+        );
+    }}
