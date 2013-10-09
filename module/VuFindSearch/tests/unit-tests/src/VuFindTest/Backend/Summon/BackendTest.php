@@ -124,6 +124,13 @@ class BackendTest extends TestCase
         $this->assertEquals('FETCH-proquest_dll_19947616111', $recs[1]->ID[0]);
         $this->assertEquals('test', $recs[2]->getSourceIdentifier());
         $this->assertEquals('FETCH-britannica_eb_129163132475image1', $recs[2]->ID[0]);
+        $this->assertEquals(545, $coll->getTotal());
+        $facets = $coll->getFacets();
+        $this->assertEquals('Language', $facets[0]['displayName']);
+        $this->assertEquals(0, $coll->getOffset());
+        $this->assertEquals(array(), $coll->getSpellcheck());
+        $this->assertEquals(false, $coll->getBestBets());
+        $this->assertEquals(false, $coll->getDatabaseRecommendations());
     }
 
     /**
