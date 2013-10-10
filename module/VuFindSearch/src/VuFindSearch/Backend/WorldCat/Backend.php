@@ -57,6 +57,13 @@ class Backend extends AbstractBackend
     protected $connector;
 
     /**
+     * Query builder.
+     *
+     * @var QueryBuilder
+     */
+    protected $queryBuilder = null;
+
+    /**
      * Constructor.
      *
      * @param Connector                        $connector WorldCat connector
@@ -112,6 +119,18 @@ class Backend extends AbstractBackend
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
         return $collection;
+    }
+
+    /**
+     * Set the query builder.
+     *
+     * @param QueryBuilder $queryBuilder Query builder
+     *
+     * @return void
+     */
+    public function setQueryBuilder(QueryBuilder $queryBuilder)
+    {
+        $this->queryBuilder = $queryBuilder;
     }
 
     /**

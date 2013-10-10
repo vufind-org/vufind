@@ -66,6 +66,13 @@ class Backend extends AbstractBackend
     protected $connector;
 
     /**
+     * Query builder.
+     *
+     * @var QueryBuilder
+     */
+    protected $queryBuilder = null;
+
+    /**
      * Constructor.
      *
      * @param Connector $connector SOLR connector
@@ -245,6 +252,18 @@ class Backend extends AbstractBackend
             $this->refineBrowseException($e);
         }
         return $this->deserialize($response);
+    }
+
+    /**
+     * Set the query builder.
+     *
+     * @param QueryBuilder $queryBuilder Query builder
+     *
+     * @return void
+     */
+    public function setQueryBuilder(QueryBuilder $queryBuilder)
+    {
+        $this->queryBuilder = $queryBuilder;
     }
 
     /**

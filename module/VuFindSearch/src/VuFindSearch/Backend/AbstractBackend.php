@@ -67,13 +67,6 @@ abstract class AbstractBackend implements BackendInterface
     protected $identifier = null;
 
     /**
-     * Query builder.
-     *
-     * @var object
-     */
-    protected $queryBuilder = null;
-
-    /**
      * Set the backend identifier.
      *
      * @param string $identifier Backend identifier
@@ -95,27 +88,6 @@ abstract class AbstractBackend implements BackendInterface
     public function setLogger(LoggerInterface $logger)
     {
         $this->logger = $logger;
-    }
-
-    /**
-     * Return query builder.
-     *
-     * Lazy loads an empty default QueryBuilder if none was set.
-     *
-     * @return object
-     */
-    abstract public function getQueryBuilder();
-
-    /**
-     * Set the query builder.
-     *
-     * @param object $queryBuilder Query builder
-     *
-     * @return void
-     */
-    public function setQueryBuilder($queryBuilder)
-    {
-        $this->queryBuilder = $queryBuilder;
     }
 
     /**
