@@ -63,9 +63,11 @@ class Backend extends AbstractBackend
      * @return void
      */
     public function __construct(Connector $connector,
-        RecordCollectionFactoryInterface $factory
+        RecordCollectionFactoryInterface $factory = null
     ) {
-        $this->setRecordCollectionFactory($factory);
+        if (null !== $factory) {
+            $this->setRecordCollectionFactory($factory);
+        }
         $this->connector    = $connector;
     }
 
@@ -142,7 +144,7 @@ class Backend extends AbstractBackend
     public function getRecordCollectionFactory()
     {
         if (!$this->collectionFactory) {
-            throw new \Exception('TODO: lazy-load record collection factory');
+            $this->collectionFactory = new Response\RecordCollectionFactory();
         }
         return $this->collectionFactory;
     }
