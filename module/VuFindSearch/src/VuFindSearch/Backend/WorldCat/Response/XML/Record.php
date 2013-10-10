@@ -35,9 +35,6 @@ use File_MARC_Record;
 /**
  * Simple WorldCat record.
  *
- * This record primarily servers as an example or blueprint for a schema-less
- * record. All SOLR fields are exposed via object properties.
- *
  * @category VuFind2
  * @package  Search
  * @author   David Maus <maus@hab.de>

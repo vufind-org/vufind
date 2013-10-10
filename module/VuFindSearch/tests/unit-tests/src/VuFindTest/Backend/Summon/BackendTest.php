@@ -182,4 +182,5 @@ class BackendTest extends TestCase
         return $this->getMock(
             'SerialsSolutions\Summon\Zend2', $mock, array('id', 'key')
         );
-    }}
+    }
+}
