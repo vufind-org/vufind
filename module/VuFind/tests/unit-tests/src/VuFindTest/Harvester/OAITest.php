@@ -189,6 +189,43 @@ class OAITest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test date autodetection w/503 retry.
+     *
+     * @return void
+     */
+    public function testDateAutodetectWith503Retry()
+    {
+        $client = $this->getMockClient();
+        $response = $client->send();
+        $response->expects($this->any())
+            ->method('isSuccess')
+            ->will($this->returnValue(true));
+        $response->expects($this->at(1))
+            ->method('getStatusCode')
+            ->will($this->returnValue(503));
+        $response->expects($this->any())
+            ->method('getBody')
+            ->will($this->returnValue($this->getIdentifyResponse()));
+        $header = $this->getMock('Zend\Http\Header\RetryAfter');
+        $header->expects($this->once())
+            ->method('getDeltaSeconds')
+            ->will($this->returnValue(1));
+        $headers = $response->getHeaders();
+        $headers->expects($this->any())
+            ->method('get')
+            ->with($this->equalTo('Retry-After'))
+            ->will($this->returnValue($header));
+        $config = array(
+            'url' => 'http://localhost',
+            'verbose' => true,
+        );
+        $oai = new OAI('test', $config, $client);
+        $this->assertEquals(
+            'YYYY-MM-DDThh:mm:ssZ', $this->getProperty($oai, 'granularity')
+        );
+    }
+
+    /**
      * Test HTTP error detection.
      *
      * @return void
@@ -247,7 +284,11 @@ class OAITest extends \VuFindTest\Unit\TestCase
         $request->expects($this->any())
             ->method('getQuery')
             ->will($this->returnValue($query));
+        $headers = $this->getMock('Zend\Http\Headers');
         $response = $this->getMock('Zend\Http\Response');
+        $response->expects($this->any())
+            ->method('getHeaders')
+            ->will($this->returnValue($headers));
         $client = $this->getMock('Zend\Http\Client');
         $client->expects($this->any())
             ->method('getRequest')
