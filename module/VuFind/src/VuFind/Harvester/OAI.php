@@ -223,60 +223,15 @@ class OAI
         $this->lastHarvestFile = $this->basePath . 'last_harvest.txt';
         $this->loadLastHarvestedDate();
 
-        // Set up base URL:
-        if (empty($settings['url'])) {
-            throw new \Exception("Missing base URL for {$target}.");
-        }
-        $this->baseURL = $settings['url'];
-        if (isset($settings['set'])) {
-            $this->set = $settings['set'];
-        }
-        if (isset($settings['metadataPrefix'])) {
-            $this->metadataPrefix = $settings['metadataPrefix'];
-        }
-        if (isset($settings['idPrefix'])) {
-            $this->idPrefix = $settings['idPrefix'];
-        }
-        if (isset($settings['idSearch'])) {
-            $this->idSearch = $settings['idSearch'];
-        }
-        if (isset($settings['idReplace'])) {
-            $this->idReplace = $settings['idReplace'];
-        }
-        if (isset($settings['harvestedIdLog'])) {
-            $this->harvestedIdLog = $settings['harvestedIdLog'];
-        }
-        if (isset($settings['injectId'])) {
-            $this->injectId = $settings['injectId'];
-        }
-        if (isset($settings['injectSetSpec'])) {
-            $this->injectSetSpec = $settings['injectSetSpec'];
-        }
-        if (isset($settings['injectSetName'])) {
-            $this->injectSetName = $settings['injectSetName'];
+        // Save configuration:
+        $this->setConfig($target, $settings);
+
+        // Load set names if we're going to need them:
+        if ($this->injectSetName) {
             $this->loadSetNames();
         }
-        if (isset($settings['injectDate'])) {
-            $this->injectDate = $settings['injectDate'];
-        }
-        if (isset($settings['injectHeaderElements'])) {
-            $this->injectHeaderElements
-                = is_array($settings['injectHeaderElements'])
-                    ? $settings['injectHeaderElements']
-                    : array($settings['injectHeaderElements']);
-        }
-        if (isset($settings['dateGranularity'])) {
-            $this->granularity = $settings['dateGranularity'];
-        }
-        if (isset($settings['verbose'])) {
-            $this->verbose = $settings['verbose'];
-        }
-        if (isset($settings['sanitize'])) {
-            $this->sanitize = $settings['sanitize'];
-        }
-        if (isset($settings['badXMLLog'])) {
-            $this->badXMLLog = $settings['badXMLLog'];
-        }
+
+        // Autoload granularity if necessary:
         if ($this->granularity == 'auto') {
             $this->loadGranularity();
         }
@@ -804,6 +759,46 @@ class OAI
     protected function getRecordsByToken($token)
     {
         return $this->getRecords(array('resumptionToken' => (string)$token));
+    }
+
+    /**
+     * Set configuration (support method for constructor).
+     *
+     * @param string $target   Target directory for harvest.
+     * @param array  $settings Configuration
+     *
+     * @return void
+     */
+    protected function setConfig($target, $settings)
+    {
+        // Set up base URL:
+        if (empty($settings['url'])) {
+            throw new \Exception("Missing base URL for {$target}.");
+        }
+        $this->baseURL = $settings['url'];
+
+        // Settings that may be mapped directly from $settings to class properties:
+        $mappableSettings = array(
+            'set', 'metadataPrefix', 'idPrefix', 'idSearch', 'idReplace',
+            'harvestedIdLog', 'injectId', 'injectSetSpec', 'injectSetName',
+            'injectDate', 'injectHeaderElements', 'verbose', 'sanitize', 'badXMLLog'
+        );
+        foreach ($mappableSettings as $current) {
+            if (isset($settings[$current])) {
+                $this->$current = $settings[$current];
+            }
+        }
+
+        // Special case: $settings value does not match property value (for
+        // readability):
+        if (isset($settings['dateGranularity'])) {
+            $this->granularity = $settings['dateGranularity'];
+        }
+
+        // Normalize injectHeaderElements to an array:
+        if (!is_array($this->injectHeaderElements)) {
+            $this->injectHeaderElements = array($this->injectHeaderElements);
+        }
     }
 
     /**
