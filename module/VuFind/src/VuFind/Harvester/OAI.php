@@ -105,7 +105,14 @@ class OAI
     protected $lastHarvestFile;
 
     /**
-     * Harvest start date (null for all records)
+     * Harvest end date (null for no specific end)
+     *
+     * @var string
+     */
+    protected $harvestEndDate;
+
+    /**
+     * Harvest start date (null for no specific start)
      *
      * @var string
      */
@@ -202,9 +209,13 @@ class OAI
      * @param string            $target   Target directory for harvest.
      * @param array             $settings OAI-PMH settings from oai.ini.
      * @param \Zend\Http\Client $client   HTTP client
+     * @param string            $from     Harvest start date (omit to use
+     * last_harvest.txt)
+     * @param string            $until    Harvest end date (optional)
      */
-    public function __construct($target, $settings, \Zend\Http\Client $client)
-    {
+    public function __construct($target, $settings, \Zend\Http\Client $client,
+        $from = null, $until = null
+    ) {
         // Store client:
         $this->client = $client;
 
@@ -221,7 +232,10 @@ class OAI
 
         // Check if there is a file containing a start date:
         $this->lastHarvestFile = $this->basePath . 'last_harvest.txt';
-        $this->loadLastHarvestedDate();
+
+        // Set up start/end dates:
+        $this->setStartDate(empty($from) ? $this->loadLastHarvestedDate() : $from);
+        $this->setEndDate($until);
 
         // Save configuration:
         $this->setConfig($target, $settings);
@@ -237,6 +251,17 @@ class OAI
         }
     }
 
+    /**
+     * Set an end date for the harvest (only harvest records BEFORE this date).
+     *
+     * @param string $date End date (YYYY-MM-DD format).
+     *
+     * @return void
+     */
+    public function setEndDate($date)
+    {
+        $this->harvestEndDate = $date;
+    }
     /**
      * Set a start date for the harvest (only harvest records AFTER this date).
      *
@@ -265,7 +290,8 @@ class OAI
         // Loop through all of the selected sets:
         foreach ($sets as $set) {
             // Start harvesting at the requested date:
-            $token = $this->getRecordsByDate($this->startDate, $set);
+            $token = $this
+                ->getRecordsByDate($this->startDate, $set, $this->harvestEndDate);
 
             // Keep harvesting as long as a resumption token is provided:
             while ($token !== false) {
@@ -307,16 +333,12 @@ class OAI
      * Retrieve the date from the "last harvested" file and use it as our start
      * date if it is available.
      *
-     * @return void
+     * @return string
      */
     protected function loadLastHarvestedDate()
     {
-        if (file_exists($this->lastHarvestFile)) {
-            $date = trim(current(file($this->lastHarvestFile)));
-            if (!empty($date)) {
-                $this->setStartDate($date);
-            }
-        }
+        return (file_exists($this->lastHarvestFile))
+            ? trim(current(file($this->lastHarvestFile))) : null;
     }
 
     /**
@@ -738,19 +760,23 @@ class OAI
     /**
      * Harvest records via OAI-PMH using date and set.
      *
-     * @param string $date Harvest start date (null for all records).
-     * @param string $set  Set to harvest (null for all records).
+     * @param string $from  Harvest start date (null for no specific start).
+     * @param string $set   Set to harvest (null for all records).
+     * @param string $until Harvest end date (null for no specific end).
      *
      * @return mixed        Resumption token if provided, false if finished
      */
-    protected function getRecordsByDate($date = null, $set = null)
+    protected function getRecordsByDate($from = null, $set = null, $until = null)
     {
         $params = array('metadataPrefix' => $this->metadataPrefix);
-        if (!empty($date)) {
-            $params['from'] = $date;
+        if (!empty($from)) {
+            $params['from'] = $from;
         }
         if (!empty($set)) {
             $params['set'] = $set;
+        }
+        if (!empty($until)) {
+            $params['until'] = $until;
         }
         return $this->getRecords($params);
     }
