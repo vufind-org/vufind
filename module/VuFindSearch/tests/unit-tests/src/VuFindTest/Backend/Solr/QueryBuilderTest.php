@@ -302,6 +302,37 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test generation with spelling
+     *
+     * @return void
+     */
+    public function testSpelling()
+    {
+        $qb = new QueryBuilder(
+            array(
+                'test' => array(
+                    'DismaxFields' => array('test1'),
+                    'DismaxParams' => array(array('bq', 'boost'))
+                )
+            )
+        );
+
+        $q = new Query('my friend', 'test');
+
+        // No spellcheck.q if spellcheck query disabled:
+        $qb->setCreateSpellingQuery(false);
+        $response = $qb->build($q);
+        $spQ = $response->get('spellcheck.q');
+        $this->assertEquals(null, $spQ[0]);
+
+        // spellcheck.q if spellcheck query enabled:
+        $qb->setCreateSpellingQuery(true);
+        $response = $qb->build($q);
+        $spQ = $response->get('spellcheck.q');
+        $this->assertEquals('my friend', $spQ[0]);
+    }
+
+    /**
      * Test advanced query detection
      *
      * @return void
