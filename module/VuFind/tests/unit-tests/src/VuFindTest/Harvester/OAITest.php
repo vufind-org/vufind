@@ -129,7 +129,7 @@ class OAITest extends \VuFindTest\Unit\TestCase
         $config = array(
             'url' => 'http://localhost',
             'injectSetName' => 'setnametag',
-            'verbose' => false,
+            'verbose' => true,
             'dateGranularity' => 'mygranularity',
         );
         $oai = new OAI('test', $config, $client);
@@ -142,6 +142,25 @@ class OAITest extends \VuFindTest\Unit\TestCase
                 'Audio (Non-Music)' => 'Audio (Non-Music)'
             ), $this->getProperty($oai, 'setNames')
         );
+    }
+
+    /**
+     * Test the sslverifypeer configuration.
+     *
+     * @return void
+     */
+    public function testSSLVerifyPeer()
+    {
+        $client = $this->getMockClient();
+        $client->expects($this->once())
+            ->method('setOptions')
+            ->with($this->equalTo(array('sslverifypeer' => false)));
+        $config = array(
+            'url' => 'http://localhost',
+            'sslverifypeer' => false,
+            'dateGranularity' => 'mygranularity',
+        );
+        $oai = new OAI('test', $config, $client);
     }
 
     /**
