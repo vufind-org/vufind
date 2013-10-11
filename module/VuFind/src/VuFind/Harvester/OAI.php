@@ -196,6 +196,20 @@ class OAI
     protected $badXMLLog = false;
 
     /**
+     * Username for HTTP basic authentication (false for none)
+     *
+     * @var string|bool
+     */
+    protected $httpUser = false;
+
+    /**
+     * Password for HTTP basic authentication (false for none)
+     *
+     * @var string|bool
+     */
+    protected $httpPass = false;
+
+    /**
      * As we harvest records, we want to track the most recent date encountered
      * so we can set a start point for the next harvest.  (Unix timestamp format)
      *
@@ -395,6 +409,11 @@ class OAI
             $this->client->setUri($this->baseURL);
             // TODO: make timeout configurable
             $this->client->setOptions(array('timeout' => 60));
+
+            // Set authentication, if necessary:
+            if ($this->httpUser && $this->httpPass) {
+                $this->client->setAuth($this->httpUser, $this->httpPass);
+            }
 
             // Load request parameters:
             $query = $this->client->getRequest()->getQuery();
@@ -813,7 +832,8 @@ class OAI
         $mappableSettings = array(
             'set', 'metadataPrefix', 'idPrefix', 'idSearch', 'idReplace',
             'harvestedIdLog', 'injectId', 'injectSetSpec', 'injectSetName',
-            'injectDate', 'injectHeaderElements', 'verbose', 'sanitize', 'badXMLLog'
+            'injectDate', 'injectHeaderElements', 'verbose', 'sanitize', 'badXMLLog',
+            'httpUser', 'httpPass',
         );
         foreach ($mappableSettings as $current) {
             if (isset($settings[$current])) {
