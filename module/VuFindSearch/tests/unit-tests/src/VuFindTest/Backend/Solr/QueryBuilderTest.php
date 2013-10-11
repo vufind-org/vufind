@@ -82,6 +82,37 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test the selective capitalization functionality of capitalizeBooleans.
+     *
+     * @return void
+     */
+    public function testSelectiveBooleanCapitalization()
+    {
+        $qb = new QueryBuilder();
+        $in = 'this or that and the other not everything else (not me)';
+        $this->assertEquals(
+            'this OR that AND the other NOT everything else (NOT me)',
+            $qb->capitalizeBooleans($in, array('AND', 'OR', 'NOT'))
+        );
+        $this->assertEquals(
+            'this OR that and the other NOT everything else (NOT me)',
+            $qb->capitalizeBooleans($in, array('OR', 'NOT'))
+        );
+        $this->assertEquals(
+            'this or that and the other NOT everything else (NOT me)',
+            $qb->capitalizeBooleans($in, array('NOT'))
+        );
+        $this->assertEquals(
+            'this or that AND the other not everything else (not me)',
+            $qb->capitalizeBooleans($in, array('AND'))
+        );
+        $this->assertEquals(
+            'this OR that and the other not everything else (not me)',
+            $qb->capitalizeBooleans($in, array('OR'))
+        );
+    }
+
+    /**
      * Test capitalizeRanges functionality.
      *
      * @return void

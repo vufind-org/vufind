@@ -607,19 +607,31 @@ class QueryBuilder implements QueryBuilderInterface
      * Capitalize boolean operators.
      *
      * @param string $string Search string
+     * @param array  $bools  Which booleans to capitalize (default = all)
      *
      * @return string
      */
-    public function capitalizeBooleans($string)
+    public function capitalizeBooleans($string, $bools = array('AND', 'OR', 'NOT'))
     {
         // Load the "inside quotes" lookahead so we can use it to prevent
         // switching case of Boolean reserved words inside quotes, since
         // that can cause problems in case-sensitive fields when the reserved
         // words are actually used as search terms.
         $lookahead = self::$insideQuotes;
-        $regs = array("/\s+AND\s+{$lookahead}/i", "/\s+OR\s+{$lookahead}/i",
-                "/(\s+NOT\s+|^NOT\s+){$lookahead}/i", "/\(NOT\s+{$lookahead}/i");
-        $replace = array(' AND ', ' OR ', ' NOT ', '(NOT ');
+
+        // Create standard conversions:
+        $regs = $replace = array();
+        foreach ($bools as $bool) {
+            $regs[] = "/\s+{$bool}\s+{$lookahead}/i";
+            $replace[] = ' ' . $bool . ' ';
+        }
+
+        // Special extra case for NOT:
+        if (in_array('NOT', $bools)) {
+            $regs[] = "/\(NOT\s+{$lookahead}/i";
+            $replace[] = '(NOT ';
+        }
+
         return trim(preg_replace($regs, $replace, $string));
     }
 
