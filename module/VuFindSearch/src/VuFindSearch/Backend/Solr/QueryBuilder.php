@@ -300,20 +300,6 @@ class QueryBuilder implements QueryBuilderInterface
         }
     }
 
-    /**
-     * Return search specs.
-     *
-     * @return array
-     */
-    public function getSpecs()
-    {
-        $specs = array();
-        foreach ($specs as $handler => $spec) {
-            $specs[$handler] = $spec->toArray();
-        }
-        return $specs;
-    }
-
     /// Internal API
 
     /**
