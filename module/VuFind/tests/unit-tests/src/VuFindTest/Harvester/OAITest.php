@@ -144,6 +144,18 @@ class OAITest extends \VuFindTest\Unit\TestCase
         );
     }
 
+    /**
+     * Test that a missing URL throws an exception.
+     *
+     * @return void
+     * @expectedException Exception
+     * @expectedExceptionMessage Missing base URL for test.
+     */
+    public function testMissingURLThrowsException()
+    {
+        $oai = new OAI('test', array(), $this->getMockClient());
+    }
+
     // Internal API
 
     /**
