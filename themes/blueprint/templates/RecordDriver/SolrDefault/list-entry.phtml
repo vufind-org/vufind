@@ -76,9 +76,30 @@
         <? endif; ?>
       <? endif; ?>
     </div>
+    <? /* We need to find out if we're supposed to display an OpenURL link ($openUrlActive),
+          but even if we don't plan to display the link, we still want to get the $openUrl
+          value for use in generating a COinS (Z3988) tag -- see bottom of file.
+        */
+       $openUrl = $this->driver->getOpenURL();
+       $openUrlActive = $this->driver->openURLActive('results');
+       $urls = $this->record($this->driver)->getLinkDetails();
+       if ($openUrlActive || !empty($urls)): ?>
+      <? if ($openUrlActive): ?>
+        <br/>
+        <?=$this->openUrl($openUrl)?>
+        <? if ($this->driver->replaceURLsWithOpenURL()) $urls = array(); // clear URL list if replace setting is active ?>
+      <? endif; ?>
+      <? if (!is_array($urls)) $urls = array(); foreach ($urls as $current): ?>
+        <br/>
+        <a href="<?=$this->escapeHtml($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
+      <? endforeach; ?>
+    <? endif; ?>
+
+    <br class="hideIfDetailed"/>
     <?=$this->record($this->driver)->getFormatList()?>
-    <? if ($this->driver->supportsAjaxStatus()): ?>
-      <div class="status ajax_availability hide"><?=$this->transEsc('Loading')?>...</div>
+
+    <? if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
+    <div class="status ajax_availability hide"><?=$this->transEsc('Loading')?>...</div>
     <? endif; ?>
   </div>
 
