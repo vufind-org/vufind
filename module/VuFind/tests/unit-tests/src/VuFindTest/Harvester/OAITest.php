@@ -164,6 +164,31 @@ class OAITest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test date autodetection.
+     *
+     * @return void
+     */
+    public function testDateAutodetect()
+    {
+        $client = $this->getMockClient();
+        $response = $client->send();
+        $response->expects($this->any())
+            ->method('isSuccess')
+            ->will($this->returnValue(true));
+        $response->expects($this->any())
+            ->method('getBody')
+            ->will($this->returnValue('<?xml version="1.0"?><OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/ http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd"><responseDate>2013-10-11T11:12:04Z</responseDate><request verb="Identify" submit="Go">http://fake/my/OAI/Server</request><Identify><repositoryName>myuniversity University VuFind</repositoryName><baseURL>http://fake/my/OAI/Server</baseURL><protocolVersion>2.0</protocolVersion><earliestDatestamp>2000-01-01T00:00:00Z</earliestDatestamp><deletedRecord>transient</deletedRecord><granularity>YYYY-MM-DDThh:mm:ssZ</granularity><adminEmail>libtech@myuniversity.edu</adminEmail><description><oai-identifier xmlns="http://www.openarchives.org/OAI/2.0/oai-identifier" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai-identifier http://www.openarchives.org/OAI/2.0/oai-identifier.xsd"><scheme>oai</scheme><repositoryIdentifier>fake.myuniversity.edu</repositoryIdentifier><delimiter>:</delimiter><sampleIdentifier>oai:fake.myuniversity.edu:123456</sampleIdentifier></oai-identifier></description></Identify></OAI-PMH>'));
+        $config = array(
+            'url' => 'http://localhost',
+            'verbose' => true,
+        );
+        $oai = new OAI('test', $config, $client);
+        $this->assertEquals(
+            'YYYY-MM-DDThh:mm:ssZ', $this->getProperty($oai, 'granularity')
+        );
+    }
+
+    /**
      * Test that a missing URL throws an exception.
      *
      * @return void
