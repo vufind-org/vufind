@@ -31,7 +31,6 @@ namespace VuFindTest\Backend\Solr;
 
 use VuFindSearch\Query\Query;
 use VuFindSearch\Backend\Solr\QueryBuilder;
-use PHPUnit_Framework_TestCase;
 
 /**
  * Unit tests for SOLR query builder
@@ -42,7 +41,7 @@ use PHPUnit_Framework_TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class QueryBuilderTest extends PHPUnit_Framework_TestCase
+class QueryBuilderTest extends \VuFindTest\Unit\TestCase
 {
     /**
      * Test capitalizeBooleans functionality.
@@ -109,6 +108,45 @@ class QueryBuilderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(
             'this OR that and the other not everything else (not me)',
             $qb->capitalizeBooleans($in, array('OR'))
+        );
+    }
+
+    /**
+     * Test getBoolsToCap().
+     *
+     * @return void
+     */
+    public function testGetBoolsToCap()
+    {
+        $qb = new QueryBuilder();
+
+        // Default behavior: do not capitalize:
+        $this->assertEquals(
+            array(), $this->callMethod($qb, 'getBoolsToCap')
+        );
+
+        // Test "capitalize all":
+        $qb->caseSensitiveBooleans = false;
+        $this->assertEquals(
+            array('AND', 'OR', 'NOT'), $this->callMethod($qb, 'getBoolsToCap')
+        );
+
+        // Test selective capitalization:
+        $qb->caseSensitiveBooleans = ' not ';
+        $this->assertEquals(
+            array('AND', 'OR'), $this->callMethod($qb, 'getBoolsToCap')
+        );
+        $qb->caseSensitiveBooleans = 'NOT';
+        $this->assertEquals(
+            array('AND', 'OR'), $this->callMethod($qb, 'getBoolsToCap')
+        );
+        $qb->caseSensitiveBooleans = 'AND,OR';
+        $this->assertEquals(
+            array('NOT'), $this->callMethod($qb, 'getBoolsToCap')
+        );
+        $qb->caseSensitiveBooleans = 'and, or';
+        $this->assertEquals(
+            array('NOT'), $this->callMethod($qb, 'getBoolsToCap')
         );
     }
 

@@ -39,7 +39,7 @@ use VuFindSearch\ParamBag;
 
 /**
  * Summon QueryBuilder.  (Currently extends Solr query builder for access to
- * capitalizeBooleans() support method).
+ * capitalizeCaseInsensitiveBooleans() support method).
  *
  * @category VuFind2
  * @package  Search
@@ -158,9 +158,7 @@ class QueryBuilder extends \VuFindSearch\Backend\Solr\QueryBuilder
 
         // Force boolean operators to uppercase if we are in a
         // case-insensitive mode:
-        if (!$this->caseSensitiveBooleans) {
-            $lookfor = $this->capitalizeBooleans($lookfor);
-        }
+        $lookfor = $this->capitalizeCaseInsensitiveBooleans($lookfor);
 
         // Prepend the index name, unless it's the special "AllFields"
         // index:
