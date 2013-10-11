@@ -67,7 +67,7 @@ class OAI
      *
      * @var string
      */
-    protected $metadata = 'oai_dc';
+    protected $metadataPrefix = 'oai_dc';
 
     /**
      * OAI prefix to strip from ID values
@@ -232,7 +232,7 @@ class OAI
             $this->set = $settings['set'];
         }
         if (isset($settings['metadataPrefix'])) {
-            $this->metadata = $settings['metadataPrefix'];
+            $this->metadataPrefix = $settings['metadataPrefix'];
         }
         if (isset($settings['idPrefix'])) {
             $this->idPrefix = $settings['idPrefix'];
@@ -400,7 +400,7 @@ class OAI
     {
         // Debug:
         if ($this->verbose) {
-            Console::write(
+            $this->write(
                 "Sending request: verb = {$verb}, params = " . print_r($params, true)
             );
         }
@@ -428,7 +428,7 @@ class OAI
                     ? $delayHeader->getDeltaSeconds() : 0;
                 if ($delay > 0) {
                     if ($this->verbose) {
-                        Console::writeLine(
+                        $this->writeLine(
                             "Received 503 response; waiting {$delay} seconds..."
                         );
                     }
@@ -617,10 +617,10 @@ class OAI
      */
     protected function loadGranularity()
     {
-        Console::write("Autodetecting date granularity... ");
+        $this->write("Autodetecting date granularity... ");
         $response = $this->sendRequest('Identify');
         $this->granularity = (string)$response->Identify->granularity;
-        Console::writeLine("found {$this->granularity}.");
+        $this->writeLine("found {$this->granularity}.");
     }
 
     /**
@@ -630,7 +630,7 @@ class OAI
      */
     protected function loadSetNames()
     {
-        Console::write("Loading set list... ");
+        $this->write("Loading set list... ");
 
         // On the first pass through the following loop, we want to get the
         // first page of sets without using a resumption token:
@@ -659,7 +659,7 @@ class OAI
                 $params['resumptionToken']
                     = (string)$response->ListSets->resumptionToken;
             } else {
-                Console::writeLine("found " . count($this->setNames));
+                $this->writeLine("found " . count($this->setNames));
                 return;
             }
         }
@@ -700,7 +700,7 @@ class OAI
      */
     protected function processRecords($records)
     {
-        Console::writeLine('Processing ' . count($records) . " records...");
+        $this->writeLine('Processing ' . count($records) . " records...");
 
         // Array for tracking successfully harvested IDs:
         $harvestedIds = array();
@@ -784,7 +784,7 @@ class OAI
      */
     protected function getRecordsByDate($date = null, $set = null)
     {
-        $params = array('metadataPrefix' => $this->metadata);
+        $params = array('metadataPrefix' => $this->metadataPrefix);
         if (!empty($date)) {
             $params['from'] = $date;
         }
@@ -804,5 +804,37 @@ class OAI
     protected function getRecordsByToken($token)
     {
         return $this->getRecords(array('resumptionToken' => (string)$token));
+    }
+
+    /**
+     * Write a string to the Console.
+     *
+     * @param string $str String to write.
+     *
+     * @return void
+     */
+    protected function write($str)
+    {
+        // Bypass output when testing:
+        if (defined('VUFIND_PHPUNIT_RUNNING')) {
+            return;
+        }
+        Console::write($str);
+    }
+
+    /**
+     * Write a string w/newline to the Console.
+     *
+     * @param string $str String to write.
+     *
+     * @return void
+     */
+    protected function writeLine($str)
+    {
+        // Bypass output when testing:
+        if (defined('VUFIND_PHPUNIT_RUNNING')) {
+            return;
+        }
+        Console::writeLine($str);
     }
 }
