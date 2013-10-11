@@ -56,9 +56,9 @@ class OAI
     protected $baseURL;
 
     /**
-     * Target set to harvest (null for all records)
+     * Target set(s) to harvest (null for all records)
      *
-     * @var string
+     * @var string|array
      */
     protected $set = null;
 
@@ -256,12 +256,21 @@ class OAI
      */
     public function launch()
     {
-        // Start harvesting at the requested date:
-        $token = $this->getRecordsByDate($this->startDate, $this->set);
+        // Normalize sets setting to an array:
+        $sets = (array)$this->set;
+        if (empty($sets)) {
+            $sets = array(null);
+        }
 
-        // Keep harvesting as long as a resumption token is provided:
-        while ($token !== false) {
-            $token = $this->getRecordsByToken($token);
+        // Loop through all of the selected sets:
+        foreach ($sets as $set) {
+            // Start harvesting at the requested date:
+            $token = $this->getRecordsByDate($this->startDate, $set);
+
+            // Keep harvesting as long as a resumption token is provided:
+            while ($token !== false) {
+                $token = $this->getRecordsByToken($token);
+            }
         }
     }
 
