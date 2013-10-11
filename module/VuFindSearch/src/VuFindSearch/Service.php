@@ -180,8 +180,8 @@ class Service
                 }
                 if (!$response) {
                     $response = $next;
-                } else {
-                    $response->add($next->first());
+                } else if ($record = $next->first()) {
+                    $response->add($record);
                 }
             }
         }
