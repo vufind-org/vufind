@@ -312,12 +312,9 @@ class OAI
     protected function loadLastHarvestedDate()
     {
         if (file_exists($this->lastHarvestFile)) {
-            $lines = file($this->lastHarvestFile);
-            if (is_array($lines)) {
-                $date = trim($lines[0]);
-                if (!empty($date)) {
-                    $this->setStartDate(trim($date));
-                }
+            $date = trim(current(file($this->lastHarvestFile)));
+            if (!empty($date)) {
+                $this->setStartDate($date);
             }
         }
     }
