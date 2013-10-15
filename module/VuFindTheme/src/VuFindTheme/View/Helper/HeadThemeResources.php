@@ -86,6 +86,13 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
             );
         }
 
+        // Compile and load LESS (make sure we prepend them in the appropriate order
+        // theme resources should load before extras added by individual templates):
+        $headLink = $this->getView()->plugin('headlink');
+        foreach (array_reverse($this->container->getLessCss()) as $current) {
+            $headLink()->addLessStylesheet($current);
+        }
+
         // Load Javascript (same ordering considerations as CSS, above):
         $headScript = $this->getView()->plugin('headscript');
         foreach (array_reverse($this->container->getJs()) as $current) {

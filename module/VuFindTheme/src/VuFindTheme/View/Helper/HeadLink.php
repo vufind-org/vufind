@@ -76,4 +76,30 @@ class HeadLink extends \Zend\View\Helper\HeadLink
 
         return parent::itemToString($item);
     }
+
+    /**
+     * Compile a less file to css and add to css folder
+     *
+     * @param string $file path to less file
+     *
+     * @return void
+     */
+    public function addLessStylesheet($file)
+    {
+        $relPath = 'less/' . $file;
+        $currentTheme = $this->themeInfo->findContainingTheme($relPath);
+        $home = APPLICATION_PATH . "/themes/$currentTheme/";
+	list($fileName, ) = explode('.', $file);
+
+	$lesscss = new \lessc;
+        $lesscss->setFormatter('compressed');
+        $lesscss->setImportDir($home . 'less');
+        $lesscss->checkedCompile(
+            $home . $relPath,
+            $home . 'css/less/' . $fileName . '.css'
+        );
+
+        $urlHelper = $this->getView()->plugin('url');
+        $this->prependStylesheet($urlHelper('home') . "themes/$currentTheme/css/less/" . $fileName . '.css');
+    }
 }

@@ -39,6 +39,13 @@ namespace VuFindTheme;
 class ResourceContainer
 {
     /**
+     * Less CSS files
+     *
+     * @var array
+     */
+    protected $less = array();
+
+    /**
      * CSS files
      *
      * @var array
@@ -74,6 +81,23 @@ class ResourceContainer
     protected $generator = '';
 
     /**
+     * Add a Less CSS file.
+     *
+     * @param array|string $css Less CSS file (or array of Less CSS files) to add
+     *
+     * @return void
+     */
+    public function addLessCss($less)
+    {
+        if (!is_array($less) && !is_a($less, 'Traversable')) {
+            $less = array($less);
+        }
+        foreach ($less as $current) {
+            $this->less[] = $current;
+        }
+    }
+
+    /**
      * Add a CSS file.
      *
      * @param array|string $css CSS file (or array of CSS files) to add (possibly
@@ -107,6 +131,16 @@ class ResourceContainer
         foreach ($js as $current) {
             $this->js[] = $current;
         }
+    }
+
+    /**
+     * Get Less CSS files.
+     *
+     * @return array
+     */
+    public function getLessCss()
+    {
+        return array_unique($this->less);
     }
 
     /**
