@@ -92,8 +92,8 @@ class HeadLink extends \Zend\View\Helper\HeadLink
 	list($fileName, ) = explode('.', $file);
 
 	$lesscss = new \lessc;
-        $lesscss->setFormatter('compressed');
-        $lesscss->setImportDir($home . 'less');
+//        $lesscss->setFormatter('compressed');
+        $lesscss->setImportDir(array($home.'less', APPLICATION_PATH."/themes/bootstrap/less"));
         $lesscss->checkedCompile(
             $home . $relPath,
             $home . 'css/less/' . $fileName . '.css'
