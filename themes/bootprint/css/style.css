@@ -74,7 +74,7 @@ select, .btn:not(.btn-link){vertical-align:top}
 .breadcrumb span.divider {color:#888}
 
 /* --- SIDEBAR --- */
-.row-fluid .span3.sidebar {margin-left:.5%}
+.row-fluid .span3.sidebar {margin-right:1%}
 .sidebar h4 {border-bottom:2px solid #DDD;font-size:14px;font-weight:normal;margin-bottom:4px;margin-right:0}
 .sidebar .nav-list {font-size:12px;margin-bottom:6px;padding:0 0 0 8px}
 .sidebar .nav-list .divider {display:none}
@@ -106,6 +106,7 @@ select, .btn:not(.btn-link){vertical-align:top}
 .centered-pills {border-bottom:1px solid #DDD;font-size:12px}
 .nav-pills {border-bottom:1px solid #DDD;margin:0 0 6px 0}
 .main.row-fluid > .span9 {margin-left:1%}
+.top-row .span4 {margin:auto 0}
 
 /* --- HOME --- */
 .searchHomeContent {margin:2em auto;width:80%}
