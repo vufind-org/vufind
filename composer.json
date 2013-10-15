@@ -66,6 +66,7 @@
         "zendframework/zendframework": "2.2.4",
         "zendframework/zendrest": "2.*",
         "zendframework/zendservice-amazon": "2.*",
-        "jasig/phpCAS": "dev-master"
+        "jasig/phpCAS": "dev-master",
+        "leafo/lessphp": "0.4.0"
     }
 }
