@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for simple JSON-based record collection factory.
+ * Unit tests for facet information.
  *
  * PHP version 5
  *
@@ -29,11 +29,11 @@
 
 namespace VuFindTest\Backend\Solr\Json\Response;
 
-use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
-use PHPUnit_Framework_TestCase;
+use VuFindSearch\Backend\Solr\Response\Json\Facets;
+use PHPUnit_Framework_TestCase as TestCase;
 
 /**
- * Unit tests for simple JSON-based record collection factory.
+ * Unit tests for facet information.
  *
  * @category VuFind2
  * @package  Search
@@ -41,31 +41,25 @@ use PHPUnit_Framework_TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class RecordCollectionFactoryTest extends PHPUnit_Framework_TestCase
+class FacetsTest extends TestCase
 {
     /**
-     * Test that the factory creates a collection.
+     * Test facets
      *
      * @return void
      */
-    public function testFactory()
+    public function testFacets()
     {
-        $json = json_encode(array('response' => array('start' => 0, 'docs' => array(array(), array(), array()))));
-        $fact = new RecordCollectionFactory();
-        $coll = $fact->factory(json_decode($json, true));
-        $this->assertEquals(3, count($coll));
-    }
-
-    /**
-     * Test invalid input.
-     *
-     * @return void
-     * @expectedException VuFindSearch\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Unexpected type of value: Expected array, got string
-     */
-    public function testInvalidInput()
-    {
-        $fact = new RecordCollectionFactory();
-        $coll = $fact->factory('garbage');
+        $facets = new Facets(
+            array(
+                'facet_fields' => array(
+                    'field1' => array(array('a', 1), array('b', 2))
+                ),
+                'facet_queries' => array(),
+            )
+        );
+        $this->assertCount(0, $facets->getQueryFacets());
+        $fieldFacets = $facets->getFieldFacets();
+        $this->assertCount(2, $fieldFacets['field1']);
     }
 }

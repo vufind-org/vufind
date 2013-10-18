@@ -72,6 +72,36 @@ class SpellcheckTest extends TestCase
     }
 
     /**
+     * Test double merge.
+     *
+     * @return void
+     */
+    public function testDoubleMerge()
+    {
+        $s1 = new Spellcheck(array(array('a', array())), 'fake');
+        $s2 = new Spellcheck(array(array('b', array())), 'fake');
+        $s3 = new Spellcheck(array(array('c', array())), 'fake');
+        $s1->mergeWith($s2);
+        $s1->mergeWith($s3);
+        $this->assertCount(3, $s1);
+        $this->assertCount(2, $s1->getSecondary());
+        $this->assertCount(1, $s1->getSecondary()->getSecondary());
+    }
+
+    /**
+     * Test exact duplication.
+     *
+     * @return void
+     */
+    public function testExactDuplication()
+    {
+        $s1 = new Spellcheck(array(array('a', array())), 'fake');
+        $s2 = new Spellcheck(array(array('a', array())), 'fake');
+        $s1->mergeWith($s2);
+        $this->assertCount(1, $s1);
+    }
+
+    /**
      * Test getQuery()
      *
      * @return void

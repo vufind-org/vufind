@@ -51,7 +51,7 @@ class RecordCollection extends AbstractRecordCollection
      */
     protected static $template = array(
         'responseHeader' => array(),
-        'response'       => array('start' => 0),
+        'response'       => array('numFound' => 0, 'start' => 0),
         'spellcheck'     => array('suggestions' => array()),
         'facet_counts'   => array(),
     );
