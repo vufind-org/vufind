@@ -68,6 +68,7 @@ class SpellcheckTest extends TestCase
         );
         $s1->mergeWith($s2);
         $this->assertCount(5, $s1);
+        $this->assertEquals($s2, $s1->getSecondary());
     }
 
     /**

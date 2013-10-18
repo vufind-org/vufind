@@ -59,6 +59,13 @@ class Spellcheck implements IteratorAggregate, Countable
     protected $query;
 
     /**
+     * Secondary spelling suggestions (in case merged results are not useful).
+     *
+     * @var Spellcheck
+     */
+    protected $secondary = false;
+
+    /**
      * Constructor.
      *
      * @param array  $spellcheck SOLR spellcheck information
@@ -89,6 +96,16 @@ class Spellcheck implements IteratorAggregate, Countable
     }
 
     /**
+     * Get secondary suggestions (or return false if none exist).
+     *
+     * @return Spellcheck|bool
+     */
+    public function getSecondary()
+    {
+        return $this->secondary;
+    }
+
+    /**
      * Merge in other spellcheck information.
      *
      * @param Spellcheck $spellcheck Other spellcheck information
@@ -97,11 +114,20 @@ class Spellcheck implements IteratorAggregate, Countable
      */
     public function mergeWith(Spellcheck $spellcheck)
     {
+        // Merge primary suggestions:
         $this->terms->uksort(array($this, 'compareTermLength'));
         foreach ($spellcheck as $term => $info) {
             if (!$this->contains($term)) {
                 $this->terms->offsetSet($term, $info);
             }
+        }
+
+        // Store secondary suggestions in case merge yielded non-useful
+        // result set:
+        if (!$this->secondary) {
+            $this->secondary = $spellcheck;
+        } else {
+            $this->secondary->mergeWith($spellcheck);
         }
     }
 
