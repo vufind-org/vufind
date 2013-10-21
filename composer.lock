@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "912400ee83b7a6b04d6e1ccc398e5ea4",
+    "hash": "0b211d2fa815ced227a3273a73041c86",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -117,6 +117,47 @@
             }
         },
         {
+            "name": "leafo/lessphp",
+            "version": "v0.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/leafo/lessphp.git",
+                "reference": "51f3f06f0fe78a722dabfd14578444bdd078d9de"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/leafo/lessphp/zipball/51f3f06f0fe78a722dabfd14578444bdd078d9de",
+                "reference": "51f3f06f0fe78a722dabfd14578444bdd078d9de",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.3-dev"
+                }
+            },
+            "autoload": {
+                "classmap": [
+                    "lessc.inc.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT",
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Leaf Corcoran",
+                    "email": "leafot@gmail.com",
+                    "homepage": "http://leafo.net"
+                }
+            ],
+            "description": "lessphp is a compiler for LESS written in PHP.",
+            "homepage": "http://leafo.net/lessphp/",
+            "time": "2013-08-09 17:09:19"
+        },
+        {
             "name": "mobileesp/mdetect",
             "version": "dev-master",
             "dist": {
@@ -186,10 +227,10 @@
         },
         {
             "name": "pear-pear.php.net/File_MARC",
-            "version": "0.8.0",
+            "version": "1.0.0",
             "dist": {
                 "type": "file",
-                "url": "http://pear.php.net/get/File_MARC-0.8.0.tgz",
+                "url": "http://pear.php.net/get/File_MARC-1.0.0.tgz",
                 "reference": null,
                 "shasum": null
             },
@@ -197,7 +238,7 @@
                 "php": ">=5.3.0.0"
             },
             "replace": {
-                "pear-pear/file_marc": "== 0.8.0.0"
+                "pear-pear/file_marc": "== 1.0.0.0"
             },
             "type": "pear-library",
             "autoload": {
@@ -390,7 +431,7 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.3.5",
+            "version": "v2.3.6",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
