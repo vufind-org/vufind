@@ -1,3 +1,10 @@
+.inspector_container #side-nav {
+  margin:auto 0 auto .8%;
+}
+.inspector_container #view {
+  margin:auto 0 auto 1%;
+}
+
 .item-list {
   height:600px;
 }
