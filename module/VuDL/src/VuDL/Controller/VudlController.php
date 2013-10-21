@@ -75,7 +75,8 @@ class VudlController extends AbstractVuDL
         if (empty($record)) {
             throw new RecordMissingException('Record not found.');
         }
-        return $record;
+        $details = $this->formatDetails($record);
+        return $details;
     }
 
     /**
@@ -89,10 +90,23 @@ class VudlController extends AbstractVuDL
     protected function getSolrDetails($id)
     {
         // Blow up now if we can't retrieve the record:
-        if (!($record = $this->getRecordLoader()->load($id)->getRawData())) {
+        if ($record = $this->getRecordLoader()->load($id)->getRawData()) {
+            return $record;
+        } else {
             throw new RecordMissingException('Solr details unavailable');
         }
-
+    }
+    
+    /**
+     * Organize the details based on config
+     *
+     * @param string $record associative array (fieldname => value)
+     *
+     * @return array
+     * @throws \Exception
+     */
+    protected function formatDetails($record)
+    {
         // Get config for which details we want
         $fields = $combinedFields = array(); // Save to combine later
         $detailsList = $this->getDetailsList();
