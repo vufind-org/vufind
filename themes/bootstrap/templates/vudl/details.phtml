@@ -83,7 +83,7 @@
       <? endif; ?>
       <a href="<?=$this->url('vudl-record', array('id'=>$this->id))?>"><i class="icon-link"></i> Permanent Link</a>
       <br/><br/>
-      <? if(isset($this->details['description'])): ?><p class="text-left"><?=$this->details['description']['value'] ?></p><? endif ?>
+      <? if(isset($this->details['description'])): ?><p class="text-left"><?=html_entity_decode($this->details['description']['value']) ?></p><? endif ?>
     </div>
   </div>
 </div>
