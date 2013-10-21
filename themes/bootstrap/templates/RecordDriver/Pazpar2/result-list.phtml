@@ -9,16 +9,17 @@
   </div>
   <div class="span9">
     <div>
-      <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
-      <?
+      <b><?
+        $summHighlightedTitle = $this->driver->getHighlightedTitle();
         $summTitle = $this->driver->getTitle();
-        if (!empty($summTitle)) {
-          echo $this->escapeHtml($this->truncate($summTitle, 180));
+        if (!empty($summHighlightedTitle)) {
+            echo $this->highlight($this->addEllipsis($summHighlightedTitle, $summTitle));
+        } else if (!empty($summTitle)) {
+            echo $this->escapeHtml($this->truncate($summTitle, 180));
         } else {
-          echo $this->transEsc('Title not available');
+            echo $this->transEsc('Title not available');
         }
-      ?>
-      </a>
+      ?></b>
     </div>
 
     <div>
