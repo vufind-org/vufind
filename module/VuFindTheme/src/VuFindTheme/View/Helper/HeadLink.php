@@ -89,9 +89,9 @@ class HeadLink extends \Zend\View\Helper\HeadLink
         $relPath = 'less/' . $file;
         $currentTheme = $this->themeInfo->findContainingTheme($relPath);
         $home = APPLICATION_PATH . "/themes/$currentTheme/";
-	list($fileName, ) = explode('.', $file);
+        list($fileName, ) = explode('.', $file);
 
-	$lesscss = new \lessc;
+        $lesscss = new \lessc;
         $lesscss->setFormatter('compressed');
         $lesscss->setImportDir(array($home.'less', APPLICATION_PATH."/themes/bootstrap/less"));
         $lesscss->checkedCompile(
