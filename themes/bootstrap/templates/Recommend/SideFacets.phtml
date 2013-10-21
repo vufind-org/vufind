@@ -103,13 +103,7 @@ JS;
         <? endif; ?>
         <? if ($thisFacet['isApplied']): ?>
           <li class="<? if ($i>5): ?><?=$moreClass ?><?endif ?><? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?><? endif ?>">
-            <? if ($allowExclude): ?>
-              <span class="pull-right small">
-                <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="icon-remove"></i></a>
-              </span>
-            <? else: ?>
-              <i class="icon-ok pull-right"></i>
-            <? endif; ?>
+            <i class="icon-ok pull-right"></i>
             <span class="main"><?=$this->escapeHtml($thisFacet['displayText'])?></span>
           </li>
         <? else: ?>
