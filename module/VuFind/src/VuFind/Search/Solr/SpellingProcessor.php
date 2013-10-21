@@ -153,6 +153,10 @@ class SpellingProcessor
                 );
             }
         }
+        // Fail over to secondary suggestions if primary failed:
+        if (empty($allSuggestions) && ($secondary = $spellcheck->getSecondary())) {
+            return $this->getSuggestions($secondary, $query);
+        }
         return $allSuggestions;
     }
 

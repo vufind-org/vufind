@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for simple JSON-based record collection factory.
+ * Unit tests for simple JSON-based record collection.
  *
  * PHP version 5
  *
@@ -29,11 +29,11 @@
 
 namespace VuFindTest\Backend\Solr\Json\Response;
 
-use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
+use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use PHPUnit_Framework_TestCase;
 
 /**
- * Unit tests for simple JSON-based record collection factory.
+ * Unit tests for simple JSON-based record collection.
  *
  * @category VuFind2
  * @package  Search
@@ -41,31 +41,27 @@ use PHPUnit_Framework_TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class RecordCollectionFactoryTest extends PHPUnit_Framework_TestCase
+class RecordCollectionTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * Test that the factory creates a collection.
+     * Test that the object returns appropriate defaults for missing elements.
      *
      * @return void
      */
-    public function testFactory()
+    public function testDefaults()
     {
-        $json = json_encode(array('response' => array('start' => 0, 'docs' => array(array(), array(), array()))));
-        $fact = new RecordCollectionFactory();
-        $coll = $fact->factory(json_decode($json, true));
-        $this->assertEquals(3, count($coll));
-    }
-
-    /**
-     * Test invalid input.
-     *
-     * @return void
-     * @expectedException VuFindSearch\Exception\InvalidArgumentException
-     * @expectedExceptionMessage Unexpected type of value: Expected array, got string
-     */
-    public function testInvalidInput()
-    {
-        $fact = new RecordCollectionFactory();
-        $coll = $fact->factory('garbage');
+        $coll = new RecordCollection(array());
+        $this->assertEquals(
+            'VuFindSearch\Backend\Solr\Response\Json\Spellcheck',
+            get_class($coll->getSpellcheck())
+        );
+        $this->assertEquals(0, $coll->getTotal());
+        $this->assertEquals(
+            'VuFindSearch\Backend\Solr\Response\Json\Facets',
+            get_class($coll->getFacets())
+        );
+        $this->assertEquals(array(), $coll->getGroups());
+        $this->assertEquals(array(), $coll->getHighlighting());
+        $this->assertEquals(0, $coll->getOffset());
     }
 }

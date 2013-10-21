@@ -1,22 +1,10 @@
 <phpunit bootstrap="./bootstrap.php" backupGlobals="false">
   <testsuites>
-    <testsuite name="VuFindConsole">
-      <directory>../../VuFindConsole/tests/unit-tests/src</directory>
+    <testsuite name="AllUnitTests">
+      <directory>../../*/tests/unit-tests/src</directory>
     </testsuite>
-    <testsuite name="VuFindHttp">
-      <directory>../../VuFindHttp/tests/unit-tests/src</directory>
-    </testsuite>
-    <testsuite name="VuFindSearch">
-      <directory>../../VuFindSearch/tests/unit-tests/src</directory>
-    </testsuite>
-    <testsuite name="VuFindTheme">
-      <directory>../../VuFindTheme/tests/unit-tests/src</directory>
-    </testsuite>
-    <testsuite name="VuFindUnit">
-      <directory>unit-tests/src</directory>
-    </testsuite>
-    <testsuite name="VuFindIntegration">
-      <directory>integration-tests/src</directory>
+    <testsuite name="AllIntegrationTests">
+      <directory>../../*/tests/integration-tests/src</directory>
     </testsuite>
   </testsuites>
 
