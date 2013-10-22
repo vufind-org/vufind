@@ -43,8 +43,25 @@ use PDO, PDOException, VuFind\Exception\ILS as ILSException;
  */
 class Koha extends AbstractBase
 {
+    /**
+     * Database connection
+     *
+     * @var PDO
+     */
     protected $db;
+
+    /**
+     * ILS base URL
+     *
+     * @var string
+     */
     protected $ilsBaseUrl;
+
+    /**
+     * Location codes
+     *
+     * @var array
+     */
     protected $locCodes;
 
     /**
