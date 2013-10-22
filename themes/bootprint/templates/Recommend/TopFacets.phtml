@@ -32,9 +32,9 @@
       <? /* Less link */ ?>
       <? if (count($cluster['list']) > $corner && $iter == count($cluster['list'])): ?>
         <a class="span12" href="#" onclick="lessFacets('<?=$title ?>'); return false;"><?=$this->transEsc('less') ?> ...</a>
-        </div>
       <? endif; ?>
       <? $iter++; ?>
     <? endforeach; ?>
+    </div>
   <? endforeach; ?>
 <? endif; ?>
