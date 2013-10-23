@@ -492,4 +492,28 @@ class Params extends \VuFind\Search\Base\Params
 
         return $backendParams;
     }
+
+    /**
+     * Format a single filter for use in getFilterList().
+     *
+     * @param string $field     Field name
+     * @param string $value     Field value
+     * @param string $operator  Operator (AND/OR/NOT)
+     * @param bool   $translate Should we translate the label?
+     *
+     * @return array
+     */
+    protected function formatFilterListEntry($field, $value, $operator, $translate)
+    {
+        $filter = parent::formatFilterListEntry(
+            $field, $value, $operator, $translate
+        );
+
+        // Convert range queries to a language-non-specific format:
+        if (preg_match('/^\[(.*) TO (.*)\]$/', $value, $matches)) {
+            $filter['displayText'] = $matches[1] . '-' . $matches[2];
+        }
+
+        return $filter;
+    }
 }
