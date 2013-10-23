@@ -943,8 +943,7 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Return an array structure containing all current filters
-     *    and urls to remove them.
+     * Return an array structure containing information about all current filters.
      *
      * @param bool $excludeCheckboxFilters Should we exclude checkbox filters from
      * the list (to be used as a complement to getCheckboxFacets()).
@@ -954,48 +953,87 @@ class Params implements ServiceLocatorAwareInterface
     public function getFilterList($excludeCheckboxFilters = false)
     {
         // Get a list of checkbox filters to skip if necessary:
-        $skipList = array();
-        if ($excludeCheckboxFilters) {
-            foreach ($this->checkboxFacets as $current) {
-                list($field, $value) = $this->parseFilter($current['filter']);
-                if (!isset($skipList[$field])) {
-                    $skipList[$field] = array();
-                }
-                $skipList[$field][] = $value;
-            }
-        }
+        $skipList = $excludeCheckboxFilters
+            ? $this->getCheckboxFacetValues() : array();
 
         $list = array();
         // Loop through all the current filter fields
         foreach ($this->filterList as $field => $values) {
-            $firstChar = substr($field, 0, 1);
-            if ($firstChar == '-') {
-                $operator = 'NOT';
-                $field = substr($field, 1);
-            } else if ($firstChar == '~') {
-                $operator = 'OR';
-                $field = substr($field, 1);
-            } else {
-                $operator = 'AND';
-            }
-            // and each value currently used for that field
+            list($operator, $field) = $this->parseOperatorAndFieldName($field);
             $translate
                 = in_array($field, $this->getOptions()->getTranslatedFacets());
+            // and each value currently used for that field
             foreach ($values as $value) {
                 // Add to the list unless it's in the list of fields to skip:
                 if (!isset($skipList[$field])
                     || !in_array($value, $skipList[$field])
                 ) {
                     $facetLabel = $this->getFacetLabel($field);
-                    $list[$facetLabel][] = array(
-                        'value'       => $value,
-                        'displayText' =>
-                            $translate ? $this->translate($value) : $value,
-                        'field'       => $field,
-                        'operator'    => $operator,
+                    $list[$facetLabel][] = $this->formatFilterListEntry(
+                        $field, $value, $operator, $translate
                     );
                 }
             }
+        }
+        return $list;
+    }
+
+    /**
+     * Format a single filter for use in getFilterList().
+     *
+     * @param string $field     Field name
+     * @param string $value     Field value
+     * @param string $operator  Operator (AND/OR/NOT)
+     * @param bool   $translate Should we translate the label?
+     *
+     * @return array
+     */
+    protected function formatFilterListEntry($field, $value, $operator, $translate)
+    {
+        return array(
+            'value'       => $value,
+            'displayText' => $translate ? $this->translate($value) : $value,
+            'field'       => $field,
+            'operator'    => $operator,
+        );
+    }
+
+    /**
+     * Parse the operator and field name from a prefixed field string.
+     *
+     * @param string $field Prefixed string
+     *
+     * @return array (0 = operator, 1 = field name)
+     */
+    protected function parseOperatorAndFieldName($field)
+    {
+        $firstChar = substr($field, 0, 1);
+        if ($firstChar == '-') {
+            $operator = 'NOT';
+            $field = substr($field, 1);
+        } else if ($firstChar == '~') {
+            $operator = 'OR';
+            $field = substr($field, 1);
+        } else {
+            $operator = 'AND';
+        }
+        return array($operator, $field);
+    }
+
+    /**
+     * Get a formatted list of checkbox filter values ($field => array of values).
+     *
+     * @return array
+     */
+    protected function getCheckboxFacetValues()
+    {
+        $list = array();
+        foreach ($this->checkboxFacets as $current) {
+            list($field, $value) = $this->parseFilter($current['filter']);
+            if (!isset($list[$field])) {
+                $list[$field] = array();
+            }
+            $list[$field][] = $value;
         }
         return $list;
     }
