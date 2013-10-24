@@ -28,7 +28,10 @@ function getHTPreviews(skeys) {
 }
 
 function applyPreviewUrl($link, url) {
+    // Update the preview button:
     $link.attr('href', url).show();
+
+    // Update associated record thumbnail, if any:
     $link.parents('.result,.record')
         .find('img.img-polaroid')
         .parents('a').attr('href', url);
