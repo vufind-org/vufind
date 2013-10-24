@@ -27,6 +27,13 @@ function getHTPreviews(skeys) {
     }
 }
 
+function applyPreviewUrl($link, url) {
+    $link.attr('href', url).show();
+    $link.parents('.result,.record')
+        .find('img.img-polaroid')
+        .parents('a').attr('href', url);
+}
+
 function processBookInfo(booksInfo, previewClass) {
     // assign the correct rights string depending on source
     var viewOptions = (previewClass == 'previewGBS')
@@ -35,8 +42,9 @@ function processBookInfo(booksInfo, previewClass) {
         var bookInfo = booksInfo[bibkey];
         if (bookInfo) {
           if (viewOptions.indexOf(bookInfo.preview)>= 0) {
-                var $link = $('.' + previewClass + '.' + bibkey);
-                $link.attr('href', bookInfo.preview_url).show();
+                applyPreviewUrl(
+                    $('.' + previewClass + '.' + bibkey), bookInfo.preview_url
+                );
             }
         }
     }
@@ -58,7 +66,7 @@ function processHTBookInfo(booksInfo) {
         for (var i = 0; i < items.length; i++) {
             // check if items possess an eligible rights code
             if (getHathiOptions().indexOf(items[i].rightsCode) >= 0) {
-                $link.attr('href', items[i].itemURL).show();
+                applyPreviewUrl($link, items[i].itemURL);
             }
         }
     }
