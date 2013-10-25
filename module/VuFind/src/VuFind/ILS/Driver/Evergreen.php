@@ -651,10 +651,11 @@ HERE;
             throw new ILSException($e->getMessage());
         }
 
-        $page = ($page) ? $page : 1;
-        $limit = ($limit) ? $limit : 20;
-        $startRow = (($page-1)*$limit)+1;
-        $endRow = ($page*$limit);
+        // TODO: implement paging support
+        //$page = ($page) ? $page : 1;
+        //$limit = ($limit) ? $limit : 20;
+        //$startRow = (($page-1)*$limit)+1;
+        //$endRow = ($page*$limit);
 
         $sql = "select copy.id from asset.copy " .
                "where copy.create_date >= '$startdate' " .

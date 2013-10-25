@@ -827,7 +827,7 @@ class ClaviusSQL extends AbstractBase
             foreach ($sqlSt->fetchAll() as $item) {
                 $id = $this->getLongId($item['tcislo'], $item['druhdoku']);
                 //TODO - requests
-                $requestsSql = "";
+                //$requestsSql = "";
                 $transactions[] = array(
                     'duedate' => $item['duedate'],
                     'id' => $id,

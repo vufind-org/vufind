@@ -57,8 +57,6 @@ class CAS extends AbstractBase
      * @throws AuthException
      * @return void
      */
-
-
     protected function validateConfig()
     {
         $cas = $this->config->CAS;
@@ -128,7 +126,6 @@ class CAS extends AbstractBase
         $casauth = $this->setupCAS();
         $casauth->forceAuthentication();
 
-
         // Check if username is set.
         $username = $casauth->getAttribute($cas->username);
         if (empty($username)) {
@@ -137,7 +134,6 @@ class CAS extends AbstractBase
 
         // If we made it this far, we should log in the user!
         $user = $this->getUserTable()->getByUsername($username);
-
 
         // Has the user configured attributes to use for populating the user table?
         $attribsToCheck = array(
@@ -200,8 +196,8 @@ class CAS extends AbstractBase
             && isset($config->CAS->logout)
         ) {
             $casauth = $this->setupCAS();
-            if ($casauth->checkAuthentication() !== true) {
-                return empty($username);
+            if ($casauth->checkAuthentication() === false) {
+                return true;
             }
         }
         return false;
