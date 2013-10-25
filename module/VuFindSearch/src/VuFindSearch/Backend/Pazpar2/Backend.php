@@ -98,7 +98,7 @@ class Backend extends AbstractBackend
     /**
      * Set the max query time.
      *
-     * @var int $time New value
+     * @param int $time New value
      *
      * @return void
      */
@@ -110,7 +110,7 @@ class Backend extends AbstractBackend
     /**
      * Set the search progress target.
      *
-     * @var float $progress New value
+     * @param float $progress New value
      *
      * @return void
      */
