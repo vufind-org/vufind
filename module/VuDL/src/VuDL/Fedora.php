@@ -130,7 +130,6 @@ class Fedora implements \VuFindHttp\HttpServiceAwareInterface
             $data,
             $matches
         );
-        $classes = array();
         return $matches[1];
     }
     
