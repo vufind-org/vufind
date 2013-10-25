@@ -29,7 +29,7 @@ input[type="text"]:focus {border-color:#619144;box-shadow:inset 0px 1px 2px rgba
 .slider.slider-horizontal .slider-handle {background:#C6D880;border:1px solid #619144;margin-top:-6px}
 .tab-container {margin:0}
 
-select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input,
+select, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input,
 .row-fluid input[class*="span"], .row-fluid select[class*="span"], .btn:not(.btn-large) {border:1px solid #AAA;border-radius:2px;font-size:12px;height:26px;min-height:1px;padding:1px 6px}
 .btn {padding:2px 8px}
 .btn.btn-small {height:20px;padding:0 4px}
@@ -132,6 +132,7 @@ select, .btn:not(.btn-link){vertical-align:top}
 .result .savedLists {margin:2px 0;padding:6px}
 .result .savedLists ul {margin-bottom:0}
 .span9>.noprint>.help-block {margin-bottom:0}
+.title .img-polaroid {margin-left:2px;max-width:96px}
 .top-row [class*="span"] {min-height:1px;padding:0 3px}
 
 /* --- VUDL --- */
