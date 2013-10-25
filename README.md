@@ -12,4 +12,3 @@ Installation
 
 See online documentation at http://vufind.org/wiki/vufind2:installation_notes
 
-test
