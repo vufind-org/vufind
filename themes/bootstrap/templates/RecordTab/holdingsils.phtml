@@ -51,7 +51,11 @@
   <? if (isset($holding['items'][0]['callnumber'])): ?>
   <tr>
     <th><?=$this->transEsc("Call Number")?>: </th>
-    <td width="50%"><?=$this->escapeHtml($holding['items'][0]['callnumber'])?></td>
+    <td width="50%">
+      <? foreach ($callNos as $callNo): ?>
+        <?=$this->escapeHtml($callNo)?><br />
+      <? endforeach; ?>
+    </td>
   </tr>
   <? endif; ?>
   <? if (!empty($holding['summary'])): ?>
