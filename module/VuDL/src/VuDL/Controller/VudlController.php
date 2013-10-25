@@ -397,10 +397,10 @@ class VudlController extends AbstractVuDL
 
         try {
             $driver = $this->getRecordLoader()->load($root, 'VuFind');
-            if ($driver->isProtected()) {
-                die('Access Denied.');
-            }
         } catch(\Exception $e) {
+        }
+        if (isset($driver) && $driver->isProtected()) {
+            return $this->forwardTo('VuDL', 'denied');
         }
 
         // File information / description
@@ -547,6 +547,16 @@ class VudlController extends AbstractVuDL
     {
         $view = $this->createViewModel();
         return $view;
+    }
+
+    /**
+     * Access denied screen.
+     *
+     * @return mixed
+     */
+    protected function deniedAction()
+    {
+        return $this->createViewModel();
     }
 
     /**
