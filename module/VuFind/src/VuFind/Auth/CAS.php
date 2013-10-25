@@ -196,7 +196,7 @@ class CAS extends AbstractBase
             && isset($config->CAS->logout)
         ) {
             $casauth = $this->setupCAS();
-            if ($casauth->checkAuthentication() !== true) {
+            if ($casauth->checkAuthentication() === false) {
                 return true;
             }
         }
