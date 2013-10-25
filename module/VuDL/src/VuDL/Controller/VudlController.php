@@ -158,7 +158,7 @@ class VudlController extends AbstractVuDL
     protected function getRoot($id)
     {
         $parents = $this->getFedora()->getParentList($id);
-        foreach ($parents[0] as $i=>$parent) {
+        foreach (array_keys($parents[0]) as $i) {
             if (in_array('ResourceCollection', $this->getFedora()->getClasses($i))) {
                 return $i;
             }
