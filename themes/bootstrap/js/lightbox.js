@@ -10,6 +10,12 @@ var modalXHR; // Used for current in-progress XHR lightbox request
 // Cart actions based on submission
 // Change the content of the lightbox
 function changeModalContent(html) {
+  var header = $('#modal .modal-header')
+  if(header.find('h3').html().length == 0) {
+    header.css('border-bottom-width', '0');
+  } else {
+    header.css('border-bottom-width', '1px');
+  }
   $('#modal .modal-body').html(html).modal({'show':true,'backdrop':false});
 }
 // Close the lightbox and run update functions
@@ -21,6 +27,7 @@ function closeLightbox() {
   $('#modal').modal('hide');
   // Reset content
   $('#modal').removeData('modal');
+  $('#modal').find('.modal-header h3').html('');
   $('#modal').find('.modal-body').html(vufindString.loading + "...");
   // Perform checks to update the page
   if(checkSaveStatuses) {
@@ -359,6 +366,11 @@ $(document).ready(function() {
   // Login link
   $('#loginOptions a').click(function() {
     return getLightbox('MyResearch','Login',{},{'loggingin':true});
+  });
+  // Tag lightbox
+  $('#tagRecord').click(function() {
+    var id = $('.hiddenId')[0].value;
+    return getLightbox('Record', 'AddTag', {id:id});
   });
   // Modal title
   $('.modal-link,.help-link').click(function() {
