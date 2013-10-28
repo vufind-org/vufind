@@ -62,13 +62,11 @@ class SummonController extends AbstractSearch
     }
 
     /**
-     * preDispatch -- block access when appropriate.
-     *
-     * @param MvcEvent $e Event object
+     * preDispatch -- add Summon message.
      *
      * @return void
      */
-    public function preDispatch(MvcEvent $e)
+    public function preDispatch()
     {
         $this->layout()->poweredBy
             = 'Powered by Summon™ from Serials Solutions, a division of ProQuest.';

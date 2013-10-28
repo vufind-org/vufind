@@ -246,6 +246,7 @@ class Backend extends AbstractBackend
      * @param int   $offset  Search offset
      *
      * @return RecordCollectionInterface
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function createRecordCollection($records, $total = 0, $offset = 0)
     {
