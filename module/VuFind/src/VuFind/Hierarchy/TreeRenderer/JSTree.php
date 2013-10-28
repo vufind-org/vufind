@@ -87,7 +87,6 @@ class JSTree extends AbstractBase
     public function getTreeList($hierarchyID = false)
     {
         $record = $this->getRecordDriver();
-        $id = $record->getUniqueID();
         $inHierarchies = $record->getHierarchyTopID();
         $inHierarchiesTitle = $record->getHierarchyTopTitle();
 
