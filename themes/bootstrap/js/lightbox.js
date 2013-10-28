@@ -10,7 +10,7 @@ var modalXHR; // Used for current in-progress XHR lightbox request
 // Cart actions based on submission
 // Change the content of the lightbox
 function changeModalContent(html) {
-  var header = $('#modal .modal-header')
+  var header = $('#modal .modal-header');
   if(header.find('h3').html().length == 0) {
     header.css('border-bottom-width', '0');
   } else {
