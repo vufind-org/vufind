@@ -401,7 +401,12 @@ class Demo extends AbstractBase
      */
     public function getPurchaseHistory($id)
     {
-        return array();
+        $issues = rand(0, 3);
+        $retval = array();
+        for ($i = 0; $i < $issues; $i++) {
+            $retval[] = array('issue' => 'issue ' . ($i + 1));
+        }
+        return $retval;
     }
 
     /**
