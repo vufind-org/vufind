@@ -15,10 +15,8 @@
     <? if ($this->renewForm): ?>
     <form name="renewals" action="" method="post" id="renewals">
       <div class="toolbar">
-        <ul>
-          <li><input type="submit" class="btn" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" /></li>
-          <li><input type="submit" class="btn" name="renewAll" value="<?=$this->transEsc('renew_all')?>" /></li>
-        </ul>
+        <input type="submit" class="btn" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
+        <input type="submit" class="btn" name="renewAll" value="<?=$this->transEsc('renew_all')?>" />
       </div>
       <br />
     <? endif; ?>
@@ -96,24 +94,24 @@
             <? if (isset($renewDetails['success']) && $renewDetails['success']): ?>
               <? $showStatus = false; ?>
               <strong><?=$this->transEsc('Due Date')?>: <?=$this->escapeHtml($renewDetails['new_date'])?> <? if (isset($renewDetails['new_time'])): ?><?=$this->escapeHtml($renewDetails['new_time'])?><? endif; ?></strong>
-              <div class="success"><?=$this->transEsc('renew_success')?></div>
+              <div class="alert alert-success"><?=$this->transEsc('renew_success')?></div>
             <? else: ?>
               <strong><?=$this->transEsc('Due Date')?>: <?=$this->escapeHtml($ilsDetails['duedate'])?><? if (isset($ilsDetails['dueTime'])): ?> <?=$this->escapeHtml($ilsDetails['dueTime'])?><? endif; ?></strong>
-              <div class="error"><?=$this->transEsc('renew_fail')?><? if (isset($renewDetails['sysMessage'])): ?>: <?=$this->escapeHtml($renewDetails['sysMessage'])?><? endif; ?></div>
+              <div class="alert alert-error"><?=$this->transEsc('renew_fail')?><? if (isset($renewDetails['sysMessage'])): ?>: <?=$this->escapeHtml($renewDetails['sysMessage'])?><? endif; ?></div>
             <? endif; ?>
           <? else: ?>
             <strong><?=$this->transEsc('Due Date')?>: <?=$this->escapeHtml($ilsDetails['duedate'])?><? if (isset($ilsDetails['dueTime'])): ?> <?=$this->escapeHtml($ilsDetails['dueTime'])?><? endif; ?></strong>
             <? if ($showStatus): ?>
               <? if (isset($ilsDetails['dueStatus']) && $ilsDetails['dueStatus'] == "overdue"): ?>
-                <div class="error"><?=$this->transEsc("renew_item_overdue")?></div>
+                <div class="alert alert-error"><?=$this->transEsc("renew_item_overdue")?></div>
               <? elseif (isset($ilsDetails['dueStatus']) && $ilsDetails['dueStatus'] == "due"): ?>
-                <div class="notice"><?=$this->transEsc("renew_item_due")?></div>
+                <div class="alert alert-info"><?=$this->transEsc("renew_item_due")?></div>
               <? endif; ?>
             <? endif; ?>
           <? endif; ?>
 
           <? if ($showStatus && isset($ilsDetails['message']) && !empty($ilsDetails['message'])): ?>
-            <div class="info"><?=$this->transEsc($ilsDetails['message'])?></div>
+            <div class="alert alert-info"><?=$this->transEsc($ilsDetails['message'])?></div>
           <? endif; ?>
           <? if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_link'])): ?>
             <a href="<?=$this->escapeHtml($ilsDetails['renew_link'])?>"><?=$this->transEsc('renew_item')?></a>
