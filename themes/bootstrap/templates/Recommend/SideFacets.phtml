@@ -97,9 +97,9 @@ JS;
               $thisFacet['displayText'] = "-";
             }
           ?>
-          <? $moreClass = 'narrowGroupHidden_'.$this->escapeHtml($title).' hidden'; ?>
+          <? $moreClass = 'NarrowGroupHidden_'.$this->escapeHtml($title).' hidden'; ?>
         <? if ($i == 6): ?>
-          <li id="more<?=$this->escapeHtml($title)?>"><a href="javascript:moreFacets('<?=$title ?>')"><?=$this->transEsc('more')?> ...</a></li>
+          <li id="moreNarrowGroupHidden_<?=$this->escapeHtml($title)?>"><a href="javascript:moreFacets('NarrowGroupHidden_<?=$title ?>')"><?=$this->transEsc('more')?> ...</a></li>
         <? endif; ?>
         <? if ($thisFacet['isApplied']): ?>
           <li class="<? if ($i>5): ?><?=$moreClass ?><?endif ?><? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?><? endif ?>">
@@ -121,7 +121,7 @@ JS;
           </li>
         <? endif; ?>
       <? endforeach; ?>
-        <? if ($i > 5): ?><li class="<?=$moreClass ?>"><a href="javascript:lessFacets('<?=$title ?>')"><?=$this->transEsc('less')?> ...</a></li><? endif; ?>
+        <? if ($i > 5): ?><li class="<?=$moreClass ?>"><a href="javascript:lessFacets('NarrowGroupHidden_<?=$title ?>')"><?=$this->transEsc('less')?> ...</a></li><? endif; ?>
       <? endif; ?>
       <li class="divider"></li>
     </ul>

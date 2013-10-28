@@ -4,7 +4,7 @@
 ?>
 <? if (isset($topFacetSet)): ?>
   <? $row=0; foreach($topFacetSet as $title => $cluster): ?>
-    <? $moreClass = ' narrowGroupHidden_'.$this->escapeHtml($title).' hidden'; ?>
+    <? $moreClass = ' NarrowGroupHidden_'.$this->escapeHtml($title).' hidden'; ?>
     <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
     <strong><?=$this->transEsc($cluster['label'])?></strong><?=$this->transEsc("top_facet_suffix") ?>
     <div class="row-fluid">
@@ -12,8 +12,8 @@
     <? foreach($cluster['list'] as $thisFacet): ?>
       <? /* More link */ ?>
       <? if ($iter == $corner+1): ?>
-        </div><div class="row-fluid">
-          <span class="span12"><a id="more<?=$this->escapeHtml($title)?>" href="#" onclick="moreFacets('<?=$this->escapeHtml($title)?>'); return false;"><?=$this->transEsc('more') ?> ...</a></span>
+        </div><div id="moreNarrowGroupHidden_<?=$this->escapeHtml($title)?>" class="row-fluid">
+          <span class="span12"><a href="#" onclick="moreFacets('NarrowGroupHidden_<?=$this->escapeHtml($title)?>'); return false;"><?=$this->transEsc('more') ?> ...</a></span>
         </div><div class="row-fluid<?=$moreClass ?>">
       <? endif; ?>
       <? /* Columns */ ?>
@@ -31,7 +31,7 @@
       <? if ($iter%$topFacetSettings['cols'] == 0 && $iter > 0): ?></div><div class="row-fluid<? if(++$row > $topFacetSettings['rows']) echo $moreClass ?>"><? endif; ?>
       <? /* Less link */ ?>
       <? if (count($cluster['list']) > $corner && $iter == count($cluster['list'])): ?>
-        <a class="span12" href="#" onclick="lessFacets('<?=$title ?>'); return false;"><?=$this->transEsc('less') ?> ...</a>
+        <a class="span12" href="#" onclick="lessFacets('NarrowGroupHidden_<?=$title ?>'); return false;"><?=$this->transEsc('less') ?> ...</a>
       <? endif; ?>
       <? $iter++; ?>
     <? endforeach; ?>

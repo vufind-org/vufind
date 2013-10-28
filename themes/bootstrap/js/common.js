@@ -40,11 +40,12 @@ function deparam(url) {
 }
 
 function moreFacets(id) {
-  $('.narrowGroupHidden_'+id).removeClass('hidden');
+  console.log(id);
+  $('.'+id).removeClass('hidden');
   $('#more'+id).addClass('hidden');
 }
 function lessFacets(id) {
-  $('.narrowGroupHidden_'+id).addClass('hidden');
+  $('.'+id).addClass('hidden');
   $('#more'+id).removeClass('hidden');
 }
 
