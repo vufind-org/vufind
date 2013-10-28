@@ -26,8 +26,7 @@
  * @link     http://vufind.org
  */
 namespace VuFind;
-use Zend\ModuleManager\ModuleManager,
-    Zend\Mvc\MvcEvent;
+use Zend\Mvc\MvcEvent;
 
 /**
  * ZF2 module definition for the VuFind application

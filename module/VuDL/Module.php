@@ -26,8 +26,6 @@
  * @link     https://github.com/dmj/vf2-proxy
  */
 namespace VuDL;
-use Zend\ModuleManager\ModuleManager,
-    Zend\Mvc\MvcEvent;
 
 /**
  * VuDL interface module.
