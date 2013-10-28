@@ -65,26 +65,4 @@ class Module
             ),
         );
     }
-
-    /**
-     * Initialize the module
-     *
-     * @param ModuleManager $m Module manager
-     *
-     * @return void
-     */
-    public function init(ModuleManager $m)
-    {
-    }
-
-    /**
-     * Bootstrap the module
-     *
-     * @param MvcEvent $e Event
-     *
-     * @return void
-     */
-    public function onBootstrap(MvcEvent $e)
-    {
-    }
 }
