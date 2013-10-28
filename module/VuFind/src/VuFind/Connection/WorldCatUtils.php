@@ -443,30 +443,11 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
         $narrower = array();
 
         while ($record = $marc->next()) {
-            // Get exact terms:
-            $actual = $record->getField('150');
-            if ($actual) {
-                $main = $actual->getSubfield('a');
-                if ($main) {
-                    // Some versions of File_MARCXML seem to have trouble returning
-                    // strings properly (giving back XML objects instead); let's
-                    // cast to string to be sure we get what we expect!
-                    $main = (string)$main->getData();
-
-                    // Add subdivisions:
-                    $subdivisions = $actual->getSubfields('x');
-                    if ($subdivisions) {
-                        foreach ($subdivisions as $current) {
-                            $main .= ', ' . (string)$current->getData();
-                        }
-                    }
-
-                    // Only save the actual term if it is not a subset of the
-                    // requested term.
-                    if (!stristr($term, $main)) {
-                        $exact[] = $main;
-                    }
-                }
+            // Get exact terms; only save it if it is not a subset of the requested
+            // term.
+            $main = $this->getExactTerm($record);
+            if ($main && !stristr($term, $main)) {
+                $exact[] = $main;
             }
 
             // Get broader/narrower terms:
@@ -505,5 +486,35 @@ class WorldCatUtils implements \Zend\Log\LoggerAwareInterface
             'broader' => array_unique($broader),
             'narrower' => array_unique($narrower)
         );
+    }
+
+    /**
+     * Extract an exact term from a MARC record.
+     *
+     * @param \File_MARC_Record $record MARC record
+     *
+     * @return string
+     */
+    protected function getExactTerm($record)
+    {
+        // Get exact terms:
+        $actual = $record->getField('150');
+        if (!$actual || !($main = $actual->getSubfield('a'))) {
+            return false;
+        }
+
+        // Some versions of File_MARCXML seem to have trouble returning
+        // strings properly (giving back XML objects instead); let's
+        // cast to string to be sure we get what we expect!
+        $main = (string)$main->getData();
+
+        // Add subdivisions:
+        $subdivisions = $actual->getSubfields('x');
+        if ($subdivisions) {
+            foreach ($subdivisions as $current) {
+                $main .= ', ' . (string)$current->getData();
+            }
+        }
+        return $main;
     }
 }
