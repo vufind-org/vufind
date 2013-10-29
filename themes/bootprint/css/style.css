@@ -15,6 +15,11 @@ body h3 {font-size:20px}
 .accordion-heading .accordion-toggle {font-size:14px;padding:2px 15px}
 .container a:not(.btn,.text-error) {color:#06C}
 .form-horizontal .controls {margin-left:165px}
+.dropdown-menu>.active>a,
+.dropdown-menu>.active>a:hover,
+.dropdown-menu>.active>a:focus {
+  background:#619144;
+}
 .hero-unit {margin:-5px}
 hr {margin:4px 0}
 input[type="text"] {border-color:#AAA;font-size:12px}
