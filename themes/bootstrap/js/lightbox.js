@@ -33,6 +33,29 @@ function closeLightbox() {
   if(checkSaveStatuses) {
     checkSaveStatuses();
   }
+  
+  // Update tag list
+  var tagList = $('#tagList');
+  if (tagList.length > 0) {
+      tagList.empty();
+      var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:id,'source':recordSource});
+      $.ajax({
+        dataType: 'json',
+        url: url,
+        success: function(response) {
+          if (response.status == 'OK') {
+            $.each(response.data, function(i, tag) {
+              var href = path + '/Tag?' + $.param({lookfor:tag.tag});
+              var html = (i>0 ? ', ' : ' ') + '<a href="' + htmlEncode(href) + '">' + htmlEncode(tag.tag) +'</a> (' + htmlEncode(tag.cnt) + ')';
+              tagList.append(html);
+            });
+          } else if (response.data && response.data.length > 0) {
+            tagList.append(response.data);
+          }
+        }
+      });
+  }
+  
   // Update cart items
   var cartCount = $('#cartItems strong');
   if(cartCount.length > 0) {
