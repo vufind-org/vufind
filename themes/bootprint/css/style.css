@@ -104,8 +104,8 @@ select, .btn:not(.btn-link){vertical-align:top}
 .filters li a i {display:inline-block;margin:2px 0 0 3px;vertical-align:top}
 
 /* --- MAIN --- */
-.centered-pills {border-bottom:1px solid #DDD;font-size:12px}
-.nav-pills {border-bottom:1px solid #DDD;margin:0 0 6px 0}
+.centered-pills {border-bottom:1px solid #DDD;font-size:12px;margin-right:14px}
+.nav-pills {margin:3px 0 0 0}
 
 /* --- HOME --- */
 .searchHomeContent {margin:2em auto;width:80%}
@@ -141,3 +141,8 @@ select, .btn:not(.btn-link){vertical-align:top}
 #download-button:active {background:linear-gradient(to bottom, #508033 0%,#72A255 100%)}
 .inspector_container {margin-top:6px}
 .table.details {font-size:10px;border-bottom:1px solid #DDD}
+
+/* -- MY RESEARCH -- */
+.bulkActionForm .btn-link {padding:1px 2px}
+.bulkActionForm .result {background:#FFF}
+#sort_options_1 {width:100px}

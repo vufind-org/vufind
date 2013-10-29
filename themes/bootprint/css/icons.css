@@ -1,10 +1,17 @@
 i.icon-asterisk,
 i.icon-book,
+i.icon-bookbag,
+i.icon-bookbag-add,
+i.icon-bookbag-delete,
+i.icon-bookbag-empty,
 i.icon-bookmark,
 i.icon-edit,
+i.icon-email,
 i.icon-envelope,
 i.icon-envelope-alt,
+i.icon-export,
 i.icon-heart,
+i.icon-home,
 i.icon-inbox,
 i.icon-leaf,
 i.icon-list-alt,
@@ -12,6 +19,7 @@ i.icon-minus-sign,
 i.icon-ok,
 i.icon-phone-sign,
 i.icon-plus-sign,
+i.icon-print,
 i.icon-qrcode,
 i.icon-remove,
 i.icon-rss,
@@ -33,6 +41,7 @@ i.icon-user {
   height:16px;
   margin:0;
   padding:0;
+  text-shadow:none;
   vertical-align:text-bottom;
   width:16px;
 }
@@ -55,11 +64,18 @@ i.icon-user {
 }
 .small i.icon-asterisk,
 .small i.icon-book,
+.small i.icon-bookbag,
+.small i.icon-bookbag-add,
+.small i.icon-bookbag-delete,
+.small i.icon-bookbag-empty,
 .small i.icon-bookmark,
 .small i.icon-edit,
+.small i.icon-email,
 .small i.icon-envelope,
 .small i.icon-envelope-alt,
+.small i.icon-export,
 .small i.icon-heart,
+.small i.icon-home,
 .small i.icon-inbox,
 .small i.icon-leaf,
 .small i.icon-list-alt,
@@ -67,6 +83,7 @@ i.icon-user {
 .small i.icon-ok,
 .small i.icon-phone-sign,
 .small i.icon-plus-sign,
+.small i.icon-print,
 .small i.icon-qrcode,
 .small i.icon-remove,
 .small i.icon-rss,
@@ -85,18 +102,25 @@ i.icon-user {
 }
 i.icon-asterisk {background:url('../images/icons/list.png')}
 i.icon-book {background:url('../images/icons/book.png')}
+i.icon-bookbag {background:url('../images/icons/bookbag.png')}
+i.icon-bookbag-add {background:url('../images/icons/bookbag_add.png')}
+i.icon-bookbag-delete {background:url('../images/icons/bookbag_delete.png')}
+i.icon-bookbag-empty {background:url('../images/icons/bookbag_empty.png')}
 i.icon-bookmark {background:url('../images/icons/bookmark_add.png')}
 i.icon-edit {background:url('../images/icons/edit.png')}
+i.icon-email,
 i.icon-envelope,
 i.icon-envelope-alt {background:url('../images/icons/email.png')}
 i.icon-heart {background:url('../images/icons/heart.png')}
+i.icon-home {background:url('../images/icons/house.png')}
 i.icon-inbox {background:url('../images/icons/box.png')}
 i.icon-leaf,.icon-sitemap {background:url('../images/icons/treeCurrent.png')}
-i.icon-list-alt {background:url('../images/icons/application_add.png')}
+i.icon-list-alt,i.icon-export {background:url('../images/icons/application_add.png')}
 i.icon-minus-sign {background:url('../images/icons/delete.png')}
 i.icon-ok {background:url('../images/icons/tick.png')}
 i.icon-phone-sign {background:url('../images/icons/phone.png')}
 i.icon-plus-sign {background:url('../images/icons/add.png')}
+i.icon-print {background:url('../images/icons/printer.png')}
 i.icon-qrcode {background:url('../images/icons/qrcode.png')}
 i.icon-remove {background:url('../images/icons/delete.png')}
 i.icon-rss {background:url('../images/icons/feed.png')}
