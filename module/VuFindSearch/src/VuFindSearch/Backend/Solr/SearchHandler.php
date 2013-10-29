@@ -163,7 +163,7 @@ class SearchHandler
     /**
      * Return true if the handler defines Dismax fields.
      *
-     * @return boolean
+     * @return bool
      */
     public function hasDismax()
     {
@@ -205,7 +205,7 @@ class SearchHandler
     /**
      * Return true if handler defines a filter query.
      *
-     * @return boolean
+     * @return bool
      */
     public function hasFilterQuery()
     {
@@ -253,8 +253,8 @@ class SearchHandler
      *
      * If optional argument $tokenize is true tokenize the search string.
      *
-     * @param string  $search   Search string
-     * @param boolean $tokenize Tokenize the search string?
+     * @param string $search   Search string
+     * @param bool   $tokenize Tokenize the search string?
      *
      * @return string
      */
@@ -328,8 +328,8 @@ class SearchHandler
      * If optional argument $advanced is true the search string contains
      * advanced lucene query syntax.
      *
-     * @param string  $search   Search string
-     * @param boolean $advanced Is the search an advanced search string?
+     * @param string $search   Search string
+     * @param bool   $advanced Is the search an advanced search string?
      *
      * @return string
      *

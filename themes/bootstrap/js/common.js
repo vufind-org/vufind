@@ -40,7 +40,6 @@ function deparam(url) {
 }
 
 function moreFacets(id) {
-  console.log(id);
   $('.'+id).removeClass('hidden');
   $('#more'+id).addClass('hidden');
 }
