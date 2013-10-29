@@ -370,7 +370,7 @@ class SearchHandler
     }
 
     /**
-     * Return modified search strign after applying the transformation rules.
+     * Return modified search string after applying the transformation rules.
      *
      * @param array  $mungeRules  Munge rules
      * @param array  $mungeValues Munge values
