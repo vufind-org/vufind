@@ -103,7 +103,6 @@ $(document).ready(function() {
   $('.autocomplete').typeahead({
     source:function(query, process) {
       var searcher = extractClassParams('.autocomplete');
-      console.log(searcher);
       $.ajax({
         url: path + '/AJAX/JSON',
         data: {method:'getACSuggestions',type:$('#searchForm_type').val(),searcher:searcher['searcher'],q:query},
