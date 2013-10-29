@@ -22,13 +22,20 @@
 #      - field3^boost
 #    # DismaxParams is optional and allows you to override default Dismax settings
 #    #     (i.e. mm / bf) on a search-by-search basis.  If you want global default
-#    #     values for these settings, you can edit the "dismax" search handler in
+#    #     values for these settings, you can edit the appropriate search handler in
 #    #     solr/biblio/conf/solrconfig.xml.
 #    DismaxParams:
 #      - [param1_name, param1_value]
 #      - [param2_name, param2_value]
 #      - [param3_name, param3_value]
-#    # QueryFields define the fields we are searching when not using Dismax
+#    # This optional setting may be set to true to use traditional Dismax instead of
+#    #     Extended Dismax. It defaults to false. It is not recommended that you use
+#    #     this unless you have a compelling reason to (e.g. connecting to an old
+#    #     version of Solr).
+#    DisableExtendedDismax: true|false
+#    # QueryFields define the fields we are searching when not using Dismax; VuFind
+#    #     detects queries that will not work with Dismax/Extended Dismax and
+#    #     switches to QueryFields as needed.
 #    QueryFields:
 #      SolrField:
 #        - [howToMungeSearchstring, weight]
@@ -133,7 +140,7 @@
 # See the CallNumber search below for an example of custom munging in action.
 #-----------------------------------------------------------------------------------
 
-# These searches use Dismax when possible:
+# These searches use Extended Dismax when possible:
 Author:
   DismaxFields:
     - author^100
