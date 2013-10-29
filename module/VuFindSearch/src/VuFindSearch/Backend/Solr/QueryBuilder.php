@@ -142,7 +142,9 @@ class QueryBuilder implements QueryBuilderInterface
         $string  = $query->getString() ?: '*:*';
         $handler = $this->getSearchHandler($query->getHandler());
 
-        if ($this->containsAdvancedLuceneSyntax($string)) {
+        if (!($handler && $handler->hasExtendedDismax())
+            && $this->containsAdvancedLuceneSyntax($string)
+        ) {
             if ($handler) {
                 $string = $this->createAdvancedInnerSearchString($string, $handler);
                 if ($handler->hasDismax()) {
@@ -159,7 +161,7 @@ class QueryBuilder implements QueryBuilderInterface
         } else {
             if ($handler && $handler->hasDismax()) {
                 $params->set('qf', implode(' ', $handler->getDismaxFields()));
-                $params->set('qt', 'dismax');
+                $params->set('qt', $handler->hasExtendedDismax() ? 'edismax' : 'dismax');
                 foreach ($handler->getDismaxParams() as $param) {
                     $params->add(reset($param), next($param));
                 }
