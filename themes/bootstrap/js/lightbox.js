@@ -20,11 +20,13 @@ function changeModalContent(html) {
 }
 // Close the lightbox and run update functions
 function closeLightbox() {
+  lightboxShown = false;
+  $('#modal').modal('hide');
+}
+function closeLightboxActions() {
   if(modalXHR) {
     modalXHR.abort();
   }
-  lightboxShown = false;
-  $('#modal').modal('hide');
   // Reset content
   $('#modal').removeData('modal');
   $('#modal').find('.modal-header h3').html('');
@@ -38,7 +40,9 @@ function closeLightbox() {
   var tagList = $('#tagList');
   if (tagList.length > 0) {
       tagList.empty();
-      var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:id,'source':recordSource});
+      var recordId = $('#record_id').val();
+      var recordSource = $('.hiddenSource').val();
+      var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
       $.ajax({
         dataType: 'json',
         url: url,
@@ -363,7 +367,7 @@ $(document).ready(function() {
   });  
   // Reset Content
   $('#modal').on('hidden', function() {
-    closeLightbox();
+    closeLightboxActions();
   });
   /* --- MODAL LINK EVENTS --- */
   // Save record links
