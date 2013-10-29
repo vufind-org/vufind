@@ -1,5 +1,5 @@
 <?
-  $this->headTitle($this->translate('VU Digital Library - ').$this->details['title']['value']);
+  $this->headTitle($this->translate($this->title) .' - '. $this->details['title']['value']);
   
   // Multiple breadcrumbs
   $this->layout()->breadcrumbs = $this->parents;
