@@ -217,7 +217,6 @@ function ajaxLogin(form) {
             if (response.status == 'OK') {
               // If summon, reload
               $('.hiddenSource').each(function(i, e) {
-                console.log(e.value);
                 if(e.value == 'Summon') {
                   document.location.reload(true);
                   return;
