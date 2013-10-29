@@ -240,8 +240,8 @@ class File_MARC_Record
             break;
 
         default: 
-             $errorMessage = File_MARC_Exception::formatError(File_MARC_Exception::$messages[File_MARC_Exception::ERROR_INSERTFIELD_MODE], array("mode" => $before));
-             throw new File_MARC_Exception($errorMessage, File_MARC_Exception::ERROR_INSERTFIELD_MODE);
+            $errorMessage = File_MARC_Exception::formatError(File_MARC_Exception::$messages[File_MARC_Exception::ERROR_INSERTFIELD_MODE], array("mode" => $before));
+            throw new File_MARC_Exception($errorMessage, File_MARC_Exception::ERROR_INSERTFIELD_MODE);
         }
         return $new_field;
     }
