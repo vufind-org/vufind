@@ -250,9 +250,9 @@ class Params extends \VuFind\Search\Base\Params
             $orFields = array();
         }
         foreach ($config->$facetList as $key => $value) {
-            $this->addFacet(
-                $key, $value, $orFields[0] == '*' || in_array($key, $orFields)
-            );
+            $useOr = (isset($orFields[0]) && $orFields[0] == '*')
+                || in_array($key, $orFields);
+            $this->addFacet($key, $value, $useOr);
         }
         if (isset($config->$facetSettings->facet_limit)
             && is_numeric($config->$facetSettings->facet_limit)

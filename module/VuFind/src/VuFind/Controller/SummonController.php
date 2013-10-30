@@ -153,9 +153,10 @@ class SummonController extends AbstractSearch
                 $orFields = array();
             }
             foreach ($facetsToShow as $facet => $label) {
+                $useOr = (isset($orFields[0]) && $orFields[0] == '*')
+                    || in_array($facet, $orFields);
                 $params->addFacet(
-                    $facet . ',or,1,' . $limit, $label,
-                    $orFields[0] == '*' || in_array($facet, $orFields)
+                    $facet . ',or,1,' . $limit, $label, $useOr
                 );
             }
 
