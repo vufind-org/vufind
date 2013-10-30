@@ -61,7 +61,7 @@
 </script>
 <form class="form-horizontal text-center" action="<?=$this->url('vudl-sibling') ?>" method="get">
   <input type="hidden" name="id" value="<?=$this->layout()->vudlID ?>"/>
-  <button class="btn" type="submit" name="prev_x" title="<?=$this->transEsc('Prev Item in Collection')?>">&larr; <?=$this->transEsc('Prev Item')?></button>
+  <button class="btn" type="submit" name="prev_x" value="1" title="<?=$this->transEsc('Prev Item in Collection')?>">&larr; <?=$this->transEsc('Prev Item')?></button>
   <? $uniqueParents = array(); ?>
   <? foreach($this->parents as $trail): ?>
      <? foreach($trail as $id=>$parent):
@@ -81,7 +81,7 @@
   <? else: ?>
     <input type="hidden" name="trail" value="<?=current(array_keys($this->parents[0]))?>"/>
   <? endif; ?>
-  <button class="btn" type="submit" name="next_x" title="<?=$this->transEsc('Next Item in Collection')?>"><?=$this->transEsc('Next Item')?> &rarr;</button>
+  <button class="btn" type="submit" name="next_x" value="1" title="<?=$this->transEsc('Next Item in Collection')?>"><?=$this->transEsc('Next Item')?> &rarr;</button>
 </form>
 <div class="inspector_container row-fluid">
   <div id="side-nav" class="accordion span3">
