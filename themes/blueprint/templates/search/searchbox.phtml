@@ -44,7 +44,7 @@
   <? else: ?>
     <form method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" id="searchForm" class="search">
       <label for="searchForm_lookfor" class="offscreen"><?=$this->transEsc("Your search terms")?></label>
-      <input id="searchForm_lookfor" type="text" name="lookfor" size="40" value="<?=$this->escapeHtml($this->lookfor)?>"<?=$options->autocompleteEnabled() ? ' class="autocomplete searcher:' . $this->escapeHtml($this->searchClassId) . ' typeSelector:searchForm_type"' : ''?>/>
+      <input id="searchForm_lookfor" type="text" name="lookfor" size="40" value="<?=$this->escapeHtml($this->lookfor)?>"<?=$this->searchbox()->autocompleteEnabled($this->searchClassId) ? ' class="autocomplete searcher:' . $this->escapeHtml($this->searchClassId) . ' typeSelector:searchForm_type"' : ''?>/>
       <label for="searchForm_type" class="offscreen"><?=$this->transEsc("Search Type")?></label>
       <? if ($handlerCount > 1): ?>
         <select id="searchForm_type" name="type" data-native-menu="false">
