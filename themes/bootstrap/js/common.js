@@ -100,10 +100,12 @@ $(document).ready(function() {
     });
 
   // Search autocomplete
+  var autoCompleteRequest;
   $('.autocomplete').typeahead({
     source:function(query, process) {
+      if(autoCompleteRequest) autoCompleteRequest.abort();
       var searcher = extractClassParams('.autocomplete');
-      $.ajax({
+      autoCompleteRequest = $.ajax({
         url: path + '/AJAX/JSON',
         data: {method:'getACSuggestions',type:$('#searchForm_type').val(),searcher:searcher['searcher'],q:query},
         dataType:'json',
