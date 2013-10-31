@@ -144,8 +144,11 @@ class Summon extends SolrDefault
      */
     public function getHighlightedAuthor()
     {
-        // Don't check for highlighted values if highlighting is disabled:
-        if (!$this->highlight) {
+        // Don't check for highlighted values if highlighting is disabled;
+        // also, don't try to highlight multi-author works, because it will
+        // cause display problems -- it's currently impossible to properly
+        // synchronize the 'Author' and 'Author_xml' lists.
+        if (!$this->highlight || count($this->fields['Author']) > 1) {
             return '';
         }
         return isset($this->fields['Author']) ?
