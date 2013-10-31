@@ -10,8 +10,8 @@
     <span class="ui-li-count"><?=$this->escapeHtml(number_format($info->getResultTotal()))?></span>
     <p><strong><?=$this->transEsc("history_time")?></strong>: <?=$this->escapeHtml(date("g:ia, jS M y", $info->getStartTime()))?></p>
     <? $info->getParams()->activateAllFacets(); foreach ($info->getParams()->getFilterList() as $field => $filters): ?>
-      <? foreach ($filters as $filter): ?>
-        <p><strong><?=$this->transEsc($field)?></strong>: <?=$this->escapeHtml($filter['displayText'])?></p>
+      <? foreach ($filters as $i => $filter): ?>
+        <p><? if ($filter['operator'] == 'NOT') echo $this->transEsc('NOT') . ' '; if ($filter['operator'] == 'OR' && $i > 0) echo $this->transEsc('OR') . ' '; ?><strong><?=$this->transEsc($field)?></strong>: <?=$this->escapeHtml($filter['displayText'])?></p>
       <? endforeach; ?>
     <? endforeach; ?>
     </div>
