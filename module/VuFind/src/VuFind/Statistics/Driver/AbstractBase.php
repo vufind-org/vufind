@@ -79,6 +79,7 @@ abstract class AbstractBase
      * @param array  $value Extra options for search. Value => match this value
      *
      * @return array
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getFullList($field, $value = array())
     {
@@ -93,6 +94,7 @@ abstract class AbstractBase
      * @param integer $limit   How many items to return
      *
      * @return array
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getBrowserStats($version, $limit)
     {
