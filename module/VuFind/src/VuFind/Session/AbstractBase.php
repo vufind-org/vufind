@@ -87,6 +87,7 @@ abstract class AbstractBase implements SaveHandlerInterface,
      * @param string $sess_name Session name
      *
      * @return void
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function open($sess_path, $sess_name)
     {
@@ -112,9 +113,7 @@ abstract class AbstractBase implements SaveHandlerInterface,
      *
      * @return string
      */
-    public function read($sess_id)
-    {
-    }
+    abstract public function read($sess_id);
 
     /**
      * Write function that is called when session data is to be saved.
@@ -124,9 +123,7 @@ abstract class AbstractBase implements SaveHandlerInterface,
      *
      * @return void
      */
-    public function write($sess_id, $data)
-    {
-    }
+    abstract public function write($sess_id, $data);
 
     /**
      * The destroy handler, this is executed when a session is destroyed with
@@ -153,6 +150,7 @@ abstract class AbstractBase implements SaveHandlerInterface,
      * @param int $sess_maxlifetime Maximum session lifetime.
      *
      * @return void
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function gc($sess_maxlifetime)
     {
