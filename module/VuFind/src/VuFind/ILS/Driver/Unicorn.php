@@ -387,6 +387,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
     {

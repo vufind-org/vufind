@@ -50,6 +50,8 @@ abstract class AbstractBase implements SMSInterface
      *
      * @param \Zend\Config\Config $config  SMS configuration
      * @param array               $options Additional options
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __construct(\Zend\Config\Config $config, $options = array())
     {

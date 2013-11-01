@@ -118,34 +118,17 @@ class Results extends \VuFind\Search\Base\Results
     public function getFacetList($filter = null)
     {
         // If there is no filter, we'll use all facets as the filter:
-        if (is_null($filter)) {
-            $filter = $this->getParams()->getFacetConfig();
-        } else {
-            // If there is a filter, make sure the field names are properly
-            // stripped of extra parameters:
-            $oldFilter = $filter;
-            $filter = array();
-            foreach ($oldFilter as $key => $value) {
-                $key = explode(',', $key);
-                $key = trim($key[0]);
-                $filter[$key] = $value;
-            }
-        }
+        $filter = is_null($filter)
+            ? $this->getParams()->getFacetConfig()
+            : $this->stripFilterParameters($filter);
 
         // We want to sort the facets to match the order in the .ini file.  Let's
         // create a lookup array to determine order:
-        $i = 0;
-        $order = array();
-        foreach ($filter as $key => $value) {
-            $order[$key] = $i++;
-        }
+        $order = array_flip(array_keys($filter));
 
         // Loop through the facets returned by Summon.
         $facetResult = array();
         if (is_array($this->responseFacets)) {
-            // Get the filter list -- we'll need to check it below:
-            $filterList = $this->getParams()->getFilters();
-
             foreach ($this->responseFacets as $current) {
                 // The "displayName" value is actually the name of the field on
                 // Summon's side -- we'll probably need to translate this to a
@@ -154,57 +137,16 @@ class Results extends \VuFind\Search\Base\Results
 
                 // Is this one of the fields we want to display?  If so, do work...
                 if (isset($filter[$field])) {
-                    // Should we translate values for the current facet?
-                    $translate = in_array(
-                        $field, $this->getOptions()->getTranslatedFacets()
-                    );
+                    // Basic reformatting of the data:
+                    $current = $this->formatFacetData($current);
 
-                    // Loop through all the facet values to see if any are applied.
-                    foreach ($current['counts'] as $facetIndex => $facetDetails) {
-                        // Is the current field negated?  If so, we don't want to
-                        // show it -- this is currently used only for the special
-                        // "exclude newspapers" facet:
-                        if ($facetDetails['isNegated']) {
-                            unset($current['counts'][$facetIndex]);
-                            continue;
-                        }
-
-                        // We need to check two things to determine if the current
-                        // value is an applied filter.  First, is the current field
-                        // present in the filter list?  Second, is the current value
-                        // an active filter for the current field?
-                        $orField = '~' . $field;
-                        $itemsToCheck = isset($filterList[$field])
-                            ? $filterList[$field] : array();
-                        if (isset($filterList[$orField])) {
-                            $itemsToCheck += $filterList[$orField];
-                        }
-                        $isApplied = in_array($facetDetails['value'], $itemsToCheck);
-
-                        // Inject "applied" value into Summon results:
-                        $current['counts'][$facetIndex]['isApplied'] = $isApplied;
-
-                        // Set operator:
-                        $current['counts'][$facetIndex]['operator']
-                            = $this->getParams()->getFacetOperator($field);
-
-                        // Create display value:
-                        $current['counts'][$facetIndex]['displayText'] = $translate
-                            ? $this->translate($facetDetails['value'])
-                            : $facetDetails['value'];
-                    }
+                    // Inject label from configuration:
+                    $current['label'] = $filter[$field];
 
                     // Put the current facet cluster in order based on the .ini
                     // settings, then override the display name again using .ini
                     // settings.
-                    $i = $order[$field];
-                    $current['label'] = $filter[$field];
-
-                    // Create a reference to counts called list for consistency with
-                    // Solr output format -- this allows the facet recommendations
-                    // modules to be shared between the Search and Summon modules.
-                    $current['list'] = & $current['counts'];
-                    $facetResult[$i] = $current;
+                    $facetResult[$order[$field]] = $current;
                 }
             }
         }
@@ -217,6 +159,85 @@ class Results extends \VuFind\Search\Base\Results
         }
 
         return $finalResult;
+    }
+
+    /**
+     * Support method for getFacetList() -- strip extra parameters from field names.
+     *
+     * @param array $rawFilter Raw filter list
+     *
+     * @return array           Processed filter list
+     */
+    protected function stripFilterParameters($rawFilter)
+    {
+        $filter = array();
+        foreach ($rawFilter as $key => $value) {
+            $key = explode(',', $key);
+            $key = trim($key[0]);
+            $filter[$key] = $value;
+        }
+        return $filter;
+    }
+
+    /**
+     * Support method for getFacetList() -- format a single facet field.
+     *
+     * @param array $current    Facet data to format
+     *
+     * @return array         Formatted data
+     */
+    protected function formatFacetData($current)
+    {
+        // We'll need this in the loop below:
+        $filterList = $this->getParams()->getFilters();
+
+        // Should we translate values for the current facet?
+        $field = $current['displayName'];
+        $translate = in_array(
+            $field, $this->getOptions()->getTranslatedFacets()
+        );
+
+        // Loop through all the facet values to see if any are applied.
+        foreach ($current['counts'] as $facetIndex => $facetDetails) {
+            // Is the current field negated?  If so, we don't want to
+            // show it -- this is currently used only for the special
+            // "exclude newspapers" facet:
+            if ($facetDetails['isNegated']) {
+                unset($current['counts'][$facetIndex]);
+                continue;
+            }
+
+            // We need to check two things to determine if the current
+            // value is an applied filter.  First, is the current field
+            // present in the filter list?  Second, is the current value
+            // an active filter for the current field?
+            $orField = '~' . $field;
+            $itemsToCheck = isset($filterList[$field])
+                ? $filterList[$field] : array();
+            if (isset($filterList[$orField])) {
+                $itemsToCheck += $filterList[$orField];
+            }
+            $isApplied = in_array($facetDetails['value'], $itemsToCheck);
+
+            // Inject "applied" value into Summon results:
+            $current['counts'][$facetIndex]['isApplied'] = $isApplied;
+
+            // Set operator:
+            $current['counts'][$facetIndex]['operator']
+                = $this->getParams()->getFacetOperator($field);
+
+            // Create display value:
+            $current['counts'][$facetIndex]['displayText'] = $translate
+                ? $this->translate($facetDetails['value'])
+                : $facetDetails['value'];
+        }
+
+        // Create a reference to counts called list for consistency with
+        // Solr output format -- this allows the facet recommendations
+        // modules to be shared between the Search and Summon modules.
+        $current['list'] = & $current['counts'];
+
+        return $current;
     }
 
     /**

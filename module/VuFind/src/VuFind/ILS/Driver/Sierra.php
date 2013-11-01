@@ -578,6 +578,7 @@ class Sierra extends AbstractBase
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
     {
