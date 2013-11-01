@@ -223,19 +223,30 @@ select {padding:2px;vertical-align:top}
 
 /* --- SEARCH --- */
 .bulkActionButtons {border-bottom:1px solid #DDD;margin-top:6px;padding-bottom:6px}
-.result {padding:6px 0}
-.result:nth-child(odd) {background:#EEE}
-.result>.checkbox {font-weight:bold;margin:2px 0 2px 1%;max-width:6%}
-.result>.checkbox input[type="checkbox"] {margin:3px auto}
-.result .span7 {margin-left:1%;width:52%}
-.result .savedLists {margin:2px 0;padding:6px}
-.result .savedLists ul {margin-bottom:0}
+.result {
+  padding:6px 0;
+  &:nth-child(odd) {background:#EEE}
+  .span7 {margin-left:1%;width:52%}
+  .savedLists {
+    margin:2px 0;
+    padding:6px;
+    ul {margin-bottom:0}
+  }
+  &>.checkbox {
+    font-weight:bold;
+    margin:2px 0 2px 1%;
+    max-width:6%
+    input[type="checkbox"] {margin:3px auto}
+  }
 .span9>.noprint>.help-block {margin-bottom:0}
 .top-row [class*="span"] {min-height:1px;padding:0 3px}
 
 /* --- VUDL --- */
-#download-button {background:linear-gradient(to bottom, #D7E991 0%,#B5C770 100%);padding:10px 8px 6px 16px}
-#download-button:hover {background:linear-gradient(to bottom, #72A255 0%,#508033 100%);text-shadow:0 1px 0 rgba(0,0,0,.5)}
-#download-button:active {background:linear-gradient(to bottom, #508033 0%,#72A255 100%)}
+#download-button {
+  background:linear-gradient(to bottom, #D7E991 0%,#B5C770 100%);
+  padding:10px 8px 6px 16px;
+  &:hover {background:linear-gradient(to bottom, #72A255 0%,#508033 100%);text-shadow:0 1px 0 rgba(0,0,0,.5)}
+  &:active {background:linear-gradient(to bottom, #508033 0%,#72A255 100%)}
+}
 .inspector_container {margin-top:6px}
 .table.details {font-size:10px;border-bottom:1px solid #DDD}
