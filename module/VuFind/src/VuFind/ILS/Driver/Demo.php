@@ -468,6 +468,7 @@ class Demo extends AbstractBase
      * @param array $patron The patron array from patronLogin
      *
      * @return mixed        Array of the patron's fines on success.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyFines($patron)
     {
@@ -521,6 +522,7 @@ class Demo extends AbstractBase
      * @param array $patron The patron array from patronLogin
      *
      * @return mixed        Array of the patron's holds on success.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyHolds($patron)
     {
@@ -570,6 +572,7 @@ class Demo extends AbstractBase
      * @param array $patron The patron array from patronLogin
      *
      * @return mixed        Array of the patron's transactions on success.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyTransactions($patron)
     {
@@ -640,6 +643,7 @@ class Demo extends AbstractBase
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
@@ -672,6 +676,7 @@ class Demo extends AbstractBase
      * or may be ignored.
      *
      * @return string A location ID
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
@@ -743,6 +748,7 @@ class Demo extends AbstractBase
      * whatever that may mean.
      *
      * @return array       Associative array with 'count' and 'results' keys
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
@@ -778,6 +784,7 @@ class Demo extends AbstractBase
      * @param string $dept   ID from getDepartments (empty string to match all)
      *
      * @return mixed An array of associative arrays representing reserve items.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function findReserves($course, $inst, $dept)
     {
