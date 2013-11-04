@@ -182,7 +182,7 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Support method for getFacetList() -- format a single facet field.
      *
-     * @param array $current    Facet data to format
+     * @param array $current Facet data to format
      *
      * @return array         Formatted data
      */
