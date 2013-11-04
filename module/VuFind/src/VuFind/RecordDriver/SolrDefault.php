@@ -646,6 +646,29 @@ class SolrDefault extends AbstractBase
     }
 
     /**
+     * Get the COinS identifier.
+     *
+     * @return string
+     */
+    protected function getCoinsID()
+    {
+        // Get the COinS ID -- it should be in the OpenURL section of config.ini,
+        // but we'll also check the COinS section for compatibility with legacy
+        // configurations (this moved between the RC2 and 1.0 releases).
+        if (isset($this->mainConfig->OpenURL->rfr_id)
+            && !empty($this->mainConfig->OpenURL->rfr_id)
+        ) {
+            return $this->mainConfig->OpenURL->rfr_id;
+        }
+        if (isset($this->mainConfig->COinS->identifier)
+            && !empty($this->mainConfig->COinS->identifier)
+        ) {
+            return $this->mainConfig->COinS->identifier;
+        }
+        return 'vufind.svn.sourceforge.net';
+    }
+
+    /**
      * Get the OpenURL parameters to represent this record (useful for the
      * title attribute of a COinS span tag).
      *
@@ -653,16 +676,6 @@ class SolrDefault extends AbstractBase
      */
     public function getOpenURL()
     {
-        // Get the COinS ID -- it should be in the OpenURL section of config.ini,
-        // but we'll also check the COinS section for compatibility with legacy
-        // configurations (this moved between the RC2 and 1.0 releases).
-        $coinsID = isset($this->mainConfig->OpenURL->rfr_id)
-            ? $this->mainConfig->OpenURL->rfr_id
-            : $this->mainConfig->COinS->identifier;
-        if (empty($coinsID)) {
-            $coinsID = 'vufind.svn.sourceforge.net';
-        }
-
         // Get a representative publication date:
         $pubDate = $this->getPublicationDates();
         $pubDate = empty($pubDate) ? '' : $pubDate[0];
@@ -671,7 +684,7 @@ class SolrDefault extends AbstractBase
         $params = array(
             'ctx_ver' => 'Z39.88-2004',
             'ctx_enc' => 'info:ofi/enc:UTF-8',
-            'rfr_id' => "info:sid/{$coinsID}:generator",
+            'rfr_id' => 'info:sid/' . $this->getCoinsID() . ':generator',
             'rft.title' => $this->getTitle(),
             'rft.date' => $pubDate
         );
