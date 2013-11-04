@@ -765,6 +765,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * @param array  $details  Item details from getHoldings return array
      *
      * @return string          URL to ILS's OPAC's place hold screen.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getHoldLink($recordId, $details)
     {
@@ -788,6 +789,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      *
      * @throws ILSException
      * @return array       Associative array with 'count' and 'results' keys
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
@@ -880,6 +882,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      *
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function findReserves($course, $inst, $dept)
     {
