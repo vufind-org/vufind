@@ -775,6 +775,26 @@ class Upgrade
     }
 
     /**
+     * Does the specified properties file contain any meaningful
+     * (non-empty/non-comment) lines?
+     *
+     * @param string $src File to check
+     *
+     * @return bool
+     */
+    protected function fileContainsMeaningfulLines($src)
+    {
+        // Does the file contain any meaningful lines?
+        foreach (file($src) as $line) {
+            $line = trim($line);
+            if (!empty($line) && substr($line, 0, 1) != '#') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Upgrade SolrMarc configurations.
      *
      * @throws FileAccessException
@@ -792,19 +812,8 @@ class Upgrade
             return;
         }
 
-        // Does the file contain any meaningful lines?
-        $lines = file($src);
-        $empty = true;
-        foreach ($lines as $line) {
-            $line = trim($line);
-            if (!empty($line) && substr($line, 0, 1) != '#') {
-                $empty = false;
-                break;
-            }
-        }
-
         // Copy the file if it contains customizations:
-        if (!$empty) {
+        if ($this->fileContainsMeaningfulLines($src)) {
             $dest = realpath($this->newDir . '/../../import')
                 . '/marc_local.properties';
             if (!copy($src, $dest) || !file_exists($dest)) {
