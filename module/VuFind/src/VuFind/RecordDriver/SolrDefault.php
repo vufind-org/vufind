@@ -708,14 +708,14 @@ class SolrDefault extends AbstractBase
                 $params['rft.pub'] = $publishers[0];
             }
             $params['rft.edition'] = $this->getEdition();
-            $params['rft.isbn'] = $this->getCleanISBN();
+            $params['rft.isbn'] = (string)$this->getCleanISBN();
             break;
         case 'Article':
             $params['rft_val_fmt'] = 'info:ofi/fmt:kev:mtx:journal';
             $params['rft.genre'] = 'article';
-            $params['rft.issn'] = $this->getCleanISSN();
+            $params['rft.issn'] = (string)$this->getCleanISSN();
             // an article may have also an ISBN:
-            $params['rft.isbn'] = $this->getCleanISBN();
+            $params['rft.isbn'] = (string)$this->getCleanISBN();
             $params['rft.volume'] = $this->getContainerVolume();
             $params['rft.issue'] = $this->getContainerIssue();
             $params['rft.spage'] = $this->getContainerStartPage();
@@ -743,7 +743,7 @@ class SolrDefault extends AbstractBase
             $params['rft.au'] = $this->getPrimaryAuthor();
             break;
              */
-            $params['rft.issn'] = $this->getCleanISSN();
+            $params['rft.issn'] = (string)$this->getCleanISSN();
 
             // Including a date in a title-level Journal OpenURL may be too
             // limiting -- in some link resolvers, it may cause the exclusion
@@ -774,11 +774,7 @@ class SolrDefault extends AbstractBase
         }
 
         // Assemble the URL:
-        $parts = array();
-        foreach ($params as $key => $value) {
-            $parts[] = $key . '=' . urlencode($value);
-        }
-        return implode('&', $parts);
+        return http_build_query($params);
     }
 
     /**
