@@ -124,7 +124,7 @@ select {padding:2px;vertical-align:top}
     background:#FFF;
     border-bottom:1px solid #DDD;
     border-radius:0;
-    margin:0 0 3px 0;
+    margin:0;
     padding:6px 6px 6px 1em;
     li {
         color:#888;
@@ -138,6 +138,7 @@ select {padding:2px;vertical-align:top}
 /* --- SIDEBAR --- */
 .row-fluid .sidebar {
     margin-right:1%;
+    padding-top:0;
     h4 {
         border-bottom:2px solid #DDD;
         font-size:14px;
@@ -193,8 +194,8 @@ select {padding:2px;vertical-align:top}
 }
 
 /* --- MAIN --- */
-.centered-pills {border-bottom:1px solid #DDD;font-size:12px}
-.nav-pills {border-bottom:1px solid #DDD;margin:0 0 6px 0}
+.centered-pills {font-size:12px}
+.nav-pills {border-bottom:1px solid #DDD;margin:2px 0 6px 0;padding-bottom:2px}
 .main.row-fluid > .span9 {margin-left:1%}
 .top-row .span4 {margin:auto 0}
 
@@ -238,8 +239,13 @@ select {padding:2px;vertical-align:top}
     max-width:6%
     input[type="checkbox"] {margin:3px auto}
   }
+}
 .span9>.noprint>.help-block {margin-bottom:0}
 .top-row [class*="span"] {min-height:1px;padding:0 3px}
+
+/* --- RECORD --- */
+#record h3 {margin-bottom:6px;margin-top:0}
+.recordcover {margin-top:6px}
 
 /* --- VUDL --- */
 #download-button {
