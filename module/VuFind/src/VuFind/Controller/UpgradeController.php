@@ -675,7 +675,7 @@ class UpgradeController extends AbstractBase
      */
     public function resetAction()
     {
-        foreach ($this->cookie->getAllValues() as $k => $v) {
+        foreach (array_keys($this->cookie->getAllValues()) as $k) {
             unset($this->cookie->$k);
         }
         $storage = $this->session->getManager()->getStorage();
