@@ -36,7 +36,7 @@ input[type="text"]:focus {border-color:#619144;box-shadow:inset 0px 1px 2px rgba
 .tab-container {margin:0}
 
 select:not([multiple]):not([size]), input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input,
-.row-fluid input[class*="span"], .row-fluid select[class*="span"], .btn:not(.btn-large) {border:1px solid #AAA;border-radius:2px;font-size:12px;height:26px;min-height:1px;padding:1px 6px}
+.row-fluid input[class*="span"], .row-fluid select[class*="span"], .btn:not(.btn-large) {border:1px solid #AAA;border-radius:2px;font-size:12px;height:26px;min-height:1px;padding:2px 6px}
 .btn {padding:2px 8px}
 .btn.btn-small {height:20px;padding:0 4px}
 .btn.btn-link {border:0}
@@ -74,7 +74,7 @@ select, .btn:not(.btn-link){vertical-align:top}
 .group .search {margin:1px 0}
 
 /* --- BREADCRUMBS --- */
-.breadcrumb {background:#FFF;border-bottom:1px solid #DDD;border-radius:0;margin:0 6px 3px 6px;padding:6px}
+.breadcrumb {background:#FFF;border-bottom:1px solid #DDD;border-radius:0;margin:0 0 3px 0;padding:6px 12px}
 .breadcrumb li {color:#888;font-size:12px;text-shadow:none}
 .breadcrumb .active {color:#000}
 .breadcrumb span.divider {color:#888}
@@ -140,14 +140,17 @@ select, .btn:not(.btn-link){vertical-align:top}
 .result .img-polaroid {margin-left:2px;max-width:96px}
 .top-row [class*="span"] {min-height:1px;padding:0 3px}
 
-/* --- VUDL --- */
-#download-button {background:linear-gradient(to bottom, #D7E991 0%,#B5C770 100%);padding:10px 8px 6px 16px}
-#download-button:hover {background:linear-gradient(to bottom, #72A255 0%,#508033 100%);text-shadow:0 1px 0 rgba(0,0,0,.5)}
-#download-button:active {background:linear-gradient(to bottom, #508033 0%,#72A255 100%)}
-.inspector_container {margin-top:6px}
-.table.details {font-size:10px;border-bottom:1px solid #DDD}
-
 /* -- MY RESEARCH -- */
 .bulkActionForm .btn-link {padding:1px 2px}
 .bulkActionForm .result {background:#FFF}
 #sort_options_1 {width:100px}
+
+/* --- VUDL --- */
+.btn.grid-btn {height:16px;padding:3px 6px 5px 6px}
+.btn.grid-btn i {font-size:14px}
+#download-button {background:linear-gradient(to bottom, #D7E991 0%,#B5C770 100%);padding:10px 8px 6px 16px}
+#download-button:hover {background:linear-gradient(to bottom, #72A255 0%,#508033 100%);text-shadow:0 1px 0 rgba(0,0,0,.5)}
+#download-button:active {background:linear-gradient(to bottom, #508033 0%,#72A255 100%)}
+.inspector_container {margin-top:6px}
+.siblings-form {margin:3px auto}
+.table.details {font-size:10px;border-bottom:1px solid #DDD}
