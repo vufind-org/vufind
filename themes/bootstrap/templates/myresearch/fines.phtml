@@ -20,6 +20,7 @@
       <th><?=$this->transEsc('Fee')?></th>
       <th><?=$this->transEsc('Balance')?></th>
     </tr>
+    <? $totalDue = 0; ?>
     <? foreach ($this->fines as $record): ?>
       <tr>
         <td>
@@ -37,7 +38,9 @@
         <td><?=isset($record['amount']) ? $this->safeMoneyFormat($record['amount']/100.00) : ''?></td>
         <td><?=isset($record['balance']) ? $this->safeMoneyFormat($record['balance']/100.00) : ''?></td>
       </tr>
+      <? $totalDue += $record['balance']; ?>
     <? endforeach; ?>
+      <tr style="font-weight:bold"><td colspan="5"><?=$this->transEsc('Total Balance Due')?></td><td><?=$this->safeMoneyFormat($totalDue/100.00) ?></td></tr>
     </table>
   <? endif; ?>
 </div>
