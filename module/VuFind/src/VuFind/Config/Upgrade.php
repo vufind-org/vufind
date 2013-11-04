@@ -432,6 +432,54 @@ class Upgrade
     }
 
     /**
+     * Is this a default BulkExport options setting?
+     *
+     * @param string $eo Bulk export options
+     *
+     * @return bool
+     */
+    protected function isDefaultBulkExportOptions($eo)
+    {
+        return ($this->from == '1.4' && $eo == 'MARC:MARCXML:EndNote:RefWorks:BibTeX')
+            || ($this->from == '1.3' && $eo == 'MARC:EndNote:RefWorks:BibTeX')
+            || ($this->from == '1.2' && $eo == 'MARC:EndNote:BibTeX')
+            || ($this->from == '1.1' && $eo == 'MARC:EndNote');
+    }
+
+    /**
+     * Add warnings if Amazon problems were found.
+     *
+     * @param array $config Configuration to check
+     *
+     * @return void
+     */
+    protected function checkAmazonConfig($config)
+    {
+        // Warn the user if they have Amazon enabled but do not have the appropriate
+        // credentials set up.
+        $hasAmazonReview = isset($config['Content']['reviews'])
+            && stristr($config['Content']['reviews'], 'amazon');
+        $hasAmazonCover = isset($config['Content']['coverimages'])
+            && stristr($config['Content']['coverimages'], 'amazon');
+        if ($hasAmazonReview || $hasAmazonCover) {
+            if (!isset($config['Content']['amazonsecret'])) {
+                $this->addWarning(
+                    'WARNING: You have Amazon content enabled but are missing '
+                    . 'the required amazonsecret setting in the [Content] section '
+                    . 'of config.ini'
+                );
+            }
+            if (!isset($config['Content']['amazonassociate'])) {
+                $this->addWarning(
+                    'WARNING: You have Amazon content enabled but are missing '
+                    . 'the required amazonassociate setting in the [Content] section'
+                    . ' of config.ini'
+                );
+            }
+        }
+    }
+
+    /**
      * Upgrade config.ini.
      *
      * @throws FileAccessException
@@ -453,38 +501,13 @@ class Upgrade
 
         // If the [BulkExport] options setting is an old default, update it to
         // reflect the fact that we now support more options.
-        $eo = $newConfig['BulkExport']['options'];
-        if (($this->from == '1.4' && $eo == 'MARC:MARCXML:EndNote:RefWorks:BibTeX')
-            || ($this->from == '1.3' && $eo == 'MARC:EndNote:RefWorks:BibTeX')
-            || ($this->from == '1.2' && $eo == 'MARC:EndNote:BibTeX')
-            || ($this->from == '1.1' && $eo == 'MARC:EndNote')
-        ) {
+        if ($this->isDefaultBulkExportOptions($newConfig['BulkExport']['options'])) {
             $newConfig['BulkExport']['options']
                 = 'MARC:MARCXML:EndNote:EndNoteWeb:RefWorks:BibTeX';
         }
 
-        // Warn the user if they have Amazon enabled but do not have the appropriate
-        // credentials set up.
-        $hasAmazonReview = isset($newConfig['Content']['reviews'])
-            && stristr($newConfig['Content']['reviews'], 'amazon');
-        $hasAmazonCover = isset($newConfig['Content']['coverimages'])
-            && stristr($newConfig['Content']['coverimages'], 'amazon');
-        if ($hasAmazonReview || $hasAmazonCover) {
-            if (!isset($newConfig['Content']['amazonsecret'])) {
-                $this->addWarning(
-                    'WARNING: You have Amazon content enabled but are missing '
-                    . 'the required amazonsecret setting in the [Content] section '
-                    . 'of config.ini'
-                );
-            }
-            if (!isset($newConfig['Content']['amazonassociate'])) {
-                $this->addWarning(
-                    'WARNING: You have Amazon content enabled but are missing '
-                    . 'the required amazonassociate setting in the [Content] section'
-                    . ' of config.ini'
-                );
-            }
-        }
+        // Warn the user about Amazon configuration issues:
+        $this->checkAmazonConfig($newConfig);
 
         // Warn the user if they have enabled a deprecated Google API:
         if (isset($newConfig['GoogleSearch'])) {
