@@ -88,6 +88,7 @@ select, .btn:not(.btn-link){vertical-align:top}
 .sidebar .nav-list li.applied {padding-left:3px}
 .sidebar .nav-list li.applied [class*="icon"] {color:transparent;margin-top:1px}
 .sidebar .nav-list li.active a {background:#FFA500;text-shadow:none}
+.sidebar .nav-list li.active a:hover {background:#FFA500}
 .sidebar .nav-list li.active a i.icon-remove {background:url('../images/icons/delete.png')}
 .sidebar .nav-list li a {margin:0;padding:3px}
 .sidebar .nav-list li a:hover {background:none}

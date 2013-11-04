@@ -5,6 +5,8 @@ i.icon-bookbag-add,
 i.icon-bookbag-delete,
 i.icon-bookbag-empty,
 i.icon-bookmark,
+i.icon-cancel-holds,
+i.icon-cancel-all-holds,
 i.icon-edit,
 i.icon-email,
 i.icon-envelope,
@@ -22,6 +24,8 @@ i.icon-plus-sign,
 i.icon-print,
 i.icon-qrcode,
 i.icon-remove,
+i.icon-renew,
+i.icon-renew-all,
 i.icon-rss,
 i.icon-shopping-cart,
 i.icon-signin,
@@ -69,6 +73,8 @@ i.icon-user {
 .small i.icon-bookbag-delete,
 .small i.icon-bookbag-empty,
 .small i.icon-bookmark,
+.small i.icon-cancel-holds,
+.small i.icon-cancel-all-holds,
 .small i.icon-edit,
 .small i.icon-email,
 .small i.icon-envelope,
@@ -86,6 +92,8 @@ i.icon-user {
 .small i.icon-print,
 .small i.icon-qrcode,
 .small i.icon-remove,
+.small i.icon-renew,
+.small i.icon-renew-all,
 .small i.icon-rss,
 .small i.icon-shopping-cart,
 .small i.icon-signin,
@@ -107,6 +115,8 @@ i.icon-bookbag-add {background:url('../images/icons/bookbag_add.png')}
 i.icon-bookbag-delete {background:url('../images/icons/bookbag_delete.png')}
 i.icon-bookbag-empty {background:url('../images/icons/bookbag_empty.png')}
 i.icon-bookmark {background:url('../images/icons/bookmark_add.png')}
+i.icon-cancel-holds {background:url('../images/icons/holdCancel.png')}
+i.icon-cancel-all-holds {background:url('../images/icons/holdCancelAll.png')}
 i.icon-edit {background:url('../images/icons/edit.png')}
 i.icon-email,
 i.icon-envelope,
@@ -123,6 +133,8 @@ i.icon-plus-sign {background:url('../images/icons/add.png')}
 i.icon-print {background:url('../images/icons/printer.png')}
 i.icon-qrcode {background:url('../images/icons/qrcode.png')}
 i.icon-remove {background:url('../images/icons/delete.png')}
+i.icon-renew {background:url('../images/icons/renew.png')}
+i.icon-renew-all {background:url('../images/icons/renewAll.png')}
 i.icon-rss {background:url('../images/icons/feed.png')}
 i.icon-shopping-cart {background:url('../images/icons/cart.png')}
 i.icon-signin {background:url('../images/icons/door_in.png')}

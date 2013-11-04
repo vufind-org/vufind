@@ -15,8 +15,8 @@
     <? if ($this->renewForm): ?>
     <form name="renewals" action="" method="post" id="renewals">
       <div class="toolbar">
-        <input type="submit" class="btn" name="renewSelected" value="<?=$this->transEsc("renew_selected")?>" />
-        <input type="submit" class="btn" name="renewAll" value="<?=$this->transEsc('renew_all')?>" />
+        <button type="submit" class="btn btn-link" name="renewSelected"><i class="icon-renew"></i> <?=$this->transEsc("renew_selected")?></button>
+        <button type="submit" class="btn btn-link" name="renewAll"><i class="icon-renew-all"></i> <?=$this->transEsc('renew_all')?></button>
       </div>
     <? endif; ?>
 
@@ -40,19 +40,19 @@
         </div>
         <div class="span9">
           <?
-            // If this is a non-missing Solr record, we should display a link:
-            if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
-              $title = $resource->getTitle();
-              $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
-              echo '<a href="' . $this->recordLink()->getUrl($resource) .
-                '" class="title">' . $title . '</a>';
-            } else if (isset($ilsDetails['title']) && !empty($ilsDetails['title'])){
-              // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
-              echo $this->escapeHtml($ilsDetails['title']);
-            } else {
-              // Last resort -- indicate that no title could be found.
-              echo $this->transEsc('Title not available');
-            }
+              // If this is a non-missing Solr record, we should display a link:
+              if (is_a($resource, 'VuFind\\RecordDriver\\SolrDefault') && !is_a($resource, 'VuFind\\RecordDriver\\Missing')) {
+                  $title = $resource->getTitle();
+                  $title = empty($title) ? $this->transEsc('Title not available') : $this->escapeHtml($title);
+                  echo '<a href="' . $this->recordLink()->getUrl($resource) .
+                      '" class="title">' . $title . '</a>';
+              } else if (isset($ilsDetails['title']) && !empty($ilsDetails['title'])){
+                  // If the record is not available in Solr, perhaps the ILS driver sent us a title we can show...
+                  echo $this->escapeHtml($ilsDetails['title']);
+              } else {
+                  // Last resort -- indicate that no title could be found.
+                  echo $this->transEsc('Title not available');
+              }
           ?><br/>
           <? $listAuthor = $resource->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
             <?=$this->transEsc('by')?>:
