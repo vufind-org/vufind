@@ -220,6 +220,7 @@ class Reviews extends AbstractSyndetics implements \Zend\Log\LoggerAwareInterfac
      *
      * @return array     Returns array with review data, otherwise a PEAR_Error.
      * @author Joe Atzberger
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function loadBooksite($id)
     {

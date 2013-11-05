@@ -101,6 +101,7 @@ class QueryBuilder
      * @param QueryGroup $query QueryGroup to convert
      *
      * @return string
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function queryGroupToString(QueryGroup $query)
     {

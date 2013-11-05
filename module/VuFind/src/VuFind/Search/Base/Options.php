@@ -121,6 +121,8 @@ abstract class Options implements TranslatorAwareInterface
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {

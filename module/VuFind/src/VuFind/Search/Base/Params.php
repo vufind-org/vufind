@@ -92,6 +92,8 @@ class Params implements ServiceLocatorAwareInterface
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
      * @param \VuFind\Config\PluginManager $configLoader Config loader
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __construct($options, \VuFind\Config\PluginManager $configLoader)
     {
@@ -1276,6 +1278,7 @@ class Params implements ServiceLocatorAwareInterface
      * will be favored.
      *
      * @return void
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function activateAllFacets($preferredSection = false)
     {
@@ -1294,6 +1297,7 @@ class Params implements ServiceLocatorAwareInterface
      * @param array $ids Record IDs to load
      *
      * @return void
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function setQueryIDs($ids)
     {
