@@ -793,6 +793,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface
      * @throws DateException
      * @throws ILSException
      * @return array Keyed data
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function processHoldingData($data, $patron = false)
     {
@@ -1078,6 +1079,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface
      *
      * @throws DateException
      * @return array Keyed data for display by template files
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function processMyTransactionsData($sqlRow, $patron = false)
     {
@@ -1520,6 +1522,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface
      * @param array  $details  Item details from getHoldings return array
      *
      * @return string          URL to ILS's OPAC's place hold screen.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getHoldLink($recordId, $details)
     {

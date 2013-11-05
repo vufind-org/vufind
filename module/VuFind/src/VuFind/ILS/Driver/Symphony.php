@@ -1514,6 +1514,7 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
@@ -1542,6 +1543,7 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
      * or may be ignored.
      *
      * @return string       The default pickup location for the patron.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
