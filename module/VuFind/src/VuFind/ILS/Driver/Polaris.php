@@ -41,10 +41,39 @@ use VuFind\Config\Reader as ConfigReader,
  */
 class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
+    /**
+     * Web services host
+     *
+     * @var string
+     */
     protected $ws_host;
+
+    /**
+     * Web services application path
+     *
+     * @var string
+     */
     protected $ws_app;
+
+    /**
+     * Web services ID
+     *
+     * @var string
+     */
     protected $ws_api_id;
+
+    /**
+     * Web services key
+     *
+     * @var string
+     */
     protected $ws_api_key;
+
+    /**
+     * Web services requesting organization ID
+     *
+     * @var string
+     */
     protected $ws_requestingorgid;
 
     /**
