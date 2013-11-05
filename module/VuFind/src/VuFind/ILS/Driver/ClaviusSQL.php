@@ -380,18 +380,18 @@ class ClaviusSQL extends AbstractBase
     }
 
     /**
-      * Get Hold Link
-      *
-      * The goal for this method is to return a URL to a "place hold" web page on
-      * the ILS OPAC. This is used for ILSs that do not support an API or method
-      * to place Holds.
-      *
-      * @param string $id      The id of the bib record
-      * @param array  $details Item details from getHoldings return array
-      *
-      * @return string         URL to ILS's OPAC's place hold screen.
-      */
-
+     * Get Hold Link
+     *
+     * The goal for this method is to return a URL to a "place hold" web page on
+     * the ILS OPAC. This is used for ILSs that do not support an API or method
+     * to place Holds.
+     *
+     * @param string $id      The id of the bib record
+     * @param array  $details Item details from getHoldings return array
+     *
+     * @return string         URL to ILS's OPAC's place hold screen.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function getHoldLink($id, $details)
     {
         // Web link of the ILS for placing hold on the item
@@ -467,6 +467,7 @@ class ClaviusSQL extends AbstractBase
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
@@ -808,6 +809,7 @@ class ClaviusSQL extends AbstractBase
      *   <li>item_id - this is used to match up renew responses and must match
      * the item_id in the renew response</li>
      * </ul>
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyTransactions($user, $history = false)
     {

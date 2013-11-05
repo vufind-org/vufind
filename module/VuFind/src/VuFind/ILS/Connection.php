@@ -269,6 +269,7 @@ class Connection
      * @return mixed On success, an associative array with specific function keys
      * and values either for cancelling holds via a form or a URL;
      * on failure, false.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function checkMethodcancelHolds($functionConfig)
     {
@@ -298,6 +299,7 @@ class Connection
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for renewing items via a form or a URL; on failure, false.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function checkMethodRenewals($functionConfig)
     {

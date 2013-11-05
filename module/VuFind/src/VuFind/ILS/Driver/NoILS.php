@@ -262,6 +262,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * @param string $id The record id to retrieve the holdings for
      *
      * @return boolean True if holdings exist, False if they do not
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function hasHoldings($id)
     {
@@ -302,6 +303,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * whatever that may mean.
      *
      * @return array       Associative array with 'count' and 'results' keys
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
@@ -346,6 +348,7 @@ class NoILS extends AbstractBase implements TranslatorAwareInterface
      * @throws ILSException
      * @return mixed          Associative array of patron info on successful login,
      * null on unsuccessful login.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function patronLogin($username, $password)
     {

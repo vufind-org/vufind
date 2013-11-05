@@ -41,10 +41,39 @@ use VuFind\Config\Reader as ConfigReader,
  */
 class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
 {
+    /**
+     * Web services host
+     *
+     * @var string
+     */
     protected $ws_host;
+
+    /**
+     * Web services application path
+     *
+     * @var string
+     */
     protected $ws_app;
+
+    /**
+     * Web services ID
+     *
+     * @var string
+     */
     protected $ws_api_id;
+
+    /**
+     * Web services key
+     *
+     * @var string
+     */
     protected $ws_api_key;
+
+    /**
+     * Web services requesting organization ID
+     *
+     * @var string
+     */
     protected $ws_requestingorgid;
 
     /**
@@ -377,6 +406,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @throws ILSException
      * @return array             An array of associative arrays with locationID
      * and locationDisplay keys
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
@@ -415,6 +445,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * or may be ignored.
      *
      * @return string           The default pickup location for the patron.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
@@ -452,6 +483,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * whatever that may mean.
      *
      * @return array             Associative array with 'count' and 'results' keys
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
@@ -468,6 +500,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @param string $dept   ID from getDepartments (empty string to match all)
      *
      * @return mixed An array of associative arrays representing reserve items.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function findReserves($course, $inst, $dept)
     {

@@ -21,13 +21,14 @@
 #      - field2^boost
 #      - field3^boost
 #    # DismaxParams is optional and allows you to override default Dismax settings
-#    #     (i.e. mm / bf) on a search-by-search basis.  If you want global default
-#    #     values for these settings, you can edit the "dismax" search handler in
+#    #     (i.e. mm / bf) on a search-by-search basis.  Enclose the parameter values
+#    #     in quotes for proper behavior. If you want global default values for these
+#    #     settings, you can edit the "dismax" search handler in
 #    #     solr/biblio/conf/solrconfig.xml.
 #    DismaxParams:
-#      - [param1_name, param1_value]
-#      - [param2_name, param2_value]
-#      - [param3_name, param3_value]
+#      - [param1_name, 'param1_value']
+#      - [param2_name, 'param2_value']
+#      - [param3_name, 'param3_value']
 #    # QueryFields define the fields we are searching when not using Dismax
 #    QueryFields:
 #      SolrField:
