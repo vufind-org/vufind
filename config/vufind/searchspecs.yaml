@@ -23,7 +23,8 @@
 #    # DismaxParams is optional and allows you to override default Dismax settings
 #    #     (i.e. mm / bf) on a search-by-search basis.  If you want global default
 #    #     values for these settings, you can edit the "dismax" search handler in
-#    #     solr/biblio/conf/solrconfig.xml.
+#    #     solr/biblio/conf/solrconfig.xml. Note that param1_value, etc., may need
+#    #     to be enclosed in quotes for proper behavior.
 #    DismaxParams:
 #      - [param1_name, param1_value]
 #      - [param2_name, param2_value]
