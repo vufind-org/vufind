@@ -512,9 +512,6 @@ class Server
             return;
         }
 
-        // Initialize the array of XML chunks to include in our response:
-        $xmlParts = array();
-
         // Copy the cursor from the parameters so we can track our current position
         // separately from our initial position!
         $currentCursor = $params['cursor'];
