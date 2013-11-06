@@ -73,8 +73,9 @@
         <th><?=$this->transEsc("Copy")?> <?=$this->escapeHtml($row['number'])?></th>
         <td>
           <? if ($row['reserve'] == "Y"): ?>
-          <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?>
-          <? elseif (isset($row['use_unknown_message']) && $row['use_unknown_message']): ?>
+            <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?><br />
+          <? endif; ?>
+          <? if (isset($row['use_unknown_message']) && $row['use_unknown_message']): ?>
             <span class="unknown"><?=$this->transEsc("status_unknown_message")?></span>
           <? else: ?>
             <? if ($row['availability']): ?>
