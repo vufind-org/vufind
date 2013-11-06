@@ -141,6 +141,18 @@ class Auth extends \Zend\View\Helper\AbstractHelper
      */
     public function getLoginFields($context = array())
     {
+        return $this->renderTemplate('loginfields.phtml', $context);
+    }
+
+    /**
+     * Render the login template.
+     *
+     * @param array $context Context for rendering template
+     *
+     * @return string
+     */
+    public function getLogin($context = array())
+    {
         return $this->renderTemplate('login.phtml', $context);
     }
 }
