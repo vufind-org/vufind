@@ -62,7 +62,7 @@ class ExtendedIni implements FileLoaderInterface
     {
         $this->data = new TextDomain();
         if (!file_exists($filename)) {
-            throw new InvalidArgumentException("Ini file '".$data."' not found");
+            throw new InvalidArgumentException("Ini file '".$filename."' not found");
         }
 
         // Load base data:

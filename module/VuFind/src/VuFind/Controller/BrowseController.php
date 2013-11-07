@@ -380,7 +380,7 @@ class BrowseController extends AbstractBase
                     $this->params()->fromQuery('findby')
                 )
             );
-            foreach ($secondaryList as $index=>$item) {
+            foreach (array_keys($secondaryList) as $index) {
                 $secondaryList[$index]['value'] .=
                     ' AND dewey-hundreds:'
                     . $this->params()->fromQuery('findby');

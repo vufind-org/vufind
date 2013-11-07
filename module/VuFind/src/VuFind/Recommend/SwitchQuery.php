@@ -151,7 +151,6 @@ class SwitchQuery implements RecommendInterface
 
         // Perform all checks (based on naming convention):
         $methods = get_class_methods($this);
-        $checks = array();
         foreach ($methods as $method) {
             if (substr($method, 0, 5) == 'check') {
                 $currentCheck = strtolower(substr($method, 5));

@@ -86,8 +86,9 @@
         <td>
           <? if ($row['reserve'] == "Y"): ?>
             <link property="availability" href="http://schema.org/InStoreOnly" />
-          <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?>
-          <? elseif (isset($row['use_unknown_message']) && $row['use_unknown_message']): ?>
+            <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?><br />
+          <? endif; ?>
+          <? if (isset($row['use_unknown_message']) && $row['use_unknown_message']): ?>
             <span class="muted"><?=$this->transEsc("status_unknown_message")?></span>
           <? else: ?>
             <? if ($row['availability']): ?>

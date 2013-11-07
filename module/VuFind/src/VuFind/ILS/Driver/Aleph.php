@@ -548,7 +548,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         $sep = (strpos($url, "?") === false)?'?':'&';
         if ($params != null) {
             foreach ($params as $key => $value) {
-                $url.= $sep . $key . "=" . $value;
+                $url.= $sep . $key . "=" . urlencode($value);
                 $sep = "&";
             }
         }

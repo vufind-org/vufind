@@ -111,7 +111,7 @@ class PluginFactory implements AbstractFactoryInterface
                 ) {
                     $config->$section = $child->$section;
                 } else {
-                    foreach ($contents as $key => $value) {
+                    foreach (array_keys($contents->toArray()) as $key) {
                         $config->$section->$key = $child->$section->$key;
                     }
                 }

@@ -312,7 +312,6 @@ class Holds
                                 ? ($addlink && $copy['is_holdable']) : $addlink;
 
                             if ($addlink) {
-                                $holdLink = "";
                                 if ($checkHolds['function'] == "getHoldLink") {
                                     /* Build opac link */
                                     $holdings[$location_key][$copy_key]['link']
