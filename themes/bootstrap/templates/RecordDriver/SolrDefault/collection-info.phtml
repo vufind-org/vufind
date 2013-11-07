@@ -27,7 +27,7 @@
 
     <? $summary = $this->driver->getSummary(); $summary = isset($summary[0]) ? $summary[0] : false; ?>
     <? if ($summary): ?>
-      <p><?=$summary ?></p>
+      <p><?=$this->escapeHtml($summary)?></p>
     <? endif; ?>
 
     <? /* Display the lists that this record is saved to */ ?>
