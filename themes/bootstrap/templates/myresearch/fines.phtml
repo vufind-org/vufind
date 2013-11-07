@@ -7,10 +7,10 @@
         . '<li class="active">' . $this->transEsc('Fines') . '</li>';
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
+  <h2><?=$this->transEsc('Your Fines')?></h2>
   <? if (empty($this->fines)): ?>
     <?=$this->transEsc('You do not have any fines')?>
   <? else: ?>
-    <h2><?=$this->transEsc('Your Fines')?></h2>
     <table class="table table-striped" summary="<?=$this->transEsc('Your Fines')?>">
     <tr>
       <th><?=$this->transEsc('Title')?></th>
