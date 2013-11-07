@@ -266,6 +266,142 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
+     * Support method for parseWikipedia - extract infobox details
+     *
+     * @param string $body The Wikipedia response to parse
+     *
+     * @return array
+     */
+    protected function extractInfoBoxInfo($body)
+    {
+        $infobox = $imageName = $imageCaption = null;
+
+        // We are looking for the infobox inside "{{...}}"
+        //   It may contain nested blocks too, thus the recursion
+        preg_match_all('/\{([^{}]++|(?R))*\}/s', $body['*'], $matches);
+        // print "<p>".htmlentities($body['*'])."</p>\n";
+        foreach ($matches[1] as $m) {
+            // If this is the Infobox
+            if (substr($m, 0, 8) == "{Infobox") {
+                // Keep the string for later, we need the body block that follows it
+                $infoboxStr = "{".$m."}";
+                // Get rid of the last pair of braces and split
+                $infobox = explode("\n|", substr($m, 1, -1));
+                // Look through every row of the infobox
+                foreach ($infobox as $row) {
+                    $data  = explode("=", $row);
+                    $key   = trim(array_shift($data));
+                    $value = trim(join("=", $data));
+
+                    // At the moment we only want stuff related to the image.
+                    switch (strtolower($key)) {
+                    case "img":
+                    case "image":
+                    case "image:":
+                    case "image_name":
+                        $imageName = str_replace(' ', '_', $value);
+                        break;
+                    case "caption":
+                    case "img_capt":
+                    case "image_caption":
+                        $imageCaption = $value;
+                        break;
+                    default:
+                        /* Nothing else... yet */
+                        break;
+                    }
+                }
+            }
+        }
+
+        return array($infoboxStr, $imageName, $imageCaption);
+    }
+
+    /**
+     * Support method for parseWikipedia - extract first image from body
+     *
+     * @param string $body The Wikipedia response to parse
+     *
+     * @return array
+     */
+    protected function extractImageFromBody($body)
+    {
+        $imageName = $imageCaption = null;
+        $pattern = '/(\x5b\x5b)Image:([^\x5d]*)(\x5d\x5d)/U';
+        preg_match_all($pattern, $body['*'], $matches);
+        if (isset($matches[2][0])) {
+            $parts = explode('|', $matches[2][0]);
+            $imageName = str_replace(' ', '_', $parts[0]);
+            if (count($parts) > 1) {
+                $imageCaption = strip_tags(
+                    preg_replace('/({{).*(}})/U', '', $parts[count($parts) - 1])
+                );
+            }
+        }
+        return array($imageName, $imageCaption);
+    }
+
+    /**
+     * Support method for parseWikipedia - fix up details in the body
+     *
+     * @param string $body The Wikipedia response to sanitize
+     *
+     * @return string
+     */
+    protected function sanitizeWikipediaBody($body)
+    {
+        // Initialize arrays of processing instructions
+        $pattern = array();
+        $replacement = array();
+
+        // Convert wikipedia links
+        $pattern[] = '/(\x5b\x5b)([^\x5d|]*)(\x5d\x5d)/Us';
+        $replacement[]
+            = '<a href="___baseurl___?lookfor=%22$2%22&amp;type=AllFields">$2</a>';
+        $pattern[] = '/(\x5b\x5b)([^\x5d]*)\x7c([^\x5d]*)(\x5d\x5d)/Us';
+        $replacement[]
+            = '<a href="___baseurl___?lookfor=%22$2%22&amp;type=AllFields">$3</a>';
+
+        // Fix pronunciation guides
+        $pattern[] = '/({{)pron-en\|([^}]*)(}})/Us';
+        $replacement[] = $this->getTranslator()->translate("pronounced") . " /$2/";
+
+        // Fix dashes
+        $pattern[] = '/{{ndash}}/';
+        $replacement[] = ' - ';
+
+        // Removes citations
+        $pattern[] = '/({{)[^}]*(}})/Us';
+        $replacement[] = "";
+        //  <ref ... > ... </ref> OR <ref> ... </ref>
+        $pattern[] = '/<ref[^\/]*>.*<\/ref>/Us';
+        $replacement[] = "";
+        //    <ref ... />
+        $pattern[] = '/<ref.*\/>/Us';
+        $replacement[] = "";
+
+        // Removes comments followed by carriage returns to avoid excess whitespace
+        $pattern[] = '/<!--.*-->\n*/Us';
+        $replacement[] = '';
+
+        // Formatting
+        $pattern[] = "/'''([^']*)'''/Us";
+        $replacement[] = '<strong>$1</strong>';
+
+        // Trim leading newlines (which can result from leftovers after stripping
+        // other items above).  We want this to be greedy.
+        $pattern[] = '/^\n*/s';
+        $replacement[] = '';
+
+        // Convert multiple newlines into two breaks
+        // We DO want this to be greedy
+        $pattern[] = "/\n{2,}/s";
+        $replacement[] = '<br/><br/>';
+
+        return preg_replace($pattern, $replacement, $body);
+    }
+
+    /**
      * _parseWikipedia
      *
      * This method is responsible for parsing the output from the Wikipedia
@@ -307,61 +443,14 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
         $body = $page;
 
         /* Infobox */
-
-        // We are looking for the infobox inside "{{...}}"
-        //   It may contain nested blocks too, thus the recursion
-        preg_match_all('/\{([^{}]++|(?R))*\}/s', $body['*'], $matches);
-        // print "<p>".htmlentities($body['*'])."</p>\n";
-        foreach ($matches[1] as $m) {
-            // If this is the Infobox
-            if (substr($m, 0, 8) == "{Infobox") {
-                // Keep the string for later, we need the body block that follows it
-                $infoboxStr = "{".$m."}";
-                // Get rid of the last pair of braces and split
-                $infobox = explode("\n|", substr($m, 1, -1));
-                // Look through every row of the infobox
-                foreach ($infobox as $row) {
-                    $data  = explode("=", $row);
-                    $key   = trim(array_shift($data));
-                    $value = trim(join("=", $data));
-
-                    // At the moment we only want stuff related to the image.
-                    switch (strtolower($key)) {
-                    case "img":
-                    case "image":
-                    case "image:":
-                    case "image_name":
-                        $imageName = str_replace(' ', '_', $value);
-                        break;
-                    case "caption":
-                    case "img_capt":
-                    case "image_caption":
-                        $image_caption = $value;
-                        break;
-                    default:
-                        /* Nothing else... yet */
-                        break;
-                    }
-                }
-            }
-        }
+        list($infoboxStr, $imageName, $imageCaption) = $this->extractInfoBoxInfo($body);
 
         /* Image */
 
         // If we didn't successfully extract an image from the infobox, let's see if
         // we can find one in the body -- we'll just take the first match:
         if (!isset($imageName)) {
-            $pattern = '/(\x5b\x5b)Image:([^\x5d]*)(\x5d\x5d)/U';
-            preg_match_all($pattern, $body['*'], $matches);
-            if (isset($matches[2][0])) {
-                $parts = explode('|', $matches[2][0]);
-                $imageName = str_replace(' ', '_', $parts[0]);
-                if (count($parts) > 1) {
-                    $image_caption = strip_tags(
-                        preg_replace('/({{).*(}})/U', '', $parts[count($parts) - 1])
-                    );
-                }
-            }
+            list($imageName, $imageCaption) = $this->extractImageFromBody($body);
         }
 
         // Given an image name found above, look up the associated URL:
@@ -416,8 +505,8 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
                 } else {
                     // Or just a normal array...
                     // If it's a file link get rid of it
-                    if (strtolower(substr($n, 0, 7)) == "[[file:"
-                        || strtolower(substr($n, 0, 8)) == "[[image:"
+                    if (strtolower(substr($nm, 0, 7)) == "[[file:"
+                        || strtolower(substr($nm, 0, 8)) == "[[image:"
                     ) {
                         $body = str_replace($nm, "", $body);
                     }
@@ -425,63 +514,13 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
             }
         }
 
-        // Initialize arrays of processing instructions
-        $pattern = array();
-        $replacement = array();
-
-        // Convert wikipedia links
-        $pattern[] = '/(\x5b\x5b)([^\x5d|]*)(\x5d\x5d)/Us';
-        $replacement[]
-            = '<a href="___baseurl___?lookfor=%22$2%22&amp;type=AllFields">$2</a>';
-        $pattern[] = '/(\x5b\x5b)([^\x5d]*)\x7c([^\x5d]*)(\x5d\x5d)/Us';
-        $replacement[]
-            = '<a href="___baseurl___?lookfor=%22$2%22&amp;type=AllFields">$3</a>';
-
-        // Fix pronunciation guides
-        $pattern[] = '/({{)pron-en\|([^}]*)(}})/Us';
-        $replacement[] = $this->getTranslator()->translate("pronounced") . " /$2/";
-
-        // Fix dashes
-        $pattern[] = '/{{ndash}}/';
-        $replacement[] = ' - ';
-
-        // Removes citations
-        $pattern[] = '/({{)[^}]*(}})/Us';
-        $replacement[] = "";
-        //  <ref ... > ... </ref> OR <ref> ... </ref>
-        $pattern[] = '/<ref[^\/]*>.*<\/ref>/Us';
-        $replacement[] = "";
-        //    <ref ... />
-        $pattern[] = '/<ref.*\/>/Us';
-        $replacement[] = "";
-
-        // Removes comments followed by carriage returns to avoid excess whitespace
-        $pattern[] = '/<!--.*-->\n*/Us';
-        $replacement[] = '';
-
-        // Formatting
-        $pattern[] = "/'''([^']*)'''/Us";
-        $replacement[] = '<strong>$1</strong>';
-
-        // Trim leading newlines (which can result from leftovers after stripping
-        // other items above).  We want this to be greedy.
-        $pattern[] = '/^\n*/s';
-        $replacement[] = '';
-
-        // Convert multiple newlines into two breaks
-        // We DO want this to be greedy
-        $pattern[] = "/\n{2,}/s";
-        $replacement[] = '<br/><br/>';
-
-        $body = preg_replace($pattern, $replacement, $body);
-
         if (isset($imageUrl) && $imageUrl != false) {
             $info['image'] = $imageUrl;
-            if (isset($image_caption)) {
-                $info['altimage'] = $image_caption;
+            if (isset($imageCaption)) {
+                $info['altimage'] = $imageCaption;
             }
         }
-        $info['description'] = $body;
+        $info['description'] = $this->sanitizeWikipediaBody($body);
         $info['wiki_lang'] = $this->lang;
 
         return $info;
