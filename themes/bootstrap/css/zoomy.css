@@ -21,16 +21,3 @@
   .zoomy-container .control .turn-left,
   .zoomy-container .control .turn-right,
   .zoomy-container .control #toggle {color:#444;cursor:pointer;text-decoration:none}
-@media screen and (max-width: 974px) {
-  .zoomy-container .control{bottom:0;height:100px;position:absolute;right:0;width:300px}
-  .zoomy-container .control .turn-left{bottom:15px;right:215px;z-index:1}
-  .zoomy-container .control .turn-right{bottom:15px;right:2px;z-index:1}
-  .zoomy-container .map,
-    .zoomy-container .map .scope,
-    .zoomy-container .map img,
-    .zoomy-container .control #toggle {border:0;display:none}
-  .zoomy-container .zoom{bottom:8px;right:40px;z-index:10}
-  .zoomy-container .zoom .level{padding:10px 0;width:50px}
-  .zoomy-container .zoom a{padding:10px}
-  .zoomy-container .zoom,.zoomy-container .zoom .level{font:18pt Courier}
-}

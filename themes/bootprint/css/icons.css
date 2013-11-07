@@ -27,6 +27,7 @@ i.icon-qrcode,
 i.icon-remove,
 i.icon-renew,
 i.icon-renew-all,
+i.icon-report,
 i.icon-rss,
 i.icon-search,
 i.icon-shopping-cart,
@@ -99,6 +100,7 @@ i.icon-user {
 .small i.icon-remove,
 .small i.icon-renew,
 .small i.icon-renew-all,
+.small i.icon-report,
 .small i.icon-rss,
 .small i.icon-search,
 .small i.icon-shopping-cart,
@@ -134,7 +136,8 @@ i.icon-heart {background:url('../images/icons/heart.png')}
 i.icon-home {background:url('../images/icons/house.png')}
 i.icon-inbox {background:url('../images/icons/box.png')}
 i.icon-leaf,.icon-sitemap {background:url('../images/icons/treeCurrent.png')}
-i.icon-list-alt,i.icon-export {background:url('../images/icons/application_add.png')}i.icon-minus-sign {background:url('../images/icons/delete.png')}
+i.icon-list-alt,i.icon-export {background:url('../images/icons/application_add.png')}
+i.icon-minus-sign {background:url('../images/icons/delete.png')}
 i.icon-ok {background:url('../images/icons/tick.png')}
 i.icon-phone-sign {background:url('../images/icons/phone.png')}
 i.icon-plus-sign {background:url('../images/icons/add.png')}
@@ -143,6 +146,7 @@ i.icon-qrcode {background:url('../images/icons/qrcode.png')}
 i.icon-remove {background:url('../images/icons/delete.png')}
 i.icon-renew {background:url('../images/icons/renew.png')}
 i.icon-renew-all {background:url('../images/icons/renewAll.png')}
+i.icon-report {background:url('../images/icons/report.png')}
 i.icon-rss {background:url('../images/icons/feed.png')}
 i.icon-search {background:url('../images/icons/magnifier.png')}
 i.icon-shopping-cart {background:url('../images/icons/cart.png')}
