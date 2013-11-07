@@ -6,7 +6,7 @@ body h1 {font-size:36px}
 body h2 {font-size:30px}
 body h3 {font-size:20px}
 .container {background:#FFF;border-radius:5px;margin:18px auto;max-width:952px}
-.main {padding:0 8px}
+.main {padding:0 1%;width:98%}
 @media (max-width:767px) {
   .main {width:98.2%}
 }
