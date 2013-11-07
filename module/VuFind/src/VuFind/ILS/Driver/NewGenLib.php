@@ -91,10 +91,6 @@ class NewGenLib extends AbstractBase
     public function getHolding($RecordID, $patron = false)
     {
         $holding = $this->getItemStatus($RecordID);
-        $pieces = explode("_", $RecordID);
-        $CatId = $pieces[0];
-        $LibId = $pieces[1];
-
         for ($i = 0; $i < count($holding); $i++) {
             // add extra data
             $duedateql = "select due_date from cir_transaction where " .
@@ -271,7 +267,6 @@ class NewGenLib extends AbstractBase
                 break;
             case 'B':
                 $location = "Item available at the circulation desk";
-                $dtsql = "select ";
                 $type2 = "INTIMATED";
                 break;
             }
@@ -447,7 +442,6 @@ class NewGenLib extends AbstractBase
     {
         $patron = array();
         $PatId = $username;
-        $LibId = 1;
         $psswrd = $password;
         //SQL Statement
         $sql = "select p.patron_id as patron_id, p.library_id as library_id, " .
