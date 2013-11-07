@@ -68,30 +68,30 @@ class SafeMoneyFormat extends AbstractHelper
         // '' or NULL gets the locale values from environment variables
         setlocale(LC_ALL, '');
         $locale = localeconv();
-        extract($locale);
 
         // Windows doesn't support UTF-8 encoding in setlocale, so we'll have to
         // convert the currency symbol manually:
-        $currency_symbol = self::safeMoneyFormatMakeUTF8($currency_symbol);
+        $currency_symbol = self::safeMoneyFormatMakeUTF8($locale['currency_symbol']);
 
         // How is the amount signed?
         // Positive
         if ($number > 0) {
-            $sign         = $positive_sign;
-            $sign_posn    = $p_sign_posn;
-            $sep_by_space = $p_sep_by_space;
-            $cs_precedes  = $p_cs_precedes;
+            $sign         = $locale['positive_sign'];
+            $sign_posn    = $locale['p_sign_posn'];
+            $sep_by_space = $locale['p_sep_by_space'];
+            $cs_precedes  = $locale['p_cs_precedes'];
         } else {
             // Negative
-            $sign         = $negative_sign;
-            $sign_posn    = $n_sign_posn;
-            $sep_by_space = $n_sep_by_space;
-            $cs_precedes  = $n_cs_precedes;
+            $sign         = $locale['negative_sign'];
+            $sign_posn    = $locale['n_sign_posn'];
+            $sep_by_space = $locale['n_sep_by_space'];
+            $cs_precedes  = $locale['n_cs_precedes'];
         }
 
         // Format the absolute value of the number
         $m = number_format(
-            abs($number), $frac_digits, $mon_decimal_point, $mon_thousands_sep
+            abs($number), $locale['frac_digits'], $locale['mon_decimal_point'],
+            $locale['mon_thousands_sep']
         );
 
         // Spaces between the number and symbol?

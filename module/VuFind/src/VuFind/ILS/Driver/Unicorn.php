@@ -562,8 +562,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         );
         $response = $this->querySirsi($params);
 
-        list($user_key, $alt_id, $barcode, $name, $library, $profile,
-        $cat1, $cat2, $cat3, $cat4, $cat5, $expiry, $holds, 
+        list($user_key, , , , $library, $profile, , , , , , , ,
         $email, $address1, $zip, $phone, $address2) = explode('|', $response);
 
         return array(
@@ -663,10 +662,8 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $lines = explode("\n", $response);
         $items = array();
         foreach ($lines as $item) {
-            list($catkey, $holdkey, $available, $recall_status, $date_expires,
-            $reserve, $date_created, $priority, $type, $pickup_library,
-            $suspend_begin, $suspend_end, $date_recalled, $special_request,
-            $date_available, $date_available_expires, $barcode)
+            list($catkey, $holdkey, $available, , $date_expires, , $date_created, ,
+            $type, $pickup_library, , , , , , , $barcode)
                 = explode('|', $item);
 
             $date_created = $this->parseDateTime($date_created);
@@ -741,7 +738,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             foreach ($lines as $line) {
                 // error lines start with '**'
                 if (strpos(trim($line), '**') === 0) {
-                    list($message, $holdKey) = explode(':', $line);
+                    list(, $holdKey) = explode(':', $line);
                     $failures[] = trim($holdKey, '()');
                 }
             }
