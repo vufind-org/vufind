@@ -619,6 +619,11 @@ $config = array(
                             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
                         );
                     },
+                    'summontopics' => function ($sm) {
+                        return new \VuFind\Recommend\SummonTopics(
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+                        );
+                    },
                     'switchquery' => function ($sm) {
                         return new \VuFind\Recommend\SwitchQuery(
                             $sm->getServiceLocator()->get('VuFind\Search\BackendManager')

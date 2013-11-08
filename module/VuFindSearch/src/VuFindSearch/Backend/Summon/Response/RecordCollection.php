@@ -133,4 +133,15 @@ class RecordCollection extends AbstractRecordCollection
         return isset($this->response['recommendationLists']['database'])
             ? $this->response['recommendationLists']['database'] : false;
     }
+
+    /**
+     * Get topic recommendations from Summon, if any.
+     *
+     * @return array|bool false if no recommendations, detailed array otherwise.
+     */
+    public function getTopicRecommendations()
+    {
+        return isset($this->response['topicRecommendations'])
+            ? $this->response['topicRecommendations'] : false;
+    }
 }

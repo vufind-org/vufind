@@ -171,6 +171,9 @@ class Params extends \VuFind\Search\Base\Params
             $backendParams->set('highlightStart', '{{{{START_HILITE}}}}');
             $backendParams->set('highlightEnd', '{{{{END_HILITE}}}}');
         }
+        if ($maxTopics = $options->getMaxTopicRecommendations()) {
+            $backendParams->set('maxTopics', $maxTopics);
+        }
         $backendParams->set('facets', $this->getBackendFacetParameters());
         $this->createBackendFilterParameters($backendParams);
 

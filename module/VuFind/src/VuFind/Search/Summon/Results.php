@@ -60,6 +60,13 @@ class Results extends \VuFind\Search\Base\Results
     protected $databaseRecommendations = false;
 
     /**
+     * Topic recommendations
+     *
+     * @var array|bool
+     */
+    protected $topicRecommendations = false;
+
+    /**
      * Support method for performAndProcessSearch -- perform a search based on the
      * parameters passed to the object.
      *
@@ -89,6 +96,7 @@ class Results extends \VuFind\Search\Base\Results
         // Get best bets and database recommendations.
         $this->bestBets = $collection->getBestBets();
         $this->databaseRecommendations = $collection->getDatabaseRecommendations();
+        $this->topicRecommendations = $collection->getTopicRecommendations();
 
         // Add fake date facets if flagged earlier; this is necessary in order
         // to display the date range facet control in the interface.
@@ -299,5 +307,15 @@ class Results extends \VuFind\Search\Base\Results
     public function getDatabaseRecommendations()
     {
         return $this->databaseRecommendations;
+    }
+
+    /**
+     * Get topic recommendations from Summon, if any.
+     *
+     * @return array|bool false if no recommendations, detailed array otherwise.
+     */
+    public function getTopicRecommendations()
+    {
+        return $this->topicRecommendations;
     }
 }
