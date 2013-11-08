@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "912400ee83b7a6b04d6e1ccc398e5ea4",
+    "hash": "6587f02e6b4f7504432193a81ba61931",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -437,17 +437,17 @@
         },
         {
             "name": "zendframework/zendframework",
-            "version": "2.2.4",
+            "version": "2.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zf2.git",
-                "reference": "5b03d868755c181fc9b5dc56c1f8c26e73ca0bed"
+                "reference": "4a7cf6a4cf791244e14aa0ca49d1f06916b63202"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-5b03d868755c181fc9b5dc56c1f8c26e73ca0bed-zip-8b1552.zip",
-                "reference": "2.2.4",
-                "shasum": "f12b12d23c937b8cbd246c6fa56c07fb1df34cb0"
+                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-4a7cf6a4cf791244e14aa0ca49d1f06916b63202-zip-2661de.zip",
+                "reference": "2.2.5",
+                "shasum": "3c699626517e16aa7b3d9a0c811fe41a2586179d"
             },
             "require": {
                 "php": ">=5.3.3"
@@ -507,6 +507,7 @@
             },
             "require-dev": {
                 "doctrine/annotations": ">=1.0",
+                "fabpot/php-cs-fixer": "*@dev",
                 "ircmaxell/random-lib": "dev-master",
                 "ircmaxell/security-lib": "dev-master",
                 "ocramius/proxy-manager": "0.4.*",
@@ -547,10 +548,10 @@
                 "zf2"
             ],
             "support": {
-                "source": "https://github.com/zendframework/zf2/tree/release-2.2.4",
+                "source": "https://github.com/zendframework/zf2/tree/release-2.2.5",
                 "issues": "https://github.com/zendframework/zf2/issues"
             },
-            "time": "2013-08-26 15:09:04"
+            "time": "2013-10-31 15:48:16"
         },
         {
             "name": "zendframework/zendrest",
