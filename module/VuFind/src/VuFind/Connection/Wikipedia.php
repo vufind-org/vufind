@@ -163,7 +163,7 @@ class Wikipedia implements TranslatorAwareInterface
     /**
      * Extract image information from an infobox
      *
-     * @param string $infoboxStr
+     * @param string $infoboxStr Infobox text
      *
      * @return string
      */
