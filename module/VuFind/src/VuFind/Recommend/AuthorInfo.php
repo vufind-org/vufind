@@ -274,7 +274,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      */
     protected function extractInfoBoxInfo($body)
     {
-        $infobox = $imageName = $imageCaption = null;
+        $infoboxStr = $imageName = $imageCaption = null;
 
         // We are looking for the infobox inside "{{...}}"
         //   It may contain nested blocks too, thus the recursion
@@ -443,7 +443,8 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
         $body = $page;
 
         /* Infobox */
-        list($infoboxStr, $imageName, $imageCaption) = $this->extractInfoBoxInfo($body);
+        list($infoboxStr, $imageName, $imageCaption)
+            = $this->extractInfoBoxInfo($body);
 
         /* Image */
 
