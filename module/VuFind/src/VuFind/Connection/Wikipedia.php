@@ -161,61 +161,73 @@ class Wikipedia implements TranslatorAwareInterface
     }
 
     /**
+     * Extract image information from an infobox
+     *
+     * @param string $infoboxStr
+     *
+     * @return string
+     */
+    protected function extractImageFromInfoBox($infoboxStr)
+    {
+        $imageName = $imageCaption = null;
+
+        // Get rid of the last pair of braces and split
+        $infobox = explode("\n|", substr($infoboxStr, 2, -2));
+        // Look through every row of the infobox
+        foreach ($infobox as $row) {
+            $data  = explode("=", $row);
+            $key   = trim(array_shift($data));
+            $value = trim(join("=", $data));
+
+            // At the moment we only want stuff related to the image.
+            switch (strtolower($key)) {
+            case "img":
+            case "image":
+            case "image:":
+            case "image_name":
+                $imageName = str_replace(' ', '_', $value);
+                break;
+            case "caption":
+            case "img_capt":
+            case "image_caption":
+                $imageCaption = $value;
+                break;
+            default:
+                /* Nothing else... yet */
+                break;
+            }
+        }
+
+        return array($imageName, $imageCaption);
+    }
+
+    /**
      * Support method for parseWikipedia - extract infobox details
      *
-     * @param string $body The Wikipedia response to parse
+     * @param array $body The Wikipedia response to parse
      *
-     * @return array
+     * @return string
      */
-    protected function extractInfoBoxInfo($body)
+    protected function extractInfoBox($body)
     {
-        $infoboxStr = $imageName = $imageCaption = null;
-
         // We are looking for the infobox inside "{{...}}"
         //   It may contain nested blocks too, thus the recursion
         preg_match_all('/\{([^{}]++|(?R))*\}/s', $body['*'], $matches);
-        // print "<p>".htmlentities($body['*'])."</p>\n";
         foreach ($matches[1] as $m) {
             // If this is the Infobox
             if (substr($m, 0, 8) == "{Infobox") {
                 // Keep the string for later, we need the body block that follows it
-                $infoboxStr = "{".$m."}";
-                // Get rid of the last pair of braces and split
-                $infobox = explode("\n|", substr($m, 1, -1));
-                // Look through every row of the infobox
-                foreach ($infobox as $row) {
-                    $data  = explode("=", $row);
-                    $key   = trim(array_shift($data));
-                    $value = trim(join("=", $data));
-
-                    // At the moment we only want stuff related to the image.
-                    switch (strtolower($key)) {
-                    case "img":
-                    case "image":
-                    case "image:":
-                    case "image_name":
-                        $imageName = str_replace(' ', '_', $value);
-                        break;
-                    case "caption":
-                    case "img_capt":
-                    case "image_caption":
-                        $imageCaption = $value;
-                        break;
-                    default:
-                        /* Nothing else... yet */
-                        break;
-                    }
-                }
+                return "{".$m."}";
             }
         }
 
-        return array($infoboxStr, $imageName, $imageCaption);
+        return null;
     }
 
     /**
      * Support method for parseWikipedia - extract first image from body
      *
-     * @param string $body The Wikipedia response to parse
+     * @param array $body The Wikipedia response to parse
      *
      * @return array
      */
@@ -342,26 +354,19 @@ class Wikipedia implements TranslatorAwareInterface
     }
 
     /**
-     * _parseWikipedia
+     * Check for redirection in the Wikipedia response
      *
-     * This method is responsible for parsing the output from the Wikipedia
-     * REST API.
-     *
-     * @param string $body The Wikipedia response to parse
+     * @param array $body Response body
      *
      * @return array
-     * @author Rushikesh Katikar <rushikesh.katikar@gmail.com>
      */
-    protected function parseWikipedia($body)
+    protected function checkForRedirect($body)
     {
-        // Check if data exists or not
-        if (isset($body['query']['pages']['-1'])) {
-            return null;
-        }
+        $name = $redirectTo = $page = null;
 
         // Loop through the pages and find the first that isn't a redirect:
         foreach ($body['query']['pages'] as $page) {
-            $info['name'] = $page['title'];
+            $name = $page['title'];
 
             // Get the latest revision
             $page = array_shift($page['revisions']);
@@ -376,51 +381,90 @@ class Wikipedia implements TranslatorAwareInterface
             }
         }
 
-        // Recurse if we only found redirects:
-        if ($redirectTo) {
-            return $this->getWikipedia($redirectTo);
-        }
-        $body = $page;
+        return array($name, $redirectTo, $page);
+    }
 
-        /* Infobox */
-        list($infoboxStr, $imageName, $imageCaption)
-            = $this->extractInfoBoxInfo($body);
-
-        /* Image */
-
-        // If we didn't successfully extract an image from the infobox, let's see if
-        // we can find one in the body -- we'll just take the first match:
-        if (!isset($imageName)) {
-            list($imageName, $imageCaption) = $this->extractImageFromBody($body);
-        }
-
-        // Given an image name found above, look up the associated URL:
-        if (isset($imageName)) {
-            $imageUrl = $this->getWikipediaImageURL($imageName);
-        }
-
-        /* Body */
-
-        if (isset($infoboxStr)) {
+    /**
+     * Extract body text
+     *
+     * @param array  $body       Body details
+     * @param string $infoboxStr Infobox found within body (if any)
+     *
+     * @return string
+     */
+    protected function extractBodyText($body, $infoboxStr)
+    {
+        if ($infoboxStr) {
             // Start of the infobox
             $start  = strpos($body['*'], $infoboxStr);
             // + the length of the infobox
             $offset = strlen($infoboxStr);
             // Every after the infobox
-            $body   = substr($body['*'], $start + $offset);
-        } else {
-            // No infobox -- use whole thing:
-            $body = $body['*'];
+            return substr($body['*'], $start + $offset);
+        }
+        // No infobox -- use whole thing:
+        return $body['*'];
+    }
+
+    /**
+     * _parseWikipedia
+     *
+     * This method is responsible for parsing the output from the Wikipedia
+     * REST API.
+     *
+     * @param string $rawBody The Wikipedia response to parse
+     *
+     * @return array
+     * @author Rushikesh Katikar <rushikesh.katikar@gmail.com>
+     */
+    protected function parseWikipedia($rawBody)
+    {
+        // Check if data exists or not
+        if (isset($rawBody['query']['pages']['-1'])) {
+            return null;
         }
 
-        if (isset($imageUrl) && $imageUrl != false) {
-            $info['image'] = $imageUrl;
-            if (isset($imageCaption)) {
-                $info['altimage'] = $imageCaption;
+        // Check for redirects; get some basic information:
+        list($name, $redirectTo, $bodyArr) = $this->checkForRedirect($rawBody);
+
+        // Recurse if we only found redirects:
+        if ($redirectTo) {
+            return $this->getWikipedia($redirectTo);
+        }
+
+        /* Infobox */
+        $infoboxStr = $this->extractInfoBox($bodyArr);
+
+        /* Body */
+        $bodyStr = $this->extractBodyText($bodyArr, $infoboxStr);
+        $info = array(
+            'name' => $name,
+            'description' => $this->sanitizeWikipediaBody($bodyStr),
+            'wiki_lang' => $this->lang,
+        );
+
+        /* Image */
+
+        // Try to find an image in either the infobox or the body:
+        if ($infoboxStr) {
+            list($imageName, $imageCaption)
+                = $this->extractImageFromInfoBox($infoboxStr);
+        }
+        if (!isset($imageName)) {
+            list($imageName, $imageCaption) = $this->extractImageFromBody($bodyArr);
+        }
+
+        // Given an image name found above, look up the associated URL and add it to
+        // our return array:
+        if (isset($imageName)) {
+            $imageUrl = $this->getWikipediaImageURL($imageName);
+            if ($imageUrl != false) {
+                $info['image'] = $imageUrl;
+                if (isset($imageCaption)) {
+                    $info['altimage'] = $imageCaption;
+                }
             }
         }
-        $info['description'] = $this->sanitizeWikipediaBody($body);
-        $info['wiki_lang'] = $this->lang;
 
         return $info;
     }
