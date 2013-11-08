@@ -37,6 +37,8 @@ use VuFindSearch\Query\AbstractQuery;
 
 use VuFindSearch\ParamBag;
 
+use VuFindSearch\Feature\RetrieveBatchInterface;
+
 use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
@@ -52,7 +54,7 @@ use VuFindSearch\Backend\Exception\BackendException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class Backend extends AbstractBackend
+class Backend extends AbstractBackend implements RetrieveBatchInterface
 {
     /**
      * Connector.
@@ -145,6 +147,46 @@ class Backend extends AbstractBackend
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
         return $collection;
+    }
+
+    /**
+     * Retrieve a batch of documents.
+     *
+     * @param array    $ids    Array of document identifiers
+     * @param ParamBag $params Search backend parameters
+     *
+     * @return RecordCollectionInterface
+     */
+    public function retrieveBatch($ids, ParamBag $params = null)
+    {
+        // Load 50 records at a time; this is the limit for Summon.
+        $pageSize = 50;
+
+        // Retrieve records a page at a time:
+        $results = false;
+        while (count($ids) > 0) {
+            $currentPage = array_splice($ids, 0, $pageSize, array());
+            $query = new SummonQuery(
+                null,
+                array(
+                    'idsToFetch' => $currentPage,
+                    'pageNumber' => 1,
+                    'pageSize' => $pageSize
+                )
+            );
+            $next = $this->createRecordCollection(
+                $this->connector->query($query)
+            );
+            if (!$results) {
+                $results = $next;
+            } else {
+                foreach ($next->getRecords() as $record) {
+                    $results->add($record);
+                }
+            }
+        }
+        $this->injectSourceIdentifier($results);
+        return $results;
     }
 
     /**
