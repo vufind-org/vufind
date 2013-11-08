@@ -124,6 +124,12 @@ class SerialsSolutions_Summon_Query
     protected $language = 'en';
 
     /**
+     * Query expansion setting
+     * @var bool
+     */
+    protected $expand = false;
+
+    /**
      * Constructor
      *
      * Sets up the Summon API Client
@@ -182,6 +188,9 @@ class SerialsSolutions_Summon_Query
         }
         if (!empty($this->sort)) {
             $options['s.sort'] = $this->sort;
+        }
+        if ($this->expand) {
+            $options['s.exp'] = 'true';
         }
         if ($this->highlight) {
             $options['s.hl'] = 'true';

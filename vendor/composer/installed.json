@@ -515,44 +515,6 @@
         ]
     },
     {
-        "name": "serialssolutions/summon",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/summon/Summon.php.git",
-            "reference": "2acfaf80bdd6414dec17478418d7c213e220575d"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/summon/Summon.php/zipball/2acfaf80bdd6414dec17478418d7c213e220575d",
-            "reference": "2acfaf80bdd6414dec17478418d7c213e220575d",
-            "shasum": ""
-        },
-        "time": "2013-09-26 19:09:03",
-        "type": "library",
-        "installation-source": "source",
-        "autoload": {
-            "psr-0": {
-                "SerialsSolutions": ""
-            }
-        },
-        "license": [
-            "GPL-2.0"
-        ],
-        "authors": [
-            {
-                "name": "Demian Katz",
-                "email": "demian.katz@villanova.edu"
-            }
-        ],
-        "description": "Library for interacting with Serials Solutions' Summon API.",
-        "support": {
-            "source": "https://github.com/summon/Summon.php/tree/master",
-            "issues": "https://github.com/summon/Summon.php/issues"
-        }
-    },
-    {
         "name": "jasig/phpcas",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
@@ -681,5 +643,43 @@
             "/"
         ],
         "description": "The standard for machine-readable cataloging (MARC) records is documented at http://loc.gov/marc/. This package enables you to read existing MARC records from a file, string, or (using the YAZ extension), from a Z39.50 source. You can also use this package to create new MARC records.\n\nThis package is based on the PHP MARC package, originally called \"php-marc\", that is part of the Emilda Project (http://www.emilda.org).  Christoffer Landtman generously agreed to make the \"php-marc\" code available under the GNU LGPL so it could be used as the basis of this PEAR package."
+    },
+    {
+        "name": "serialssolutions/summon",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/summon/Summon.php.git",
+            "reference": "18840ee36537889269e22e4ef69561461547b6f1"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/summon/Summon.php/zipball/18840ee36537889269e22e4ef69561461547b6f1",
+            "reference": "18840ee36537889269e22e4ef69561461547b6f1",
+            "shasum": ""
+        },
+        "time": "2013-11-08 13:57:56",
+        "type": "library",
+        "installation-source": "source",
+        "autoload": {
+            "psr-0": {
+                "SerialsSolutions": ""
+            }
+        },
+        "license": [
+            "GPL-2.0"
+        ],
+        "authors": [
+            {
+                "name": "Demian Katz",
+                "email": "demian.katz@villanova.edu"
+            }
+        ],
+        "description": "Library for interacting with Serials Solutions' Summon API.",
+        "support": {
+            "source": "https://github.com/summon/Summon.php/tree/master",
+            "issues": "https://github.com/summon/Summon.php/issues"
+        }
     }
 ]
