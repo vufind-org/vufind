@@ -342,6 +342,45 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     }
 
     /**
+     * Support method for sanitizeWikipediaBody -- strip image/file links.
+     *
+     * @param string $body The Wikipedia response to sanitize
+     *
+     * @return string
+     */
+    protected function stripImageAndFileLinks($body)
+    {
+        // Remove unwanted image/file links
+        // Nested brackets make this annoying: We can't add 'File' or 'Image' as
+        //    mandatory because the recursion fails, or as optional because then
+        //    normal links get hit.
+        //    ... unless there's a better pattern? TODO
+        // eg. [[File:Johann Sebastian Bach.jpg|thumb|Bach in a 1748 portrait by
+        //     [[Elias Gottlob Haussmann|Haussmann]]]]
+        $open    = "\\[";
+        $close   = "\\]";
+        $content = "(?>[^\\[\\]]+)";  // Anything but [ or ]
+        // We can either find content or recursive brackets:
+        $recursive_match = "($content|(?R))*";
+        $body .= "[[file:bad]]";
+        preg_match_all("/".$open.$recursive_match.$close."/Us", $body, $new_matches);
+        // Loop through every match (link) we found
+        if (is_array($new_matches)) {
+            foreach ($new_matches as $nm) {
+                foreach ((array)$nm as $n) {
+                    // If it's a file link get rid of it
+                    if (strtolower(substr($n, 0, 7)) == "[[file:"
+                        || strtolower(substr($n, 0, 8)) == "[[image:"
+                    ) {
+                        $body = str_replace($n, "", $body);
+                    }
+                }
+            }
+        }
+        return $body;
+    }
+
+    /**
      * Support method for parseWikipedia - fix up details in the body
      *
      * @param string $body The Wikipedia response to sanitize
@@ -350,6 +389,12 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
      */
     protected function sanitizeWikipediaBody($body)
     {
+        // Cull our content back to everything before the first heading
+        $body = trim(substr($body, 0, strpos($body, "==")));
+
+        // Strip out links
+        $body = $this->stripImageAndFileLinks($body);
+
         // Initialize arrays of processing instructions
         $pattern = array();
         $replacement = array();
@@ -471,48 +516,6 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
         } else {
             // No infobox -- use whole thing:
             $body = $body['*'];
-        }
-        // Find the first heading
-        $end    = strpos($body, "==");
-        // Now cull our content back to everything before the first heading
-        $body   = trim(substr($body, 0, $end));
-
-        // Remove unwanted image/file links
-        // Nested brackets make this annoying: We can't add 'File' or 'Image' as
-        //    mandatory because the recursion fails, or as optional because then
-        //    normal links get hit.
-        //    ... unless there's a better pattern? TODO
-        // eg. [[File:Johann Sebastian Bach.jpg|thumb|Bach in a 1748 portrait by
-        //     [[Elias Gottlob Haussmann|Haussmann]]]]
-        $open    = "\\[";
-        $close   = "\\]";
-        $content = "(?>[^\\[\\]]+)";  // Anything but [ or ]
-        // We can either find content or recursive brackets:
-        $recursive_match = "($content|(?R))*";
-        preg_match_all("/".$open.$recursive_match.$close."/Us", $body, $new_matches);
-        // Loop through every match (link) we found
-        if (is_array($new_matches)) {
-            foreach ($new_matches as $nm) {
-                // Might be an array of arrays
-                if (is_array($nm)) {
-                    foreach ($nm as $n) {
-                        // If it's a file link get rid of it
-                        if (strtolower(substr($n, 0, 7)) == "[[file:"
-                            || strtolower(substr($n, 0, 8)) == "[[image:"
-                        ) {
-                            $body = str_replace($n, "", $body);
-                        }
-                    }
-                } else {
-                    // Or just a normal array...
-                    // If it's a file link get rid of it
-                    if (strtolower(substr($nm, 0, 7)) == "[[file:"
-                        || strtolower(substr($nm, 0, 8)) == "[[image:"
-                    ) {
-                        $body = str_replace($nm, "", $body);
-                    }
-                }
-            }
         }
 
         if (isset($imageUrl) && $imageUrl != false) {
