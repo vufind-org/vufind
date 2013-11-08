@@ -129,11 +129,14 @@ class Params extends \VuFind\Search\Base\Params
         // Grab checkbox facet details using the standard method:
         $facets = parent::getCheckboxFacets();
 
-        // Special case -- if we have a "holdings only" facet, we want this to
-        // always appear, even on the "no results" screen, since setting this
-        // facet actually EXPANDS the result set, rather than reducing it:
+        // Special case -- if we have a "holdings only" or "expand query" facet,
+        // we want this to always appear, even on the "no results" screen, since
+        // setting this facet actually EXPANDS rather than reduces the result set.
         if (isset($facets['holdingsOnly'])) {
             $facets['holdingsOnly']['alwaysVisible'] = true;
+        }
+        if (isset($facets['queryExpansion'])) {
+            $facets['queryExpansion']['alwaysVisible'] = true;
         }
 
         // Return modified list:
@@ -224,6 +227,12 @@ class Params extends \VuFind\Search\Base\Params
                     if ($filt['field'] == 'holdingsOnly') {
                         $params->set(
                             'holdings', strtolower(trim($safeValue)) == 'true'
+                        );
+                    } else if ($filt['field'] == 'queryExpansion') {
+                        // Special case -- "query expansion" is a separate parameter
+                        // from other facets.
+                        $params->set(
+                            'expand', strtolower(trim($safeValue)) == 'true'
                         );
                     } else if ($filt['field'] == 'excludeNewspapers') {
                         // Special case -- support a checkbox for excluding
