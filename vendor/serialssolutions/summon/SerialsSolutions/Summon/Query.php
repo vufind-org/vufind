@@ -136,6 +136,12 @@ class SerialsSolutions_Summon_Query
     protected $idsToFetch = array();
 
     /**
+     * Maximum topics to explore
+     * @var int
+     */
+    protected $maxTopics = 1;
+
+    /**
      * Constructor
      *
      * Sets up the Summon API Client
@@ -188,6 +194,9 @@ class SerialsSolutions_Summon_Query
         }
         if (!empty($this->filters)) {
             $options['s.fvf'] = $this->filters;
+        }
+        if ($this->maxTopics !== false) {
+            $options['s.rec.topic.max'] = $this->maxTopics;
         }
         if (!empty($this->groupFilters)) {
             $options['s.fvgf'] = $this->groupFilters;
