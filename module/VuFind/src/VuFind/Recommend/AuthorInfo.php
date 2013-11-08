@@ -590,7 +590,7 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
         $results = $auth->getResults();
 
         // Find first useful LCCN:
-        foreach ($results as $i => $current) {
+        foreach ($results as $current) {
             $lccn = $current->tryMethod('getRawLCCN');
             if (!empty($lccn)) {
                 $name = $this->getWikipediaNameFromViaf($lccn);
