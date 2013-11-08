@@ -358,12 +358,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/summon/Summon.php.git",
-                "reference": "18840ee36537889269e22e4ef69561461547b6f1"
+                "reference": "40a47b759c81dd7db717c7b1ae457548f7a7290a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/summon/Summon.php/zipball/18840ee36537889269e22e4ef69561461547b6f1",
-                "reference": "18840ee36537889269e22e4ef69561461547b6f1",
+                "url": "https://api.github.com/repos/summon/Summon.php/zipball/40a47b759c81dd7db717c7b1ae457548f7a7290a",
+                "reference": "40a47b759c81dd7db717c7b1ae457548f7a7290a",
                 "shasum": ""
             },
             "type": "library",
@@ -386,7 +386,7 @@
                 "source": "https://github.com/summon/Summon.php/tree/master",
                 "issues": "https://github.com/summon/Summon.php/issues"
             },
-            "time": "2013-11-08 13:57:56"
+            "time": "2013-11-08 15:54:31"
         },
         {
             "name": "symfony/yaml",

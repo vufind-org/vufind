@@ -130,6 +130,12 @@ class SerialsSolutions_Summon_Query
     protected $expand = false;
 
     /**
+     * IDs to fetch in place of a regular query
+     * @var array
+     */
+    protected $idsToFetch = array();
+
+    /**
      * Constructor
      *
      * Sets up the Summon API Client
@@ -174,6 +180,9 @@ class SerialsSolutions_Summon_Query
             's.dym' => $this->didYouMean ? 'true' : 'false',
             's.l' => $this->language,
         );
+        if (!empty($this->idsToFetch)) {
+            $options['s.fids'] = implode(',', (array)$this->idsToFetch);
+        }
         if (!empty($this->facets)) {
             $options['s.ff'] = $this->facets;
         }
