@@ -4,6 +4,7 @@
 .centered-pills li { display:inline }
 .centered-pills a { float:left }
 .front { position:absolute;top:0;left:0;width:100%;padding-top:20%;z-index:5 }
+.highlight { font-weight:bold }
 li a.hidden {display:none}
 * html .centered-pills ul.nav-pills { display:inline } /* IE6 */
 *+html .centered-pills ul.nav-pills { display:inline } /* IE7 */
