@@ -669,7 +669,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     public function renewMyItems($renewDetails)
     {
         $renewProcessed = array();
-        $renewResult = array();
         $failIDs = array();
         $patronId = $renewDetails['patron']['id'];
 
@@ -727,7 +726,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                 }
             }
             // Deal with unsuccessful results
-            foreach ($failIDs as $id => $junk) {
+            foreach (array_keys($failIDs) as $id) {
                 $finalResult['details'][$id] = array(
                     "success" => false,
                     "new_date" => false,
