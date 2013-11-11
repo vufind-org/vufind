@@ -562,7 +562,7 @@ class Unicorn extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         );
         $response = $this->querySirsi($params);
 
-        list($user_key, , , , $library, $profile, , , , , , , ,
+        list(, , , , $library, $profile, , , , , , , ,
         $email, $address1, $zip, $phone, $address2) = explode('|', $response);
 
         return array(
