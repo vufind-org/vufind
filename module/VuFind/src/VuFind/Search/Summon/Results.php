@@ -104,8 +104,8 @@ class Results extends \VuFind\Search\Base\Results
         if (!empty($dateFacets)) {
             foreach ($dateFacets as $dateFacet) {
                 $this->responseFacets[] = array(
-                    'fieldName' => 'PublicationDate',
-                    'displayName' => 'PublicationDate',
+                    'fieldName' => $dateFacet,
+                    'displayName' => $dateFacet,
                     'counts' => array()
                 );
             }
