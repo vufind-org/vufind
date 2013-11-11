@@ -993,7 +993,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
         // Prepare the set for sorting on '8' subfields, also move the tag data out
         $sort_set = array();
         // Loop through each sequence
-        foreach ($data_set as $seq => $row) {
+        foreach ($data_set as $row) {
             $sort = '';
             $tag  = '';
             $data = array();
