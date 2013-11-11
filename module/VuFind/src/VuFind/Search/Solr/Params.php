@@ -136,7 +136,7 @@ class Params extends \VuFind\Search\Base\Params
         $facetSet = array();
         if (!empty($this->facetConfig)) {
             $facetSet['limit'] = $this->facetLimit;
-            foreach ($this->facetConfig as $facetField => $facetName) {
+            foreach (array_keys($this->facetConfig) as $facetField) {
                 if ($this->getFacetOperator($facetField) == 'OR') {
                     $facetField = '{!ex=' . $facetField . '_filter}' . $facetField;
                 }

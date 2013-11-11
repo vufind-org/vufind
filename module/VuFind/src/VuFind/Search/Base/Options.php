@@ -172,7 +172,6 @@ abstract class Options implements TranslatorAwareInterface
     {
         $label = empty($label) ? false : $this->translate($label);
 
-        $targetHandler = false;
         foreach ($this->getBasicHandlers() as $id => $currentLabel) {
             if ($this->translate($currentLabel) == $label) {
                 return $id;
