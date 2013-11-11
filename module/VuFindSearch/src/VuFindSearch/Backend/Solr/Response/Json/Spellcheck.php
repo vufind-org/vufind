@@ -172,7 +172,7 @@ class Spellcheck implements IteratorAggregate, Countable
 
         $qTerm = preg_quote($term, '/');
         $length = strlen($term);
-        foreach ($this->terms as $key => $value) {
+        foreach (array_keys((array)$this->terms) as $key) {
             if ($length > strlen($key)) {
                 return false;
             }
