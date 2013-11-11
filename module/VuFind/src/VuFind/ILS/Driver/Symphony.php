@@ -767,7 +767,6 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
                     'reserve' => 'N',
                     'number' => $i,
                     'barcode' => true,
-                    'unicorn_boundwith' => $ckey,
                     'offsite' => $library_id == 'OFFSITE',
                 );
             }
