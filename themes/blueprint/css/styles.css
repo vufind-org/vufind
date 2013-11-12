@@ -541,10 +541,8 @@ dl.narrowList a {
     text-align:center;
     font-size:8pt;
 }
-.navmenu dd,.navmenu dd[id^=more] {display:none}
-.navmenu.open dt:before {
-    content:'\25B2';
-}
+.navmenu dd {display:none}
+.navmenu.open dt:before {content:'\25B2'}
 .navmenu.open dd {display:inherit}
 
 dd input[type="checkbox"] {

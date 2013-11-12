@@ -55,7 +55,7 @@
         </form>
       <? else: ?>
         <dl class="narrowList navmenu">
-          <dt><?=$this->transEsc($cluster['label'])?></dt>
+          <dt class="facet_<?=$this->escapeHtml($title)?>"><?=$this->transEsc($cluster['label'])?></dt>
           <? $i = 0; foreach ($cluster['list'] as $thisFacet): ?>
             <? if (++$i == 6): ?>
             <dd id="more<?=$this->escapeHtml($title)?>"><a href="#" onclick="moreFacets('<?=$this->escapeHtml($title)?>'); return false;"><?=$this->transEsc('more')?> ...</a></dd>

@@ -29,12 +29,12 @@ function toggleMenu(elemId) {
 }
 
 function moreFacets(name) {
-    $("#more"+name).hide();
+    $("#more"+name).addClass("offscreen");
     $("#narrowGroupHidden_"+name).removeClass("offscreen");
 }
 
 function lessFacets(name) {
-    $("#more"+name).show();
+    $("#more"+name).removeClass("offscreen");
     $("#narrowGroupHidden_"+name).addClass("offscreen");
 }
 
@@ -368,7 +368,12 @@ $(document).ready(function(){
     }
     
     // Collapsing facets
-    $('.navmenu dt').click(function(){$(this).parent().toggleClass('open');$(this).parent().next('.navmenu').toggleClass('open')});
+    $('.navmenu dt').click(function(){
+      console.log(this.className);
+      console.log(this.className.replace('facet_','#narrowGroupHidden_'));
+      $(this).parent().toggleClass('open');
+      $(this.className.replace('facet_','#narrowGroupHidden_')).toggleClass('open');
+    });
 
     //ContextHelp
     contextHelp.init();
