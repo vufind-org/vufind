@@ -352,9 +352,6 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function placeHold($holdDetails)
     {
-        $api_query = 'holdrequest';
-        $http_method = 'POST';
-
         // what do workstation & userid really mean in this context?
         $workstationid = '1';
         $userid = '1';
