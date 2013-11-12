@@ -376,10 +376,11 @@ class PICA extends DAIA
      * @param string $recordId Record identifier
      *
      * @return bool            True on success
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function renew($recordId)
     {
-        // TODO: rewrite this to use VuFind's standard renewMyItems() mechanism.
+        /* TODO: rewrite this to use VuFind's standard renewMyItems() mechanism.
         $URL = "/loan/DB={$this->dbsid}/LNG=DU/USERINFO";
         $POST = array(
             "ACT" => "UI_RENEWLOAN",
@@ -387,13 +388,15 @@ class PICA extends DAIA
             "BOR_PW" => $_SESSION['picauser']->getCatPassword()
         );
         if (is_array($recordId) === true) {
+            // TODO: fix this; something seems wrong with the logic
             foreach ($recordId as $rid) {
                 array_push($POST['VB'], $recordId);
             }
         } else {
             $POST['VB'] = $recordId;
         }
-        $postit = $this->postit($URL, $POST);
+        $this->postit($URL, $POST);
+         */
 
         return true;
     }
@@ -408,11 +411,10 @@ class PICA extends DAIA
      * @throws \VuFind\Exception\Date
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyFines($patron)
     {
-        // The patron comes as an array...
-        $p = $patron[0];
         $URL = "/loan/DB={$this->dbsid}/LNG=DU/USERINFO";
         $POST = array(
             "ACT" => "UI_LOC",
@@ -423,7 +425,6 @@ class PICA extends DAIA
 
         // How many items are there?
         $holds = substr_count($postit, '<td class="plain"')/3;
-        $ppns = array();
         $fineDate = array();
         $description = array();
         $fine = array();
@@ -624,6 +625,8 @@ class PICA extends DAIA
      */
     protected function postit($file, $data_to_send)
     {
+        // TODO: can we use Zend\Http\Client here instead?
+
         // Parameter verarbeiten
         foreach ($data_to_send as $key => $dat) {
             $data_to_send[$key]
@@ -641,6 +644,7 @@ class PICA extends DAIA
         $out .= "\r\n";
         $out .= $postData;
         if (!$conex = @fsockopen($this->catalogHost, "80", $errno, $errstr, 10)) {
+            error_log($errno . ': ' . $errstr);
             return 0;
         }
         fwrite($conex, $out);
