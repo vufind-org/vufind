@@ -469,7 +469,6 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
         foreach ($possibleQueries as $sql) {
             // Execute SQL
             try {
-                $holding = array();
                 $sqlStmt = $this->db->prepare($sql);
                 $sqlStmt->execute();
             } catch (PDOException $e) {
@@ -477,7 +476,6 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             }
 
             // Build Holdings Array
-            $i = 0;
             $data = array();
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 // Determine Location
@@ -491,7 +489,6 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
 
                 $status = $this->sacaStatus($row['CPY_ID_NBR']);
                 $availability = $this->determineAvailability(array($status));
-                $signatura=$row['CALLNUMBER'];
                 $currentItem = array(
                     'id' => $id,
                     'availability' => $availability['available'],
