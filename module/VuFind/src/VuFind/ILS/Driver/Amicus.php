@@ -744,7 +744,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
                                 'zip' => $row['ZIP_POSTAL'],
                                 'phone' => $row['TFNO'],
                                 'email' => $row['EMAIL'],
-                                'GROUP' => $ROW['PATRON_GROUP_NAME']);
+                                'group' => $row['PATRON_GROUP_NAME']);
                 return $patron;
             } else {
                 return null;
