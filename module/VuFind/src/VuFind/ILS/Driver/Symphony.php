@@ -400,7 +400,6 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
                     'barcode' => $result['barcode number'],
                     'item_id' => $result['barcode number'],
                     'library' => $library,
-                    'material' => $material
                 );
             }
         }
