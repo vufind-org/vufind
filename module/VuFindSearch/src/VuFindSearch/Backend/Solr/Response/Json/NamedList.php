@@ -73,6 +73,20 @@ class NamedList implements Countable, Iterator
         $this->list = $list;
     }
 
+    /**
+     * Convert the named list into a standard associative array.
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        $arr = array();
+        foreach ($this as $k => $v) {
+            $arr[$k] = $v;
+        }
+        return $arr;
+    }
+
     /// Countable
 
     /**

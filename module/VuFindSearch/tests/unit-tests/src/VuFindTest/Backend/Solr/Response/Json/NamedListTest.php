@@ -68,4 +68,15 @@ class NamedListTest extends TestCase
         $list = new NamedList(array(array('first term', 'info'), array('second term', 'info')));
         $this->assertEquals(2, count($list));
     }
+
+    /**
+     * Test converting the list to an array.
+     *
+     * @return void
+     */
+    public function testToArray()
+    {
+        $list = new NamedList(array(array('first term', 'info'), array('second term', 'info2')));
+        $this->assertEquals(array('first term' => 'info', 'second term' => 'info2'), $list->toArray());
+    }
 }
