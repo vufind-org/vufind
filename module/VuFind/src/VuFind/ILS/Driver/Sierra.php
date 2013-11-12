@@ -445,7 +445,7 @@ class Sierra extends AbstractBase
                         ON (item_view.id = varfield_view.record_id)
                         WHERE item_view.id = $1
                         AND varfield_view.record_type_code = 'i';";
-            $prep_query = pg_prepare($this->db, "prep_query", $query1);
+            pg_prepare($this->db, "prep_query", $query1);
             foreach ($itemIds as $item) {
                 $callnumber = null;
                 $results1 = pg_execute($this->db, "prep_query", array($item));
