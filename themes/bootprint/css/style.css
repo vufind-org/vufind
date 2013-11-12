@@ -80,7 +80,7 @@ select, .btn:not(.btn-link){vertical-align:top}
 .breadcrumb span.divider {color:#888}
 
 /* --- SIDEBAR --- */
-.row-fluid .span3.sidebar {margin-left:.5%}
+.row-fluid .span3.sidebar {margin-left:1%;width:24%}
 .sidebar h4 {border-bottom:2px solid #DDD;font-size:14px;font-weight:normal;margin-bottom:4px;margin-right:0}
 .sidebar .nav-list {font-size:12px;margin-bottom:6px;padding:0 0 0 8px}
 .sidebar .nav-list .divider {display:none}
@@ -93,6 +93,7 @@ select, .btn:not(.btn-link){vertical-align:top}
 .sidebar .nav-list li a {margin:0;padding:3px}
 .sidebar .nav-list li a:hover {background:none}
 .sidebar .nav-list li span.main {width:auto}
+.sidebar .nav-list li .icon-ok {background-repeat:no-repeat;padding-top:3px}
 .sidebar .nav-list li.nav-header {background:#EEE;border-color:#DDD;min-height:1px;padding:2px 4px}
 .sidebar .small {margin-top:10px}
 #publishDateFilter {margin:6px 0}
