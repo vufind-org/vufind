@@ -387,6 +387,8 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
                 $location   = $library . ' - ' . ($available && !empty($curr_loc)
                     ? $curr_loc : $home_loc);
 
+                $material = $this->translatePolicyID('ITYP', $result['item type']);
+
                 $items[$result['id']][] = array(
                     'id' => $result['id'],
                     'availability' => $available,
@@ -400,6 +402,7 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
                     'barcode' => $result['barcode number'],
                     'item_id' => $result['barcode number'],
                     'library' => $library,
+                    'material' => $material
                 );
             }
         }

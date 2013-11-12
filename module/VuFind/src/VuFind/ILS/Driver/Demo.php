@@ -273,7 +273,6 @@ class Demo extends AbstractBase
     public function setStatus($id, $holding = array(), $append = true)
     {
         $id = (string)$id;
-        $status = ($holding['status']) ? $holding['status'] : $this->getFakeStatus();
         $i = ($this->session->statuses) ? count($this->session->statuses)+1 : 1;
         $holding = array_merge($this->getRandomHolding($id, $i), $holding);
 
@@ -371,7 +370,7 @@ class Demo extends AbstractBase
         $status = $this->getStatus($id);
 
         // Add notes and summary:
-        foreach ($status as $i => $current) {
+        foreach (array_keys($status) as $i) {
             $itemNum = $i + 1;
             $noteCount = rand(1, 3);
             $status[$i]['notes'] = array();

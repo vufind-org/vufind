@@ -721,7 +721,7 @@ HERE;
         try {
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
-            while ($row = $sqlStm->fetch(PDO::FETCH_ASSOC)) {
+            while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 $list[] = $row['id'];
             }
         } catch (PDOException $e) {
