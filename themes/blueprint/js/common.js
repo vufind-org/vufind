@@ -366,6 +366,9 @@ $(document).ready(function(){
         $("link[media='print']").attr("media", "all");
         window.print();
     }
+    
+    // Collapsing facets
+    $('.navmenu dt').click(function(){$(this).parent().toggleClass('open');$(this).parent().next('.navmenu').toggleClass('open')});
 
     //ContextHelp
     contextHelp.init();
