@@ -15,9 +15,11 @@
   <? $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); if (!empty($filterList)): ?>
     <strong><?=$this->transEsc('Remove Filters')?></strong>
     <ul class="filters">
+    <? $open = array() ?>
     <? foreach ($filterList as $field => $filters): ?>
       <? foreach ($filters as $i => $filter): ?>
         <?
+            $open[] = $filter['field'];
             if (isset($filter['specialType']) && $filter['specialType'] == 'keyword') {
                 $removeLink = $this->currentPath().$results->getUrlQuery()->replaceTerm($filter['value'], '');
             } else {
@@ -54,7 +56,7 @@
           </fieldset>
         </form>
       <? else: ?>
-        <dl class="narrowList navmenu">
+        <dl class="narrowList navmenu<? if(in_array($title, $open)): ?> open<? endif ?>">
           <dt class="facet_<?=$this->escapeHtml($title)?>"><?=$this->transEsc($cluster['label'])?></dt>
           <? $i = 0; foreach ($cluster['list'] as $thisFacet): ?>
             <? if (++$i == 6): ?>
