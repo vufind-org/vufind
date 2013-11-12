@@ -368,9 +368,7 @@ $(document).ready(function(){
     }
     
     // Collapsing facets
-    $('.navmenu dt').click(function(){
-      console.log(this.className);
-      console.log(this.className.replace('facet_','#narrowGroupHidden_'));
+    $('.nav-header').click(function(){
       $(this).parent().toggleClass('open');
       $(this.className.replace('facet_','#narrowGroupHidden_')).toggleClass('open');
     });
