@@ -114,9 +114,9 @@ class InjectSpellingListener
         if ($backend === $this->backend) {
             $params = $event->getParam('params');
             if ($params) {
-                // Set spelling parameters unless explicitly disabled:
+                // Set spelling parameters when enabled:
                 $sc = $params->get('spellcheck');
-                if (!isset($sc[0]) || $sc[0] != 'false') {
+                if (isset($sc[0]) && $sc[0] != 'false') {
                     $this->active = true;
                     if (empty($this->dictionaries)) {
                         throw new \Exception(
