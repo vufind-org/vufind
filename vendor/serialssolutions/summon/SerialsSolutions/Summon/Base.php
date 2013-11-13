@@ -151,6 +151,7 @@ abstract class SerialsSolutions_Summon_Base
 
         // Query String Parameters
         $options = array('s.q' => sprintf('ID:"%s"', $id));
+        $options['s.role'] = $this->authedUser ? 'authenticated' : 'none';
         return $this->call($options, 'search', 'GET', $raw);
     }
 
