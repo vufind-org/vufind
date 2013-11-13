@@ -80,7 +80,6 @@ function refreshCommentList(recordId, recordSource) {
 
 function registerAjaxCommentRecord() {
   $('form[name="commentRecord"]').unbind('submit').submit(function(){
-    if (!$(this).valid()) { return false; }
     var form = this;
     var id = form.id.value;
     var recordSource = form.source.value;
