@@ -106,26 +106,6 @@ abstract class AbstractBase implements SaveHandlerInterface,
     }
 
     /**
-     * Read function must return string value always to make save handler work as
-     * expected. Return empty string if there is no data to read.
-     *
-     * @param string $sess_id The session ID to read
-     *
-     * @return string
-     */
-    abstract public function read($sess_id);
-
-    /**
-     * Write function that is called when session data is to be saved.
-     *
-     * @param string $sess_id The current session ID
-     * @param string $data    The session data to write
-     *
-     * @return void
-     */
-    abstract public function write($sess_id, $data);
-
-    /**
      * The destroy handler, this is executed when a session is destroyed with
      * session_destroy() and takes the session id as its only parameter.
      *
