@@ -3,6 +3,10 @@
 .centered-pills ul.nav-pills { display:inline-block }
 .centered-pills li { display:inline }
 .centered-pills a { float:left }
+#commentList table {width:100%}
+.comment {width:100%}
+.comment .popover {display:block;margin-top:6px;max-width:none;position:relative}
+form.comment .span3 {padding-top:60px}
 .front { position:absolute;top:0;left:0;width:100%;padding-top:20%;z-index:5 }
 .highlight { font-weight:bold }
 li a.hidden {display:none}

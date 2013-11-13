@@ -2,18 +2,25 @@
 <? if (empty($comments) || count($comments) == 0): ?>
   <div class="alert alert-info"><?=$this->transEsc('Be the first to leave a comment')?>!</div>
 <? else: ?>
-  <table class="table table-striped">
   <? foreach ($comments as $comment): ?>
-    <tr><td>
-      <?=$this->escapeHtml($comment->comment)?><br/>
-      <small>
-        <?=$this->transEsc('Posted by')?> <strong><?=$this->escapeHtml(trim($comment->firstname . ' ' . $comment->lastname))?></strong>
-        <?=$this->transEsc('posted_on')?> <?=$this->escapeHtml($comment->created)?>
-        <? if (($user = $this->auth()->isLoggedIn()) && $comment->user_id == $user->id): ?>
-          <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'DeleteComment')?>?delete=<?=urlencode($comment->id)?>" id="recordComment<?=$this->escapeHtml($comment->id)?>" class="btn btn-small btn-danger pull-right"><?=$this->transEsc('Delete')?></a>
-        <? endif; ?>
-      </small>
-    </tr></td>
+    <div class="comment row-fluid">
+      <div class="span3 text-right">
+        <br/>
+        <strong><?=$this->escapeHtml(trim($comment->firstname . ' ' . $comment->lastname))?></strong>
+        <br/>
+        <small>
+          <?=$this->escapeHtml($comment->created)?>
+          <? if (($user = $this->auth()->isLoggedIn()) && $comment->user_id == $user->id): ?>
+            <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'DeleteComment')?>?delete=<?=urlencode($comment->id)?>" id="recordComment<?=$this->escapeHtml($comment->id)?>" class="text-error"><?=$this->transEsc('Delete')?></a>
+          <? endif; ?>
+        </small>
+      </div>
+      <div class="popover right span9">
+        <div class="arrow"></div>
+        <div class="popover-content">
+          <p><?=$this->escapeHtml($comment->comment)?></p>
+        </div>
+      </div>
+    </div>
   <? endforeach; ?>
-  </table>
 <? endif; ?>
