@@ -116,37 +116,29 @@ class ResultScroller extends AbstractPlugin
     public function getScrollData($driver)
     {
         $retVal = array(
-            'previousRecord'=>null,
-            'nextRecord'=>null,
-            'currentPosition'=>null,
-            'resultTotal'=>null);
+            'previousRecord'=>null, 'nextRecord'=>null,
+            'currentPosition'=>null, 'resultTotal'=>null
+        );
 
-        // Do nothing if disabled:
-        if (!$this->enabled) {
-            return $retVal;
-        }
-
-        if (isset($this->data->currIds) && isset($this->data->searchId)) {
-            // build a full ID string using the driver:
-            $id = $driver->getResourceSource() . '|' . $driver->getUniqueId();
-
-            // we need to restore the last search object
-            // to fetch either the previous/next page of results
-            $lastSearch = $this->restoreLastSearch();
-
-            // give up if we can not restore the last search
-            if (!$lastSearch) {
-                return $retVal;
-            }
-
+        // Do nothing if disabled or data missing:
+        if ($this->enabled
+            && isset($this->data->currIds) && isset($this->data->searchId)
+            && ($lastSearch = $this->restoreLastSearch())
+        ) {
+            // Make sure expected data elements are populated:
             if (!isset($this->data->prevIds)) {
                 $this->data->prevIds = null;
             }
             if (!isset($this->data->nextIds)) {
                 $this->data->nextIds = null;
             }
+
+            // Store total result set size:
             $retVal['resultTotal']
                 = isset($this->data->total) ? $this->data->total : 0;
+
+            // build a full ID string using the driver:
+            $id = $driver->getResourceSource() . '|' . $driver->getUniqueId();
 
             // find where this record is in the current result page
             $pos = is_array($this->data->currIds)
