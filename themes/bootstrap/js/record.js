@@ -52,7 +52,7 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
     url: url,
     success: function(response) {
       if (response.status == 'OK') {
-        $($(element).parents('li')[0]).remove();
+        $($(element).parents('.comment')[0]).remove();
       }
     }
   });
@@ -119,9 +119,6 @@ function registerAjaxCommentRecord() {
 $(document).ready(function(){
   var id = document.getElementById('record_id').value;
   
-  // register the record comment form to be submitted via AJAX
-  registerAjaxCommentRecord();
-  
   // Cite lightbox
   $('#cite-record').click(function() {
     var params = extractClassParams(this);
@@ -142,6 +139,10 @@ $(document).ready(function(){
     var params = extractClassParams(this);
     return getLightbox(params['controller'], 'Save', {id:id});
   });
-    
+  
+  // register the record comment form to be submitted via AJAX
+  registerAjaxCommentRecord();
+  $('.delete').click(function(){deleteRecordComment(this, id, $('.hiddenSource').val(), this.id.substr(13));return false});
+  
   setUpCheckRequest();
 });
