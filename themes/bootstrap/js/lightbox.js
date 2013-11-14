@@ -35,13 +35,17 @@ function closeLightboxActions() {
   if(checkSaveStatuses) {
     checkSaveStatuses();
   }
-  
+  // Record updates
+  var recordId = $('#record_id').val();
+  var recordSource = $('.hiddenSource').val();
+  // Perform checks to update the page
+  if(refreshCommentList) {
+    refreshCommentList(recordId, recordSource);
+  }
   // Update tag list
   var tagList = $('#tagList');
   if (tagList.length > 0) {
       tagList.empty();
-      var recordId = $('#record_id').val();
-      var recordSource = $('.hiddenSource').val();
       var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
       $.ajax({
         dataType: 'json',
@@ -93,6 +97,7 @@ function displayLightboxError(message) {
 // AJAX the content and put it into a lightbox
 // Callback if necessary
 function getLightboxByUrl(url, post, callback) {
+  if(!callback) callback = closeLightbox;
   if(!lightboxShown) {
     $('#modal').modal('show');
     lightboxShown = true;

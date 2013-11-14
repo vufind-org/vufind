@@ -100,7 +100,10 @@ function registerAjaxCommentRecord() {
           refreshCommentList(id, recordSource);
           $(form).find('textarea[name="comment"]').val('');
         } else if (response.status == 'NEED_AUTH') {
-          return getLightbox('MyResearch', 'Login');
+          return getLightbox(
+            'Record', 'AddComment', data, data,
+            closeLightbox
+          );
         } else {
           $('#modal').find('.modal-body').html(response.data+'!');
           $('#modal').find('.modal-header h3').html('Error!');
