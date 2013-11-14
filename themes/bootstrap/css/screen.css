@@ -25,7 +25,7 @@ li a.hidden {display:none}
 .sidebar .nav-list li input[type="checkbox"] { float:left;margin:4px 3px 0 0}
 .sidebar .nav-list li .icon-ok { margin-top:3px }
 .sidebar .nav-list li .icon-remove { margin-left:3px }
-.sidebar .small { color:#333;margin-top:6px;line-height:85% }
+.sidebar .small { color:#333;margin-top:9px;line-height:85% }
 .sidebar a.small { color:#08C }
 .small { font-size:85% }
 .switch-margins,.row .switch-margins,.row-fluid .switch-margins { display: inline-block; margin:auto 0 }
