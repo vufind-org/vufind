@@ -268,7 +268,7 @@ class Export
 
         // Loop through all possible formats:
         $formats = array();
-        foreach ($this->exportConfig as $format => $details) {
+        foreach (array_keys($this->exportConfig->toArray()) as $format) {
             if (isset($active[$format]) && $active[$format]
                 && $this->recordSupportsFormat($driver, $format)
             ) {
