@@ -102,6 +102,100 @@ class ResultScroller extends AbstractPlugin
     }
 
     /**
+     * Return a modified results array to help scroll the user through the current
+     * page of results
+     *
+     * @param array $retVal Return values (in progress)
+     * @param int   $pos    Current position within current page
+     *
+     * @return array
+     */
+    protected function scrollOnCurrentPage($retVal, $pos)
+    {
+        $retVal['previousRecord'] = $this->data->currIds[$pos - 1];
+        $retVal['nextRecord'] = $this->data->currIds[$pos + 1];
+        // and we're done
+        return $retVal;
+    }
+
+    /**
+     * Return a modified results array to help scroll the user to the previous
+     * page of results
+     *
+     * @param array                       $retVal     Return values (in progress)
+     * @param \VuFind\Search\Base\Results $lastSearch Representation of last search
+     * @param int                         $pos        Current position within current
+     * page
+     * @param int                         $count      Size of current page of results
+     *
+     * @return array
+     */
+    protected function scrollToPreviousPage($retVal, $lastSearch, $pos, $count)
+    {
+        // if the current page is NOT the first page, and
+        // the previous page has not been fetched before, then
+        // fetch the previous page
+        if ($this->data->page > 1 && $this->data->prevIds == null) {
+            $this->data->prevIds = $this->fetchPage(
+                $lastSearch, $this->data->page - 1
+            );
+        }
+
+        // if there is something on the previous page, then the previous
+        // record is the last record on the previous page
+        if (!empty($this->data->prevIds)) {
+            $retVal['previousRecord']
+                = $this->data->prevIds[count($this->data->prevIds) - 1];
+        }
+
+        // if it is not the last record on the current page, then
+        // we also have a next record on the current page
+        if ($pos < $count - 1) {
+            $retVal['nextRecord'] = $this->data->currIds[$pos + 1];
+        }
+
+        // and we're done
+        return $retVal;
+    }
+
+    /**
+     * Return a modified results array to help scroll the user to the next
+     * page of results
+     *
+     * @param array                       $retVal     Return values (in progress)
+     * @param \VuFind\Search\Base\Results $lastSearch Representation of last search
+     * @param int                         $pos        Current position within current
+     * page
+     *
+     * @return array
+     */
+    protected function scrollToNextPage($retVal, $lastSearch, $pos)
+    {
+        // if the next page has not been fetched, then
+        // fetch the next page
+        if ($this->data->nextIds == null) {
+            $this->data->nextIds = $this->fetchPage(
+                $lastSearch, $this->data->page + 1
+            );
+        }
+
+        // if there is something on the next page, then the next
+        // record is the first record on the next page
+        if (is_array($this->data->nextIds) && count($this->data->nextIds) > 0) {
+            $retVal['nextRecord'] = $this->data->nextIds[0];
+        }
+
+        // if it is not the first record on the current page, then
+        // we also have a previous record on the current page
+        if ($pos > 0) {
+            $retVal['previousRecord'] = $this->data->currIds[$pos - 1];
+        }
+
+        // and we're done
+        return $retVal;
+    }
+
+    /**
      * Get the previous/next record in the last search
      * result set relative to the current one, also return
      * the position of the current record in the result set.
@@ -146,78 +240,23 @@ class ResultScroller extends AbstractPlugin
                 : false;
             if ($pos !== false) {
                 // OK, found this record in the current result page
-                // calculate it's position relative to the result set
+                // calculate its position relative to the result set
                 $retVal['currentPosition']
                     = ($this->data->page - 1) * $this->data->limit + $pos + 1;
 
                 // count how many records in the current result page
                 $count = count($this->data->currIds);
-
-                // if the current record is somewhere in the middle of the current
-                // page, ie: not first or last, then it is easy
                 if ($pos > 0 && $pos < $count - 1) {
-                    $retVal['previousRecord'] = $this->data->currIds[$pos - 1];
-                    $retVal['nextRecord'] = $this->data->currIds[$pos + 1];
-                    // and we're done
-                    return $retVal;
-                }
-
-                // if this record is first record on the current page
-                if ($pos == 0) {
-                    // if the current page is NOT the first page, and
-                    // the previous page has not been fetched before, then
-                    // fetch the previous page
-                    if ($this->data->page > 1
-                        && $this->data->prevIds == null
-                    ) {
-                        $this->data->prevIds = $this->fetchPage(
-                            $lastSearch, $this->data->page - 1
-                        );
-                    }
-
-                    // if there is something on the previous page, then the previous
-                    // record is the last record on the previous page
-                    if (!empty($this->data->prevIds)) {
-                        $retVal['previousRecord']
-                            = $this->data->prevIds[count($this->data->prevIds) - 1];
-                    }
-
-                    // if it is not the last record on the current page, then
-                    // we also have a next record on the current page
-                    if ($pos < $count - 1) {
-                        $retVal['nextRecord'] = $this->data->currIds[$pos + 1];
-                    }
-
-                    // and we're done
-                    return $retVal;
-                }
-
-                // if this record is last record on the current page
-                if ($pos == $count - 1) {
-                    // if the next page has not been fetched, then
-                    // fetch the next page
-                    if ($this->data->nextIds == null) {
-                        $this->data->nextIds = $this->fetchPage(
-                            $lastSearch, $this->data->page + 1
-                        );
-                    }
-
-                    // if there is something on the next page, then the next
-                    // record is the first record on the next page
-                    if (is_array($this->data->nextIds)
-                        && count($this->data->nextIds) > 0
-                    ) {
-                        $retVal['nextRecord'] = $this->data->nextIds[0];
-                    }
-
-                    // if it is not the first record on the current page, then
-                    // we also have a previous record on the current page
-                    if ($pos > 0) {
-                        $retVal['previousRecord'] = $this->data->currIds[$pos - 1];
-                    }
-
-                    // and we're done
-                    return $retVal;
+                    // the current record is somewhere in the middle of the current
+                    // page, ie: not first or last
+                    return $this->scrollOnCurrentPage($retVal, $pos);
+                } else if ($pos == 0) {
+                    // this record is first record on the current page
+                    return $this
+                        ->scrollToPreviousPage($retVal, $lastSearch, $pos, $count);
+                } else if ($pos == $count - 1) {
+                    // this record is last record on the current page
+                    return $this->scrollToNextPage($retVal, $lastSearch, $pos);
                 }
             } else {
                 // the current record is not on the current page
