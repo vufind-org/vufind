@@ -80,7 +80,7 @@ function refreshCommentList(recordId, recordSource) {
 
 function registerAjaxCommentRecord() {
   // Delete links
-  $('.delete').click(function(){deleteRecordComment(this, id, $('.hiddenSource').val(), this.id.substr(13));return false});
+  $('.delete').click(function(){deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));return false});
   // Form submission
   $('form[name="commentRecord"]').unbind('submit').submit(function(){
     var form = this;
