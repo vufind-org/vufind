@@ -79,6 +79,9 @@ function refreshCommentList(recordId, recordSource) {
 }
 
 function registerAjaxCommentRecord() {
+  // Delete links
+  $('.delete').click(function(){deleteRecordComment(this, id, $('.hiddenSource').val(), this.id.substr(13));return false});
+  // Form submission
   $('form[name="commentRecord"]').unbind('submit').submit(function(){
     var form = this;
     var id = form.id.value;
@@ -90,8 +93,8 @@ function registerAjaxCommentRecord() {
       source:recordSource
     };
     $.ajax({
-      type:'POST',
-      url: url,
+      type: 'POST',
+      url:  url,
       data: data,
       dataType: 'json',
       success: function(response) {
@@ -100,9 +103,14 @@ function registerAjaxCommentRecord() {
           refreshCommentList(id, recordSource);
           $(form).find('textarea[name="comment"]').val('');
         } else if (response.status == 'NEED_AUTH') {
+          data['loggingin'] = true;
           return getLightbox(
             'Record', 'AddComment', data, data,
-            closeLightbox
+            function(){
+              closeLightbox();
+              $.ajax({type:'POST',url:url,data:data});
+              refreshCommentList(id, recordSource);
+            }
           );
         } else {
           $('#modal').find('.modal-body').html(response.data+'!');
@@ -115,7 +123,6 @@ function registerAjaxCommentRecord() {
     return false;
   });
 }
-  
 $(document).ready(function(){
   var id = document.getElementById('record_id').value;
   
@@ -142,7 +149,6 @@ $(document).ready(function(){
   
   // register the record comment form to be submitted via AJAX
   registerAjaxCommentRecord();
-  $('.delete').click(function(){deleteRecordComment(this, id, $('.hiddenSource').val(), this.id.substr(13));return false});
   
   setUpCheckRequest();
 });

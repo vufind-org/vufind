@@ -3,6 +3,7 @@
 var lastLightboxURL,lastLightboxPOST; // Replacement for empty form actions
 var lightboxShown = false; // is the lightbox deployed?
 var modalXHR; // Used for current in-progress XHR lightbox request
+var callbackStack = [];
 
 /**********************************/
 /* ====== LIGHTBOX ACTIONS ====== */
@@ -20,10 +21,10 @@ function changeModalContent(html) {
 }
 // Close the lightbox and run update functions
 function closeLightbox() {
-  lightboxShown = false;
   $('#modal').modal('hide');
 }
 function closeLightboxActions() {
+  lightboxShown = false;
   if(modalXHR) {
     modalXHR.abort();
   }
@@ -97,7 +98,11 @@ function displayLightboxError(message) {
 // AJAX the content and put it into a lightbox
 // Callback if necessary
 function getLightboxByUrl(url, post, callback) {
-  if(!lightboxShown) {
+  if(typeof callback !== "undefined") {
+    //console.log("Push:",callback);
+    callbackStack.push(callback);
+  }
+  if(lightboxShown === false) {
     $('#modal').modal('show');
     lightboxShown = true;
   }
@@ -107,7 +112,9 @@ function getLightboxByUrl(url, post, callback) {
     data:post,
     success:function(html) {
       // Check for a flash message error
-      if(typeof callback === "function" && html.indexOf("alert-error") == -1) {
+      if(callbackStack.length > 0 && html.indexOf("alert-error") == -1) {
+        var callback = callbackStack.pop();
+        //console.log("Pop:",callback);
         callback(html);
       } else {
         changeModalContent(html);
@@ -137,7 +144,12 @@ function getLightbox(controller, action, get, post, callback) {
 function ajaxSubmit($form, callback) {
   // Default callback is to close
   if(!callback) {
-    callback = closeLightbox;
+    if(callbackStack.length > 0) {
+      callback = callbackStack.pop();
+      //console.log("Pop:",callback);
+    } else {
+      callback = closeLightbox;
+    }
   }
   // Gather all the data
   var inputs = $form.find('*[name]');
@@ -262,7 +274,11 @@ function ajaxLogin(form) {
               }
 
               // and we update the modal
-              if(lastLightboxPOST && lastLightboxPOST['loggingin']) {
+              if(callbackStack.length > 0) {
+                var callback = callbackStack.pop();
+                //console.log("Pop:",callback);
+                callback();
+              } else if(lastLightboxPOST && lastLightboxPOST['loggingin']) {
                 closeLightbox();
               } else {
                 getLightboxByUrl(lastLightboxURL, lastLightboxPOST);
