@@ -15,12 +15,18 @@
   <? endforeach; ?>
 <? endif; ?>
 <? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : array(); ?>
+<? $collapsedFacets = $this->recommend->getCollapsedFacets() ?>
 <? $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); if (!empty($filterList)): ?>
-  <ul class="nav nav-list">
+  <ul class="nav nav-list open">
     <li class="nav-header"><?=$this->transEsc('Remove Filters')?></li>
     <? foreach ($filterList as $field => $filters): ?>
       <? foreach ($filters as $i => $filter): ?>
-        <? if (isset($filter['specialType']) && $filter['specialType'] == 'keyword') {
+        <? 
+          $index = array_search($filter['field'], $collapsedFacets);
+          if ($index !== false) {
+              unset($collapsedFacets[$index]); // Open if we have a match
+          }
+          if (isset($filter['specialType']) && $filter['specialType'] == 'keyword') {
             $removeLink = $this->currentPath().$results->getUrlQuery()->replaceTerm($filter['value'], '');
           } else {
             $removeLink = $this->currentPath().$results->getUrlQuery()->removeFacet($filter['field'], $filter['value'], true, $filter['operator']);
@@ -41,7 +47,7 @@
 <? if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
   <? foreach ($sideFacetSet as $title => $cluster): ?>
     <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
-    <ul class="nav nav-list">
+    <ul class="nav nav-list<? if(!in_array($title, $collapsedFacets)): ?> open<? endif ?>">
       <? if (isset($dateFacets[$title])): ?>
         <li class="nav-header"><?=$this->transEsc($cluster['label'])?></li>
         <li>
@@ -97,9 +103,9 @@ JS;
               $thisFacet['displayText'] = "-";
             }
           ?>
-          <? $moreClass = 'NarrowGroupHidden_'.$this->escapeHtml($title).' hidden'; ?>
+          <? $moreClass = 'narrowGroupHidden-'.$this->escapeHtml($title).' hidden'; ?>
         <? if ($i == 6): ?>
-          <li id="moreNarrowGroupHidden_<?=$this->escapeHtml($title)?>"><a href="javascript:moreFacets('NarrowGroupHidden_<?=$title ?>')"><?=$this->transEsc('more')?> ...</a></li>
+          <li id="more-narrowGroupHidden-<?=$this->escapeHtml($title)?>"><a href="javascript:moreFacets('narrowGroupHidden-<?=$title ?>')"><?=$this->transEsc('more')?> ...</a></li>
         <? endif; ?>
         <? if ($thisFacet['isApplied']): ?>
           <li class="<? if ($i>5): ?><?=$moreClass ?><?endif ?><? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?><? endif ?>">
@@ -121,7 +127,7 @@ JS;
           </li>
         <? endif; ?>
       <? endforeach; ?>
-        <? if ($i > 5): ?><li class="<?=$moreClass ?>"><a href="javascript:lessFacets('NarrowGroupHidden_<?=$title ?>')"><?=$this->transEsc('less')?> ...</a></li><? endif; ?>
+        <? if ($i > 5): ?><li class="<?=$moreClass ?>"><a href="javascript:lessFacets('narrowGroupHidden-<?=$title ?>')"><?=$this->transEsc('less')?> ...</a></li><? endif; ?>
       <? endif; ?>
       <li class="divider"></li>
     </ul>

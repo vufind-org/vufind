@@ -35,3 +35,17 @@ div.xml.collapsed > div { display:none;margin-left:2px }
 .xmlt { cursor:pointer;margin-left:-16px }
 .xmlt:before { content:'- ' }
 .collapsed .xmlt:before { content:'+ ' }
+/* --- Collapsing Facets ---*/
+.sidebar .nav-header {cursor:pointer}
+.sidebar .nav-header:before {
+    content:'\25BC';
+    display:block;
+    float:right;
+    width:10px;
+    margin:1px 3px 0 0;
+    text-align:center;
+    font-size:8pt;
+}
+.sidebar .nav-list li:not(.nav-header) {display:none}
+.sidebar .nav-list.open .nav-header:before {content:'\25B2'}
+.sidebar .nav-list.open li:not(.hidden) {display:inherit}

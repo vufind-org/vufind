@@ -525,11 +525,25 @@ dl.narrowList a {
     margin: 0;
 }
 .navmenu dt {
+    cursor:pointer;
     margin-top:.75em;
     font-weight:bold;
     padding:0.2em 0.4em;
     background-color: #eee;
 }
+.navmenu dt:before {
+    content:'\25BC';
+    display:block;
+    float:right;
+    width:10px;
+    margin:1px 3px 0 0;
+    text-align:center;
+    font-size:8pt;
+}
+.navmenu dd {display:none}
+.navmenu.open dt:before {content:'\25B2'}
+.navmenu.open dd {display:inherit}
+
 dd input[type="checkbox"] {
     margin:0 4px 0 0;
     vertical-align:text-bottom;

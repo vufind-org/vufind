@@ -41,11 +41,11 @@ function deparam(url) {
 
 function moreFacets(id) {
   $('.'+id).removeClass('hidden');
-  $('#more'+id).addClass('hidden');
+  $('#more-'+id).addClass('hidden');
 }
 function lessFacets(id) {
   $('.'+id).addClass('hidden');
-  $('#more'+id).removeClass('hidden');
+  $('#more-'+id).removeClass('hidden');
 }
 
 // Advanced facets
@@ -148,6 +148,9 @@ $(document).ready(function() {
     $("link[media='print']").attr("media", "all");
     window.print();
   }
+    
+  // Collapsing facets
+  $('.sidebar .nav-header').click(function(){$(this).parent().toggleClass('open')});
   
   // Advanced facets
   setupOrFacets();
