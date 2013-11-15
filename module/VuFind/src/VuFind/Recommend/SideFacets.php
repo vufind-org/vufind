@@ -171,4 +171,20 @@ class SideFacets extends AbstractFacets
         }
         return $result;
     }
+
+    /**
+     * Return the list of facets configured to be open
+     *
+     * @return array Array of from/to value arrays keyed by field.
+     */
+    public function getHiddenFacets() {
+        $config = $this->configLoader->get('facets');
+        if (!isset($config->Advanced_Settings->hiddenFacets) || empty($config->Advanced_Settings->hiddenFacets)) {
+            return array();
+        } elseif ($config->Advanced_Settings->hiddenFacets == '*') {
+            return array_keys($this->getFacetSet());
+        } else {
+            return explode(',', $config->Advanced_Settings->hiddenFacets);
+        }
+    }
 }
