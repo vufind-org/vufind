@@ -97,7 +97,6 @@ function displayLightboxError(message) {
 // AJAX the content and put it into a lightbox
 // Callback if necessary
 function getLightboxByUrl(url, post, callback) {
-  if(!callback) callback = closeLightbox;
   if(!lightboxShown) {
     $('#modal').modal('show');
     lightboxShown = true;
