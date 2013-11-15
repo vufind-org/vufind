@@ -29,12 +29,12 @@ function toggleMenu(elemId) {
 }
 
 function moreFacets(name) {
-    $("#more"+name).hide();
+    $("#more"+name).addClass("offscreen");
     $("#narrowGroupHidden_"+name).removeClass("offscreen");
 }
 
 function lessFacets(name) {
-    $("#more"+name).show();
+    $("#more"+name).removeClass("offscreen");
     $("#narrowGroupHidden_"+name).addClass("offscreen");
 }
 
@@ -366,6 +366,12 @@ $(document).ready(function(){
         $("link[media='print']").attr("media", "all");
         window.print();
     }
+    
+    // Collapsing facets
+    $('.narrowList dt').click(function(){
+      $(this).parent().toggleClass('open');
+      $(this.className.replace('facet_', '#narrowGroupHidden_')).toggleClass('open');
+    });
 
     //ContextHelp
     contextHelp.init();
