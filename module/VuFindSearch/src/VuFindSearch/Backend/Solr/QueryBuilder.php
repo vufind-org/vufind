@@ -28,7 +28,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\Solr;
 
 use VuFindSearch\Query\AbstractQuery;
@@ -50,7 +49,6 @@ use VuFindSearch\ParamBag;
  */
 class QueryBuilder implements QueryBuilderInterface
 {
-
     /**
      * Regular expression matching a SOLR range.
      *
@@ -64,6 +62,13 @@ class QueryBuilder implements QueryBuilderInterface
      * @var string
      */
     protected static $insideQuotes = '(?=(?:[^\"]*+\"[^\"]*+\")*+[^\"]*+$)';
+
+    /**
+     * Default dismax handler (if no DismaxHandler set in specs).
+     *
+     * @var string
+     */
+    protected $defaultDismaxHandler;
 
     /**
      * Search specs.
@@ -105,12 +110,16 @@ class QueryBuilder implements QueryBuilderInterface
     /**
      * Constructor.
      *
-     * @param array $specs Search handler specifications
+     * @param array  $specs                Search handler specifications
+     * @param string $defaultDismaxHandler Default dismax handler (if no
+     * DismaxHandler set in specs).
      *
      * @return void
      */
-    public function __construct(array $specs = array())
-    {
+    public function __construct(array $specs = array(),
+        $defaultDismaxHandler = 'dismax'
+    ) {
+        $this->defaultDismaxHandler = $defaultDismaxHandler;
         $this->setSpecs($specs);
     }
 
@@ -142,7 +151,9 @@ class QueryBuilder implements QueryBuilderInterface
         $string  = $query->getString() ?: '*:*';
         $handler = $this->getSearchHandler($query->getHandler());
 
-        if ($this->containsAdvancedLuceneSyntax($string)) {
+        if (!($handler && $handler->hasExtendedDismax())
+            && $this->containsAdvancedLuceneSyntax($string)
+        ) {
             if ($handler) {
                 $string = $this->createAdvancedInnerSearchString($string, $handler);
                 if ($handler->hasDismax()) {
@@ -159,7 +170,7 @@ class QueryBuilder implements QueryBuilderInterface
         } else {
             if ($handler && $handler->hasDismax()) {
                 $params->set('qf', implode(' ', $handler->getDismaxFields()));
-                $params->set('qt', 'dismax');
+                $params->set('qt', $handler->getDismaxHandler());
                 foreach ($handler->getDismaxParams() as $param) {
                     $params->add(reset($param), next($param));
                 }
@@ -296,7 +307,8 @@ class QueryBuilder implements QueryBuilderInterface
     public function setSpecs(array $specs)
     {
         foreach ($specs as $handler => $spec) {
-            $this->specs[strtolower($handler)] = new SearchHandler($spec);
+            $this->specs[strtolower($handler)]
+                = new SearchHandler($spec, $this->defaultDismaxHandler);
         }
     }
 

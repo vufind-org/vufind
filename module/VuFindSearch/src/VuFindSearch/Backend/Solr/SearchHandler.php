@@ -28,7 +28,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-
 namespace VuFindSearch\Backend\Solr;
 
 /**
@@ -47,14 +46,14 @@ namespace VuFindSearch\Backend\Solr;
  */
 class SearchHandler
 {
-
     /**
      * Known configuration keys.
      *
      * @var array
      */
     protected static $configKeys = array(
-        'CustomMunge', 'DismaxFields', 'QueryFields', 'DismaxParams', 'FilterQuery'
+        'CustomMunge', 'DismaxFields', 'DismaxHandler', 'QueryFields',
+        'DismaxParams', 'FilterQuery'
     );
 
     /**
@@ -74,14 +73,20 @@ class SearchHandler
     /**
      * Constructor.
      *
-     * @param array $spec Search handler specification
+     * @param array  $spec                 Search handler specification
+     * @param string $defaultDismaxHandler Default dismax handler (if no
+     * DismaxHandler set in specs).
      *
      * @return void
      */
-    public function __construct(array $spec)
+    public function __construct(array $spec, $defaultDismaxHandler = 'dismax')
     {
         foreach (self::$configKeys as $key) {
             $this->specs[$key] = isset($spec[$key]) ? $spec[$key] : array();
+        }
+        // Set dismax handler to default if not specified:
+        if (empty($this->specs['DismaxHandler'])) {
+            $this->specs['DismaxHandler'] = $defaultDismaxHandler;
         }
     }
 
@@ -171,6 +176,26 @@ class SearchHandler
     }
 
     /**
+     * Get the name of the Dismax handler to be used with this search.
+     *
+     * @return string
+     */
+    public function getDismaxHandler()
+    {
+        return $this->specs['DismaxHandler'];
+    }
+
+    /**
+     * Return true if the handler supports Extended Dismax.
+     *
+     * @return bool
+     */
+    public function hasExtendedDismax()
+    {
+        return $this->hasDismax() && ('edismax' == $this->getDismaxHandler());
+    }
+
+    /**
      * Return defined dismax fields.
      *
      * @return array
@@ -240,7 +265,8 @@ class SearchHandler
             );
         }
         $dismaxQuery = sprintf(
-            '{!dismax qf="%s" %s}%s',
+            '{!%s qf="%s" %s}%s',
+            $this->getDismaxHandler(),
             implode(' ', $this->specs['DismaxFields']),
             implode(' ', $dismaxParams),
             $search
@@ -336,10 +362,10 @@ class SearchHandler
      */
     protected function createQueryString($search, $advanced = false)
     {
-        // If this is a basic query and we have Dismax settings, let's build
-        // a Dismax subquery to avoid some of the ugly side effects of our Lucene
-        // query generation logic.
-        if (!$advanced && $this->hasDismax()) {
+        // If this is a basic query and we have Dismax settings (or if we have
+        // Extended Dismax available), let's build a Dismax subquery to avoid
+        // some of the ugly side effects of our Lucene query generation logic.
+        if (($this->hasExtendedDismax() || !$advanced) && $this->hasDismax()) {
             $query = $this->dismaxSubquery($search);
         } else {
             $mungeRules  = $this->mungeRules();

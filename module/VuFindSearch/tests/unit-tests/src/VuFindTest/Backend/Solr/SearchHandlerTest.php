@@ -54,4 +54,16 @@ class SearchHandlerTest extends PHPUnit_Framework_TestCase
         $hndl = new SearchHandler($spec);
         $this->assertEquals('(_query_:"{!dismax qf=\"field1 field2\" foo=\\\'bar\\\'}foobar")', $hndl->createSimpleQueryString('foobar'));
     }
+
+    /**
+     * Test creating extended dismax query.
+     *
+     * @return void
+     */
+    public function testSimpleSearchExtendedDismax()
+    {
+        $spec = array('DismaxParams' => array(array('foo', 'bar')), 'DismaxFields' => array('field1', 'field2'));
+        $hndl = new SearchHandler($spec, 'edismax');
+        $this->assertEquals('(_query_:"{!edismax qf=\"field1 field2\" foo=\\\'bar\\\'}foobar")', $hndl->createSimpleQueryString('foobar'));
+    }
 }

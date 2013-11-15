@@ -284,7 +284,10 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     protected function createQueryBuilder()
     {
         $specs   = $this->loadSpecs();
-        $builder = new QueryBuilder($specs);
+        $config = $this->config->get('config');
+        $defaultDismax = isset($config->Index->default_dismax_handler)
+            ? $config->Index->default_dismax_handler : 'dismax';
+        $builder = new QueryBuilder($specs, $defaultDismax);
 
         // Configure builder:
         $search = $this->config->get($this->searchConfig);
