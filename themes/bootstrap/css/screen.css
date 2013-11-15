@@ -26,7 +26,7 @@ li a.hidden {display:none}
 .sidebar .nav-list li .icon-ok { margin-top:3px }
 .sidebar .nav-list li .icon-remove { margin-left:3px }
 .sidebar .small { color:#333;margin-top:9px;line-height:85% }
-.sidebar a.small { color:#08C }
+.sidebar a.small,.sidebar .small a { color:#08C }
 .small { font-size:85% }
 .switch-margins,.row .switch-margins,.row-fluid .switch-margins { display: inline-block; margin:auto 0 }
 .tab-container { border:1px solid #DDD;border-top:0;border-radius:0 0 4px 4px;margin-top:-20px;padding:8px 12px;position:relative }
