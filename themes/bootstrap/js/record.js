@@ -64,11 +64,12 @@ function refreshCommentList(recordId, recordSource) {
     dataType: 'json',
     url: url,
     success: function(response) {
+      // Update HTML
       if (response.status == 'OK') {
         $('#commentList').empty();
         $('#commentList').append(response.data);
         $('input[type="submit"]').button('reset');
-        $('#commentList a.deleteRecordComment').unbind('click').click(function() {
+        $('.delete').unbind('click').click(function() {
           var commentId = $(this).attr('id').substr('recordComment'.length);
           deleteRecordComment(this, recordId, recordSource, commentId);
           return false;
@@ -79,8 +80,6 @@ function refreshCommentList(recordId, recordSource) {
 }
 
 function registerAjaxCommentRecord() {
-  // Delete links
-  $('.delete').click(function(){deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));return false});
   // Form submission
   $('form[name="commentRecord"]').unbind('submit').submit(function(){
     var form = this;
@@ -122,6 +121,8 @@ function registerAjaxCommentRecord() {
     $(form).find('input[type="submit"]').button('loading');
     return false;
   });
+  // Delete links
+  $('.delete').click(function(){deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));return false});
 }
 $(document).ready(function(){
   var id = document.getElementById('record_id').value;
