@@ -201,8 +201,8 @@ class ResultScroller extends AbstractPlugin
      *
      * @param array                       $retVal     Return values (in progress)
      * @param \VuFind\Search\Base\Results $lastSearch Representation of last search
-     * @param int                         $pos        Current position within previous
-     * page
+     * @param int                         $pos        Current position within
+     * previous page
      *
      * @return array
      */
@@ -354,7 +354,8 @@ class ResultScroller extends AbstractPlugin
                     $pos = is_array($this->data->prevIds)
                         ? array_search($id, $this->data->prevIds) : false;
                     if ($pos !== false) {
-                        return $this->scrollToPreviousPage($retVal, $lastSearch, $pos);
+                        return $this
+                            ->scrollToPreviousPage($retVal, $lastSearch, $pos);
                     }
                 }
 
