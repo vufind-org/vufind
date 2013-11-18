@@ -150,7 +150,7 @@ $(document).ready(function() {
   }
     
   // Collapsing facets
-  $('.sidebar .nav-header').click(function(){$(this).parent().toggleClass('open')});
+  $('.sidebar .nav-header').click(function(){$(this).parent().toggleClass('open');});
   
   // Advanced facets
   setupOrFacets();

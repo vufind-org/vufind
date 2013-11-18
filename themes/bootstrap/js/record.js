@@ -1,4 +1,4 @@
-/*global extractClassParams, getLightbox, path */
+/*global closeLightbox, extractClassParams, getLightbox, path */
 
 /**
  * Functions and event handlers specific to record pages.
@@ -122,7 +122,7 @@ function registerAjaxCommentRecord() {
     return false;
   });
   // Delete links
-  $('.delete').click(function(){deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));return false});
+  $('.delete').click(function(){deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));return false;});
 }
 $(document).ready(function(){
   var id = document.getElementById('record_id').value;
