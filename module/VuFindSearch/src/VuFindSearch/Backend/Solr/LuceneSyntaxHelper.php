@@ -83,8 +83,8 @@ class LuceneSyntaxHelper
     /**
      * Constructor.
      *
-     * @param bool|string $csBools   Case sensitive Booleans setting
-     * @param bool        $csrRanges Case sensitive ranges setting
+     * @param bool|string $csBools  Case sensitive Booleans setting
+     * @param bool        $csRanges Case sensitive ranges setting
      */
     public function __construct($csBools = true, $csRanges = true)
     {
