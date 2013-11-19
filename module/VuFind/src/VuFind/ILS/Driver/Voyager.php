@@ -1849,7 +1849,6 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface
     public function findReserves($course, $inst, $dept)
     {
         $recordList = array();
-
         $reserveWhere = array();
         $bindParams = array();
 

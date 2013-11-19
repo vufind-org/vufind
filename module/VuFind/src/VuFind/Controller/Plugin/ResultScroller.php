@@ -119,8 +119,8 @@ class ResultScroller extends AbstractPlugin
     }
 
     /**
-     * Return a modified results array to help scroll the user to the previous
-     * page of results
+     * Return a modified results array for the case where the user is on the cusp of
+     * the previous page of results
      *
      * @param array                       $retVal     Return values (in progress)
      * @param \VuFind\Search\Base\Results $lastSearch Representation of last search
@@ -130,7 +130,7 @@ class ResultScroller extends AbstractPlugin
      *
      * @return array
      */
-    protected function scrollToPreviousPage($retVal, $lastSearch, $pos, $count)
+    protected function fetchPreviousPage($retVal, $lastSearch, $pos, $count)
     {
         // if the current page is NOT the first page, and
         // the previous page has not been fetched before, then
@@ -159,8 +159,8 @@ class ResultScroller extends AbstractPlugin
     }
 
     /**
-     * Return a modified results array to help scroll the user to the next
-     * page of results
+     * Return a modified results array for the case where the user is on the cusp of
+     * the next page of results
      *
      * @param array                       $retVal     Return values (in progress)
      * @param \VuFind\Search\Base\Results $lastSearch Representation of last search
@@ -169,7 +169,7 @@ class ResultScroller extends AbstractPlugin
      *
      * @return array
      */
-    protected function scrollToNextPage($retVal, $lastSearch, $pos)
+    protected function fetchNextPage($retVal, $lastSearch, $pos)
     {
         // if the next page has not been fetched, then
         // fetch the next page
@@ -190,6 +190,94 @@ class ResultScroller extends AbstractPlugin
         if ($pos > 0) {
             $retVal['previousRecord'] = $this->data->currIds[$pos - 1];
         }
+
+        // and we're done
+        return $retVal;
+    }
+
+    /**
+     * Return a modified results array for the case where we need to retrieve data
+     * from the previous page of results
+     *
+     * @param array                       $retVal     Return values (in progress)
+     * @param \VuFind\Search\Base\Results $lastSearch Representation of last search
+     * @param int                         $pos        Current position within
+     * previous page
+     *
+     * @return array
+     */
+    protected function scrollToPreviousPage($retVal, $lastSearch, $pos)
+    {
+        // decrease the page in the session because
+        // we're now sliding into the previous page
+        // (-- doesn't work on ArrayObjects)
+        $this->data->page = $this->data->page - 1;
+
+        // shift pages to the right
+        $tmp = $this->data->currIds;
+        $this->data->currIds = $this->data->prevIds;
+        $this->data->nextIds = $tmp;
+        $this->data->prevIds = null;
+
+        // now we can set the previous/next record
+        if ($pos > 0) {
+            $retVal['previousRecord']
+                = $this->data->currIds[$pos - 1];
+        }
+        $retVal['nextRecord'] = $this->data->nextIds[0];
+
+        // recalculate the current position
+        $retVal['currentPosition']
+            = ($this->data->page - 1)
+            * $this->data->limit + $pos + 1;
+
+        // update the search URL in the session
+        $lastSearch->getParams()->setPage($this->data->page);
+        $this->rememberSearch($lastSearch);
+
+        // and we're done
+        return $retVal;
+    }
+
+    /**
+     * Return a modified results array for the case where we need to retrieve data
+     * from the next page of results
+     *
+     * @param array                       $retVal     Return values (in progress)
+     * @param \VuFind\Search\Base\Results $lastSearch Representation of last search
+     * @param int                         $pos        Current position within next
+     * page
+     *
+     * @return array
+     */
+    protected function scrollToNextPage($retVal, $lastSearch, $pos)
+    {
+        // increase the page in the session because
+        // we're now sliding into the next page
+        // (++ doesn't work on ArrayObjects)
+        $this->data->page = $this->data->page + 1;
+
+        // shift pages to the left
+        $tmp = $this->data->currIds;
+        $this->data->currIds = $this->data->nextIds;
+        $this->data->prevIds = $tmp;
+        $this->data->nextIds = null;
+
+        // now we can set the previous/next record
+        $retVal['previousRecord']
+            = $this->data->prevIds[count($this->data->prevIds) - 1];
+        if ($pos < count($this->data->currIds) - 1) {
+            $retVal['nextRecord'] = $this->data->currIds[$pos + 1];
+        }
+
+        // recalculate the current position
+        $retVal['currentPosition']
+            = ($this->data->page - 1)
+            * $this->data->limit + $pos + 1;
+
+        // update the search URL in the session
+        $lastSearch->getParams()->setPage($this->data->page);
+        $this->rememberSearch($lastSearch);
 
         // and we're done
         return $retVal;
@@ -253,10 +341,10 @@ class ResultScroller extends AbstractPlugin
                 } else if ($pos == 0) {
                     // this record is first record on the current page
                     return $this
-                        ->scrollToPreviousPage($retVal, $lastSearch, $pos, $count);
+                        ->fetchPreviousPage($retVal, $lastSearch, $pos, $count);
                 } else if ($pos == $count - 1) {
                     // this record is last record on the current page
-                    return $this->scrollToNextPage($retVal, $lastSearch, $pos);
+                    return $this->fetchNextPage($retVal, $lastSearch, $pos);
                 }
             } else {
                 // the current record is not on the current page
@@ -266,35 +354,8 @@ class ResultScroller extends AbstractPlugin
                     $pos = is_array($this->data->prevIds)
                         ? array_search($id, $this->data->prevIds) : false;
                     if ($pos !== false) {
-                        // decrease the page in the session because
-                        // we're now sliding into the previous page
-                        // (-- doesn't work on ArrayObjects)
-                        $this->data->page = $this->data->page - 1;
-
-                        // shift pages to the right
-                        $tmp = $this->data->currIds;
-                        $this->data->currIds = $this->data->prevIds;
-                        $this->data->nextIds = $tmp;
-                        $this->data->prevIds = null;
-
-                        // now we can set the previous/next record
-                        if ($pos > 0) {
-                            $retVal['previousRecord']
-                                = $this->data->currIds[$pos - 1];
-                        }
-                        $retVal['nextRecord'] = $this->data->nextIds[0];
-
-                        // recalculate the current position
-                        $retVal['currentPosition']
-                            = ($this->data->page - 1)
-                            * $this->data->limit + $pos + 1;
-
-                        // update the search URL in the session
-                        $lastSearch->getParams()->setPage($this->data->page);
-                        $this->rememberSearch($lastSearch);
-
-                        // and we're done
-                        return $retVal;
+                        return $this
+                            ->scrollToPreviousPage($retVal, $lastSearch, $pos);
                     }
                 }
 
@@ -304,35 +365,7 @@ class ResultScroller extends AbstractPlugin
                     $pos = is_array($this->data->nextIds)
                         ? array_search($id, $this->data->nextIds) : false;
                     if ($pos !== false) {
-                        // increase the page in the session because
-                        // we're now sliding into the next page
-                        // (++ doesn't work on ArrayObjects)
-                        $this->data->page = $this->data->page + 1;
-
-                        // shift pages to the left
-                        $tmp = $this->data->currIds;
-                        $this->data->currIds = $this->data->nextIds;
-                        $this->data->prevIds = $tmp;
-                        $this->data->nextIds = null;
-
-                        // now we can set the previous/next record
-                        $retVal['previousRecord']
-                            = $this->data->prevIds[count($this->data->prevIds) - 1];
-                        if ($pos < count($this->data->currIds) - 1) {
-                            $retVal['nextRecord'] = $this->data->currIds[$pos + 1];
-                        }
-
-                        // recalculate the current position
-                        $retVal['currentPosition']
-                            = ($this->data->page - 1)
-                            * $this->data->limit + $pos + 1;
-
-                        // update the search URL in the session
-                        $lastSearch->getParams()->setPage($this->data->page);
-                        $this->rememberSearch($lastSearch);
-
-                        // and we're done
-                        return $retVal;
+                        return $this->scrollToNextPage($retVal, $lastSearch, $pos);
                     }
                 }
             }
