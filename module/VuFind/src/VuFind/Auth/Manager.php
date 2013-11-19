@@ -49,6 +49,13 @@ class Manager implements ServiceLocatorAwareInterface
     protected $auth = false;
 
     /**
+     * Authentication module currently proxied (false if uninitialized)
+     *
+     * @var string|bool
+     */
+    protected $authToProxy = false;
+
+    /**
      * VuFind configuration
      *
      * @var \Zend\Config\Config
@@ -111,21 +118,34 @@ class Manager implements ServiceLocatorAwareInterface
      */
     protected function getAuth()
     {
-        if (!$this->auth) {
+        if ($this->authToProxy == false) {
+            if (!$this->auth) {
+                $manager = $this->getServiceLocator()->get('VuFind\AuthPluginManager');
+                $this->auth = $manager->get($this->config->Authentication->method);
+                $this->auth->setConfig($this->config);
+            }
+            return $this->auth;
+        } else {
             $manager = $this->getServiceLocator()->get('VuFind\AuthPluginManager');
-            $this->auth = $manager->get($this->config->Authentication->method);
-            $this->auth->setConfig($this->config);
+            $pAuth = $manager->get($this->authToProxy);
+            $pAuth->setConfig($this->config);
+            return $pAuth;
         }
-        return $this->auth;
     }
 
     /**
      * Does the current configuration support account creation?
      *
+     *@param string $authMethod optional; check this auth method rather than 
+     *  the one in config file
+     *
      * @return bool
      */
-    public function supportsCreation()
+    public function supportsCreation($authMethod=null)
     {
+        if ($authMethod != null) {
+            $this->setActiveAuthClass($authMethod);
+        }
         return $this->getAuth()->supportsCreation();
     }
 
@@ -151,6 +171,35 @@ class Manager implements ServiceLocatorAwareInterface
     public function getAuthClass()
     {
         return get_class($this->getAuth());
+    }
+
+    /**
+     * Does the current auth class allow for authentication from more than 
+     * one auth method? (e.g. choiceauth)
+     * If so return an array that lists the classes for the methods allowed.
+     *
+     * @return array
+     */
+    public function getAuthClasses()
+    {
+        $classes = $this->getAuth()->getClasses();
+        if ($classes) {
+            return $classes;
+        } else {
+            return array($this->getAuthClass());
+        }
+    }
+
+    /**
+     * Get the name of the current authentication method.
+     *
+     * @return string
+     */
+    public function getAuthMethod()
+    {
+        $className = $this->getAuthClass();
+        $classParts = explode('\\', $className);
+        return array_pop($classParts);
     }
 
     /**
@@ -418,4 +467,15 @@ class Manager implements ServiceLocatorAwareInterface
     {
         return $this->serviceLocator;
     }
+
+    /**
+     * Setter
+     *
+     * @param string $method The auth class to proxy
+     */
+    public function setActiveAuthClass($method) 
+    {
+        $this->authToProxy = $method;
+    }
+
 }

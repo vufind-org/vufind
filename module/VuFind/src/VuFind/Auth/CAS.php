@@ -184,6 +184,7 @@ class CAS extends AbstractBase
         }
         $sessionInitiator = $config->CAS->login
             . '?service=' . urlencode($casTarget);
+            . urlencode('?auth_method=Shibboleth');
 
         return $sessionInitiator;
     }

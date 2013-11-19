@@ -1,7 +1,6 @@
 @CHARSET "UTF-8";
 
 /** General ***/
-
 body {
     margin: 1.5em 0;
     /*background:url("../images/bg_body.jpg") no-repeat scroll center top;*/
@@ -2237,3 +2236,25 @@ div.handle {
     text-align: center;
     border-top: 1px solid #eee;
 }
+
+
+.authmethod0 {
+  width:47%;
+  float:left;
+  padding:1%;
+  border-right:1px solid rgb(204, 204, 204);
+}
+
+.authmethod1 {
+  width:47%;
+  float:left;
+  padding:1%;
+  border-left:1px solid rgb(204, 204, 204);
+  margin:-1px; /* keep the borders on top of one another; longest one will win */
+}
+
+#authcontainer {
+  float:left;
+  width:100%;
+}
+

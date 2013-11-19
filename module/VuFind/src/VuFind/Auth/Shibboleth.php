@@ -142,7 +142,11 @@ class Shibboleth extends AbstractBase
             $shibTarget = $target;
         }
         $sessionInitiator = $config->Shibboleth->login
-            . '?target=' . urlencode($shibTarget);
+            . '?target=' . urlencode($shibTarget)
+            . urlencode('?auth_method=Shibboleth'); // makes it possible to 
+                                                    // handle logins when using
+                                                    // an auth method that 
+                                                    // proxies others
 
         if (isset($config->Shibboleth->provider_id)) {
             $sessionInitiator = $sessionInitiator . '&providerId=' .

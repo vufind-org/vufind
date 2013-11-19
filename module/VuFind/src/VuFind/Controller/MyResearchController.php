@@ -112,10 +112,18 @@ class MyResearchController extends AbstractBase
      */
     public function homeAction()
     {
+        // if the current auth class proxies others, we'll get the proxied
+        //   auth method as a querystring or post parameter.
+        //   Force to post.
+        $method = trim($this->getRequest()->getQuery()->get('auth_method'));
+        if ($method) {
+            $this->getRequest()->setPost($this->getRequest()->getPost()->set('auth_method', $method));
+        }
         // Process login request, if necessary (either because a form has been
         // submitted or because we're using an external login provider):
         if ($this->params()->fromPost('processLogin')
             || $this->getSessionInitiator()
+            || $this->getRequest()->getPost()->get('auth_method')
         ) {
             try {
                 $this->getAuthManager()->login($this->getRequest());
@@ -152,9 +160,12 @@ class MyResearchController extends AbstractBase
      */
     public function accountAction()
     {
+        // if the current auth class proxies others, we'll get the proxied
+        //   auth method as a querystring parameter.
+        $method = trim($this->getRequest()->getQuery()->get('auth_method'));
         // If authentication mechanism does not support account creation, send
         // the user away!
-        if (!$this->getAuthManager()->supportsCreation()) {
+        if (!$this->getAuthManager()->supportsCreation($method)) {
             return $this->forwardTo('MyResearch', 'Home');
         }
 
