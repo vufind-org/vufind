@@ -241,6 +241,9 @@ class MyResearchController extends AbstractBase
             $logoutTarget = $this->getServerUrl('home');
         }
 
+        // clear querystring parameters
+        $logoutTarget = preg_replace('/\?.*/', '', $logoutTarget);
+
         return $this->redirect()
             ->toUrl($this->getAuthManager()->logout($logoutTarget));
     }
