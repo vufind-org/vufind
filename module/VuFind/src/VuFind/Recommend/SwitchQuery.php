@@ -193,16 +193,13 @@ class SwitchQuery implements RecommendInterface
     {
         // This test only applies if booleans are case-sensitive and there is a
         // capitalizaton method available:
-        $qb = $this->getQueryBuilder();
-        if (!$qb || !isset($qb->caseSensitiveBooleans)
-            || !is_callable(array($qb, 'capitalizeBooleans'))
-            || !$qb->caseSensitiveBooleans
-        ) {
+        $lh = $this->getLuceneHelper();
+        if (!$lh || !$lh->hasCaseSensitiveBooleans()) {
             return false;
         }
 
         // Try to capitalize booleans, return new query if a change is found:
-        $newQuery = $qb->capitalizeBooleans($query);
+        $newQuery = $lh->capitalizeBooleans($query);
         return ($query == $newQuery) ? false : $newQuery;
     }
 
@@ -217,9 +214,8 @@ class SwitchQuery implements RecommendInterface
     protected function checkUnwantedBools($query)
     {
         $query = trim($query);
-        $qb = $this->getQueryBuilder();
-        if (!$qb || !is_callable(array($qb, 'containsBooleans'))
-            || !$qb->containsBooleans($query)
+        $lh = $this->getLuceneHelper();
+        if (!$lh || !$lh->containsBooleans($query)
             || (substr($query, 0, 1) == '"' && substr($query, -1) == '"')
         ) {
             return false;
@@ -260,15 +256,17 @@ class SwitchQuery implements RecommendInterface
     }
 
     /**
-     * Extract a query builder from the search backend.
+     * Extract a Lucene syntax helper from the search backend, if possible.
      *
-     * @return object
+     * @return bool|\VuFindSearch\Backend\Solr\LuceneSyntaxHelper
      */
-    protected function getQueryBuilder()
+    protected function getLuceneHelper()
     {
         $backend = $this->backendManager->get($this->backend);
-        return is_callable(array($backend, 'getQueryBuilder'))
+        $qb = is_callable(array($backend, 'getQueryBuilder'))
             ? $backend->getQueryBuilder() : false;
+        return $qb && is_callable(array($qb, 'getLuceneHelper'))
+            ? $qb->getLuceneHelper() : false;
     }
 
     /**

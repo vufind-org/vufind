@@ -102,7 +102,7 @@ class SearchHandler
      *
      * @return string
      *
-     * @see \VuFind\Service\Solr\QueryBuilder::containsAdvancedLuceneSyntax()
+     * @see \VuFind\Service\Solr\LuceneSyntaxHelper::containsAdvancedLuceneSyntax()
      */
     public function createAdvancedQueryString($search)
     {

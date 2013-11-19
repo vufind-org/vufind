@@ -36,6 +36,7 @@ use VuFind\Search\Solr\V3\ErrorListener as LegacyErrorListener;
 use VuFind\Search\Solr\V4\ErrorListener;
 
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 use VuFindSearch\Backend\Solr\QueryBuilder;
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\Connector;
@@ -291,12 +292,16 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
 
         // Configure builder:
         $search = $this->config->get($this->searchConfig);
-        $builder->caseSensitiveRanges
-            = isset($search->General->case_sensitive_ranges)
-            ? $search->General->case_sensitive_ranges : true;
-        $builder->caseSensitiveBooleans
+        $caseSensitiveBooleans
             = isset($search->General->case_sensitive_bools)
             ? $search->General->case_sensitive_bools : true;
+        $caseSensitiveRanges
+            = isset($search->General->case_sensitive_ranges)
+            ? $search->General->case_sensitive_ranges : true;
+        $helper = new LuceneSyntaxHelper(
+            $caseSensitiveBooleans, $caseSensitiveRanges
+        );
+        $builder->setLuceneHelper($helper);
 
         return $builder;
     }
