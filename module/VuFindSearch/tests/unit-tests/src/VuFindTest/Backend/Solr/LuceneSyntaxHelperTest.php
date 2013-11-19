@@ -80,6 +80,28 @@ class LuceneSyntaxHelperTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test that booleans are detected properly.
+     *
+     * @return void
+     */
+    public function testContainsBooleans()
+    {
+        $lh = new LuceneSyntaxHelper();
+        $this->assertTrue($lh->containsBooleans('this AND that'));
+        $this->assertTrue($lh->containsBooleans('this OR that'));
+        $this->assertTrue($lh->containsBooleans('this NOT that'));
+        $this->assertTrue(
+            $lh->containsBooleans('"my OR phrase" NOT "your AND phrase"')
+        );
+        $this->assertFalse($lh->containsBooleans('"this AND that"'));
+        $this->assertFalse(
+            $lh->containsBooleans('something that has no operators in it')
+        );
+        $this->assertFalse($lh->containsBooleans('this ANDD that'));
+        $this->assertFalse($lh->containsBooleans('this NOR that'));
+    }
+
+    /**
      * Test the selective capitalization functionality of capitalizeBooleans.
      *
      * @return void

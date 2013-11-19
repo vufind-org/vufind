@@ -105,7 +105,8 @@ class LuceneSyntaxHelper
     {
         // Build a regular expression to detect booleans -- AND/OR/NOT surrounded
         // by whitespace, or NOT leading the query and followed by whitespace.
-        $boolReg = '/((\s+(AND|OR|NOT)\s+)|^NOT\s+)/';
+        $lookahead = self::$insideQuotes;
+        $boolReg = '/((\s+(AND|OR|NOT)\s+)|^NOT\s+)' . $lookahead . '/';
         $checkString = $this->capitalizeCaseInsensitiveBooleans($searchString);
         return preg_match($boolReg, $checkString) ? true : false;
     }

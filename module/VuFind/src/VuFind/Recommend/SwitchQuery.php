@@ -215,9 +215,7 @@ class SwitchQuery implements RecommendInterface
     {
         $query = trim($query);
         $lh = $this->getLuceneHelper();
-        if (!$lh || !$lh->containsBooleans($query)
-            || (substr($query, 0, 1) == '"' && substr($query, -1) == '"')
-        ) {
+        if (!$lh || !$lh->containsBooleans($query)) {
             return false;
         }
         return '"' . addcslashes($query, '"') . '"';
