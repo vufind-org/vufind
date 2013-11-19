@@ -51,6 +51,13 @@ class Manager implements ServiceLocatorAwareInterface
     /**
      * Authentication module currently proxied (false if uninitialized)
      *
+     * @var \VuFind\Auth\AbstractBase|bool
+     */
+    protected $authProxied = false;
+
+    /**
+     * Authentication module to proxy (false if uninitialized)
+     *
      * @var string|bool
      */
     protected $authToProxy = false;
@@ -120,17 +127,30 @@ class Manager implements ServiceLocatorAwareInterface
     {
         if ($this->authToProxy == false) {
             if (!$this->auth) {
-                $manager = $this->getServiceLocator()->get('VuFind\AuthPluginManager');
-                $this->auth = $manager->get($this->config->Authentication->method);
-                $this->auth->setConfig($this->config);
+                $this->auth = $this->makeAuth($this->config->Authentication->method);
             }
             return $this->auth;
         } else {
-            $manager = $this->getServiceLocator()->get('VuFind\AuthPluginManager');
-            $pAuth = $manager->get($this->authToProxy);
-            $pAuth->setConfig($this->config);
-            return $pAuth;
+            if (!$this->authProxied) {
+                $this->authProxied = $this->makeAuth($this->authToProxy);
+            }
+            return $this->authProxied;
         }
+    }
+
+    /** 
+     * Helper
+     *
+     * @param string $method auth method to instantiate
+     *
+     * @return AbstractBase
+     */
+    protected function makeAuth($method) 
+    {
+        $manager = $this->getServiceLocator()->get('VuFind\AuthPluginManager');
+        $auth = $manager->get($method);
+        $auth->setConfig($this->config);
+        return $auth;
     }
 
     /**
@@ -476,6 +496,7 @@ class Manager implements ServiceLocatorAwareInterface
     public function setActiveAuthClass($method) 
     {
         $this->authToProxy = $method;
+        $this->authProxied = false;
     }
 
 }
