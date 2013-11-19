@@ -43,10 +43,13 @@ use VuFind\Exception\Auth as AuthException;
  * [ChoiceAuth]
  * choice_order = "Shibboleth,Database"
  *
- * This example uses a combination of Shibboleth and Database authentication, presenting
- * Shibboleth on the left and Database on the right.
+ * This example uses a combination of Shibboleth and Database authentication,
+ * presenting Shibboleth on the left and Database on the right.
  *
  * Each choice given must also be configured in its relevent config.ini section.
+ *
+ * The code should allow for more than 2 choices; however, styling would need
+ * to be expanded / modified
  *
  * @category VuFind2
  * @package  Authentication
