@@ -17,7 +17,7 @@
 <? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : array(); ?>
 <? $collapsedFacets = $this->recommend->getCollapsedFacets() ?>
 <? $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); if (!empty($filterList)): ?>
-  <ul class="nav nav-list open">
+  <ul class="nav nav-list">
     <li class="nav-header"><?=$this->transEsc('Remove Filters')?></li>
     <? foreach ($filterList as $field => $filters): ?>
       <? foreach ($filters as $i => $filter): ?>
@@ -47,7 +47,7 @@
 <? if (!empty($sideFacetSet) && $results->getResultTotal() > 0): ?>
   <? foreach ($sideFacetSet as $title => $cluster): ?>
     <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
-    <ul class="nav nav-list<? if(!in_array($title, $collapsedFacets)): ?> open<? endif ?>">
+    <ul class="nav nav-list collapsed <? if(!in_array($title, $collapsedFacets)): ?> open<? endif ?>">
       <? if (isset($dateFacets[$title])): ?>
         <li class="nav-header"><?=$this->transEsc($cluster['label'])?></li>
         <li>

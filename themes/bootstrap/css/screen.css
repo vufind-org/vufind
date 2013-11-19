@@ -36,8 +36,8 @@ div.xml.collapsed > div { display:none;margin-left:2px }
 .xmlt:before { content:'- ' }
 .collapsed .xmlt:before { content:'+ ' }
 /* --- Collapsing Facets ---*/
-.sidebar .nav-header {cursor:pointer}
-.sidebar .nav-header:before {
+.sidebar .collapsed .nav-header {cursor:pointer}
+.sidebar .collapsed .nav-header:before {
     content:'\25BC';
     display:block;
     float:right;
@@ -46,6 +46,6 @@ div.xml.collapsed > div { display:none;margin-left:2px }
     text-align:center;
     font-size:8pt;
 }
-.sidebar .nav-list li:not(.nav-header) {display:none}
-.sidebar .nav-list.open .nav-header:before {content:'\25B2'}
-.sidebar .nav-list.open li:not(.hidden) {display:inherit}
+.sidebar .collapsed li:not(.nav-header) {display:none}
+.sidebar .collapsed.open .nav-header:before {content:'\25B2'}
+.sidebar .collapsed.open li:not(.hidden) {display:inherit}
