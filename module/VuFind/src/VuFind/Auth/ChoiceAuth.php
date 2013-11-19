@@ -164,7 +164,7 @@ class ChoiceAuth extends AbstractBase
      * @throws AuthException
      * @return \VuFind\Db\Row\User Object representing logged-in user.
      */
-    private function authUser($request)
+    protected function authUser($request)
     {
         $manager = $this->getPluginManager();
         $authenticator = $manager->get($this->method);
