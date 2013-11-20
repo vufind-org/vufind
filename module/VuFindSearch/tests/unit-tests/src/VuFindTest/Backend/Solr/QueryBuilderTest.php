@@ -131,6 +131,24 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test generation with a query handler with a filter set
+     *
+     * @return void
+     */
+    public function testQueryHandlerWithFilterQuery()
+    {
+        $qb = new QueryBuilder(
+            array(
+                'test' => array('FilterQuery' => 'a:filter')
+            )
+        );
+        $q = new Query('q', 'test');
+        $response = $qb->build($q);
+        $q = $response->get('q');
+        $this->assertEquals('((q) AND (a:filter))', $q[0]);
+    }
+
+    /**
      * Test generation with highlighting
      *
      * @return void
