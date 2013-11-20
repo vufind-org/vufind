@@ -172,6 +172,33 @@ class LuceneSyntaxHelperTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test hasCaseSensitiveBooleans().
+     *
+     * @return void
+     */
+    public function testHasCaseSensitiveBooleans()
+    {
+        $lh = new LuceneSyntaxHelper();
+
+        // Default behavior: do not capitalize:
+        $this->assertTrue($lh->hasCaseSensitiveBooleans());
+
+        // Test "capitalize all":
+        $lh = new LuceneSyntaxHelper(false);
+        $this->assertFalse($lh->hasCaseSensitiveBooleans());
+
+        // Test selective capitalization:
+        $lh = new LuceneSyntaxHelper(' not ');
+        $this->assertTrue($lh->hasCaseSensitiveBooleans());
+        $lh = new LuceneSyntaxHelper('NOT');
+        $this->assertTrue($lh->hasCaseSensitiveBooleans());
+        $lh = new LuceneSyntaxHelper('AND,OR');
+        $this->assertTrue($lh->hasCaseSensitiveBooleans());
+        $lh = new LuceneSyntaxHelper('and, or');
+        $this->assertTrue($lh->hasCaseSensitiveBooleans());
+    }
+
+    /**
      * Test capitalizeRanges functionality.
      *
      * @return void
@@ -276,5 +303,19 @@ class LuceneSyntaxHelperTest extends \VuFindTest\Unit\TestCase
         $this->assertTrue($lh->containsAdvancedLuceneSyntax('this and that'));
         $this->assertTrue($lh->containsAdvancedLuceneSyntax('this or that'));
         $this->assertTrue($lh->containsAdvancedLuceneSyntax('this not that'));
+    }
+
+    /**
+     * Test case insensitive range normalization
+     *
+     * @return void
+     */
+    public function testCaseInsensitiveRangeNormalization()
+    {
+        $lh = new LuceneSyntaxHelper(false, false);
+        $this->assertFalse($lh->hasCaseSensitiveRanges());
+        $this->assertEquals(
+            'a:([b TO c] OR [B TO C])', $lh->normalizeSearchString('a:[b to c]')
+        );
     }
 }
