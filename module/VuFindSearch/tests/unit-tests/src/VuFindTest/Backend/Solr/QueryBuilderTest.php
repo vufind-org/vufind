@@ -167,6 +167,25 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test generation with a query handler with a filter set and no DisMax settings
+     * when the query is "all records"
+     *
+     * @return void
+     */
+    public function testMatchAllQueryWithFilterQueryAndNoDisMax()
+    {
+        $qb = new QueryBuilder(
+            array(
+                'test' => array('FilterQuery' => 'a:filter')
+            )
+        );
+        $q = new Query('*:*', 'test');
+        $response = $qb->build($q);
+        $q = $response->get('q');
+        $this->assertEquals('a:filter', $q[0]);
+    }
+
+    /**
      * Test generation with highlighting
      *
      * @return void
