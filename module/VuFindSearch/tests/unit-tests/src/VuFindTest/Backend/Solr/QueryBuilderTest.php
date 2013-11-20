@@ -131,11 +131,29 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
-     * Test generation with a query handler with a filter set
+     * Test generation with a query handler with a filter set and DisMax settings
      *
      * @return void
      */
-    public function testQueryHandlerWithFilterQuery()
+    public function testQueryHandlerWithFilterQueryAndDisMax()
+    {
+        $qb = new QueryBuilder(
+            array(
+                'test' => array('DismaxFields' => array('a'), 'FilterQuery' => 'a:filter')
+            )
+        );
+        $q = new Query('q', 'test');
+        $response = $qb->build($q);
+        $fq = $response->get('fq');
+        $this->assertEquals('a:filter', $fq[0]);
+    }
+
+    /**
+     * Test generation with a query handler with a filter set and no DisMax settings
+     *
+     * @return void
+     */
+    public function testQueryHandlerWithFilterQueryAndNoDisMax()
     {
         $qb = new QueryBuilder(
             array(
