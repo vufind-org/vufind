@@ -30,6 +30,7 @@
 namespace VuFindTest\Backend\Solr;
 
 use VuFindSearch\Query\Query;
+use VuFindSearch\Query\QueryGroup;
 use VuFindSearch\Backend\Solr\QueryBuilder;
 
 /**
@@ -187,5 +188,32 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
         $response = $qb->build($q);
         $spQ = $response->get('spellcheck.q');
         $this->assertEquals('my friend', $spQ[0]);
+    }
+
+    /**
+     * Test generation from a QueryGroup
+     *
+     * @return void
+     */
+    public function testQueryGroup()
+    {
+        $qb = new QueryBuilder(
+            array(
+                'a' => array(
+                    'DismaxFields' => array('field_a'),
+                ),
+                'b' => array(
+                    'DismaxFields' => array('field_b'),
+                )
+            )
+        );
+
+        $q1 = new Query('value1', 'a');
+        $q2 = new Query('value2', 'b');
+        $q = new QueryGroup('OR', array($q1, $q2));
+
+        $response = $qb->build($q);
+        $processedQ = $response->get('q');
+        $this->assertEquals('((_query_:"{!dismax qf=\"field_a\" }value1") OR (_query_:"{!dismax qf=\"field_b\" }value2"))', $processedQ[0]);
     }
 }
