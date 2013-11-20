@@ -54,39 +54,41 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
         // Set up an array of expected inputs and outputs:
         // @codingStandardsIgnoreStart
         $tests = array(
-            array("", "*:*"),                       // empty query
-            array("()", "*:*"),                     // empty parens
-            array("((()))", "*:*"),                 // nested empty parens
-            array("((())", "*:*"),                  // mismatched parens
-            array("this that ()", "this that"),     // text mixed w/ empty parens
-            array('"()"', '"()"'),                  // empty parens in quotes
-            array('title - sub', 'title sub'),      // freestanding hyphen
-            array('"title - sub"', '"title - sub"'),// freestanding hyphen in quotes
-            array('test~1', 'test'),                // meaningless proximity
-            array('test~1.', 'test'),               // meaningless proximity w/dec.
-            array('test~1.000', 'test'),            // meaningless proximity w/dec.
-            array('test~1 fish', 'test fish'),      // meaningless proximity
-            array('test~1. fish', 'test fish'),     // meaningless proximity w/dec.
-            array('test~1.000 fish', 'test fish'),  // meaningless proximity w/dec.
-            array('"test~1"', '"test~1"'),          // meaningless prox. in quotes
-            array('test~0.9', 'test~0.9'),          // valid proximity
-            array('test~10', 'test~10'),            // illegal prox. (leave alone)
-            array('test~10 fish', 'test~10 fish'),  // illegal prox. (leave alone)
-            array('^10 test^10', '10 test10'),      // invalid boosts
-            array('^10', '10'),                     // invalid boosts
-            array('test^ test^6', 'test test6'),    // invalid boosts
-            array('test^1 test^2', 'test^1 test^2'),// valid boosts
-            array('this / that', 'this that'),      // freestanding slash
-            array('/ this', 'this'),                // leading slash
-            array('title /', 'title'),              // trailing slash
-            array('this - that', 'this that'),      // freestanding hyphen
-            array('- this', 'this'),                // leading hyphen
-            array('title -', 'title'),              // trailing hyphen
-            array('AND', 'and'),                    // freestanding operator
-            array('OR', 'or'),                      // freestanding operator
-            array('NOT', 'not'),                    // freestanding operator
-            array('*bad', 'bad'),                   // leading wildcard
-            array('?bad', 'bad'),                   // leading wildcard
+            array("", "*:*"),                         // empty query
+            array("()", "*:*"),                       // empty parens
+            array("((()))", "*:*"),                   // nested empty parens
+            array("((())", "*:*"),                    // mismatched parens
+            array("this that ()", "this that"),       // text mixed w/ empty parens
+            array('"()"', '"()"'),                    // empty parens in quotes
+            array('title - sub', 'title sub'),        // freestanding hyphen
+            array('"title - sub"', '"title - sub"'),  // freestanding hyphen in quotes
+            array('test~1', 'test'),                  // meaningless proximity
+            array('test~1.', 'test'),                 // meaningless proximity w/dec.
+            array('test~1.000', 'test'),              // meaningless proximity w/dec.
+            array('test~1 fish', 'test fish'),        // meaningless proximity
+            array('test~1. fish', 'test fish'),       // meaningless proximity w/dec.
+            array('test~1.000 fish', 'test fish'),    // meaningless proximity w/dec.
+            array('"test~1"', '"test~1"'),            // meaningless prox. in quotes
+            array('test~0.9', 'test~0.9'),            // valid proximity
+            array('test~10', 'test~10'),              // illegal prox. (leave alone)
+            array('test~10 fish', 'test~10 fish'),    // illegal prox. (leave alone)
+            array('^10 test^10', '10 test10'),        // invalid boosts
+            array('^10', '10'),                       // invalid boosts
+            array('test^ test^6', 'test test6'),      // invalid boosts
+            array('test^1 test^2', 'test^1 test^2'),  // valid boosts
+            array('this / that', 'this that'),        // freestanding slash
+            array('/ this', 'this'),                  // leading slash
+            array('title /', 'title'),                // trailing slash
+            array('this - that', 'this that'),        // freestanding hyphen
+            array('- this', 'this'),                  // leading hyphen
+            array('title -', 'title'),                // trailing hyphen
+            array('AND', 'and'),                      // freestanding operator
+            array('OR', 'or'),                        // freestanding operator
+            array('NOT', 'not'),                      // freestanding operator
+            array('*bad', 'bad'),                     // leading wildcard
+            array('?bad', 'bad'),                     // leading wildcard
+            array("\xE2\x80\x9Ca\xE2\x80\x9D", '"a"'),// fancy quotes
+            array('a:{a TO b} [ }', 'a:{a TO b}'),    // floating braces/brackets
         );
         // @codingStandardsIgnoreEnd
 

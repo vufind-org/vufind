@@ -293,18 +293,13 @@ class LuceneSyntaxHelper
     /// Internal API
 
     /**
-     * Prepare input to be used in a SOLR query.
+     * Normalize fancy quotes in a query.
      *
-     * Handles certain cases where the input might conflict with Lucene
-     * syntax rules.
-     *
-     * @param string $input Input string
+     * @param string $input String to normalize
      *
      * @return string
-     *
-     * @todo Check if it is safe to assume $input to be an UTF-8 encoded string.
      */
-    protected function prepareForLuceneSyntax($input)
+    protected function normalizeFancyQuotes($input)
     {
         // Normalize fancy quotes:
         $quotes = array(
@@ -321,7 +316,143 @@ class LuceneSyntaxHelper
             "\xE2\x80\xB9" => "'", // ‹ (U+2039) in UTF-8
             "\xE2\x80\xBA" => "'", // › (U+203A) in UTF-8
         );
-        $input = strtr($input, $quotes);
+        return strtr($input, $quotes);
+    }
+
+    /**
+     * Normalize wildcards in a query.
+     *
+     * @param string $input String to normalize
+     *
+     * @return string
+     */
+    protected function normalizeWildcards($input)
+    {
+        // Ensure wildcards are not at beginning of input
+        return ((substr($input, 0, 1) == '*') || (substr($input, 0, 1) == '?'))
+            ? substr($input, 1) : $input;
+    }
+
+    /**
+     * Normalize parentheses in a query.
+     *
+     * @param string $input String to normalize
+     *
+     * @return string
+     */
+    protected function normalizeParens($input)
+    {
+        // Ensure all parens match
+        //   Better: Remove all parens if they are not balanced
+        //     -- dmaus, 2012-11-11
+        $start = preg_match_all('/\(/', $input, $tmp);
+        $end = preg_match_all('/\)/', $input, $tmp);
+        return ($start != $end) ? str_replace(array('(', ')'), '', $input) : $input;
+    }
+
+    /**
+     * Normalize boosts in a query.
+     *
+     * @param string $input String to normalize
+     *
+     * @return string
+     */
+    protected function normalizeBoosts($input)
+    {
+        // Ensure ^ is used properly
+        //   Better: Remove all ^ if not followed by digits
+        //     -- dmaus, 2012-11-11
+        $cnt = preg_match_all('/\^/', $input, $tmp);
+        $matches = preg_match_all('/[^^]+\^[0-9]/', $input, $tmp);
+        return (($cnt) && ($cnt !== $matches))
+            ? str_replace('^', '', $input) : $input;
+    }
+
+    /**
+     * Normalize braces/brackets in a query.
+     *
+     * IMPORTANT: This should only be called on a string that has already been
+     * cleaned up by normalizeBoosts().
+     *
+     * @param string $input String to normalize
+     *
+     * @return string
+     */
+    protected function normalizeBracesAndBrackets($input)
+    {
+        // Remove unwanted brackets/braces that are not part of range queries.
+        // This is a bit of a shell game -- first we replace valid brackets and
+        // braces with tokens that cannot possibly already be in the query (due
+        // to the work of normalizeBoosts()).  Next, we remove all remaining
+        // invalid brackets/braces, and transform our tokens back into valid ones.
+        // Obviously, the order of the patterns/merges array is critically
+        // important to get this right!!
+        $patterns = array(
+            // STEP 1 -- escape valid brackets/braces
+            '/\[([^\[\]\s]+\s+TO\s+[^\[\]\s]+)\]/' .
+            ($this->caseSensitiveRanges ? '' : 'i'),
+            '/\{([^\{\}\s]+\s+TO\s+[^\{\}\s]+)\}/' .
+            ($this->caseSensitiveRanges ? '' : 'i'),
+            // STEP 2 -- destroy remaining brackets/braces
+            '/[\[\]\{\}]/',
+            // STEP 3 -- unescape valid brackets/braces
+            '/\^\^lbrack\^\^/', '/\^\^rbrack\^\^/',
+            '/\^\^lbrace\^\^/', '/\^\^rbrace\^\^/');
+        $matches = array(
+            // STEP 1 -- escape valid brackets/braces
+            '^^lbrack^^$1^^rbrack^^', '^^lbrace^^$1^^rbrace^^',
+            // STEP 2 -- destroy remaining brackets/braces
+            '',
+            // STEP 3 -- unescape valid brackets/braces
+            '[', ']', '{', '}');
+        return preg_replace($patterns, $matches, $input);
+    }
+
+    /**
+     * Normalize various problems found in unquoted text within the query.
+     *
+     * @param string $input String to normalize
+     *
+     * @return string
+     */
+    protected function normalizeUnquotedText($input)
+    {
+        // Freestanding hyphens and slashes can cause problems:
+        $lookahead = self::$insideQuotes;
+        $input = preg_replace(
+            '/(\s+[-\/]$|\s+[-\/]\s+|^[-\/]\s+)' . $lookahead . '/',
+            ' ', $input
+        );
+
+        // A proximity of 1 is illegal and meaningless -- remove it:
+        $input = preg_replace('/~1(\.0*)?$/', '', $input);
+        $input = preg_replace('/~1(\.0*)?\s+' . $lookahead . '/', ' ', $input);
+
+        // Remove empty parentheses outside of quotation marks -- these will
+        // cause a fatal Solr error and should be ignored.
+        $parenRegex = '/\(\s*\)' . $lookahead . '/';
+        while (preg_match($parenRegex, $input)) {
+            $input = preg_replace($parenRegex, '', $input);
+        }
+
+        return $input;
+    }
+   
+    /**
+     * Prepare input to be used in a SOLR query.
+     *
+     * Handles certain cases where the input might conflict with Lucene
+     * syntax rules.
+     *
+     * @param string $input Input string
+     *
+     * @return string
+     *
+     * @todo Check if it is safe to assume $input to be an UTF-8 encoded string.
+     */
+    protected function prepareForLuceneSyntax($input)
+    {
+        $input = $this->normalizeFancyQuotes($input);
 
         // If the user has entered a lone BOOLEAN operator, convert it to lowercase
         // so it is treated as a word (otherwise it will trigger a fatal error):
@@ -346,73 +477,12 @@ class LuceneSyntaxHelper
             return '';
         }
 
-        // Ensure wildcards are not at beginning of input
-        if ((substr($input, 0, 1) == '*') || (substr($input, 0, 1) == '?')) {
-            $input = substr($input, 1);
-        }
-
-        // Ensure all parens match
-        //   Better: Remove all parens if they are not balanced
-        //     -- dmaus, 2012-11-11
-        $start = preg_match_all('/\(/', $input, $tmp);
-        $end = preg_match_all('/\)/', $input, $tmp);
-        if ($start != $end) {
-            $input = str_replace(array('(', ')'), '', $input);
-        }
-
-        // Ensure ^ is used properly
-        //   Better: Remove all ^ if not followed by digits
-        //     -- dmaus, 2012-11-11
-        $cnt = preg_match_all('/\^/', $input, $tmp);
-        $matches = preg_match_all('/[^^]+\^[0-9]/', $input, $tmp);
-        if (($cnt) && ($cnt !== $matches)) {
-            $input = str_replace('^', '', $input);
-        }
-
-        // Remove unwanted brackets/braces that are not part of range queries.
-        // This is a bit of a shell game -- first we replace valid brackets and
-        // braces with tokens that cannot possibly already be in the query (due
-        // to ^ normalization in the step above).  Next, we remove all remaining
-        // invalid brackets/braces, and transform our tokens back into valid ones.
-        // Obviously, the order of the patterns/merges array is critically
-        // important to get this right!!
-        $patterns = array(
-            // STEP 1 -- escape valid brackets/braces
-            '/\[([^\[\]\s]+\s+TO\s+[^\[\]\s]+)\]/' .
-            ($this->caseSensitiveRanges ? '' : 'i'),
-            '/\{([^\{\}\s]+\s+TO\s+[^\{\}\s]+)\}/' .
-            ($this->caseSensitiveRanges ? '' : 'i'),
-            // STEP 2 -- destroy remaining brackets/braces
-            '/[\[\]\{\}]/',
-            // STEP 3 -- unescape valid brackets/braces
-            '/\^\^lbrack\^\^/', '/\^\^rbrack\^\^/',
-            '/\^\^lbrace\^\^/', '/\^\^rbrace\^\^/');
-        $matches = array(
-            // STEP 1 -- escape valid brackets/braces
-            '^^lbrack^^$1^^rbrack^^', '^^lbrace^^$1^^rbrace^^',
-            // STEP 2 -- destroy remaining brackets/braces
-            '',
-            // STEP 3 -- unescape valid brackets/braces
-            '[', ']', '{', '}');
-        $input = preg_replace($patterns, $matches, $input);
-
-        // Freestanding hyphens and slashes can cause problems:
-        $lookahead = self::$insideQuotes;
-        $input = preg_replace(
-            '/(\s+[-\/]$|\s+[-\/]\s+|^[-\/]\s+)' . $lookahead . '/',
-            ' ', $input
-        );
-
-        // A proximity of 1 is illegal and meaningless -- remove it:
-        $input = preg_replace('/~1(\.0*)?$/', '', $input);
-        $input = preg_replace('/~1(\.0*)?\s+' . $lookahead . '/', ' ', $input);
-
-        // Remove empty parentheses outside of quotation marks -- these will
-        // cause a fatal Solr error and should be ignored.
-        $parenRegex = '/\(\s*\)' . $lookahead . '/';
-        while (preg_match($parenRegex, $input)) {
-            $input = preg_replace($parenRegex, '', $input);
-        }
+        // Standard normalization actions (order is significant):
+        $input = $this->normalizeWildcards($input);
+        $input = $this->normalizeParens($input);
+        $input = $this->normalizeBoosts($input);
+        $input = $this->normalizeBracesAndBrackets($input);
+        $input = $this->normalizeUnquotedText($input);
 
         // Remove surrounding slashes and whitespace -- these serve no purpose
         // and can cause problems.
