@@ -66,4 +66,45 @@ class SearchHandlerTest extends PHPUnit_Framework_TestCase
         $hndl = new SearchHandler($spec, 'edismax');
         $this->assertEquals('(_query_:"{!edismax qf=\"field1 field2\" foo=\\\'bar\\\'}foobar")', $hndl->createSimpleQueryString('foobar'));
     }
+
+    /**
+     * Test custom munge rules.
+     *
+     * @return void
+     */
+    public function testCustomMunge()
+    {
+        // fake munge rules based on a simplified version of default searchspecs.yaml
+        $spec = array(
+            'CustomMunge' => array(
+                'callnumber_exact' => array(
+                    array('uppercase'),
+                    array('preg_replace', '/[ "]/', ""),
+                    array('preg_replace', '/\*+$/', "")
+                ),
+                'callnumber_fuzzy' => array(
+                    array('uppercase'),
+                    array('preg_replace', '/[ "]/', ""),
+                    array('preg_replace', '/\*+$/', ""),
+                    array('append', '*')
+                )
+            ),
+            'QueryFields' => array(
+                'callnumber' => array(
+                    array('callnumber_exact', 1000),
+                    array('callnumber_fuzzy', '~'),
+                ),
+                'dewey-full' => array(
+                    array('callnumber_exact', 1000),
+                    array('callnumber_fuzzy', '~'),
+                )
+            )
+        );
+
+        $hndl = new SearchHandler($spec);
+        $this->assertEquals(
+            '(callnumber:(ABC123)^1000 OR callnumber:(ABC123*) OR dewey-full:(ABC123)^1000 OR dewey-full:(ABC123*))',
+            $hndl->createSimpleQueryString('abc"123*')
+        );
+    }
 }
