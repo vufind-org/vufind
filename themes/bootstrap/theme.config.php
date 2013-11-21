@@ -9,7 +9,7 @@ return array(
         'slider.css',
         'screen.css',
         'print.css:print',
-        'style.css'
+        'styles.css'
     ),
     'js' => array(
         'core/jquery.min.js',
