@@ -140,3 +140,22 @@ select, .btn:not(.btn-link){vertical-align:top}
 #download-button:active {background:linear-gradient(to bottom, #508033 0%,#72A255 100%)}
 .inspector_container {margin-top:6px}
 .table.details {font-size:10px;border-bottom:1px solid #DDD}
+
+/* --- ChoiceAuth --- */
+.authmethod0 {
+  width:47%;
+  float:left;
+  padding:1%;
+  border-right:1px solid rgb(204, 204, 204);
+}
+.authmethod1 {
+  width:47%;
+  float:left;
+  padding:1%;
+  border-left:1px solid rgb(204, 204, 204);
+  margin:-1px; /* keep the borders on top of one another; longest one will win */
+}
+#authcontainer {
+  float:left;
+  width:100%;
+}
