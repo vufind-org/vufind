@@ -164,6 +164,18 @@ class Auth extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
+     * Render the login description template.
+     *
+     * @param array $context Context for rendering template
+     *
+     * @return string
+     */
+    public function getLoginDesc($context = array())
+    {
+        return $this->renderTemplate('logindesc.phtml', $context);
+    }
+
+    /**
      * Setter
      *
      * @param string $classname Class to use in rendering
