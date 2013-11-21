@@ -48,4 +48,4 @@ div.xml.collapsed > div { display:none;margin-left:2px }
 }
 .sidebar .collapsed li:not(.nav-header) {display:none}
 .sidebar .collapsed.open .nav-header:before {content:'\25B2'}
-.sidebar .collapsed.open li:not(.hidden) {display:inherit}
+.sidebar .collapsed.open li:not(.hidden) {display:block}

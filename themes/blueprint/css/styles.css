@@ -542,7 +542,7 @@ dl.narrowList a {
 }
 .navmenu dd {display:none}
 .navmenu.open dt:before {content:'\25B2'}
-.navmenu.open dd {display:inherit}
+.navmenu.open dd {display:block}
 
 dd input[type="checkbox"] {
     margin:0 4px 0 0;
