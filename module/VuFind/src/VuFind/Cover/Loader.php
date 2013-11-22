@@ -79,9 +79,9 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     /**
      * User ISN parameter
      *
-     * @var string
+     * @var ISBN
      */
-    protected $isn;
+    protected $isn = null;
 
     /**
      * User size parameter
@@ -211,7 +211,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     public function loadImage($isn, $size = 'small', $type = null)
     {
         // Sanitize parameters:
-        $this->isn = preg_replace('/[^0-9xX]/', '', $isn);
+        $this->isn = new ISBN($isn);
         $this->type = preg_replace("/[^a-zA-Z]/", "", $type);
         $this->size = $size;
 
@@ -229,27 +229,20 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     /**
      * Load bookcover fom URL from cache or remote provider and display if possible.
      *
-     * @return bool        True if image displayed, false on failure.
+     * @return bool        True if image loaded, false on failure.
      */
     protected function fetchFromISBN()
     {
-        if (empty($this->isn)) {
+        if (!$this->isn || !$this->isn->isValid()) {
             return false;
         }
 
         // We should check whether we have cached images for the 13- or 10-digit
         // ISBNs. If no file exists, we'll favor the 10-digit number if
         // available for the sake of brevity.
-        $isbn = new ISBN($this->isn);
-        if ($isbn->get13()) {
-            $this->localFile = $this->getCachePath($this->size, $isbn->get13());
-        } else {
-            // Invalid ISBN?  Keep it as-is to avoid a bad file path; the error will
-            // be caught later down the line anyway.
-            $this->localFile = $this->getCachePath($this->size, $this->isn);
-        }
-        if (!is_readable($this->localFile) && $isbn->get10()) {
-            $this->localFile = $this->getCachePath($this->size, $isbn->get10());
+        $this->localFile = $this->getCachePath($this->size, $this->isn->get13());
+        if (!is_readable($this->localFile) && $this->isn->get10()) {
+            $this->localFile = $this->getCachePath($this->size, $this->isn->get10());
         }
         if (is_readable($this->localFile)) {
             // Load local cache if available
@@ -307,7 +300,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      * Load content type icon image from URL from theme images and display if
      * possible.
      *
-     * @return bool        True if image displayed, false on failure.
+     * @return bool        True if image loaded, false on failure.
      */
     protected function fetchFromContentType()
     {
@@ -424,7 +417,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      * @param string $url   URL to load image from
      * @param string $cache Boolean -- should we store in local cache?
      *
-     * @return bool         True if image displayed, false on failure.
+     * @return bool         True if image loaded, false on failure.
      */
     protected function processImageURL($url, $cache = true)
     {
@@ -496,7 +489,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      *
      * @param string $id Syndetics client ID.
      *
-     * @return bool      True if image displayed, false otherwise.
+     * @return bool      True if image loaded, false otherwise.
      */
     protected function syndetics($id)
     {
@@ -514,8 +507,9 @@ class Loader implements \Zend\Log\LoggerAwareInterface
 
         $url = isset($this->config->Syndetics->url) ?
                 $this->config->Syndetics->url : 'http://syndetics.com';
-        $url .= "/index.aspx?type=xw12&isbn={$this->isn}/{$size}&client={$id}";
-        return $this->processImageURL($url);
+        $isbn = $this->isn->get10();
+        $url .= "/index.aspx?type=xw12&isbn={$isbn}/{$size}&client={$id}";
+        return $isbn ? $this->processImageURL($url) : false;
     }
 
     /**
@@ -523,7 +517,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      *
      * @param string $id Content Cafe client ID.
      *
-     * @return bool      True if image displayed, false otherwise.
+     * @return bool      True if image loaded, false otherwise.
      */
     protected function contentcafe($id)
     {
@@ -541,9 +535,10 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         $pw = $this->config->Contentcafe->pw;
         $url = isset($this->config->Contentcafe->url)
             ? $this->config->Contentcafe->url : 'http://contentcafe2.btol.com';
+        $isbn = $this->isn->get10();
         $url .= "/ContentCafe/Jacket.aspx?UserID={$id}&Password={$pw}&Return=1" .
-            "&Type={$size}&Value={$this->isn}&erroroverride=1";
-        return $this->processImageURL($url);
+            "&Type={$size}&Value={$isbn}&erroroverride=1";
+        return $isbn ? $this->processImageURL($url) : false;
     }
 
     /**
@@ -551,19 +546,20 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      *
      * @param string $id LibraryThing client ID.
      *
-     * @return bool      True if image displayed, false otherwise.
+     * @return bool      True if image loaded, false otherwise.
      */
     protected function librarything($id)
     {
+        $isbn = $this->isn->get10();
         $url = 'http://covers.librarything.com/devkey/' . $id . '/' .
-            $this->size . '/isbn/' . $this->isn;
-        return $this->processImageURL($url);
+            $this->size . '/isbn/' . $isbn;
+        return $isbn ? $this->processImageURL($url) : false;
     }
 
     /**
      * Retrieve an OpenLibrary cover.
      *
-     * @return bool True if image displayed, false otherwise.
+     * @return bool True if image loaded, false otherwise.
      */
     protected function openlibrary()
     {
@@ -583,58 +579,65 @@ class Loader implements \Zend\Log\LoggerAwareInterface
 
         // Retrieve the image; the default=false parameter indicates that we
         // want a 404 if the ISBN is not supported.
-        $url = 'http://covers.openlibrary.org/b/isbn/' . $this->isn .
+        $isbn = $this->isn->get10();
+        $url = 'http://covers.openlibrary.org/b/isbn/' . $isbn .
             "-{$size}.jpg?default=false";
-        return $this->processImageURL($url);
+        return $isbn ? $this->processImageURL($url) : false;
     }
 
     /**
      * Retrieve a Google Books cover.
      *
-     * @return bool True if image displayed, false otherwise.
+     * @return bool True if image loaded, false otherwise.
      */
     protected function google()
     {
         // Don't bother trying if we can't read JSON:
-        if (is_callable('json_decode')) {
-            // Construct the request URL:
-            $url = 'http://books.google.com/books?jscmd=viewapi&' .
-                   'bibkeys=ISBN:' . $this->isn . '&callback=addTheCover';
+        if (!is_callable('json_decode')) {
+            return false;
+        }
+        $isbn = $this->isn->get10();
+        if (!$isbn) {
+            return false;
+        }
 
-            // Make the HTTP request:
-            $result = $this->client->setUri($url)->send();
+        // Construct the request URL:
+        $url = 'http://books.google.com/books?jscmd=viewapi&' .
+               'bibkeys=ISBN:' . $isbn . '&callback=addTheCover';
 
-            // Was the request successful?
-            if ($result->isSuccess()) {
-                // grab the response:
-                $json = $result->getBody();
+        // Make the HTTP request:
+        $result = $this->client->setUri($url)->send();
 
-                // extract the useful JSON from the response:
-                $count = preg_match('/^[^{]*({.*})[^}]*$/', $json, $matches);
-                if ($count < 1) {
-                    return false;
-                }
-                $json = $matches[1];
+        // Was the request successful?
+        if ($result->isSuccess()) {
+            // grab the response:
+            $json = $result->getBody();
 
-                // convert \x26 or \u0026 to &
-                $json = str_replace(array("\\x26", "\\u0026"), "&", $json);
+            // extract the useful JSON from the response:
+            $count = preg_match('/^[^{]*({.*})[^}]*$/', $json, $matches);
+            if ($count < 1) {
+                return false;
+            }
+            $json = $matches[1];
 
-                // decode the object:
-                $json = json_decode($json, true);
+            // convert \x26 or \u0026 to &
+            $json = str_replace(array("\\x26", "\\u0026"), "&", $json);
 
-                // convert a flat object to an array -- probably unnecessary, but
-                // retained just in case the response format changes:
-                if (isset($json['thumbnail_url'])) {
-                    $json = array($json);
-                }
+            // decode the object:
+            $json = json_decode($json, true);
 
-                // find the first thumbnail URL and process it:
-                foreach ($json as $current) {
-                    if (isset($current['thumbnail_url'])) {
-                        return $this->processImageURL(
-                            $current['thumbnail_url'], false
-                        );
-                    }
+            // convert a flat object to an array -- probably unnecessary, but
+            // retained just in case the response format changes:
+            if (isset($json['thumbnail_url'])) {
+                $json = array($json);
+            }
+
+            // find the first thumbnail URL and process it:
+            foreach ($json as $current) {
+                if (isset($current['thumbnail_url'])) {
+                    return $this->processImageURL(
+                        $current['thumbnail_url'], false
+                    );
                 }
             }
         }
@@ -646,7 +649,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      *
      * @param string $id Amazon Web Services client ID.
      *
-     * @return bool      True if image displayed, false otherwise.
+     * @return bool      True if image loaded, false otherwise.
      */
     protected function amazon($id)
     {
@@ -657,7 +660,11 @@ class Loader implements \Zend\Log\LoggerAwareInterface
                 'AssociateTag' => isset($this->config->Content->amazonassociate)
                     ? $this->config->Content->amazonassociate : null
             );
-            $result = $amazon->itemLookup($this->isn, $params);
+            $isbn = $this->isn->get10();
+            if (!$isbn) {
+                return false;
+            }
+            $result = $amazon->itemLookup($isbn, $params);
         } catch (\Exception $e) {
             // Something went wrong?  Just report failure:
             return false;
@@ -692,16 +699,11 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      *
      * @param string $id Serials Solutions client key.
      *
-     * @return bool      True if image displayed, false otherwise.
+     * @return bool      True if image loaded, false otherwise.
      */
     protected function summon($id)
     {
-        // convert normalized 10 char isn to 13 digits
-        $isn = $this->isn;
-        if (strlen($isn) != 13) {
-            $ISBN = new ISBN($isn);
-            $isn = $ISBN->get13();
-        }
+        $isn = $this->isn->get13();
         $url = 'http://api.summon.serialssolutions.com/2.0.0/image/isbn/' . $id .
             '/' . $isn . '/' . $this->size;
         return $this->processImageURL($url);
@@ -710,16 +712,11 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     /**
      * Retrieve a Booksite cover.
      *
-     * @return bool      True if image displayed, false otherwise.
+     * @return bool      True if image loaded, false otherwise.
      */
-    public function booksite()
+    protected function booksite()
     {
-        // convert normalized 10 char isn to 13 digits
-        $isn = $this->isn;
-        if (strlen($isn) != 13) {
-            $ISBN = new ISBN($isn);
-            $isn = $ISBN->get13();
-        }
+        $isn = $this->isn->get13();
         $url = isset($this->config->Booksite->url)
             ? $this->config->Booksite->url  : 'https://api.booksite.com';
         if (! isset($this->config->Booksite->key)) {
