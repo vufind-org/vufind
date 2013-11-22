@@ -130,7 +130,6 @@ class BackendTest extends PHPUnit_Framework_TestCase
      */
     public function testTerms()
     {
-        $map  = new HandlerMap(array('select' => array('fallback' => true)));
         $resp = $this->loadResponse('terms');
         $conn = $this->getConnectorMock(array('query'));
         $conn->expects($this->once())
@@ -141,6 +140,24 @@ class BackendTest extends PHPUnit_Framework_TestCase
         $terms = $back->terms('author', '', -1);
         $this->assertTrue($terms->hasFieldTerms('author'));
         $this->assertCount(10, $terms->getFieldTerms('author'));
+    }
+
+    /**
+     * Test handling of a bad JSON response.
+     *
+     * @return void
+     *
+     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     * @expectedExceptionMessage JSON decoding error: 4 -- bad {
+     */
+    public function testBadJson()
+    {
+        $conn = $this->getConnectorMock(array('query'));
+        $conn->expects($this->once())
+            ->method('query')
+            ->will($this->returnValue('bad {'));
+        $back = new Backend($conn);
+        $terms = $back->terms('author', '', -1);
     }
 
     /**

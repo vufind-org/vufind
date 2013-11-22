@@ -56,6 +56,19 @@ class SearchHandlerTest extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test toArray() method.
+     *
+     * @return void
+     */
+    public function testToArray()
+    {
+        $spec = array('DismaxParams' => array(array('foo', 'bar')), 'DismaxFields' => array('field1', 'field2'));
+        $hndl = new SearchHandler($spec);
+        $defaults = array('CustomMunge' => array(), 'DismaxHandler' => 'dismax', 'QueryFields' => array(), 'FilterQuery' => array());
+        $this->assertEquals($spec + $defaults, $hndl->toArray());
+    }
+
+    /**
      * Test creating extended dismax query.
      *
      * @return void
