@@ -40,7 +40,18 @@ namespace VuFind\Code;
  */
 class ISBN
 {
+    /**
+     * Raw ISBN string
+     *
+     * @var string
+     */
     protected $raw;
+
+    /**
+     * Validation status of ISBN (null until checked)
+     *
+     * @var bool
+     */
     protected $valid = null;
 
     /**
