@@ -507,7 +507,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
 
         $url = isset($this->config->Syndetics->url) ?
                 $this->config->Syndetics->url : 'http://syndetics.com';
-        $isbn = $this->isn->get10();
+        $isbn = $this->isn->get13();
         $url .= "/index.aspx?type=xw12&isbn={$isbn}/{$size}&client={$id}";
         return $isbn ? $this->processImageURL($url) : false;
     }
@@ -535,7 +535,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         $pw = $this->config->Contentcafe->pw;
         $url = isset($this->config->Contentcafe->url)
             ? $this->config->Contentcafe->url : 'http://contentcafe2.btol.com';
-        $isbn = $this->isn->get10();
+        $isbn = $this->isn->get13();
         $url .= "/ContentCafe/Jacket.aspx?UserID={$id}&Password={$pw}&Return=1" .
             "&Type={$size}&Value={$isbn}&erroroverride=1";
         return $isbn ? $this->processImageURL($url) : false;
@@ -550,7 +550,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      */
     protected function librarything($id)
     {
-        $isbn = $this->isn->get10();
+        $isbn = $this->isn->get13();
         $url = 'http://covers.librarything.com/devkey/' . $id . '/' .
             $this->size . '/isbn/' . $isbn;
         return $isbn ? $this->processImageURL($url) : false;
@@ -579,7 +579,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
 
         // Retrieve the image; the default=false parameter indicates that we
         // want a 404 if the ISBN is not supported.
-        $isbn = $this->isn->get10();
+        $isbn = $this->isn->get13();
         $url = 'http://covers.openlibrary.org/b/isbn/' . $isbn .
             "-{$size}.jpg?default=false";
         return $isbn ? $this->processImageURL($url) : false;
@@ -596,7 +596,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         if (!is_callable('json_decode')) {
             return false;
         }
-        $isbn = $this->isn->get10();
+        $isbn = $this->isn->get13();
         if (!$isbn) {
             return false;
         }
@@ -660,6 +660,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
                 'AssociateTag' => isset($this->config->Content->amazonassociate)
                     ? $this->config->Content->amazonassociate : null
             );
+            // TODO: add support for 13-digit ISBNs (requires extra lookup)
             $isbn = $this->isn->get10();
             if (!$isbn) {
                 return false;
