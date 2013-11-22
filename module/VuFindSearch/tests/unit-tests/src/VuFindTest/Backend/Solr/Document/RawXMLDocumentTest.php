@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Unit tests for SOLR delete document class.
+ * Unit tests for SOLR raw XML document class.
  *
  * PHP version 5
  *
@@ -29,12 +29,12 @@
 
 namespace VuFindTest\Backend\Solr\Document;
 
-use VuFindSearch\Backend\Solr\Document\DeleteDocument;
+use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
 
 use PHPUnit_Framework_TestCase;
 
 /**
- * Unit tests for SOLR delete document class.
+ * Unit tests for SOLR raw XML document class.
  *
  * @category VuFind2
  * @package  Search
@@ -42,7 +42,7 @@ use PHPUnit_Framework_TestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class DeleteDocumentTest extends PHPUnit_Framework_TestCase
+class RawXMLDocumentTest extends PHPUnit_Framework_TestCase
 {
     /**
      * Test creation of XML document.
@@ -51,29 +51,7 @@ class DeleteDocumentTest extends PHPUnit_Framework_TestCase
      */
     public function testAsXML()
     {
-        $document = new DeleteDocument();
-        $document->addKey('foobar');
-        $document->addQuery('timestamp:[* TO NOW-12HOUR]');
-        $xml = $document->asXML();
-        $this->assertXmlStringEqualsXmlString(
-            '<delete><id>foobar</id><query>timestamp:[* TO NOW-12HOUR]</query></delete>',
-            $xml
-        );
-    }
-
-    /**
-     * Test creation of XML document with multiple keys.
-     *
-     * @return void
-     */
-    public function testAsXMLMultiKey()
-    {
-        $document = new DeleteDocument();
-        $document->addKeys(array('foo', 'bar'));
-        $xml = $document->asXML();
-        $this->assertXmlStringEqualsXmlString(
-            '<delete><id>foo</id><id>bar</id></delete>',
-            $xml
-        );
+        $document = new RawXMLDocument('<empty />');
+        $this->assertXmlStringEqualsXmlString('<empty />', $document->asXML());
     }
 }
