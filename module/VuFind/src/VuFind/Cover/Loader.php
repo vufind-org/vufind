@@ -409,6 +409,64 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
+     * Support method for validateAndMoveTempFile -- convert non-JPEG image data to a
+     * JPEG file.
+     *
+     * @param string $imageData Raw image data
+     * @param string $jpeg      JPEG file (output)
+     *
+     * @return bool             Did we succeed?
+     */
+    protected function convertNonJpeg($imageData, $jpeg)
+    {
+        // We can't proceed if we don't have image conversion functions:
+        if (!is_callable('imagecreatefromstring')) {
+            return false;
+        }
+
+        // Try to create a GD image and rewrite as JPEG, fail if we can't:
+        if (!($imageGD = @imagecreatefromstring($imageData))) {
+            return false;
+        }
+        if (!@imagejpeg($imageGD, $jpeg)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * This method either moves the temporary file to its final location (true)
+     * or detects an error and deletes it (false).
+     *
+     * @param string $image     Raw image data
+     * @param string $tempFile  Temporary file
+     * @param string $finalFile Final file location
+     *
+     * @return bool
+     */
+    protected function validateAndMoveTempFile($image, $tempFile, $finalFile)
+    {
+        list($width, $height, $type) = @getimagesize($tempFile);
+
+        // File too small -- delete it and report failure.
+        if ($width < 2 && $height < 2) {
+            @unlink($tempFile);
+            return false;
+        }
+
+        // Conversion needed -- do some normalization for non-JPEG images:
+        if ($type != IMAGETYPE_JPEG) {
+            // We no longer need the temp file:
+            @unlink($tempFile);
+            return $this->convertNonJpeg($image, $finalFile);
+        }
+
+        // If $tempFile is already a JPEG, let's store it in the cache.
+        return @rename($tempFile, $finalFile);
+    }
+
+    /**
      * Load image from URL, store in cache if requested, display if possible.
      *
      * @param string $url   URL to load image from
@@ -420,65 +478,39 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     {
         // Attempt to pull down the image:
         $result = $this->client->setUri($url)->send();
-        if ($result->isSuccess()) {
-            $image = $result->getBody();
-
-            // Figure out file paths -- $tempFile will be used to store the
-            // image for analysis.  $finalFile will be used for long-term storage if
-            // $cache is true or for temporary display purposes if $cache is false.
-            $tempFile = str_replace('.jpg', uniqid(), $this->localFile);
-            $finalFile = $cache ? $this->localFile : $tempFile . '.jpg';
-
-            // If some services can't provide an image, they will serve a 1x1 blank
-            // or give us invalid image data.  Let's analyze what came back before
-            // proceeding.
-            if (!@file_put_contents($tempFile, $image)) {
-                throw new \Exception("Unable to write to image directory.");
-            }
-            list($width, $height, $type) = @getimagesize($tempFile);
-
-            // File too small -- delete it and report failure.
-            if ($width < 2 && $height < 2) {
-                @unlink($tempFile);
-                return false;
-            }
-
-            // Conversion needed -- do some normalization for non-JPEG images:
-            if ($type != IMAGETYPE_JPEG) {
-                // We no longer need the temp file:
-                @unlink($tempFile);
-
-                // We can't proceed if we don't have image conversion functions:
-                if (!is_callable('imagecreatefromstring')) {
-                    return false;
-                }
-
-                // Try to create a GD image and rewrite as JPEG, fail if we can't:
-                if (!($imageGD = @imagecreatefromstring($image))) {
-                    return false;
-                }
-                if (!@imagejpeg($imageGD, $finalFile)) {
-                    return false;
-                }
-            } else {
-                // If $tempFile is already a JPEG, let's store it in the cache.
-                @rename($tempFile, $finalFile);
-            }
-
-            // Display the image:
-            $this->contentType = 'image/jpeg';
-            $this->image = file_get_contents($finalFile);
-
-            // If we don't want to cache the image, delete it now that we're done.
-            if (!$cache) {
-                @unlink($finalFile);
-            }
-
-            return true;
-        } else {
+        if (!$result->isSuccess()) {
             $this->debug("Failed to retrieve image from " + $url);
             return false;
         }
+
+        $image = $result->getBody();
+
+        // Figure out file paths -- $tempFile will be used to store the
+        // image for analysis.  $finalFile will be used for long-term storage if
+        // $cache is true or for temporary display purposes if $cache is false.
+        $tempFile = str_replace('.jpg', uniqid(), $this->localFile);
+        $finalFile = $cache ? $this->localFile : $tempFile . '.jpg';
+
+        // Write image data to disk:
+        if (!@file_put_contents($tempFile, $image)) {
+            throw new \Exception("Unable to write to image directory.");
+        }
+
+        // Move temporary file to final location:
+        if (!$this->validateAndMoveTempFile($image, $tempFile, $finalFile)) {
+            return false;
+        }
+
+        // Display the image:
+        $this->contentType = 'image/jpeg';
+        $this->image = file_get_contents($finalFile);
+
+        // If we don't want to cache the image, delete it now that we're done.
+        if (!$cache) {
+            @unlink($finalFile);
+        }
+
+        return true;
     }
 
     /**
