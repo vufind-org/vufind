@@ -249,24 +249,21 @@ class Loader implements \Zend\Log\LoggerAwareInterface
             $this->contentType = 'image/jpeg';
             $this->image = file_get_contents($this->localFile);
             return true;
-        } else {
-            // Fetch from provider
-            if (isset($this->config->Content->coverimages)) {
-                $providers = explode(',', $this->config->Content->coverimages);
-                foreach ($providers as $provider) {
-                    $provider = explode(':', trim($provider));
-                    $func = trim($provider[0]);
-                    $key = isset($provider[1]) ? trim($provider[1]) : null;
-                    try {
-                        if ($this->$func($key)) {
-                            return true;
-                        }
-                    } catch (\Exception $e) {
-                        $this->debug(
-                            get_class($e) . ' during processing of ' . $func . ': '
-                            . $e->getMessage()
-                        );
+        } else if (isset($this->config->Content->coverimages)) {
+            $providers = explode(',', $this->config->Content->coverimages);
+            foreach ($providers as $provider) {
+                $provider = explode(':', trim($provider));
+                $func = trim($provider[0]);
+                $key = isset($provider[1]) ? trim($provider[1]) : null;
+                try {
+                    if ($this->$func($key)) {
+                        return true;
                     }
+                } catch (\Exception $e) {
+                    $this->debug(
+                        get_class($e) . ' during processing of ' . $func . ': '
+                        . $e->getMessage()
+                    );
                 }
             }
         }
