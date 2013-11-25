@@ -1,14 +1,18 @@
 <? $account = $this->auth()->getManager(); ?>
 <? $sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home'))); ?>
 <? if (!$sessionInitiator): // display default login form if no login URL provided ?>
-  <form method="post" action="<?=$this->url('myresearch-home')?>" name="loginForm" id="loginForm">
+  <form method="post" class="form-horizontal" action="<?=$this->url('myresearch-home')?>" name="loginForm" id="loginForm">
     <?=$this->auth()->getLoginFields()?>
     <input type="hidden" name="auth_method" value="<?=$this->auth()->getActiveAuthMethod()?>">
-    <input class="btn" type="submit" name="processLogin" value="<?=$this->transEsc('Login')?>"/>
+    <div class="control-group">
+      <div class="controls">
+        <input class="btn btn-primary" type="submit" name="processLogin" value="Login">
+        <? if ($account->supportsCreation()): ?>
+          <a class="btn btn-link" href="/digitaldev/MyResearch/Account">Create New Account</a>
+        <? endif; ?>
+      </div>
+    </div>
   </form>
-  <? if ($account->supportsCreation()): ?>
-    <a class="new_account" href="<?=$this->url('myresearch-account')?>?auth_method=<?=$this->auth()->getActiveAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
-  <? endif; ?>
 <? else: ?>
   <a href="<?=$this->escapeHtml($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
 <? endif; ?>
