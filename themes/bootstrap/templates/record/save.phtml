@@ -7,7 +7,7 @@
     . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '<span class="divider">&gt;</span></li><li class="active">' . $this->transEsc('Save') . '</li>';
 ?>
 <p class="lead"><?=$this->transEsc("add_favorite_prefix") ?> <?=$this->escapeHtml($this->driver->getBreadcrumb())?> <?=$this->transEsc("add_favorite_suffix") ?></p>
-<form id="edit-save-form" class="form-horizontal" method="post" action="<?=$this->url('record-save', array('id'=>$this->driver->getUniqueId())) ?>" name="saveRecord">
+<form id="edit-save-form" class="form-horizontal" method="post" name="saveRecord">
   <input type="hidden" name="submit" value="1" />
   <input type="hidden" name="id" value="<?=$this->escapeHtml($this->driver->getUniqueId()) ?>" />
   <input type="hidden" name="source" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>" />
