@@ -94,7 +94,7 @@ function displayLightboxError(message) {
   } else {
     $('#modal .modal-body').prepend('<div class="alert alert-error">'+message+'</div>');
   }
-  $('icon-spinner').remove();
+  $('.icon-spinner').remove();
 }
 
 /****************************/
