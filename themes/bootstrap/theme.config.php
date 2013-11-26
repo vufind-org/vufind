@@ -2,11 +2,13 @@
 return array(
     'extends' => 'root',
     'less' => array(
-        'style.less' // imports bootstrap and responsive
+        'style.less' // imports screen
     ),
     'css' => array(
-        'font-awesome.css',
-        'font-awesome-ie7.min.css',
+        'bootstrap.min.css',
+        'bootstrap-responsive.min.css',
+        'font/font-awesome.min.css',
+        'font/font-awesome-ie7.min.css',
         'slider.css',
         'print.css:print',
     ),
