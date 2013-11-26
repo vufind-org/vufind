@@ -356,7 +356,9 @@ function registerModalEvents(modal) {
     $(this).attr("clicked", "true");
   });
   $(modal).find("form").submit(function() {
-    $(this).find('*[clicked="true"]').after(' <i class="icon-spinner icon-spin"></i> ');
+    if($(this).find('.icon-spinner').length == 0) {
+      $(this).find('*[clicked="true"]').after(' <i class="icon-spinner icon-spin"></i> ');
+    }
 });
 }
 // Prevent forms from submitting in the lightbox
@@ -417,13 +419,12 @@ $(document).ready(function() {
     return getLightbox('MyResearch','Login',{},{'loggingin':true});
   });
   // Tag lightbox
+  
+  // Tag lightbox
   $('#tagRecord').click(function() {
     var id = $('.hiddenId')[0].value;
-    if($('.hiddenSource').val() == 'Summon') {
-      return getLightbox('SummonRecord', 'AddTag', {id:id});
-    } else {
-      return getLightbox('Record', 'AddTag', {id:id});
-    }
+    var parts = this.href.split('/');
+    return getLightbox(parts[parts.length-3], 'AddTag', {id:id});
   });
   // Modal title
   $('.modal-link,.help-link').click(function() {
