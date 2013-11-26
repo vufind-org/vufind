@@ -559,7 +559,10 @@ class Summon extends SolrDefault
     {
         if (isset($this->fields['EndPage'])) {
             return $this->fields['EndPage'][0];
-        } else if (isset($this->fields['PageCount'])) {
+        } else if (isset($this->fields['PageCount'])
+            && $this->fields['PageCount'] > 1
+            && intval($this->fields['StartPage'][0]) > 0
+        ) {
             return $this->fields['StartPage'][0] + $this->fields['PageCount'][0] - 1;
         }
         return $this->getContainerStartPage();
