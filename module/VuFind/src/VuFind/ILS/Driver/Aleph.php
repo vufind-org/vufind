@@ -1519,7 +1519,9 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         $body->addChild('pickup-location', $pickupLocation);
         $body->addChild('last-interest-date', $requiredBy);
         $body->addChild('note-1', $comment1);
-        $body->addChild('note-2', $comment2);
+        if (isset($comment2)) {
+            $body->addChild('note-2', $comment2);
+        }
         $body = 'post_xml=' . $body->asXML();
         try {
             $result = $this->doRestDLFRequest(
