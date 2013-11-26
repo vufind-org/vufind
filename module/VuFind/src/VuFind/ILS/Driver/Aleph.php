@@ -1498,8 +1498,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
         $comment = $details['comment'];
         if (strlen($comment) <= 50) {
             $comment1 = $comment;
-        }
-        else {
+        } else {
             $comment1 = substr($comment, 0, 50);
             $comment2 = substr($comment, 50, 50);
         }
