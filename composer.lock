@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "0b211d2fa815ced227a3273a73041c86",
+    "hash": "025d41c2c07842265033d0852de084b8",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -227,10 +227,10 @@
         },
         {
             "name": "pear-pear.php.net/File_MARC",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "dist": {
                 "type": "file",
-                "url": "http://pear.php.net/get/File_MARC-1.0.0.tgz",
+                "url": "http://pear.php.net/get/File_MARC-1.0.1.tgz",
                 "reference": null,
                 "shasum": null
             },
@@ -238,7 +238,7 @@
                 "php": ">=5.3.0.0"
             },
             "replace": {
-                "pear-pear/file_marc": "== 1.0.0.0"
+                "pear-pear/file_marc": "== 1.0.1.0"
             },
             "type": "pear-library",
             "autoload": {
@@ -394,6 +394,57 @@
             "description": "Selection of methods that are often needed when working with XML documents.  Functionality includes creating of attribute lists from arrays, creation of tags, validation of XML names and more."
         },
         {
+            "name": "richthegeek/phpsass",
+            "version": "2012-06-27",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/richthegeek/phpsass.git",
+                "reference": "3ed604470630a11897e580f9551ad83dde715c1f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/richthegeek/phpsass/zipball/3ed604470630a11897e580f9551ad83dde715c1f",
+                "reference": "3ed604470630a11897e580f9551ad83dde715c1f",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "script/",
+                    "renderers/",
+                    "tree/",
+                    "SassException.php",
+                    "SassFile.php",
+                    "SassParser.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-2-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Richard Lyon",
+                    "homepage": "https://github.com/richthegeek"
+                },
+                {
+                    "name": "Sebastian Siemssen",
+                    "homepage": "https://twitter.com/thefubhy"
+                },
+                {
+                    "name": "Steve Jones",
+                    "homepage": "https://github.com/darthsteven"
+                },
+                {
+                    "name": "Sam Richard",
+                    "homepage": "https://github.com/snugug"
+                }
+            ],
+            "description": "PHPSass is a PHP compiler for SASS, a popular CSS pre-processor language.",
+            "homepage": "http://phpsass.com",
+            "time": "2013-06-27 14:12:37"
+        },
+        {
             "name": "serialssolutions/summon",
             "version": "dev-master",
             "source": {
@@ -431,17 +482,17 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.3.6",
+            "version": "v2.3.7",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "6bb881b948368482e1abf1a75c08bcf88a1c5fc3"
+                "reference": "c1bda5b459d792cb253de12c65beba3040163b2b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/6bb881b948368482e1abf1a75c08bcf88a1c5fc3",
-                "reference": "6bb881b948368482e1abf1a75c08bcf88a1c5fc3",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/c1bda5b459d792cb253de12c65beba3040163b2b",
+                "reference": "c1bda5b459d792cb253de12c65beba3040163b2b",
                 "shasum": ""
             },
             "require": {
@@ -474,7 +525,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com",
-            "time": "2013-09-22 18:04:39"
+            "time": "2013-10-17 11:48:01"
         },
         {
             "name": "zendframework/zendframework",

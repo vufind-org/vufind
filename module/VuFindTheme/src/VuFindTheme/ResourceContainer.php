@@ -44,6 +44,13 @@ class ResourceContainer
      * @var array
      */
     protected $less = array();
+    
+    /**
+     * Sass CSS files
+     *
+     * @var array
+     */
+    protected $sass = array();
 
     /**
      * CSS files
@@ -98,6 +105,23 @@ class ResourceContainer
     }
 
     /**
+     * Add a Sass CSS file.
+     *
+     * @param array|string $css Less CSS file (or array of Less CSS files) to add
+     *
+     * @return void
+     */
+    public function addSassCss($sass)
+    {
+        if (!is_array($sass) && !is_a($less, 'Traversable')) {
+            $sass = array($sass);
+        }
+        foreach ($sass as $current) {
+            $this->sass[] = $current;
+        }
+    }
+
+    /**
      * Add a CSS file.
      *
      * @param array|string $css CSS file (or array of CSS files) to add (possibly
@@ -141,6 +165,15 @@ class ResourceContainer
     public function getLessCss()
     {
         return array_unique($this->less);
+    }
+    /**
+     * Get Sass CSS files.
+     *
+     * @return array
+     */
+    public function getSassCss()
+    {
+        return array_unique($this->sass);
     }
 
     /**

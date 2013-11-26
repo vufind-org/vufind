@@ -74,9 +74,22 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
             $headMeta()->appendName('Generator', $generator);
         }
 
+
+        // Compile and load LESS (make sure we prepend them in the appropriate order
+        // theme resources should load before extras added by individual templates):
+        $headLink = $this->getView()->plugin('headlink');
+        foreach (array_reverse($this->container->getLessCss()) as $current) {
+            $headLink()->addLessStylesheet($current);
+        }
+
+        // Compile and load SASS (make sure we prepend them in the appropriate order
+        // theme resources should load before extras added by individual templates):
+        foreach (array_reverse($this->container->getSassCss()) as $current) {
+            $headLink()->addSassStylesheet($current);
+        }
+        
         // Load CSS (make sure we prepend them in the appropriate order; theme
         // resources should load before extras added by individual templates):
-        $headLink = $this->getView()->plugin('headlink');
         foreach (array_reverse($this->container->getCss()) as $current) {
             $parts = explode(':', $current);
             $headLink()->prependStylesheet(
@@ -84,13 +97,6 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
                 isset($parts[1]) ? trim($parts[1]) : 'all',
                 isset($parts[2]) ? trim($parts[2]) : false
             );
-        }
-
-        // Compile and load LESS (make sure we prepend them in the appropriate order
-        // theme resources should load before extras added by individual templates):
-        $headLink = $this->getView()->plugin('headlink');
-        foreach (array_reverse($this->container->getLessCss()) as $current) {
-            $headLink()->addLessStylesheet($current);
         }
 
         // Load Javascript (same ordering considerations as CSS, above):

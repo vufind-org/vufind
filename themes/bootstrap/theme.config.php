@@ -2,15 +2,17 @@
 return array(
     'extends' => 'root',
     'less' => array(
-        'style.less' // imports screen
+        'style.less' // imports screen, print
+    ),
+    'sass' => array(
+        //'style.scss' // imports screen, print
     ),
     'css' => array(
         'bootstrap.min.css',
         'bootstrap-responsive.min.css',
         'font/font-awesome.min.css',
         'font/font-awesome-ie7.min.css',
-        'slider.css',
-        'print.css:print',
+        'slider.css'
     ),
     'js' => array(
         'core/jquery.min.js',

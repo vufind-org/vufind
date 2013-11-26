@@ -1,0 +1,7 @@
+@import 'screen';
+
+body { margin-top:1em }
+.sidebar {
+  @extend .well;
+  @extend .well-small;
+}
