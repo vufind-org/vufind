@@ -419,8 +419,6 @@ $(document).ready(function() {
     return getLightbox('MyResearch','Login',{},{'loggingin':true});
   });
   // Tag lightbox
-  
-  // Tag lightbox
   $('#tagRecord').click(function() {
     var id = $('.hiddenId')[0].value;
     var parts = this.href.split('/');
