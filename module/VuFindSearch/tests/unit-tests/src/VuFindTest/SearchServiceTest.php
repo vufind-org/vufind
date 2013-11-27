@@ -34,6 +34,7 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Feature\RetrieveBatchInterface;
+use VuFindSearch\Query\Query;
 use VuFindSearch\Response\AbstractRecordCollection;
 
 use PHPUnit_Framework_TestCase as TestCase;
@@ -100,6 +101,28 @@ class SearchServiceTest extends TestCase
         $em->expects($this->at(1))->method('trigger')
             ->with($this->equalTo('error'), $this->equalTo($exception));
         $service->retrieve('foo', 'bar', $params);
+    }
+
+    /**
+     * Test exception-throwing search action.
+     *
+     * @return void
+     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     * @expectedExceptionMessage test
+     */
+    public function testSearchException()
+    {
+        $service = $this->getService();
+        $backend = $this->getBackend();
+        $exception = new BackendException('test');
+        $backend->expects($this->once())->method('search')
+            ->will($this->throwException($exception));
+        $em = $service->getEventManager();
+        $em->expects($this->at(0))->method('trigger')
+            ->with($this->equalTo('pre'), $this->equalTo($backend));
+        $em->expects($this->at(1))->method('trigger')
+            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $service->search('foo', new Query('test'));
     }
 
     /**
