@@ -89,7 +89,6 @@ class SearchServiceTest extends TestCase
     {
         $service = $this->getService();
         $backend = $this->getBackend();
-        $response = 'fake';
         $params = new ParamBag(array('x' => 'y'));
         $exception = new BackendException('test');
         $backend->expects($this->once())->method('retrieve')
@@ -205,7 +204,6 @@ class SearchServiceTest extends TestCase
     {
         $service = $this->getService();
         $backend = $this->getBackend();
-        $response = 'fake';
         $params = new ParamBag(array('x' => 'y'));
         $exception = new BackendException('test');
         $backend->expects($this->once())->method('retrieve')
