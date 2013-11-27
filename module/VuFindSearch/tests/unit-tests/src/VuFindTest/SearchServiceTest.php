@@ -241,6 +241,64 @@ class SearchServiceTest extends TestCase
     }
 
     /**
+     * Test similar action.
+     *
+     * @return void
+     */
+    public function testSimilar()
+    {
+        // Use a special backend for this test...
+        $this->backend = $this->getMock('VuFindTest\TestBackendClassForSimilar');
+
+        $service = $this->getService();
+        $backend = $this->getBackend();
+        $response = 'fake';
+        $params = new ParamBag(array('x' => 'y'));
+        $backend->expects($this->once())->method('similar')
+            ->with($this->equalTo('bar'), $this->equalTo($params))
+            ->will($this->returnValue($response));
+        $em = $service->getEventManager();
+        $em->expects($this->at(0))->method('trigger')
+            ->with($this->equalTo('pre'), $this->equalTo($backend));
+        $em->expects($this->at(1))->method('trigger')
+            ->with($this->equalTo('post'), $this->equalTo($response));
+        $service->similar('foo', 'bar', $params);
+
+        // Put the backend back to the default:
+        unset($this->backend);
+    }
+
+    /**
+     * Test exception-throwing similar action.
+     *
+     * @return void
+     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     * @expectedExceptionMessage test
+     */
+    public function testSimilarException()
+    {
+        // Use a special backend for this test...
+        $this->backend = $this->getMock('VuFindTest\TestBackendClassForSimilar');
+
+        $service = $this->getService();
+        $backend = $this->getBackend();
+        $params = new ParamBag(array('x' => 'y'));
+        $exception = new BackendException('test');
+        $backend->expects($this->once())->method('similar')
+            ->with($this->equalTo('bar'), $this->equalTo($params))
+            ->will($this->throwException($exception));
+        $em = $service->getEventManager();
+        $em->expects($this->at(0))->method('trigger')
+            ->with($this->equalTo('pre'), $this->equalTo($backend));
+        $em->expects($this->at(1))->method('trigger')
+            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $service->similar('foo', 'bar', $params);
+
+        // Put the backend back to the default:
+        unset($this->backend);
+    }
+
+    /**
      * Test a failure to resolve.
      *
      * @return void
@@ -309,4 +367,13 @@ class SearchServiceTest extends TestCase
 abstract class TestClassForRetrieveBatchInterface
     implements BackendInterface, RetrieveBatchInterface
 {
+}
+
+/**
+ * Stub class to test similar.
+ */
+abstract class TestBackendClassForSimilar
+    implements BackendInterface
+{
+    abstract function similar();
 }
