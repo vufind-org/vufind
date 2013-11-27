@@ -31,7 +31,9 @@ namespace VuFindTest;
 
 use VuFindSearch\Service;
 use VuFindSearch\ParamBag;
+use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
+use VuFindSearch\Feature\RetrieveBatchInterface;
 use VuFindSearch\Response\AbstractRecordCollection;
 
 use PHPUnit_Framework_TestCase as TestCase;
@@ -50,7 +52,7 @@ class SearchServiceTest extends TestCase
     /**
      * Mock backend
      *
-     * @var \VuFindSearch\Backend\BackendInterface
+     * @var BackendInterface
      */
     protected $backend = false;
 
@@ -102,11 +104,39 @@ class SearchServiceTest extends TestCase
     }
 
     /**
-     * Test batch retrieve.
+     * Test batch retrieve (with RetrieveBatchInterface).
      *
      * @return void
      */
-    public function testRetrieveBatch()
+    public function testRetrieveBatchInterface()
+    {
+        // Use a special backend for this test...
+        $this->backend = $this->getMock('VuFindTest\TestClassForRetrieveBatchInterface');
+
+        $service = $this->getService();
+        $backend = $this->getBackend();
+        $params = new ParamBag(array('x' => 'y'));
+        $ids = array('bar', 'baz');
+        $backend->expects($this->once(0))->method('retrieveBatch')
+            ->with($this->equalTo($ids), $this->equalTo($params))
+            ->will($this->returnValue('response'));
+        $em = $service->getEventManager();
+        $em->expects($this->at(0))->method('trigger')
+            ->with($this->equalTo('pre'), $this->equalTo($backend));
+        $em->expects($this->at(1))->method('trigger')
+            ->with($this->equalTo('post'), $this->equalTo('response'));
+        $service->retrieveBatch('foo', $ids, $params);
+
+        // Put the backend back to the default:
+        unset($this->backend);
+    }
+
+    /**
+     * Test batch retrieve (without RetrieveBatchInterface).
+     *
+     * @return void
+     */
+    public function testRetrieveBatchNoInterface()
     {
         $service = $this->getService();
         $backend = $this->getBackend();
@@ -133,13 +163,45 @@ class SearchServiceTest extends TestCase
     }
 
     /**
-     * Test exception-throwing retrieve action.
+     * Test exception-throwing batch retrieve action (with RetrieveBatchInterface).
      *
      * @return void
      * @expectedException VuFindSearch\Backend\Exception\BackendException
      * @expectedExceptionMessage test
      */
-    public function testRetrieveBatchException()
+    public function testRetrieveBatchInterfaceException()
+    {
+        // Use a special backend for this test...
+        $this->backend = $this->getMock('VuFindTest\TestClassForRetrieveBatchInterface');
+
+        $service = $this->getService();
+        $backend = $this->getBackend();
+        $params = new ParamBag(array('x' => 'y'));
+        $exception = new BackendException('test');
+        $ids = array('bar', 'baz');
+        $backend->expects($this->once(0))->method('retrieveBatch')
+            ->with($this->equalTo($ids), $this->equalTo($params))
+            ->will($this->throwException($exception));
+        $em = $service->getEventManager();
+        $em->expects($this->at(0))->method('trigger')
+            ->with($this->equalTo('pre'), $this->equalTo($backend));
+        $em->expects($this->at(1))->method('trigger')
+            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $service->retrieveBatch('foo', $ids, $params);
+
+        // Put the backend back to the default:
+        unset($this->backend);
+    }
+
+    /**
+     * Test exception-throwing batch retrieve action (without
+     * RetrieveBatchInterface).
+     *
+     * @return void
+     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     * @expectedExceptionMessage test
+     */
+    public function testRetrieveBatchNoInterfaceException()
     {
         $service = $this->getService();
         $backend = $this->getBackend();
@@ -162,7 +224,7 @@ class SearchServiceTest extends TestCase
     /**
      * Get a mock backend.
      *
-     * @return \VuFindSearch\Backend\BackendInterface
+     * @return BackendInterface
      */
     protected function getBackend()
     {
@@ -198,4 +260,12 @@ class SearchServiceTest extends TestCase
     {
         return $this->getMock('VuFindSearch\Response\AbstractRecordCollection');
     }
+}
+
+/**
+ * Stub class to test multiple interfaces.
+ */
+abstract class TestClassForRetrieveBatchInterface
+    implements BackendInterface, RetrieveBatchInterface
+{
 }
