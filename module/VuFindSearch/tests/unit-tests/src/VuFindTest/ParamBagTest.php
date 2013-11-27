@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract base class of user query components.
+ * Unit tests for ParamBag.
  *
  * PHP version 5
  *
@@ -27,10 +27,14 @@
  * @link     http://vufind.org
  */
 
-namespace VuFindSearch\Query;
+namespace VuFindTest;
+
+use VuFindSearch\ParamBag;
+
+use PHPUnit_Framework_TestCase as TestCase;
 
 /**
- * Abstract base class of user query components.
+ * Unit tests for ParamBag.
  *
  * @category VuFind2
  * @package  Search
@@ -38,6 +42,33 @@ namespace VuFindSearch\Query;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-abstract class AbstractQuery implements QueryInterface
+class ParamBagTest extends TestCase
 {
+    /**
+     * Test "remove"
+     *
+     * @return void
+     */
+    public function testRemove()
+    {
+        $bag = new ParamBag();
+        $bag->set('foo', 'bar');
+        $bag->set('bar', 'baz');
+        $bag->remove('foo');
+        $this->assertEquals(array('bar' => array('baz')), $bag->getArrayCopy());
+    }
+
+    /**
+     * Test "merge with all"
+     *
+     * @return void
+     */
+    public function testMergeWithAll()
+    {
+        $bag1 = new ParamBag(array('a' => 1));
+        $bag2 = new ParamBag(array('b' => 2));
+        $bag3 = new ParamBag(array('c' => 3));
+        $bag3->mergeWithAll(array($bag1, $bag2));
+        $this->assertEquals(array('a' => array(1), 'b' => array(2), 'c' => array(3)), $bag3->getArrayCopy());
+    }
 }

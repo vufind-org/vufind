@@ -62,4 +62,16 @@ class QueryTest extends PHPUnit_Framework_TestCase
         // Should not contain a partial term (matches on word boundaries):
         $this->assertFalse($q->containsTerm('tes'));
     }
+
+    /**
+     * Test setHandler() method
+     *
+     * @return void
+     */
+    public function testSetHandler()
+    {
+        $q = new Query('foo', 'bar');
+        $q->setHandler('baz');
+        $this->assertEquals('baz', $q->getHandler());
+    }
 }

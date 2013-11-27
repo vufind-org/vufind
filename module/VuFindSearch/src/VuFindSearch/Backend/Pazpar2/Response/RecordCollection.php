@@ -83,14 +83,4 @@ class RecordCollection extends AbstractRecordCollection
     {
         return array();
     }
-
-    /**
-     * Return offset in the total search result set.
-     *
-     * @return int
-     */
-    public function getOffset()
-    {
-        return $this->offset;
-    }
 }

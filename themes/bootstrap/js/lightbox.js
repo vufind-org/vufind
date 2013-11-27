@@ -281,7 +281,7 @@ function ajaxLogin(form) {
                 // If summon, queue reload
                 $('.hiddenSource').each(function(i, e) {
                   if(e.value == 'Summon') {
-                    closeAction = function(){document.location.reload(true)};
+                    closeAction = function(){document.location.reload(true);};
                   }
                 });
                 getLightboxByUrl(lastLightboxURL, lastLightboxPOST);
@@ -418,8 +418,6 @@ $(document).ready(function() {
   $('#loginOptions a').click(function() {
     return getLightbox('MyResearch','Login',{},{'loggingin':true});
   });
-  // Tag lightbox
-  
   // Tag lightbox
   $('#tagRecord').click(function() {
     var id = $('.hiddenId')[0].value;
