@@ -132,6 +132,31 @@ class SearchServiceTest extends TestCase
         $service->retrieveBatch('foo', array('bar', 'baz'), $params);
     }
 
+    /**
+     * Test exception-throwing retrieve action.
+     *
+     * @return void
+     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     * @expectedExceptionMessage test
+     */
+    public function testRetrieveBatchException()
+    {
+        $service = $this->getService();
+        $backend = $this->getBackend();
+        $response = 'fake';
+        $params = new ParamBag(array('x' => 'y'));
+        $exception = new BackendException('test');
+        $backend->expects($this->once())->method('retrieve')
+            ->with($this->equalTo('bar'), $this->equalTo($params))
+            ->will($this->throwException($exception));
+        $em = $service->getEventManager();
+        $em->expects($this->at(0))->method('trigger')
+            ->with($this->equalTo('pre'), $this->equalTo($backend));
+        $em->expects($this->at(1))->method('trigger')
+            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $service->retrieveBatch('foo', array('bar'), $params);
+    }
+
     // Internal API
 
     /**
