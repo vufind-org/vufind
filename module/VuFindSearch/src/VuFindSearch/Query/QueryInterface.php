@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract base class of user query components.
+ * Common methods that must be shared by all query objects.
  *
  * PHP version 5
  *
@@ -30,7 +30,7 @@
 namespace VuFindSearch\Query;
 
 /**
- * Abstract base class of user query components.
+ * Common methods that must be shared by all query objects.
  *
  * @category VuFind2
  * @package  Search
@@ -38,6 +38,31 @@ namespace VuFindSearch\Query;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-abstract class AbstractQuery implements QueryInterface
+interface QueryInterface
 {
+    /**
+     * Does the query contain the specified term?
+     *
+     * @param string $needle Term to check
+     *
+     * @return bool
+     */
+    public function containsTerm($needle);
+
+    /**
+     * Get a concatenated list of all query strings within the object.
+     *
+     * @return string
+     */
+    public function getAllTerms();
+
+    /**
+     * Replace a term.
+     *
+     * @param string $from Search term to find
+     * @param string $to   Search term to insert
+     *
+     * @return void
+     */
+    public function replaceTerm($from, $to);
 }
