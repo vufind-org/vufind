@@ -219,6 +219,26 @@ class SearchServiceTest extends TestCase
         $service->retrieveBatch('foo', array('bar'), $params);
     }
 
+    /**
+     * Test a failure to resolve.
+     *
+     * @return void
+     * @expectedException VuFindSearch\Exception\RuntimeException
+     * @expectedExceptionMessage Unable to resolve backend: retrieve, junk
+     */
+    public function testFailedResolve()
+    {
+        $mockResponse = $this->getMock('Zend\EventManager\ResponseCollection');
+        $mockResponse->expects($this->any())->method('stopped')->will($this->returnValue(false));
+        $em = $this->getMock('Zend\EventManager\EventManagerInterface');
+        $service = new Service();
+        $em->expects($this->any())->method('trigger')
+            ->with($this->equalTo('resolve'), $this->equalTo($service))
+            ->will($this->returnValue($mockResponse));
+        $service->setEventManager($em);
+        $service->retrieve('junk', 'foo');
+    }
+
     // Internal API
 
     /**
