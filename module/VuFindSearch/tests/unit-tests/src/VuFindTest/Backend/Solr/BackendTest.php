@@ -193,7 +193,6 @@ class BackendTest extends PHPUnit_Framework_TestCase
     /**
      * Test getting a connector.
      *
-     *
      * @return void
      */
     public function testGetConnector()
@@ -201,6 +200,19 @@ class BackendTest extends PHPUnit_Framework_TestCase
         $conn = $this->getConnectorMock();
         $back = new Backend($conn);
         $this->assertEquals($conn, $back->getConnector());
+    }
+
+    /**
+     * Test getting an identifier.
+     *
+     * @return void
+     */
+    public function testGetIdentifier()
+    {
+        $conn = $this->getConnectorMock();
+        $back = new Backend($conn);
+        $back->setIdentifier('foo');
+        $this->assertEquals('foo', $back->getIdentifier());
     }
 
     /// Internal API
