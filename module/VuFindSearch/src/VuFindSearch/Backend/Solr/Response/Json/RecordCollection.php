@@ -87,6 +87,7 @@ class RecordCollection extends AbstractRecordCollection
     public function __construct(array $response)
     {
         $this->response = array_replace_recursive(static::$template, $response);
+        $this->offset = $this->response['response']['start'];
         $this->rewind();
     }
 
@@ -153,15 +154,5 @@ class RecordCollection extends AbstractRecordCollection
     {
         return isset($this->response['highlighting'])
             ? $this->response['highlighting'] : array();
-    }
-
-    /**
-     * Return offset in the total search result set.
-     *
-     * @return int
-     */
-    public function getOffset()
-    {
-        return $this->response['response']['start'];
     }
 }

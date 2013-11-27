@@ -59,6 +59,14 @@ class RecordCollection extends AbstractRecordCollection
     public function __construct(array $response)
     {
         $this->response = $response;
+
+        // Determine the offset:
+        $page = isset($this->response['query']['pageNumber'])
+            ? $this->response['query']['pageNumber'] - 1 : 0;
+        $size = isset($this->response['query']['pageSize'])
+            ? $this->response['query']['pageSize'] : 0;
+        $this->offset = $page * $size;
+
         $this->rewind();
     }
 
@@ -81,20 +89,6 @@ class RecordCollection extends AbstractRecordCollection
     {
         return isset($this->response['facetFields'])
             ? $this->response['facetFields'] : array();
-    }
-
-    /**
-     * Return offset in the total search result set.
-     *
-     * @return int
-     */
-    public function getOffset()
-    {
-        $page = isset($this->response['query']['pageNumber'])
-            ? $this->response['query']['pageNumber'] - 1 : 0;
-        $size = isset($this->response['query']['pageSize'])
-            ? $this->response['query']['pageSize'] : 0;
-        return $page * $size;
     }
 
     /**
