@@ -154,6 +154,8 @@ class ConnectorTest extends \PHPUnit_Framework_TestCase
         $client->expects($this->once())->method('setMethod')
             ->with($this->equalTo('POST'))
             ->will($this->returnValue($client));
+        $client->expects($this->once())->method('setUri')
+            ->with($this->equalTo('http://www.worldcat.org/webservices/catalog/search/sru?version=1.1&x=y&startRecord=0&maximumRecords=20&servicelevel=full&wskey=key'));
         $body = '<foo>,<numberOfRecords>1</numberOfRecords><records><record><recordData>bar</recordData></record></records></foo>';
         $response = $this->getMock('Zend\Http\Response');
         $response->expects($this->once())->method('getBody')
@@ -162,7 +164,7 @@ class ConnectorTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue(true));
         $client->expects($this->once())->method('send')
             ->will($this->returnValue($response));
-        $final = $connector->search(new ParamBag(), 0, 20);
+        $final = $connector->search(new ParamBag(array('x' => 'y')), 0, 20);
         $this->assertEquals('<recordData>bar</recordData>', $final['docs'][0]);
         $this->assertEquals(1, $final['total']);
     }
