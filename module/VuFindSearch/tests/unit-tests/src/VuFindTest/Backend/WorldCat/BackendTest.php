@@ -96,6 +96,19 @@ class BackendTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('44310183', $recs[2]->getMarc()->getField('001')->getData());
     }
 
+    /**
+     * Test setting a query builder.
+     *
+     * @return void
+     */
+    public function testSetQueryBuilder()
+    {
+        $qb = new \VuFindSearch\Backend\WorldCat\QueryBuilder();
+        $back = new Backend($this->getConnectorMock());
+        $back->setQueryBuilder($qb);
+        $this->assertEquals($qb, $back->getQueryBuilder());
+    }
+
     /// Internal API
 
     /**
