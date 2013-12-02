@@ -88,4 +88,56 @@ class ConnectorTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($response));
         $connector->getHoldings('baz');
     }
+
+    /**
+     * Test "get record"
+     *
+     * @return void
+     */
+    public function testGetRecord()
+    {
+        $client = $this->getMock('Zend\Http\Client');
+        $connector = new Connector('key', '', $client);
+        $client->expects($this->once())->method('setMethod')
+            ->with($this->equalTo('POST'))
+            ->will($this->returnValue($client));
+        $client->expects($this->once())->method('setUri')
+            ->with($this->equalTo('http://www.worldcat.org/webservices/catalog/content/baz?servicelevel=full&wskey=key'));
+        $body = '<foo>bar</foo>';
+        $response = $this->getMock('Zend\Http\Response');
+        $response->expects($this->once())->method('getBody')
+            ->will($this->returnValue($body));
+        $response->expects($this->any())->method('isSuccess')
+            ->will($this->returnValue(true));
+        $client->expects($this->once())->method('send')
+            ->will($this->returnValue($response));
+        $final = $connector->getRecord('baz');
+        $this->assertEquals($body, $final['docs'][0]);
+    }
+
+    /**
+     * Test "get record" with error
+     *
+     * @return void
+     */
+    public function testGetRecordWithError()
+    {
+        $client = $this->getMock('Zend\Http\Client');
+        $connector = new Connector('key', '', $client);
+        $client->expects($this->once())->method('setMethod')
+            ->with($this->equalTo('POST'))
+            ->will($this->returnValue($client));
+        $client->expects($this->once())->method('setUri')
+            ->with($this->equalTo('http://www.worldcat.org/webservices/catalog/content/baz?servicelevel=full&wskey=key'));
+        $body = '<foo><diagnostic>bad</diagnostic></foo>';
+        $response = $this->getMock('Zend\Http\Response');
+        $response->expects($this->once())->method('getBody')
+            ->will($this->returnValue($body));
+        $response->expects($this->any())->method('isSuccess')
+            ->will($this->returnValue(true));
+        $client->expects($this->once())->method('send')
+            ->will($this->returnValue($response));
+        $final = $connector->getRecord('baz');
+        $this->assertEquals(array(), $final['docs']);
+    }
 }
