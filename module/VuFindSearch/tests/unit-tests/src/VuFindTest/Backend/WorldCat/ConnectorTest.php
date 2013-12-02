@@ -30,6 +30,7 @@
 namespace VuFindTest\Backend\WorldCat;
 
 use VuFindSearch\Backend\WorldCat\Connector;
+use VuFindSearch\ParamBag;
 
 /**
  * Unit tests for WorldCat backend.
@@ -139,5 +140,30 @@ class ConnectorTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($response));
         $final = $connector->getRecord('baz');
         $this->assertEquals(array(), $final['docs']);
+    }
+
+    /**
+     * Test search
+     *
+     * @return void
+     */
+    public function testSearch()
+    {
+        $client = $this->getMock('Zend\Http\Client');
+        $connector = new Connector('key', '', $client);
+        $client->expects($this->once())->method('setMethod')
+            ->with($this->equalTo('POST'))
+            ->will($this->returnValue($client));
+        $body = '<foo>,<numberOfRecords>1</numberOfRecords><records><record><recordData>bar</recordData></record></records></foo>';
+        $response = $this->getMock('Zend\Http\Response');
+        $response->expects($this->once())->method('getBody')
+            ->will($this->returnValue($body));
+        $response->expects($this->any())->method('isSuccess')
+            ->will($this->returnValue(true));
+        $client->expects($this->once())->method('send')
+            ->will($this->returnValue($response));
+        $final = $connector->search(new ParamBag(), 0, 20);
+        $this->assertEquals('<recordData>bar</recordData>', $final['docs'][0]);
+        $this->assertEquals(1, $final['total']);
     }
 }
