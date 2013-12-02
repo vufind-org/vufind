@@ -109,6 +109,20 @@ class BackendTest extends PHPUnit_Framework_TestCase
         $this->assertEquals($qb, $back->getQueryBuilder());
     }
 
+    /**
+     * Test setting a custom record collection factory.
+     *
+     * @return void
+     */
+    public function testConstructorSetters()
+    {
+        $fact = $this->getMock('VuFindSearch\Response\RecordCollectionFactoryInterface');
+        $conn = $this->getConnectorMock();
+        $back = new Backend($conn, $fact);
+        $this->assertEquals($fact, $back->getRecordCollectionFactory());
+        $this->assertEquals($conn, $back->getConnector());
+    }
+
     /// Internal API
 
     /**
