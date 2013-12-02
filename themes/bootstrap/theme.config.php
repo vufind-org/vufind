@@ -8,8 +8,6 @@ return array(
         //'style.scss' // imports screen, print
     ),
     'css' => array(
-        'bootstrap.min.css',
-        'bootstrap-responsive.min.css',
         'font/font-awesome.min.css',
         'font/font-awesome-ie7.min.css',
         'slider.css'

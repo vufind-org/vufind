@@ -1,2 +1,5 @@
-.noprint,.noprint *,.noprint[class*="span"] {display:none}
-.row-fluid .span9 {margin:auto;width:90%}
+.noprint {}
+@media print {
+  .noprint,.noprint *,.noprint[class*="span"] {display:none}
+  .row-fluid .span9 {margin:auto;width:90%}
+}
