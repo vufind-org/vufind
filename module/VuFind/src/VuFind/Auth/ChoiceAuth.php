@@ -34,22 +34,7 @@ use VuFind\Exception\Auth as AuthException;
  * This module enables a user to choose between two authentication methods. 
  * choices are presented side-by-side and one is manually selected.
  *
- * The plugin must be configured with its choices in 
- * config.ini like this:
- *
- * [Authentication]
- * method = ChoiceAuth
- *
- * [ChoiceAuth]
- * choice_order = "Shibboleth,Database"
- *
- * This example uses a combination of Shibboleth and Database authentication,
- * presenting Shibboleth on the left and Database on the right.
- *
- * Each choice given must also be configured in its relevent config.ini section.
- *
- * The code should allow for more than 2 choices; however, styling would need
- * to be expanded / modified
+ * See config.ini for more details
  *
  * @category VuFind2
  * @package  Authentication
