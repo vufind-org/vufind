@@ -1,4 +1,4 @@
-<? if ($this->auth()->isLoggedIn()): ?>
+<? if ($this->auth()->isLoggedIn() && 'ils-none' !== $this->ils()->getOfflineMode()): ?>
   <div data-role="navbar">
     <ul>
       <li><a rel="external" <?=$this->layout()->templateName=="checkedout" ? ' class="ui-btn-active"' : ''?> href="<?=$this->url('myresearch-checkedout')?>"><?=$this->transEsc('Checked Out')?></a></li>
