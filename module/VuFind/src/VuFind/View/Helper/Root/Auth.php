@@ -40,7 +40,8 @@ use Zend\View\Exception\RuntimeException;
 class Auth extends \Zend\View\Helper\AbstractHelper
 {
     /**
-     * Active auth class (used for auth methods that allow more than one type of authentication)
+     * Active auth class (used for auth methods that allow more than one type
+     * of authentication)
      *
      * @var string
      */
@@ -179,8 +180,11 @@ class Auth extends \Zend\View\Helper\AbstractHelper
      * Setter
      *
      * @param string $classname Class to use in rendering
+     *
+     * @return void
      */
-    public function setActiveAuthClass($classname) {
+    public function setActiveAuthClass($classname)
+    {
         $this->activeAuthClass = $classname;
         $this->getManager()->setActiveAuthClass($this->getBriefClass($classname));
     }
@@ -214,11 +218,11 @@ class Auth extends \Zend\View\Helper\AbstractHelper
     /**
      * Helper to grab the end of the class name
      *
-     * @param string $className
+     * @param string $className Class name to abbreviate
      *
      * @return string
      */
-    protected function getBriefClass($className) 
+    protected function getBriefClass($className)
     {
         $classParts = explode('\\', $className);
         return array_pop($classParts);

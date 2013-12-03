@@ -117,7 +117,9 @@ class MyResearchController extends AbstractBase
         //   Force to post.
         $method = trim($this->params()->fromQuery('auth_method'));
         if ($method) {
-            $this->getRequest()->setPost($this->getRequest()->getPost()->set('auth_method', $method));
+            $this->getRequest()->setPost(
+                $this->getRequest()->getPost()->set('auth_method', $method)
+            );
         }
         // Process login request, if necessary (either because a form has been
         // submitted or because we're using an external login provider):
