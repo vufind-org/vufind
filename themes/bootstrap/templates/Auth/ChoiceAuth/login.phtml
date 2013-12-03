@@ -1,10 +1,12 @@
-<p><?=$this->transEsc('choose_login_method')?></p>
+<p>Please choose a login method:</p>
 <div id="authcontainer">
-<? foreach ($this->auth()->getManager()->getAuthClasses() as $loop=>$class):?>
-  <div class="authmethod<?=$loop?>">
+<? $classes = $this->auth()->getManager()->getAuthClasses(); ?>
+<? $count = count($classes); ?>
+<? foreach ($classes as $loop=>$class):?>
+  <div class="authmethod<?=$loop?> span<?=floor(12/$count) ?>">
     <? $this->auth()->setActiveAuthClass($class) ?>
-    <?=$this->auth()->getLoginDesc() ?>
-    <?=$this->auth()->getLogin() ?>
+    <?=$this->auth()->getLoginDesc($method) ?>
+    <?=$this->auth()->getLogin($method) ?>
     <? $this->auth()->setActiveAuthClass('ChoiceAuth') ?>
   </div>
 <? endforeach ?>
