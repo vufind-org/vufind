@@ -5,8 +5,8 @@
 <? foreach ($classes as $loop=>$class):?>
   <div class="authmethod<?=$loop?> span<?=floor(12/$count) ?>">
     <? $this->auth()->setActiveAuthClass($class) ?>
-    <?=$this->auth()->getLoginDesc($method) ?>
-    <?=$this->auth()->getLogin($method) ?>
+    <?=$this->auth()->getLoginDesc() ?>
+    <?=$this->auth()->getLogin() ?>
     <? $this->auth()->setActiveAuthClass('ChoiceAuth') ?>
   </div>
 <? endforeach ?>
