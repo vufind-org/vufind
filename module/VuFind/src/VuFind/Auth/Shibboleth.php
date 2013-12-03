@@ -141,7 +141,7 @@ class Shibboleth extends AbstractBase
         } else {
             $shibTarget = $target;
         }
-        $append = (preg_match('\?', $shibTarget)) ? '&' : '?';
+        $append = (strpos($shibTarget, '?') !== false) ? '&' : '?';
         $sessionInitiator = $config->Shibboleth->login
             . '?target=' . urlencode($shibTarget)
             . urlencode($append . 'auth_method=Shibboleth'); 
