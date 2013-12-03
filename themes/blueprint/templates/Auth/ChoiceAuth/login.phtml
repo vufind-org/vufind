@@ -1,4 +1,4 @@
-<p>Please choose a login method:</p>
+<p><?=$this->transEsc('choose_login_method')?></p>
 <div id="authcontainer">
 <? foreach ($this->auth()->getManager()->getAuthClasses() as $loop=>$class):?>
   <div class="authmethod<?=$loop?>">
