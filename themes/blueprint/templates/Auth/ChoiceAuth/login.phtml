@@ -1,0 +1,13 @@
+<p>Please choose a login method:</p>
+<div id="authcontainer">
+<? foreach ($this->auth()->getManager()->getAuthClasses() as $loop=>$class):?>
+  <div class="authmethod<?=$loop?>">
+    <? $this->auth()->setActiveAuthClass($class) ?>
+    <?=$this->auth()->getLoginDesc($method) ?>
+    <?=$this->auth()->getLogin($method) ?>
+    <? $this->auth()->setActiveAuthClass('ChoiceAuth') ?>
+  </div>
+<? endforeach ?>
+</div>
+<div class="clearer"></div>
+
