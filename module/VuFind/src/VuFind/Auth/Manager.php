@@ -492,6 +492,8 @@ class Manager implements ServiceLocatorAwareInterface
      * Setter
      *
      * @param string $method The auth class to proxy
+     *
+     * @return void
      */
     public function setActiveAuthClass($method) 
     {
