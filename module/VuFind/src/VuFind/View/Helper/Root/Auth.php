@@ -40,6 +40,14 @@ use Zend\View\Exception\RuntimeException;
 class Auth extends \Zend\View\Helper\AbstractHelper
 {
     /**
+     * Active auth class (used for auth methods that allow more than one type
+     * of authentication)
+     *
+     * @var string
+     */
+    protected $activeAuthClass;
+
+    /**
      * Authentication manager
      *
      * @var \VuFind\Auth\Manager
@@ -54,6 +62,7 @@ class Auth extends \Zend\View\Helper\AbstractHelper
     public function __construct(\VuFind\Auth\Manager $manager)
     {
         $this->manager = $manager;
+        $this->activeAuthClass = null;
     }
 
     /**
@@ -73,12 +82,11 @@ class Auth extends \Zend\View\Helper\AbstractHelper
         // Get the current auth module's class name, then start a loop
         // in case we need to use a parent class' name to find the appropriate
         // template.
-        $className = $this->getManager()->getAuthClass();
+        $className = $this->getActiveAuthClass();
         $topClassName = $className; // for error message
         while (true) {
             // Guess the template name for the current class:
-            $classParts = explode('\\', $className);
-            $template = 'Auth/' . array_pop($classParts) . '/' . $name;
+            $template = 'Auth/' . $this->getBriefClass($className) . '/' . $name;
             try {
                 // Try to render the template....
                 $html = $this->getView()->render($template);
@@ -141,6 +149,82 @@ class Auth extends \Zend\View\Helper\AbstractHelper
      */
     public function getLoginFields($context = array())
     {
+        return $this->renderTemplate('loginfields.phtml', $context);
+    }
+
+    /**
+     * Render the login template.
+     *
+     * @param array $context Context for rendering template
+     *
+     * @return string
+     */
+    public function getLogin($context = array())
+    {
         return $this->renderTemplate('login.phtml', $context);
+    }
+
+    /**
+     * Render the login description template.
+     *
+     * @param array $context Context for rendering template
+     *
+     * @return string
+     */
+    public function getLoginDesc($context = array())
+    {
+        return $this->renderTemplate('logindesc.phtml', $context);
+    }
+
+    /**
+     * Setter
+     *
+     * @param string $classname Class to use in rendering
+     *
+     * @return void
+     */
+    public function setActiveAuthClass($classname)
+    {
+        $this->activeAuthClass = $classname;
+        $this->getManager()->setActiveAuthClass($this->getBriefClass($classname));
+    }
+
+    /**
+     * Accessor for the full class name
+     *
+     * @return string
+     */
+    protected function getActiveAuthClass()
+    {
+        if ($this->activeAuthClass == null) {
+            return $this->getManager()->getAuthClass();
+        }
+        return $this->activeAuthClass;
+    }
+
+    /**
+     * Accessor for just the last part of the class name
+     *
+     * @return string
+     */
+    public function getActiveAuthMethod()
+    {
+        if ($this->activeAuthClass == null) {
+            return $this->getManager()->getAuthClass();
+        }
+        return $this->getBriefClass($this->activeAuthClass);
+    }
+
+    /**
+     * Helper to grab the end of the class name
+     *
+     * @param string $className Class name to abbreviate
+     *
+     * @return string
+     */
+    protected function getBriefClass($className)
+    {
+        $classParts = explode('\\', $className);
+        return array_pop($classParts);
     }
 }

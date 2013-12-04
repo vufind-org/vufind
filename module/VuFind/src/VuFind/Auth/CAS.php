@@ -178,8 +178,10 @@ class CAS extends AbstractBase
         } else {
             $casTarget = $target;
         }
+        $append = (strpos($casTarget, '?') !== false) ? '&' : '?';
         $sessionInitiator = $config->CAS->login
-            . '?service=' . urlencode($casTarget);
+            . '?service=' . urlencode($casTarget)
+            . urlencode($append . 'auth_method=CAS');
 
         return $sessionInitiator;
     }

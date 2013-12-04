@@ -1,6 +1,20 @@
-<label class="span-2" for="login_username"><?=$this->transEsc('Username')?>:</label>
-<input id="login_username" type="text" name="username" value="<?=$this->escapeHtml($this->request->get('username'))?>" size="15" class="mainFocus <?=$this->jqueryValidation(array('required'=>'This field is required'))?>"/>
-<br class="clear"/>
-<label class="span-2" for="login_password"><?=$this->transEsc('Password')?>:</label>
-<input id="login_password" type="password" name="password" size="15" class="<?=$this->jqueryValidation(array('required'=>'This field is required'))?>"/>
-<br class="clear"/>
+<? $account = $this->auth()->getManager(); ?>
+<? $sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home'))); ?>
+<? if (!$sessionInitiator): // display default login form if no login URL provided ?>
+  <form method="post" action="<?=$this->url('myresearch-home')?>" name="loginForm" id="loginForm">
+    <?=$this->auth()->getLoginFields()?>
+    <input type="hidden" name="auth_method" value="<?=$this->auth()->getActiveAuthMethod()?>">
+    <input class="push-2 button" type="submit" name="processLogin" value="<?=$this->transEsc('Login')?>"/>
+    <div class="clear"></div>
+  </form>
+  <?
+    // Set up form validation:
+    $initJs = '$(document).ready(function() { $(\'#loginForm\').validate(); });';
+    echo $this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $initJs, 'SET');
+  ?>
+  <? if ($account->supportsCreation()): ?>
+    <a class="new_account" href="<?=$this->url('myresearch-account')?>?auth_method=<?=$this->auth()->getActiveAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
+  <? endif; ?>
+<? else: ?>
+  <a href="<?=$this->escapeHtml($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
+<? endif; ?>
