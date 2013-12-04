@@ -22,7 +22,8 @@ li a.hidden {display:none}
 .sidebar .checkbox { margin-left:10px }
 .sidebar .nav-list li:not(.divider) { min-height:26px }
 .sidebar .nav-list li span.main { display:inline-block;padding:3px 0 }
-.sidebar .nav-list li input[type="checkbox"] { float:left;margin:4px 3px 0 0}
+.sidebar .nav-list li input[type="checkbox"] { float:left;margin:4px 3px 0 0 }
+.sidebar .nav-list li.applied input[type="checkbox"] { margin-top:7px }
 .sidebar .nav-list li .icon-ok { margin-top:3px }
 .sidebar .nav-list li .icon-remove { margin-left:3px }
 .sidebar .small { color:#333;margin-top:9px;line-height:85% }

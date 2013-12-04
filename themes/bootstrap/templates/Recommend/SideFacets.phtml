@@ -109,7 +109,11 @@ JS;
         <? endif; ?>
         <? if ($thisFacet['isApplied']): ?>
           <li class="<? if ($i>5): ?><?=$moreClass ?><?endif ?><? if ($thisFacet['operator'] == 'OR'): ?> facetOR applied" href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?><? endif ?>">
-            <i class="icon-ok pull-right"></i>
+            <? if($thisFacet['operator'] == 'OR'): ?>
+              <i class="icon-check"></i>
+            <? else: ?>
+              <i class="icon-ok pull-right"></i>
+            <? endif; ?>
             <span class="main"><?=$this->escapeHtml($thisFacet['displayText'])?></span>
           </li>
         <? else: ?>
@@ -122,6 +126,9 @@ JS;
               <? endif; ?>
             </span>
             <a class="main" href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>">
+              <? if($thisFacet['operator'] == 'OR'): ?>
+                <i class="icon-check-empty"></i>
+              <? endif; ?>
               <?=$this->escapeHtml($thisFacet['displayText'])?>
             </a>
           </li>
