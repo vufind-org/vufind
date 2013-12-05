@@ -152,7 +152,6 @@ class Search extends Gateway
         $newSearch, $sessionId, $searchHistory = array()
     ) {
         // Duplicate elimination
-        $dupSaved  = false;
         foreach ($searchHistory as $oldSearch) {
             // Deminify the old search (note that if we have a resource, we need
             // to grab the contents -- this is necessary for PostgreSQL compatibility

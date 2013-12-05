@@ -26,8 +26,6 @@
  * @link     https://github.com/dmj/vf2-proxy
  */
 namespace VuDL;
-use Zend\ModuleManager\ModuleManager,
-    Zend\Mvc\MvcEvent;
 
 /**
  * VuDL interface module.
@@ -64,27 +62,5 @@ class Module
                 ),
             ),
         );
-    }
-
-    /**
-     * Initialize the module
-     *
-     * @param ModuleManager $m Module manager
-     *
-     * @return void
-     */
-    public function init(ModuleManager $m)
-    {
-    }
-
-    /**
-     * Bootstrap the module
-     *
-     * @param MvcEvent $e Event
-     *
-     * @return void
-     */
-    public function onBootstrap(MvcEvent $e)
-    {
     }
 }

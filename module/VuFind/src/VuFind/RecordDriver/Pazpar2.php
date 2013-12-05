@@ -152,22 +152,21 @@ class Pazpar2 extends SolrDefault
      */
     public function getProviders()
     {
-        if ($this->pz2fields['location']) {
-            if (isset($this->pz2fields['location']['_attr_'])) {
-                return array($this->pz2fields['location']['_attr_']['name']);
-            } else {
-                $providers = array();
-                foreach ($this->pz2fields['location'] as $i=>$location) {
-                    if ( isset($location['_attr_']['name'])
-                        && !in_array($location['_attr_']['name'], $providers)
-                    ) {
-                        $providers[] = $location['_attr_']['name'];
-                    }
-                }
-                return $providers;
+        if (!$this->pz2fields['location']) {
+            return array();
+        }
+        if (isset($this->pz2fields['location']['_attr_'])) {
+            return array($this->pz2fields['location']['_attr_']['name']);
+        }
+        $providers = array();
+        foreach ($this->pz2fields['location'] as $location) {
+            if (isset($location['_attr_']['name'])
+                && !in_array($location['_attr_']['name'], $providers)
+            ) {
+                $providers[] = $location['_attr_']['name'];
             }
         }
-        return array();
+        return $providers;
     }
 
     /**

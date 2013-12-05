@@ -292,7 +292,7 @@ class DbUpgrade extends AbstractPlugin
     {
         $tables = $this->getAllTables();
         $missing = array();
-        foreach ($this->dbCommands as $table => $sql) {
+        foreach (array_keys($this->dbCommands) as $table) {
             if (!in_array(trim(strtolower($table)), $tables)) {
                 $missing[] = $table;
             }

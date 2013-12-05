@@ -6,7 +6,7 @@
     $lastLimit = $this->options->getLastLimit();
     $defaultLimit = empty($lastLimit) ? $this->options->getDefaultLimit() : $lastLimit;
 ?>
-<? if (!empty($limitList)): ?>
+<? if (count($limitList) > 1): ?>
   <fieldset class="span4">
     <legend><?=$this->transEsc('Results per page')?></legend>
     <select id="limit" name="limit">

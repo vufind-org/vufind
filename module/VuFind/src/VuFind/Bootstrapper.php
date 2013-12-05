@@ -128,7 +128,7 @@ class Bootstrapper
         );
         foreach ($namespaces as $ns) {
             $serviceName = 'VuFind\\' . str_replace('\\', '', $ns) . 'PluginManager';
-            $factory = function ($sm) use ($config, $ns) {
+            $factory = function () use ($config, $ns) {
                 $className = 'VuFind\\' . $ns . '\PluginManager';
                 $configKey = strtolower(str_replace('\\', '_', $ns));
                 return new $className(
@@ -310,7 +310,7 @@ class Bootstrapper
         $validLanguages = array_keys($this->config->Languages->toArray());
 
         // return first valid language
-        foreach ($langs as $language => $rating) {
+        foreach (array_keys($langs) as $language) {
             // Make sure language code is valid
             $language = strtolower($language);
             if (in_array($language, $validLanguages)) {

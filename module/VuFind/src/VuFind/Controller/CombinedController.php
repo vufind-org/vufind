@@ -138,6 +138,12 @@ class CombinedController extends AbstractSearch
                 = (!isset($settings['ajax']) || !$settings['ajax'])
                 ? $this->forwardTo($controller, $action)
                 : $this->createViewModel(array('results' => $results));
+
+            // Special case: include appropriate "powered by" message:
+            if (strtolower($current) == 'summon') {
+                $this->layout()->poweredBy = 'Powered by Summon™ from Serials '
+                    . 'Solutions, a division of ProQuest.';
+            }
         }
 
         // Build view model:

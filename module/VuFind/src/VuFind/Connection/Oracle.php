@@ -125,6 +125,38 @@ class Oracle
     }
 
     /**
+     * Convert data type name into constant
+     *
+     * @param string $data_type Data type (string, integer, float, long, date,
+     * row_id, clob, or blob)
+     *
+     * @return int
+     */
+    protected function getDataTypeConstant($data_type)
+    {
+        switch ($data_type) {
+        case 'integer':
+            return SQLT_INT;
+        case 'float':
+            return SQLT_FLT;
+        case 'long':
+            return SQLT_LNG;
+        case 'row_id':
+            return SQLT_RDD;
+        case 'clob':
+            return SQLT_CLOB;
+        case 'blob':
+            return SQLT_BLOB;
+        case 'string':
+        case 'date':
+        default:
+            // Date and string are redundant since default is varchar,
+            //  but they're here for clarity.
+            return SQLT_CHR;
+        }
+    }
+
+    /**
      * Wrapper around oci_bind_by_name.
      *
      * @param resource $parsed       Result returned by prepare() method.
@@ -143,40 +175,9 @@ class Oracle
     public function bindParam(
         $parsed, $place_holder, $data, $data_type = 'string', $length = -1
     ) {
-        switch ($data_type) {
-        case 'string':
-            $oracle_data_type = SQLT_CHR;
-            break;
-        case 'integer':
-            $oracle_data_type = SQLT_INT;
-            break;
-        case 'float':
-            $oracle_data_type = SQLT_FLT;
-            break;
-        case 'long':
-            $oracle_data_type = SQLT_LNG;
-            break;
-        // Date is redundant since default is varchar,
-        //  but it's here for clarity.
-        case 'date':
-            $oracle_data_type = SQLT_CHR;
-            break;
-        case 'row_id':
-            $oracle_data_type = SQLT_RDD;
-            break;
-        case 'clob':
-            $oracle_data_type = SQLT_CLOB;
-            break;
-        case 'blob':
-            $oracle_data_type = SQLT_BLOB;
-            break;
-        default:
-            $oracle_data_type = SQLT_CHR;
-            break;
-        }
-
         if (@oci_bind_by_name(
-            $parsed, $place_holder, $data, $length, $oracle_data_type
+            $parsed, $place_holder, $data, $length,
+            $this->getDataTypeConstant($data_type)
         )) {
             return true;
         } else {
@@ -207,40 +208,9 @@ class Oracle
     public function returnParam(
         $parsed, $place_holder, &$data, $data_type = 'string', $length = -1
     ) {
-        switch ($data_type) {
-        case 'string':
-            $oracle_data_type = SQLT_CHR;
-            break;
-        case 'integer':
-            $oracle_data_type = SQLT_INT;
-            break;
-        case 'float':
-            $oracle_data_type = SQLT_FLT;
-            break;
-        case 'long':
-            $oracle_data_type = SQLT_LNG;
-            break;
-        // Date is redundant since default is varchar,
-        //  but it's here for clarity.
-        case 'date':
-            $oracle_data_type = SQLT_CHR;
-            break;
-        case 'row_id':
-            $oracle_data_type = SQLT_RDD;
-            break;
-        case 'clob':
-            $oracle_data_type = SQLT_CLOB;
-            break;
-        case 'blob':
-            $oracle_data_type = SQLT_BLOB;
-            break;
-        default:
-            $oracle_data_type = SQLT_CHR;
-            break;
-        }
-
         if (@oci_bind_by_name(
-            $parsed, $place_holder, $data, $length, $oracle_data_type
+            $parsed, $place_holder, $data, $length,
+            $this->getDataTypeConstant($data_type)
         )) {
             return true;
         } else {

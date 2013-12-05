@@ -26,8 +26,6 @@
  * @link     https://github.com/dmj/vf2-proxy
  */
 namespace VuFindConsole;
-use VuFindConsole\Mvc\Router\ConsoleRouter,
-    Zend\ModuleManager\ModuleManager, Zend\Mvc\MvcEvent;
 
 /**
  * ZF2 module definition for the VuFind console module
@@ -64,27 +62,5 @@ class Module
                 ),
             ),
         );
-    }
-
-    /**
-     * Initialize the module
-     *
-     * @param ModuleManager $m Module manager
-     *
-     * @return void
-     */
-    public function init(ModuleManager $m)
-    {
-    }
-
-    /**
-     * Bootstrap the module
-     *
-     * @param MvcEvent $e Event
-     *
-     * @return void
-     */
-    public function onBootstrap(MvcEvent $e)
-    {
     }
 }

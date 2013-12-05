@@ -75,7 +75,8 @@ class VudlController extends AbstractVuDL
         if (empty($record)) {
             throw new RecordMissingException('Record not found.');
         }
-        return $record;
+        $details = $this->formatDetails($record);
+        return $details;
     }
 
     /**
@@ -89,10 +90,23 @@ class VudlController extends AbstractVuDL
     protected function getSolrDetails($id)
     {
         // Blow up now if we can't retrieve the record:
-        if (!($record = $this->getRecordLoader()->load($id)->getRawData())) {
+        if ($record = $this->getRecordLoader()->load($id)->getRawData()) {
+            return $record;
+        } else {
             throw new RecordMissingException('Solr details unavailable');
         }
-
+    }
+    
+    /**
+     * Organize the details based on config
+     *
+     * @param string $record associative array (fieldname => value)
+     *
+     * @return array
+     * @throws \Exception
+     */
+    protected function formatDetails($record)
+    {
         // Get config for which details we want
         $fields = $combinedFields = array(); // Save to combine later
         $detailsList = $this->getDetailsList();
@@ -144,7 +158,7 @@ class VudlController extends AbstractVuDL
     protected function getRoot($id)
     {
         $parents = $this->getFedora()->getParentList($id);
-        foreach ($parents[0] as $i=>$parent) {
+        foreach (array_keys($parents[0]) as $i) {
             if (in_array('ResourceCollection', $this->getFedora()->getClasses($i))) {
                 return $i;
             }
@@ -383,10 +397,10 @@ class VudlController extends AbstractVuDL
 
         try {
             $driver = $this->getRecordLoader()->load($root, 'VuFind');
-            if ($driver->isProtected()) {
-                die('Access Denied.');
-            }
         } catch(\Exception $e) {
+        }
+        if (isset($driver) && $driver->isProtected()) {
+            return $this->forwardTo('VuDL', 'denied');
         }
 
         // File information / description
@@ -533,6 +547,16 @@ class VudlController extends AbstractVuDL
     {
         $view = $this->createViewModel();
         return $view;
+    }
+
+    /**
+     * Access denied screen.
+     *
+     * @return mixed
+     */
+    protected function deniedAction()
+    {
+        return $this->createViewModel();
     }
 
     /**

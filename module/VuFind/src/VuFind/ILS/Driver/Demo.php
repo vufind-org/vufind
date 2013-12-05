@@ -273,7 +273,6 @@ class Demo extends AbstractBase
     public function setStatus($id, $holding = array(), $append = true)
     {
         $id = (string)$id;
-        $status = ($holding['status']) ? $holding['status'] : $this->getFakeStatus();
         $i = ($this->session->statuses) ? count($this->session->statuses)+1 : 1;
         $holding = array_merge($this->getRandomHolding($id, $i), $holding);
 
@@ -371,7 +370,7 @@ class Demo extends AbstractBase
         $status = $this->getStatus($id);
 
         // Add notes and summary:
-        foreach ($status as $i => $current) {
+        foreach (array_keys($status) as $i) {
             $itemNum = $i + 1;
             $noteCount = rand(1, 3);
             $status[$i]['notes'] = array();
@@ -401,7 +400,12 @@ class Demo extends AbstractBase
      */
     public function getPurchaseHistory($id)
     {
-        return array();
+        $issues = rand(0, 3);
+        $retval = array();
+        for ($i = 0; $i < $issues; $i++) {
+            $retval[] = array('issue' => 'issue ' . ($i + 1));
+        }
+        return $retval;
     }
 
     /**
@@ -463,6 +467,7 @@ class Demo extends AbstractBase
      * @param array $patron The patron array from patronLogin
      *
      * @return mixed        Array of the patron's fines on success.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyFines($patron)
     {
@@ -516,6 +521,7 @@ class Demo extends AbstractBase
      * @param array $patron The patron array from patronLogin
      *
      * @return mixed        Array of the patron's holds on success.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyHolds($patron)
     {
@@ -565,6 +571,7 @@ class Demo extends AbstractBase
      * @param array $patron The patron array from patronLogin
      *
      * @return mixed        Array of the patron's transactions on success.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyTransactions($patron)
     {
@@ -635,6 +642,7 @@ class Demo extends AbstractBase
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
@@ -667,6 +675,7 @@ class Demo extends AbstractBase
      * or may be ignored.
      *
      * @return string A location ID
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
@@ -738,6 +747,7 @@ class Demo extends AbstractBase
      * whatever that may mean.
      *
      * @return array       Associative array with 'count' and 'results' keys
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
@@ -773,6 +783,7 @@ class Demo extends AbstractBase
      * @param string $dept   ID from getDepartments (empty string to match all)
      *
      * @return mixed An array of associative arrays representing reserve items.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function findReserves($course, $inst, $dept)
     {

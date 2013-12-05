@@ -520,7 +520,7 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
                 = $key.$this->delimiters['login'].$login['cat_username'];
             return $login;
         }
-        foreach ($this->drivers as $key => $driver) {
+        foreach (array_keys($this->drivers) as $key) {
             $login =  $this->getDriver($key)->patronLogin($username, $password);
             if ($login) {
                 $login['cat_username']
@@ -581,7 +581,7 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
         }
 
         // Lastly, we see if any of the drivers we have support the function
-        foreach ($this->drivers as $key => $driver) {
+        foreach (array_keys($this->drivers) as $key) {
             $driverInst = $this->getUninitializedDriver($key);
             if (is_callable(array($driverInst, $method))) {
                   return true;
@@ -666,7 +666,7 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
         $returnArray = array();
         // Here we loop through evry instance we have access to and change what
         // we do based off of the configuration behavior.
-        foreach ($this->drivers as $key => $driver) {
+        foreach (array_keys($this->drivers) as $key) {
             $funcReturn = $this->runIfPossible($key, $methodName, $params, $called);
             if ($called) {
                 if ($behavior == "use_first" || !is_array($funcReturn)) {

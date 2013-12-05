@@ -203,7 +203,6 @@ class UrlQueryHelper
         $shards = $this->params->getSelectedShards();
         if (!empty($shards)) {
             sort($shards);
-            $key = implode(':::', $shards);
             $defaultShards = $this->options->getDefaultSelectedShards();
             sort($defaultShards);
             if (implode(':::', $shards) != implode(':::', $defaultShards)) {

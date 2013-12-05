@@ -190,6 +190,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * @throws ILSException
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickUpLocations($patron, $holdDetails = null)
     {
@@ -267,6 +268,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * or may be ignored.
      *
      * @return string       The default pickup location for the patron.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
@@ -650,7 +652,6 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
             $count = 0;
             // Go through the submited bib ids and look for a match
             foreach ($data as $values) {
-                $bibID = $values['bib_id'];
                 $itemID = $values['item_id'];
                 // If the bib id is matched, the cancel must have failed
                 if (in_array($values['bib_id'], $keys)) {
@@ -670,7 +671,8 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
             if ($response->error->message) {
                 $message = (string)$response->error->message;
             }
-            foreach ($items as $itemID) {
+            foreach ($data as $values) {
+                $itemID = $values['item_id'];
                 $responseItems[$itemID] = array(
                     'success' => false,
                     'status' => "hold_cancel_fail",
@@ -697,7 +699,6 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     public function placeHold($holdDetails)
     {
-        $userId           = $holdDetails['patron']['id'];
         $userBarcode      = $holdDetails['patron']['id'];
         $userPassword     = $holdDetails['patron']['cat_password'];
         $bibId            = $holdDetails['id'];
@@ -838,9 +839,6 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     public function renewMyItems($renewDetails)
     {
         $renewals = $renewDetails['details'];
-        $patron = $renewDetails['patron'];
-        $renewals_count = count($renewals);
-        $userId = $holdDetails['patron']['id'];
         $userBarcode = $renewDetails['patron']['id'];
         $userPassword = $renewDetails['patron']['cat_password'];
 

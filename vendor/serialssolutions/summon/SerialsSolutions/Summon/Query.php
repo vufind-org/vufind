@@ -124,6 +124,24 @@ class SerialsSolutions_Summon_Query
     protected $language = 'en';
 
     /**
+     * Query expansion setting
+     * @var bool
+     */
+    protected $expand = false;
+
+    /**
+     * IDs to fetch in place of a regular query
+     * @var array
+     */
+    protected $idsToFetch = array();
+
+    /**
+     * Maximum topics to explore
+     * @var int
+     */
+    protected $maxTopics = 1;
+
+    /**
      * Constructor
      *
      * Sets up the Summon API Client
@@ -168,11 +186,17 @@ class SerialsSolutions_Summon_Query
             's.dym' => $this->didYouMean ? 'true' : 'false',
             's.l' => $this->language,
         );
+        if (!empty($this->idsToFetch)) {
+            $options['s.fids'] = implode(',', (array)$this->idsToFetch);
+        }
         if (!empty($this->facets)) {
             $options['s.ff'] = $this->facets;
         }
         if (!empty($this->filters)) {
             $options['s.fvf'] = $this->filters;
+        }
+        if ($this->maxTopics !== false) {
+            $options['s.rec.topic.max'] = $this->maxTopics;
         }
         if (!empty($this->groupFilters)) {
             $options['s.fvgf'] = $this->groupFilters;
@@ -182,6 +206,9 @@ class SerialsSolutions_Summon_Query
         }
         if (!empty($this->sort)) {
             $options['s.sort'] = $this->sort;
+        }
+        if ($this->expand) {
+            $options['s.exp'] = 'true';
         }
         if ($this->highlight) {
             $options['s.hl'] = 'true';

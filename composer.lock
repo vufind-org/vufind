@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "912400ee83b7a6b04d6e1ccc398e5ea4",
+    "hash": "6587f02e6b4f7504432193a81ba61931",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -186,10 +186,10 @@
         },
         {
             "name": "pear-pear.php.net/File_MARC",
-            "version": "0.8.0",
+            "version": "1.0.1",
             "dist": {
                 "type": "file",
-                "url": "http://pear.php.net/get/File_MARC-0.8.0.tgz",
+                "url": "http://pear.php.net/get/File_MARC-1.0.1.tgz",
                 "reference": null,
                 "shasum": null
             },
@@ -197,7 +197,7 @@
                 "php": ">=5.3.0.0"
             },
             "replace": {
-                "pear-pear/file_marc": "== 0.8.0.0"
+                "pear-pear/file_marc": "== 1.0.1.0"
             },
             "type": "pear-library",
             "autoload": {
@@ -358,12 +358,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/summon/Summon.php.git",
-                "reference": "2acfaf80bdd6414dec17478418d7c213e220575d"
+                "reference": "ce26752adfded96aff2f4422991078eedfc740a5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/summon/Summon.php/zipball/2acfaf80bdd6414dec17478418d7c213e220575d",
-                "reference": "2acfaf80bdd6414dec17478418d7c213e220575d",
+                "url": "https://api.github.com/repos/summon/Summon.php/zipball/ce26752adfded96aff2f4422991078eedfc740a5",
+                "reference": "ce26752adfded96aff2f4422991078eedfc740a5",
                 "shasum": ""
             },
             "type": "library",
@@ -386,11 +386,11 @@
                 "source": "https://github.com/summon/Summon.php/tree/master",
                 "issues": "https://github.com/summon/Summon.php/issues"
             },
-            "time": "2013-09-26 19:09:03"
+            "time": "2013-11-13 19:07:09"
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.3.5",
+            "version": "v2.3.6",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
@@ -437,17 +437,17 @@
         },
         {
             "name": "zendframework/zendframework",
-            "version": "2.2.4",
+            "version": "2.2.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zf2.git",
-                "reference": "5b03d868755c181fc9b5dc56c1f8c26e73ca0bed"
+                "reference": "4a7cf6a4cf791244e14aa0ca49d1f06916b63202"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-5b03d868755c181fc9b5dc56c1f8c26e73ca0bed-zip-8b1552.zip",
-                "reference": "2.2.4",
-                "shasum": "f12b12d23c937b8cbd246c6fa56c07fb1df34cb0"
+                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-4a7cf6a4cf791244e14aa0ca49d1f06916b63202-zip-2661de.zip",
+                "reference": "2.2.5",
+                "shasum": "3c699626517e16aa7b3d9a0c811fe41a2586179d"
             },
             "require": {
                 "php": ">=5.3.3"
@@ -507,6 +507,7 @@
             },
             "require-dev": {
                 "doctrine/annotations": ">=1.0",
+                "fabpot/php-cs-fixer": "*@dev",
                 "ircmaxell/random-lib": "dev-master",
                 "ircmaxell/security-lib": "dev-master",
                 "ocramius/proxy-manager": "0.4.*",
@@ -547,10 +548,10 @@
                 "zf2"
             ],
             "support": {
-                "source": "https://github.com/zendframework/zf2/tree/release-2.2.4",
+                "source": "https://github.com/zendframework/zf2/tree/release-2.2.5",
                 "issues": "https://github.com/zendframework/zf2/issues"
             },
-            "time": "2013-08-26 15:09:04"
+            "time": "2013-10-31 15:48:16"
         },
         {
             "name": "zendframework/zendrest",

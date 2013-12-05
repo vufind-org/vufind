@@ -210,7 +210,7 @@ class ShibbolethTest extends \VuFindTest\Unit\DbTestCase
     public function testSessionInitiator()
     {
         $this->assertEquals(
-            'http://myserver?target=http%3A%2F%2Ftarget',
+            'http://myserver?target=http%3A%2F%2Ftarget%3Fauth_method%3DShibboleth',
             $this->getAuthObject()->getSessionInitiator('http://target')
         );
     }

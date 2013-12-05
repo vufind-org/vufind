@@ -107,6 +107,7 @@ class ConsoleRouter implements RouteStackInterface
      * @param array $options Route options
      *
      * @return mixed
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function assemble(array $params = array(), array $options = array())
     {
@@ -121,6 +122,7 @@ class ConsoleRouter implements RouteStackInterface
      * @param integer $priority Priority
      *
      * @return RouteStackInterface
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function addRoute($name, $route, $priority = null)
     {
@@ -133,6 +135,7 @@ class ConsoleRouter implements RouteStackInterface
      * @param array|\Traversable $routes Routes to add
      *
      * @return RouteStackInterface
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function addRoutes($routes)
     {
@@ -145,6 +148,7 @@ class ConsoleRouter implements RouteStackInterface
      * @param string $name Route name
      *
      * @return RouteStackInterface
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function removeRoute($name)
     {
@@ -157,6 +161,7 @@ class ConsoleRouter implements RouteStackInterface
      * @param array|\Traversable $routes Routes to set
      *
      * @return RouteStackInterface
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function setRoutes($routes)
     {

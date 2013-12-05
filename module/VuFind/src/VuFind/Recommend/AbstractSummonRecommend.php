@@ -130,10 +130,23 @@ abstract class AbstractSummonRecommend implements RecommendInterface
         // parameter for search terms.
         if ($results->getParams()->getSearchClassId() != 'Summon') {
             $results = $this->resultsManager->get('Summon');
-            $results->getParams()->setBasicSearch($this->lookfor, 'AllFields');
+            $this->configureSummonResults($results);
             $results->performAndProcessSearch();
         }
         $this->results = $results;
+    }
+
+    /**
+     * If we have to create a new Summon results object, this method is used to
+     * configure it with appropriate settings.
+     *
+     * @param \VuFind\Search\Summon\Results $results Search results object
+     *
+     * @return void
+     */
+    protected function configureSummonResults(\VuFind\Search\Summon\Results $results)
+    {
+        $results->getParams()->setBasicSearch($this->lookfor, 'AllFields');
     }
 
     /**

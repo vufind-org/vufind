@@ -57,5 +57,5 @@
   <? endforeach; ?>
 <? else: ?>
   <?=$this->render('search/list-' . $params->getView() . '.phtml', array('results' => $results, 'params' => $params))?>
-  <p><a href="<?=$moreUrl?>"><?=$this->transEsc($currentSearch['more_link'])?></a></p>
+  <p class="pad text-right"><a href="<?=$moreUrl?>"><?=$this->transEsc($currentSearch['more_link'])?> <i class="icon-long-arrow-right"></i></a></p>
 <? endif; ?>

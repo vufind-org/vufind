@@ -237,8 +237,8 @@ class File_MARC_Data_Field extends File_MARC_Field
             break;
 
         default: 
-             $errorMessage = File_MARC_Exception::formatError(File_MARC_Exception::$messages[File_MARC_Exception::ERROR_INSERTSUBFIELD_MODE], array("mode" => $mode));
-             throw new File_MARC_Exception($errorMessage, File_MARC_Exception::ERROR_INSERTSUBFIELD_MODE);
+            $errorMessage = File_MARC_Exception::formatError(File_MARC_Exception::$messages[File_MARC_Exception::ERROR_INSERTSUBFIELD_MODE], array("mode" => $mode));
+            throw new File_MARC_Exception($errorMessage, File_MARC_Exception::ERROR_INSERTSUBFIELD_MODE);
             return false;
         }
         return $new_field;
@@ -338,8 +338,8 @@ class File_MARC_Data_Field extends File_MARC_Field
             break;
 
         default:
-             $errorMessage = File_MARC_Exception::formatError(File_MARC_Exception::$messages[File_MARC_Exception::ERROR_INVALID_INDICATOR_REQUEST], array("indicator" => $ind));
-             throw new File_MARC_Exception($errorMessage, File_MARC_Exception::ERROR_INVALID_INDICATOR_REQUEST);
+            $errorMessage = File_MARC_Exception::formatError(File_MARC_Exception::$messages[File_MARC_Exception::ERROR_INVALID_INDICATOR_REQUEST], array("indicator" => $ind));
+            throw new File_MARC_Exception($errorMessage, File_MARC_Exception::ERROR_INVALID_INDICATOR_REQUEST);
             return false;
         }
 

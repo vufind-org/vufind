@@ -7,7 +7,7 @@
     . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '<span class="divider">&gt;</span></li><li class="active">' . $this->transEsc('Save') . '</li>';
 ?>
 <p class="lead"><?=$this->transEsc("add_favorite_prefix") ?> <?=$this->escapeHtml($this->driver->getBreadcrumb())?> <?=$this->transEsc("add_favorite_suffix") ?></p>
-<form id="edit-save-form" class="form-horizontal" method="post" action="<?=$this->url('record-save', array('id'=>$this->driver->getUniqueId())) ?>" name="saveRecord">
+<form id="edit-save-form" class="form-horizontal" method="post" action="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" name="saveRecord">
   <input type="hidden" name="submit" value="1" />
   <input type="hidden" name="id" value="<?=$this->escapeHtml($this->driver->getUniqueId()) ?>" />
   <input type="hidden" name="source" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>" />
@@ -41,22 +41,24 @@
     </div>
   </div>
 
-  <div class="control-group">
-    <label class="control-label" for="add_mytags"><?=$this->transEsc('Add Tags') ?></label>
-    <div class="controls">
-      <input class="input-xlarge" id="add_mytags" type="text" name="mytags" value=""/>
-      <span class="help-block"><?=$this->transEsc("add_tag_note") ?></span>
+  <? if ($showLists): ?>
+    <div class="control-group">
+      <label class="control-label" for="add_mytags"><?=$this->transEsc('Add Tags') ?></label>
+      <div class="controls">
+        <input class="input-xlarge" id="add_mytags" type="text" name="mytags" value=""/>
+        <span class="help-block"><?=$this->transEsc("add_tag_note") ?></span>
+      </div>
     </div>
-  </div>
-  <div class="control-group">
-    <label class="control-label" for="add_notes"><?=$this->transEsc('Add a Note') ?></label>
-    <div class="controls">
-      <textarea class="input-xlarge" id="add_notes" name="notes" rows="3"></textarea>
+    <div class="control-group">
+      <label class="control-label" for="add_notes"><?=$this->transEsc('Add a Note') ?></label>
+      <div class="controls">
+        <textarea class="input-xlarge" id="add_notes" name="notes" rows="3"></textarea>
+      </div>
     </div>
-  </div>
-  <div class="control-group">
-    <div class="controls">
-      <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Save to List') ?>"/>
+    <div class="control-group">
+      <div class="controls">
+        <input class="btn btn-primary" type="submit" value="<?=$this->transEsc('Save to List') ?>"/>
+      </div>
     </div>
-  </div>
+  <? endif; ?>
 </form>

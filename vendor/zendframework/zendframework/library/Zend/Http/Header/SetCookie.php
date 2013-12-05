@@ -77,6 +77,13 @@ class SetCookie implements MultipleHeaderInterface
     protected $secure = null;
 
     /**
+     * If the value need to be quoted or not
+     *
+     * @var bool
+     */
+    protected $quoteFieldValue = false;
+
+    /**
      * @var bool|null
      */
     protected $httponly = null;
@@ -100,8 +107,9 @@ class SetCookie implements MultipleHeaderInterface
                 $keyValuePairs = preg_split('#;\s*#', $headerLine);
 
                 foreach ($keyValuePairs as $keyValue) {
-                    if (strpos($keyValue, '=')) {
-                        list($headerKey, $headerValue) = preg_split('#=\s*#', $keyValue, 2);
+                    if (preg_match('#^(?<headerKey>[^=]+)=\s*("?)(?<headerValue>[^"]+)\2#',$keyValue,$matches)) {
+                        $headerKey  = $matches['headerKey'];
+                        $headerValue= $matches['headerValue'];
                     } else {
                         $headerKey = $keyValue;
                         $headerValue = null;
@@ -132,8 +140,7 @@ class SetCookie implements MultipleHeaderInterface
             };
         }
 
-        list($name, $value) = explode(':', $headerLine, 2);
-        $value = ltrim($value);
+        list($name, $value) = GenericHeader::splitHeaderLine($headerLine);
 
         // some sites return set-cookie::value, this is to get rid of the second :
         $name = (strtolower($name) =='set-cookie:') ? 'set-cookie' : $name;
@@ -205,12 +212,11 @@ class SetCookie implements MultipleHeaderInterface
             return '';
         }
 
-        $value = $this->getValue();
-        if (strpos($value, '"')!==false) {
-            $value = '"'.urlencode(str_replace('"', '', $value)).'"';
-        } else {
-            $value = urlencode($value);
+        $value = urlencode($this->getValue());
+        if ( $this->hasQuoteFieldValue() ) {
+            $value = '"'. $value . '"';
         }
+
         $fieldValue = $this->getName() . '=' . $value;
 
         $version = $this->getVersion();
@@ -428,6 +434,16 @@ class SetCookie implements MultipleHeaderInterface
     }
 
     /**
+     * @param  bool $quotedValue
+     * @return SetCookie
+     */
+    public function setQuoteFieldValue($quotedValue)
+    {
+        $this->quoteFieldValue = (bool) $quotedValue;
+        return $this;
+    }
+
+    /**
      * @return bool
      */
     public function isSecure()
@@ -482,6 +498,16 @@ class SetCookie implements MultipleHeaderInterface
     public function isSessionCookie()
     {
         return ($this->expires === null);
+    }
+
+    /**
+     * Check whether the cookie is a session cookie (has no expiry time set)
+     *
+     * @return bool
+     */
+    public function hasQuoteFieldValue()
+    {
+        return $this->quoteFieldValue;
     }
 
     public function isValidForRequest($requestDomain, $path, $isSecure = false)
@@ -604,7 +630,7 @@ class SetCookie implements MultipleHeaderInterface
                     'The SetCookie multiple header implementation can only accept an array of SetCookie headers'
                 );
             }
-            $headerLine .= ', ' . $header->getFieldValue();
+            $headerLine .= "\n" . $header->toString();
         }
         return $headerLine;
     }

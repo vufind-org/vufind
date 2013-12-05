@@ -136,7 +136,7 @@ class Params extends \VuFind\Search\Base\Params
         $facetSet = array();
         if (!empty($this->facetConfig)) {
             $facetSet['limit'] = $this->facetLimit;
-            foreach ($this->facetConfig as $facetField => $facetName) {
+            foreach (array_keys($this->facetConfig) as $facetField) {
                 if ($this->getFacetOperator($facetField) == 'OR') {
                     $facetField = '{!ex=' . $facetField . '_filter}' . $facetField;
                 }
@@ -250,9 +250,9 @@ class Params extends \VuFind\Search\Base\Params
             $orFields = array();
         }
         foreach ($config->$facetList as $key => $value) {
-            $this->addFacet(
-                $key, $value, $orFields[0] == '*' || in_array($key, $orFields)
-            );
+            $useOr = (isset($orFields[0]) && $orFields[0] == '*')
+                || in_array($key, $orFields);
+            $this->addFacet($key, $value, $useOr);
         }
         if (isset($config->$facetSettings->facet_limit)
             && is_numeric($config->$facetSettings->facet_limit)
@@ -491,5 +491,29 @@ class Params extends \VuFind\Search\Base\Params
         }
 
         return $backendParams;
+    }
+
+    /**
+     * Format a single filter for use in getFilterList().
+     *
+     * @param string $field     Field name
+     * @param string $value     Field value
+     * @param string $operator  Operator (AND/OR/NOT)
+     * @param bool   $translate Should we translate the label?
+     *
+     * @return array
+     */
+    protected function formatFilterListEntry($field, $value, $operator, $translate)
+    {
+        $filter = parent::formatFilterListEntry(
+            $field, $value, $operator, $translate
+        );
+
+        // Convert range queries to a language-non-specific format:
+        if (preg_match('/^\[(.*) TO (.*)\]$/', $value, $matches)) {
+            $filter['displayText'] = $matches[1] . '-' . $matches[2];
+        }
+
+        return $filter;
     }
 }

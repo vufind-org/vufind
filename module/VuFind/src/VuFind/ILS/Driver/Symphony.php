@@ -44,7 +44,18 @@ use SoapClient, SoapFault, SoapHeader, VuFind\Exception\ILS as ILSException,
 
 class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
 {
+    /**
+     * Cache for policy information
+     *
+     * @var object
+     */
     protected $policyCache = false;
+
+    /**
+     * Policy information
+     *
+     * @var array
+     */
     protected $policies;
 
     /**
@@ -375,6 +386,8 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
                 $callnumber = $result['call number'];
                 $location   = $library . ' - ' . ($available && !empty($curr_loc)
                     ? $curr_loc : $home_loc);
+
+                $material = $this->translatePolicyID('ITYP', $result['item type']);
 
                 $items[$result['id']][] = array(
                     'id' => $result['id'],
@@ -756,7 +769,6 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
                     'reserve' => 'N',
                     'number' => $i,
                     'barcode' => true,
-                    'unicorn_boundwith' => $ckey,
                     'offsite' => $library_id == 'OFFSITE',
                 );
             }
@@ -1277,7 +1289,7 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
             try {
                 $options = array('holdKey' => $holdKey);
 
-                $hold = $this->makeRequest(
+                $this->makeRequest(
                     'patron',
                     'cancelMyHold',
                     $options,
@@ -1353,7 +1365,6 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
      */
     public function renewMyItems($renewDetails)
     {
-        $blocks  = array();
         $details = array();
         $patron  = $renewDetails['patron'];
 
@@ -1429,7 +1440,7 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
                 $options['comment'] = $holdDetails['comment'];
             }
 
-            $hold = $this->makeRequest(
+            $this->makeRequest(
                 'patron',
                 'createMyHold',
                 $options,
@@ -1514,6 +1525,7 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
@@ -1542,6 +1554,7 @@ class Symphony extends AbstractBase implements ServiceLocatorAwareInterface
      * or may be ignored.
      *
      * @return string       The default pickup location for the patron.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {

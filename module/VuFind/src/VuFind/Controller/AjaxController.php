@@ -699,14 +699,12 @@ class AjaxController extends AbstractBase
     /**
      * Get entry information on entries tied to a specific map location
      *
-     * @param array $fields Solr fields to retrieve data from
-     *
      * @author   Chris Hallberg <crhallberg@gmail.com>
      * @author   Lutz Biedinger <lutz.biedinger@gmail.com>
      *
      * @return mixed
      */
-    public function resultgooglemapinfoAction($fields = array('long_lat'))
+    public function resultgooglemapinfoAction()
     {
         $this->writeSession();  // avoid session write timing bug
         // Set layout to render the page inside a lightbox:

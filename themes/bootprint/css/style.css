@@ -6,6 +6,7 @@ body h1 {font-size:36px}
 body h2 {font-size:30px}
 body h3 {font-size:20px}
 .container {background:#FFF;border-radius:5px;margin:18px auto;max-width:952px}
+.main {padding:0 1%;width:98%}
 @media (max-width:767px) {
   .main {width:98.2%}
 }
@@ -14,6 +15,11 @@ body h3 {font-size:20px}
 .accordion-heading .accordion-toggle {font-size:14px;padding:2px 15px}
 .container a:not(.btn,.text-error) {color:#06C}
 .form-horizontal .controls {margin-left:165px}
+.dropdown-menu>.active>a,
+.dropdown-menu>.active>a:hover,
+.dropdown-menu>.active>a:focus {
+  background:#619144;
+}
 .hero-unit {margin:-5px}
 hr {margin:4px 0}
 input[type="text"] {border-color:#AAA;font-size:12px}
@@ -29,8 +35,8 @@ input[type="text"]:focus {border-color:#619144;box-shadow:inset 0px 1px 2px rgba
 .slider.slider-horizontal .slider-handle {background:#C6D880;border:1px solid #619144;margin-top:-6px}
 .tab-container {margin:0}
 
-select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input,
-.row-fluid input[class*="span"], .row-fluid select[class*="span"], .btn:not(.btn-large) {border:1px solid #AAA;border-radius:2px;font-size:12px;height:26px;min-height:1px;padding:1px 6px}
+input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input,
+.row-fluid input[class*="span"], .btn:not(.btn-large) {border:1px solid #AAA;border-radius:2px;font-size:12px;height:26px;min-height:1px;padding:2px 6px}
 .btn {padding:2px 8px}
 .btn.btn-small {height:20px;padding:0 4px}
 .btn.btn-link {border:0}
@@ -68,13 +74,13 @@ select, .btn:not(.btn-link){vertical-align:top}
 .group .search {margin:1px 0}
 
 /* --- BREADCRUMBS --- */
-.breadcrumb {background:#FFF;border-bottom:1px solid #DDD;border-radius:0;margin:0 0 3px 0;padding:6px 6px 6px 1em}
+.breadcrumb {background:#FFF;border-bottom:1px solid #DDD;border-radius:0;margin:0 0 3px 0;padding:6px 12px}
 .breadcrumb li {color:#888;font-size:12px;text-shadow:none}
 .breadcrumb .active {color:#000}
 .breadcrumb span.divider {color:#888}
 
 /* --- SIDEBAR --- */
-.row-fluid .span3.sidebar {margin-left:.5%}
+.row-fluid .span3.sidebar {margin-left:1%;width:24%}
 .sidebar h4 {border-bottom:2px solid #DDD;font-size:14px;font-weight:normal;margin-bottom:4px;margin-right:0}
 .sidebar .nav-list {font-size:12px;margin-bottom:6px;padding:0 0 0 8px}
 .sidebar .nav-list .divider {display:none}
@@ -82,10 +88,12 @@ select, .btn:not(.btn-link){vertical-align:top}
 .sidebar .nav-list li.applied {padding-left:3px}
 .sidebar .nav-list li.applied [class*="icon"] {color:transparent;margin-top:1px}
 .sidebar .nav-list li.active a {background:#FFA500;text-shadow:none}
+.sidebar .nav-list li.active a:hover {background:#FFA500}
 .sidebar .nav-list li.active a i.icon-remove {background:url('../images/icons/delete.png')}
 .sidebar .nav-list li a {margin:0;padding:3px}
 .sidebar .nav-list li a:hover {background:none}
 .sidebar .nav-list li span.main {width:auto}
+.sidebar .nav-list li .icon-ok {background-repeat:no-repeat;padding-top:3px}
 .sidebar .nav-list li.nav-header {background:#EEE;border-color:#DDD;min-height:1px;padding:2px 4px}
 .sidebar .small {margin-top:10px}
 #publishDateFilter {margin:6px 0}
@@ -103,9 +111,8 @@ select, .btn:not(.btn-link){vertical-align:top}
 .filters li a i {display:inline-block;margin:2px 0 0 3px;vertical-align:top}
 
 /* --- MAIN --- */
-.centered-pills {border-bottom:1px solid #DDD;font-size:12px}
-.nav-pills {border-bottom:1px solid #DDD;margin:0 0 6px 0}
-.main.row-fluid > .span9 {margin-left:1%}
+.centered-pills {border-bottom:1px solid #DDD;font-size:12px;margin-right:14px}
+.nav-pills {margin:3px 0 0 0}
 
 /* --- HOME --- */
 .searchHomeContent {margin:2em auto;width:80%}
@@ -132,11 +139,39 @@ select, .btn:not(.btn-link){vertical-align:top}
 .result .savedLists {margin:2px 0;padding:6px}
 .result .savedLists ul {margin-bottom:0}
 .span9>.noprint>.help-block {margin-bottom:0}
+.result .img-polaroid {margin-left:2px;max-width:96px}
 .top-row [class*="span"] {min-height:1px;padding:0 3px}
 
+/* -- MY RESEARCH -- */
+.bulkActionForm .btn-link {padding:1px 2px}
+.bulkActionForm .result {background:#FFF}
+#sort_options_1 {width:100px}
+
 /* --- VUDL --- */
+.btn.grid-btn {height:16px;padding:3px 6px 5px 6px}
+.btn.grid-btn i {font-size:14px}
 #download-button {background:linear-gradient(to bottom, #D7E991 0%,#B5C770 100%);padding:10px 8px 6px 16px}
 #download-button:hover {background:linear-gradient(to bottom, #72A255 0%,#508033 100%);text-shadow:0 1px 0 rgba(0,0,0,.5)}
 #download-button:active {background:linear-gradient(to bottom, #508033 0%,#72A255 100%)}
 .inspector_container {margin-top:6px}
+.siblings-form {margin:3px auto}
 .table.details {font-size:10px;border-bottom:1px solid #DDD}
+
+/* --- ChoiceAuth --- */
+.authmethod0 {
+  width:47%;
+  float:left;
+  padding:1%;
+  border-right:1px solid rgb(204, 204, 204);
+}
+.authmethod1 {
+  width:47%;
+  float:left;
+  padding:1%;
+  border-left:1px solid rgb(204, 204, 204);
+  margin:-1px; /* keep the borders on top of one another; longest one will win */
+}
+#authcontainer {
+  float:left;
+  width:100%;
+}

@@ -51,10 +51,7 @@ class QueryGroupTest extends PHPUnit_Framework_TestCase
      */
     public function testContainsTerm()
     {
-        $q1 = new Query('test');
-        $q2 = new Query('query');
-        $q3 = new Query('multi word query');
-        $q = new QueryGroup('OR', array($q1, $q2, $q3));
+        $q = $this->getSampleQueryGroup();
 
         // Should report true for actual contained terms:
         $this->assertTrue($q->containsTerm('test'));
@@ -75,10 +72,7 @@ class QueryGroupTest extends PHPUnit_Framework_TestCase
      */
     public function testGetAllTerms()
     {
-        $q1 = new Query('test');
-        $q2 = new Query('query');
-        $q3 = new Query('multi word query');
-        $q = new QueryGroup('OR', array($q1, $q2, $q3));
+        $q = $this->getSampleQueryGroup();
         $this->assertEquals('test query multi word query', $q->getAllTerms());
     }
 
@@ -89,10 +83,7 @@ class QueryGroupTest extends PHPUnit_Framework_TestCase
      */
     public function testReplaceTerm()
     {
-        $q1 = new Query('test');
-        $q2 = new Query('query');
-        $q3 = new Query('multi word query');
-        $q = new QueryGroup('OR', array($q1, $q2, $q3));
+        $q = $this->getSampleQueryGroup();
         $q->replaceTerm('query', 'question');
         $this->assertEquals('test question multi word question', $q->getAllTerms());
     }
@@ -104,10 +95,7 @@ class QueryGroupTest extends PHPUnit_Framework_TestCase
      */
     public function testClone()
     {
-        $q1 = new Query('test');
-        $q2 = new Query('query');
-        $q3 = new Query('multi word query');
-        $q = new QueryGroup('OR', array($q1, $q2, $q3));
+        $q = $this->getSampleQueryGroup();
         $qClone = clone($q);
         $q->replaceTerm('query', 'question');
         $qClone->setOperator('AND');
@@ -115,5 +103,45 @@ class QueryGroupTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('OR', $q->getOperator());
         $this->assertEquals('test query multi word query', $qClone->getAllTerms());
         $this->assertEquals('AND', $qClone->getOperator());
+    }
+
+    /**
+     * Test setting/clearing of reduced handler.
+     *
+     * @return void
+     */
+    public function testReducedHandler()
+    {
+        $q = $this->getSampleQueryGroup();
+        $q->setReducedHandler('foo');
+        $this->assertEquals('foo', $q->getReducedHandler());
+        $q->unsetReducedHandler();
+        $this->assertEquals(null, $q->getReducedHandler());
+    }
+
+    /**
+     * Test setting an invalid operator.
+     *
+     * @return void
+     * @expectedException VuFindSearch\Exception\InvalidArgumentException
+     * @expectedExceptionMessage Unknown or invalid boolean operator: fizz
+     */
+    public function testIllegalOperator()
+    {
+        $q = $this->getSampleQueryGroup();
+        $q->setOperator('fizz');
+    }
+
+    /**
+     * Get a test object.
+     *
+     * @return QueryGroup
+     */
+    protected function getSampleQueryGroup()
+    {
+        $q1 = new Query('test');
+        $q2 = new Query('query');
+        $q3 = new Query('multi word query');
+        return new QueryGroup('OR', array($q1, $q2, $q3));
     }
 }

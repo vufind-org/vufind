@@ -197,7 +197,7 @@ class Sitemap
             } else {
                 $filename = $this->getFilenameForPage($currentPage);
                 $smf = $this->openSitemapFile($filename, 'urlset');
-                foreach ($currentPageInfo as $item => $count) {
+                foreach (array_keys($currentPageInfo->toArray()) as $item) {
                     $loc = htmlspecialchars($recordUrl . urlencode($item));
                     if (strpos($loc, 'http') === false) {
                         $loc = 'http://'.$loc;

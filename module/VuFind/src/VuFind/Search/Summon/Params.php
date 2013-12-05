@@ -129,11 +129,14 @@ class Params extends \VuFind\Search\Base\Params
         // Grab checkbox facet details using the standard method:
         $facets = parent::getCheckboxFacets();
 
-        // Special case -- if we have a "holdings only" facet, we want this to
-        // always appear, even on the "no results" screen, since setting this
-        // facet actually EXPANDS the result set, rather than reducing it:
+        // Special case -- if we have a "holdings only" or "expand query" facet,
+        // we want this to always appear, even on the "no results" screen, since
+        // setting this facet actually EXPANDS rather than reduces the result set.
         if (isset($facets['holdingsOnly'])) {
             $facets['holdingsOnly']['alwaysVisible'] = true;
+        }
+        if (isset($facets['queryExpansion'])) {
+            $facets['queryExpansion']['alwaysVisible'] = true;
         }
 
         // Return modified list:
@@ -167,6 +170,9 @@ class Params extends \VuFind\Search\Base\Params
             $backendParams->set('highlight', true);
             $backendParams->set('highlightStart', '{{{{START_HILITE}}}}');
             $backendParams->set('highlightEnd', '{{{{END_HILITE}}}}');
+        }
+        if ($maxTopics = $options->getMaxTopicRecommendations()) {
+            $backendParams->set('maxTopics', $maxTopics);
         }
         $backendParams->set('facets', $this->getBackendFacetParameters());
         $this->createBackendFilterParameters($backendParams);
@@ -225,6 +231,12 @@ class Params extends \VuFind\Search\Base\Params
                         $params->set(
                             'holdings', strtolower(trim($safeValue)) == 'true'
                         );
+                    } else if ($filt['field'] == 'queryExpansion') {
+                        // Special case -- "query expansion" is a separate parameter
+                        // from other facets.
+                        $params->set(
+                            'expand', strtolower(trim($safeValue)) == 'true'
+                        );
                     } else if ($filt['field'] == 'excludeNewspapers') {
                         // Special case -- support a checkbox for excluding
                         // newspapers:
@@ -259,5 +271,29 @@ class Params extends \VuFind\Search\Base\Params
                 }
             }
         }
+    }
+
+    /**
+     * Format a single filter for use in getFilterList().
+     *
+     * @param string $field     Field name
+     * @param string $value     Field value
+     * @param string $operator  Operator (AND/OR/NOT)
+     * @param bool   $translate Should we translate the label?
+     *
+     * @return array
+     */
+    protected function formatFilterListEntry($field, $value, $operator, $translate)
+    {
+        $filter = parent::formatFilterListEntry(
+            $field, $value, $operator, $translate
+        );
+
+        // Convert range queries to a language-non-specific format:
+        if (preg_match('/^\[(.*) TO (.*)\]$/', $value, $matches)) {
+            $filter['displayText'] = $matches[1] . '-' . $matches[2];
+        }
+
+        return $filter;
     }
 }

@@ -215,7 +215,7 @@ class Connector implements LoggerAwareInterface
     public function checkForHttpError($result)
     {
         if (!$result->isSuccess()) {
-            throw HttpErrorException::createFromResponse($response);
+            throw HttpErrorException::createFromResponse($result);
         }
     }
 

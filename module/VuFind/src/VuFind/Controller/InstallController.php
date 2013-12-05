@@ -199,7 +199,7 @@ class InstallController extends AbstractBase
         try {
             // Try to read the tags table just to see if we can connect to the DB:
             $tags = $this->getTable('Tags');
-            $test = $tags->getByText('test', false);
+            $tags->getByText('test', false);
             $status = true;
         } catch (\Exception $e) {
             $status = false;
