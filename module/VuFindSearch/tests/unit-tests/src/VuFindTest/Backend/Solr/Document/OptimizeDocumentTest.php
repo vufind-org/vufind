@@ -58,4 +58,19 @@ class OptimizeDocumentTest extends PHPUnit_Framework_TestCase
             $xml
         );
     }
+
+    /**
+     * Test creation of XML document with WaitSearcher.
+     *
+     * @return void
+     */
+    public function testAsXMLWithWaitSearcher()
+    {
+        $document = new OptimizeDocument(true, true);
+        $xml = $document->asXML();
+        $this->assertXmlStringEqualsXmlString(
+            '<optimize waitFlush="true" waitSearcher="true"/>',
+            $xml
+        );
+    }
 }

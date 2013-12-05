@@ -365,13 +365,13 @@
     </arr>
   </requestHandler>
 
-  <!-- the following handler will be used for eligible dismax searches defined
-     in web/conf/searchspecs.yaml.  Searches relying on advanced features
-     incompatible with dismax will be sent to the standard handler instead.
-     You can use this handler definition to set global Dismax settings
-     (i.e. mm / bf).  If you need different settings for different types of
-     searches (i.e. Title vs. Author), you can also configure individual
-     settings in the searchspecs.yaml file.
+  <!-- the following two handlers will be used for eligible dismax searches defined
+     in searchspecs.yaml. The edismax handler will be used most of the time, unless
+     a specific configuration tells VuFind to use traditional dismax instead. You
+     can use these handler definitions to set global Dismax settings (e.g. mm / bf).
+     If you need different settings for different types of searches (e.g. Title vs.
+     Author), you can also configure individual settings in the searchspecs.yaml
+     file.
   -->
   <requestHandler name="dismax" class="solr.SearchHandler">
     <lst name="defaults">
@@ -381,6 +381,21 @@
      <str name="spellcheck.extendedResults">true</str>
      <str name="spellcheck.onlyMorePopular">true</str>
      <str name="spellcheck.count">20</str>
+    </lst>
+    <arr name="last-components">
+      <str>spellcheck</str>
+    </arr>
+  </requestHandler>
+
+  <requestHandler name="edismax" class="solr.SearchHandler">
+    <lst name="defaults">
+     <str name="defType">edismax</str>
+     <!-- str name="fl">a*,b*,c*,d*,e*,first_indexed,format,fullrecord,g*,h*,i*,l*,o*,p*,r*,s*,t*,u*,*_date*,*_isn*,*_str*,*_txt*</str -->
+     <str name="echoParams">explicit</str>
+     <str name="spellcheck.extendedResults">true</str>
+     <str name="spellcheck.onlyMorePopular">true</str>
+     <str name="spellcheck.count">20</str>
+     <str name="lowercaseOperators">false</str>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>

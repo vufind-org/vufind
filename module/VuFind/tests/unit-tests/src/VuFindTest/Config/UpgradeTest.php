@@ -176,4 +176,30 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
             'Custom Generator', $results['config.ini']['Site']['generator']
         );
     }
+
+    /**
+     * Test "meaningful line" detection in SolrMarc properties files.
+     *
+     * @return void
+     */
+    public function testMeaningfulLineDetection()
+    {
+        $upgrader = $this->getUpgrader('1.4');
+        $meaningless = realpath(
+            __DIR__ . '/../../../../fixtures/configs/solrmarc/empty.properties'
+        );
+        $this->assertFalse(
+            $this->callMethod(
+                $upgrader, 'fileContainsMeaningfulLines', array($meaningless)
+            )
+        );
+        $meaningful = realpath(
+            __DIR__ . '/../../../../fixtures/configs/solrmarc/meaningful.properties'
+        );
+        $this->assertTrue(
+            $this->callMethod(
+                $upgrader, 'fileContainsMeaningfulLines', array($meaningful)
+            )
+        );
+    }
 }

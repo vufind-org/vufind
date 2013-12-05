@@ -264,7 +264,7 @@ class HttpService implements HttpServiceInterface
      */
     public static function isAssocParams(array $array)
     {
-        foreach ($array as $key => $value) {
+        foreach (array_keys($array) as $key) {
             if (!is_numeric($key)) {
                 return true;
             }

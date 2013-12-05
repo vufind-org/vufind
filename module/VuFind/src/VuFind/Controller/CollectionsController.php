@@ -246,7 +246,7 @@ class CollectionsController extends AbstractBase
 
         // Declare array to hold the $result array in the right sort order
         $sorted = array();
-        foreach ($this->normalizeAndSortFacets($result) as $i => $val) {
+        foreach (array_keys($this->normalizeAndSortFacets($result)) as $i) {
             // If this is the placeholder we added earlier, we have found the
             // array position we want to use as our start; otherwise, it is an
             // element that needs to be moved into the sorted version of the

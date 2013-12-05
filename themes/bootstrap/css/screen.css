@@ -1,0 +1,52 @@
+.block { display:block }
+.centered-pills { text-align:center }
+.centered-pills ul.nav-pills { display:inline-block }
+.centered-pills li { display:inline }
+.centered-pills a { float:left }
+#commentList table {width:100%}
+.comment {width:100%}
+.comment .popover {display:block;margin-top:6px;max-width:none;position:relative}
+form.comment .span3 {padding-top:60px}
+.front { position:absolute;top:0;left:0;width:100%;padding-top:20%;z-index:5 }
+.highlight { font-weight:bold }
+li a.hidden {display:none}
+* html .centered-pills ul.nav-pills { display:inline } /* IE6 */
+*+html .centered-pills ul.nav-pills { display:inline } /* IE7 */
+.modal-body { max-height:600px }
+.nav-list i[class^="icon-"] { margin:0;padding:0;text-align:center;width:16px }
+.pad { padding:12px }
+.pager { margin:0 0 8px 0 }
+.pointer { cursor:pointer }
+.sidebar { padding:4px 0 0 0 }
+.sidebar h4 { margin:6px 8px }
+.sidebar .checkbox { margin-left:10px }
+.sidebar .nav-list li:not(.divider) { min-height:26px }
+.sidebar .nav-list li span.main { display:inline-block;padding:3px 0 }
+.sidebar .nav-list li input[type="checkbox"] { float:left;margin:4px 3px 0 0 }
+.sidebar .nav-list li.applied input[type="checkbox"] { margin-top:7px }
+.sidebar .nav-list li .icon-ok { margin-top:3px }
+.sidebar .nav-list li .icon-remove { margin-left:3px }
+.sidebar .small { color:#333;margin-top:9px;line-height:85% }
+.sidebar a.small,.sidebar .small a { color:#08C }
+.small { font-size:85% }
+.switch-margins,.row .switch-margins,.row-fluid .switch-margins { display: inline-block; margin:auto 0 }
+.tab-container { border:1px solid #DDD;border-top:0;border-radius:0 0 4px 4px;margin-top:-20px;padding:8px 12px;position:relative }
+div.xml { display:block;font:10pt Courier;text-align:left;padding-left:1em }
+div.xml.collapsed > div { display:none;margin-left:2px }
+.xmlt { cursor:pointer;margin-left:-16px }
+.xmlt:before { content:'- ' }
+.collapsed .xmlt:before { content:'+ ' }
+/* --- Collapsing Facets ---*/
+.sidebar .collapsed .nav-header {cursor:pointer}
+.sidebar .collapsed .nav-header:before {
+    content:'\25BC';
+    display:block;
+    float:right;
+    width:10px;
+    margin:1px 3px 0 0;
+    text-align:center;
+    font-size:8pt;
+}
+.sidebar .collapsed li:not(.nav-header) {display:none}
+.sidebar .collapsed.open .nav-header:before {content:'\25B2'}
+.sidebar .collapsed.open li:not(.hidden) {display:block}

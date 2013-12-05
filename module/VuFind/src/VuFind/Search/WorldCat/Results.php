@@ -48,7 +48,7 @@ class Results extends \VuFind\Search\Base\Results
     {
         $query  = $this->getParams()->getQuery();
         $limit  = $this->getParams()->getLimit();
-        $offset = $this->getStartRecord() - 1;
+        $offset = $this->getStartRecord();
         $params = $this->getParams()->getBackendParameters();
         $collection = $this->getSearchService()
             ->search('WorldCat', $query, $offset, $limit, $params);

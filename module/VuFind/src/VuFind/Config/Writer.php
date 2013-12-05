@@ -115,7 +115,7 @@ class Writer
                 }
                 $currentSection = $matches[1];
             } else if (strstr($content, '=')) {
-                list($key, $oldValue) = explode('=', $content, 2);
+                $key = reset(explode('=', $content, 2));
                 if ($currentSection == $section && trim($key) == $setting) {
                     $line = $setting . ' = "' . $value . '"';
                     if (!empty($comment)) {

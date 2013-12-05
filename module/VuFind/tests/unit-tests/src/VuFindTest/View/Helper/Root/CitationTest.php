@@ -185,7 +185,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21
             ),
-            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), 19-21.',
+            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21.',
             'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.'
         ),
         array(  // seven authors
@@ -199,7 +199,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21
             ),
-            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., &amp; Seven, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), 19-21.',
+            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., &amp; Seven, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21.',
             'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.'
         ),
         array(  // six authors
@@ -213,7 +213,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21
             ),
-            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., &amp; Six, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), 19-21.',
+            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., &amp; Six, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21.',
             'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.'
         ),
         array(  // two authors
@@ -227,7 +227,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21
             ),
-            'apa' => 'One, P., &amp; Two, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), 19-21.',
+            'apa' => 'One, P., &amp; Two, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21.',
             'mla' => 'One, Person, and Person Two. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.'
         ),
         array(  // one author
@@ -241,7 +241,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21
             ),
-            'apa' => 'One, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), 19-21.',
+            'apa' => 'One, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21.',
             'mla' => 'One, Person. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.'
         ),
         array(  // eight authors in "first name first" format.
@@ -255,7 +255,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerStartPage' => 19,
                 'ContainerEndPage' => 21
             ),
-            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), 19-21.',
+            'apa' => 'One, P., Two, P., Three, P., Four, P., Five, P., Six, P., . . . Eight, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21.',
             'mla' => 'One, Person, et al. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.'
         ),
         array(  // DOI
@@ -270,7 +270,7 @@ class CitationTest extends \VuFindTest\Unit\ViewHelperTestCase
                 'ContainerEndPage' => 21,
                 'CleanDOI' => 'testDOI'
             ),
-            'apa' => 'One, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), 19-21. doi:testDOI',
+            'apa' => 'One, P. (1999). Test Article. <span style="font-style:italic;">Test Journal, 1</span>(7), pp. 19-21. doi:testDOI',
             'mla' => 'One, Person. &quot;Test Article.&quot; <span style="font-style:italic;">Test Journal</span> 1.7 (1999): 19-21.'
         )
         // @codingStandardsIgnoreEnd

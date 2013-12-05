@@ -70,7 +70,7 @@ class Importer implements ServiceLocatorAwareInterface
         // Save the results (or just display them, if in test mode):
         if (!$testMode) {
             $solr = $this->getServiceLocator()->get('VuFind\Solr\Writer');
-            $result = $solr->save($index, new RawXMLDocument($xml));
+            $solr->save($index, new RawXMLDocument($xml));
         } else {
             Console::write($xml . "\n");
         }

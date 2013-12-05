@@ -1,11 +1,13 @@
 <div class="result source<?=$this->escapeHtml($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
   <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueID())?>" class="hiddenId" />
   <div class="span-2">
-  <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
-    <img src="<?=$this->escapeHtml($summThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
-  <? else: ?>
-    <img src="<?=$this->url('cover-unavailable')?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
-  <? endif; ?>
+  <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
+    <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
+      <img src="<?=$this->escapeHtml($summThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+    <? else: ?>
+      <img src="<?=$this->url('cover-unavailable')?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
+    <? endif; ?>
+  </a>
   </div>
   <div class="span-9">
     <div class="resultItemLine1">

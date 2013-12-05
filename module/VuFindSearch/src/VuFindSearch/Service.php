@@ -153,7 +153,7 @@ class Service
     {
         $params  = $params ?: new ParamBag();
         $context = __FUNCTION__;
-        $args = compact('backend', 'id', 'params', 'context');
+        $args = compact('backend', 'ids', 'params', 'context');
         $backend = $this->resolve($backend, $args);
         $args['backend_instance'] = $backend;
 

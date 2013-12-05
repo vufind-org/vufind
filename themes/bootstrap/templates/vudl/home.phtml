@@ -1,6 +1,6 @@
 <?
   // Set page title.
-  $this->headTitle($this->translate('Search Home'));
+  $this->headTitle($this->translate($this->title) .' - '. $this->translate('Search Home'));
 
   // Set default value if necessary:
   if (!isset($this->searchClassId)) {

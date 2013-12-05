@@ -1,6 +1,6 @@
 <? $editions = $this->related->getResults(); if (!empty($editions)): ?>
   <h4><?=$this->transEsc('Other Editions')?></h4>
-  <ul class="nav-list">
+  <ul class="nav nav-list open">
     <? foreach ($editions as $data): ?>
       <li>
         <? $formats = $data->getFormats(); if (count($formats) > 0): ?>

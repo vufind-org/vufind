@@ -130,7 +130,6 @@ class Fedora implements \VuFindHttp\HttpServiceAwareInterface
             $data,
             $matches
         );
-        $classes = array();
         return $matches[1];
     }
     
@@ -396,7 +395,7 @@ class Fedora implements \VuFindHttp\HttpServiceAwareInterface
             } else {
                 $tree[$parent] = array($child);
             }
-            $items[$parent] = trim($title, '" ');
+            $items[$parent] = str_replace('""', '"', trim($title, '" '));
         }
         $ret = array();
         $queue = array();

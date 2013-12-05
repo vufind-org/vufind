@@ -283,7 +283,7 @@ class EuropeanaResults implements RecommendInterface,
         }
         $parsedFeed = FeedReader::import($this->targetUrl);
         $resultsProcessed = array();
-        foreach ($parsedFeed as $key => $value) {
+        foreach ($parsedFeed as $value) {
             $link = (string)$value->link;
             if (!empty($link)) {
                 $resultsProcessed[] = array(

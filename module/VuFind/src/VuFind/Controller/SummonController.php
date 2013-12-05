@@ -62,13 +62,11 @@ class SummonController extends AbstractSearch
     }
 
     /**
-     * preDispatch -- block access when appropriate.
-     *
-     * @param MvcEvent $e Event object
+     * preDispatch -- add Summon message.
      *
      * @return void
      */
-    public function preDispatch(MvcEvent $e)
+    public function preDispatch()
     {
         $this->layout()->poweredBy
             = 'Powered by Summon™ from Serials Solutions, a division of ProQuest.';
@@ -155,9 +153,10 @@ class SummonController extends AbstractSearch
                 $orFields = array();
             }
             foreach ($facetsToShow as $facet => $label) {
+                $useOr = (isset($orFields[0]) && $orFields[0] == '*')
+                    || in_array($facet, $orFields);
                 $params->addFacet(
-                    $facet . ',or,1,' . $limit, $label,
-                    $orFields[0] == '*' || in_array($facet, $orFields)
+                    $facet . ',or,1,' . $limit, $label, $useOr
                 );
             }
 

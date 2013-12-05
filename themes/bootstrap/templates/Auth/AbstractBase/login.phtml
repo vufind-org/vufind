@@ -1,12 +1,18 @@
-<div class="control-group">
-  <label class="control-label" for="login_username"><?=$this->transEsc('Username')?>:</label>
-  <div class="controls">
-    <input id="login_username" type="text" name="username" value="<?=$this->escapeHtml($this->request->get('username'))?>"/>
-  </div>
-</div>
-<div class="control-group">
-  <label class="control-label" for="login_password"><?=$this->transEsc('Password')?>:</label>
-  <div class="controls">
-    <input id="login_password" type="password" name="password"/>
-  </div>
-</div>
+<? $account = $this->auth()->getManager(); ?>
+<? $sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home'))); ?>
+<? if (!$sessionInitiator): // display default login form if no login URL provided ?>
+  <form method="post" class="form-horizontal" action="<?=$this->url('myresearch-home')?>" name="loginForm" id="loginForm">
+    <?=$this->auth()->getLoginFields()?>
+    <input type="hidden" name="auth_method" value="<?=$this->auth()->getActiveAuthMethod()?>">
+    <div class="control-group">
+      <div class="controls">
+        <input class="btn btn-primary" type="submit" name="processLogin" value="Login">
+        <? if ($account->supportsCreation()): ?>
+          <a class="btn btn-link" href="/digitaldev/MyResearch/Account">Create New Account</a>
+        <? endif; ?>
+      </div>
+    </div>
+  </form>
+<? else: ?>
+  <a href="<?=$this->escapeHtml($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
+<? endif; ?>

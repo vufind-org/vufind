@@ -73,7 +73,7 @@ $config = array(
                 )
             ),
             'vudl-home' => array(
-                'type' => 'Zend\Mvc\Router\Http\Literal',
+                'type' => 'Zend\Mvc\Router\Http\Segment',
                 'options' => array(
                     'route'    => '/VuDL/Home[/]',
                     'defaults' => array(

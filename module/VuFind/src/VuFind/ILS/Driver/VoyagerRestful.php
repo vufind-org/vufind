@@ -442,6 +442,27 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     }
 
     /**
+     * Is the selected pickup location valid for the hold?
+     *
+     * @param string $pickUpLocation Selected pickup location
+     * @param array  $patron         Patron information returned by the patronLogin
+     * method.
+     * @param array  $holdDetails    Details of hold being placed
+     *
+     * @return bool
+     */
+    protected function pickUpLocationIsValid($pickUpLocation, $patron, $holdDetails)
+    {
+        $pickUpLibs = $this->getPickUpLocations($patron, $holdDetails);
+        foreach ($pickUpLibs as $location) {
+            if ($location['locationID'] == $pickUpLocation) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Get Pick Up Locations
      *
      * This is responsible for gettting a list of valid library locations for
@@ -458,6 +479,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * @throws ILSException
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickUpLocations($patron = false, $holdDetails = null)
     {
@@ -507,6 +529,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * or may be ignored.
      *
      * @return string       The default pickup location for the patron.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
     {
@@ -667,7 +690,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     public function renewMyItems($renewDetails)
     {
         $renewProcessed = array();
-        $renewResult = array();
         $failIDs = array();
         $patronId = $renewDetails['patron']['id'];
 
@@ -725,7 +747,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                 }
             }
             // Deal with unsuccessful results
-            foreach ($failIDs as $id => $junk) {
+            foreach (array_keys($failIDs) as $id) {
                 $finalResult['details'][$id] = array(
                     "success" => false,
                     "new_date" => false,
@@ -1057,15 +1079,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         }
 
         // Make Sure Pick Up Library is Valid
-        $pickUpValid = false;
-        $pickUpLibs = $this->getPickUpLocations($patron, $holdDetails);
-        foreach ($pickUpLibs as $location) {
-            if ($location['locationID'] == $pickUpLocation) {
-                $pickUpValid = true;
-            }
-        }
-        if (!$pickUpValid) {
-            // Invalid Pick Up Point
+        if (!$this->pickUpLocationIsValid($pickUpLocation, $patron, $holdDetails)) {
             return $this->holdError("hold_invalid_pickup");
         }
 

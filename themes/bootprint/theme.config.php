@@ -6,6 +6,7 @@ return array(
     ),
     'css' => array(
         'icons.css',
+        'style.css',
     ),
     'helpers' => array(
         'factories' => array(

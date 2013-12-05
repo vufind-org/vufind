@@ -100,6 +100,7 @@ class Editions implements RelatedInterface
             // Limit the number of parts based on the boolean clause limit:
             $result = $this->resultsManager->get('Solr');
             $params = $result->getParams();
+            $params->getOptions()->spellcheckEnabled(false);
             $limit = $params->getQueryIDLimit();
             if ($this->maxLimit > 0 && $limit > $this->maxLimit) {
                 $limit = $this->maxLimit;

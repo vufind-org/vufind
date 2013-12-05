@@ -171,4 +171,25 @@ class SideFacets extends AbstractFacets
         }
         return $result;
     }
+
+    /**
+     * Return the list of facets configured to be collapsed
+     *
+     * @return array
+     */
+    public function getCollapsedFacets()
+    {
+        $config = $this->configLoader->get('facets');
+        if (!isset($config->Results_Settings->collapsedFacets)
+            || empty($config->Results_Settings->collapsedFacets)
+        ) {
+            return array();
+        } elseif ($config->Results_Settings->collapsedFacets == '*') {
+            return array_keys($this->getFacetSet());
+        } else {
+            return array_map(
+                'trim', explode(',', $config->Results_Settings->collapsedFacets)
+            );
+        }
+    }
 }

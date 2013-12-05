@@ -60,7 +60,7 @@ function checkItemStatuses() {
             item.find('.locationDetails').empty().append(locationListHTML);
           } else {
             // Default case -- load call number and location into appropriate containers:
-            item.find('.callnumber').empty().append(result.callnumber);
+            item.find('.callnumber').empty().append(result.callnumber+'<br/>');
             item.find('.location').empty().append(
               result.reserve == 'true'
               ? result.reserve_message

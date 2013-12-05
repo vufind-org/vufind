@@ -74,7 +74,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         // If we're using a combined search box, we need to override the searcher
         // and type settings.
         if (substr($type, 0, 7) == 'VuFind:') {
-            list($junk, $tmp) = explode(':', $type, 2);
+            list(, $tmp) = explode(':', $type, 2);
             list($searcher, $type) = explode('|', $tmp, 2);
         }
 

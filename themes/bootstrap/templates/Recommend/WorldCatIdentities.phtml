@@ -15,7 +15,6 @@
           <? $j = 0; foreach ($subjects as $subj): ?>
             <? if (++$j == 3): ?>
               <dd id="moreWCIdents<?=$i?>"><a href="#" onclick="moreFacets('WCIdents<?=$i?>'); return false;"><?=$this->transEsc('more')?> ...</a></dd>
-              <span class="hidden" id="narrowGroupHidden_WCIdents<?=$i?>">
             <? endif; ?>
             <dd>&bull; <a href="<?=$this->url('search-results')?>?lookfor=%22<?=urlencode($subj)?>%22&amp;type=Subject"><?=$this->escapeHtml($subj)?></a></dd>
           <? endforeach; ?>
