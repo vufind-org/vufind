@@ -54,6 +54,13 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
     protected $optionsManager;
 
     /**
+     * Cache for configurations
+     *
+     * @var array
+     */
+    protected $cachedConfigs = array();
+
+    /**
      * Constructor
      *
      * @param OptionsManager $optionsManager Search options plugin manager
@@ -63,6 +70,38 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
     {
         $this->optionsManager = $optionsManager;
         $this->config = $config;
+    }
+
+    /**
+     * Is autocomplete enabled for the current context?
+     *
+     * @param string $activeSearchClass Active search class ID
+     *
+     * @return bool
+     */
+    public function autocompleteEnabled($activeSearchClass)
+    {
+        // Simple case -- no combined handlers:
+        if (!$this->combinedHandlersActive()) {
+            $options = $this->optionsManager->get($activeSearchClass);
+            return $options->autocompleteEnabled();
+        }
+
+        // Complex case -- combined handlers:
+        $settings = $this->getCombinedHandlerConfig($activeSearchClass);
+        $typeCount = count($settings['type']);
+        for ($i = 0; $i < $typeCount; $i++) {
+            $type = $settings['type'][$i];
+            $target = $settings['target'][$i];
+
+            if ($type == 'VuFind') {
+                $options = $this->optionsManager->get($target);
+                if ($options->autocompleteEnabled()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -157,28 +196,32 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
      */
     protected function getCombinedHandlerConfig($activeSearchClass)
     {
-        // Load and validate configuration:
-        $settings = isset($this->config['CombinedHandlers'])
-            ? $this->config['CombinedHandlers'] : array();
-        if (empty($settings)) {
-            throw new \Exception('CombinedHandlers configuration missing.');
-        }
-        $typeCount = count($settings['type']);
-        if ($typeCount != count($settings['target'])
-            || $typeCount != count($settings['label'])
-        ) {
-            throw new \Exception('CombinedHandlers configuration incomplete.');
+        if (!isset($this->cachedConfigs[$activeSearchClass])) {
+            // Load and validate configuration:
+            $settings = isset($this->config['CombinedHandlers'])
+                ? $this->config['CombinedHandlers'] : array();
+            if (empty($settings)) {
+                throw new \Exception('CombinedHandlers configuration missing.');
+            }
+            $typeCount = count($settings['type']);
+            if ($typeCount != count($settings['target'])
+                || $typeCount != count($settings['label'])
+            ) {
+                throw new \Exception('CombinedHandlers configuration incomplete.');
+            }
+
+            // Add configuration for the current search class if it is not already
+            // present:
+            if (!in_array($activeSearchClass, $settings['target'])) {
+                $settings['type'][] = 'VuFind';
+                $settings['target'][] = $activeSearchClass;
+                $settings['label'][] = $activeSearchClass;
+            }
+
+            $this->cachedConfigs[$activeSearchClass] = $settings;
         }
 
-        // Add configuration for the current search class if it is not already
-        // present:
-        if (!in_array($activeSearchClass, $settings['target'])) {
-            $settings['type'][] = 'VuFind';
-            $settings['target'][] = $activeSearchClass;
-            $settings['label'][] = $activeSearchClass;
-        }
-
-        return $settings;
+        return $this->cachedConfigs[$activeSearchClass];
     }
 
     /**

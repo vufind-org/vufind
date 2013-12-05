@@ -1,4 +1,4 @@
-/*global extractClassParams, getLightbox, path */
+/*global closeLightbox, extractClassParams, getLightbox, path */
 
 /**
  * Functions and event handlers specific to record pages.
@@ -52,7 +52,7 @@ function deleteRecordComment(element, recordId, recordSource, commentId) {
     url: url,
     success: function(response) {
       if (response.status == 'OK') {
-        $($(element).parents('li')[0]).remove();
+        $($(element).parents('.comment')[0]).remove();
       }
     }
   });
@@ -64,11 +64,12 @@ function refreshCommentList(recordId, recordSource) {
     dataType: 'json',
     url: url,
     success: function(response) {
+      // Update HTML
       if (response.status == 'OK') {
         $('#commentList').empty();
         $('#commentList').append(response.data);
         $('input[type="submit"]').button('reset');
-        $('#commentList a.deleteRecordComment').unbind('click').click(function() {
+        $('.delete').unbind('click').click(function() {
           var commentId = $(this).attr('id').substr('recordComment'.length);
           deleteRecordComment(this, recordId, recordSource, commentId);
           return false;
@@ -79,8 +80,8 @@ function refreshCommentList(recordId, recordSource) {
 }
 
 function registerAjaxCommentRecord() {
+  // Form submission
   $('form[name="commentRecord"]').unbind('submit').submit(function(){
-    if (!$(this).valid()) { return false; }
     var form = this;
     var id = form.id.value;
     var recordSource = form.source.value;
@@ -91,8 +92,8 @@ function registerAjaxCommentRecord() {
       source:recordSource
     };
     $.ajax({
-      type:'POST',
-      url: url,
+      type: 'POST',
+      url:  url,
       data: data,
       dataType: 'json',
       success: function(response) {
@@ -101,7 +102,15 @@ function registerAjaxCommentRecord() {
           refreshCommentList(id, recordSource);
           $(form).find('textarea[name="comment"]').val('');
         } else if (response.status == 'NEED_AUTH') {
-          return getLightbox('MyResearch', 'Login');
+          data['loggingin'] = true;
+          return getLightbox(
+            'Record', 'AddComment', data, data,
+            function(){
+              closeLightbox();
+              $.ajax({type:'POST',url:url,data:data});
+              refreshCommentList(id, recordSource);
+            }
+          );
         } else {
           $('#modal').find('.modal-body').html(response.data+'!');
           $('#modal').find('.modal-header h3').html('Error!');
@@ -112,13 +121,11 @@ function registerAjaxCommentRecord() {
     $(form).find('input[type="submit"]').button('loading');
     return false;
   });
+  // Delete links
+  $('.delete').click(function(){deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));return false;});
 }
-  
 $(document).ready(function(){
   var id = document.getElementById('record_id').value;
-  
-  // register the record comment form to be submitted via AJAX
-  registerAjaxCommentRecord();
   
   // Cite lightbox
   $('#cite-record').click(function() {
@@ -140,6 +147,9 @@ $(document).ready(function(){
     var params = extractClassParams(this);
     return getLightbox(params['controller'], 'Save', {id:id});
   });
-    
+  
+  // register the record comment form to be submitted via AJAX
+  registerAjaxCommentRecord();
+  
   setUpCheckRequest();
 });

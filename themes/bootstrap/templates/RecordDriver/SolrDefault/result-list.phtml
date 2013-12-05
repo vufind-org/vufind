@@ -1,7 +1,7 @@
 <div class="row-fluid result<?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
   <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueID())?>" class="hiddenId" />
   <input type="hidden" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>" class="hiddenSource" />
-  <div class="span2 text-center">
+  <div class="span2 text-center left">
     <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
       <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
         <img class="img-polaroid" src="<?=$this->escapeHtml($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
@@ -10,7 +10,7 @@
       <? endif; ?>
     </a>
   </div>
-  <div class="span7">
+  <div class="span7 middle">
     <div>
       <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
       <?

@@ -31,6 +31,7 @@ namespace VuFind\Search\Factory;
 
 use SerialsSolutions\Summon\Zend2 as Connector;
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
 use VuFindSearch\Backend\Summon\Response\RecordCollectionFactory;
 use VuFindSearch\Backend\Summon\QueryBuilder;
 use VuFindSearch\Backend\Summon\Backend;
@@ -184,9 +185,11 @@ class SummonBackendFactory implements FactoryInterface
     protected function createQueryBuilder()
     {
         $builder = new QueryBuilder();
-        $builder->caseSensitiveBooleans
+        $caseSensitiveBooleans
             = isset($this->summonConfig->General->case_sensitive_bools)
             ? $this->summonConfig->General->case_sensitive_bools : true;
+        $helper = new LuceneSyntaxHelper($caseSensitiveBooleans);
+        $builder->setLuceneHelper($helper);
         return $builder;
     }
 

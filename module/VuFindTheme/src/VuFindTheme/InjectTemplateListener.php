@@ -59,6 +59,7 @@ class InjectTemplateListener extends \Zend\Mvc\View\Http\InjectTemplateListener
      * @param string $controller Controller name
      *
      * @return string
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function deriveModuleNamespace($controller)
     {

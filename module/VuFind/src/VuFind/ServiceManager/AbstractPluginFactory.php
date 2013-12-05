@@ -85,6 +85,7 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
      * @param string                  $requestedName  Unfiltered name of service
      *
      * @return bool
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function canCreateServiceWithName(ServiceLocatorInterface $serviceLocator,
         $name, $requestedName
@@ -101,6 +102,7 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
      * @param string                  $requestedName  Unfiltered name of service
      *
      * @return object
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function createServiceWithName(ServiceLocatorInterface $serviceLocator,
         $name, $requestedName

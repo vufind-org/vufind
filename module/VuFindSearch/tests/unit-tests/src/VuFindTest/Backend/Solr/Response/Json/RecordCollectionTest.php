@@ -64,4 +64,25 @@ class RecordCollectionTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(array(), $coll->getHighlighting());
         $this->assertEquals(0, $coll->getOffset());
     }
+
+    /**
+     * Test that the object handles offsets properly.
+     *
+     * @return void
+     */
+    public function testOffsets()
+    {
+        $coll = new RecordCollection(
+            array(
+                'response' => array('numFound' => 10, 'start' => 5)
+            )
+        );
+        for ($i = 0; $i < 5; $i++) {
+            $coll->add($this->getMock('VuFindSearch\Response\RecordInterface'));
+        }
+        $coll->rewind();
+        $this->assertEquals(5, $coll->key());
+        $coll->next();
+        $this->assertEquals(6, $coll->key());
+    }
 }

@@ -377,6 +377,7 @@ $config = array(
                     },
                 ),
                 'invokables' => array(
+                    'choiceauth' => 'VuFind\Auth\ChoiceAuth',
                     'database' => 'VuFind\Auth\Database',
                     'ldap' => 'VuFind\Auth\LDAP',
                     'multiauth' => 'VuFind\Auth\MultiAuth',
@@ -616,6 +617,11 @@ $config = array(
                     },
                     'summonresults' => function ($sm) {
                         return new \VuFind\Recommend\SummonResults(
+                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+                        );
+                    },
+                    'summontopics' => function ($sm) {
+                        return new \VuFind\Recommend\SummonTopics(
                             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
                         );
                     },

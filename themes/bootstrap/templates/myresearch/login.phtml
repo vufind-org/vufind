@@ -28,20 +28,5 @@
 <? if ($hideLogin): ?>
   <div class="alert alert-error"><?=$this->transEsc('login_disabled')?></div>
 <? else: ?>
-  <? $sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home'))); ?>
-  <? if (!$sessionInitiator): // display default login form if no login URL provided ?>
-    <form method="post" action="<?=$this->url('myresearch-home')?>" name="loginForm" id="loginForm" class="form-horizontal">
-      <?=$this->auth()->getLoginFields()?>
-      <div class="control-group">
-        <div class="controls">
-          <input class="btn btn-primary" type="submit" name="processLogin" value="<?=$this->transEsc('Login')?>"/>
-          <? if ($account->supportsCreation()): ?>
-            <a class="btn btn-link" href="<?=$this->url('myresearch-account')?>"><?=$this->transEsc('Create New Account')?></a>
-          <? endif; ?>
-        </div>
-      </div>
-    </form>
-  <? else: ?>
-    <a href="<?=$this->escapeHtml($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
-  <? endif; ?>
+  <?=$this->auth()->getLogin()?>
 <? endif; ?>

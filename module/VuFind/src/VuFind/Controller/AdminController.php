@@ -160,12 +160,8 @@ class AdminController extends AbstractBase
     public function statisticsAction()
     {
         $view = $this->createViewModel();
-
         $config = $this->getConfig();
-        $statsFilled = array(
-            'search' => false,
-            'record' => false
-        );
+
         // Search statistics
         $search = $this->getServiceLocator()->get('VuFind\SearchStats');
         $view->searchesBySource

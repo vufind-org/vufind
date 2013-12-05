@@ -4,6 +4,7 @@
     . "\$('#SummonDeferredRecommend').load(url);";
 ?>
 <div id="SummonDeferredRecommend">
-  <p><?=$this->transEsc("Loading")?>... <img src="<?=$this->imageLink('icons/ajax_loading.gif')?>" /></p>
+  <h3><?=$this->transEsc("Summon Results")?></h3>
+  <p><?=$this->transEsc("Loading")?>... <i class="icon-spinner"></i></p>
   <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $loadJs, 'SET')?>
 </div>

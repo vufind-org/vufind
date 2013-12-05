@@ -40,12 +40,12 @@ function deparam(url) {
 }
 
 function moreFacets(id) {
-  $('.narrowGroupHidden_'+id).removeClass('hidden');
-  $('#more'+id).addClass('hidden');
+  $('.'+id).removeClass('hidden');
+  $('#more-'+id).addClass('hidden');
 }
 function lessFacets(id) {
-  $('.narrowGroupHidden_'+id).addClass('hidden');
-  $('#more'+id).removeClass('hidden');
+  $('.'+id).addClass('hidden');
+  $('#more-'+id).removeClass('hidden');
 }
 
 // Advanced facets
@@ -56,15 +56,8 @@ function updateOrFacets(url, op) {
   list.html(header[0].outerHTML+'<div class="alert alert-info">'+vufindString.loading+'...</div>');
 }
 function setupOrFacets() {
-  var facets = $('.facetOR');
-  for(var i=0;i<facets.length;i++) {
-    var $facet = $(facets[i]);
-    if($facet.hasClass('applied')) {
-      $facet.find('span:not(.pull-right)').prepend('<input type="checkbox" checked onChange="updateOrFacets($(this).parent().parent().attr(\'href\'), this)"/>');
-    } else {
-      $facet.find('a.main').prepend('<input type="checkbox" onChange="updateOrFacets($(this).parent().attr(\'href\'), this)"/> ');
-    }
-  }
+  $('.facetOR').find('.icon-check').replaceWith('<input type="checkbox" checked onChange="updateOrFacets($(this).parent().parent().attr(\'href\'), this)"/>');
+  $('.facetOR').find('.icon-check-empty').replaceWith('<input type="checkbox" onChange="updateOrFacets($(this).parent().attr(\'href\'), this)"/> ');
 }
 
 $(document).ready(function() {
@@ -100,21 +93,29 @@ $(document).ready(function() {
     });
 
   // Search autocomplete
+  var autoCompleteRequest, autoCompleteTimer;
   $('.autocomplete').typeahead({
+    minLength:3,
     source:function(query, process) {
-      var searcher = extractClassParams($('.autocomplete').attr('class'));
-      $.ajax({
-        url: path + '/AJAX/JSON',
-        data: {method:'getACSuggestions',type:$('#searchForm_type').val(),searcher:searcher['searcher'],q:query},
-        dataType:'json',
-        success: function(json) {
-          if (json.status == 'OK' && json.data.length > 0) {
-            process(json.data);
-          } else {
-            process([]);
+      clearTimeout(autoCompleteTimer);
+      if(autoCompleteRequest) {
+        autoCompleteRequest.abort();
+      }
+      var searcher = extractClassParams('.autocomplete');
+      autoCompleteTimer = setTimeout(function() {
+        autoCompleteRequest = $.ajax({
+          url: path + '/AJAX/JSON',
+          data: {method:'getACSuggestions',type:$('#searchForm_type').val(),searcher:searcher['searcher'],q:query},
+          dataType:'json',
+          success: function(json) {
+            if (json.status == 'OK' && json.data.length > 0) {
+              process(json.data);
+            } else {
+              process([]);
+            }
           }
-        }
-      });
+        });
+      }, 600); // Delay request submission
     }
   });
 
@@ -140,6 +141,9 @@ $(document).ready(function() {
     $("link[media='print']").attr("media", "all");
     window.print();
   }
+    
+  // Collapsing facets
+  $('.sidebar .collapsed .nav-header').click(function(){$(this).parent().toggleClass('open');});
   
   // Advanced facets
   setupOrFacets();

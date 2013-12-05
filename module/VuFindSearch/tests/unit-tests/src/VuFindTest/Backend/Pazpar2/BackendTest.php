@@ -31,7 +31,7 @@ namespace VuFindTest\Backend\Pazpar2;
 
 use VuFindSearch\Query\Query;
 use VuFindSearch\Backend\Pazpar2\Backend;
-use PHPUnit_Framework_TestCase;
+use VuFindTest\Unit\TestCase;
 use InvalidArgumentException;
 
 /**
@@ -43,7 +43,7 @@ use InvalidArgumentException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
-class BackendTest extends PHPUnit_Framework_TestCase
+class BackendTest extends TestCase
 {
     /**
      * Test that getConnector works.
@@ -70,13 +70,19 @@ class BackendTest extends PHPUnit_Framework_TestCase
      */
     public function testSearch()
     {
-        $conn = $this->getConnectorMock(array('search', 'show'));
+        $conn = $this->getConnectorMock(array('search', 'show', 'stat'));
         $conn->expects($this->once())
             ->method('search')
             ->will($this->returnValue($this->loadResponse('pp2search')));
         $conn->expects($this->once())
             ->method('show')
             ->will($this->returnValue($this->loadResponse('pp2show')));
+        $conn->expects($this->at(0))
+            ->method('stat')
+            ->will($this->returnValue(simplexml_load_string($this->getStatXml(0.5))));
+        $conn->expects($this->at(1))
+            ->method('stat')
+            ->will($this->returnValue(simplexml_load_string($this->getStatXml(1.0))));
 
         $back = new Backend($conn);
         $back->setIdentifier('test');
@@ -90,6 +96,30 @@ class BackendTest extends PHPUnit_Framework_TestCase
         $this->assertEquals('test', $recs[19]->getSourceIdentifier());
         $this->assertEquals('content: author navalani k author gidwani n n title a practical guide to colon classification medium book', (string)$recs[19]->getXML()->recid);
         $this->assertEquals(54, $coll->getTotal());
+    }
+
+    /**
+     * Test setter.
+     *
+     * @return void
+     */
+    public function testSetSearchProgressTarget()
+    {
+        $back = new Backend($this->getConnectorMock());
+        $back->setSearchProgressTarget(0.75);
+        $this->assertEquals(0.75, $this->getProperty($back, 'progressTarget'));
+    }
+
+    /**
+     * Test setter.
+     *
+     * @return void
+     */
+    public function testSetMaxQueryTime()
+    {
+        $back = new Backend($this->getConnectorMock());
+        $back->setMaxQueryTime(3);
+        $this->assertEquals(3, $this->getProperty($back, 'maxQueryTime'));
     }
 
     /// Internal API
@@ -125,5 +155,18 @@ class BackendTest extends PHPUnit_Framework_TestCase
         return $this->getMock(
             'VuFindSearch\Backend\Pazpar2\Connector', $mock, array('fake', $client)
         );
+    }
+
+    /**
+     * Get a fake stat response.
+     *
+     * @param float $progress How far?
+     *
+     * @return string
+     */
+    protected function getStatXml($progress)
+    {
+        return '<?xml version="1.0" encoding="UTF-8"?><stat><progress>'
+            . $progress . '</progress></stat>';
     }
 }

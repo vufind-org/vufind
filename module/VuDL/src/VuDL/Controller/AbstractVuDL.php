@@ -48,6 +48,20 @@ class AbstractVuDL extends \VuFind\Controller\AbstractBase
     protected $vuDLConfig = null;
 
     /**
+     * Create a new ViewModel with title.
+     *
+     * @param array $params Parameters to pass to ViewModel constructor.
+     *
+     * @return ViewModel
+     */
+    protected function createViewModel($params = null)
+    {
+        $view = parent::createViewModel($params);
+        $view->title = $this->getVuDLConfig()->General->title;
+        return $view;
+    }
+
+    /**
      * Get the VuDL configuration object.
      *
      * @return \Zend\Config\Config

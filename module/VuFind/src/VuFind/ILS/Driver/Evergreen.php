@@ -267,6 +267,7 @@ HERE;
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
     {
@@ -623,6 +624,7 @@ HERE;
      *
      * @throws ILSException
      * @return array       Associative array with 'count' and 'results' keys
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
@@ -651,10 +653,11 @@ HERE;
             throw new ILSException($e->getMessage());
         }
 
-        $page = ($page) ? $page : 1;
-        $limit = ($limit) ? $limit : 20;
-        $startRow = (($page-1)*$limit)+1;
-        $endRow = ($page*$limit);
+        // TODO: implement paging support
+        //$page = ($page) ? $page : 1;
+        //$limit = ($limit) ? $limit : 20;
+        //$startRow = (($page-1)*$limit)+1;
+        //$endRow = ($page*$limit);
 
         $sql = "select copy.id from asset.copy " .
                "where copy.create_date >= '$startdate' " .
@@ -718,7 +721,7 @@ HERE;
         try {
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
-            while ($row = $sqlStm->fetch(PDO::FETCH_ASSOC)) {
+            while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
                 $list[] = $row['id'];
             }
         } catch (PDOException $e) {
@@ -783,6 +786,7 @@ HERE;
      *
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function findReserves($course, $inst, $dept)
     {

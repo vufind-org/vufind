@@ -69,8 +69,10 @@
     <? endif; ?>
     <div class="sidegroup">
       <h4><?=$this->transEsc("Search Tips")?></h4>
-      <a href="<?=$this->url('help-home')?>?topic=advsearch" class="help-link" title="<?=$this->transEsc('Help with Advanced Search')?>"><?=$this->transEsc("Help with Advanced Search")?></a><br />
-      <a href="<?=$this->url('help-home')?>?topic=search" class="help-link" title="<?=$this->transEsc('Help with Search Operators')?>"><?=$this->transEsc("Help with Search Operators")?></a>
+      <ul class="nav nav-list">
+        <li><a href="<?=$this->url('help-home')?>?topic=advsearch" class="help-link" title="<?=$this->transEsc('Help with Advanced Search')?>"><?=$this->transEsc("Help with Advanced Search")?></a></li>
+        <li><a href="<?=$this->url('help-home')?>?topic=search" class="help-link" title="<?=$this->transEsc('Help with Search Operators')?>"><?=$this->transEsc("Help with Search Operators")?></a></li>
+      </ul>
     </div>
   </div>
 </form>

@@ -64,7 +64,7 @@ class Module
         // @codingStandardsIgnoreStart
         return array(
             'factories' => array(
-                'VuFindTheme\ThemeInfo' => function ($sm) {
+                'VuFindTheme\ThemeInfo' => function () {
                     return new \VuFindTheme\ThemeInfo(
                         realpath(__DIR__ . '/../../themes'), 'blueprint'
                     );

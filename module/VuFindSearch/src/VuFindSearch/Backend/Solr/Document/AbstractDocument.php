@@ -48,7 +48,7 @@ abstract class AbstractDocument
     abstract public function asJSON();
 
     /**
-     * Return serialize XML representation.
+     * Return serialized XML representation.
      *
      * @return string
      */

@@ -62,6 +62,23 @@ class Backend extends AbstractBackend
     protected $queryBuilder = null;
 
     /**
+     * How much search progress should be completed before returning results
+     * (a value between 0 and 1).
+     *
+     * @var float
+     */
+    protected $progressTarget = 1.0;
+
+    /**
+     * The maximum amount of time to wait to reach $progressTarget (above)
+     * before giving up and accepting what is currently available. (Measured
+     * in seconds).
+     *
+     * @var int
+     */
+    protected $maxQueryTime = 60;
+
+    /**
      * Constructor.
      *
      * @param Connector                        $connector Pazpar2 connector
@@ -75,7 +92,31 @@ class Backend extends AbstractBackend
         if (null !== $factory) {
             $this->setRecordCollectionFactory($factory);
         }
-        $this->connector    = $connector;
+        $this->connector      = $connector;
+    }
+
+    /**
+     * Set the max query time.
+     *
+     * @param int $time New value
+     *
+     * @return void
+     */
+    public function setMaxQueryTime($time)
+    {
+        $this->maxQueryTime = $time;
+    }
+
+    /**
+     * Set the search progress target.
+     *
+     * @param float $progress New value
+     *
+     * @return void
+     */
+    public function setSearchProgressTarget($progress)
+    {
+        $this->progressTarget = $progress;
     }
 
     /**
@@ -96,6 +137,23 @@ class Backend extends AbstractBackend
             $baseParams->mergeWith($params);
         }
         $this->connector->search($baseParams);
+
+        /* Pazpar2 does not return all results immediately. Rather, we need to
+         * occassionally check with the Pazpar2 server on the status of the 
+         * search.
+         *
+         * This loop will continue to wait until the configured level of
+         * progress is reached or until the maximum query time has passed at
+         * which time the existing results will be returned.
+         */
+        $queryStart = time();
+        $progress = $this->getSearchProgress();
+        while ($progress < $this->progressTarget
+            && (time() - $queryStart) < $this->maxQueryTime
+        ) {
+            sleep(1);
+            $progress = $this->getSearchProgress();
+        }
 
         $showParams = new ParamBag(
             array('block' => 1, 'num' => $limit, 'start' => $offset)
@@ -188,10 +246,22 @@ class Backend extends AbstractBackend
      * @param int   $offset  Search offset
      *
      * @return RecordCollectionInterface
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function createRecordCollection($records, $total = 0, $offset = 0)
     {
         return $this->getRecordCollectionFactory()
             ->factory(compact('records', 'total', 'offset'));
+    }
+
+    /**
+     * Get progress on the current search operation.
+     *
+     * @return float
+     */
+    protected function getSearchProgress()
+    {
+        $statResponse = $this->connector->stat();
+        return (float) $statResponse->progress;
     }
 }

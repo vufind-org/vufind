@@ -51,7 +51,11 @@
   <? if (isset($holding['items'][0]['callnumber'])): ?>
   <tr>
     <th><?=$this->transEsc("Call Number")?>: </th>
-    <td width="50%"><?=$this->escapeHtml($holding['items'][0]['callnumber'])?></td>
+    <td width="50%">
+      <? foreach ($callNos as $callNo): ?>
+        <?=$this->escapeHtml($callNo)?><br />
+      <? endforeach; ?>
+    </td>
   </tr>
   <? endif; ?>
   <? if (!empty($holding['summary'])): ?>
@@ -82,8 +86,9 @@
         <td>
           <? if ($row['reserve'] == "Y"): ?>
             <link property="availability" href="http://schema.org/InStoreOnly" />
-          <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?>
-          <? elseif (isset($row['use_unknown_message']) && $row['use_unknown_message']): ?>
+            <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?><br />
+          <? endif; ?>
+          <? if (isset($row['use_unknown_message']) && $row['use_unknown_message']): ?>
             <span class="muted"><?=$this->transEsc("status_unknown_message")?></span>
           <? else: ?>
             <? if ($row['availability']): ?>

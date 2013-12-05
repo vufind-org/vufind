@@ -114,8 +114,8 @@ class Database extends AbstractBase
             'firstname' => '', 'lastname' => '', 'username' => '',
             'password' => '', 'password2' => '', 'email' => ''
         );
-        foreach ($params as $param => $junk) {
-            $params[$param] = $request->getPost()->get($param, '');
+        foreach ($params as $param => $default) {
+            $params[$param] = $request->getPost()->get($param, $default);
         }
 
         // Validate Input

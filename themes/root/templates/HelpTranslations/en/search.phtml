@@ -21,8 +21,8 @@
   <dt><a name="Wildcard Searches"></a>Wildcard Searches</dt>
   <dd>
     <p>To perform a single character wildcard search use the <strong>?</strong> symbol.</p>
-    <p>For example, to search for "text" or "test" you can use the search:</p>
-    <pre class="code">te?t</pre>
+    <p>For example, to search for "woman" or "women" you can use the search:</p>
+    <pre class="code">wom?n</pre>
     <p>To perform a multiple character, 0 or more, wildcard search use the <strong>*</strong> symbol.</p>
     <p>For example, to search for test, tests or tester, you can use the search: </p>
     <pre class="code">test*</pre>
@@ -33,11 +33,10 @@
   
   <dt><a name="Fuzzy Searches"></a>Fuzzy Searches</dt>
   <dd>
-    <p>Use the tilde <strong>~</strong> symbol at the end of a <strong>Single</strong> word Term. For example to search for a term similar in spelling to "roam" use the fuzzy search: </p>
-    <pre class="code">roam~</pre>
-    <p>This search will find terms like foam and roams.</p>
+    <p>Use the tilde <strong>~</strong> symbol at the end of a <strong>Single</strong> word Term. For example, to search for variant spellings of "Tchaikovsky," use the fuzzy search: </p>
+    <pre class="code">Tchaikovsky~</pre>
     <p>An additional parameter can specify the required similarity. The value is between 0 and 1, with a value closer to 1 only terms with a higher similarity will be matched. For example:</p>
-    <pre class="code">roam~0.8</pre>
+    <pre class="code">Tchaikovsky~0.8</pre>
     <p>The default that is used if the parameter is not given is 0.5.</p>
   </dd>
   

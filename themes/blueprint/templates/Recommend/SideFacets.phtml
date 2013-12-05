@@ -12,12 +12,17 @@
     <? endforeach; ?>
   <? endif; ?>
   <? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : array(); ?>
+  <? $collapsedFacets = $this->recommend->getCollapsedFacets() ?>
   <? $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); if (!empty($filterList)): ?>
     <strong><?=$this->transEsc('Remove Filters')?></strong>
     <ul class="filters">
     <? foreach ($filterList as $field => $filters): ?>
       <? foreach ($filters as $i => $filter): ?>
         <?
+            $index = array_search($filter['field'], $collapsedFacets);
+            if ($index !== false) {
+                unset($collapsedFacets[$index]); // Open if we have a match
+            }
             if (isset($filter['specialType']) && $filter['specialType'] == 'keyword') {
                 $removeLink = $this->currentPath().$results->getUrlQuery()->replaceTerm($filter['value'], '');
             } else {
@@ -54,13 +59,13 @@
           </fieldset>
         </form>
       <? else: ?>
-        <dl class="narrowList navmenu">
-          <dt><?=$this->transEsc($cluster['label'])?></dt>
+        <dl class="narrowList navmenu<? if(!in_array($title, $collapsedFacets)): ?> open<? endif ?>">
+          <dt class="facet_<?=$this->escapeHtml($title)?>"><?=$this->transEsc($cluster['label'])?></dt>
           <? $i = 0; foreach ($cluster['list'] as $thisFacet): ?>
             <? if (++$i == 6): ?>
             <dd id="more<?=$this->escapeHtml($title)?>"><a href="#" onclick="moreFacets('<?=$this->escapeHtml($title)?>'); return false;"><?=$this->transEsc('more')?> ...</a></dd>
           </dl>
-          <dl class="narrowList navmenu offscreen" id="narrowGroupHidden_<?=$this->escapeHtml($title)?>">
+          <dl class="narrowList navmenu offscreen<? if(!in_array($title, $collapsedFacets)): ?> open<? endif ?>" id="narrowGroupHidden_<?=$this->escapeHtml($title)?>">
             <? endif; ?>
             <? if ($thisFacet['isApplied']): ?>
               <dd class="facet<?=$thisFacet['operator'] ?> applied"<? if($thisFacet['operator'] == 'OR'): ?> href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>"<? endif ?>><?=$this->escapeHtml($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="Selected"/></dd>

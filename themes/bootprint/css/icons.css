@@ -1,10 +1,20 @@
 i.icon-asterisk,
 i.icon-book,
+i.icon-bookbag,
+i.icon-bookbag-add,
+i.icon-bookbag-delete,
+i.icon-bookbag-empty,
 i.icon-bookmark,
+i.icon-cancel-all-holds,
+i.icon-cancel-holds,
 i.icon-edit,
+i.icon-email,
 i.icon-envelope,
 i.icon-envelope-alt,
+i.icon-export,
+i.icon-flag,
 i.icon-heart,
+i.icon-home,
 i.icon-inbox,
 i.icon-leaf,
 i.icon-list-alt,
@@ -12,17 +22,24 @@ i.icon-minus-sign,
 i.icon-ok,
 i.icon-phone-sign,
 i.icon-plus-sign,
+i.icon-print,
 i.icon-qrcode,
 i.icon-remove,
+i.icon-renew,
+i.icon-renew-all,
+i.icon-report,
 i.icon-rss,
+i.icon-search,
 i.icon-shopping-cart,
 i.icon-signin,
 i.icon-signout,
 i.icon-sitemap,
 i.icon-spinner,
+i.icon-star,
 i.icon-trash,
 i.icon-tree,
 i.icon-tree-muted,
+i.icon-usd,
 i.icon-user {
   background-position:center top;
   background-repeat:no-repeat;
@@ -33,6 +50,7 @@ i.icon-user {
   height:16px;
   margin:0;
   padding:0;
+  text-shadow:none;
   vertical-align:text-bottom;
   width:16px;
 }
@@ -55,11 +73,21 @@ i.icon-user {
 }
 .small i.icon-asterisk,
 .small i.icon-book,
+.small i.icon-bookbag,
+.small i.icon-bookbag-add,
+.small i.icon-bookbag-delete,
+.small i.icon-bookbag-empty,
 .small i.icon-bookmark,
+.small i.icon-cancel-all-holds,
+.small i.icon-cancel-holds,
 .small i.icon-edit,
+.small i.icon-email,
 .small i.icon-envelope,
 .small i.icon-envelope-alt,
+.small i.icon-export,
+.small i.icon-flag,
 .small i.icon-heart,
+.small i.icon-home,
 .small i.icon-inbox,
 .small i.icon-leaf,
 .small i.icon-list-alt,
@@ -67,17 +95,24 @@ i.icon-user {
 .small i.icon-ok,
 .small i.icon-phone-sign,
 .small i.icon-plus-sign,
+.small i.icon-print,
 .small i.icon-qrcode,
 .small i.icon-remove,
+.small i.icon-renew,
+.small i.icon-renew-all,
+.small i.icon-report,
 .small i.icon-rss,
+.small i.icon-search,
 .small i.icon-shopping-cart,
 .small i.icon-signin,
 .small i.icon-signout,
 .small i.icon-sitemap,
 .small i.icon-spinner,
+.small i.icon-star,
 .small i.icon-trash,
 .small i.icon-tree,
 .small i.icon-tree-muted,
+.small i.icon-usd,
 .small i.icon-user {
   background-size:13px 13px;
   height:13px;
@@ -85,26 +120,42 @@ i.icon-user {
 }
 i.icon-asterisk {background:url('../images/icons/list.png')}
 i.icon-book {background:url('../images/icons/book.png')}
+i.icon-bookbag {background:url('../images/icons/bookbag.png')}
+i.icon-bookbag-add {background:url('../images/icons/bookbag_add.png')}
+i.icon-bookbag-delete {background:url('../images/icons/bookbag_delete.png')}
+i.icon-bookbag-empty {background:url('../images/icons/bookbag_empty.png')}
 i.icon-bookmark {background:url('../images/icons/bookmark_add.png')}
+i.icon-cancel-all-holds {background:url('../images/icons/holdCancelAll.png')}
+i.icon-cancel-holds {background:url('../images/icons/holdCancel.png')}
 i.icon-edit {background:url('../images/icons/edit.png')}
+i.icon-email,
 i.icon-envelope,
 i.icon-envelope-alt {background:url('../images/icons/email.png')}
+i.icon-flag {background:url('../images/icons/flag_red.png')}
 i.icon-heart {background:url('../images/icons/heart.png')}
+i.icon-home {background:url('../images/icons/house.png')}
 i.icon-inbox {background:url('../images/icons/box.png')}
 i.icon-leaf,.icon-sitemap {background:url('../images/icons/treeCurrent.png')}
-i.icon-list-alt {background:url('../images/icons/application_add.png')}
+i.icon-list-alt,i.icon-export {background:url('../images/icons/application_add.png')}
 i.icon-minus-sign {background:url('../images/icons/delete.png')}
 i.icon-ok {background:url('../images/icons/tick.png')}
 i.icon-phone-sign {background:url('../images/icons/phone.png')}
 i.icon-plus-sign {background:url('../images/icons/add.png')}
+i.icon-print {background:url('../images/icons/printer.png')}
 i.icon-qrcode {background:url('../images/icons/qrcode.png')}
 i.icon-remove {background:url('../images/icons/delete.png')}
+i.icon-renew {background:url('../images/icons/renew.png')}
+i.icon-renew-all {background:url('../images/icons/renewAll.png')}
+i.icon-report {background:url('../images/icons/report.png')}
 i.icon-rss {background:url('../images/icons/feed.png')}
+i.icon-search {background:url('../images/icons/magnifier.png')}
 i.icon-shopping-cart {background:url('../images/icons/cart.png')}
 i.icon-signin {background:url('../images/icons/door_in.png')}
 i.icon-signout {background:url('../images/icons/door_out.png')}
 i.icon-spinner {background:url('../images/icons/ajax_loading.gif')}
+i.icon-star {background:url('../images/icons/star.png')}
 i.icon-trash {background:url('../images/icons/bin.png')}
 i.icon-tree {background:url('../images/icons/treeCurrent.png')}
 i.icon-tree-muted {background:url('../images/icons/treeMuted.png')}
+i.icon-usd {background:url('../images/icons/money_dollar.png')}
 i.icon-user {background:url('../images/icons/user.png')}

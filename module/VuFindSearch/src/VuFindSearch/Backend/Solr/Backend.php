@@ -136,7 +136,7 @@ class Backend extends AbstractBackend
      * @param array    $ids    Array of document identifiers
      * @param ParamBag $params Search backend parameters
      *
-     * @return \VuFindSearch\Response\RecordCollectionInterface
+     * @return RecordCollectionInterface
      */
     public function retrieveBatch($ids, ParamBag $params = null)
     {

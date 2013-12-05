@@ -46,6 +46,13 @@ class Options extends \VuFind\Search\Base\Options
     protected $resultLimit = 400;
 
     /**
+     * Maximum number of topic recommendations to show (false for none)
+     *
+     * @var int|bool
+     */
+    protected $maxTopicRecommendations = false;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Config loader
@@ -152,5 +159,27 @@ class Options extends \VuFind\Search\Base\Options
     public function getVisibleSearchResultLimit()
     {
         return intval($this->resultLimit);
+    }
+
+    /**
+     * Get the maximum number of topic recommendations (false for none)
+     *
+     * @return bool|int
+     */
+    public function getMaxTopicRecommendations()
+    {
+        return $this->maxTopicRecommendations;
+    }
+
+    /**
+     * Set the maximum number of topic recommendations (false for none)
+     *
+     * @param bool|int $max New maximum setting
+     *
+     * @return void
+     */
+    public function setMaxTopicRecommendations($max)
+    {
+        $this->maxTopicRecommendations = $max;
     }
 }

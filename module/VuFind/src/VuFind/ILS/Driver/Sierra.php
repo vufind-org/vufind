@@ -278,6 +278,7 @@ class Sierra extends AbstractBase
      *
      * @throws ILSException
      * @return array An array of associative arrays representing reserve items.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function findReserves($course, $instructor, $department)
     {
@@ -444,7 +445,7 @@ class Sierra extends AbstractBase
                         ON (item_view.id = varfield_view.record_id)
                         WHERE item_view.id = $1
                         AND varfield_view.record_type_code = 'i';";
-            $prep_query = pg_prepare($this->db, "prep_query", $query1);
+            pg_prepare($this->db, "prep_query", $query1);
             foreach ($itemIds as $item) {
                 $callnumber = null;
                 $results1 = pg_execute($this->db, "prep_query", array($item));
@@ -578,6 +579,7 @@ class Sierra extends AbstractBase
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
     {

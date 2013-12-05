@@ -212,15 +212,15 @@ abstract class AbstractControllerTestCase extends PHPUnit_Framework_TestCase
         }
 
         if ($method == HttpRequest::METHOD_POST) {
-            if (count($params) != 0){
+            if (count($params) != 0) {
                 $post = $params;
             }
         } elseif ($method == HttpRequest::METHOD_GET) {
             $query = array_merge($query, $params);
         } elseif ($method == HttpRequest::METHOD_PUT) {
-            if (count($params) != 0){
+            if (count($params) != 0) {
                 array_walk($params,
-                    function(&$item, $key) { $item = $key . '=' . $item; }
+                    function (&$item, $key) { $item = $key . '=' . $item; }
                 );
                 $content = implode('&', $params);
                 $request->setContent($content);

@@ -26,7 +26,6 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-
 namespace VuFind\Cache\Storage\Adapter;
 
 use Zend\Cache\Storage\Adapter\AbstractAdapter;
@@ -39,6 +38,7 @@ use Zend\Cache\Storage\Adapter\AbstractAdapter;
  * @author   David Maus <maus@hab.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
+ * @SuppressWarnings(PHPMD.UnusedFormalParameter)
  */
 class NoCacheAdapter extends AbstractAdapter
 {

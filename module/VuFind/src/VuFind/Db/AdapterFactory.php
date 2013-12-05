@@ -122,7 +122,7 @@ class AdapterFactory
             $statement = $adapter->createStatement(
                 'SET search_path TO ' . $this->config->Database->schema
             );
-            $result = $statement->execute();
+            $statement->execute();
         }
 
         return $adapter;

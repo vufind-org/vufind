@@ -130,7 +130,6 @@ class BackendTest extends PHPUnit_Framework_TestCase
      */
     public function testTerms()
     {
-        $map  = new HandlerMap(array('select' => array('fallback' => true)));
         $resp = $this->loadResponse('terms');
         $conn = $this->getConnectorMock(array('query'));
         $conn->expects($this->once())
@@ -141,6 +140,24 @@ class BackendTest extends PHPUnit_Framework_TestCase
         $terms = $back->terms('author', '', -1);
         $this->assertTrue($terms->hasFieldTerms('author'));
         $this->assertCount(10, $terms->getFieldTerms('author'));
+    }
+
+    /**
+     * Test handling of a bad JSON response.
+     *
+     * @return void
+     *
+     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     * @expectedExceptionMessage JSON decoding error: 4 -- bad {
+     */
+    public function testBadJson()
+    {
+        $conn = $this->getConnectorMock(array('query'));
+        $conn->expects($this->once())
+            ->method('query')
+            ->will($this->returnValue('bad {'));
+        $back = new Backend($conn);
+        $terms = $back->terms('author', '', -1);
     }
 
     /**
@@ -176,7 +193,6 @@ class BackendTest extends PHPUnit_Framework_TestCase
     /**
      * Test getting a connector.
      *
-     *
      * @return void
      */
     public function testGetConnector()
@@ -184,6 +200,19 @@ class BackendTest extends PHPUnit_Framework_TestCase
         $conn = $this->getConnectorMock();
         $back = new Backend($conn);
         $this->assertEquals($conn, $back->getConnector());
+    }
+
+    /**
+     * Test getting an identifier.
+     *
+     * @return void
+     */
+    public function testGetIdentifier()
+    {
+        $conn = $this->getConnectorMock();
+        $back = new Backend($conn);
+        $back->setIdentifier('foo');
+        $this->assertEquals('foo', $back->getIdentifier());
     }
 
     /// Internal API
