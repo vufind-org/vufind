@@ -124,7 +124,7 @@ function getLightboxByUrl(url, post, callback) {
       }
     },
     error:function(d,e) {
-      console.log(url,e,d);
+      console.log(url,e,d); // Error reporting
     }
   });
   lastLightboxURL = url;
@@ -251,9 +251,18 @@ function ajaxLogin(form) {
                 refreshCommentList(recordId, recordSource);
               });
               
+              var summon = false;
+              $('.hiddenSource').each(function(i, e) {
+                if(e.value == 'Summon') {
+                  summon = true;
+                  // If summon, queue reload
+                  callbackStack.unshift(function(){document.location.reload(true);});
+                }
+              });
+              
               // Refresh tab content
               var recordTabs = $('.recordTabs');
-              if(recordTabs.length > 0) {
+              if(!summon && recordTabs.length > 0) { // If summon, skip: about to reload anyway
                 var tab = recordTabs.find('.active a').attr('id');
                 $.ajax({
                   type:'POST',
@@ -263,7 +272,7 @@ function ajaxLogin(form) {
                     recordTabs.next('.tab-container').html(html);
                   },
                   error:function(d,e) {
-                    console.log(d,e);
+                    console.log(d,e); // Error reporting
                   }
                 });
               }
@@ -276,12 +285,6 @@ function ajaxLogin(form) {
               } else if(lastLightboxPOST && lastLightboxPOST['loggingin']) {
                 closeLightbox();
               } else {
-                // If summon, queue reload
-                $('.hiddenSource').each(function(i, e) {
-                  if(e.value == 'Summon') {
-                    callbackStack.unshift(function(){alert('!');document.location.reload(true);});
-                  }
-                });
                 getLightboxByUrl(lastLightboxURL, lastLightboxPOST);
               }
             } else {
@@ -324,7 +327,7 @@ function cartSubmit($form) {
           newDoc.close();
         },
         error:function(d,e) {
-          console.log(d,e);
+          console.log(d,e); // Error reporting
         }
       });
       break;
