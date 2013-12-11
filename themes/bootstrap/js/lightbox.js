@@ -20,15 +20,13 @@ function changeModalContent(html) {
   $('#modal .modal-body').html(html).modal({'show':true,'backdrop':false});
 }
 // Close the lightbox and run update functions
-var closeAction = false;
 function closeLightbox() {
-  if(closeAction !== false) {
-    closeAction();
-  }
   $('#modal').modal('hide');
 }
 function closeLightboxActions() {
   lightboxShown = false;
+  // Clean out stack
+  while(f = callbackStack.pop()) f();
   if(modalXHR) {
     modalXHR.abort();
   }
@@ -37,7 +35,7 @@ function closeLightboxActions() {
   $('#modal').find('.modal-header h3').html('');
   $('#modal').find('.modal-body').html(vufindString.loading + "...");
   // Perform checks to update the page
-  if(checkSaveStatuses) {
+  if(typeof checkSaveStatuses === 'function') {
     checkSaveStatuses();
   }
   // Record updates
@@ -281,7 +279,7 @@ function ajaxLogin(form) {
                 // If summon, queue reload
                 $('.hiddenSource').each(function(i, e) {
                   if(e.value == 'Summon') {
-                    closeAction = function(){document.location.reload(true);};
+                    callbackStack.unshift(function(){alert('!');document.location.reload(true);});
                   }
                 });
                 getLightboxByUrl(lastLightboxURL, lastLightboxPOST);
