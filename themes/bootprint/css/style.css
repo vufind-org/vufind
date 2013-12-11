@@ -159,8 +159,9 @@ select, .btn:not(.btn-link){vertical-align:top}
 .table.details {font-size:10px;border-bottom:1px solid #DDD}
 
 /* --- ChoiceAuth --- */
-.authmethod0 {border:1px solid #DDD;border-width:0 1px 0 0}
-@media (max-width: 979px) {
-  .row-fluid .authmethod0.span6,
-  .row-fluid .authmethod1.span6 {border-width:0 0 1px 0;float:none;padding-bottom:10px;margin-left:20px}
-}
+#authcontainer .authmethod0 {padding-left:25px}
+#authcontainer .authmethod1 {border:1px solid #DDD;border-width:0 0 0 1px;margin-left:0;padding-left:25px}
+.modal #authcontainer .authmethod0,
+.modal #authcontainer .authmethod1 {border:0;float:none;padding:0 0 10px 0;margin:0;width:auto}
+#authcontainer .control-label {width:80px}
+#authcontainer .controls {margin-left:90px}
