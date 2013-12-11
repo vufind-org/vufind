@@ -1,15 +1,32 @@
 /*global checkSaveStatuses, console, deparam, extractSource, getFullCartItems, hexEncode, htmlEncode, path, rc4Encrypt, refreshCommentList, vufindString */
 
-var lastLightboxURL,lastLightboxPOST; // Replacement for empty form actions
-var lightboxShown = false; // is the lightbox deployed?
+/**
+ * We save the URL and POST data every time we call getLightboxByUrl.
+ * If we don't have a target a form submission, we use these variables
+ * to replicate empty target behaviour by submitting to the current "page".
+ */
+var lastLightboxURL,lastLightboxPOST;
+var lightboxShown = false; // Is the lightbox deployed?
 var modalXHR; // Used for current in-progress XHR lightbox request
+/**
+ * This stack holds all the callbacks.
+ * Callbacks are triggered on form submissions and when the lightbox is closed.
+ * 
+ * The only callback added in here is a refresh for Summon under ajaxLogin
+ *
+ * The default callback action should be closeLightbox.
+ */
 var callbackStack = [];
 
 /**********************************/
 /* ====== LIGHTBOX ACTIONS ====== */
 /**********************************/
-// Cart actions based on submission
-// Change the content of the lightbox
+/**
+ * Change the content of the lightbox.
+ *
+ * Hide the header if it's empty to make more
+ * room for content and avoid double headers.
+ */
 function changeModalContent(html) {
   var header = $('#modal .modal-header');
   if(header.find('h3').html().length == 0) {
@@ -19,33 +36,48 @@ function changeModalContent(html) {
   }
   $('#modal .modal-body').html(html).modal({'show':true,'backdrop':false});
 }
-// Close the lightbox and run update functions
+
+/**
+ * This is the function you call to manually close the lightbox
+ */
 function closeLightbox() {
   $('#modal').modal('hide');
 }
+/**
+ * This function is attached to the lightbox close event,
+ * so it always runs when the lightbox is closed.
+ */
 function closeLightboxActions() {
   lightboxShown = false;
   // Clean out stack
-  while(f = callbackStack.pop()) f();
+  while(f = callbackStack.pop()) {
+    f();
+  }
+  // Abort requests triggered by the lightbox
   if(modalXHR) {
     modalXHR.abort();
   }
-  // Reset content
+  // Reset content so we start fresh when we open a lightbox
   $('#modal').removeData('modal');
   $('#modal').find('.modal-header h3').html('');
   $('#modal').find('.modal-body').html(vufindString.loading + "...");
-  // Perform checks to update the page
+  
+  /**
+   * Below here, we're doing content updates (sample events that affect content)
+   */ 
+  var recordId = $('#record_id').val();
+  var recordSource = $('.hiddenSource').val();
+   
+  // Update the "Saved In" lists (add favorite, login)
   if(typeof checkSaveStatuses === 'function') {
     checkSaveStatuses();
   }
-  // Record updates
-  var recordId = $('#record_id').val();
-  var recordSource = $('.hiddenSource').val();
-  // Perform checks to update the page
+  
+  // Update the comment list (add comment, login)
   if(typeof refreshCommentList === 'function') {
     refreshCommentList(recordId, recordSource);
   }
-  // Update tag list
+  // Update tag list (add tag)
   var tagList = $('#tagList');
   if (tagList.length > 0) {
       tagList.empty();
@@ -67,7 +99,7 @@ function closeLightboxActions() {
       });
   }
   
-  // Update cart items
+  // Update cart items (add to cart, remove from cart, cart lightbox interface)
   var cartCount = $('#cartItems strong');
   if(cartCount.length > 0) {
     var cart = getFullCartItems();
@@ -84,7 +116,10 @@ function closeLightboxActions() {
     cartCount.html(cart.length);
   }
 }
-// Make an error box appear in the lightbox, or insert one
+
+/**
+ * Insert an alert element into the top of the lightbox
+ */
 function displayLightboxError(message) {
   var alert = $('#modal .modal-body .alert');
   if(alert.length > 0) {
@@ -95,29 +130,38 @@ function displayLightboxError(message) {
   $('.icon-spinner').remove();
 }
 
-/****************************/
+/******************************/
 /* ====== GET LIGHTBOX ====== */
-/****************************/
-// AJAX the content and put it into a lightbox
-// Callback if necessary
-function getLightboxByUrl(url, post, callback) {
+/******************************/
+
+/**
+ * This function creates an XHR request to the URL
+ * and handles the response according to the callbackStack.
+ *
+ * Pop controls whether or not the callback is used immediately
+ * after loading or to be stashed for later when it closes. Default true.
+ */
+function getLightboxByUrl(url, post, callback, pop) {
+  if(typeof pop === "undefined") pop = true;
+  // If we have a callback, push it to the stack
   if(typeof callback !== "undefined") {
     //console.log("Push:",callback);
     callbackStack.push(callback);
   }
+  // If the lightbox isn't visible, fix that
   if(lightboxShown === false) {
     $('#modal').modal('show');
     lightboxShown = true;
   }
+  // Create our AJAX request, store it in case we need to cancel later
   modalXHR = $.ajax({
     type:'POST',
     url:url,
     data:post,
-    success:function(html) {
+    success:function(html) { // Success!
       // Check for a flash message error
-      if(callbackStack.length > 0 && html.indexOf("alert-error") == -1) {
+      if(pop && callbackStack.length > 0 && html.indexOf("alert-error") == -1) {
         var callback = callbackStack.pop();
-        //console.log("Pop:",callback);
         callback(html);
       } else {
         changeModalContent(html);
@@ -127,17 +171,23 @@ function getLightboxByUrl(url, post, callback) {
       console.log(url,e,d); // Error reporting
     }
   });
+  // Store current "page" context for empty targets
   lastLightboxURL = url;
   lastLightboxPOST = post;
   return false;
 }
-// Get a template and display it in a lightbox
-function getLightbox(controller, action, get, post, callback) {
+/**
+ * This is the friendly face to the function above.
+ * It converts a Controller and Action into a URL with GET
+ * and pushes the data and callback to the getLightboxByUrl
+ */
+function getLightbox(controller, action, get, post, callback, pop) {
+  if(typeof pop === "undefined") pop = true;
   var url = path+'/AJAX/JSON?method=getLightbox&submodule='+controller+'&subaction='+action;
   if(get && get !== {}) {
     url += '&'+$.param(get);
   }
-  return getLightboxByUrl(url, post, callback);
+  return getLightboxByUrl(url, post, callback, pop);
 }
 
 /****************************/
@@ -418,6 +468,13 @@ $(document).ready(function() {
   // Login link
   $('#loginOptions a').click(function() {
     return getLightbox('MyResearch','Login',{},{'loggingin':true});
+  });
+  // Login link
+  $('.logoutOptions a').click(function() {
+    return getLightbox('MyResearch','Logout',{},{}, function() {
+      closeLightbox();
+      alert('!');
+    }, false);
   });
   // Tag lightbox
   $('#tagRecord').click(function() {
