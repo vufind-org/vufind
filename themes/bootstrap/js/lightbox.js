@@ -141,6 +141,7 @@ function displayLightboxError(message) {
  * after loading or to be stashed for later when it closes. Default true.
  */
 function getLightboxByUrl(url, post, callback, pop) {
+  // Pop determines if we execute the callback immediately or later
   if(typeof pop === "undefined") pop = true;
   // If we have a callback, push it to the stack
   if(typeof callback !== "undefined") {
@@ -181,7 +182,9 @@ function getLightboxByUrl(url, post, callback, pop) {
  * and pushes the data and callback to the getLightboxByUrl
  */
 function getLightbox(controller, action, get, post, callback, pop) {
+  // Pop determines if we execute the callback immediately or later
   if(typeof pop === "undefined") pop = true;
+  // Build URL
   var url = path+'/AJAX/JSON?method=getLightbox&submodule='+controller+'&subaction='+action;
   if(get && get !== {}) {
     url += '&'+$.param(get);
@@ -469,10 +472,12 @@ $(document).ready(function() {
   $('#loginOptions a').click(function() {
     return getLightbox('MyResearch','Login',{},{'loggingin':true});
   });
-  // Place a Hold
+  /*/ Place a Hold
   $('.placehold').click(function() {
-    return getLightboxByUrl($(this).attr('href'));
-  });
+    var params = deparam($(this).attr('href'));
+    console.log(params);
+    return getLightbox('Record', 'Hold', params, {});
+  });*/
   // Save record links
   $('.save-record').click(function() {
     var parts = this.href.split('/');
