@@ -159,20 +159,8 @@ select, .btn:not(.btn-link){vertical-align:top}
 .table.details {font-size:10px;border-bottom:1px solid #DDD}
 
 /* --- ChoiceAuth --- */
-.authmethod0 {
-  width:47%;
-  float:left;
-  padding:1%;
-  border-right:1px solid rgb(204, 204, 204);
-}
-.authmethod1 {
-  width:47%;
-  float:left;
-  padding:1%;
-  border-left:1px solid rgb(204, 204, 204);
-  margin:-1px; /* keep the borders on top of one another; longest one will win */
-}
-#authcontainer {
-  float:left;
-  width:100%;
+.authmethod0 {border:1px solid #DDD;border-width:0 1px 0 0}
+@media (max-width: 979px) {
+  .row-fluid .authmethod0.span6,
+  .row-fluid .authmethod1.span6 {border-width:0 0 1px 0;float:none;padding-bottom:10px;margin-left:20px}
 }
