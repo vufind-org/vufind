@@ -130,10 +130,9 @@ function displayLightboxError(message) {
   $('.icon-spinner').remove();
 }
 
-/******************************/
-/* ====== GET LIGHTBOX ====== */
-/******************************/
-
+/***********************************/
+/* ====== LIGHTBOX REQUESTS ====== */
+/***********************************/
 /**
  * This function creates an XHR request to the URL
  * and handles the response according to the callbackStack.
@@ -190,10 +189,12 @@ function getLightbox(controller, action, get, post, callback, pop) {
   return getLightboxByUrl(url, post, callback, pop);
 }
 
-/****************************/
-/* ====== AJAX MAGIC ====== */
-/****************************/
-// Submit a form via AJAX and show the result
+/**********************************/
+/* ====== FORM SUBMISSIONS ====== */
+/**********************************/
+/**
+ * Call this function after a form is submitted
+ */
 function ajaxSubmit($form, callback) {
   // Default callback is to close
   if(!callback) {
@@ -257,7 +258,10 @@ function ajaxSubmit($form, callback) {
   }
   $(this).find('.modal-body').html(vufindString.loading + "...");
 }
-// AJAX action specifically for logging in (encrypted)
+/**
+ * Action specific form submissions
+ */
+// Logging in
 function ajaxLogin(form) {
   $.ajax({
     url: path + '/AJAX/JSON?method=getSalt',
@@ -348,7 +352,7 @@ function ajaxLogin(form) {
     }
   });
 }
-// AJAX action specifically for the cart and its many submit buttons
+// Cart submission
 function cartSubmit($form) {
   var submit = $form.find('input[type="submit"][clicked=true]').attr('name');
   switch(submit) {
@@ -387,7 +391,11 @@ function cartSubmit($form) {
 /***********************/
 /* ====== SETUP ====== */
 /***********************/
-// Checkbox actions and link hijacking
+/**
+ * The jQueries add functionality to content in the lightbox.
+ *
+ * It is called every time the lightbox is finished loading.
+ */
 function registerModalEvents(modal) {
   // New list
   $('#make-list').click(function() {
@@ -412,13 +420,18 @@ function registerModalEvents(modal) {
     }
 });
 }
-// Prevent forms from submitting in the lightbox
-// Go through AJAX instead
+/**
+ * Prevents default submission, reroutes through ajaxSubmit
+ *
+ * Called everytime the lightbox is loaded.
+ */
 function registerModalForms(modal) {
+  // Default
   $(modal).find('form').submit(function(){
     ajaxSubmit($(this), closeLightbox);
     return false;
   });
+  // Action specific
   $(modal).find('form[name="cartForm"]').unbind('submit').submit(function(){
     cartSubmit($(this));
     return false;
@@ -432,9 +445,46 @@ function registerModalForms(modal) {
     return false;
   });
 }
-// Default lightbox behaviour
-// Tell links to open lightboxes
+/**
+ * This is where you add click events to open the lightbox.
+ * We do it here so that non-JS users still have a good time.
+ */
 $(document).ready(function() {
+  // Cart lightbox
+  $('#cartItems').click(function() {
+    return getLightbox('Cart','Cart');
+  });
+  // Help links
+  $('.help-link').click(function() {
+    var split = this.href.split('=');
+    return getLightbox('Help','Home',{topic:split[1]});
+  });
+  // Hierarchy links
+  $('.hierarchyTreeLink a').click(function() {
+    var id = $(this).parent().parent().parent().find(".hiddenId")[0].value;
+    var hierarchyID = $(this).parent().find(".hiddenHierarchyId")[0].value;
+    return getLightbox('Record','AjaxTab',{id:id},{hierarchy:hierarchyID,tab:'HierarchyTree'});
+  });
+  // Login link
+  $('#loginOptions a').click(function() {
+    return getLightbox('MyResearch','Login',{},{'loggingin':true});
+  });
+  // Place a Hold
+  $('.placehold').click(function() {
+    return getLightboxByUrl($(this).attr('href'));
+  });
+  // Save record links
+  $('.save-record').click(function() {
+    var parts = this.href.split('/');
+    return getLightbox(parts[parts.length-3],'Save',{id:$(this).attr('id')});
+  });  
+  // Tag lightbox
+  $('#tagRecord').click(function() {
+    var id = $('.hiddenId')[0].value;
+    var parts = this.href.split('/');
+    return getLightbox(parts[parts.length-3],'AddTag',{id:id});
+  });
+  /* --- LIGHTBOX BEHAVIOUR --- */
   // Hijack modal forms
   $('#modal').on('show', function() {
     registerModalForms(this);
@@ -443,44 +493,6 @@ $(document).ready(function() {
   // Reset Content
   $('#modal').on('hidden', function() {
     closeLightboxActions();
-  });
-  /* --- MODAL LINK EVENTS --- */
-  // Save record links
-  $('.save-record').click(function() {
-    var parts = this.href.split('/');
-    return getLightbox(parts[parts.length-3],'Save',{id:$(this).attr('id')});
-  });  
-  // Cart lightbox
-  $('#cartItems').click(function() {
-    return getLightbox('Cart','Cart');
-  });
-  // Hierarchy links
-  $('.hierarchyTreeLink a').click(function() {
-    var id = $(this).parent().parent().parent().find(".hiddenId")[0].value;
-    var hierarchyID = $(this).parent().find(".hiddenHierarchyId")[0].value;
-    return getLightbox('Record','AjaxTab',{id:id},{hierarchy:hierarchyID,tab:'HierarchyTree'});
-  });
-  // Help links
-  $('.help-link').click(function() {
-    var split = this.href.split('=');
-    return getLightbox('Help','Home',{topic:split[1]});
-  });
-  // Login link
-  $('#loginOptions a').click(function() {
-    return getLightbox('MyResearch','Login',{},{'loggingin':true});
-  });
-  // Login link
-  $('.logoutOptions a').click(function() {
-    return getLightbox('MyResearch','Logout',{},{}, function() {
-      closeLightbox();
-      alert('!');
-    }, false);
-  });
-  // Tag lightbox
-  $('#tagRecord').click(function() {
-    var id = $('.hiddenId')[0].value;
-    var parts = this.href.split('/');
-    return getLightbox(parts[parts.length-3], 'AddTag', {id:id});
   });
   // Modal title
   $('.modal-link,.help-link').click(function() {
