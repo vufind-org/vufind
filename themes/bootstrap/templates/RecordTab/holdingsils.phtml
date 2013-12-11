@@ -95,7 +95,7 @@
               <? /* Begin Available Items (Holds) */ ?>
                <span class="text-success"><?=$this->transEsc("Available")?><link property="availability" href="http://schema.org/InStock" /></span>
               <? if (isset($row['link']) && $row['link']): ?>
-                <a<?=$check ? ' class="checkRequest"' : ''?> class="placehold" href="<?=$this->recordLink()->getHoldUrl($row['link'])?>"><?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
+                <a<?=$check ? ' class="checkRequest"' : ''?> class="modal-link placehold" href="<?=$this->recordLink()->getHoldUrl($row['link'])?>" title="<?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?>"><?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></a>
               <? endif; ?>
             <? else: ?>
               <? /* Begin Unavailable Items (Recalls) */ ?>

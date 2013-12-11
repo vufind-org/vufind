@@ -501,6 +501,10 @@ $(document).ready(function() {
   });
   // Modal title
   $('.modal-link,.help-link').click(function() {
-    $('#modal .modal-header h3').html($(this).attr('title'));
+    var title = $(this).attr('title');
+    if(typeof title === "undefined") {
+      title = $(this).html();
+    }
+    $('#modal .modal-header h3').html(title);
   });
 });
