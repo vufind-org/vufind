@@ -135,9 +135,9 @@
 <? $history = $this->driver->getRealTimeHistory(); ?>
 <? if (is_array($history) && !empty($history)): ?>
 <h3><?=$this->transEsc("Most Recent Received Issues")?></h3>
-<ul>
+<table class="table table-striped">
   <? foreach ($history as $row): ?>
-    <li><?=$this->escapeHtml($row['issue'])?></li>
+    <tr><td><?=$this->escapeHtml($row['issue'])?></td></tr>
   <? endforeach; ?>
-</ul>
+</table>
 <? endif; ?>
