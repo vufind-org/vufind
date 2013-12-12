@@ -49,7 +49,7 @@
       <strong><?=$this->escapeHtml($this->results->getStartRecord())?></strong> - <strong><?=$this->escapeHtml($this->results->getEndRecord())?></strong>
       <?=$this->transEsc('of')?> <strong><?=number_format($recordTotal)?></strong>
     </div>
-    <p class="lead"><?=$this->transEsc("Your Favorites")?></p>
+    <p class="lead"><?=$this->transEsc("Your Saved Items")?></p>
   <? endif; ?>
   </div>
   <? if ($recordTotal > 0): ?>
@@ -74,7 +74,7 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>">
-  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => isset($list) ? 'list' : 'favorites'))?>
+  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => isset($list) ? $list['title'] : 'favorites'))?>
 
   <? foreach ($this->results->getRecommendations('side') as $current): ?>
     <?=$this->recommend($current)?>
