@@ -51,6 +51,6 @@ class FavoriteFacets extends SideFacets
      */
     public function setConfig($settings)
     {
-        $this->mainFacets = array('lists' => 'Your Lists', 'tags' => 'Your Tags');
+        $this->mainFacets = array('tags' => 'Your Tags');
     }
 }
