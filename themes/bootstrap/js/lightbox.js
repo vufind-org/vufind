@@ -472,12 +472,12 @@ $(document).ready(function() {
   $('#loginOptions a').click(function() {
     return getLightbox('MyResearch','Login',{},{'loggingin':true});
   });
-  /*/ Place a Hold
+  // Place a Hold
   $('.placehold').click(function() {
     var params = deparam($(this).attr('href'));
-    console.log(params);
+    params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
     return getLightbox('Record', 'Hold', params, {});
-  });*/
+  });
   // Save record links
   $('.save-record').click(function() {
     var parts = this.href.split('/');
