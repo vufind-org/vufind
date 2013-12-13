@@ -467,6 +467,43 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     }
 
     /**
+     * Wrapper around processImageURL to determine cache setting based on
+     * image source.
+     *
+     * @param string $url    URL to load image from
+     * @param string $source Service being used for image loading
+     *
+     * @return bool         True if image loaded, false on failure.
+     */
+    protected function processImageURLForSource($url, $source)
+    {
+        $source = strtolower($source);
+        switch ($source) {
+        case 'amazon':
+        case 'google':
+            // These services disallow caching
+            $cache = false;
+            break;
+        default:
+            // All other services cache based on configuration:
+            $conf = isset($this->config->Content->coverimagesCache)
+                ? trim(strtolower($this->config->Content->coverimagesCache)) : true;
+            if ($conf === true || $conf === 1 || $conf === '1' || $conf === 'true') {
+                $cache = true;
+            } else if ($conf === false || $conf === 0 || $conf === '0'
+                || $conf === 'false'
+            ) {
+                $cache = false;
+            } else {
+                $conf = array_map('trim', explode(',', $conf));
+                $cache = in_array($source, $conf);
+            }
+            break;
+        }
+        return $this->processImageURL($url, $cache);
+    }
+
+    /**
      * Load image from URL, store in cache if requested, display if possible.
      *
      * @param string $url   URL to load image from
@@ -538,7 +575,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
                 $this->config->Syndetics->url : 'http://syndetics.com';
         $isbn = $this->isn->get13();
         $url .= "/index.aspx?type=xw12&isbn={$isbn}/{$size}&client={$id}";
-        return $isbn ? $this->processImageURL($url) : false;
+        return $isbn ? $this->processImageURLForSource($url, 'syndetics') : false;
     }
 
     /**
@@ -567,7 +604,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         $isbn = $this->isn->get13();
         $url .= "/ContentCafe/Jacket.aspx?UserID={$id}&Password={$pw}&Return=1" .
             "&Type={$size}&Value={$isbn}&erroroverride=1";
-        return $isbn ? $this->processImageURL($url) : false;
+        return $isbn ? $this->processImageURLForSource($url, 'contentcafe') : false;
     }
 
     /**
@@ -582,7 +619,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         $isbn = $this->isn->get13();
         $url = 'http://covers.librarything.com/devkey/' . $id . '/' .
             $this->size . '/isbn/' . $isbn;
-        return $isbn ? $this->processImageURL($url) : false;
+        return $isbn ? $this->processImageURLForSource($url, 'librarything') : false;
     }
 
     /**
@@ -611,7 +648,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         $isbn = $this->isn->get13();
         $url = 'http://covers.openlibrary.org/b/isbn/' . $isbn .
             "-{$size}.jpg?default=false";
-        return $isbn ? $this->processImageURL($url) : false;
+        return $isbn ? $this->processImageURLForSource($url, 'openlibrary') : false;
     }
 
     /**
@@ -664,8 +701,8 @@ class Loader implements \Zend\Log\LoggerAwareInterface
             // find the first thumbnail URL and process it:
             foreach ($json as $current) {
                 if (isset($current['thumbnail_url'])) {
-                    return $this->processImageURL(
-                        $current['thumbnail_url'], false
+                    return $this->processImageURLForSource(
+                        $current['thumbnail_url'], 'google'
                     );
                 }
             }
@@ -718,7 +755,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
 
         if ($imageIndex && isset($result->$imageIndex->Url)) {
             $imageUrl = (string)$result->$imageIndex->Url;
-            return $this->processImageURL($imageUrl, false);
+            return $this->processImageURLForSource($imageUrl, 'amazon');
         }
 
         return false;
@@ -736,7 +773,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         $isn = $this->isn->get13();
         $url = 'http://api.summon.serialssolutions.com/2.0.0/image/isbn/' . $id .
             '/' . $isn . '/' . $this->size;
-        return $this->processImageURL($url);
+        return $this->processImageURLForSource($url, 'summon');
     }
 
     /**
@@ -754,7 +791,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         }
         $key = $this->config->Booksite->key;
         $url = $url . '/poca/content_img?apikey=' . $key . '&ean=' . $isn;
-        return $this->processImageURL($url);
+        return $this->processImageURLForSource($url, 'booksite');
     }
 
 }
