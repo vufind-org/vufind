@@ -8,7 +8,6 @@
 .comment .popover {display:block;margin-top:6px;max-width:none;position:relative}
 form.comment .span3 {padding-top:60px}
 .front { position:absolute;top:0;left:0;width:100%;padding-top:20%;z-index:5 }
-.highlight { font-weight:bold }
 * html .centered-pills ul.nav-pills { display:inline } /* IE6 */
 *+html .centered-pills ul.nav-pills { display:inline } /* IE7 */
 li a.hidden {display:none}
