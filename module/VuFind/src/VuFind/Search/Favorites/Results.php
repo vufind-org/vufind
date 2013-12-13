@@ -40,7 +40,18 @@ use VuFind\Exception\ListPermission as ListPermissionException,
  */
 class Results extends BaseResults
 {
+    /**
+     * Object if user is logged in, false otherwise.
+     *
+     * @var \VuFind\Db\Row\User|bool
+     */
     protected $user = null;
+
+    /**
+     * Active user list (false if none).
+     *
+     * @var \VuFind\Db\Row\UserList|bool
+     */
     protected $list = false;
 
     /**
@@ -75,18 +86,6 @@ class Results extends BaseResults
                     'list' => array()
                 );
                 switch ($field) {
-                case 'lists':
-                    $lists = $this->user ? $this->user->getLists() : array();
-                    foreach ($lists as $list) {
-                        $this->facets[$field]['list'][] = array(
-                            'value' => $list->id,
-                            'displayText' => $list->title,
-                            'count' => $list->cnt,
-                            'isApplied' =>
-                                $this->getParams()->hasFilter("$field:".$list->id)
-                        );
-                    }
-                    break;
                 case 'tags':
                     if ($this->list) {
                         $tags = $this->list->getTags();

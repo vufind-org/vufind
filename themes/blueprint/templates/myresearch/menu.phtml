@@ -10,4 +10,23 @@
     <? endif; ?>
     <li<?=$this->active == 'history' ? ' class="active"' : ''?>><a href="<?=$this->url('search-history')?>?require_login"><?=$this->transEsc('history_saved_searches')?></a></li>
   </ul>
+  <? if ($user = $this->auth()->isLoggedIn()): ?>
+    <h4 class="list"><?=$this->transEsc('Your Lists')?></h4>
+    <ul>
+      <li<?=$this->active == 'favorites' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-favorites')?>"><?=$this->transEsc('Your Favorites')?></a></li>
+      <? $lists = $user->getLists() ?>
+      <? foreach ($lists as $list): ?>
+        <li<?=$this->active == 'list' . $list['id'] ? ' class="active"' : ''?>>
+          <a href="<?=$this->url('userList', array('id' => $list['id']))?>"><?=$this->escapeHtml($list['title'])?></a>
+          (<?=$list->cnt?>)
+        </li>
+      <? endforeach; ?>
+      <li>
+        <a href="<?=$this->url('editList', array('id'=>'NEW'))?>" title="<?=$this->transEsc('Create a List') ?>">
+          <?=$this->transEsc('Create a List') ?> 
+        </a>
+        <img src="<?=$this->imagelink('silk/add.png')?>" style="margin-left:2px;vertical-align:text-bottom"/>
+      </li>
+    </ul>
+  <? endif ?>
 </div>
