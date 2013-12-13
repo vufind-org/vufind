@@ -134,12 +134,17 @@ function getApacheLocation($overrideDir)
         $httpdConf = ($httpdConf && file_exists($httpdConf))
             ? $httpdConf : 'httpd.conf';
 
+        // Suggest a symlink name based on the local directory, so if running in
+        // multisite mode, we don't use the same symlink for multiple instances:
+        $symlink = basename($overrideDir);
+        $symlink = ($symlink == 'local') ? 'vufind' : ('vufind-' . $symlink);
+
         echo "You can do it in either of two ways:\n\n";
         echo "    a) Add this line to your {$httpdConf} file:\n";
         echo "       Include {$overrideDir}/httpd-vufind.conf\n\n";
         echo "    b) Link the configuration to Apache's conf.d directory like this:";
-        echo "\n       ln -s {$overrideDir}/httpd-vufind.conf {$confD}/vufind\n\n";
-        echo "Option b is preferable if your platform supports it,\n";
+        echo "\n       ln -s {$overrideDir}/httpd-vufind.conf {$confD}/{$symlink}\n";
+        echo "\nOption b is preferable if your platform supports it,\n";
         echo "but option a is more certain to be supported.\n\n";
     }
 }
