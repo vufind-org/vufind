@@ -33,6 +33,7 @@ return array(
             },
         ),
         'invokables' => array(
+            'highlight' => 'VuFind\View\Helper\Bootstrap\Highlight',
             'search' => 'VuFind\View\Helper\Bootstrap\Search',
             'vudl' => 'VuDL\View\Helper\Bootstrap\VuDL',
         )
