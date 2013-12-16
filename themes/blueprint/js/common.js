@@ -373,6 +373,28 @@ $(document).ready(function(){
       $(this.className.replace('facet_', '#narrowGroupHidden_')).toggleClass('open');
     });
 
+    // Support holds cancel list buttons:
+    function cancelHolds(type) {
+      var ids = $('[name="'+type+'IDS[]"]');
+      var cancelIDS = [];
+      for(var i=0;i<ids.length;i++) {
+        cancelIDS.push(ids[i].value);
+      }
+      var postParams = {
+        'confirm': 0,
+        type: 1,
+        type+'IDS': cancelIDS
+      };
+      getLightbox('MyResearch', 'Holds', '', '', '', 'MyResearch', 'Holds', '', postParams);
+      return false;
+    }
+    $('.holdCancel').unbind('click').click(function(){
+      return cancelHolds('cancelSelected');
+    });
+    $('.holdCancelAll').unbind('click').click(function(){
+      return cancelHolds('cancelAll');
+    });
+
     //ContextHelp
     contextHelp.init();
     contextHelp.contextHelpSys.load();

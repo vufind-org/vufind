@@ -163,6 +163,33 @@ class Holds extends AbstractPlugin
         }
 
         if (!empty($details)) {
+            // Confirm?
+            if ($params->fromPost('confirm') === "0") {
+                if ($params->fromPost('cancelAll') !== null) {
+                    return $this->getController()->confirm(
+                        'hold_cancel_all',
+                        $this->getController()->url()->fromRoute('myresearch-holds'),
+                        $this->getController()->url()->fromRoute('myresearch-holds'),
+                        'confirm_hold_cancel_all_text',
+                        array(
+                            'cancelAll' => 1,
+                            'cancelAllIDS' => $params->fromPost('cancelAllIDS')
+                        )
+                    );
+                } else {
+                    return $this->getController()->confirm(
+                        'hold_cancel_selected',
+                        $this->getController()->url()->fromRoute('myresearch-holds'),
+                        $this->getController()->url()->fromRoute('myresearch-holds'),
+                        'confirm_hold_cancel_selected_text',
+                        array(
+                            'cancelSelected' => 1,
+                            'cancelSelectedIDS' => $params->fromPost('cancelSelectedIDS')
+                        )
+                    );
+                }
+            }
+            
             foreach ($details as $info) {
                 // If the user input contains a value not found in the session
                 // whitelist, something has been tampered with -- abort the process.
