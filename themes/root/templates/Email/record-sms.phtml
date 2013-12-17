@@ -39,10 +39,10 @@
         }
 
         if ($callno) {
-            echo $this->translate('callnumber_abbrev') . ': ' . trim($callno) . "\n";
+            echo $this->transEsc('callnumber_abbrev') . ': ' . trim($callno) . "\n";
         }
         if ($location) {
-            echo $this->translate('Location') . ': ' . trim($location) . "\n";
+            echo $this->transEsc('Location') . ': ' . trim($location) . "\n";
         }
         echo $this->driver->getBreadcrumb() . "\n";
         echo $this->serverUrl($this->recordLink()->getUrl($this->driver)) . "\n";

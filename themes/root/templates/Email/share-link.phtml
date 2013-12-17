@@ -1,13 +1,13 @@
 <? // This is a text-only email template; do not include HTML! ?>
-<?=$this->translate('This email was sent from')?>: <?=$this->from?>
+<?=$this->transEsc('This email was sent from')?>: <?=$this->from?>
 
 ------------------------------------------------------------
-<? if (!empty($this->message)): ?><?=$this->translate("Message From Sender")?>:
+<? if (!empty($this->message)): ?><?=$this->transEsc("Message From Sender")?>:
 <?=$this->message?>
 
 
 <? endif; ?>
-  <?=$this->translate('email_link')?>: <?=$this->msgUrl?>
+  <?=$this->transEsc('email_link')?>: <?=$this->msgUrl?>
 
 ------------------------------------------------------------
 
