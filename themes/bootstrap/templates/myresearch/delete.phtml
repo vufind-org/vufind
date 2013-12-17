@@ -8,7 +8,7 @@
     <? endif; ?>
     
     <? foreach ($this->records as $favorite): ?>
-      <strong><?=$this->translate('Title') ?>:</strong>
+      <strong><?=$this->transEsc('Title') ?>:</strong>
       <?=$this->escapeHtml($favorite->getBreadcrumb())?><br />
     <? endforeach; ?>
     <br />

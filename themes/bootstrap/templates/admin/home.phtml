@@ -9,7 +9,7 @@
     'stats' => $this->translate('Usage Statistics Index')
   );
   
-  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('admin-home') . '">' . $this->translate('Admin') . '</a> <span class="divider">&gt;</span></li> <li class="active">Home</li>';
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('admin-home') . '">' . $this->transEsc('Admin') . '</a> <span class="divider">&gt;</span></li> <li class="active">Home</li>';
 ?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">

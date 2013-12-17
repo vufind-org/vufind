@@ -5,7 +5,7 @@
 <div data-role="page" id="MyResearch-checkedout">
   <?=$this->mobileMenu()->header()?>
   <div data-role="content">
-    <h3><?=$this->translate('Your Holds and Recalls') ?></h3>
+    <h3><?=$this->transEsc('Your Holds and Recalls') ?></h3>
 
     <?=$this->flashmessages()?>
 
@@ -13,8 +13,8 @@
       <? if ($this->cancelForm): ?>
         <form name="cancelForm" method="post" id="cancelHold">
           <fieldset data-type="horizontal" data-role="controlgroup">
-            <input type="submit" class="button holdCancel" name="cancelSelected" value="<?=$this->translate("hold_cancel_selected") ?>" onClick="return confirm('<?=$this->translate("confirm_hold_cancel_selected_text") ?>')" />
-            <input type="submit" class="button holdCancelAll" name="cancelAll" value="<?=$this->translate("hold_cancel_all") ?>" onClick="return confirm('<?=$this->translate("confirm_hold_cancel_all_text") ?>')" />
+            <input type="submit" class="button holdCancel" name="cancelSelected" value="<?=$this->transEsc("hold_cancel_selected") ?>" onClick="return confirm('<?=$this->transEsc("confirm_hold_cancel_selected_text") ?>')" />
+            <input type="submit" class="button holdCancelAll" name="cancelAll" value="<?=$this->transEsc("hold_cancel_all") ?>" onClick="return confirm('<?=$this->transEsc("confirm_hold_cancel_all_text") ?>')" />
           </fieldset>
       <? endif; ?>
 
@@ -115,8 +115,8 @@
       </ul>
       <? if ($this->cancelForm): ?>
           <fieldset data-type="horizontal" data-role="controlgroup">
-            <input type="submit" class="button holdCancel" name="cancelSelected" value="<?=$this->translate("hold_cancel_selected") ?>" onClick="return confirm('<?=$this->translate("confirm_hold_cancel_selected_text") ?>')" />
-            <input type="submit" class="button holdCancelAll" name="cancelAll" value="<?=$this->translate("hold_cancel_all") ?>" onClick="return confirm('<?=$this->translate("confirm_hold_cancel_all_text") ?>')" />
+            <input type="submit" class="button holdCancel" name="cancelSelected" value="<?=$this->transEsc("hold_cancel_selected") ?>" onClick="return confirm('<?=$this->transEsc("confirm_hold_cancel_selected_text") ?>')" />
+            <input type="submit" class="button holdCancelAll" name="cancelAll" value="<?=$this->transEsc("hold_cancel_all") ?>" onClick="return confirm('<?=$this->transEsc("confirm_hold_cancel_all_text") ?>')" />
           </fieldset>
       </form>
       <? endif; ?>

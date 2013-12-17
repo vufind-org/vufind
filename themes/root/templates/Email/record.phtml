@@ -1,12 +1,12 @@
 <? // This is a text-only email template; do not include HTML! ?>
-<?=$this->translate('This email was sent from')?>: <?=$this->from?>
+<?=$this->transEsc('This email was sent from')?>: <?=$this->from?>
 
 ------------------------------------------------------------
   <?=$this->driver->getBreadcrumb()?>
 
-  <?=$this->translate('email_link')?>: <?=$this->serverUrl($this->recordLink()->getUrl($this->driver))?>
+  <?=$this->transEsc('email_link')?>: <?=$this->serverUrl($this->recordLink()->getUrl($this->driver))?>
 
 ------------------------------------------------------------
-<? if (!empty($this->message)): ?><?=$this->translate("Message From Sender")?>:
+<? if (!empty($this->message)): ?><?=$this->transEsc("Message From Sender")?>:
 <?=$this->message?>
 <? endif; ?>
