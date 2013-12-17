@@ -375,16 +375,15 @@ $(document).ready(function(){
 
     // Support holds cancel list buttons:
     function cancelHolds(type) {
-      var ids = $('[name="'+type+'IDS[]"]');
+      var typeIDS = type+'IDS';
+      var ids = $('[name="'+typeIDS+'[]"]');
       var cancelIDS = [];
       for(var i=0;i<ids.length;i++) {
         cancelIDS.push(ids[i].value);
       }
-      var postParams = {
-        'confirm': 0,
-        type: 1,
-        type+'IDS': cancelIDS
-      };
+      var postParams = {'confirm':0};
+      postParams[type] = 1;
+      postParams[typeIDS] = cancelIDS;
       getLightbox('MyResearch', 'Holds', '', '', '', 'MyResearch', 'Holds', '', postParams);
       return false;
     }
