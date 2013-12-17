@@ -476,7 +476,9 @@ $(document).ready(function() {
   $('.placehold').click(function() {
     var params = deparam($(this).attr('href'));
     params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    return getLightbox('Record', 'Hold', params, {});
+    return getLightbox('Record', 'Hold', params, {}, function(op) {
+      document.location.href = path+'/MyResearch/Holds';
+    }, false);
   });
   // Save record links
   $('.save-record').click(function() {

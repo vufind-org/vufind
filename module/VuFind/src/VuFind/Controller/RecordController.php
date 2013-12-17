@@ -128,6 +128,9 @@ class RecordController extends AbstractRecord
                 if (isset($results['success']) && $results['success'] == true) {
                     $this->flashMessenger()->setNamespace('info')
                         ->addMessage('hold_place_success');
+                    if ($this->inLightbox()) {
+                        return false;
+                    }
                     return $this->redirect()->toRoute('myresearch-holds');
                 } else {
                     // Failure: use flash messenger to display messages, stay on
