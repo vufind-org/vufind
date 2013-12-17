@@ -25,7 +25,7 @@
       </div>
     <? elseif (!$user->cat_username): ?>
       <div class="info">
-        <?=$this->translate("hold_profile_html", array('%%url%%' => $this->currentPath() . '?catalogLogin=true'))?>
+        <?=$this->transEsc("hold_profile_html", array('%%url%%' => $this->currentPath() . '?catalogLogin=true'))?>
       </div>
     <? endif; ?>
   <? endif; ?>

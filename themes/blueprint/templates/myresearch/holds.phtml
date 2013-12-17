@@ -8,7 +8,7 @@
         . $this->transEsc('My Holds') . '</em>';
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h3><?=$this->translate('Your Holds and Recalls') ?></h3>
+  <h3><?=$this->transEsc('Your Holds and Recalls') ?></h3>
 
   <?=$this->flashmessages()?>
 
@@ -18,8 +18,8 @@
         <input type="hidden" id="cancelConfirm" name="confirm" value="0"/>
         <div class="toolbar">
           <ul>
-            <li><input type="submit" class="button holdCancel" name="cancelSelected" value="<?=$this->translate("hold_cancel_selected") ?>"/></li>
-            <li><input type="submit" class="button holdCancelAll" name="cancelAll" value="<?=$this->translate("hold_cancel_all") ?>"/></li>
+            <li><input type="submit" class="button holdCancel" name="cancelSelected" value="<?=$this->transEsc("hold_cancel_selected") ?>"/></li>
+            <li><input type="submit" class="button holdCancelAll" name="cancelAll" value="<?=$this->transEsc("hold_cancel_all") ?>"/></li>
           </ul>
         </div>
       <div class="clearer"></div>

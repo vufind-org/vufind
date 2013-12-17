@@ -2,7 +2,7 @@
   // Set page title.
   $this->headTitle($this->translate('VuFind Administration - Configuration'));
     
-  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('admin-home') . '">' . $this->translate('Admin') . '</a> <span class="divider">&gt;</span></li> <li class="active">Config</li>';
+  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('admin-home') . '">' . $this->transEsc('Admin') . '</a> <span class="divider">&gt;</span></li> <li class="active">Config</li>';
 ?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">

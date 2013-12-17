@@ -12,7 +12,7 @@
         &bull; <a href="<?=$this->recordLink()->getUrl($record)?>"><?=$record->getTitle() ?></a>
         <? if(strlen($record->getPrimaryAuthor()) > 0): ?>
           <span class="small">
-            <?=$this->translate('by') ?> <a href="<?=$this->url('author-home')?>?author=<?=urlencode($record->getPrimaryAuthor())?>"><?=$this->escapeHtml($record->getPrimaryAuthor())?></a>
+            <?=$this->transEsc('by') ?> <a href="<?=$this->url('author-home')?>?author=<?=urlencode($record->getPrimaryAuthor())?>"><?=$this->escapeHtml($record->getPrimaryAuthor())?></a>
           </span><br/>
         <? endif; ?>
 
@@ -23,7 +23,7 @@
   </div>
   <? if ($this->recordCount > 5): ?>
     <div class="mapSeeAllDiv">
-      <a href="<?=$this->url('search-results') ?><?=$this->results->getUrlQuery()->getParams() ?>"><?=$this->translate('see all') ?> <?=$this->escapeHtml($this->recordCount) ?>...</a>
+      <a href="<?=$this->url('search-results') ?><?=$this->results->getUrlQuery()->getParams() ?>"><?=$this->transEsc('see all') ?> <?=$this->escapeHtml($this->recordCount) ?>...</a>
     </div>
   <? endif; ?>
 </div>
