@@ -186,7 +186,10 @@ class ResourceTags extends Gateway
         );
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $result = $statement->execute();
-        return (array)$result->current();
+        $stats = (array)$result->current();
+        $stats['unique'] = count($this->getUniqueTags());
+        $stats['anonymous'] = count($this->getAnonymousCount());
+        return $stats;
     }
 
     /**
