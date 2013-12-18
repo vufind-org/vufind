@@ -1,15 +1,21 @@
 <?
-  // Set page title.
-  $this->headTitle($this->translate('VuFind Administration - Statistics'));
-    
-  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('admin-home') . '">' . $this->transEsc('Admin') . '</a> <span class="divider">&gt;</span></li> <li class="active">Statistics</li>';
+    // Set page title.
+    $this->headTitle($this->translate('VuFind Administration - Statistics'));
 ?>
-
+<style>
+table {
+    table-layout: fixed;
+    width: 100%;
+}
+tr td:first-child {
+    width:50%;
+}
+</style>
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h2><?=$this->transEsc('Statistics')?></h2>
-  <hr/>
+
   <? if(null !== $this->totalSearches || null !== $this->emptySearches || null !== $this->totalRecordViews): ?>
-    <p class="lead">Executive Summary</p>
+    <h3>Executive Summary</h3>
     <table class="table table-striped">
       <? if(null !== $this->totalSearches): ?><tr><td>Total Searches</td><td><?=$this->totalSearches ?></td></tr><? endif; ?>
       <? if(null !== $this->emptySearches): ?><tr><td>0 Hit Searches</td><td><?=$this->emptySearches ?></td></tr><? endif; ?>
@@ -18,10 +24,10 @@
   <? endif; ?>
 
   <? if(!empty($this->topSearches)): ?>
-    <p class="lead">Top Searches<? if($this->searchesBySource): ?> by Source<? endif; ?></p>
+    <h3>Top Searches<? if($this->searchesBySource): ?> by Source<? endif; ?></h3>
     <? if($this->searchesBySource): ?>
       <? foreach($this->topSearches as $source=>$searches): ?>
-        <span><?=$source ?></span>
+        <span style="font-size:14px"><?=$source ?></span>
         <table class="table table-striped">
         <? foreach($searches as $search): ?>
           <tr><td><?=$search['value'] ?></td><td><?=$search['count'] ?></td></tr>
@@ -38,10 +44,10 @@
   <? endif; ?>
 
   <? if(!empty($this->topRecords)): ?>
-    <p class="lead">Top Records<? if($this->recordsBySource): ?> by Source<? endif; ?></p>
+    <h3>Top Records<? if($this->recordsBySource): ?> by Source<? endif; ?></h3>
     <? if($this->recordsBySource): ?>
       <? foreach($this->topRecords as $source=>$records): ?>
-        <span><?=$source ?></span>
+        <span style="font-size:14px"><?=$source ?></span>
         <table class="table table-striped">
         <? foreach($records as $record): ?>
           <tr><td><?=$record['value'] ?></td><td><?=$record['count'] ?></td></tr>
@@ -58,7 +64,7 @@
   <? endif; ?>
 
   <? if(!empty($this->browserStats)): ?>
-    <p class="lead">Browser Usage</p>
+    <h3>Browser Usage</h3>
     <?
       $total = 0;
       foreach($this->browserStats as $browser) {
@@ -72,7 +78,7 @@
     </table>
     <h4 style="display:inline">Top Versions</h4>:
     <? foreach($this->topVersions as $i=>$browser): ?>
-      <span><?=$browser['browserName'] ?> (<?=$browser['count'] ?>)</span><? if(++$i < count($this->topVersions)): ?>,<? endif; ?>
+      <span style="padding:0 3px<? if($this->currentBrowser == $browser['browserName']): ?>;background:#E5ECF9<? endif; ?>"><?=$browser['browserName'] ?> (<?=$browser['count'] ?>)</span><? if(++$i < count($this->topVersions)): ?>,<? endif; ?>
     <? endforeach; ?>
   <? endif; ?>
   

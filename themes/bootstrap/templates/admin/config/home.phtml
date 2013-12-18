@@ -1,10 +1,7 @@
 <?
-  // Set page title.
-  $this->headTitle($this->translate('VuFind Administration - Configuration'));
-    
-  $this->layout()->breadcrumbs = '<li><a href="' . $this->url('admin-home') . '">' . $this->transEsc('Admin') . '</a> <span class="divider">&gt;</span></li> <li class="active">Config</li>';
+    // Set page title.
+    $this->headTitle($this->translate('VuFind Administration - Configuration'));
 ?>
-
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h2><?=$this->transEsc('Configuration')?></h2>
   <?=$this->flashmessages()?>
@@ -12,9 +9,9 @@
   <p>Some basic settings can also be adjusted through the auto-configuration tool.</p>
   <? if (!$this->showInstallLink): ?>
     <p><?=$this->transEsc('Auto configuration is currently disabled') ?>.</p>
-    <p><a href="<?=$this->url('admin-enableautoconfig')?>" class="btn"><?=$this->transEsc('Enable Auto Config')?></a></p>
+    <p><a href="<?=$this->url('admin/config', array('action' => 'EnableAutoConfig'))?>"><?=$this->transEsc('Enable Auto Config')?></a></p>
   <? else: ?>
-    <p><a href="<?=$this->url('install-home')?>" class="btn btn-primary"><?=$this->transEsc('auto_configure_title')?></a></p>
+    <p><a href="<?=$this->url('install-home')?>"><?=$this->transEsc('auto_configure_title')?></a></p>
   <? endif; ?>
 </div>
 
