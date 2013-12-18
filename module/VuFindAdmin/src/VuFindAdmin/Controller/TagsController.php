@@ -132,6 +132,15 @@ class TagsController extends AbstractAdmin
 
         $originUrl = $this->url()
             ->fromRoute('admin/tags', array('action' => $action));
+        if ($action == 'List') {
+            $originUrl .= '?' . http_build_query(
+                array(
+                    'user_id' => $this->getParam('user_id'),
+                    'resource_id' => $this->getParam('resource_id'),
+                    'tag_id' => $this->getParam('tag_id'),
+                )
+            );
+        }
         $newUrl = $this->url()->fromRoute('admin/tags', array('action' => 'Delete'));
 
         $confirm = $this->params()->fromPost('confirm', false);
