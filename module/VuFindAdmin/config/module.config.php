@@ -9,6 +9,7 @@ $config = array(
             'adminsocial' => 'VuFindAdmin\Controller\SocialstatsController',
             'adminmaintenance' => 'VuFindAdmin\Controller\MaintenanceController',
             'adminstatistics' => 'VuFindAdmin\Controller\StatisticsController',
+            'admintags' => 'VuFindAdmin\Controller\TagsController',
         ),
     ),
     'router' => array(
@@ -70,6 +71,16 @@ $config = array(
                             'route'    => '/Statistics[/:action]',
                             'defaults' => array(
                                 'controller' => 'AdminStatistics',
+                                'action'     => 'Home',
+                            )
+                        )
+                    ),
+                    'tags' => array(
+                        'type' => 'Zend\Mvc\Router\Http\Segment',
+                        'options' => array(
+                            'route'    => '/Tags[/:action]',
+                            'defaults' => array(
+                                'controller' => 'AdminTags',
                                 'action'     => 'Home',
                             )
                         )
