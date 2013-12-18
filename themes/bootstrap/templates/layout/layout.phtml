@@ -70,7 +70,10 @@
         <? endif; ?>
       </div>
       
-      <? if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true) && $this->layout()->breadcrumbs !== false): ?>
+      <? if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
+        && !empty($this->layout()->breadcrumbs)
+        && $this->layout()->breadcrumbs !== false
+      ): ?>
         <ul class="breadcrumb">
         <? if(is_array($this->layout()->breadcrumbs)): ?>
           <? if(count($this->layout()->breadcrumbs) > 1): ?>
