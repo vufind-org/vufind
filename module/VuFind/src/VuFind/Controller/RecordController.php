@@ -151,14 +151,18 @@ class RecordController extends AbstractRecord
         $defaultRequired = $this->holds()->getDefaultRequiredDate($checkHolds);
         $defaultRequired = $this->getServiceLocator()->get('VuFind\DateConverter')
             ->convertToDisplayDate("U", $defaultRequired);
+        try {
+            $defaultPickup = $catalog->getDefaultPickUpLocation($patron, $gatheredDetails);
+        } catch (\Exception $e) {
+            $defaultPickup = false;
+        }
+
 
         return $this->createViewModel(
             array(
                 'gatheredDetails' => $gatheredDetails,
                 'pickup' => $pickup,
-                'defaultPickup' => $catalog->getDefaultPickUpLocation(
-                    $patron, $gatheredDetails
-                ),
+                'defaultPickup' => $defaultPickup,
                 'homeLibrary' => $this->getUser()->home_library,
                 'extraHoldFields' => $extraHoldFields,
                 'defaultRequiredDate' => $defaultRequired
