@@ -259,7 +259,11 @@ class TagsController extends AbstractAdmin
     protected function confirmTagsDeleteByFilter($tagModel, $originUrl, $newUrl)
     {
         $messages = array();
-        $count = $tagModel->getResourceTags()->getTotalItemCount();
+        $count = $tagModel->getResourceTags(
+            $this->convertFilter($this->getParam('user_id')),
+            $this->convertFilter($this->getParam('resource_id')),
+            $this->convertFilter($this->getParam('tag_id'))
+        )->getTotalItemCount();
 
         $user = $this->getTable('user')
             ->select(array('id' => $this->getParam('user_id')))
