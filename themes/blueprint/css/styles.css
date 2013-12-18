@@ -2270,3 +2270,8 @@ div.handle {
   float:left;
   width:100%;
 }
+
+/* Admin styling */
+.tagForm select {
+  width:200px;
+}
