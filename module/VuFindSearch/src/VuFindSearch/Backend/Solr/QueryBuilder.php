@@ -128,7 +128,7 @@ class QueryBuilder implements QueryBuilderInterface
         }
 
         $string  = $query->getString() ?: '*:*';
-        $handler = $this->getSearchHandler($query->getHandler());
+        $handler = $this->getSearchHandler($query->getHandler(), $string);
 
         if (!($handler && $handler->hasExtendedDismax())
             && $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string)
@@ -239,18 +239,28 @@ class QueryBuilder implements QueryBuilderInterface
     /**
      * Return named search handler.
      *
-     * @param string $handler Search handler name
+     * @param string $handler      Search handler name
+     * @param string $searchString Search query
      *
      * @return SearchHandler|null
      */
-    protected function getSearchHandler($handler)
+    protected function getSearchHandler($handler, $searchString)
     {
         $handler = $handler ? strtolower($handler) : $handler;
-        if ($handler && isset($this->specs[$handler])) {
-            return $this->specs[$handler];
-        } else {
-            return null;
+        if ($handler) {
+            if (isset($searchString) 
+                && substr(trim($searchString), 0, 1) == '"'
+                && substr(trim($searchString), -1, 1) == '"'
+            ) {
+                if (isset($this->specs[$handler . 'exact'])) {
+                    return $this->specs[$handler . 'exact'];
+                }
+            }
+            if (isset($this->specs[$handler])) {
+                return $this->specs[$handler];
+            }
         }
+        return null;
     }
 
     /**
@@ -292,7 +302,10 @@ class QueryBuilder implements QueryBuilderInterface
         } else {
             $searchString  = $this->getLuceneHelper()
                 ->normalizeSearchString($component->getString());
-            $searchHandler = $this->getSearchHandler($component->getHandler());
+            $searchHandler = $this->getSearchHandler(
+                $component->getHandler(),
+                $searchString
+            );
             if ($searchHandler) {
                 $searchString
                     = $this->createSearchString($searchString, $searchHandler);

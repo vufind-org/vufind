@@ -54,6 +54,11 @@
 #
 # ...etc.
 #
+# Additional searchTypeExact (e.g. SubjectExact) can be specified, and it will
+# be automatically used in case the search string is enclosed in quotes. It
+# allows "exact" search to have different fields or weights. See below for
+# commented-out examples. 
+#
 #-----------------------------------------------------------------------------------
 #
 # Within the QueryFields area, fields are OR'd together, unless they're in an
@@ -209,6 +214,15 @@ Subject:
       - [and, 100]
       - [or, ~]
 
+#SubjectExact:
+#  DismaxFields:
+#    - topic_unstemmed^150
+#  QueryFields:
+#    - topic_unstemmed:
+#      - [onephrase, 350]
+#      - [and, 150]
+#      - [or, ~]
+
 # This field definition is a compromise that supports both journal-level and
 # article-level data.  The disadvantage is that hits in article titles will
 # be mixed in.  If you are building a purely article-oriented index, you should
@@ -254,6 +268,15 @@ JournalTitle:
       - [and , ~]
   FilterQuery: "format:Journal OR format:Article"
 
+#JournalTitleExact:
+#  DismaxFields:
+#    - title_full_unstemmed^450
+#  QueryFields:
+#    - title_full_unstemmed:
+#      - [onephrase, 450]
+#      - [and, 400]
+#  FilterQuery: "format:Journal OR format:Article"
+
 Title:
   DismaxFields:
     - title_short^500
@@ -288,6 +311,14 @@ Title:
     series2:
       - [onephrase, 50]
       - [and , ~]
+
+#TitleExact:
+#  DismaxFields:
+#    - title_full_unstemmed^450
+#  QueryFields:
+#    - title_full_unstemmed:
+#      - [onephrase, 450]
+#      - [and, 400]
 
 Series:
   DismaxFields:
@@ -324,6 +355,8 @@ AllFields:
     - fulltext_unstemmed^10
     - allfields
     - fulltext
+    - isbn
+    - issn    
   QueryFields:
     0:
       0:
@@ -376,6 +409,34 @@ AllFields:
       - [or, ~]
     fulltext:
       - [or, ~]
+    isbn:
+      - [onephrase, ~]
+    issn:
+      - [onephrase, ~]
+
+#AllFieldsExact:
+#  DismaxFields:
+#    - title_full_unstemmed^600
+#    - topic_unstemmed^550
+#    - allfields_unstemmed^10
+#    - fulltext_unstemmed^10
+#    - isbn
+#    - issn
+#  QueryFields:
+#    title_full_unstemmed:
+#      - [onephrase, 600]
+#      - [and, 500]
+#    topic_unstemmed:
+#      - [onephrase, 550]
+#      - [and, 500]
+#    allfields_unstemmed:
+#      - [or, 10]
+#    fulltext_unstemmed:
+#      - [or, 10]
+#    isbn:
+#      - [onephrase, ~]
+#    issn:
+#      - [onephrase, ~]
 
 # These are advanced searches that never use Dismax:
 id:
@@ -487,7 +548,7 @@ geographic:
     geographic:
       - [and, 50]
     geographic_facet:
-      - [and ~]
+      - [and, ~]
 
 genre:
   QueryFields:
