@@ -1,7 +1,7 @@
 <script>
   // Mandatory update function
   updateFunction = function(data, tab) {
-    //$('#xml').html(data['techinfo']);
+    $('#file-download').attr("action", data['master']);
   };
 </script>
 <? if($this->counts[0] > 1): ?>

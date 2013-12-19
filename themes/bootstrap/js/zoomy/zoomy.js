@@ -76,11 +76,9 @@
               'width' :state.map.width,
               'height':state.map.height
             });
-          if(navigator.userAgent.match(/iPad/i) == null) {
-            state.zoombar.css({
-                'bottom' :(state.map.size+state.map.margin-state.map.height)/2+state.map.height+3
-              });
-          }
+          state.zoombar.css({
+              'bottom' :(state.map.size+state.map.margin-state.map.height)/2+state.map.height+3
+            });
           // Initialize map lens
           state.scope.css({
               'width' :state.map.width-2,

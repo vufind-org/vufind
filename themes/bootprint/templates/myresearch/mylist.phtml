@@ -34,7 +34,7 @@
           </a>
           <ul class="dropdown-menu">
             <li><a href="<?=$this->url('myresearch-deletelist') ?>?listID=<?=urlencode($list->id)?>&amp;confirm=1"><?=$this->transEsc('Delete') ?></a></li>
-            <li><a href="#">Cancel</a></li>
+            <li><a href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
           </ul>
         </div>
       <? endif; ?>
@@ -74,7 +74,7 @@
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>">
-  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => isset($list) ? 'list' : 'favorites'))?>
+  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => isset($list) ? 'list' . $list['id'] : 'favorites'))?>
 
   <? foreach ($this->results->getRecommendations('side') as $current): ?>
     <?=$this->recommend($current)?>

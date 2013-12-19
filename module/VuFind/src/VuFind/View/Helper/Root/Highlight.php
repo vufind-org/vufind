@@ -40,6 +40,20 @@ use Zend\View\Helper\AbstractHelper;
 class Highlight extends AbstractHelper
 {
     /**
+     * Start tag for highlighitng
+     *
+     * @var string
+     */
+    protected $startTag = '<span class="highlight">';
+
+    /**
+     * End tag for highlighitng
+     *
+     * @var string
+     */
+    protected $endTag = '</span>';
+
+    /**
      * Adds a span tag with class "highlight" around a specific phrase for
      * highlighting
      *
@@ -76,7 +90,7 @@ class Highlight extends AbstractHelper
         // URL encode the string, then put in the highlight spans:
         $haystack = str_replace(
             array('{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'),
-            array('<span class="highlight">', '</span>'),
+            array($this->startTag, $this->endTag),
             htmlspecialchars($haystack)
         );
 

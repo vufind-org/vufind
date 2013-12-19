@@ -128,6 +128,9 @@ class RecordController extends AbstractRecord
                 if (isset($results['success']) && $results['success'] == true) {
                     $this->flashMessenger()->setNamespace('info')
                         ->addMessage('hold_place_success');
+                    if ($this->inLightbox()) {
+                        return false;
+                    }
                     return $this->redirect()->toRoute('myresearch-holds');
                 } else {
                     // Failure: use flash messenger to display messages, stay on
@@ -148,14 +151,18 @@ class RecordController extends AbstractRecord
         $defaultRequired = $this->holds()->getDefaultRequiredDate($checkHolds);
         $defaultRequired = $this->getServiceLocator()->get('VuFind\DateConverter')
             ->convertToDisplayDate("U", $defaultRequired);
+        try {
+            $defaultPickup = $catalog->getDefaultPickUpLocation($patron, $gatheredDetails);
+        } catch (\Exception $e) {
+            $defaultPickup = false;
+        }
+
 
         return $this->createViewModel(
             array(
                 'gatheredDetails' => $gatheredDetails,
                 'pickup' => $pickup,
-                'defaultPickup' => $catalog->getDefaultPickUpLocation(
-                    $patron, $gatheredDetails
-                ),
+                'defaultPickup' => $defaultPickup,
                 'homeLibrary' => $this->getUser()->home_library,
                 'extraHoldFields' => $extraHoldFields,
                 'defaultRequiredDate' => $defaultRequired

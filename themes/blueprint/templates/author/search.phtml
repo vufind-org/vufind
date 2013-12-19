@@ -20,5 +20,5 @@
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<a href="' . $this->url('author-home') . '">' . $this->transEsc('Author') . '</a> <span>&gt;</span> '
-        . '<em>' . $this->translate('Author Results for') . ' ' . $this->escapeHtml($this->params->getDisplayQuery()) . '</em>';
+        . '<em>' . $this->transEsc('Author Results for') . ' ' . $this->escapeHtml($this->params->getDisplayQuery()) . '</em>';
 ?>

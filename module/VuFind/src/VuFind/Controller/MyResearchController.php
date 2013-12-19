@@ -828,6 +828,10 @@ class MyResearchController extends AbstractBase
         $view = $this->createViewModel();
         $view->cancelResults = $cancelStatus
             ? $this->holds()->cancelHolds($catalog, $patron) : array();
+        // If we need to confirm
+        if (!is_array($view->cancelResults)) {
+            return $view->cancelResults;
+        }
 
         // By default, assume we will not need to display a cancel form:
         $view->cancelForm = false;

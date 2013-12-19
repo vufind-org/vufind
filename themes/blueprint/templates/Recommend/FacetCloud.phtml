@@ -8,7 +8,7 @@
   <div class="sidegroup">
     <? foreach ($expandFacetSet as $title=>$facets): ?>
       <dl class="narrowList navmenu">
-        <dt><?=$this->translate($facets['label']) ?></dt>
+        <dt><?=$this->transEsc($facets['label']) ?></dt>
         <?
         foreach ($facets['list'] as $i => $facetItem) {
             if ($i < $cloudLimit) {
