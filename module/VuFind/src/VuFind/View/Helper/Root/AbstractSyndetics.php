@@ -26,7 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\View\Helper\Root;
-use Zend\View\Helper\AbstractHelper;
+use DOMDocument, Zend\View\Helper\AbstractHelper;
 
 /**
  * Author Notes view helper
@@ -205,5 +205,18 @@ abstract class AbstractSyndetics extends AbstractHelper
     protected function loadSyndeticsplus($id) 
     {
         return $this->loadSyndetics($id, true);
+    }
+
+    /**
+     * Turn an XML response into a DOMDocument object.
+     *
+     * @param string $xml XML to load.
+     *
+     * @return DOMDocument|bool Document on success, false on failure.
+     */
+    protected function xmlToDOMDocument($xml)
+    {
+        $dom = new DOMDocument();
+        return $dom->loadXML($xml) ? $dom : false;
     }
 }
