@@ -51,13 +51,14 @@
 #    #     for an example.  This is applied whether we use DismaxFields or
 #    #     QueryFields.
 #    FilterQuery: (optional Lucene filter query)
-#
+#    ExactSettings:
+#      DismaxFields: ...
+#      QueryFields: ...
+#    # All the same settings as above, but for exact searches, i.e. search terms
+#    #     enclosed in quotes. Allows different fields or weights for exact
+#    #     searches. See below for commented-out examples.  
+#       
 # ...etc.
-#
-# Additional searchTypeExact (e.g. SubjectExact) can be specified, and it will
-# be automatically used in case the search string is enclosed in quotes. It
-# allows "exact" search to have different fields or weights. See below for
-# commented-out examples. 
 #
 #-----------------------------------------------------------------------------------
 #
@@ -213,15 +214,14 @@ Subject:
     era:
       - [and, 100]
       - [or, ~]
-
-#SubjectExact:
-#  DismaxFields:
-#    - topic_unstemmed^150
-#  QueryFields:
-#    - topic_unstemmed:
-#      - [onephrase, 350]
-#      - [and, 150]
-#      - [or, ~]
+#  ExactSettings:
+#    DismaxFields:
+#      - topic_unstemmed^150
+#    QueryFields:
+#      - topic_unstemmed:
+#        - [onephrase, 350]
+#        - [and, 150]
+#        - [or, ~]
 
 # This field definition is a compromise that supports both journal-level and
 # article-level data.  The disadvantage is that hits in article titles will
@@ -267,15 +267,14 @@ JournalTitle:
       - [onephrase, 50]
       - [and , ~]
   FilterQuery: "format:Journal OR format:Article"
-
-#JournalTitleExact:
-#  DismaxFields:
-#    - title_full_unstemmed^450
-#  QueryFields:
-#    - title_full_unstemmed:
-#      - [onephrase, 450]
-#      - [and, 400]
-#  FilterQuery: "format:Journal OR format:Article"
+#  ExactSettings:
+#    DismaxFields:
+#      - title_full_unstemmed^450
+#    QueryFields:
+#      - title_full_unstemmed:
+#        - [onephrase, 450]
+#        - [and, 400]
+#    FilterQuery: "format:Journal OR format:Article"
 
 Title:
   DismaxFields:
@@ -311,14 +310,13 @@ Title:
     series2:
       - [onephrase, 50]
       - [and , ~]
-
-#TitleExact:
-#  DismaxFields:
-#    - title_full_unstemmed^450
-#  QueryFields:
-#    - title_full_unstemmed:
-#      - [onephrase, 450]
-#      - [and, 400]
+#  ExactSettings:
+#    DismaxFields:
+#      - title_full_unstemmed^450
+#    QueryFields:
+#      - title_full_unstemmed:
+#        - [onephrase, 450]
+#        - [and, 400]
 
 Series:
   DismaxFields:
@@ -413,30 +411,29 @@ AllFields:
       - [onephrase, ~]
     issn:
       - [onephrase, ~]
-
-#AllFieldsExact:
-#  DismaxFields:
-#    - title_full_unstemmed^600
-#    - topic_unstemmed^550
-#    - allfields_unstemmed^10
-#    - fulltext_unstemmed^10
-#    - isbn
-#    - issn
-#  QueryFields:
-#    title_full_unstemmed:
-#      - [onephrase, 600]
-#      - [and, 500]
-#    topic_unstemmed:
-#      - [onephrase, 550]
-#      - [and, 500]
-#    allfields_unstemmed:
-#      - [or, 10]
-#    fulltext_unstemmed:
-#      - [or, 10]
-#    isbn:
-#      - [onephrase, ~]
-#    issn:
-#      - [onephrase, ~]
+  ExactSettings:
+    DismaxFields:
+      - title_full_unstemmed^600
+      - topic_unstemmed^550
+      - allfields_unstemmed^10
+      - fulltext_unstemmed^10
+      - isbn
+      - issn
+    QueryFields:
+      title_full_unstemmed:
+        - [onephrase, 600]
+        - [and, 500]
+      topic_unstemmed:
+        - [onephrase, 550]
+        - [and, 500]
+      allfields_unstemmed:
+        - [or, 10]
+      fulltext_unstemmed:
+        - [or, 10]
+      isbn:
+        - [onephrase, ~]
+      issn:
+        - [onephrase, ~]
 
 # These are advanced searches that never use Dismax:
 id:
