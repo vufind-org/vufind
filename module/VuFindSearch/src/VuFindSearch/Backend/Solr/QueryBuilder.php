@@ -64,6 +64,13 @@ class QueryBuilder implements QueryBuilderInterface
     protected $specs;
 
     /**
+     * Search specs for exact searches.
+     *
+     * @var array
+     */
+    protected $exactSpecs;
+    
+    /**
      * Should we create the hl.q parameter when appropriate?
      *
      * @var bool
@@ -204,6 +211,11 @@ class QueryBuilder implements QueryBuilderInterface
     public function setSpecs(array $specs)
     {
         foreach ($specs as $handler => $spec) {
+            if (isset($spec['ExactSettings'])) {
+                $this->exactSpecs[strtolower($handler)]
+                    = new SearchHandler($spec['ExactSettings'], $this->defaultDismaxHandler);
+                unset($spec['ExactSettings']);
+            }
             $this->specs[strtolower($handler)]
                 = new SearchHandler($spec, $this->defaultDismaxHandler);
         }
@@ -252,8 +264,8 @@ class QueryBuilder implements QueryBuilderInterface
                 && substr(trim($searchString), 0, 1) == '"'
                 && substr(trim($searchString), -1, 1) == '"'
             ) {
-                if (isset($this->specs[$handler . 'exact'])) {
-                    return $this->specs[$handler . 'exact'];
+                if (isset($this->exactSpecs[$handler])) {
+                    return $this->exactSpecs[$handler];
                 }
             }
             if (isset($this->specs[$handler])) {
