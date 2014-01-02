@@ -58,9 +58,9 @@ class TagsController extends AbstractAdmin
         return (isset($this->params[$param]))
             ? $this->params[$param]
             : $this->params()->fromPost(
-                  $param,
-                  $this->params()->fromQuery($param, null)
-              );
+                $param,
+                $this->params()->fromQuery($param, null)
+            );
     }
 
     /**

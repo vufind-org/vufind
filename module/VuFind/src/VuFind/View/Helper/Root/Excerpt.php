@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 namespace VuFind\View\Helper\Root;
-use DOMDocument;
 
 /**
  * Excerpt view helper
@@ -94,7 +93,7 @@ class Excerpt extends AbstractSyndetics
         }
 
         // Test XML Response
-        if (!($xmldoc = DOMDocument::loadXML($result->getBody()))) {
+        if (!($xmldoc = $this->xmlToDOMDocument($result->getBody()))) {
             throw new \Exception('Invalid XML');
         }
 
@@ -110,7 +109,7 @@ class Excerpt extends AbstractSyndetics
                 }
 
                 // Test XML Response
-                $xmldoc2 = DOMDocument::loadXML($result2->getBody());
+                $xmldoc2 = $this->xmlToDOMDocument($result2->getBody());
                 if (!$xmldoc2) {
                     throw new \Exception('Invalid XML');
                 }

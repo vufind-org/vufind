@@ -1,0 +1,120 @@
+<h1>Dicas para Buscas</h1>
+
+<ul class="HelpMenu">
+  <li><a href="#Wildcard Searches">Uso de caracter curinga</a></li>
+  <li><a href="#Fuzzy Searches">Busca usando algorítmo Fuzzy</a></li>
+  <li><a href="#Proximity Searches">Buscas por proximidade</a></li>
+  <li><a href="#Range Searches">Busca por intervalo</a></li>
+  <li><a href="#Boosting a Term">Incrementar um termo</a></li>
+  <li><a href="#Boolean operators">Operadores booleanos</a>
+    <ul>
+      <li><a href="#AND">E</a></li>
+      <li><a href="#+">+</a></li>
+      <li><a href="#OR">OU</a></li>
+      <li><a href="#NOT">Não</a></li>
+      <li><a href="#-">-</a></li>
+    </ul>
+  </li>
+</ul>
+
+<dl class="Content">
+  <dt><a name="Wildcard Searches"></a>Uso de caracter curinga</dt>
+  <dd>
+    <p>Para um único caracter, use o sinal de interrogação <strong>?</strong>.</p>
+    <p>Por exemplo, para buscar tanto "Souza" quanto "Sousa" pode-se usar:</p>
+    <pre class="code">Sou?a</pre>
+    <p>para múltiplos caracteres, 0 (zero) ou mais, use o asterísco <strong>*</strong>.</p>
+    <p>Por exemplo, para busca por "livro", "livros", "livrinho", "livrão" e outros, pode-se usar a seguinte busca: </p>
+    <pre class="code">livr*</pre>
+    <p>Pode-se usar o caracter curinga no meio do termo.</p>
+    <pre class="code">te*t</pre>
+    <p>Nota: <strong>Não</strong> use os caracteres curinga como primeira letra do termo de busca.</p>
+  </dd>
+  
+  <dt><a name="Fuzzy Searches"></a>Busca usando algorítmo Fuzzy</dt>
+  <dd>
+    <p>Uso do diacrítico til <strong>~</strong> ao final de um <strong>único</strong> termo. Por exemplo, para buscar por termos similares às pronúncias inglesas de "Luiz", use algorítmo fuzzy: </p>
+    <pre class="code">roam~</pre>
+    <p>Essa busca retornará termos como Luiz, Luiz, Lewis, Louis e outros.</p>
+    <p>Um parâmetro adicional pode ser especificado para requerer simularidade.  Os valores possíveis deve estar entre 0 e 1, com o valor próximo de 1, somente os registros mais similares são retornados, por exemplo:</p>
+    <pre class="code">Luiz~0.8</pre>
+    <p>O valor padrão, caso não seja especificado é de 0.5.</p>
+  </dd>
+  
+  <dt><a name="Proximity Searches"></a>Buscas por proximidade</dt>
+  <dd>
+    <p>
+      Use o diacrítico til <strong>~</strong> ao final de <strong>multiplos</strong> termos.
+      Por exemplo, para buscar por economia e Brasil, com até dez palavras de separação:
+    </p>
+    <pre class="code">"economia Brasil"~10</pre>
+  </dd>
+  
+  <dt><a name="Range Searches"></a>Busca por intervalo</dt>
+  <dd>
+    <p>
+      Para executar busca por intervalo pode-se usar os sinais de chaves <strong>{ }</strong>.
+      Por exemplo, para busca por termos que iniciam por A, B, ou C:
+    </p>
+    <pre class="code">{A TO C}</pre>
+    <p>
+      O mesmo pode ser feito com campos numéricos como os anos:
+    </p>
+    <pre class="code">[2002 TO 2003]</pre>
+  </dd>
+  
+  <dt><a name="Boosting a Term"></a>Incrementar um termo</dt>
+  <dd>
+    <p>
+      Para aplicar um valor maior a um termo, pode-se fazer uso do diacrítico circunflexo <strong>^</strong>.
+      Por exemplo, na seguinte busca:
+    </p>
+    <pre class="code">gestão economia^5</pre>
+    <p>o termo "economia" tera um peso maior que o termo "gestão"</p>
+  </dd>
+  
+  <dt><a name="Boolean operators"></a>Operadores Booleanos</dt>
+  <dd>
+    <p>
+      Os operadores boolenaos permitem que os termos se combinem como operadores lógicos.
+      Os seguintes operadores booleanos estão disponíveis: <strong>AND</strong>, <strong>+</strong>, <strong>OR</strong>, <strong>NOT</strong> e <strong>-</strong>.
+    </p>
+    <p>Nota: Os Operadores boolenos devem estar escritos em <strong>letras maiúsculas</strong></p>
+    <dl>
+      <dt><a name="AND"></a>AND</dt>
+      <dd>
+        <p>O operador boolenao <strong>AND</strong> (em Portugues e) é padrão, isso significa que se não for explicitado um operador entre dois termos o AND serão utilizado. O operador AND busca por registros que contenha os termos em qualquer campo do registro.</p>
+        <p>Para buscar registros que contenham os termos "Ciência" e "Informação" use o exemplo: </p>
+        <pre class="code">Ciência Informação</pre>
+        <p>or</p>
+        <pre class="code">Ciência AND Informação</pre>
+      </dd>
+      <dt><a name="+"></a>+</dt>
+      <dd>
+        <p>O operador de obrigatoriedade "+" requer que o termo apresentado depois do "+" exista em qualquer campo do registro.</p>
+        <p>Para buscar registros que contenham o termo "Ciência" e podem conter "Informação" use:</p>
+        <pre class="code">+Ciência Informação</pre>
+      </dd>
+      <dt><a name="OR"></a>OR</dt>
+      <dd>
+        <p>O operador booleando <strong>OR</strong> (em Português ou) amplia a busca, retornando registros que contenham pelo menos um dos termos inseridos.</p>
+        <p>Para buscar por itens que contenham ou "Ciência da Informação" ou "comunicação" use o exemplo:</p>
+        <pre class="code">"Ciência da Informação" OR comunicação</pre>
+      </dd>
+      <dt><a name="NOT"></a>NOT</dt>
+      <dd>
+        <p>O operador booleando <strong>NOT</strong> (em Português não) exclui registros que contenham o termo inserido após o NOT.</p>
+        <p>Para buscar itens que contenha "econimia", mas não "brasileira"  use o exemplo: </p>
+        <pre class="code">econimia NOT brasileira</pre>
+        <p>Nota: Não deve-se iniciar uma busca com o operador NOT. Por exempolo, a seguinte busca não retornará registros:</p>
+        <pre class="code">NOT econimia</pre>
+      </dd>
+      <dt><a name="-"></a>-</dt>
+      <dd>
+        <p>O operador de proibição <Strong>-</strong> exclui registros que contenha o termo iserido após o operador.</p>
+        <p>Para buscas for itens que contenham "economia", mas não "brasileira" use o exemplo: </p>
+        <pre class="code">economia -brasileira</pre>
+      </dd>
+    </dl>
+  </dd>
+</dl>

@@ -184,7 +184,8 @@ class Holds extends AbstractPlugin
                         'confirm_hold_cancel_selected_text',
                         array(
                             'cancelSelected' => 1,
-                            'cancelSelectedIDS' => $params->fromPost('cancelSelectedIDS')
+                            'cancelSelectedIDS' =>
+                                $params->fromPost('cancelSelectedIDS')
                         )
                     );
                 }
