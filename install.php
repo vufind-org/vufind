@@ -350,7 +350,7 @@ function buildApacheConfig($baseDir, $overrideDir, $basePath, $module, $multi, $
     }
     $config = str_replace("/usr/local/vufind/local", "%override-dir%", $config);
     $config = str_replace("/usr/local/vufind", "%base-dir%", $config);
-    $config = str_replace("/vufind", "%base-path%", $config);
+    $config = preg_replace("|([^/])\/vufind|", "$1%base-path%", $config);
     $config = str_replace("%override-dir%", $overrideDir, $config);
     $config = str_replace("%base-dir%", $baseDir, $config);
     $config = str_replace("%base-path%", $basePath, $config);
