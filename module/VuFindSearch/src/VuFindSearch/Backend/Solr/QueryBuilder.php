@@ -61,7 +61,14 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @var array
      */
-    protected $specs;
+    protected $specs = array();
+
+    /**
+     * Search specs for exact searches.
+     *
+     * @var array
+     */
+    protected $exactSpecs = array();
 
     /**
      * Should we create the hl.q parameter when appropriate?
@@ -128,7 +135,7 @@ class QueryBuilder implements QueryBuilderInterface
         }
 
         $string  = $query->getString() ?: '*:*';
-        $handler = $this->getSearchHandler($query->getHandler());
+        $handler = $this->getSearchHandler($query->getHandler(), $string);
 
         if (!($handler && $handler->hasExtendedDismax())
             && $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string)
@@ -204,6 +211,12 @@ class QueryBuilder implements QueryBuilderInterface
     public function setSpecs(array $specs)
     {
         foreach ($specs as $handler => $spec) {
+            if (isset($spec['ExactSettings'])) {
+                $this->exactSpecs[strtolower($handler)] = new SearchHandler(
+                    $spec['ExactSettings'], $this->defaultDismaxHandler
+                );
+                unset($spec['ExactSettings']);
+            }
             $this->specs[strtolower($handler)]
                 = new SearchHandler($spec, $this->defaultDismaxHandler);
         }
@@ -239,18 +252,32 @@ class QueryBuilder implements QueryBuilderInterface
     /**
      * Return named search handler.
      *
-     * @param string $handler Search handler name
+     * @param string $handler      Search handler name
+     * @param string $searchString Search query
      *
      * @return SearchHandler|null
      */
-    protected function getSearchHandler($handler)
+    protected function getSearchHandler($handler, $searchString)
     {
         $handler = $handler ? strtolower($handler) : $handler;
-        if ($handler && isset($this->specs[$handler])) {
-            return $this->specs[$handler];
-        } else {
-            return null;
+        if ($handler) {
+            // Since we will rarely have exactSpecs set, it is less expensive
+            // to check for a handler first before doing multiple string
+            // operations to determine eligibility for exact handling.
+            if (isset($this->exactSpecs[$handler])) {
+                $searchString = isset($searchString) ? trim($searchString) : '';
+                if (strlen($searchString) > 1
+                    && substr($searchString, 0, 1) == '"'
+                    && substr($searchString, -1, 1) == '"'
+                ) {
+                    return $this->exactSpecs[$handler];
+                }
+            }
+            if (isset($this->specs[$handler])) {
+                return $this->specs[$handler];
+            }
         }
+        return null;
     }
 
     /**
@@ -292,7 +319,10 @@ class QueryBuilder implements QueryBuilderInterface
         } else {
             $searchString  = $this->getLuceneHelper()
                 ->normalizeSearchString($component->getString());
-            $searchHandler = $this->getSearchHandler($component->getHandler());
+            $searchHandler = $this->getSearchHandler(
+                $component->getHandler(),
+                $searchString
+            );
             if ($searchHandler) {
                 $searchString
                     = $this->createSearchString($searchString, $searchHandler);
