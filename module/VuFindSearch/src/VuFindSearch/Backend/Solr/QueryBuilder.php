@@ -135,12 +135,11 @@ class QueryBuilder implements QueryBuilderInterface
         }
 
         $string  = $query->getString() ?: '*:*';
-        $handler = $this->getSearchHandler($query->getHandler(), $string);
 
-        if (!($handler && $handler->hasExtendedDismax())
-            && $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string)
-        ) {
-            if ($handler) {
+        if ($handler = $this->getSearchHandler($query->getHandler(), $string)) {
+            if (!$handler->hasExtendedDismax()
+                && $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string)
+            ) {
                 $string = $this->createAdvancedInnerSearchString($string, $handler);
                 if ($handler->hasDismax()) {
                     $oldString = $string;
@@ -152,19 +151,17 @@ class QueryBuilder implements QueryBuilderInterface
                         $params->set('hl.q', $oldString);
                     }
                 }
-            }
-        } else {
-            if ($handler && $handler->hasDismax()) {
-                $params->set('qf', implode(' ', $handler->getDismaxFields()));
-                $params->set('qt', $handler->getDismaxHandler());
-                foreach ($handler->getDismaxParams() as $param) {
-                    $params->add(reset($param), next($param));
-                }
-                if ($handler->hasFilterQuery()) {
-                    $params->add('fq', $handler->getFilterQuery());
-                }
             } else {
-                if ($handler) {
+                if ($handler->hasDismax()) {
+                    $params->set('qf', implode(' ', $handler->getDismaxFields()));
+                    $params->set('qt', $handler->getDismaxHandler());
+                    foreach ($handler->getDismaxParams() as $param) {
+                        $params->add(reset($param), next($param));
+                    }
+                    if ($handler->hasFilterQuery()) {
+                        $params->add('fq', $handler->getFilterQuery());
+                    }
+                } else {
                     $string = $handler->createSimpleQueryString($string);
                 }
             }
@@ -360,7 +357,6 @@ class QueryBuilder implements QueryBuilderInterface
      * @param SearchHandler $handler Search handler
      *
      * @return string
-     *
      */
     protected function createAdvancedInnerSearchString($string,
         SearchHandler $handler
