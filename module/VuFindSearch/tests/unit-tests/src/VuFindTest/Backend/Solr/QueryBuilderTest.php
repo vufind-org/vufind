@@ -305,4 +305,35 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
         $processedQ = $response->get('q');
         $this->assertEquals('((_query_:"{!dismax qf=\"field_a\" }value1") OR (_query_:"{!dismax qf=\"field_b\" }value2"))', $processedQ[0]);
     }
+
+    /**
+     * Test generation from a QueryGroup with advanced syntax
+     *
+     * @return void
+     */
+    public function testQueryGroupWithAdvancedSyntax()
+    {
+        $qb = new QueryBuilder(
+            array(
+                'a' => array(
+                    'DismaxFields' => array('field_a'),
+                    'QueryFields' => array(
+                        'field_a' => array(array('and', 100)),
+                        'field_c' => array(array('and', 200))
+                    )
+                ),
+                'b' => array(
+                    'DismaxFields' => array('field_b'),
+                )
+            )
+        );
+
+        $q1 = new Query('value*', 'a');
+        $q2 = new Query('value2', 'b');
+        $q = new QueryGroup('OR', array($q1, $q2));
+
+        $response = $qb->build($q);
+        $processedQ = $response->get('q');
+        $this->assertEquals('((field_a:(value*)^100 OR field_c:(value*)^200) OR (_query_:"{!dismax qf=\"field_b\" }value2"))', $processedQ[0]);
+    }
 }
