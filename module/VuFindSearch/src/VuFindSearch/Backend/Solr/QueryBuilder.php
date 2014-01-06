@@ -367,19 +367,11 @@ class QueryBuilder implements QueryBuilderInterface
             return $handler->getFilterQuery();
         }
 
-        // Strip out any colons that are NOT part of a field specification:
-        $string = preg_replace('/(\:\s+|\s+:)/', ' ', $string);
-
         // If the query already includes field specifications, we can't easily
         // apply it to other fields through our defined handlers, so we'll leave
         // it as-is:
         if (strstr($string, ':')) {
             return $string;
-        }
-
-        // Convert empty queries to return all values in a field:
-        if (empty($string)) {
-            $string = '[* TO *]';
         }
 
         // If the query ends in a non-escaped question mark, the user may not really

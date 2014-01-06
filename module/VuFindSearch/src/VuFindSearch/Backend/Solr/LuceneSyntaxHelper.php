@@ -437,7 +437,20 @@ class LuceneSyntaxHelper
 
         return $input;
     }
-   
+
+    /**
+     * Normalize field specifications within the query.
+     *
+     * @param string $input String to normalize
+     *
+     * @return string
+     */
+    protected function normalizeColons($input)
+    {
+        $input = preg_replace('/:+/', ':', $input);
+        $input = preg_replace('/(\:[:\s]+|[:\s]+:)/', ' ', $input);
+        return $input == ':' ? '' : $input;
+    }
     /**
      * Prepare input to be used in a SOLR query.
      *
@@ -483,6 +496,7 @@ class LuceneSyntaxHelper
         $input = $this->normalizeBoosts($input);
         $input = $this->normalizeBracesAndBrackets($input);
         $input = $this->normalizeUnquotedText($input);
+        $input = $this->normalizeColons($input);
 
         // Remove surrounding slashes and whitespace -- these serve no purpose
         // and can cause problems.
