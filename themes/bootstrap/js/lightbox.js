@@ -186,7 +186,9 @@ function getLightboxByUrl(url, post, callback, pop) {
  */
 function getLightbox(controller, action, get, post, callback, pop) {
   // Pop determines if we execute the callback immediately or later
-  if(typeof pop === "undefined") pop = true;
+  if(typeof pop === "undefined") {
+    pop = true;
+  }
   // Build URL
   var url = path+'/AJAX/JSON?method=getLightbox&submodule='+controller+'&subaction='+action;
   if(get && get !== {}) {
