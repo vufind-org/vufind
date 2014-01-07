@@ -50,7 +50,8 @@ function closeLightbox() {
 function closeLightboxActions() {
   lightboxShown = false;
   // Clean out stack
-  while(f = callbackStack.pop()) {
+  while(callbackStack.length > 0) {
+    var f = callbackStack.pop();
     f();
   }
   // Abort requests triggered by the lightbox
@@ -142,7 +143,9 @@ function displayLightboxError(message) {
  */
 function getLightboxByUrl(url, post, callback, pop) {
   // Pop determines if we execute the callback immediately or later
-  if(typeof pop === "undefined") pop = true;
+  if(typeof pop === "undefined") {
+    pop = true;
+  }
   // If we have a callback, push it to the stack
   if(typeof callback !== "undefined") {
     //console.log("Push:",callback);
@@ -183,7 +186,9 @@ function getLightboxByUrl(url, post, callback, pop) {
  */
 function getLightbox(controller, action, get, post, callback, pop) {
   // Pop determines if we execute the callback immediately or later
-  if(typeof pop === "undefined") pop = true;
+  if(typeof pop === "undefined") {
+    pop = true;
+  }
   // Build URL
   var url = path+'/AJAX/JSON?method=getLightbox&submodule='+controller+'&subaction='+action;
   if(get && get !== {}) {

@@ -152,7 +152,8 @@ class RecordController extends AbstractRecord
         $defaultRequired = $this->getServiceLocator()->get('VuFind\DateConverter')
             ->convertToDisplayDate("U", $defaultRequired);
         try {
-            $defaultPickup = $catalog->getDefaultPickUpLocation($patron, $gatheredDetails);
+            $defaultPickup
+                = $catalog->getDefaultPickUpLocation($patron, $gatheredDetails);
         } catch (\Exception $e) {
             $defaultPickup = false;
         }

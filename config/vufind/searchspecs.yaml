@@ -354,7 +354,7 @@ AllFields:
     - allfields
     - fulltext
     - isbn
-    - issn    
+    - issn
   QueryFields:
     0:
       0:
@@ -411,29 +411,29 @@ AllFields:
       - [onephrase, ~]
     issn:
       - [onephrase, ~]
-  ExactSettings:
-    DismaxFields:
-      - title_full_unstemmed^600
-      - topic_unstemmed^550
-      - allfields_unstemmed^10
-      - fulltext_unstemmed^10
-      - isbn
-      - issn
-    QueryFields:
-      title_full_unstemmed:
-        - [onephrase, 600]
-        - [and, 500]
-      topic_unstemmed:
-        - [onephrase, 550]
-        - [and, 500]
-      allfields_unstemmed:
-        - [or, 10]
-      fulltext_unstemmed:
-        - [or, 10]
-      isbn:
-        - [onephrase, ~]
-      issn:
-        - [onephrase, ~]
+#  ExactSettings:
+#    DismaxFields:
+#      - title_full_unstemmed^600
+#      - topic_unstemmed^550
+#      - allfields_unstemmed^10
+#      - fulltext_unstemmed^10
+#      - isbn
+#      - issn
+#    QueryFields:
+#      title_full_unstemmed:
+#        - [onephrase, 600]
+#        - [and, 500]
+#      topic_unstemmed:
+#        - [onephrase, 550]
+#        - [and, 500]
+#      allfields_unstemmed:
+#        - [or, 10]
+#      fulltext_unstemmed:
+#        - [or, 10]
+#      isbn:
+#        - [onephrase, ~]
+#      issn:
+#        - [onephrase, ~]
 
 # These are advanced searches that never use Dismax:
 id:

@@ -303,10 +303,10 @@ class ResourceTags extends Gateway
             );
             if (!is_null($userId)) {
                 $select->where->equalTo('resource_tags.user_id', $userId);
-             }
+            }
             if (!is_null($resourceId)) {
                 $select->where->equalTo('resource_tags.resource_id', $resourceId);
-             }
+            }
             if (!is_null($tagId)) {
                 $select->where->equalTo('resource_tags.tag_id', $tagId);
             }
@@ -365,7 +365,7 @@ class ResourceTags extends Gateway
                 array('u' => 'user'),
                 'resource_tags.user_id = u.id',
                 array("username" => "username")
-           );
+            );
             if (!is_null($userId)) {
                 $select->where->equalTo('resource_tags.user_id', $userId);
             }
@@ -379,7 +379,7 @@ class ResourceTags extends Gateway
             $select->order(array("username"));
         };
         return $this->select($callback);
-     }
+    }
 
     /**
      * Get Resource Tags

@@ -61,15 +61,15 @@ class QueryBuilder implements QueryBuilderInterface
      *
      * @var array
      */
-    protected $specs;
+    protected $specs = array();
 
     /**
      * Search specs for exact searches.
      *
      * @var array
      */
-    protected $exactSpecs;
-    
+    protected $exactSpecs = array();
+
     /**
      * Should we create the hl.q parameter when appropriate?
      *
@@ -135,12 +135,11 @@ class QueryBuilder implements QueryBuilderInterface
         }
 
         $string  = $query->getString() ?: '*:*';
-        $handler = $this->getSearchHandler($query->getHandler(), $string);
 
-        if (!($handler && $handler->hasExtendedDismax())
-            && $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string)
-        ) {
-            if ($handler) {
+        if ($handler = $this->getSearchHandler($query->getHandler(), $string)) {
+            if (!$handler->hasExtendedDismax()
+                && $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string)
+            ) {
                 $string = $this->createAdvancedInnerSearchString($string, $handler);
                 if ($handler->hasDismax()) {
                     $oldString = $string;
@@ -152,19 +151,17 @@ class QueryBuilder implements QueryBuilderInterface
                         $params->set('hl.q', $oldString);
                     }
                 }
-            }
-        } else {
-            if ($handler && $handler->hasDismax()) {
-                $params->set('qf', implode(' ', $handler->getDismaxFields()));
-                $params->set('qt', $handler->getDismaxHandler());
-                foreach ($handler->getDismaxParams() as $param) {
-                    $params->add(reset($param), next($param));
-                }
-                if ($handler->hasFilterQuery()) {
-                    $params->add('fq', $handler->getFilterQuery());
-                }
             } else {
-                if ($handler) {
+                if ($handler->hasDismax()) {
+                    $params->set('qf', implode(' ', $handler->getDismaxFields()));
+                    $params->set('qt', $handler->getDismaxHandler());
+                    foreach ($handler->getDismaxParams() as $param) {
+                        $params->add(reset($param), next($param));
+                    }
+                    if ($handler->hasFilterQuery()) {
+                        $params->add('fq', $handler->getFilterQuery());
+                    }
+                } else {
                     $string = $handler->createSimpleQueryString($string);
                 }
             }
@@ -212,8 +209,9 @@ class QueryBuilder implements QueryBuilderInterface
     {
         foreach ($specs as $handler => $spec) {
             if (isset($spec['ExactSettings'])) {
-                $this->exactSpecs[strtolower($handler)]
-                    = new SearchHandler($spec['ExactSettings'], $this->defaultDismaxHandler);
+                $this->exactSpecs[strtolower($handler)] = new SearchHandler(
+                    $spec['ExactSettings'], $this->defaultDismaxHandler
+                );
                 unset($spec['ExactSettings']);
             }
             $this->specs[strtolower($handler)]
@@ -260,11 +258,15 @@ class QueryBuilder implements QueryBuilderInterface
     {
         $handler = $handler ? strtolower($handler) : $handler;
         if ($handler) {
-            if (isset($searchString) 
-                && substr(trim($searchString), 0, 1) == '"'
-                && substr(trim($searchString), -1, 1) == '"'
-            ) {
-                if (isset($this->exactSpecs[$handler])) {
+            // Since we will rarely have exactSpecs set, it is less expensive
+            // to check for a handler first before doing multiple string
+            // operations to determine eligibility for exact handling.
+            if (isset($this->exactSpecs[$handler])) {
+                $searchString = isset($searchString) ? trim($searchString) : '';
+                if (strlen($searchString) > 1
+                    && substr($searchString, 0, 1) == '"'
+                    && substr($searchString, -1, 1) == '"'
+                ) {
                     return $this->exactSpecs[$handler];
                 }
             }
@@ -355,7 +357,6 @@ class QueryBuilder implements QueryBuilderInterface
      * @param SearchHandler $handler Search handler
      *
      * @return string
-     *
      */
     protected function createAdvancedInnerSearchString($string,
         SearchHandler $handler
@@ -366,19 +367,11 @@ class QueryBuilder implements QueryBuilderInterface
             return $handler->getFilterQuery();
         }
 
-        // Strip out any colons that are NOT part of a field specification:
-        $string = preg_replace('/(\:\s+|\s+:)/', ' ', $string);
-
         // If the query already includes field specifications, we can't easily
         // apply it to other fields through our defined handlers, so we'll leave
         // it as-is:
         if (strstr($string, ':')) {
             return $string;
-        }
-
-        // Convert empty queries to return all values in a field:
-        if (empty($string)) {
-            $string = '[* TO *]';
         }
 
         // If the query ends in a non-escaped question mark, the user may not really
