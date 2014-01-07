@@ -493,12 +493,6 @@ class Upgrade
         // Set up reference for convenience (and shorter lines):
         $newConfig = & $this->newConfigs['config.ini'];
 
-        // Brazilian Portuguese language file is now disabled by default (since
-        // it is very incomplete, and regular Portuguese file is now available):
-        if (isset($newConfig['Languages']['pt-br'])) {
-            unset($newConfig['Languages']['pt-br']);
-        }
-
         // If the [BulkExport] options setting is an old default, update it to
         // reflect the fact that we now support more options.
         if ($this->isDefaultBulkExportOptions($newConfig['BulkExport']['options'])) {
