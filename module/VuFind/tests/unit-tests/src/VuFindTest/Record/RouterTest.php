@@ -75,6 +75,68 @@ class RouterTest extends TestCase
     }
 
     /**
+     * Test tab routing with source|id string.
+     *
+     * @return void
+     */
+    public function testTabRoutingWithString()
+    {
+        $router = $this->getRouter();
+        $this->assertEquals(
+            array('params' => array('id' => 'test', 'tab' => 'foo'), 'route' => 'summonrecord'),
+            $router->getTabRouteDetails('Summon|test', 'foo')
+        );
+    }
+
+    /**
+     * Test collection special case with source|id string.
+     *
+     * @return void
+     */
+    public function testCollectionSpecialCaseWithString()
+    {
+        $driver = $this->getDriver();
+        $driver->expects($this->once())->method('tryMethod')->with($this->equalTo('isCollection'))->will($this->returnValue(true));
+        $router = $this->getRouter($driver, array('Collections' => array('collections' => true)));
+        $this->assertEquals(
+            array('params' => array('id' => 'test', 'tab' => 'foo'), 'route' => 'collection'),
+            $router->getTabRouteDetails('VuFind|test', 'foo')
+        );
+    }
+
+    /**
+     * Test collection special case with id string having no source prefix.
+     *
+     * @return void
+     */
+    public function testCollectionSpecialCaseWithStringMissingSource()
+    {
+        $driver = $this->getDriver();
+        $driver->expects($this->once())->method('tryMethod')->with($this->equalTo('isCollection'))->will($this->returnValue(true));
+        $router = $this->getRouter($driver, array('Collections' => array('collections' => true)));
+        $this->assertEquals(
+            array('params' => array('id' => 'test', 'tab' => 'foo'), 'route' => 'collection'),
+            $router->getTabRouteDetails('test', 'foo')
+        );
+    }
+
+    /**
+     * Test collection special case with driver.
+     *
+     * @return void
+     */
+    public function testCollectionSpecialCaseWithDriver()
+    {
+        $driver = $this->getDriver();
+        $driver->expects($this->once())->method('tryMethod')->with($this->equalTo('isCollection'))->will($this->returnValue(true));
+        $router = $this->getRouter($driver, array('Collections' => array('collections' => true)));
+        $this->assertEquals(
+            array('params' => array('id' => 'test', 'tab' => 'foo'), 'route' => 'collection'),
+            $router->getTabRouteDetails($driver, 'foo')
+        );
+    }
+
+    /**
      * Test routing with id string having no source prefix.
      *
      * @return void
