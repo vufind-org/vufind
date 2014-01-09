@@ -56,7 +56,36 @@ class RouterTest extends TestCase
         $router = $this->getRouter($driver);
         $this->assertEquals(
             array('params' => array('id' => 'test'), 'route' => 'record'),
-            $router->getRouteDetails($driver, '')
+            $router->getRouteDetails($driver)
+        );
+    }
+
+    /**
+     * Test routing with driver object.
+     *
+     * @return void
+     */
+    public function testRoutingWithString()
+    {
+        $router = $this->getRouter();
+        $this->assertEquals(
+            array('params' => array('id' => 'test'), 'route' => 'summonrecord'),
+            $router->getRouteDetails('Summon|test')
+        );
+    }
+
+    /**
+     * Test action routing with driver object.
+     *
+     * @return void
+     */
+    public function testActionRoutingWithDriver()
+    {
+        $driver = $this->getDriver();
+        $router = $this->getRouter($driver);
+        $this->assertEquals(
+            array('params' => array('id' => 'test'), 'route' => 'record-sms'),
+            $router->getActionRouteDetails($driver, 'SMS')
         );
     }
 

@@ -125,7 +125,7 @@ class Router
      *
      * @return array
      */
-    public function getRouteDetails($driver, $routeSuffix,
+    public function getRouteDetails($driver, $routeSuffix = '',
         $extraParams = array()
     ) {
         // Extract source and ID from driver or string:
@@ -146,9 +146,6 @@ class Router
         // Build URL parameters:
         $params = $extraParams;
         $params['id'] = $id;
-        if (!empty($action)) {
-            $params['action'] = $action;
-        }
 
         // Determine route based on naming convention (default VuFind route is
         // the exception to the rule):
