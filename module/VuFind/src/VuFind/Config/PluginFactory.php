@@ -87,8 +87,15 @@ class PluginFactory implements AbstractFactoryInterface
                 = new Config($this->iniReader->fromFile($fullpath), true);
 
             $i = count($configs) - 1;
-            $fullpath = isset($configs[$i]->Parent_Config->path)
-                ? $configs[$i]->Parent_Config->path : false;
+            if (isset($configs[$i]->Parent_Config->path)) {
+                $fullpath = $configs[$i]->Parent_Config->path;
+            } elseif (isset($configs[$i]->Parent_Config->relative_path)) {
+                $fullpath = pathinfo($fullpath, PATHINFO_DIRNAME)
+                    . DIRECTORY_SEPARATOR
+                    . $configs[$i]->Parent_Config->relative_path;
+            } else {
+                $fullpath = false;
+            }
         } while ($fullpath);
 
         // The last element in the array will be the top of the inheritance tree.
