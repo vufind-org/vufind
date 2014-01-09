@@ -61,7 +61,7 @@ class RouterTest extends TestCase
     }
 
     /**
-     * Test routing with driver object.
+     * Test routing with source|id string.
      *
      * @return void
      */
@@ -71,6 +71,20 @@ class RouterTest extends TestCase
         $this->assertEquals(
             array('params' => array('id' => 'test'), 'route' => 'summonrecord'),
             $router->getRouteDetails('Summon|test')
+        );
+    }
+
+    /**
+     * Test routing with id string having no source prefix.
+     *
+     * @return void
+     */
+    public function testRoutingWithStringMissingSource()
+    {
+        $router = $this->getRouter();
+        $this->assertEquals(
+            array('params' => array('id' => 'test'), 'route' => 'record'),
+            $router->getRouteDetails('test')
         );
     }
 
