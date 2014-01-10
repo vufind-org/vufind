@@ -83,6 +83,46 @@ class LoaderTest extends TestCase
     }
 
     /**
+     * Test batch load.
+     *
+     * @return void
+     */
+    public function testBatchLoad()
+    {
+        $driver1 = $this->getDriver('test1', 'VuFind');
+        $driver2 = $this->getDriver('test2', 'VuFind');
+        $driver3 = $this->getDriver('test3', 'Summon');
+        $missing = $this->getDriver('missing', 'Missing');
+
+        $collection1 = $this->getCollection(array($driver1, $driver2));
+        $collection2 = $this->getCollection(array($driver3));
+        $collection3 = $this->getCollection(array());
+
+        $factory = $this->getMock('VuFind\RecordDriver\PluginManager');
+        $factory->expects($this->once())->method('get')
+            ->with($this->equalTo('Missing'))
+            ->will($this->returnValue($missing));
+
+        $service = $this->getMock('VuFindSearch\Service');
+        $service->expects($this->at(0))->method('retrieveBatch')
+            ->with($this->equalTo('VuFind'), $this->equalTo(array('test1', 'test2')))
+            ->will($this->returnValue($collection1));
+        $service->expects($this->at(1))->method('retrieveBatch')
+            ->with($this->equalTo('Summon'), $this->equalTo(array('test3')))
+            ->will($this->returnValue($collection2));
+        $service->expects($this->at(2))->method('retrieveBatch')
+            ->with($this->equalTo('WorldCat'), $this->equalTo(array('test4')))
+            ->will($this->returnValue($collection3));
+
+        $loader = $this->getLoader($service, $factory);
+        $input = array(
+            array('source' => 'VuFind', 'id' => 'test1'),
+            'VuFind|test2', 'Summon|test3', 'WorldCat|test4'
+        );
+        $this->assertEquals(array($driver1, $driver2, $driver3, $missing), $loader->loadBatch($input));
+    }
+
+    /**
      * Get test record driver object
      *
      * @param string $id     Record ID
