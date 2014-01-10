@@ -66,6 +66,41 @@ class LoaderTest extends TestCase
     }
 
     /**
+     * Test single record.
+     *
+     * @return void
+     */
+    public function testSingleRecord()
+    {
+        $driver = $this->getDriver();
+        $collection = $this->getCollection(array($driver));
+        $service = $this->getMock('VuFindSearch\Service');
+        $service->expects($this->once())->method('retrieve')
+            ->with($this->equalTo('VuFind'), $this->equalTo('test'))
+            ->will($this->returnValue($collection));
+        $loader = $this->getLoader($service);
+        $this->assertEquals($driver, $loader->load('test'));
+    }
+
+    /**
+     * Get test record driver object
+     *
+     * @param string $id     Record ID
+     * @param string $source Record source
+     *
+     * @return RecordDriver
+     */
+    protected function getDriver($id = 'test', $source = 'VuFind')
+    {
+        $driver = $this->getMock('VuFind\RecordDriver\AbstractBase');
+        $driver->expects($this->any())->method('getUniqueId')
+            ->will($this->returnValue($id));
+        $driver->expects($this->any())->method('getResourceSource')
+            ->will($this->returnValue($source));
+        return $driver;
+    }
+
+    /**
      * Build a loader to test.
      *
      * @param SearchService $service Search service
