@@ -1,0 +1,16 @@
+; A set of local libraries accessible to everyone
+[local]
+name = "Local Libraries"
+ird_list = FIN11884,FIN21544,FIN24401,FIN35715,FIN26185,FIN20656,FIN18544,FIN21546
+
+; A set of eJournal databases for guests
+[free]
+name = Free eJournals
+ird_list = FIN07075,FIN21857,FIN18562
+access = guest
+
+; A set of eJournal databases for authorized users
+[subscription]
+name = eJournals for Authorized Users
+ird_list = FIN00001,FIN00002,FIN00003
+access = authorized

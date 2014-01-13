@@ -1,0 +1,34 @@
+; this file defines the RSS-powered dynamic content in views
+
+;[newCarousel]
+;active = [true or false]
+;url[language code|*] = [url of rss feed]
+;type = [list, carousel, carousel-small, carousel-notext]
+;items = [number of newest items to read from the feed, default 0 means all items]
+;itemsPerPage = [number of visible items in the carousel, has no effect on lists]
+;scrolledItems = [number of items to scroll -- defaults to itemsPerPage]
+;images = [true or false -- whether to render images, has no effect on carousels]
+;moreLink = [true or false, whether to render a "more" link, useful for news feeds]
+
+; 'carousel' is the first of the two feeds used by the NDL theme; it is used to
+; render the front page carousel
+[carousel]
+active = false
+url[*] = http://www.rss.com/url.rss
+type = carousel
+;items = 0
+;itemsPerPage = 4
+;scrolledItems = 4
+;title = Title
+;height = 100
+
+; 'news' is the second of the two feeds used by the NDL theme; it is used to
+; render the front page news headings
+[news]
+active = false
+url[*] = http://www.rss.com/url.rss
+type = list
+;items = 10
+;dateFormat = "Y-m-d"
+;moreLink = true
+;images = false

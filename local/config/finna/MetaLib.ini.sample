@@ -1,0 +1,31 @@
+[General]
+enabled = false
+url = http://metalib.server/X
+x_user = username
+x_password = password
+institution = INST
+cache_timeout = 60
+
+[Basic_Searches]
+AllFields    = "All Fields"
+WSU          = Subject
+WTI          = Title
+WAU          = Author
+ISSN         = ISSN
+ISBN         = ISBN
+WYR          = Year
+
+[Advanced_Searches]
+AllFields    = "All Fields"
+WSU          = Subject
+WTI          = Title
+WAU          = Author
+ISSN         = ISSN
+ISBN         = ISBN
+WYR          = Year
+
+; Sorting: primary,secondary
+[Sorting]
+rank = sort_relevance
+year,rank = "sort_year asc"
+title = sort_title
