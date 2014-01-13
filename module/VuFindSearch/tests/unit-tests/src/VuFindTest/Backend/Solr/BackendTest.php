@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Backend\Solr;
 
+use VuFindSearch\Backend\Exception\RemoteErrorException;
 use VuFindSearch\Backend\Solr\Backend;
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\ParamBag;
@@ -213,6 +214,24 @@ class BackendTest extends PHPUnit_Framework_TestCase
         $back = new Backend($conn);
         $back->setIdentifier('foo');
         $this->assertEquals('foo', $back->getIdentifier());
+    }
+
+    /**
+     * Test refining an alphabrowse exception.
+     *
+     * @return void
+     * @expectedException VuFindSearch\Backend\Exception\RemoteErrorException
+     * @expectedExceptionMessage Alphabetic Browse index missing.
+     */
+    public function testRefineAlphaBrowseException()
+    {
+        $conn = $this->getConnectorMock(array('query'));
+        $e = new RemoteErrorException('does not exist', 400, new \Zend\Http\Response());
+        $conn->expects($this->once())->method('query')
+            ->with($this->equalTo('browse'))
+            ->will($this->throwException($e));
+        $back = new Backend($conn);
+        $back->alphabeticBrowse('foo', 'bar', 1);
     }
 
     /// Internal API
