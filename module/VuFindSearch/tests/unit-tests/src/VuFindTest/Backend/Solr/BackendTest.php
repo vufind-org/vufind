@@ -217,7 +217,7 @@ class BackendTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test refining an alphabrowse exception.
+     * Test refining an alphabrowse exception (string 1).
      *
      * @return void
      * @expectedException VuFindSearch\Backend\Exception\RemoteErrorException
@@ -225,16 +225,52 @@ class BackendTest extends PHPUnit_Framework_TestCase
      */
     public function testRefineAlphaBrowseException()
     {
+        $this->runRefineExceptionCall('does not exist');
+    }
+
+    /**
+     * Test refining an alphabrowse exception (string 2).
+     *
+     * @return void
+     * @expectedException VuFindSearch\Backend\Exception\RemoteErrorException
+     * @expectedExceptionMessage Alphabetic Browse index missing.
+     */
+    public function testRefineAlphaBrowseExceptionWithAltString()
+    {
+        $this->runRefineExceptionCall('couldn\'t find a browse index');
+    }
+
+    /**
+     * Test that we don't refine a non-alphabrowse-related exception.
+     *
+     * @return void
+     * @expectedException VuFindSearch\Backend\Exception\RemoteErrorException
+     * @expectedExceptionMessage not a browse error
+     */
+    public function testRefineAlphaBrowseExceptionWithNonBrowseString()
+    {
+        $this->runRefineExceptionCall('not a browse error');
+    }
+
+    /// Internal API
+
+    /**
+     * Support method to run a "refine exception" test.
+     *
+     * @param string $msg Error message
+     *
+     * @return void
+     */
+    protected function runRefineExceptionCall($msg)
+    {
         $conn = $this->getConnectorMock(array('query'));
-        $e = new RemoteErrorException('does not exist', 400, new \Zend\Http\Response());
+        $e = new RemoteErrorException($msg, 400, new \Zend\Http\Response());
         $conn->expects($this->once())->method('query')
             ->with($this->equalTo('browse'))
             ->will($this->throwException($e));
         $back = new Backend($conn);
         $back->alphabeticBrowse('foo', 'bar', 1);
     }
-
-    /// Internal API
 
     /**
      * Load a SOLR response as fixture.
