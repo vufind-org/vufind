@@ -1608,6 +1608,7 @@ class SolrDefault extends AbstractBase
         }
         return array_keys($types);
     }
+    
     /**
      * Get schema.org type mapping, expected to be a space-delimited string of
      * sub-types of http://schema.org/CreativeWork, defaulting to CreativeWork
@@ -1618,5 +1619,17 @@ class SolrDefault extends AbstractBase
     public function getSchemaOrgFormats()
     {
         return implode(' ', $this->getSchemaOrgFormatsArray());
+    }
+    
+    /**
+     * Get information on records deduplicated with this one
+     * 
+     * @return array Array keyed by source id containing record id
+     */
+    public function getDedupData()
+    {
+        return isset($this->fields['dedup_data'])
+            ? $this->fields['dedup_data']
+            : array(); 
     }
 }
