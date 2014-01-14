@@ -582,11 +582,22 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         }
 
         // Send Request and Retrieve Response
+        $startTime = microtime(true);
         $result = $client->setMethod($mode)->send();
         if (!$result->isSuccess()) {
+            $this->error(
+                "$mode request for '$urlParams' with contents '$xml' failed: "
+                . $result->getStatus() . ': ' . $result->getMessage()
+            );
             throw new ILSException('Problem with RESTful API.');
         }
         $xmlResponse = $result->getBody();
+        $this->debug(
+            '[' . round(microtime(true) - $startTime, 4) . 's]' 
+            . " $mode request $urlParams, contents:" . PHP_EOL . $xml
+            . PHP_EOL . 'response: ' . PHP_EOL
+            . $xmlResponse
+        );
         $oldLibXML = libxml_use_internal_errors();
         libxml_use_internal_errors(true);
         $simpleXML = simplexml_load_string($xmlResponse);
