@@ -72,9 +72,11 @@ class RecordController extends AbstractRecord
      */
     public function holdAction()
     {
+        $driver = $this->loadRecord();
+        
         // If we're not supposed to be here, give up now!
         $catalog = $this->getILS();
-        $checkHolds = $catalog->checkFunction("Holds");
+        $checkHolds = $catalog->checkFunction("Holds", $driver->getUniqueID());
         if (!$checkHolds) {
             return $this->forwardTo('Record', 'Home');
         }
@@ -92,7 +94,6 @@ class RecordController extends AbstractRecord
         }
 
         // Block invalid requests:
-        $driver = $this->loadRecord();
         if (!$catalog->checkRequestIsValid(
             $driver->getUniqueID(), $gatheredDetails, $patron
         )) {

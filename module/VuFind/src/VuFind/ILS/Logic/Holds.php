@@ -174,7 +174,7 @@ class Holds
             if ($mode == "disabled") {
                  $holdings = $this->standardHoldings($result);
             } else if ($mode == "driver") {
-                $holdings = $this->driverHoldings($result);
+                $holdings = $this->driverHoldings($result, $id);
             } else {
                 $holdings = $this->generateHoldings($result, $mode);
             }
@@ -206,16 +206,17 @@ class Holds
     /**
      * Protected method for driver defined holdings
      *
-     * @param array $result A result set returned from a driver
+     * @param array  $result A result set returned from a driver
+     * @param string $id     Record ID   
      *
      * @return array A sorted results set
      */
-    protected function driverHoldings($result)
+    protected function driverHoldings($result, $id)
     {
         $holdings = array();
 
         // Are holds allows?
-        $checkHolds = $this->catalog->checkFunction("Holds");
+        $checkHolds = $this->catalog->checkFunction("Holds", $id);
 
         if (count($result)) {
             foreach ($result as $copy) {
