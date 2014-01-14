@@ -204,15 +204,17 @@ class Connection
      * if the system supports a particular function.
      *
      * @param string $function The name of the function to check.
+     * @param string $id       (optional) A record id used to identify the used 
+     * backend with MultiBackend driver  
      *
      * @return mixed On success, an associative array with specific function keys
      * and values; on failure, false.
      */
-    public function checkFunction($function)
+    public function checkFunction($function, $id = null)
     {
         // Extract the configuration from the driver if available:
         $functionConfig = $this->checkCapability('getConfig')
-            ? $this->getDriver()->getConfig($function) : false;
+            ? $this->getDriver()->getConfig($function, $id) : false;
 
         // See if we have a corresponding check method to analyze the response:
         $checkMethod = "checkMethod".$function;
