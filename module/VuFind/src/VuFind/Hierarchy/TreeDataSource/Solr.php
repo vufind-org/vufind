@@ -159,7 +159,7 @@ class Solr extends AbstractBase
         $xml = array();
         $sorting = $this->getHierarchyDriver()->treeSorting();
 
-        foreach ($results->getRecords() as $current) {
+        foreach ($results->getRecords() as $i=>$current) {
             ++$count;
             if ($sorting) {
                 $positions = $current->getHierarchyPositionsInParents();
@@ -174,7 +174,9 @@ class Solr extends AbstractBase
             $xmlNode .= '<item id="' . htmlspecialchars($current->getUniqueID()) .
                 '" isCollection="' . $isCollection . '"><content><name>' .
                 htmlspecialchars($current->getTitle()) . '</name></content>';
+            echo "\t- searching ".$current->getUniqueID()." (".($i+1)."/".count($results->getRecords()).")... ";
             $xmlNode .= $this->getChildren($current->getUniqueID(), $count);
+            echo "done\n";
             $xmlNode .= '</item>';
             array_push($xml, array((isset($sequence) ? $sequence : 0), $xmlNode));
         }
