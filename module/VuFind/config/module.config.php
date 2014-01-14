@@ -84,6 +84,7 @@ $config = array(
             },
         ),
         'invokables' => array(
+            'admin' => 'VuFind\Controller\AdminController',
             'ajax' => 'VuFind\Controller\AjaxController',
             'alphabrowse' => 'VuFind\Controller\AlphabrowseController',
             'author' => 'VuFind\Controller\AuthorController',
@@ -467,9 +468,11 @@ $config = array(
                 'factories' => array(
                     'solr' => function ($sm) {
                         $cacheDir = $sm->getServiceLocator()->get('VuFind\CacheManager')->getCacheDir(false);
+                        $filters = $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')->get('Solr')->getHiddenFilters();
                         return new \VuFind\Hierarchy\TreeDataSource\Solr(
                             $sm->getServiceLocator()->get('VuFind\Search'),
-                            rtrim($cacheDir, '/') . '/hierarchy'
+                            rtrim($cacheDir, '/') . '/hierarchy',
+                            $filters
                         );
                     },
                 ),
@@ -1024,6 +1027,8 @@ $listRoutes = array('userList' => 'MyList', 'editList' => 'EditList');
 
 // Define static routes -- Controller/Action strings
 $staticRoutes = array(
+    'Admin/Config', 'Admin/DeleteExpiredSearches', 'Admin/EnableAutoConfig',
+    'Admin/Home', 'Admin/Maintenance', 'Admin/SocialStats', 'Admin/Statistics',
     'Alphabrowse/Home', 'Author/Home', 'Author/Search',
     'Authority/Home', 'Authority/Record', 'Authority/Search',
     'Browse/Author', 'Browse/Dewey', 'Browse/Era', 'Browse/Genre', 'Browse/Home',
