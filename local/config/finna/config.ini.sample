@@ -733,7 +733,7 @@ skip_numeric = true
 ; NOTE : Make sure the log file exists and that Apache has write permission.
 ; NOTE : Windows users should avoid drive letters (eg. c:\vufind) because
 ;        the colon will be used in the string parsing. "/vufind" will work
-file           = /var/log/vufind2.log:alert,error,notice,debug
+file           = /var/log/vufind2.log:alert-5,error-3,notice
 ;email          = alerts@myuniversity.edu:alert-5,error-5
 
 ; This section can be used to specify a "parent configuration" from which
