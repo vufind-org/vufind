@@ -31,6 +31,11 @@
 namespace Finna\Module\Configuration;
 
 $config = array(
+    'controllers' => array(
+        'invokables' => array(
+            'cover' => 'Finna\Controller\CoverController'
+        ),
+    ),
     // This section contains all VuFind-specific settings (i.e. configurations
     // unrelated to specific Zend Framework 2 components).
     'vufind' => array(
