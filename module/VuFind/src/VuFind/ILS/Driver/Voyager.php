@@ -204,7 +204,9 @@ class Voyager extends AbstractBase
             );
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            $this->error("PDO Connection failed ($this->dbName): " . $e->getMessage());
+            $this->error(
+                "PDO Connection failed ($this->dbName): " . $e->getMessage()
+            );
             throw $e;
         }
     }
@@ -573,7 +575,7 @@ class Voyager extends AbstractBase
     {
         // Expressions
         $sqlExpressions = array(
-            "BIB_ITEM.BIB_ID",
+            "BIB_ITEM.BIB_ID", "MFHD_ITEM.MFHD_ID",
             "ITEM_BARCODE.ITEM_BARCODE", "ITEM.ITEM_ID",
             "ITEM.ON_RESERVE", "ITEM.ITEM_SEQUENCE_NUMBER",
             "ITEM.RECALLS_PLACED", "ITEM.HOLDS_PLACED",
@@ -644,29 +646,35 @@ class Voyager extends AbstractBase
     protected function getHoldingNoItemsSQL($id)
     {
         // Expressions
-        $sqlExpressions = array("null as ITEM_BARCODE", "null as ITEM_ID",
-                                "MFHD_DATA.RECORD_SEGMENT", "null as ITEM_ENUM",
-                                "'N' as ON_RESERVE", "1 as ITEM_SEQUENCE_NUMBER",
-                                "'No information available' as status",
-                                "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
-                                    "LOCATION.LOCATION_NAME) as location",
-                                "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
-                                "BIB_MFHD.BIB_ID", "null as duedate",
-                                "0 AS TEMP_LOCATION"
-                               );
+        $sqlExpressions = array(
+            "BIB_MFHD.BIB_ID",
+            "MFHD_MASTER.MFHD_ID",
+            "MFHD_DATA.RECORD_SEGMENT", "null as ITEM_ENUM",
+            "'N' as ON_RESERVE", "1 as ITEM_SEQUENCE_NUMBER",
+            "'No information available' as status",
+            "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
+                "LOCATION.LOCATION_NAME) as location",
+            "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
+            "BIB_MFHD.BIB_ID", "null as duedate",
+            "0 AS TEMP_LOCATION"
+        );
 
         // From
-        $sqlFrom = array($this->dbName.".BIB_MFHD", $this->dbName.".LOCATION",
-                         $this->dbName.".MFHD_MASTER", $this->dbName.".MFHD_DATA"
-                        );
+        $sqlFrom = array(
+            $this->dbName.".BIB_MFHD", $this->dbName.".LOCATION",
+            $this->dbName.".MFHD_MASTER", $this->dbName.".MFHD_DATA"
+        );
 
         // Where
-        $sqlWhere = array("BIB_MFHD.BIB_ID = :id",
-                          "LOCATION.LOCATION_ID = MFHD_MASTER.LOCATION_ID",
-                          "MFHD_MASTER.MFHD_ID = BIB_MFHD.MFHD_ID",
-                          "MFHD_DATA.MFHD_ID = BIB_MFHD.MFHD_ID",
-                          "MFHD_MASTER.SUPPRESS_IN_OPAC='N'"
-                         );
+        $sqlWhere = array(
+            "BIB_MFHD.BIB_ID = :id",
+            "LOCATION.LOCATION_ID = MFHD_MASTER.LOCATION_ID",
+            "MFHD_MASTER.MFHD_ID = BIB_MFHD.MFHD_ID",
+            "MFHD_DATA.MFHD_ID = BIB_MFHD.MFHD_ID",
+            "MFHD_MASTER.SUPPRESS_IN_OPAC='N'",
+            "NOT EXISTS (SELECT MFHD_ID FROM MFHD_ITEM" .
+            " WHERE MFHD_ITEM.MFHD_ID=MFHD_MASTER.MFHD_ID)"
+        );
 
         // Order
         $sqlOrder = array("MFHD_DATA.MFHD_ID", "MFHD_DATA.SEQNUM");
@@ -705,12 +713,13 @@ class Voyager extends AbstractBase
 
             // Concat wrapped rows (MARC data more than 300 bytes gets split
             // into multiple rows)
-            if (isset($data[$row['ITEM_ID']][$number])) {
+            $rowId = isset($row['ITEM_ID']) ? $row['ITEM_ID'] : $row['MFHD_ID'];
+            if (isset($data[$rowId][$number])) {
                 // We don't want to concatenate the same MARC information to
                 // itself over and over due to a record with multiple status
                 // codes -- we should only concat wrapped rows for the FIRST
                 // status code we encounter!
-                $record = & $data[$row['ITEM_ID']][$number];
+                $record = & $data[$rowId][$number];
                 if ($record['STATUS_ARRAY'][0] == $row['STATUS']) {
                     $record['RECORD_SEGMENT'] .= $row['RECORD_SEGMENT'];
                 }
@@ -724,8 +733,8 @@ class Voyager extends AbstractBase
             } else {
                 // This is the first time we've encountered this row number --
                 // initialize the row and start an array of statuses.
-                $data[$row['ITEM_ID']][$number] = $row;
-                $data[$row['ITEM_ID']][$number]['STATUS_ARRAY']
+                $data[$rowId][$number] = $row;
+                $data[$rowId][$number]['STATUS_ARRAY']
                     = array($row['STATUS']);
             }
         }
@@ -841,6 +850,7 @@ class Voyager extends AbstractBase
     {
         return array(
             'id' => $sqlRow['BIB_ID'],
+            'holdings_id' => $sqlRow['MFHD_ID'],
             'status' => $sqlRow['STATUS'],
             'location' => $sqlRow['TEMP_LOCATION'] > 0
                 ? $this->getLocationName($sqlRow['TEMP_LOCATION'])
@@ -961,8 +971,8 @@ class Voyager extends AbstractBase
         $sqlArrayNoItems = $this->getHoldingNoItemsSQL($id);
         $possibleQueries[] = $this->buildSqlFromArray($sqlArrayNoItems);
 
-        // Loop through the possible queries and try each in turn -- the first one
-        // that yields results will cause us to break out of the loop.
+        // Loop through the queries and collect all results
+        $data = array();
         foreach ($possibleQueries as $sql) {
             // Execute SQL
             try {
@@ -976,13 +986,7 @@ class Voyager extends AbstractBase
                 $sqlRows[] = $row;
             }
 
-            $data = $this->getHoldingData($sqlRows);
-
-            // If we found data, we can leave the foreach loop -- we don't need to
-            // try any more queries.
-            if (count($data) > 0) {
-                break;
-            }
+            $data = array_merge($data, $this->getHoldingData($sqlRows));            
         }
         return $this->processHoldingData($data, $patron);
     }
