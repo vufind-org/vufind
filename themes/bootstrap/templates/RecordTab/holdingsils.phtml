@@ -48,7 +48,7 @@
 <? foreach ($holdings as $location => $holding): ?>
 <h3><?=$this->transEsc($location)?></h3>
 <table class="table table-striped" summary="<?=$this->transEsc('Holdings details from')?> <?=$this->transEsc($location)?>">
-  <? if (isset($holding['items'][0]['callnumber'])): ?>
+  <? $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
   <tr>
     <th><?=$this->transEsc("Call Number")?>: </th>
     <td width="50%">
