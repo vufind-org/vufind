@@ -181,7 +181,7 @@ title_level_holds_mode = "driver"
 ;method         = Shibboleth
 ;method         = SIP2
 ;method         = CAS
-method         = MultiAuth
+method         = ChoiceAuth
 
 ; This setting only applies when method is set to ILS.  It determines which
 ; field of the ILS driver's patronLogin() return array is used as the username
@@ -201,7 +201,10 @@ encrypt_ils_password = "1"
 
 ; This is the key used to encrypt and decrypt catalog passwords.  This must be
 ; filled in with a random string value when encrypt_ils_passwords is set to true.
-ils_encryption_key = "b24f48c7e51b689f963cc95855f52ee745c8d466"
+ils_encryption_key = ""
+
+[ChoiceAuth]
+choice_order = MozillaPersona,Shibboleth,ILS
 
 ; See the comments in library/VF/Auth/MultiAuth.php for full details
 ; on using multiple authentication methods.  Note that MultiAuth assumes login
