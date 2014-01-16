@@ -587,7 +587,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         if (!$result->isSuccess()) {
             $this->error(
                 "$mode request for '$urlParams' with contents '$xml' failed: "
-                . $result->getStatus() . ': ' . $result->getMessage()
+                . $result->getStatusCode() . ': ' . $result->getReasonPhrase()
             );
             throw new ILSException('Problem with RESTful API.');
         }
