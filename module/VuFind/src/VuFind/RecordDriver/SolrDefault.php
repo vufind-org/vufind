@@ -1600,7 +1600,7 @@ class SolrDefault extends AbstractBase
                 $types['Map'] = 1;
                 break;
             case 'Audio':
-                $types['MusicRecording'] = 1;
+                $types['MusicAlbum'] = 1;
                 break;
             default:
                 $types['CreativeWork'] = 1;
