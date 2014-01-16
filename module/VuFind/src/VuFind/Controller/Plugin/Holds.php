@@ -29,7 +29,7 @@ namespace VuFind\Controller\Plugin;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Session\Container;
 
 /**
- * Zend action helper to perform renewal-related actions
+ * Zend action helper to perform holds-related actions
  *
  * @category VuFind2
  * @package  Controller_Plugins
