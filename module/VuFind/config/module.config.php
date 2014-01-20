@@ -84,6 +84,7 @@ $config = array(
             },
         ),
         'invokables' => array(
+            'admin' => 'VuFind\Controller\AdminController',
             'ajax' => 'VuFind\Controller\AjaxController',
             'alphabrowse' => 'VuFind\Controller\AlphabrowseController',
             'author' => 'VuFind\Controller\AuthorController',
@@ -92,6 +93,8 @@ $config = array(
             'combined' => 'VuFind\Controller\CombinedController',
             'confirm' => 'VuFind\Controller\ConfirmController',
             'cover' => 'VuFind\Controller\CoverController',
+	    'ebsco' => 'VuFind\Controller\EBSCOController',
+	    'ebscorecord' => '\VuFind\Controller\EBSCOrecordController',
             'error' => 'VuFind\Controller\ErrorController',
             'feedback' => 'VuFind\Controller\FeedbackController',
             'help' => 'VuFind\Controller\HelpController',
@@ -101,7 +104,6 @@ $config = array(
             'missingrecord' => 'VuFind\Controller\MissingrecordController',
             'my-research' => 'VuFind\Controller\MyResearchController',
             'oai' => 'VuFind\Controller\OaiController',
-            'qrcode' => 'VuFind\Controller\QRCodeController',
             'pazpar2' => 'VuFind\Controller\Pazpar2Controller',
             'records' => 'VuFind\Controller\RecordsController',
             'search' => 'VuFind\Controller\SearchController',
@@ -109,6 +111,7 @@ $config = array(
             'summonrecord' => 'VuFind\Controller\SummonrecordController',
             'tag' => 'VuFind\Controller\TagController',
             'upgrade' => 'VuFind\Controller\UpgradeController',
+            'vudl' => 'VuFind\Controller\VudlController',
             'web' => 'VuFind\Controller\WebController',
             'worldcat' => 'VuFind\Controller\WorldcatController',
             'worldcatrecord' => 'VuFind\Controller\WorldcatrecordController',
@@ -376,12 +379,10 @@ $config = array(
                     },
                 ),
                 'invokables' => array(
-                    'choiceauth' => 'VuFind\Auth\ChoiceAuth',
                     'database' => 'VuFind\Auth\Database',
                     'ldap' => 'VuFind\Auth\LDAP',
                     'multiauth' => 'VuFind\Auth\MultiAuth',
                     'shibboleth' => 'VuFind\Auth\Shibboleth',
-                    'cas' => 'VuFind\Auth\CAS',
                     'sip2' => 'VuFind\Auth\SIP2',
                 ),
                 'aliases' => array(
@@ -487,7 +488,6 @@ $config = array(
                 'factories' => array(
                     'aleph' => function ($sm) {
                         return new \VuFind\ILS\Driver\Aleph(
-                            $sm->getServiceLocator()->get('VuFind\DateConverter'),
                             $sm->getServiceLocator()->get('VuFind\CacheManager')
                         );
                     },
@@ -619,16 +619,6 @@ $config = array(
                             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
                         );
                     },
-                    'summontopics' => function ($sm) {
-                        return new \VuFind\Recommend\SummonTopics(
-                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
-                        );
-                    },
-                    'switchquery' => function ($sm) {
-                        return new \VuFind\Recommend\SwitchQuery(
-                            $sm->getServiceLocator()->get('VuFind\Search\BackendManager')
-                        );
-                    },
                     'topfacets' => function ($sm) {
                         return new \VuFind\Recommend\TopFacets(
                             $sm->getServiceLocator()->get('VuFind\Config')
@@ -710,6 +700,13 @@ $config = array(
                             $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
                         );
                     },
+                    'solrvudl' => function ($sm) {
+                        return new \VuFind\RecordDriver\SolrVudl(
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+                            null,
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
+                        );
+                    },
                     'solrweb' => function ($sm) {
                         return new \VuFind\RecordDriver\SolrWeb(
                             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
@@ -734,8 +731,14 @@ $config = array(
                             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
                             $sm->getServiceLocator()->get('VuFind\Config')->get('WorldCat')
                         );
-                    },
-                ),
+                   }, 
+		   'ebsco' => function($sm) {
+			return new \VuFind\RecordDriver\EBSCO(
+               			$sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+				$sm->getServiceLocator()->get('VuFind\Config')->get('EBSCO')
+			);
+		}, 
+		),
             ),
             'recordtab' => array(
                 'abstract_factories' => array('VuFind\RecordTab\PluginFactory'),
@@ -853,6 +856,7 @@ $config = array(
             ),
             'search_backend' => array(
                 'factories' => array(
+		    'EBSCO' => 'VuFind\Search\Factory\EBSCOBackendFactory',
                     'Pazpar2' => 'VuFind\Search\Factory\Pazpar2BackendFactory',
                     'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
                     'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
@@ -933,35 +937,21 @@ $config = array(
                 ),
             ),
         ),
-        // This section behaves just like recorddriver_tabs below, but is used for
-        // the collection module instead of the standard record view.
-        'recorddriver_collection_tabs' => array(
-            'VuFind\RecordDriver\AbstractBase' => array(
-                'tabs' => array(
-                    'CollectionList' => 'CollectionList',
-                    'HierarchyTree' => 'CollectionHierarchyTree',
-                ),
-                'defaultTab' => null,
-            ),
-        ),
         // This section controls which tabs are used for which record driver classes.
         // Each sub-array is a map from a tab name (as used in a record URL) to a tab
         // service (found in recordtab_plugin_manager, below).  If a particular record
         // driver is not defined here, it will inherit configuration from a configured
-        // parent class.  The defaultTab setting may be used to specify the default
-        // active tab; if null, the value from the relevant .ini file will be used.
+        // parent class.
         'recorddriver_tabs' => array(
             'VuFind\RecordDriver\Pazpar2' => array(
                 'tabs' => array (
                     'Details' => 'StaffViewMARC',
                  ),
-                'defaultTab' => null,
             ),
             'VuFind\RecordDriver\SolrAuth' => array(
                 'tabs' => array (
                     'Details' => 'StaffViewMARC',
                  ),
-                'defaultTab' => null,
             ),
             'VuFind\RecordDriver\SolrDefault' => array(
                 'tabs' => array (
@@ -971,7 +961,6 @@ $config = array(
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
                     'Details' => 'StaffViewArray',
                 ),
-                'defaultTab' => null,
             ),
             'VuFind\RecordDriver\SolrMarc' => array(
                 'tabs' => array(
@@ -981,7 +970,6 @@ $config = array(
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
                     'Details' => 'StaffViewMARC',
                 ),
-                'defaultTab' => null,
             ),
             'VuFind\RecordDriver\Summon' => array(
                 'tabs' => array(
@@ -990,7 +978,6 @@ $config = array(
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
                     'Details' => 'StaffViewArray',
                 ),
-                'defaultTab' => null,
             ),
             'VuFind\RecordDriver\WorldCat' => array(
                 'tabs' => array (
@@ -999,7 +986,6 @@ $config = array(
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
                     'Details' => 'StaffViewMARC',
                 ),
-                'defaultTab' => null,
             ),
         ),
     ),
@@ -1011,6 +997,7 @@ $recordRoutes = array(
     'collection' => 'Collection',
     'missingrecord' => 'MissingRecord',
     'solrauthrecord' => 'Authority',
+    'ebscorecord' => 'EBSCORecord', 
     'summonrecord' => 'SummonRecord',
     'worldcatrecord' => 'WorldcatRecord'
 );
@@ -1024,13 +1011,15 @@ $listRoutes = array('userList' => 'MyList', 'editList' => 'EditList');
 
 // Define static routes -- Controller/Action strings
 $staticRoutes = array(
+    'Admin/Config', 'Admin/DeleteExpiredSearches', 'Admin/EnableAutoConfig',
+    'Admin/Home', 'Admin/Maintenance', 'Admin/SocialStats', 'Admin/Statistics',
     'Alphabrowse/Home', 'Author/Home', 'Author/Search',
     'Authority/Home', 'Authority/Record', 'Authority/Search',
     'Browse/Author', 'Browse/Dewey', 'Browse/Era', 'Browse/Genre', 'Browse/Home',
     'Browse/LCC', 'Browse/Region', 'Browse/Tag', 'Browse/Topic',
     'Cart/doExport', 'Cart/Email', 'Cart/Export', 'Cart/Home', 'Cart/MyResearchBulk',
     'Cart/Save', 'Collections/ByTitle', 'Collections/Home',
-    'Combined/Home', 'Combined/Results', 'Combined/SearchBox', 'Confirm/Confirm',
+    'Combined/Home', 'Combined/Results', 'Combined/Advanced', 'Combined/SearchBox', 'Confirm/Confirm',
     'Cover/Show', 'Cover/Unavailable', 'Error/Unavailable',
     'Feedback/Email', 'Feedback/Home', 'Help/Home',
     'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',
@@ -1042,7 +1031,6 @@ $staticRoutes = array(
     'MyResearch/Favorites', 'MyResearch/Fines',
     'MyResearch/Holds', 'MyResearch/Home', 'MyResearch/Logout', 'MyResearch/Profile',
     'MyResearch/SaveSearch',
-    'QRCode/Show', 'QRCode/Unavailable',
     'OAI/Server', 'Pazpar2/Home', 'Pazpar2/Search', 'Records/Home',
     'Search/Advanced', 'Search/Email', 'Search/History', 'Search/Home',
     'Search/NewItem', 'Search/OpenSearch', 'Search/Reserves', 'Search/Results',
@@ -1054,8 +1042,9 @@ $staticRoutes = array(
     'Upgrade/GetDBCredentials', 'Upgrade/GetDbEncodingPreference',
     'Upgrade/GetSourceDir', 'Upgrade/GetSourceVersion', 'Upgrade/Reset',
     'Upgrade/ShowSQL',
+    'VuDL/Browse', 'VuDL/DSRecord', 'VuDL/Record',
     'Web/Home', 'Web/Results',
-    'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search'
+    'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search', 'EBSCO/Advanced', 'EBSCO/Home', 'EBSCO/Search'
 );
 
 // Build record routes
