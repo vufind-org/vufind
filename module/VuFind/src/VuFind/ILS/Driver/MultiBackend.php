@@ -584,6 +584,35 @@ class MultiBackend extends AbstractBase
     }
 
     /**
+     * Get available login targets (drivers enabled for login)
+     * 
+     * @return string[] Source ID's
+     */
+    public function getLoginDrivers()
+    {
+        return isset($this->config['Login']['drivers'])
+            ? $this->config['Login']['drivers']
+            : array();
+    }
+
+    /**
+     * Get default login driver
+     * 
+     * @return string Default login driver or empty string
+     */
+    public function getDefaultLoginDriver()
+    {
+        if (isset($this->config['Login']['default_driver'])) {
+            return $this->config['Login']['default_driver'];
+        }
+        $drivers = $this->getLoginDrivers();
+        if ($drivers) {
+            return $drivers[0];
+        }
+        return '';
+    }
+    
+    /**
      * Function developed to reduce code duplication in supportsMethod() and __call()
      *
      * @param array $params Array of passed parameters
