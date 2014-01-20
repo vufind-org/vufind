@@ -374,6 +374,11 @@ $config = array(
                             $sm->getServiceLocator()->get('VuFind\ILSConnection')
                         );
                     },
+                    'multiils' => function ($sm) {
+                        return new \VuFind\Auth\MultiILS(
+                            $sm->getServiceLocator()->get('VuFind\ILSConnection')
+                        );
+                    },
                 ),
                 'invokables' => array(
                     'choiceauth' => 'VuFind\Auth\ChoiceAuth',
