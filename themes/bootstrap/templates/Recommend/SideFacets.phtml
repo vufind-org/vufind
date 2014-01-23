@@ -22,7 +22,7 @@
     <? foreach ($filterList as $field => $filters): ?>
       <? foreach ($filters as $i => $filter): ?>
         <? 
-          $index = array_search($filter['field'], $collapsedFacets);
+          $index = isset($filter['field']) ? array_search($filter['field'], $collapsedFacets) : false;
           if ($index !== false) {
               unset($collapsedFacets[$index]); // Open if we have a match
           }
