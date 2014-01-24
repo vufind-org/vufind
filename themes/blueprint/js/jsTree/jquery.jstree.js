@@ -13,7 +13,7 @@
  */
 
 /*jslint browser: true, onevar: true, undef: true, bitwise: true, strict: true */
-/*global window : false, clearInterval: false, clearTimeout: false, document: false, setInterval: false, setTimeout: false, jQuery: false, navigator: false, XSLTProcessor: false, DOMParser: false, XMLSerializer: false*/
+/*global window : false, clearInterval: false, clearTimeout: false, document: false, setInterval: false, setTimeout: false, jQuery: false, navigator: false, XSLTProcessor: false, DOMParser: false, XMLSerializer: false, ActiveXObject: false */
 
 "use strict";
 
@@ -436,7 +436,7 @@
 					.undelegate(".jstree")
 					.removeData("jstree_instance_id")
 					.find("[class^='jstree']")
-						.andSelf()
+						.addBack()
 						.attr("class", function () { return this.className.replace(/jstree[^ ]*|$/ig,''); });
 				$(document)
 					.unbind(".jstree-" + n)
@@ -679,7 +679,7 @@
 				}
 				else {
 					original_obj = obj;
-					if(obj.is(".jstree-closed")) { obj = obj.find("li.jstree-closed").andSelf(); }
+					if(obj.is(".jstree-closed")) { obj = obj.find("li.jstree-closed").addBack(); }
 					else { obj = obj.find("li.jstree-closed"); }
 				}
 				var _this = this;
@@ -695,12 +695,12 @@
 				var _this = this;
 				obj = obj ? this._get_node(obj) : this.get_container();
 				if(!obj || obj === -1) { obj = this.get_container_ul(); }
-				obj.find("li.jstree-open").andSelf().each(function () { _this.close_node(this, !do_animation); });
+				obj.find("li.jstree-open").addBack().each(function () { _this.close_node(this, !do_animation); });
 				this.__callback({ "obj" : obj });
 			},
 			clean_node	: function (obj) {
 				obj = obj && obj != -1 ? $(obj) : this.get_container_ul();
-				obj = obj.is("li") ? obj.find("li").andSelf() : obj.find("li");
+				obj = obj.is("li") ? obj.find("li").addBack() : obj.find("li");
 				obj.removeClass("jstree-last")
 					.filter("li:last-child").addClass("jstree-last").end()
 					.filter(":has(li)")
@@ -922,10 +922,12 @@
 			check_move : function () {
 				var obj = prepared_move, ret = true, r = obj.r === -1 ? this.get_container() : obj.r;
 				if(!obj || !obj.o || obj.or[0] === obj.o[0]) { return false; }
-				if(obj.op && obj.np && obj.op[0] === obj.np[0] && obj.cp - 1 === obj.o.index()) { return false; }
-				obj.o.each(function () { 
-					if(r.parentsUntil(".jstree", "li").andSelf().index(this) !== -1) { ret = false; return false; }
-				});
+				if(!obj.cy) {
+					if(obj.op && obj.np && obj.op[0] === obj.np[0] && obj.cp - 1 === obj.o.index()) { return false; }
+					obj.o.each(function () { 
+						if(r.parentsUntil(".jstree", "li").addBack().index(this) !== -1) { ret = false; return false; }
+					});
+				}
 				return ret;
 			},
 			move_node : function (obj, ref, position, is_copy, is_prepared, skip_check) {
@@ -943,7 +945,7 @@
 				var o = false;
 				if(is_copy) {
 					o = obj.o.clone(true);
-					o.find("*[id]").andSelf().each(function () {
+					o.find("*[id]").addBack().each(function () {
 						if(this.id) { this.id = "copy_" + this.id; }
 					});
 				}
@@ -1140,7 +1142,7 @@
 					switch(!0) {
 						case (is_range):
 							this.data.ui.last_selected.addClass("jstree-last-selected");
-							obj = obj[ obj.index() < this.data.ui.last_selected.index() ? "nextUntil" : "prevUntil" ](".jstree-last-selected").andSelf();
+							obj = obj[ obj.index() < this.data.ui.last_selected.index() ? "nextUntil" : "prevUntil" ](".jstree-last-selected").addBack();
 							if(s.select_limit == -1 || obj.length < s.select_limit) {
 								this.data.ui.last_selected.removeClass("jstree-last-selected");
 								this.data.ui.selected.each(function () {
@@ -1244,7 +1246,7 @@
 				.bind("move_node.jstree", $.proxy(function (e, data) {
 					if(this._get_settings().crrm.move.open_onmove) {
 						var t = this;
-						data.rslt.np.parentsUntil(".jstree").andSelf().filter(".jstree-closed").each(function () {
+						data.rslt.np.parentsUntil(".jstree").addBack().filter(".jstree-closed").each(function () {
 							t.open_node(this, false, true);
 						});
 					}
@@ -1789,12 +1791,15 @@
 					obj.data("jstree_children", d);
 				}
 				if($.isArray(js)) {
-					d = $();
+					d = $('<ul>');
 					if(!js.length) { return false; }
 					for(i = 0, j = js.length; i < j; i++) {
 						tmp = this._parse_json(js[i], obj, true);
-						if(tmp.length) { d = d.add(tmp); }
+						if(tmp.length) {
+							d = d.append(tmp);
+						}
 					}
+					d = d.children();
 				}
 				else {
 					if(typeof js == "string") { js = { data : js }; }
@@ -1929,6 +1934,7 @@
  * This is useful for maintaining the same structure in many languages (hence the name of the plugin)
  */
 (function ($) {
+	var sh = false;
 	$.jstree.plugin("languages", {
 		__init : function () { this._load_css();  },
 		defaults : [],
@@ -1943,9 +1949,9 @@
 					else { return false; }
 				}
 				if(i == this.data.languages.current_language) { return true; }
-				st = $.vakata.css.get_css(selector + "." + this.data.languages.current_language, false, this.data.languages.language_css);
+				st = $.vakata.css.get_css(selector + "." + this.data.languages.current_language, false, sh);
 				if(st !== false) { st.style.display = "none"; }
-				st = $.vakata.css.get_css(selector + "." + i, false, this.data.languages.language_css);
+				st = $.vakata.css.get_css(selector + "." + i, false, sh);
 				if(st !== false) { st.style.display = ""; }
 				this.data.languages.current_language = i;
 				this.__callback(i);
@@ -2019,7 +2025,7 @@
 						if(langs[ln] != this.data.languages.current_language) { str += " display:none; "; }
 						str += " } ";
 					}
-					this.data.languages.language_css = $.vakata.css.add_sheet({ 'str' : str, 'title' : "jstree-languages" });
+					sh = $.vakata.css.add_sheet({ 'str' : str, 'title' : "jstree-languages" });
 				}
 			},
 			create_node : function (obj, position, js, callback) {
@@ -2801,7 +2807,7 @@
 				obj.each(function () {
 					t = $(this);
 					c = t.is("li") && (t.hasClass("jstree-checked") || (rc && t.children(":checked").length)) ? "jstree-checked" : "jstree-unchecked";
-					t.find("li").andSelf().each(function () {
+					t.find("li").addBack().each(function () {
 						var $t = $(this), nm;
 						$t.children("a" + (_this.data.languages ? "" : ":eq(0)") ).not(":has(.jstree-checkbox)").prepend("<ins class='jstree-checkbox'>&#160;</ins>").parent().not(".jstree-checked, .jstree-unchecked").addClass( ts ? "jstree-unchecked" : c );
 						if(rc) {
@@ -2815,7 +2821,7 @@
 						}
 						if(!ts) {
 							if(c === "jstree-checked" || $t.hasClass("jstree-checked") || $t.children(':checked').length) {
-								$t.find("li").andSelf().addClass("jstree-checked").children(":checkbox").prop("checked", true);
+								$t.find("li").addBack().addClass("jstree-checked").children(":checkbox").prop("checked", true);
 							}
 						}
 						else {
@@ -2846,13 +2852,13 @@
 				}
 				else {
 					if(state) { 
-						coll = obj.find("li").andSelf();
+						coll = obj.find("li").addBack();
 						if(!coll.filter(".jstree-checked, .jstree-undetermined").length) { return false; }
 						coll.removeClass("jstree-checked jstree-undetermined").addClass("jstree-unchecked"); 
 						if(rc) { coll.children(":checkbox").prop("checked", false); }
 					}
 					else { 
-						coll = obj.find("li").andSelf();
+						coll = obj.find("li").addBack();
 						if(!coll.filter(".jstree-unchecked, .jstree-undetermined").length) { return false; }
 						coll.removeClass("jstree-unchecked jstree-undetermined").addClass("jstree-checked"); 
 						if(rc) { coll.children(":checkbox").prop("checked", true); }
@@ -2863,8 +2869,8 @@
 						var $this = $(this);
 						if(state) {
 							if($this.children("ul").children("li.jstree-checked, li.jstree-undetermined").length) {
-								$this.parentsUntil(".jstree", "li").andSelf().removeClass("jstree-checked jstree-unchecked").addClass("jstree-undetermined");
-								if(rc) { $this.parentsUntil(".jstree", "li").andSelf().children(":checkbox").prop("checked", false); }
+								$this.parentsUntil(".jstree", "li").addBack().removeClass("jstree-checked jstree-unchecked").addClass("jstree-undetermined");
+								if(rc) { $this.parentsUntil(".jstree", "li").addBack().children(":checkbox").prop("checked", false); }
 								return false;
 							}
 							else {
@@ -2874,8 +2880,8 @@
 						}
 						else {
 							if($this.children("ul").children("li.jstree-unchecked, li.jstree-undetermined").length) {
-								$this.parentsUntil(".jstree", "li").andSelf().removeClass("jstree-checked jstree-unchecked").addClass("jstree-undetermined");
-								if(rc) { $this.parentsUntil(".jstree", "li").andSelf().children(":checkbox").prop("checked", false); }
+								$this.parentsUntil(".jstree", "li").addBack().removeClass("jstree-checked jstree-unchecked").addClass("jstree-undetermined");
+								if(rc) { $this.parentsUntil(".jstree", "li").addBack().children(":checkbox").prop("checked", false); }
 								return false;
 							}
 							else {
@@ -2939,7 +2945,7 @@
 				obj = this._get_node(obj);
 				if(!obj.length) { return; }
 				if(this._get_settings().checkbox.two_state) {
-					obj.find('li').andSelf().not('.jstree-checked').removeClass('jstree-undetermined').addClass('jstree-unchecked').children(':checkbox').prop('checked', true);
+					obj.find('li').addBack().not('.jstree-checked').removeClass('jstree-undetermined').addClass('jstree-unchecked').children(':checkbox').prop('checked', true);
 					return;
 				}
 				var rc = this._get_settings().checkbox.real_checkboxes,
@@ -2950,8 +2956,8 @@
 				else if(a === 0 && b === 0) { this.change_state(obj, true); }
 				else if(a === c) { this.change_state(obj, false); }
 				else { 
-					obj.parentsUntil(".jstree","li").andSelf().removeClass("jstree-checked jstree-unchecked").addClass("jstree-undetermined");
-					if(rc) { obj.parentsUntil(".jstree", "li").andSelf().children(":checkbox").prop("checked", false); }
+					obj.parentsUntil(".jstree","li").addBack().removeClass("jstree-checked jstree-unchecked").addClass("jstree-undetermined");
+					if(rc) { obj.parentsUntil(".jstree", "li").addBack().children(":checkbox").prop("checked", false); }
 				}
 			},
 			reselect : function () {
@@ -2988,70 +2994,38 @@
  * The XML data store. Datastores are build by overriding the `load_node` and `_is_loaded` functions.
  */
 (function ($) {
-
-    /* Edited Out LOS 03/04/12 - See http://code.google.com/p/jstree/issues/detail?id=907
 	$.vakata.xslt = function (xml, xsl, callback) {
-		var rs = "", xm, xs, processor, support;
-		// TODO: IE9 no XSLTProcessor, no document.recalc
-		if(document.recalc) {
-			xm = document.createElement('xml');
-			xs = document.createElement('xml');
-			xm.innerHTML = xml;
-			xs.innerHTML = xsl;
-			$("body").append(xm).append(xs);
-			setTimeout( (function (xm, xs, callback) {
-				return function () {
-					callback.call(null, xm.transformNode(xs.XMLDocument));
-					setTimeout( (function (xm, xs) { return function () { $(xm).remove(); $(xs).remove(); }; })(xm, xs), 200);
-				};
-			})(xm, xs, callback), 100);
-			return true;
-		}
-    */
-    // Added LOS 03/04/12
-    $.vakata.xslt = function (xml, xsl, callback) {
-		var rs = "", xm, xs, processor, support;
-		if(window.ActiveXObject) {		
-			var xslt = new ActiveXObject("Msxml2.XSLTemplate");
-			var xmlDoc = new ActiveXObject("Msxml2.DOMDocument");
-			var xslDoc = new ActiveXObject("Msxml2.FreeThreadedDOMDocument");
-			xmlDoc.loadXML(xml);
-			xslDoc.loadXML(xsl);
-			xslt.stylesheet = xslDoc;
-			var xslProc = xslt.createProcessor();
-			xslProc.input = xmlDoc;
-			xslProc.transform();
-			callback.call(null, xslProc.output);
-			
-			return true;
-        }
-		if(typeof window.DOMParser !== "undefined" && typeof window.XMLHttpRequest !== "undefined" && typeof window.XSLTProcessor === "undefined") {
-			xml = new DOMParser().parseFromString(xml, "text/xml");
-			xsl = new DOMParser().parseFromString(xsl, "text/xml");
-			// alert(xml.transformNode());
-			// callback.call(null, new XMLSerializer().serializeToString(rs));
-			
-		}
-		if(typeof window.DOMParser !== "undefined" && typeof window.XMLHttpRequest !== "undefined" && typeof window.XSLTProcessor !== "undefined") {
-			processor = new XSLTProcessor();
-			support = $.isFunction(processor.transformDocument) ? (typeof window.XMLSerializer !== "undefined") : true;
-			if(!support) { return false; }
-			xml = new DOMParser().parseFromString(xml, "text/xml");
-			xsl = new DOMParser().parseFromString(xsl, "text/xml");
-			if($.isFunction(processor.transformDocument)) {
-				rs = document.implementation.createDocument("", "", null);
-				processor.transformDocument(xml, xsl, rs, null);
-				callback.call(null, new XMLSerializer().serializeToString(rs));
-				return true;
+		var r = false, p, q, s;
+		// IE9
+		if(r === false && (window.ActiveXObject || "ActiveXObject" in window)) {
+			try {
+				r = new ActiveXObject("Msxml2.XSLTemplate");
+				q = new ActiveXObject("Msxml2.DOMDocument");
+				q.loadXML(xml);
+				s = new ActiveXObject("Msxml2.FreeThreadedDOMDocument");
+				s.loadXML(xsl);
+				r.stylesheet = s;
+				p = r.createProcessor();
+				p.input = q;
+				p.transform();
+				r = p.output;
 			}
-			else {
-				processor.importStylesheet(xsl);
-				rs = processor.transformToFragment(xml, document);
-				callback.call(null, $("<div />").append(rs).html());
-				return true;
-			}
+			catch (e) { }
 		}
-		return false;
+		xml = $.parseXML(xml);
+		xsl = $.parseXML(xsl);
+		// FF, Chrome
+		if(r === false && typeof (XSLTProcessor) !== "undefined") {
+			p = new XSLTProcessor();
+			p.importStylesheet(xsl);
+			r = p.transformToFragment(xml, document);
+			r = $('<div />').append(r).html();
+		}
+		// OLD IE
+		if(r === false && typeof (xml.transformNode) !== "undefined") {
+			r = xml.transformNode(xsl);
+		}
+		callback.call(null, r);
 	};
 	var xsl = {
 		'nest' : '<' + '?xml version="1.0" encoding="utf-8" ?>' + 
@@ -3427,12 +3401,26 @@
  * DOES NOT WORK WITH JSON PROGRESSIVE RENDER
  */
 (function ($) {
-	$.expr[':'].jstree_contains = function(a,i,m){
-		return (a.textContent || a.innerText || "").toLowerCase().indexOf(m[3].toLowerCase())>=0;
-	};
-	$.expr[':'].jstree_title_contains = function(a,i,m) {
-		return (a.getAttribute("title") || "").toLowerCase().indexOf(m[3].toLowerCase())>=0;
-	};
+	if($().jquery.split('.')[1] >= 8) {
+		$.expr[':'].jstree_contains = $.expr.createPseudo(function(search) {
+			return function(a) {
+				return (a.textContent || a.innerText || "").toLowerCase().indexOf(search.toLowerCase())>=0;
+			};
+		});
+		$.expr[':'].jstree_title_contains = $.expr.createPseudo(function(search) {
+			return function(a) {
+				return (a.getAttribute("title") || "").toLowerCase().indexOf(search.toLowerCase())>=0;
+			};
+		});
+	}
+	else {
+		$.expr[':'].jstree_contains = function(a,i,m){
+			return (a.textContent || a.innerText || "").toLowerCase().indexOf(m[3].toLowerCase())>=0;
+		};
+		$.expr[':'].jstree_title_contains = function(a,i,m) {
+			return (a.getAttribute("title") || "").toLowerCase().indexOf(m[3].toLowerCase())>=0;
+		};
+	}
 	$.jstree.plugin("search", {
 		__init : function () {
 			this.data.search.str = "";
@@ -3441,7 +3429,7 @@
 				this.get_container()
 					.bind("search.jstree", function (e, data) {
 						$(this).children("ul").find("li").hide().removeClass("jstree-last");
-						data.rslt.nodes.parentsUntil(".jstree").andSelf().show()
+						data.rslt.nodes.parentsUntil(".jstree").addBack().show()
 							.filter("ul").each(function () { $(this).children("li:visible").eq(-1).addClass("jstree-last"); });
 					})
 					.bind("clear_search.jstree", function () {
@@ -4027,7 +4015,7 @@
 			// this used to use html() and clean the whitespace, but this way any attached data was lost
 			this.data.html_data.original_container_html = this.get_container().find(" > ul > li").clone(true);
 			// remove white space from LI node - otherwise nodes appear a bit to the right
-			this.data.html_data.original_container_html.find("li").andSelf().contents().filter(function() { return this.nodeType == 3; }).remove();
+			this.data.html_data.original_container_html.find("li").addBack().contents().filter(function() { return this.nodeType == 3; }).remove();
 		},
 		defaults : { 
 			data : false,
@@ -4245,7 +4233,8 @@
 		_fn : {
 			_themeroller : function (obj) {
 				var s = this._get_settings().themeroller;
-				obj = !obj || obj == -1 ? this.get_container_ul() : this._get_node(obj).parent();
+				obj = (!obj || obj == -1) ? this.get_container_ul() : this._get_node(obj);
+				obj = (!obj || obj == -1) ? this.get_container_ul() : obj.parent();
 				obj
 					.find("li.jstree-closed")
 						.children("ins.jstree-icon").removeClass(s.opened).addClass("ui-icon " + s.closed).end()
@@ -4358,15 +4347,19 @@
 		},
 		_fn : { 
 			_check_unique : function (nms, p, func) {
-				var cnms = [];
+				var cnms = [], ok = true;
 				p.children("a").each(function () { cnms.push($(this).text().replace(/^\s+/g,"")); });
 				if(!cnms.length || !nms.length) { return true; }
-				cnms = cnms.sort().join(",,").replace(/(,|^)([^,]+)(,,\2)+(,|$)/g,"$1$2$4").replace(/,,+/g,",").replace(/,$/,"").split(",");
-				if((cnms.length + nms.length) != cnms.concat(nms).sort().join(",,").replace(/(,|^)([^,]+)(,,\2)+(,|$)/g,"$1$2$4").replace(/,,+/g,",").replace(/,$/,"").split(",").length) {
+				$.each(nms, function (i, v) {
+					if($.inArray(v, cnms) !== -1) {
+						ok = false;
+						return false;
+					}
+				});
+				if(!ok) {
 					this._get_settings().unique.error_callback.call(null, nms, p, func);
-					return false;
 				}
-				return true;
+				return ok;
 			},
 			check_move : function () {
 				if(!this.__call_old()) { return false; }
@@ -4453,7 +4446,7 @@
 				obj = !obj || obj == -1 ? this.get_container().find("> ul > li") : this._get_node(obj);
 				if(obj === false) { return; } // added for removing root nodes
 				obj.each(function () {
-					$(this).find("li").andSelf().each(function () {
+					$(this).find("li").addBack().each(function () {
 						var $t = $(this);
 						if($t.children(".jstree-wholerow-span").length) { return true; }
 						$t.prepend("<span class='jstree-wholerow-span' style='width:" + ($t.parentsUntil(".jstree","li").length * 18) + "px;'>&#160;</span>");
