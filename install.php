@@ -118,9 +118,12 @@ function getApacheLocation($overrideDir)
         } else if (is_dir('/etc/apache2/2.2/conf.d')) {         // Solaris
             $confD = '/etc/apache2/2.2/conf.d';
             $httpdConf = '/etc/apache2/2.2/httpd.conf';
-        } else if (is_dir('/etc/apache2/conf.d')) {             // Ubuntu / OpenSUSE
+        } else if (is_dir('/etc/apache2/conf.d')) {         // old Ubuntu / OpenSUSE
             $confD = '/etc/apache2/conf.d';
             $httpdConf = '/etc/apache2/httpd.conf';
+        } else if (is_dir('/etc/apache2/conf-enabled')) {   // new Ubuntu / OpenSUSE
+            $confD = '/etc/apache2/conf-enabled';
+            $httpdConf = '/etc/apache2/apache2.conf';
         } else if (is_dir('/opt/local/apache2/conf/extra')) {   // Mac with Mac Ports
             $confD = '/opt/local/apache2/conf/extra';
             $httpdConf = '/opt/local/apache2/conf/httpd.conf';
