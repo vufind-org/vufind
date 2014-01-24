@@ -141,6 +141,7 @@ function getApacheLocation($overrideDir)
         // multisite mode, we don't use the same symlink for multiple instances:
         $symlink = basename($overrideDir);
         $symlink = ($symlink == 'local') ? 'vufind' : ('vufind-' . $symlink);
+        $symlink .= '.conf';
 
         echo "You can do it in either of two ways:\n\n";
         echo "    a) Add this line to your {$httpdConf} file:\n";
