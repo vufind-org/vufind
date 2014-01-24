@@ -35,5 +35,9 @@ cd $VUFIND_HOME
 php install.php --use-defaults
 
 # Set up Apache for VuFind and reload configuration
-ln -s $VUFIND_LOCAL_DIR/httpd-vufind.conf /etc/apache2/conf.d/vufind2
+APACHE_CONF_DIR=/etc/apache2/conf.d
+if [ ! -d $APACHE_CONF_DIR ]; then
+  APACHE_CONF_DIR=/etc/apache2/conf-enabled
+fi
+ln -s $VUFIND_LOCAL_DIR/httpd-vufind.conf $APACHE_CONF_DIR/vufind2
 /etc/init.d/apache2 force-reload
