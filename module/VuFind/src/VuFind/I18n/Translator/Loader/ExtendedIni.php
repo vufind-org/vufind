@@ -100,6 +100,15 @@ class ExtendedIni implements FileLoaderInterface
                             '/^\"?(.*?)\"?$/', '$1', trim($parts[1])
                         );
 
+                        // Check for parent_ini value and load the parent language
+                        // file if it exists (also put it into translation just in
+                        // case it's used as a normal translation string)
+                        if ($key == 'parent_ini') {
+                            $this->loadLanguageFile(
+                                dirname($file) . DIRECTORY_SEPARATOR . $value
+                            ); 
+                        }
+                        
                         // Store the key/value pair (allow empty values -- sometimes
                         // we want to replace a language token with a blank string,
                         // but Zend translator doesn't support them so replace with
