@@ -1,10 +1,11 @@
 <?php
 /**
- * VuFind Action Helper - Holds Support Methods
+ * VuFind Action Helper - Storage Retrieval Requests Support Methods
  *
  * PHP version 5
  *
  * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2014.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,6 +23,7 @@
  * @category VuFind2
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
@@ -29,40 +31,17 @@ namespace VuFind\Controller\Plugin;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Session\Container;
 
 /**
- * Zend action helper to perform holds-related actions
+ * Zend action helper to perform storage retrieval request related actions
  *
  * @category VuFind2
  * @package  Controller_Plugins
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Holds extends AbstractPlugin
+class StorageRetrievalRequests extends Holds
 {
-    /**
-     * Session data
-     *
-     * @var Container
-     */
-    protected $session;
-
-    /**
-     * HMAC generator
-     *
-     * @var \VuFind\Crypt\HMAC
-     */
-    protected $hmac;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Crypt\HMAC $hmac HMAC generator
-     */
-    public function __construct(\VuFind\Crypt\HMAC $hmac)
-    {
-        $this->hmac = $hmac;
-    }
-
     /**
      * Grab the Container object for storing helper-specific session
      * data.
@@ -72,63 +51,45 @@ class Holds extends AbstractPlugin
     protected function getSession()
     {
         if (!isset($this->session)) {
-            $this->session = new Container('Holds_Helper');
+            $this->session = new Container('StorageRetrievalRequests_Helper');
         }
         return $this->session;
-    }
-
-    /**
-     * Reset the array of valid IDs in the session (used for form submission
-     * validation)
-     *
-     * @return void
-     */
-    public function resetValidation()
-    {
-        $this->getSession()->validIds = array();
-    }
-
-    /**
-     * Add an ID to the validation array.
-     *
-     * @param string $id ID to remember
-     *
-     * @return void
-     */
-    public function rememberValidId($id)
-    {
-        // The session container doesn't allow modification of entries (as of
-        // ZF2beta5 anyway), so we have to do this in a roundabout way.
-        $existingArray = $this->getSession()->validIds;
-        $existingArray[] = $id;
-        $this->getSession()->validIds = $existingArray;
     }
 
     /**
      * Update ILS details with cancellation-specific information, if appropriate.
      *
      * @param \VuFind\ILS\Connection $catalog      ILS connection object
-     * @param array                  $ilsDetails   Hold details from ILS driver's
-     * getMyHolds() method
-     * @param array                  $cancelStatus Cancel settings from ILS driver's
-     * checkFunction() method
+     * @param array                  $ilsDetails   Details from ILS driver's
+     * getMyStorageRetrievalRequests() method
+     * @param array                  $cancelStatus Cancellation settings from ILS
+     * @param array                  $patron       ILS patron 
+     * driver's checkFunction() method
      *
      * @return array $ilsDetails with cancellation info added
      */
-    public function addCancelDetails($catalog, $ilsDetails, $cancelStatus)
+    public function addCancelDetails($catalog, $ilsDetails, $cancelStatus, $patron)
     {
-        // Generate Form Details for cancelling Holds if Cancelling Holds
-        // is enabled
+        // Generate form details for cancelling requests if enabled
         if ($cancelStatus) {
-            if ($cancelStatus['function'] == "getCancelHoldLink") {
+            if ($cancelStatus['function'] == 'getCancelStorageRetrievalRequestsLink'
+            ) {
                 // Build OPAC URL
                 $ilsDetails['cancel_link']
-                    = $catalog->getCancelHoldLink($ilsDetails);
+                    = $catalog->getCancelStorageRetrievalRequestLink(
+                        $ilsDetails,
+                        $patron
+                    );
             } else {
                 // Form Details
                 $ilsDetails['cancel_details']
-                    = $catalog->getCancelHoldDetails($ilsDetails);
-                $this->rememberValidId($ilsDetails['cancel_details']);
+                    = $catalog->getCancelStorageRetrievalRequestDetails(
+                        $ilsDetails,
+                        $patron
+                    );
+                $this->rememberValidId(
+                    $ilsDetails['cancel_details']
+                );
             }
         }
 
@@ -136,7 +97,7 @@ class Holds extends AbstractPlugin
     }
 
     /**
-     * Process cancellation requests.
+     * Process cancel request.
      *
      * @param \VuFind\ILS\Connection $catalog ILS connection object
      * @param array                  $patron  Current logged in patron
@@ -144,7 +105,7 @@ class Holds extends AbstractPlugin
      * @return array                          The result of the cancellation, an
      * associative array keyed by item ID (empty if no cancellations performed)
      */
-    public function cancelHolds($catalog, $patron)
+    public function cancelStorageRetrievalRequests($catalog, $patron)
     {
         // Retrieve the flashMessenger helper:
         $flashMsg = $this->getController()->flashMessenger();
@@ -165,12 +126,14 @@ class Holds extends AbstractPlugin
         if (!empty($details)) {
             // Confirm?
             if ($params->fromPost('confirm') === "0") {
+                $url = $this->getController()->url()
+                    ->fromRoute('myresearch-storageretrievalrequests');
                 if ($params->fromPost('cancelAll') !== null) {
                     return $this->getController()->confirm(
-                        'hold_cancel_all',
-                        $this->getController()->url()->fromRoute('myresearch-holds'),
-                        $this->getController()->url()->fromRoute('myresearch-holds'),
-                        'confirm_hold_cancel_all_text',
+                        'storage_retrieval_request_cancel_all',
+                        $url,
+                        $url,
+                        'confirm_storage_retrieval_request_cancel_all_text',
                         array(
                             'cancelAll' => 1,
                             'cancelAllIDS' => $params->fromPost('cancelAllIDS')
@@ -178,10 +141,10 @@ class Holds extends AbstractPlugin
                     );
                 } else {
                     return $this->getController()->confirm(
-                        'hold_cancel_selected',
-                        $this->getController()->url()->fromRoute('myresearch-holds'),
-                        $this->getController()->url()->fromRoute('myresearch-holds'),
-                        'confirm_hold_cancel_selected_text',
+                        'storage_retrieval_request_cancel_selected',
+                        $url,
+                        $url,
+                        'confirm_storage_retrieval_request_cancel_selected_text',
                         array(
                             'cancelSelected' => 1,
                             'cancelSelectedIDS' =>
@@ -202,17 +165,20 @@ class Holds extends AbstractPlugin
             }
 
             // Add Patron Data to Submitted Data
-            $cancelResults = $catalog->cancelHolds(
+            $cancelResults = $catalog->cancelStorageRetrievalRequests(
                 array('details' => $details, 'patron' => $patron)
             );
             if ($cancelResults == false) {
-                $flashMsg->setNamespace('error')->addMessage('hold_cancel_fail');
+                $flashMsg->setNamespace('error')->addMessage(
+                    'storage_retrieval_request_cancel_fail'
+                );
             } else {
                 if ($cancelResults['count'] > 0) {
                     // TODO : add a mechanism for inserting tokens into translated
                     // messages so we can avoid a double translation here.
-                    $msg = $this->getController()
-                        ->translate('hold_cancel_success_items');
+                    $msg = $this->getController()->translate(
+                        'storage_retrieval_request_cancel_success_items'
+                    );
                     $flashMsg->setNamespace('info')->addMessage(
                         $cancelResults['count'] . ' ' . $msg
                     );
@@ -220,14 +186,17 @@ class Holds extends AbstractPlugin
                 return $cancelResults;
             }
         } else {
-             $flashMsg->setNamespace('error')->addMessage('hold_empty_selection');
+            $flashMsg->setNamespace('error')->addMessage(
+                'storage_retrieval_request_empty_selection'
+            );
         }
         return array();
     }
 
     /**
-     * Method for validating contents of a "place hold" request; returns an array of
-     * collected details if request is valid, otherwise returns false.
+     * Method for validating contents of a "place storage retrieval" request; 
+     * returns an array of collected details if request is valid, otherwise
+     * returns false.
      *
      * @param array $linkData An array of keys to check
      *
@@ -249,7 +218,7 @@ class Holds extends AbstractPlugin
         }
 
         // Initialize gatheredDetails with any POST values we find; this will
-        // allow us to repopulate the hold form with user-entered values if there
+        // allow us to repopulate the request form with user-entered values if there
         // is an error.  However, it is important that we load the POST data
         // FIRST and then override it with GET values in order to ensure that
         // the user doesn't bypass the hashkey verification by manipulating POST
@@ -264,65 +233,5 @@ class Holds extends AbstractPlugin
         $gatheredDetails = array_merge($gatheredDetails, $keyValueArray);
 
         return $gatheredDetails;
-    }
-
-    /**
-     * Check if the user-provided pickup location is valid.
-     *
-     * @param string $pickup          User-specified pickup location
-     * @param array  $extraHoldFields Hold form fields enabled by
-     * configuration/driver
-     * @param array  $pickUpLibs      Pickup library list from driver
-     *
-     * @return bool
-     */
-    public function validatePickUpInput($pickup, $extraHoldFields, $pickUpLibs)
-    {
-        // Not having to care for pickUpLocation is equivalent to having a valid one.
-        if (!in_array('pickUpLocation', $extraHoldFields)) {
-            return true;
-        }
-
-        // Check the valid pickup locations for a match against user input:
-        return $this->validatePickUpLocation($pickup, $pickUpLibs);
-    }
-
-    /**
-     * Check if the provided pickup location is valid.
-     *
-     * @param string $location   Location to check
-     * @param array  $pickUpLibs Pickup locations list from driver
-     *
-     * @return bool
-     */
-    public function validatePickUpLocation($location, $pickUpLibs)
-    {
-        foreach ($pickUpLibs as $lib) {
-            if ($location == $lib['locationID']) {
-                return true;
-            }
-        }
-
-        // If we got this far, something is wrong!
-         return false;
-    }
-
-    /**
-     * Getting a default required date based on hold settings.
-     *
-     * @param array $checkHolds Hold settings returned by the ILS driver's
-     * checkFunction method.
-     *
-     * @return int A timestamp representing the default required date
-     */
-    public function getDefaultRequiredDate($checkHolds)
-    {
-        $dateArray = isset($checkHolds['defaultRequiredDate'])
-             ? explode(":", $checkHolds['defaultRequiredDate'])
-             : array(0, 1, 0);
-        list($d, $m, $y) = $dateArray;
-        return mktime(
-            0, 0, 0, date("m")+$m,   date("d")+$d,   date("Y")+$y
-        );
     }
 }

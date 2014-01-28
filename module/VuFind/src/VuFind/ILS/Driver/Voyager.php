@@ -5,6 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2007.
+ * Copyright (C) The National Library of Finland 2014.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,6 +24,7 @@
  * @package  ILS_Drivers
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
@@ -41,6 +43,7 @@ use File_MARC, PDO, PDOException,
  * @package  ILS_Drivers
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
@@ -1513,6 +1516,165 @@ class Voyager extends AbstractBase
         }
     }
 
+    /**
+     * Protected support method for getMyStorageRetrievalRequests.
+     *
+     * @param array $patron Patron data for use in an sql query
+     *
+     * @return array Keyed data for use in an sql query
+     */
+    protected function getMyStorageRetrievalRequestsSQL($patron)
+    {
+        // Modifier
+        $sqlSelectModifier = "distinct";
+
+        // Expressions
+        $sqlExpressions = array(
+            'CALL_SLIP.CALL_SLIP_ID', 'CALL_SLIP.BIB_ID',
+            'CALL_SLIP.PICKUP_LOCATION_ID',
+            "to_char(CALL_SLIP.DATE_REQUESTED, 'YYYY-MM-DD HH24:MI:SS')"
+                . ' as CREATE_DATE',
+            "to_char(CALL_SLIP.DATE_PROCESSED, 'YYYY-MM-DD HH24:MI:SS')"
+                . ' as PROCESSED_DATE',
+            "to_char(CALL_SLIP.STATUS_DATE, 'YYYY-MM-DD HH24:MI:SS')"
+                . ' as STATUS_DATE',
+            'CALL_SLIP.ITEM_ID',
+            'CALL_SLIP.MFHD_ID',
+            'CALL_SLIP.STATUS',
+            'CALL_SLIP_STATUS_TYPE.STATUS_DESC',
+            'CALL_SLIP.ITEM_YEAR',
+            'CALL_SLIP.ITEM_ENUM',
+            'CALL_SLIP.ITEM_CHRON',
+            'CALL_SLIP.REPLY_NOTE',
+            'CALL_SLIP.PICKUP_LOCATION_ID',
+            'MFHD_ITEM.ITEM_ENUM',
+            'MFHD_ITEM.YEAR',
+            'BIB_TEXT.TITLE_BRIEF',
+            'BIB_TEXT.TITLE'
+        );
+
+        // From
+        $sqlFrom = array(
+            $this->dbName.'.CALL_SLIP',
+            $this->dbName.'.CALL_SLIP_STATUS_TYPE',
+            $this->dbName.'.MFHD_ITEM',
+            $this->dbName.'.BIB_TEXT'
+        );
+
+        // Where
+        $sqlWhere = array(
+            'CALL_SLIP.PATRON_ID = :id',
+            'CALL_SLIP.STATUS = CALL_SLIP_STATUS_TYPE.STATUS_TYPE(+)',
+            'CALL_SLIP.ITEM_ID = MFHD_ITEM.ITEM_ID(+)',
+            'BIB_TEXT.BIB_ID = CALL_SLIP.BIB_ID'
+        );
+
+        // Order by
+        $sqlOrderBy = array(
+            "to_char(CALL_SLIP.DATE_REQUESTED, 'YYYY-MM-DD HH24:MI:SS')"
+        );
+        
+        // Bind
+        $sqlBind = array(':id' => $patron['id']);
+
+        $sqlArray = array(
+            'modifier' => $sqlSelectModifier,
+            'expressions' => $sqlExpressions,
+            'from' => $sqlFrom,
+            'where' => $sqlWhere,
+            'order' => $sqlOrderBy,
+            'bind' => $sqlBind
+        );
+
+        return $sqlArray;
+    }
+
+    /**
+     * Protected support method for getMyStorageRetrievalRequests.
+     *
+     * @param array $sqlRow An array of keyed data
+     *
+     * @return array Keyed data for display by template files
+     */
+    protected function processMyStorageRetrievalRequestsData($sqlRow)
+    {
+        $available = ($sqlRow['STATUS'] == 4) ? true : false;
+        $expireDate = '';
+        $processedDate = '';
+        $statusDate = '';
+        // Convert Voyager Format to display format
+        if (!empty($sqlRow['PROCESSED_DATE'])) {
+            $processedDate = $this->dateFormat->convertToDisplayDate(
+                "m-d-y", $sqlRow['PROCESSED_DATE']
+            );
+        }
+        if (!empty($sqlRow['STATUS_DATE'])) {
+            $statusDate = $this->dateFormat->convertToDisplayDate(
+                "m-d-y", $sqlRow['STATUS_DATE']
+            );
+        }
+        
+        $createDate = $this->translate("Unknown");
+        // Convert Voyager Format to display format
+        if (!empty($sqlRow['CREATE_DATE'])) {
+            $createDate = $this->dateFormat->convertToDisplayDate(
+                "m-d-y", $sqlRow['CREATE_DATE']
+            );
+        }
+
+        return array(
+            'id' => $sqlRow['BIB_ID'],
+            'status' => utf8_encode($sqlRow['STATUS_DESC']),
+            'statusDate' => $statusDate,
+            'location' => $this->getLocationName($sqlRow['PICKUP_LOCATION_ID']),
+            'created' => $createDate,
+            'processed' => $processedDate,
+            'expire' => $expireDate,
+            'reply' => utf8_encode($sqlRow['REPLY_NOTE']),
+            'available' => $available,
+            'canceled' => $sqlRow['STATUS'] == 7 ? $statusDate : false,
+            'reqnum' => $sqlRow['CALL_SLIP_ID'],
+            'item_id' => $sqlRow['ITEM_ID'],
+            'volume' => str_replace(
+                "v.", "", utf8_encode($sqlRow['ITEM_ENUM'])
+            ),
+            'issue' => utf8_encode($sqlRow['ITEM_CHRON']),
+            'year' => utf8_encode($sqlRow['ITEM_YEAR']),
+            'title' => empty($sqlRow['TITLE_BRIEF'])
+                ? $sqlRow['TITLE'] : $sqlRow['TITLE_BRIEF']
+        );
+    }
+    
+    /**
+     * Get Patron Storage Retrieval Requests
+     *
+     * This is responsible for retrieving all call slips by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return mixed        Array of the patron's holds on success, PEAR_Error
+     * otherwise.
+     */
+    public function getMyStorageRetrievalRequests($patron)
+    {
+        $list = array();
+
+        $sqlArray = $this->getMyStorageRetrievalRequestsSQL($patron);
+
+        $sql = $this->buildSqlFromArray($sqlArray);
+        try {
+            $sqlStmt = $this->db->prepare($sql['string']);
+            $this->debugsql(__FUNCTION__, $sql['string'], $sql['bind']);
+            $sqlStmt->execute($sql['bind']);
+            while ($sqlRow = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
+                $list[] = $this->processMyStorageRetrievalRequestsData($sqlRow);
+            }
+            return $list;
+        } catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
+        }
+    }
+    
     /**
      * Get Patron Profile
      *

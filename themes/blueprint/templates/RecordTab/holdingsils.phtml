@@ -99,6 +99,9 @@
               <? if (isset($row['link']) && $row['link']): ?>
                 <a class="holdPlace<?=$check ? ' checkRequest' : ''?>" href="<?=$this->recordLink()->getHoldUrl($row['link'])?>"><span><?=$this->transEsc($check ? "Check Hold" : "Place a Hold")?></span></a>
               <? endif; ?>
+              <? if (isset($row['storageRetrievalRequestLink']) && $row['storageRetrievalRequestLink']): ?>
+                <a class="storageRetrievalRequestPlace<?=$check ? ' checkStorageRetrievalRequest' : ''?>" href="<?=$this->recordLink()->getStorageRetrievalRequestUrl($row['storageRetrievalRequestLink'])?>"><span><?=$this->transEsc($check ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></span></a>
+              <? endif; ?>
               </div>
             <? else: ?>
               <? /* Begin Unavailable Items (Recalls) */ ?>

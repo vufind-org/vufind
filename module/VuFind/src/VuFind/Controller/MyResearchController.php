@@ -868,6 +868,69 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Send list of storage retrieval requests to view
+     *
+     * @return mixed
+     */
+    public function storageRetrievalRequestsAction()
+    {
+        // Stop now if the user does not have valid catalog credentials available:
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+
+        // Connect to the ILS:
+        $catalog = $this->getILS();
+
+        // Process cancel requests if necessary:
+        $cancelStatus = $catalog->checkFunction('cancelStorageRetrievalRequests');
+        $view = $this->createViewModel();
+        $view->cancelResults = $cancelStatus
+            ? $this->storageRetrievalRequests()->cancelStorageRetrievalRequests(
+                $catalog, $patron
+            )
+            : array();
+        // If we need to confirm
+        if (!is_array($view->cancelResults)) {
+            return $view->cancelResults;
+        }
+
+        // By default, assume we will not need to display a cancel form:
+        $view->cancelForm = false;
+
+        // Get request details:
+        $result = $catalog->getMyStorageRetrievalRequests($patron);
+        $recordList = array();
+        $this->storageRetrievalRequests()->resetValidation();
+        foreach ($result as $current) {
+            // Add cancel details if appropriate:
+            $current = $this->storageRetrievalRequests()->addCancelDetails(
+                $catalog, $current, $cancelStatus, $patron
+            );
+            if ($cancelStatus 
+                && $cancelStatus['function'] != "getCancelStorageRetrievalRequestLink"
+                && isset($current['cancel_details'])
+            ) {
+                // Enable cancel form if necessary:
+                $view->cancelForm = true;
+            }
+
+            // Build record driver:
+            $recordList[] = $this->getDriverForILSRecord($current);
+        }
+
+        // Get List of PickUp Libraries based on patron's home library
+        try {
+            $view->pickup = $catalog->getPickUpLocations($patron);
+        } catch (\Exception $e) {
+            // Do nothing; if we're unable to load information about pickup
+            // locations, they are not supported and we should ignore them.
+        }
+        $view->recordList = $recordList;
+        return $view;
+    }
+
+    /**
      * Send list of checked out books to view
      *
      * @return mixed
