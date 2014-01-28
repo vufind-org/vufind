@@ -34,6 +34,7 @@ use VuFind\Search\Solr\InjectSpellingListener;
 use VuFind\Search\Solr\MultiIndexListener;
 use VuFind\Search\Solr\V3\ErrorListener as LegacyErrorListener;
 use VuFind\Search\Solr\V4\ErrorListener;
+use VuFind\Search\Solr\DeduplicationListener;
 
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
@@ -192,6 +193,14 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             $mindexListener->attach($events);
         }
 
+        // Apply deduplication if applicable:
+        if (isset($search->Records->deduplication)
+            && $search->Records->deduplication
+        ) {
+            $deduplicationListener = $this->getDeduplicationListener($backend);
+            $deduplicationListener->attach($events);
+        }
+
         // Attach error listeners for Solr 3.x and Solr 4.x (for backward
         // compatibility with VuFind 1.x instances).
         $legacyErrorListener = new LegacyErrorListener($backend);
@@ -315,5 +324,21 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     {
         return $this->serviceLocator->get('VuFind\SearchSpecsReader')
             ->get($this->searchYaml);
+    }
+    
+    /**
+     * Get a deduplication listener for the backend
+     * 
+     * @param BackendInterface $backend Search backend
+     * 
+     * @return \VuFind\Search\Solr\DeduplicationListener
+     */
+    protected function getDeduplicationListener(BackendInterface $backend)
+    {
+        return new DeduplicationListener(
+            $backend,
+            $this->serviceLocator,
+            $this->searchConfig
+        );
     }
 }
