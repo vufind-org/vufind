@@ -30,7 +30,8 @@ namespace VuFind\ILS\Driver;
 
 use VuFind\Exception\ILS as ILSException,
     Zend\ServiceManager\ServiceLocatorAwareInterface,
-    Zend\ServiceManager\ServiceLocatorInterface;
+    Zend\ServiceManager\ServiceLocatorInterface,
+    Zend\Log\LoggerInterface;
 
 /**
  * Multiple Backend Driver.
@@ -44,7 +45,8 @@ use VuFind\Exception\ILS as ILSException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
-class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
+class MultiBackend extends AbstractBase 
+    implements ServiceLocatorAwareInterface, \Zend\Log\LoggerAwareInterface
 {
     /**
      * The serviceLocator instance (implementing ServiceLocatorAwareInterface).
@@ -104,6 +106,13 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
     protected $configLoader;
 
     /**
+     * Logger (or false for none)
+     *
+     * @var LoggerInterface|bool
+     */
+    protected $logger = false;
+    
+    /**
      * Constructor
      *
      * @param \VuFind\Config\PluginManager $configLoader Configuration loader
@@ -113,6 +122,46 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
         $this->configLoader = $configLoader;
     }
 
+    /**
+     * Set the logger
+     *
+     * @param LoggerInterface $logger Logger to use.
+     *
+     * @return void
+     */
+    public function setLogger(LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * Log an error message.
+     *
+     * @param string $msg Message to log.
+     *
+     * @return void
+     */
+    protected function error($msg)
+    {
+        if ($this->logger) {
+            $this->logger->err(get_class($this) . ": $msg");
+        }
+    }
+    
+    /**
+     * Log a debug message.
+     *
+     * @param string $msg Message to log.
+     *
+     * @return void
+     */
+    protected function debug($msg)
+    {
+        if ($this->logger) {
+            $this->logger->debug(get_class($this) . ": $msg");
+        }
+    }
+    
     /**
      * Set the driver configuration.
      *
@@ -187,7 +236,7 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
         if ($pos > 0) {
             return substr($id, $pos + 1);
         }
-        //error_log("MultiBackend: Can't find local id in '$id'");
+        $this->debug("Cannot find local id in '$id' using '$delimiter'");
         return $id;
     }
 
@@ -206,9 +255,7 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
             return substr($id, 0, $pos);
         }
 
-        //error_log(
-        //    "MultiBackend: Can't find source id in '$id' using '$delimiter'"
-        //);
+        $this->debug("Cannot find source id in '$id' using '$delimiter'");
         return $id;
     }
 
@@ -267,6 +314,10 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
         if (isset($this->drivers[$source])) {
             $driver = $this->drivers[$source];
             $config = $this->getDriverConfig($source);
+            if (!$config) {
+                $this->error("No configuration found for source '$source'");
+                return null;
+            }
             $driverInst = $this->getServiceLocator()->get($driver);
             $driverInst->setConfig($config);
             $this->cache[$source] = $driverInst;
@@ -296,7 +347,7 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
                 $this->isInitialized[$source] = true;
                 $this->cache[$source] = $driver;
             } catch (Exception $e) {
-                //error_log($e->__toString);
+                $this->error("Driver init for '$source' failed: " . $e->getMessage());
             }
         }
     }
@@ -319,6 +370,7 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
         } catch (\Zend\Config\Exception\RuntimeException $e) {
             // Configuration loading failed; probably means file does not
             // exist -- just return an empty array in that case:
+            $this->error("Could not load config for $source");
             return array();
         }
         return $config->toArray();
@@ -570,7 +622,7 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
         $instance = $this->getInstanceFromParams($params);
         if ($instance) {
             $driverInst = $this->getUninitializedDriver($instance);
-            return  is_callable(array($driverInst, $method));
+            return is_callable(array($driverInst, $method));
         }
 
         // Falling back, we try to use a default driver if it's set
@@ -584,7 +636,7 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
         foreach (array_keys($this->drivers) as $key) {
             $driverInst = $this->getUninitializedDriver($key);
             if (is_callable(array($driverInst, $method))) {
-                  return true;
+                return true;
             }
         }
 
@@ -687,6 +739,7 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
         }
         return false;
     }
+        
     /**
      * Default method -- pass along calls to the driver if available; return
      * false otherwise.  This allows custom functions to be implemented in
@@ -718,7 +771,7 @@ class MultiBackend extends AbstractBase implements ServiceLocatorAwareInterface
         if ($called) {
             return $funcReturn;
         }
-        throw new ILSException('Cannot call method: ' . $methodName);
+        throw new ILSException("Cannot call method: $methodName, instance: '$instName'");
     }
 }
 
