@@ -1415,7 +1415,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     public function placeStorageRetrievalRequest($details)
     {
-        error_log("placeSRR: " . var_export($details, true));
         $patron = $details['patron'];
         $level = isset($details['level']) && !empty($details['level'])
             ? $details['level'] : 'copy';
