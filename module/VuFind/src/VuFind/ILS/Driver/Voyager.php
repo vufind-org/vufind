@@ -204,7 +204,9 @@ class Voyager extends AbstractBase
             );
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            $this->error("PDO Connection failed ($this->dbName): " . $e->getMessage());
+            $this->error(
+                "PDO Connection failed ($this->dbName): " . $e->getMessage()
+            );
             throw $e;
         }
     }

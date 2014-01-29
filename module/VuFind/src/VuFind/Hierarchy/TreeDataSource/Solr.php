@@ -69,6 +69,7 @@ class Solr extends AbstractBase
      *
      * @param SearchService $search   Search service
      * @param string        $cacheDir Directory to hold cache results (optional)
+     * @param array         $filters  Filters to apply to Solr tree queries
      */
     public function __construct(SearchService $search, $cacheDir = null,
         $filters = array()
