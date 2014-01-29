@@ -121,6 +121,11 @@ $config = array(
                     $sm->getServiceLocator()->get('VuFind\HMAC')
                 );
             },
+            'storageRetrievalRequests' => function ($sm) {
+                return new \VuFind\Controller\Plugin\StorageRetrievalRequests(
+                    $sm->getServiceLocator()->get('VuFind\HMAC')
+                );
+            },
             'reserves' => function ($sm) {
                 $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
                 $useIndex = isset($config->Reserves->search_enabled)
@@ -1021,7 +1026,8 @@ $recordRoutes = array(
 );
 $nonTabRecordActions = array(
     'AddComment', 'DeleteComment', 'AddTag', 'Save', 'Email', 'SMS', 'Cite',
-    'Export', 'RDF', 'Hold', 'BlockedHold', 'Home'
+    'Export', 'RDF', 'Hold', 'BlockedHold', 'Home', 'StorageRetrievalRequest',
+    'BlockedStorageRetrievalRequest'
 );
 
 // Define list-related routes -- route name => MyResearch action
@@ -1046,7 +1052,7 @@ $staticRoutes = array(
     'MyResearch/DeleteList', 'MyResearch/Edit', 'MyResearch/Email',
     'MyResearch/Favorites', 'MyResearch/Fines',
     'MyResearch/Holds', 'MyResearch/Home', 'MyResearch/Logout', 'MyResearch/Profile',
-    'MyResearch/SaveSearch',
+    'MyResearch/SaveSearch', 'MyResearch/StorageRetrievalRequests',
     'QRCode/Show', 'QRCode/Unavailable',
     'OAI/Server', 'Pazpar2/Home', 'Pazpar2/Search', 'Records/Home',
     'Search/Advanced', 'Search/Email', 'Search/History', 'Search/Home',

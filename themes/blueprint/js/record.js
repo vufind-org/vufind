@@ -4,7 +4,7 @@
  * Functions and event handlers specific to record pages.
  */
 
-function checkRequestIsValid(element, requestURL) {
+function checkRequestIsValid(element, requestURL, requestType = '') {
     var recordId = requestURL.match(/\/Record\/([^\/]+)\//)[1];
     var vars = {}, hash;
     var hashes = requestURL.slice(requestURL.indexOf('?') + 1).split('&');
@@ -18,7 +18,7 @@ function checkRequestIsValid(element, requestURL) {
     }
     vars['id'] = recordId;
 
-    var url = path + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, data: vars});
+    var url = path + '/AJAX/JSON?' + $.param({method:'check' + requestType + 'RequestIsValid', id: recordId, data: vars});
     $.ajax({
         dataType: 'json',
         cache: false,
@@ -41,6 +41,14 @@ function setUpCheckRequest() {
     $('.checkRequest').each(function(i) {
         if($(this).hasClass('checkRequest')) {
             var isValid = checkRequestIsValid(this, this.href);
+        }
+    });
+}
+
+function setUpCheckStorageRetrievalRequest() {
+    $('.checkStorageRetrievalRequest').each(function(i) {
+        if($(this).hasClass('checkStorageRetrievalRequest')) {
+            var isValid = checkRequestIsValid(this, this.href, 'StorageRetrieval');
         }
     });
 }
@@ -172,4 +180,5 @@ $(document).ready(function(){
     });
 
     setUpCheckRequest();
+    setUpCheckStorageRetrievalRequest();
 });

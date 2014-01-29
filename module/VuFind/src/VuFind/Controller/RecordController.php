@@ -66,6 +66,18 @@ class RecordController extends AbstractRecord
     }
 
     /**
+     * Action for dealing with blocked storage retrieval requests.
+     *
+     * @return mixed
+     */
+    public function blockedStorageRetrievalRequestAction()
+    {
+        $this->flashMessenger()->setNamespace('error')
+            ->addMessage('storage_retrieval_request_error_blocked');
+        return $this->redirectToRecord('#top');
+    }
+
+    /**
      * Action for dealing with holds.
      *
      * @return mixed
@@ -159,7 +171,6 @@ class RecordController extends AbstractRecord
             $defaultPickup = false;
         }
 
-
         return $this->createViewModel(
             array(
                 'gatheredDetails' => $gatheredDetails,
@@ -168,6 +179,110 @@ class RecordController extends AbstractRecord
                 'homeLibrary' => $this->getUser()->home_library,
                 'extraHoldFields' => $extraHoldFields,
                 'defaultRequiredDate' => $defaultRequired
+            )
+        );
+    }
+
+    /**
+     * Action for dealing with storage retrieval requests.
+     *
+     * @return mixed
+     */
+    public function storageRetrievalRequestAction()
+    {
+        $driver = $this->loadRecord();
+
+        // If we're not supposed to be here, give up now!
+        $catalog = $this->getILS();
+        $checkRequests = $catalog->checkFunction(
+            'StorageRetrievalRequests',
+            $driver->getUniqueID()
+        );
+        if (!$checkRequests) {
+            return $this->forwardTo('Record', 'Home');
+        }
+
+        // Stop now if the user does not have valid catalog credentials available:
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+
+        // Do we have valid information?
+        // Sets $this->logonURL and $this->gatheredDetails
+        $gatheredDetails = $this->storageRetrievalRequests()->validateRequest(
+            $checkRequests['HMACKeys']
+        );
+        if (!$gatheredDetails) {
+            return $this->redirectToRecord();
+        }
+
+        // Block invalid requests:
+        if (!$catalog->checkStorageRetrievalRequestIsValid(
+            $driver->getUniqueID(), $gatheredDetails, $patron
+        )) {
+            return $this->blockedStorageRetrievalRequestAction();
+        }
+
+        // Send various values to the view so we can build the form:
+        $pickup = $catalog->getPickUpLocations($patron, $gatheredDetails);
+        $extraFields = isset($checkRequests['extraFields'])
+            ? explode(":", $checkRequests['extraFields']) : array();
+
+        // Process form submissions if necessary:
+        if (!is_null($this->params()->fromPost('placeStorageRetrievalRequest'))) {
+            // If we made it this far, we're ready to place the hold;
+            // if successful, we will redirect and can stop here.
+
+            // Add Patron Data to Submitted Data
+            $details = $gatheredDetails + array('patron' => $patron);
+
+            // Attempt to place the hold:
+            $function = (string)$checkRequests['function'];
+            $results = $catalog->$function($details);
+
+            // Success: Go to Display Holds
+            if (isset($results['success']) && $results['success'] == true) {
+                $this->flashMessenger()->setNamespace('info')
+                    ->addMessage('storage_retrieval_request_place_success');
+                if ($this->inLightbox()) {
+                    return false;
+                }
+                return $this->redirect()->toRoute('myresearch-storageretrievalrequests');
+            } else {
+                // Failure: use flash messenger to display messages, stay on
+                // the current form.
+                if (isset($results['status'])) {
+                    $this->flashMessenger()->setNamespace('error')
+                        ->addMessage($results['status']);
+                }
+                if (isset($results['sysMessage'])) {
+                    $this->flashMessenger()->setNamespace('error')
+                        ->addMessage($results['sysMessage']);
+                }
+            }
+        }
+
+        // Find and format the default required date:
+        $defaultRequired = $this->storageRetrievalRequests()
+            ->getDefaultRequiredDate($checkRequests);
+        $defaultRequired = $this->getServiceLocator()->get('VuFind\DateConverter')
+            ->convertToDisplayDate("U", $defaultRequired);
+        try {
+            $defaultPickup
+                = $catalog->getDefaultPickUpLocation($patron, $gatheredDetails);
+        } catch (\Exception $e) {
+            $defaultPickup = false;
+        }
+
+        return $this->createViewModel(
+            array(
+                'gatheredDetails' => $gatheredDetails,
+                'pickup' => $pickup,
+                'defaultPickup' => $defaultPickup,
+                'homeLibrary' => $this->getUser()->home_library,
+                'extraFields' => $extraFields,
+                'defaultRequiredDate' => $defaultRequired,
+                'helpText' => $checkRequests['helpText']
             )
         );
     }

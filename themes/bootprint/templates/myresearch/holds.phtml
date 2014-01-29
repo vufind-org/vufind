@@ -21,16 +21,16 @@
           <button type="submit" id="cancelSelected" class="btn btn-link dropdown-toggle" data-toggle="dropdown" name="cancelSelected" value="1"><i class="icon-cancel-holds"></i> <?=$this->transEsc("hold_cancel_selected") ?></button>
           <ul class="dropdown-menu">
             <li class="disabled"><a><?=$this->transEsc("confirm_hold_cancel_selected_text") ?></a></li>
-            <li><a href="#" onClick="$('#cancelConfirm').val(1);$('#submitType').attr('name','cancelSelected');$(this).parents('form').submit()"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
-            <li><a href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+            <li><a href="#" onClick="$('#cancelConfirm').val(1);$('#submitType').attr('name','cancelSelected');$(this).parents('form').submit(); return false;"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
+            <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
           </ul>
         </div>
         <div class="btn-group">
           <button type="submit" id="cancelAll" class="btn btn-link dropdown-toggle" data-toggle="dropdown" name="cancelAll" value="1"><i class="icon-cancel-all-holds"></i> <?=$this->transEsc("hold_cancel_all") ?></button>>
           <ul class="dropdown-menu">
             <li class="disabled"><a><?=$this->transEsc("confirm_hold_cancel_all_text") ?></a></li>
-            <li><a href="#" onClick="$('#cancelConfirm').val(1);$('#submitType').attr('name','cancelAll');$(this).parents('form').submit()"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
-            <li><a href="#"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+            <li><a href="#" onClick="$('#cancelConfirm').val(1);$('#submitType').attr('name','cancelAll');$(this).parents('form').submit(); return false;"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
+            <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
           </ul>
         </div>
     <? endif; ?>
