@@ -278,12 +278,8 @@ function ajaxLogin(form) {
       if (response.status == 'OK') {
         var salt = response.data;
 
-        // get the user entered username/password and auth method
+        // get the user entered password
         var password = form.password.value;
-        var username = form.username.value;
-        var auth_method = form.auth_method !== 'undefined' 
-            ? form.auth_method.value
-            : '';
 
         // encrypt the password with the salt
         password = rc4Encrypt(salt, password);
@@ -291,12 +287,22 @@ function ajaxLogin(form) {
         // hex encode the encrypted password
         password = hexEncode(password);
 
+        var params = {password:password};
+
+        // get any other form values
+        for (var i = 0; i < form.length; i++) {
+            if (form.elements[i].name == 'password') {
+                continue;
+            }
+            params[form.elements[i].name] = form.elements[i].value;
+        }
+
         // login via ajax
         $.ajax({
           type: 'POST',
           url: path + '/AJAX/JSON?method=login',
           dataType: 'json',
-          data: {username:username, password:password, auth_method:auth_method},
+          data: params,
           success: function(response) {
             if (response.status == 'OK') {
               // Hide "log in" options and show "log out" options:
