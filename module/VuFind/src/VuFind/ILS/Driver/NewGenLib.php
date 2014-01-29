@@ -101,7 +101,7 @@ class NewGenLib extends AbstractBase
                 $sqlStmt2 = $this->_db->prepare($duedateql);
                 $sqlStmt2->execute();
             } catch (PDOException $e1) {
-                return new PEAR_Error($e1->getMessage());
+                throw new ILSException($e1->getMessage());
             }
             $duedate = "";
             while ($rowDD = $sqlStmt2->fetch(PDO::FETCH_ASSOC)) {
