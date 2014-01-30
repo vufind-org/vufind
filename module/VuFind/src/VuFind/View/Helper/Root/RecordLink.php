@@ -123,14 +123,14 @@ class RecordLink extends \Zend\View\Helper\AbstractHelper
     }
 
     /**
-     * Given a string or array of parts, build a hold URL.
+     * Given a string or array of parts, build a request (e.g. hold) URL.
      *
      * @param string|array $url           URL to process
      * @param bool         $includeAnchor Should we include an anchor?
      *
      * @return string
      */
-    public function getHoldUrl($url, $includeAnchor = true)
+    public function getRequestUrl($url, $includeAnchor = true)
     {
         if (is_array($url)) {
             // Assemble URL string from array parts:
@@ -155,6 +155,7 @@ class RecordLink extends \Zend\View\Helper\AbstractHelper
         $escaper = $this->getView()->plugin('escapehtml');
         return $escaper($finalUrl);
     }
+
     /**
      * Given a record driver, get a URL for that record.
      *

@@ -1,34 +1,34 @@
 <?
     // Set up page title:
-    $this->headTitle($this->translate('My Holds'));
+    $this->headTitle($this->translate('Storage Retrieval Requests'));
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a> <span class="divider">&gt;</span></li>'
-        . '<li class="active">' . $this->transEsc('My Holds') . '</li>';
+        . '<li class="active">' . $this->transEsc('Storage Retrieval Requests') . '</li>';
 ?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$this->transEsc('Your Holds and Recalls') ?></h2>
+  <h2><?=$this->transEsc('Storage Retrieval Requests') ?></h2>
 
   <?=$this->flashmessages()?>
 
   <? if (!empty($this->recordList)): ?>
     <? if ($this->cancelForm): ?>
-      <form name="cancelForm" class="inline" action="" method="post" id="cancelHold">
+      <form name="cancelForm" class="inline" action="" method="post" id="cancelStorageRetrievalRequest">
         <input type="hidden" id="submitType" name="cancelSelected" value="1"/>
         <input type="hidden" id="cancelConfirm" name="confirm" value="0"/>
         <div class="btn-group">
-          <input id="cancelSelected" name="cancelSelected" type="submit" value="<?=$this->transEsc("hold_cancel_selected") ?>" class="btn dropdown-toggle" data-toggle="dropdown"/>
+          <input id="cancelSelected" name="cancelSelected" type="submit" value="<?=$this->transEsc("storage_retrieval_request_cancel_selected") ?>" class="btn dropdown-toggle" data-toggle="dropdown"/>
           <ul class="dropdown-menu">
-            <li class="disabled"><a><?=$this->transEsc("confirm_hold_cancel_selected_text") ?></a></li>
+            <li class="disabled"><a><?=$this->transEsc("confirm_storage_retrieval_request_cancel_selected_text") ?></a></li>
             <li><a href="#" onClick="$('#cancelConfirm').val(1);$('#submitType').attr('name','cancelSelected');$(this).parents('form').submit(); return false;"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
             <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
           </ul>
         </div>
         <div class="btn-group">
-          <input id="cancelAll" name="cancelAll" type="submit" value="<?=$this->transEsc("hold_cancel_all") ?>" class="btn dropdown-toggle" data-toggle="dropdown"/>
+          <input id="cancelAll" name="cancelAll" type="submit" value="<?=$this->transEsc("storage_retrieval_request_cancel_all") ?>" class="btn dropdown-toggle" data-toggle="dropdown"/>
           <ul class="dropdown-menu">
-            <li class="disabled"><a><?=$this->transEsc("confirm_hold_cancel_all_text") ?></a></li>
+            <li class="disabled"><a><?=$this->transEsc("confirm_storage_retrieval_request_cancel_all_text") ?></a></li>
             <li><a href="#" onClick="$('#cancelConfirm').val(1);$('#submitType').attr('name','cancelAll');$(this).parents('form').submit(); return false;"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
             <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
           </ul>
@@ -127,8 +127,10 @@
             <br />
           <? endif; ?>
 
-          <strong><?=$this->transEsc('Created') ?>:</strong> <?=$this->escapeHtml($ilsDetails['create']) ?> |
-          <strong><?=$this->transEsc('Expires') ?>:</strong> <?=$this->escapeHtml($ilsDetails['expire']) ?>
+          <strong><?=$this->transEsc('Created') ?>:</strong> <?=$this->escapeHtml($ilsDetails['created']) ?>
+          <? if (!empty($ilsDetails['expire'])): ?>
+            | <strong><?=$this->transEsc('Expires') ?>:</strong> <?=$this->escapeHtml($ilsDetails['expire']) ?>
+          <? endif; ?>
           <br />
 
           <? if (isset($this->cancelResults['items'])): ?>
@@ -139,13 +141,17 @@
             <? endforeach; ?>
           <? endif; ?>
 
-          <? if (isset($ilsDetails['available']) && $ilsDetails['available'] == true): ?>
-            <div class="text-success"><?=$this->transEsc("hold_available") ?></div>
-          <? elseif (isset($ilsDetails['position'])): ?>
-            <p><strong><?=$this->transEsc("hold_queue_position") ?>:</strong> <?=$this->escapeHtml($ilsDetails['position']) ?></p>
+          <? if (isset($ilsDetails['processed']) && $ilsDetails['processed']): ?>
+            <div class="text-success"><?=$this->transEsc("storage_retrieval_request_processed") . (is_string($ilsDetails['processed']) ? ': ' . $ilsDetails['processed'] : '') ?></div>
+          <? endif; ?>
+          <? if (isset($ilsDetails['available']) && $ilsDetails['available']): ?>
+            <div class="text-success"><?=$this->transEsc("storage_retrieval_request_available") ?></div>
+          <? endif; ?>
+          <? if (isset($ilsDetails['canceled']) && $ilsDetails['canceled']): ?>
+            <div class="text-success"><?=$this->transEsc("storage_retrieval_request_canceled") . (is_string($ilsDetails['canceled']) ? ': ' . $ilsDetails['canceled'] : '') ?></div>
           <? endif; ?>
           <? if (isset($ilsDetails['cancel_link'])): ?>
-            <p><a href="<?=$this->escapeHtml($ilsDetails['cancel_link']) ?>"><?=$this->transEsc("hold_cancel") ?></a></p>
+            <p><a href="<?=$this->escapeHtml($ilsDetails['cancel_link']) ?>"><?=$this->transEsc("storage_retrieval_request_cancel") ?></a></p>
           <? endif; ?>
 
         </div>
@@ -153,10 +159,10 @@
     <? endforeach; ?>
     <? if ($this->cancelForm): ?></form><? endif; ?>
   <? else: ?>
-    <?=$this->transEsc('You do not have any holds or recalls placed') ?>.
+    <?=$this->transEsc('You do not have any storage retrieval requests placed') ?>.
   <? endif; ?>
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>">
-  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'holds'))?>
+  <?=$this->context($this)->renderInContext("myresearch/menu.phtml", array('active' => 'storageRetrievalRequests'))?>
 </div>

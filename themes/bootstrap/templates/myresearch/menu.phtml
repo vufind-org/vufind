@@ -4,6 +4,9 @@
   <? if ('ils-none' !== $this->ils()->getOfflineMode()): ?>
     <li<?=$this->active == 'checkedout' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-checkedout')?>"><?=$this->transEsc('Checked Out Items')?> <i class="icon-book pull-right"></i></a></li>
     <li<?=$this->active == 'holds' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-holds')?>"><?=$this->transEsc('Holds and Recalls')?> <i class="icon-flag pull-right"></i></a></li>
+    <? if ($this->ils()->checkFunction('StorageRetrievalRequests')): ?>
+    <li<?=$this->active == 'storageRetrievalRequests' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-storageretrievalrequests')?>"><?=$this->transEsc('Storage Retrieval Requests')?> <i class="icon-archive pull-right"></i></a></li>
+    <? endif; ?>
     <li<?=$this->active == 'fines' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-fines')?>"><?=$this->transEsc('Fines')?> <i class="icon-usd pull-right"></i></a></li>
     <li<?=$this->active == 'profile' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-profile')?>"><?=$this->transEsc('Profile')?> <i class="icon-user pull-right"></i></a></li>
   <? endif; ?>
