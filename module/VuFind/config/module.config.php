@@ -289,13 +289,14 @@ $config = array(
                 $translator = $factory->createService($sm);
 
                 // Set up the ExtendedIni plugin:
+                $config = $sm->get('VuFind\Config')->get('config');
                 $pathStack = array(
                     APPLICATION_PATH  . '/languages',
                     LOCAL_OVERRIDE_DIR . '/languages'
                 );
                 $translator->getPluginManager()->setService(
                     'extendedini',
-                    new \VuFind\I18n\Translator\Loader\ExtendedIni($pathStack)
+                    new \VuFind\I18n\Translator\Loader\ExtendedIni($pathStack, $config->Site->language)
                 );
 
                 // Set up language caching for better performance:
