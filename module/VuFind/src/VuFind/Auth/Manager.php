@@ -211,6 +211,34 @@ class Manager implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Does the current auth class allow for authentication from more than 
+     * one target? (e.g. MultiILS)
+     * If so return an array that lists the targets.
+     *
+     * @return array
+     */
+    public function getLoginTargets()
+    {
+        $auth = $this->getAuth();
+        return is_callable(array($auth, 'getLoginTargets'))
+            ? $auth->getLoginTargets() : array();
+    }
+
+    /**
+     * Does the current auth class allow for authentication from more than 
+     * one target? (e.g. MultiILS)
+     * If so return the default target.
+     *
+     * @return string
+     */
+    public function getDefaultLoginTarget()
+    {
+        $auth = $this->getAuth();
+        return is_callable(array($auth, 'getDefaultLoginTarget'))
+            ? $auth->getDefaultLoginTarget() : null;
+    }
+
+    /**
      * Get the name of the current authentication method.
      *
      * @return string

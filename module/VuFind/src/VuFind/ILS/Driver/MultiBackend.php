@@ -301,7 +301,7 @@ class MultiBackend extends AbstractBase
      *
      * @param string $source the source title for the driver.
      *
-     * @return mixed On success an unintiialized driver object, otherwise null.
+     * @return mixed On success an uninitialized driver object, otherwise null.
      */
     protected function getUninitializedDriver($source)
     {
@@ -334,7 +334,7 @@ class MultiBackend extends AbstractBase
      * @param object $driver The driver object to be initialized
      * @param string $source The source related to the driver for caching purposes.
      *
-     * @return no returns, getting an error without this comment though.
+     * @return void
      */
     protected function initializeDriver($driver, $source)
     {
@@ -347,7 +347,9 @@ class MultiBackend extends AbstractBase
                 $this->isInitialized[$source] = true;
                 $this->cache[$source] = $driver;
             } catch (Exception $e) {
-                $this->error("Driver init for '$source' failed: " . $e->getMessage());
+                $this->error(
+                    "Driver init for '$source' failed: " . $e->getMessage()
+                );
             }
         }
     }
@@ -584,6 +586,35 @@ class MultiBackend extends AbstractBase
     }
 
     /**
+     * Get available login targets (drivers enabled for login)
+     * 
+     * @return string[] Source ID's
+     */
+    public function getLoginDrivers()
+    {
+        return isset($this->config['Login']['drivers'])
+            ? $this->config['Login']['drivers']
+            : array();
+    }
+
+    /**
+     * Get default login driver
+     * 
+     * @return string Default login driver or empty string
+     */
+    public function getDefaultLoginDriver()
+    {
+        if (isset($this->config['Login']['default_driver'])) {
+            return $this->config['Login']['default_driver'];
+        }
+        $drivers = $this->getLoginDrivers();
+        if ($drivers) {
+            return $drivers[0];
+        }
+        return '';
+    }
+    
+    /**
      * Function developed to reduce code duplication in supportsMethod() and __call()
      *
      * @param array $params Array of passed parameters
@@ -771,7 +802,9 @@ class MultiBackend extends AbstractBase
         if ($called) {
             return $funcReturn;
         }
-        throw new ILSException("Cannot call method: $methodName, instance: '$instName'");
+        throw new ILSException(
+            "Cannot call method: $methodName, instance: '$instName'"
+        );
     }
 }
 

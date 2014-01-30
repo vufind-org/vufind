@@ -69,14 +69,14 @@ class DeduplicationListener
      * @var string
      */
     protected $searchConfig;
-    
+
     /**
      * Data source configuration file identifier.
      *
      * @var string
      */
     protected $dataSourceConfig;
-    
+
     /**
      * Constructor.
      *
@@ -90,7 +90,7 @@ class DeduplicationListener
     public function __construct(
         BackendInterface $backend,
         ServiceLocatorInterface $serviceLocator,
-        $searchConfig, $dataSourceConfig = 'datasources' 
+        $searchConfig, $dataSourceConfig = 'datasources'
     ) {
         $this->backend = $backend;
         $this->serviceLocator = $serviceLocator;
@@ -143,7 +143,7 @@ class DeduplicationListener
     {
         // Inject deduplication details into record objects:
         $backend = $event->getParam('backend');
-        
+
         if ($backend != $this->backend->getIdentifier()) {
             return $event;
         }
@@ -153,12 +153,12 @@ class DeduplicationListener
         }
         return $event;
     }
-    
+
     /**
      * Fetch local records for all the found dedup records
-     * 
+     *
      * @param EventInterface $event Event
-     * 
+     *
      * @return void
      */
     protected function fetchLocalRecords($event)
@@ -166,19 +166,19 @@ class DeduplicationListener
         $config = $this->serviceLocator->get('VuFind\Config');
         $searchConfig = $config->get($this->searchConfig);
         $dataSourceConfig = $config->get($this->dataSourceConfig);
-        $recordSources = isset($searchConfig->Records->sources) 
-            ? $searchConfig->Records->sources 
+        $recordSources = isset($searchConfig->Records->sources)
+            ? $searchConfig->Records->sources
             : '';
         $sourcePriority = $this->determineSourcePriority($recordSources);
         $params = $event->getParam('params');
-        $buildingPriority = $this->determineBuildingPriority($params); 
+        $buildingPriority = $this->determineBuildingPriority($params);
 
         $idList = array();
         // Find out the best records and list their IDs:
         $result = $event->getTarget();
         foreach ($result->getRecords() as $record) {
             $fields = $record->getRawData();
-            
+
             if (!isset($fields['merged_boolean'])) {
                 continue;
             }
@@ -222,9 +222,9 @@ class DeduplicationListener
 
             // Sort dedupData by priority:
             uasort(
-                $dedupData, 
-                function($a, $b) {
-                    return $a['priority'] - $b['priority'];    
+                $dedupData,
+                function ($a, $b) {
+                    return $a['priority'] - $b['priority'];
                 }
             );
             $fields['dedup_data'] = $dedupData;
@@ -233,7 +233,7 @@ class DeduplicationListener
         if (empty($idList)) {
             return;
         }
-        
+
         // Fetch records and assign them to the result:
         $searchService = $this->serviceLocator->get('VuFind\Search');
         $localRecords = $this->backend->retrieveBatch($idList)->getRecords();
@@ -256,33 +256,33 @@ class DeduplicationListener
             }
 
             $localRecordData = $foundLocalRecord->getRawData();
-            
+
             // Copy dedup_data for the active data sources:
             foreach ($dedupRecordData['dedup_data'] as $dedupDataKey => $dedupData) {
                 if (!$recordSources || isset($sourcePriority[$dedupDataKey])) {
                     $localRecordData['dedup_data'][$dedupDataKey] = $dedupData;
                 }
             }
-            
-            // Copy fields from dedup record to local record 
+
+            // Copy fields from dedup record to local record
             $localRecordData = $this->appendDedupRecordFields(
                 $localRecordData,
                 $dedupRecordData,
                 $recordSources,
                 $sourcePriority
-            );  
+            );
             $record->setRawData($localRecordData);
         }
     }
-    
+
     /**
      * Append fields from dedup record to the selected local record
-     * 
+     *
      * @param array  $localRecordData Local record data
      * @param array  $dedupRecordData Dedup record data
      * @param string $recordSources   List of active record sources, empty if all
      * @param array  $sourcePriority  Array of source priorities keyed by source id
-     * 
+     *
      * @return array Local record data
      */
     protected function appendDedupRecordFields($localRecordData, $dedupRecordData,
@@ -291,24 +291,24 @@ class DeduplicationListener
         $localRecordData['local_ids_str_mv'] = $dedupRecordData['local_ids_str_mv'];
         return $localRecordData;
     }
-    
+
     /**
      * Function that determines the priority for sources
-     * 
+     *
      * @param object $recordSources Record sources defined in searches.ini
-     * 
+     *
      * @return array Array keyed by source with priority as the value
      */
     protected function determineSourcePriority($recordSources)
     {
         return array_flip(explode(',', $recordSources));
     }
-    
+
     /**
      * Function that determines the priority for buildings
-     * 
-     * @param object $params Query parameters 
-     * 
+     *
+     * @param object $params Query parameters
+     *
      * @return array Array keyed by building with priority as the value
      */
     protected function determineBuildingPriority($params)
@@ -328,10 +328,10 @@ class DeduplicationListener
                 }
             }
         }
-        
+
         array_unshift($result, '');
         $result = array_flip($result);
         return $result;
     }
-    
+
 }

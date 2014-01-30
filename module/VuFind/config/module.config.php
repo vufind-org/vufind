@@ -374,6 +374,11 @@ $config = array(
                             $sm->getServiceLocator()->get('VuFind\ILSConnection')
                         );
                     },
+                    'multiils' => function ($sm) {
+                        return new \VuFind\Auth\MultiILS(
+                            $sm->getServiceLocator()->get('VuFind\ILSConnection')
+                        );
+                    },
                 ),
                 'invokables' => array(
                     'choiceauth' => 'VuFind\Auth\ChoiceAuth',
@@ -1019,6 +1024,8 @@ $recordRoutes = array(
     'summonrecord' => 'SummonRecord',
     'worldcatrecord' => 'WorldcatRecord'
 );
+// Record sub-routes are generally used to access tab plug-ins, but a few
+// URLs are hard-coded to specific actions; this array lists those actions.
 $nonTabRecordActions = array(
     'AddComment', 'DeleteComment', 'AddTag', 'Save', 'Email', 'SMS', 'Cite',
     'Export', 'RDF', 'Hold', 'BlockedHold', 'Home'
