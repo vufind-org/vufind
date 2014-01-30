@@ -161,6 +161,10 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
         sort($allLangs);
         foreach ($allLangs as $langCode) {
             $lang = $loader->load($langCode, null);
+            if (isset($lang['@parent_ini'])) {
+                // don't count macros in comparison:
+                unset($lang['@parent_ini']);
+            }
             $details[$langCode] = $this->compareLanguages($main, $lang);
             $details[$langCode]['object'] = $lang;
             $details[$langCode]['name'] = $this->getLangName($langCode);
