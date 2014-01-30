@@ -363,9 +363,8 @@ class Bootstrapper
             }
 
             $sm = $event->getApplication()->getServiceManager();
-            $langFile = APPLICATION_PATH  . '/languages/' . $language . '.ini';
             $sm->get('VuFind\Translator')
-                ->addTranslationFile('ExtendedIni', $langFile, 'default', $language)
+                ->addTranslationFile('ExtendedIni', null, 'default', $language)
                 ->setLocale($language);
 
             // Send key values to view:

@@ -42,17 +42,27 @@ use Zend\I18n\Exception\InvalidArgumentException,
 class ExtendedIni implements FileLoaderInterface
 {
     /**
-     * Parsed translation data
+     * List of directories to search for language files.
      *
-     * @var TextDomain
+     * @var array
      */
-    protected $data;
+    protected $pathStack;
+
+    /**
+     * Constructor
+     *
+     * @param array $pathStack List of directories to search for language files.
+     */
+    public function __construct($pathStack = array())
+    {
+        $this->pathStack = $pathStack;
+    }
 
     /**
      * load(): defined by LoaderInterface.
      *
      * @param string $locale   Locale to read from language file
-     * @param string $filename Language file to read
+     * @param string $filename Language file to read (not used)
      *
      * @return TextDomain
      * @throws InvalidArgumentException
@@ -60,21 +70,34 @@ class ExtendedIni implements FileLoaderInterface
      */
     public function load($locale, $filename)
     {
-        $this->data = new TextDomain();
-        if (!file_exists($filename)) {
-            throw new InvalidArgumentException("Ini file '".$filename."' not found");
-        }
-
         // Load base data:
-        $this->loadLanguageFile($filename);
+        return $this->loadLanguageFile($locale . '.ini');
+    }
 
-        // Load local overrides, if available:
-        $localFile = LOCAL_OVERRIDE_DIR . '/languages/' . basename($filename);
-        if (file_exists($localFile)) {
-            $this->loadLanguageFile($localFile);
+    /**
+     * Search the path stack for language files and merge them together.
+     *
+     * @param string $filename Name of file to search path stack for.
+     *
+     * @return TextDomain
+     */
+    protected function loadLanguageFile($filename)
+    {
+        $data = false;
+        foreach ($this->pathStack as $path) {
+            if (file_exists($path . '/' . $filename)) {
+                $current = $this->languageFileToTextDomain($path . '/' . $filename);
+                if ($data === false) {
+                    $data = $current;
+                } else {
+                    $data->merge($current);
+                }
+            }
         }
-
-        return $this->data;
+        if ($data === false) {
+            throw new InvalidArgumentException("Ini file '{$filename}' not found");
+        }
+        return $data;
     }
 
     /**
@@ -82,10 +105,12 @@ class ExtendedIni implements FileLoaderInterface
      *
      * @param string $file Filename to load
      *
-     * @return void
+     * @return TextDomain
      */
-    protected function loadLanguageFile($file)
+    protected function languageFileToTextDomain($file)
     {
+        $data = new TextDomain();
+
         // Manually parse the language file:
         $contents = file($file);
         if (is_array($contents)) {
@@ -109,10 +134,12 @@ class ExtendedIni implements FileLoaderInterface
                                 '&#x200C;', ENT_NOQUOTES, 'UTF-8'
                             );
                         }
-                        $this->data[$key] = $value;
+                        $data[$key] = $value;
                     }
                 }
             }
         }
+
+        return $data;
     }
 }
