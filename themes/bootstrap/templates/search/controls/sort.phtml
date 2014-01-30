@@ -1,5 +1,6 @@
 <? $list = $this->params->getSortList(); if (!empty($list)): ?>
-  <form class="pull-right form-inline" style="margin:0" action="<?=$this->currentPath() . $this->results->getUrlQuery()->setSort(null)?>" method="post" name="sort">
+  <form class="pull-right form-inline" style="margin:0" action="<?=$this->currentPath()?>" method="get" name="sort">
+    <?=$this->results->getUrlQuery()->asHiddenFields(array('sort' => '/.*/'));?>
     <label class="help-inline" for="sort_options_1"><?=$this->transEsc('Sort')?></label>
     <select id="sort_options_1" name="sort" class="jumpMenu" onChange="document.sort.submit()">
       <? foreach ($list as $sortType => $sortData): ?>

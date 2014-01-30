@@ -477,9 +477,14 @@ $config = array(
                 'factories' => array(
                     'solr' => function ($sm) {
                         $cacheDir = $sm->getServiceLocator()->get('VuFind\CacheManager')->getCacheDir(false);
+                        $hierarchyFilters = $sm->getServiceLocator()->get('VuFind\Config')->get('HierarchyDefault');
+                        $filters = isset($hierarchyFilters->HierarchyTree->filterQueries)
+                          ? $hierarchyFilters->HierarchyTree->filterQueries->toArray()
+                          : array();
                         return new \VuFind\Hierarchy\TreeDataSource\Solr(
                             $sm->getServiceLocator()->get('VuFind\Search'),
-                            rtrim($cacheDir, '/') . '/hierarchy'
+                            rtrim($cacheDir, '/') . '/hierarchy',
+                            $filters
                         );
                     },
                 ),

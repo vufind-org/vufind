@@ -200,7 +200,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             $deduplicationListener = $this->getDeduplicationListener($backend);
             $deduplicationListener->attach($events);
         }
-        
+
         // Attach error listeners for Solr 3.x and Solr 4.x (for backward
         // compatibility with VuFind 1.x instances).
         $legacyErrorListener = new LegacyErrorListener($backend);

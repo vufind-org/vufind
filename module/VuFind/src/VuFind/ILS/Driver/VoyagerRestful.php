@@ -673,6 +673,11 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         // Create Proxy Request
         $client = $this->httpService->createClient($urlParams);
 
+        // Set timeout value
+        $timeout = isset($this->config['Catalog']['http_timeout'])
+            ? $this->config['Catalog']['http_timeout'] : 30;
+        $client->setOptions(array('timeout' => $timeout));
+
         // Attach XML if necessary
         if ($xml !== false) {
             $client->setRawBody($xml);
