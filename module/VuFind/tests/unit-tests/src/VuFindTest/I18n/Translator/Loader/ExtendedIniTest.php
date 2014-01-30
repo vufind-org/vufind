@@ -65,6 +65,50 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test fallback to a different language.
+     *
+     * @return void
+     */
+    public function testFallback()
+    {
+        $pathStack = array(
+            realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
+        );
+        $loader = new ExtendedIni($pathStack, 'en');
+        $result = $loader->load('fake', null);
+        $this->assertEquals(
+            array(
+                'blank_line' =>
+                    html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8'),
+                'test1' => 'test one',
+                'test2' => 'test two',
+                'test3' => 'test three',
+            ),
+            (array)$result
+        );
+    }
+
+    /**
+     * Test fallback to the same language.
+     *
+     * @return void
+     */
+    public function testFallbackToSelf()
+    {
+        $pathStack = array(
+            realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
+        );
+        $loader = new ExtendedIni($pathStack, 'fake');
+        $result = $loader->load('fake', null);
+        $this->assertEquals(
+            array(
+                'test3' => 'test three',
+            ),
+            (array)$result
+        );
+    }
+
+    /**
      * Test missing path stack.
      *
      * @return void

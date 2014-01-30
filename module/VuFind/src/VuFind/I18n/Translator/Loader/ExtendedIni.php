@@ -49,13 +49,32 @@ class ExtendedIni implements FileLoaderInterface
     protected $pathStack;
 
     /**
+     * Fallback locale to use for language strings missing from selected file.
+     *
+     * @var string
+     */
+    protected $fallbackLocale;
+
+    /**
+     * List of files loaded during the current run -- avoids infinite loops and
+     * duplicate loading.
+     *
+     * @var array
+     */
+    protected $loadedFiles = array();
+
+    /**
      * Constructor
      *
-     * @param array $pathStack List of directories to search for language files.
+     * @param array  $pathStack      List of directories to search for language
+     * files.
+     * @param string $fallbackLocale Fallback locale to use for language strings
+     * missing from selected file.
      */
-    public function __construct($pathStack = array())
+    public function __construct($pathStack = array(), $fallbackLocale = null)
     {
         $this->pathStack = $pathStack;
+        $this->fallbackLocale = $fallbackLocale;
     }
 
     /**
@@ -70,8 +89,46 @@ class ExtendedIni implements FileLoaderInterface
      */
     public function load($locale, $filename)
     {
+        // Reset the loaded files list:
+        $this->resetLoadedFiles();
+
         // Load base data:
-        return $this->loadLanguageFile($locale . '.ini');
+        $data = $this->loadLanguageFile($locale . '.ini');
+
+        // Load fallback data, if any:
+        if (!empty($this->fallbackLocale)) {
+            $newData = $this->loadLanguageFile($this->fallbackLocale . '.ini');
+            $newData->merge($data);
+            $data = $newData;
+        }
+
+        return $data;
+    }
+
+    /**
+     * Reset the loaded file list.
+     *
+     * @return void
+     */
+    protected function resetLoadedFiles()
+    {
+        $this->loadedFiles = array();
+    }
+
+    /**
+     * Check if a file has already been loaded; mark it loaded if it is not already.
+     *
+     * @param string $filename Name of file to check and mark as loaded.
+     *
+     * @return bool True if loaded, false if new.
+     */
+    protected function checkAndMarkLoadedFile($filename)
+    {
+        if (isset($this->loadedFiles[$filename])) {
+            return true;
+        }
+        $this->loadedFiles[$filename] = true;
+        return false;
     }
 
     /**
@@ -83,6 +140,11 @@ class ExtendedIni implements FileLoaderInterface
      */
     protected function loadLanguageFile($filename)
     {
+        // Don't load a file that has already been loaded:
+        if ($this->checkAndMarkLoadedFile($filename)) {
+            return new TextDomain();
+        }
+
         $data = false;
         foreach ($this->pathStack as $path) {
             if (file_exists($path . '/' . $filename)) {
