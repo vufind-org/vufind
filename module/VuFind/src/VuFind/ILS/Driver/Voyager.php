@@ -1652,8 +1652,7 @@ class Voyager extends AbstractBase
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @return mixed        Array of the patron's holds on success, PEAR_Error
-     * otherwise.
+     * @return array        Array of the patron's storage retrieval requests.
      */
     public function getMyStorageRetrievalRequests($patron)
     {

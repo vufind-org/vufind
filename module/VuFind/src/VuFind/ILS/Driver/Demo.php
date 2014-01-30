@@ -573,8 +573,7 @@ class Demo extends AbstractBase
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @return mixed        Array of the patron's holds on success, PEAR_Error
-     * otherwise.
+     * @return mixed        Array of the patron's holds
      */
     public function getMyStorageRetrievalRequests($patron)
     {

@@ -1326,8 +1326,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @return mixed        Array of the patron's holds on success, PEAR_Error
-     * otherwise.
+     * @return mixed        Array of the patron's storage retrieval requests.
      */
     public function getMyStorageRetrievalRequests($patron)
     {
@@ -1409,14 +1408,12 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * Place Storage Retrieval Request (Call Slip)
      *
      * Attempts to place a call slip request on a particular item and returns
-     * an array with result details or a PEAR error on failure of support 
-     * classes
+     * an array with result details
      *
      * @param array $details An array of item and patron data
      *
      * @return mixed An array of data on the request including
-     * whether or not it was successful and a system message (if available) or a
-     * PEAR error on failure of support classes
+     * whether or not it was successful and a system message (if available)
      */
     public function placeStorageRetrievalRequest($details)
     {
