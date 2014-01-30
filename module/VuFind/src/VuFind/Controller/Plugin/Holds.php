@@ -226,7 +226,7 @@ class Holds extends AbstractPlugin
     }
 
     /**
-     * Method for validating contents of a "place hold" request; returns an array of
+     * Method for validating contents of a request; returns an array of
      * collected details if request is valid, otherwise returns false.
      *
      * @param array $linkData An array of keys to check
@@ -249,7 +249,7 @@ class Holds extends AbstractPlugin
         }
 
         // Initialize gatheredDetails with any POST values we find; this will
-        // allow us to repopulate the hold form with user-entered values if there
+        // allow us to repopulate the form with user-entered values if there
         // is an error.  However, it is important that we load the POST data
         // FIRST and then override it with GET values in order to ensure that
         // the user doesn't bypass the hashkey verification by manipulating POST

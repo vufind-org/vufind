@@ -240,14 +240,16 @@ class RecordController extends AbstractRecord
             $function = (string)$checkRequests['function'];
             $results = $catalog->$function($details);
 
-            // Success: Go to Display Holds
+            // Success: Go to Display Storage Retrieval Requests
             if (isset($results['success']) && $results['success'] == true) {
                 $this->flashMessenger()->setNamespace('info')
                     ->addMessage('storage_retrieval_request_place_success');
                 if ($this->inLightbox()) {
                     return false;
                 }
-                return $this->redirect()->toRoute('myresearch-storageretrievalrequests');
+                return $this->redirect()->toRoute(
+                    'myresearch-storageretrievalrequests'
+                );
             } else {
                 // Failure: use flash messenger to display messages, stay on
                 // the current form.

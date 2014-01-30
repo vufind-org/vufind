@@ -4,7 +4,7 @@
  * Functions and event handlers specific to record pages.
  */
 
-function checkRequestIsValid(element, requestURL, requestType = '') {
+function checkRequestIsValid(element, requestURL, requestType, checkClasses, blockedClass) {
     var recordId = requestURL.match(/\/Record\/([^\/]+)\//)[1];
     var vars = {}, hash;
     var hashes = requestURL.slice(requestURL.indexOf('?') + 1).split('&');
@@ -18,7 +18,7 @@ function checkRequestIsValid(element, requestURL, requestType = '') {
     }
     vars['id'] = recordId;
 
-    var url = path + '/AJAX/JSON?' + $.param({method:'check' + requestType + 'RequestIsValid', id: recordId, data: vars});
+    var url = path + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, requestType: requestType, data: vars});
     $.ajax({
         dataType: 'json',
         cache: false,
@@ -26,12 +26,12 @@ function checkRequestIsValid(element, requestURL, requestType = '') {
         success: function(response) {
             if (response.status == 'OK') {
                 if (response.data.status) {
-                    $(element).removeClass('checkRequest ajax_hold_availability').html(response.data.msg);
+                    $(element).removeClass(checkClasses).html(response.data.msg);
                 } else {
                     $(element).remove();
                 }
             } else if (response.status == 'NEED_AUTH') {
-                $(element).replaceWith('<span class="holdBlocked">' + response.data.msg + '</span>');
+                $(element).replaceWith('<span class="' + blockedClass + '">' + response.data.msg + '</span>');
             }
         }
     });
@@ -40,7 +40,9 @@ function checkRequestIsValid(element, requestURL, requestType = '') {
 function setUpCheckRequest() {
     $('.checkRequest').each(function(i) {
         if($(this).hasClass('checkRequest')) {
-            var isValid = checkRequestIsValid(this, this.href);
+            $(this).addClass('ajax_hold_availability');
+            var isValid = checkRequestIsValid(this, this.href, 'Hold', 
+                'checkRequest ajax_hold_availability', 'holdBlocked');
         }
     });
 }
@@ -48,7 +50,10 @@ function setUpCheckRequest() {
 function setUpCheckStorageRetrievalRequest() {
     $('.checkStorageRetrievalRequest').each(function(i) {
         if($(this).hasClass('checkStorageRetrievalRequest')) {
-            var isValid = checkRequestIsValid(this, this.href, 'StorageRetrieval');
+            $(this).addClass('ajax_storage_retrieval_request_availability');
+            var isValid = checkRequestIsValid(this, this.href, 'StorageRetrievalRequest',
+                'checkStorageRetrievalRequest ajax_storage_retrieval_request_availability', 
+                'storageRetrievalRequestBlocked');
         }
     });
 }
@@ -171,12 +176,6 @@ $(document).ready(function(){
     });
     $('a.subjectHeading').mouseout(function() {
         $('.subjectHeading').removeClass('highlight');
-    });
-
-    $('.checkRequest').each(function(i) {
-        if($(this).hasClass('checkRequest')) {
-            $(this).addClass('ajax_hold_availability');
-        }
     });
 
     setUpCheckRequest();

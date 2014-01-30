@@ -268,8 +268,8 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     }
 
     /**
-     * Support method for VuFind Storage Retrieval Request (Call Slip) Logic.
-     * Take a holdings row array and determine whether or not a call slip is
+     * Support method for VuFind Storage Retrieval Request (Call Slip) Logic. 
+     * Take a holdings row array and determine whether or not a call slip is 
      * allowed based on the valid_call_slip_locations settings in configuration
      * file
      *
@@ -292,7 +292,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         }
         return true;
     }
-
+    
     /**
      * Protected support method for getHolding.
      *
@@ -305,7 +305,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         $sqlArray = parent::getHoldingItemsSQL($id);
         $sqlArray['expressions'][] = "ITEM.ITEM_TYPE_ID";
         $sqlArray['expressions'][] = "ITEM.TEMP_ITEM_TYPE_ID";
-
+        
         return $sqlArray;
     }
 
@@ -352,7 +352,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             $addStorageRetrievalLink = false;
             $holdType = '';
             $storageRetrieval = '';
-
+            
             // Hold Type - If we have patron data, we can use it to determine if a
             // hold link should be shown
             if ($patron && $this->holdsMode == "driver") {
@@ -372,11 +372,11 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
 
             if ($isStorageRetrievalRequestAllowed) {
                 if ($patron) {
-                    if ($i < $this->callSlipCheckLimit
+                    if ($i < $this->callSlipCheckLimit 
                         && $this->callSlipCheckLimit != "0"
                     ) {
                         $storageRetrieval = $this->checkItemRequests(
-                            $patron['id'],
+                            $patron['id'], 
                             'callslip',
                             $row['id'],
                             $row['item_id']
@@ -392,7 +392,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                     $storageRetrieval = "auto";
                 }
             }
-
+            
             $holding[$i] += array(
                 'is_holdable' => $is_holdable,
                 'holdtype' => $holdType,
@@ -448,7 +448,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         if ($this->checkAccountBlocks($patron['id'])) {
             return 'block';
         }
-
+        
         $level = isset($data['level']) ? $data['level'] : "copy";
         $itemID = ($level != 'title' && isset($data['item_id']))
             ? $data['item_id']
@@ -461,7 +461,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         }
         return true;
     }
-
+    
     /**
      * Determine Renewability
      *
@@ -736,7 +736,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             }
 
             // Split out any attributes
-            $root = strtok($root, ' ');
+            $root = strtok($root, ' '); 
             $xmlString .= "</" . $root . ">";
         }
 
@@ -1317,22 +1317,21 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         $renewDetails = $checkOutDetails['item_id'];
         return $renewDetails;
     }
-
+    
     /**
-     * Get Patron Storage Retrieval Requests (Call Slips). Gets local call slips
+     * Get Patron Storage Retrieval Requests (Call Slips). Gets local call slips 
      * from the database, then remote callslips via the API.
      *
      * This is responsible for retrieving all call slips by a specific patron.
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @return mixed        Array of the patron's holds on success, PEAR_Error
-     * otherwise.
+     * @return mixed        Array of the patron's storage retrieval requests.
      */
     public function getMyStorageRetrievalRequests($patron)
     {
         $requests = parent::getMyStorageRetrievalRequests($patron);
-
+        
         // Build Hierarchy
         $hierarchy = array(
             'patron' =>  $patron['id'],
@@ -1364,18 +1363,18 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                         'id' => '',
                         'type' => (string)$item->holdType,
                         'location' => (string)$item->pickupLocation,
-                        'expire' => (string)$item->expiredDate
+                        'expire' => (string)$item->expiredDate 
                             ? $this->dateFormat->convertToDisplayDate(
                                 'Y-m-d', (string)$item->expiredDate
                             )
-                            : '',
-                        // Looks like expired date shows creation date for
+                            : '',  
+                        // Looks like expired date shows creation date for 
                         // call slip requests, but who knows
-                        'created' => (string)$item->expiredDate
+                        'created' => (string)$item->expiredDate 
                             ? $this->dateFormat->convertToDisplayDate(
                                 'Y-m-d', (string)$item->expiredDate
                             )
-                            : '',
+                            : '',  
                         'position' => (string)$item->queuePosition,
                         'available' => (string)$item->status == '4',
                         'reqnum' => (string)$item->holdRecallId,
@@ -1386,37 +1385,35 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                         'institution_id' => (string)$institution->attributes()->id,
                         'institution_name' => (string)$item->dbName,
                         'institution_dbkey' => (string)$item->dbKey,
-                        'processed' => substr((string)$item->statusText, 0, 6)
+                        'processed' => substr((string)$item->statusText, 0, 6) 
                             == 'Filled'
                             ? $this->dateFormat->convertToDisplayDate(
                                 'Y-m-d', substr((string)$item->statusText, 7)
-                            )
+                            ) 
                             : '',
-                        'canceled' => substr((string)$item->statusText, 0, 8)
+                        'canceled' => substr((string)$item->statusText, 0, 8) 
                             == 'Canceled'
                             ? $this->dateFormat->convertToDisplayDate(
                                 'Y-m-d', substr((string)$item->statusText, 9)
-                            )
+                            ) 
                             : ''
                     );
                 }
             }
         }
-        return $requests;
+        return $requests;        
     }
-
+    
     /**
      * Place Storage Retrieval Request (Call Slip)
      *
      * Attempts to place a call slip request on a particular item and returns
-     * an array with result details or a PEAR error on failure of support
-     * classes
+     * an array with result details
      *
      * @param array $details An array of item and patron data
      *
      * @return mixed An array of data on the request including
-     * whether or not it was successful and a system message (if available) or a
-     * PEAR error on failure of support classes
+     * whether or not it was successful and a system message (if available)
      */
     public function placeStorageRetrievalRequest($details)
     {
@@ -1429,7 +1426,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         $bibId = $details['id'];
         $pickUpLocation = !empty($details['pickUpLocation'])
             ? $details['pickUpLocation'] : '';
-
+        
         // Attempt Request
         $hierarchy = array();
 
@@ -1459,10 +1456,10 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                 'mfhdId' => $mfhdId
             );
             // It seems Voyager doesn't currently (v8.1) use pickupLocation,
-            // but we'll handle it just in case it becomes available later.
+            // but we'll handle it just in case it becomes available later.  
             if ($pickUpLocation) {
                 $xml['call-slip-title-parameters']['pickupLocation']
-                    = $pickUpLocation;
+                    = $pickUpLocation;    
             }
         } else {
             $xml['call-slip-parameters'] = array(
@@ -1470,13 +1467,13 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                 'dbkey' => $this->ws_dbKey
             );
             // It seems Voyager doesn't currently (v8.1) use pickupLocation,
-            // but we'll handle it just in case it becomes available later.
+            // but we'll handle it just in case it becomes available later.  
             if ($pickUpLocation) {
                 $xml['call-slip-parameters']['pickupLocation']
-                    = $pickUpLocation;
+                    = $pickUpLocation;    
             }
         }
-
+        
         // Generate XML
         $requestXML = $this->buildBasicXML($xml);
 
@@ -1504,7 +1501,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             }
             return $response;
         }
-
+        
         return $this->holdError('storage_retrieval_request_error_blocked');
     }
 
@@ -1573,12 +1570,12 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         $result = array('count' => $count, 'items' => $response);
         return $result;
     }
-
+    
     /**
      * Get Cancel Storage Retrieval Request (Call Slip) Details
      *
-     * In order to cancel a call slip, Voyager requires the item ID and a
-     * request ID. This function returns the item id and call slip id as a
+     * In order to cancel a call slip, Voyager requires the item ID and a 
+     * request ID. This function returns the item id and call slip id as a 
      * string separated by a pipe, which is then submitted as form data. This
      * value is then extracted by the CancelStorageRetrievalRequests function.
      *
@@ -1588,9 +1585,9 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     public function getCancelStorageRetrievalRequestDetails($details)
     {
-        $details
-            = (isset($details['institution_dbkey'])
-                ? $details['institution_dbkey']
+        $details 
+            = (isset($details['institution_dbkey']) 
+                ? $details['institution_dbkey'] 
                 : ''
             )
             . '|' . $details['item_id']

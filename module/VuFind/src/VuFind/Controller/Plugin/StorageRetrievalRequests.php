@@ -63,7 +63,7 @@ class StorageRetrievalRequests extends Holds
      * @param array                  $ilsDetails   Details from ILS driver's
      * getMyStorageRetrievalRequests() method
      * @param array                  $cancelStatus Cancellation settings from ILS
-     * @param array                  $patron       ILS patron
+     * @param array                  $patron       ILS patron 
      * driver's checkFunction() method
      *
      * @return array $ilsDetails with cancellation info added
@@ -153,7 +153,7 @@ class StorageRetrievalRequests extends Holds
                     );
                 }
             }
-
+            
             foreach ($details as $info) {
                 // If the user input contains a value not found in the session
                 // whitelist, something has been tampered with -- abort the process.
@@ -191,47 +191,5 @@ class StorageRetrievalRequests extends Holds
             );
         }
         return array();
-    }
-
-    /**
-     * Method for validating contents of a "place storage retrieval" request;
-     * returns an array of collected details if request is valid, otherwise
-     * returns false.
-     *
-     * @param array $linkData An array of keys to check
-     *
-     * @return boolean|array
-     */
-    public function validateRequest($linkData)
-    {
-        $controller = $this->getController();
-        $params = $controller->params();
-
-        $keyValueArray = array();
-        foreach ($linkData as $details) {
-            $keyValueArray[$details] = $params->fromQuery($details);
-        }
-        $hashKey = $this->hmac->generate($linkData, $keyValueArray);
-
-        if ($params->fromQuery('hashKey') != $hashKey) {
-            return false;
-        }
-
-        // Initialize gatheredDetails with any POST values we find; this will
-        // allow us to repopulate the request form with user-entered values if there
-        // is an error.  However, it is important that we load the POST data
-        // FIRST and then override it with GET values in order to ensure that
-        // the user doesn't bypass the hashkey verification by manipulating POST
-        // values.
-        $gatheredDetails = $params->fromPost('gatheredDetails', array());
-
-        // Make sure the bib ID is included, even if it's not loaded as part of
-        // the validation loop below.
-        $gatheredDetails['id'] = $params->fromRoute('id');
-
-        // Get Values Passed from holdings.php
-        $gatheredDetails = array_merge($gatheredDetails, $keyValueArray);
-
-        return $gatheredDetails;
     }
 }
