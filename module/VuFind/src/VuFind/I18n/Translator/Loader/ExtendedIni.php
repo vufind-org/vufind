@@ -159,7 +159,26 @@ class ExtendedIni implements FileLoaderInterface
         if ($data === false) {
             throw new InvalidArgumentException("Ini file '{$filename}' not found");
         }
-        return $data;
+
+        // Load parent data, if necessary:
+        return $this->loadParentData($data);
+    }
+
+    /**
+     * Support method for loadLanguageFile: retrieve parent data.
+     *
+     * @param TextDomain $data TextDomain to populate with parent information.
+     *
+     * @return TextDomain
+     */
+    protected function loadParentData($data)
+    {
+        if (!isset($data['@parent_ini'])) {
+            return $data;
+        }
+        $parent = $this->loadLanguageFile($data['@parent_ini']);
+        $parent->merge($data);
+        return $parent;
     }
 
     /**

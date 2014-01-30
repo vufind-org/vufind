@@ -109,6 +109,50 @@ class ExtendedIniTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test file with self as parent.
+     *
+     * @return void
+     */
+    public function testSelfAsParent()
+    {
+        $pathStack = array(
+            realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
+        );
+        $loader = new ExtendedIni($pathStack);
+        $result = $loader->load('self-parent', null);
+        $this->assertEquals(
+            array(
+                '@parent_ini' => 'self-parent.ini',
+                'string' => 'bad',
+            ),
+            (array)$result
+        );
+    }
+
+    /**
+     * Test file with a chain of parents.
+     *
+     * @return void
+     */
+    public function testParentChain()
+    {
+        $pathStack = array(
+            realpath(__DIR__ . '/../../../../../../fixtures/language/base'),
+        );
+        $loader = new ExtendedIni($pathStack);
+        $result = $loader->load('child2', null);
+        $this->assertEquals(
+            array(
+                '@parent_ini' => 'child1.ini',
+                'test1' => 'test 1',
+                'test2' => 'test 2',
+                'test3' => 'test three',
+            ),
+            (array)$result
+        );
+    }
+
+    /**
      * Test missing path stack.
      *
      * @return void
