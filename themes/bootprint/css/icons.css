@@ -6,7 +6,9 @@ i.icon-bookbag-delete,
 i.icon-bookbag-empty,
 i.icon-bookmark,
 i.icon-cancel-all-holds,
+i.icon-cancel-all-storage-retrieval-requests,
 i.icon-cancel-holds,
+i.icon-cancel-storage-retrieval-requests,
 i.icon-edit,
 i.icon-email,
 i.icon-envelope,
@@ -79,7 +81,9 @@ i.icon-user {
 .small i.icon-bookbag-empty,
 .small i.icon-bookmark,
 .small i.icon-cancel-all-holds,
+.small i.icon-cancel-all-storage-retrieval-requests,
 .small i.icon-cancel-holds,
+.small i.icon-cancel-storage-retrieval-requests,
 .small i.icon-edit,
 .small i.icon-email,
 .small i.icon-envelope,
@@ -126,7 +130,9 @@ i.icon-bookbag-delete {background:url('../images/icons/bookbag_delete.png')}
 i.icon-bookbag-empty {background:url('../images/icons/bookbag_empty.png')}
 i.icon-bookmark {background:url('../images/icons/bookmark_add.png')}
 i.icon-cancel-all-holds {background:url('../images/icons/holdCancelAll.png')}
+i.icon-cancel-all-storage-retrieval-requests {background:url('../images/icons/holdCancelAll.png')}
 i.icon-cancel-holds {background:url('../images/icons/holdCancel.png')}
+i.icon-cancel-storage-retrieval-requests {background:url('../images/icons/holdCancel.png')}
 i.icon-edit {background:url('../images/icons/edit.png')}
 i.icon-email,
 i.icon-envelope,
