@@ -105,7 +105,7 @@ class Holds extends AbstractPlugin
     }
 
     /**
-     * Update ILS details with renewal-specific information, if appropriate.
+     * Update ILS details with cancellation-specific information, if appropriate.
      *
      * @param \VuFind\ILS\Connection $catalog      ILS connection object
      * @param array                  $ilsDetails   Hold details from ILS driver's
@@ -113,7 +113,7 @@ class Holds extends AbstractPlugin
      * @param array                  $cancelStatus Cancel settings from ILS driver's
      * checkFunction() method
      *
-     * @return array $ilsDetails with renewal info added
+     * @return array $ilsDetails with cancellation info added
      */
     public function addCancelDetails($catalog, $ilsDetails, $cancelStatus)
     {
@@ -136,13 +136,13 @@ class Holds extends AbstractPlugin
     }
 
     /**
-     * Process renewal requests.
+     * Process cancellation requests.
      *
      * @param \VuFind\ILS\Connection $catalog ILS connection object
      * @param array                  $patron  Current logged in patron
      *
-     * @return array                          The result of the renewal, an
-     * associative array keyed by item ID (empty if no renewals performed)
+     * @return array                          The result of the cancellation, an
+     * associative array keyed by item ID (empty if no cancellations performed)
      */
     public function cancelHolds($catalog, $patron)
     {
@@ -150,7 +150,7 @@ class Holds extends AbstractPlugin
         $flashMsg = $this->getController()->flashMessenger();
         $params = $this->getController()->params();
 
-        // Pick IDs to renew based on which button was pressed:
+        // Pick IDs to cancel based on which button was pressed:
         $all = $params->fromPost('cancelAll');
         $selected = $params->fromPost('cancelSelected');
         if (!empty($all)) {
@@ -226,7 +226,7 @@ class Holds extends AbstractPlugin
     }
 
     /**
-     * Method for validating contents of a "place hold" request; returns an array of
+     * Method for validating contents of a request; returns an array of
      * collected details if request is valid, otherwise returns false.
      *
      * @param array $linkData An array of keys to check
@@ -249,7 +249,7 @@ class Holds extends AbstractPlugin
         }
 
         // Initialize gatheredDetails with any POST values we find; this will
-        // allow us to repopulate the hold form with user-entered values if there
+        // allow us to repopulate the form with user-entered values if there
         // is an error.  However, it is important that we load the POST data
         // FIRST and then override it with GET values in order to ensure that
         // the user doesn't bypass the hashkey verification by manipulating POST
