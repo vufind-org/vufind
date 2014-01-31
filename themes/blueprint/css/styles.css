@@ -91,7 +91,7 @@ div.dialogLoading {
     height:100%;
 }
 
-.ajax_availability, .ajax_hold_availability {
+.ajax_availability, .ajax_hold_availability, .ajax_storage_retrieval_request_availability {
     background: url(../images/ajax_loading.gif) no-repeat left top;
     padding:0 .5em .5em 20px;
 }
@@ -926,6 +926,27 @@ h3.list {
     padding:.5em .5em .5em 20px;
     margin-right:1em;
 }
+.storageRetrievalRequestPlace {
+    background-image:url(../images/fugue/holdPlace.png);
+    background-repeat:no-repeat;
+    background-position: left;
+    padding:.5em .5em .5em 20px;
+    margin-right:1em;
+}
+.storageRetrievalRequestCancel {
+    background-image:url(../images/fugue/holdCancel.png);
+    background-repeat:no-repeat;
+    background-position: left;
+    padding:.5em .5em .5em 20px;
+    margin-right:1em;
+}
+.storageRetrievalRequestCancelAll {
+    background-image:url(../images/fugue/holdCancelAll.png);
+    background-repeat:no-repeat;
+    background-position: left;
+    padding:.5em .5em .5em 20px;
+    margin-right:1em;
+}
 .renew {
     background-image:url(../images/fugue/renew.png);
     background-repeat:no-repeat;
@@ -1144,6 +1165,17 @@ ul.similar li {
     text-align: left;
     background:white;
     margin: 0px;
+}
+
+/*********** Storage Retrieval Request Form ************/
+.storageRetrievalRequestForm .label {
+    width: 70px;
+    text-align: right;
+    float: left;
+    margin-right: 12px;
+}
+.storageRetrievalRequestReference {
+    margin-left: 12px;
 }
 
 /*********** Toolbar (Favorites View) ************/
