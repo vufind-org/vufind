@@ -22,12 +22,7 @@ return array(
     'favicon' => 'vufind-favicon.ico',
     'helpers' => array(
         'factories' => array(
-            'layoutclass' => function ($sm) {
-                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-                $left = !isset($config->Site->sidebarOnLeft)
-                    ? false : $config->Site->sidebarOnLeft;
-                return new \VuFind\View\Helper\Blueprint\LayoutClass($left);
-            },
+            'layoutclass' => array('VuFind\View\Helper\Blueprint\Factory', 'getLayoutClass'),
         ),
         'invokables' => array(
             'search' => 'VuFind\View\Helper\Blueprint\Search',
