@@ -200,10 +200,11 @@ class Demo extends AbstractBase
      *
      * @param string $id     set id
      * @param string $number set number for multiple items
+     * @param array  $patron Patron data
      *
      * @return array
      */
-    protected function getRandomHolding($id, $number)
+    protected function getRandomHolding($id, $number, $patron)
     {
         $status = $this->getFakeStatus();
         return array(
@@ -217,9 +218,11 @@ class Demo extends AbstractBase
             'callnumber'   => $this->getFakeCallNum(),
             'duedate'      => '',
             'is_holdable'  => true,
-            'addLink'      => rand()%10 == 0 ? 'block' : true,
+            'addLink'      => $patron ? rand()%10 == 0 ? 'block' : true : false,
             'storageRetrievalRequest' => 'auto',
-            'addStorageRetrievalRequestLink' => rand()%10 == 0 ? 'block' : 'check'
+            'addStorageRetrievalRequestLink' => $patron
+                ? rand()%10 == 0 ? 'block' : 'check'
+                : false
         );
     }
 
@@ -229,12 +232,13 @@ class Demo extends AbstractBase
      * This is responsible for retrieving the status information of a certain
      * record.
      *
-     * @param string $id The record id to retrieve the holdings for
+     * @param string $id     The record id to retrieve the holdings for
+     * @param array  $patron Patron data
      *
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus($id)
+    public function getStatus($id, $patron = false)
     {
         $id = $id.""; // make it a string for consistency
         // How many items are there?
@@ -258,7 +262,7 @@ class Demo extends AbstractBase
 
         // Create a fake entry for each one
         for ($i = 0; $i < $records; $i++) {
-            $holding[] = $this->getRandomHolding($id, $i+1);
+            $holding[] = $this->getRandomHolding($id, $i+1, $patron);
         }
         return $holding;
     }
@@ -371,7 +375,7 @@ class Demo extends AbstractBase
     public function getHolding($id, $patron = false)
     {
         // Get basic status info:
-        $status = $this->getStatus($id);
+        $status = $this->getStatus($id, $patron);
 
         // Add notes and summary:
         foreach (array_keys($status) as $i) {
@@ -1204,15 +1208,41 @@ class Demo extends AbstractBase
         $nextId = $lastRequest >= 0
             ? $this->session->storageRetrievalRequests[$lastRequest]['item_id'] + 1 
             : 0;
-
+        
+        // Figure out appropriate expiration date:
+        if (!isset($holdDetails['requiredBy'])
+            || empty($holdDetails['requiredBy'])
+        ) {
+            $expire = strtotime("now + 30 days");
+        } else {
+            try {
+                $expire = $this->dateConverter->convertFromDisplayDate(
+                    "U", $details['requiredBy']
+                );
+            } catch (DateException $e) {
+                // Hold Date is invalid
+                return array(
+                    'success' => false,
+                    'sysMessage' => 'storage_retrieval_request_date_invalid'
+                );
+            }
+        }
+        if ($expire <= time()) {
+            return array(
+                'success' => false,
+                'sysMessage' => 'storage_retrieval_request_date_past'
+            );
+        }
+        
         $this->session->storageRetrievalRequests->append(
             array(
                 "id"       => $details['id'],
                 "location" => $details['pickUpLocation'],
                 "expire"   => date("j-M-y", $expire),
-                "create"   => date("j-M-y"),
+                "created"  => date("j-M-y"),
+                "processed" => rand()%3 == 0 ? date("j-M-y", $expire) : '',
                 "reqnum"   => sprintf("%06d", $nextId),
-                "item_id" => $nextId
+                "item_id"  => $nextId
             )
         );
 
