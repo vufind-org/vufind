@@ -1074,7 +1074,10 @@ class AjaxController extends AbstractBase
             $user = $this->getUser();
             if (!$user) {
                 return $this->output(
-                    $this->translate('You must be logged in first'),
+                    array(
+                        'status' => false, 
+                        'msg' => $this->translate('You must be logged in first')
+                    ),
                     self::STATUS_NEED_AUTH
                 );
             }
