@@ -219,7 +219,9 @@ class Manager implements ServiceLocatorAwareInterface
      */
     public function getLoginTargets()
     {
-        return $this->getAuth()->getLoginTargets();
+        $auth = $this->getAuth();
+        return is_callable(array($auth, 'getLoginTargets'))
+            ? $auth->getLoginTargets() : array();
     }
 
     /**
@@ -227,11 +229,13 @@ class Manager implements ServiceLocatorAwareInterface
      * one target? (e.g. MultiILS)
      * If so return the default target.
      *
-     * @return array
+     * @return string
      */
     public function getDefaultLoginTarget()
     {
-        return $this->getAuth()->getDefaultLoginTarget();
+        $auth = $this->getAuth();
+        return is_callable(array($auth, 'getDefaultLoginTarget'))
+            ? $auth->getDefaultLoginTarget() : null;
     }
 
     /**

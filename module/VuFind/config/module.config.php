@@ -294,8 +294,14 @@ $config = array(
                 $translator = $factory->createService($sm);
 
                 // Set up the ExtendedIni plugin:
+                $config = $sm->get('VuFind\Config')->get('config');
+                $pathStack = array(
+                    APPLICATION_PATH  . '/languages',
+                    LOCAL_OVERRIDE_DIR . '/languages'
+                );
                 $translator->getPluginManager()->setService(
-                    'extendedini', new \VuFind\I18n\Translator\Loader\ExtendedIni()
+                    'extendedini',
+                    new \VuFind\I18n\Translator\Loader\ExtendedIni($pathStack, $config->Site->language)
                 );
 
                 // Set up language caching for better performance:
@@ -1029,6 +1035,8 @@ $recordRoutes = array(
     'summonrecord' => 'SummonRecord',
     'worldcatrecord' => 'WorldcatRecord'
 );
+// Record sub-routes are generally used to access tab plug-ins, but a few
+// URLs are hard-coded to specific actions; this array lists those actions.
 $nonTabRecordActions = array(
     'AddComment', 'DeleteComment', 'AddTag', 'Save', 'Email', 'SMS', 'Cite',
     'Export', 'RDF', 'Hold', 'BlockedHold', 'Home', 'StorageRetrievalRequest',

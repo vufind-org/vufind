@@ -100,4 +100,25 @@ class MultiILS extends ILS
     {
         return $this->getCatalog()->getDefaultLoginDriver();
     }
+
+    /**
+     * Set the ILS connection for this object.
+     *
+     * @param \VuFind\ILS\Connection $connection ILS connection to set
+     *
+     * @return void
+     */
+    public function setCatalog(\VuFind\ILS\Connection $connection)
+    {
+        // Right now, MultiILS authentication only works with the MultiBackend
+        // driver; if other ILS drivers eventually support this option, we
+        // should define an interface containing getLoginDrivers() and
+        // getDefaultLoginDriver().
+        if (!($connection instanceof MultiBackend)) {
+            throw new \Exception(
+                'MultiILS authentication requires MultiBackend ILS driver.'
+            );
+        }
+        return parent::setCatalog($connection);
+    }
 }
