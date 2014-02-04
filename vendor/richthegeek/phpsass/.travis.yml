@@ -1,0 +1,12 @@
+# Configuration file for unit test runner.
+language: php
+php:
+  - 5.3
+  - 5.4
+env:
+  - PHPUNIT_ARGS=--group=sass
+before_script:
+  - cd tests
+script: phpunit $PHPUNIT_ARGS
+notifications:
+  email: false

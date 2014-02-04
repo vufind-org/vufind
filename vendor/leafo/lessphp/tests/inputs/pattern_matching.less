@@ -117,6 +117,7 @@
 
 #hola {
 	.hola(hello, world);
+	.hola(jello, world);
 }
 
 .resty(@hello, @world, @the_rest...) {
@@ -124,11 +125,20 @@
 	rest: @the_rest;
 }
 
+#nnn {
+	.body(10, 10, 10, 10, 10);
+	.body(10, 10, 10);
+	.body(10, 10);
+	.body(10);
+	.body();
+}
+
 .defaults(@aa, @bb:e343, @cc: "heah", ...) {
 	height: @aa;
 }
 
 #defaults_1 {
+	.defaults();
 	.defaults(one);
 	.defaults(two, one);
 	.defaults(three, two, one);

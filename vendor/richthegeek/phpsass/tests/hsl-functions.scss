@@ -1,0 +1,15 @@
+#hsl {
+  background: hsl(.09, 1, .47); // #010101
+  background: hsla(.09, 1, .47, .5); // rgba(1, 1, 1, 0.5)
+  background: hue(#f28500); // 32.975deg
+  background: saturation(#f28500); // 100%
+  background: lightness(#f28500); // 47.451%
+  background: adjust-hue(#f28500, .01); // #f28500
+  background: lighten(#f28500, .5); // #f58600
+  background: darken(#f28500, .5); // #ef8400
+  background: saturate(#f28500, .5); // #f28500
+  background: desaturate(#f28500, .5); // #f18501
+  background: grayscale(#f28500); // #797979
+  background: complement(#f28500); // #006df2
+  background: invert(#f28500); // #0d7aff
+}

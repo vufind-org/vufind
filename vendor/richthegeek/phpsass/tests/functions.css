@@ -1,0 +1,9 @@
+foo,
+bar,
+foo + bar {
+  content: 'one two' true;
+  content: 'foo bar' true;
+  content: 'foo two' true;
+  content: 'one foo' true;
+  content: bar foo true;
+  adjust-color: #0000f0; }

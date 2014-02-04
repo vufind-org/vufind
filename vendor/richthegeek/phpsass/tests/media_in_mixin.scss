@@ -1,0 +1,9 @@
+@mixin mediaContent() {
+    @media (min-width: 768px) {
+        @content;
+    }
+}
+
+@include mediaContent() {
+    body { width: 50px; }
+}

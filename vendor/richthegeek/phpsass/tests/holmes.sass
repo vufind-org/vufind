@@ -1,0 +1,262 @@
+body.holmes-debug
+
+  a:not([href]),
+  a[href=""]
+    outline: 2px solid red
+
+  a[href="#"],
+  a[href^="javascript"],
+  a:not([title]),
+  a[title=""]
+    outline: 2px solid #fd0
+
+  img:not([alt]),
+  img[alt=""]
+    outline: 2px solid red
+
+  label:not([for]),
+  label[for=""],
+  input:not([name]),
+  input[name=""],
+  select:not([name]),
+  select[name=""],
+  textarea:not([name]),
+  textarea[name=""],
+  abbr:not([title]),
+  abbr[title=""],
+  [class=""],
+  [id=""],
+  table:not([summary]),
+  table[summary=""]
+    outline: 2px solid red
+
+  [style],
+  [onclick],
+  [onblur],
+  [onfocus],
+  [onselect],
+  [onload],
+  [onunload]
+    outline: 2px solid #fd0
+
+  applet,
+  acronym,
+  center,
+  dir,
+  font,
+  strike,
+  u,
+  big,
+  tt,
+  marquee,
+  plaintext,
+  xmp
+    border: 2px solid #a9a9a9
+
+  [bgproperties],
+  [topmargin],
+  [rightmargin],
+  [bottommargin],
+  [leftmargin]
+    outline: 2px solid #a9a9a9
+
+  *[bordercolor],
+  *[bordercolordark],
+  *[bordercolorlight],
+  table[frame]
+    border: 2px solid #a9a9a9
+
+  div:empty,
+  span:empty,
+  li:empty,
+  p:empty,
+  td:empty,
+  th:empty
+    border: 2px solid #f10
+
+  a[href="#"]:hover::after,
+  a[href^="javascript"]:hover::after,
+  a:not([title]):hover::after,
+  a[title=""]:hover::after,
+  div:empty:hover::after,
+  span:empty:hover::after,
+  li:empty:hover::after,
+  p:empty:hover::after,
+  td:empty:hover::after,
+  th:empty:hover::after,
+  [style]:hover::after
+    border-radius: 0.5em
+    display: block
+    padding: 1em
+    margin: 1em
+    background: #fd0
+    position: fixed
+    color: #000
+    left: 0
+    top: 0
+    z-index: 9999
+
+  a:not([href]):hover::after,
+  a[href=""]:hover::after,
+  img:not([alt]):hover:after,
+  img[alt=""]:hover::after,
+  label:not([for]):hover::after,
+  label[for=""]:hover::after,
+  input:not([name]):hover::after,
+  input[name=""]:hover::after,
+  select:not([name]):hover::after,
+  select[name=""]:hover::after,
+  textarea:not([name]):hover::after,
+  textarea[name=""]:hover::after,
+  abbr:not([title]):hover::after,
+  abbr[title=""]:hover::after,
+  [class=""]:hover::after,
+  [id=""]:hover::after,
+  table:not([summary]):hover::after,
+  table[summary=""]:hover::after
+    border-radius: 0.5em
+    display: block
+    padding: 1em
+    margin: 1em
+    background: red
+    position: fixed
+    color: #000
+    left: 0
+    top: 0
+    z-index: 9999
+    text-decoration: none
+
+  applet:hover::after,
+  acronym:hover::after,
+  center:hover::after,
+  dir:hover::after,
+  font:hover::after,
+  strike:hover::after,
+  big:hover::after,
+  tt:hover::after,
+  marquee:hover::after,
+  plaintext:hover::after,
+  xmp:hover::after,
+  *[bordercolor]:hover::after,
+  *[bordercolordark]:hover::after,
+  *[bordercolorlight]:hover::after,
+  table[frame]:hover::after
+    border-radius: 0.5em
+    display: block
+    padding: 1em
+    margin: 1em
+    background: red
+    position: fixed
+    background: #a9a9a9
+    color: #000
+    left: 0
+    top: 0
+    z-index: 9999
+
+  &[bgproperties]:hover::after,
+  &[topmargin]:hover::after,
+  &[rightmargin]:hover::after,
+  &[bottommargin]:hover::after,
+  &[leftmargin]:hover::after
+    border-radius: 0.5em
+    display: block
+    padding: 1em
+    margin: 1em
+    background: red
+    position: fixed
+    background: #a9a9a9
+    color: #000
+    bottom: 0
+    right: 0
+    z-index: 9999
+
+  td:empty:hover::after,
+  th:empty:hover::after
+    top: 4em
+
+  a:not([href]):hover::after,
+  a[href=""]:hover::after
+    content: "Missing href attribute"
+
+  a[href="#"]:hover:after
+    content: "href='#'"
+
+  a[href^="javascript"]:hover:after
+    content: "href has JavaScript"
+
+  a:not([title]):hover::after,
+  a[title=""]:hover::after
+    content: "Missing title attribute"
+
+
+  img:not([alt]):hover::after,
+  img[alt=""]:hover::after
+    content: "Missing alt attribute"
+
+  label:not([for]):hover::after,
+  label[for=""]:hover::after
+    content: "Missing for attribute"
+
+  input:not([name]):hover::after,
+  input[name=""]:hover::after,
+  select:not([name]):hover::after,
+  select[name=""]:hover::after,
+  textarea:not([name]):hover::after,
+  textarea[name=""]:hover::after
+    content: "Missing name attribute"
+
+  abbr:not([title]):hover::after,
+  abbr[title=""]:hover::after
+    content: "Missing title attribute"
+
+  [class=""]:hover::after
+    content: "Blank class attribute"
+
+  [id=""]:hover::after
+    content: "Blank id attribute"
+
+  table:not([summary]):hover::after,
+  table[summary=""]:hover::after
+    content: "Missing summary attribute"
+
+  [style]:hover::after
+    content: "Element has inline styles"
+
+  applet:hover::after,
+  acronym:hover::after,
+  center:hover::after,
+  dir:hover::after,
+  font:hover::after,
+  strike:hover::after,
+  big:hover::after,
+  tt:hover::after,
+  marquee:hover::after,
+  plaintext:hover::after,
+  xmp:hover::after
+    content: "Deprecated or Non-W3C element"
+
+  &[bgproperties]:hover::after
+    content: "Deprecated or Non-W3C body attribute bgproperties"
+
+  &[topmargin]:hover::after,
+  &[rightmargin]:hover::after,
+  &[bottommargin]:hover::after,
+  &[leftmargin]:hover::after
+    content: "Deprecated or Non-W3C body attribute *margin"
+
+  *[bordercolor]:hover::after,
+  *[bordercolordark]:hover::after,
+  *[bordercolorlight]:hover::after
+    content: "Deprecated or Non-W3C body attribute bordercolor"
+
+  table[frame]:hover::after
+    content: "Deprecated or Non-W3C attribute frame"
+
+  div:empty:hover::after,
+  span:empty:hover::after,
+  li:empty:hover::after,
+  p:empty:hover::after,
+  td:empty:hover::after,
+  th:empty:hover::after
+    content: "Empty element!"
+

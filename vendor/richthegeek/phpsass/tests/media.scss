@@ -1,0 +1,15 @@
+$fiver: 500px;
+.sidebar {
+	width: 300px;
+	@media screen and (max-width: 1024px) {
+		width: $fiver;
+	}
+}
+
+@mixin test-mixin() {
+	color: blue;
+}
+
+@media all and (max-width: 800px) {
+	@include test-mixin;
+}

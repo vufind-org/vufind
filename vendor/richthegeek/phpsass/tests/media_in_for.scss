@@ -1,0 +1,10 @@
+$fiver: 500px;
+#gallery {
+    @for $i from 1 through 2 {
+        $screenWidth: $fiver * $i;
+        $galleryWidth: ($fiver * $i) + 20px;
+        @media only screen and (min-width: $screenWidth) {
+            width: $galleryWidth;
+        }
+    }
+}

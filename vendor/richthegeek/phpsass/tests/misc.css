@@ -1,0 +1,85 @@
+/*
+ * Source: http://code.google.com/p/phamlp/issues/detail?id=117;
+ */
+@import url("http://fonts.googleapis.com/css?family=Actor");
+
+/*
+ * Source: http://code.google.com/p/phamlp/issues/detail?id=116;
+ */
+@import url('somefile.css');
+
+/*
+ * Source: http://code.google.com/p/phamlp/issues/detail?id=101;
+ */
+.nav-boolean ol li input:checked + label {
+  color: red; }
+
+/* 
+ * Source: http://code.google.com/p/phamlp/issues/detail?id=100;
+ */
+.zero {
+  margin: 0 0;
+  padding: 0px; }
+
+/*
+ * Source: http://code.google.com/p/phamlp/issues/detail?id=99;
+ */
+/*
+ * Variables
+ */
+.content-navigation {
+  border-color: #3bbfce;
+  color: #2ca2af; }
+
+.border {
+  padding: 16px;
+  margin: 8px;
+  border-color: #3bbfce; }
+
+/*
+ * Nesting
+ */
+table.hl {
+  margin: 2em 0; }
+  table.hl td.ln {
+    text-align: right; }
+
+li {
+  font-family: serif;
+  font-weight: bold;
+  font-size: 1.2em; }
+
+/*
+ * Mixins
+ */
+#data {
+  float: left;
+  margin-left: 10px; }
+  #data th {
+    text-align: center;
+    font-weight: bold; }
+  #data td,
+  #data th {
+    padding: 2px; }
+
+/*
+ * Selector Inheritance
+ */
+.error,
+.madError {
+  border: 1px red;
+  background: #ffdddd; }
+
+.error.intrusion,
+.madError.intrusion {
+  font-size: 1.3em;
+  font-weight: bold; }
+
+.madError {
+  border-width: 3px; }
+
+git20 {
+   *margin-left: 0.991%; }
+
+git30 {
+  width: 30px !important;}

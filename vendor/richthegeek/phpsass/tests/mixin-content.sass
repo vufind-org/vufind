@@ -1,0 +1,10 @@
+$fiver: 500px
+=ie6
+	* html &
+		@content
+
+#logo
+	background-image: url("/images/logo.png")
+	+ie6
+		width: $fiver
+		background-image: url("/images/logo.gif")

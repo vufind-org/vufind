@@ -3487,7 +3487,8 @@ class CAS_Client
             if (empty($_SERVER['HTTP_X_FORWARDED_PORT'])) {
                 $server_port = $_SERVER['SERVER_PORT'];
             } else {
-                $server_port = $_SERVER['HTTP_X_FORWARDED_PORT'];
+                $ports = explode(',', $_SERVER['HTTP_X_FORWARDED_PORT']);
+                $server_port = $ports[0];
             }
 
             if ( ($this->_isHttps() && $server_port!=443)

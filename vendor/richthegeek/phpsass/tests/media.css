@@ -1,0 +1,7 @@
+.sidebar {
+	width: 300px; }
+@media screen and (max-width: 1024px) {
+	.sidebar {
+		width: 500 px; } }
+@media all and (max-width: 800px) {
+	color: blue; }

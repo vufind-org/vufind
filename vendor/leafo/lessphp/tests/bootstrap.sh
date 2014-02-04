@@ -21,7 +21,7 @@ mkdir -p tmp
 
 if [ ! -d 'bootstrap/' ]; then
   echo ">> Cloning bootstrap to bootstrap/"
-  git clone https://github.com/twbs/bootstrap
+  git clone https://github.com/twitter/bootstrap
 fi
 
 echo ">> lessc compilation ($input)"

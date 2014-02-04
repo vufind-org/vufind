@@ -1,0 +1,16 @@
+#introspection {
+  $one: 'hello';
+  $array: 'apple', 'banana', 'pear', 2px, 2, 2em, 4px;
+  append: append($array, $one);
+  content: type-of($array);
+  content: type-of(nth($array, 1));
+  content: type-of(nth($array, 4));
+  content: type-of(nth($array, 5));
+  content: unit(nth($array, 4));
+  content: unit(nth($array, 5));
+  content: unitless(nth($array, 4));
+  content: unitless(nth($array, 5));
+  content: comparable(nth($array, 4), nth($array, 5));
+  content: comparable(nth($array, 4), nth($array, 6));
+  content: comparable(nth($array, 4), nth($array, 7));
+}

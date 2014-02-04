@@ -1,0 +1,24 @@
+#main {
+  width: 15em;
+  color: blue; }
+  #main p {
+    border-style: dotted;
+    border-width: 2px; }
+  #main .cool {
+    width: 100px; }
+
+#left {
+  font-size: 2em;
+  font-weight: bold;
+  float: left; }
+
+  #right .header {
+    border-style: solid; }
+  #right .body {
+    border-style: dotted; }
+  #right .footer {
+    border-style: dashed; }
+
+
+  body[bgproperties] {
+    outline: 2px solid blue; }

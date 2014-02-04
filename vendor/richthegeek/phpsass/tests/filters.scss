@@ -1,0 +1,10 @@
+// https://github.com/richthegeek/phpsass/issues/31
+
+test {
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#feffff', endColorstr='#ccffffff',GradientType=0 );
+	foo: bar;
+}
+
+other {
+	hello: goodbye;
+}

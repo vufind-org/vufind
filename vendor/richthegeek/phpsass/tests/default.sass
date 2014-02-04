@@ -1,0 +1,11 @@
+$var1: blue
+$var1: red !default
+
+$var2: blue
+@import default_imported.sass
+$var3: red !default
+
+body
+	background: $var1
+	color: $var2
+	border-color: $var3

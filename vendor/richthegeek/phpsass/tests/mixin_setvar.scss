@@ -1,0 +1,10 @@
+@mixin layout2($otherFoo) {
+  $foo    : $otherFoo;
+  @content;
+}
+$foo  : 2;
+body {
+    @include layout2(4) {
+        foo: $foo;
+    }
+}

@@ -1,0 +1,18 @@
+.foo body {
+  font: Arial;
+  background: blue; }
+.foo #page {
+  width: 700px;
+  height: 100;
+  line-height: 100%; }
+  .foo #page #header {
+    height: 300px; }
+    .foo #page #header h1 {
+      font-size: 50px;
+      color: blue; }
+.foo #content.user.show #container.top #column.left {
+  width: 100px; }
+.foo #content.user.show #container.top #column.right {
+  width: 600px; }
+.foo #content.user.show #container.bottom {
+  background: brown; }

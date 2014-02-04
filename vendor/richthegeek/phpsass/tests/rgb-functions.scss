@@ -1,0 +1,9 @@
+#rgb {
+  background-color: rgb(255, 243, 108);
+  background-color: rgba(255, 243, 108, .5);
+  background-color: rgba(#fffa2b, .5);
+  background-color: red(#fffa2b);
+  background-color: green(#fffa2b);
+  background-color: blue(#fffa2b);
+  background-color: mix(#fffa2b, rgb(255, 243, 108));
+}

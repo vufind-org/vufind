@@ -1,0 +1,6 @@
+#string {
+  $banana: "banana";
+  $pineapple: pineapple;
+  content: unquote($banana);
+  content: quote($pineapple);
+}

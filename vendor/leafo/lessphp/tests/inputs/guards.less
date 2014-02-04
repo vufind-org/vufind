@@ -1,38 +1,39 @@
 
 .simple(@hi) when (@hi) {
-	simple: yellow;
+	color: yellow;
 }
 
 
 .something(@hi) when (@hi = cool) {
-	something: red;
+	color: red;
 }
 
 .another(@x) when (@x > 10) {
-	another: green;
+	color: green;
 }
 
 
 .flipped(@x) when (@x =< 10) {
-	flipped: teal;
+	color: teal;
 }
 
 .yeah(@arg) when (isnumber(@arg)) {
-	yeah-number: purple @arg;
+	color: purple;
 }
 
 
 .yeah(@arg) when (ispixel(@arg)) {
-	yeah-pixel: silver;
+	color: silver;
 }
 
 
 .hello(@arg) when not (@arg) {
-	hello: orange;
+	color: orange;
 }
 
 dd {
 	.simple(true);
+	.simple(2344px);
 }
 
 b {
@@ -42,16 +43,22 @@ b {
 
 img {
 	.another(12);
+	.another(2);
+
+	.flipped(12);
 	.flipped(2);
 }
 
 body {
+	.yeah("world");
 	.yeah(232px);
 	.yeah(232);
+
+	.hello(true);
 }
 
 .something(@x) when (@x) and (@y), not (@x = what) {
-	something-complex: blue @x;
+	color: blue;
 }
 
 div {
@@ -60,12 +67,19 @@ div {
 
 }
 
+pre {
+	.something(what);
+}
+
+
 .coloras(@g) when (iscolor(@g)) {
 	color: true @g;
 }
 
 link {
 	.coloras(red);
+	.coloras(10px);
+	.coloras(ffjref);
 	.coloras(#fff);
 	.coloras(#fffddd);
 	.coloras(rgb(0,0,0));

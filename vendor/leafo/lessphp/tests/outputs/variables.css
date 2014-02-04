@@ -1,5 +1,5 @@
-outer1: 44px;
-outer2: 44px;
+color: 44px;
+color: 44px;
 .variables {
   width: 14cm;
   height: 24px;
@@ -16,4 +16,5 @@ outer2: 44px;
   color: #888;
   border: 1px solid #3326cc;
   background: rgba(23,68,149,0.5);
+  padding: 4px;
 }

@@ -99,17 +99,20 @@ class HeadLink extends \Zend\View\Helper\HeadLink
         $lesscss->setImportDir(array($home . 'less', APPLICATION_PATH . "/themes/bootstrap/less"));
 
         if (file_exists($cacheFile)) {
-          $cache = unserialize(file_get_contents($cacheFile));
+            $cache = unserialize(file_get_contents($cacheFile));
         } else {
-          $cache = $inputFile;
+            $cache = $inputFile;
         }
 
-        $newCache = $lesscss->cachedCompile($cache);
-        var_dump($newCache['updated']);
+        try {
+            $newCache = $lesscss->cachedCompile($cache, true);
 
-        if (!is_array($cache) || $newCache["updated"] > $cache["updated"]) {
-          file_put_contents($cacheFile, serialize($newCache));
-          file_put_contents($outputFile, $newCache['compiled']);
+            if (!is_array($cache) || $newCache["updated"] > $cache["updated"]) {
+                file_put_contents($cacheFile, serialize($newCache));
+                file_put_contents($outputFile, $newCache['compiled']);
+            }
+        } catch(\Exception $e) {
+            var_dump($e->getMessage());
         }
 
         $urlHelper = $this->getView()->plugin('url');
