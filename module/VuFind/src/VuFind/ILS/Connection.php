@@ -30,7 +30,10 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS;
-use VuFind\Exception\ILS as ILSException, VuFind\ILS\Driver\DriverInterface;
+use VuFind\Exception\ILS as ILSException,
+    VuFind\ILS\Driver\DriverInterface,
+    VuFind\I18n\Translator\TranslatorAwareInterface;
+
 
 /**
  * Catalog Connection Class
@@ -45,8 +48,15 @@ use VuFind\Exception\ILS as ILSException, VuFind\ILS\Driver\DriverInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
-class Connection
+class Connection implements TranslatorAwareInterface
 {
+    /**
+     * Translator (or null if unavailable)
+     *
+     * @var \Zend\I18n\Translator\Translator
+     */
+    protected $translator = null;
+
     /**
      * Has the driver been initialized yet?
      *
@@ -123,6 +133,19 @@ class Connection
                 $this->setDriver($driverManager->get('NoILS'));
             }
         }
+    }
+
+    /**
+     * Set a translator
+     *
+     * @param \Zend\I18n\Translator\Translator $translator Translator
+     *
+     * @return Connection
+     */
+    public function setTranslator(\Zend\I18n\Translator\Translator $translator)
+    {
+        $this->translator = $translator;
+        return $this;
     }
 
     /**
@@ -254,6 +277,11 @@ class Connection
             if (isset($functionConfig['extraHoldFields'])) {
                 $response['extraHoldFields'] = $functionConfig['extraHoldFields'];
             }
+            if (isset($functionConfig['helpText'])) {
+                $response['helpText'] = $this->getHelpText(
+                    $functionConfig['helpText']
+                );
+            }
         } else if ($this->checkCapability('getHoldLink')) {
             $response = array('function' => "getHoldLink");
         }
@@ -322,6 +350,94 @@ class Connection
     }
 
     /**
+     * Check Storage Retrieval Request
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports storage
+     * retrieval requests.
+     *
+     * @param string $functionConfig The storage retrieval request configuration
+     * values
+     *
+     * @return mixed On success, an associative array with specific function keys
+     * and values either for placing requests via a form; on failure, false.
+     */
+    protected function checkMethodStorageRetrievalRequests($functionConfig)
+    {
+        $response = false;
+
+        if ($this->checkCapability('placeStorageRetrievalRequest')
+            && isset($functionConfig['HMACKeys'])
+        ) {
+            $response = array('function' => 'placeStorageRetrievalRequest');
+            $response['HMACKeys'] = explode(':', $functionConfig['HMACKeys']);
+            if (isset($functionConfig['extraFields'])) {
+                $response['extraFields'] = $functionConfig['extraFields'];
+            }
+            if (isset($functionConfig['helpText'])) {
+                $response['helpText'] = $this->getHelpText(
+                    $functionConfig['helpText']
+                );
+            }
+        }
+        return $response;
+    }
+
+    /**
+     * Check Cancel Storage Retrieval Requests
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports Cancelling
+     * Storage Retrieval Requests.
+     *
+     * @param string $functionConfig The Cancel function configuration values
+     *
+     * @return mixed On success, an associative array with specific function keys
+     * and values either for cancelling requests via a form or a URL;
+     * on failure, false.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkMethodcancelStorageRetrievalRequests($functionConfig)
+    {
+        $response = false;
+
+        if (isset($this->config->cancel_storage_retrieval_requests_enabled)
+            && $this->config->cancel_storage_retrieval_requests_enabled
+        ) {
+            if ($this->checkCapability('cancelStorageRetrievalRequests')) {
+                $response = array('function' => 'cancelStorageRetrievalRequests');
+            } elseif ($this->checkCapability('getCancelStorageRetrievalRequestLink')
+            ) {
+                $response = array(
+                    'function' => 'getCancelStorageRetrievalRequestLink'
+                );
+            }
+        }
+        return $response;
+    }
+
+    /**
+     * Get proper help text from the function config
+     *
+     * @param string|array $helpText Help text(s)
+     *
+     * @return string Language-specific help text
+     */
+    protected function getHelpText($helpText)
+    {
+        if (is_array($helpText)) {
+            $lang = !is_null($this->translator)
+                ? $this->translator->getLocale()
+                : 'en';
+            if (isset($helpText[$lang])) {
+                return $helpText[$lang];
+            }
+            return '';
+        }
+        return $helpText;
+    }
+
+    /**
      * Check Request is Valid
      *
      * This is responsible for checking if a request is valid from hold.php
@@ -342,6 +458,30 @@ class Connection
         // all requests are valid - failure can be handled later after the user
         // attempts to place an illegal hold
         return true;
+    }
+
+    /**
+     * Check Storage Retrieval Request is Valid
+     *
+     * This is responsible for checking if a storage retrieval request is valid
+     *
+     * @param string $id     A Bibliographic ID
+     * @param array  $data   Collected Holds Data
+     * @param array  $patron Patron related data
+     *
+     * @return mixed The result of the checkStorageRetrievalRequestIsValid
+     * function if it exists, false if it does not
+     */
+    public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
+    {
+        if ($this->checkCapability('checkStorageRetrievalRequestIsValid')) {
+            return $this->getDriver()->checkStorageRetrievalRequestIsValid(
+                $id, $data, $patron
+            );
+        }
+        // If the driver has no checkStorageRetrievalRequestIsValid method, we
+        // will assume that the request is not valid
+        return false;
     }
 
     /**
@@ -440,6 +580,7 @@ class Connection
         // If we got this far, the feature is unsupported:
         return false;
     }
+
     /**
      * Default method -- pass along calls to the driver if available; return
      * false otherwise.  This allows custom functions to be implemented in

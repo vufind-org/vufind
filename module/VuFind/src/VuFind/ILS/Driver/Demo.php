@@ -183,9 +183,11 @@ class Demo extends AbstractBase
      */
     protected function getRandomBibId()
     {
-        // Let's keep away from both ends of the index
+        // Let's keep away from both ends of the index, but only take any of the
+        // first 500 000 records to avoid slow Solr queries.
+        $position = rand()%(min(array(500000, $this->totalRecords-1)));
         $result = $this->searchService->search(
-            'Solr', new Query('*:*'), rand()%($this->totalRecords-1), 1
+            'Solr', new Query('*:*'), $position, 1
         );
         if (count($result) === 0) {
             throw new \Exception('Solr index is empty!');
@@ -198,10 +200,11 @@ class Demo extends AbstractBase
      *
      * @param string $id     set id
      * @param string $number set number for multiple items
+     * @param array  $patron Patron data
      *
      * @return array
      */
-    protected function getRandomHolding($id, $number)
+    protected function getRandomHolding($id, $number, $patron)
     {
         $status = $this->getFakeStatus();
         return array(
@@ -215,7 +218,11 @@ class Demo extends AbstractBase
             'callnumber'   => $this->getFakeCallNum(),
             'duedate'      => '',
             'is_holdable'  => true,
-            'addLink'      => rand()%10 == 0 ? 'block' : true
+            'addLink'      => $patron ? rand()%10 == 0 ? 'block' : true : false,
+            'storageRetrievalRequest' => 'auto',
+            'addStorageRetrievalRequestLink' => $patron
+                ? rand()%10 == 0 ? 'block' : 'check'
+                : false
         );
     }
 
@@ -225,12 +232,13 @@ class Demo extends AbstractBase
      * This is responsible for retrieving the status information of a certain
      * record.
      *
-     * @param string $id The record id to retrieve the holdings for
+     * @param string $id     The record id to retrieve the holdings for
+     * @param array  $patron Patron data
      *
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus($id)
+    public function getStatus($id, $patron = false)
     {
         $id = $id.""; // make it a string for consistency
         // How many items are there?
@@ -254,7 +262,7 @@ class Demo extends AbstractBase
 
         // Create a fake entry for each one
         for ($i = 0; $i < $records; $i++) {
-            $holding[] = $this->getRandomHolding($id, $i+1);
+            $holding[] = $this->getRandomHolding($id, $i+1, $patron);
         }
         return $holding;
     }
@@ -367,7 +375,7 @@ class Demo extends AbstractBase
     public function getHolding($id, $patron = false)
     {
         // Get basic status info:
-        $status = $this->getStatus($id);
+        $status = $this->getStatus($id, $patron);
 
         // Add notes and summary:
         foreach (array_keys($status) as $i) {
@@ -560,6 +568,57 @@ class Demo extends AbstractBase
             $this->session->holds = $holdList;
         }
         return $this->session->holds;
+    }
+
+    /**
+     * Get Patron Storage Retrieval Requests
+     *
+     * This is responsible for retrieving all call slips by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return mixed        Array of the patron's holds
+     */
+    public function getMyStorageRetrievalRequests($patron)
+    {
+        if (!isset($this->session->storageRetrievalRequests)) {
+            // How many items are there?  %10 - 1 = 10% chance of none,
+            // 90% of 1-9 (give or take some odd maths)
+            $items = rand()%10 - 1;
+
+            // Do some initial work in solr so we aren't repeating it inside this
+            // loop.
+            $this->prepSolr();
+
+            $list = new ArrayObject();
+            for ($i = 0; $i < $items; $i++) {
+                $status = rand()%5;
+                $currentItem = array(
+                    "type"     => 'C',
+                    "location" => $this->getFakeLoc(false),
+                    "expire"   => date("j-M-y", strtotime("now + 30 days")),
+                    "created"   =>
+                        date("j-M-y", strtotime("now - ".(rand()%10)." days")),
+                    "reqnum"   => sprintf("%06d", $i),
+                    "available" => $status == 1,
+                    "canceled" => $status == 2,
+                    "item_id" => $i,
+                    "reqnum" => $i,
+                    "volume" => '',
+                    "processed" => ($status == 1 || rand(1, 3) == 3)
+                        ? date("j-M-y")
+                        : ''
+                );
+                if ($this->idsInMyResearch) {
+                    $currentItem['id'] = $this->getRandomBibId();
+                } else {
+                    $currentItem['title'] = 'Demo Title ' . $i;
+                }
+                $list->append($currentItem);
+            }
+            $this->session->storageRetrievalRequests = $list;
+        }
+        return $this->session->storageRetrievalRequests;
     }
 
     /**
@@ -872,6 +931,69 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Cancel Storage Retrieval Request
+     *
+     * Attempts to Cancel a Storage Retrieval Request on a particular item. The
+     * data in $cancelDetails['details'] is determined by
+     * getCancelStorageRetrievalRequestDetails().
+     *
+     * @param array $cancelDetails An array of item and patron data
+     *
+     * @return array               An array of data on each request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function cancelStorageRetrievalRequests($cancelDetails)
+    {
+        // Rewrite the items in the session, removing those the user wants to
+        // cancel.
+        $newRequests = new ArrayObject();
+        $retVal = array('count' => 0, 'items' => array());
+        foreach ($this->session->storageRetrievalRequests as $current) {
+            if (!in_array($current['reqnum'], $cancelDetails['details'])) {
+                $newRequests->append($current);
+            } else {
+                // 50% chance of cancel failure for testing purposes
+                if (rand() % 2) {
+                    $retVal['count']++;
+                    $retVal['items'][$current['item_id']] = array(
+                        'success' => true,
+                        'status' => 'storage_retrieval_request_cancel_success'
+                    );
+                } else {
+                    $newRequests->append($current);
+                    $retVal['items'][$current['item_id']] = array(
+                        'success' => false,
+                        'status' => 'storage_retrieval_request_cancel_fail',
+                        'sysMessage' =>
+                            'Demonstrating failure; keep trying and ' .
+                            'it will work eventually.'
+                    );
+                }
+            }
+        }
+
+        $this->session->storageRetrievalRequests = $newRequests;
+        return $retVal;
+    }
+
+    /**
+     * Get Cancel Storage Retrieval Request Details
+     *
+     * In order to cancel a hold, Voyager requires the patron details an item ID
+     * and a recall ID. This function returns the item id and recall id as a string
+     * separated by a pipe, which is then submitted as form data in Hold.php. This
+     * value is then extracted by the CancelHolds function.
+     *
+     * @param array $details An array of item data
+     *
+     * @return string Data for use in a form field
+     */
+    public function getCancelStorageRetrievalRequestDetails($details)
+    {
+        return $details['reqnum'];
+    }
+
+    /**
      * Renew My Items
      *
      * Function for attempting to renew a patron's items.  The data in
@@ -950,6 +1072,25 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Check if hold or recall available
+     *
+     * This is responsible for determining if an item is requestable
+     *
+     * @param string $id     The Bib ID
+     * @param array  $data   An Array of item data
+     * @param patron $patron An array of patron data
+     *
+     * @return string True if request is valid, false if not
+     */
+    public function checkRequestIsValid($id, $data, $patron)
+    {
+        if (rand() % 10 == 0) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Place Hold
      *
      * Attempts to place a hold or recall on a particular item and returns
@@ -990,7 +1131,7 @@ class Demo extends AbstractBase
                     "U", $holdDetails['requiredBy']
                 );
             } catch (DateException $e) {
-                // Hold Date is invalid
+                // Expiration date is invalid
                 return array(
                     'success' => false, 'sysMessage' => 'hold_date_invalid'
                 );
@@ -1009,7 +1150,99 @@ class Demo extends AbstractBase
                 "expire"   => date("j-M-y", $expire),
                 "create"   => date("j-M-y"),
                 "reqnum"   => sprintf("%06d", $nextId),
-                "item_id" => $nextId
+                "item_id" => $nextId,
+                "volume" => '',
+                "processed" => ''
+            )
+        );
+
+        return array('success' => true);
+    }
+
+    /**
+     * Check if storage retrieval request available
+     *
+     * This is responsible for determining if an item is requestable
+     *
+     * @param string $id     The Bib ID
+     * @param array  $data   An Array of item data
+     * @param patron $patron An array of patron data
+     *
+     * @return string True if request is valid, false if not
+     */
+    public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
+    {
+        if (rand() % 10 == 0) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Place a Storage Retrieval Request
+     *
+     * Attempts to place a request on a particular item and returns
+     * an array with result details.
+     *
+     * @param array $details An array of item and patron data
+     *
+     * @return mixed An array of data on the request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function placeStorageRetrievalRequest($details)
+    {
+        // Simulate failure:
+        if (rand() % 2) {
+            return array(
+                "success" => false,
+                "sysMessage" =>
+                    'Demonstrating failure; keep trying and ' .
+                    'it will work eventually.'
+            );
+        }
+
+        if (!isset($this->session->storageRetrievalRequests)) {
+            $this->session->storageRetrievalRequests = new ArrayObject();
+        }
+        $lastRequest = count($this->session->storageRetrievalRequests) - 1;
+        $nextId = $lastRequest >= 0
+            ? $this->session->storageRetrievalRequests[$lastRequest]['item_id'] + 1
+            : 0;
+        
+        // Figure out appropriate expiration date:
+        if (!isset($details['requiredBy'])
+            || empty($details['requiredBy'])
+        ) {
+            $expire = strtotime("now + 30 days");
+        } else {
+            try {
+                $expire = $this->dateConverter->convertFromDisplayDate(
+                    "U", $details['requiredBy']
+                );
+            } catch (DateException $e) {
+                // Expiration date is invalid
+                return array(
+                    'success' => false,
+                    'sysMessage' => 'storage_retrieval_request_date_invalid'
+                );
+            }
+        }
+        if ($expire <= time()) {
+            return array(
+                'success' => false,
+                'sysMessage' => 'storage_retrieval_request_date_past'
+            );
+        }
+        
+        $this->session->storageRetrievalRequests->append(
+            array(
+                "id"       => $details['id'],
+                "location" => $details['pickUpLocation'],
+                "expire"   => date("j-M-y", $expire),
+                "created"  => date("j-M-y"),
+                "processed" => rand()%3 == 0 ? date("j-M-y", $expire) : '',
+                "reqnum"   => sprintf("%06d", $nextId),
+                "item_id"  => $nextId
             )
         );
 
@@ -1029,6 +1262,14 @@ class Demo extends AbstractBase
             return array(
                 'HMACKeys' => 'id',
                 'extraHoldFields' => 'comments:pickUpLocation:requiredByDate'
+            );
+        }
+        if ($function == 'StorageRetrievalRequests') {
+            return array(
+                'HMACKeys' => 'id',
+                'extraFields' => 'comments:pickUpLocation:requiredByDate:item-issue',
+                'helpText' => 'This is a storage retrieval request help text'
+                    . ' with some <span style="color: red">styling</span>.'
             );
         }
         return array();

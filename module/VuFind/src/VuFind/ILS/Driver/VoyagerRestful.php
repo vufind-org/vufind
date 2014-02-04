@@ -101,6 +101,13 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     protected $holdCheckLimit;
 
     /**
+     * The maximum number of call slips to check at a time (0 = no limit)
+     *
+     * @var int
+     */
+    protected $callSlipCheckLimit;
+
+    /**
      * Should we check renewal status before presenting a list of items or only
      * after user requests renewal?
      *
@@ -183,6 +190,9 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         $this->holdCheckLimit
             = isset($this->config['Holds']['holdCheckLimit'])
             ? $this->config['Holds']['holdCheckLimit'] : "15";
+        $this->callSlipCheckLimit
+            = isset($this->config['CallSlips']['callSlipCheckLimit'])
+            ? $this->config['CallSlips']['callSlipCheckLimit'] : "15";
         $this->checkRenewalsUpFront
             = isset($this->config['Renewals']['checkUpFront'])
             ? $this->config['Renewals']['checkUpFront'] : true;
@@ -258,6 +268,32 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     }
 
     /**
+     * Support method for VuFind Storage Retrieval Request (Call Slip) Logic. 
+     * Take a holdings row array and determine whether or not a call slip is 
+     * allowed based on the valid_call_slip_locations settings in configuration
+     * file
+     *
+     * @param array $holdingsRow The holdings row to analyze.
+     *
+     * @return bool Whether an item is requestable
+     */
+    protected function isStorageRetrievalRequestAllowed($holdingsRow)
+    {
+        $holdingsRow = $holdingsRow['_fullRow'];
+        if (isset($this->config['CallSlips']['valid_item_types'])) {
+            $validTypes = explode(
+                ':', $this->config['CallSlips']['valid_item_types']
+            );
+
+            $type = $holdingsRow['TEMP_ITEM_TYPE_ID']
+                ? $holdingsRow['TEMP_ITEM_TYPE_ID']
+                : $holdingsRow['ITEM_TYPE_ID'];
+            return in_array($type, $validTypes);
+        }
+        return true;
+    }
+    
+    /**
      * Protected support method for getHolding.
      *
      * @param array $id A Bibliographic id
@@ -268,7 +304,8 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     {
         $sqlArray = parent::getHoldingItemsSQL($id);
         $sqlArray['expressions'][] = "ITEM.ITEM_TYPE_ID";
-
+        $sqlArray['expressions'][] = "ITEM.TEMP_ITEM_TYPE_ID";
+        
         return $sqlArray;
     }
 
@@ -302,6 +339,8 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             $is_borrowable = isset($row['_fullRow']['ITEM_TYPE_ID'])
                 ? $this->isBorrowable($row['_fullRow']['ITEM_TYPE_ID']) : false;
             $is_holdable = $this->isHoldable($row['_fullRow']['STATUS_ARRAY']);
+            $isStorageRetrievalRequestAllowed
+                = $this->isStorageRetrievalRequestAllowed($row);
             // If the item cannot be borrowed or if the item is not holdable,
             // set is_holdable to false
             if (!$is_borrowable || !$is_holdable) {
@@ -310,7 +349,10 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
 
             // Only used for driver generated hold links
             $addLink = false;
-
+            $addStorageRetrievalLink = false;
+            $holdType = '';
+            $storageRetrieval = '';
+            
             // Hold Type - If we have patron data, we can use it to determine if a
             // hold link should be shown
             if ($patron && $this->holdsMode == "driver") {
@@ -328,11 +370,36 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                 $holdType = "auto";
             }
 
+            if ($isStorageRetrievalRequestAllowed) {
+                if ($patron) {
+                    if ($i < $this->callSlipCheckLimit 
+                        && $this->callSlipCheckLimit != "0"
+                    ) {
+                        $storageRetrieval = $this->checkItemRequests(
+                            $patron['id'], 
+                            'callslip',
+                            $row['id'],
+                            $row['item_id']
+                        );
+                        $addStorageRetrievalLink = $storageRetrieval
+                            ? true
+                            : false;
+                    } else {
+                        $storageRetrieval = "auto";
+                        $addStorageRetrievalLink = "check";
+                    }
+                } else {
+                    $storageRetrieval = "auto";
+                }
+            }
+            
             $holding[$i] += array(
                 'is_holdable' => $is_holdable,
                 'holdtype' => $holdType,
                 'addLink' => $addLink,
-                'level' => "copy"
+                'level' => "copy",
+                'storageRetrievalRequest' => $storageRetrieval,
+                'addStorageRetrievalRequestLink' => $addStorageRetrievalLink
             );
             unset($holding[$i]['_fullRow']);
         }
@@ -365,6 +432,36 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         return true;
     }
 
+    /**
+     * checkStorageRetrievalRequestIsValid
+     *
+     * This is responsible for determining if an item is requestable
+     *
+     * @param string $id     The Bib ID
+     * @param array  $data   An Array of item data
+     * @param patron $patron An array of patron data
+     *
+     * @return string True if request is valid, false if not
+     */
+    public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
+    {
+        if ($this->checkAccountBlocks($patron['id'])) {
+            return 'block';
+        }
+        
+        $level = isset($data['level']) ? $data['level'] : "copy";
+        $itemID = ($level != 'title' && isset($data['item_id']))
+            ? $data['item_id']
+            : false;
+        $result = $this->checkItemRequests(
+            $patron['id'], 'callslip', $id, $itemID
+        );
+        if (!$result || $result == 'block') {
+            return $result;
+        }
+        return true;
+    }
+    
     /**
      * Determine Renewability
      *
@@ -623,7 +720,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      *
      * @return string    An XML string
      */
-
     protected function buildBasicXML($xml)
     {
         $xmlString = "";
@@ -633,10 +729,14 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
 
             foreach ($nodes as $nodeName => $nodeValue) {
                 $xmlString .= "<" . $nodeName . ">";
-                $xmlString .= htmlentities($nodeValue, ENT_COMPAT, "UTF-8");
+                $xmlString .= htmlspecialchars($nodeValue, ENT_COMPAT, "UTF-8");
+                // Split out any attributes
+                $nodeName = strtok($nodeName, ' ');
                 $xmlString .= "</" . $nodeName . ">";
             }
 
+            // Split out any attributes
+            $root = strtok($root, ' '); 
             $xmlString .= "</" . $root . ">";
         }
 
@@ -1216,5 +1316,282 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     {
         $renewDetails = $checkOutDetails['item_id'];
         return $renewDetails;
+    }
+    
+    /**
+     * Get Patron Storage Retrieval Requests (Call Slips). Gets local call slips 
+     * from the database, then remote callslips via the API.
+     *
+     * This is responsible for retrieving all call slips by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return mixed        Array of the patron's storage retrieval requests.
+     */
+    public function getMyStorageRetrievalRequests($patron)
+    {
+        $requests = parent::getMyStorageRetrievalRequests($patron);
+        
+        // Build Hierarchy
+        $hierarchy = array(
+            'patron' =>  $patron['id'],
+            'circulationActions' => 'requests',
+            'callslips' => false
+        );
+
+        // Add Required Params
+        $params = array(
+            "patron_homedb" => $this->ws_patronHomeUbId,
+            "view" => "full"
+        );
+
+        $results = $this->makeRequest($hierarchy, $params);
+
+        $replyCode = (string)$results->{'reply-code'};
+        if ($replyCode != 0 && $replyCode != 8) {
+            throw new Exception('System error fetching call slips');
+        }
+        if (isset($results->callslips->institution)) {
+            foreach ($results->callslips->institution as $institution) {
+                if ((string)$institution->attributes()->id == 'LOCAL') {
+                    // Ignore local callslips, we have them already
+                    continue;
+                }
+                foreach ($institution->callslip as $callslip) {
+                    $item = $callslip->requestItem;
+                    $requests[] = array(
+                        'id' => '',
+                        'type' => (string)$item->holdType,
+                        'location' => (string)$item->pickupLocation,
+                        'expire' => (string)$item->expiredDate 
+                            ? $this->dateFormat->convertToDisplayDate(
+                                'Y-m-d', (string)$item->expiredDate
+                            )
+                            : '',  
+                        // Looks like expired date shows creation date for 
+                        // call slip requests, but who knows
+                        'created' => (string)$item->expiredDate 
+                            ? $this->dateFormat->convertToDisplayDate(
+                                'Y-m-d', (string)$item->expiredDate
+                            )
+                            : '',  
+                        'position' => (string)$item->queuePosition,
+                        'available' => (string)$item->status == '4',
+                        'reqnum' => (string)$item->holdRecallId,
+                        'item_id' => (string)$item->itemId,
+                        'volume' => '',
+                        'publication_year' => '',
+                        'title' => (string)$item->itemTitle,
+                        'institution_id' => (string)$institution->attributes()->id,
+                        'institution_name' => (string)$item->dbName,
+                        'institution_dbkey' => (string)$item->dbKey,
+                        'processed' => substr((string)$item->statusText, 0, 6) 
+                            == 'Filled'
+                            ? $this->dateFormat->convertToDisplayDate(
+                                'Y-m-d', substr((string)$item->statusText, 7)
+                            ) 
+                            : '',
+                        'canceled' => substr((string)$item->statusText, 0, 8) 
+                            == 'Canceled'
+                            ? $this->dateFormat->convertToDisplayDate(
+                                'Y-m-d', substr((string)$item->statusText, 9)
+                            ) 
+                            : ''
+                    );
+                }
+            }
+        }
+        return $requests;        
+    }
+    
+    /**
+     * Place Storage Retrieval Request (Call Slip)
+     *
+     * Attempts to place a call slip request on a particular item and returns
+     * an array with result details
+     *
+     * @param array $details An array of item and patron data
+     *
+     * @return mixed An array of data on the request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function placeStorageRetrievalRequest($details)
+    {
+        $patron = $details['patron'];
+        $level = isset($details['level']) && !empty($details['level'])
+            ? $details['level'] : 'copy';
+        $itemId = isset($details['item_id']) ? $details['item_id'] : false;
+        $mfhdId = isset($details['holdings_id']) ? $details['holdings_id'] : false;
+        $comment = $details['comment'];
+        $bibId = $details['id'];
+        $pickUpLocation = !empty($details['pickUpLocation'])
+            ? $details['pickUpLocation'] : '';
+        
+        // Attempt Request
+        $hierarchy = array();
+
+        // Build Hierarchy
+        $hierarchy['record'] = $bibId;
+
+        if ($itemId && $level != 'title') {
+            $hierarchy['items'] = $itemId;
+        }
+
+        $hierarchy['callslip'] = false;
+
+        // Add Required Params
+        $params = array(
+            'patron' => $patron['id'],
+            'patron_homedb' => $this->ws_patronHomeUbId,
+            'view' => 'full'
+        );
+
+        if ('title' == $level) {
+            $xml['call-slip-title-parameters'] = array(
+                'comment' => $comment,
+                'reqinput field="1"' => $details['volume'],
+                'reqinput field="2"' => $details['issue'],
+                'reqinput field="3"' => $details['year'],
+                'dbkey' => $this->ws_dbKey,
+                'mfhdId' => $mfhdId
+            );
+            // It seems Voyager doesn't currently (v8.1) use pickupLocation,
+            // but we'll handle it just in case it becomes available later.  
+            if ($pickUpLocation) {
+                $xml['call-slip-title-parameters']['pickupLocation']
+                    = $pickUpLocation;    
+            }
+        } else {
+            $xml['call-slip-parameters'] = array(
+                'comment' => $comment,
+                'dbkey' => $this->ws_dbKey
+            );
+            // It seems Voyager doesn't currently (v8.1) use pickupLocation,
+            // but we'll handle it just in case it becomes available later.  
+            if ($pickUpLocation) {
+                $xml['call-slip-parameters']['pickupLocation']
+                    = $pickUpLocation;    
+            }
+        }
+        
+        // Generate XML
+        $requestXML = $this->buildBasicXML($xml);
+
+        // Get Data
+        $result = $this->makeRequest($hierarchy, $params, 'PUT', $requestXML);
+
+        if ($result) {
+            // Process
+            $result = $result->children();
+            $reply = (string)$result->{'reply-text'};
+
+            $responseNode = 'title' == $level
+                ? 'create-call-slip-title'
+                : 'create-call-slip';
+            $note = (isset($result->$responseNode))
+                ? trim((string)$result->$responseNode->note) : false;
+
+            // Valid Response
+            if ($reply == 'ok' && $note == 'Your request was successful.') {
+                $response['success'] = true;
+                $response['status'] = 'storage_retrieval_request_place_success';
+            } else {
+                // Failed
+                $response['sysMessage'] = $note;
+            }
+            return $response;
+        }
+        
+        return $this->holdError('storage_retrieval_request_error_blocked');
+    }
+
+    /**
+     * Cancel Storage Retrieval Requests (Call Slips)
+     *
+     * Attempts to Cancel a call slip on a particular item. The
+     * data in $cancelDetails['details'] is determined by
+     * getCancelStorageRetrievalRequestDetails().
+     *
+     * @param array $cancelDetails An array of item and patron data
+     *
+     * @return array               An array of data on each request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function cancelStorageRetrievalRequests($cancelDetails)
+    {
+        $details = $cancelDetails['details'];
+        $patron = $cancelDetails['patron'];
+        $count = 0;
+        $response = array();
+
+        foreach ($details as $cancelDetails) {
+            list($dbKey, $itemId, $cancelCode) = explode("|", $cancelDetails);
+
+             // Create Rest API Cancel Key
+            $cancelID = ($dbKey ? $dbKey : $this->ws_dbKey) . "|" . $cancelCode;
+
+            // Build Hierarchy
+            $hierarchy = array(
+                'patron' => $patron['id'],
+                'circulationActions' => 'requests',
+                'callslips' => $cancelID
+            );
+
+            // Add Required Params
+            $params = array(
+                'patron_homedb' => $this->ws_patronHomeUbId,
+                'view' => 'full'
+            );
+
+            // Get Data
+            $cancel = $this->makeRequest($hierarchy, $params, 'DELETE');
+
+            if ($cancel) {
+                // Process Cancel
+                $cancel = $cancel->children();
+                $reply = (string)$cancel->{'reply-text'};
+                $count = ($reply == 'ok') ? $count + 1 : $count;
+
+                $response[$itemId] = array(
+                    'success' => ($reply == 'ok') ? true : false,
+                    'status' => ($reply == 'ok')
+                        ? 'storage_retrieval_request_cancel_success'
+                        : 'storage_retrieval_request_cancel_fail',
+                    'sysMessage' => ($reply == 'ok') ? false : $reply,
+                );
+
+            } else {
+                $response[$itemId] = array(
+                    'success' => false,
+                    'status' => 'storage_retrieval_request_cancel_fail'
+                );
+            }
+        }
+        $result = array('count' => $count, 'items' => $response);
+        return $result;
+    }
+    
+    /**
+     * Get Cancel Storage Retrieval Request (Call Slip) Details
+     *
+     * In order to cancel a call slip, Voyager requires the item ID and a 
+     * request ID. This function returns the item id and call slip id as a 
+     * string separated by a pipe, which is then submitted as form data. This
+     * value is then extracted by the CancelStorageRetrievalRequests function.
+     *
+     * @param array $details An array of item data
+     *
+     * @return string Data for use in a form field
+     */
+    public function getCancelStorageRetrievalRequestDetails($details)
+    {
+        $details 
+            = (isset($details['institution_dbkey']) 
+                ? $details['institution_dbkey'] 
+                : ''
+            )
+            . '|' . $details['item_id']
+            . '|' . $details['reqnum'];
+        return $details;
     }
 }
