@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "025d41c2c07842265033d0852de084b8",
+    "hash": "db1ceb3d7096d3aa5f66fcc2b1cff836",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -11,12 +11,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/aferrandini/PHPQRCode.git",
-                "reference": "3c1c0454d43710ab5bbe19a51ad4cb41c22e3d46"
+                "reference": "1cedb4ccd266b18dcc8c734555deb5f21315426b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aferrandini/PHPQRCode/zipball/3c1c0454d43710ab5bbe19a51ad4cb41c22e3d46",
-                "reference": "3c1c0454d43710ab5bbe19a51ad4cb41c22e3d46",
+                "url": "https://api.github.com/repos/aferrandini/PHPQRCode/zipball/1cedb4ccd266b18dcc8c734555deb5f21315426b",
+                "reference": "1cedb4ccd266b18dcc8c734555deb5f21315426b",
                 "shasum": ""
             },
             "require": {
@@ -47,7 +47,7 @@
                 "php",
                 "qrcode"
             ],
-            "time": "2013-07-08 09:39:08"
+            "time": "2013-12-16 07:21:25"
         },
         {
             "name": "jasig/phpcas",
@@ -55,12 +55,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Jasig/phpCAS.git",
-                "reference": "673feb404d3c07869ed7e186128d70a8c85473d6"
+                "reference": "27a971e0beee74b7b62c5d669be0823e585dfe82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Jasig/phpCAS/zipball/673feb404d3c07869ed7e186128d70a8c85473d6",
-                "reference": "673feb404d3c07869ed7e186128d70a8c85473d6",
+                "url": "https://api.github.com/repos/Jasig/phpCAS/zipball/27a971e0beee74b7b62c5d669be0823e585dfe82",
+                "reference": "27a971e0beee74b7b62c5d669be0823e585dfe82",
                 "shasum": ""
             },
             "require": {
@@ -98,7 +98,7 @@
                 "source": "https://github.com/Jasig/phpCAS/tree/master",
                 "issues": "https://github.com/Jasig/phpCAS/issues"
             },
-            "time": "2013-10-01 20:06:01"
+            "time": "2013-12-08 09:32:42"
         },
         {
             "name": "johnwohlers/sip2",
@@ -118,16 +118,16 @@
         },
         {
             "name": "leafo/lessphp",
-            "version": "v0.4.0",
+            "version": "v0.3.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/leafo/lessphp.git",
-                "reference": "51f3f06f0fe78a722dabfd14578444bdd078d9de"
+                "reference": "a11a6141b5715162b933c405379765d817891c5d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/leafo/lessphp/zipball/51f3f06f0fe78a722dabfd14578444bdd078d9de",
-                "reference": "51f3f06f0fe78a722dabfd14578444bdd078d9de",
+                "url": "https://api.github.com/repos/leafo/lessphp/zipball/a11a6141b5715162b933c405379765d817891c5d",
+                "reference": "a11a6141b5715162b933c405379765d817891c5d",
                 "shasum": ""
             },
             "type": "library",
@@ -155,7 +155,7 @@
             ],
             "description": "lessphp is a compiler for LESS written in PHP.",
             "homepage": "http://leafo.net/lessphp/",
-            "time": "2013-08-09 17:09:19"
+            "time": "2013-03-02 16:13:31"
         },
         {
             "name": "mobileesp/mdetect",
@@ -227,10 +227,10 @@
         },
         {
             "name": "pear-pear.php.net/File_MARC",
-            "version": "1.0.1",
+            "version": "1.1.1",
             "dist": {
                 "type": "file",
-                "url": "http://pear.php.net/get/File_MARC-1.0.1.tgz",
+                "url": "http://pear.php.net/get/File_MARC-1.1.1.tgz",
                 "reference": null,
                 "shasum": null
             },
@@ -238,7 +238,7 @@
                 "php": ">=5.3.0.0"
             },
             "replace": {
-                "pear-pear/file_marc": "== 1.0.1.0"
+                "pear-pear/file_marc": "== 1.1.1.0"
             },
             "type": "pear-library",
             "autoload": {
@@ -482,17 +482,17 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.3.7",
+            "version": "v2.4.1",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "c1bda5b459d792cb253de12c65beba3040163b2b"
+                "reference": "4e1a237fc48145fae114b96458d799746ad89aa0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/c1bda5b459d792cb253de12c65beba3040163b2b",
-                "reference": "c1bda5b459d792cb253de12c65beba3040163b2b",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/4e1a237fc48145fae114b96458d799746ad89aa0",
+                "reference": "4e1a237fc48145fae114b96458d799746ad89aa0",
                 "shasum": ""
             },
             "require": {
@@ -501,7 +501,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.3-dev"
+                    "dev-master": "2.4-dev"
                 }
             },
             "autoload": {
@@ -525,7 +525,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com",
-            "time": "2013-10-17 11:48:01"
+            "time": "2013-12-28 08:12:03"
         },
         {
             "name": "zendframework/zendframework",
