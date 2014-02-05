@@ -4,7 +4,7 @@
 
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = $this->getLastSearchLink($this->transEsc('Search'), '', '<span>&gt;</span>') .
-        $this->recordLink()->getBreadcrumb($this->driver) . '<span>&gt;</span><em>' . $this->transEsc('request_place_text') . '</em>';
+        $this->recordLink()->getBreadcrumb($this->driver) . '<span>&gt;</span><em>' . $this->transEsc('storage_retrieval_request_place_text') . '</em>';
 ?>
 <h2><?=$this->transEsc('storage_retrieval_request_place_text')?></h2>
 <? if ($this->helpText): ?>
