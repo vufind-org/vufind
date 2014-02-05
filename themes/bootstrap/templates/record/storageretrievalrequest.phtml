@@ -5,7 +5,7 @@
     // Set up breadcrumbs:
     $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '<span class="divider">&gt;</span> </li>')
         . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '<span class="divider">&gt;</span> </li>'
-        . '<li class="active">' . $this->transEsc('request_place_text') . '</li>';
+        . '<li class="active">' . $this->transEsc('storage_retrieval_request_place_text') . '</li>';
 ?>
 <p class="lead"><?=$this->transEsc('storage_retrieval_request_place_text')?></p>
 <?=$this->flashmessages()?>
