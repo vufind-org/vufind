@@ -30,10 +30,10 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS;
-use VuFind\Exception\ILS as ILSException, 
+use VuFind\Exception\ILS as ILSException,
     VuFind\ILS\Driver\DriverInterface,
     VuFind\I18n\Translator\TranslatorAwareInterface;
-    
+
 
 /**
  * Catalog Connection Class
@@ -56,7 +56,7 @@ class Connection implements TranslatorAwareInterface
      * @var \Zend\I18n\Translator\Translator
      */
     protected $translator = null;
-    
+
     /**
      * Has the driver been initialized yet?
      *
@@ -140,14 +140,14 @@ class Connection implements TranslatorAwareInterface
      *
      * @param \Zend\I18n\Translator\Translator $translator Translator
      *
-     * @return Voyager
+     * @return Connection
      */
     public function setTranslator(\Zend\I18n\Translator\Translator $translator)
     {
         $this->translator = $translator;
         return $this;
     }
-    
+
     /**
      * Set the hold configuration for the connection.
      *
@@ -280,7 +280,7 @@ class Connection implements TranslatorAwareInterface
             if (isset($functionConfig['helpText'])) {
                 $response['helpText'] = $this->getHelpText(
                     $functionConfig['helpText']
-                ); 
+                );
             }
         } else if ($this->checkCapability('getHoldLink')) {
             $response = array('function' => "getHoldLink");
@@ -377,17 +377,17 @@ class Connection implements TranslatorAwareInterface
             if (isset($functionConfig['helpText'])) {
                 $response['helpText'] = $this->getHelpText(
                     $functionConfig['helpText']
-                );  
+                );
             }
         }
         return $response;
     }
-    
+
     /**
      * Check Cancel Storage Retrieval Requests
      *
      * A support method for checkFunction(). This is responsible for checking
-     * the driver configuration to determine if the system supports Cancelling 
+     * the driver configuration to determine if the system supports Cancelling
      * Storage Retrieval Requests.
      *
      * @param string $functionConfig The Cancel function configuration values
@@ -415,12 +415,12 @@ class Connection implements TranslatorAwareInterface
         }
         return $response;
     }
-    
+
     /**
      * Get proper help text from the function config
-     * 
+     *
      * @param string|array $helpText Help text(s)
-     * 
+     *
      * @return string Language-specific help text
      */
     protected function getHelpText($helpText)
@@ -433,10 +433,10 @@ class Connection implements TranslatorAwareInterface
                 return $helpText[$lang];
             }
             return '';
-        } 
+        }
         return $helpText;
     }
-    
+
     /**
      * Check Request is Valid
      *
@@ -469,7 +469,7 @@ class Connection implements TranslatorAwareInterface
      * @param array  $data   Collected Holds Data
      * @param array  $patron Patron related data
      *
-     * @return mixed The result of the checkStorageRetrievalRequestIsValid 
+     * @return mixed The result of the checkStorageRetrievalRequestIsValid
      * function if it exists, false if it does not
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
@@ -479,11 +479,11 @@ class Connection implements TranslatorAwareInterface
                 $id, $data, $patron
             );
         }
-        // If the driver has no checkStorageRetrievalRequestIsValid method, we 
+        // If the driver has no checkStorageRetrievalRequestIsValid method, we
         // will assume that the request is not valid
         return false;
     }
-    
+
     /**
      * Get Holds Mode
      *

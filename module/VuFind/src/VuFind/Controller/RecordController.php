@@ -191,11 +191,11 @@ class RecordController extends AbstractRecord
     public function storageRetrievalRequestAction()
     {
         $driver = $this->loadRecord();
-        
+
         // If we're not supposed to be here, give up now!
         $catalog = $this->getILS();
         $checkRequests = $catalog->checkFunction(
-            'StorageRetrievalRequests', 
+            'StorageRetrievalRequests',
             $driver->getUniqueID()
         );
         if (!$checkRequests) {
@@ -275,7 +275,7 @@ class RecordController extends AbstractRecord
         } catch (\Exception $e) {
             $defaultPickup = false;
         }
-        
+
         return $this->createViewModel(
             array(
                 'gatheredDetails' => $gatheredDetails,

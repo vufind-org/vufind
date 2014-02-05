@@ -578,7 +578,7 @@ class Voyager extends AbstractBase
     {
         // Expressions
         $sqlExpressions = array(
-            "BIB_ITEM.BIB_ID", "MFHD_ITEM.MFHD_ID",
+            "BIB_ITEM.BIB_ID",
             "ITEM_BARCODE.ITEM_BARCODE", "ITEM.ITEM_ID",
             "ITEM.ON_RESERVE", "ITEM.ITEM_SEQUENCE_NUMBER",
             "ITEM.RECALLS_PLACED", "ITEM.HOLDS_PLACED",
@@ -649,35 +649,29 @@ class Voyager extends AbstractBase
     protected function getHoldingNoItemsSQL($id)
     {
         // Expressions
-        $sqlExpressions = array(
-            "BIB_MFHD.BIB_ID",
-            "MFHD_MASTER.MFHD_ID",
-            "MFHD_DATA.RECORD_SEGMENT", "null as ITEM_ENUM",
-            "'N' as ON_RESERVE", "1 as ITEM_SEQUENCE_NUMBER",
-            "'No information available' as status",
-            "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
-                "LOCATION.LOCATION_NAME) as location",
-            "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
-            "BIB_MFHD.BIB_ID", "null as duedate",
-            "0 AS TEMP_LOCATION"
-        );
+        $sqlExpressions = array("null as ITEM_BARCODE", "null as ITEM_ID",
+                                "MFHD_DATA.RECORD_SEGMENT", "null as ITEM_ENUM",
+                                "'N' as ON_RESERVE", "1 as ITEM_SEQUENCE_NUMBER",
+                                "'No information available' as status",
+                                "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
+                                    "LOCATION.LOCATION_NAME) as location",
+                                "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
+                                "BIB_MFHD.BIB_ID", "null as duedate",
+                                "0 AS TEMP_LOCATION"
+                               );
 
         // From
-        $sqlFrom = array(
-            $this->dbName.".BIB_MFHD", $this->dbName.".LOCATION",
-            $this->dbName.".MFHD_MASTER", $this->dbName.".MFHD_DATA"
-        );
+        $sqlFrom = array($this->dbName.".BIB_MFHD", $this->dbName.".LOCATION",
+                         $this->dbName.".MFHD_MASTER", $this->dbName.".MFHD_DATA"
+                        );
 
         // Where
-        $sqlWhere = array(
-            "BIB_MFHD.BIB_ID = :id",
-            "LOCATION.LOCATION_ID = MFHD_MASTER.LOCATION_ID",
-            "MFHD_MASTER.MFHD_ID = BIB_MFHD.MFHD_ID",
-            "MFHD_DATA.MFHD_ID = BIB_MFHD.MFHD_ID",
-            "MFHD_MASTER.SUPPRESS_IN_OPAC='N'",
-            "NOT EXISTS (SELECT MFHD_ID FROM MFHD_ITEM" .
-            " WHERE MFHD_ITEM.MFHD_ID=MFHD_MASTER.MFHD_ID)"
-        );
+        $sqlWhere = array("BIB_MFHD.BIB_ID = :id",
+                          "LOCATION.LOCATION_ID = MFHD_MASTER.LOCATION_ID",
+                          "MFHD_MASTER.MFHD_ID = BIB_MFHD.MFHD_ID",
+                          "MFHD_DATA.MFHD_ID = BIB_MFHD.MFHD_ID",
+                          "MFHD_MASTER.SUPPRESS_IN_OPAC='N'"
+                         );
 
         // Order
         $sqlOrder = array("MFHD_DATA.MFHD_ID", "MFHD_DATA.SEQNUM");
@@ -716,13 +710,12 @@ class Voyager extends AbstractBase
 
             // Concat wrapped rows (MARC data more than 300 bytes gets split
             // into multiple rows)
-            $rowId = isset($row['ITEM_ID']) ? $row['ITEM_ID'] : $row['MFHD_ID'];
-            if (isset($data[$rowId][$number])) {
+            if (isset($data[$row['ITEM_ID']][$number])) {
                 // We don't want to concatenate the same MARC information to
                 // itself over and over due to a record with multiple status
                 // codes -- we should only concat wrapped rows for the FIRST
                 // status code we encounter!
-                $record = & $data[$rowId][$number];
+                $record = & $data[$row['ITEM_ID']][$number];
                 if ($record['STATUS_ARRAY'][0] == $row['STATUS']) {
                     $record['RECORD_SEGMENT'] .= $row['RECORD_SEGMENT'];
                 }
@@ -736,8 +729,8 @@ class Voyager extends AbstractBase
             } else {
                 // This is the first time we've encountered this row number --
                 // initialize the row and start an array of statuses.
-                $data[$rowId][$number] = $row;
-                $data[$rowId][$number]['STATUS_ARRAY']
+                $data[$row['ITEM_ID']][$number] = $row;
+                $data[$row['ITEM_ID']][$number]['STATUS_ARRAY']
                     = array($row['STATUS']);
             }
         }
@@ -853,7 +846,6 @@ class Voyager extends AbstractBase
     {
         return array(
             'id' => $sqlRow['BIB_ID'],
-            'holdings_id' => $sqlRow['MFHD_ID'],
             'status' => $sqlRow['STATUS'],
             'location' => $sqlRow['TEMP_LOCATION'] > 0
                 ? $this->getLocationName($sqlRow['TEMP_LOCATION'])
@@ -974,8 +966,8 @@ class Voyager extends AbstractBase
         $sqlArrayNoItems = $this->getHoldingNoItemsSQL($id);
         $possibleQueries[] = $this->buildSqlFromArray($sqlArrayNoItems);
 
-        // Loop through the queries and collect all results
-        $data = array();
+        // Loop through the possible queries and try each in turn -- the first one
+        // that yields results will cause us to break out of the loop.
         foreach ($possibleQueries as $sql) {
             // Execute SQL
             try {
@@ -989,7 +981,13 @@ class Voyager extends AbstractBase
                 $sqlRows[] = $row;
             }
 
-            $data = array_merge($data, $this->getHoldingData($sqlRows));            
+            $data = $this->getHoldingData($sqlRows);
+
+            // If we found data, we can leave the foreach loop -- we don't need to
+            // try any more queries.
+            if (count($data) > 0) {
+                break;
+            }
         }
         return $this->processHoldingData($data, $patron);
     }
@@ -1573,7 +1571,7 @@ class Voyager extends AbstractBase
         $sqlOrderBy = array(
             "to_char(CALL_SLIP.DATE_REQUESTED, 'YYYY-MM-DD HH24:MI:SS')"
         );
-        
+
         // Bind
         $sqlBind = array(':id' => $patron['id']);
 
@@ -1613,7 +1611,7 @@ class Voyager extends AbstractBase
                 "m-d-y", $sqlRow['STATUS_DATE']
             );
         }
-        
+
         $createDate = $this->translate("Unknown");
         // Convert Voyager Format to display format
         if (!empty($sqlRow['CREATE_DATE'])) {
@@ -1644,7 +1642,7 @@ class Voyager extends AbstractBase
                 ? $sqlRow['TITLE'] : $sqlRow['TITLE_BRIEF']
         );
     }
-    
+
     /**
      * Get Patron Storage Retrieval Requests
      *
@@ -1673,7 +1671,7 @@ class Voyager extends AbstractBase
             throw new ILSException($e->getMessage());
         }
     }
-    
+
     /**
      * Get Patron Profile
      *

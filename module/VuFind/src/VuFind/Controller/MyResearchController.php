@@ -907,7 +907,7 @@ class MyResearchController extends AbstractBase
             $current = $this->storageRetrievalRequests()->addCancelDetails(
                 $catalog, $current, $cancelStatus, $patron
             );
-            if ($cancelStatus 
+            if ($cancelStatus
                 && $cancelStatus['function'] != "getCancelStorageRetrievalRequestLink"
                 && isset($current['cancel_details'])
             ) {

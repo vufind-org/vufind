@@ -606,7 +606,7 @@ class Demo extends AbstractBase
                     "reqnum" => $i,
                     "volume" => '',
                     "processed" => ($status == 1 || rand(1, 3) == 3)
-                        ? date("j-M-y") 
+                        ? date("j-M-y")
                         : ''
                 );
                 if ($this->idsInMyResearch) {
@@ -620,7 +620,7 @@ class Demo extends AbstractBase
         }
         return $this->session->storageRetrievalRequests;
     }
-    
+
     /**
      * Get Patron Transactions
      *
@@ -1070,7 +1070,7 @@ class Demo extends AbstractBase
     {
         return $checkOutDetails['item_id'];
     }
-    
+
     /**
      * Check if hold or recall available
      *
@@ -1089,7 +1089,7 @@ class Demo extends AbstractBase
         }
         return true;
     }
-    
+
     /**
      * Place Hold
      *
@@ -1131,7 +1131,7 @@ class Demo extends AbstractBase
                     "U", $holdDetails['requiredBy']
                 );
             } catch (DateException $e) {
-                // Hold Date is invalid
+                // Expiration date is invalid
                 return array(
                     'success' => false, 'sysMessage' => 'hold_date_invalid'
                 );
@@ -1177,7 +1177,7 @@ class Demo extends AbstractBase
         }
         return true;
     }
-    
+
     /**
      * Place a Storage Retrieval Request
      *
@@ -1206,12 +1206,12 @@ class Demo extends AbstractBase
         }
         $lastRequest = count($this->session->storageRetrievalRequests) - 1;
         $nextId = $lastRequest >= 0
-            ? $this->session->storageRetrievalRequests[$lastRequest]['item_id'] + 1 
+            ? $this->session->storageRetrievalRequests[$lastRequest]['item_id'] + 1
             : 0;
         
         // Figure out appropriate expiration date:
-        if (!isset($holdDetails['requiredBy'])
-            || empty($holdDetails['requiredBy'])
+        if (!isset($details['requiredBy'])
+            || empty($details['requiredBy'])
         ) {
             $expire = strtotime("now + 30 days");
         } else {
@@ -1220,7 +1220,7 @@ class Demo extends AbstractBase
                     "U", $details['requiredBy']
                 );
             } catch (DateException $e) {
-                // Hold Date is invalid
+                // Expiration date is invalid
                 return array(
                     'success' => false,
                     'sysMessage' => 'storage_retrieval_request_date_invalid'
