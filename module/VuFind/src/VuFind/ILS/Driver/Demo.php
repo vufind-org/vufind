@@ -75,6 +75,13 @@ class Demo extends AbstractBase
     protected $idsInMyResearch = true;
 
     /**
+     * Should we support Storage Retrieval Requests?
+     *
+     * @var bool
+     */
+    protected $storageRetrievalRequests = true;
+    
+    /**
      * Date converter object
      *
      * @var \VuFind\Date\Converter
@@ -108,7 +115,10 @@ class Demo extends AbstractBase
         if (isset($this->config['Catalog']['idsInMyResearch'])) {
             $this->idsInMyResearch = $this->config['Catalog']['idsInMyResearch'];
         }
-
+        if (isset($this->config['Catalog']['storageRetrievalRequests'])) {
+            $this->storageRetrievalRequests
+                = $this->config['Catalog']['storageRetrievalRequests'];
+        }
         // Establish a namespace in the session for persisting fake data (to save
         // on Solr hits):
         $this->session = new SessionContainer('DemoDriver');
@@ -1172,7 +1182,7 @@ class Demo extends AbstractBase
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
-        if (rand() % 10 == 0) {
+        if (!$this->storageRetrievalRequests || rand() % 10 == 0) {
             return false;
         }
         return true;
@@ -1191,6 +1201,12 @@ class Demo extends AbstractBase
      */
     public function placeStorageRetrievalRequest($details)
     {
+        if (!$this->storageRetrievalRequests) {
+            return array(
+                "success" => false,
+                "sysMessage" => 'Storage Retrieval Requests are disabled.'
+            );
+        }
         // Simulate failure:
         if (rand() % 2) {
             return array(
@@ -1264,7 +1280,9 @@ class Demo extends AbstractBase
                 'extraHoldFields' => 'comments:pickUpLocation:requiredByDate'
             );
         }
-        if ($function == 'StorageRetrievalRequests') {
+        if ($function == 'StorageRetrievalRequests'
+            && $this->storageRetrievalRequests
+        ) {
             return array(
                 'HMACKeys' => 'id',
                 'extraFields' => 'comments:pickUpLocation:requiredByDate:item-issue',
