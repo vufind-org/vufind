@@ -100,22 +100,9 @@ $config = array(
     ),
     'controller_plugins' => array(
         'factories' => array(
-            'holds' => function ($sm) {
-                return new \VuFind\Controller\Plugin\Holds(
-                    $sm->getServiceLocator()->get('VuFind\HMAC')
-                );
-            },
-            'storageRetrievalRequests' => function ($sm) {
-                return new \VuFind\Controller\Plugin\StorageRetrievalRequests(
-                    $sm->getServiceLocator()->get('VuFind\HMAC')
-                );
-            },
-            'reserves' => function ($sm) {
-                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-                $useIndex = isset($config->Reserves->search_enabled)
-                    && $config->Reserves->search_enabled;
-                return new \VuFind\Controller\Plugin\Reserves($useIndex);
-            },
+            'holds' => array('VuFind\Controller\Plugin\Factory', 'getHolds'),
+            'storageRetrievalRequests' => array('VuFind\Controller\Plugin\Factory', 'getStorageRetrievalRequests'),
+            'reserves' => array('VuFind\Controller\Plugin\Factory', 'getReserves'),
         ),
         'invokables' => array(
             'db-upgrade' => 'VuFind\Controller\Plugin\DbUpgrade',
