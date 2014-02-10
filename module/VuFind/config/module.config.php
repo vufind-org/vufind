@@ -62,26 +62,10 @@ $config = array(
     ),
     'controllers' => array(
         'factories' => array(
-            'browse' => function ($sm) {
-                return new \VuFind\Controller\BrowseController(
-                    $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-                );
-            },
-            'collection' => function ($sm) {
-                return new \VuFind\Controller\CollectionController(
-                    $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-                );
-            },
-            'collections' => function ($sm) {
-                return new \VuFind\Controller\CollectionsController(
-                    $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-                );
-            },
-            'record' => function ($sm) {
-                return new \VuFind\Controller\RecordController(
-                    $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-                );
-            },
+            'browse' => array('VuFind\Controller\Factory', 'getBrowseController'),
+            'collection' => array('VuFind\Controller\Factory', 'getCollectionController'),
+            'collections' => array('VuFind\Controller\Factory', 'getCollectionsController'),
+            'record' => array('VuFind\Controller\Factory', 'getRecordController'),
         ),
         'invokables' => array(
             'ajax' => 'VuFind\Controller\AjaxController',
