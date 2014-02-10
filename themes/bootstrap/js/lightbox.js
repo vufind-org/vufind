@@ -384,23 +384,24 @@ function cartSubmit($form) {
       break;
     case 'print':
       //redirect page
-      var checks = $form.find('input[type="checkbox"]:checked');
-      var data = {};
-      for(var i=0;i<checks.length;i++) {
-        data[checks[i].name] = checks[i].value;
-      }
-      $.ajax({
-        url:path+'/Cart/PrintCart',
-        data:data,
-        success:function(html) {
-          var newDoc = document.open("text/html", "replace");
-          newDoc.write(html);
-          newDoc.close();
-        },
-        error:function(d,e) {
-          console.log(d,e); // Error reporting
+      var checks = $form.find('input.checkbox-select-item:checked');
+      if(checks.length == 0) {
+        $.ajax({
+          url:path+'/Cart/PrintCart',
+          data:{},
+          success:function(html) {
+            var newDoc = document.open("text/html", "replace");
+            newDoc.write(html);
+            newDoc.close();
+          },
+        });
+      } else {
+        var url = path+'/Records/Home?print=true';
+        for(var i=0;i<checks.length;i++) {
+          url += '&id[]='+checks[i].value;
         }
-      });
+        window.location.replace(url);
+      }
       break;
   }
 }
