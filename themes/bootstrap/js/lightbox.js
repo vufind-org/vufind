@@ -397,7 +397,7 @@ function cartSubmit($form) {
             var newDoc = document.open("text/html", "replace");
             newDoc.write(html);
             newDoc.close();
-          },
+          }
         });
       } else {
         var url = path+'/Records/Home?print=true';
