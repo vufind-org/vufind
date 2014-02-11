@@ -125,4 +125,14 @@ class Params extends \VuFind\Search\Solr\Params
             ? $searchSettings->Recommend->toArray()
             : array('side' => array('CollectionSideFacets:Facets::Collection:true'));
     }
+
+    /**
+     * Get collection field
+     *
+     * @return string
+     */
+    public function getCollectionField()
+    {
+        return $this->collectionField;
+    }
 }
