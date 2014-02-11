@@ -149,6 +149,16 @@ abstract class Results implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Override a helper object.
+     *
+     * @return void
+     */
+    public function setHelper($key, $value)
+    {
+        $this->helpers[$key] = $value;
+    }
+
+    /**
      * Actually execute the search.
      *
      * @return void
