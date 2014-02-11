@@ -12,22 +12,23 @@
 
 <form class="form-horizontal" method="post" action="<?=$this->url('cart-save')?>" name="bulkSave">
   <? $idParams = array(); ?>
+  <? foreach ($this->records as $current): ?>
+    <? $idParams[] = urlencode('ids[]') . '=' . urlencode($current->getResourceSource() . '|' . $current->getUniqueId()) ?>
+    <input type="hidden" name="ids[]" value="<?=$this->escapeHtml($current->getResourceSource() . '|' . $current->getUniqueId())?>" />
+  <? endforeach; ?>
   <div class="control-group">
     <label class="control-label"><?=$this->transEsc('Title')?></label>
     <div class="controls">
-    <? if(count($this->records) > 1): ?>
+    <? if(count($this->records) > 3): ?>
       <div class="item-list">
         <ul>
           <? foreach ($this->records as $current): ?>
-            <? $idParams[] = urlencode('ids[]') . '=' . urlencode($current->getResourceSource() . '|' . $current->getUniqueId()) ?>
             <li><?=$this->escapeHtml($current->getBreadcrumb())?></li>
-            <input type="hidden" name="ids[]" value="<?=$this->escapeHtml($current->getResourceSource() . '|' . $current->getUniqueId())?>" />
           <? endforeach; ?>
         </ul>
       </div>
     <? else: ?>
       <span class="uneditable-input"><?=$this->records[0]->getBreadcrumb() ?></span>
-      <input type="hidden" name="ids[]" value="<?=$this->escapeHtml($this->records[0]->getResourceSource() . '|' . $this->records[0]->getUniqueId())?>" />
     <? endif; ?>
     </div>
   </div>
@@ -60,7 +61,6 @@
     </div>
   </div>
 </form>
-
 <?
   $items = $this->transEsc('items');
   $script = <<<JS

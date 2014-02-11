@@ -42,6 +42,7 @@ function changeModalContent(html) {
  */
 function closeLightbox() {
   $('#modal').modal('hide');
+  cartAction = false;
 }
 /**
  * This function is attached to the lightbox close event,
@@ -170,8 +171,10 @@ function getLightboxByUrl(url, post, callback, pop) {
         changeModalContent(html);
       }
     },
-    error:function(d,e) {
+    error:function(d,e, xhr, $form) {
+      //window.location.replace(url);
       console.log(url,e,d); // Error reporting
+      console.log(xhr);
     }
   });
   // Store current "page" context for empty targets
@@ -203,24 +206,16 @@ function getLightbox(controller, action, get, post, callback, pop) {
 /**
  * Call this function after a form is submitted
  */
-function ajaxSubmit($form, callback) {
-  // Default callback is to close
-  if(!callback) {
-    if(callbackStack.length > 0) {
-      callback = callbackStack.pop();
-      //console.log("Pop:",callback);
-    } else {
-      callback = closeLightbox;
-    }
-  }
+var cartAction = false;
+function getDataFromForm($form) {
   // Gather all the data
   var inputs = $form.find('*[name]');
   var data = {};
   for(var i=0;i<inputs.length;i++) {
     var currentName = inputs[i].name;
     var array = currentName.substring(currentName.length-2) == '[]';
-    if(array && !data[currentName]) {
-      data[currentName] = [];
+    if(array && !data[currentName.substring(0,currentName.length-2)]) {
+      data[currentName.substring(0,currentName.length-2)] = [];
     }
     // Submit buttons
     if(inputs[i].type == 'submit') {
@@ -231,7 +226,8 @@ function ajaxSubmit($form, callback) {
     } else if(inputs[i].type == 'radio') {
       if(inputs[i].checked) {
         if(array) {
-          data[currentName][data[currentName].length] = inputs[i].value;
+          var n = currentName.substring(0,currentName.length-2);
+          data[n].push(inputs[i].value);
         } else {
           data[currentName] = inputs[i].value;
         }
@@ -239,12 +235,27 @@ function ajaxSubmit($form, callback) {
     // Checkboxes
     } else if($(inputs[i]).attr('type') != 'checkbox' || inputs[i].checked) {
       if(array) {
-        data[currentName][data[currentName].length] = inputs[i].value;
+        var n = currentName.substring(0,currentName.length-2);
+        data[n].push(inputs[i].value);
       } else {
         data[currentName] = inputs[i].value;
       }
     }
   }
+  return data;
+}
+function ajaxSubmit($form, callback) {
+  cartAction = $form.attr('name');
+  // Default callback is to close
+  if(!callback) {
+    if(callbackStack.length > 0) {
+      callback = callbackStack.pop();
+      //console.log("Pop:",callback);
+    } else {
+      callback = closeLightbox;
+    }
+  }
+  var data = getDataFromForm($form);
   // If we have an action: parse
   var POST = $form.attr('method') && $form.attr('method').toUpperCase() == 'POST';
   if($form.attr('action')) {
@@ -271,6 +282,7 @@ function ajaxSubmit($form, callback) {
  */
 // Logging in
 function ajaxLogin(form) {
+  console.log('ajaxLogin');
   $.ajax({
     url: path + '/AJAX/JSON?method=getSalt',
     dataType: 'json',
@@ -347,19 +359,15 @@ function ajaxLogin(form) {
                   }
                 });
               }
-
               // and we update the modal
-              if(callbackStack.length > 0) {
+              if(!cartAction && callbackStack.length > 0) {
                 var callback = callbackStack.pop();
                 //console.log("Pop:",callback);
-                if(callback == changeModalContent) { // We don't have good data for changeModalContent
-                  getLightboxByUrl(lastLightboxURL, lastLightboxPOST);
-                } else {
-                  callback();
-                }
+                callback();
               } else if(lastLightboxPOST && lastLightboxPOST['loggingin']) {
                 closeLightbox();
               } else {
+              console.log('lastLightboxPOST', lastLightboxPOST);
                 getLightboxByUrl(lastLightboxURL, lastLightboxPOST);
               }
             } else {
@@ -375,31 +383,12 @@ function ajaxLogin(form) {
 }
 // Cart submission
 function cartSubmit($form) {
-  var submit = $form.find('input[type="submit"][clicked=true]').attr('name');
+  var submit = $form.find('input[type="submit"][clicked=true]').attr('name'); 
   switch(submit) {
-    case 'saveCart':
-    case 'email':
-    case 'export':
-      ajaxSubmit($form, changeModalContent);
-      break;
-    case 'delete':
-    case 'empty':
-      ajaxSubmit($form, closeLightbox);
-      break;
     case 'print':
       //redirect page
       var checks = $form.find('input.checkbox-select-item:checked');
-      if(checks.length == 0) {
-        $.ajax({
-          url:path+'/Cart/PrintCart',
-          data:{},
-          success:function(html) {
-            var newDoc = document.open("text/html", "replace");
-            newDoc.write(html);
-            newDoc.close();
-          }
-        });
-      } else {
+      if(checks.length > 0) {
         var url = path+'/Records/Home?print=true';
         for(var i=0;i<checks.length;i++) {
           url += '&id[]='+checks[i].value;
@@ -407,6 +396,8 @@ function cartSubmit($form) {
         window.location.replace(url);
       }
       break;
+    default:
+      ajaxSubmit($form, changeModalContent);
   }
 }
 
@@ -458,12 +449,38 @@ function registerModalForms(modal) {
     cartSubmit($(this));
     return false;
   });
-  $(modal).find('form[name="newList"]').unbind('submit').submit(function(){
-    ajaxSubmit($(this), changeModalContent);
+  $(modal).find('form[name="bulkSave"]').unbind('submit').submit(function(){
+    ajaxSubmit($(this), function() {
+      changeModalContent('<div class="alert alert-info">'+vufindString['bulk_save_success']+'</div><button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>');
+    });
+    callbackStack.unshift(function() {
+      window.location.replace(path+'/MyResearch/MyList/'+lastLightboxPOST['list']);
+    });
+    return false;
+  });
+  $(modal).find('form[name="exportForm"]').unbind('submit').submit(function(){
+    var form = $(this);
+    $.ajax({
+      url: path + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
+      type:'POST',
+      dataType:'json',
+      data:getDataFromForm($(this)),
+      success:function(data) {
+        changeModalContent(data.data.result_additional);
+      },
+      error:function(d,e) {
+        console.log(d,e); // Error reporting
+      }
+    });
+    //ajaxSubmit($(this), changeModalContent);
     return false;
   });
   $(modal).find('form[name="loginForm"]').unbind('submit').submit(function(){
     ajaxLogin(this);
+    return false;
+  });
+  $(modal).find('form[name="newList"]').unbind('submit').submit(function(){
+    ajaxSubmit($(this), changeModalContent);
     return false;
   });
 }

@@ -14,17 +14,49 @@
 <? if (!empty($this->exportOptions)): ?>
   <form class="form-inline" method="post" action="<?=$this->url('cart-export')?>" name="exportForm" title="<?=$this->transEsc('Export Items')?>">
     <? foreach ($this->records as $current): ?>
-      <strong><?=$this->transEsc('Title')?>:</strong> <?=$this->escapeHtml($current->getBreadcrumb())?><br />
       <input type="hidden" name="ids[]" value="<?=$this->escapeHtml($current->getResourceSource() . '|' . $current->getUniqueId())?>" />
     <? endforeach; ?>
-    <br />
-    <label for="format"><?=$this->transEsc('Format')?>:</label>
-    <select name="format" id="format">
-      <? foreach ($this->exportOptions as $exportOption): ?>
-        <option value="<?=$this->escapeHtml($exportOption)?>"><?=$this->transEsc($exportOption)?></option>
-      <? endforeach; ?>
-    </select>
-    <br/><br/>
-    <input class="btn" type="submit" name="submit" value="<?=$this->transEsc('Export') ?>"/>
+    <div class="control-group">
+      <label class="control-label"><?=$this->transEsc('Title')?></label>
+      <div class="controls">
+      <? if(count($this->records) > 3): ?>
+        <div class="item-list">
+          <ul>
+            <? foreach ($this->records as $current): ?>
+              <li><?=$this->escapeHtml($current->getBreadcrumb())?></li>
+            <? endforeach; ?>
+          </ul>
+        </div>
+      <? else: ?>
+        <span class="uneditable-input"><?=$this->records[0]->getBreadcrumb() ?></span>
+      <? endif; ?>
+      </div>
+    </div>
+    <div class="control-group">
+      <label class="control-label" for="format"><?=$this->transEsc('Format')?>:</label>
+      <div class="controls">
+        <select name="format" id="format">
+          <? foreach ($this->exportOptions as $exportOption): ?>
+            <option value="<?=$this->escapeHtml($exportOption)?>"><?=$this->transEsc($exportOption)?></option>
+          <? endforeach; ?>
+        </select>
+      </div>
+    </div>
+    <div class="control-group">
+      <div class="controls">
+        <input class="btn" type="submit" name="submit" value="<?=$this->transEsc('Export')?>"/>
+      </div>
+    </div>
   </form>
 <? endif; ?>
+<?
+  $items = $this->transEsc('items');
+  $script = <<<JS
+    var list = $('.item-list');
+    var items = list.find('li').length;
+    var bubble = list.html();
+    list.html('<span class="btn">'+items+' {$items}</span>');
+    list.find('.btn').popover({html:true,content:bubble});
+JS;
+?>
+<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>
