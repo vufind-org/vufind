@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "db1ceb3d7096d3aa5f66fcc2b1cff836",
+    "hash": "f6c95054366a34a12d4951ab5262d3a8",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -156,6 +156,52 @@
             "description": "lessphp is a compiler for LESS written in PHP.",
             "homepage": "http://leafo.net/lessphp/",
             "time": "2013-03-02 16:13:31"
+        },
+        {
+            "name": "leafo/scssphp",
+            "version": "v0.0.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/leafo/scssphp.git",
+                "reference": "a06d702ebf9fabb22542bbb27cc12a905813bb6d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/leafo/scssphp/zipball/a06d702ebf9fabb22542bbb27cc12a905813bb6d",
+                "reference": "a06d702ebf9fabb22542bbb27cc12a905813bb6d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.2.0"
+            },
+            "require-dev": {
+                "php": ">=5.3.0",
+                "phpunit/phpunit": "3.7.*"
+            },
+            "bin": [
+                "pscss"
+            ],
+            "type": "library",
+            "autoload": {
+                "classmap": [
+                    "scss.inc.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT",
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Leaf Corcoran",
+                    "email": "leafot@gmail.com",
+                    "homepage": "http://leafo.net"
+                }
+            ],
+            "description": "scssphp is a compiler for SCSS written in PHP.",
+            "homepage": "http://leafo.net/scssphp/",
+            "time": "2013-12-23 23:28:02"
         },
         {
             "name": "mobileesp/mdetect",
