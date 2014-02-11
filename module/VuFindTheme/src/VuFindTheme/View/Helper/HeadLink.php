@@ -131,11 +131,13 @@ class HeadLink extends \Zend\View\Helper\HeadLink
         $relPath = 'sass/' . $file;
         $currentTheme = $this->themeInfo->findContainingTheme($relPath);
         $home = APPLICATION_PATH . "/themes/$currentTheme/";
+        $inputFile  = $home . $relPath;
         list($fileName, ) = explode('.', $file);
+        $outputFile = $home . 'css/sass/' . $fileName . '.css';
         
-        $sass = new \SassParser;
-        $css = $sass->toCss($home . $relPath);
-        $int = file_put_contents($home . 'css/sass/' . $fileName . '.css', $css);
+        $sass = new \scssc;
+        $css = $sass->compile($inputFile);
+        $int = file_put_contents($outputFile, $css);
 
         $urlHelper = $this->getView()->plugin('url');
         $this->prependStylesheet($urlHelper('home') . "themes/$currentTheme/css/sass/" . $fileName . '.css');

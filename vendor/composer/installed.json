@@ -508,59 +508,6 @@
         }
     },
     {
-        "name": "richthegeek/phpsass",
-        "version": "2012-06-27",
-        "version_normalized": "2012-06-27",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/richthegeek/phpsass.git",
-            "reference": "3ed604470630a11897e580f9551ad83dde715c1f"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/richthegeek/phpsass/zipball/3ed604470630a11897e580f9551ad83dde715c1f",
-            "reference": "3ed604470630a11897e580f9551ad83dde715c1f",
-            "shasum": ""
-        },
-        "time": "2013-06-27 14:12:37",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                "script/",
-                "renderers/",
-                "tree/",
-                "SassException.php",
-                "SassFile.php",
-                "SassParser.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD-2-Clause"
-        ],
-        "authors": [
-            {
-                "name": "Richard Lyon",
-                "homepage": "https://github.com/richthegeek"
-            },
-            {
-                "name": "Sebastian Siemssen",
-                "homepage": "https://twitter.com/thefubhy"
-            },
-            {
-                "name": "Steve Jones",
-                "homepage": "https://github.com/darthsteven"
-            },
-            {
-                "name": "Sam Richard",
-                "homepage": "https://github.com/snugug"
-            }
-        ],
-        "description": "PHPSass is a PHP compiler for SASS, a popular CSS pre-processor language.",
-        "homepage": "http://phpsass.com"
-    },
-    {
         "name": "aferrandini/phpqrcode",
         "version": "dev-master",
         "version_normalized": "9999999-dev",
@@ -778,5 +725,106 @@
         ],
         "description": "lessphp is a compiler for LESS written in PHP.",
         "homepage": "http://leafo.net/lessphp/"
+    },
+    {
+        "name": "richthegeek/phpsass",
+        "version": "2012-06-27",
+        "version_normalized": "2012-06-27",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/richthegeek/phpsass.git",
+            "reference": "3ed604470630a11897e580f9551ad83dde715c1f"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/richthegeek/phpsass/zipball/3ed604470630a11897e580f9551ad83dde715c1f",
+            "reference": "3ed604470630a11897e580f9551ad83dde715c1f",
+            "shasum": ""
+        },
+        "time": "2013-06-27 14:12:37",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "script/",
+                "renderers/",
+                "tree/",
+                "SassException.php",
+                "SassFile.php",
+                "SassParser.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-2-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Richard Lyon",
+                "homepage": "https://github.com/richthegeek"
+            },
+            {
+                "name": "Sebastian Siemssen",
+                "homepage": "https://twitter.com/thefubhy"
+            },
+            {
+                "name": "Steve Jones",
+                "homepage": "https://github.com/darthsteven"
+            },
+            {
+                "name": "Sam Richard",
+                "homepage": "https://github.com/snugug"
+            }
+        ],
+        "description": "PHPSass is a PHP compiler for SASS, a popular CSS pre-processor language.",
+        "homepage": "http://phpsass.com"
+    },
+    {
+        "name": "leafo/scssphp",
+        "version": "v0.0.9",
+        "version_normalized": "0.0.9.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/leafo/scssphp.git",
+            "reference": "a06d702ebf9fabb22542bbb27cc12a905813bb6d"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/leafo/scssphp/zipball/a06d702ebf9fabb22542bbb27cc12a905813bb6d",
+            "reference": "a06d702ebf9fabb22542bbb27cc12a905813bb6d",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.2.0"
+        },
+        "require-dev": {
+            "php": ">=5.3.0",
+            "phpunit/phpunit": "3.7.*"
+        },
+        "time": "2013-12-23 23:28:02",
+        "bin": [
+            "pscss"
+        ],
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "scss.inc.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT",
+            "GPL-3.0"
+        ],
+        "authors": [
+            {
+                "name": "Leaf Corcoran",
+                "email": "leafot@gmail.com",
+                "homepage": "http://leafo.net"
+            }
+        ],
+        "description": "scssphp is a compiler for SCSS written in PHP.",
+        "homepage": "http://leafo.net/scssphp/"
     }
 ]
