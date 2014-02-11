@@ -423,6 +423,11 @@ function registerModalEvents(modal) {
   $(modal).find('.checkbox-select-all').change(function() {
     $(this).closest('.modal-body').find('.checkbox-select-item').attr('checked', this.checked);
   });
+  $(modal).find('.checkbox-select-item').change(function() {
+    if(!this.checked) { // Uncheck all selected if one is unselected
+      $(this).closest('.modal-body').find('.checkbox-select-all').attr('checked', false);
+    }
+  });
   // Highlight which submit button clicked
   $(modal).find("form input[type=submit]").click(function() {
     $(this).attr("clicked", "true");
@@ -441,7 +446,7 @@ function registerModalEvents(modal) {
 function registerModalForms(modal) {
   // Default
   $(modal).find('form').submit(function(){
-    ajaxSubmit($(this), closeLightbox);
+    ajaxSubmit($(this), changeModalContent);
     return false;
   });
   // Action specific
@@ -477,10 +482,6 @@ function registerModalForms(modal) {
   });
   $(modal).find('form[name="loginForm"]').unbind('submit').submit(function(){
     ajaxLogin(this);
-    return false;
-  });
-  $(modal).find('form[name="newList"]').unbind('submit').submit(function(){
-    ajaxSubmit($(this), changeModalContent);
     return false;
   });
 }

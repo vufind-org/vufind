@@ -123,6 +123,11 @@ $(document).ready(function() {
   $('.checkbox-select-all').change(function() {
     $(this).closest('form').find('.checkbox-select-item').attr('checked', this.checked);
   });
+  $(modal).find('.checkbox-select-item').change(function() {
+    if(!this.checked) {
+      $(this).closest('form').find('.checkbox-select-all').attr('checked', false);
+    }
+  });
   
   // handle QR code links
   $('a.qrcodeLink').click(function() {
