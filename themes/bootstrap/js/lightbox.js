@@ -351,7 +351,7 @@ function ajaxLogin(form) {
               // and we update the modal
               if(callbackStack.length > 0) {
                 var callback = callbackStack.pop();
-                console.log("Pop:",callback);
+                //console.log("Pop:",callback);
                 if(callback == changeModalContent) { // We don't have good data for changeModalContent
                   getLightboxByUrl(lastLightboxURL, lastLightboxPOST);
                 } else {
