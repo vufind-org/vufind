@@ -318,7 +318,7 @@ class MultiBackend extends AbstractBase
                 $this->error("No configuration found for source '$source'");
                 return null;
             }
-            $driverInst = $this->getServiceLocator()->get($driver);
+            $driverInst = clone($this->getServiceLocator()->get($driver));
             $driverInst->setConfig($config);
             $this->cache[$source] = $driverInst;
             $this->isInitialized[$source] = false;
