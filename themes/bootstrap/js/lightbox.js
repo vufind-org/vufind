@@ -42,7 +42,6 @@ function changeModalContent(html) {
  */
 function closeLightbox() {
   $('#modal').modal('hide');
-  cartAction = false;
 }
 /**
  * This function is attached to the lightbox close event,
@@ -204,7 +203,6 @@ function getLightbox(controller, action, get, post, callback, pop) {
 /**
  * Call this function after a form is submitted
  */
-var cartAction = false;
 function getDataFromForm($form) {
   // Gather all the data
   var inputs = $form.find('*[name]');
@@ -243,7 +241,6 @@ function getDataFromForm($form) {
   return data;
 }
 function ajaxSubmit($form, callback) {
-  cartAction = $form.attr('name');
   // Default callback is to close
   if(!callback) {
     if(callbackStack.length > 0) {
@@ -357,7 +354,7 @@ function ajaxLogin(form) {
                 });
               }
               // and we update the modal
-              if(!cartAction && callbackStack.length > 0) {
+              if(callbackStack.length > 0) {
                 var callback = callbackStack.pop();
                 //console.log("Pop:",callback);
                 callback();
