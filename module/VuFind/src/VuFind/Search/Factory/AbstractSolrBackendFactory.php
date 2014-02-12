@@ -162,8 +162,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         $events = $this->serviceLocator->get('SharedEventManager');
 
         // Highlighting
-        $highlightListener = new InjectHighlightingListener($backend);
-        $highlightListener->attach($events);
+        $this->getInjectHighlightingListener($backend)->attach($events);
 
         // Spellcheck
         $config  = $this->config->get('config');
@@ -197,8 +196,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         if (isset($search->Records->deduplication)
             && $search->Records->deduplication
         ) {
-            $deduplicationListener = $this->getDeduplicationListener($backend);
-            $deduplicationListener->attach($events);
+            $this->getDeduplicationListener($backend)->attach($events);
         }
 
         // Attach error listeners for Solr 3.x and Solr 4.x (for backward
@@ -331,7 +329,7 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      * 
      * @param BackendInterface $backend Search backend
      * 
-     * @return \VuFind\Search\Solr\DeduplicationListener
+     * @return DeduplicationListener
      */
     protected function getDeduplicationListener(BackendInterface $backend)
     {
@@ -340,5 +338,17 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
             $this->serviceLocator,
             $this->searchConfig
         );
+    }
+
+    /**
+     * Get a highlighting listener for the backend
+     * 
+     * @param BackendInterface $backend Search backend
+     *
+     * @return InjectHighlightingListener
+     */
+    protected function getInjectHighlightingListener(BackendInterface $backend)
+    {
+        return new InjectHighlightingListener($backend);
     }
 }
