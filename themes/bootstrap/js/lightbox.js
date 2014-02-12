@@ -156,12 +156,6 @@ function getLightboxByUrl(url, post, callback) {
       } else {
         changeModalContent(html);
       }
-      /*
-      } else if(html.indexOf("alert-error") == -1) {
-        changeModalContent(html);
-      } else {
-        displayLightboxError(html);
-      } */
     },
     error:function(d,e) {
       console.log(url,e,d); // Error reporting
