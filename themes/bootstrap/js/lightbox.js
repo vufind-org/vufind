@@ -153,11 +153,15 @@ function getLightboxByUrl(url, post, callback) {
       // Check for a flash message error
       if(typeof callback !== "undefined") {
         callback(html);
+      } else {
+        changeModalContent(html);
+      }
+      /*
       } else if(html.indexOf("alert-error") == -1) {
         changeModalContent(html);
       } else {
         displayLightboxError(html);
-      }
+      } */
     },
     error:function(d,e) {
       console.log(url,e,d); // Error reporting

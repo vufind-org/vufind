@@ -149,6 +149,7 @@ $(document).ready(function(){
   // Mail lightbox
   $('#mail-record').click(function() {
     var params = extractClassParams(this);
+    console.log(params);
     return getLightbox(params['controller'], 'Email', {id:id});
   });
   // Save lightbox
