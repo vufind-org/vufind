@@ -203,24 +203,15 @@ function getLightbox(controller, action, get, post, callback, pop) {
 /**
  * Call this function after a form is submitted
  */
-function ajaxSubmit($form, callback) {
-  // Default callback is to close
-  if(!callback) {
-    if(callbackStack.length > 0) {
-      callback = callbackStack.pop();
-      //console.log("Pop:",callback);
-    } else {
-      callback = closeLightbox;
-    }
-  }
+function getDataFromForm($form) {
   // Gather all the data
   var inputs = $form.find('*[name]');
   var data = {};
   for(var i=0;i<inputs.length;i++) {
     var currentName = inputs[i].name;
     var array = currentName.substring(currentName.length-2) == '[]';
-    if(array && !data[currentName]) {
-      data[currentName] = [];
+    if(array && !data[currentName.substring(0,currentName.length-2)]) {
+      data[currentName.substring(0,currentName.length-2)] = [];
     }
     // Submit buttons
     if(inputs[i].type == 'submit') {
@@ -231,7 +222,8 @@ function ajaxSubmit($form, callback) {
     } else if(inputs[i].type == 'radio') {
       if(inputs[i].checked) {
         if(array) {
-          data[currentName][data[currentName].length] = inputs[i].value;
+          var n = currentName.substring(0,currentName.length-2);
+          data[n].push(inputs[i].value);
         } else {
           data[currentName] = inputs[i].value;
         }
@@ -239,12 +231,26 @@ function ajaxSubmit($form, callback) {
     // Checkboxes
     } else if($(inputs[i]).attr('type') != 'checkbox' || inputs[i].checked) {
       if(array) {
-        data[currentName][data[currentName].length] = inputs[i].value;
+        var n = currentName.substring(0,currentName.length-2);
+        data[n].push(inputs[i].value);
       } else {
         data[currentName] = inputs[i].value;
       }
     }
   }
+  return data;
+}
+function ajaxSubmit($form, callback) {
+  // Default callback is to close
+  if(!callback) {
+    if(callbackStack.length > 0) {
+      callback = callbackStack.pop();
+      //console.log("Pop:",callback);
+    } else {
+      callback = closeLightbox;
+    }
+  }
+  var data = getDataFromForm($form);
   // If we have an action: parse
   var POST = $form.attr('method') && $form.attr('method').toUpperCase() == 'POST';
   if($form.attr('action')) {
@@ -278,12 +284,8 @@ function ajaxLogin(form) {
       if (response.status == 'OK') {
         var salt = response.data;
 
-        // get the user entered username/password and auth method
+        // get the user entered password
         var password = form.password.value;
-        var username = form.username.value;
-        var auth_method = form.auth_method !== 'undefined' 
-            ? form.auth_method.value
-            : '';
 
         // encrypt the password with the salt
         password = rc4Encrypt(salt, password);
@@ -291,12 +293,22 @@ function ajaxLogin(form) {
         // hex encode the encrypted password
         password = hexEncode(password);
 
+        var params = {password:password};
+
+        // get any other form values
+        for (var i = 0; i < form.length; i++) {
+            if (form.elements[i].name == 'password') {
+                continue;
+            }
+            params[form.elements[i].name] = form.elements[i].value;
+        }
+
         // login via ajax
         $.ajax({
           type: 'POST',
           url: path + '/AJAX/JSON?method=login',
           dataType: 'json',
-          data: {username:username, password:password, auth_method:auth_method},
+          data: params,
           success: function(response) {
             if (response.status == 'OK') {
               // Hide "log in" options and show "log out" options:
@@ -320,7 +332,7 @@ function ajaxLogin(form) {
               $('.hiddenSource').each(function(i, e) {
                 if(e.value == 'Summon') {
                   summon = true;
-                  // If summon, queue reload
+                  // If summon, queue reload for when we close
                   callbackStack.unshift(function(){document.location.reload(true);});
                 }
               });
@@ -341,7 +353,6 @@ function ajaxLogin(form) {
                   }
                 });
               }
-
               // and we update the modal
               if(callbackStack.length > 0) {
                 var callback = callbackStack.pop();
@@ -365,37 +376,21 @@ function ajaxLogin(form) {
 }
 // Cart submission
 function cartSubmit($form) {
-  var submit = $form.find('input[type="submit"][clicked=true]').attr('name');
+  var submit = $form.find('input[type="submit"][clicked=true]').attr('name'); 
   switch(submit) {
-    case 'saveCart':
-    case 'email':
-    case 'export':
-      ajaxSubmit($form, changeModalContent);
-      break;
-    case 'delete':
-    case 'empty':
-      ajaxSubmit($form, closeLightbox);
-      break;
     case 'print':
       //redirect page
-      var checks = $form.find('input[type="checkbox"]:checked');
-      var data = {};
-      for(var i=0;i<checks.length;i++) {
-        data[checks[i].name] = checks[i].value;
-      }
-      $.ajax({
-        url:path+'/Cart/PrintCart',
-        data:data,
-        success:function(html) {
-          var newDoc = document.open("text/html", "replace");
-          newDoc.write(html);
-          newDoc.close();
-        },
-        error:function(d,e) {
-          console.log(d,e); // Error reporting
+      var checks = $form.find('input.checkbox-select-item:checked');
+      if(checks.length > 0) {
+        var url = path+'/Records/Home?print=true';
+        for(var i=0;i<checks.length;i++) {
+          url += '&id[]='+checks[i].value;
         }
-      });
+        document.location.href = url;
+      }
       break;
+    default:
+      ajaxSubmit($form, changeModalContent);
   }
 }
 
@@ -410,8 +405,6 @@ function cartSubmit($form) {
 function registerModalEvents(modal) {
   // New list
   $('#make-list').click(function() {
-    var id = $(this).find('#edit-save-form input[name="id"]').val();
-    var source = $(this).find('#edit-save-form input[name="source"]').val();
     var parts = this.href.split('?');
     var get = deparam(parts[1]);
     get['id'] = 'NEW';
@@ -420,6 +413,11 @@ function registerModalEvents(modal) {
   // Select all checkboxes
   $(modal).find('.checkbox-select-all').change(function() {
     $(this).closest('.modal-body').find('.checkbox-select-item').attr('checked', this.checked);
+  });
+  $(modal).find('.checkbox-select-item').change(function() {
+    if(!this.checked) { // Uncheck all selected if one is unselected
+      $(this).closest('.modal-body').find('.checkbox-select-all').attr('checked', false);
+    }
   });
   // Highlight which submit button clicked
   $(modal).find("form input[type=submit]").click(function() {
@@ -439,7 +437,7 @@ function registerModalEvents(modal) {
 function registerModalForms(modal) {
   // Default
   $(modal).find('form').submit(function(){
-    ajaxSubmit($(this), closeLightbox);
+    ajaxSubmit($(this), changeModalContent);
     return false;
   });
   // Action specific
@@ -447,8 +445,31 @@ function registerModalForms(modal) {
     cartSubmit($(this));
     return false;
   });
-  $(modal).find('form[name="newList"]').unbind('submit').submit(function(){
-    ajaxSubmit($(this), changeModalContent);
+  $(modal).find('form[name="bulkSave"]').unbind('submit').submit(function(){
+    ajaxSubmit($(this), function() {
+      changeModalContent('<div class="alert alert-info">'+vufindString['bulk_save_success']+'</div><button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>');
+    });
+    // After we close the lightbox, redirect to list view
+    callbackStack.unshift(function() {
+      document.location.href = path+'/MyResearch/MyList/'+lastLightboxPOST['list'];
+    });
+    return false;
+  });
+  $(modal).find('form[name="exportForm"]').unbind('submit').submit(function(){
+    var form = $(this);
+    $.ajax({
+      url: path + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
+      type:'POST',
+      dataType:'json',
+      data:getDataFromForm($(this)),
+      success:function(data) {
+        changeModalContent(data.data.result_additional);
+      },
+      error:function(d,e) {
+        console.log(d,e); // Error reporting
+      }
+    });
+    //ajaxSubmit($(this), changeModalContent);
     return false;
   });
   $(modal).find('form[name="loginForm"]').unbind('submit').submit(function(){
