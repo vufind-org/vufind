@@ -1,4 +1,4 @@
-/*global Cookies, vufindString */
+/*global Cookies, lightbox, vufindString */
 
 var _CART_COOKIE = 'vufind_cart';
 var _CART_COOKIE_SOURCES = 'vufind_cart_src';
