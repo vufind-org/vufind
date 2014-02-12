@@ -43,6 +43,8 @@ use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\Backend;
 
+use Zend\Config\Config;
+
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
 
@@ -161,11 +163,14 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     {
         $events = $this->serviceLocator->get('SharedEventManager');
 
+        // Load configurations:
+        $config = $this->config->get('config');
+        $search = $this->config->get($this->searchConfig);
+
         // Highlighting
-        $this->getInjectHighlightingListener($backend)->attach($events);
+        $this->getInjectHighlightingListener($backend, $search)->attach($events);
 
         // Spellcheck
-        $config  = $this->config->get('config');
         if (isset($config->Spelling->enabled) && $config->Spelling->enabled) {
             if (isset($config->Spelling->simple) && $config->Spelling->simple) {
                 $dictionaries = array('basicSpell');
@@ -177,7 +182,6 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         }
 
         // Apply field stripping if applicable:
-        $search = $this->config->get($this->searchConfig);
         if (isset($search->StripFields) && isset($search->IndexShards)) {
             $strip = $search->StripFields->toArray();
             foreach ($strip as $k => $v) {
@@ -344,11 +348,15 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
      * Get a highlighting listener for the backend
      * 
      * @param BackendInterface $backend Search backend
+     * @param Config           $search  Search configuration
      *
      * @return InjectHighlightingListener
      */
-    protected function getInjectHighlightingListener(BackendInterface $backend)
-    {
-        return new InjectHighlightingListener($backend);
+    protected function getInjectHighlightingListener(BackendInterface $backend,
+        Config $search
+    ) {
+        $fl = isset($search->General->highlighting_fields)
+            ? $search->General->highlighting_fields : '*';
+        return new InjectHighlightingListener($backend, $fl);
     }
 }
