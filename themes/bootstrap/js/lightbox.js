@@ -171,10 +171,8 @@ function getLightboxByUrl(url, post, callback, pop) {
         changeModalContent(html);
       }
     },
-    error:function(d,e, xhr, $form) {
-      //window.location.replace(url);
+    error:function(d,e) {
       console.log(url,e,d); // Error reporting
-      console.log(xhr);
     }
   });
   // Store current "page" context for empty targets
@@ -282,7 +280,6 @@ function ajaxSubmit($form, callback) {
  */
 // Logging in
 function ajaxLogin(form) {
-  console.log('ajaxLogin');
   $.ajax({
     url: path + '/AJAX/JSON?method=getSalt',
     dataType: 'json',
@@ -338,7 +335,7 @@ function ajaxLogin(form) {
               $('.hiddenSource').each(function(i, e) {
                 if(e.value == 'Summon') {
                   summon = true;
-                  // If summon, queue reload
+                  // If summon, queue reload for when we close
                   callbackStack.unshift(function(){document.location.reload(true);});
                 }
               });
@@ -367,7 +364,6 @@ function ajaxLogin(form) {
               } else if(lastLightboxPOST && lastLightboxPOST['loggingin']) {
                 closeLightbox();
               } else {
-              console.log('lastLightboxPOST', lastLightboxPOST);
                 getLightboxByUrl(lastLightboxURL, lastLightboxPOST);
               }
             } else {
@@ -393,7 +389,7 @@ function cartSubmit($form) {
         for(var i=0;i<checks.length;i++) {
           url += '&id[]='+checks[i].value;
         }
-        window.location.replace(url);
+        document.location.href = url;
       }
       break;
     default:
@@ -412,8 +408,6 @@ function cartSubmit($form) {
 function registerModalEvents(modal) {
   // New list
   $('#make-list').click(function() {
-    var id = $(this).find('#edit-save-form input[name="id"]').val();
-    var source = $(this).find('#edit-save-form input[name="source"]').val();
     var parts = this.href.split('?');
     var get = deparam(parts[1]);
     get['id'] = 'NEW';
@@ -458,8 +452,9 @@ function registerModalForms(modal) {
     ajaxSubmit($(this), function() {
       changeModalContent('<div class="alert alert-info">'+vufindString['bulk_save_success']+'</div><button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>');
     });
+    // After we close the lightbox, redirect to list view
     callbackStack.unshift(function() {
-      window.location.replace(path+'/MyResearch/MyList/'+lastLightboxPOST['list']);
+      document.location.href = path+'/MyResearch/MyList/'+lastLightboxPOST['list'];
     });
     return false;
   });

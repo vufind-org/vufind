@@ -27,11 +27,12 @@ function deparam(url) {
   for (var i = 0; i < pairs.length; i++) {
     var pair = pairs[i].split('=');
     var name = decodeURIComponent(pair[0]);
-    if(pair[0].substring(pair[0].length-2) == '[]') {
+    if(name.substring(name.length-2) == '[]') {
+      name = name.substring(0,name.length-2);
       if(!request[name]) {
         request[name] = [];
       }
-      request[name][request[name].length] = pair[1];
+      request[name].push(decodeURIComponent(pair[1]));
     } else {
       request[name] = decodeURIComponent(pair[1]);
     }
