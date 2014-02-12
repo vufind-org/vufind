@@ -26,7 +26,7 @@ function checkRequestIsValid(element, requestURL, requestType, blockedClass) {
     success: function(response) {
       if (response.status == 'OK') {
         if (response.data.status) {
-          $(element).removeClass('disabled').html(response.data.msg);
+          $(element).removeClass('disabled').html('<i class="icon-flag"></i>&nbsp;'+response.data.msg);
         } else {
           $(element).remove();
         }
