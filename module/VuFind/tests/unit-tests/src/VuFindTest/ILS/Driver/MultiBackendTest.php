@@ -242,12 +242,12 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
             'getUninitializedDriver',
             array('testing')
         );
-        $this->assertSame($ILS, $unInitDriver);
+        $this->assertEquals($ILS, $unInitDriver);
 
         //Check the cache arrays to make sure they get set correctly
         $isInit = $this->getProperty($driver, 'isInitialized');
         $cache = $this->getproperty($driver, 'cache');
-        $this->assertSame($ILS, $cache['testing']);
+        $this->assertEquals($ILS, $cache['testing']);
         $this->assertFalse($isInit['testing']);
 
         //Case: No driver associated with that name exists
@@ -286,13 +286,12 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $drivers = array('testing2' => 'Voyager');
         $this->setProperty($driver, 'drivers', $drivers);
 
-
         $returnDriver = $this->callMethod($driver, 'getDriver', array('testing2'));
-        $this->assertSame($ILS, $returnDriver);
+        $this->assertEquals($ILS, $returnDriver);
 
         $this->setProperty($driver, 'isInitialized', array());
         $returnDriver = $this->callMethod($driver, 'getDriver', array('testing2'));
-        $this->assertSame($ILS, $returnDriver);
+        $this->assertEquals($ILS, $returnDriver);
 
         $returnDriver
             = $this->callMethod($driver, 'getDriver', array('nonexistant'));
