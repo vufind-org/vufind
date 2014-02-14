@@ -382,27 +382,9 @@ $config = array(
             'resolver_driver' => array(
                 'abstract_factories' => array('VuFind\Resolver\Driver\PluginFactory'),
                 'factories' => array(
-                    '360link' => function ($sm) {
-                        return new \VuFind\Resolver\Driver\Threesixtylink(
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('config')->OpenURL->url,
-                            $sm->getServiceLocator()->get('VuFind\Http')
-                                ->createClient()
-                        );
-                    },
-                    'ezb' => function ($sm) {
-                        return new \VuFind\Resolver\Driver\Ezb(
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('config')->OpenURL->url,
-                            $sm->getServiceLocator()->get('VuFind\Http')
-                                ->createClient()
-                        );
-                    },
-                    'sfx' => function ($sm) {
-                        return new \VuFind\Resolver\Driver\Sfx(
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('config')->OpenURL->url,
-                            $sm->getServiceLocator()->get('VuFind\Http')
-                                ->createClient()
-                        );
-                    },
+                    '360link' => array('VuFind\Resolver\Driver\Factory', 'getThreesixtylink'),
+                    'ezb' => array('VuFind\Resolver\Driver\Factory', 'getEzb'),
+                    'sfx' => array('VuFind\Resolver\Driver\Factory', 'getSfx'),
                 ),
                 'aliases' => array(
                     'threesixtylink' => '360link',
