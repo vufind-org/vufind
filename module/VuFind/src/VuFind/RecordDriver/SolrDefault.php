@@ -1475,7 +1475,7 @@ class SolrDefault extends AbstractBase
      *
      * @return array Strings representing citation formats.
      */
-    public function getCitationFormats()
+    protected function getSupportedCitationFormats()
     {
         return array('APA', 'MLA');
     }
