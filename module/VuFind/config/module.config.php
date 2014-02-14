@@ -339,77 +339,15 @@ $config = array(
             'recorddriver' => array(
                 'abstract_factories' => array('VuFind\RecordDriver\PluginFactory'),
                 'factories' => array(
-                    'missing' => function ($sm) {
-                        return new \VuFind\RecordDriver\Missing(
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-                        );
-                    },
-                    'solrauth' => function ($sm) {
-                        return new \VuFind\RecordDriver\SolrAuth(
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
-                            null,
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
-                        );
-                    },
-                    'pazpar2' => function ($sm) {
-                        return new \VuFind\RecordDriver\Pazpar2(
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
-                            null,
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
-                        );
-                    },
-                    'solrdefault' => function ($sm) {
-                        return new \VuFind\RecordDriver\SolrDefault(
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
-                            null,
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
-                        );
-                    },
-                    'solrmarc' => function ($sm) {
-                        $driver = new \VuFind\RecordDriver\SolrMarc(
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
-                            null,
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
-                        );
-                        $driver->attachILS(
-                            $sm->getServiceLocator()->get('VuFind\ILSConnection'),
-                            $sm->getServiceLocator()->get('VuFind\ILSHoldLogic'),
-                            $sm->getServiceLocator()->get('VuFind\ILSTitleHoldLogic')
-                        );
-                        return $driver;
-                    },
-                    'solrreserves' => function ($sm) {
-                        return new \VuFind\RecordDriver\SolrReserves(
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
-                            null,
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
-                        );
-                    },
-                    'solrweb' => function ($sm) {
-                        return new \VuFind\RecordDriver\SolrWeb(
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
-                            null,
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('website'),
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('website')
-                        );
-                    },
-                    'summon' => function ($sm) {
-                        $summon = $sm->getServiceLocator()->get('VuFind\Config')->get('Summon');
-                        $driver = new \VuFind\RecordDriver\Summon(
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
-                            $summon, $summon
-                        );
-                        $driver->setDateConverter(
-                            $sm->getServiceLocator()->get('VuFind\DateConverter')
-                        );
-                        return $driver;
-                    },
-                    'worldcat' => function ($sm) {
-                        return new \VuFind\RecordDriver\WorldCat(
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('WorldCat')
-                        );
-                    },
+                    'missing' => array('VuFind\RecordDriver\Factory', 'getMissing'),
+                    'solrauth' => array('VuFind\RecordDriver\Factory', 'getSolrAuth'),
+                    'pazpar2' => array('VuFind\RecordDriver\Factory', 'getPazpar2'),
+                    'solrdefault' => array('VuFind\RecordDriver\Factory', 'getSolrDefault'),
+                    'solrmarc' => array('VuFind\RecordDriver\Factory', 'getSolrMarc'),
+                    'solrreserves' => array('VuFind\RecordDriver\Factory', 'getSolrReserves'),
+                    'solrweb' => array('VuFind\RecordDriver\Factory', 'getSolrWeb'),
+                    'summon' => array('VuFind\RecordDriver\Factory', 'getSummon'),
+                    'worldcat' => array('VuFind\RecordDriver\Factory', 'getWorldCat'),
                 ),
             ),
             'recordtab' => array(
