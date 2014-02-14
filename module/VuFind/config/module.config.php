@@ -353,51 +353,13 @@ $config = array(
             'recordtab' => array(
                 'abstract_factories' => array('VuFind\RecordTab\PluginFactory'),
                 'factories' => array(
-                    'collectionhierarchytree' => function ($sm) {
-                        return new \VuFind\RecordTab\CollectionHierarchyTree(
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
-                            $sm->getServiceLocator()->get('VuFind\RecordLoader')
-                        );
-                    },
-                    'collectionlist' => function ($sm) {
-                        return new \VuFind\RecordTab\CollectionList(
-                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')->get('SolrCollection')
-                        );
-                    },
-                    'excerpt' => function ($sm) {
-                        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-                        $enabled = isset($config->Content->excerpts);
-                        return new \VuFind\RecordTab\Excerpt($enabled);
-                    },
-                    'hierarchytree' => function ($sm) {
-                        return new \VuFind\RecordTab\HierarchyTree(
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-                        );
-                    },
-                    'holdingsils' => function ($sm) {
-                        // If VuFind is configured to suppress the holdings tab when the
-                        // ILS driver specifies no holdings, we need to pass in a connection
-                        // object:
-                        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-                        if (isset($config->Site->hideHoldingsTabWhenEmpty)
-                            && $config->Site->hideHoldingsTabWhenEmpty
-                        ) {
-                            $catalog = $sm->getServiceLocator()->get('VuFind\ILSConnection');
-                        } else {
-                            $catalog = false;
-                        }
-                        return new \VuFind\RecordTab\HoldingsILS($catalog);
-                    },
-                    'map' => function ($sm) {
-                        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-                        $enabled = isset($config->Content->recordMap);
-                        return new \VuFind\RecordTab\Map($enabled);
-                    },
-                    'reviews' => function ($sm) {
-                        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-                        $enabled = isset($config->Content->reviews);
-                        return new \VuFind\RecordTab\Reviews($enabled);
-                    },
+                    'collectionhierarchytree' => array('VuFind\RecordTab\Factory', 'getCollectionHierarchyTree'),
+                    'collectionlist' => array('VuFind\RecordTab\Factory', 'getCollectionList'),
+                    'excerpt' => array('VuFind\RecordTab\Factory', 'getExcerpt'),
+                    'hierarchytree' => array('VuFind\RecordTab\Factory', 'getHierarchyTree'),
+                    'holdingsils' => array('VuFind\RecordTab\Factory', 'getHoldingsILS'),
+                    'map' => array('VuFind\RecordTab\Factory', 'getMap'),
+                    'reviews' => array('VuFind\RecordTab\Factory', 'getReviews'),
                 ),
                 'invokables' => array(
                     'description' => 'VuFind\RecordTab\Description',
