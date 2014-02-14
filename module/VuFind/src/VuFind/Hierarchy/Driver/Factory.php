@@ -1,6 +1,6 @@
 <?php
 /**
- * Hierarchy Factory Class
+ * Hierarchy Driver Factory Class
  *
  * PHP version 5
  *
@@ -28,7 +28,7 @@
 namespace VuFind\Hierarchy\Driver;
 
 /**
- * Hierarchy Factory Class
+ * Hierarchy Driver Factory Class
  *
  * This is a factory class to build objects for managing hierarchies.
  *
@@ -79,7 +79,7 @@ class Factory
      *
      * @return HierarchyDefault
      */
-    public function getHierarchyDefault(ServiceManager $sm)
+    public static function getHierarchyDefault(ServiceManager $sm)
     {
         return static::get($sm->getServiceLocator(), 'HierarchyDefault');
     }
@@ -91,7 +91,7 @@ class Factory
      *
      * @return HierarchyFlat
      */
-    public function getHierarchyFlat(ServiceManager $sm)
+    public static function getHierarchyFlat(ServiceManager $sm)
     {
         return static::get($sm->getServiceLocator(), 'HierarchyFlat');
     }
