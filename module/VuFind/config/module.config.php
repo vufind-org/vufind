@@ -306,101 +306,24 @@ $config = array(
             'recommend' => array(
                 'abstract_factories' => array('VuFind\Recommend\PluginFactory'),
                 'factories' => array(
-                    'authorfacets' => function ($sm) {
-                        return new \VuFind\Recommend\AuthorFacets(
-                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
-                        );
-                    },
-                    'authorinfo' => function ($sm) {
-                        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-                        return new \VuFind\Recommend\AuthorInfo(
-                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
-                            $sm->getServiceLocator()->get('VuFind\Http')->createClient(),
-                            isset ($config->Content->authors) ? $config->Content->authors : ''
-                        );
-                    },
-                    'authorityrecommend' => function ($sm) {
-                        return new \VuFind\Recommend\AuthorityRecommend(
-                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
-                        );
-                    },
-                    'catalogresults' => function ($sm) {
-                        return new \VuFind\Recommend\CatalogResults(
-                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
-                        );
-                    },
-                    'collectionsidefacets' => function ($sm) {
-                        return new \VuFind\Recommend\CollectionSideFacets(
-                            $sm->getServiceLocator()->get('VuFind\Config')
-                        );
-                    },
-                    'europeanaresults' => function ($sm) {
-                        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-                        return new \VuFind\Recommend\EuropeanaResults(
-                            $config->Content->europeanaAPI
-                        );
-                    },
-                    'expandfacets' => function ($sm) {
-                        return new \VuFind\Recommend\ExpandFacets(
-                            $sm->getServiceLocator()->get('VuFind\Config'),
-                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')->get('Solr')
-                        );
-                    },
-                    'favoritefacets' => function ($sm) {
-                        return new \VuFind\Recommend\FavoriteFacets(
-                            $sm->getServiceLocator()->get('VuFind\Config')
-                        );
-                    },
-                    'sidefacets' => function ($sm) {
-                        return new \VuFind\Recommend\SideFacets(
-                            $sm->getServiceLocator()->get('VuFind\Config')
-                        );
-                    },
-                    'summonbestbets' => function ($sm) {
-                        return new \VuFind\Recommend\SummonBestBets(
-                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
-                        );
-                    },
-                    'summondatabases' => function ($sm) {
-                        return new \VuFind\Recommend\SummonDatabases(
-                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
-                        );
-                    },
-                    'summonresults' => function ($sm) {
-                        return new \VuFind\Recommend\SummonResults(
-                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
-                        );
-                    },
-                    'summontopics' => function ($sm) {
-                        return new \VuFind\Recommend\SummonTopics(
-                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
-                        );
-                    },
-                    'switchquery' => function ($sm) {
-                        return new \VuFind\Recommend\SwitchQuery(
-                            $sm->getServiceLocator()->get('VuFind\Search\BackendManager')
-                        );
-                    },
-                    'topfacets' => function ($sm) {
-                        return new \VuFind\Recommend\TopFacets(
-                            $sm->getServiceLocator()->get('VuFind\Config')
-                        );
-                    },
-                    'webresults' => function ($sm) {
-                        return new \VuFind\Recommend\WebResults(
-                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
-                        );
-                    },
-                    'worldcatidentities' => function ($sm) {
-                        return new \VuFind\Recommend\WorldCatIdentities(
-                            $sm->getServiceLocator()->get('VuFind\WorldCatUtils')
-                        );
-                    },
-                    'worldcatterms' => function ($sm) {
-                        return new \VuFind\Recommend\WorldCatTerms(
-                            $sm->getServiceLocator()->get('VuFind\WorldCatUtils')
-                        );
-                    },
+                    'authorfacets' => array('VuFind\Recommend\Factory', 'getAuthorFacets'),
+                    'authorinfo' => array('VuFind\Recommend\Factory', 'getAuthorInfo'),
+                    'authorityrecommend' => array('VuFind\Recommend\Factory', 'getAuthorityRecommend'),
+                    'catalogresults' => array('VuFind\Recommend\Factory', 'getCatalogResults'),
+                    'collectionsidefacets' => array('VuFind\Recommend\Factory', 'getCollectionSideFacets'),
+                    'europeanaresults' => array('VuFind\Recommend\Factory', 'getEuropeanaResults'),
+                    'expandfacets' => array('VuFind\Recommend\Factory', 'getExpandFacets'),
+                    'favoritefacets' => array('VuFind\Recommend\Factory', 'getFavoriteFacets'),
+                    'sidefacets' => array('VuFind\Recommend\Factory', 'getSideFacets'),
+                    'summonbestbets' => array('VuFind\Recommend\Factory', 'getSummonBestBets'),
+                    'summondatabases' => array('VuFind\Recommend\Factory', 'getSummonDatabases'),
+                    'summonresults' => array('VuFind\Recommend\Factory', 'getSummonResults'),
+                    'summontopics' => array('VuFind\Recommend\Factory', 'getSummonTopics'),
+                    'switchquery' => array('VuFind\Recommend\Factory', 'getSwitchQuery'),
+                    'topfacets' => array('VuFind\Recommend\Factory', 'getTopFacets'),
+                    'webresults' => array('VuFind\Recommend\Factory', 'getWebResults'),
+                    'worldcatidentities' => array('VuFind\Recommend\Factory', 'getWorldCatIdentities'),
+                    'worldcatterms' => array('VuFind\Recommend\Factory', 'getWorldCatTerms'),
                 ),
                 'invokables' => array(
                     'europeanaresultsdeferred' => 'VuFind\Recommend\EuropeanaResultsDeferred',
