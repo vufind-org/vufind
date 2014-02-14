@@ -239,11 +239,7 @@ $config = array(
             'db_table' => array(
                 'abstract_factories' => array('VuFind\Db\Table\PluginFactory'),
                 'factories' => array(
-                    'resource' => function ($sm) {
-                        return new \VuFind\Db\Table\Resource(
-                            $sm->getServiceLocator()->get('VuFind\DateConverter')
-                        );
-                    },
+                    'resource' => array('VuFind\Db\Table\Factory', 'getResource'),
                 ),
                 'invokables' => array(
                     'changetracker' => 'VuFind\Db\Table\ChangeTracker',
