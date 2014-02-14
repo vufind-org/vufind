@@ -43,7 +43,7 @@ class Factory
     /**
      * This constructs a hierarchy driver using VuFind's service setup.
      *
-     * @param \Zend\ServiceManager\ServiceManager $sm     Service manager
+     * @param \Zend\ServiceManager\ServiceManager $sm     Top-level service manager
      * @param string                              $config Name of config to load
      * @param string                              $class  Name of driver class
      *
@@ -70,5 +70,29 @@ class Factory
             $sm->get('VuFind\HierarchyTreeRendererPluginManager'),
             $options
         );
+    }
+
+    /**
+     * Factory for HierarchyDefault to be called from module.config.php.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return HierarchyDefault
+     */
+    public function getHierarchyDefault(ServiceManager $sm)
+    {
+        return static::get($sm->getServiceLocator(), 'HierarchyDefault');
+    }
+
+    /**
+     * Factory for HierarchyFlat to be called from module.config.php.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return HierarchyFlat
+     */
+    public function getHierarchyFlat(ServiceManager $sm)
+    {
+        return static::get($sm->getServiceLocator(), 'HierarchyFlat');
     }
 }

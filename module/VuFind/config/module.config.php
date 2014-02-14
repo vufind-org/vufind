@@ -257,13 +257,9 @@ $config = array(
             ),
             'hierarchy_driver' => array(
                 'factories' => array(
-                    'default' => function ($sm) {
-                        return \VuFind\Hierarchy\Driver\Factory::get($sm->getServiceLocator(), 'HierarchyDefault');
-                    },
-                    'flat' => function ($sm) {
-                        return \VuFind\Hierarchy\Driver\Factory::get($sm->getServiceLocator(), 'HierarchyFlat');
-                    },
-                )
+                    'default' => array('VuFind\Hierarchy\Driver\Factory', 'getHierarchyDefault'),
+                    'flat' => array('VuFind\Hierarchy\Driver\Factory', 'getHierarchyFlat'),
+                ),
             ),
             'hierarchy_treedatasource' => array(
                 'factories' => array(
