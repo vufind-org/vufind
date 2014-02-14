@@ -440,18 +440,8 @@ $config = array(
             'statistics_driver' => array(
                 'abstract_factories' => array('VuFind\Statistics\Driver\PluginFactory'),
                 'factories' => array(
-                    'file' => function ($sm) {
-                        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-                        $folder = isset($config->Statistics->file)
-                            ? $config->Statistics->file : sys_get_temp_dir();
-                        return new \VuFind\Statistics\Driver\File($folder);
-                    },
-                    'solr' => function ($sm) {
-                        return new \VuFind\Statistics\Driver\Solr(
-                            $sm->getServiceLocator()->get('VuFind\Solr\Writer'),
-                            $sm->getServiceLocator()->get('VuFind\Search\BackendManager')->get('SolrStats')
-                        );
-                    },
+                    'file' => array('VuFind\Statistics\Driver\Factory', 'getFile'),
+                    'solr' => array('VuFind\Statistics\Driver\Factory', 'getSolr'),
                 ),
                 'invokables' => array(
                     'db' => 'VuFind\Statistics\Driver\Db',
