@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
 namespace VuFind\Hierarchy\Driver;
+use Zend\ServiceManager\ServiceManager;
 
 /**
  * Hierarchy Driver Factory Class
@@ -49,7 +50,7 @@ class Factory
      *
      * @return object
      */
-    public static function get(\Zend\ServiceManager\ServiceManager $sm, $config,
+    public static function get(ServiceManager $sm, $config,
         $class = 'VuFind\Hierarchy\Driver\ConfigurationBased'
     ) {
         // Set up options based on global VuFind settings:

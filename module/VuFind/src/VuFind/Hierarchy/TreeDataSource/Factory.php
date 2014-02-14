@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
 namespace VuFind\Hierarchy\TreeDataSource;
+use Zend\ServiceManager\ServiceManager;
 
 /**
  * Hierarchy Data Source Factory Class
