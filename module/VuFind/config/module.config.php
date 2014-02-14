@@ -420,18 +420,7 @@ $config = array(
             'search_results' => array(
                 'abstract_factories' => array('VuFind\Search\Results\PluginFactory'),
                 'factories' => array(
-                    'solr' => function ($sm) {
-                        $factory = new \VuFind\Search\Results\PluginFactory();
-                        $solr = $factory->createServiceWithName($sm, 'solr', 'Solr');
-                        $config = $sm->getServiceLocator()
-                            ->get('VuFind\Config')->get('config');
-                        $spellConfig = isset($config->Spelling)
-                            ? $config->Spelling : null;
-                        $solr->setSpellingProcessor(
-                            new \VuFind\Search\Solr\SpellingProcessor($spellConfig)
-                        );
-                        return $solr;
-                    },
+                    'solr' => array('VuFind\Search\Results\Factory', 'getSolr'),
                 ),
             ),
             'session' => array(
