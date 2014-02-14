@@ -115,11 +115,7 @@ $config = array(
     'service_manager' => array(
         'allow_override' => true,
         'factories' => array(
-            'VuFind\AuthManager' => function ($sm) {
-                return new \VuFind\Auth\Manager(
-                    $sm->get('VuFind\Config')->get('config')
-                );
-            },
+            'VuFind\AuthManager' => array('VuFind\Auth\Factory', 'getManager'),
             'VuFind\CacheManager' => function ($sm) {
                 return new \VuFind\Cache\Manager(
                     $sm->get('VuFind\Config')->get('config'),
@@ -351,16 +347,8 @@ $config = array(
             'auth' => array(
                 'abstract_factories' => array('VuFind\Auth\PluginFactory'),
                 'factories' => array(
-                    'ils' => function ($sm) {
-                        return new \VuFind\Auth\ILS(
-                            $sm->getServiceLocator()->get('VuFind\ILSConnection')
-                        );
-                    },
-                    'multiils' => function ($sm) {
-                        return new \VuFind\Auth\MultiILS(
-                            $sm->getServiceLocator()->get('VuFind\ILSConnection')
-                        );
-                    },
+                    'ils' => array('VuFind\Auth\Factory', 'getILS'),
+                    'multiils' => array('VuFind\Auth\Factory', 'getMultiILS'),
                 ),
                 'invokables' => array(
                     'choiceauth' => 'VuFind\Auth\ChoiceAuth',
