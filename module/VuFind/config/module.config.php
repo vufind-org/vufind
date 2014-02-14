@@ -215,26 +215,10 @@ $config = array(
             'autocomplete' => array(
                 'abstract_factories' => array('VuFind\Autocomplete\PluginFactory'),
                 'factories' => array(
-                    'solr' => function ($sm) {
-                        return new \VuFind\Autocomplete\Solr(
-                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
-                        );
-                    },
-                    'solrauth' => function ($sm) {
-                        return new \VuFind\Autocomplete\SolrAuth(
-                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
-                        );
-                    },
-                    'solrcn' => function ($sm) {
-                        return new \VuFind\Autocomplete\SolrCN(
-                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
-                        );
-                    },
-                    'solrreserves' => function ($sm) {
-                        return new \VuFind\Autocomplete\SolrReserves(
-                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
-                        );
-                    },
+                    'solr' => array('VuFind\Autocomplete\Factory', 'getSolr'),
+                    'solrauth' => array('VuFind\Autocomplete\Factory', 'getSolrAuth'),
+                    'solrcn' => array('VuFind\Autocomplete\Factory', 'getSolrCN'),
+                    'solrreserves' => array('VuFind\Autocomplete\Factory', 'getSolrReserves'),
                 ),
                 'invokables' => array(
                     'none' => 'VuFind\Autocomplete\None',
