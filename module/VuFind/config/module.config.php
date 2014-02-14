@@ -373,28 +373,10 @@ $config = array(
             'related' => array(
                 'abstract_factories' => array('VuFind\Related\PluginFactory'),
                 'factories' => array(
-                    'editions' => function ($sm) {
-                        return new \VuFind\Related\Editions(
-                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
-                            $sm->getServiceLocator()->get('VuFind\WorldCatUtils')
-                        );
-                    },
-                    'similar' => function ($sm) {
-                        return new \VuFind\Related\Similar(
-                            $sm->getServiceLocator()->get('VuFind\Search')
-                        );
-                    },
-                    'worldcateditions' => function ($sm) {
-                        return new \VuFind\Related\WorldCatEditions(
-                            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
-                            $sm->getServiceLocator()->get('VuFind\WorldCatUtils')
-                        );
-                    },
-                    'worldcatsimilar' => function ($sm) {
-                        return new \VuFind\Related\WorldCatSimilar(
-                            $sm->getServiceLocator()->get('VuFind\Search')
-                        );
-                    },
+                    'editions' => array('VuFind\Related\Factory', 'getEditions'),
+                    'similar' => array('VuFind\Related\Factory', 'getSimilar'),
+                    'worldcateditions' => array('VuFind\Related\Factory', 'getWorldCatEditions'),
+                    'worldcatsimilar' => array('VuFind\Related\Factory', 'getWorldCatSimilar'),
                 ),
             ),
             'resolver_driver' => array(
