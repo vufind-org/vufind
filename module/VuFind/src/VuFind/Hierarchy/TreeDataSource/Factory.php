@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Hierarchy_Drivers
+ * @package  HierarchyTree_DataSource
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
@@ -33,7 +33,7 @@ namespace VuFind\Hierarchy\TreeDataSource;
  * This is a factory class to build objects for managing hierarchies.
  *
  * @category VuFind2
- * @package  Hierarchy_Drivers
+ * @package  HierarchyTree_DataSource
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
