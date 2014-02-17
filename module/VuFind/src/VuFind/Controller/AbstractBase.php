@@ -374,15 +374,24 @@ class AbstractBase extends AbstractActionController
     /**
      * Translate a string if a translator is available.
      *
-     * @param string $msg Message to translate
+     * @param string $msg     Message to translate
+     * @param string $default Default value to use if no translation is found (null
+     * for no default).
      *
      * @return string
      */
-    public function translate($msg)
+    public function translate($msg, $default = null)
     {
-        return $this->getServiceLocator()->has('VuFind\Translator')
+        $translated = $this->getServiceLocator()->has('VuFind\Translator')
             ? $this->getServiceLocator()->get('VuFind\Translator')->translate($msg)
             : $msg;
+        
+        // Did the translation fail to change anything?  If so, use default:
+        if (!is_null($default) && $translated == $msg) {
+            $translated = $default;
+        }
+        
+        return $translated;
     }
 
     /**
