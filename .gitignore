@@ -6,3 +6,34 @@ ChangeLog
 TAGS
 *~
 vendor/.git
+
+# OS Created Files
+
+.DS_Store*
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# Eclipse Files
+.metadata/*
+.settings/*
+.project
+.buildpath
+.ExternalToolBuilders
+
+# Local VuFind files
+local/cache/covers/large/*
+local/cache/covers/medium/*
+local/cache/covers/small/*
+local/cache/languages/*
+local/cache/objects/*
+local/cache/searchspecs/*
+local/config/finna/*.ini
+local/config/finna/*.yaml
+local/config/vufind/*.ini
+local/config/vufind/*.yaml
+local/httpd-vufind.conf
+local/import/import.properties
+local/import/import_auth.properties
+*.diff
+vufind.bat
