@@ -1625,7 +1625,7 @@ class Voyager extends AbstractBase
             'status' => utf8_encode($sqlRow['STATUS_DESC']),
             'statusDate' => $statusDate,
             'location' => $this->getLocationName($sqlRow['PICKUP_LOCATION_ID']),
-            'created' => $createDate,
+            'create' => $createDate,
             'processed' => $processedDate,
             'expire' => $expireDate,
             'reply' => utf8_encode($sqlRow['REPLY_NOTE']),

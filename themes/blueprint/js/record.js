@@ -45,15 +45,20 @@ function setUpCheckRequest() {
                 'checkRequest ajax_hold_availability', 'holdBlocked');
         }
     });
-}
-
-function setUpCheckStorageRetrievalRequest() {
     $('.checkStorageRetrievalRequest').each(function(i) {
         if($(this).hasClass('checkStorageRetrievalRequest')) {
             $(this).addClass('ajax_storage_retrieval_request_availability');
             var isValid = checkRequestIsValid(this, this.href, 'StorageRetrievalRequest',
                 'checkStorageRetrievalRequest ajax_storage_retrieval_request_availability', 
                 'storageRetrievalRequestBlocked');
+        }
+    });
+    $('.checkILLRequest').each(function(i) {
+        if($(this).hasClass('checkILLRequest')) {
+            $(this).addClass('ajax_ill_request_availability');
+            var isValid = checkRequestIsValid(this, this.href, 'ILLRequest',
+                'checkILLRequest ajax_ill_request_availability', 
+                'ILLRequestBlocked');
         }
     });
 }
@@ -179,5 +184,4 @@ $(document).ready(function(){
     });
 
     setUpCheckRequest();
-    setUpCheckStorageRetrievalRequest();
 });
