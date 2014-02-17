@@ -28,7 +28,8 @@
  */
 namespace Finna\ILS\Driver;
 
-use VuFind\Exception\ILS as ILSException;
+use VuFind\Exception\ILS as ILSException,
+    Zend\Session\Container as SessionContainer;
 
 /**
  * Multiple Backend Driver.
@@ -44,6 +45,30 @@ use VuFind\Exception\ILS as ILSException;
  */
 class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
 {
+    /**
+     * Container for storing cached ILS data.
+     *
+     * @var SessionContainer
+     */
+    protected $session;
+    
+    /**
+     * Initialize the driver.
+     *
+     * Validate configuration and perform all resource-intensive tasks needed to
+     * make the driver active.
+     *
+     * @throws ILSException
+     * @return void
+     */
+    public function init()
+    {
+        parent::init();
+        
+        // Establish a namespace in the session for persisting cached data
+        $this->session = new SessionContainer('MultiBackend');
+    }
+    
     /**
      * Get the drivers (data source IDs) enabled in MultiBackend for login
      *
@@ -231,11 +256,9 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
      */
     public function patronLogin($username, $password)
     {
-        error_log("MB: PATRON LOGIN $username");
         $hash = md5($username . $password);
-        if (isset($_SESSION['logins'][$hash])) {
-            error_log("- Return patron from session");
-            return unserialize($_SESSION['logins'][$hash]);
+        if (isset($this->session->logins[$hash])) {
+            return unserialize($this->session->logins[$hash]);
         }
         $source = $this->getSource($username);
         if (!$source) {
@@ -245,7 +268,10 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
         if ($driver) {
             $patron = $driver->patronLogin($this->getLocalId($username), $password);
             $patron = $this->addIdPrefixes($patron, $source);
-            $_SESSION['logins'][$username] = serialize($patron);
+            if (!isset($this->session->logins)) {
+                $this->session->logins = array();
+            }
+            $this->session->logins[$hash] = serialize($patron);
             return $patron;
         }
         throw new ILSException('No suitable backend driver found');
