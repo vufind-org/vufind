@@ -1087,6 +1087,19 @@ class AjaxController extends AbstractBase
                 $patron = $this->getAuthManager()->storedCatalogLogin();
                 if ($patron) {
                     switch ($requestType) {
+                    case 'ILLRequest':
+                        $results = $catalog->checkILLRequestIsValid(
+                            $id, $data, $patron
+                        );
+    
+                        $msg = $results
+                            ? $this->translate(
+                                'ill_request_place_text'
+                            )
+                            : $this->translate(
+                                'ill_request_error_blocked'
+                            );
+                        break;
                     case 'StorageRetrievalRequest':
                         $results = $catalog->checkStorageRetrievalRequestIsValid(
                             $id, $data, $patron
@@ -1346,6 +1359,63 @@ class AjaxController extends AbstractBase
 
         // output HTML encoded in JSON object
         return $this->output($html, self::STATUS_OK);
+    }
+
+    /**
+     * Get pick up locations for a library
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function getLibraryPickupLocationsAjax()
+    {
+        $this->writeSession();  // avoid session write timing bug
+        $id = $this->params()->fromQuery('id');
+        $pickupLib = $this->params()->fromQuery('pickupLib');
+        if (!empty($id) && !empty($pickupLib)) {
+            // check if user is logged in
+            $user = $this->getUser();
+            if (!$user) {
+                return $this->output(
+                    array(
+                        'status' => false, 
+                        'msg' => $this->translate('You must be logged in first')
+                    ),
+                    self::STATUS_NEED_AUTH
+                );
+            }
+
+            try {
+                $catalog = $this->getILS();
+                $patron = $this->getAuthManager()->storedCatalogLogin();
+                if ($patron) {
+                    $params = array(
+                        'id' => $id,
+                        'pickupLib' => $pickupLib,
+                        'patron' => $patron
+                    );
+                    $results = $catalog->getILLPickupLocations(
+                        $id, $pickupLib, $patron
+                    );
+                    foreach ($results as &$result) {
+                        if (isset($result['name'])) {
+                            $result['name'] = $this->translate(
+                                'location_' . $result['name'], 
+                                $result['name']
+                            );
+                        }
+                    }
+                    return $this->output(
+                        array('locations' => $results), self::STATUS_OK
+                    );
+                }
+            } catch (\Exception $e) {
+                // Do nothing -- just fail through to the error message below.
+            }
+        }
+
+        return $this->output(
+            $this->translate('An error has occurred'), self::STATUS_ERROR
+        );
     }
 
     /**

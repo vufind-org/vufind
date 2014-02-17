@@ -417,6 +417,72 @@ class Connection implements TranslatorAwareInterface
     }
 
     /**
+     * Check ILL Request
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports storage
+     * retrieval requests.
+     *
+     * @param string $functionConfig The ILL request configuration values
+     *
+     * @return mixed On success, an associative array with specific function keys
+     * and values either for placing requests via a form; on failure, false.
+     */
+    protected function checkMethodILLRequests($functionConfig)
+    {
+        $response = false;
+
+        if ($this->checkCapability('placeILLRequest')
+            && isset($functionConfig['HMACKeys'])
+        ) {
+            $response = array('function' => 'placeILLRequest');
+            $response['HMACKeys'] = explode(':', $functionConfig['HMACKeys']);
+            if (isset($functionConfig['extraFields'])) {
+                $response['extraFields'] = $functionConfig['extraFields'];
+            }
+            if (isset($functionConfig['helpText'])) {
+                $response['helpText'] = $this->getHelpText(
+                    $functionConfig['helpText']
+                );  
+            }
+        }
+        return $response;
+    }
+    
+    /**
+     * Check Cancel ILL Requests
+     *
+     * A support method for checkFunction(). This is responsible for checking
+     * the driver configuration to determine if the system supports Cancelling 
+     * ILL Requests.
+     *
+     * @param string $functionConfig The Cancel function configuration values
+     *
+     * @return mixed On success, an associative array with specific function keys
+     * and values either for cancelling requests via a form or a URL;
+     * on failure, false.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkMethodcancelILLRequests($functionConfig)
+    {
+        $response = false;
+
+        if (isset($this->config->cancel_ill_requests_enabled)
+            && $this->config->cancel_ill_requests_enabled
+        ) {
+            if ($this->checkCapability('cancelILLRequests')) {
+                $response = array('function' => 'cancelILLRequests');
+            } elseif ($this->checkCapability('getCancelILLRequestLink')
+            ) {
+                $response = array(
+                    'function' => 'getCancelILLRequestLink'
+                );
+            }
+        }
+        return $response;
+    }
+    
+    /**
      * Get proper help text from the function config
      *
      * @param string|array $helpText Help text(s)
@@ -484,6 +550,30 @@ class Connection implements TranslatorAwareInterface
         return false;
     }
 
+    /**
+     * Check ILL Request is Valid
+     *
+     * This is responsible for checking if an ILL request is valid
+     *
+     * @param string $id     A Bibliographic ID
+     * @param array  $data   Collected Holds Data
+     * @param array  $patron Patron related data
+     *
+     * @return mixed The result of the checkILLRequestIsValid 
+     * function if it exists, false if it does not
+     */
+    public function checkILLRequestIsValid($id, $data, $patron)
+    {
+        if ($this->checkCapability('checkILLRequestIsValid')) {
+            return $this->getDriver()->checkILLRequestIsValid(
+                $id, $data, $patron
+            );
+        }
+        // If the driver has no checkILLRequestIsValid method, we 
+        // will assume that the request is not valid
+        return false;
+    }
+    
     /**
      * Get Holds Mode
      *

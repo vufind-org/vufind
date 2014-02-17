@@ -5,6 +5,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2007.
+ * Copyright (C) The National Library of Finland 2014.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -24,13 +25,15 @@
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
 use PDO, PDOException, VuFind\Exception\Date as DateException,
-    VuFind\Exception\ILS as ILSException;
-
+    VuFind\Exception\ILS as ILSException,
+    Zend\Session\Container as SessionContainer;
+    
 /**
  * Voyager Restful ILS Driver
  *
@@ -39,6 +42,7 @@ use PDO, PDOException, VuFind\Exception\Date as DateException,
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
@@ -137,6 +141,13 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     protected $titleHoldsMode;
 
     /**
+     * Container for storing cached ILS data.
+     *
+     * @var SessionContainer
+     */
+    protected $session;
+    
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter  Date converter object
@@ -149,6 +160,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         parent::__construct($dateConverter);
         $this->holdsMode = $holdsMode;
         $this->titleHoldsMode = $titleHoldsMode;
+        
     }
 
     /**
@@ -196,6 +208,9 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         $this->checkRenewalsUpFront
             = isset($this->config['Renewals']['checkUpFront'])
             ? $this->config['Renewals']['checkUpFront'] : true;
+        
+        // Establish a namespace in the session for persisting cached data
+        $this->session = new SessionContainer('VoyagerRestful_' . $this->dbName);
     }
 
     /**
@@ -216,6 +231,47 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         return $functionConfig;
     }
 
+    /**
+     * Helper function for fetching cached data.
+     * Data is cached for up to 30 seconds so that it would be faster to process
+     * e.g. requests where multiple calls to the backend are made.
+     * 
+     * @param string $id Cache entry id
+     * 
+     * @return mixed|null Cached entry or null if not cached or expired
+     */
+    protected function getCachedData($id)
+    {
+        if (isset($this->session->cache[$id])) {
+            $item = $this->session->cache[$id];
+            if (time() - $item['time'] > 30) {
+                return $item['entry'];
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Helper function for storing cached data.
+     * Data is cached for up to 30 seconds so that it would be faster to process
+     * e.g. requests where multiple calls to the backend are made.
+     * 
+     * @param string $id    Cache entry id
+     * @param mixed  $entry Entry to be cached
+     * 
+     * @return void
+     */
+    protected function putCachedData($id, $entry)
+    {
+        if (!isset($this->session->cache)) {
+            $this->session->cache = array();
+        }
+        $this->session->cache[$id] = array(
+            'time' => time(),
+            'entry' => $entry
+        );
+    }
+        
     /**
      * Support method for VuFind Hold Logic. Take an array of status strings
      * and determines whether or not an item is holdable based on the
@@ -294,6 +350,20 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     }
     
     /**
+     * Support method for VuFind ILL Logic. Take a holdings row array 
+     * and determine whether or not an ILL (UB) request is allowed.
+     *
+     * @param array $holdingsRow The holdings row to analyze.
+     *
+     * @return bool Whether an item is holdable
+     * @access protected
+     */
+    protected function isILLRequestAllowed($holdingsRow)
+    {
+        return true;
+    }
+    
+    /**
      * Protected support method for getHolding.
      *
      * @param array $id A Bibliographic id
@@ -339,8 +409,11 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             $is_borrowable = isset($row['_fullRow']['ITEM_TYPE_ID'])
                 ? $this->isBorrowable($row['_fullRow']['ITEM_TYPE_ID']) : false;
             $is_holdable = $this->isHoldable($row['_fullRow']['STATUS_ARRAY']);
-            $isStorageRetrievalRequestAllowed
-                = $this->isStorageRetrievalRequestAllowed($row);
+            $isStorageRetrievalRequestAllowed 
+                = isset($this->config['StorageRetrievalRequests'])
+                && $this->isStorageRetrievalRequestAllowed($row);
+            $isILLRequestAllowed = isset($this->config['ILLRequests'])
+                && $this->isILLRequestAllowed($row);
             // If the item cannot be borrowed or if the item is not holdable,
             // set is_holdable to false
             if (!$is_borrowable || !$is_holdable) {
@@ -393,13 +466,22 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                 }
             }
             
+            $ILLRequest = '';
+            $addILLRequestLink = false;
+            if ($patron && $isILLRequestAllowed) {
+                $ILLRequest = 'auto';
+                $addILLRequestLink = 'check';
+            }
+            
             $holding[$i] += array(
                 'is_holdable' => $is_holdable,
                 'holdtype' => $holdType,
                 'addLink' => $addLink,
                 'level' => "copy",
                 'storageRetrievalRequest' => $storageRetrieval,
-                'addStorageRetrievalRequestLink' => $addStorageRetrievalLink
+                'addStorageRetrievalRequestLink' => $addStorageRetrievalLink,
+                'ILLRequest' => $ILLRequest,
+                'addILLRequestLink' => $addILLRequestLink
             );
             unset($holding[$i]['_fullRow']);
         }
@@ -445,6 +527,9 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
+        if (!isset($this->config['StorageRetrievalRequests'])) {
+            return false;
+        }
         if ($this->checkAccountBlocks($patron['id'])) {
             return 'block';
         }
@@ -461,7 +546,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         }
         return true;
     }
-    
+
     /**
      * Determine Renewability
      *
@@ -660,6 +745,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         }
 
         // Add Params
+        $queryString = array();
         foreach ($params as $key => $param) {
             $queryString[] = urlencode($key). "=" . urlencode($param);
         }
@@ -712,6 +798,18 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     }
 
     /**
+     * Encode a string for XML
+     * 
+     * @param string $string String to be encoded
+     * 
+     * @return string Encoded string
+     */
+    protected function encodeXML($string)
+    {
+        return htmlspecialchars($string, ENT_COMPAT, "UTF-8");
+    }
+    
+    /**
      * Build Basic XML
      *
      * Builds a simple xml string to send to the API
@@ -729,7 +827,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
 
             foreach ($nodes as $nodeName => $nodeValue) {
                 $xmlString .= "<" . $nodeName . ">";
-                $xmlString .= htmlspecialchars($nodeValue, ENT_COMPAT, "UTF-8");
+                $xmlString .= $this->encodeXML($nodeValue);
                 // Split out any attributes
                 $nodeName = strtok($nodeName, ' ');
                 $xmlString .= "</" . $nodeName . ">";
@@ -758,6 +856,12 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     protected function checkAccountBlocks($patronId)
     {
+        $cacheId = "blocks_$patronId";
+        $data = $this->getCachedData($cacheId);
+        if (!is_null($data)) {
+            return $data;
+        }
+        
         $blockReason = false;
 
         // Build Hierarchy
@@ -772,15 +876,15 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             "view" => "full"
         );
 
-        $blocks = $this->makeRequest($hierarchy, $params);
+        $blockReason = array();
 
+        $blocks = $this->makeRequest($hierarchy, $params);
         if ($blocks) {
             $node = "reply-text";
             $reply = (string)$blocks->$node;
 
             // Valid Response
             if ($reply == "ok" && isset($blocks->blocks)) {
-                $blockReason = array();
                 foreach ($blocks->blocks->institution->borrowingBlock
                     as $borrowBlock
                 ) {
@@ -788,7 +892,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                 }
             }
         }
-
+        $this->putCachedData($cacheId, $blockReason);
         return $blockReason;
     }
 
@@ -1134,6 +1238,91 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     }
 
     /**
+     * Get Patron Remote Holds
+     *
+     * This is responsible for retrieving all remote holds by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @throws DateException
+     * @throws ILSException
+     * @return array        Array of the patron's holds on success.
+     */
+    protected function getRemoteHolds($patron)
+    {
+        // Build Hierarchy
+        $hierarchy = array(
+            'patron' =>  $patron['id'],
+            'circulationActions' => 'requests',
+            'holds' => false
+        );
+
+        // Add Required Params
+        $params = array(
+            "patron_homedb" => $this->ws_patronHomeUbId,
+            "view" => "full"
+        );
+
+        $results = $this->makeRequest($hierarchy, $params);
+
+        if ($results === false) {
+            throw new ILSException('System error fetching remote holds');
+        }
+        
+        $replyCode = (string)$results->{'reply-code'};
+        if ($replyCode != 0 && $replyCode != 8) {
+            throw new ILSException('System error fetching remote holds');
+        }
+        $holds = array();
+        if (isset($results->holds->institution)) {
+            foreach ($results->holds->institution as $institution) {
+                // Only take remote holds
+                if ($institution == 'LOCAL') {
+                    continue;
+                }
+                
+                foreach ($institution->hold as $hold) {
+                    $item = $hold->requestItem;
+                    
+                    $holds[] = array(
+                        'id' => '',
+                        'type' => (string)$item->holdType,
+                        'location' => (string)$item->pickupLocation,
+                        'expire' => (string)$item->expiredDate 
+                            ? $this->dateFormat->convertToDisplayDate(
+                                'Y-m-d', (string)$item->expiredDate
+                            )
+                            : '',  
+                        // Looks like expired date shows creation date for
+                        // UB requests, but who knows
+                        'create' => (string)$item->expiredDate 
+                            ? $this->dateFormat->convertToDisplayDate(
+                                'Y-m-d', (string)$item->expiredDate
+                            )
+                            : '',  
+                        'position' => (string)$item->queuePosition,
+                        'available' => (string)$item->status == '2',
+                        'reqnum' => (string)$item->holdRecallId,
+                        'item_id' => (string)$item->itemId,
+                        'volume' => '',
+                        'publication_year' => '',
+                        'title' => (string)$item->itemTitle,
+                        'institution_id' => (string)$institution->attributes()->id,
+                        'institution_name' => (string)$item->dbName,
+                        'institution_dbkey' => (string)$item->dbKey,
+                        'in_transit' => (substr((string)$item->statusText, 0, 13) 
+                            == 'In transit to')
+                          ? substr((string)$item->statusText, 14) 
+                          : ''
+                    );
+                }
+            }
+        }
+        
+        return $holds;
+    }
+    
+    /**
      * Place Hold
      *
      * Attempts to place a hold or recall on a particular item and returns
@@ -1330,8 +1519,23 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     public function getMyStorageRetrievalRequests($patron)
     {
-        $requests = parent::getMyStorageRetrievalRequests($patron);
-        
+        $requests = array_merge(
+            parent::getMyStorageRetrievalRequests($patron),
+            $this->getRemoteCallSlips($patron)
+        );
+        return $requests;
+    }
+    
+    /**
+     * Get Patron Remote Storage Retrieval Requests (Call Slips). Gets remote
+     * callslips via the API.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return mixed        Array of the patron's storage retrieval requests.
+     */
+    protected function getRemoteCallSlips($patron)
+    {
         // Build Hierarchy
         $hierarchy = array(
             'patron' =>  $patron['id'],
@@ -1351,6 +1555,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         if ($replyCode != 0 && $replyCode != 8) {
             throw new Exception('System error fetching call slips');
         }
+        $requests = array();
         if (isset($results->callslips->institution)) {
             foreach ($results->callslips->institution as $institution) {
                 if ((string)$institution->attributes()->id == 'LOCAL') {
@@ -1370,7 +1575,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                             : '',  
                         // Looks like expired date shows creation date for 
                         // call slip requests, but who knows
-                        'created' => (string)$item->expiredDate 
+                        'create' => (string)$item->expiredDate 
                             ? $this->dateFormat->convertToDisplayDate(
                                 'Y-m-d', (string)$item->expiredDate
                             )
@@ -1594,4 +1799,598 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             . '|' . $details['reqnum'];
         return $details;
     }
+
+    /**
+     * A helper function that retrieves UB request details for ILL and caches them
+     * for a short while for faster access.
+     * 
+     * @param string $id     BIB id
+     * @param array  $patron Patron
+     * 
+     * @return boolean|array False if UB request is not available or an array
+     * of details on success
+     */
+    protected function getUBRequestDetails($id, $patron)
+    {
+        $requestId = "ub_{$id}_" . $patron['id'];
+        $data = $this->getCachedData($requestId);
+        if (!empty($data)) {
+            return $data;
+        }
+        
+        if (strstr($patron['id'], '.') === false) {
+            $this->debug(
+                "getUBRequestDetails: no prefix in patron id '{$patron['id']}'"
+            );
+            $this->putCachedData($requestId, false);
+            return false;
+        }
+        list($source, $patronId) = explode('.', $patron['id'], 2);
+        if (!isset($this->config['ILLRequestSources'][$source])) {
+            $this->debug("getUBRequestDetails: source '$source' unknown");
+            $this->putCachedData($requestId, false);
+            return false;
+        }
+
+        list($catSource, $catUsername) = explode('.', $patron['cat_username'], 2);
+        $patronId = $this->encodeXML($patronId);
+        $patronHomeUbId = $this->encodeXML(
+            $this->config['ILLRequestSources'][$source]
+        );
+        $lastname = $this->encodeXML($patron['lastname']);
+        $barcode = $this->encodeXML($catUsername);
+        $bibId = $this->encodeXML($id);
+        $bibDbName = $this->encodeXML($this->config['Catalog']['database']);
+        $localUbId = $this->encodeXML($this->ws_patronHomeUbId);
+        
+        // Call PatronRequestsService first to check that UB is an available request
+        // type. Additionally, this seems to be mandatory, as PatronRequestService 
+        // may fail otherwise.
+        $xml = <<<EOT
+<?xml version="1.0" encoding="UTF-8"?>
+<ser:serviceParameters 
+xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+  <ser:parameters>
+    <ser:parameter key="bibId">
+      <ser:value>$bibId</ser:value>
+    </ser:parameter>
+    <ser:parameter key="bibDbCode">
+      <ser:value>LOCAL</ser:value>
+    </ser:parameter>
+  </ser:parameters>
+  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$patronHomeUbId" 
+  patronId="$patronId">
+    <ser:authFactor type="B">$barcode</ser:authFactor>
+  </ser:patronIdentifier>
+</ser:serviceParameters>
+EOT;
+
+        $response = $this->makeRequest(
+            array('PatronRequestsService' => false), array(), 'POST', $xml
+        );
+        
+        if ($response === false) {
+            $this->session->UBDetails[$requestId] = array(
+                'time' => time(),
+                'data' => false
+            );
+            $this->putCachedData($requestId, false);
+            return false;
+        }
+        // Process
+        $response->registerXPathNamespace(
+            'ser', 'http://www.endinfosys.com/Voyager/serviceParameters'
+        );
+        $response->registerXPathNamespace(
+            'req', 'http://www.endinfosys.com/Voyager/requests'
+        );
+        foreach ($response->xpath('//ser:message') as $message) {
+            // Any message means a problem, right?
+            $this->putCachedData($requestId, false);
+            return false; 
+        }
+        $requestCount = count(
+            $response->xpath("//req:requestIdentifier[@requestCode='UB']")
+        ); 
+        if ($requestCount == 0) {
+            // UB request not available
+            $this->putCachedData($requestId, false);
+            return false;
+        }
+
+        $xml =  <<<EOT
+<?xml version="1.0" encoding="UTF-8"?>
+<ser:serviceParameters
+xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+  <ser:parameters>
+    <ser:parameter key="bibId">
+      <ser:value>$bibId</ser:value>
+    </ser:parameter>
+    <ser:parameter key="bibDbCode">
+      <ser:value>LOCAL</ser:value>
+    </ser:parameter>
+    <ser:parameter key="bibDbName">
+      <ser:value>$bibDbName</ser:value>
+    </ser:parameter>
+    <ser:parameter key="requestCode">
+      <ser:value>UB</ser:value>
+    </ser:parameter>
+    <ser:parameter key="requestSiteId">
+      <ser:value>$localUbId</ser:value>
+    </ser:parameter>
+  </ser:parameters>
+  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$patronHomeUbId" 
+  patronId="$patronId">
+    <ser:authFactor type="B">$barcode</ser:authFactor>
+  </ser:patronIdentifier>
+</ser:serviceParameters>               
+EOT;
+        
+        $response = $this->makeRequest(
+            array('PatronRequestService' => false), array(), 'POST', $xml
+        );
+        
+        if ($response === false) {
+            $this->putCachedData($requestId, false);
+            return false;
+        }
+        // Process
+        $response->registerXPathNamespace(
+            'ser', 'http://www.endinfosys.com/Voyager/serviceParameters'
+        );
+        $response->registerXPathNamespace(
+            'req', 'http://www.endinfosys.com/Voyager/requests'
+        );
+        foreach ($response->xpath('//ser:message') as $message) {
+            // Any message means a problem, right?
+            $this->putCachedData($requestId, false);
+            return false; 
+        }
+        $items = array();
+        $libraries = array();
+        $locations = array();
+        $requiredByDate = '';
+        foreach ($response->xpath('//req:field') as $field) {
+            switch ($field->attributes()->labelKey) {
+            case 'selectItem': 
+                foreach ($field->xpath('./req:select/req:option') as $option) {
+                    $items[] = array(
+                        'id' => (string)$option->attributes()->id, 
+                        'name' => (string)$option
+                    );
+                }
+                break;
+            case 'pickupLib': 
+                foreach ($field->xpath('./req:select/req:option') as $option) {
+                    $libraries[] = array(
+                        'id' => (string)$option->attributes()->id,
+                        'name' => (string)$option,
+                        'isDefault' => $option->attributes()->isDefault == 'Y'
+                    );
+                }
+                break;
+            case 'pickUpAt': 
+                foreach ($field->xpath('./req:select/req:option') as $option) {
+                    $locations[] = array(
+                        'id' => (string)$option->attributes()->id,
+                        'name' => (string)$option,
+                        'isDefault' => $option->attributes()->isDefault == 'Y'
+                    );
+                }
+                break;
+            case 'notNeededAfter':
+                $node = current($field->xpath('./req:text'));
+                $requiredByDate = $this->dateFormat->convertToDisplayDate(
+                    "Y-m-d H:i", (string)$node
+                );
+                break;
+            }
+        }
+        $results = array(
+            'items' => $items,
+            'libraries' => $libraries,
+            'locations' => $locations,
+            'requiredBy' => $requiredByDate
+        );
+        $this->putCachedData($requestId, $results);
+        return $results;
+    }
+    
+    /**
+     * checkILLRequestIsValid
+     *
+     * This is responsible for determining if an item is requestable
+     *
+     * @param string $id     The Bib ID
+     * @param array  $data   An Array of item data
+     * @param patron $patron An array of patron data
+     *
+     * @return string True if request is valid, false if not
+     */
+    public function checkILLRequestIsValid($id, $data, $patron)
+    {
+        if (!isset($this->config['ILLRequests'])) {
+            $this->debug('ILL Requests not configured');
+            return false;
+        }
+        
+        $level = isset($data['level']) ? $data['level'] : "copy";
+        $itemID = ($level != 'title' && isset($data['item_id']))
+            ? $data['item_id']
+            : false;
+        
+        if ($level == 'copy' && $itemID === false) {
+            $this->debug('Item ID missing');
+            return false;
+        }
+        
+        $results = $this->getUBRequestDetails($id, $patron);
+        if ($results === false) {
+            $this->debug('getUBRequestDetails returned false');
+            return false;
+        }
+        if ($level == 'copy') {
+            $found = false;
+            foreach ($results['items'] as $item) {
+                if ($item['id'] == "$itemID.$id") {
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                $this->debug('Item not requestable');
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Get ILL (UB) Pickup Libraries
+     *
+     * This is responsible for getting information on the possible pickup libraries
+     *
+     * @param string $id     Record ID
+     * @param array  $patron Patron
+     *
+     * @return bool|array False if request not allowed, or an array of associative 
+     * arrays with libraries.
+     */
+    public function getILLPickupLibraries($id, $patron)
+    {
+        if (!isset($this->config['ILLRequests'])) {
+            return false;
+        }
+
+        $results = $this->getUBRequestDetails($id, $patron);
+        if ($results === false) {
+            $this->debug('getUBRequestDetails returned false');
+            return false;
+        }
+        
+        return $results['libraries'];
+    }
+    
+    /**
+     * Get ILL (UB) Pickup Locations
+     * 
+     * This is responsible for getting a list of possible pickup locations for a 
+     * library
+     *
+     * @param string $id        Record ID
+     * @param string $pickupLib Pickup library ID
+     * @param array  $patron    Patron
+     *
+     * @return bool|array False if request not allowed, or an array of  
+     * locations.
+     */
+    public function getILLPickupLocations($id, $pickupLib, $patron)
+    {    
+        if (!isset($this->config['ILLRequests'])) {
+            return false;
+        }
+        
+        list($source, $patronId) = explode('.', $patron['id'], 2);
+        if (!isset($this->config['ILLRequestSources'][$source])) {
+            return $this->holdError('ill_request_unknown_patron_source');
+        }
+        
+        list($catSource, $catUsername) = explode('.', $patron['cat_username'], 2);
+        $patronId = $this->encodeXML($patronId);
+        $patronHomeUbId = $this->encodeXML(
+            $this->config['ILLRequestSources'][$source]
+        );
+        $lastname = $this->encodeXML($patron['lastname']);
+        $barcode = $this->encodeXML($catUsername);
+        $localUbId = $this->encodeXML($this->ws_patronHomeUbId);
+        $pickupLib = $this->encodeXML($pickupLib);
+        
+        $xml =  <<<EOT
+<?xml version="1.0" encoding="UTF-8"?>
+<ser:serviceParameters
+xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+  <ser:parameters>
+    <ser:parameter key="pickupLibId">
+      <ser:value>$pickupLib</ser:value>
+    </ser:parameter>
+  </ser:parameters>
+  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$patronHomeUbId"
+  patronId="$patronId">
+    <ser:authFactor type="B">$barcode</ser:authFactor>
+  </ser:patronIdentifier>
+</ser:serviceParameters>               
+EOT;
+        
+        $response = $this->makeRequest(
+            array('UBPickupLibService' => false), array(), 'POST', $xml
+        );
+        
+        if ($response === false) {
+            return new PEAR_Error('ill_request_error_technical');
+        }
+        // Process
+        $response->registerXPathNamespace(
+            'ser', 'http://www.endinfosys.com/Voyager/serviceParameters'
+        );
+        $response->registerXPathNamespace(
+            'req', 'http://www.endinfosys.com/Voyager/requests'
+        );
+        foreach ($response->xpath('//ser:message') as $message) {
+            // Any message means a problem, right?
+            return new PEAR_Error('ill_request_error_technical');
+        }
+        $locations = array();
+        foreach ($response->xpath('//req:location') as $location) {
+            $locations[] = array(
+                'id' => (string)$location->attributes()->id,
+                'name' => (string)$location,
+                'isDefault' => $location->attributes()->isDefault == 'Y'
+            );
+        }
+        return $locations;
+    }
+    
+    /**
+     * Place ILL (UB) Request
+     *
+     * Attempts to place an UB request on a particular item and returns
+     * an array with result details or a PEAR error on failure of support classes
+     *
+     * @param array $details An array of item and patron data
+     *
+     * @return mixed An array of data on the request including
+     * whether or not it was successful and a system message (if available)
+     * @access public
+     */
+    public function placeILLRequest($details)
+    {
+        $patron = $details['patron'];
+        list($source, $patronId) = explode('.', $patron['id'], 2);
+        if (!isset($this->config['ILLRequestSources'][$source])) {
+            return $this->holdError('ill_request_error_unknown_patron_source');
+        }
+                
+        list($catSource, $catUsername) = explode('.', $patron['cat_username'], 2);
+        $patronId = htmlspecialchars($patronId, ENT_COMPAT, 'UTF-8');
+        $patronHomeUbId = $this->encodeXML(
+            $this->config['ILLRequestSources'][$source]
+        );
+        $lastname = $this->encodeXML($patron['lastname']);
+        $ubId = $this->encodeXML($patronHomeUbId);
+        $barcode = $this->encodeXML($catUsername);
+        $pickupLocation = $this->encodeXML($details['pickUpLibraryLocation']);
+        $pickupLibrary = $this->encodeXML($details['pickUpLibrary']);
+        $itemId = $this->encodeXML($details['item_id'] . '.' . $details['id']);
+        $comment = $this->encodeXML(
+            isset($details['comment']) ? $details['comment'] : ''
+        );
+        $bibId = $this->encodeXML($details['id']);
+        $bibDbName = $this->encodeXML($this->config['Catalog']['database']);
+        $localUbId = $this->encodeXML($this->ws_patronHomeUbId);
+        
+        // Convert last interest date from Display Format to Voyager required format
+        try {
+            $lastInterestDate = $this->dateFormat->convertFromDisplayDate(
+                "Y-m-d", $details['requiredBy']
+            );
+        } catch (DateException $e) {
+            // Date is invalid
+            return $this->holdError("ill_request_date_invalid");
+        }
+        
+        // Attempt Request
+        $xml =  <<<EOT
+<?xml version="1.0" encoding="UTF-8"?>
+<ser:serviceParameters
+xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+  <ser:parameters>
+    <ser:parameter key="bibId">
+      <ser:value>$bibId</ser:value>
+    </ser:parameter>
+    <ser:parameter key="bibDbCode">
+      <ser:value>LOCAL</ser:value>
+    </ser:parameter>
+    <ser:parameter key="bibDbName">
+      <ser:value>$bibDbName</ser:value>
+    </ser:parameter>
+    <ser:parameter key="Select_Library">
+      <ser:value>$localUbId</ser:value>
+    </ser:parameter>
+    <ser:parameter key="requestCode">
+      <ser:value>UB</ser:value>
+    </ser:parameter>
+    <ser:parameter key="requestSiteId">
+      <ser:value>$localUbId</ser:value>
+    </ser:parameter>
+    <ser:parameter key="itemId">
+      <ser:value>$itemId</ser:value>
+    </ser:parameter>
+    <ser:parameter key="Select_Pickup_Lib">
+      <ser:value>$pickupLibrary</ser:value>
+    </ser:parameter>
+    <ser:parameter key="PICK">
+      <ser:value>$pickupLocation</ser:value>
+    </ser:parameter>
+    <ser:parameter key="REQNNA">
+      <ser:value>$lastInterestDate</ser:value>
+    </ser:parameter>
+    <ser:parameter key="REQCOMMENTS">
+      <ser:value>$comment</ser:value>
+    </ser:parameter>
+  </ser:parameters>
+  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$ubId"
+  patronId="$patronId">
+    <ser:authFactor type="B">$barcode</ser:authFactor>
+  </ser:patronIdentifier>
+</ser:serviceParameters>               
+EOT;
+        
+        $response = $this->makeRequest(
+            array('SendPatronRequestService' => false), array(), 'POST', $xml
+        );
+        
+        if ($response === false) {
+            return $this->holdError('ill_request_error_technical');
+        }
+        // Process
+        $response->registerXPathNamespace(
+            'ser', 'http://www.endinfosys.com/Voyager/serviceParameters'
+        );
+        $response->registerXPathNamespace(
+            'req', 'http://www.endinfosys.com/Voyager/requests'
+        );
+        foreach ($response->xpath('//ser:message') as $message) {
+            if ($message->attributes()->type == 'success') {
+                return array(
+                    'success' => true,
+                    'status' => 'ill_request_success'
+                );
+            }
+            if ($message->attributes()->type == 'system') {
+                return $this->holdError('ill_request_error_technical');
+            }
+        }
+
+        return $this->holdError('ill_request_error_blocked');
+    }
+
+    /**
+     * Get Patron ILL Requests
+     *
+     * This is responsible for retrieving all UB requests by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return mixed        Array of the patron's holds on success, PEAR_Error
+     * otherwise.
+     * @access public
+     */
+    public function getMyILLRequests($patron)
+    {
+        return array_merge(
+            $this->getRemoteHolds($patron),
+            $this->getRemoteCallSlips($patron)
+        );
+        
+        return $holds;        
+    }
+    
+    /**
+     * Cancel ILL (UB) Requests
+     *
+     * Attempts to Cancel an UB request on a particular item. The
+     * data in $cancelDetails['details'] is determined by 
+     * getCancelILLRequestDetails().
+     *
+     * @param array $cancelDetails An array of item and patron data
+     *
+     * @return array               An array of data on each request including
+     * whether or not it was successful and a system message (if available)
+     * @access public
+     */
+    public function cancelILLRequests($cancelDetails)
+    {
+        $details = $cancelDetails['details'];
+        $patron = $cancelDetails['patron'];
+        $count = 0;
+        $response = array();
+
+        foreach ($details as $cancelDetails) {
+            list($dbKey, $itemId, $type, $cancelCode) = explode("|", $cancelDetails);
+
+             // Create Rest API Cancel Key
+            $cancelID = ($dbKey ? $dbKey : $this->ws_dbKey) . "|" . $cancelCode;
+
+            // Build Hierarchy
+            $hierarchy = array(
+                "patron" => $patron['id'],
+                 "circulationActions" => 'requests'
+            );
+            // An UB request is 
+            if ($type == 'C') {
+                $hierarchy['callslips'] = $cancelID;
+            } else {
+                $hierarchy['holds'] = $cancelID;
+            }
+            
+            // Add Required Params
+            $params = array(
+                "patron_homedb" => $this->ws_patronHomeUbId,
+                "view" => "full"
+            );
+
+            // Get Data
+            $cancel = $this->makeRequest($hierarchy, $params, "DELETE");
+
+            if ($cancel) {
+
+                // Process Cancel
+                $cancel = $cancel->children();
+                $node = "reply-text";
+                $reply = (string)$cancel->$node;
+                $count = ($reply == "ok") ? $count+1 : $count;
+
+                $response[$itemId] = array(
+                    'success' => ($reply == "ok") ? true : false,
+                    'status' => ($reply == "ok")
+                        ? "ill_request_cancel_success" : "ill_request_cancel_fail",
+                    'sysMessage' => ($reply == "ok") ? false : $reply,
+                );
+
+            } else {
+                $response[$itemId] = array(
+                    'success' => false, 
+                    'status' => "ill_request_cancel_fail"
+                );
+            }
+        }
+        $result = array('count' => $count, 'items' => $response);
+        return $result;
+    }
+    
+    /**
+     * Get Cancel ILL (UB) Request Details
+     *
+     * In Voyager an UB request is either a call slip (pending delivery) or a hold
+     * (pending checkout). In order to cancel an UB request, Voyager requires the 
+     * patron details, an item ID, request type and a recall ID. This function 
+     * returns the information as a string separated by pipes, which is then 
+     * submitted as form data and extracted by the CancelILLRequests function.
+     *
+     * @param array $details An array of item data
+     *
+     * @return string Data for use in a form field
+     * @access public
+     */
+    public function getCancelILLRequestDetails($details)
+    {
+        $details = (isset($details['institution_dbkey']) 
+            ? $details['institution_dbkey'] 
+            : '')
+            . '|' . $details['item_id']
+            . '|' . $details['type']
+            . '|' . $details['reqnum'];
+        return $details;
+    }    
 }
