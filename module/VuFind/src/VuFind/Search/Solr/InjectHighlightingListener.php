@@ -60,15 +60,24 @@ class InjectHighlightingListener
     protected $active = false;
 
     /**
+     * Fields to highlight when active.
+     *
+     * @var string
+     */
+    protected $fieldList;
+
+    /**
      * Constructor.
      *
-     * @param BackendInterface $backend Backend
+     * @param BackendInterface $backend   Backend
+     * @param string           $fieldList Field(s) to highlight (hl.fl param)
      *
      * @return void
      */
-    public function __construct(BackendInterface $backend)
+    public function __construct(BackendInterface $backend, $fieldList = '*')
     {
         $this->backend = $backend;
+        $this->fieldList = $fieldList;
     }
 
     /**
@@ -102,7 +111,7 @@ class InjectHighlightingListener
                 if (!isset($hl[0]) || $hl[0] != 'false') {
                     $this->active = true;
                     $params->set('hl', 'true');
-                    $params->set('hl.fl', '*');
+                    $params->set('hl.fl', $this->fieldList);
                     $params->set('hl.simple.pre', '{{{{START_HILITE}}}}');
                     $params->set('hl.simple.post', '{{{{END_HILITE}}}}');
 

@@ -10,6 +10,7 @@ form.comment .span3 {padding-top:60px}
 .front { position:absolute;top:0;left:0;width:100%;padding-top:20%;z-index:5 }
 * html .centered-pills ul.nav-pills { display:inline } /* IE6 */
 *+html .centered-pills ul.nav-pills { display:inline } /* IE7 */
+.inlineblock {display:inline-block}
 li a.hidden {display:none}
 .modal .lightbox-header {display:none}
 .modal-body { max-height:600px }
