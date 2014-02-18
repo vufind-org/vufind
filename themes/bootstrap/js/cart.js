@@ -1,4 +1,4 @@
-/*global Cookies, lightbox, vufindString */
+/*global Cookies, path, vufindString, lightbox, addLightboxFormHandler, addLightboxOnClose, ajaxSubmit, changeModalContent, getDataFromForm, lastLightboxPOST, modalXHR */
 
 var _CART_COOKIE = 'vufind_cart';
 var _CART_COOKIE_SOURCES = 'vufind_cart_src';
@@ -88,20 +88,18 @@ function removeItemFromCart(id,source) {
 // Ajax cart submission for the lightbox
 function cartSubmit($form) {
   var submit = $form.find('input[type="submit"][clicked=true]').attr('name'); 
-  switch(submit) {
-    case 'print':
-      //redirect page
-      var checks = $form.find('input.checkbox-select-item:checked');
-      if(checks.length > 0) {
-        var url = path+'/Records/Home?print=true';
-        for(var i=0;i<checks.length;i++) {
-          url += '&id[]='+checks[i].value;
-        }
-        document.location.href = url;
-      }
-      break;
-    default:
-      ajaxSubmit($form, changeModalContent);
+  if (submit == 'print') {
+		//redirect page
+		var checks = $form.find('input.checkbox-select-item:checked');
+		if(checks.length > 0) {
+			var url = path+'/Records/Home?print=true';
+			for(var i=0;i<checks.length;i++) {
+				url += '&id[]='+checks[i].value;
+			}
+			document.location.href = url;
+		}
+  } else {
+    ajaxSubmit($form, changeModalContent);
   }
 }
 
@@ -198,7 +196,7 @@ $(document).ready(function() {
         }
       },
       error:function(d,e) {
-        console.log(d,e); // Error reporting
+        //console.log(d,e); // Error reporting
       }
     });
     return false;

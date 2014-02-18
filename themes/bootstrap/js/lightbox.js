@@ -130,15 +130,8 @@ function displayLightboxError(message) {
  * and handles the response according to the callback.
  *
  * Unless there's an error, default callback is changeModalContent
- *
- * Pop controls whether or not the callback is used immediately
- * after loading or to be stashed for later when it closes. Default true.
  */
 function getLightboxByUrl(url, post, callback) {
-  // Pop determines if we execute the callback immediately or later
-  if(typeof pop === "undefined") {
-    pop = true;
-  }
   // If the lightbox isn't visible, fix that
   if(lightboxShown === false) {
     $('#modal').modal('show');
@@ -172,16 +165,12 @@ function getLightboxByUrl(url, post, callback) {
  * and pushes the data and callback to the getLightboxByUrl
  */
 function getLightbox(controller, action, get, post, callback) {
-  // Pop determines if we execute the callback immediately or later
-  if(typeof pop === "undefined") {
-    pop = true;
-  }
   // Build URL
   var url = path+'/AJAX/JSON?method=getLightbox&submodule='+controller+'&subaction='+action;
   if(get && get !== {}) {
     url += '&'+$.param(get);
   }
-  return getLightboxByUrl(url, post, callback, pop);
+  return getLightboxByUrl(url, post, callback);
 }
 
 /**********************************/
