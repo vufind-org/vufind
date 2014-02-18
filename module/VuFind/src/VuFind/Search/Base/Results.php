@@ -151,6 +151,9 @@ abstract class Results implements ServiceLocatorAwareInterface
     /**
      * Override a helper object.
      *
+     * @param string $key   Name of helper to set
+     * @param object $value Helper object
+     *
      * @return void
      */
     public function setHelper($key, $value)

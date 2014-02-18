@@ -13,8 +13,8 @@
 ?>
 <div class="centered-pills noprint">
   <ul class="nav nav-pills">
-    <li><a id="cite-record" class="modal-link <?=$controllerClass?>" href="<?=$this->url('record-cite', array('id'=>$id)) ?>" title="<?=$this->transEsc('Cite this')?>"><i class="icon-asterisk"></i> <?=$this->transEsc('Cite this')?></a></li>
     <? if (count($this->driver->getCitationFormats()) > 0): ?>
+      <li><a id="cite-record" class="modal-link <?=$controllerClass?>" href="<?=$this->url('record-cite', array('id'=>$id)) ?>" title="<?=$this->transEsc('Cite this')?>"><i class="icon-asterisk"></i> <?=$this->transEsc('Cite this')?></a></li>
     <? endif; ?>
     <li><a id="sms-record" class="modal-link <?=$controllerClass?>" href="<?=$this->url('record-sms', array('id'=>$id)) ?>" title="<?=$this->transEsc('Text this')?>"><i class="icon-phone-sign"></i> <?=$this->transEsc('Text this')?></a></li>
     <li><a id="mail-record" class="modal-link <?=$controllerClass?>" href="<?=$this->url('record-email', array('id'=>$id)) ?>" title="<?=$this->transEsc('Email this')?>"><i class="icon-envelope"></i> <?=$this->transEsc('Email this')?></a></li>
