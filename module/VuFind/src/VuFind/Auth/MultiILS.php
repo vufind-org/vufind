@@ -114,7 +114,7 @@ class MultiILS extends ILS
         // driver; if other ILS drivers eventually support this option, we
         // should define an interface containing getLoginDrivers() and
         // getDefaultLoginDriver().
-        if (!($connection instanceof MultiBackend)) {
+        if (!($connection->getDriver() instanceof MultiBackend)) {
             throw new \Exception(
                 'MultiILS authentication requires MultiBackend ILS driver.'
             );

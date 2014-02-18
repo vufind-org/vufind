@@ -1,10 +1,10 @@
 <?php
 /**
- * Search results plugin manager
+ * Factory for DB tables.
  *
  * PHP version 5
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2014.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -20,47 +20,34 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Search
+ * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-namespace VuFind\Search\Results;
+namespace VuFind\Db\Table;
+use Zend\ServiceManager\ServiceManager;
 
 /**
- * Search results plugin manager
+ * Factory for DB tables.
  *
  * @category VuFind2
- * @package  Search
+ * @package  Db_Table
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
+class Factory
 {
     /**
-     * Constructor
+     * Construct the Resource table.
      *
-     * @param null|ConfigInterface $configuration Configuration settings (optional)
-     */
-    public function __construct(
-        \Zend\ServiceManager\ConfigInterface $configuration = null
-    ) {
-        // These objects are not meant to be shared -- every time we retrieve one,
-        // we are building a brand new object.
-        $this->setShareByDefault(false);
-
-        parent::__construct($configuration);
-    }
-
-    /**
-     * Return the name of the base class or interface that plug-ins must conform
-     * to.
+     * @param ServiceManager $sm Service manager.
      *
-     * @return string
+     * @return Resource
      */
-    protected function getExpectedInterface()
+    public static function getResource(ServiceManager $sm)
     {
-        return 'VuFind\Search\Base\Results';
+        return new Resource($sm->getServiceLocator()->get('VuFind\DateConverter'));
     }
 }

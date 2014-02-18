@@ -9,6 +9,7 @@
  * PHP version 5
  *
  * Copyright (C) Villanova University 2007.
+ * Copyright (C) The National Library of Finland 2014.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -26,6 +27,7 @@
  * @category VuFind2
  * @package  ILS_Drivers
  * @author   Greg Pendlebury <vufind-tech@lists.sourceforge.net>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
@@ -41,6 +43,7 @@ use ArrayObject, VuFind\Exception\Date as DateException,
  * @category VuFind2
  * @package  ILS_Drivers
  * @author   Greg Pendlebury <vufind-tech@lists.sourceforge.net>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
@@ -80,7 +83,7 @@ class Demo extends AbstractBase
      * @var bool
      */
     protected $storageRetrievalRequests = true;
-    
+
     /**
      * Date converter object
      *
@@ -236,6 +239,60 @@ class Demo extends AbstractBase
         );
     }
 
+    /**
+     * Generate a list of holds or storage retrieval requests.
+     * 
+     * @param string $requestType Request type (Holds or StorageRetrievalRequests)
+     * 
+     * @return ArrayObject List of requests
+     */
+    protected function createRequestList($requestType)
+    {
+        // How many items are there?  %10 - 1 = 10% chance of none,
+        // 90% of 1-9 (give or take some odd maths)
+        $items = rand()%10 - 1;
+
+        // Do some initial work in solr so we aren't repeating it inside this
+        // loop.
+        $this->prepSolr();
+
+        $list = new ArrayObject();
+        for ($i = 0; $i < $items; $i++) {
+            $currentItem = array(
+                "location" => $this->getFakeLoc(false),
+                "create"   => date("j-M-y", strtotime("now - ".(rand()%10)." days")),
+                "expire"   => date("j-M-y", strtotime("now + 30 days")),
+                "reqnum"   => sprintf("%06d", $i),
+                "item_id" => $i,
+                "reqnum" => $i
+            );
+            if ($this->idsInMyResearch) {
+                $currentItem['id'] = $this->getRandomBibId();
+            } else {
+                $currentItem['title'] = 'Demo Title ' . $i;
+            }
+
+            if ($requestType == 'Holds') {
+                $pos = rand()%5;
+                if ($pos > 1) {
+                    $currentItem['position'] = $pos;
+                } else {
+                    $currentItem['available'] = true;
+                }
+            } else {
+                $status = rand()%5;
+                $currentItem['available'] = $status == 1;
+                $currentItem['canceled'] = $status == 2;
+                $currentItem['processed'] = ($status == 1 || rand(1, 3) == 3)
+                    ? date("j-M-y") 
+                    : '';
+            }
+            
+            $list->append($currentItem);
+        }
+        return $list;        
+    }
+    
     /**
      * Get Status
      *
@@ -544,38 +601,7 @@ class Demo extends AbstractBase
     public function getMyHolds($patron)
     {
         if (!isset($this->session->holds)) {
-            // How many items are there?  %10 - 1 = 10% chance of none,
-            // 90% of 1-9 (give or take some odd maths)
-            $holds = rand()%10 - 1;
-
-            // Do some initial work in solr so we aren't repeating it inside this
-            // loop.
-            $this->prepSolr();
-
-            $holdList = new ArrayObject();
-            for ($i = 0; $i < $holds; $i++) {
-                $currentHold = array(
-                    "location" => $this->getFakeLoc(false),
-                    "expire"   => date("j-M-y", strtotime("now + 30 days")),
-                    "create"   =>
-                        date("j-M-y", strtotime("now - ".(rand()%10)." days")),
-                    "reqnum"   => sprintf("%06d", $i),
-                    "item_id" => $i
-                );
-                if ($this->idsInMyResearch) {
-                    $currentHold['id'] = $this->getRandomBibId();
-                } else {
-                    $currentHold['title'] = 'Demo Title ' . $i;
-                }
-                $pos = rand()%5;
-                if ($pos > 1) {
-                    $currentHold['position'] = $pos;
-                } else {
-                    $currentHold['available'] = true;
-                }
-                $holdList->append($currentHold);
-            }
-            $this->session->holds = $holdList;
+            $this->session->holds = $this->createRequestList('Holds');
         }
         return $this->session->holds;
     }
@@ -592,45 +618,12 @@ class Demo extends AbstractBase
     public function getMyStorageRetrievalRequests($patron)
     {
         if (!isset($this->session->storageRetrievalRequests)) {
-            // How many items are there?  %10 - 1 = 10% chance of none,
-            // 90% of 1-9 (give or take some odd maths)
-            $items = rand()%10 - 1;
-
-            // Do some initial work in solr so we aren't repeating it inside this
-            // loop.
-            $this->prepSolr();
-
-            $list = new ArrayObject();
-            for ($i = 0; $i < $items; $i++) {
-                $status = rand()%5;
-                $currentItem = array(
-                    "type"     => 'C',
-                    "location" => $this->getFakeLoc(false),
-                    "expire"   => date("j-M-y", strtotime("now + 30 days")),
-                    "created"   =>
-                        date("j-M-y", strtotime("now - ".(rand()%10)." days")),
-                    "reqnum"   => sprintf("%06d", $i),
-                    "available" => $status == 1,
-                    "canceled" => $status == 2,
-                    "item_id" => $i,
-                    "reqnum" => $i,
-                    "volume" => '',
-                    "processed" => ($status == 1 || rand(1, 3) == 3)
-                        ? date("j-M-y")
-                        : ''
-                );
-                if ($this->idsInMyResearch) {
-                    $currentItem['id'] = $this->getRandomBibId();
-                } else {
-                    $currentItem['title'] = 'Demo Title ' . $i;
-                }
-                $list->append($currentItem);
-            }
-            $this->session->storageRetrievalRequests = $list;
+            $this->session->storageRetrievalRequests
+                = $this->createRequestList('StorageRetrievalRequests');
         }
         return $this->session->storageRetrievalRequests;
     }
-
+    
     /**
      * Get Patron Transactions
      *
@@ -1080,7 +1073,7 @@ class Demo extends AbstractBase
     {
         return $checkOutDetails['item_id'];
     }
-
+    
     /**
      * Check if hold or recall available
      *
@@ -1099,7 +1092,7 @@ class Demo extends AbstractBase
         }
         return true;
     }
-
+    
     /**
      * Place Hold
      *
@@ -1187,7 +1180,7 @@ class Demo extends AbstractBase
         }
         return true;
     }
-
+    
     /**
      * Place a Storage Retrieval Request
      *
@@ -1222,7 +1215,7 @@ class Demo extends AbstractBase
         }
         $lastRequest = count($this->session->storageRetrievalRequests) - 1;
         $nextId = $lastRequest >= 0
-            ? $this->session->storageRetrievalRequests[$lastRequest]['item_id'] + 1
+            ? $this->session->storageRetrievalRequests[$lastRequest]['item_id'] + 1 
             : 0;
         
         // Figure out appropriate expiration date:
@@ -1255,7 +1248,7 @@ class Demo extends AbstractBase
                 "id"       => $details['id'],
                 "location" => $details['pickUpLocation'],
                 "expire"   => date("j-M-y", $expire),
-                "created"  => date("j-M-y"),
+                "create"  => date("j-M-y"),
                 "processed" => rand()%3 == 0 ? date("j-M-y", $expire) : '',
                 "reqnum"   => sprintf("%06d", $nextId),
                 "item_id"  => $nextId

@@ -39,7 +39,7 @@ namespace VuFind\Search\SolrCollection;
 class Params extends \VuFind\Search\Solr\Params
 {
     /**
-     * The field which defines somehting as being a collection
+     * The field which defines something as being a collection
      * this is usually either hierarchy_parent_id or
      * hierarchy_top_id
      *
@@ -124,5 +124,15 @@ class Params extends \VuFind\Search\Solr\Params
         return isset($searchSettings->Recommend)
             ? $searchSettings->Recommend->toArray()
             : array('side' => array('CollectionSideFacets:Facets::Collection:true'));
+    }
+
+    /**
+     * Get collection field
+     *
+     * @return string
+     */
+    public function getCollectionField()
+    {
+        return $this->collectionField;
     }
 }

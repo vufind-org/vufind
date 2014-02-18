@@ -136,6 +136,9 @@ class Database extends AbstractBase
         if (!$validator->isValid($params['email'])) {
             throw new AuthException('Email address is invalid');
         }
+        if (!$this->emailAllowed($params['email'])) {
+            throw new AuthException('authentication_error_creation_blocked');
+        }
 
         // Make sure we have a unique username
         $table = $this->getUserTable();
@@ -195,6 +198,38 @@ class Database extends AbstractBase
         return $password == $userRow->password;
     }
 
+    /**
+     * Check that an email address is legal based on whitelist (if configured).
+     *
+     * @param string $email Email address to check (assumed to be valid/well-formed)
+     *
+     * @return bool
+     */
+    protected function emailAllowed($email)
+    {
+        // If no whitelist is configured, all emails are allowed:
+        $config = $this->getConfig();
+        if (!isset($config->Authentication->domain_whitelist)
+            || empty($config->Authentication->domain_whitelist)
+        ) {
+            return true;
+        }
+
+        // Normalize the whitelist:
+        $whitelist = array_map(
+            'trim',
+            array_map(
+                'strtolower', $config->Authentication->domain_whitelist->toArray()
+            )
+        );
+
+        // Extract the domain from the email address:
+        $parts = explode('@', $email);
+        $domain = strtolower(trim(array_pop($parts)));
+
+        // Match domain against whitelist:
+        return in_array($domain, $whitelist);
+    }
 
     /**
      * Does this authentication method support account creation?

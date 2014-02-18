@@ -883,9 +883,9 @@ class MyResearchController extends AbstractBase
         $catalog = $this->getILS();
 
         // Process cancel requests if necessary:
-        $cancelStatus = $catalog->checkFunction('cancelStorageRetrievalRequests');
+        $cancelSRR = $catalog->checkFunction('cancelStorageRetrievalRequests');
         $view = $this->createViewModel();
-        $view->cancelResults = $cancelStatus
+        $view->cancelResults = $cancelSRR
             ? $this->storageRetrievalRequests()->cancelStorageRetrievalRequests(
                 $catalog, $patron
             )
@@ -905,10 +905,10 @@ class MyResearchController extends AbstractBase
         foreach ($result as $current) {
             // Add cancel details if appropriate:
             $current = $this->storageRetrievalRequests()->addCancelDetails(
-                $catalog, $current, $cancelStatus, $patron
+                $catalog, $current, $cancelSRR, $patron
             );
-            if ($cancelStatus
-                && $cancelStatus['function'] != "getCancelStorageRetrievalRequestLink"
+            if ($cancelSRR
+                && $cancelSRR['function'] != "getCancelStorageRetrievalRequestLink"
                 && isset($current['cancel_details'])
             ) {
                 // Enable cancel form if necessary:
