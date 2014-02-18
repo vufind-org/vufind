@@ -19,6 +19,7 @@ return array(
             'historylabel' => array('VuFind\View\Helper\Root\Factory', 'getHistoryLabel'),
             'ils' => array('VuFind\View\Helper\Root\Factory', 'getIls'),
             'jstranslations' => array('VuFind\View\Helper\Root\Factory', 'getJsTranslations'),
+            'keepalive' => array('VuFind\View\Helper\Root\Factory', 'getKeepAlive'),
             'proxyurl' => array('VuFind\View\Helper\Root\Factory', 'getProxyUrl'),
             'openurl' => array('VuFind\View\Helper\Root\Factory', 'getOpenUrl'),
             'record' => array('VuFind\View\Helper\Root\Factory', 'getRecord'),
