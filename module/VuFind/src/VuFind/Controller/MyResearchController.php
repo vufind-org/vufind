@@ -931,6 +931,62 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * Send list of ill requests to view
+     *
+     * @return mixed
+     */
+    public function illRequestsAction()
+    {
+        // Stop now if the user does not have valid catalog credentials available:
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+
+        // Connect to the ILS:
+        $catalog = $this->getILS();
+
+        // Process cancel requests if necessary:
+        $cancelStatus = $catalog->checkFunction('cancelILLRequests');
+        $view = $this->createViewModel();
+        $view->cancelResults = $cancelStatus
+            ? $this->ILLRequests()->cancelILLRequests(
+                $catalog, $patron
+            )
+            : array();
+        // If we need to confirm
+        if (!is_array($view->cancelResults)) {
+            return $view->cancelResults;
+        }
+
+        // By default, assume we will not need to display a cancel form:
+        $view->cancelForm = false;
+
+        // Get request details:
+        $result = $catalog->getMyILLRequests($patron);
+        $recordList = array();
+        $this->ILLRequests()->resetValidation();
+        foreach ($result as $current) {
+            // Add cancel details if appropriate:
+            $current = $this->ILLRequests()->addCancelDetails(
+                $catalog, $current, $cancelStatus, $patron
+            );
+            if ($cancelStatus 
+                && $cancelStatus['function'] != "getCancelILLRequestLink"
+                && isset($current['cancel_details'])
+            ) {
+                // Enable cancel form if necessary:
+                $view->cancelForm = true;
+            }
+
+            // Build record driver:
+            $recordList[] = $this->getDriverForILSRecord($current);
+        }
+
+        $view->recordList = $recordList;
+        return $view;
+    }
+
+    /**
      * Send list of checked out books to view
      *
      * @return mixed

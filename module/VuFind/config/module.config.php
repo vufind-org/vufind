@@ -102,6 +102,7 @@ $config = array(
         'factories' => array(
             'holds' => array('VuFind\Controller\Plugin\Factory', 'getHolds'),
             'storageRetrievalRequests' => array('VuFind\Controller\Plugin\Factory', 'getStorageRetrievalRequests'),
+            'ILLRequests' => array('VuFind\Controller\Plugin\Factory', 'getILLRequests'),
             'reserves' => array('VuFind\Controller\Plugin\Factory', 'getReserves'),
         ),
         'invokables' => array(
@@ -537,7 +538,7 @@ $recordRoutes = array(
 $nonTabRecordActions = array(
     'AddComment', 'DeleteComment', 'AddTag', 'Save', 'Email', 'SMS', 'Cite',
     'Export', 'RDF', 'Hold', 'BlockedHold', 'Home', 'StorageRetrievalRequest',
-    'BlockedStorageRetrievalRequest'
+    'BlockedStorageRetrievalRequest', 'ILLRequest', 'BlockedILLRequest' 
 );
 
 // Define list-related routes -- route name => MyResearch action
@@ -563,6 +564,7 @@ $staticRoutes = array(
     'MyResearch/Favorites', 'MyResearch/Fines',
     'MyResearch/Holds', 'MyResearch/Home', 'MyResearch/Logout', 'MyResearch/Profile',
     'MyResearch/SaveSearch', 'MyResearch/StorageRetrievalRequests',
+    'MyResearch/ILLRequests',
     'QRCode/Show', 'QRCode/Unavailable',
     'OAI/Server', 'Pazpar2/Home', 'Pazpar2/Search', 'Records/Home',
     'Search/Advanced', 'Search/Email', 'Search/History', 'Search/Home',

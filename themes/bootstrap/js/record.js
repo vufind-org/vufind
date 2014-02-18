@@ -39,19 +39,25 @@ function checkRequestIsValid(element, requestURL, requestType, blockedClass) {
 
 function setUpCheckRequest() {
   $('.checkRequest').each(function(i) {
-    if($(this).hasClass('checkRequest')) {
+    if ($(this).hasClass('checkRequest')) {
       var isValid = checkRequestIsValid(this, this.href, 'Hold', 'holdBlocked');
+    }
+  });
+  $('.checkStorageRetrievalRequest').each(function(i) {
+    if ($(this).hasClass('checkStorageRetrievalRequest')) {
+      var isValid = checkRequestIsValid(this, this.href, 'StorageRetrievalRequest',
+          'StorageRetrievalRequestBlocked');
+    }
+  });
+  $('.checkILLRequest').each(function(i) {
+    if ($(this).hasClass('checkILLRequest')) {
+      var isValid = checkRequestIsValid(this, this.href, 'ILLRequest',
+          'ILLRequestBlocked');
     }
   });
 }
 
 function setUpCheckStorageRetrievalRequest() {
-  $('.checkStorageRetrievalRequest').each(function(i) {
-    if($(this).hasClass('checkStorageRetrievalRequest')) {
-      var isValid = checkRequestIsValid(this, this.href, 'StorageRetrievalRequest',
-          'StorageRetrievalRequestBlocked');
-    }
-  });
 }
 
 function deleteRecordComment(element, recordId, recordSource, commentId) {
