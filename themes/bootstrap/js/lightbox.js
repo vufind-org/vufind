@@ -108,6 +108,12 @@ function closeLightboxActions() {
     cartCount.html(cart.length);
   }
 }
+/**
+ * This function changes the content of the lightbox to a message.
+ */
+function lightboxConfirm(message) {
+  changeModalContent('<div class="alert alert-info">'+message+'</div><button class="btn" data-dismiss="modal" aria-hidden="true">'+vufindString['close']+'</button>');
+}
 
 /**
  * Insert an alert element into the top of the lightbox
@@ -151,7 +157,8 @@ function getLightboxByUrl(url, post, callback) {
       }
     },
     error:function(d,e) {
-      console.log(url,e,d); // Error reporting
+      console.log(e,d); // Error reporting
+      console.log(url,post);
     }
   });
   // Store current "page" context for empty targets

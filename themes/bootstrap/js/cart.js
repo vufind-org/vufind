@@ -1,4 +1,4 @@
-/*global Cookies, path, vufindString, lightbox, addLightboxFormHandler, addLightboxOnClose, ajaxSubmit, changeModalContent, getDataFromForm, lastLightboxPOST, modalXHR */
+/*global Cookies, path, vufindString, addLightboxFormHandler, addLightboxOnClose, ajaxSubmit, changeModalContent, getDataFromForm, lastLightboxPOST, modalXHR */
 
 var _CART_COOKIE = 'vufind_cart';
 var _CART_COOKIE_SOURCES = 'vufind_cart_src';
@@ -173,9 +173,7 @@ $(document).ready(function() {
     return false;
   });
   addLightboxFormHandler('bulkSave', function(){
-    ajaxSubmit($(this), function(x) {
-      changeModalContent('<div class="alert alert-info">'+vufindString['bulk_save_success']+'</div><button class="btn" data-dismiss="modal" aria-hidden="true">'+vufindString['close']+'</button>');
-    });
+    ajaxSubmit($(this), changeModalContent);
     // After we close the lightbox, redirect to list view
     addLightboxOnClose(function() {
       document.location.href = path+'/MyResearch/MyList/'+lastLightboxPOST['list'];

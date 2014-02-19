@@ -1,4 +1,4 @@
-/*global closeLightbox, extractClassParams, getLightbox, path */
+/*global addLightboxFormHandler, addLightboxOnClose, closeLightbox, extractClassParams, getLightbox, path */
 
 /**
  * Functions and event handlers specific to record pages.
@@ -112,14 +112,15 @@ function registerAjaxCommentRecord() {
           $(form).find('textarea[name="comment"]').val('');
         } else if (response.status == 'NEED_AUTH') {
           data['loggingin'] = true;
-          return getLightbox(
-            'Record', 'AddComment', data, data,
-            function(){
-              closeLightbox();
-              $.ajax({type:'POST',url:url,data:data});
-              refreshCommentList(id, recordSource);
-            }
-          );
+          addLightboxOnClose(function() {
+            $.ajax({
+              type: 'POST',
+              url:  url,
+              data: data,
+              dataType: 'json',
+            });
+          });
+          return getLightbox('Record', 'AddComment', data, data);
         } else {
           $('#modal').find('.modal-body').html(response.data+'!');
           $('#modal').find('.modal-header h3').html('Error!');
@@ -155,6 +156,9 @@ $(document).ready(function(){
   $('#save-record').click(function() {
     var params = extractClassParams(this);
     return getLightbox(params['controller'], 'Save', {id:id});
+  });
+  addLightboxFormHandler('saveRecord', function(x) {
+    ajaxSubmit($(this), function(){lightboxConfirm(vufindString['bulk_save_success'])});
   });
   
   // register the record comment form to be submitted via AJAX
