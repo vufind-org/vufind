@@ -112,7 +112,7 @@ function closeLightboxActions() {
  * This function changes the content of the lightbox to a message.
  */
 function lightboxConfirm(message) {
-  changeModalContent('<div class="alert alert-info">'+message+'</div><button class="btn" data-dismiss="modal" aria-hidden="true">'+vufindString['close']+'</button>');
+  changeModalContent('<div class="alert alert-info">'+message+'</div><button class="btn" onClick="closeLightbox()">'+vufindString['close']+'</button>');
 }
 
 /**
@@ -403,7 +403,12 @@ function registerModalForms(modal) {
   var $form = $(modal).find('form');
   // Assign form handler based on name
   if(typeof modalFormHandlers[$form.attr('name')] !== "undefined") {
-    $form.submit(modalFormHandlers[$form.attr('name')]);
+    $form.submit(
+      function(ret) {
+        modalFormHandlers[$form.attr('name')](ret);
+        return false; // Always return false
+      }
+    );
   } else {
     // Default
     $(modal).find('form').submit(function(){

@@ -157,11 +157,11 @@ $(document).ready(function(){
     var params = extractClassParams(this);
     return getLightbox(params['controller'], 'Save', {id:id});
   });
-  addLightboxFormHandler('saveRecord', function(x) {
-    ajaxSubmit($(this), function(){lightboxConfirm(vufindString['bulk_save_success'])});
+  addLightboxFormHandler('saveRecord', function(evt) {
+    ajaxSubmit($(evt.target), function(){lightboxConfirm(vufindString['bulk_save_success'])});
   });
-  addLightboxFormHandler('emailRecord', function(x) {
-    ajaxSubmit($(this), function(){lightboxConfirm(vufindString['bulk_email_success'])});
+  addLightboxFormHandler('emailRecord', function(evt) {
+    ajaxSubmit($(evt.target), function(){lightboxConfirm(vufindString['bulk_email_success'])});
   });
   
   // register the record comment form to be submitted via AJAX
