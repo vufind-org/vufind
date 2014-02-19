@@ -160,6 +160,9 @@ $(document).ready(function(){
   addLightboxFormHandler('saveRecord', function(x) {
     ajaxSubmit($(this), function(){lightboxConfirm(vufindString['bulk_save_success'])});
   });
+  addLightboxFormHandler('emailRecord', function(x) {
+    ajaxSubmit($(this), function(){lightboxConfirm(vufindString['bulk_email_success'])});
+  });
   
   // register the record comment form to be submitted via AJAX
   registerAjaxCommentRecord();
