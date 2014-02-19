@@ -1380,7 +1380,8 @@ class Voyager extends AbstractBase
             $this->dbName.".HOLD_RECALL",
             $this->dbName.".HOLD_RECALL_ITEMS",
             $this->dbName.".MFHD_ITEM",
-            $this->dbName.".BIB_TEXT"
+            $this->dbName.".BIB_TEXT",
+            $this->dbName.".VOYAGER_DATABASES"
         );
 
         // Where
@@ -1390,7 +1391,9 @@ class Voyager extends AbstractBase
             "HOLD_RECALL_ITEMS.ITEM_ID = MFHD_ITEM.ITEM_ID(+)",
             "(HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS IS NULL OR " .
             "HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS < 3)",
-            "BIB_TEXT.BIB_ID = HOLD_RECALL.BIB_ID"
+            "BIB_TEXT.BIB_ID = HOLD_RECALL.BIB_ID",
+            "(HOLD_RECALL.HOLDING_DB_ID IS NULL OR (HOLD_RECALL.HOLDING_DB_ID = " .
+            "VOYAGER_DATABASES.DB_ID AND VOYAGER_DATABASES.DB_CODE = 'LOCAL'))"
         );
 
         // Bind
