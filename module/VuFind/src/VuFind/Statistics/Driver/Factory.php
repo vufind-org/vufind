@@ -65,7 +65,8 @@ class Factory
     {
         return new Solr(
             $sm->getServiceLocator()->get('VuFind\Solr\Writer'),
-            $sm->getServiceLocator()->get('VuFind\Search\BackendManager')->get('SolrStats')
+            $sm->getServiceLocator()->get('VuFind\Search\BackendManager')
+                ->get('SolrStats')
         );
     }
 }

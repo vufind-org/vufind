@@ -50,8 +50,10 @@ class Factory
      */
     public function getSolr(ServiceManager $sm)
     {
-        $cacheDir = $sm->getServiceLocator()->get('VuFind\CacheManager')->getCacheDir(false);
-        $hierarchyFilters = $sm->getServiceLocator()->get('VuFind\Config')->get('HierarchyDefault');
+        $cacheDir = $sm->getServiceLocator()->get('VuFind\CacheManager')
+            ->getCacheDir(false);
+        $hierarchyFilters = $sm->getServiceLocator()->get('VuFind\Config')
+            ->get('HierarchyDefault');
         $filters = isset($hierarchyFilters->HierarchyTree->filterQueries)
           ? $hierarchyFilters->HierarchyTree->filterQueries->toArray()
           : array();
