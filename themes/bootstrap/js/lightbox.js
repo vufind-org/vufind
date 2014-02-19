@@ -482,9 +482,10 @@ $(document).ready(function() {
   $('.placehold').click(function() {
     var params = deparam($(this).attr('href'));
     params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    return getLightbox('Record', 'Hold', params, {}, function(op) {
+    addLightboxOnClose(function(op) {
       document.location.href = path+'/MyResearch/Holds';
-    }, false);
+    });
+    return getLightbox('Record', 'Hold', params, {});
   });
   // Save record links
   $('.save-record').click(function() {
