@@ -159,9 +159,11 @@ $(document).ready(function(){
   });
   addLightboxFormHandler('saveRecord', function(evt) {
     ajaxSubmit($(evt.target), function(){lightboxConfirm(vufindString['bulk_save_success'])});
+    return false;
   });
   addLightboxFormHandler('emailRecord', function(evt) {
     ajaxSubmit($(evt.target), function(){lightboxConfirm(vufindString['bulk_email_success'])});
+    return false;
   });
   
   // register the record comment form to be submitted via AJAX

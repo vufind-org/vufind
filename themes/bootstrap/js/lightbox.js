@@ -403,12 +403,7 @@ function registerModalForms(modal) {
   var $form = $(modal).find('form');
   // Assign form handler based on name
   if(typeof modalFormHandlers[$form.attr('name')] !== "undefined") {
-    $form.submit(
-      function(ret) {
-        modalFormHandlers[$form.attr('name')](ret);
-        return false; // Always return false
-      }
-    );
+    $form.submit(modalFormHandlers[$form.attr('name')]);
   } else {
     // Default
     $(modal).find('form').submit(function(){
