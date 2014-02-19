@@ -1455,10 +1455,8 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                 'dbkey' => $this->ws_dbKey,
                 'mfhdId' => $mfhdId
             );
-            // It seems Voyager doesn't currently (v8.1) use pickupLocation,
-            // but we'll handle it just in case it becomes available later.  
             if ($pickUpLocation) {
-                $xml['call-slip-title-parameters']['pickupLocation']
+                $xml['call-slip-title-parameters']['pickup-location']
                     = $pickUpLocation;    
             }
         } else {
@@ -1466,10 +1464,8 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                 'comment' => $comment,
                 'dbkey' => $this->ws_dbKey
             );
-            // It seems Voyager doesn't currently (v8.1) use pickupLocation,
-            // but we'll handle it just in case it becomes available later.  
             if ($pickUpLocation) {
-                $xml['call-slip-parameters']['pickupLocation']
+                $xml['call-slip-parameters']['pickup-location']
                     = $pickUpLocation;    
             }
         }
