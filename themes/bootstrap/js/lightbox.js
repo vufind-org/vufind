@@ -378,7 +378,7 @@ function registerModalEvents(modal) {
   $(modal).find("form input[type=submit]").click(function() {
     // Abort requests triggered by the lightbox
     if(modalXHR) { modalXHR.abort() }
-    $(this).remove('.icon-spinner');
+    $('#modal .icon-spinner').remove();
     // Add useful information
     $(this).attr("clicked", "true");
     // Add prettiness
