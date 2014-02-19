@@ -157,6 +157,11 @@ $(document).ready(function(){
     var params = extractClassParams(this);
     return getLightbox(params['controller'], 'Save', {id:id});
   });
+  // Form handlers
+  addLightboxFormHandler('placeHold', function(evt) {
+    ajaxSubmit($(evt.target), closeLightbox);
+    return false;
+  });
   addLightboxFormHandler('saveRecord', function(evt) {
     ajaxSubmit($(evt.target), function(){lightboxConfirm(vufindString['bulk_save_success'])});
     return false;
