@@ -274,8 +274,9 @@ class Demo extends AbstractBase
 
         $list = new ArrayObject();
         for ($i = 0; $i < $items; $i++) {
+            $location = $this->getFakeLoc(false);
             $currentItem = array(
-                "location" => $this->getFakeLoc(false),
+                "location" => $location,
                 "create"   => date("j-M-y", strtotime("now - ".(rand()%10)." days")),
                 "expire"   => date("j-M-y", strtotime("now + 30 days")),
                 "reqnum"   => sprintf("%06d", $i),
@@ -302,6 +303,17 @@ class Demo extends AbstractBase
                 $currentItem['processed'] = ($status == 1 || rand(1, 3) == 3)
                     ? date("j-M-y") 
                     : '';
+                if ($requestType == 'ILLRequests') {
+                    $transit = rand()%2;
+                    if (!$currentItem['available'] 
+                        && !$currentItem['canceled']
+                        && $transit == 1
+                    ) {
+                        $currentItem['in_transit'] = $location;  
+                    } else {
+                        $currentItem['in_transit'] = false;
+                    }
+                }
             }
             
             $list->append($currentItem);
