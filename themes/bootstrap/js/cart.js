@@ -174,7 +174,7 @@ $(document).ready(function() {
   });
   addLightboxFormHandler('bulkSave', function(){
     ajaxSubmit($(this), function(x) {
-      changeModalContent('<div class="alert alert-info">'+vufindString['bulk_save_success']+'</div><button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>');
+      changeModalContent('<div class="alert alert-info">'+vufindString['bulk_save_success']+'</div><button class="btn" data-dismiss="modal" aria-hidden="true">'+vufindString['close']+'</button>');
     });
     // After we close the lightbox, redirect to list view
     addLightboxOnClose(function() {
