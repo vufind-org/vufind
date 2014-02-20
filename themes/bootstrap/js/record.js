@@ -1,4 +1,4 @@
-/*global addLightboxFormHandler, addLightboxOnClose, closeLightbox, extractClassParams, getLightbox, path */
+/*global addLightboxFormHandler, addLightboxOnClose, ajaxSubmit, closeLightbox, extractClassParams, getLightbox, lightboxConfirm, path, vufindString */
 
 /**
  * Functions and event handlers specific to record pages.
@@ -117,7 +117,7 @@ function registerAjaxCommentRecord() {
               type: 'POST',
               url:  url,
               data: data,
-              dataType: 'json',
+              dataType: 'json'
             });
           });
           return getLightbox('Record', 'AddComment', data, data);
@@ -158,12 +158,8 @@ $(document).ready(function(){
     return getLightbox(params['controller'], 'Save', {id:id});
   });
   // Form handlers
-  addLightboxFormHandler('placeHold', function(evt) {
-    ajaxSubmit($(evt.target), closeLightbox);
-    return false;
-  });
   addLightboxFormHandler('emailRecord', function(evt) {
-    ajaxSubmit($(evt.target), function(){lightboxConfirm(vufindString['bulk_email_success'])});
+    ajaxSubmit($(evt.target), function(){lightboxConfirm(vufindString['bulk_email_success']);});
     return false;
   });
   

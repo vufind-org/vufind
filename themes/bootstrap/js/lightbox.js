@@ -10,6 +10,29 @@ var lightboxShown = false; // Is the lightbox deployed?
 var modalXHR; // Used for current in-progress XHR lightbox request
 var modalOpenStack = [];
 var modalCloseStack = [];
+var modalFormHandlers = {};
+
+/**********************************/
+/* ======    INTERFACE     ====== */
+/**********************************/
+/**
+ * Register custom open event handlers
+ */
+function addLightboxOnOpen(func) {
+  modalOpenStack.push(func);
+}
+/**
+ * Register custom close event handlers
+ */
+function addLightboxOnClose(func) {
+  modalCloseStack.push(func);
+}
+/**
+ * Register custom form handlers
+ */
+function addLightboxFormHandler(formName, func) {
+  modalFormHandlers[formName] = func;
+}
 
 /**********************************/
 /* ====== LIGHTBOX ACTIONS ====== */
@@ -48,7 +71,7 @@ function closeLightboxActions() {
     f();
   }
   // Abort requests triggered by the lightbox
-  if(modalXHR) { modalXHR.abort() }
+  if(modalXHR) { modalXHR.abort(); }
   // Reset content so we start fresh when we open a lightbox
   $('#modal').removeData('modal');
   $('#modal').find('.modal-header h3').html('');
@@ -214,8 +237,8 @@ function getDataFromForm($form) {
     // Checkboxes
     } else if($(inputs[i]).attr('type') != 'checkbox' || inputs[i].checked) {
       if(array) {
-        var n = currentName.substring(0,currentName.length-2);
-        data[n].push(inputs[i].value);
+        var f = currentName.substring(0,currentName.length-2);
+        data[f].push(inputs[i].value);
       } else {
         data[currentName] = inputs[i].value;
       }
@@ -385,20 +408,12 @@ function registerModalEvents(modal) {
     $(this).after(' <i class="icon-spinner icon-spin"></i> ');
   });
 }
-
 /**
  * Prevents default submission, reroutes through ajaxSubmit
  * or a specified action based on form name. Please return false.
  *
  * Called everytime the lightbox is loaded.
  */
-var modalFormHandlers = {
-  loginForm:
-    function() {
-      ajaxLogin(this);
-      return false;
-    },
-};
 function registerModalForms(modal) {
   var $form = $(modal).find('form');
   // Assign form handler based on name
@@ -413,24 +428,6 @@ function registerModalForms(modal) {
   }
 }
 /**
- * Register custom open event handlers
- */
-function addLightboxOnOpen(func) {
-  modalOpenStack.push(func);
-}
-/**
- * Register custom close event handlers
- */
-function addLightboxOnClose(func) {
-  modalCloseStack.push(func);
-}
-/**
- * Register custom form handlers
- */
-function addLightboxFormHandler(formName, func) {
-  modalFormHandlers[formName] = func;
-}
-/**
  * This is where you add click events to open the lightbox.
  * We do it here so that non-JS users still have a good time.
  */
@@ -439,6 +436,11 @@ $(document).ready(function() {
   // First things first
   addLightboxOnOpen(registerModalEvents);
   addLightboxOnOpen(registerModalForms);
+  addLightboxFormHandler('loginForm', function() {
+    ajaxLogin(this);
+    return false;
+  });
+
   // Hijack modal forms
   $('#modal').on('show', function() {
     for(var i=0;i<modalOpenStack.length;i++) {
