@@ -12,6 +12,7 @@ body h3 {font-size:20px}
 }
 
 /* --- Bootstrap MODS ---*/
+[class^="icon-"]:before, [class*=" icon-"]:before {text-decoration:none}
 .accordion-heading .accordion-toggle {font-size:14px;padding:2px 15px}
 .centered-pills .nav-pills > li > a {padding-bottom:4px}
 .container a:not(.btn,.text-error) {color:#06C}
