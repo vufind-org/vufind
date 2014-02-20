@@ -86,6 +86,11 @@
             <br />
           <? endif; ?>
 
+          <? if (isset($ilsDetails['institution_name']) && !empty($ilsDetails['institution_name'])): ?>
+            <strong><?=$this->transEsc('location_' . $ilsDetails['institution_name'], array(), $ilsDetails['institution_name'])?></strong>
+            <br />
+          <? endif; ?>
+          
           <? $showStatus = true; ?>
 
           <? if (isset($this->renewResult[$ilsDetails['item_id']])): ?>
