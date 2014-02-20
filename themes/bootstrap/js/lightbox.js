@@ -152,7 +152,7 @@ function getLightboxByUrl(url, post, callback) {
       // Check for a flash message error
       if(typeof callback !== "undefined") {
         callback(html);
-      } else {
+      } else { // If we don't have a custom handler, display in lightbox
         changeModalContent(html);
       }
     },
@@ -226,7 +226,7 @@ function getDataFromForm($form) {
 function ajaxSubmit($form, callback) {
   // Default callback is to close
   if(typeof callback == "undefined") {
-    callback = changeModalContent;
+    callback = closeLightbox;
   }
   var data = getDataFromForm($form);
   // If we have an action: parse
@@ -497,5 +497,11 @@ $(document).ready(function() {
     var id = $('.hiddenId')[0].value;
     var parts = this.href.split('/');
     return getLightbox(parts[parts.length-3],'AddTag',{id:id});
+  });
+  
+  /* ---  --- */
+  addLightboxFormHandler('saveRecord', function(evt) {
+    ajaxSubmit($(evt.target), function(){lightboxConfirm(vufindString['bulk_save_success'])});
+    return false;
   });
 });
