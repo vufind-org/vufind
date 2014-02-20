@@ -168,6 +168,10 @@ $(document).ready(function() {
   }
   
   // Setup lightbox behavior
+  // Cart lightbox
+  $('#cartItems').click(function() {
+    return getLightbox('Cart','Cart');
+  });
   addLightboxFormHandler('cartForm', function(evt){
     cartSubmit($(evt.target));
     return false;

@@ -161,6 +161,10 @@ function displayLightboxError(message) {
  * Unless there's an error, default callback is changeModalContent
  */
 function getLightboxByUrl(url, post, callback) {
+  if(typeof callback == "undefined") {
+    // No custom handler: display return in lightbox
+    callback = changeModalContent;
+  }
   // If the lightbox isn't visible, fix that
   if(lightboxShown === false) {
     $('#modal').modal('show');
@@ -172,12 +176,7 @@ function getLightboxByUrl(url, post, callback) {
     url:url,
     data:post,
     success:function(html) { // Success!
-      // Check for a flash message error
-      if(typeof callback !== "undefined") {
-        callback(html);
-      } else { // If we don't have a custom handler, display in lightbox
-        changeModalContent(html);
-      }
+      callback(html);
     },
     error:function(d,e) {
       console.log(e,d); // Error reporting
@@ -358,7 +357,7 @@ function ajaxLogin(form) {
               if(lastLightboxPOST && lastLightboxPOST['loggingin']) {
                 closeLightbox();
               } else {
-                getLightboxByUrl(lastLightboxURL, lastLightboxPOST);
+                getLightboxByUrl(lastLightboxURL, lastLightboxPOST, changeModalContent);
               }
             } else {
               displayLightboxError(response.data);
@@ -422,7 +421,7 @@ function registerModalForms(modal) {
   } else {
     // Default
     $(modal).find('form').submit(function(){
-      ajaxSubmit($(this), changeModalContent);
+      ajaxSubmit($(this), closeLightbox);
       return false;
     });
   }
@@ -438,6 +437,10 @@ $(document).ready(function() {
   addLightboxOnOpen(registerModalForms);
   addLightboxFormHandler('loginForm', function() {
     ajaxLogin(this);
+    return false;
+  });
+  addLightboxFormHandler('saveRecord', function(evt) {
+    ajaxSubmit($(evt.target), function(){lightboxConfirm(vufindString['bulk_save_success'])});
     return false;
   });
 
@@ -461,10 +464,6 @@ $(document).ready(function() {
   });
   
   /* --- PAGES EVENTS THAT AFFECT THE LIGHTBOX --- */
-  // Cart lightbox
-  $('#cartItems').click(function() {
-    return getLightbox('Cart','Cart');
-  });
   // Help links
   $('.help-link').click(function() {
     var split = this.href.split('=');
@@ -499,11 +498,5 @@ $(document).ready(function() {
     var id = $('.hiddenId')[0].value;
     var parts = this.href.split('/');
     return getLightbox(parts[parts.length-3],'AddTag',{id:id});
-  });
-  
-  /* ---  --- */
-  addLightboxFormHandler('saveRecord', function(evt) {
-    ajaxSubmit($(evt.target), function(){lightboxConfirm(vufindString['bulk_save_success'])});
-    return false;
   });
 });
