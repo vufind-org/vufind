@@ -112,14 +112,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     protected $callSlipCheckLimit;
 
     /**
-     * Should we check renewal status before presenting a list of items or only
-     * after user requests renewal?
-     *
-     * @var bool
-     */
-    protected $checkRenewalsUpFront;
-
-    /**
      * HTTP service
      *
      * @var \VuFindHttp\HttpServiceInterface
@@ -146,6 +138,14 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * @var SessionContainer
      */
     protected $session;
+    
+    /**
+     * Web Services cookies. Required for at least renewals (for JSESSIONID) as 
+     * documented at http://www.exlibrisgroup.org/display/VoyagerOI/Renew
+     * 
+     * @var SetCookie[]
+     */
+    protected $cookies = false;
     
     /**
      * Constructor
@@ -205,9 +205,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
         $this->callSlipCheckLimit
             = isset($this->config['CallSlips']['callSlipCheckLimit'])
             ? $this->config['CallSlips']['callSlipCheckLimit'] : "15";
-        $this->checkRenewalsUpFront
-            = isset($this->config['Renewals']['checkUpFront'])
-            ? $this->config['Renewals']['checkUpFront'] : true;
         
         // Establish a namespace in the session for persisting cached data
         $this->session = new SessionContainer('VoyagerRestful_' . $this->dbName);
@@ -548,58 +545,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     }
 
     /**
-     * Determine Renewability
-     *
-     * This is responsible for determining if an item is renewable
-     *
-     * @param string $patronId The user's patron ID
-     * @param string $itemId   The Item Id of item
-     *
-     * @return mixed Array of the renewability status and associated
-     * message
-     */
-    protected function isRenewable($patronId, $itemId)
-    {
-        // Build Hierarchy
-        $hierarchy = array(
-            "patron" => $patronId,
-            "circulationActions" => "loans"
-        );
-
-        // Add Required Params
-        $params = array(
-            "patron_homedb" => $this->ws_patronHomeUbId,
-            "view" => "full"
-        );
-
-        // Create Rest API Renewal Key
-        $restItemID = $this->ws_patronHomeUbId . "|" . $itemId;
-
-        // Add to Hierarchy
-        $hierarchy[$restItemID] = false;
-
-        $renewability = $this->makeRequest($hierarchy, $params, "GET");
-        $renewability = $renewability->children();
-        $node = "reply-text";
-        $reply = (string)$renewability->$node;
-        if ($reply == "ok") {
-            $loanAttributes = $renewability->resource->loan->attributes();
-            $canRenew = (string)$loanAttributes['canRenew'];
-            if ($canRenew == "Y") {
-                $renewData['message'] = false;
-                $renewData['renewable'] = true;
-            } else {
-                $renewData['message'] = "renew_item_no";
-                $renewData['renewable'] = false;
-            }
-        } else {
-            $renewData['message'] = "renew_determine_fail";
-            $renewData['renewable'] = false;
-        }
-        return $renewData;
-    }
-
-    /**
      * Protected support method for getMyTransactions.
      *
      * @param array $sqlRow An array of keyed data
@@ -611,15 +556,10 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     {
         $transactions = parent::processMyTransactionsData($sqlRow, $patron);
 
-        // Do we need to check renewals up front?  If so, do the check; otherwise,
-        // set up fake "success" data to move us forward.
-        $renewData = $this->checkRenewalsUpFront
-            ? $this->isRenewable($patron['id'], $transactions['item_id'])
-            : array('message' => false, 'renewable' => true);
-
-        $transactions['renewable'] = $renewData['renewable'];
-        $transactions['message'] = $renewData['message'];
-
+        // We'll verify renewability later in getMyTransactions
+        $transactions['renewable'] = true;
+        $transactions['message'] = false;
+        
         return $transactions;
     }
 
@@ -758,6 +698,11 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
 
         // Create Proxy Request
         $client = $this->httpService->createClient($urlParams);
+        
+        // Add any cookies
+        if ($this->cookies) {
+            $client->addCookie($this->cookies);
+        }
 
         // Set timeout value
         $timeout = isset($this->config['Catalog']['http_timeout'])
@@ -779,6 +724,14 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             );
             throw new ILSException('Problem with RESTful API.');
         }
+        
+        // Store cookies
+        $cookie = $result->getCookie();
+        if ($cookie) {
+            $this->cookies = $cookie;
+        }
+
+        // Process response
         $xmlResponse = $result->getBody();
         $this->debug(
             '[' . round(microtime(true) - $startTime, 4) . 's]' 
@@ -907,109 +860,132 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      *
      * @return array              An array of renewal information keyed by item ID
      */
+    /**
+     * Renew My Items
+     *
+     * Function for attempting to renew a patron's items.  The data in
+     * $renewDetails['details'] is determined by getRenewDetails().
+     *
+     * @param array $renewDetails An array of data required for renewing items
+     * including the Patron ID and an array of renewal IDS
+     *
+     * @return array              An array of renewal information keyed by item ID
+     */
     public function renewMyItems($renewDetails)
     {
-        $renewProcessed = array();
-        $failIDs = array();
-        $patronId = $renewDetails['patron']['id'];
-
+        $patron = $renewDetails['patron'];
+        $finalResult = array('details' => array());
+        
         // Get Account Blocks
-        $finalResult['blocks'] = $this->checkAccountBlocks($patronId);
+        $finalResult['blocks'] = $this->checkAccountBlocks($patron['id']);
 
-        if ($finalResult['blocks'] === false) {
+        if (!$finalResult['blocks']) {
             // Add Items and Attempt Renewal
+            $itemIdentifiers = '';
+            
             foreach ($renewDetails['details'] as $renewID) {
-                // Build an array of item ids which may be of use in the template
-                // file
-                $failIDs[$renewID] = "";
+                list($dbKey, $loanId) = explode('|', $renewID);
+                if (!$dbKey) {
+                    $dbKey = $this->ws_dbKey;
+                }
+                
+                $loanId = $this->encodeXML($loanId);
+                $dbKey = $this->encodeXML($dbKey);
+                
+                $itemIdentifiers .= <<<EOT
+      <myac:itemIdentifier>
+       <myac:itemId>$loanId</myac:itemId>
+       <myac:ubId>$dbKey</myac:ubId>
+      </myac:itemIdentifier>
+EOT;
+            }
 
-                // Did we need to check renewals up front?  If not, do the check now;
-                // otherwise, set up fake "success" data to avoid redundant work.
-                $renewable = !$this->checkRenewalsUpFront
-                    ? $this->isRenewable($patronId, $renewID)
-                    : array('renewable' => true);
+            $patronId = $this->encodeXML($patron['id']);
+            $lastname = $this->encodeXML($patron['lastname']);
+            $barcode = $this->encodeXML($patron['cat_username']);
+            $localUbId = $this->encodeXML($this->ws_patronHomeUbId);
+            
+            // The RenewService has a weird prerequisite that 
+            // AuthenticatePatronService must be called first and JSESSIONID header 
+            // be preserved. There's no explanation why this is required, and a 
+            // quick check implies that RenewService works without it at least in 
+            // Voyager 8.1, but who knows if it fails with UB or something, so let's 
+            // try to play along with the rules.
+            $xml = <<<EOT
+<?xml version="1.0" encoding="UTF-8"?>
+<ser:serviceParameters
+xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$localUbId">
+    <ser:authFactor type="B">$barcode</ser:authFactor>
+  </ser:patronIdentifier>
+</ser:serviceParameters>             
+EOT;
+            
+            $response = $this->makeRequest(
+                array('AuthenticatePatronService' => false), array(), 'POST', $xml
+            );
+            if ($response === false) {
+                throw new ILSException('renew_error_system');
+            }
+            
+            $xml = <<<EOT
+<?xml version="1.0" encoding="UTF-8"?>
+<ser:serviceParameters
+xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+   <ser:parameters/>
+   <ser:definedParameters xsi:type="myac:myAccountServiceParametersType"
+   xmlns:myac="http://www.endinfosys.com/Voyager/myAccount"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+$itemIdentifiers
+   </ser:definedParameters>
+  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$localUbId"
+  patronId="$patronId">
+    <ser:authFactor type="B">$barcode</ser:authFactor>
+  </ser:patronIdentifier>
+</ser:serviceParameters>
+EOT;
 
-                // Don't even try to renew a non-renewable item; we don't want to
-                // break any rules, and Voyager's API doesn't always enforce well.
-                if (isset($renewable['renewable']) && $renewable['renewable']) {
-                    // Build Hierarchy
-                    $hierarchy = array(
-                        "patron" => $patronId,
-                        "circulationActions" => "loans"
-                    );
-
-                    // Add Required Params
-                    $params = array(
-                        "patron_homedb" => $this->ws_patronHomeUbId,
-                        "view" => "full"
-                    );
-
-                    // Create Rest API Renewal Key
-                    $restRenewID = $this->ws_patronHomeUbId . "|" . $renewID;
-
-                    // Add to Hierarchy
-                    $hierarchy[$restRenewID] = false;
-
-                    // Attempt Renewal
-                    $renewalObj = $this->makeRequest($hierarchy, $params, "POST");
-                    $process = $this->processRenewals($renewalObj);
-
-                    // Process Renewal
-                    $renewProcessed[] = $process;
+            $response = $this->makeRequest(
+                array('RenewService' => false), array(), 'POST', $xml
+            );
+            if ($response === false) {
+                throw new ILSException('renew_error_system');
+            }
+            
+            // Process
+            $myac_ns = 'http://www.endinfosys.com/Voyager/myAccount';
+            $response->registerXPathNamespace(
+                'ser', 'http://www.endinfosys.com/Voyager/serviceParameters'
+            );
+            $response->registerXPathNamespace('myac', $myac_ns);
+            // The service doesn't actually return messages (in Voyager 8.1), 
+            // but maybe in the future...
+            foreach ($response->xpath('//ser:message') as $message) {
+                if ($message->attributes()->type == 'system') {
+                    return false;
                 }
             }
-
-            // Place Successfully processed renewals in the details array
-            foreach ($renewProcessed as $renewal) {
-                if ($renewal !== false) {
-                    $finalResult['details'][$renewal['item_id']] = $renewal;
-                    unset($failIDs[$renewal['item_id']]);
-                }
-            }
-            // Deal with unsuccessful results
-            foreach (array_keys($failIDs) as $id) {
-                $finalResult['details'][$id] = array(
-                    "success" => false,
-                    "new_date" => false,
-                    "item_id" => $id,
-                    "sysMessage" => ""
-                );
-            }
-        }
-        return $finalResult;
-    }
-
-    /**
-     * Process Renewals
-     *
-     * A support method of renewMyItems which determines if the renewal attempt
-     * was successful
-     *
-     * @param object $renewalObj A simpleXML object loaded with renewal data
-     *
-     * @return array             An array with the item id, success, new date (if
-     * available) and system message (if available)
-     */
-    protected function processRenewals($renewalObj)
-    {
-        // Not Sure Why, but necessary!
-        $renewal = $renewalObj->children();
-        $node = "reply-text";
-        $reply = (string)$renewal->$node;
-
-        // Valid Response
-        if ($reply == "ok") {
-            $loan = $renewal->renewal->institution->loan;
-            $itemId = (string)$loan->itemId;
-            $renewalStatus = (string)$loan->renewalStatus;
-
-            $response['item_id'] = $itemId;
-            $response['sysMessage'] = $renewalStatus;
-
-            if ($renewalStatus == "Success") {
-                $dueDate = (string)$loan->dueDate;
-                if (!empty($dueDate)) {
-                    // Convert Voyager Format to display format
+            foreach ($response->xpath('//myac:clusterChargedItems') as $cluster) {
+                $cluster = $cluster->children($myac_ns);
+                $dbKey = (string)$cluster->cluster->ubSiteId;
+                foreach ($cluster->chargedItem as $chargedItem) {
+                    $chargedItem = $chargedItem->children($myac_ns);
+                    $renewStatus = $chargedItem->renewStatus;
+                    if (!$renewStatus) {
+                        continue;
+                    }
+                    $renewed = false;
+                    foreach ($renewStatus->status as $status) {
+                        if ((string)$status == 'Renewed') {
+                            $renewed = true;
+                        }
+                    }
+                    
+                    $result = array();
+                    $result['item_id'] = (string)$chargedItem->itemId;
+                    $result['sysMessage'] = (string)$renewStatus->status;
+                    
+                    $dueDate = (string)$chargedItem->dueDate;
                     try {
                         $newDate = $this->dateFormat->convertToDisplayDate(
                             "Y-m-d H:i", $dueDate
@@ -1028,19 +1004,15 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
                         // If we can't parse out the time, just ignore it:
                         $response['new_time'] = false;
                     }
+                    $result['new_date'] = $newDate;
+                    $result['new_time'] = $newTime;
+                    $result['success'] = $renewed;
+                    
+                    $finalResult['details'][$result['item_id']] = $result;
                 }
-                $response['success'] = true;
-            } else {
-                $response['success'] = false;
-                $response['new_date'] = false;
-                $response['new_time'] = false;
             }
-
-            return $response;
-        } else {
-            // System Error
-            return false;
         }
+        return $finalResult;
     }
 
     /**
@@ -1238,91 +1210,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     }
 
     /**
-     * Get Patron Remote Holds
-     *
-     * This is responsible for retrieving all remote holds by a specific patron.
-     *
-     * @param array $patron The patron array from patronLogin
-     *
-     * @throws DateException
-     * @throws ILSException
-     * @return array        Array of the patron's holds on success.
-     */
-    protected function getRemoteHolds($patron)
-    {
-        // Build Hierarchy
-        $hierarchy = array(
-            'patron' =>  $patron['id'],
-            'circulationActions' => 'requests',
-            'holds' => false
-        );
-
-        // Add Required Params
-        $params = array(
-            "patron_homedb" => $this->ws_patronHomeUbId,
-            "view" => "full"
-        );
-
-        $results = $this->makeRequest($hierarchy, $params);
-
-        if ($results === false) {
-            throw new ILSException('System error fetching remote holds');
-        }
-        
-        $replyCode = (string)$results->{'reply-code'};
-        if ($replyCode != 0 && $replyCode != 8) {
-            throw new ILSException('System error fetching remote holds');
-        }
-        $holds = array();
-        if (isset($results->holds->institution)) {
-            foreach ($results->holds->institution as $institution) {
-                // Only take remote holds
-                if ($institution == 'LOCAL') {
-                    continue;
-                }
-                
-                foreach ($institution->hold as $hold) {
-                    $item = $hold->requestItem;
-                    
-                    $holds[] = array(
-                        'id' => '',
-                        'type' => (string)$item->holdType,
-                        'location' => (string)$item->pickupLocation,
-                        'expire' => (string)$item->expiredDate 
-                            ? $this->dateFormat->convertToDisplayDate(
-                                'Y-m-d', (string)$item->expiredDate
-                            )
-                            : '',  
-                        // Looks like expired date shows creation date for
-                        // UB requests, but who knows
-                        'create' => (string)$item->expiredDate 
-                            ? $this->dateFormat->convertToDisplayDate(
-                                'Y-m-d', (string)$item->expiredDate
-                            )
-                            : '',  
-                        'position' => (string)$item->queuePosition,
-                        'available' => (string)$item->status == '2',
-                        'reqnum' => (string)$item->holdRecallId,
-                        'item_id' => (string)$item->itemId,
-                        'volume' => '',
-                        'publication_year' => '',
-                        'title' => (string)$item->itemTitle,
-                        'institution_id' => (string)$institution->attributes()->id,
-                        'institution_name' => (string)$item->dbName,
-                        'institution_dbkey' => (string)$item->dbKey,
-                        'in_transit' => (substr((string)$item->statusText, 0, 13) 
-                            == 'In transit to')
-                          ? substr((string)$item->statusText, 14) 
-                          : ''
-                    );
-                }
-            }
-        }
-        
-        return $holds;
-    }
-    
-    /**
      * Place Hold
      *
      * Attempts to place a hold or recall on a particular item and returns
@@ -1503,29 +1390,207 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      */
     public function getRenewDetails($checkOutDetails)
     {
-        $renewDetails = $checkOutDetails['item_id'];
+        $renewDetails = (isset($checkOutDetails['institution_dbkey']) 
+            ? $checkOutDetails['institution_dbkey'] 
+            : '') 
+            . '|' . $checkOutDetails['item_id'];
         return $renewDetails;
     }
     
     /**
-     * Get Patron Storage Retrieval Requests (Call Slips). Gets local call slips 
-     * from the database, then remote callslips via the API.
+     * Get Patron Transactions
      *
-     * This is responsible for retrieving all call slips by a specific patron.
+     * This is responsible for retrieving all transactions (i.e. checked out items)
+     * by a specific patron.
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @return mixed        Array of the patron's storage retrieval requests.
+     * @return mixed        Array of the patron's transactions on success,
+     * PEAR_Error otherwise.
+     * @access public
      */
-    public function getMyStorageRetrievalRequests($patron)
+    public function getMyTransactions($patron)
     {
-        $requests = array_merge(
-            parent::getMyStorageRetrievalRequests($patron),
-            $this->getRemoteCallSlips($patron)
+        // Get local loans from the database so that we can get more details
+        // than available via the API.
+        $transactions = parent::getMyTransactions($patron);
+        
+        // Get remote loans and renewability for local loans via the API
+        
+        // Build Hierarchy
+        $hierarchy = array(
+            'patron' =>  $patron['id'],
+            'circulationActions' => 'loans'
         );
-        return $requests;
+
+        // Add Required Params
+        $params = array(
+            "patron_homedb" => $this->ws_patronHomeUbId,
+            "view" => "full"
+        );
+
+        $results = $this->makeRequest($hierarchy, $params);
+
+        if ($results === false) {
+            throw new ILSException('System error fetching loans');
+        }
+        
+        $replyCode = (string)$results->{'reply-code'};
+        if ($replyCode != 0 && $replyCode != 8) {
+            throw new ILSException('System error fetching loans');
+        }
+        if (isset($results->loans->institution)) {
+            foreach ($results->loans->institution as $institution) {
+                foreach ($institution->loan as $loan) {
+                    if ((string)$institution->attributes()->id == 'LOCAL') {
+                        // Take only renewability for local loans, other information
+                        // we have already
+                        $renewable = (string)$loan->attributes()->canRenew == 'Y';
+                        
+                        foreach ($transactions as &$transaction) {
+                            if (!isset($transaction['institution_id']) 
+                                && $transaction['item_id'] == (string)$loan->itemId
+                            ) {
+                                $transaction['renewable'] = $renewable;
+                                break;
+                            }
+                        }
+                        continue;
+                    }
+                    
+                    $dueStatus = false;
+                    $now = time();
+                    $dueTimeStamp = strtotime((string)$loan->dueDate);
+                    if ($dueTimeStamp !== false && is_numeric($dueTimeStamp)) {
+                        if ($now > $dueTimeStamp) {
+                            $dueStatus = 'overdue';
+                        } else if ($now > $dueTimeStamp-(1*24*60*60)) {
+                            $dueStatus = 'due';
+                        }
+                    }
+                    
+                    try {
+                        $dueDate = $this->dateFormat->convertToDisplayDate(
+                            'Y-m-d H:i', (string)$loan->dueDate
+                        );
+                    } catch (DateException $e) {
+                        // If we can't parse out the date, use the raw string:
+                        $dueDate = (string)$loan->dueDate;
+                    }
+
+                    try {
+                        $dueTime = $this->dateFormat->convertToDisplayTime(
+                            'Y-m-d H:i', (string)$loan->dueDate
+                        );
+                    } catch (DateException $e) {
+                        // If we can't parse out the time, just ignore it:
+                        $dueTime = false;
+                    }
+                    
+                    $transactions[] = array(
+                        // This is bogus, but we need something..
+                        'id' => (string)$institution->attributes()->id . '_' . 
+                                (string)$loan->itemId,
+                        'item_id' => (string)$loan->itemId,
+                        'duedate' => $dueDate,
+                        'dueTime' => $dueTime,
+                        'dueStatus' => $dueStatus,
+                        'title' => (string)$loan->title,
+                        'renewable' => (string)$loan->attributes()->canRenew == 'Y',
+                        'institution_id' => (string)$institution->attributes()->id,
+                        'institution_name' => (string)$loan->dbName,
+                        'institution_dbkey' => (string)$loan->dbKey,
+                    );
+                }
+            }
+        }
+        return $transactions;           
     }
     
+    /**
+     * Get Patron Remote Holds
+     *
+     * This is responsible for retrieving all remote holds by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @throws DateException
+     * @throws ILSException
+     * @return array        Array of the patron's holds on success.
+     */
+    protected function getRemoteHolds($patron)
+    {
+        // Build Hierarchy
+        $hierarchy = array(
+            'patron' =>  $patron['id'],
+            'circulationActions' => 'requests',
+            'holds' => false
+        );
+
+        // Add Required Params
+        $params = array(
+            "patron_homedb" => $this->ws_patronHomeUbId,
+            "view" => "full"
+        );
+
+        $results = $this->makeRequest($hierarchy, $params);
+
+        if ($results === false) {
+            throw new ILSException('System error fetching remote holds');
+        }
+        
+        $replyCode = (string)$results->{'reply-code'};
+        if ($replyCode != 0 && $replyCode != 8) {
+            throw new ILSException('System error fetching remote holds');
+        }
+        $holds = array();
+        if (isset($results->holds->institution)) {
+            foreach ($results->holds->institution as $institution) {
+                // Only take remote holds
+                if ($institution == 'LOCAL') {
+                    continue;
+                }
+                
+                foreach ($institution->hold as $hold) {
+                    $item = $hold->requestItem;
+                    
+                    $holds[] = array(
+                        'id' => '',
+                        'type' => (string)$item->holdType,
+                        'location' => (string)$item->pickupLocation,
+                        'expire' => (string)$item->expiredDate 
+                            ? $this->dateFormat->convertToDisplayDate(
+                                'Y-m-d', (string)$item->expiredDate
+                            )
+                            : '',  
+                        // Looks like expired date shows creation date for
+                        // UB requests, but who knows
+                        'create' => (string)$item->expiredDate 
+                            ? $this->dateFormat->convertToDisplayDate(
+                                'Y-m-d', (string)$item->expiredDate
+                            )
+                            : '',  
+                        'position' => (string)$item->queuePosition,
+                        'available' => (string)$item->status == '2',
+                        'reqnum' => (string)$item->holdRecallId,
+                        'item_id' => (string)$item->itemId,
+                        'volume' => '',
+                        'publication_year' => '',
+                        'title' => (string)$item->itemTitle,
+                        'institution_id' => (string)$institution->attributes()->id,
+                        'institution_name' => (string)$item->dbName,
+                        'institution_dbkey' => (string)$item->dbKey,
+                        'in_transit' => (substr((string)$item->statusText, 0, 13) 
+                            == 'In transit to')
+                          ? substr((string)$item->statusText, 14) 
+                          : ''
+                    );
+                }
+            }
+        }
+        return $holds;
+    }
+        
     /**
      * Get Patron Remote Storage Retrieval Requests (Call Slips). Gets remote
      * callslips via the API.
