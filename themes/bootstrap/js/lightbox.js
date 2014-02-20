@@ -399,7 +399,7 @@ function registerModalEvents(modal) {
   // Highlight which submit button clicked
   $(modal).find("form input[type=submit]").click(function() {
     // Abort requests triggered by the lightbox
-    if(modalXHR) { modalXHR.abort() }
+    if(modalXHR) { modalXHR.abort(); }
     $('#modal .icon-spinner').remove();
     // Add useful information
     $(this).attr("clicked", "true");
@@ -440,7 +440,7 @@ $(document).ready(function() {
     return false;
   });
   addLightboxFormHandler('saveRecord', function(evt) {
-    ajaxSubmit($(evt.target), function(){lightboxConfirm(vufindString['bulk_save_success'])});
+    ajaxSubmit($(evt.target), function(){lightboxConfirm(vufindString['bulk_save_success']);});
     return false;
   });
 
