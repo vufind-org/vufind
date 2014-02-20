@@ -46,7 +46,7 @@
       <? if (isset($dateFacets[$title])): ?>
         <? /* Load the publication date slider UI widget */ $this->headScript()->appendFile('pubdate_slider.js'); ?>
         <form action="" name="<?=$this->escapeHtml($title)?>Filter" id="<?=$this->escapeHtml($title)?>Filter">
-          <?=$results->getUrlQuery()->asHiddenFields(array('filter' => "/^{$title}:.*/"))?>
+          <?=$results->getUrlQuery()->asHiddenFields(array('page' => '/./', 'filter' => "/^{$title}:.*/"))?>
           <input type="hidden" name="daterange[]" value="<?=$this->escapeHtml($title)?>"/>
           <fieldset class="publishDateLimit" id="<?=$this->escapeHtml($title)?>">
             <legend><?=$this->transEsc($cluster['label'])?></legend>
