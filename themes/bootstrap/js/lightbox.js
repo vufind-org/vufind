@@ -439,6 +439,10 @@ $(document).ready(function() {
     ajaxLogin(this);
     return false;
   });
+  addLightboxFormHandler('newList', function(evt) {
+    ajaxSubmit($(evt.target), changeModalContent);
+    return false;
+  });
   addLightboxFormHandler('saveRecord', function(evt) {
     ajaxSubmit($(evt.target), function(){lightboxConfirm(vufindString['bulk_save_success']);});
     return false;
