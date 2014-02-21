@@ -1,4 +1,5 @@
 i.icon-asterisk,
+i.icon-bell,
 i.icon-book,
 i.icon-bookbag,
 i.icon-bookbag-add,
@@ -72,6 +73,7 @@ i.icon-user {
   width:16px
 }
 .small i.icon-asterisk,
+.small i.icon-bell,
 .small i.icon-book,
 .small i.icon-bookbag,
 .small i.icon-bookbag-add,
@@ -119,6 +121,7 @@ i.icon-user {
   width:13px;
 }
 i.icon-asterisk {background:url('../images/icons/list.png')}
+i.icon-bell {background:url('../images/icons/bell.png')}
 i.icon-book {background:url('../images/icons/book.png')}
 i.icon-bookbag {background:url('../images/icons/bookbag.png')}
 i.icon-bookbag-add {background:url('../images/icons/bookbag_add.png')}
