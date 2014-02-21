@@ -1246,7 +1246,9 @@ class AjaxController extends AbstractBase
         return $this->output(
             array(
                 'result' => $this->translate('Done'),
-                'result_additional' => $html
+                'result_additional' => $html,
+                'needs_redirect' => $export->needsRedirect($format),
+                'result_url' => $url
             ), self::STATUS_OK
         );
     }
