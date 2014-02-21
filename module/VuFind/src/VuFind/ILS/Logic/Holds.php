@@ -363,7 +363,7 @@ class Holds
                 }
             }
 
-            if ($checkStorageRequests && is_array($holdings)) {
+            if ($checkStorageRetrievalRequests && is_array($holdings)) {
                 // Generate Links
                 // Loop through each holding
                 foreach ($holdings as $location_key => $location) {
