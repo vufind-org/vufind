@@ -43,7 +43,7 @@
     <? if (!empty($list->description)): ?>
       <p><?=$this->escapeHtml($list->description)?></p><hr />
     <? endif; ?>
-  <? else: ?>
+  <? elseif ($recordTotal > 0): ?>
     <div class="pull-right">
       <?=$this->transEsc("Showing")?>
       <strong><?=$this->escapeHtml($this->results->getStartRecord())?></strong> - <strong><?=$this->escapeHtml($this->results->getEndRecord())?></strong>

@@ -64,7 +64,8 @@ class Factory
     public function getCollectionList(ServiceManager $sm)
     {
         return new CollectionList(
-            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')->get('SolrCollection')
+            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+                ->get('SolrCollection')
         );
     }
 

@@ -10,7 +10,7 @@
 <p class="lead"><?=$this->transEsc('request_place_text')?></p>
 <?=$this->flashmessages()?>
 <div class="hold-form">
-  <form action="" class="form-horizontal" method="post">
+  <form action="" class="form-horizontal" method="post" name="placeHold">
     <? if (in_array("comments", $this->extraHoldFields)): ?>
       <div class="control-group">
         <label class="control-label"><?=$this->transEsc("Comments")?>:</label>

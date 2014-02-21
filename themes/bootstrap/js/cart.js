@@ -1,4 +1,4 @@
-/*global Cookies, lightbox, vufindString */
+/*global Cookies, path, vufindString, addLightboxFormHandler, addLightboxOnClose, ajaxSubmit, changeModalContent, getDataFromForm, lastLightboxPOST, lightboxConfirm, getLightbox */
 
 var _CART_COOKIE = 'vufind_cart';
 var _CART_COOKIE_SOURCES = 'vufind_cart_src';
@@ -88,20 +88,18 @@ function removeItemFromCart(id,source) {
 // Ajax cart submission for the lightbox
 function cartSubmit($form) {
   var submit = $form.find('input[type="submit"][clicked=true]').attr('name'); 
-  switch(submit) {
-    case 'print':
-      //redirect page
-      var checks = $form.find('input.checkbox-select-item:checked');
-      if(checks.length > 0) {
-        var url = path+'/Records/Home?print=true';
-        for(var i=0;i<checks.length;i++) {
-          url += '&id[]='+checks[i].value;
-        }
-        document.location.href = url;
+  if (submit == 'print') {
+    //redirect page
+    var checks = $form.find('input.checkbox-select-item:checked');
+    if(checks.length > 0) {
+      var url = path+'/Records/Home?print=true';
+      for(var i=0;i<checks.length;i++) {
+        url += '&id[]='+checks[i].value;
       }
-      break;
-    default:
-      ajaxSubmit($form, changeModalContent);
+      document.location.href = url;
+    }
+  } else {
+    ajaxSubmit($form, changeModalContent);
   }
 }
 
@@ -170,26 +168,28 @@ $(document).ready(function() {
   }
   
   // Setup lightbox behavior
-  addLightboxFormHandler('cartForm', function(){
-    cartSubmit($(this));
+  // Cart lightbox
+  $('#cartItems').click(function() {
+    return getLightbox('Cart','Cart');
+  });
+  addLightboxFormHandler('cartForm', function(evt){
+    cartSubmit($(evt.target));
     return false;
   });
-  addLightboxFormHandler('bulkSave', function(){
-    ajaxSubmit($(this), function(x) {
-      changeModalContent('<div class="alert alert-info">'+vufindString['bulk_save_success']+'</div><button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>');
-    });
+  addLightboxFormHandler('bulkSave', function(evt){
+    ajaxSubmit($(evt.target), function(){lightboxConfirm(vufindString['bulk_save_success']);});
     // After we close the lightbox, redirect to list view
     addLightboxOnClose(function() {
       document.location.href = path+'/MyResearch/MyList/'+lastLightboxPOST['list'];
     });
     return false;
   });
-  addLightboxFormHandler('exportForm', function(){
-    modalXHR = $.ajax({
+  addLightboxFormHandler('exportForm', function(evt){
+    $.ajax({
       url: path + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
       type:'POST',
       dataType:'json',
-      data:getDataFromForm($(this)),
+      data:getDataFromForm($(evt.target)),
       success:function(data) {
         if(data.data.needs_redirect) {
           document.location.href = data.data.result_url;
@@ -198,7 +198,7 @@ $(document).ready(function() {
         }
       },
       error:function(d,e) {
-        console.log(d,e); // Error reporting
+        //console.log(d,e); // Error reporting
       }
     });
     return false;

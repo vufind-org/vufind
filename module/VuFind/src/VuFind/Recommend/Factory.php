@@ -138,7 +138,8 @@ class Factory
     {
         return new ExpandFacets(
             $sm->getServiceLocator()->get('VuFind\Config'),
-            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')->get('Solr')
+            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+                ->get('Solr')
         );
     }
 

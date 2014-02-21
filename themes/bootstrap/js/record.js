@@ -1,4 +1,4 @@
-/*global closeLightbox, extractClassParams, getLightbox, path */
+/*global addLightboxFormHandler, addLightboxOnClose, ajaxSubmit, closeLightbox, extractClassParams, getLightbox, lightboxConfirm, path, vufindString */
 
 /**
  * Functions and event handlers specific to record pages.
@@ -112,14 +112,15 @@ function registerAjaxCommentRecord() {
           $(form).find('textarea[name="comment"]').val('');
         } else if (response.status == 'NEED_AUTH') {
           data['loggingin'] = true;
-          return getLightbox(
-            'Record', 'AddComment', data, data,
-            function(){
-              closeLightbox();
-              $.ajax({type:'POST',url:url,data:data});
-              refreshCommentList(id, recordSource);
-            }
-          );
+          addLightboxOnClose(function() {
+            $.ajax({
+              type: 'POST',
+              url:  url,
+              data: data,
+              dataType: 'json'
+            });
+          });
+          return getLightbox('Record', 'AddComment', data, data);
         } else {
           $('#modal').find('.modal-body').html(response.data+'!');
           $('#modal').find('.modal-header h3').html('Error!');
@@ -133,6 +134,7 @@ function registerAjaxCommentRecord() {
   // Delete links
   $('.delete').click(function(){deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));return false;});
 }
+
 $(document).ready(function(){
   var id = document.getElementById('record_id').value;
   
@@ -155,6 +157,15 @@ $(document).ready(function(){
   $('#save-record').click(function() {
     var params = extractClassParams(this);
     return getLightbox(params['controller'], 'Save', {id:id});
+  });
+  // Form handlers
+  addLightboxFormHandler('emailRecord', function(evt) {
+    ajaxSubmit($(evt.target), function(){lightboxConfirm(vufindString['bulk_email_success']);});
+    return false;
+  });
+  addLightboxFormHandler('smsRecord', function(evt) {
+    ajaxSubmit($(evt.target), function(){lightboxConfirm(vufindString['sms_success']);});
+    return false;
   });
   
   // register the record comment form to be submitted via AJAX

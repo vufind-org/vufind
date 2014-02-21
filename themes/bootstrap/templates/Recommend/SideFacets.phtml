@@ -52,7 +52,7 @@
         <li class="nav-header"><?=$this->transEsc($cluster['label'])?></li>
         <li>
           <form class="form-inline text-center" action="" name="<?=$this->escapeHtml($title)?>Filter" id="<?=$this->escapeHtml($title)?>Filter">
-            <?=$results->getUrlQuery()->asHiddenFields(array('filter' => "/^{$title}:.*/"))?>
+            <?=$results->getUrlQuery()->asHiddenFields(array('page' => "/./", 'filter' => "/^{$title}:.*/"))?>
             <input type="hidden" name="daterange[]" value="<?=$this->escapeHtml($title)?>"/>
             <div class="row-fluid">
               <label class="span6" for="<?=$this->escapeHtml($title)?>from">
