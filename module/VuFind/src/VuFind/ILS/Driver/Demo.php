@@ -614,6 +614,7 @@ class Demo extends AbstractBase
      * @param array $patron The patron array from patronLogin
      *
      * @return mixed        Array of the patron's holds
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyStorageRetrievalRequests($patron)
     {
@@ -1084,6 +1085,7 @@ class Demo extends AbstractBase
      * @param patron $patron An array of patron data
      *
      * @return string True if request is valid, false if not
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
@@ -1172,6 +1174,7 @@ class Demo extends AbstractBase
      * @param patron $patron An array of patron data
      *
      * @return string True if request is valid, false if not
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
