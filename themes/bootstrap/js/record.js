@@ -141,30 +141,30 @@ $(document).ready(function(){
   // Cite lightbox
   $('#cite-record').click(function() {
     var params = extractClassParams(this);
-    return getLightbox(params['controller'], 'Cite', {id:id});
+    return Lightbox.get(params['controller'], 'Cite', {id:id});
   });
   // SMS lightbox
   $('#sms-record').click(function() {
     var params = extractClassParams(this);
-    return getLightbox(params['controller'], 'SMS', {id:id});
+    return Lightbox.get(params['controller'], 'SMS', {id:id});
   });
   // Mail lightbox
   $('#mail-record').click(function() {
     var params = extractClassParams(this);
-    return getLightbox(params['controller'], 'Email', {id:id});
+    return Lightbox.get(params['controller'], 'Email', {id:id});
   });
   // Save lightbox
   $('#save-record').click(function() {
     var params = extractClassParams(this);
-    return getLightbox(params['controller'], 'Save', {id:id});
+    return Lightbox.get(params['controller'], 'Save', {id:id});
   });
   // Form handlers
-  addLightboxFormHandler('emailRecord', function(evt) {
-    ajaxSubmit($(evt.target), function(){lightboxConfirm(vufindString['bulk_email_success']);});
+  Lightbox.addFormHandler('emailRecord', function(evt) {
+    Lightbox.submit($(evt.target), function(){Lightbox.confirm(vufindString['bulk_email_success']);});
     return false;
   });
-  addLightboxFormHandler('smsRecord', function(evt) {
-    ajaxSubmit($(evt.target), function(){lightboxConfirm(vufindString['sms_success']);});
+  Lightbox.addFormHandler('smsRecord', function(evt) {
+    Lightbox.submit($(evt.target), function(){Lightbox.confirm(vufindString['sms_success']);});
     return false;
   });
   

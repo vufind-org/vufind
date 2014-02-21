@@ -1,4 +1,4 @@
-/*global Cookies, path, vufindString, addLightboxFormHandler, addLightboxOnClose, ajaxSubmit, changeModalContent, getDataFromForm, lastLightboxPOST, lightboxConfirm */
+/*global Cookies, path, vufindString, Lightbox */
 
 var _CART_COOKIE = 'vufind_cart';
 var _CART_COOKIE_SOURCES = 'vufind_cart_src';
@@ -99,7 +99,7 @@ function cartSubmit($form) {
       document.location.href = url;
     }
   } else {
-    ajaxSubmit($form, changeModalContent);
+    Lightbox.submit($form, Lightbox.changeContent);
   }
 }
 
@@ -170,21 +170,21 @@ $(document).ready(function() {
   // Setup lightbox behavior
   // Cart lightbox
   $('#cartItems').click(function() {
-    return getLightbox('Cart','Cart');
+    return Lightbox.get('Cart','Cart');
   });
-  addLightboxFormHandler('cartForm', function(evt){
+  Lightbox.addFormHandler('cartForm', function(evt){
     cartSubmit($(evt.target));
     return false;
   });
-  addLightboxFormHandler('bulkSave', function(evt){
-    ajaxSubmit($(evt.target), function(){lightboxConfirm(vufindString['bulk_save_success']);});
+  Lightbox.addFormHandler('bulkSave', function(evt){
+    Lightbox.submit($(evt.target), function(){Lightbox.confirm(vufindString['bulk_save_success']);});
     // After we close the lightbox, redirect to list view
-    addLightboxOnClose(function() {
+    Lightbox.addCloseAction(function() {
       document.location.href = path+'/MyResearch/MyList/'+lastLightboxPOST['list'];
     });
     return false;
   });
-  addLightboxFormHandler('exportForm', function(evt){
+  Lightbox.addFormHandler('exportForm', function(evt){
     $.ajax({
       url: path + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
       type:'POST',
@@ -202,5 +202,23 @@ $(document).ready(function() {
       }
     });
     return false;
+  });
+  Lightbox.addCloseAction(function() {
+    // Update cart items (add to cart, remove from cart, cart lightbox interface)
+    var cartCount = $('#cartItems strong');
+    if(cartCount.length > 0) {
+      var cart = getFullCartItems();
+      var id = $('#cartId');
+      if(id.length > 0) {
+        id = id.val();
+        $('#cart-add,#cart-remove').addClass('hidden');
+        if(cart.indexOf(id) > -1) {
+          $('#cart-remove').removeClass('hidden');
+        } else {
+          $('#cart-add').removeClass('hidden');
+        }
+      }
+      cartCount.html(cart.length);
+    }
   });
 });
