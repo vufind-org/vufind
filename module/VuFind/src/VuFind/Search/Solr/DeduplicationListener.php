@@ -190,12 +190,12 @@ class DeduplicationListener
             $dedupData = array();
             foreach ($localIds as $localId) {
                 $localPriority = null;
-                list($source, $localPart) = explode('.', $localId, 2);
+                list($source) = explode('.', $localId, 2);
                 if (!empty($buildingPriority)) {
                     if (isset($buildingPriority[$source])) {
                         $localPriority = -$buildingPriority[$source];
-                    } elseif (isset($datasourceConfig[$source]['institution'])) {
-                        $institution = $datasourceConfig[$source]['institution'];
+                    } elseif (isset($dataSourceConfig[$source]['institution'])) {
+                        $institution = $dataSourceConfig[$source]['institution'];
                         if (isset($buildingPriority[$institution])) {
                             $localPriority = -$buildingPriority[$institution];
                         }
@@ -235,7 +235,6 @@ class DeduplicationListener
         }
 
         // Fetch records and assign them to the result:
-        $searchService = $this->serviceLocator->get('VuFind\Search');
         $localRecords = $this->backend->retrieveBatch($idList)->getRecords();
         foreach ($result->getRecords() as $record) {
             $dedupRecordData = $record->getRawData();
@@ -245,7 +244,6 @@ class DeduplicationListener
             // Find the corresponding local record in the results:
             $foundLocalRecord = null;
             foreach ($localRecords as $localRecord) {
-                $localFields = $localRecord->getRawData();
                 if ($localRecord->getUniqueID() == $dedupRecordData['dedup_id']) {
                     $foundLocalRecord = $localRecord;
                     break;
