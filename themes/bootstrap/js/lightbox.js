@@ -443,6 +443,28 @@ $(document).ready(function() {
     ajaxSubmit($(evt.target), changeModalContent);
     return false;
   });
+  addLightboxFormHandler('placeHold', function(evt) {
+    var data = getDataFromForm($(evt.target));
+    modalXHR = $.ajax({
+      type:'POST',
+      url:lastLightboxURL,
+      data:data,
+      success:function(html) { // Success!
+        var fi = html.indexOf('<div class="alert alert-error">')+31;
+        if(fi > -1) {
+          var li = html.indexOf('</div>', fi);
+          displayLightboxError(html.substring(fi, li));
+        } else {
+          document.location.href = path+'/MyResearch/Holds';
+        }
+      },
+      error:function(d,e) {
+        console.log(e,d); // Error reporting
+        console.log(lastLightboxURL,data);
+      }
+    });
+    return false;
+  });
   addLightboxFormHandler('saveRecord', function(evt) {
     ajaxSubmit($(evt.target), function(){lightboxConfirm(vufindString['bulk_save_success']);});
     return false;
@@ -487,9 +509,6 @@ $(document).ready(function() {
   $('.placehold').click(function() {
     var params = deparam($(this).attr('href'));
     params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    addLightboxOnClose(function(op) {
-      document.location.href = path+'/MyResearch/Holds';
-    });
     return getLightbox('Record', 'Hold', params, {});
   });
   // Save record links
