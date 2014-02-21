@@ -61,21 +61,16 @@ class Module
      */
     public function getServiceConfig()
     {
-        // @codingStandardsIgnoreStart
         return array(
             'factories' => array(
-                'VuFindTheme\ThemeInfo' => function () {
-                    return new \VuFindTheme\ThemeInfo(
-                        realpath(__DIR__ . '/../../themes'), 'blueprint'
-                    );
-                }
+                'VuFindTheme\ThemeInfo' =>
+                    array('VuFindTheme\Module', 'getThemeInfo'),
             ),
             'invokables' => array(
                 'VuFindTheme\Mobile' => 'VuFindTheme\Mobile',
                 'VuFindTheme\ResourceContainer' => 'VuFindTheme\ResourceContainer',
             ),
         );
-        // @codingStandardsIgnoreEnd
     }
 
     /**
@@ -124,11 +119,12 @@ class Module
     }
 
     /**
-     * Perform initialization
+     * Factory function for ThemeInfo object.
      *
-     * @return void
+     * @return ThemeInfo
      */
-    public function init()
+    public function getThemeInfo()
     {
+        return new ThemeInfo(realpath(__DIR__ . '/../../themes'), 'blueprint');
     }
 }
