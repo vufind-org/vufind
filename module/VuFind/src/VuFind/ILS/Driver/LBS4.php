@@ -47,28 +47,28 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      *
      * @var resource
      */
-    private $db;
+    protected $db;
 
     /**
      * URL where epn can be appended to
      *
      * @var string
      */
-    private $opcloan;
+    protected $opcloan;
 
     /**
      * ILN 
      *
      * @var string
      */
-    private $opaciln;
+    protected $opaciln;
 
     /**
      * FNO 
      *
      * @var string
      */
-    private $opacfno;
+    protected $opacfno;
 
     /**
      * Initialize the driver.
@@ -153,7 +153,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
         }
     }
 
-    private function getLoanexpire($vol) {
+    protected function getLoanexpire($vol) {
         $sql = "select expiry_date_loan from loans_requests"
              . " where volume_number=".$vol."";
         try {
@@ -170,7 +170,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
         return false;
     }
 
-    private function getSybStatus($ppn, $fno, $iln) {
+    protected function getSybStatus($ppn, $fno, $iln) {
         $sybid = substr($ppn,0,-1); //no checksum
         $sql = "select o.loan_indication, o.signature, v.loan_status"
              . " from ous_copy_cache o, volume v"
@@ -195,9 +195,9 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                 } else if ($loan_indi==8) {
                     $available = false; //missed items
                 } else if ($loan_indi==9) {
-                    $available = false; //not ready
+                    $available = false; //not ready yet
                 } else if ($loan_indi==3) {
-                    $status = 'Presence';//available, but not for loan
+                    $status = 'presentation'; //available, but not for loan
                 }
 
                 $reserve = 'N';
@@ -255,7 +255,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                 $barcode = $row[2];
                 $loan_status  = $row[3];
                 $volnum = $row[4];
-                //suppress multiple callnumbers, items are separated by comma
+                //suppress multiple callnumbers, comma separated items 
                 $callnumber = current(explode(',',substr($row[5],4)));
                 $locid = substr($row[5],0,3);
                 $notes = array();
@@ -493,11 +493,11 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                           'group'     => $row[6],
                           ); 
                 if ($row[6]=='81')
-                    $result['group'] = 'Mitarbeiter';
+                    $result['group'] = $this->translate('Staff');
                 else if ($row[6]=='1')
-                    $result['group'] = 'Student';
+                    $result['group'] = $this->translate('Student');
                 else if ($row[6]=='30')
-                    $result['group'] = 'Umland';
+                    $result['group'] = $this->translate('Residents');
                 $row = sybase_fetch_row($sqlStmt);
                 if ($row) {
                     if ($row[8]==$row[13]) { //reminder address first
@@ -603,7 +603,6 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                     //'location' => $row[4],
                     'title'    => $title
                 );
-              //error_log("[".$row[0].":".$row[2].":".$row[3].":".$row[4]."]");
             } 
             return $result;
         } catch (\Exception $e) {
@@ -643,8 +642,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
             ." and v.epn=o.epn"
             ." and r.iln=o.iln"
             ." and r.costs_code in (1, 2, 3, 4, 8)"
-            ." union "
-            ." select id_number"
+            ." union select id_number"
             .", r.costs_code" 
             .", r.costs"
             .", rtrim(convert(char(20),r.date_of_issue,104))"
@@ -725,7 +723,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
             ? $this->translator->translate($msg) : $msg;
     }
 
-    private function picaRecode($str) {
+    protected function picaRecode($str) {
         $clean = preg_replace('/[^(\x20-\x7F)]*/','', $str);
 	    return $clean;
     }
