@@ -184,6 +184,18 @@ $(document).ready(function() {
     });
     return false;
   });
+  addLightboxFormHandler('bulkEmail', function(evt){
+    ajaxSubmit($(evt.target), function(html){
+      var fi = html.indexOf('<div class="alert alert-error">');
+      if(fi > -1) {
+        var li = html.indexOf('</div>', fi+31);
+        displayLightboxError(html.substring(fi+31, li));
+      } else {
+        lightboxConfirm(vufindString['bulk_email_success']);
+      }
+    });
+    return false;
+  });
   addLightboxFormHandler('exportForm', function(evt){
     $.ajax({
       url: path + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),

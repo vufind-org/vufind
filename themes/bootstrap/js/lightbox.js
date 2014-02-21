@@ -513,7 +513,7 @@ $(document).ready(function() {
       var fi = html.indexOf('<div class="alert alert-error">');
       if(fi > -1) {
         var li = html.indexOf('</div>', fi+31);
-        changeModalContent(html.substring(fi, li));
+        changeModalContent(html.substring(fi, li+5));
       } else {
         changeModalContent(html);
       }
