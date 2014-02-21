@@ -450,10 +450,10 @@ $(document).ready(function() {
       url:lastLightboxURL,
       data:data,
       success:function(html) { // Success!
-        var fi = html.indexOf('<div class="alert alert-error">')+31;
+        var fi = html.indexOf('<div class="alert alert-error">');
         if(fi > -1) {
-          var li = html.indexOf('</div>', fi);
-          displayLightboxError(html.substring(fi, li));
+          var li = html.indexOf('</div>', fi+31);
+          displayLightboxError(html.substring(fi+31, li));
         } else {
           document.location.href = path+'/MyResearch/Holds';
         }
@@ -509,7 +509,15 @@ $(document).ready(function() {
   $('.placehold').click(function() {
     var params = deparam($(this).attr('href'));
     params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    return getLightbox('Record', 'Hold', params, {});
+    return getLightbox('Record', 'Hold', params, {}, function(html) {
+      var fi = html.indexOf('<div class="alert alert-error">');
+      if(fi > -1) {
+        var li = html.indexOf('</div>', fi+31);
+        changeModalContent(html.substring(fi, li));
+      } else {
+        changeModalContent(html);
+      }
+    });
   });
   // Save record links
   $('.save-record').click(function() {
