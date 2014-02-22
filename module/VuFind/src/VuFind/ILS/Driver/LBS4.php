@@ -196,13 +196,13 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                     $available = false; //missed items
                 } else if ($loan_indi==9) {
                     $available = false; //not ready yet
-                } else if ($loan_indi==3) {
-                    $status = 'presentation'; //available, but not for loan
                 }
 
                 $reserve = 'N';
                 if ($available) {
-                    if ($loan_status==0) {
+                    if ($loan_indi==3) {
+                        $status = 'Presence'; //available, but not for loan
+                    } else if ($loan_status==0) {
                         $status = 'Available'; 
                     } else if ($loan_status==5) {
                         $available = false;
@@ -271,7 +271,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                 } else if ($loan_indi==2) {
                     $notes[] = "Interlibrary Loan";
                 } else if ($loan_indi==3) {
-                    $notes[] = $this->translate("Presentation");
+                    $notes[] = $this->translate("Presence");
                 } else if ($loan_indi==4) {
                     $notes[] = $this->translate("No Media");
                 } else if ($loan_indi==5) {
