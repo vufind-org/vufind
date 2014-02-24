@@ -1,4 +1,4 @@
-/*global Cookies, path, vufindString, addLightboxFormHandler, addLightboxOnClose, ajaxSubmit, changeModalContent, getDataFromForm, lastLightboxPOST, lightboxConfirm, getLightbox */
+/*global Cookies, path, vufindString, addLightboxFormHandler, addLightboxOnClose, ajaxSubmit, changeModalContent, displayLightboxError, getDataFromForm, lastLightboxPOST, lightboxConfirm, getLightbox */
 
 var _CART_COOKIE = 'vufind_cart';
 var _CART_COOKIE_SOURCES = 'vufind_cart_src';
