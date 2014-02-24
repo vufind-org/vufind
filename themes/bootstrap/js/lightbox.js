@@ -300,7 +300,7 @@ var Lightbox = {
       var parts = this.href.split('?');
       var get = deparam(parts[1]);
       get['id'] = 'NEW';
-      return get('MyResearch', 'EditList', get);
+      return this.get('MyResearch', 'EditList', get);
     });
     // Select all checkboxes
     $(modal).find('.checkbox-select-all').change(function() {
@@ -494,7 +494,7 @@ $(document).ready(function() {
   $('.hierarchyTreeLink a').click(function() {
     var id = $(this).parent().parent().parent().find(".hiddenId")[0].value;
     var hierarchyID = $(this).parent().find(".hiddenHierarchyId")[0].value;
-    return get('Record','AjaxTab',{id:id},{hierarchy:hierarchyID,tab:'HierarchyTree'});
+    return Lightbox.get('Record','AjaxTab',{id:id},{hierarchy:hierarchyID,tab:'HierarchyTree'});
   });
   // Login link
   $('#loginOptions a').click(function() {
@@ -504,20 +504,31 @@ $(document).ready(function() {
   $('.placehold').click(function() {
     var params = deparam($(this).attr('href'));
     params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    addLightboxOnClose(function(op) {
+    Lightbox.addCloseAction(function(op) {
       document.location.href = path+'/MyResearch/Holds';
     });
-    return get('Record', 'Hold', params, {});
+    return Lightbox.getByUrl('Record', 'Hold', params, {});
+    //return Lightbox.get('Record', 'Hold', params, {});
+  });
+  // Place a Storage Hold
+  $('.placeStorageRetrievalRequest').click(function() {
+    var params = deparam($(this).attr('href'));
+    params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
+    Lightbox.addCloseAction(function(op) {
+      document.location.href = path+'/MyResearch/Holds';
+    });
+    return Lightbox.get('Record', 'StorageRetrievalRequest', params, {});
+    //return Lightbox.get('Record', 'Hold', params, {});
   });
   // Save record links
   $('.save-record').click(function() {
     var parts = this.href.split('/');
-    return get(parts[parts.length-3],'Save',{id:$(this).attr('id')});
+    return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('id')});
   });  
   // Tag lightbox
   $('#tagRecord').click(function() {
     var id = $('.hiddenId')[0].value;
     var parts = this.href.split('/');
-    return get(parts[parts.length-3],'AddTag',{id:id});
+    return Lightbox.get(parts[parts.length-3],'AddTag',{id:id});
   });
 });
