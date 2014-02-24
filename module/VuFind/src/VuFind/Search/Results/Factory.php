@@ -21,7 +21,7 @@
  *
  * @category VuFind2
  * @package  Search
- * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
@@ -33,7 +33,7 @@ use Zend\ServiceManager\ServiceManager;
  *
  * @category VuFind2
  * @package  Search
- * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
@@ -46,7 +46,7 @@ class Factory
      *
      * @return Solr
      */
-    public function getSolr(ServiceManager $sm)
+    public static function getSolr(ServiceManager $sm)
     {
         $factory = new PluginFactory();
         $solr = $factory->createServiceWithName($sm, 'solr', 'Solr');

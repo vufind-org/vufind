@@ -21,7 +21,7 @@
  *
  * @category VuFind2
  * @package  Recommendations
- * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
@@ -33,7 +33,7 @@ use Zend\ServiceManager\ServiceManager;
  *
  * @category VuFind2
  * @package  Recommendations
- * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
@@ -46,7 +46,7 @@ class Factory
      *
      * @return AuthorFacets
      */
-    public function getAuthorFacets(ServiceManager $sm)
+    public static function getAuthorFacets(ServiceManager $sm)
     {
         return new AuthorFacets(
             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
@@ -60,7 +60,7 @@ class Factory
      *
      * @return AuthorInfo
      */
-    public function getAuthorInfo(ServiceManager $sm)
+    public static function getAuthorInfo(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         return new AuthorInfo(
@@ -77,7 +77,7 @@ class Factory
      *
      * @return AuthorityRecommend
      */
-    public function getAuthorityRecommend(ServiceManager $sm)
+    public static function getAuthorityRecommend(ServiceManager $sm)
     {
         return new AuthorityRecommend(
             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
@@ -91,7 +91,7 @@ class Factory
      *
      * @return CatalogResults
      */
-    public function getCatalogResults(ServiceManager $sm)
+    public static function getCatalogResults(ServiceManager $sm)
     {
         return new CatalogResults(
             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
@@ -105,7 +105,7 @@ class Factory
      *
      * @return CollectionSideFacets
      */
-    public function getCollectionSideFacets(ServiceManager $sm)
+    public static function getCollectionSideFacets(ServiceManager $sm)
     {
         return new CollectionSideFacets(
             $sm->getServiceLocator()->get('VuFind\Config')
@@ -119,7 +119,7 @@ class Factory
      *
      * @return EuropeanaResults
      */
-    public function getEuropeanaResults(ServiceManager $sm)
+    public static function getEuropeanaResults(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         return new EuropeanaResults(
@@ -134,7 +134,7 @@ class Factory
      *
      * @return ExpandFacets
      */
-    public function getExpandFacets(ServiceManager $sm)
+    public static function getExpandFacets(ServiceManager $sm)
     {
         return new ExpandFacets(
             $sm->getServiceLocator()->get('VuFind\Config'),
@@ -150,7 +150,7 @@ class Factory
      *
      * @return FavoriteFacets
      */
-    public function getFavoriteFacets(ServiceManager $sm)
+    public static function getFavoriteFacets(ServiceManager $sm)
     {
         return new FavoriteFacets(
             $sm->getServiceLocator()->get('VuFind\Config')
@@ -164,7 +164,7 @@ class Factory
      *
      * @return SideFacets
      */
-    public function getSideFacets(ServiceManager $sm)
+    public static function getSideFacets(ServiceManager $sm)
     {
         return new SideFacets(
             $sm->getServiceLocator()->get('VuFind\Config')
@@ -178,7 +178,7 @@ class Factory
      *
      * @return SummonBestBets
      */
-    public function getSummonBestBets(ServiceManager $sm)
+    public static function getSummonBestBets(ServiceManager $sm)
     {
         return new SummonBestBets(
             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
@@ -192,7 +192,7 @@ class Factory
      *
      * @return SummonDatabases
      */
-    public function getSummonDatabases(ServiceManager $sm)
+    public static function getSummonDatabases(ServiceManager $sm)
     {
         return new SummonDatabases(
             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
@@ -206,7 +206,7 @@ class Factory
      *
      * @return SummonResults
      */
-    public function getSummonResults(ServiceManager $sm)
+    public static function getSummonResults(ServiceManager $sm)
     {
         return new SummonResults(
             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
@@ -220,7 +220,7 @@ class Factory
      *
      * @return SummonTopics
      */
-    public function getSummonTopics(ServiceManager $sm)
+    public static function getSummonTopics(ServiceManager $sm)
     {
         return new SummonTopics(
             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
@@ -234,7 +234,7 @@ class Factory
      *
      * @return SwitchQuery
      */
-    public function getSwitchQuery(ServiceManager $sm)
+    public static function getSwitchQuery(ServiceManager $sm)
     {
         return new SwitchQuery(
             $sm->getServiceLocator()->get('VuFind\Search\BackendManager')
@@ -248,7 +248,7 @@ class Factory
      *
      * @return TopFacets
      */
-    public function getTopFacets(ServiceManager $sm)
+    public static function getTopFacets(ServiceManager $sm)
     {
         return new TopFacets(
             $sm->getServiceLocator()->get('VuFind\Config')
@@ -262,7 +262,7 @@ class Factory
      *
      * @return WebResults
      */
-    public function getWebResults(ServiceManager $sm)
+    public static function getWebResults(ServiceManager $sm)
     {
         return new WebResults(
             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
@@ -276,7 +276,7 @@ class Factory
      *
      * @return WorldCatIdentities
      */
-    public function getWorldCatIdentities(ServiceManager $sm)
+    public static function getWorldCatIdentities(ServiceManager $sm)
     {
         return new WorldCatIdentities(
             $sm->getServiceLocator()->get('VuFind\WorldCatUtils')
@@ -290,7 +290,7 @@ class Factory
      *
      * @return WorldCatTerms
      */
-    public function getWorldCatTerms(ServiceManager $sm)
+    public static function getWorldCatTerms(ServiceManager $sm)
     {
         return new WorldCatTerms(
             $sm->getServiceLocator()->get('VuFind\WorldCatUtils')
