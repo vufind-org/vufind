@@ -274,7 +274,9 @@ class DeduplicationListener
     }
 
     /**
-     * Append fields from dedup record to the selected local record
+     * Append fields from dedup record to the selected local record. Note: the last
+     * two parameters are unused in this default method, but they may be useful for
+     * custom behavior in subclasses.
      *
      * @param array  $localRecordData Local record data
      * @param array  $dedupRecordData Dedup record data
@@ -282,6 +284,7 @@ class DeduplicationListener
      * @param array  $sourcePriority  Array of source priorities keyed by source id
      *
      * @return array Local record data
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function appendDedupRecordFields($localRecordData, $dedupRecordData,
         $recordSources, $sourcePriority
