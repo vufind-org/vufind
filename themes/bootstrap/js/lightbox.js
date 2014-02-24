@@ -506,16 +506,6 @@ $(document).ready(function() {
     return Lightbox.getByUrl('Record', 'Hold', params, {});
     //return Lightbox.get('Record', 'Hold', params, {});
   });
-  // Place a Storage Hold
-  $('.placeStorageRetrievalRequest').click(function() {
-    var params = deparam($(this).attr('href'));
-    params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    Lightbox.addCloseAction(function(op) {
-      document.location.href = path+'/MyResearch/Holds';
-    });
-    return Lightbox.get('Record', 'StorageRetrievalRequest', params, {});
-    //return Lightbox.get('Record', 'Hold', params, {});
-  });
   // Save record links
   $('.save-record').click(function() {
     var parts = this.href.split('/');
