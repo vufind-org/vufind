@@ -262,22 +262,38 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
 
                 $available = true;
                 $hold = false;
-                $store = false;
+                $check = false;
+                $reserve = 'N';
+                $storage = false;
                 if ($loan_indi==0) {
-                    $notes[] = $this->translate("Lending Collection");
-                    $hold = $this->opcloan.$this->prfz($epn);
+                    list($note, $storage) = $this->getMyStorage($callnumber);
+                    if ($storage==null) {
+                        $hold = $this->opcloan.$this->prfz($epn);
+                    } 
+                    if ($note==null) {
+                        $notes[] = $this->translate("Lending Collection");
+                    } else {
+                        $notes[] = $note;
+                    }
                 } else if ($loan_indi==1) {
-                    $notes[] = "Short loan"; //Short time loan ?
+                    //Short time loan ?
+                    $notes[] = $this->translate("Short loan"); 
                 } else if ($loan_indi==2) {
                     $notes[] = "Interlibrary Loan";
                 } else if ($loan_indi==3) {
-                    $notes[] = $this->translate("Presence");
+                    list($note, $storage) = $this->getMyStorage($callnumber);
+                    if ($note==null) {
+                        $notes[] = $this->translate("Presence");
+                    } else {
+                        $notes[] = $note;
+                    }
                 } else if ($loan_indi==4) {
                     $notes[] = $this->translate("No Media");
                 } else if ($loan_indi==5) {
                     $notes[] = $this->translate("Reading Room");
                 } else if ($loan_indi==6) {
-                    $notes[] = "Short loan"; //Short time loan ?
+                    //Short time loan ?
+                    $notes[] = $this->translate("Short loan"); 
                 } else if ($loan_indi==7) {
                     $notes[] = $this->translate("Interlibrary Loan");
                     $available = false;
@@ -285,11 +301,10 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                     $notes[] = $this->translate("Missed");
                     $available = false;
                 } else if ($loan_indi==9) {
-                    $notes[] = $this->translate("Not Available");
+                    $notes[] = $this->translate("In Progress");
                     $available = false;
                 }
 
-                $reserve = 'N';
                 if ($available) {
                     if ($loan_status==0) {
                         $status = 'Available';
@@ -318,7 +333,8 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                     'barcode'        => $barcode,
                     'number'         => $number,
                     'notes'          => $notes,
-                    'loan_availability' => $available?'1':'0',
+                    'check'          => $check,
+                    'storageRetrievalRequestLink' => $storage,
                     'hold' => $hold,
                 );
             }
@@ -326,6 +342,11 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
             throw new ILSException($e->getMessage());
         }
         return $holding;
+    }
+
+    /** return array with information and storage link */
+    protected function getMyStorage($callnumber) {
+        return array();
     }
 
     /**
