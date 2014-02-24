@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Controller
+ * @package  VuDL
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-3.0.php GNU General Public License
  * @link     http://vufind.org/wiki/
@@ -32,7 +32,7 @@ use Zend\Mvc\Controller\Plugin\Url as UrlHelper;
  * VuDL outline generator
  *
  * @category VuFind2
- * @package  Controller
+ * @package  VuDL
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-3.0.php GNU General Public License
  * @link     http://vufind.org/wiki/

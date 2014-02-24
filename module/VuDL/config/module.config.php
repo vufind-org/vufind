@@ -9,30 +9,17 @@ $config = array(
     ),
     'service_manager' => array(
         'factories' => array(
-            'VuDL\Fedora' => function ($sm) {
-                return new \VuDL\Fedora(
-                    $sm->get('VuFind\Config')->get('VuDL')
-                );
-            })
+            'VuDL\Fedora' => array('VuDL\Factory', 'getFedora'),
+        ),
     ),
     'vufind' => array(
         'plugin_managers' => array(
             'recorddriver' => array(
                 'factories' => array(
-                    'solrvudl' => function ($sm) {
-                        $driver = new \VuDL\RecordDriver\SolrVudl(
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
-                            null,
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
-                        );
-                        $driver->setVuDLConfig(
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('VuDL')
-                        );
-                        return $driver;
-                    }
-                )
-            )
-        )
+                    'solrvudl' => array('VuDL\Factory', 'getRecordDriver'),
+                ),
+            ),
+        ),
     ),
     'router' => array(
         'routes' => array(
