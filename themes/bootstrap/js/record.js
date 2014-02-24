@@ -138,6 +138,13 @@ function registerAjaxCommentRecord() {
 $(document).ready(function(){
   var id = document.getElementById('record_id').value;
   
+  // register the record comment form to be submitted via AJAX
+  registerAjaxCommentRecord();
+  
+  setUpCheckRequest();
+  setUpCheckStorageRetrievalRequest();
+  
+  /* --- LIGHTBOX --- */
   // Cite lightbox
   $('#cite-record').click(function() {
     var params = extractClassParams(this);
@@ -158,14 +165,18 @@ $(document).ready(function(){
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'Save', {id:id});
   });
+  // Place a Hold
+  $('.placehold').click(function() {
+    var params = deparam($(this).attr('href'));
+    params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
+    Lightbox.addCloseAction(function(op) {
+      document.location.href = path+'/MyResearch/Holds';
+    });
+    return Lightbox.getByUrl('Record', 'Hold', params, {});
+    //return Lightbox.get('Record', 'Hold', params, {});
+  });
   // Form handlers
   Lightbox.addFormCallback('emailRecord', function(){Lightbox.confirm(vufindString['bulk_email_success']);});
-  Lightbox.addFormCallback('smsRecord', function(){Lightbox.confirm(vufindString['sms_success']);});
   Lightbox.addFormCallback('saveRecord', function(){Lightbox.confirm(vufindString['bulk_save_success']);});
-  
-  // register the record comment form to be submitted via AJAX
-  registerAjaxCommentRecord();
-  
-  setUpCheckRequest();
-  setUpCheckStorageRetrievalRequest();
+  Lightbox.addFormCallback('smsRecord', function(){Lightbox.confirm(vufindString['sms_success']);});
 });
