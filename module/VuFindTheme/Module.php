@@ -104,7 +104,7 @@ class Module
      *
      * @return ThemeInfo
      */
-    public function getThemeInfo()
+    public static function getThemeInfo()
     {
         return new ThemeInfo(realpath(__DIR__ . '/../../themes'), 'blueprint');
     }
