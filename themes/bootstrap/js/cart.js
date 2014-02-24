@@ -176,13 +176,12 @@ $(document).ready(function() {
     cartSubmit($(evt.target));
     return false;
   });
-  Lightbox.addFormHandler('bulkSave', function(evt){
-    Lightbox.submit($(evt.target), function(){Lightbox.confirm(vufindString['bulk_save_success']);});
+  Lightbox.addFormCallback('bulkSave', function(){
     // After we close the lightbox, redirect to list view
     Lightbox.addCloseAction(function() {
-      document.location.href = path+'/MyResearch/MyList/'+lastLightboxPOST['list'];
+      document.location.href = path+'/MyResearch/MyList/'+Lightbox.lastPOST['list'];
     });
-    return false;
+    Lightbox.confirm(vufindString['bulk_save_success']);
   });
   Lightbox.addFormHandler('exportForm', function(evt){
     $.ajax({

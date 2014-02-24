@@ -1,4 +1,4 @@
-/*global addLightboxFormHandler, addLightboxOnClose, ajaxSubmit, closeLightbox, extractClassParams, getLightbox, lightboxConfirm, path, vufindString */
+/*global extractClassParams, Lightbox, path, vufindString */
 
 /**
  * Functions and event handlers specific to record pages.
@@ -112,7 +112,7 @@ function registerAjaxCommentRecord() {
           $(form).find('textarea[name="comment"]').val('');
         } else if (response.status == 'NEED_AUTH') {
           data['loggingin'] = true;
-          addLightboxOnClose(function() {
+          Lightbox.addCloseAction(function() {
             $.ajax({
               type: 'POST',
               url:  url,
@@ -120,7 +120,7 @@ function registerAjaxCommentRecord() {
               dataType: 'json'
             });
           });
-          return getLightbox('Record', 'AddComment', data, data);
+          return Lightbox.get('Record', 'AddComment', data, data);
         } else {
           $('#modal').find('.modal-body').html(response.data+'!');
           $('#modal').find('.modal-header h3').html('Error!');
@@ -159,14 +159,9 @@ $(document).ready(function(){
     return Lightbox.get(params['controller'], 'Save', {id:id});
   });
   // Form handlers
-  Lightbox.addFormHandler('emailRecord', function(evt) {
-    Lightbox.submit($(evt.target), function(){Lightbox.confirm(vufindString['bulk_email_success']);});
-    return false;
-  });
-  Lightbox.addFormHandler('smsRecord', function(evt) {
-    Lightbox.submit($(evt.target), function(){Lightbox.confirm(vufindString['sms_success']);});
-    return false;
-  });
+  Lightbox.addFormCallback('emailRecord', function(){Lightbox.confirm(vufindString['bulk_email_success']);});
+  Lightbox.addFormCallback('smsRecord', function(){Lightbox.confirm(vufindString['sms_success']);});
+  Lightbox.addFormCallback('saveRecord', function(){Lightbox.confirm(vufindString['bulk_save_success']);});
   
   // register the record comment form to be submitted via AJAX
   registerAjaxCommentRecord();

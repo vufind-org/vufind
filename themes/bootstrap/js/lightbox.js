@@ -59,7 +59,6 @@ var Lightbox = {
    * room for content and avoid double headers.
    */
   changeContent: function(html) {
-    console.log('!');
     var header = $('#modal .modal-header');
     if(header.find('h3').html().length == 0) {
       header.css('border-bottom-width', '0');
@@ -67,6 +66,7 @@ var Lightbox = {
       header.css('border-bottom-width', '1px');
     }
     $('#modal .modal-body').html(html).modal({'show':true,'backdrop':false});
+    Lightbox.openActions()
   },
 
   /**
@@ -142,13 +142,13 @@ var Lightbox = {
    * This function changes the content of the lightbox to a message.
    */
   confirm: function(message) {
-    this.changeContent('<div class="alert alert-info">'+message+'</div><button class="btn" onClick="closeLightbox()">'+vufindString['close']+'</button>');
+    this.changeContent('<div class="alert alert-info">'+message+'</div><button class="btn" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
   },
 
   /**
    * Insert an alert element into the top of the lightbox
    */
-  displayLightboxError: function(message) {
+  displayError: function(message) {
     var alert = $('#modal .modal-body .alert');
     if(alert.length > 0) {
       $(alert).html(message);
@@ -172,7 +172,6 @@ var Lightbox = {
       // No custom handler: display return in lightbox
       callback = this.changeContent;
     }
-    console.log(url, post, callback);
     // If the lightbox isn't visible, fix that
     if(this.shown == false) {
       $('#modal').modal('show');
@@ -192,8 +191,8 @@ var Lightbox = {
       }
     });
     // Store current "page" context for empty targets
-    lastURL = url;
-    lastPOST = post;
+    this.lastURL = url;
+    this.lastPOST = post;
     //this.openActions();
     return false;
   },
@@ -300,7 +299,7 @@ var Lightbox = {
       var parts = this.href.split('?');
       var get = deparam(parts[1]);
       get['id'] = 'NEW';
-      return this.get('MyResearch', 'EditList', get);
+      return Lightbox.get('MyResearch', 'EditList', get);
     });
     // Select all checkboxes
     $(modal).find('.checkbox-select-all').change(function() {
@@ -336,14 +335,14 @@ var Lightbox = {
       $(form).submit(Lightbox.formHandlers[name]);
     // Default action, with custom callback
     } else if(typeof Lightbox.formCallbacks[name] !== "undefined") {
-      $(form).submit(function(){
-        this.submit($(this), Lightbox.formCallbacks[name]);
+      $(form).submit(function(evt){
+        Lightbox.submit($(evt.target), Lightbox.formCallbacks[name]);
         return false;
       });
     // Default
     } else {
-      $(form).submit(function(){
-        this.submit($(this), Lightbox.close);
+      $(form).submit(function(evt){
+        Lightbox.submit($(evt.target), Lightbox.close);
         return false;
       });
     }
@@ -432,10 +431,14 @@ function ajaxLogin(form) {
                 });
               }
               // and we update the modal
-              if(lastPOST && lastPOST['loggingin']) {
+              if(Lightbox.lastPOST && Lightbox.lastPOST['loggingin']) {
                 Lightbox.close();
               } else {
-                Lightbox.getByUrl(lastURL, lastPOST, Lightbox.changeContent);
+                Lightbox.getByUrl(
+                  Lightbox.lastURL,
+                  Lightbox.lastPOST,
+                  Lightbox.changeContent
+                );
               }
             } else {
               Lightbox.displayError(response.data);
@@ -443,7 +446,7 @@ function ajaxLogin(form) {
           }
         });
       } else {
-        displayLightboxError(response.data);
+        Lightbox.displayError(response.data);
       }
     }
   });
@@ -462,14 +465,7 @@ $(document).ready(function() {
     ajaxLogin(evt.target);
     return false;
   });
-  Lightbox.addFormHandler('newList', function(evt) {
-    Lightbox.submit($(evt.target), changeContent);
-    return false;
-  });
-  Lightbox.addFormHandler('saveRecord', function(evt) {
-    Lightbox.submit($(evt.target), function(){lightboxConfirm(vufindString['bulk_save_success']);});
-    return false;
-  });
+  Lightbox.addFormCallback('newList', Lightbox.changeContent);
 
   // Hijack modal forms
   $('#modal').on('shown', Lightbox.openActions);  
