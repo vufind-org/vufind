@@ -173,6 +173,10 @@ $(document).ready(function() {
   $('#loginOptions a').click(function() {
     return Lightbox.get('MyResearch','Login',{},{'loggingin':true});
   });
+  // Email search link
+  $('.mailSearch').click(function() {
+    return Lightbox.get('Search','Email',{url:document.URL});
+  });
   // Save record links
   $('.save-record').click(function() {
     var parts = this.href.split('/');
