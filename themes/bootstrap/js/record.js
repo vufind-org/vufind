@@ -1,10 +1,10 @@
-/*global addLightboxFormHandler, addLightboxOnClose, ajaxSubmit, closeLightbox, extractClassParams, getLightbox, lightboxConfirm, path, vufindString */
+/*global extractClassParams, Lightbox, path, vufindString */
 
 /**
  * Functions and event handlers specific to record pages.
  */
 
-function checkRequestIsValid(element, requestURL) {
+function checkRequestIsValid(element, requestURL, requestType, blockedClass) {
   var recordId = requestURL.match(/\/Record\/([^\/]+)\//)[1];
   var vars = {}, hash;
   var hashes = requestURL.slice(requestURL.indexOf('?') + 1).split('&');
@@ -18,7 +18,7 @@ function checkRequestIsValid(element, requestURL) {
   }
   vars['id'] = recordId;
 
-  var url = path + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, data: vars});
+  var url = path + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, requestType: requestType, data: vars});
   $.ajax({
     dataType: 'json',
     cache: false,
@@ -26,12 +26,12 @@ function checkRequestIsValid(element, requestURL) {
     success: function(response) {
       if (response.status == 'OK') {
         if (response.data.status) {
-          $(element).removeClass('disabled').html(response.data.msg);
+          $(element).removeClass('disabled').html('<i class="icon-flag"></i>&nbsp;'+response.data.msg);
         } else {
           $(element).remove();
         }
       } else if (response.status == 'NEED_AUTH') {
-        $(element).replaceWith('<span class="holdBlocked">' + response.data.msg + '</span>');
+        $(element).replaceWith('<span class="' + blockedClass + '">' + response.data.msg + '</span>');
       }
     }
   });
@@ -40,7 +40,16 @@ function checkRequestIsValid(element, requestURL) {
 function setUpCheckRequest() {
   $('.checkRequest').each(function(i) {
     if($(this).hasClass('checkRequest')) {
-      var isValid = checkRequestIsValid(this, this.href);
+      var isValid = checkRequestIsValid(this, this.href, 'Hold', 'holdBlocked');
+    }
+  });
+}
+
+function setUpCheckStorageRetrievalRequest() {
+  $('.checkStorageRetrievalRequest').each(function(i) {
+    if($(this).hasClass('checkStorageRetrievalRequest')) {
+      var isValid = checkRequestIsValid(this, this.href, 'StorageRetrievalRequest',
+          'StorageRetrievalRequestBlocked');
     }
   });
 }
@@ -103,7 +112,7 @@ function registerAjaxCommentRecord() {
           $(form).find('textarea[name="comment"]').val('');
         } else if (response.status == 'NEED_AUTH') {
           data['loggingin'] = true;
-          addLightboxOnClose(function() {
+          Lightbox.addCloseAction(function() {
             $.ajax({
               type: 'POST',
               url:  url,
@@ -111,7 +120,7 @@ function registerAjaxCommentRecord() {
               dataType: 'json'
             });
           });
-          return getLightbox('Record', 'AddComment', data, data);
+          return Lightbox.get('Record', 'AddComment', data, data);
         } else {
           $('#modal').find('.modal-body').html(response.data+'!');
           $('#modal').find('.modal-header h3').html('Error!');
@@ -129,46 +138,49 @@ function registerAjaxCommentRecord() {
 $(document).ready(function(){
   var id = document.getElementById('record_id').value;
   
-  // Cite lightbox
-  $('#cite-record').click(function() {
-    var params = extractClassParams(this);
-    return getLightbox(params['controller'], 'Cite', {id:id});
-  });
-  // SMS lightbox
-  $('#sms-record').click(function() {
-    var params = extractClassParams(this);
-    return getLightbox(params['controller'], 'SMS', {id:id});
-  });
-  // Mail lightbox
-  $('#mail-record').click(function() {
-    var params = extractClassParams(this);
-    return getLightbox(params['controller'], 'Email', {id:id});
-  });
-  // Save lightbox
-  $('#save-record').click(function() {
-    var params = extractClassParams(this);
-    return getLightbox(params['controller'], 'Save', {id:id});
-  });
-  // Form handlers
-  addLightboxFormHandler('emailRecord', function(evt) {
-    ajaxSubmit($(evt.target), function(html){
-      var fi = html.indexOf('<div class="alert alert-error">');
-      if(fi > -1) {
-        var li = html.indexOf('</div>', fi+31);
-        displayLightboxError(html.substring(fi+31, li));
-      } else {
-        lightboxConfirm(vufindString['bulk_email_success']);
-      }
-    });
-    return false;
-  });
-  addLightboxFormHandler('smsRecord', function(evt) {
-    ajaxSubmit($(evt.target), function(){lightboxConfirm(vufindString['sms_success']);});
-    return false;
-  });
-  
   // register the record comment form to be submitted via AJAX
   registerAjaxCommentRecord();
   
   setUpCheckRequest();
+  setUpCheckStorageRetrievalRequest();
+  
+  /* --- LIGHTBOX --- */
+  // Cite lightbox
+  $('#cite-record').click(function() {
+    var params = extractClassParams(this);
+    return Lightbox.get(params['controller'], 'Cite', {id:id});
+  });
+  // Mail lightbox
+  $('#mail-record').click(function() {
+    var params = extractClassParams(this);
+    return Lightbox.get(params['controller'], 'Email', {id:id});
+  });
+  // Place a Hold
+  $('.placehold').click(function() {
+    var params = deparam($(this).attr('href'));
+    params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
+    params.id = id;
+    return Lightbox.get('Record', 'Hold', params, {}, function(html) {
+      Lightbox.checkForError(html, Lightbox.changeContent);
+    });
+  });
+  // Save lightbox
+  $('#save-record').click(function() {
+    var params = extractClassParams(this);
+    return Lightbox.get(params['controller'], 'Save', {id:id});
+  });
+  // SMS lightbox
+  $('#sms-record').click(function() {
+    var params = extractClassParams(this);
+    return Lightbox.get(params['controller'], 'SMS', {id:id});
+  });
+  // Form handlers
+  Lightbox.addFormCallback('saveRecord', function(){Lightbox.confirm(vufindString['bulk_save_success']);});
+  Lightbox.addFormCallback('smsRecord', function(){Lightbox.confirm(vufindString['sms_success']);});
+  Lightbox.addFormCallback('emailRecord', function(){
+    Lightbox.confirm(vufindString['bulk_email_success']);
+  });
+  Lightbox.addFormCallback('placeHold', function() {
+    document.location.href = path+'/MyResearch/Holds';
+  });
 });

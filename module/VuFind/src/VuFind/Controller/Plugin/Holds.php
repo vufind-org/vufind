@@ -258,7 +258,7 @@ class Holds extends AbstractPlugin
 
         // Make sure the bib ID is included, even if it's not loaded as part of
         // the validation loop below.
-        $gatheredDetails['id'] = $params->fromRoute('id');
+        $gatheredDetails['id'] = $params->fromRoute('id', $params->fromQuery('id'));
 
         // Get Values Passed from holdings.php
         $gatheredDetails = array_merge($gatheredDetails, $keyValueArray);
