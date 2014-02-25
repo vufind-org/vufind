@@ -61,7 +61,7 @@
     var items = list.find('li').length;
     var bubble = list.html();
     list.html('<span class="btn">'+items+' {$items}</span>');
-    list.find('.btn').popover({html:true,content:bubble});
+    list.find('.btn').popover({html:true,content:bubble,placement:"bottom"});
 JS;
 ?>
 <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>
