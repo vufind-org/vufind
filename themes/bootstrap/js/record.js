@@ -150,20 +150,28 @@ $(document).ready(function(){
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'Cite', {id:id});
   });
-  // SMS lightbox
-  $('#sms-record').click(function() {
-    var params = extractClassParams(this);
-    return Lightbox.get(params['controller'], 'SMS', {id:id});
-  });
   // Mail lightbox
   $('#mail-record').click(function() {
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'Email', {id:id});
   });
+  // Place a Hold
+  $('.placehold').click(function() {
+    var params = deparam($(this).attr('href'));
+    params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
+    return Lightbox.get('Record', 'Hold', params, {}, function(html) {
+      Lightbox.checkForError(html, Lightbox.changeContent);
+    });
+  });
   // Save lightbox
   $('#save-record').click(function() {
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'Save', {id:id});
+  });
+  // SMS lightbox
+  $('#sms-record').click(function() {
+    var params = extractClassParams(this);
+    return Lightbox.get(params['controller'], 'SMS', {id:id});
   });
   // Form handlers
   Lightbox.addFormCallback('saveRecord', function(){Lightbox.confirm(vufindString['bulk_save_success']);});

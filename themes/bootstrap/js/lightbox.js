@@ -156,6 +156,12 @@ var Lightbox = {
   confirm: function(message) {
     this.changeContent('<div class="alert alert-info">'+message+'</div><button class="btn" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
   },
+  /**
+   * Regexes a piece of html to find an error alert
+   * If one is found, display it
+   *
+   * If one is not found, return html to a success callback function
+   */
   checkForError: function(html, success) {
     var fi = html.indexOf('<div class="alert alert-error">');
     if(fi > -1) {
@@ -172,6 +178,8 @@ var Lightbox = {
     var alert = $('#modal .modal-body .alert');
     if(alert.length > 0) {
       $(alert).html(message);
+    } else if($('#modal .modal-body').html() == vufindString.loading+"...") {
+      $('#modal .modal-body').html('<div class="alert alert-error">'+message+'</div><button class="btn" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
     } else {
       $('#modal .modal-body').prepend('<div class="alert alert-error">'+message+'</div>');
     }
