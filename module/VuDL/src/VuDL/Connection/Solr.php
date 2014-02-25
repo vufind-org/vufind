@@ -70,20 +70,53 @@ class Solr extends AbstractBase
      */
     public function getDetails($id, $format)
     {
+        // Remove global filters from the connector
+        $map = $this->solr->getMap();
+        $params = $map->getParameters('select', 'appends');
+        $map->setParameters('select', 'appends', array());
+        $details = null;
         if($response = $this->solr->search(
             new ParamBag(
                 array(
                     'q'     => 'id:"'.$id.'"',
-                    'wt'    => 'json',
-                    'group' => 'false'
+                    'wt'    => 'json'
                 )
             )
         )) {
             $record = json_decode($response);
             if ($format) {
-                return $this->formatDetails((Array) $record->response->docs[0]);
+                $details = $this->formatDetails((Array) $record->response->docs[0]);
             }
-            return (Array) $record->response->docs[0];
+            $details = (Array) $record->response->docs[0];
+        }
+        // Reapply the global filters
+        $map->setParameters('select', 'appends', $params->getArrayCopy());
+        return null;
+            }
+    
+    /**
+     * Get the last modified date from Solr
+     *
+     * @param string $id ID to look up
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function getModDate($id)
+    {
+        $modfield = 'fgs.lastModifiedDate';
+        if($response = $this->solr->search(
+            new ParamBag(
+                array(
+                    'q'     => 'id:"'.$id.'"',
+                    'wt'    => 'json',
+                    'group' => 'false',
+                    'fl'    => $modfield
+                )
+            )
+        )) {
+            $record = json_decode($response);
+            return $record->response->docs[0]->$modfield;
         }
         return null;
     }
@@ -106,7 +139,8 @@ class Solr extends AbstractBase
         $response = $this->solr->search(
             new ParamBag(
                 array(
-                    'q'  => $seqField.':[* TO *]',
+                    'q'  => 'relsext.isMemberOf:"'.$id.'"',
+                    'sort'  => $seqField.' asc',
                     'wt' => 'json',
                     'rows' => 99999,
                     'fl' => 'id,'.$seqField,
@@ -117,34 +151,18 @@ class Solr extends AbstractBase
         $data = json_decode($response);
         // If we didn't find anything, do a standard members search
         if ($data->response->numFound == 0) {
-            $response = $this->solr->search(
-                new ParamBag(
-                    array(
-                        'q'  => 'relsext.isMemberOf:"'.$id.'"',
-                        'wt' => 'json',
-                        'rows' => 99999,
-                        'fl' => 'id',
-                        'group' => 'false'
-                    )
-                )
-            );
-            $data = json_decode($response);
+            return null;
+        } else {
             $structmap = array_map(
                 function ($n) {
                     return $n->id;
                 },
                 $data->response->docs
             );
-            //var_dump('relsext.isMemberOf:"'.$id.'"');
-        } else {
-            //var_dump($seqField);
-            $structmap = array();
-            foreach ($data->response->docs as $member) {
-                $structmap[intval($member->$seqField)-1] = $member->id;
-            }
         }
         // Reapply the global filters
         $map->setParameters('select', 'appends', $params->getArrayCopy());
+        //var_dump($structmap);
         return $structmap;
     }
 

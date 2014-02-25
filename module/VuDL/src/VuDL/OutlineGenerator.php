@@ -164,8 +164,7 @@ class OutlineGenerator
         $this->outline = array('counts'=>array(), 'names'=>array(), 'lists'=>array());
 
         // Check modification date
-        $xml = $this->connector->getObjectAsXML($root);
-        $rootModDate = (string)$xml[0]->objLastModDate;
+        $rootModDate = $this->connector->getModDate($root);
         // Get lists
         $lists = array_reverse($this->connector->getOrderedMembers($root));
         // Get list items

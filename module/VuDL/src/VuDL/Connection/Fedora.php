@@ -97,6 +97,20 @@ class Fedora extends AbstractBase
     }
 
     /**
+     * Get the last modified date from Solr
+     *
+     * @param string $id ID to look up
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function getModDate($id)
+    {
+        $xml = $this->connector->getObjectAsXML($id);
+        return (string)$xml[0]->objLastModDate;
+    }
+    
+    /**
      * Returns file contents of the structmap, our most common call
      *
      * @param string $id record id
@@ -105,53 +119,7 @@ class Fedora extends AbstractBase
      */
     public function getOrderedMembers($id)
     {
-        // Remove global filters from the connector
-        $map = $this->solr->getMap();
-        $params = $map->getParameters('select', 'appends');
-        $map->setParameters('select', 'appends', array());
-        // Try to find members in order
-        $seqField = 'sequence_'.str_replace(':', '_', $id).'_str';
-        $response = $this->solr->search(
-            new ParamBag(
-                array(
-                    'q'  => $seqField.':[* TO *]',
-                    'wt' => 'json',
-                    'rows' => 99999,
-                    'fl' => 'id,'.$seqField,
-                    'group' => 'false'
-                )
-            )
-        );
-        $data = json_decode($response);
-        // If we didn't find anything, do a standard members search
-        if ($data->response->numFound == 0) {          
-            $response = $this->solr->search(
-                new ParamBag(
-                    array(
-                        'q'  => 'relsext.isMemberOf:"'.$id.'"',
-                        'wt' => 'json',
-                        'rows' => 99999,
-                        'fl' => 'id',
-                        'group' => 'false'
-                    )
-                )
-            );
-            $data = json_decode($response);
-            $structmap = array_map(
-                function ($n) {
-                    return $n->id;
-                },
-                $data->response->docs
-            );
-        } else {
-            $structmap = array();
-            foreach ($data->response->docs as $member) {
-                $structmap[intval($member->$seqField)-1] = $member->id;
-            }
-        }
-        // Reapply the global filters
-        $map->setParameters('select', 'appends', $params->getArrayCopy());
-        return $structmap;
+        return $this->getMemberList($id);
     }
 
     /**
