@@ -264,7 +264,7 @@ class Factory
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         return new KeepAlive(
-            isset($config->Session->keepAlive) ? $config->Session->keepAlive : false
+            isset($config->Session->keepAlive) ? $config->Session->keepAlive : 0
         );
     }
     
