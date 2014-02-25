@@ -174,6 +174,38 @@ $(document).ready(function(){
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'SMS', {id:id});
   });
+  // Tag lightbox
+  $('#tagRecord').click(function() {
+    var id = $('.hiddenId')[0].value;
+    var parts = this.href.split('/');
+    Lightbox.addCloseAction(function() {
+      var recordId = $('#record_id').val();
+      var recordSource = $('.hiddenSource').val();
+      
+      // Update tag list (add tag)
+      var tagList = $('#tagList');
+      if (tagList.length > 0) {
+        tagList.empty();
+        var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
+        $.ajax({
+          dataType: 'json',
+          url: url,
+          success: function(response) {
+            if (response.status == 'OK') {
+              $.each(response.data, function(i, tag) {
+                var href = path + '/Tag?' + $.param({lookfor:tag.tag});
+                var html = (i>0 ? ', ' : ' ') + '<a href="' + htmlEncode(href) + '">' + htmlEncode(tag.tag) +'</a> (' + htmlEncode(tag.cnt) + ')';
+                tagList.append(html);
+              });
+            } else if (response.data && response.data.length > 0) {
+              tagList.append(response.data);
+            }
+          }
+        });
+      }
+    });
+    return Lightbox.get(parts[parts.length-3],'AddTag',{id:id});
+  });
   // Form handlers
   Lightbox.addFormCallback('saveRecord', function(){Lightbox.confirm(vufindString['bulk_save_success']);});
   Lightbox.addFormCallback('smsRecord', function(){Lightbox.confirm(vufindString['sms_success']);});

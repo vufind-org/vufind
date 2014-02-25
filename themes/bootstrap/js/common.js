@@ -181,12 +181,6 @@ $(document).ready(function() {
   $('.save-record').click(function() {
     var parts = this.href.split('/');
     return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('id')});
-  });  
-  // Tag lightbox
-  $('#tagRecord').click(function() {
-    var id = $('.hiddenId')[0].value;
-    var parts = this.href.split('/');
-    return Lightbox.get(parts[parts.length-3],'AddTag',{id:id});
   });
   Lightbox.addFormCallback('emailSearch', function(html) {
     Lightbox.confirm(vufindString['bulk_email_success']);

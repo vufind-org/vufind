@@ -127,27 +127,6 @@ var Lightbox = {
     if(typeof refreshCommentList === 'function') {
       refreshCommentList(recordId, recordSource);
     }
-    // Update tag list (add tag)
-    var tagList = $('#tagList');
-    if (tagList.length > 0) {
-      tagList.empty();
-      var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
-      $.ajax({
-        dataType: 'json',
-        url: url,
-        success: function(response) {
-          if (response.status == 'OK') {
-            $.each(response.data, function(i, tag) {
-              var href = path + '/Tag?' + $.param({lookfor:tag.tag});
-              var html = (i>0 ? ', ' : ' ') + '<a href="' + htmlEncode(href) + '">' + htmlEncode(tag.tag) +'</a> (' + htmlEncode(tag.cnt) + ')';
-              tagList.append(html);
-            });
-          } else if (response.data && response.data.length > 0) {
-            tagList.append(response.data);
-          }
-        }
-      });
-    }
   },
   /**
    * Call all the functions we need for when the modal loads
