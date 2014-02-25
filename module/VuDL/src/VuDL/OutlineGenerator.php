@@ -40,11 +40,11 @@ use Zend\Mvc\Controller\Plugin\Url as UrlHelper;
 class OutlineGenerator
 {
     /**
-     * Fedora connection
+     * VuDL connection manager
      *
-     * @var Fedora
+     * @var connector
      */
-    protected $fedora;
+    protected $connector;
 
     /**
      * URL helper
@@ -96,10 +96,10 @@ class OutlineGenerator
      * @param array       $routes VuDL route configuration
      * @param object|bool $cache  Cache object (or false to disable caching)
      */
-    public function __construct(Fedora $fedora, UrlHelper $url, $routes = array(),
+    public function __construct(Connection\Manager $connector, UrlHelper $url, $routes = array(),
         $cache = false
     ) {
-        $this->fedora = $fedora;
+        $this->connector = $connector;
         $this->url = $url;
         $this->routes = $routes;
         $this->cache = $cache;
@@ -161,26 +161,21 @@ class OutlineGenerator
     {
         // Reset the state of the class:
         $this->queue = $this->moddate = array();
-        $this->outline = array('counts'=>array(), 'names'=>array());
+        $this->outline = array('counts'=>array(), 'names'=>array(), 'lists'=>array());
 
         // Check modification date
-        $xml = $this->fedora->getObjectAsXML($root);
+        $xml = $this->connector->getObjectAsXML($root);
         $rootModDate = (string)$xml[0]->objLastModDate;
         // Get lists
-        $data = $this->fedora->getStructmap($root);
-        $lists = array();
-        preg_match_all('/vudl:[^"]+/', $data, $lists);
-
+        $lists = array_reverse($this->connector->getOrderedMembers($root));
         // Get list items
-        foreach ($lists[0] as $i=>$list_id) {
+        foreach ($lists as $i=>$list_id) {
             // Get list name
-            $xml = $this->fedora->getObjectAsXML($list_id);
+            $xml = $this->connector->getObjectAsXML($list_id);
             $this->outline['names'][] = (String) $xml[0]->objLabel;
             $this->moddate[$i] = max((string)$xml[0]->objLastModDate, $rootModDate);
-            $data = $this->fedora->getStructmap($list_id);
-            $list = array();
-            preg_match_all('/vudl:[^"]+/', $data, $list);
-            $this->queue[$i] = $list[0];
+            $items = $this->connector->getOrderedMembers($list_id);
+            $this->queue[$i] = $items;
         }
     }
 
@@ -194,10 +189,10 @@ class OutlineGenerator
     protected function buildItem($id)
     {
         // Else, get all the data and save it to the cache
-        $details = $this->fedora->getRecordDetails($id);
+        $details = $this->connector->getDetails($id, false);
         $list = array();
         // Get the file type
-        $file = $this->fedora->getDatastreams($id);
+        $file = $this->connector->getDatastreams($id);
         preg_match_all(
             '/dsid="([^"]+)"[^>]*mimeType="([^"]+)/',
             $file,
@@ -240,7 +235,7 @@ class OutlineGenerator
     {
         // Set default page length if necessary
         if ($pageLength == null) {
-            $pageLength = $this->fedora->getPageLength();
+            $pageLength = $this->connector->getPageLength();
         }
 
         // Get data on all pages and docs

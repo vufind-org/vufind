@@ -9,17 +9,42 @@ $config = array(
     ),
     'service_manager' => array(
         'factories' => array(
-            'VuDL\Fedora' => array('VuDL\Factory', 'getFedora'),
-        ),
+            'VuDL\Connection\Manager' => function ($sm) {
+                return new \VuDL\Connection\Manager(
+                    array('Solr', 'Fedora'), $sm
+                );
+            },
+            'VuDL\Connection\Fedora' => function ($sm) {
+                return new \VuDL\Connection\Fedora(
+                    $sm->get('VuFind\Config')->get('VuDL')
+                );
+            },
+            'VuDL\Connection\Solr' => function ($sm) {
+                return new \VuDL\Connection\Solr(
+                    $sm->get('VuFind\Config')->get('VuDL'),
+                    $sm->get('VuFind\Search\BackendManager')->get('Solr')
+                );
+            }
+        )
     ),
     'vufind' => array(
         'plugin_managers' => array(
             'recorddriver' => array(
                 'factories' => array(
-                    'solrvudl' => array('VuDL\Factory', 'getRecordDriver'),
-                ),
-            ),
-        ),
+                    'solrvudl' => function ($sm) {
+                        $driver = new \VuDL\RecordDriver\SolrVudl(
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+                            null,
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
+                        );
+                        $driver->setVuDLConfig(
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('VuDL')
+                        );
+                        return $driver;
+                    }
+                )
+            )
+        )
     ),
     'router' => array(
         'routes' => array(
