@@ -85,24 +85,6 @@ function removeItemFromCart(id,source) {
   return false;
 }
 
-// Ajax cart submission for the lightbox
-function cartSubmit($form) {
-  var submit = $form.find('input[type="submit"][clicked=true]').attr('name'); 
-  if (submit == 'print') {
-    //redirect page
-    var checks = $form.find('input.checkbox-select-item:checked');
-    if(checks.length > 0) {
-      var url = path+'/Records/Home?print=true';
-      for(var i=0;i<checks.length;i++) {
-        url += '&id[]='+checks[i].value;
-      }
-      document.location.href = url;
-    }
-  } else {
-    Lightbox.submit($form, Lightbox.changeContent);
-  }
-}
-
 function registerUpdateCart($form) {
   if($form) {
     $("#updateCart, #bottom_updateCart").unbind('click').click(function(){
@@ -142,6 +124,26 @@ function registerUpdateCart($form) {
       }
       return false;
     });
+  }
+}
+
+// Ajax cart submission for the lightbox
+function cartSubmit($form) {
+  var submit = $form.find('input[type="submit"][clicked=true]').attr('name');
+  if (submit == 'print') {
+    //redirect page
+    var checks = $form.find('input.checkbox-select-item:checked');
+    if(checks.length > 0) {
+      var url = path+'/Records/Home?print=true';
+      for(var i=0;i<checks.length;i++) {
+        url += '&id[]='+checks[i].value;
+      }
+      document.location.href = url;
+    } else {
+      Lightbox.displayError(vufindString['bulk_noitems_advice']);
+    }
+  } else {
+    Lightbox.submit($form, Lightbox.changeContent);
   }
 }
 
