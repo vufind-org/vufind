@@ -153,4 +153,42 @@ $(document).ready(function() {
   
   // Advanced facets
   setupOrFacets();
+  
+  /**************************
+   * LIGHTBOX OPENING LINKS *
+   **************************/
+  
+  // Help links
+  $('.help-link').click(function() {
+    var split = this.href.split('=');
+    return Lightbox.get('Help','Home',{topic:split[1]});
+  });
+  // Hierarchy links
+  $('.hierarchyTreeLink a').click(function() {
+    var id = $(this).parent().parent().parent().find(".hiddenId")[0].value;
+    var hierarchyID = $(this).parent().find(".hiddenHierarchyId")[0].value;
+    return Lightbox.get('Record','AjaxTab',{id:id},{hierarchy:hierarchyID,tab:'HierarchyTree'});
+  });
+  // Login link
+  $('#loginOptions a').click(function() {
+    return Lightbox.get('MyResearch','Login',{},{'loggingin':true});
+  });
+  // Email search link
+  $('.mailSearch').click(function() {
+    return Lightbox.get('Search','Email',{url:document.URL});
+  });
+  // Save record links
+  $('.save-record').click(function() {
+    var parts = this.href.split('/');
+    return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('id')});
+  });  
+  // Tag lightbox
+  $('#tagRecord').click(function() {
+    var id = $('.hiddenId')[0].value;
+    var parts = this.href.split('/');
+    return Lightbox.get(parts[parts.length-3],'AddTag',{id:id});
+  });
+  Lightbox.addFormCallback('emailSearch', function(html) {
+    Lightbox.confirm(vufindString['bulk_email_success']);
+  });
 });
