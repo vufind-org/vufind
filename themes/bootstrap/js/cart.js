@@ -178,6 +178,11 @@ $(document).ready(function() {
     cartSubmit($(evt.target));
     return false;
   });
+  Lightbox.addFormCallback('bulkEmail', function(){
+    Lightbox.checkForError(html, function(x) {
+      Lightbox.confirm(vufindString['bulk_email_success']);
+    });
+  });
   Lightbox.addFormCallback('bulkSave', function(){
     // After we close the lightbox, redirect to list view
     Lightbox.addCloseAction(function() {
