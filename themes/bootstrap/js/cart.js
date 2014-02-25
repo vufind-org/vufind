@@ -174,23 +174,21 @@ $(document).ready(function() {
   $('#cartItems').click(function() {
     return Lightbox.get('Cart','Cart');
   });
-  Lightbox.addFormHandler('cartForm', function(evt){
+  Lightbox.addFormHandler('cartForm', function(evt) {
     cartSubmit($(evt.target));
     return false;
   });
-  Lightbox.addFormCallback('bulkEmail', function(){
-    Lightbox.checkForError(html, function(x) {
-      Lightbox.confirm(vufindString['bulk_email_success']);
-    });
+  Lightbox.addFormCallback('bulkEmail', function() {
+    Lightbox.confirm(vufindString['bulk_email_success']);
   });
-  Lightbox.addFormCallback('bulkSave', function(){
+  Lightbox.addFormCallback('bulkSave', function() {
     // After we close the lightbox, redirect to list view
     Lightbox.addCloseAction(function() {
       document.location.href = path+'/MyResearch/MyList/'+Lightbox.lastPOST['list'];
     });
     Lightbox.confirm(vufindString['bulk_save_success']);
   });
-  Lightbox.addFormHandler('exportForm', function(evt){
+  Lightbox.addFormHandler('exportForm', function(evt) {
     $.ajax({
       url: path + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
       type:'POST',

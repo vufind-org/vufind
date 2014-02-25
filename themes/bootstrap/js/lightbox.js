@@ -43,10 +43,16 @@ var Lightbox = {
     this.formHandlers[formName] = func;
   },
   /**
-   * Register a function to be called after a form submission returns
+   * Register a function to be called when a form submission succeeds
    */
-  addFormCallback: function(formName, func) {
-    this.formCallbacks[formName] = func;
+  addFormCallback: function(formName, func, expectsError) {
+    if(typeof expectsError === "undefined" || expectsError) {
+      this.formCallbacks[formName] = function(html) {
+        Lightbox.checkForError(html, func);
+      }
+    } else {
+      this.formCallbacks[formName] = func;
+    }
   },
   /**
    * We store all the ajax calls in case we need to cancel.
@@ -374,7 +380,7 @@ var Lightbox = {
    * function that will call Lightbox.submit with the form and the callback.
    *
    * Finally, if nothing custom is setup, it will add the default function which
-   * calls Lightbox.submit with a callback to close when we're done.
+   * calls Lightbox.submit with a callback to close if there are no errors to display.
    *
    * This is a default open action, so it runs every time changeContent
    * is called and the 'shown' lightbox event is triggered
@@ -394,7 +400,9 @@ var Lightbox = {
     // Default
     } else {
       $(form).unbind('submit').submit(function(evt){
-        Lightbox.submit($(evt.target), Lightbox.close);
+        Lightbox.submit($(evt.target), function(html){
+          Lightbox.checkForError(html, Lightbox.close)
+        });
         return false;
       });
     }

@@ -188,9 +188,7 @@ $(document).ready(function() {
     var parts = this.href.split('/');
     return Lightbox.get(parts[parts.length-3],'AddTag',{id:id});
   });
-  Lightbox.addFormCallback('emailSearch', function(html){
-    Lightbox.checkForError(html, function(x) {
-      Lightbox.confirm(vufindString['bulk_email_success']);
-    });
+  Lightbox.addFormCallback('emailSearch', function(html) {
+    Lightbox.confirm(vufindString['bulk_email_success']);
   });
 });

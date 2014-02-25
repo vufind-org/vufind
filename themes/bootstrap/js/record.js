@@ -177,14 +177,10 @@ $(document).ready(function(){
   // Form handlers
   Lightbox.addFormCallback('saveRecord', function(){Lightbox.confirm(vufindString['bulk_save_success']);});
   Lightbox.addFormCallback('smsRecord', function(){Lightbox.confirm(vufindString['sms_success']);});
-  Lightbox.addFormCallback('emailRecord', function(html){
-    Lightbox.checkForError(html, function(x) {
-      Lightbox.confirm(vufindString['bulk_email_success']);
-    });
+  Lightbox.addFormCallback('emailRecord', function(){
+    Lightbox.confirm(vufindString['bulk_email_success']);
   });
-  Lightbox.addFormCallback('placeHold', function(html) {
-    Lightbox.checkForError(html, function(x) {
-      document.location.href = path+'/MyResearch/Holds';
-    });
+  Lightbox.addFormCallback('placeHold', function() {
+    document.location.href = path+'/MyResearch/Holds';
   });
 });
