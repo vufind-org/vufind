@@ -164,6 +164,15 @@ $(document).ready(function(){
       Lightbox.checkForError(html, Lightbox.changeContent);
     });
   });
+  // Place a Storage Hold
+  $('.placeStorageRetrievalRequest').click(function() {
+    var params = deparam($(this).attr('href'));
+    params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
+    Lightbox.addCloseAction(function(op) {
+      document.location.href = path+'/MyResearch/Holds';
+    });
+    return Lightbox.get('Record', 'StorageRetrievalRequest', params, {});
+  });
   // Save lightbox
   $('#save-record').click(function() {
     var params = extractClassParams(this);
