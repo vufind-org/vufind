@@ -44,6 +44,9 @@ var Lightbox = {
   },
   /**
    * Register a function to be called when a form submission succeeds
+   *
+   * We add error checking by default, you never know when error blocks will strike.
+   * Passing false to expectsError turns this off. Errors are inserted above *current* content.
    */
   addFormCallback: function(formName, func, expectsError) {
     if(typeof expectsError === "undefined" || expectsError) {
