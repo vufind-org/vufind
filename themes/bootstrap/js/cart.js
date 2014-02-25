@@ -51,7 +51,8 @@ function addItemToCart(id,source) {
   Cookies.setItem(_CART_COOKIE, $.unique(cartItems).join(_CART_COOKIE_DELIM), false, '/');
   $('#cartItems strong').html(parseInt($('#cartItems strong').html(), 10)+1);
   return true;
-}function removeItemFromCart(id,source) {
+}
+function removeItemFromCart(id,source) {
   var cartItems = getCartItems();
   var cartSources = getCartSources();
   // Find 
