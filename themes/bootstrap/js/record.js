@@ -159,6 +159,7 @@ $(document).ready(function(){
   $('.placehold').click(function() {
     var params = deparam($(this).attr('href'));
     params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
+    params.id = id;
     return Lightbox.get('Record', 'Hold', params, {}, function(html) {
       Lightbox.checkForError(html, Lightbox.changeContent);
     });
