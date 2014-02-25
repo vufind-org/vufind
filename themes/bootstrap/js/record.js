@@ -165,7 +165,18 @@ $(document).ready(function(){
     var params = extractClassParams(this);
     return Lightbox.get(params['controller'], 'Save', {id:id});
   });
-  // Place a Hold
+  // Form handlers
+  Lightbox.addFormCallback('saveRecord', function(){Lightbox.confirm(vufindString['bulk_save_success']);});
+  Lightbox.addFormCallback('smsRecord', function(){Lightbox.confirm(vufindString['sms_success']);});
+  Lightbox.addFormCallback('emailRecord', function(html){
+    var fi = html.indexOf('<div class="alert alert-error">');
+    if(fi > -1) {
+      var li = html.indexOf('</div>', fi+31);
+      Lightbox.displayError(html.substring(fi+31, li));
+    } else {
+      Lightbox.confirm(vufindString['bulk_email_success']);
+    }
+  });
   Lightbox.addFormHandler('placeHold', function(evt) {
     var data = getDataFromForm($(evt.target));
     modalXHR = $.ajax({
@@ -187,18 +198,5 @@ $(document).ready(function(){
       }
     });
     return false;
-  });
-  // Form handlers
-  Lightbox.addFormCallback('saveRecord', function(){Lightbox.confirm(vufindString['bulk_save_success']);});
-  Lightbox.addFormCallback('smsRecord', function(){Lightbox.confirm(vufindString['sms_success']);});
-  Lightbox.addFormCallback('placeHold', function(){document.location.href = path+'/MyResearch/Holds';});
-  Lightbox.addFormCallback('emailRecord', function(html){
-    var fi = html.indexOf('<div class="alert alert-error">');
-    if(fi > -1) {
-      var li = html.indexOf('</div>', fi+31);
-      Lightbox.displayError(html.substring(fi+31, li));
-    } else {
-      Lightbox.confirm(vufindString['bulk_email_success']);
-    }
   });
 });

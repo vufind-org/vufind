@@ -188,4 +188,13 @@ $(document).ready(function() {
     var parts = this.href.split('/');
     return Lightbox.get(parts[parts.length-3],'AddTag',{id:id});
   });
+  Lightbox.addFormCallback('emailSearch', function(html){
+    var fi = html.indexOf('<div class="alert alert-error">');
+    if(fi > -1) {
+      var li = html.indexOf('</div>', fi+31);
+      Lightbox.displayError(html.substring(fi+31, li));
+    } else {
+      Lightbox.confirm(vufindString['bulk_email_success']);
+    }
+  });
 });
