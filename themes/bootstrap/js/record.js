@@ -166,14 +166,39 @@ $(document).ready(function(){
     return Lightbox.get(params['controller'], 'Save', {id:id});
   });
   // Place a Hold
-  $('.placehold').click(function() {
-    var params = deparam($(this).attr('href'));
-    params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    return Lightbox.get('Record', 'Hold', params, {});
+  Lightbox.addFormHandler('placeHold', function(evt) {
+    var data = getDataFromForm($(evt.target));
+    modalXHR = $.ajax({
+      type:'POST',
+      url:lastLightboxURL,
+      data:data,
+      success:function(html) { // Success!
+        var fi = html.indexOf('<div class="alert alert-error">');
+        if(fi > -1) {
+          var li = html.indexOf('</div>', fi+31);
+          displayLightboxError(html.substring(fi+31, li));
+        } else {
+          document.location.href = path+'/MyResearch/Holds';
+        }
+      },
+      error:function(d,e) {
+        console.log(e,d); // Error reporting
+        console.log(lastLightboxURL,data);
+      }
+    });
+    return false;
   });
   // Form handlers
-  Lightbox.addFormCallback('emailRecord', function(){Lightbox.confirm(vufindString['bulk_email_success']);});
   Lightbox.addFormCallback('saveRecord', function(){Lightbox.confirm(vufindString['bulk_save_success']);});
   Lightbox.addFormCallback('smsRecord', function(){Lightbox.confirm(vufindString['sms_success']);});
   Lightbox.addFormCallback('placeHold', function(){document.location.href = path+'/MyResearch/Holds';});
+  Lightbox.addFormCallback('emailRecord', function(html){
+    var fi = html.indexOf('<div class="alert alert-error">');
+    if(fi > -1) {
+      var li = html.indexOf('</div>', fi+31);
+      Lightbox.displayError(html.substring(fi+31, li));
+    } else {
+      Lightbox.confirm(vufindString['bulk_email_success']);
+    }
+  });
 });
