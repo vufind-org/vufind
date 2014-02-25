@@ -169,14 +169,11 @@ $(document).ready(function(){
   $('.placehold').click(function() {
     var params = deparam($(this).attr('href'));
     params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    Lightbox.addCloseAction(function(op) {
-      document.location.href = path+'/MyResearch/Holds';
-    });
-    return Lightbox.getByUrl('Record', 'Hold', params, {});
-    //return Lightbox.get('Record', 'Hold', params, {});
+    return Lightbox.get('Record', 'Hold', params, {});
   });
   // Form handlers
   Lightbox.addFormCallback('emailRecord', function(){Lightbox.confirm(vufindString['bulk_email_success']);});
   Lightbox.addFormCallback('saveRecord', function(){Lightbox.confirm(vufindString['bulk_save_success']);});
   Lightbox.addFormCallback('smsRecord', function(){Lightbox.confirm(vufindString['sms_success']);});
+  Lightbox.addFormCallback('placeHold', function(){document.location.href = path+'/MyResearch/Holds';});
 });
