@@ -171,7 +171,7 @@ $(document).ready(function(){
   Lightbox.addFormCallback('emailRecord', function(html){
     Lightbox.checkForError(html, function(x) {
       Lightbox.confirm(vufindString['bulk_email_success']);
-    }
+    });
   });
   Lightbox.addFormCallback('placeHold', function(evt) {
     Lightbox.checkForError(html, function(x) {
