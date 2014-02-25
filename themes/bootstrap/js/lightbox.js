@@ -76,7 +76,7 @@ var Lightbox = {
       header.css('border-bottom-width', '1px');
     }
     $('#modal .modal-body').html(html).modal({'show':true,'backdrop':false});
-    //Lightbox.openActions()
+    Lightbox.openActions();
   },
 
   /**
