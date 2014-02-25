@@ -182,7 +182,7 @@ $(document).ready(function(){
       Lightbox.confirm(vufindString['bulk_email_success']);
     });
   });
-  Lightbox.addFormCallback('placeHold', function(evt) {
+  Lightbox.addFormCallback('placeHold', function(html) {
     Lightbox.checkForError(html, function(x) {
       document.location.href = path+'/MyResearch/Holds';
     });
