@@ -169,34 +169,13 @@ $(document).ready(function(){
   Lightbox.addFormCallback('saveRecord', function(){Lightbox.confirm(vufindString['bulk_save_success']);});
   Lightbox.addFormCallback('smsRecord', function(){Lightbox.confirm(vufindString['sms_success']);});
   Lightbox.addFormCallback('emailRecord', function(html){
-    var fi = html.indexOf('<div class="alert alert-error">');
-    if(fi > -1) {
-      var li = html.indexOf('</div>', fi+31);
-      Lightbox.displayError(html.substring(fi+31, li));
-    } else {
+    Lightbox.checkForError(html, function(x) {
       Lightbox.confirm(vufindString['bulk_email_success']);
     }
   });
-  Lightbox.addFormHandler('placeHold', function(evt) {
-    var data = getDataFromForm($(evt.target));
-    modalXHR = $.ajax({
-      type:'POST',
-      url:lastLightboxURL,
-      data:data,
-      success:function(html) { // Success!
-        var fi = html.indexOf('<div class="alert alert-error">');
-        if(fi > -1) {
-          var li = html.indexOf('</div>', fi+31);
-          displayLightboxError(html.substring(fi+31, li));
-        } else {
-          document.location.href = path+'/MyResearch/Holds';
-        }
-      },
-      error:function(d,e) {
-        console.log(e,d); // Error reporting
-        console.log(lastLightboxURL,data);
-      }
+  Lightbox.addFormCallback('placeHold', function(evt) {
+    Lightbox.checkForError(html, function(x) {
+      document.location.href = path+'/MyResearch/Holds';
     });
-    return false;
   });
 });

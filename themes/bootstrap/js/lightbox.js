@@ -76,7 +76,7 @@ var Lightbox = {
       header.css('border-bottom-width', '1px');
     }
     $('#modal .modal-body').html(html).modal({'show':true,'backdrop':false});
-    Lightbox.openActions()
+    //Lightbox.openActions()
   },
 
   /**
@@ -156,6 +156,15 @@ var Lightbox = {
   confirm: function(message) {
     this.changeContent('<div class="alert alert-info">'+message+'</div><button class="btn" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
   },
+  checkForError: function(html, success) {
+    var fi = html.indexOf('<div class="alert alert-error">');
+    if(fi > -1) {
+      var li = html.indexOf('</div>', fi+31);
+      Lightbox.displayError(html.substring(fi+31, li));
+    } else {
+      success(html);
+    }
+  },
   /**
    * Insert an error alert element at the top of the lightbox
    */
@@ -180,7 +189,6 @@ var Lightbox = {
    */
   getByUrl: function(url, post, callback) {
     if(typeof callback == "undefined") {
-      console.log("UNDEFINED", url);
       // No custom handler: display return in lightbox
       callback = this.changeContent;
     }
@@ -368,16 +376,16 @@ var Lightbox = {
     var name = $(form).attr('name');
     // Assign form handler based on name
     if(typeof name !== "undefined" && typeof Lightbox.formHandlers[name] !== "undefined") {
-      $(form).submit(Lightbox.formHandlers[name]);
+      $(form).unbind('submit').submit(Lightbox.formHandlers[name]);
     // Default action, with custom callback
     } else if(typeof Lightbox.formCallbacks[name] !== "undefined") {
-      $(form).submit(function(evt){
+      $(form).unbind('submit').submit(function(evt){
         Lightbox.submit($(evt.target), Lightbox.formCallbacks[name]);
         return false;
       });
     // Default
     } else {
-      $(form).submit(function(evt){
+      $(form).unbind('submit').submit(function(evt){
         Lightbox.submit($(evt.target), Lightbox.close);
         return false;
       });
