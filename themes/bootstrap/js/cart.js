@@ -86,10 +86,10 @@ function removeItemFromCart(id,source) {
       var oldSources = cartSources.slice(0);
       cartSources.splice(sourceIndex,1);
       // Adjust source index characters
-      for(var i=cartItems.length;i--;) {
-        var si = cartItems[i].charCodeAt(0)-65;
+      for(var j=cartItems.length;j--;) {
+        var si = cartItems[j].charCodeAt(0)-65;
         var ni = cartSources.indexOf(oldSources[si]);
-        cartItems[i] = String.fromCharCode(65+ni)+cartItems[i].substring(1);
+        cartItems[j] = String.fromCharCode(65+ni)+cartItems[j].substring(1);
       }
     }
     if(cartItems.length > 0) {
