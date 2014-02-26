@@ -1349,6 +1349,19 @@ class AjaxController extends AbstractBase
     }
 
     /**
+     * Keep Alive
+     *
+     * This is responsible for keeping the session alive whenever called
+     * (via JavaScript)
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function keepAliveAjax()
+    {
+        return $this->output(true, self::STATUS_OK);
+    }
+
+    /**
      * Convenience method for accessing results
      *
      * @return \VuFind\Search\Results\PluginManager
