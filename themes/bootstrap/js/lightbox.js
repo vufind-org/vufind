@@ -52,7 +52,7 @@ var Lightbox = {
     if(typeof expectsError === "undefined" || expectsError) {
       this.formCallbacks[formName] = function(html) {
         Lightbox.checkForError(html, func);
-      }
+      };
     } else {
       this.formCallbacks[formName] = func;
     }
@@ -383,13 +383,13 @@ var Lightbox = {
     } else {
       $(form).unbind('submit').submit(function(evt){
         Lightbox.submit($(evt.target), function(html){
-          Lightbox.checkForError(html, Lightbox.close)
+          Lightbox.checkForError(html, Lightbox.close);
         });
         return false;
       });
     }
-  },
-}
+  }
+};
 
 /**
  * This is a full handler for the login form
@@ -491,7 +491,7 @@ function ajaxLogin(form) {
       }
     }
   });
-};
+}
 
 /**
  * This is where you add click events to open the lightbox.
