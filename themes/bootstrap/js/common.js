@@ -1,4 +1,4 @@
-/*global path, vufindString */
+/*global Lightbox, path, vufindString */
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value){

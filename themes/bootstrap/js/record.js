@@ -1,4 +1,4 @@
-/*global extractClassParams, Lightbox, path, vufindString */
+/*global deparam, extractClassParams, htmlEncode, Lightbox, path, vufindString */
 
 /**
  * Functions and event handlers specific to record pages.
