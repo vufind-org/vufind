@@ -182,7 +182,7 @@ $(document).ready(function() {
     var parts = this.href.split('/');
     return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('id')});
   });
-  Lightbox.addFormCallback('emailSearch', function(html) {
+  Lightbox.addFormCallback('emailSearch', function(x) {
     Lightbox.confirm(vufindString['bulk_email_success']);
   });
 });

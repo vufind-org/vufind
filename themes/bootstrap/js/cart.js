@@ -213,12 +213,12 @@ $(document).ready(function() {
       url: path + '/AJAX/JSON?' + $.param({method:'exportFavorites'}),
       type:'POST',
       dataType:'json',
-      data:getDataFromForm($(evt.target)),
+      data:Lightbox.getFormData($(evt.target)),
       success:function(data) {
         if(data.data.needs_redirect) {
           document.location.href = data.data.result_url;
         } else {
-          changeModalContent(data.data.result_additional);
+          Lightbox.changeContent(data.data.result_additional);
         }
       },
       error:function(d,e) {
