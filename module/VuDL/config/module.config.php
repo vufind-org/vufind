@@ -9,23 +9,10 @@ $config = array(
     ),
     'service_manager' => array(
         'factories' => array(
-            'VuDL\Connection\Manager' => function ($sm) {
-                return new \VuDL\Connection\Manager(
-                    array('Solr', 'Fedora'), $sm
-                );
-            },
-            'VuDL\Connection\Fedora' => function ($sm) {
-                return new \VuDL\Connection\Fedora(
-                    $sm->get('VuFind\Config')->get('VuDL')
-                );
-            },
-            'VuDL\Connection\Solr' => function ($sm) {
-                return new \VuDL\Connection\Solr(
-                    $sm->get('VuFind\Config')->get('VuDL'),
-                    $sm->get('VuFind\Search\BackendManager')->get('Solr')
-                );
-            }
-        )
+            'VuDL\Connection\Manager' => array('VuDL\Factory', 'getConnectionManager'),
+            'VuDL\Connection\Fedora' => array('VuDL\Factory', 'getConnectionFedora'),
+            'VuDL\Connection\Solr' => array('VuDL\Factory', 'getConnectionSolr'),
+        ),
     ),
     'vufind' => array(
         'plugin_managers' => array(
