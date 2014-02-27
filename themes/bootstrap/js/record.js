@@ -168,10 +168,9 @@ $(document).ready(function(){
   $('.placeStorageRetrievalRequest').click(function() {
     var params = deparam($(this).attr('href'));
     params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    Lightbox.addCloseAction(function(op) {
-      document.location.href = path+'/MyResearch/StorageRetrievalRequests';
+    return Lightbox.get('Record', 'StorageRetrievalRequest', params, {}, function(html) {
+      Lightbox.checkForError(html, Lightbox.changeContent);
     });
-    return Lightbox.get('Record', 'StorageRetrievalRequest', params, {});
   });
   // Save lightbox
   $('#save-record').click(function() {
@@ -223,5 +222,8 @@ $(document).ready(function(){
   });
   Lightbox.addFormCallback('placeHold', function() {
     document.location.href = path+'/MyResearch/Holds';
+  });
+  Lightbox.addFormCallback('placeStorageRetrievalRequest', function() {
+    document.location.href = path+'/MyResearch/StorageRetrievalRequests';
   });
 });

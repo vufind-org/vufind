@@ -10,7 +10,7 @@
 <p class="lead"><?=$this->transEsc('storage_retrieval_request_place_text')?></p>
 <?=$this->flashmessages()?>
 <div class="storage-retrieval-request-form">
-  <form action="" class="form-horizontal" method="post">
+  <form name="placeStorageRetrievalRequest" action="" class="form-horizontal" method="post">
     <? if (in_array("item-issue", $this->extraFields)): ?>
       <div class="control-group">
         <div class="controls">
