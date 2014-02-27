@@ -49,8 +49,8 @@ class Factory
     public static function getConnectionManager(ServiceManager $sm)
     {
         return new \VuDL\Connection\Manager(
-                        array('Solr', 'Fedora'), $sm
-                );
+            array('Solr', 'Fedora'), $sm
+        );
     }
         
     /**
@@ -62,9 +62,9 @@ class Factory
      */
     public static function getConnectionFedora(ServiceManager $sm)
     {
-                return new \VuDL\Connection\Fedora(
-                        $sm->get('VuFind\Config')->get('VuDL')
-                );
+        return new \VuDL\Connection\Fedora(
+            $sm->get('VuFind\Config')->get('VuDL')
+        );
     }
         
     /**
@@ -76,10 +76,10 @@ class Factory
      */
     public static function getConnectionSolr(ServiceManager $sm)
     {
-                return new \VuDL\Connection\Solr(
-                        $sm->get('VuFind\Config')->get('VuDL'),
-                        $sm->get('VuFind\Search\BackendManager')->get('Solr')
-                );
+        return new \VuDL\Connection\Solr(
+            $sm->get('VuFind\Config')->get('VuDL'),
+            $sm->get('VuFind\Search\BackendManager')->get('Solr')
+        );
     }
 
     /**
