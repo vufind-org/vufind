@@ -19,9 +19,9 @@ $config = array(
             'recorddriver' => array(
                 'factories' => array(
                     'solrvudl' => array('VuDL\Factory', 'getRecordDriver'),
-                )
-            )
-        )
+                ),
+            ),
+        ),
     ),
     'router' => array(
         'routes' => array(
