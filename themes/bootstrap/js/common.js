@@ -145,7 +145,11 @@ $(document).ready(function() {
   var url = window.location.href;
   if(url.indexOf('?' + 'print' + '=') != -1  || url.indexOf('&' + 'print' + '=') != -1) {
     $("link[media='print']").attr("media", "all");
-    window.print();
+    $(document).ajaxStop(function() {
+      window.print();
+    });
+    // Make an ajax call to ensure that ajaxStop is triggered
+    $.getJSON(path + '/AJAX/JSON', {method: 'keepAlive'});
   }
     
   // Collapsing facets
