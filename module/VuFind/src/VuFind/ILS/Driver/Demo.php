@@ -283,10 +283,20 @@ class Demo extends AbstractBase
                 "item_id" => $i,
                 "reqnum" => $i
             );
-            if ($this->idsInMyResearch) {
-                $currentItem['id'] = $this->getRandomBibId();
-            } else {
-                $currentItem['title'] = 'Demo Title ' . $i;
+            
+            if ($i == 2 || rand()%5 == 1) {
+                // Mimic an ILL request
+                $currentItem["id"] = "ill_request_$i";
+                $currentItem["title"] = "ILL Hold Title $i";
+                $currentItem['institution_id'] = 'ill_institution';
+                $currentItem['institution_name'] = 'ILL Library';
+                $currentItem['institution_dbkey'] = 'ill_institution';
+            } else {    
+                if ($this->idsInMyResearch) {
+                    $currentItem['id'] = $this->getRandomBibId();
+                } else {
+                    $currentItem['title'] = 'Demo Title ' . $i;
+                }
             }
 
             if ($requestType == 'Holds') {
@@ -697,10 +707,15 @@ class Demo extends AbstractBase
                 // When is it due? +/- up to 15 days
                 $due_relative = rand()%30 - 15;
                 // Due date
+                $dueStatus = false;
                 if ($due_relative >= 0) {
                     $due_date = date("j-M-y", strtotime("now +$due_relative days"));
+                    if ($due_relative == 0) {
+                        $dueStatus = 'due';
+                    }
                 } else {
                     $due_date = date("j-M-y", strtotime("now $due_relative days"));
+                    $dueStatus = 'overdue';
                 }
 
                 // Times renewed    : 0,0,0,0,0,1,2,3,4,5
@@ -715,18 +730,37 @@ class Demo extends AbstractBase
                     $req = 0;
                 }
 
-                $transList[] = array(
-                    'duedate' => $due_date,
-                    'barcode' => sprintf("%08d", rand()%50000),
-                    'renew'   => $renew,
-                    'request' => $req,
-                    'item_id' => $i,
-                    'renewable' => true
-                );
-                if ($this->idsInMyResearch) {
-                    $transList[$i]['id'] = $this->getRandomBibId();
+                if ($i == 2 || rand()%5 == 1) {
+                    // Mimic an ILL loan    
+                    $transList[] = array(
+                        'duedate' => $due_date,
+                        'dueStatus' => $dueStatus,
+                        'barcode' => sprintf("%08d", rand()%50000),
+                        'renew'   => $renew,
+                        'request' => $req,
+                        'id'      => "ill_institution_$i",
+                        'item_id' => $i,
+                        'renewable' => $renew,
+                        'title'   => "ILL Loan Title $i",
+                        'institution_id' => 'ill_institution',
+                        'institution_name' => 'ILL Library',
+                        'institution_dbkey' => 'ill_institution'
+                    );
                 } else {
-                    $transList[$i]['title'] = 'Demo Title ' . $i;
+                    $transList[] = array(
+                        'duedate' => $due_date,
+                        'dueStatus' => $dueStatus,
+                        'barcode' => sprintf("%08d", rand()%50000),
+                        'renew'   => $renew,
+                        'request' => $req,
+                        'item_id' => $i,
+                        'renewable' => true
+                    );
+                    if ($this->idsInMyResearch) {
+                        $transList[$i]['id'] = $this->getRandomBibId();
+                    } else {
+                        $transList[$i]['title'] = 'Demo Title ' . $i;
+                    }
                 }
             }
             $this->session->transactions = $transList;
