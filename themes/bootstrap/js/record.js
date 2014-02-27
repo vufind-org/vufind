@@ -169,7 +169,7 @@ $(document).ready(function(){
     var params = deparam($(this).attr('href'));
     params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
     Lightbox.addCloseAction(function(op) {
-      document.location.href = path+'/MyResearch/StorageRetrievalRequest';
+      document.location.href = path+'/MyResearch/StorageRetrievalRequests';
     });
     return Lightbox.get('Record', 'StorageRetrievalRequest', params, {});
   });
