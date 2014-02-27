@@ -60,15 +60,76 @@ class Fedora extends AbstractBase
     }
     
     /**
-     * Get Fedora Query URL.
+     * Returns an array of classes for this object
+     *
+     * @param string $id record id
+     *
+     * @return array
+     */
+    public function getClasses($id)
+    {
+        $data = file_get_contents(
+            $this->getBase() . $id . '/datastreams/RELS-EXT/content'
+        );
+        $matches = array();
+        preg_match_all(
+            '/rdf:resource="info:fedora\/vudl-system:([^"]+)/',
+            $data,
+            $matches
+        );
+        return $matches[1];
+    }
+
+    /**
+     * Returns file contents of the structmap, our most common call
+     *
+     * @param string  $id  Record id
+     * @param boolean $xml Return data as SimpleXMLElement?
+     *
+     * @return string|\SimpleXMLElement
+     */
+    public function getDatastreams($id, $xml = false)
+    {
+        if (!isset($this->datastreams[$id])) {
+            $this->datastreams[$id] = file_get_contents(
+                $this->getBase() . $id . '/datastreams?format=xml'
+            );
+        }
+        if ($xml) {
+            return simplexml_load_string($this->datastreams[$id]);
+        } else {
+            return $this->datastreams[$id];
+        }
+    }
+
+    /**
+     * Return the content of a datastream.
+     *
+     * @param string $id     Record id
+     * @param string $stream Name of stream to retrieve
      *
      * @return string
      */
-    public function getQueryURL()
+    public function getDatastreamContent($id, $stream)
     {
-        return isset($this->config->Fedora->query_url)
-            ? $this->config->Fedora->query_url
-            : null;
+        return file_get_contents(
+            $this->getBase() . $id . '/datastreams/' . $stream . '/content'
+        );
+    }
+
+    /**
+     * Return the headers of a datastream.
+     *
+     * @param string $id     Record id
+     * @param string $stream Name of stream to retrieve
+     *
+     * @return string
+     */
+    public function getDatastreamHeaders($id, $stream)
+    {
+        return get_headers(
+            $this->getBase() . $id . '/datastreams/' . $stream . '/content'
+        );
     }
 
     /**
@@ -95,31 +156,37 @@ class Fedora extends AbstractBase
         }
         return $details;
     }
-
+    
     /**
-     * Get the last modified date from Solr
+     * Get an HTTP client
      *
-     * @param string $id ID to look up
+     * @param string $url URL for client to access
      *
-     * @return array
-     * @throws \Exception
+     * @return \Zend\Http\Client
      */
-    public function getModDate($id)
+    public function getHttpClient($url)
     {
-        $xml = $this->connector->getObjectAsXML($id);
-        return (string)$xml[0]->objLastModDate;
+        if ($this->httpService) {
+            return $this->httpService->createClient($url);
+        }
+        return new \Zend\Http\Client($url);
     }
     
     /**
-     * Returns file contents of the structmap, our most common call
+     * Get an item's label
      *
-     * @param string $id record id
+     * @param string $id Record's id
      *
-     * @return string $id
+     * @return string
      */
-    public function getOrderedMembers($id)
+    public function getLabel($id)
     {
-        return $this->getMemberList($id);
+        $query = 'select $memberTitle from <#ri> '
+            . 'where $member <dc:identifier> \''. $id .'\' '
+            . 'and $member <fedora-model:label> $memberTitle';
+        $response = $this->query($query);
+        $list = explode("\n", $response->getBody());
+        return $list[1];
     }
 
     /**
@@ -135,7 +202,7 @@ class Fedora extends AbstractBase
             . 'where $member <fedora-rels-ext:isMemberOf> <info:fedora/' .$root. '> '
             . 'and $member <fedora-model:label> $memberTitle '
             . 'and $member <dc:identifier> $memberPID';
-        $response = $this->query($query, array('format'=>'CSV'));
+        $response = $this->query($query);
         $list = explode("\n", $response->getBody());
         $items = array();
         for ($i=1;$i<count($list);$i++) {
@@ -143,10 +210,93 @@ class Fedora extends AbstractBase
                 continue;
             }
             list($id, $title) = explode(',', $list[$i], 2);
-            $items[] = array(
-                'id' => $id,
-                'title' => trim($title, '"')
-            );
+            $items[] = $id;
+        }
+        return $items;
+    }
+
+    /**
+     * Get the last modified date from Solr
+     *
+     * @param string $id ID to look up
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function getModDate($id)
+    {
+        $query = 'select $lastModDate from <#ri> '
+            . 'where $member <info:fedora/fedora-system:def/view#lastModifiedDate> $lastModDate '
+            . 'and $member <dc:identifier> \''. $id .'\'';
+        $response = $this->query($query);
+        $list = explode("\n", $response->getBody());
+        return $list[1];
+    }
+    
+    /**
+     * Returns file contents of the structmap, our most common call
+     *
+     * @param string $id record id
+     *
+     * @return string $id
+     */
+    public function getOrderedMembers($root)
+    {
+        $query = 'select $memberPID $memberTitle $sequence $member from <#ri> '
+            . 'where $member <fedora-rels-ext:isMemberOf> <info:fedora/'.$root.'> '
+            . 'and $member <http://vudl.org/relationships#sequence> $sequence '
+            . 'and $member <fedora-model:label> $memberTitle '
+            . 'and $member <dc:identifier> $memberPID';
+        $response = $this->query($query);
+        $list = explode("\n", $response->getBody());
+        if (count($list) > 2) {
+            $items = array();
+            $sequenced = true;
+            for ($i=1;$i<count($list);$i++) {
+                if (empty($list[$i])) {
+                    continue;
+                }
+                list($id, $title, $sequence,) = explode(',', $list[$i], 4);
+                list($seqID, $seq) = explode('#', $sequence);
+                if ($seqID != $root) {
+                    $sequenced = false;
+                    break;
+                }
+                $items[] = array(
+                    'seq' => $seq,
+                    'id' =>$id
+                );
+            }
+            if ($sequenced) {
+                usort(
+                    $items,
+                    function($a, $b) {
+                        return intval($a['seq'])-intval($b['seq']);
+                    }
+                );
+                return array_map(
+                    function($op) {
+                        return $op['id'];
+                    },
+                    $items
+                );;
+            }
+        }
+        // No sequence? Title sort.
+        $query = 'select $memberPID $memberTitle from <#ri> '
+            . 'where $member <fedora-rels-ext:isMemberOf> <info:fedora/' .$root. '> '
+            . 'and $member <fedora-model:label> $memberTitle '
+            . 'and $member <dc:identifier> $memberPID '
+            . 'order by $memberTitle';
+        $response = $this->query($query);
+        $list = explode("\n", $response->getBody());
+        $items = array();
+        for ($i=1;$i<count($list);$i++) {
+            if (empty($list[$i])) {
+                continue;
+            }
+            list($id, $title, ) = explode(',', $list[$i], 3);
+            $items[] = $id;
         }
         return $items;
     }
@@ -170,7 +320,7 @@ class Fedora extends AbstractBase
                         . '$parent '
                     . 'and $child <fedora-rels-ext:isMemberOf> $parent) '
                 . 'and $parent <fedora-model:label> $parentTitle';
-        $response = $this->query($query, array('format'=>'CSV'));
+        $response = $this->query($query);
         $list = explode("\n", $response->getBody());
         $tree = array();
         $items = array();
@@ -217,103 +367,15 @@ class Fedora extends AbstractBase
     }
     
     /**
-     * Returns an array of classes for this object
-     *
-     * @param string $id record id
-     *
-     * @return array
-     */
-    public function getClasses($id)
-    {
-        $data = file_get_contents(
-            $this->getBase() . $id . '/datastreams/RELS-EXT/content'
-        );
-        $matches = array();
-        preg_match_all(
-            '/rdf:resource="info:fedora\/vudl-system:([^"]+)/',
-            $data,
-            $matches
-        );
-        return $matches[1];
-    }
-
-    /**
-     * Return the object as XML.
-     *
-     * @param string $id Record id
-     *
-     * @return \SimpleXMLElement
-     */
-    public function getObjectAsXML($id)
-    {
-        return simplexml_load_file($this->getBase() . $id . '?format=xml');
-    }
-
-    /**
-     * Return the content of a datastream.
-     *
-     * @param string $id     Record id
-     * @param string $stream Name of stream to retrieve
+     * Get Fedora Query URL.
      *
      * @return string
      */
-    public function getDatastreamContent($id, $stream)
+    public function getQueryURL()
     {
-        return file_get_contents(
-            $this->getBase() . $id . '/datastreams/' . $stream . '/content'
-        );
-    }
-
-    /**
-     * Return the headers of a datastream.
-     *
-     * @param string $id     Record id
-     * @param string $stream Name of stream to retrieve
-     *
-     * @return string
-     */
-    public function getDatastreamHeaders($id, $stream)
-    {
-        return get_headers(
-            $this->getBase() . $id . '/datastreams/' . $stream . '/content'
-        );
-    }
-
-    /**
-     * Returns file contents of the structmap, our most common call
-     *
-     * @param string  $id  Record id
-     * @param boolean $xml Return data as SimpleXMLElement?
-     *
-     * @return string|\SimpleXMLElement
-     */
-    public function getDatastreams($id, $xml = false)
-    {
-        if (!isset($this->datastreams[$id])) {
-            $this->datastreams[$id] = file_get_contents(
-                $this->getBase() . $id . '/datastreams?format=xml'
-            );
-        }
-        if ($xml) {
-            return simplexml_load_string($this->datastreams[$id]);
-        } else {
-            return $this->datastreams[$id];
-        }
-    }
-
-    /**
-     * Get an HTTP client
-     *
-     * @param string $url URL for client to access
-     *
-     * @return \Zend\Http\Client
-     */
-    public function getHttpClient($url)
-    {
-        if ($this->httpService) {
-            return $this->httpService->createClient($url);
-        }
-        return new \Zend\Http\Client($url);
+        return isset($this->config->Fedora->query_url)
+            ? $this->config->Fedora->query_url
+            : null;
     }
 
     /**
@@ -330,7 +392,7 @@ class Fedora extends AbstractBase
             'type'  => 'tuples',
             'flush' => false,
             'lang'  => 'itql',
-            'format'=> 'Simple',
+            'format'=> 'CSV',
             'query' => $query
         );
         foreach ($options as $key=>$value) {
