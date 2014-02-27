@@ -66,6 +66,28 @@ class LoaderTest extends TestCase
     }
 
     /**
+     * Test "tolerate missing records" feature.
+     *
+     * @return void
+     */
+    public function testToleratedMissingRecord()
+    {
+        $collection = $this->getCollection(array());
+        $service = $this->getMock('VuFindSearch\Service');
+        $service->expects($this->once())->method('retrieve')
+            ->with($this->equalTo('VuFind'), $this->equalTo('test'))
+            ->will($this->returnValue($collection));
+        $missing = $this->getDriver('missing', 'Missing');
+        $factory = $this->getMock('VuFind\RecordDriver\PluginManager');
+        $factory->expects($this->once())->method('get')
+            ->with($this->equalTo('Missing'))
+            ->will($this->returnValue($missing));
+        $loader = $this->getLoader($service, $factory);
+        $record = $loader->load('test', 'VuFind', true);
+        $this->assertEquals($missing, $record);
+    }
+
+    /**
      * Test single record.
      *
      * @return void
