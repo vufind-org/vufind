@@ -27,7 +27,8 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuDL\Controller;
-use VuFind\Exception\RecordMissing as RecordMissingException;
+use VuFind\Exception\RecordMissing as RecordMissingException,
+    VuFindSearch\ParamBag;
 
 /**
  * This controller is for the viewing of the digital library files.
@@ -52,102 +53,6 @@ class VudlController extends AbstractVuDL
     }
 
     /**
-     * Gathers details on a file based on the id
-     *
-     * @param string $id       record id
-     * @param bool   $skipSolr Should we skip accessing the Solr index for details?
-     *
-     * @return associative array
-     */
-    protected function getDetails($id, $skipSolr = false)
-    {
-        $record = false;
-        if (!$skipSolr) {
-            try {
-                $record = $this->getSolrDetails($id);
-            } catch (RecordMissingException $e) {
-                // Do nothing, handled in fedora below
-            }
-        }
-        if (!$record) {
-            $record = $this->getFedora()->getRecordDetails($id);
-        }
-        if (empty($record)) {
-            throw new RecordMissingException('Record not found.');
-        }
-        $details = $this->formatDetails($record);
-        return $details;
-    }
-
-    /**
-     * Get details from Solr
-     *
-     * @param string $id ID to look up
-     *
-     * @return array
-     * @throws \Exception
-     */
-    protected function getSolrDetails($id)
-    {
-        // Blow up now if we can't retrieve the record:
-        if ($record = $this->getRecordLoader()->load($id)->getRawData()) {
-            return $record;
-        } else {
-            throw new RecordMissingException('Solr details unavailable');
-        }
-    }
-    
-    /**
-     * Organize the details based on config
-     *
-     * @param string $record associative array (fieldname => value)
-     *
-     * @return array
-     * @throws \Exception
-     */
-    protected function formatDetails($record)
-    {
-        // Get config for which details we want
-        $fields = $combinedFields = array(); // Save to combine later
-        $detailsList = $this->getDetailsList();
-        if (empty($detailsList)) {
-            throw new \Exception('Missing [Details] in VuDL.ini');
-        }
-        foreach ($detailsList as $key=>$title) {
-            $keys = explode(',', $key);
-            foreach ($keys as $k) {
-                $fields[$k] = $title;
-            }
-            // Link up to top combined field
-            if (count($keys) > 1) {
-                $combinedFields[] = $keys;
-            }
-        }
-
-        // Pool details
-        $details = array();
-        foreach ($fields as $key=>$title) {
-            if (isset($record[$key])) {
-                $details[$key] = array('title' => $title, 'value' => $record[$key]);
-            }
-        }
-
-        // Rearrange combined fields
-        foreach ($combinedFields as $fields) {
-            $main = $fields[0];
-            for ($i=1;$i<count($fields);$i++) {
-                if (isset($details[$fields[$i]])) {
-                    if (!is_array($details[$main]['value'])) {
-                        $details[$main]['value'] = array($details[$main]['value']);
-                    }
-                    $details[$main]['value'][] = $details[$fields[$i]]['value'];
-                }
-            }
-        }
-        return $details;
-    }
-    
-    /**
      * Returns the root id for any parent this item may have
      * ie. If we're requesting a specific page, return the book
      *
@@ -157,9 +62,9 @@ class VudlController extends AbstractVuDL
      */
     protected function getRoot($id)
     {
-        $parents = $this->getFedora()->getParentList($id);
+        $parents = $this->getConnector()->getParentList($id);
         foreach (array_keys($parents[0]) as $i) {
-            if (in_array('ResourceCollection', $this->getFedora()->getClasses($i))) {
+            if (in_array('ResourceCollection', $this->getConnector()->getClasses($i))) {
                 return $i;
             }
         }
@@ -177,15 +82,11 @@ class VudlController extends AbstractVuDL
     protected function getPage($parent, $child)
     {
         // GET LISTS
-        $data = $this->getFedora()->getStructmap($parent);
-        $lists = array();
-        preg_match_all('/vudl:[^"]+/', $data, $lists);
+        $lists = $this->getConnector()->getOrderedMembers($parent);
         // GET LIST ITEMS
-        foreach ($lists[0] as $list=>$list_id) {
-            $data = $this->getFedora()->getStructmap($list_id);
-            $items = array();
-            preg_match_all('/vudl:[^"]+/', $data, $items);
-            foreach ($items[0] as $i=>$id) {
+        foreach ($lists as $list=>$list_data) {
+            $items = $this->getConnector()->getOrderedMembers($list_data);
+            foreach ($items as $i=>$id) {
                 if ($id == $child) {
                     return array($list, $i);
                 }
@@ -207,7 +108,7 @@ class VudlController extends AbstractVuDL
         $cache = (strtolower($this->params()->fromQuery('cache')) == 'no');
 
         $generator = new \VuDL\OutlineGenerator(
-            $this->getFedora(), $this->url(), $this->getVuDLRoutes(),
+            $this->getConnector(), $this->url(), $this->getVuDLRoutes(),
             $cache ? $this->getCache() : false
         );
         return $generator->getOutline($root, $start, $pageLength);
@@ -315,7 +216,7 @@ class VudlController extends AbstractVuDL
             $list = array();
             preg_match_all(
                 '/dsid="([^"]+)"/',
-                strtolower($this->getFedora()->getDatastreams($id)),
+                strtolower($this->getConnector()->getDatastreams($id)),
                 $list
             );
             $record = array_flip($list[1]);
@@ -326,12 +227,12 @@ class VudlController extends AbstractVuDL
 
         // OCR
         if (isset($record['ocr-dirty'])) {
-            $record['ocr-dirty'] = $this->getFedora()
+            $record['ocr-dirty'] = $this->getConnector()
                 ->getDatastreamContent($record['id'], 'OCR-DIRTY');
         }
         // Technical Information
         if (isset($record['master-md'])) {
-            $record['techinfo'] = $this->getFedora()
+            $record['techinfo'] = $this->getConnector()
                 ->getDatastreamContent($record['id'], 'MASTER-MD');
             $ret += $this->getSizeAndTypeInfo($record['techinfo']);
         }
@@ -382,7 +283,7 @@ class VudlController extends AbstractVuDL
             return $this->forwardTo('VuDL', 'Home');
         }
 
-        $classes = $this->getFedora()->getClasses($id);
+        $classes = $this->getConnector()->getClasses($id);
         if (in_array('FolderCollection', $classes)) {
             return $this->forwardTo('Collection', 'Home', array('id'=>$id));
         }
@@ -404,12 +305,12 @@ class VudlController extends AbstractVuDL
         }
 
         // File information / description
-        $fileDetails = $this->getDetails($root);
+        $fileDetails = $this->getConnector()->getDetails($root, true);
 
         // Copyright information
-        $check = $this->getFedora()->getDatastreamHeaders($root, 'LICENSE');
+        $check = $this->getConnector()->getDatastreamHeaders($root, 'LICENSE');
         if (!strpos($check[0], '404')) {
-            $xml = $this->getFedora()->getDatastreamContent($root, 'LICENSE');
+            $xml = $this->getConnector()->getDatastreamContent($root, 'LICENSE');
             preg_match('/xlink:href="(.*?)"/', $xml, $license);
             $fileDetails['license'] = $license[1];
             $fileDetails['special_license'] = false;
@@ -426,13 +327,13 @@ class VudlController extends AbstractVuDL
         // Get ids for all files
         $outline = $this->getOutline(
             $root,
-            max(0, $view->initPage-($this->getFedora()->getPageLength()/2))
+            max(0, $view->initPage-($this->getConnector()->getPageLength()/2))
         );
 
         // Send the data for the first pages
         // (Original, Large, Medium, Thumbnail srcs) and THE DOCUMENTS
         $view->outline = $outline;
-        $parents = $this->getFedora()->getParentList($root);
+        $parents = $this->getConnector()->getParentList($root);
         //$keys = array_keys($parents);
         //$view->hierarchyID = end($keys);
         $view->parents = $parents;
@@ -440,7 +341,7 @@ class VudlController extends AbstractVuDL
             $view->parentID = $root;
             $view->breadcrumbEnd = $outline['lists'][0][$view->page]['label'];
         }
-        $view->pagelength = $this->getFedora()->getPageLength();
+        $view->pagelength = $this->getConnector()->getPageLength();
         return $view;
     }
 
@@ -452,19 +353,19 @@ class VudlController extends AbstractVuDL
     public function homeAction()
     {
         $view = $this->createViewModel();
-        $data =$this->getFedora()->getMemberList($this->getRootId());
-        $outline = array();
-        foreach ($data as $item) {
+        $config = $this->getConfig('vudl');
+        $children = $this->getConnector()->getMemberList($config->General->root_id);
+        foreach ($children as $item) {
             $outline[] = array(
                 'id' => $item['id'],
                 'img' => $this->url()->fromRoute(
                     'files',
                     array(
-                        'id'=>(String)$item['id'],
-                        'type'=>'THUMBNAIL'
+                        'id'   => $item['id'],
+                        'type' => 'THUMBNAIL'
                     )
                 ),
-                'label' => $item['title'] //(String)$item->memberTitle
+                'label' => $item['title']
             );
         }
         $view->thumbnails = $outline;
@@ -488,7 +389,7 @@ class VudlController extends AbstractVuDL
         $view->id = $root;
 
         // File information / description
-        $fileDetails = $this->getDetails($root);
+        $fileDetails = $this->getConnector()->getDetails($root, true);
         $view->details = $fileDetails;
 
         // Get ids for all files
@@ -497,7 +398,7 @@ class VudlController extends AbstractVuDL
         // Send the data for the first pages
         // (Original, Large, Medium, Thumbnail srcs) and THE DOCUMENTS
         $view->outline = $outline;
-        $parents = $this->getFedora()->getParentList($root);
+        $parents = $this->getConnector()->getParentList($root);
         //$keys = array_keys($parents);
         //$view->hierarchyID = end($keys);
         $view->parents = $parents;
@@ -527,7 +428,7 @@ class VudlController extends AbstractVuDL
             $response .= $connector->search($params);
         }
         $result = array();
-        preg_match_all('/numFound="([^"]*)"/', $response, $result);
+        preg_match_all('/"ngroups">([^<]*)/', $response, $result);
         $view->totals = array(
             'folders'=>intval($result[1][0]),
             'resources'=>intval($result[1][1]),
@@ -556,7 +457,9 @@ class VudlController extends AbstractVuDL
      */
     protected function deniedAction()
     {
-        return $this->createViewModel();
+        $view = $this->createViewModel();
+        $view->id = $this->params()->fromRoute('id');
+        return $view;
     }
 
     /**
@@ -567,17 +470,10 @@ class VudlController extends AbstractVuDL
     protected function siblingAction()
     {
         $params = $this->params()->fromQuery();
-        $members = $data = array();
-        preg_match_all(
-            '/div ORDER="([^"]*)[^<]*<[^<]*"(vudl:[^"]*)/i',
-            $this->getFedora()->getStructmap($params['trail']), $data
-        );
-        for ($i=0;$i<count($data[0]);$i++) {
-            $members[intval($data[1][$i])-1] = $data[2][$i];
-        }
+        $members = $this->getConnector()->getOrderedMembers($params['trail']);
         if (count($members) < 2) {
-            return $this->redirect()
-                ->toRoute('Collection', 'Home', array('id'=>$params['trail']));
+            //return $this->redirect()
+                //->toRoute('Collection', 'Home', array('id'=>$params['trail']));
         }
         $index = -1;
         foreach ($members as $i=>$member) {

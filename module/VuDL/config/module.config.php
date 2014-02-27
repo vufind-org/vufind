@@ -9,7 +9,9 @@ $config = array(
     ),
     'service_manager' => array(
         'factories' => array(
-            'VuDL\Fedora' => array('VuDL\Factory', 'getFedora'),
+            'VuDL\Connection\Manager' => array('VuDL\Factory', 'getConnectionManager'),
+            'VuDL\Connection\Fedora' => array('VuDL\Factory', 'getConnectionFedora'),
+            'VuDL\Connection\Solr' => array('VuDL\Factory', 'getConnectionSolr'),
         ),
     ),
     'vufind' => array(

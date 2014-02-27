@@ -40,15 +40,46 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
-     * Construct the Fedora service.
+     * Construct the Connection Manager service.
      *
      * @param ServiceManager $sm Service manager.
      *
      * @return Fedora
      */
-    public static function getFedora(ServiceManager $sm)
+    public static function getConnectionManager(ServiceManager $sm)
     {
-        return new \VuDL\Fedora($sm->get('VuFind\Config')->get('VuDL'));
+        return new \VuDL\Connection\Manager(
+            array('Solr', 'Fedora'), $sm
+        );
+    }
+        
+    /**
+     * Construct the Connection Fedora service.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Fedora
+     */
+    public static function getConnectionFedora(ServiceManager $sm)
+    {
+        return new \VuDL\Connection\Fedora(
+            $sm->get('VuFind\Config')->get('VuDL')
+        );
+    }
+        
+    /**
+     * Construct the Connection Solr service.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Fedora
+     */
+    public static function getConnectionSolr(ServiceManager $sm)
+    {
+        return new \VuDL\Connection\Solr(
+            $sm->get('VuFind\Config')->get('VuDL'),
+            $sm->get('VuFind\Search\BackendManager')->get('Solr')
+        );
     }
 
     /**
