@@ -18,17 +18,7 @@ $config = array(
         'plugin_managers' => array(
             'recorddriver' => array(
                 'factories' => array(
-                    'solrvudl' => function ($sm) {
-                        $driver = new \VuDL\RecordDriver\SolrVudl(
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
-                            null,
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('searches')
-                        );
-                        $driver->setVuDLConfig(
-                            $sm->getServiceLocator()->get('VuFind\Config')->get('VuDL')
-                        );
-                        return $driver;
-                    }
+                    'solrvudl' => array('VuDL\Factory', 'getRecordDriver'),
                 )
             )
         )
