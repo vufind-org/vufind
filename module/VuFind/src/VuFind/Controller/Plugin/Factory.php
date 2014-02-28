@@ -52,17 +52,18 @@ class Factory
     }
 
     /**
-     * Construct the StorageRetrievalRequests plugin.
+     * Construct the NewItems plugin.
      *
      * @param ServiceManager $sm Service manager.
      *
-     * @return StorageRetrievalRequests
+     * @return Reserves
      */
-    public static function getStorageRetrievalRequests(ServiceManager $sm)
+    public static function getNewItems(ServiceManager $sm)
     {
-        return new StorageRetrievalRequests(
-            $sm->getServiceLocator()->get('VuFind\HMAC')
-        );
+        $search = $sm->getServiceLocator()->get('VuFind\Config')->get('searches');
+        $config = isset($search->NewItem)
+            ? $search->NewItem : new \Zend\Config\Config(array());
+        return new NewItems($config);
     }
 
     /**
@@ -78,5 +79,19 @@ class Factory
         $useIndex = isset($config->Reserves->search_enabled)
             && $config->Reserves->search_enabled;
         return new Reserves($useIndex);
+    }
+
+    /**
+     * Construct the StorageRetrievalRequests plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return StorageRetrievalRequests
+     */
+    public static function getStorageRetrievalRequests(ServiceManager $sm)
+    {
+        return new StorageRetrievalRequests(
+            $sm->getServiceLocator()->get('VuFind\HMAC')
+        );
     }
 }
