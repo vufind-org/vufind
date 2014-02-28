@@ -57,6 +57,9 @@ class Manager
     
     /**
      * Constructor
+     * 
+     * @param array          $priority Order we want to try connectors in
+     * @param ServiceLocator $sm       Object to load everything from
      */
     public function __construct($priority, $sm)
     {
@@ -85,8 +88,8 @@ class Manager
      * Try to call a function in each successive class
      * according to priority
      *
-     * @param string      $methodName The function we want to call
-     * @param mixed array $params     The params to pass to the func
+     * @param string $methodName The function we want to call
+     * @param array  $params     The params to pass to the func
      *
      * @return mixed
      */

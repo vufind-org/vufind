@@ -68,10 +68,10 @@ class OutlineGenerator
     protected $cache;
 
     /**
-	 * Do we skip the cache for this outline?
-	 *
-	 * @var boolean
-	 */
+     * Do we skip the cache for this outline?
+     *
+     * @var boolean
+     */
     protected $skipCache;
 
     /**
@@ -103,8 +103,8 @@ class OutlineGenerator
      * @param array       $routes VuDL route configuration
      * @param object|bool $cache  Cache object (or false to disable caching)
      */
-    public function __construct(Connection\Manager $connector, UrlHelper $url, $routes = array(),
-        $cache = false
+    public function __construct(Connection\Manager $connector, UrlHelper $url,
+        $routes = array(), $cache = false
     ) {
         $this->connector = $connector;
         $this->url = $url;
@@ -124,7 +124,9 @@ class OutlineGenerator
      */
     protected function getCache($key, $moddate = null)
     {
-        if (!$this->skipCache && $this->cache && $cache_item = $this->cache->getItem($key)) {
+        if (!$this->skipCache && $this->cache
+            && $cache_item = $this->cache->getItem($key)
+        ) {
             if ($moddate == null || (isset($cache_item['moddate'])
                 && date_create($cache_item['moddate']) >= date_create($moddate))
             ) {
@@ -293,7 +295,7 @@ class OutlineGenerator
      *
      * @return associative array of the lists with their members
      */
-    public function getOutline($root, $cache = NULL, $start = 0, $pageLength = null)
+    public function getOutline($root, $cache = null, $start = 0, $pageLength = null)
     {
         $this->skipCache = $cache == 'no';
         $this->loadLists($root);
