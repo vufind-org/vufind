@@ -65,7 +65,6 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * Constructor
      *
      * @param \Zend\Config\Config $config config
-     * @param \VuFind\Search\BackendManager $backend backend manager
      */
     public function __construct($config)
     {
@@ -123,6 +122,8 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     /**
      * Format details properly into the correct keys
      *
+     * @param array $record
+     *
      * @return string
      */
     protected function formatDetails($record)
@@ -154,7 +155,9 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         // Rearrange combined fields
         foreach ($combinedFields as $fields) {
             $main = $fields[0];
-            if (!isset($details[$main]['value']) || !is_array($details[$main]['value'])) {
+            if (!isset($details[$main]['value'])
+            || !is_array($details[$main]['value'])
+            ) {
                 if (isset($details[$main]['value'])) {
                     $details[$main]['value'] = array($details[$main]['value']);
                 } else {
