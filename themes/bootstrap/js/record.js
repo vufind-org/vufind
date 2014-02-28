@@ -1,4 +1,4 @@
-/*global extractClassParams, Lightbox, path, vufindString */
+/*global deparam, extractClassParams, htmlEncode, Lightbox, path, vufindString */
 
 /**
  * Functions and event handlers specific to record pages.
@@ -164,6 +164,14 @@ $(document).ready(function(){
       Lightbox.checkForError(html, Lightbox.changeContent);
     });
   });
+  // Place a Storage Hold
+  $('.placeStorageRetrievalRequest').click(function() {
+    var params = deparam($(this).attr('href'));
+    params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
+    return Lightbox.get('Record', 'StorageRetrievalRequest', params, {}, function(html) {
+      Lightbox.checkForError(html, Lightbox.changeContent);
+    });
+  });
   // Save lightbox
   $('#save-record').click(function() {
     var params = extractClassParams(this);
@@ -214,5 +222,8 @@ $(document).ready(function(){
   });
   Lightbox.addFormCallback('placeHold', function() {
     document.location.href = path+'/MyResearch/Holds';
+  });
+  Lightbox.addFormCallback('placeStorageRetrievalRequest', function() {
+    document.location.href = path+'/MyResearch/StorageRetrievalRequests';
   });
 });

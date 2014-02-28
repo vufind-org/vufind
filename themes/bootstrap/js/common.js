@@ -1,4 +1,4 @@
-/*global path, vufindString */
+/*global Lightbox, path, vufindString */
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value){
@@ -145,7 +145,11 @@ $(document).ready(function() {
   var url = window.location.href;
   if(url.indexOf('?' + 'print' + '=') != -1  || url.indexOf('&' + 'print' + '=') != -1) {
     $("link[media='print']").attr("media", "all");
-    window.print();
+    $(document).ajaxStop(function() {
+      window.print();
+    });
+    // Make an ajax call to ensure that ajaxStop is triggered
+    $.getJSON(path + '/AJAX/JSON', {method: 'keepAlive'});
   }
     
   // Collapsing facets
@@ -182,7 +186,7 @@ $(document).ready(function() {
     var parts = this.href.split('/');
     return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('id')});
   });
-  Lightbox.addFormCallback('emailSearch', function(html) {
+  Lightbox.addFormCallback('emailSearch', function(x) {
     Lightbox.confirm(vufindString['bulk_email_success']);
   });
 });
