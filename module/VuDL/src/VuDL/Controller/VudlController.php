@@ -183,7 +183,21 @@ class VudlController extends AbstractVuDL
     {
         $renderer = $this->getViewRenderer();
         $data = $this->params()->fromPost();
-        $data['techinfo'] = $this->getTechInfo($data);
+        if ($data == null) {
+            $data = $this->params()->fromPost();
+        }
+        if ($data == null) {
+            $id = $this->params()->fromQuery('id');
+            $list = array();
+            preg_match_all(
+                '/dsid="([^"]+)"/',
+                strtolower($this->getConnector()->getDatastreams($id)),
+                $list
+            );
+            $data = array_flip($list[1]);
+            $data['id'] = $id;
+        }
+        $data['techinfo'] = $this->getConnector()->getTechInfo($data, $renderer);
         $data['keys'] = array_keys($data);
         try {
             $view = $renderer->render(
@@ -197,77 +211,6 @@ class VudlController extends AbstractVuDL
             );
         }
         return $view;
-    }
-
-    /**
-     * Get collapsable XML for an id
-     *
-     * @param object $record Record data
-     *
-     * @return html string
-     */
-    public function getTechInfo($record = null)
-    {
-        if ($record == null) {
-            $record = $this->params()->fromPost();
-        }
-        if ($record == null) {
-            $id = $this->params()->fromQuery('id');
-            $list = array();
-            preg_match_all(
-                '/dsid="([^"]+)"/',
-                strtolower($this->getConnector()->getDatastreams($id)),
-                $list
-            );
-            $record = array_flip($list[1]);
-            $record['id'] = $id;
-        }
-
-        $ret = array();
-
-        // OCR
-        if (isset($record['ocr-dirty'])) {
-            $record['ocr-dirty'] = $this->getConnector()
-                ->getDatastreamContent($record['id'], 'OCR-DIRTY');
-        }
-        // Technical Information
-        if (isset($record['master-md'])) {
-            $record['techinfo'] = $this->getConnector()
-                ->getDatastreamContent($record['id'], 'MASTER-MD');
-            $ret += $this->getSizeAndTypeInfo($record['techinfo']);
-        }
-        $renderer = $this->getViewRenderer();
-        $ret['div'] = $renderer
-            ->render('vudl/techinfo.phtml', array('record'=>$record));
-        return $ret;
-    }
-
-    /**
-     * Get size/type information out of the technical metadata.
-     *
-     * @param string $techInfo Technical metadata
-     *
-     * @return array
-     */
-    protected function getSizeAndTypeInfo($techInfo)
-    {
-        $data = $type = array();
-        preg_match('/<size[^>]*>([^<]*)/', $techInfo, $data);
-        preg_match('/mimetype="([^"]*)/', $techInfo, $type);
-        $size_index = 0;
-        if (count($data) > 1) {
-            $bytes = intval($data[1]);
-            $sizes = array('bytes','KB','MB');
-            while ($size_index < count($sizes)-1 && $bytes > 1024) {
-                $bytes /= 1024;
-                $size_index++;
-            }
-            return array(
-                'size' => round($bytes, 1) . ' ' . $sizes[$size_index],
-                'type' => $type[1]
-            );
-        }
-        return array();
     }
 
     /**
@@ -301,7 +244,7 @@ class VudlController extends AbstractVuDL
         } catch(\Exception $e) {
         }
         if (isset($driver) && $driver->isProtected()) {
-            return $this->forwardTo('VuDL', 'denied');
+            return $this->forwardTo('VuDL', 'Denied', array('id'=>$id));
         }
 
         // File information / description
@@ -327,6 +270,7 @@ class VudlController extends AbstractVuDL
         // Get ids for all files
         $outline = $this->getOutline(
             $root,
+            $this->params()->fromQuery('cache'),
             max(0, $view->initPage-($this->getConnector()->getPageLength()/2))
         );
 

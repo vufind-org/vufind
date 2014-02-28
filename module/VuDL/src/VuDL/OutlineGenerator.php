@@ -68,6 +68,13 @@ class OutlineGenerator
     protected $cache;
 
     /**
+	 * Do we skip the cache for this outline?
+	 *
+	 * @var boolean
+	 */
+    protected $skipCache;
+
+    /**
      * Queues
      *
      * @var array
@@ -117,7 +124,7 @@ class OutlineGenerator
      */
     protected function getCache($key, $moddate = null)
     {
-        if ($this->cache && $cache_item = $this->cache->getItem($key)) {
+        if (!$this->skipCache && $this->cache && $cache_item = $this->cache->getItem($key)) {
             if ($moddate == null || (isset($cache_item['moddate'])
                 && date_create($cache_item['moddate']) >= date_create($moddate))
             ) {
@@ -170,9 +177,8 @@ class OutlineGenerator
         // Get list items
         foreach ($lists as $i=>$list_id) {
             // Get list name
-            $xml = $this->connector->getObjectAsXML($list_id);
-            $this->outline['names'][] = (String) $xml[0]->objLabel;
-            $this->moddate[$i] = max((string)$xml[0]->objLastModDate, $rootModDate);
+            $this->outline['names'][] = $this->connector->getLabel($list_id);
+            $this->moddate[$i] = $this->connector->getModDate($list_id);
             $items = $this->connector->getOrderedMembers($list_id);
             $this->queue[$i] = $items;
         }
@@ -188,7 +194,6 @@ class OutlineGenerator
     protected function buildItem($id)
     {
         // Else, get all the data and save it to the cache
-        $details = $this->connector->getDetails($id, false);
         $list = array();
         // Get the file type
         $file = $this->connector->getDatastreams($id);
@@ -207,6 +212,7 @@ class OutlineGenerator
                 strpos($list[2][$masterIndex], '/') + 1
             );
         }
+        $details = $this->connector->getDetails($id, false);
         return array(
             'id' => $id,
             'fulltype' => $type,
@@ -287,8 +293,9 @@ class OutlineGenerator
      *
      * @return associative array of the lists with their members
      */
-    public function getOutline($root, $start = 0, $pageLength = null)
+    public function getOutline($root, $cache = NULL, $start = 0, $pageLength = null)
     {
+        $this->skipCache = $cache == 'no';
         $this->loadLists($root);
         $this->loadPagesAndDocs($start, $pageLength);
         $this->injectUrls();

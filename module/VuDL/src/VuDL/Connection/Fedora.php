@@ -382,6 +382,63 @@ class Fedora extends AbstractBase
     }
 
     /**
+     * Get collapsable XML for an id
+     *
+     * @param object $record Record data
+     *
+     * @return html string
+     */
+    public function getTechInfo($record = null, $renderer = null)
+    {
+        if ($record == null) {
+            return false;
+        }
+        $ret = array();
+        // OCR
+        if (isset($record['ocr-dirty'])) {
+            $record['ocr-dirty'] = $this->getDatastreamContent($record['id'], 'OCR-DIRTY');
+        }
+        // Technical Information
+        if (isset($record['master-md'])) {
+            $record['techinfo'] = $this->getDatastreamContent($record['id'], 'MASTER-MD');
+            $ret += $this->getSizeAndTypeInfo($record['techinfo']);
+        }
+        if ($renderer != null) {
+            $ret['div'] = $renderer
+                ->render('vudl/techinfo.phtml', array('record'=>$record));
+        }
+        return $ret;
+    }
+
+    /**
+     * Get size/type information out of the technical metadata.
+     *
+     * @param string $techInfo Technical metadata
+     *
+     * @return array
+     */
+    protected function getSizeAndTypeInfo($techInfo)
+    {
+        $data = $type = array();
+        preg_match('/<size[^>]*>([^<]*)/', $techInfo, $data);
+        preg_match('/mimetype="([^"]*)/', $techInfo, $type);
+        $size_index = 0;
+        if (count($data) > 1) {
+            $bytes = intval($data[1]);
+            $sizes = array('bytes','KB','MB');
+            while ($size_index < count($sizes)-1 && $bytes > 1024) {
+                $bytes /= 1024;
+                $size_index++;
+            }
+            return array(
+                'size' => round($bytes, 1) . ' ' . $sizes[$size_index],
+                'type' => $type[1]
+            );
+        }
+        return array();
+    }
+    
+    /**
      * Consolidation of Zend Client calls
      *
      * @param string $query   Query for call
