@@ -28,6 +28,7 @@ return array(
             'reviews' => array('VuFind\View\Helper\Root\Factory', 'getReviews'),
             'searchbox' => array('VuFind\View\Helper\Root\Factory', 'getSearchBox'),
             'searchoptions' => array('VuFind\View\Helper\Root\Factory', 'getSearchOptions'),
+            'searchparams' => array('VuFind\View\Helper\Root\Factory', 'getSearchParams'),
             'searchtabs' => array('VuFind\View\Helper\Root\Factory', 'getSearchTabs'),
             'syndeticsplus' => array('VuFind\View\Helper\Root\Factory', 'getSyndeticsPlus'),
             'systememail' => array('VuFind\View\Helper\Root\Factory', 'getSystemEmail'),

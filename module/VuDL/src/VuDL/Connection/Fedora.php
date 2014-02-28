@@ -135,7 +135,8 @@ class Fedora extends AbstractBase
     /**
      * Get details for the sidebar on a record.
      *
-     * @param string $id ID to retrieve
+     * @param string  $id     ID to retrieve
+     * @param boolean $format Send result through formatDetails?
      *
      * @return string
      */
@@ -226,7 +227,9 @@ class Fedora extends AbstractBase
     public function getModDate($id)
     {
         $query = 'select $lastModDate from <#ri> '
-            . 'where $member <info:fedora/fedora-system:def/view#lastModifiedDate> $lastModDate '
+            . 'where $member '
+            . '<info:fedora/fedora-system:def/view#lastModifiedDate> '
+            . '$lastModDate '
             . 'and $member <dc:identifier> \''. $id .'\'';
         $response = $this->query($query);
         $list = explode("\n", $response->getBody());
@@ -236,9 +239,9 @@ class Fedora extends AbstractBase
     /**
      * Returns file contents of the structmap, our most common call
      *
-     * @param string $id record id
+     * @param string $root record id
      *
-     * @return string $id
+     * @return array of ids
      */
     public function getOrderedMembers($root)
     {
@@ -270,7 +273,7 @@ class Fedora extends AbstractBase
             if ($sequenced) {
                 usort(
                     $items,
-                    function($a, $b) {
+                    function ($a, $b) {
                         return intval($a['seq'])-intval($b['seq']);
                     }
                 );

@@ -73,12 +73,12 @@ class Solr extends AbstractBase
         $response = $this->search(
             new ParamBag(
                 array(
-                    'q'     => 'id:"'.$id.'"',
+                    'q'  => 'id:"'.$id.'"',
                     'fl' => 'modeltype_str_mv',
                 )
             )
         );
-            $record = json_decode($response);
+        $record = json_decode($response);
         if ($record->response->numFound > 0) {
             return array_map(
                 function($op) {
@@ -87,7 +87,7 @@ class Solr extends AbstractBase
                 $record->response->docs[0]->modeltype_str_mv);
         }
         return null;
-            }
+    }
     
     /**
      * Get details from Solr
@@ -140,7 +140,7 @@ class Solr extends AbstractBase
         }
         return null;
     }
-
+    
     /**
      * Tuple call to return and parse a list of members...
      *
@@ -328,7 +328,7 @@ class Solr extends AbstractBase
         }
         return null;
     }
-    
+
     protected function search($paramBag)
     {
         // Remove global filters from the Solr connector

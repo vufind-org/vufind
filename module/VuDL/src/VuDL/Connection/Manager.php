@@ -40,12 +40,24 @@ use VuFindHttp\HttpServiceInterface,
  */
 class Manager
 {
+    /**
+     * Array of classes to try in order
+     */
     protected $priority;
     
+    /**
+     * Cache of class objects
+     */
     protected $connections;
     
+    /**
+     * Used to load class objects
+     */
     protected $serviceLocator;
     
+    /**
+     * Constructor
+     */
     public function __construct($priority, $sm)
     {
         $this->priority = $priority;
@@ -53,7 +65,15 @@ class Manager
         $this->serviceLocator = $sm;
     }
     
-    protected function get($className) {
+    /**
+     * Get a class object from a classname, save in cache
+     * 
+     * @param string $className Class we want to load
+     * 
+     * @return object
+     */
+    protected function get($className)
+    {
         if (!isset($this->connections[$className])) {
             $this->connections[$className] = $this->serviceLocator
                 ->get("VuDL\\Connection\\$className");
@@ -61,6 +81,15 @@ class Manager
         return $this->connections[$className];
     }
     
+    /**
+     * Try to call a function in each successive class
+     * according to priority
+     *
+     * @param string      $methodName The function we want to call
+     * @param mixed array $params     The params to pass to the func
+     *
+     * @return mixed
+     */
     public function __call($methodName, $params)
     {
         $index = 0;
@@ -75,6 +104,8 @@ class Manager
             }
             $index ++;
         }
-        throw new \Exception('VuDL Connection Failed to resolved method "'.$methodName.'"');
+        throw new \Exception(
+            'VuDL Connection Failed to resolved method "'.$methodName.'"'
+        );
     }
 }

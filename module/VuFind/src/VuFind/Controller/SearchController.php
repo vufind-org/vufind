@@ -27,7 +27,7 @@
  */
 namespace VuFind\Controller;
 
-use VuFind\Exception\Mail as MailException, VuFind\Solr\Utils as SolrUtils;
+use VuFind\Exception\Mail as MailException;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -60,7 +60,7 @@ class SearchController extends AbstractSearch
                 = $this->getIllustrationSettings($view->saved);
         }
         if (stristr($specialFacets, 'daterange')) {
-            $view->dateRangeLimit
+            $view->ranges
                 = $this->getDateRangeSettings($view->saved);
         }
         return $view;
@@ -158,38 +158,6 @@ class SearchController extends AbstractSearch
             $illAny['selected'] = true;
         }
         return array($illYes, $illNo, $illAny);
-    }
-
-    /**
-     * Get the current settings for the date range facet, if it is set:
-     *
-     * @param object $savedSearch Saved search object (false if none)
-     *
-     * @return array              Date range: Key 0 = from, Key 1 = to.
-     */
-    protected function getDateRangeSettings($savedSearch = false)
-    {
-        // Default to blank strings:
-        $from = $to = '';
-
-        // Check to see if there is an existing range in the search object:
-        if ($savedSearch) {
-            $filters = $savedSearch->getParams()->getFilters();
-            if (isset($filters['publishDate'])) {
-                foreach ($filters['publishDate'] as $current) {
-                    if ($range = SolrUtils::parseRange($current)) {
-                        $from = $range['from'] == '*' ? '' : $range['from'];
-                        $to = $range['to'] == '*' ? '' : $range['to'];
-                        $savedSearch->getParams()
-                            ->removeFilter('publishDate:' . $current);
-                        break;
-                    }
-                }
-            }
-        }
-
-        // Send back the settings:
-        return array($from, $to);
     }
 
     /**
