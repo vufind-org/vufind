@@ -337,7 +337,7 @@ class Solr extends AbstractBase
     /**
      * Perform a search with clean params
      *
-     * @param ParamBag $paramBag
+     * @param ParamBag $paramBag The params you'd normally send to solr
      *
      * @return json
      */

@@ -384,7 +384,8 @@ class Fedora extends AbstractBase
     /**
      * Get collapsable XML for an id
      *
-     * @param object $record Record data
+     * @param object        $record   Record data
+     * @param View\Renderer $renderer View renderer to get techinfo template
      *
      * @return html string
      */

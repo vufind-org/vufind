@@ -98,10 +98,10 @@ class OutlineGenerator
     /**
      * Constructor
      *
-     * @param Fedora      $fedora Fedora connection
-     * @param UrlHelper   $url    URL helper
-     * @param array       $routes VuDL route configuration
-     * @param object|bool $cache  Cache object (or false to disable caching)
+     * @param Fedora      $connector VuDL connection manager
+     * @param UrlHelper   $url       URL helper
+     * @param array       $routes    VuDL route configuration
+     * @param object|bool $cache     Cache object (or false to disable caching)
      */
     public function __construct(Connection\Manager $connector, UrlHelper $url,
         $routes = array(), $cache = false
@@ -170,7 +170,11 @@ class OutlineGenerator
     {
         // Reset the state of the class:
         $this->queue = $this->moddate = array();
-        $this->outline = array('counts'=>array(), 'names'=>array(), 'lists'=>array());
+        $this->outline = array(
+            'counts'=>array(),
+            'names'=>array(),
+            'lists'=>array()
+        );
 
         // Check modification date
         $rootModDate = $this->connector->getModDate($root);
@@ -290,6 +294,7 @@ class OutlineGenerator
      * Generate an array of all child pages and their information/images
      *
      * @param string $root       record id to search under
+     * @param string $cache      'cache' get parameter for skipping the cache
      * @param string $start      page/doc to start with for the return
      * @param int    $pageLength page length (leave null to use default)
      *
