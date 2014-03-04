@@ -312,7 +312,7 @@ class VudlController extends AbstractVuDL
                         'type' => 'THUMBNAIL'
                     )
                 ),
-                'label' => $item['title']
+                'label' => $item['title'][0]
             );
         }
         $view->thumbnails = $outline;
