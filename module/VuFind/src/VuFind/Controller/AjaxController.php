@@ -522,7 +522,7 @@ class AjaxController extends AbstractBase
             throw new \Exception('Unsupported output mode: ' . $this->outputMode);
         }
     }
-    
+
     /**
      * Store the errors for later, to be added to the output
      *
@@ -1075,7 +1075,7 @@ class AjaxController extends AbstractBase
             if (!$user) {
                 return $this->output(
                     array(
-                        'status' => false, 
+                        'status' => false,
                         'msg' => $this->translate('You must be logged in first')
                     ),
                     self::STATUS_NEED_AUTH
@@ -1104,7 +1104,7 @@ class AjaxController extends AbstractBase
                         $results = $catalog->checkStorageRetrievalRequestIsValid(
                             $id, $data, $patron
                         );
-    
+
                         $msg = $results
                             ? $this->translate(
                                 'storage_retrieval_request_place_text'
@@ -1117,7 +1117,7 @@ class AjaxController extends AbstractBase
                         $results = $catalog->checkRequestIsValid(
                             $id, $data, $patron
                         );
-    
+
                         $msg = $results
                             ? $this->translate('request_place_text')
                             : $this->translate('hold_error_blocked');
@@ -1390,7 +1390,7 @@ class AjaxController extends AbstractBase
             if (!$user) {
                 return $this->output(
                     array(
-                        'status' => false, 
+                        'status' => false,
                         'msg' => $this->translate('You must be logged in first')
                     ),
                     self::STATUS_NEED_AUTH
@@ -1412,7 +1412,8 @@ class AjaxController extends AbstractBase
                     foreach ($results as &$result) {
                         if (isset($result['name'])) {
                             $result['name'] = $this->translate(
-                                'location_' . $result['name'], 
+                                'location_' . $result['name'],
+                                array(),
                                 $result['name']
                             );
                         }

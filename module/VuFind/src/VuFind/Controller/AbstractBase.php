@@ -375,20 +375,33 @@ class AbstractBase extends AbstractActionController
      * Translate a string if a translator is available.
      *
      * @param string $msg     Message to translate
+     * @param array  $tokens  Tokens to inject into the translated string
      * @param string $default Default value to use if no translation is found (null
      * for no default).
      *
      * @return string
      */
-    public function translate($msg, $default = null)
+    public function translate($msg, $tokens = array(), $default = null)
     {
         $translated = $this->getServiceLocator()->has('VuFind\Translator')
             ? $this->getServiceLocator()->get('VuFind\Translator')->translate($msg)
             : $msg;
 
+        // TODO: avoid redundancy between this code and Translate view helper!!
+
         // Did the translation fail to change anything?  If so, use default:
         if (!is_null($default) && $translated == $msg) {
             $translated = $default;
+        }
+
+        // Do we need to perform substitutions?
+        if (!empty($tokens)) {
+            $in = $out = array();
+            foreach ($tokens as $key => $value) {
+                $in[] = $key;
+                $out[] = $value;
+            }
+            $translated = str_replace($in, $out, $translated);
         }
 
         return $translated;
