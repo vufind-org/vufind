@@ -278,7 +278,7 @@ class Fedora extends AbstractBase
                     }
                 );
                 return array_map(
-                    function($op) {
+                    function ($op) {
                         return $op['id'];
                     },
                     $items
@@ -384,7 +384,8 @@ class Fedora extends AbstractBase
     /**
      * Get collapsable XML for an id
      *
-     * @param object $record Record data
+     * @param object        $record   Record data
+     * @param View\Renderer $renderer View renderer to get techinfo template
      *
      * @return html string
      */
@@ -396,11 +397,17 @@ class Fedora extends AbstractBase
         $ret = array();
         // OCR
         if (isset($record['ocr-dirty'])) {
-            $record['ocr-dirty'] = $this->getDatastreamContent($record['id'], 'OCR-DIRTY');
+            $record['ocr-dirty'] = $this->getDatastreamContent(
+                $record['id'],
+                'OCR-DIRTY'
+            );
         }
         // Technical Information
         if (isset($record['master-md'])) {
-            $record['techinfo'] = $this->getDatastreamContent($record['id'], 'MASTER-MD');
+            $record['techinfo'] = $this->getDatastreamContent(
+                $record['id'],
+                'MASTER-MD'
+            );
             $ret += $this->getSizeAndTypeInfo($record['techinfo']);
         }
         if ($renderer != null) {

@@ -122,7 +122,7 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     /**
      * Format details properly into the correct keys
      *
-     * @param array $record
+     * @param array $record Record object
      *
      * @return string
      */
@@ -156,7 +156,7 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         foreach ($combinedFields as $fields) {
             $main = $fields[0];
             if (!isset($details[$main]['value'])
-            || !is_array($details[$main]['value'])
+                || !is_array($details[$main]['value'])
             ) {
                 if (isset($details[$main]['value'])) {
                     $details[$main]['value'] = array($details[$main]['value']);

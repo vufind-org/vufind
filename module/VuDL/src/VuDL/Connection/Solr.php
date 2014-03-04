@@ -51,7 +51,7 @@ class Solr extends AbstractBase
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config config
+     * @param \Zend\Config\Config           $config  config
      * @param \VuFind\Search\BackendManager $backend backend manager
      */
     public function __construct($config, $backend)
@@ -81,10 +81,11 @@ class Solr extends AbstractBase
         $record = json_decode($response);
         if ($record->response->numFound > 0) {
             return array_map(
-                function($op) {
+                function ($op) {
                     return substr($op, 12);
                 },
-                $record->response->docs[0]->modeltype_str_mv);
+                $record->response->docs[0]->modeltype_str_mv
+            );
         }
         return null;
     }
@@ -92,14 +93,15 @@ class Solr extends AbstractBase
     /**
      * Get details from Solr
      *
-     * @param string $id ID to look up
+     * @param string  $id     ID to look up
+     * @param boolean $format Run result through formatDetails?
      *
      * @return array
      * @throws \Exception
      */
     public function getDetails($id, $format)
     {
-        if($response = $this->search(
+        if ($response = $this->search(
             new ParamBag(
                 array(
                     'q' => 'id:"'.$id.'"'
@@ -187,7 +189,7 @@ class Solr extends AbstractBase
     public function getModDate($id)
     {
         $modfield = 'fgs.lastModifiedDate';
-        if($response = $this->search(
+        if ($response = $this->search(
             new ParamBag(
                 array(
                     'q'     => 'id:"'.$id.'"',
@@ -270,7 +272,8 @@ class Solr extends AbstractBase
                 $origin->response->docs[0]->hierarchy_all_parents_str_mv
             );
             $ret = array();
-            foreach ($origin->response->docs[0]->hierarchy_parent_id as $i=>$parent) {
+            $hierarchyParents = $origin->response->docs[0]->hierarchy_parent_id;
+            foreach ($hierarchyParents as $i=>$parent) {
                 $ret[] = array(
                     $origin->response->docs[0]->hierarchy_parent_id[$i]
                         => $origin->response->docs[0]->hierarchy_parent_title[$i]
@@ -285,7 +288,9 @@ class Solr extends AbstractBase
                     new ParamBag(
                         array(
                             'q'     => 'id:"'.$last.'"',
-                            'fl'    => 'hierarchy_top_id,hierarchy_parent_id,hierarchy_parent_title',
+                            'fl'    => 'hierarchy_top_id,'
+                                . 'hierarchy_parent_id,'
+                                . 'hierarchy_parent_title',
                         )
                     )
                 );
@@ -329,6 +334,13 @@ class Solr extends AbstractBase
         return null;
     }
 
+    /**
+     * Perform a search with clean params
+     *
+     * @param ParamBag $paramBag The params you'd normally send to solr
+     *
+     * @return json
+     */
     protected function search($paramBag)
     {
         // Remove global filters from the Solr connector

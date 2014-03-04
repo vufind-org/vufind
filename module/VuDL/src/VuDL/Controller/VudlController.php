@@ -64,7 +64,10 @@ class VudlController extends AbstractVuDL
     {
         $parents = $this->getConnector()->getParentList($id);
         foreach (array_keys($parents[0]) as $i) {
-            if (in_array('ResourceCollection', $this->getConnector()->getClasses($i))) {
+            if (in_array(
+                'ResourceCollection',
+                $this->getConnector()->getClasses($i)
+            )) {
                 return $i;
             }
         }
