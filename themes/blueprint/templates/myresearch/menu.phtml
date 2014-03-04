@@ -8,6 +8,9 @@
       <? if ($this->ils()->checkFunction('StorageRetrievalRequests')): ?>
       <li<?=$this->active == 'storageRetrievalRequests' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-storageretrievalrequests')?>"><?=$this->transEsc('Storage Retrieval Requests')?></a></li>
       <? endif; ?>
+      <? if ($this->ils()->checkFunction('ILLRequests')): ?>
+      <li<?=$this->active == 'ILLRequests' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-illrequests')?>"><?=$this->transEsc('Interlibrary Loan Requests')?></a></li>
+      <? endif; ?>
       <li<?=$this->active == 'fines' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-fines')?>"><?=$this->transEsc('Fines')?></a></li>
       <li<?=$this->active == 'profile' ? ' class="active"' : ''?>><a href="<?=$this->url('myresearch-profile')?>"><?=$this->transEsc('Profile')?></a></li>
     <? endif; ?>

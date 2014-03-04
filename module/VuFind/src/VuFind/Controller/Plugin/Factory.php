@@ -67,6 +67,20 @@ class Factory
     }
 
     /**
+     * Construct the ILLRequests plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return ILLRequests
+     */
+    public static function getILLRequests(ServiceManager $sm)
+    {
+        return new ILLRequests(
+            $sm->getServiceLocator()->get('VuFind\HMAC')
+        );
+    }
+
+    /**
      * Construct the Reserves plugin.
      *
      * @param ServiceManager $sm Service manager.

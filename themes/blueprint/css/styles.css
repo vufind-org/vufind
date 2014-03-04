@@ -91,7 +91,7 @@ div.dialogLoading {
     height:100%;
 }
 
-.ajax_availability, .ajax_hold_availability, .ajax_storage_retrieval_request_availability {
+.ajax_availability, .ajax_hold_availability, .ajax_storage_retrieval_request_availability, .ajax_ill_request_availability, .ajax_ill_request_loading {
     background: url(../images/ajax_loading.gif) no-repeat left top;
     padding:0 .5em .5em 20px;
 }
@@ -905,42 +905,21 @@ h3.list {
     padding:.5em .5em .5em 20px;
     margin-right:1em;
 }
-.holdPlace {
+.holdPlace, .storageRetrievalRequestPlace, .ILLRequestPlace {
     background-image:url(../images/fugue/holdPlace.png);
     background-repeat:no-repeat;
     background-position: left;
     padding:.5em .5em .5em 20px;
     margin-right:1em;
 }
-.holdCancel {
+.holdCancel, .storageRetrievalRequestCancel, .ILLRequestCancel {
     background-image:url(../images/fugue/holdCancel.png);
     background-repeat:no-repeat;
     background-position: left;
     padding:.5em .5em .5em 20px;
     margin-right:1em;
 }
-.holdCancelAll {
-    background-image:url(../images/fugue/holdCancelAll.png);
-    background-repeat:no-repeat;
-    background-position: left;
-    padding:.5em .5em .5em 20px;
-    margin-right:1em;
-}
-.storageRetrievalRequestPlace {
-    background-image:url(../images/fugue/holdPlace.png);
-    background-repeat:no-repeat;
-    background-position: left;
-    padding:.5em .5em .5em 20px;
-    margin-right:1em;
-}
-.storageRetrievalRequestCancel {
-    background-image:url(../images/fugue/holdCancel.png);
-    background-repeat:no-repeat;
-    background-position: left;
-    padding:.5em .5em .5em 20px;
-    margin-right:1em;
-}
-.storageRetrievalRequestCancelAll {
+.holdCancelAll, .storageRetrievalRequestCancelAll, .ILLRequestCancelAll {
     background-image:url(../images/fugue/holdCancelAll.png);
     background-repeat:no-repeat;
     background-position: left;
@@ -961,7 +940,7 @@ h3.list {
     padding:.5em .5em .5em 20px;
     margin-right:1em;
 }
-.checkRequest {
+.checkRequest, .checkStorageRetrievalRequest, .checkILLRequest {
     background-image:url(../images/fugue/checkRequest.png);
     background-repeat:no-repeat;
     padding-left:18px;
