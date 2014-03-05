@@ -3,6 +3,7 @@
   <input type="hidden" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>" class="hiddenSource" />
   <div class="span2 text-center left">
     <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
+      <? var_dump($this->record($this->driver)->getThumbnail()) ?>
       <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
         <img class="img-polaroid" src="<?=$this->escapeHtml($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
       <? else: ?>

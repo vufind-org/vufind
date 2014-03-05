@@ -407,7 +407,12 @@ class Record extends AbstractHelper
         // Array?  It's parameters to send to the cover generator:
         if (is_array($thumb)) {
             $urlHelper = $this->getView()->plugin('url');
-            return $urlHelper('cover-show') . '?' . http_build_query($thumb);
+            return $urlHelper('cover-show') . '?' . http_build_query(
+                array(
+                    'isn'  => $thumb['isn'],
+                    'size' => $thumb['size']
+                )
+            );
         }
 
         // Default case -- return fixed string:

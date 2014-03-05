@@ -222,6 +222,10 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         } else if (!$this->fetchFromISBN()
             && !$this->fetchFromContentType()
         ) {
+            // TODO: check config
+            // if config
+            // dynamic image (method)\
+            // else
             $this->loadUnavailable();
         }
     }
