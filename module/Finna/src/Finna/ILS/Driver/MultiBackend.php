@@ -1007,7 +1007,7 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
             );
         case 'Renewals':
         case 'StorageRetrievalRequests':
-        case 'UBRequests':
+        case 'ILLRequests':
             return array();
         default:
             $this->error("MultiBackend: unhandled getConfig function: '$function'");
