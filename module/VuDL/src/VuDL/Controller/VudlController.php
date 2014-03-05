@@ -118,6 +118,23 @@ class VudlController extends AbstractVuDL
     }
 
     /**
+     * Generate an array of all child pages and their information/images
+     *
+     * @param string $root       record id to search under
+     * @param string $start      page/doc to start with for the return
+     * @param int    $pageLength page length (leave null to use default)
+     *
+     * @return associative array of the lists with their members
+     */
+    protected function getTechInfo()
+    {
+        return $this->getConnector()->getTechInfo(
+            $this->params()->fromPost(),
+            $this->getViewRenderer()
+        );
+    }
+
+    /**
      * Ajax function for the VuDL view
      * Return JSON encoding of pages
      *
@@ -187,9 +204,6 @@ class VudlController extends AbstractVuDL
         $renderer = $this->getViewRenderer();
         $data = $this->params()->fromPost();
         if ($data == null) {
-            $data = $this->params()->fromPost();
-        }
-        if ($data == null) {
             $id = $this->params()->fromQuery('id');
             $list = array();
             preg_match_all(
@@ -200,7 +214,6 @@ class VudlController extends AbstractVuDL
             $data = array_flip($list[1]);
             $data['id'] = $id;
         }
-        $data['techinfo'] = $this->getConnector()->getTechInfo($data, $renderer);
         $data['keys'] = array_keys($data);
         try {
             $view = $renderer->render(
@@ -273,7 +286,6 @@ class VudlController extends AbstractVuDL
         // Get ids for all files
         $outline = $this->getOutline(
             $root,
-            $this->params()->fromQuery('cache'),
             max(0, $view->initPage-($this->getConnector()->getPageLength()/2))
         );
 

@@ -68,13 +68,6 @@ class OutlineGenerator
     protected $cache;
 
     /**
-     * Do we skip the cache for this outline?
-     *
-     * @var boolean
-     */
-    protected $skipCache;
-
-    /**
      * Queues
      *
      * @var array
@@ -124,9 +117,7 @@ class OutlineGenerator
      */
     protected function getCache($key, $moddate = null)
     {
-        if (!$this->skipCache && $this->cache
-            && $cache_item = $this->cache->getItem($key)
-        ) {
+        if ($this->cache && $cache_item = $this->cache->getItem($key)) {
             if ($moddate == null || (isset($cache_item['moddate'])
                 && date_create($cache_item['moddate']) >= date_create($moddate))
             ) {
