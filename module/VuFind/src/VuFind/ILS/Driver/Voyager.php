@@ -1141,7 +1141,7 @@ class Voyager extends AbstractBase
         $sql = "SELECT PATRON.PATRON_ID, PATRON.FIRST_NAME, PATRON.LAST_NAME " .
                "FROM $this->dbName.PATRON, $this->dbName.PATRON_BARCODE " .
                "WHERE PATRON.PATRON_ID = PATRON_BARCODE.PATRON_ID AND " .
-               "lower(PATRON.{$login_field}) = :login AND ";
+               "lower(PATRON_BARCODE.PATRON_BARCODE) = :barcode AND ";
         if (isset($this->config['Catalog']['fallback_login_field'])) {
             $fallback_login_field = preg_replace(
                 '/[^\w]/', '', $this->config['Catalog']['fallback_login_field']
