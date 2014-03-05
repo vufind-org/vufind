@@ -118,13 +118,9 @@ class VudlController extends AbstractVuDL
     }
 
     /**
-     * Generate an array of all child pages and their information/images
+     * Get the technical metadata for a record from POST
      *
-     * @param string $root       record id to search under
-     * @param string $start      page/doc to start with for the return
-     * @param int    $pageLength page length (leave null to use default)
-     *
-     * @return associative array of the lists with their members
+     * @return array
      */
     protected function getTechInfo()
     {

@@ -2,7 +2,7 @@
 .inspector_container #view { margin:auto 0 auto 1% }
 .inspector_container .grid-view { margin-left:1% }
 .item-list { height:600px }
-.opener a { display:none }
+.nav>li.opener>a { display:none }
 #view.wide { width:100% }
 
 .page_grid .audio {

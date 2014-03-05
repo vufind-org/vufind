@@ -12,6 +12,7 @@
         <? if (
           is_array($this->record[$key])
           || strpos($this->record['mimetypes'][$mtKey], 'text') !== false
+          || strpos($this->record['mimetypes'][$mtKey], 'xml') !== false
           || strpos($key, '-') !== false
           || $key == 'techinfo'
         ) continue; ?>

@@ -173,7 +173,12 @@ $( window ).resize( function(){resizeAccordions()} );
 // Toggle side menu
 function toggleSideNav() {
   $('#side-nav').toggle();
-  $('#view .nav-tabs li.opener a').toggle();
+  var opener = $('#view .nav-tabs li.opener a');
+  if(opener.is(":visible")) {
+    opener.hide();
+  } else {
+    opener.css('display','inherit');
+  }
   $('#view').toggleClass('wide');
   $('#zoom').zoomyResize();
 }
