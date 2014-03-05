@@ -95,6 +95,14 @@
               <strong><?=$this->transEsc('location_' . $ilsDetails['institution_name'], array(), $ilsDetails['institution_name'])?></strong>
               <br />
             <? endif; ?>
+
+            <? if (isset($ilsDetails['renew'])): ?>
+              <strong><?=$this->transEsc('Renewed')?>:</strong> <?=$this->transEsc($ilsDetails['renew'])?>
+              <? if (isset($ilsDetails['renewLimit'])): ?>
+                / <?=$this->transEsc($ilsDetails['renewLimit'])?>
+              <? endif; ?>
+              <br />
+            <? endif; ?>            
             
             <? $showStatus = true; ?>
 

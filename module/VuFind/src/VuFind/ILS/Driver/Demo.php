@@ -725,6 +725,9 @@ class Demo extends AbstractBase
                     $renew = 0;
                 }
 
+                // Renewal limit
+                $renewLimit = $renew + rand()%3;
+                
                 // Pending requests : 0,0,0,0,0,1,2,3,4,5
                 $req = rand()%10 - 5;
                 if ($req < 0) {
@@ -738,10 +741,11 @@ class Demo extends AbstractBase
                         'dueStatus' => $dueStatus,
                         'barcode' => sprintf("%08d", rand()%50000),
                         'renew'   => $renew,
+                        'renewLimit' => $renewLimit,
                         'request' => $req,
                         'id'      => "ill_institution_$i",
                         'item_id' => $i,
-                        'renewable' => $renew,
+                        'renewable' => $renew < $renewLimit,
                         'title'   => "ILL Loan Title $i",
                         'institution_id' => 'ill_institution',
                         'institution_name' => 'ILL Library',
@@ -753,9 +757,10 @@ class Demo extends AbstractBase
                         'dueStatus' => $dueStatus,
                         'barcode' => sprintf("%08d", rand()%50000),
                         'renew'   => $renew,
+                        'renewLimit' => $renewLimit,
                         'request' => $req,
                         'item_id' => $i,
-                        'renewable' => true
+                        'renewable' => $renew < $renewLimit
                     );
                     if ($this->idsInMyResearch) {
                         $transList[$i]['id'] = $this->getRandomBibId();
@@ -1111,6 +1116,9 @@ class Demo extends AbstractBase
                     $old = $transactions[$i]['duedate'];
                     $transactions[$i]['duedate']
                         = date("j-M-y", strtotime($old . " + 7 days"));
+                    $transactions[$i]['renew'] = $transactions[$i]['renew'] + 1;
+                    $transactions[$i]['renewable'] =
+                        $transactions[$i]['renew'] < $transactions[$i]['renewLimit']; 
 
                     $finalResult['details'][$current['item_id']] = array(
                         "success" => true,
