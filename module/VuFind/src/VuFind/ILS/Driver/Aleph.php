@@ -1615,6 +1615,9 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     public function getConfig($func)
     {
         if ($func == "Holds") {
+            if (isset($this->config['Holds'])) {
+                return $this->config['Holds'];
+            }
             return array(
                 "HMACKeys" => "id:item_id",
                 "extraHoldFields" => "comments:requiredByDate:pickUpLocation",

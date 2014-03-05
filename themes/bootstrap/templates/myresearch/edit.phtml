@@ -54,10 +54,14 @@
           <? foreach ($this->lists as $listID=>$listTitle): ?>
             <option value="<?=$listID ?>"><?=$this->escapeHtml($listTitle) ?></option>
           <? endforeach; ?>
-        </select><br/><br/>
-        <? if (!empty($this->savedData) || count($this->lists) > 0): ?>
-          <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Save') ?>"/>
-        <? endif; ?>
+        </select>
+      </div>
+    </div>
+  <? endif; ?>
+  <? if (!empty($this->savedData) || count($this->lists) > 0): ?>
+    <div class="control-group">
+      <div class="controls">
+        <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Save') ?>"/>
       </div>
     </div>
   <? endif; ?>

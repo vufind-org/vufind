@@ -429,7 +429,7 @@ class Wikipedia implements TranslatorAwareInterface
 
         // Recurse if we only found redirects:
         if ($redirectTo) {
-            return $this->getWikipedia($redirectTo);
+            return $this->get($redirectTo);
         }
 
         /* Infobox */

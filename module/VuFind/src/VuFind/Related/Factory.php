@@ -21,7 +21,7 @@
  *
  * @category VuFind2
  * @package  Related_Records
- * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
@@ -33,7 +33,7 @@ use Zend\ServiceManager\ServiceManager;
  *
  * @category VuFind2
  * @package  Related_Records
- * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
@@ -46,7 +46,7 @@ class Factory
      *
      * @return Editions
      */
-    public function getEditions(ServiceManager $sm)
+    public static function getEditions(ServiceManager $sm)
     {
         return new Editions(
             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
@@ -61,7 +61,7 @@ class Factory
      *
      * @return Similar
      */
-    public function getSimilar(ServiceManager $sm)
+    public static function getSimilar(ServiceManager $sm)
     {
         return new Similar($sm->getServiceLocator()->get('VuFind\Search'));
     }
@@ -73,7 +73,7 @@ class Factory
      *
      * @return WorldCatEditions
      */
-    public function getWorldCatEditions(ServiceManager $sm)
+    public static function getWorldCatEditions(ServiceManager $sm)
     {
         return new WorldCatEditions(
             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
@@ -88,7 +88,7 @@ class Factory
      *
      * @return WorldCatSimilar
      */
-    public function getWorldCatSimilar(ServiceManager $sm)
+    public static function getWorldCatSimilar(ServiceManager $sm)
     {
         return new WorldCatSimilar($sm->getServiceLocator()->get('VuFind\Search'));
     }

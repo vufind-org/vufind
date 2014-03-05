@@ -42,29 +42,29 @@ namespace VuFind\View\Helper\Root;
 class KeepAlive extends \Zend\View\Helper\AbstractHelper
 {
     /**
-     * Whether keep-alive is enabled
+     * Keep-alive interval in seconds or 0 if disabled
      *
-     * @var bool
+     * @var int
      */
-    protected $enabled;
+    protected $interval;
 
     /**
      * Constructor
      *
-     * @param bool $enabled Whether keep-alive is enabled
+     * @param int $interval Keep-alive interval in seconds or 0 if disabled
      */
-    public function __construct($enabled)
+    public function __construct($interval)
     {
-        $this->enabled = (bool)$enabled;
+        $this->interval = $interval;
     }
 
     /**
-     * Returns true if keep-alive is enabled and false if not.
+     * Returns the keep-alive interval.
      *
-     * @return string|bool
+     * @return int
      */
     public function __invoke()
     {
-        return $this->enabled;
+        return $this->interval;
     }
 }

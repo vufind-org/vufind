@@ -106,6 +106,10 @@
         </div>
       <? endif; ?>
       <?
+      /* Show hidden field for active search class when in combined handler mode. */
+      if ($this->searchbox()->combinedHandlersActive()) {
+        echo '<input type="hidden" name="activeSearchClassId" value="' . $this->escapeHtml($this->searchClassId) . '" />';
+      }
       /* Load hidden limit preference from Session */
       if (!empty($lastLimit)) {
         echo '<input type="hidden" name="limit" value="' . $this->escapeHtml($lastLimit) . '" />';

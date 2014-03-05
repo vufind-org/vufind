@@ -26,7 +26,9 @@
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
 namespace VuFind\RecordDriver;
-use VuFind\Exception\ILS as ILSException, VuFind\XSLT\Processor as XSLTProcessor;
+use VuFind\Exception\ILS as ILSException,
+    VuFind\View\Helper\Root\RecordLink,
+    VuFind\XSLT\Processor as XSLTProcessor;
 
 /**
  * Model for MARC records in Solr.
@@ -935,12 +937,16 @@ class SolrMarc extends SolrDefault
      * Return an XML representation of the record using the specified format.
      * Return false if the format is unsupported.
      *
-     * @param string $format Name of format to use (corresponds with OAI-PMH
+     * @param string     $format     Name of format to use (corresponds with OAI-PMH
      * metadataPrefix parameter).
+     * @param string     $baseUrl    Base URL of host containing VuFind (optional;
+     * may be used to inject record URLs into XML when appropriate).
+     * @param RecordLink $recordLink Record link helper (optional; may be used to
+     * inject record URLs into XML when appropriate).
      *
      * @return mixed         XML, or false if format unsupported.
      */
-    public function getXML($format)
+    public function getXML($format, $baseUrl = null, $recordLink = null)
     {
         // Special case for MARC:
         if ($format == 'marc21') {
@@ -966,7 +972,7 @@ class SolrMarc extends SolrDefault
         }
 
         // Try the parent method:
-        return parent::getXML($format);
+        return parent::getXML($format, $baseUrl, $recordLink);
     }
 
     /**

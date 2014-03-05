@@ -21,7 +21,7 @@
  *
  * @category VuFind2
  * @package  RecordDrivers
- * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
@@ -33,7 +33,7 @@ use Zend\ServiceManager\ServiceManager;
  *
  * @category VuFind2
  * @package  RecordDrivers
- * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
@@ -46,7 +46,7 @@ class Factory
      *
      * @return CollectionHierarchyTree
      */
-    public function getCollectionHierarchyTree(ServiceManager $sm)
+    public static function getCollectionHierarchyTree(ServiceManager $sm)
     {
         return new CollectionHierarchyTree(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
@@ -61,10 +61,11 @@ class Factory
      *
      * @return CollectionList
      */
-    public function getCollectionList(ServiceManager $sm)
+    public static function getCollectionList(ServiceManager $sm)
     {
         return new CollectionList(
-            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')->get('SolrCollection')
+            $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')
+                ->get('SolrCollection')
         );
     }
 
@@ -75,7 +76,7 @@ class Factory
      *
      * @return Excerpt
      */
-    public function getExcerpt(ServiceManager $sm)
+    public static function getExcerpt(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $enabled = isset($config->Content->excerpts);
@@ -89,7 +90,7 @@ class Factory
      *
      * @return HierarchyTree
      */
-    public function getHierarchyTree(ServiceManager $sm)
+    public static function getHierarchyTree(ServiceManager $sm)
     {
         return new HierarchyTree(
             $sm->getServiceLocator()->get('VuFind\Config')->get('config')
@@ -103,7 +104,7 @@ class Factory
      *
      * @return HoldingsILS
      */
-    public function getHoldingsILS(ServiceManager $sm)
+    public static function getHoldingsILS(ServiceManager $sm)
     {
         // If VuFind is configured to suppress the holdings tab when the
         // ILS driver specifies no holdings, we need to pass in a connection
@@ -126,7 +127,7 @@ class Factory
      *
      * @return Map
      */
-    public function getMap(ServiceManager $sm)
+    public static function getMap(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $enabled = isset($config->Content->recordMap);
@@ -140,7 +141,7 @@ class Factory
      *
      * @return Reviews
      */
-    public function getReviews(ServiceManager $sm)
+    public static function getReviews(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $enabled = isset($config->Content->reviews);

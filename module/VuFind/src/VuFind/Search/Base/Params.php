@@ -1428,4 +1428,33 @@ class Params implements ServiceLocatorAwareInterface
         }
         return $this->query;
     }
+
+    /**
+     * Initialize facet settings for the specified configuration sections.
+     *
+     * @param string $facetList     Config section containing fields to activate
+     * @param string $facetSettings Config section containing related settings
+     * @param string $cfgFile       Name of configuration to load
+     *
+     * @return bool                 True if facets set, false if no settings found
+     */
+    protected function initFacetList($facetList, $facetSettings, $cfgFile = 'facets')
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get($cfgFile);
+        if (!isset($config->$facetList)) {
+            return false;
+        }
+        if (isset($config->$facetSettings->orFacets)) {
+            $orFields
+                = array_map('trim', explode(',', $config->$facetSettings->orFacets));
+        } else {
+            $orFields = array();
+        }
+        foreach ($config->$facetList as $key => $value) {
+            $useOr = (isset($orFields[0]) && $orFields[0] == '*')
+                || in_array($key, $orFields);
+            $this->addFacet($key, $value, $useOr);
+        }
+        return true;
+    }
 }

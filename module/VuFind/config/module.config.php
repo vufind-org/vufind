@@ -101,9 +101,9 @@ $config = array(
     'controller_plugins' => array(
         'factories' => array(
             'holds' => array('VuFind\Controller\Plugin\Factory', 'getHolds'),
-            'storageRetrievalRequests' => array('VuFind\Controller\Plugin\Factory', 'getStorageRetrievalRequests'),
-            'ILLRequests' => array('VuFind\Controller\Plugin\Factory', 'getILLRequests'),
+            'newitems' => array('VuFind\Controller\Plugin\Factory', 'getNewItems'),
             'reserves' => array('VuFind\Controller\Plugin\Factory', 'getReserves'),
+            'storageRetrievalRequests' => array('VuFind\Controller\Plugin\Factory', 'getStorageRetrievalRequests'),
         ),
         'invokables' => array(
             'db-upgrade' => 'VuFind\Controller\Plugin\DbUpgrade',
@@ -333,6 +333,8 @@ $config = array(
                     'openlibrarysubjectsdeferred' => 'VuFind\Recommend\OpenLibrarySubjectsDeferred',
                     'pubdatevisajax' => 'VuFind\Recommend\PubDateVisAjax',
                     'resultgooglemapajax' => 'VuFind\Recommend\ResultGoogleMapAjax',
+                    'summonbestbetsdeferred' => 'VuFind\Recommend\SummonBestBetsDeferred',
+                    'summondatabasesdeferred' => 'VuFind\Recommend\SummonDatabasesDeferred',
                     'summonresultsdeferred' => 'VuFind\Recommend\SummonResultsDeferred',
                     'switchtype' => 'VuFind\Recommend\SwitchType',
                 ),
@@ -538,7 +540,7 @@ $recordRoutes = array(
 $nonTabRecordActions = array(
     'AddComment', 'DeleteComment', 'AddTag', 'Save', 'Email', 'SMS', 'Cite',
     'Export', 'RDF', 'Hold', 'BlockedHold', 'Home', 'StorageRetrievalRequest',
-    'BlockedStorageRetrievalRequest', 'ILLRequest', 'BlockedILLRequest' 
+    'BlockedStorageRetrievalRequest'
 );
 
 // Define list-related routes -- route name => MyResearch action
@@ -564,7 +566,6 @@ $staticRoutes = array(
     'MyResearch/Favorites', 'MyResearch/Fines',
     'MyResearch/Holds', 'MyResearch/Home', 'MyResearch/Logout', 'MyResearch/Profile',
     'MyResearch/SaveSearch', 'MyResearch/StorageRetrievalRequests',
-    'MyResearch/ILLRequests',
     'QRCode/Show', 'QRCode/Unavailable',
     'OAI/Server', 'Pazpar2/Home', 'Pazpar2/Search', 'Records/Home',
     'Search/Advanced', 'Search/Email', 'Search/History', 'Search/Home',

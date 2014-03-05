@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Controller
+ * @package  VuDL
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-3.0.php GNU General Public License
  * @link     http://vufind.org/wiki/
@@ -32,7 +32,7 @@ use Zend\Mvc\Controller\Plugin\Url as UrlHelper;
  * VuDL outline generator
  *
  * @category VuFind2
- * @package  Controller
+ * @package  VuDL
  * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-3.0.php GNU General Public License
  * @link     http://vufind.org/wiki/
@@ -40,11 +40,11 @@ use Zend\Mvc\Controller\Plugin\Url as UrlHelper;
 class OutlineGenerator
 {
     /**
-     * Fedora connection
+     * VuDL connection manager
      *
-     * @var Fedora
+     * @var connector
      */
-    protected $fedora;
+    protected $connector;
 
     /**
      * URL helper
@@ -66,6 +66,13 @@ class OutlineGenerator
      * @var object
      */
     protected $cache;
+
+    /**
+     * Do we skip the cache for this outline?
+     *
+     * @var boolean
+     */
+    protected $skipCache;
 
     /**
      * Queues
@@ -91,15 +98,15 @@ class OutlineGenerator
     /**
      * Constructor
      *
-     * @param Fedora      $fedora Fedora connection
-     * @param UrlHelper   $url    URL helper
-     * @param array       $routes VuDL route configuration
-     * @param object|bool $cache  Cache object (or false to disable caching)
+     * @param Fedora      $connector VuDL connection manager
+     * @param UrlHelper   $url       URL helper
+     * @param array       $routes    VuDL route configuration
+     * @param object|bool $cache     Cache object (or false to disable caching)
      */
-    public function __construct(Fedora $fedora, UrlHelper $url, $routes = array(),
-        $cache = false
+    public function __construct(Connection\Manager $connector, UrlHelper $url,
+        $routes = array(), $cache = false
     ) {
-        $this->fedora = $fedora;
+        $this->connector = $connector;
         $this->url = $url;
         $this->routes = $routes;
         $this->cache = $cache;
@@ -117,7 +124,9 @@ class OutlineGenerator
      */
     protected function getCache($key, $moddate = null)
     {
-        if ($this->cache && $cache_item = $this->cache->getItem($key)) {
+        if (!$this->skipCache && $this->cache
+            && $cache_item = $this->cache->getItem($key)
+        ) {
             if ($moddate == null || (isset($cache_item['moddate'])
                 && date_create($cache_item['moddate']) >= date_create($moddate))
             ) {
@@ -161,26 +170,23 @@ class OutlineGenerator
     {
         // Reset the state of the class:
         $this->queue = $this->moddate = array();
-        $this->outline = array('counts'=>array(), 'names'=>array());
+        $this->outline = array(
+            'counts'=>array(),
+            'names'=>array(),
+            'lists'=>array()
+        );
 
         // Check modification date
-        $xml = $this->fedora->getObjectAsXML($root);
-        $rootModDate = (string)$xml[0]->objLastModDate;
+        $rootModDate = $this->connector->getModDate($root);
         // Get lists
-        $data = $this->fedora->getStructmap($root);
-        $lists = array();
-        preg_match_all('/vudl:[^"]+/', $data, $lists);
-
+        $lists = array_reverse($this->connector->getOrderedMembers($root));
         // Get list items
-        foreach ($lists[0] as $i=>$list_id) {
+        foreach ($lists as $i=>$list_id) {
             // Get list name
-            $xml = $this->fedora->getObjectAsXML($list_id);
-            $this->outline['names'][] = (String) $xml[0]->objLabel;
-            $this->moddate[$i] = max((string)$xml[0]->objLastModDate, $rootModDate);
-            $data = $this->fedora->getStructmap($list_id);
-            $list = array();
-            preg_match_all('/vudl:[^"]+/', $data, $list);
-            $this->queue[$i] = $list[0];
+            $this->outline['names'][] = $this->connector->getLabel($list_id);
+            $this->moddate[$i] = $this->connector->getModDate($list_id);
+            $items = $this->connector->getOrderedMembers($list_id);
+            $this->queue[$i] = $items;
         }
     }
 
@@ -194,10 +200,9 @@ class OutlineGenerator
     protected function buildItem($id)
     {
         // Else, get all the data and save it to the cache
-        $details = $this->fedora->getRecordDetails($id);
         $list = array();
         // Get the file type
-        $file = $this->fedora->getDatastreams($id);
+        $file = $this->connector->getDatastreams($id);
         preg_match_all(
             '/dsid="([^"]+)"[^>]*mimeType="([^"]+)/',
             $file,
@@ -213,6 +218,7 @@ class OutlineGenerator
                 strpos($list[2][$masterIndex], '/') + 1
             );
         }
+        $details = $this->connector->getDetails($id, false);
         return array(
             'id' => $id,
             'fulltype' => $type,
@@ -240,7 +246,7 @@ class OutlineGenerator
     {
         // Set default page length if necessary
         if ($pageLength == null) {
-            $pageLength = $this->fedora->getPageLength();
+            $pageLength = $this->connector->getPageLength();
         }
 
         // Get data on all pages and docs
@@ -288,13 +294,15 @@ class OutlineGenerator
      * Generate an array of all child pages and their information/images
      *
      * @param string $root       record id to search under
+     * @param string $cache      'cache' get parameter for skipping the cache
      * @param string $start      page/doc to start with for the return
      * @param int    $pageLength page length (leave null to use default)
      *
      * @return associative array of the lists with their members
      */
-    public function getOutline($root, $start = 0, $pageLength = null)
+    public function getOutline($root, $cache = null, $start = 0, $pageLength = null)
     {
+        $this->skipCache = $cache == 'no';
         $this->loadLists($root);
         $this->loadPagesAndDocs($start, $pageLength);
         $this->injectUrls();

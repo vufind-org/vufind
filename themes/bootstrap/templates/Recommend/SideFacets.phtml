@@ -52,7 +52,7 @@
         <li class="nav-header"><?=$this->transEsc($cluster['label'])?></li>
         <li>
           <form class="form-inline text-center" action="" name="<?=$this->escapeHtml($title)?>Filter" id="<?=$this->escapeHtml($title)?>Filter">
-            <?=$results->getUrlQuery()->asHiddenFields(array('filter' => "/^{$title}:.*/"))?>
+            <?=$results->getUrlQuery()->asHiddenFields(array('page' => "/./", 'filter' => "/^{$title}:.*/"))?>
             <input type="hidden" name="daterange[]" value="<?=$this->escapeHtml($title)?>"/>
             <div class="row-fluid">
               <label class="span6" for="<?=$this->escapeHtml($title)?>from">
@@ -64,30 +64,31 @@
                 <input type="text" maxlength="4" class="span12" name="<?=$this->escapeHtml($title)?>to" id="<?=$this->escapeHtml($title)?>to" value="<?=isset($dateFacets[$title][1])?$dateFacets[$title][1]:''?>" />
               </label>
             </div>
-            <div class="row-fluid"><input type="text" class="span10 hidden" id="dateSlider"/></div>
+            <div class="row-fluid"><input type="text" class="span10 hidden" id="<?=$this->escapeHtml($title)?>dateSlider"/></div>
             <input class="btn" type="submit" value="<?=$this->transEsc('Set')?>"/>
           </form>
         </li>
         <? $this->headScript()->appendFile('bootstrap-slider.js'); ?>
         <?
-          $min = !empty($dateFacets[$title][0]) ? $dateFacets[$title][0] : 1400;
-          $max = !empty($dateFacets[$title][1]) ? $dateFacets[$title][1] : date('Y', time()+31536000);
+          $min = !empty($dateFacets[$title][0]) ? min($dateFacets[$title][0], 1400) : 1400;
+          $future = date('Y', time()+31536000);
+          $max = !empty($dateFacets[$title][1]) ? max($future, $dateFacets[$title][1]) : $future;
+          $low  = !empty($dateFacets[$title][0]) ? $dateFacets[$title][0] : $min;
+          $high = !empty($dateFacets[$title][1]) ? $dateFacets[$title][1] : $max;
           $script = <<<JS
           $(document).ready(function() {
             var fillTexts = function() {
-              var v = dateSlider.getValue();
+              var v = {$this->escapeHtml($title)}dateSlider.getValue();
               $('#{$this->escapeHtml($title)}from').val(v[0]);
               $('#{$this->escapeHtml($title)}to').val(v[1]);
             };
-            var min = {$min};
-            var max = {$max}; // Next year
-            var dateSlider = $('#dateSlider')
+            var {$this->escapeHtml($title)}dateSlider = $('#{$this->escapeHtml($title)}dateSlider')
               .slider({
-                 'min':min,
-                 'max':max,
+                 'min':{$min},
+                 'max':{$max},
                  'handle':"square",
                  'tooltip':"hide",
-                 'value':[min,max]
+                 'value':[{$low},{$high}]
               })
               .on('slide', fillTexts)
               .data('slider');

@@ -264,10 +264,10 @@ class Factory
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         return new KeepAlive(
-            isset($config->Session->keepAlive) ? $config->Session->keepAlive : false
+            isset($config->Session->keepAlive) ? $config->Session->keepAlive : 0
         );
     }
-    
+
     /**
      * Construct the ProxyUrl helper.
      *
@@ -378,6 +378,20 @@ class Factory
     {
         return new SearchOptions(
             $sm->getServiceLocator()->get('VuFind\SearchOptionsPluginManager')
+        );
+    }
+
+    /**
+     * Construct the SearchParams helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return SearchParams
+     */
+    public static function getSearchParams(ServiceManager $sm)
+    {
+        return new SearchParams(
+            $sm->getServiceLocator()->get('VuFind\SearchParamsPluginManager')
         );
     }
 
