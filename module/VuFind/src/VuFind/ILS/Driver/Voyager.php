@@ -223,14 +223,17 @@ class Voyager extends AbstractBase
      */
     protected function buildSqlFromArray($sql)
     {
-        $modifier = isset($sql['modifier']) ? $sql['modifier'] . " " : "";
+        $modifier = isset($sql['modifier']) ? $sql['modifier'] . ' ' : '';
 
         // Put String Together
-        $sqlString = "SELECT ". $modifier . implode(", ", $sql['expressions']);
-        $sqlString .= " FROM " .implode(", ", $sql['from']);
-        $sqlString .= " WHERE " .implode(" AND ", $sql['where']);
+        $sqlString = 'SELECT ' . $modifier . implode(', ', $sql['expressions']);
+        $sqlString .= " FROM " . implode(", ", $sql['from']);
+        $sqlString .= (!empty($sql['where']))
+            ? ' WHERE ' . implode(' AND ', $sql['where']) : '';
+        $sqlString .= (!empty($sql['group']))
+            ? ' GROUP BY ' . implode(', ', $sql['group']) : '';
         $sqlString .= (!empty($sql['order']))
-            ? " ORDER BY " .implode(", ", $sql['order']) : "";
+            ? ' ORDER BY ' . implode(', ', $sql['order']) : '';
 
         return array('string' => $sqlString, 'bind' => $sql['bind']);
     }
@@ -350,7 +353,7 @@ class Voyager extends AbstractBase
             "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
                 "LOCATION.LOCATION_NAME) as location",
             "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
-            "ITEM.TEMP_LOCATION"
+            "ITEM.TEMP_LOCATION", "ITEM.ITEM_TYPE_ID"
         );
 
         // From
@@ -578,7 +581,7 @@ class Voyager extends AbstractBase
     {
         // Expressions
         $sqlExpressions = array(
-            "BIB_ITEM.BIB_ID",
+            "BIB_ITEM.BIB_ID", "MFHD_ITEM.MFHD_ID",
             "ITEM_BARCODE.ITEM_BARCODE", "ITEM.ITEM_ID",
             "ITEM.ON_RESERVE", "ITEM.ITEM_SEQUENCE_NUMBER",
             "ITEM.RECALLS_PLACED", "ITEM.HOLDS_PLACED",
@@ -587,6 +590,7 @@ class Voyager extends AbstractBase
             "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
                 "LOCATION.LOCATION_NAME) as location",
             "ITEM.TEMP_LOCATION",
+            "ITEM.PERM_LOCATION",
             "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
             "to_char(CIRC_TRANSACTIONS.CURRENT_DUE_DATE, 'MM-DD-YY') as duedate",
             "(SELECT TO_CHAR(MAX(CIRC_TRANS_ARCHIVE.DISCHARGE_DATE), " .
@@ -655,9 +659,11 @@ class Voyager extends AbstractBase
                                 "'No information available' as status",
                                 "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
                                     "LOCATION.LOCATION_NAME) as location",
+                                "null as TEMP_LOCATION",
+                                "null as PERM_LOCATION",            
                                 "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
-                                "BIB_MFHD.BIB_ID", "null as duedate",
-                                "0 AS TEMP_LOCATION"
+                                "BIB_MFHD.BIB_ID", "MFHD_MASTER.MFHD_ID",
+                                "null as duedate", "0 AS TEMP_LOCATION"
                                );
 
         // From
@@ -670,7 +676,8 @@ class Voyager extends AbstractBase
                           "LOCATION.LOCATION_ID = MFHD_MASTER.LOCATION_ID",
                           "MFHD_MASTER.MFHD_ID = BIB_MFHD.MFHD_ID",
                           "MFHD_DATA.MFHD_ID = BIB_MFHD.MFHD_ID",
-                          "MFHD_MASTER.SUPPRESS_IN_OPAC='N'"
+                          "MFHD_MASTER.SUPPRESS_IN_OPAC='N'",
+                          "NOT EXISTS (SELECT MFHD_ID FROM MFHD_ITEM WHERE MFHD_ITEM.MFHD_ID=MFHD_MASTER.MFHD_ID)"
                          );
 
         // Order
@@ -710,12 +717,13 @@ class Voyager extends AbstractBase
 
             // Concat wrapped rows (MARC data more than 300 bytes gets split
             // into multiple rows)
-            if (isset($data[$row['ITEM_ID']][$number])) {
+            $rowId = isset($row['ITEM_ID']) ? $row['ITEM_ID'] : $row['MFHD_ID'];
+            if (isset($data[$rowId][$number])) {
                 // We don't want to concatenate the same MARC information to
                 // itself over and over due to a record with multiple status
                 // codes -- we should only concat wrapped rows for the FIRST
                 // status code we encounter!
-                $record = & $data[$row['ITEM_ID']][$number];
+                $record = & $data[$rowId][$number];
                 if ($record['STATUS_ARRAY'][0] == $row['STATUS']) {
                     $record['RECORD_SEGMENT'] .= $row['RECORD_SEGMENT'];
                 }
@@ -729,14 +737,63 @@ class Voyager extends AbstractBase
             } else {
                 // This is the first time we've encountered this row number --
                 // initialize the row and start an array of statuses.
-                $data[$row['ITEM_ID']][$number] = $row;
-                $data[$row['ITEM_ID']][$number]['STATUS_ARRAY']
+                $data[$rowId][$number] = $row;
+                $data[$rowId][$number]['STATUS_ARRAY']
                     = array($row['STATUS']);
             }
         }
         return $data;
     }
 
+    /**
+     * Get specified fields from an MFHD MARC Record
+     * 
+     * @param object       $record     File_MARC object
+     * @param array|string $fieldSpecs Array or colon-separated list of 
+     * field/subfield specifications (3 chars for field code and then subfields, 
+     * e.g. 866az)
+     * 
+     * @return string|string[] Results as a string if single, array if multiple
+     */
+    protected function getMFHDData($record, $fieldSpecs)
+    {
+        if (!is_array($fieldSpecs)) {
+            $fieldSpecs = explode(':', $fieldSpecs);
+        }
+        $results = '';
+        foreach ($fieldSpecs as $fieldSpec) {
+            $fieldCode = substr($fieldSpec, 0, 3);
+            $subfieldCodes = substr($fieldSpec, 3); 
+            if ($fields = $record->getFields($fieldCode)) {
+                foreach ($fields as $field) {
+                    if ($subfields = $field->getSubfields()) {
+                        $line = '';
+                        foreach ($subfields as $code => $subfield) {
+                            if (!strstr($subfieldCodes, $code)) {
+                                continue;
+                            }
+                            if ($line) {
+                                $line .= ' ';
+                            }
+                            $line .= $subfield->getData();
+                        }
+                        if ($line) {
+                            if (!$results) {
+                                $results = $line;
+                            } else {
+                                if (!is_array($results)) {
+                                    $results = array($results);
+                                }
+                                $results[] = $line;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return $results;         
+    }
+    
     /**
      * Protected support method for getHolding.
      *
@@ -755,51 +812,46 @@ class Voyager extends AbstractBase
             );
             if ($record = $marc->next()) {
                 // Get Notes
-                if ($fields = $record->getFields('852')) {
-                    foreach ($fields as $field) {
-                        if ($subfields = $field->getSubfields('z')) {
-                            foreach ($subfields as $subfield) {
-                                // If this is the first time through,
-                                // assume a single-line summary
-                                if (!isset($marcDetails['notes'])) {
-                                    $marcDetails['notes']
-                                        = $subfield->getData();
-                                } else {
-                                    // If we already have a summary
-                                    // line, convert it to an array and
-                                    // append more data
-                                    if (!is_array($marcDetails['notes'])) {
-                                        $marcDetails['notes']
-                                            = array($marcDetails['notes']);
-                                    }
-                                    $marcDetails['notes'][]
-                                        = $subfield->getData();
-                                }
-                            }
-                        }
-                    }
+                $data = $this->getMFHDData(
+                    $record,
+                    isset($this->config['Holdings']['notes'])
+                    ? $this->config['Holdings']['notes']
+                    : '852z'
+                );
+                if ($data) {
+                    $marcDetails['notes'] = $data;
                 }
 
                 // Get Summary (may be multiple lines)
-                if ($fields = $record->getFields('866')) {
-                    foreach ($fields as $field) {
-                        if ($subfield = $field->getSubfield('a')) {
-                            // If this is the first time through, assume
-                            // a single-line summary
-                            if (!isset($marcDetails['summary'])) {
-                                $marcDetails['summary']
-                                    = $subfield->getData();
-                                // If we already have a summary line,
-                                // convert it to an array and append
-                                // more data
-                            } else {
-                                if (!is_array($marcDetails['summary'])) {
-                                    $marcDetails['summary']
-                                        = array($marcDetails['summary']);
-                                }
-                                $marcDetails['summary'][] = $subfield->getData();
-                            }
-                        }
+                $data = $this->getMFHDData(
+                    $record,
+                    isset($this->config['Holdings']['summary'])
+                    ? $this->config['Holdings']['summary']
+                    : '866a'
+                );
+                if ($data) {
+                    $marcDetails['summary'] = $data;
+                }
+                
+                // Get Supplements
+                if (isset($this->config['Holdings']['supplements'])) {
+                    $data = $this->getMFHDData(
+                        $record,
+                        $this->config['Holdings']['supplements']
+                    );
+                    if ($data) {
+                        $marcDetails['supplements'] = $data;
+                    }
+                }
+
+                // Get Indexes
+                if (isset($this->config['Holdings']['indexes'])) {
+                    $data = $this->getMFHDData(
+                        $record,
+                        $this->config['Holdings']['indexes']
+                    );
+                    if ($data) {
+                        $marcDetails['indexes'] = $data;
                     }
                 }
             }
@@ -846,32 +898,43 @@ class Voyager extends AbstractBase
     {
         return array(
             'id' => $sqlRow['BIB_ID'],
+            'holdings_id' => $sqlRow['MFHD_ID'],
+            'item_id' => $sqlRow['ITEM_ID'],
             'status' => $sqlRow['STATUS'],
             'location' => $sqlRow['TEMP_LOCATION'] > 0
                 ? $this->getLocationName($sqlRow['TEMP_LOCATION'])
                 : utf8_encode($sqlRow['LOCATION']),
             'reserve' => $sqlRow['ON_RESERVE'],
             'callnumber' => $sqlRow['CALLNUMBER'],
-            'barcode' => $sqlRow['ITEM_BARCODE']
+            'barcode' => $sqlRow['ITEM_BARCODE'],
+            'use_unknown_message' => 
+                in_array('No information available', $sqlRow['STATUS_ARRAY'])
         );
     }
 
     /**
      * Protected support method for getHolding.
      *
-     * @param array $data   Item Data
-     * @param array $patron Patron Data
+     * @param array  $data   Item Data
+     * @param string $id     The BIB record id
+     * @param array  $patron Patron Data
      *
      * @throws DateException
      * @throws ILSException
      * @return array Keyed data
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function processHoldingData($data, $patron = false)
+    protected function processHoldingData($data, $id, $patron = false)
     {
         $holding = array();
 
         // Build Holdings Array
+        $purchaseHistory = array();
+        if (isset($this->config['Holdings']['purchase_history'])
+            && $this->config['Holdings']['purchase_history']
+        ) {
+            $purchaseHistory = $this->getPurchaseHistory($id);
+        } 
         $i = 0;
         foreach ($data as $item) {
             foreach ($item as $number => $row) {
@@ -913,12 +976,19 @@ class Voyager extends AbstractBase
                 }
 
                 $holding[$i] = $this->processHoldingRow($row);
+                $purchases = array();
+                foreach ($purchaseHistory as $historyItem) {
+                    if ($holding[$i]['holdings_id'] == $historyItem['holdings_id']) {
+                        $purchases[] = $historyItem;
+                    }
+                }
                 $holding[$i] += array(
                     'availability' => $availability['available'],
                     'duedate' => $dueDate,
                     'number' => $number,
                     'requests_placed' => $requests_placed,
-                    'returnDate' => $returnDate
+                    'returnDate' => $returnDate,
+                    'purchase_history' => $purchases
                 );
 
                 // Parse Holding Record
@@ -968,6 +1038,7 @@ class Voyager extends AbstractBase
 
         // Loop through the possible queries and try each in turn -- the first one
         // that yields results will cause us to break out of the loop.
+        $data = array();
         foreach ($possibleQueries as $sql) {
             // Execute SQL
             try {
@@ -981,15 +1052,9 @@ class Voyager extends AbstractBase
                 $sqlRows[] = $row;
             }
 
-            $data = $this->getHoldingData($sqlRows);
-
-            // If we found data, we can leave the foreach loop -- we don't need to
-            // try any more queries.
-            if (count($data) > 0) {
-                break;
-            }
+            $data = array_merge($data, $this->getHoldingData($sqlRows));
         }
-        return $this->processHoldingData($data, $patron);
+        return $this->processHoldingData($data, $id, $patron);
     }
 
     /**
@@ -1005,24 +1070,32 @@ class Voyager extends AbstractBase
      */
     public function getPurchaseHistory($id)
     {
-        $sql = "select SERIAL_ISSUES.ENUMCHRON " .
+        if (isset($this->config['Catalog']['purchase_history']) && !$this->config['Catalog']['purchase_history']) {
+            return array();
+        }
+                
+        $sql = "select LINE_ITEM_COPY_STATUS.MFHD_ID, SERIAL_ISSUES.ENUMCHRON " .
                "from $this->dbName.SERIAL_ISSUES, $this->dbName.COMPONENT, ".
                "$this->dbName.ISSUES_RECEIVED, $this->dbName.SUBSCRIPTION, ".
-               "$this->dbName.LINE_ITEM " .
+               "$this->dbName.LINE_ITEM, $this->dbName.LINE_ITEM_COPY_STATUS " .
                "where SERIAL_ISSUES.COMPONENT_ID = COMPONENT.COMPONENT_ID " .
                "and ISSUES_RECEIVED.ISSUE_ID = SERIAL_ISSUES.ISSUE_ID " .
                "and ISSUES_RECEIVED.COMPONENT_ID = COMPONENT.COMPONENT_ID " .
                "and COMPONENT.SUBSCRIPTION_ID = SUBSCRIPTION.SUBSCRIPTION_ID " .
                "and SUBSCRIPTION.LINE_ITEM_ID = LINE_ITEM.LINE_ITEM_ID " .
+               "and LINE_ITEM_COPY_STATUS.LINE_ITEM_ID = LINE_ITEM.LINE_ITEM_ID " .
                "and SERIAL_ISSUES.RECEIVED > 0 " .
                "and ISSUES_RECEIVED.OPAC_SUPPRESSED = 1 " .
                "and LINE_ITEM.BIB_ID = :id " .
-               "order by SERIAL_ISSUES.ISSUE_ID DESC";
+               "order by LINE_ITEM_COPY_STATUS.MFHD_ID, SERIAL_ISSUES.ISSUE_ID DESC";
         try {
             $data = array();
             $sqlStmt = $this->executeSQL($sql, array(':id' => $id));
             while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                $data[] = array('issue' => $row['ENUMCHRON']);
+                $data[] = array(
+                    'issue' => $row['ENUMCHRON'],
+                    'holdings_id' => $row['MFHD_ID']
+                );
             }
             return $data;
         } catch (PDOException $e) {
