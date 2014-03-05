@@ -352,6 +352,16 @@ var Lightbox = {
       // Add prettiness
       $(this).after(' <i class="icon-spinner icon-spin"></i> ');
     });
+    /**
+     * Hide the header in the lightbox content
+     * if it matches the title bar of the lightbox
+     */
+    var header = $('#modal .modal-header h3').html();
+    $('#modal .modal-body .lead').each(function(i,op) {
+      if (op.innerHTML == header) {
+        $(op).hide();
+      }
+    });
   },
   /**
    * This function adds submission events to forms loaded inside the lightbox
