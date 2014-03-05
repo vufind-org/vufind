@@ -1,15 +1,10 @@
-.inspector_container #side-nav {
-  margin:auto 0;
-}
-.inspector_container #view {
-  margin:auto 0 auto 1%;
-}
-.inspector_container .grid-view {
-  margin-left:1%;
-}
-.item-list {
-  height:600px;
-}
+.inspector_container #side-nav { margin:auto 0 }
+.inspector_container #view { margin:auto 0 auto 1% }
+.inspector_container .grid-view { margin-left:1% }
+.item-list { height:600px }
+.opener a { display:none }
+#view.wide { width:100% }
+
 .page_grid .audio {
   background:url('../images/small/mp3.png');
   box-shadow:none;
@@ -26,7 +21,15 @@
 }
 .page_grid .doc,
 .page_grid .msword {
-  background:url('../images/small/doc.png');
+  background:url('../images/small/msword.jpg');
+  box-shadow:none;
+  margin:auto;
+  width:116px;
+  height:85px;
+}
+.page_grid .xls,
+.page_grid .msexcel {
+  background:url('../images/small/msexcel.jpg');
   box-shadow:none;
   margin:auto;
   width:116px;

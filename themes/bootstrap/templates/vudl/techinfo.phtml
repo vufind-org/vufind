@@ -8,8 +8,13 @@
   <div id="allFiles" class="accordion-body collapse">
     <div class="accordion-inner">
       <? foreach ($this->record as $key=>$link): ?>
-        <? if (is_array($this->record[$key]) || strpos($key, '-') !== false
-        || $link == $this->record['id']|| $key == 'techinfo') continue; ?>
+        <? $mtKey = array_search(strToUpper($key), $this->record['datastreams']); ?>
+        <? if (
+          is_array($this->record[$key])
+          || strpos($this->record['mimetypes'][$mtKey], 'text') !== false
+          || strpos($key, '-') !== false
+          || $key == 'techinfo'
+        ) continue; ?>
         <a class="btn btn-block" href="<?=$this->url(
           'files',
           array(
@@ -19,7 +24,6 @@
         )?>?download=true">
           <?=strToUpper($this->transEsc($key)) ?>
           <? if (isset($this->record['mimetypes'])): ?>
-            <? $mtKey = array_search(strToUpper($key), $this->record['datastreams']); ?>
             <span class="pull-right small"><?=$this->record['mimetypes'][$mtKey] ?></span>
           <? endif; ?>
         </a>
