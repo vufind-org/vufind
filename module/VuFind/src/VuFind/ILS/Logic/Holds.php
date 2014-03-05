@@ -114,10 +114,14 @@ class Holds
     {
         $retVal = array();
 
-        foreach ($holdings as $location => $items) {
+        foreach ($holdings as $groupKey => $items) {
             $notes = array();
             $summaries = array();
+            $supplements = array();
+            $indexes = array();
+            $locationName = '';
             foreach ($items as $item) {
+                $locationName = $item['location'];
                 if (isset($item['notes'])) {
                     if (!is_array($item['notes'])) {
                         $item['notes'] = empty($item['notes'])
@@ -140,9 +144,36 @@ class Holds
                         }
                     }
                 }
+                if (isset($item['supplements'])) {
+                    if (!is_array($item['supplements'])) {
+                        $item['summary'] = empty($item['supplements'])
+                            ? array() : array($item['supplements']);
+                    }
+                    foreach ($item['supplements'] as $supplement) {
+                        if (!in_array($supplement, $supplements)) {
+                            $supplements[] = $supplement;
+                        }
+                    }
+                }
+                if (isset($item['indexes'])) {
+                    if (!is_array($item['indexes'])) {
+                        $item['indexes'] = empty($item['indexes'])
+                            ? array() : array($item['indexes']);
+                    }
+                    foreach ($item['indexes'] as $index) {
+                        if (!in_array($index, $indexes)) {
+                            $indexes[] = $index;
+                        }
+                    }
+                }
             }
-            $retVal[$location] = array(
-                'notes' => $notes, 'summary' => $summaries, 'items' => $items
+            $retVal[$groupKey] = array(
+                'location' => $locationName,
+                'notes' => $notes,
+                'summary' => $summaries,
+                'supplements' => $supplements,
+                'indexes' => $indexes,
+                'items' => $items
             );
         }
 
@@ -196,7 +227,8 @@ class Holds
             foreach ($result as $copy) {
                 $show = !in_array($copy['location'], $this->hideHoldings);
                 if ($show) {
-                    $holdings[$copy['location']][] = $copy;
+                    $groupKey = $this->getHoldingsGroupKey($copy);
+                    $holdings[$groupKey][] = $copy;
                 }
             }
         }
@@ -266,7 +298,8 @@ class Holds
                                     === 'check';
                         }
                     }
-                    $holdings[$copy['location']][] = $copy;
+                    $groupKey = $this->getHoldingsGroupKey($copy);
+                    $holdings[$groupKey][] = $copy;
                 }
             }
         }
@@ -294,7 +327,8 @@ class Holds
             foreach ($result as $copy) {
                 $show = !in_array($copy['location'], $this->hideHoldings);
                 if ($show) {
-                    $holdings[$copy['location']][] = $copy;
+                    $groupKey = $this->getHoldingsGroupKey($copy);
+                    $holdings[$groupKey][] = $copy;
                     // Are any copies available?
                     if ($copy['availability'] == true) {
                         $any_available = true;
@@ -493,6 +527,41 @@ class Holds
         );
     }
 
+    /**
+     * Returns a URL to display a "blocked ILL request" message.
+     *
+     * @param array $details An array of item data
+     *
+     * @return array         Details for generating URL
+     */
+    protected function getBlockedILLRequestDetails($details)
+    {
+        // Build Params
+        return array(
+            'action' => 'BlockedILLRequest',
+            'record' => $details['id']
+        );
+    }
+
+    /**
+     * Get a grouping key for a holdings item
+     * 
+     * @param array $copy Item information
+     * 
+     * @return string Grouping key
+     */
+    protected function getHoldingsGroupKey($copy)
+    {
+        // Group by holdings id unless configured otherwise or holdings id not
+        // available
+        if ($this->config->Catalog->holdings_grouping != 'location_name'
+            && isset($copy['holdings_id'])
+        ) {
+            return $copy['holdings_id'];
+        }
+        return $copy['location'];    
+    }
+    
     /**
      * Get an array of suppressed location names.
      *

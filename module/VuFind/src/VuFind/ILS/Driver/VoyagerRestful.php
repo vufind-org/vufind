@@ -393,14 +393,15 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     /**
      * Protected support method for getHolding.
      *
-     * @param array $data   Item Data
-     * @param mixed $patron Patron Data or boolean false
+     * @param array  $data   Item Data
+     * @param string $id     The BIB record id
+     * @param mixed  $patron Patron Data or boolean false
      *
      * @return array Keyed data
      */
-    protected function processHoldingData($data, $patron = false)
+    protected function processHoldingData($data, $id, $patron = false)
     {
-        $holding = parent::processHoldingData($data, $patron);
+        $holding = parent::processHoldingData($data, $id, $patron);
 
         foreach ($holding as $i => $row) {
             $is_borrowable = isset($row['_fullRow']['ITEM_TYPE_ID'])

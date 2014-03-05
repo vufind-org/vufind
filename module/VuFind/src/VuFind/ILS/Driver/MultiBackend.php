@@ -404,7 +404,10 @@ class MultiBackend extends AbstractBase
                     $value, $source, $modifyFields
                 );
             } else {
-                if (in_array($key, $modifyFields)) {
+                if (!is_numeric($key)
+                    && $value !== ''
+                    && in_array($key, $modifyFields)
+                ) {
                     $array[$key] = $source . '.' . $value;
                 }
             }

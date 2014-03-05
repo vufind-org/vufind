@@ -33,9 +33,9 @@
 <? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
     <a rel="external" class="holdPlace" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold, false)?>"><?=$this->transEsc('title_hold_place')?></a>
 <? endif; ?>
-<? foreach ($holdings as $location => $holding): ?>
-<h4><?=$this->transEsc($location)?></h4>
-<table class="holdings" summary="<?=$this->transEsc('Holdings details from')?> <?=$this->transEsc($location)?>">
+<? foreach ($holdings as $holding): ?>
+<h4><?=$this->transEsc($holding['location'])?></h4>
+<table class="holdings" summary="<?=$this->transEsc('Holdings details from')?> <?=$this->transEsc($holding['location'])?>">
   <? $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
   <tr>
     <th><?=$this->transEsc("Call Number")?>: </th>
@@ -61,6 +61,26 @@
     <th><?=$this->transEsc("Notes")?>: </th>
     <td>
       <? foreach ($holding['notes'] as $data): ?>
+        <?=$this->escapeHtml($data)?><br/>
+      <? endforeach; ?>
+    </td>
+  </tr>
+  <? endif; ?>
+  <? if (!empty($holding['supplements'])): ?>
+  <tr>
+    <th><?=$this->transEsc("Supplements")?>: </th>
+    <td>
+      <? foreach ($holding['supplements'] as $data): ?>
+        <?=$this->escapeHtml($data)?><br/>
+      <? endforeach; ?>
+    </td>
+  </tr>
+  <? endif; ?>
+  <? if (!empty($holding['indexes'])): ?>
+  <tr>
+    <th><?=$this->transEsc("Indexes")?>: </th>
+    <td>
+      <? foreach ($holding['indexes'] as $data): ?>
         <?=$this->escapeHtml($data)?><br/>
       <? endforeach; ?>
     </td>
