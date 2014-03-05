@@ -1795,6 +1795,7 @@ class Voyager extends AbstractBase
         $sql = "SELECT PATRON.LAST_NAME, PATRON.FIRST_NAME, " .
                "PATRON.HISTORICAL_CHARGES, PATRON_ADDRESS.ADDRESS_LINE1, " .
                "PATRON_ADDRESS.ADDRESS_LINE2, PATRON_ADDRESS.ZIP_POSTAL, ".
+               "PATRON_ADDRESS.CITY, PATRON_ADDRESS.COUNTRY, " .
                "PATRON_PHONE.PHONE_NUMBER, PATRON_GROUP.PATRON_GROUP_NAME " .
                "FROM $this->dbName.PATRON, $this->dbName.PATRON_ADDRESS, ".
                "$this->dbName.PATRON_PHONE, $this->dbName.PATRON_BARCODE, " .
@@ -1834,6 +1835,12 @@ class Voyager extends AbstractBase
                     }
                     if (!empty($row['ZIP_POSTAL'])) {
                         $patron['zip'] = utf8_encode($row['ZIP_POSTAL']);
+                    }
+                    if (!empty($row['CITY'])) {
+                        $patron['city'] = utf8_encode($row['CITY']);
+                    }
+                    if (!empty($row['COUNTRY'])) {
+                        $patron['country'] = utf8_encode($row['COUNTRY']);
                     }
                 }
             }
