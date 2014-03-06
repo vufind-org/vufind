@@ -116,12 +116,13 @@ $(document).ready(function() {
             }
           }
         });
-      }, 500); // Delay request submission
+      }, 100); // Delay request submission
     },
     updater : function(item) { // Submit on update
-        this.$element[0].value = item;
-        this.$element[0].form.submit();
-        return item;
+      console.log(this.$element[0].form.submit);
+      this.$element[0].value = item;
+      this.$element[0].form.submit();
+      return item;
     }
   });
 
