@@ -85,7 +85,7 @@ class VudlController extends AbstractVuDL
     protected function getPage($parent, $child)
     {
         // GET LISTS
-        $lists = $this->getConnector()->getOrderedMembers($parent);
+        $lists = array_reverse($this->getConnector()->getOrderedMembers($parent));
         // GET LIST ITEMS
         foreach ($lists as $list=>$list_data) {
             $items = $this->getConnector()->getOrderedMembers($list_data);

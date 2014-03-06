@@ -202,6 +202,7 @@ var Lightbox = {
         callback(html);
       },
       error:function(d,e) {
+        Lightbox.changeContent('<p class="alert alert-error">'+d.statusText+' ('+d.status+')</p>');
         console.log(e,d); // Error reporting
         console.log(url,post);
       }
