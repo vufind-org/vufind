@@ -408,7 +408,9 @@ class Fedora extends AbstractBase
                 $record['id'],
                 'MASTER-MD'
             );
-            $ret += $this->getSizeAndTypeInfo($record['techinfo']);
+            $info = $this->getSizeAndTypeInfo($record['techinfo']);
+            $ret['size']     = $info['size'];
+            $ret['type'] = $info['type'];
         }
         if ($renderer != null) {
             $ret['div'] = $renderer

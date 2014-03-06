@@ -126,6 +126,18 @@
           state.minimap.attr('src', src);
         }
       },
+      resize: function() {
+        // Update container size
+        state.container.width =   $('.zoomy-container').width();
+        state.container.height =  $('.zoomy-container').height();
+        state.container.left =    $('.zoomy-container').offset().left;
+        state.container.top =     $('.zoomy-container').offset().top;
+        state.container.centerx = $('.zoomy-container').width()/2;
+        state.container.centery = $('.zoomy-container').height()/2;
+        // Do it
+        core.zoom({init:state.page.zoom,setZoom:true},0);
+        //console.log(state.bounds.width());
+      },
       rotateLeft: function() {
         //drawCross(centerX+(centerY-mouseY)-boxHeight,centerY+(mouseX-centerX));
         core.rotate(state.page.theta + 90);
@@ -167,13 +179,13 @@
           state.map.elem.css({
               'width' :state.map.height, 'height':state.map.width,
               'right' :(state.map.size+state.map.margin-state.map.height)/2,
-              'bottom':(state.map.size+state.map.margin-state.map.width)/2-21
+              'bottom':(state.map.size+state.map.margin-state.map.width)/2
             });
         } else {
           state.map.elem.css({
               'width' :state.map.width, 'height':state.map.height,
               'right' :(state.map.size+state.map.margin-state.map.width)/2,
-              'bottom':(state.map.size+state.map.margin-state.map.height)/2-21
+              'bottom':(state.map.size+state.map.margin-state.map.height)/2
             });
         }
         var moffset = state.page.sideways && $.browser != "msie"
@@ -304,9 +316,9 @@
       toggleUI: function() {
         $('.zoomy-container .ui').toggle();
         if($('.zoomy-container .ui').is(':hidden')) {
-          $('.zoomy-container #toggle').html('<i class="icon-resize-full icon-rotate-90"></i>');
+          $('.zoomy-container #toggle').html('<span class="icon-stack"><i class="icon-sign-blank icon-muted icon-stack-base"></i><i class="icon-resize-full icon-rotate-90"></i></span>');
         } else {
-          $('.zoomy-container #toggle').html('<i class="icon-resize-small icon-rotate-90"></i>');
+          $('.zoomy-container #toggle').html('<span class="icon-stack"><i class="icon-sign-blank icon-muted icon-stack-base"></i><i class="icon-resize-small icon-rotate-90"></i></span>');
         }
       }
     };
@@ -315,19 +327,19 @@
     
     $('.zoomy-container .turn-left').unbind('click').bind('click', core.rotateLeft);
     $('.zoomy-container .turn-right').unbind('click').bind('click', core.rotateRight);
-    $('.zoomy-container .zoom-in').unbind('click').bind('click', function(){core.zoom({fake:1},1)});
-    $('.zoomy-container .zoom-out').unbind('click').bind('click', function(){core.zoom({fake:1},-1)});
+    $('.zoomy-container .zoom-in').unbind('click').bind('click', function(){core.zoom({fake:1},-1)});
+    $('.zoomy-container .zoom-out').unbind('click').bind('click', function(){core.zoom({fake:1},1)});
     $('.zoomy-container .zoom .level').unbind('keyup').bind('keyup', function(){core.zoom({setZoom:this.value/100},0)});
     $('.zoomy-container #toggle').unbind('click').bind('click', function(){core.toggleUI()});
     
-    return {'src':src,'load':core.load};
+    return {'src':src,'load':core.load,'resize':core.resize};
   };
   
   $.fn.zoomy = function(src, thumb) {
     var elem = this,
         instance = elem.data('zoomy');            
     if(!instance) { // init
-      $(this).html('<div class="bounds"></div><div class="page"><img src=""></div><div class="map ui"><img src="" class="mini_map"><div class="scope"></div></div><div class="loading-bar"><div class="progress progress-striped active" style="width:40%;margin:auto;border:1px solid #FFF"><div class="bar" style="width:100%;">Loading...</div></div></div><div class="control"><a class="turn-right ui"><span class="icon-stack"><i class="icon-sign-blank icon-muted icon-stack-base"></i><i class="icon-rotate-left"></i></span></i></a><a class="turn-left ui"><span class="icon-stack"><i class="icon-sign-blank icon-muted icon-stack-base"></i><i class="icon-rotate-right"></i></span></a><a id="toggle"><i class="icon-resize-small icon-rotate-90"></i></a></div><div class="zoom ui"><a class="zoom-out"><span class="icon-stack"><i class="icon-sign-blank icon-muted icon-stack-base"></i><i class="icon-plus"></i></span></a><input class="level">%<a class="zoom-in"><span class="icon-stack"><i class="icon-sign-blank icon-muted icon-stack-base"></i><i class="icon-minus"></i></span></a></div>');
+      $(this).html('<div class="bounds"></div><div class="page"><img src=""></div><div class="map ui"><img src="" class="mini_map"><div class="scope"></div></div><div class="loading-bar"><div class="progress progress-striped active" style="width:40%;margin:auto;border:1px solid #FFF"><div class="bar" style="width:100%;">Loading...</div></div></div><div class="control"><a class="turn-right ui"><span class="icon-stack"><i class="icon-sign-blank icon-muted icon-stack-base"></i><i class="icon-rotate-left"></i></span></i></a><a class="turn-left ui"><span class="icon-stack"><i class="icon-sign-blank icon-muted icon-stack-base"></i><i class="icon-rotate-right"></i></span></a><a id="toggle"><span class="icon-stack"><i class="icon-sign-blank icon-muted icon-stack-base"></i><i class="icon-resize-small icon-rotate-90"></i></span></a></div><div class="zoom ui"><a class="zoom-out"><span class="icon-stack"><i class="icon-sign-blank icon-muted icon-stack-base"></i><i class="icon-plus"></i></span></a><input class="level">%<a class="zoom-in"><span class="icon-stack"><i class="icon-sign-blank icon-muted icon-stack-base"></i><i class="icon-minus"></i></span></a></div>');
       $(this).addClass('zoomy-container');
       instance = new Zoomy(src, thumb);
       elem.data('zoomy', instance);
@@ -339,5 +351,12 @@
       }
     }
     return this;
+  }
+  
+  $.fn.zoomyResize = function() {
+      var instance = this.data('zoomy');
+      //console.log(instance);
+      instance['resize']();
+    
   }
 })(jQuery);

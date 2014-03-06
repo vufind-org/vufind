@@ -85,7 +85,7 @@ class VudlController extends AbstractVuDL
     protected function getPage($parent, $child)
     {
         // GET LISTS
-        $lists = $this->getConnector()->getOrderedMembers($parent);
+        $lists = array_reverse($this->getConnector()->getOrderedMembers($parent));
         // GET LIST ITEMS
         foreach ($lists as $list=>$list_data) {
             $items = $this->getConnector()->getOrderedMembers($list_data);
@@ -115,6 +115,19 @@ class VudlController extends AbstractVuDL
             $cache ? $this->getCache() : false
         );
         return $generator->getOutline($root, $start, $pageLength);
+    }
+
+    /**
+     * Get the technical metadata for a record from POST
+     *
+     * @return array
+     */
+    protected function getTechInfo()
+    {
+        return $this->getConnector()->getTechInfo(
+            $this->params()->fromPost(),
+            $this->getViewRenderer()
+        );
     }
 
     /**
@@ -187,9 +200,6 @@ class VudlController extends AbstractVuDL
         $renderer = $this->getViewRenderer();
         $data = $this->params()->fromPost();
         if ($data == null) {
-            $data = $this->params()->fromPost();
-        }
-        if ($data == null) {
             $id = $this->params()->fromQuery('id');
             $list = array();
             preg_match_all(
@@ -200,7 +210,6 @@ class VudlController extends AbstractVuDL
             $data = array_flip($list[1]);
             $data['id'] = $id;
         }
-        $data['techinfo'] = $this->getConnector()->getTechInfo($data, $renderer);
         $data['keys'] = array_keys($data);
         try {
             $view = $renderer->render(
@@ -273,7 +282,6 @@ class VudlController extends AbstractVuDL
         // Get ids for all files
         $outline = $this->getOutline(
             $root,
-            $this->params()->fromQuery('cache'),
             max(0, $view->initPage-($this->getConnector()->getPageLength()/2))
         );
 
