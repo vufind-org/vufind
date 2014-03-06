@@ -2259,6 +2259,26 @@ EOT;
             return $this->holdError("ill_request_date_invalid");
         }
 
+        // Verify pickup library and location
+        $pickupLocationValid = false;
+        $pickupLocations = $this->getILLPickupLocations(
+            $details['id'],
+            $details['pickUpLibrary'],
+            $patron
+        );
+        foreach ($pickupLocations as $location) {
+            if ($location['id'] == $details['pickUpLibraryLocation']) {
+                $pickupLocationValid = true;
+                break;
+            }
+        }
+        if (!$pickupLocationValid) {
+            return array(
+                'success' => false,
+                'sysMessage' => 'ill_request_place_fail_missing'
+            );
+        }
+        
         // Attempt Request
         $xml =  <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
