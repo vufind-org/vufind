@@ -116,7 +116,7 @@ $(document).ready(function() {
             }
           }
         });
-      }, 100); // Delay request submission
+      }, 500); // Delay request submission
     },
     updater : function(item) { // Submit on update
       console.log(this.$element[0].form.submit);
