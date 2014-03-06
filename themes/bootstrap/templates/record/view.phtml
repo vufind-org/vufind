@@ -41,10 +41,7 @@
     <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
     <input type="hidden" value="<?=$this->escapeHtml($this->driver->getResourceSource()) ?>" class="hiddenSource" />
     <?=$this->flashmessages()?>
-    <? $core = $this->record($this->driver)->getCoreMetadata() ?>
-    <?=$core ?>
-    <? /* We need to close run away div tags */ ?>
-    <?=str_repeat('</div>', substr_count($core, '<div')-substr_count($core, '</div>')) ?>
+    <?=$this->record($this->driver)->getCoreMetadata() ?>
   </div>
 
   <? if (count($this->tabs) > 0): ?>
