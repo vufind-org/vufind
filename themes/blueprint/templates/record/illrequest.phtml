@@ -54,7 +54,12 @@
 
     <? if (in_array("pickUpLibraryLocation", $this->extraFields)): ?>
       <div>
-        <span id="pickupLibraryLocationLabel"><strong><?=$this->transEsc("ill_request_pick_up_location")?>:</strong></span><br/>
+        <span id="pickupLibraryLocationLabel"><strong><?=$this->transEsc("ill_request_pick_up_location")?>:</strong></span>
+        <noscript>
+          <label class="error" for="pickupLibraryLocation"><?=$this->transEsc("Please enable JavaScript.")?></label>
+          <br />
+        </noscript>
+        <br/>
         <select id="pickupLibraryLocation" name="gatheredDetails[pickUpLibraryLocation]">
         </select>
       </div>
