@@ -383,28 +383,8 @@ class AbstractBase extends AbstractActionController
      */
     public function translate($msg, $tokens = array(), $default = null)
     {
-        $translated = $this->getServiceLocator()->has('VuFind\Translator')
-            ? $this->getServiceLocator()->get('VuFind\Translator')->translate($msg)
-            : $msg;
-
-        // TODO: avoid redundancy between this code and Translate view helper!!
-
-        // Did the translation fail to change anything?  If so, use default:
-        if (!is_null($default) && $translated == $msg) {
-            $translated = $default;
-        }
-
-        // Do we need to perform substitutions?
-        if (!empty($tokens)) {
-            $in = $out = array();
-            foreach ($tokens as $key => $value) {
-                $in[] = $key;
-                $out[] = $value;
-            }
-            $translated = str_replace($in, $out, $translated);
-        }
-
-        return $translated;
+        return $this->getViewRenderer()->plugin('translate')
+            ->__invoke($msg, $tokens, $default);
     }
 
     /**
