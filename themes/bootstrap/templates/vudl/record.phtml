@@ -49,6 +49,8 @@
     }
   }
 ?>
+  <? var_dump($this->initList) ?>
+  <? var_dump($this->initPage) ?>
 <script>
   google.load("swfobject", "2.2");
   var documentID = '<?=$this->id ?>';
@@ -93,15 +95,14 @@
       </div>
     </div>
     <?=$this->context($this)->renderInContext('vudl/details.phtml', array())?>
-    <? $i=0; ?>
     <? foreach($this->outline['lists'] as $key=>$list): ?>
       <div class="accordion-group">
         <div class="accordion-heading">
-          <a class="accordion-toggle" data-toggle="collapse" data-parent="#side-nav" href="#collapse<?=($i+1)?>">
+          <a class="accordion-toggle" data-toggle="collapse" data-parent="#side-nav" href="#collapse<?=$key+1 ?>">
             <?=$this->outline['names'][$key] ?>
           </a>
         </div>
-        <div id="collapse<?=($i+1)?>" class="accordion-body collapse<? if($i==0): ?> in<? endif; ?>">
+        <div id="collapse<?=$key+1 ?>" class="accordion-body collapse<? if($key==$this->initList): ?> in<? endif; ?>">
           <div class="accordion-inner item-list" id="list<?=$key ?>">
             <!-- PRE LOADING PLACEHOLDERS -->
             <? for($i=0;$i<current(array_keys($list))-1;$i++): ?>
@@ -109,7 +110,7 @@
             <? endfor; ?>
             <!-- LOADED ITEMS -->
             <? foreach($list as $j=>$item): ?>
-              <a title="<?=$item['id'] ?>" onClick="ajaxGetView(<?=json_php_encode($item, true) ?>, this)" class="well well-small block text-center page-link pointer<?=$key == 0 && $j == $this->initPage ?' alert-info':''?>" id="item<?=$j?>">
+              <a title="<?=$item['id'] ?>" onClick="ajaxGetView(<?=json_php_encode($item, true) ?>, this)" class="well well-small block text-center page-link pointer<?=$key == $this->initList && $j == $this->initPage ?' alert-info':''?>" id="item<?=$j?>">
               <? if(isset($item['thumbnail'])): ?>
                 <img src="<?=$item['thumbnail'] ?>" alt="<?=$item['label'] ?>"/><br/>
               <? else: ?>
