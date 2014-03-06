@@ -1427,7 +1427,7 @@ class Demo extends AbstractBase
         $pickupLocations = $this->getILLPickupLocations(
             $details['id'],
             $details['pickUpLibrary'],
-            $details['patron']['id']
+            $details['patron']
         );
         foreach ($pickupLocations as $location) {
             if ($location['id'] == $details['pickUpLibraryLocation']) {
