@@ -132,13 +132,13 @@ function scrollToSelected() {
 function resizeAccordions(offset) {
   var height = $(window).innerHeight()-40;
   $('.tab-content').css('min-height',height-$('.tab-content').position().top-46);
-  var accordionHeight = height-150-($('#side-nav .accordion-heading').length-2)*30;
+  var accordionHeight = height-160-($('#side-nav .accordion-heading').length-2)*30;
   // All accordions
   $('#side-nav .accordion-body').css({
     'max-height':accordionHeight,
     'overflow-y':'auto'
   });
-  // Set height in the open one
+  // Set height in the open accordion
   $('#side-nav .accordion-body.in').css({
     'height':accordionHeight
   });
