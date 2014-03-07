@@ -26,6 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller\Plugin;
+use VuFind\ILS\Connection;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Session\Container;
 
 /**
@@ -310,19 +311,50 @@ class Holds extends AbstractPlugin
     /**
      * Getting a default required date based on hold settings.
      *
-     * @param array $checkHolds Hold settings returned by the ILS driver's
+     * @param array      $checkHolds Hold settings returned by the ILS driver's
      * checkFunction method.
+     * @param Connection $catalog    ILS connection (optional)
+     * @param array      $patron     Patron details (optional)
+     * @param array      $holdInfo   Hold details (optional)
      *
      * @return int A timestamp representing the default required date
      */
-    public function getDefaultRequiredDate($checkHolds)
-    {
+    public function getDefaultRequiredDate($checkHolds, $catalog = null,
+        $patron = null, $holdInfo = null
+    ) {
         $dateArray = isset($checkHolds['defaultRequiredDate'])
              ? explode(":", $checkHolds['defaultRequiredDate'])
              : array(0, 1, 0);
+        if ($dateArray[0] == 'driver' && $catalog
+            && $catalog->checkCapability('getHoldDefaultRequiredDate')
+        ) {
+            $result = $catalog->getHoldDefaultRequiredDate($patron, $holdInfo);
+            if (!empty($result)) {
+                return $result;
+            }
+            // Driver failed? Use default date array (user-specified if provided;
+            // base default otherwise) and fall through:
+            array_shift($dateArray);
+            if (count($dateArray) < 3) {
+                $dateArray = array(0, 1, 0);
+            }
+        }
+        return $this->getDateFromArray($dateArray);
+    }
+
+    /**
+     * Support method for getDefaultRequiredDate() -- generate a date based
+     * on a days/months/years offset array.
+     *
+     * @param array $dateArray 3-element array containing day/month/year offsets
+     *
+     * @return int A timestamp representing the default required date
+     */
+    protected function getDateFromArray($dateArray)
+    {
         list($d, $m, $y) = $dateArray;
         return mktime(
-            0, 0, 0, date("m")+$m,   date("d")+$d,   date("Y")+$y
+            0, 0, 0, date('m')+$m, date('d')+$d, date('Y')+$y
         );
     }
 }
