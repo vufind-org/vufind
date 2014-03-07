@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "030554dc6af0899fae74f8d7d3232f7d",
+    "hash": "62e7c688185a99c2490f6124b718e711",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -439,20 +439,21 @@
         },
         {
             "name": "zendframework/zendframework",
-            "version": "2.2.5",
+            "version": "2.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zf2.git",
-                "reference": "4a7cf6a4cf791244e14aa0ca49d1f06916b63202"
+                "reference": "5eae447d46b00a280573b94c398b2f46f45a6903"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-4a7cf6a4cf791244e14aa0ca49d1f06916b63202-zip-2661de.zip",
-                "reference": "2.2.5",
-                "shasum": "3c699626517e16aa7b3d9a0c811fe41a2586179d"
+                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-5eae447d46b00a280573b94c398b2f46f45a6903-zip-cbc7a8.zip",
+                "reference": "2.2.6",
+                "shasum": "fd15c9f720744a28ea2a93dda737ca37bd3c40b2"
             },
             "require": {
-                "php": ">=5.3.3"
+                "php": ">=5.3.3",
+                "zendframework/zendxml": "~1.0-dev"
             },
             "replace": {
                 "zendframework/zend-authentication": "self.version",
@@ -550,10 +551,10 @@
                 "zf2"
             ],
             "support": {
-                "source": "https://github.com/zendframework/zf2/tree/release-2.2.5",
+                "source": "https://github.com/zendframework/zf2/tree/release-2.2.6",
                 "issues": "https://github.com/zendframework/zf2/issues"
             },
-            "time": "2013-10-31 15:48:16"
+            "time": "2014-03-06 17:27:03"
         },
         {
             "name": "zendframework/zendrest",

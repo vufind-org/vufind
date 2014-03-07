@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -125,40 +125,54 @@ class Logger implements LoggerInterface
      */
     public function __construct($options = null)
     {
-        $this->writers = new SplPriorityQueue();
+        $this->writers    = new SplPriorityQueue();
+        $this->processors = new SplPriorityQueue();
 
         if ($options instanceof Traversable) {
             $options = ArrayUtils::iteratorToArray($options);
         }
 
-        if (is_array($options)) {
-            if (isset($options['writers']) && is_array($options['writers'])) {
-                foreach ($options['writers'] as $writer) {
+        if (!$options) {
+            return;
+        }
 
-                    if (!isset($writer['name'])) {
-                        throw new Exception\InvalidArgumentException('Options must contain a name for the writer');
-                    }
-
-                    $priority      = (isset($writer['priority'])) ? $writer['priority'] : null;
-                    $writerOptions = (isset($writer['options'])) ? $writer['options'] : null;
-
-                    $this->addWriter($writer['name'], $priority, $writerOptions);
-                }
-            }
-
-            if (isset($options['exceptionhandler']) && $options['exceptionhandler'] === true) {
-                static::registerExceptionHandler($this);
-            }
-
-            if (isset($options['errorhandler']) && $options['errorhandler'] === true) {
-                static::registerErrorHandler($this);
-            }
-
-        } elseif ($options) {
+        if (!is_array($options)) {
             throw new Exception\InvalidArgumentException('Options must be an array or an object implementing \Traversable ');
         }
 
-        $this->processors = new SplPriorityQueue();
+        if (isset($options['writers']) && is_array($options['writers'])) {
+            foreach ($options['writers'] as $writer) {
+                if (!isset($writer['name'])) {
+                    throw new Exception\InvalidArgumentException('Options must contain a name for the writer');
+                }
+
+                $priority      = (isset($writer['priority'])) ? $writer['priority'] : null;
+                $writerOptions = (isset($writer['options'])) ? $writer['options'] : null;
+
+                $this->addWriter($writer['name'], $priority, $writerOptions);
+            }
+        }
+
+        if (isset($options['processors']) && is_array($options['processors'])) {
+            foreach ($options['processors'] as $processor) {
+                if (!isset($processor['name'])) {
+                    throw new Exception\InvalidArgumentException('Options must contain a name for the processor');
+                }
+
+                $priority         = (isset($processor['priority'])) ? $processor['priority'] : null;
+                $processorOptions = (isset($processor['options']))  ? $processor['options']  : null;
+
+                $this->addProcessor($processor['name'], $priority, $processorOptions);
+            }
+        }
+
+        if (isset($options['exceptionhandler']) && $options['exceptionhandler'] === true) {
+            static::registerExceptionHandler($this);
+        }
+
+        if (isset($options['errorhandler']) && $options['errorhandler'] === true) {
+            static::registerErrorHandler($this);
+        }
     }
 
     /**
