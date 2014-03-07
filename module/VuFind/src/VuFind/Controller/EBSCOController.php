@@ -1,6 +1,6 @@
 <?php
 /**
- * EBSCO Controller
+ * WorldCat Controller
  *
  * PHP version 5
  *
@@ -28,8 +28,7 @@
 namespace VuFind\Controller;
 
 /**
- * EBSCO Controller
- * Copied from WorldCat Controller
+ * VuFind Controller
  *
  * @category VuFind2
  * @package  Controller
@@ -78,6 +77,11 @@ class EBSCOController extends AbstractSearch
      */
     public function searchAction()
     {
+
+        $account = $this->getAuthManager();
+        if ($account->isLoggedIn() == false) {
+            	return $this->forceLogin();
+       	}
         return $this->resultsAction();
     }
 }
