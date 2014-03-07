@@ -59,9 +59,6 @@ function setUpCheckRequest() {
   });
 }
 
-function setUpCheckStorageRetrievalRequest() {
-}
-
 function deleteRecordComment(element, recordId, recordSource, commentId) {
   var url = path + '/AJAX/JSON?' + $.param({method:'deleteRecordComment',id:commentId});
   $.ajax({
@@ -145,13 +142,12 @@ function registerAjaxCommentRecord() {
 
 $(document).ready(function(){
   var id = document.getElementById('record_id').value;
-  
+
   // register the record comment form to be submitted via AJAX
   registerAjaxCommentRecord();
-  
+
   setUpCheckRequest();
-  setUpCheckStorageRetrievalRequest();
-  
+
   /* --- LIGHTBOX --- */
   // Cite lightbox
   $('#cite-record').click(function() {
@@ -192,7 +188,7 @@ $(document).ready(function(){
     Lightbox.addCloseAction(function() {
       var recordId = $('#record_id').val();
       var recordSource = $('.hiddenSource').val();
-      
+
       // Update tag list (add tag)
       var tagList = $('#tagList');
       if (tagList.length > 0) {
