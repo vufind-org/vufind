@@ -726,6 +726,22 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Get Default "Hold Required By" Date (as Unix timestamp) or null if unsupported
+     *
+     * @param array $patron   Patron information returned by the patronLogin method.
+     * @param array $holdInfo Contains most of the same values passed to
+     * placeHold, minus the patron data.
+     *
+     * @return int
+     */
+    public function getHoldDefaultRequiredDate($patron, $holdInfo)
+    {
+        // 5 years in the future (but similate intermittent failure):
+        return rand(0, 1) == 1
+            ? mktime(0, 0, 0, date('m'), date('d'), date('Y')+5) : null;
+    }
+
+    /**
      * Get Default Pick Up Location
      *
      * Returns the default pick up location set in HorizonXMLAPI.ini
@@ -1273,7 +1289,8 @@ class Demo extends AbstractBase
         if ($function == 'Holds') {
             return array(
                 'HMACKeys' => 'id',
-                'extraHoldFields' => 'comments:pickUpLocation:requiredByDate'
+                'extraHoldFields' => 'comments:pickUpLocation:requiredByDate',
+                'defaultRequiredDate' => 'driver:0:2:0',
             );
         }
         if ($function == 'StorageRetrievalRequests'

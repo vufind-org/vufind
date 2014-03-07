@@ -1473,6 +1473,36 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     }
 
     /**
+     * Get Default "Hold Required By" Date (as Unix timestamp) or null if unsupported
+     *
+     * @param array $patron   Patron information returned by the patronLogin method.
+     * @param array $holdInfo Contains most of the same values passed to
+     * placeHold, minus the patron data.
+     *
+     * @return int
+     */
+    public function getHoldDefaultRequiredDate($patron, $holdInfo)
+    {
+        if ($holdInfo != null) {
+            $details = $this->getHoldingInfoForItem(
+                $patron['id'], $holdInfo['id'], $holdInfo['item_id']
+            );
+        }
+        if (isset($details['last-interest-date'])) {
+            try {
+                return $this->dateConverter
+                    ->process('d.m.Y', 'U', $details['last-interest-date']);
+            } catch (DateException $e) {
+                // If we couldn't convert the date, fail gracefully.
+                $this->debug(
+                    'Could not convert date: ' . $details['last-interest-date']
+                );
+            }
+        }
+        return null;
+    }
+
+    /**
      * Place Hold
      *
      * Attempts to place a hold or recall on a particular item and returns
