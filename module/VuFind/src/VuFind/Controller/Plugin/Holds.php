@@ -322,23 +322,35 @@ class Holds extends AbstractPlugin
     public function getDefaultRequiredDate($checkHolds, $catalog = null,
         $patron = null, $holdInfo = null
     ) {
+        // Load config:
         $dateArray = isset($checkHolds['defaultRequiredDate'])
              ? explode(":", $checkHolds['defaultRequiredDate'])
              : array(0, 1, 0);
-        if ($dateArray[0] == 'driver' && $catalog
+
+        // Process special "driver" prefix and adjust default date
+        // settings accordingly:
+        if ($dateArray[0] == 'driver') {
+            $useDriver = true;
+            array_shift($dateArray);
+            if (count($dateArray) < 3) {
+                $dateArray = array(0, 1, 0);
+            }
+        } else {
+            $useDriver = false;
+        }
+
+        // If the driver setting is active, try it out:
+        if ($useDriver && $catalog
             && $catalog->checkCapability('getHoldDefaultRequiredDate')
         ) {
             $result = $catalog->getHoldDefaultRequiredDate($patron, $holdInfo);
             if (!empty($result)) {
                 return $result;
             }
-            // Driver failed? Use default date array (user-specified if provided;
-            // base default otherwise) and fall through:
-            array_shift($dateArray);
-            if (count($dateArray) < 3) {
-                $dateArray = array(0, 1, 0);
-            }
         }
+
+        // If the driver setting is off or the driver didn't work, use the
+        // standard relative date mechanism:
         return $this->getDateFromArray($dateArray);
     }
 
