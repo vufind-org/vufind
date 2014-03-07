@@ -161,7 +161,7 @@ $(document).ready(function(){
   });
   // Place a Hold
   // Place a Storage Hold
-  $('.placehold,.placeStorageRetrievalRequest').click(function() {
+  $('.placehold,.placeStorageRetrievalRequest,.placeILLRequest').click(function() {
     var parts = $(this).attr('href').split('?');
     parts = parts[0].split('/');
     var params = deparam($(this).attr('href'));
@@ -224,5 +224,8 @@ $(document).ready(function(){
   });
   Lightbox.addFormCallback('placeStorageRetrievalRequest', function() {
     document.location.href = path+'/MyResearch/StorageRetrievalRequests';
+  });
+  Lightbox.addFormCallback('placeILLRequest', function() {
+    document.location.href = path+'/MyResearch/ILLRequests';
   });
 });

@@ -1,7 +1,4 @@
 <?
-    // Set up ill script:
-    $this->headScript()->appendFile("ill.js");
-
     // Set page title.
     $this->headTitle($this->translate('ill_request_place_text') . ': ' . $this->driver->getBreadcrumb());
 
@@ -13,7 +10,7 @@
 <p class="lead"><?=$this->transEsc('ill_request_place_text')?></p>
 <?=$this->flashmessages()?>
 <div id="ILLRequestForm" class="storage-retrieval-request-form">
-  <form action="" class="form-horizontal" method="post">
+  <form action="" name="placeILLRequest" class="form-horizontal" method="post">
 
     <? if (in_array("itemId", $this->extraFields)): ?>
       <div class="control-group">
@@ -119,8 +116,19 @@
   </form>
 </div>
 
-<script type="text/javascript">
-$(document).ready(function(){
-    setUpILLRequestForm('<?=$this->escapeHtml($this->driver->getUniqueId()) ?>');
-});
-</script>
+<?
+    // Set up ill script; we do this inline instead of in the header for lightbox compatibility:
+    $this->inlineScript()->appendFile('ill.js');
+
+    $js = <<<JS
+        if ($.isReady) {
+            setUpILLRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
+        } else {
+            $(document).ready(function(){
+                setUpILLRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
+            });
+        }
+JS;
+
+    echo $this->inlineScript()->appendScript($js);
+?>
