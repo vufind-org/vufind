@@ -535,7 +535,6 @@ $(document).ready(function() {
   // First things first, default form customizations
   Lightbox.addOpenAction(Lightbox.registerEvents);
   Lightbox.addOpenAction(Lightbox.registerForms);
-  Lightbox.addOpenAction(function(){alert('!')});
   Lightbox.addFormCallback('newList', Lightbox.changeContent);
   Lightbox.addFormHandler('loginForm', function(evt) {
     ajaxLogin(evt.target);
