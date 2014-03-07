@@ -158,19 +158,14 @@ $(document).ready(function(){
     return Lightbox.get(params['controller'], 'Email', {id:id});
   });
   // Place a Hold
-  $('.placehold').click(function() {
-    var params = deparam($(this).attr('href'));
-    params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    params.id = id;
-    return Lightbox.get('Record', 'Hold', params, {}, function(html) {
-      Lightbox.checkForError(html, Lightbox.changeContent);
-    });
-  });
   // Place a Storage Hold
-  $('.placeStorageRetrievalRequest').click(function() {
+  $('.placehold,.placeStorageRetrievalRequest').click(function() {
+    var parts = $(this).attr('href').split('?');
+    parts = parts[0].split('/');
     var params = deparam($(this).attr('href'));
+    params.id = parts[parts.length-2];
     params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    return Lightbox.get('Record', 'StorageRetrievalRequest', params, {}, function(html) {
+    return Lightbox.get('Record', parts[parts.length-1], params, {}, function(html) {
       Lightbox.checkForError(html, Lightbox.changeContent);
     });
   });
