@@ -8,11 +8,11 @@ var Lightbox = {
    */
   lastURL: false,
   lastPOST: false,
-  shown: false, // Is the lightbox deployed?
-  XHR: false, // Used for current in-progress XHR lightbox request
-  openStack: [], // Array of functions to be called after changeContent or the lightbox event 'shown'
-  closeStack: [], // Array of functions to be called after the lightbox event 'hidden'
-  formHandlers: [], // Full custom handlers for forms; by name
+  shown: false,      // Is the lightbox deployed?
+  XHR: false,        // Used for current in-progress XHR lightbox request
+  openStack: [],     // Array of functions to be called after changeContent or the lightbox event 'shown'
+  closeStack: [],    // Array of functions to be called after the lightbox event 'hidden'
+  formHandlers: [],  // Full custom handlers for forms; by name
   formCallbacks: [], // Custom functions for forms, called after .submit(); by name
 
   /**********************************/
@@ -20,8 +20,21 @@ var Lightbox = {
   /**********************************/
   /**
    * Register custom open event handlers
+   *
+   * Think of this as the $(document).ready() of the Lightbox
+   * There's actually an alias right below it.
+   *
+   * If your template has inline JS, $(document).ready() will not fire in the lightbox
+   * because it already fired before you opened the lightbox and won't fire again.
+   *
+   * You can use $.isReady to determine if ready() has already been called
+   * so you can trigger your function immediately in the inline JS.
    */
   addOpenAction: function(func) {
+    this.openStack.push(func);
+  },
+  // Alias for addOpenAction
+  ready: function(func) {
     this.openStack.push(func);
   },
   /**
@@ -325,9 +338,9 @@ var Lightbox = {
     $(this).find('.modal-body').html(vufindString.loading + "...");
   },
 
-  /***********************/
-  /* ====== SETUP ====== */
-  /***********************/
+  /****************************/
+  /* === COMMON FUNCTIONS === */
+  /****************************/
   /**
    * This function adds jQuery events to elements in the lightbox
    *
@@ -522,6 +535,7 @@ $(document).ready(function() {
   // First things first, default form customizations
   Lightbox.addOpenAction(Lightbox.registerEvents);
   Lightbox.addOpenAction(Lightbox.registerForms);
+  Lightbox.addOpenAction(function(){alert('!')});
   Lightbox.addFormCallback('newList', Lightbox.changeContent);
   Lightbox.addFormHandler('loginForm', function(evt) {
     ajaxLogin(evt.target);
@@ -529,12 +543,10 @@ $(document).ready(function() {
   });
 
   /**
-   * Hook into Bootstrap events
+   * Hook into the Bootstrap close event
    *
    * Yes, the secret's out, our beloved Lightbox is a modal
    */
-  $('#modal').on('shown', Lightbox.openActions);  
-  // Reset Content
   $('#modal').on('hidden', Lightbox.closeActions);
   
   /**
