@@ -202,7 +202,16 @@ var Lightbox = {
         callback(html);
       },
       error:function(d,e) {
-        Lightbox.changeContent('<p class="alert alert-error">'+d.statusText+' ('+d.status+')</p>');
+        if (d.status == 200) {
+          try {
+            var data = JSON.parse(d.responseText);
+            Lightbox.changeContent('<p class="alert alert-error">'+data.data+'</p>');
+          } catch(e) {
+            Lightbox.changeContent('<p class="alert alert-error">'+d.responseText+'</p>');
+          }
+        } else {
+          Lightbox.changeContent('<p class="alert alert-error">'+d.statusText+' ('+d.status+')</p>');
+        }
         console.log(e,d); // Error reporting
         console.log(url,post);
       }
