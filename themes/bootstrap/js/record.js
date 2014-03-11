@@ -26,7 +26,9 @@ function checkRequestIsValid(element, requestURL, requestType, blockedClass) {
     success: function(response) {
       if (response.status == 'OK') {
         if (response.data.status) {
-          $(element).removeClass('disabled').html('<i class="icon-flag"></i>&nbsp;'+response.data.msg);
+          $(element).removeClass('disabled')
+            .attr('title', response.data.msg)
+            .html('<i class="icon-flag"></i>&nbsp;'+response.data.msg);
         } else {
           $(element).remove();
         }
@@ -55,9 +57,6 @@ function setUpCheckRequest() {
           'ILLRequestBlocked');
     }
   });
-}
-
-function setUpCheckStorageRetrievalRequest() {
 }
 
 function deleteRecordComment(element, recordId, recordSource, commentId) {
@@ -143,13 +142,12 @@ function registerAjaxCommentRecord() {
 
 $(document).ready(function(){
   var id = document.getElementById('record_id').value;
-  
+
   // register the record comment form to be submitted via AJAX
   registerAjaxCommentRecord();
-  
+
   setUpCheckRequest();
-  setUpCheckStorageRetrievalRequest();
-  
+
   /* --- LIGHTBOX --- */
   // Cite lightbox
   $('#cite-record').click(function() {
@@ -162,19 +160,14 @@ $(document).ready(function(){
     return Lightbox.get(params['controller'], 'Email', {id:id});
   });
   // Place a Hold
-  $('.placehold').click(function() {
-    var params = deparam($(this).attr('href'));
-    params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    params.id = id;
-    return Lightbox.get('Record', 'Hold', params, {}, function(html) {
-      Lightbox.checkForError(html, Lightbox.changeContent);
-    });
-  });
   // Place a Storage Hold
-  $('.placeStorageRetrievalRequest').click(function() {
+  $('.placehold,.placeStorageRetrievalRequest,.placeILLRequest').click(function() {
+    var parts = $(this).attr('href').split('?');
+    parts = parts[0].split('/');
     var params = deparam($(this).attr('href'));
+    params.id = parts[parts.length-2];
     params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    return Lightbox.get('Record', 'StorageRetrievalRequest', params, {}, function(html) {
+    return Lightbox.get('Record', parts[parts.length-1], params, {}, function(html) {
       Lightbox.checkForError(html, Lightbox.changeContent);
     });
   });
@@ -195,7 +188,7 @@ $(document).ready(function(){
     Lightbox.addCloseAction(function() {
       var recordId = $('#record_id').val();
       var recordSource = $('.hiddenSource').val();
-      
+
       // Update tag list (add tag)
       var tagList = $('#tagList');
       if (tagList.length > 0) {
@@ -231,5 +224,8 @@ $(document).ready(function(){
   });
   Lightbox.addFormCallback('placeStorageRetrievalRequest', function() {
     document.location.href = path+'/MyResearch/StorageRetrievalRequests';
+  });
+  Lightbox.addFormCallback('placeILLRequest', function() {
+    document.location.href = path+'/MyResearch/ILLRequests';
   });
 });

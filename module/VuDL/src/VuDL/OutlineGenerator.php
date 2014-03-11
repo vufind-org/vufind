@@ -68,13 +68,6 @@ class OutlineGenerator
     protected $cache;
 
     /**
-     * Do we skip the cache for this outline?
-     *
-     * @var boolean
-     */
-    protected $skipCache;
-
-    /**
      * Queues
      *
      * @var array
@@ -124,9 +117,7 @@ class OutlineGenerator
      */
     protected function getCache($key, $moddate = null)
     {
-        if (!$this->skipCache && $this->cache
-            && $cache_item = $this->cache->getItem($key)
-        ) {
+        if ($this->cache && $cache_item = $this->cache->getItem($key)) {
             if ($moddate == null || (isset($cache_item['moddate'])
                 && date_create($cache_item['moddate']) >= date_create($moddate))
             ) {
@@ -294,15 +285,13 @@ class OutlineGenerator
      * Generate an array of all child pages and their information/images
      *
      * @param string $root       record id to search under
-     * @param string $cache      'cache' get parameter for skipping the cache
      * @param string $start      page/doc to start with for the return
      * @param int    $pageLength page length (leave null to use default)
      *
      * @return associative array of the lists with their members
      */
-    public function getOutline($root, $cache = null, $start = 0, $pageLength = null)
+    public function getOutline($root, $start = 0, $pageLength = null)
     {
-        $this->skipCache = $cache == 'no';
         $this->loadLists($root);
         $this->loadPagesAndDocs($start, $pageLength);
         $this->injectUrls();

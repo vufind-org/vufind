@@ -34,7 +34,7 @@
   <? endif; ?>
 <? endif; ?>
 <? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
-    <a class="holdPlace" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"><?=$this->transEsc('title_hold_place')?></a>
+    <a class="placehold modal-link" title="<?=$this->transEsc('request_place_text')?>" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold)?>"><i class="icon-flag"></i>&nbsp;<?=$this->transEsc('title_hold_place')?></a>
 <? endif; ?>
 <? if (!empty($urls) || $openUrl): ?>
   <h3><?=$this->transEsc("Internet")?></h3>

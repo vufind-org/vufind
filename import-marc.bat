@@ -46,7 +46,7 @@ rem # You may also want to add the following:
 rem # -XX:+UseParallelGC
 rem # -XX:+AggressiveOpts
 rem ##################################################
-set INDEX_OPTIONS=-Xms512m -Xmx512m
+set INDEX_OPTIONS=-Xms512m -Xmx512m -DentityExpansionLimit=0
 
 rem ##################################################
 rem # Set SOLRCORE

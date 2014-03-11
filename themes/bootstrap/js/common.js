@@ -61,6 +61,215 @@ function setupOrFacets() {
   $('.facetOR').find('.icon-check-empty').replaceWith('<input type="checkbox" onChange="updateOrFacets($(this).parent().attr(\'href\'), this)"/> ');
 }
 
+/* --- COMMON AND DEFAULT LIGHTBOX FUNCTIONS --- */
+/**
+ * This function adds jQuery events to elements in the lightbox
+ *
+ * This is a default open action, so it runs every time changeContent
+ * is called and the 'shown' lightbox event is triggered
+ */
+function registerLightboxEvents() {
+  var modal = $("#modal");
+  // New list
+  $('#make-list').click(function() {
+    var parts = this.href.split('?');
+    var get = deparam(parts[1]);
+    get['id'] = 'NEW';
+    return Lightbox.get('MyResearch', 'EditList', get);
+  });
+  // Select all checkboxes
+  $(modal).find('.checkbox-select-all').change(function() {
+    $(this).closest('.modal-body').find('.checkbox-select-item').attr('checked', this.checked);
+  });
+  $(modal).find('.checkbox-select-item').change(function() {
+    if(!this.checked) { // Uncheck all selected if one is unselected
+      $(this).closest('.modal-body').find('.checkbox-select-all').attr('checked', false);
+    }
+  });
+  // Highlight which submit button clicked
+  $(modal).find("form input[type=submit]").click(function() {
+    // Abort requests triggered by the lightbox
+    if(Lightbox.XHR) { Lightbox.XHR.abort(); }
+    $('#modal .icon-spinner').remove();
+    // Add useful information
+    $(this).attr("clicked", "true");
+    // Add prettiness
+    $(this).after(' <i class="icon-spinner icon-spin"></i> ');
+  });
+  /**
+   * Hide the header in the lightbox content
+   * if it matches the title bar of the lightbox
+   */
+  var header = $('#modal .modal-header h3').html();
+  $('#modal .modal-body .lead').each(function(i,op) {
+    if (op.innerHTML == header) {
+      $(op).hide();
+    }
+  });
+}
+/**
+ * This function adds submission events to forms loaded inside the lightbox
+ *
+ * First, it will check for custom handlers, for those who want to handle everything.
+ *
+ * Then, it will check for custom form callbacks. These will be added to an anonymous
+ * function that will call Lightbox.submit with the form and the callback.
+ *
+ * Finally, if nothing custom is setup, it will add the default function which
+ * calls Lightbox.submit with a callback to close if there are no errors to display.
+ *
+ * This is a default open action, so it runs every time changeContent
+ * is called and the 'shown' lightbox event is triggered
+ */
+function registerLightboxForms() {
+  var form = $("#modal").find('form');
+  var name = $(form).attr('name');
+  // Assign form handler based on name
+  if(typeof name !== "undefined" && typeof Lightbox.formHandlers[name] !== "undefined") {
+    $(form).unbind('submit').submit(Lightbox.formHandlers[name]);
+  // Default action, with custom callback
+  } else if(typeof Lightbox.formCallbacks[name] !== "undefined") {
+    $(form).unbind('submit').submit(function(evt){
+      Lightbox.submit($(evt.target), Lightbox.formCallbacks[name]);
+      return false;
+    });
+  // Default
+  } else {
+    $(form).unbind('submit').submit(function(evt){
+      Lightbox.submit($(evt.target), function(html){
+        Lightbox.checkForError(html, Lightbox.close);
+      });
+      return false;
+    });
+  }
+}
+/**
+ * This is a full handler for the login form
+ */
+function ajaxLogin(form) {
+  Lightbox.ajax({
+    url: path + '/AJAX/JSON?method=getSalt',
+    dataType: 'json',
+    success: function(response) {
+      if (response.status == 'OK') {
+        var salt = response.data;
+
+        // get the user entered password
+        var password = form.password.value;
+
+        // encrypt the password with the salt
+        password = rc4Encrypt(salt, password);
+
+        // hex encode the encrypted password
+        password = hexEncode(password);
+
+        var params = {password:password};
+
+        // get any other form values
+        for (var i = 0; i < form.length; i++) {
+            if (form.elements[i].name == 'password') {
+                continue;
+            }
+            params[form.elements[i].name] = form.elements[i].value;
+        }
+
+        // login via ajax
+        Lightbox.ajax({
+          type: 'POST',
+          url: path + '/AJAX/JSON?method=login',
+          dataType: 'json',
+          data: params,
+          success: function(response) {
+            if (response.status == 'OK') {
+              // Hide "log in" options and show "log out" options:
+              $('#loginOptions').hide();
+              $('.logoutOptions').show();
+              
+              var recordId = $('#record_id').val();
+
+              // Update user save statuses if the current context calls for it:
+              if (typeof(checkSaveStatuses) == 'function') {
+                checkSaveStatuses();
+              }
+
+              // refresh the comment list so the "Delete" links will show
+              $('.commentList').each(function(){
+                var recordSource = extractSource($('#record'));
+                refreshCommentList(recordId, recordSource);
+              });
+              
+              var summon = false;
+              $('.hiddenSource').each(function(i, e) {
+                if(e.value == 'Summon') {
+                  summon = true;
+                  // If summon, queue reload for when we close
+                  Lightbox.addCloseAction(function(){document.location.reload(true);});
+                }
+              });
+              
+              // Refresh tab content
+              var recordTabs = $('.recordTabs');
+              if(!summon && recordTabs.length > 0) { // If summon, skip: about to reload anyway
+                var tab = recordTabs.find('.active a').attr('id');
+                $.ajax({ // Shouldn't be cancelled, not assigned to XHR
+                  type:'POST',
+                  url:path+'/AJAX/JSON?method=get&submodule=Record&subaction=AjaxTab&id='+recordId,
+                  data:{tab:tab},
+                  success:function(html) {
+                    recordTabs.next('.tab-container').html(html);
+                  },
+                  error:function(d,e) {
+                    console.log(d,e); // Error reporting
+                  }
+                });
+              }
+              // and we update the modal
+              if(Lightbox.lastPOST && Lightbox.lastPOST['loggingin']) {
+                Lightbox.close();
+              } else {
+                Lightbox.getByUrl(
+                  Lightbox.lastURL,
+                  Lightbox.lastPOST,
+                  Lightbox.changeContent
+                );
+              }
+            } else {
+              Lightbox.displayError(response.data);
+            }
+          }
+        });
+      } else {
+        Lightbox.displayError(response.data);
+      }
+    }
+  });
+}
+
+/* --- BOOTSTRAP LIBRARY TWEAKS --- */
+// Prevent typeahead highlighting
+$.fn.typeahead.Constructor.prototype.render = function(items) {
+  var that = this
+
+  items = $(items).map(function (i, item) {
+    i = $(that.options.item).attr('data-value', item)
+    i.find('a').html(that.highlighter(item))
+    return i[0]
+  })
+
+  this.$menu.html(items)
+  return this
+};
+// Enter without highlight does not delete the query
+$.fn.typeahead.Constructor.prototype.select = function () {
+  var val = this.$menu.find('.active')
+  if(val.length > 0) val = val.attr('data-value')
+  else val = this.$element.val()
+  this.$element
+    .val(this.updater(val))
+    .change()
+  return this.hide()
+}
+
 $(document).ready(function() {
   // Highlight previous links, grey out following
   $('.backlink')
@@ -116,7 +325,13 @@ $(document).ready(function() {
             }
           }
         });
-      }, 600); // Delay request submission
+      }, 500); // Delay request submission
+    },
+    updater : function(item) { // Submit on update
+      console.log(this.$element[0].form.submit);
+      this.$element[0].value = item;
+      this.$element[0].form.submit();
+      return item;
     }
   });
 
@@ -153,9 +368,16 @@ $(document).ready(function() {
   // Advanced facets
   setupOrFacets();
   
-  /**************************
-   * LIGHTBOX OPENING LINKS *
-   **************************/
+  /******************************
+   * LIGHTBOX DEFAULT BEHAVIOUR *
+   ******************************/
+  Lightbox.addOpenAction(registerLightboxEvents);
+  Lightbox.addOpenAction(registerLightboxForms);
+  Lightbox.addFormCallback('newList', Lightbox.changeContent);
+  Lightbox.addFormHandler('loginForm', function(evt) {
+    ajaxLogin(evt.target);
+    return false;
+  });
   
   // Help links
   $('.help-link').click(function() {

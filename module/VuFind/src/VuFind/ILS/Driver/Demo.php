@@ -813,6 +813,22 @@ class Demo extends AbstractBase
     }
 
     /**
+     * Get Default "Hold Required By" Date (as Unix timestamp) or null if unsupported
+     *
+     * @param array $patron   Patron information returned by the patronLogin method.
+     * @param array $holdInfo Contains most of the same values passed to
+     * placeHold, minus the patron data.
+     *
+     * @return int
+     */
+    public function getHoldDefaultRequiredDate($patron, $holdInfo)
+    {
+        // 5 years in the future (but similate intermittent failure):
+        return rand(0, 1) == 1
+            ? mktime(0, 0, 0, date('m'), date('d'), date('Y')+5) : null;
+    }
+
+    /**
      * Get Default Pick Up Location
      *
      * Returns the default pick up location set in HorizonXMLAPI.ini
@@ -1408,8 +1424,8 @@ class Demo extends AbstractBase
             : 0;
         
         // Figure out appropriate expiration date:
-        if (!isset($holdDetails['requiredBy'])
-            || empty($holdDetails['requiredBy'])
+        if (!isset($details['requiredBy'])
+            || empty($details['requiredBy'])
         ) {
             $expire = strtotime("now + 30 days");
         } else {
@@ -1418,7 +1434,7 @@ class Demo extends AbstractBase
                     "U", $details['requiredBy']
                 );
             } catch (DateException $e) {
-                // Hold Date is invalid
+                // Expiration Date is invalid
                 return array(
                     'success' => false,
                     'sysMessage' => 'ill_request_date_invalid'
@@ -1432,10 +1448,30 @@ class Demo extends AbstractBase
             );
         }
         
+        // Verify pickup library and location
+        $pickupLocation = '';
+        $pickupLocations = $this->getILLPickupLocations(
+            $details['id'],
+            $details['pickUpLibrary'],
+            $details['patron']
+        );
+        foreach ($pickupLocations as $location) {
+            if ($location['id'] == $details['pickUpLibraryLocation']) {
+                $pickupLocation = $location['name'];
+                break;
+            }
+        }
+        if (!$pickupLocation) {
+            return array(
+                'success' => false,
+                'sysMessage' => 'ill_request_place_fail_missing'
+            );
+        }
+                
         $this->session->ILLRequests->append(
             array(
                 "id"       => $details['id'],
-                "location" => $details['pickUpLocation'],
+                "location" => $pickupLocation,
                 "expire"   => date("j-M-y", $expire),
                 "create"  => date("j-M-y"),
                 "processed" => rand()%3 == 0 ? date("j-M-y", $expire) : '',
@@ -1596,7 +1632,8 @@ class Demo extends AbstractBase
         if ($function == 'Holds') {
             return array(
                 'HMACKeys' => 'id',
-                'extraHoldFields' => 'comments:pickUpLocation:requiredByDate'
+                'extraHoldFields' => 'comments:pickUpLocation:requiredByDate',
+                'defaultRequiredDate' => 'driver:0:2:0',
             );
         }
         if ($function == 'StorageRetrievalRequests'
