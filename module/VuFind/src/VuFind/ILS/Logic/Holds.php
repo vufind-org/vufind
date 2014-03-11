@@ -178,6 +178,9 @@ class Holds
             } else {
                 $holdings = $this->generateHoldings($result, $mode);
             }
+
+            $holdings = $this->processStorageRetrievalRequests($holdings, $id);
+            $holdings = $this->processILLRequests($holdings, $id);
         }
         return $this->formatHoldings($holdings);
     }
@@ -207,7 +210,7 @@ class Holds
      * Protected method for driver defined holdings
      *
      * @param array  $result A result set returned from a driver
-     * @param string $id     Record ID   
+     * @param string $id     Record ID
      *
      * @return array A sorted results set
      */
@@ -219,11 +222,6 @@ class Holds
             // Are holds allowed?
             $checkHolds = $this->catalog->checkFunction("Holds", $id);
 
-            // Are storage retrieval requests allowed?
-            $checkStorageRetrievalRequests = $this->catalog->checkFunction(
-                "StorageRetrievalRequests"
-            );
-
             foreach ($result as $copy) {
                 $show = !in_array($copy['location'], $this->hideHoldings);
                 if ($show) {
@@ -234,8 +232,8 @@ class Holds
                             // instead of the hold form:
                             $copy['link'] = $copy['addLink'] === 'block'
                                 ? $this->getBlockedDetails($copy)
-                                : $this->getHoldDetails(
-                                    $copy, $checkHolds['HMACKeys']
+                                : $this->getRequestDetails(
+                                    $copy, $checkHolds['HMACKeys'], 'Hold'
                                 );
                             // If we are unsure whether hold options are available,
                             // set a flag so we can check later via AJAX:
@@ -243,29 +241,6 @@ class Holds
                         }
                     }
 
-                    if ($checkStorageRetrievalRequests) {
-                        // Is this copy requestable
-                        if (isset($copy['addStorageRetrievalRequestLink'])
-                            && $copy['addStorageRetrievalRequestLink']
-                        ) {
-                            // If the request is blocked, link to an error page
-                            // instead of the hold form:
-                            $copy['storageRetrievalRequestLink']
-                                = $copy['addStorageRetrievalRequestLink'] === 'block'
-                                ? $this->getBlockedStorageRetrievalRequestDetails(
-                                    $copy
-                                )
-                                : $this->getStorageRetrievalRequestDetails(
-                                    $copy,
-                                    $checkStorageRetrievalRequests['HMACKeys']
-                                );
-                            // If we are unsure whether request options are
-                            // available, set a flag so we can check later via AJAX:
-                            $copy['checkStorageRetrievalRequest']
-                                = $copy['addStorageRetrievalRequestLink']
-                                    === 'check';
-                        }
-                    }
                     $holdings[$copy['location']][] = $copy;
                 }
             }
@@ -304,11 +279,6 @@ class Holds
 
             // Are holds allowed?
             $checkHolds = $this->catalog->checkFunction("Holds");
-
-            // Are storage retrieval requests allowed?
-            $checkStorageRetrievalRequests = $this->catalog->checkFunction(
-                "StorageRetrievalRequests"
-            );
 
             if ($checkHolds && is_array($holdings)) {
                 // Generate Links
@@ -354,35 +324,10 @@ class Holds
                             } else {
                                 /* Build non-opac link */
                                 $holdings[$location_key][$copy_key]['link']
-                                    = $this->getHoldDetails(
-                                        $copy, $checkHolds['HMACKeys']
+                                    = $this->getRequestDetails(
+                                        $copy, $checkHolds['HMACKeys'], 'Hold'
                                     );
                             }
-                        }
-                    }
-                }
-            }
-
-            if ($checkStorageRetrievalRequests && is_array($holdings)) {
-                // Generate Links
-                // Loop through each holding
-                foreach ($holdings as $location_key => $location) {
-                    foreach ($location as $copy_key => $copy) {
-                        if (isset($copy['addStorageRetrievalRequestLink'])
-                            && $copy['addStorageRetrievalRequestLink']
-                            && $copy['addStorageRetrievalRequestLink'] !== 'block'
-                        ) {
-                            $copy['storageRetrievalRequestLink']
-                                = $this->getStorageRetrievalRequestDetails(
-                                    $copy,
-                                    $checkStorageRetrievalRequests['HMACKeys']
-                                );
-                            // If we are unsure whether storage retrieval
-                            // request is available, set a flag so we can check
-                            // later via AJAX:
-                            $copy['checkStorageRetrievalRequest']
-                                = $copy['addStorageRetrievalRequestLink'] ===
-                                'check';
                         }
                     }
                 }
@@ -392,22 +337,130 @@ class Holds
     }
 
     /**
+     * Process storage retrieval request information in holdings and set the links
+     * accordingly.
+     *
+     * @param array $holdings Holdings
+     *
+     * @return array Modified holdings
+     */
+    protected function processStorageRetrievalRequests($holdings)
+    {
+        if (!is_array($holdings)) {
+            return $holdings;
+        }
+
+        // Are storage retrieval requests allowed?
+        $requestConfig = $this->catalog->checkFunction(
+            'StorageRetrievalRequests'
+        );
+
+        if (!$requestConfig) {
+            return $holdings;
+        }
+
+        // Generate Links
+        // Loop through each holding
+        foreach ($holdings as &$location) {
+            foreach ($location as &$copy) {
+                // Is this copy requestable
+                if (isset($copy['addStorageRetrievalRequestLink'])
+                    && $copy['addStorageRetrievalRequestLink']
+                ) {
+                    // If the request is blocked, link to an error page
+                    // instead of the form:
+                    if ($copy['addStorageRetrievalRequestLink'] === 'block') {
+                        $copy['storageRetrievalRequestLink']
+                            = $this->getBlockedStorageRetrievalRequestDetails($copy);
+                    } else {
+                        $copy['storageRetrievalRequestLink']
+                            = $this->getRequestDetails(
+                                $copy,
+                                $requestConfig['HMACKeys'],
+                                'StorageRetrievalRequest'
+                            );
+                    }
+                    // If we are unsure whether request options are
+                    // available, set a flag so we can check later via AJAX:
+                    $copy['checkStorageRetrievalRequest']
+                        = $copy['addStorageRetrievalRequestLink'] === 'check';
+                }
+            }
+        }
+        return $holdings;
+    }
+
+    /**
+     * Process ILL request information in holdings and set the links accordingly.
+     *
+     * @param array $holdings Holdings
+     *
+     * @return array Modified holdings
+     */
+    protected function processILLRequests($holdings)
+    {
+        if (!is_array($holdings)) {
+            return $holdings;
+        }
+
+        // Are storage retrieval requests allowed?
+        $requestConfig = $this->catalog->checkFunction(
+            'ILLRequests'
+        );
+
+        if (!$requestConfig) {
+            return $holdings;
+        }
+
+        // Generate Links
+        // Loop through each holding
+        foreach ($holdings as &$location) {
+            foreach ($location as &$copy) {
+                // Is this copy requestable
+                if (isset($copy['addILLRequestLink'])
+                    && $copy['addILLRequestLink']
+                ) {
+                    // If the request is blocked, link to an error page
+                    // instead of the form:
+                    if ($copy['addILLRequestLink'] === 'block') {
+                        $copy['ILLRequestLink']
+                            = $this->getBlockedILLRequestDetails($copy);
+                    } else {
+                        $copy['ILLRequestLink']
+                            = $this->getRequestDetails(
+                                $copy,
+                                $requestConfig['HMACKeys'],
+                                'ILLRequest'
+                            );
+                    }
+                    // If we are unsure whether request options are
+                    // available, set a flag so we can check later via AJAX:
+                    $copy['checkILLRequest']
+                        = $copy['addILLRequestLink'] === 'check';
+                }
+            }
+        }
+        return $holdings;
+    }
+
+    /**
      * Get Hold Form
      *
-     * Supplies holdLogic with the form details required to place a hold
+     * Supplies holdLogic with the form details required to place a request
      *
-     * @param array $holdDetails An array of item data
-     * @param array $HMACKeys    An array of keys to hash
+     * @param array  $details  An array of item data
+     * @param array  $HMACKeys An array of keys to hash
+     * @param string $action   The action for which the details are built
      *
      * @return array             Details for generating URL
      */
-    protected function getHoldDetails($holdDetails, $HMACKeys)
+    protected function getRequestDetails($details, $HMACKeys, $action)
     {
         // Generate HMAC
-        $HMACkey = $this->hmac->generate($HMACKeys, $holdDetails);
+        $HMACkey = $this->hmac->generate($HMACKeys, $details);
 
         // Add Params
-        foreach ($holdDetails as $key => $param) {
+        foreach ($details as $key => $param) {
             $needle = in_array($key, $HMACKeys);
             if ($needle) {
                 $queryString[] = $key. "=" .urlencode($param);
@@ -420,45 +473,8 @@ class Holds
 
         // Build Params
         return array(
-            'action' => 'Hold', 'record' => $holdDetails['id'],
+            'action' => $action, 'record' => $details['id'],
             'query' => $queryString, 'anchor' => "#tabnav"
-        );
-    }
-
-    /**
-     * Get Storage Retrieval Request Form
-     *
-     * Supplies holdLogic with the form details required to place a storage
-     * retrieval request
-     *
-     * @param array $details  An array of item data
-     * @param array $HMACKeys An array of keys to hash
-     *
-     * @return array          Details for generating URL
-     */
-    protected function getStorageRetrievalRequestDetails($details, $HMACKeys)
-    {
-        // Generate HMAC
-        $HMACkey = $this->hmac->generate($HMACKeys, $details);
-
-        // Add Params
-        foreach ($details as $key => $param) {
-            $needle = in_array($key, $HMACKeys);
-            if ($needle) {
-                $queryString[] = $key . "=" . urlencode($param);
-            }
-        }
-
-        // Add HMAC
-        $queryString[] = "hashKey=" . urlencode($HMACkey);
-        $queryString = implode('&', $queryString);
-
-        // Build Params
-        return array(
-            'action' => 'StorageRetrievalRequest',
-            'record' => $details['id'],
-            'query' => $queryString,
-            'anchor' => "#tabnav"
         );
     }
 
@@ -489,6 +505,22 @@ class Holds
         // Build Params
         return array(
             'action' => 'BlockedStorageRetrievalRequest',
+            'record' => $details['id']
+        );
+    }
+
+    /**
+     * Returns a URL to display a "blocked ILL request" message.
+     *
+     * @param array $details An array of item data
+     *
+     * @return array         Details for generating URL
+     */
+    protected function getBlockedILLRequestDetails($details)
+    {
+        // Build Params
+        return array(
+            'action' => 'BlockedILLRequest',
             'record' => $details['id']
         );
     }

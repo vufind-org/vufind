@@ -75,7 +75,7 @@ class Converter
     }
 
     /**
-     * Protected method for conversion of a time / date string
+     * Generic method for conversion of a time / date string
      *
      * @param string $inputFormat  The format of the time string to be changed
      * @param string $outputFormat The desired output format
@@ -84,7 +84,7 @@ class Converter
      * @throws DateException
      * @return string               A re-formated time string
      */
-    protected function process($inputFormat, $outputFormat, $dateString)
+    public function convert($inputFormat, $outputFormat, $dateString)
     {
         $errors = "Date/time problem: Details: ";
 
@@ -157,7 +157,7 @@ class Converter
 
     public function convertToDisplayDate($createFormat, $dateString)
     {
-        return $this->process($createFormat, $this->displayDateFormat, $dateString);
+        return $this->convert($createFormat, $this->displayDateFormat, $dateString);
     }
 
     /**
@@ -173,7 +173,7 @@ class Converter
 
     public function convertFromDisplayDate($outputFormat, $displayDate)
     {
-        return $this->process(
+        return $this->convert(
             $this->displayDateFormat, $outputFormat, $displayDate
         );
     }
@@ -191,6 +191,6 @@ class Converter
 
     public function convertToDisplayTime($createFormat, $timeString)
     {
-        return $this->process($createFormat, $this->displayTimeFormat, $timeString);
+        return $this->convert($createFormat, $this->displayTimeFormat, $timeString);
     }
 }

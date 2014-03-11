@@ -1053,8 +1053,18 @@ class Voyager extends AbstractBase
         $sql = "SELECT PATRON.PATRON_ID, PATRON.FIRST_NAME, PATRON.LAST_NAME " .
                "FROM $this->dbName.PATRON, $this->dbName.PATRON_BARCODE " .
                "WHERE PATRON.PATRON_ID = PATRON_BARCODE.PATRON_ID AND " .
-               "lower(PATRON.{$login_field}) = :login AND " .
-               "lower(PATRON_BARCODE.PATRON_BARCODE) = :barcode";
+               "lower(PATRON_BARCODE.PATRON_BARCODE) = :barcode AND ";
+        if (isset($this->config['Catalog']['fallback_login_field'])) {
+            $fallback_login_field = preg_replace(
+                '/[^\w]/', '', $this->config['Catalog']['fallback_login_field']
+            );
+            $sql .= "(lower(PATRON.{$login_field}) = :login OR " .
+                    "(PATRON.{$login_field} IS NULL AND " .
+                    "lower(PATRON.{$fallback_login_field}) = :login))";
+        } else {
+            $sql .= "lower(PATRON.{$login_field}) = :login";
+        }
+        
         try {
             $bindLogin = strtolower(utf8_decode($login));
             $bindBarcode = strtolower(utf8_decode($barcode));
@@ -1105,7 +1115,9 @@ class Voyager extends AbstractBase
             "MFHD_ITEM.ITEM_ENUM",
             "MFHD_ITEM.YEAR",
             "BIB_TEXT.TITLE_BRIEF",
-            "BIB_TEXT.TITLE"
+            "BIB_TEXT.TITLE",
+            "CIRC_TRANSACTIONS.RENEWAL_COUNT",
+            "CIRC_POLICY_MATRIX.RENEWAL_COUNT as RENEWAL_LIMIT"
         );
 
         // From
@@ -1113,7 +1125,8 @@ class Voyager extends AbstractBase
             $this->dbName.".CIRC_TRANSACTIONS",
             $this->dbName.".BIB_ITEM",
             $this->dbName.".MFHD_ITEM",
-            $this->dbName.".BIB_TEXT"
+            $this->dbName.".BIB_TEXT",
+            $this->dbName.".CIRC_POLICY_MATRIX"
         );
 
         // Where
@@ -1121,7 +1134,9 @@ class Voyager extends AbstractBase
             "CIRC_TRANSACTIONS.PATRON_ID = :id",
             "BIB_ITEM.ITEM_ID = CIRC_TRANSACTIONS.ITEM_ID",
             "CIRC_TRANSACTIONS.ITEM_ID = MFHD_ITEM.ITEM_ID(+)",
-            "BIB_TEXT.BIB_ID = BIB_ITEM.BIB_ID"
+            "BIB_TEXT.BIB_ID = BIB_ITEM.BIB_ID",
+            "CIRC_TRANSACTIONS.CIRC_POLICY_MATRIX_ID = " .
+            "CIRC_POLICY_MATRIX.CIRC_POLICY_MATRIX_ID"
         );
 
         // Order
@@ -1185,7 +1200,9 @@ class Voyager extends AbstractBase
             'volume' => str_replace("v.", "", utf8_encode($sqlRow['ITEM_ENUM'])),
             'publication_year' => $sqlRow['YEAR'],
             'title' => empty($sqlRow['TITLE_BRIEF'])
-                ? $sqlRow['TITLE'] : $sqlRow['TITLE_BRIEF']
+                ? $sqlRow['TITLE'] : $sqlRow['TITLE_BRIEF'],
+            'renew' => $sqlRow['RENEWAL_COUNT'],
+            'renewLimit' => $sqlRow['RENEWAL_LIMIT']
         );
     }
 
@@ -1625,7 +1642,7 @@ class Voyager extends AbstractBase
             'status' => utf8_encode($sqlRow['STATUS_DESC']),
             'statusDate' => $statusDate,
             'location' => $this->getLocationName($sqlRow['PICKUP_LOCATION_ID']),
-            'created' => $createDate,
+            'create' => $createDate,
             'processed' => $processedDate,
             'expire' => $expireDate,
             'reply' => utf8_encode($sqlRow['REPLY_NOTE']),

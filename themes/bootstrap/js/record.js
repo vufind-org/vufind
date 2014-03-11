@@ -41,17 +41,20 @@ function checkRequestIsValid(element, requestURL, requestType, blockedClass) {
 
 function setUpCheckRequest() {
   $('.checkRequest').each(function(i) {
-    if($(this).hasClass('checkRequest')) {
+    if ($(this).hasClass('checkRequest')) {
       var isValid = checkRequestIsValid(this, this.href, 'Hold', 'holdBlocked');
     }
   });
-}
-
-function setUpCheckStorageRetrievalRequest() {
   $('.checkStorageRetrievalRequest').each(function(i) {
-    if($(this).hasClass('checkStorageRetrievalRequest')) {
+    if ($(this).hasClass('checkStorageRetrievalRequest')) {
       var isValid = checkRequestIsValid(this, this.href, 'StorageRetrievalRequest',
           'StorageRetrievalRequestBlocked');
+    }
+  });
+  $('.checkILLRequest').each(function(i) {
+    if ($(this).hasClass('checkILLRequest')) {
+      var isValid = checkRequestIsValid(this, this.href, 'ILLRequest',
+          'ILLRequestBlocked');
     }
   });
 }
@@ -139,13 +142,12 @@ function registerAjaxCommentRecord() {
 
 $(document).ready(function(){
   var id = document.getElementById('record_id').value;
-  
+
   // register the record comment form to be submitted via AJAX
   registerAjaxCommentRecord();
-  
+
   setUpCheckRequest();
-  setUpCheckStorageRetrievalRequest();
-  
+
   /* --- LIGHTBOX --- */
   // Cite lightbox
   $('#cite-record').click(function() {
@@ -158,19 +160,14 @@ $(document).ready(function(){
     return Lightbox.get(params['controller'], 'Email', {id:id});
   });
   // Place a Hold
-  $('.placehold').click(function() {
-    var params = deparam($(this).attr('href'));
-    params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    params.id = id;
-    return Lightbox.get('Record', 'Hold', params, {}, function(html) {
-      Lightbox.checkForError(html, Lightbox.changeContent);
-    });
-  });
   // Place a Storage Hold
-  $('.placeStorageRetrievalRequest').click(function() {
+  $('.placehold,.placeStorageRetrievalRequest,.placeILLRequest').click(function() {
+    var parts = $(this).attr('href').split('?');
+    parts = parts[0].split('/');
     var params = deparam($(this).attr('href'));
+    params.id = parts[parts.length-2];
     params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
-    return Lightbox.get('Record', 'StorageRetrievalRequest', params, {}, function(html) {
+    return Lightbox.get('Record', parts[parts.length-1], params, {}, function(html) {
       Lightbox.checkForError(html, Lightbox.changeContent);
     });
   });
@@ -191,7 +188,7 @@ $(document).ready(function(){
     Lightbox.addCloseAction(function() {
       var recordId = $('#record_id').val();
       var recordSource = $('.hiddenSource').val();
-      
+
       // Update tag list (add tag)
       var tagList = $('#tagList');
       if (tagList.length > 0) {
@@ -227,5 +224,8 @@ $(document).ready(function(){
   });
   Lightbox.addFormCallback('placeStorageRetrievalRequest', function() {
     document.location.href = path+'/MyResearch/StorageRetrievalRequests';
+  });
+  Lightbox.addFormCallback('placeILLRequest', function() {
+    document.location.href = path+'/MyResearch/ILLRequests';
   });
 });

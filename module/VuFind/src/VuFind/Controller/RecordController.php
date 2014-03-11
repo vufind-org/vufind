@@ -78,6 +78,18 @@ class RecordController extends AbstractRecord
     }
 
     /**
+     * Action for dealing with blocked ILL requests.
+     *
+     * @return mixed
+     */
+    public function blockedILLRequestAction()
+    {
+        $this->flashMessenger()->setNamespace('error')
+            ->addMessage('ill_request_error_blocked');
+        return $this->redirectToRecord('#top');
+    }
+
+    /**
      * Action for dealing with holds.
      *
      * @return mixed
@@ -161,7 +173,9 @@ class RecordController extends AbstractRecord
         }
 
         // Find and format the default required date:
-        $defaultRequired = $this->holds()->getDefaultRequiredDate($checkHolds);
+        $defaultRequired = $this->holds()->getDefaultRequiredDate(
+            $checkHolds, $catalog, $patron, $gatheredDetails
+        );
         $defaultRequired = $this->getServiceLocator()->get('VuFind\DateConverter')
             ->convertToDisplayDate("U", $defaultRequired);
         try {
@@ -281,6 +295,116 @@ class RecordController extends AbstractRecord
                 'gatheredDetails' => $gatheredDetails,
                 'pickup' => $pickup,
                 'defaultPickup' => $defaultPickup,
+                'homeLibrary' => $this->getUser()->home_library,
+                'extraFields' => $extraFields,
+                'defaultRequiredDate' => $defaultRequired,
+                'helpText' => $checkRequests['helpText']
+            )
+        );
+    }
+
+    /**
+     * Action for dealing with ILL requests.
+     *
+     * @return mixed
+     */
+    public function illRequestAction()
+    {
+        $driver = $this->loadRecord();
+        
+        // If we're not supposed to be here, give up now!
+        $catalog = $this->getILS();
+        $checkRequests = $catalog->checkFunction(
+            'ILLRequests', 
+            $driver->getUniqueID()
+        );
+        if (!$checkRequests) {
+            return $this->forwardTo('Record', 'Home');
+        }
+
+        // Stop now if the user does not have valid catalog credentials available:
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+
+        // Do we have valid information?
+        // Sets $this->logonURL and $this->gatheredDetails
+        $gatheredDetails = $this->ILLRequests()->validateRequest(
+            $checkRequests['HMACKeys']
+        );
+        if (!$gatheredDetails) {
+            return $this->redirectToRecord();
+        }
+
+        // Block invalid requests:
+        if (!$catalog->checkILLRequestIsValid(
+            $driver->getUniqueID(), $gatheredDetails, $patron
+        )) {
+            return $this->blockedILLRequestAction();
+        }
+
+        // Send various values to the view so we can build the form:
+        
+        $extraFields = isset($checkRequests['extraFields'])
+            ? explode(":", $checkRequests['extraFields']) : array();
+
+        // Process form submissions if necessary:
+        if (!is_null($this->params()->fromPost('placeILLRequest'))) {
+            // If we made it this far, we're ready to place the hold;
+            // if successful, we will redirect and can stop here.
+
+            // Add Patron Data to Submitted Data
+            $details = $gatheredDetails + array('patron' => $patron);
+
+            // Attempt to place the hold:
+            $function = (string)$checkRequests['function'];
+            $results = $catalog->$function($details);
+
+            // Success: Go to Display Storage Retrieval Requests
+            if (isset($results['success']) && $results['success'] == true) {
+                $this->flashMessenger()->setNamespace('info')
+                    ->addMessage('ill_request_place_success');
+                if ($this->inLightbox()) {
+                    return false;
+                }
+                return $this->redirect()->toRoute(
+                    'myresearch-illrequests'
+                );
+            } else {
+                // Failure: use flash messenger to display messages, stay on
+                // the current form.
+                if (isset($results['status'])) {
+                    $this->flashMessenger()->setNamespace('error')
+                        ->addMessage($results['status']);
+                }
+                if (isset($results['sysMessage'])) {
+                    $this->flashMessenger()->setNamespace('error')
+                        ->addMessage($results['sysMessage']);
+                }
+            }
+        }
+
+        // Find and format the default required date:
+        $defaultRequired = $this->ILLRequests()
+            ->getDefaultRequiredDate($checkRequests);
+        $defaultRequired = $this->getServiceLocator()->get('VuFind\DateConverter')
+            ->convertToDisplayDate("U", $defaultRequired);
+
+        // Get pickup libraries
+        $pickupLibraries = $catalog->getILLPickUpLibraries(
+            $driver->getUniqueID(), $patron, $gatheredDetails
+        );
+
+        // Get pickup locations. Note that these are independent of pickup library,
+        // and library specific locations must be retrieved when a library is 
+        // selected.
+        $pickupLocations = $catalog->getPickUpLocations($patron, $gatheredDetails);
+        
+        return $this->createViewModel(
+            array(
+                'gatheredDetails' => $gatheredDetails,
+                'pickupLibraries' => $pickupLibraries,
+                'pickupLocations' => $pickupLocations,
                 'homeLibrary' => $this->getUser()->home_library,
                 'extraFields' => $extraFields,
                 'defaultRequiredDate' => $defaultRequired,

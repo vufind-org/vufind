@@ -29,7 +29,7 @@
       <li class="result<?=(++$i % 2 == 0) ? ' alt' : ''?>">
         <? if ($this->renewForm): ?>
           <? if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
-              <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
+              <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
               <label for="checkbox_<?=$safeId?>" class="offscreen"><?=$this->transEsc("Select this record")?></label>
               <input type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtml($ilsDetails['renew_details'])?>" class="checkbox" style="margin-left: 0" id="checkbox_<?=$safeId?>" />
               <input type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtml($ilsDetails['renew_details'])?>" />
@@ -91,6 +91,19 @@
               <br />
             <? endif; ?>
 
+            <? if (isset($ilsDetails['institution_name']) && !empty($ilsDetails['institution_name'])): ?>
+              <strong><?=$this->transEsc('location_' . $ilsDetails['institution_name'], array(), $ilsDetails['institution_name'])?></strong>
+              <br />
+            <? endif; ?>
+
+            <? if (isset($ilsDetails['renew'])): ?>
+              <strong><?=$this->transEsc('Renewed')?>:</strong> <?=$this->transEsc($ilsDetails['renew'])?>
+              <? if (isset($ilsDetails['renewLimit'])): ?>
+                / <?=$this->transEsc($ilsDetails['renewLimit'])?>
+              <? endif; ?>
+              <br />
+            <? endif; ?>            
+            
             <? $showStatus = true; ?>
 
             <? if (isset($this->renewResult[$ilsDetails['item_id']])): ?>

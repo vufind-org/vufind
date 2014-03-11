@@ -3,11 +3,11 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "6587f02e6b4f7504432193a81ba61931",
+    "hash": "62e7c688185a99c2490f6124b718e711",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
-            "version": "dev-master",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aferrandini/PHPQRCode.git",
@@ -55,12 +55,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Jasig/phpCAS.git",
-                "reference": "673feb404d3c07869ed7e186128d70a8c85473d6"
+                "reference": "27a971e0beee74b7b62c5d669be0823e585dfe82"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Jasig/phpCAS/zipball/673feb404d3c07869ed7e186128d70a8c85473d6",
-                "reference": "673feb404d3c07869ed7e186128d70a8c85473d6",
+                "url": "https://api.github.com/repos/Jasig/phpCAS/zipball/27a971e0beee74b7b62c5d669be0823e585dfe82",
+                "reference": "27a971e0beee74b7b62c5d669be0823e585dfe82",
                 "shasum": ""
             },
             "require": {
@@ -98,7 +98,7 @@
                 "source": "https://github.com/Jasig/phpCAS/tree/master",
                 "issues": "https://github.com/Jasig/phpCAS/issues"
             },
-            "time": "2013-10-01 20:06:01"
+            "time": "2013-12-08 09:32:42"
         },
         {
             "name": "johnwohlers/sip2",
@@ -186,10 +186,10 @@
         },
         {
             "name": "pear-pear.php.net/File_MARC",
-            "version": "1.0.1",
+            "version": "1.1.1",
             "dist": {
                 "type": "file",
-                "url": "http://pear.php.net/get/File_MARC-1.0.1.tgz",
+                "url": "http://pear.php.net/get/File_MARC-1.1.1.tgz",
                 "reference": null,
                 "shasum": null
             },
@@ -197,7 +197,7 @@
                 "php": ">=5.3.0.0"
             },
             "replace": {
-                "pear-pear/file_marc": "== 1.0.1.0"
+                "pear-pear/file_marc": "== 1.1.1.0"
             },
             "type": "pear-library",
             "autoload": {
@@ -390,17 +390,17 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v2.3.6",
+            "version": "v2.4.2",
             "target-dir": "Symfony/Component/Yaml",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/Yaml.git",
-                "reference": "6bb881b948368482e1abf1a75c08bcf88a1c5fc3"
+                "reference": "bb6ddaf8956139d1b8c360b4b713ed0138e876b3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/Yaml/zipball/6bb881b948368482e1abf1a75c08bcf88a1c5fc3",
-                "reference": "6bb881b948368482e1abf1a75c08bcf88a1c5fc3",
+                "url": "https://api.github.com/repos/symfony/Yaml/zipball/bb6ddaf8956139d1b8c360b4b713ed0138e876b3",
+                "reference": "bb6ddaf8956139d1b8c360b4b713ed0138e876b3",
                 "shasum": ""
             },
             "require": {
@@ -409,7 +409,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.3-dev"
+                    "dev-master": "2.4-dev"
                 }
             },
             "autoload": {
@@ -424,7 +424,9 @@
             "authors": [
                 {
                     "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
                 },
                 {
                     "name": "Symfony Community",
@@ -433,24 +435,25 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "http://symfony.com",
-            "time": "2013-09-22 18:04:39"
+            "time": "2014-01-07 13:28:54"
         },
         {
             "name": "zendframework/zendframework",
-            "version": "2.2.5",
+            "version": "2.2.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zf2.git",
-                "reference": "4a7cf6a4cf791244e14aa0ca49d1f06916b63202"
+                "reference": "5eae447d46b00a280573b94c398b2f46f45a6903"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-4a7cf6a4cf791244e14aa0ca49d1f06916b63202-zip-2661de.zip",
-                "reference": "2.2.5",
-                "shasum": "3c699626517e16aa7b3d9a0c811fe41a2586179d"
+                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-5eae447d46b00a280573b94c398b2f46f45a6903-zip-cbc7a8.zip",
+                "reference": "2.2.6",
+                "shasum": "fd15c9f720744a28ea2a93dda737ca37bd3c40b2"
             },
             "require": {
-                "php": ">=5.3.3"
+                "php": ">=5.3.3",
+                "zendframework/zendxml": "~1.0-dev"
             },
             "replace": {
                 "zendframework/zend-authentication": "self.version",
@@ -548,36 +551,32 @@
                 "zf2"
             ],
             "support": {
-                "source": "https://github.com/zendframework/zf2/tree/release-2.2.5",
+                "source": "https://github.com/zendframework/zf2/tree/release-2.2.6",
                 "issues": "https://github.com/zendframework/zf2/issues"
             },
-            "time": "2013-10-31 15:48:16"
+            "time": "2014-03-06 17:27:03"
         },
         {
             "name": "zendframework/zendrest",
-            "version": "2.0.1",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/ZendRest.git",
-                "reference": "release-2.0.1"
+                "reference": "7427d242b4546e5aef1206d2c97e402109d8843e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zendrest-2.0.1-release-2.0.1-97c8b5.zip",
-                "reference": "2.0.1",
-                "shasum": "e5c2ae15280bfbfb090601752dcb1f193d8617f8"
+                "url": "https://packages.zendframework.com/composer/zendframework-zendrest-7427d242b4546e5aef1206d2c97e402109d8843e-zip-da96cc.zip",
+                "reference": "2.0.2",
+                "shasum": "cd304d9e2fccccbd98348bfbead7d42b102e565a"
             },
             "require": {
                 "php": ">=5.3.3",
-                "zendframework/zend-http": ">=2.0.0",
-                "zendframework/zend-uri": ">=2.0.0"
+                "zendframework/zend-http": "~2.0",
+                "zendframework/zend-uri": "~2.0",
+                "zendframework/zendxml": "~1.0-dev"
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.0.x-dev"
-                }
-            },
             "autoload": {
                 "psr-0": {
                     "ZendRest": "library/"
@@ -593,10 +592,10 @@
                 "zf2"
             ],
             "support": {
-                "source": "https://github.com/zendframework/ZendRest/tree/release-2.0.1",
+                "source": "https://github.com/zendframework/ZendRest/tree/release-2.0.2",
                 "issues": "https://github.com/zendframework/ZendRest/issues"
             },
-            "time": "2012-09-24 15:17:53"
+            "time": "2014-03-05 22:32:09"
         },
         {
             "name": "zendframework/zendservice-amazon",
@@ -654,6 +653,54 @@
                 "issues": "https://github.com/zendframework/ZendService_Amazon/issues"
             },
             "time": "2012-10-17 19:02:58"
+        },
+        {
+            "name": "zendframework/zendxml",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zendframework/ZendXml.git",
+                "reference": "559b34f426d33a11c3db118e00ce14bb8dc64e5f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://packages.zendframework.com/composer/zendframework-zendxml-559b34f426d33a11c3db118e00ce14bb8dc64e5f-zip-6cf7a2.zip",
+                "reference": "1.0.0",
+                "shasum": "39abc614b5c26bcbf8102e203c52dee73c4460a8"
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "fabpot/php-cs-fixer": "*@dev",
+                "phpunit/phpunit": "~3.7"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "ZendXml": "library/"
+                }
+            },
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Utility library for XML usage, best practices, and security in PHP",
+            "homepage": "http://packages.zendframework.com/",
+            "keywords": [
+                "security",
+                "xml",
+                "zf2"
+            ],
+            "support": {
+                "source": "https://github.com/zendframework/ZendXml/tree/master",
+                "issues": "https://github.com/zendframework/ZendXml/issues"
+            },
+            "time": "2014-03-05 22:25:44"
         }
     ],
     "packages-dev": [
@@ -664,7 +711,6 @@
     ],
     "minimum-stability": "stable",
     "stability-flags": {
-        "aferrandini/phpqrcode": 20,
         "johnwohlers/sip2": 20,
         "mobileesp/mdetect": 20,
         "serialssolutions/summon": 20,

@@ -55,7 +55,7 @@
         }
     ],
     "require": {
-        "aferrandini/phpqrcode": "dev-master",
+        "aferrandini/phpqrcode": "1.0.1",
         "johnwohlers/sip2": "dev-master",
         "mobileesp/mdetect": "dev-master",
         "pear-pear.php.net/file_marc": "*",
@@ -63,7 +63,7 @@
         "pear-pear.php.net/validate_ispn": "*",
         "serialssolutions/summon": "dev-master",
         "symfony/yaml": "*",
-        "zendframework/zendframework": "2.2.5",
+        "zendframework/zendframework": "2.2.6",
         "zendframework/zendrest": "2.*",
         "zendframework/zendservice-amazon": "2.*",
         "jasig/phpCAS": "dev-master"

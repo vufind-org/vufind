@@ -81,6 +81,7 @@
   <? foreach ($holding['items'] as $row): ?>
     <? $check = (isset($row['check']) && $row['check']); ?>
     <? $checkStorageRetrievalRequest = (isset($row['checkStorageRetrievalRequest']) && $row['checkStorageRetrievalRequest']); ?>
+    <? $checkILLRequest = (isset($row['checkILLRequest']) && $row['checkILLRequest']); ?>
     <? if (isset($row['barcode']) && $row['barcode'] != ""): ?>
       <tr vocab="http://schema.org/" typeof="Offer">
         <th><?=$this->transEsc("Copy")?> <?=$this->escapeHtml($row['number'])?></th>
@@ -102,6 +103,9 @@
               <? endif; ?>
               <? if (isset($row['storageRetrievalRequestLink']) && $row['storageRetrievalRequestLink']): ?>
                 <a class="storageRetrievalRequestPlace<?=$checkStorageRetrievalRequest ? ' checkStorageRetrievalRequest' : ''?>" href="<?=$this->recordLink()->getRequestUrl($row['storageRetrievalRequestLink'])?>"><span><?=$this->transEsc($checkStorageRetrievalRequest ? "storage_retrieval_request_check_text" : "storage_retrieval_request_place_text")?></span></a>
+              <? endif; ?>
+              <? if (isset($row['ILLRequestLink']) && $row['ILLRequestLink']): ?>
+                <a class="ILLRequestPlace<?=$checkILLRequest ? ' checkILLRequest' : ''?>" href="<?=$this->recordLink()->getRequestUrl($row['ILLRequestLink'])?>"><span><?=$this->transEsc($checkILLRequest ? "ill_request_check_text" : "ill_request_place_text")?></span></a>
               <? endif; ?>
               </div>
             <? else: ?>
