@@ -1404,9 +1404,8 @@ EOT;
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @return mixed        Array of the patron's transactions on success,
-     * PEAR_Error otherwise.
-     * @access public
+     * @throws ILSException
+     * @return mixed        Array of the patron's transactions on success.
      */
     public function getMyTransactions($patron)
     {
@@ -2187,7 +2186,7 @@ EOT;
         );
 
         if ($response === false) {
-            return new PEAR_Error('ill_request_error_technical');
+            throw new ILSException('ill_request_error_technical');
         }
         // Process
         $response->registerXPathNamespace(
@@ -2198,7 +2197,7 @@ EOT;
         );
         if ($response->xpath('//ser:message')) {
             // Any message means a problem, right?
-            return new PEAR_Error('ill_request_error_technical');
+            throw new ILSException('ill_request_error_technical');
         }
         $locations = array();
         foreach ($response->xpath('//req:location') as $location) {
@@ -2221,7 +2220,6 @@ EOT;
      *
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
-     * @access public
      */
     public function placeILLRequest($details)
     {
@@ -2362,9 +2360,8 @@ EOT;
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @return mixed        Array of the patron's holds on success, PEAR_Error
-     * otherwise.
-     * @access public
+     * @throws ILSException
+     * @return mixed        Array of the patron's holds on success.
      */
     public function getMyILLRequests($patron)
     {
@@ -2385,7 +2382,6 @@ EOT;
      *
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
-     * @access public
      */
     public function cancelILLRequests($cancelDetails)
     {
@@ -2459,7 +2455,6 @@ EOT;
      * @param array $details An array of item data
      *
      * @return string Data for use in a form field
-     * @access public
      */
     public function getCancelILLRequestDetails($details)
     {
