@@ -1401,11 +1401,6 @@ class AjaxController extends AbstractBase
                 $catalog = $this->getILS();
                 $patron = $this->getAuthManager()->storedCatalogLogin();
                 if ($patron) {
-                    $params = array(
-                        'id' => $id,
-                        'pickupLib' => $pickupLib,
-                        'patron' => $patron
-                    );
                     $results = $catalog->getILLPickupLocations(
                         $id, $pickupLib, $patron
                     );

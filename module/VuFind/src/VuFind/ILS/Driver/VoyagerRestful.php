@@ -352,7 +352,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * @param array $holdingsRow The holdings row to analyze.
      *
      * @return bool Whether an item is holdable
-     * @access protected
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function isILLRequestAllowed($holdingsRow)
     {
@@ -1892,7 +1892,7 @@ EOT;
             return false;
         }
 
-        list($catSource, $catUsername) = explode('.', $patron['cat_username'], 2);
+        list(, $catUsername) = explode('.', $patron['cat_username'], 2);
         $patronId = $this->encodeXML($patronId);
         $patronHomeUbId = $this->encodeXML(
             $this->config['ILLRequestSources'][$source]
@@ -2144,6 +2144,7 @@ EOT;
      *
      * @return bool|array False if request not allowed, or an array of
      * locations.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getILLPickupLocations($id, $pickupLib, $patron)
     {
@@ -2156,14 +2157,13 @@ EOT;
             return $this->holdError('ill_request_unknown_patron_source');
         }
 
-        list($catSource, $catUsername) = explode('.', $patron['cat_username'], 2);
+        list(, $catUsername) = explode('.', $patron['cat_username'], 2);
         $patronId = $this->encodeXML($patronId);
         $patronHomeUbId = $this->encodeXML(
             $this->config['ILLRequestSources'][$source]
         );
         $lastname = $this->encodeXML($patron['lastname']);
         $barcode = $this->encodeXML($catUsername);
-        $localUbId = $this->encodeXML($this->ws_patronHomeUbId);
         $pickupLib = $this->encodeXML($pickupLib);
 
         $xml =  <<<EOT
@@ -2196,7 +2196,7 @@ EOT;
         $response->registerXPathNamespace(
             'req', 'http://www.endinfosys.com/Voyager/requests'
         );
-        foreach ($response->xpath('//ser:message') as $message) {
+        if ($response->xpath('//ser:message')) {
             // Any message means a problem, right?
             return new PEAR_Error('ill_request_error_technical');
         }
@@ -2231,7 +2231,7 @@ EOT;
             return $this->holdError('ill_request_error_unknown_patron_source');
         }
 
-        list($catSource, $catUsername) = explode('.', $patron['cat_username'], 2);
+        list(, $catUsername) = explode('.', $patron['cat_username'], 2);
         $patronId = htmlspecialchars($patronId, ENT_COMPAT, 'UTF-8');
         $patronHomeUbId = $this->encodeXML(
             $this->config['ILLRequestSources'][$source]
@@ -2372,8 +2372,6 @@ EOT;
             $this->getRemoteHolds($patron),
             $this->getRemoteCallSlips($patron)
         );
-
-        return $holds;
     }
 
     /**
