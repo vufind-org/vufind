@@ -255,6 +255,11 @@ class UtilController extends AbstractBase
         return $this->getSuccessResponse();
     }
 
+    public function pingAction()
+    {
+        Console::writeLine("PONG");
+        return $this->getSuccessResponse();
+    }
     /**
      * Generate a Sitemap
      *
