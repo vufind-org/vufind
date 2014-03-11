@@ -1053,8 +1053,18 @@ class Voyager extends AbstractBase
         $sql = "SELECT PATRON.PATRON_ID, PATRON.FIRST_NAME, PATRON.LAST_NAME " .
                "FROM $this->dbName.PATRON, $this->dbName.PATRON_BARCODE " .
                "WHERE PATRON.PATRON_ID = PATRON_BARCODE.PATRON_ID AND " .
-               "lower(PATRON.{$login_field}) = :login AND " .
-               "lower(PATRON_BARCODE.PATRON_BARCODE) = :barcode";
+               "lower(PATRON_BARCODE.PATRON_BARCODE) = :barcode AND ";
+        if (isset($this->config['Catalog']['fallback_login_field'])) {
+            $fallback_login_field = preg_replace(
+                '/[^\w]/', '', $this->config['Catalog']['fallback_login_field']
+            );
+            $sql .= "(lower(PATRON.{$login_field}) = :login OR " .
+                    "(PATRON.{$login_field} IS NULL AND " .
+                    "lower(PATRON.{$fallback_login_field}) = :login))";
+        } else {
+            $sql .= "lower(PATRON.{$login_field}) = :login";
+        }
+        
         try {
             $bindLogin = strtolower(utf8_decode($login));
             $bindBarcode = strtolower(utf8_decode($barcode));
