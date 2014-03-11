@@ -1134,8 +1134,9 @@ class Demo extends AbstractBase
                     $transactions[$i]['duedate']
                         = date("j-M-y", strtotime($old . " + 7 days"));
                     $transactions[$i]['renew'] = $transactions[$i]['renew'] + 1;
-                    $transactions[$i]['renewable'] =
-                        $transactions[$i]['renew'] < $transactions[$i]['renewLimit']; 
+                    $transactions[$i]['renewable']
+                        = $transactions[$i]['renew']
+                        < $transactions[$i]['renewLimit'];
 
                     $finalResult['details'][$current['item_id']] = array(
                         "success" => true,
