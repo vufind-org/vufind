@@ -50,6 +50,8 @@ class ConsoleRouter extends SimpleRouteStack
 
     /**
      * Check CLIDIR
+     *
+     * @return string
      */
     public function getCliDir()
     {
@@ -58,6 +60,19 @@ class ConsoleRouter extends SimpleRouteStack
         }
         return $this->pwd;
     }
+
+    /**
+     * Set CLIDIR (used primarily for testing)
+     *
+     * @param string $pwd Present directory
+     *
+     * @return void
+     */
+    public function setCliDir($pwd)
+    {
+        $this->pwd = $pwd;
+    }
+
     /**
      * Legacy handling for scripts: Match a given request.
      *
