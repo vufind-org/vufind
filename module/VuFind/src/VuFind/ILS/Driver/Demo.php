@@ -561,13 +561,15 @@ class Demo extends AbstractBase
     public function getMyProfile($patron)
     {
         $patron = array(
-            'firstname' => trim("Lib"),
-            'lastname'  => trim("Rarian"),
-            'address1'  => trim("Somewhere ..."),
-            'address2'  => trim("Other the Rainbow"),
-            'zip'       => trim("12345"),
-            'phone'     => trim("1900 CALL ME"),
-            'group'     => trim("Library Staff")
+            'firstname' => 'Lib',
+            'lastname'  => 'Rarian',
+            'address1'  => 'Somewhere...',
+            'address2'  => 'Over the Rainbow',
+            'zip'       => '12345',
+            'city'      => 'City',
+            'country'   => 'Country',
+            'phone'     => '1900 CALL ME',
+            'group'     => 'Library Staff'
         );
         return $patron;
     }
@@ -1134,8 +1136,9 @@ class Demo extends AbstractBase
                     $transactions[$i]['duedate']
                         = date("j-M-y", strtotime($old . " + 7 days"));
                     $transactions[$i]['renew'] = $transactions[$i]['renew'] + 1;
-                    $transactions[$i]['renewable'] =
-                        $transactions[$i]['renew'] < $transactions[$i]['renewLimit']; 
+                    $transactions[$i]['renewable']
+                        = $transactions[$i]['renew']
+                        < $transactions[$i]['renewLimit'];
 
                     $finalResult['details'][$current['item_id']] = array(
                         "success" => true,
