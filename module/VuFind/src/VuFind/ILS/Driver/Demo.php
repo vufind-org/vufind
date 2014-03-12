@@ -673,6 +673,7 @@ class Demo extends AbstractBase
      * @param array $patron The patron array from patronLogin
      *
      * @return mixed        Array of the patron's ILL requests
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyILLRequests($patron)
     {
@@ -1135,8 +1136,9 @@ class Demo extends AbstractBase
                     $transactions[$i]['duedate']
                         = date("j-M-y", strtotime($old . " + 7 days"));
                     $transactions[$i]['renew'] = $transactions[$i]['renew'] + 1;
-                    $transactions[$i]['renewable'] =
-                        $transactions[$i]['renew'] < $transactions[$i]['renewLimit']; 
+                    $transactions[$i]['renewable']
+                        = $transactions[$i]['renew']
+                        < $transactions[$i]['renewLimit'];
 
                     $finalResult['details'][$current['item_id']] = array(
                         "success" => true,
@@ -1377,6 +1379,7 @@ class Demo extends AbstractBase
      * @param patron $patron An array of patron data
      *
      * @return string True if request is valid, false if not
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function checkILLRequestIsValid($id, $data, $patron)
     {
@@ -1493,6 +1496,7 @@ class Demo extends AbstractBase
      *
      * @return bool|array False if request not allowed, or an array of associative 
      * arrays with libraries.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getILLPickupLibraries($id, $patron)
     {
@@ -1528,6 +1532,7 @@ class Demo extends AbstractBase
      *
      * @return boo|array False if request not allowed, or an array of  
      * locations.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getILLPickupLocations($id, $pickupLib, $patron)
     {
