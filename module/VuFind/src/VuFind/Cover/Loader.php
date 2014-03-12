@@ -420,11 +420,6 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      */
     protected function loadDefaultFailImage()
     {
-        /*
-        $this->contentType = 'image/gif';
-        $this->image = file_get_contents($this->searchTheme('images/noCover2.gif'));
-        */
-        
         $this->contentType = 'image/gif';
         $this->image = file_get_contents($this->searchTheme('images/noCover2.gif'));
     }
