@@ -7,7 +7,7 @@ return array(
     ),
     'helpers' => array(
         'factories' => array(
-            'layoutclass' => array('VuFind\View\Helper\Bootprint\Factory', 'getLayoutClass'),
+            'layoutclass' => 'VuFind\View\Helper\Bootprint\Factory::getLayoutClass',
         )
     )
 );

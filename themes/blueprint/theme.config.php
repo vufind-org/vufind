@@ -22,7 +22,7 @@ return array(
     'favicon' => 'vufind-favicon.ico',
     'helpers' => array(
         'factories' => array(
-            'layoutclass' => array('VuFind\View\Helper\Blueprint\Factory', 'getLayoutClass'),
+            'layoutclass' => 'VuFind\View\Helper\Blueprint\Factory::getLayoutClass',
         ),
         'invokables' => array(
             'search' => 'VuFind\View\Helper\Blueprint\Search',

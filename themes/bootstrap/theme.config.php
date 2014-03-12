@@ -20,8 +20,8 @@ return array(
     'favicon' => 'vufind-favicon.ico',
     'helpers' => array(
         'factories' => array(
-            'flashmessages' => array('VuFind\View\Helper\Bootstrap\Factory', 'getFlashmessages'),
-            'layoutclass' => array('VuFind\View\Helper\Bootstrap\Factory', 'getLayoutClass'),
+            'flashmessages' => 'VuFind\View\Helper\Bootstrap\Factory::getFlashmessages',
+            'layoutclass' => 'VuFind\View\Helper\Bootstrap\Factory::getLayoutClass',
         ),
         'invokables' => array(
             'highlight' => 'VuFind\View\Helper\Bootstrap\Highlight',
