@@ -198,7 +198,16 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         }
         return $this->contentType;
     }
-
+    
+    /**
+     * Get Cover Generator Object
+     *
+     * return VuFind\Cover\Generator
+     */
+    public function getCoverGenerator()
+    {
+        return new \VuFind\Cover\Generator($this->themeTools);
+    }
     /**
      * Load an image given an ISBN and/or content type.
      *
@@ -208,8 +217,9 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      *
      * @return void
      */
-    public function loadImage($isn, $size = 'small', $type = null)
-    {
+    public function loadImage($isn, $size = 'small', $type = null,
+        $title = null, $author = null, $callnumber = null
+    ) {
         // Sanitize parameters:
         $this->isn = new ISBN($isn);
         $this->type = preg_replace("/[^a-zA-Z]/", "", $type);
@@ -222,7 +232,15 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         } else if (!$this->fetchFromISBN()
             && !$this->fetchFromContentType()
         ) {
-            $this->loadUnavailable();
+            if (isset($this->config->Content->makeDynamicCovers)
+                && true == $this->config->Content->makeDynamicCovers
+            ) {
+                $this->image = $this->getCoverGenerator()
+                    ->generate($title, $author, $callnumber);
+                $this->contentType = 'image/png';
+            } else {
+                $this->loadUnavailable();
+            }
         }
     }
 
