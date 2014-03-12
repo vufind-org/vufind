@@ -50,7 +50,7 @@
         <? foreach($list as $i=>$item): ?>
           <a href="<?=$this->url('vudl-record', array('id'=>$item['id'])) ?>" class="span3 pull-left well text-center page-grid pointer" title="<?=$item['id'] ?>" id="item<?=$index?>">
           <? if(isset($item['thumbnail'])): ?>
-            <img class="img-polaroid" src="<?=$item['thumbnail'] ?>" alt="<?=$item['label'] ?>"/>
+            <img src="<?=$item['thumbnail'] ?>" alt="<?=$item['label'] ?>"/>
           <? else: ?>
             <img class="<?=$item['fulltype'] ?>" src="<?=$this->imageLink('vudl/'.$item['fulltype'].'.png') ?>"/>
           <? endif; ?>

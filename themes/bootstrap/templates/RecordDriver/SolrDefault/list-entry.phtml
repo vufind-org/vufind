@@ -15,9 +15,9 @@
   <div class="span2 text-center">
     <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
       <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
-        <img src="<?=$this->escapeHtml($summThumb)?>" class="img-polaroid" alt="<?=$this->transEsc('Cover Image')?>"/>
+        <img src="<?=$this->escapeHtml($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
       <? else: ?>
-        <img src="<?=$this->url('cover-unavailable')?>" class="img-polaroid" alt="<?=$this->transEsc('No Cover Image')?>"/>
+        <img src="<?=$this->url('cover-unavailable')?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
       <? endif; ?>
     </a>
   </div>
