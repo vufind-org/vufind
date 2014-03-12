@@ -659,11 +659,10 @@ class Voyager extends AbstractBase
                                 "'No information available' as status",
                                 "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
                                     "LOCATION.LOCATION_NAME) as location",
-                                "null as TEMP_LOCATION",
-                                "null as PERM_LOCATION",            
                                 "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
                                 "BIB_MFHD.BIB_ID", "MFHD_MASTER.MFHD_ID",
-                                "null as duedate", "0 AS TEMP_LOCATION"
+                                "null as duedate", "0 AS TEMP_LOCATION",
+                                "0 as PERM_LOCATION"            
                                );
 
         // From
