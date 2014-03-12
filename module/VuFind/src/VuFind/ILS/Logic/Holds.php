@@ -115,66 +115,33 @@ class Holds
         $retVal = array();
 
         foreach ($holdings as $groupKey => $items) {
-            $notes = array();
-            $summaries = array();
-            $supplements = array();
-            $indexes = array();
+            $textFields = array();
             $locationName = '';
             foreach ($items as $item) {
                 $locationName = $item['location'];
-                if (isset($item['notes'])) {
-                    if (!is_array($item['notes'])) {
-                        $item['notes'] = empty($item['notes'])
-                            ? array() : array($item['notes']);
-                    }
-                    foreach ($item['notes'] as $note) {
-                        if (!in_array($note, $notes)) {
-                            $notes[] = $note;
-                        }
-                    }
-                }
-                if (isset($item['summary'])) {
-                    if (!is_array($item['summary'])) {
-                        $item['summary'] = empty($item['summary'])
-                            ? array() : array($item['summary']);
-                    }
-                    foreach ($item['summary'] as $summary) {
-                        if (!in_array($summary, $summaries)) {
-                            $summaries[] = $summary;
-                        }
-                    }
-                }
-                if (isset($item['supplements'])) {
-                    if (!is_array($item['supplements'])) {
-                        $item['summary'] = empty($item['supplements'])
-                            ? array() : array($item['supplements']);
-                    }
-                    foreach ($item['supplements'] as $supplement) {
-                        if (!in_array($supplement, $supplements)) {
-                            $supplements[] = $supplement;
-                        }
-                    }
-                }
-                if (isset($item['indexes'])) {
-                    if (!is_array($item['indexes'])) {
-                        $item['indexes'] = empty($item['indexes'])
-                            ? array() : array($item['indexes']);
-                    }
-                    foreach ($item['indexes'] as $index) {
-                        if (!in_array($index, $indexes)) {
-                            $indexes[] = $index;
+                
+                // Collect all text fields from the item
+                foreach ($this->catalog->getHoldingsTextFieldNames() as $fieldName) {
+                    if (!empty($item[$fieldName])) {
+                        $fields = is_array($item[$fieldName])
+                            ? $item[$fieldName]
+                            : array($item[$fieldName]);
+
+                        foreach ($fields as $field) {
+                            if (empty($textFields[$fieldName]) 
+                                || !in_array($field, $textFields[$fieldName])
+                            ) {
+                                $textFields[$fieldName][] = $field;
+                            }
                         }
                     }
                 }
             }
             $retVal[$groupKey] = array(
                 'location' => $locationName,
-                'notes' => $notes,
-                'summary' => $summaries,
-                'supplements' => $supplements,
-                'indexes' => $indexes,
                 'items' => $items
             );
+            $retVal[$groupKey] += $textFields;
         }
 
         return $retVal;
