@@ -206,7 +206,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      */
     public function getCoverGenerator()
     {
-        return new \VuFind\Cover\Generator($this->config, $this->themeTools);
+        return new \VuFind\Cover\Generator($this->themeTools);
     }
     /**
      * Load an image given an ISBN and/or content type.

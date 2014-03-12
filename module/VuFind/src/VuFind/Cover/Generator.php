@@ -57,11 +57,10 @@ class Generator
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config     VuFind configuration
-     * @param \Zend\Config\Config $themeTools For font loading
-     * @param array               $settings   Overwrite styles
+     * @param \VuFindTheme\ThemeInfo $themeTools For font loading
+     * @param array                  $settings   Overwrite styles
      */
-    public function __construct($config, $themeTools, $settings = array())
+    public function __construct($themeTools, $settings = array())
     {
         $this->themeTools = $themeTools;
         $default = array(
