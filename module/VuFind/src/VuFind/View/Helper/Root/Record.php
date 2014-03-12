@@ -409,8 +409,10 @@ class Record extends AbstractHelper
             $urlHelper = $this->getView()->plugin('url');
             return $urlHelper('cover-show') . '?' . http_build_query(
                 array(
-                    'isn'  => $thumb['isn'],
-                    'size' => $thumb['size']
+                    'isn'    => $thumb['isn'],
+                    'size'   => $thumb['size'],
+                    'title'  => $thumb['title'],
+                    'author' => $thumb['author'],
                 )
             );
         }
