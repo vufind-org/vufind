@@ -1104,10 +1104,11 @@ class SolrDefault extends AbstractBase
     public function getThumbnail($size = 'small')
     {
         return array(
-            'author' => mb_substr($this->getPrimaryAuthor(), 0, 300, 'utf-8'),
-            'title'  => mb_substr($this->getTitle(), 0, 300, 'utf-8'),
-            'isn'    => $this->getCleanIsbn(),
-            'size'   => $size
+            'author'     => mb_substr($this->getPrimaryAuthor(), 0, 300, 'utf-8'),
+            'callnumber' => $this->getCallNumber(),
+            'isn'        => $this->getCleanIsbn(),
+            'size'       => $size,
+            'title'      => mb_substr($this->getTitle(), 0, 300, 'utf-8')
         );
     }
 
