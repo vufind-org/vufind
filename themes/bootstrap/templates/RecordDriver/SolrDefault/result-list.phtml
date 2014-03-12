@@ -4,9 +4,9 @@
   <div class="span2 text-center left">
     <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
       <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
-        <img class="img-polaroid" src="<?=$this->escapeHtml($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
+        <img src="<?=$this->escapeHtml($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
       <? else: ?>
-        <img class="img-polaroid" src="<?=$this->url('cover-unavailable')?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
+        <img src="<?=$this->url('cover-unavailable')?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
       <? endif; ?>
     </a>
   </div>
