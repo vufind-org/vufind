@@ -561,13 +561,15 @@ class Demo extends AbstractBase
     public function getMyProfile($patron)
     {
         $patron = array(
-            'firstname' => trim("Lib"),
-            'lastname'  => trim("Rarian"),
-            'address1'  => trim("Somewhere ..."),
-            'address2'  => trim("Other the Rainbow"),
-            'zip'       => trim("12345"),
-            'phone'     => trim("1900 CALL ME"),
-            'group'     => trim("Library Staff")
+            'firstname' => 'Lib',
+            'lastname'  => 'Rarian',
+            'address1'  => 'Somewhere...',
+            'address2'  => 'Over the Rainbow',
+            'zip'       => '12345',
+            'city'      => 'City',
+            'country'   => 'Country',
+            'phone'     => '1900 CALL ME',
+            'group'     => 'Library Staff'
         );
         return $patron;
     }
