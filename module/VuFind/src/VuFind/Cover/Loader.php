@@ -232,11 +232,13 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         } else if (!$this->fetchFromISBN()
             && !$this->fetchFromContentType()
         ) {
-            // TODO: check config
-            // if config
-            $this->getCoverGenerator()->generate($title, $author, $callnumber);
-            // else
-            //$this->loadUnavailable();
+            if (isset($this->config->Content->makeDynamicCovers)
+            && true == $this->config->Content->makeDynamicCovers
+            ) {
+                $this->getCoverGenerator()->generate($title, $author, $callnumber);
+            } else {
+                $this->loadUnavailable();
+            }
         }
     }
 
