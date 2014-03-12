@@ -47,7 +47,13 @@ class Generator
      * @var array
      */
     protected $settings = array();
+    /**
+     * Reserved color
+     */
     protected $black;
+    /**
+     * Reserved color
+     */
     protected $white;
 
     /**
@@ -215,7 +221,7 @@ class Generator
                 $this->settings->fontSize
             );
             if ($textWidth > $this->settings->wrapWidth) {
-                // Print this->black with this->white border
+                // Print black with white border
                 $this->drawText(
                     $im,
                     $pline,
@@ -224,7 +230,8 @@ class Generator
                     $this->settings->titleFont,
                     $this->settings->fontSize,
                     $this->black,
-                    $this->white
+                    $this->white,
+                    $textAlign
                 );
                 $line = $text . " ";
                 $lineCount++;
@@ -240,7 +247,8 @@ class Generator
             $this->settings->titleFont,
             $this->settings->fontSize,
             $this->black,
-            $this->white
+            $this->white,
+            $textAlign
         );
         // Add ellipses if we've truncated
         if ($i < count($words)-1) {
@@ -273,7 +281,7 @@ class Generator
             $txtWidth=$this->textWidth($author, $this->settings->titleFont, $fontSize);
             $fontSize--;
         } while ($txtWidth > $this->settings->wrapWidth);
-        // this->white text, this->black outline
+        // white text, black outline
         $this->drawText(
             $im,
             $author,
@@ -306,6 +314,7 @@ class Generator
         $fileMatch = $this->themeTools->findContainingTheme($filenames, true);
         return empty($fileMatch) ? false : $fileMatch;
     }
+    
     /**
      * Returns the width a string would render to
      *
@@ -338,6 +347,15 @@ class Generator
      */
     protected function drawText($im, $text, $x, $y, $font, $fontSize, $mcolor, $scolor, $align = null)
     {
+        $txtWidth = $this->textWidth(
+            $text,
+            $this->settings->titleFont,
+            $this->settings->fontSize
+        );
+        if ($txtWidth > $this->settings->size) {
+            $align = 'left';
+            $x = 0;
+        }
         if (null == $align) {
             $align = $this->settings->textAlign;
         }
@@ -351,6 +369,7 @@ class Generator
             $txtWidth = $p[2]-$p[0]-4;
             $x = $this->settings->size-$txtWidth-$x;
         }
+        
         // Generate 5 lines of text, 4 offset in a border color
         imagettftext($im, $fontSize, 0, $x,   $y+1, $scolor, $font, $text);
         imagettftext($im, $fontSize, 0, $x,   $y-1, $scolor, $font, $text);
