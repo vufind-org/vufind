@@ -974,7 +974,7 @@ class Voyager extends AbstractBase
         // Build Holdings Array
         $purchaseHistory = array();
         if (isset($this->config['Holdings']['purchase_history'])
-            && $this->config['Holdings']['purchase_history']
+            && $this->config['Holdings']['purchase_history'] === 'split'
         ) {
             $purchaseHistory = $this->getPurchaseHistoryData($id);
         }
@@ -1115,10 +1115,9 @@ class Voyager extends AbstractBase
     {
         // Return empty array if purchase history is disabled or embedded
         // in holdings
-        if ((isset($this->config['Catalog']['purchase_history'])
-                && !$this->config['Catalog']['purchase_history'])
-            || (isset($this->config['Holdings']['purchase_history'])
-                && $this->config['Holdings']['purchase_history'])
+        if (isset($this->config['Holdings']['purchase_history'])
+            && (!$this->config['Holdings']['purchase_history']
+                || $this->config['Holdings']['purchase_history'] === 'split')
         ) {
             return array();
         }
