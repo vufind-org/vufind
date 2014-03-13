@@ -197,7 +197,7 @@ $(document).ready(function() {
     return Lightbox.get('Cart','Cart');
   });
   Lightbox.addOpenAction(function() {
-    // New list
+    // New account link handler
     $('.createAccountLink').click(function() {
       return Lightbox.get('MyResearch', 'Account');
     });
