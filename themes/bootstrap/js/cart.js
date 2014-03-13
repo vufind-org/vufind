@@ -147,6 +147,7 @@ function registerUpdateCart($form) {
 }
 
 // Ajax cart submission for the lightbox
+var lastCartSubmit = false;
 function cartSubmit($form) {
   var submit = $form.find('input[type="submit"][clicked=true]').attr('name');
   if (submit == 'print') {
@@ -162,6 +163,8 @@ function cartSubmit($form) {
       Lightbox.displayError(vufindString['bulk_noitems_advice']);
     }
   } else {
+    lastCartSubmit = $form;
+    Lightbox.addCloseAction(function(){lastCartSubmit = false;});
     Lightbox.submit($form, Lightbox.changeContent);
   }
 }
@@ -192,6 +195,18 @@ $(document).ready(function() {
   // Cart lightbox
   $('#cartItems').click(function() {
     return Lightbox.get('Cart','Cart');
+  });
+  Lightbox.addOpenAction(function() {
+    // New list
+    $('.createAccountLink').click(function() {
+      return Lightbox.get('MyResearch', 'Account');
+    });
+  });
+  Lightbox.addFormCallback('accountForm', function() {
+    if (typeof lastCartSubmit !== "undefined" && lastCartSubmit !== false) {
+      cartSubmit(lastCartSubmit);
+      lastCartSubmit = false;
+    }
   });
   Lightbox.addFormHandler('cartForm', function(evt) {
     cartSubmit($(evt.target));

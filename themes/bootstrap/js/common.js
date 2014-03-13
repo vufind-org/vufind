@@ -1,4 +1,4 @@
-/*global Lightbox, path, vufindString */
+/*global cartSubmit, lastCartSubmit, Lightbox, path, vufindString */
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value){
