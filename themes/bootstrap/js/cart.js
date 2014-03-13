@@ -203,9 +203,14 @@ $(document).ready(function() {
     });
   });
   Lightbox.addFormCallback('accountForm', function() {
+    Lightbox.addCloseAction(function() {
+      document.location.href = path+'/MyResearch/';
+    });
     if (typeof lastCartSubmit !== "undefined" && lastCartSubmit !== false) {
       cartSubmit(lastCartSubmit);
       lastCartSubmit = false;
+    } else {
+      Lightbox.close();
     }
   });
   Lightbox.addFormHandler('cartForm', function(evt) {
