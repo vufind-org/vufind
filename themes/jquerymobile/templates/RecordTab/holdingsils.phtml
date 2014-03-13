@@ -98,6 +98,16 @@
       </tr>
     <? endif; ?>
   <? endforeach; ?>
+  <? if (!empty($holding['purchase_history'])): ?>
+    <tr>
+      <th><?=$this->transEsc("Most Recent Received Issues")?>:</th>
+      <td>
+        <? foreach ($holding['purchase_history'] as $current): ?>
+          <?=$this->escapeHtml($current['issue'])?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
 </table>
 <? endforeach; ?>
 

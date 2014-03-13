@@ -62,7 +62,7 @@
     <? if (!empty($holding[$textField])): ?>
       <tr>
         <? // Translation for summary is a special case for backwards-compatibility ?>
-        <th><?=$textField == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textField))?>: </th>
+        <th><?=$textField == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textField))?>:</th>
         <td>
           <? foreach ($holding[$textField] as $current): ?>
             <?=$this->escapeHtml($current)?><br/>
@@ -130,6 +130,16 @@
       </tr>
     <? endif; ?>
   <? endforeach; ?>
+  <? if (!empty($holding['purchase_history'])): ?>
+    <tr>
+      <th><?=$this->transEsc("Most Recent Received Issues")?>:</th>
+      <td>
+        <? foreach ($holding['purchase_history'] as $current): ?>
+          <?=$this->escapeHtml($current['issue'])?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
 </table>
 <? endforeach; ?>
 

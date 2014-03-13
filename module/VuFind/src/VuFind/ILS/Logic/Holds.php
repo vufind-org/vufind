@@ -114,21 +114,25 @@ class Holds
     {
         $retVal = array();
 
+        // Handle purchase history alongside other textual fields
+        $textFieldNames = $this->catalog->getHoldingsTextFieldNames();
+        $textFieldNames[] = 'purchase_history';
+
         foreach ($holdings as $groupKey => $items) {
             $textFields = array();
             $locationName = '';
             foreach ($items as $item) {
                 $locationName = $item['location'];
-                
+
                 // Collect all text fields from the item
-                foreach ($this->catalog->getHoldingsTextFieldNames() as $fieldName) {
+                foreach ($textFieldNames as $fieldName) {
                     if (!empty($item[$fieldName])) {
                         $fields = is_array($item[$fieldName])
                             ? $item[$fieldName]
                             : array($item[$fieldName]);
 
                         foreach ($fields as $field) {
-                            if (empty($textFields[$fieldName]) 
+                            if (empty($textFields[$fieldName])
                                 || !in_array($field, $textFields[$fieldName])
                             ) {
                                 $textFields[$fieldName][] = $field;
@@ -528,9 +532,9 @@ class Holds
 
     /**
      * Get a grouping key for a holdings item
-     * 
+     *
      * @param array $copy Item information
-     * 
+     *
      * @return string Grouping key
      */
     protected function getHoldingsGroupKey($copy)
@@ -542,9 +546,9 @@ class Holds
         ) {
             return $copy['holdings_id'];
         }
-        return $copy['location'];    
+        return $copy['location'];
     }
-    
+
     /**
      * Get an array of suppressed location names.
      *
