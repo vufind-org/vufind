@@ -247,11 +247,11 @@ class Solr extends AbstractBase
      */
     public function getParentList($id)
     {
+        // Cache
         if (isset($this->parentLists[$id])) {
             return $this->parentLists[$id];
         }
-        // Solr        
-        // Get members
+        // Get info on our record
         $origin = $this->search(
             new ParamBag(
                 array(
@@ -265,12 +265,17 @@ class Solr extends AbstractBase
             )
         );
         $origin = json_decode($origin);
+        // These are our targets
         $top = $origin->response->docs[0]->hierarchy_top_id;
         // If we have results, find the structure
         if ($origin->response->numFound > 0) {
+            // Immediate parents
             $parents = array_unique(
                 $origin->response->docs[0]->hierarchy_all_parents_str_mv
             );
+            if (empty($parents)) {
+                return null;
+            }
             $ret = array();
             $hierarchyParents = $origin->response->docs[0]->hierarchy_parent_id;
             foreach ($hierarchyParents as $i=>$parent) {
@@ -323,7 +328,7 @@ class Solr extends AbstractBase
                             $path2 = $path;
                             $path2[$pid] = $ptitle;
                             $ret[] = $path2;
-                        }                      
+                        }
                         $count ++;
                     }
                 }
