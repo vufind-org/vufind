@@ -119,12 +119,14 @@ class Holds
         $textFieldNames[] = 'purchase_history';
 
         foreach ($holdings as $groupKey => $items) {
-            $textFields = array();
-            $locationName = '';
+            $retVal[$groupKey] = array(
+                'items' => $items,
+                'location' => isset($items[0]['location'])
+                    ? $items[0]['location']
+                    : ''
+            );
+            // Copy all text fields from the item to the holdings level
             foreach ($items as $item) {
-                $locationName = $item['location'];
-
-                // Collect all text fields from the item
                 foreach ($textFieldNames as $fieldName) {
                     if (!empty($item[$fieldName])) {
                         $fields = is_array($item[$fieldName])
@@ -132,20 +134,15 @@ class Holds
                             : array($item[$fieldName]);
 
                         foreach ($fields as $field) {
-                            if (empty($textFields[$fieldName])
-                                || !in_array($field, $textFields[$fieldName])
+                            if (empty($retVal[$groupKey][$fieldName])
+                                || !in_array($field, $retVal[$groupKey][$fieldName])
                             ) {
-                                $textFields[$fieldName][] = $field;
+                                $retVal[$groupKey][$fieldName][] = $field;
                             }
                         }
                     }
                 }
             }
-            $retVal[$groupKey] = array(
-                'location' => $locationName,
-                'items' => $items
-            );
-            $retVal[$groupKey] += $textFields;
         }
 
         return $retVal;
