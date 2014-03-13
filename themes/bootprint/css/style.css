@@ -157,6 +157,10 @@ select, .btn:not(.btn-link){vertical-align:top}
 #download-button:hover {background:linear-gradient(to bottom, #72A255 0%,#508033 100%);text-shadow:0 1px 0 rgba(0,0,0,.5)}
 #download-button:active {background:linear-gradient(to bottom, #508033 0%,#72A255 100%)}
 .inspector_container {margin-top:6px}
+.page-link,.page-grid {color:#888;padding:5px}
+#side-nav .page-link.selected {background:#AC8}
+.page-link.active,.page-grid.active {color:#000}
+.page-link.loading,.page-grid.loading {color:#000}
 .siblings-form {margin:3px auto}
 .table.details {font-size:10px;border-bottom:1px solid #DDD}
 

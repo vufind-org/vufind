@@ -5,33 +5,11 @@
 .nav>li.opener>a { display:none }
 #view.wide { width:100% }
 
-.page_grid .audio {
-  background:url('../images/small/mp3.png');
-  box-shadow:none;
-  margin:auto;
-  width:128px;
-  height:128px;
+.page-grid,.page-link {
+  display:block;
+  margin:1em 0;
+  text-align:center;
+  width:100%;
 }
-.page_grid .pdf {
-  background:url('../images/small/pdf.png');
-  box-shadow:none;
-  height:87px;
-  margin:auto;
-  width:70px;
-}
-.page_grid .doc,
-.page_grid .msword {
-  background:url('../images/small/msword.jpg');
-  box-shadow:none;
-  margin:auto;
-  width:116px;
-  height:85px;
-}
-.page_grid .xls,
-.page_grid .msexcel {
-  background:url('../images/small/msexcel.jpg');
-  box-shadow:none;
-  margin:auto;
-  width:116px;
-  height:85px;
-}
+.page-link.active { cursor:pointer }
+.page-link.selected { background:#DEF }

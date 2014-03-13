@@ -67,9 +67,8 @@ function findVisible() {
   $('.page-link').each(function(index, item) {
     if($(item).offset().top > $('#collapse1').position().top-100
     && $(item).offset().top < $('#collapse1').position().top+$('#collapse1').height()+300
-    && $(item).hasClass('loading')) {
-      $(item).removeClass('muted');
-      $(item).removeClass('loading');
+    && !$(item).hasClass('loading') && !$(item).hasClass('active')) {
+      $(item).addClass('loading');
       max = parseInt($(item).attr('title'));
       if(min < 0) min = max;
     } else {
@@ -102,10 +101,8 @@ function ajaxLoadPages(min, max) {
           .attr('id', 'item'+response.data.start)
           .html('<br/>'+page.label)
           .prepend(img)
-          .addClass('pointer')
-          .removeClass('loading')
-          .removeClass('onscreen')
-          .removeClass('muted');
+          .addClass('active')
+          .removeClass('loading');
         response.data.start++;
       }
       findVisible();
@@ -118,15 +115,15 @@ function ajaxLoadPages(min, max) {
 }
 // Pages
 function prevPage() {
-  $('.page-link.alert-info').prev('.page-link').click();
+  $('.page-link.selected').prev('.page-link').click();
   scrollToSelected();
 }
 function nextPage() {  
-  $('.page-link.alert-info').next('.page-link').click();
+  $('.page-link.selected').next('.page-link').click();
   scrollToSelected();
 }
 function scrollToSelected() {
-  $('#collapse1').scrollTop($('#collapse1').scrollTop()+$('#collapse1 .alert-info').position().top-10);
+  $('#collapse1').scrollTop($('#collapse1').scrollTop()+$('#collapse1 .selected').position().top-10);
 }
 // Accordion size
 function resizeAccordions(offset) {
@@ -159,8 +156,8 @@ function toggleSideNav() {
 // Ready? Let's go
 $(document).ready(function() {
   $('.page-link').click(function() {
-    $('.page-link.alert-info').removeClass('alert-info');
-    $(this).addClass('alert-info');
+    $('.page-link.selected').removeClass('selected');
+    $(this).addClass('selected');
   });  
   // Load clicked items
   $('.loading').click(function() {

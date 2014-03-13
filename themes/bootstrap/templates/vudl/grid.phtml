@@ -43,12 +43,12 @@
       <? $index=0; foreach($this->outline['lists'] as $key=>$list): ?>
         <!-- PRE LOADING PLACEHOLDERS -->
         <? for($i=0;$i<current(array_keys($list))-1;$i++): ?>
-          <a class="span3 pull-left well text-center page-grid pointer" id="item<?=$i ?>" title="<?=$i ?>">Loading...</a>
+          <a class="span3 page-grid" id="item<?=$i ?>" title="<?=$i ?>">Loading...</a>
           <? if((++$index)%4 == 0 && $index > 1): ?></div><div class="row-fluid"><? endif; ?>
         <? endfor; ?>
         <!-- LOADED ITEMS -->
         <? foreach($list as $i=>$item): ?>
-          <a href="<?=$this->url('vudl-record', array('id'=>$item['id'])) ?>" class="span3 pull-left well text-center page-grid pointer" title="<?=$item['id'] ?>" id="item<?=$index?>">
+          <a href="<?=$this->url('vudl-record', array('id'=>$item['id'])) ?>" class="span3 page-grid active" title="<?=$item['id'] ?>" id="item<?=$index?>">
           <? if(isset($item['thumbnail'])): ?>
             <img src="<?=$item['thumbnail'] ?>" alt="<?=$item['label'] ?>"/>
           <? else: ?>
@@ -61,7 +61,7 @@
         <!-- POST LOADING PLACEHOLDERS -->
         <? if(isset($this->outline['counts'][$key])): ?>
           <? for($i=$this->initPage+count($list);$i<$this->outline['counts'][$key];$i++): ?>
-            <a class="span3 pull-left well text-center page-grid pointer" id="item<?=$i ?>" title="<?=$i ?>">Loading...</a>
+            <a class="span3 page-grid" id="item<?=$i ?>" title="<?=$i ?>">Loading...</a>
             <? if((++$index)%4 == 0 && $index > 1): ?></div><div class="row-fluid"><? endif; ?>
           <? endfor; ?>
         <? endif; ?>
