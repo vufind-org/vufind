@@ -59,7 +59,9 @@ abstract class QueryAdapter
     {
         if (isset($search['l'])) {
             $handler = isset($search['i']) ? $search['i'] : $search['f'];
-            return new Query($search['l'], $handler);
+            return new Query(
+                $search['l'], $handler, isset($search['o']) ? $search['o'] : null
+            );
         } elseif (isset($search['g'])) {
             $operator = $search['g'][0]['b'];
             return new QueryGroup(
@@ -185,10 +187,14 @@ abstract class QueryAdapter
                     $handler = (isset($typeArr[$i]) && !empty($typeArr[$i]))
                         ? $typeArr[$i] : $defaultHandler;
 
+                    $opArr = $request->get('op' . $groupCount);
+                    $operator = (isset($opArr[$i]) && !empty($opArr[$i]))
+                        ? $opArr[$i] : null;
+
                     // Add term to this group
                     $boolArr = $request->get('bool' . $groupCount);
                     $lastBool = isset($boolArr[0]) ? $boolArr[0] : null;
-                    $group[] = new Query($lookfor[$i], $handler);
+                    $group[] = new Query($lookfor[$i], $handler, $operator);
                 }
             }
 
@@ -239,11 +245,15 @@ abstract class QueryAdapter
             } elseif ($current instanceof QueryGroup) {
                 throw new \Exception('Not sure how to minify this query!');
             } else {
-                $retVal[] = array(
+                $currentArr = array(
                     'f' => $current->getHandler(),
                     'l' => $current->getString(),
                     'b' => $operator
                 );
+                if (null !== ($op = $current->getOperator())) {
+                    $currentArr['o'] = $op;
+                }
+                $retVal[] = $currentArr;
             }
         }
         return $retVal;
