@@ -151,6 +151,9 @@ class UrlQueryHelper
                                 }
                                 $params['lookfor'.$i][] = $inner->getString();
                                 $params['type' . $i][] = $inner->getHandler();
+                                if (null !== ($op = $inner->getOperator())) {
+                                    $params['op' . $i][] = $op;
+                                }
                             }
                         } else {
                             throw new \Exception('Unexpected Query object.');
