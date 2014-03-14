@@ -20,6 +20,7 @@
 
   // HEADER FILES
   $this->headLink()->appendStylesheet('vudl.css');
+  $this->headScript()->appendFile('vudl/config.js');
   $this->headScript()->appendFile('vudl/record.js');
   $this->headScript()->appendFile('jquery.swipe.min.js');
   //$this->headScript()->appendFile('scrollto.js'); // scrolling stuff
@@ -104,7 +105,7 @@
           <div class="accordion-inner item-list" id="list<?=$key ?>">
             <!-- PRE LOADING PLACEHOLDERS -->
             <? for($i=0;$i<current(array_keys($list))-1;$i++): ?>
-              <a class="page-link" id="item<?=$i ?>" title="<?=$i ?>">Loading...</a>
+              <a class="page-link unloaded" id="item<?=$i ?>" title="<?=$i ?>">Loading...</a>
             <? endfor; ?>
             <!-- LOADED ITEMS -->
             <? foreach($list as $j=>$item): ?>
@@ -123,7 +124,7 @@
             <!-- POST LOADING PLACEHOLDERS -->
             <? if(isset($this->outline['counts'][$key])): ?>
               <? for($i=$this->page+count($list);$i<$this->outline['counts'][$key];$i++): ?>
-                <a class="page-link" id="item<?=($i) ?>" title="<?=$i ?>">Loading...</a>
+                <a class="page-link unloaded" id="item<?=($i) ?>" title="<?=$i ?>">Loading...</a>
               <? endfor; ?>
             <? endif; ?>
           </div>

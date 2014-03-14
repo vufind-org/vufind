@@ -12,4 +12,5 @@
   width:100%;
 }
 .page-link.active { cursor:pointer }
+.page-link.loading { color:#059 }
 .page-link.selected { background:#DEF }
