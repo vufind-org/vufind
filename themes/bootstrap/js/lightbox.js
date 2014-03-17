@@ -8,6 +8,7 @@ var Lightbox = {
    */
   lastURL: false,
   lastPOST: false,
+  openingURL: false,
   shown: false,      // Is the lightbox deployed?
   XHR: false,        // Used for current in-progress XHR lightbox request
   openStack: [],     // Array of functions to be called after changeContent or the lightbox event 'shown'
@@ -113,6 +114,7 @@ var Lightbox = {
    */
   closeActions: function() {
     Lightbox.shown = false;
+    Lightbox.openingURL = false;
     // Clean out stack
     while(Lightbox.closeStack.length > 0) {
       var f = Lightbox.closeStack.pop();
@@ -230,6 +232,10 @@ var Lightbox = {
       }
     });
     // Store current "page" context for empty targets
+    if(this.openingURL === false) {
+      this.openingURL = url;
+      
+    }
     this.lastURL = url;
     this.lastPOST = post;
     //this.openActions();

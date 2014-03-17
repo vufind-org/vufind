@@ -163,8 +163,6 @@ function cartSubmit($form) {
       Lightbox.displayError(vufindString['bulk_noitems_advice']);
     }
   } else {
-    lastCartSubmit = $form;
-    Lightbox.addCloseAction(function(){lastCartSubmit = false;});
     Lightbox.submit($form, Lightbox.changeContent);
   }
 }
@@ -201,17 +199,6 @@ $(document).ready(function() {
     $('.createAccountLink').click(function() {
       return Lightbox.get('MyResearch', 'Account');
     });
-  });
-  Lightbox.addFormCallback('accountForm', function() {
-    Lightbox.addCloseAction(function() {
-      document.location.href = path+'/MyResearch/';
-    });
-    if (typeof lastCartSubmit !== "undefined" && lastCartSubmit !== false) {
-      cartSubmit(lastCartSubmit);
-      lastCartSubmit = false;
-    } else {
-      Lightbox.close();
-    }
   });
   Lightbox.addFormHandler('cartForm', function(evt) {
     cartSubmit($(evt.target));

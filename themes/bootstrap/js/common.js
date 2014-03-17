@@ -167,10 +167,10 @@ function ajaxLogin(form) {
 
         // get any other form values
         for (var i = 0; i < form.length; i++) {
-            if (form.elements[i].name == 'password') {
-                continue;
-            }
-            params[form.elements[i].name] = form.elements[i].value;
+          if (form.elements[i].name == 'password') {
+            continue;
+          }
+          params[form.elements[i].name] = form.elements[i].value;
         }
 
         // login via ajax
@@ -378,6 +378,13 @@ $(document).ready(function() {
   Lightbox.addFormHandler('loginForm', function(evt) {
     ajaxLogin(evt.target);
     return false;
+  });
+  Lightbox.addFormCallback('accountForm', function() {
+    Lightbox.addCloseAction(function() {
+      document.location.href = path+'/MyResearch/';
+    });
+    Lightbox.getByUrl(Lightbox.openingURL);
+    Lightbox.openingURL = false;
   });
   
   // Help links
