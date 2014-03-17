@@ -429,6 +429,8 @@ class Summon extends SolrDefault
             if (!empty($formats)) {
                 $params['contenttype'] = $formats[0];
             }
+            $params['title'] = $this->getTitle();
+            $params['author'] = $this->getPrimaryAuthor();
             return $params;
         }
         return false;

@@ -76,7 +76,7 @@ class Generator
             'topPadding'   => 19,
             'wrapWidth'    => 80,
         );
-        foreach($settings as $i=>$setting) {
+        foreach ($settings as $i=>$setting) {
             $default[$i] = $setting;
         }
         $default['authorFont'] = $this->fontPath($default['authorFont']);
@@ -155,41 +155,41 @@ class Generator
         }
         if (null !== $callnumber) {
             $cv = 0;
-            for($i=0;$i<strlen($callnumber);$i++) {
-              $cv += ord($callnumber[$i]);
+            for ($i=0;$i<strlen($callnumber);$i++) {
+                $cv += ord($callnumber[$i]);
             }
             return $cv;
         } else {
             // If no callnumber, random
-            return ceil(rand(pow(2,4), pow(2,32)));
+            return ceil(rand(pow(2, 4), pow(2, 32)));
         }
     }
     
     /**
      * Turn number into pattern
      *
-     * @param integer $title      Title of the book
+     * @param integer $seed Seed used to generate the pattern
      *
      * @return string binary string describing a quarter of the pattern
      */
     protected function createPattern($seed)
     {
         // Convert to binary
-        $bc = decbin((int)$seed%pow(2,32));
+        $bc = decbin($seed);
         // If we have less that a half of a quarter
-        if(strlen($bc) < 8) {
-          // Rotate square of the first 4 into a 4x2
-          // Simulate matrix rotation on string
-          $bc = substr($bc, 0, 3)
-            . substr($bc, 0, 1)
-            . substr($bc, 2, 2)
-            . substr($bc, 3, 1)
-            . substr($bc, 1, 1);
+        if (strlen($bc) < 8) {
+            // Rotate square of the first 4 into a 4x2
+            // Simulate matrix rotation on string
+            $bc = substr($bc, 0, 3)
+                . substr($bc, 0, 1)
+                . substr($bc, 2, 2)
+                . substr($bc, 3, 1)
+                . substr($bc, 1, 1);
         }
         // If we have less than a quarter
-        if(strlen($bc) < 16) {
-          // Rotate the first 8 as a 4x2 into a 4x4
-          $bc .= strrev($bc);
+        if (strlen($bc) < 16) {
+            // Rotate the first 8 as a 4x2 into a 4x4
+            $bc .= strrev($bc);
         }
         return $bc;
     }
@@ -267,8 +267,8 @@ class Generator
     /**
      * Render author at bottom in wrapped, white text with black border
      *
-     * @param GCImage $im         Image object to render to
-     * @param string  $author     Author to write
+     * @param GCImage $im     Image object to render to
+     * @param string  $author Author to write
      *
      * @return void
      */
@@ -277,25 +277,31 @@ class Generator
         // Scale author to fit by incrementing fontsizes down
         $fontSize = $this->settings->fontSize;
         do {
-            $txtWidth=$this->textWidth($author, $this->settings->titleFont, $fontSize);
+            $txtWidth=$this->textWidth(
+                $author,
+                $this->settings->titleFont,
+                $fontSize
+            );
             $fontSize--;
         } while ($txtWidth > $this->settings->wrapWidth);
         // white text, black outline
+        $fontSize = ++$fontSize < $this->settings->minFontSize
+            ? $this->settings->fontSize
+            : $fontSize;
+        // Too small to read? Align left
+        $alignment = $fontSize < $this->settings->minFontSize
+            ? 'left'
+            : null;
         $this->drawText(
             $im,
             $author,
             3,
             $this->settings->size-3,
             $this->settings->authorFont,
-            ++$fontSize < $this->settings->minFontSize
-                ? $this->settings->fontSize
-                : $fontSize,
+            $fontSize,
             $this->white,
             $this->black,
-            // Too small to read? Align left
-            $fontSize < $this->settings->minFontSize
-                ? 'left'
-                : null
+            $alignment
         );
     }
     
@@ -344,8 +350,9 @@ class Generator
      *
      * @return void
      */
-    protected function drawText($im, $text, $x, $y, $font, $fontSize, $mcolor, $scolor, $align = null)
-    {
+    protected function drawText($im, $text, $x, $y,
+        $font, $fontSize, $mcolor, $scolor, $align = null
+    ) {
         $txtWidth = $this->textWidth(
             $text,
             $this->settings->titleFont,
@@ -393,17 +400,17 @@ class Generator
     protected function render($bc, $im, $color, $half, $box)
     {
         $bc = str_split($bc);
-        for($k=0;$k<4;$k++) {
+        for ($k=0;$k<4;$k++) {
             $x = $k%2   ? $half : $half-$box;
             $y = $k/2<1 ? $half : $half-$box;
             $u = $k%2   ? $box : -$box;
             $v = $k/2<1 ? $box : -$box;
-            for($i=0;$i<16;$i++) {
-                if($bc[$i] == "1") {
+            for ($i=0;$i<16;$i++) {
+                if ($bc[$i] == "1") {
                     imagefilledrectangle($im, $x, $y, $x+$box-1, $y+$box-1, $color);
                 }
                 $x += $u;
-                if($x >= $this->settings->size || $x < 0) {
+                if ($x >= $this->settings->size || $x < 0) {
                     $x = $k%2 ? $half : $half-$box;
                     $y += $v;
                 }
@@ -425,7 +432,9 @@ class Generator
     protected function makeHSBColor($im, $h, $s, $v)
     {
         $s /= 256.0;
-        if ($s == 0.0) return imagecolorallocate($im, $v,$v,$v);
+        if ($s == 0.0) {
+            return imagecolorallocate($im, $v, $v, $v);
+        }
         $h /= (256.0 / 6.0);
         $i = floor($h);
         $f = $h - $i;
@@ -433,12 +442,18 @@ class Generator
         $q = (integer)($v * (1.0 - $s * $f));
         $t = (integer)($v * (1.0 - $s * (1.0 - $f)));
         switch($i) {
-            case 0:  return imagecolorallocate($im, $v,$t,$p);
-            case 1:  return imagecolorallocate($im, $q,$v,$p);
-            case 2:  return imagecolorallocate($im, $p,$v,$t);
-            case 3:  return imagecolorallocate($im, $p,$q,$v);
-            case 4:  return imagecolorallocate($im, $t,$p,$v);
-            default: return imagecolorallocate($im, $v,$p,$q);
+        case 0:
+            return imagecolorallocate($im, $v, $t, $p);
+        case 1:
+            return imagecolorallocate($im, $q, $v, $p);
+        case 2:
+            return imagecolorallocate($im, $p, $v, $t);
+        case 3:
+            return imagecolorallocate($im, $p, $q, $v);
+        case 4:
+            return imagecolorallocate($im, $t, $p, $v);
+        default:
+            return imagecolorallocate($im, $v, $p, $q);
         }
         return imagecolorallocate($im, $R, $G, $B);
     }

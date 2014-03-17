@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, console, deparam, extractSource, hexEncode, htmlEncode, path, rc4Encrypt, refreshCommentList, vufindString */
+/*global checkSaveStatuses, console, deparam, path, refreshCommentList, vufindString */
 
 var Lightbox = {
   /**
@@ -219,7 +219,7 @@ var Lightbox = {
           try {
             var data = JSON.parse(d.responseText);
             Lightbox.changeContent('<p class="alert alert-error">'+data.data+'</p>');
-          } catch(e) {
+          } catch(error) {
             Lightbox.changeContent('<p class="alert alert-error">'+d.responseText+'</p>');
           }
         } else {
