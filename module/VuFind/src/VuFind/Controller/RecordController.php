@@ -360,7 +360,7 @@ class RecordController extends AbstractRecord
             $function = (string)$checkRequests['function'];
             $results = $catalog->$function($details);
 
-            // Success: Go to Display Storage Retrieval Requests
+            // Success: Go to Display ILL Requests
             if (isset($results['success']) && $results['success'] == true) {
                 $this->flashMessenger()->setNamespace('info')
                     ->addMessage('ill_request_place_success');
