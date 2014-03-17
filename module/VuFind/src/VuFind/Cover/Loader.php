@@ -211,9 +211,12 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     /**
      * Load an image given an ISBN and/or content type.
      *
-     * @param string $isn  ISBN
-     * @param string $size Requested size
-     * @param string $type Content type
+     * @param string $isn        ISBN
+     * @param string $size       Requested size
+     * @param string $type       Content type
+     * @param string $title      Title of book (for dynamic covers)
+     * @param string $author     Author of the book (for dynamic covers)
+     * @param string $callnumber Callnumber (unique id for dynamic covers)
      *
      * @return void
      */

@@ -1,4 +1,4 @@
-/*global Lightbox, path, vufindString */
+/*global checkSaveStatuses, console, extractSource, hexEncode, Lightbox, path, rc4Encrypt, refreshCommentList, vufindString */
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value){
@@ -248,26 +248,28 @@ function ajaxLogin(form) {
 /* --- BOOTSTRAP LIBRARY TWEAKS --- */
 // Prevent typeahead highlighting
 $.fn.typeahead.Constructor.prototype.render = function(items) {
-  var that = this
+  var that = this;
 
   items = $(items).map(function (i, item) {
-    i = $(that.options.item).attr('data-value', item)
-    i.find('a').html(that.highlighter(item))
-    return i[0]
+    i = $(that.options.item).attr('data-value', item);
+    i.find('a').html(that.highlighter(item));
+    return i[0];
   })
 
-  this.$menu.html(items)
-  return this
+  this.$menu.html(items);
+  return this;
 };
 // Enter without highlight does not delete the query
 $.fn.typeahead.Constructor.prototype.select = function () {
-  var val = this.$menu.find('.active')
-  if(val.length > 0) val = val.attr('data-value')
-  else val = this.$element.val()
+  var val = this.$menu.find('.active');
+  if (val.length > 0) {
+    val = val.attr('data-value');
+  }
+  else val = this.$element.val();
   this.$element
     .val(this.updater(val))
-    .change()
-  return this.hide()
+    .change();
+  return this.hide();
 }
 
 $(document).ready(function() {
