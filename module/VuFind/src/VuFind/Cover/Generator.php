@@ -175,7 +175,7 @@ class Generator
     protected function createPattern($seed)
     {
         // Convert to binary
-        $bc = decbin((int)$seed%pow(2,32));
+        $bc = decbin($seed);
         // If we have less that a half of a quarter
         if(strlen($bc) < 8) {
           // Rotate square of the first 4 into a 4x2
