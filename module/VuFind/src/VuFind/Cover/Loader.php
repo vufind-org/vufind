@@ -202,7 +202,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     /**
      * Get Cover Generator Object
      *
-     * return VuFind\Cover\Generator
+     * @return VuFind\Cover\Generator
      */
     public function getCoverGenerator()
     {

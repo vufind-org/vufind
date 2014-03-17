@@ -269,7 +269,7 @@ $.fn.typeahead.Constructor.prototype.select = function () {
   }
   this.$element.val(this.updater(val)).change();
   return this.hide();
-}
+};
 
 $(document).ready(function() {
   // Highlight previous links, grey out following
