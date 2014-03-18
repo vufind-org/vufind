@@ -146,53 +146,53 @@ class Solr extends AbstractBase
      *
      * @return string
      */
-	protected function getChildren($parentID, &$count)
-	{
-		$query   = new Query(
-			'hierarchy_parent_id:"' . addcslashes($parentID, '"') . '"'
-		);
-		$results = $this->searchService->search('Solr', $query, 0, $this->CHILD_LIMIT);
-		if ($results->getTotal() < 1) {
-			return '';
-		}
-		$xml     = array();
-		$sorting = $this->getHierarchyDriver()->treeSorting();
+    protected function getChildren($parentID, &$count)
+    {
+        $query   = new Query(
+            'hierarchy_parent_id:"' . addcslashes($parentID, '"') . '"'
+        );
+        $results = $this->searchService->search('Solr', $query, 0, $this->CHILD_LIMIT);
+        if ($results->getTotal() < 1) {
+            return '';
+        }
+        $xml     = array();
+        $sorting = $this->getHierarchyDriver()->treeSorting();
 
-		foreach ($results->getRecords() as $current) {
-			++$count;
-			if ($sorting) {
-				$positions = $current->getHierarchyPositionsInParents();
+        foreach ($results->getRecords() as $current) {
+            ++$count;
+            if ($sorting) {
+                $positions = $current->getHierarchyPositionsInParents();
                 $titles = $current->getHierarchyTitlesInParents();
-				if (isset($positions[$parentID])) {
-					$sequence = $positions[$parentID];
+                if (isset($positions[$parentID])) {
+                    $sequence = $positions[$parentID];
                     $title    = $titles[$parentID];
-				}
-				else {
-					$title = $current->getIs_hierarchy_title();
-				}
-			}
+                }
+                else {
+                    $title = $current->getIs_hierarchy_title();
+                }
+            }
 
-			$this->debug("$parentID: " . $current->getUniqueID());
-			$xmlNode      = '';
-			$isCollection = $current->isCollection() ? "true" : "false";
-			$xmlNode .= '<item id="' . htmlspecialchars($current->getUniqueID()) .
-					'" isCollection="' . $isCollection . '"><content><name>' .
-					htmlspecialchars($title) . '</name></content>';
-			$xmlNode .= $this->getChildren($current->getUniqueID(), $count);
-			$xmlNode .= '</item>';
-			array_push($xml, array((isset($sequence) ? $sequence : 0), $xmlNode));
-		}
+            $this->debug("$parentID: " . $current->getUniqueID());
+            $xmlNode      = '';
+            $isCollection = $current->isCollection() ? "true" : "false";
+            $xmlNode .= '<item id="' . htmlspecialchars($current->getUniqueID()) .
+                '" isCollection="' . $isCollection . '"><content><name>' .
+                htmlspecialchars($title) . '</name></content>';
+            $xmlNode .= $this->getChildren($current->getUniqueID(), $count);
+            $xmlNode .= '</item>';
+            array_push($xml, array((isset($sequence) ? $sequence : 0), $xmlNode));
+        }
 
-		if ($sorting) {
-			$this->sortNodes($xml, 0);
-		}
+        if ($sorting) {
+            $this->sortNodes($xml, 0);
+        }
 
-		$xmlReturnString = '';
-		foreach ($xml as $node) {
-			$xmlReturnString .= $node[1];
-		}
-		return $xmlReturnString;
-	}
+        $xmlReturnString = '';
+        foreach ($xml as $node) {
+            $xmlReturnString .= $node[1];
+        }
+        return $xmlReturnString;
+    }
 
     /**
      * Sort Nodes
