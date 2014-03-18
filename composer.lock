@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "62e7c688185a99c2490f6124b718e711",
+    "hash": "cf5f2fd59957a5e9197232e73e2e0a7e",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -653,6 +653,52 @@
                 "issues": "https://github.com/zendframework/ZendService_Amazon/issues"
             },
             "time": "2012-10-17 19:02:58"
+        },
+        {
+            "name": "zendframework/zendservice-recaptcha",
+            "version": "2.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/zendframework/ZendService_ReCaptcha.git",
+                "reference": "4324cca8502d9f47b3b43a18acdd3fdbeb965536"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://packages.zendframework.com/composer/zendframework-zendservice-recaptcha-4324cca8502d9f47b3b43a18acdd3fdbeb965536-zip-8c45bf.zip",
+                "reference": "2.0.1",
+                "shasum": "fab92465cda889ff975c1ec79bb378d7e3f39081"
+            },
+            "require": {
+                "php": ">=5.3.3",
+                "zendframework/zend-http": ">=2.0.0",
+                "zendframework/zend-uri": ">=2.0.0",
+                "zendframework/zend-version": ">=2.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "ZendService": "library/"
+                }
+            },
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "OOP wrapper for the ReCaptcha web service",
+            "homepage": "http://packages.zendframework.com/",
+            "keywords": [
+                "recaptcha",
+                "zf2"
+            ],
+            "support": {
+                "source": "https://github.com/zendframework/ZendService_ReCaptcha/tree/release-2.0.1",
+                "issues": "https://github.com/zendframework/ZendService_ReCaptcha/issues"
+            },
+            "time": "2012-09-24 15:18:29"
         },
         {
             "name": "zendframework/zendxml",

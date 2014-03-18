@@ -456,4 +456,28 @@ class AbstractBase extends AbstractActionController
     {
         return $this->getServiceLocator()->get('VuFind\Search\Memory');
     }
+    
+    /**
+     *
+     *
+     *
+     */
+    protected function validateCaptcha($recaptcha)
+    {
+        $captchaPassed = true;
+        $recaptchaChallenge = $this->params()->fromPost('recaptcha_challenge_field');
+        $recaptchaResponse = $this->params()->fromPost('recaptcha_response_field', 'manual_challenge');
+        if (empty($recaptchaResponse)) {
+            $recaptchaResponse = 'manual_challenge';
+        }
+        if (isset($recaptcha) && !empty($recaptchaChallenge)) {
+            $result = $recaptcha->verify($recaptchaChallenge, $recaptchaResponse);
+            $captchaPassed = $result->isValid();
+            if (!$captchaPassed) {
+                $this->flashMessenger()->setNamespace('error')
+                    ->addMessage('CAPTCHA not passed');
+            }
+        }
+        return $captchaPassed;
+    }
 }

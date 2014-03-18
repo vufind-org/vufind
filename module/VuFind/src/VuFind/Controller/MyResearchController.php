@@ -176,9 +176,25 @@ class MyResearchController extends AbstractBase
         if (!isset($followup->url)) {
             $followup->url = $this->getRequest()->getServer()->get('HTTP_REFERER');
         }
+        
+        // Make view
+        $view = $this->createViewModel();
+        $config = $this->getConfig();
+        // Setup reCaptcha
+        if (isset($config->Captcha) && in_array('newAccount', $config->Captcha->forms->toArray())) {
+            $recaptcha = new \VuFind\Auth\ReCaptcha(
+                $config->Captcha->publicKey,
+                $config->Captcha->privateKey,
+                $this->getServiceLocator()
+            );
+            $view->recaptcha = $recaptcha;
+            $view->config = $config;
+        }
 
         // Process request, if necessary:
-        if (!is_null($this->params()->fromPost('submit', null))) {
+        if (!is_null($this->params()->fromPost('submit', null))
+        && $this->validateCaptcha($recaptcha)
+        ) {
             try {
                 $this->getAuthManager()->create($this->getRequest());
                 return $this->forwardTo('MyResearch', 'Home');
@@ -189,7 +205,6 @@ class MyResearchController extends AbstractBase
         }
 
         // Pass request to view so we can repopulate user parameters in form:
-        $view = $this->createViewModel();
         $view->request = $this->getRequest()->getPost();
         return $view;
     }
