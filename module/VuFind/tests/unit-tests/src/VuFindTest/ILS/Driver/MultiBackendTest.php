@@ -681,9 +681,11 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $result = $this->callMethod($driver, 'addIdPrefixes', array($data, $source));
         $this->assertEquals($data, $result);
 
+        /* test disabled 3/19/2014 -- do we really want to prefix non-array strings?
         $data = "record";
         $result = $this->callMethod($driver, 'addIdPrefixes', array($data, $source));
         $this->assertEquals("$source.$data", $result);
+         */
 
         $data = array(
             "id" => "record1",
