@@ -177,19 +177,8 @@ class MyResearchController extends AbstractBase
             $followup->url = $this->getRequest()->getServer()->get('HTTP_REFERER');
         }
         
-        // Make view
-        $view = $this->createViewModel();
-        $config = $this->getConfig();
-        // Setup reCaptcha
-        if (isset($config->Captcha) && in_array('newAccount', $config->Captcha->forms->toArray())) {
-            $recaptcha = new \VuFind\Auth\ReCaptcha(
-                $config->Captcha->publicKey,
-                $config->Captcha->privateKey,
-                $this->getServiceLocator()
-            );
-            $view->recaptcha = $recaptcha;
-            $view->config = $config;
-        }
+        // Process form submission:
+        if ($this->params()->fromPost('submit') && $this->recaptcha()->validate()) {
 
         // Process request, if necessary:
         if (!is_null($this->params()->fromPost('submit', null))
@@ -204,8 +193,14 @@ class MyResearchController extends AbstractBase
             }
         }
 
+        // Make view
+        $view = $this->createViewModel();
         // Pass request to view so we can repopulate user parameters in form:
         $view->request = $this->getRequest()->getPost();
+        // Set up reCaptcha
+        if ($this->recaptcha()->active('newAccount')) {
+            $view->useRecaptcha = true;
+        }
         return $view;
     }
 

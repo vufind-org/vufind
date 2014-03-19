@@ -247,6 +247,27 @@ class Factory
      *
      * @return \VuFind\Record\Loader
      */
+    public static function getRecaptcha(ServiceManager $sm)
+    {
+        $config = $sm->get('VuFind\Config')->get('config');
+        $recaptcha = new \ZendService\ReCaptcha\ReCaptcha(
+            $config->Captcha->publicKey,
+            $config->Captcha->privateKey
+        );
+        if (isset($config->Captcha->theme)) {
+            $recaptcha->setOption('theme', $config->Captcha->theme);
+            $recaptcha->setOption('custom_theme_widget', $config->Captcha->elementID);
+        }
+        return $recaptcha;
+    }
+
+    /**
+     * Construct the record loader.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Record\Loader
+     */
     public static function getRecordLoader(ServiceManager $sm)
     {
         return new \VuFind\Record\Loader(

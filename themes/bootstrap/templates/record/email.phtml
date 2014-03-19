@@ -31,10 +31,10 @@
       <textarea id="email_message" class="input-xlarge" name="message" rows="4"><?=isset($this->message) ? $this->message : ''?></textarea>
     </div>
   </div>
-  <? if(isset($this->recaptcha)): ?>
+  <? if(isset($this->useRecaptcha) && $this->useRecaptcha): ?>
     <div class="control-group">
       <div class="controls">
-        <?=$this->recaptcha->getHTML(); ?>
+        <?=$this->recaptcha(); ?>
       </div>
     </div>
   <? endif; ?>

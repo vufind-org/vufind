@@ -37,10 +37,10 @@
     <? $keys = is_array($this->carriers) ? array_keys($this->carriers) : array(); ?>
     <input type="hidden" name="provider" value="<?=isset($keys[0]) ? $keys[0] : ''?>" />
   <? endif; ?>
-  <? if(isset($this->recaptcha)): ?>
+  <? if(isset($this->useRecaptcha) && $this->useRecaptcha): ?>
     <div class="control-group">
       <div class="controls">
-        <?=$this->recaptcha->getHTML(); ?>
+        <?=$this->recaptcha(); ?>
       </div>
     </div>
   <? endif; ?>

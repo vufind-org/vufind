@@ -356,21 +356,14 @@ class AbstractRecord extends AbstractBase
         // Retrieve the record driver:
         $driver = $this->loadRecord();
 
-        // Process form submission:
+        // Create view
         $view = $this->createEmailViewModel();
         // Set up reCaptcha
-        if (isset($config->Captcha)
-        && in_array('email', $config->Captcha->forms->toArray())
-        ) {
-            $recaptcha = new \VuFind\Auth\ReCaptcha(
-                $config->Captcha->publicKey,
-                $config->Captcha->privateKey,
-                $this->getServiceLocator()
-            );
-            $view->recaptcha = $recaptcha;
-            $view->config = $config;
+        if ($this->recaptcha()->active('email')) {
+            $view->useRecaptcha = true;
         }
-        if ($this->params()->fromPost('submit') && $this->validateCaptcha($recaptcha)) {
+        // Process form submission:
+        if ($this->params()->fromPost('submit') && $this->recaptcha()->validate()) {
             // Attempt to send the email and show an appropriate flash message:
             try {
                 $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
@@ -407,21 +400,11 @@ class AbstractRecord extends AbstractBase
         $view->carriers = $sms->getCarriers();
         $view->validation = $sms->getValidationType();
         // Set up reCaptcha
-        $config = $this->getConfig();
-        if (isset($config->Captcha)
-        && in_array('sms', $config->Captcha->forms->toArray())
-        ) {
-            $recaptcha = new \VuFind\Auth\ReCaptcha(
-                $config->Captcha->publicKey,
-                $config->Captcha->privateKey,
-                $this->getServiceLocator()
-            );
-            $view->recaptcha = $recaptcha;
-            $view->config = $config;
+        if ($this->recaptcha()->active('sms')) {
+            $view->useRecaptcha = true;
         }
-
         // Process form submission:
-        if ($this->params()->fromPost('submit') && $this->validateCaptcha($recaptcha)) {
+        if ($this->params()->fromPost('submit') && $this->recaptcha()->validate()) {
             // Send parameters back to view so form can be re-populated:
             $view->to = $this->params()->fromPost('to');
             $view->provider = $this->params()->fromPost('provider');

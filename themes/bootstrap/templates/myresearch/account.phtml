@@ -11,10 +11,10 @@
 
 <form method="post" action="" name="accountForm" id="accountForm" class="form-horizontal">
   <?=$this->auth()->getCreateFields()?>
-  <? if(isset($this->recaptcha)): ?>
+  <? if(isset($this->useRecaptcha) && $this->useRecaptcha): ?>
     <div class="control-group">
       <div class="controls">
-        <?=$this->recaptcha->getHTML(); ?>
+        <?=$this->recaptcha(); ?>
       </div>
     </div>
   <? endif; ?>

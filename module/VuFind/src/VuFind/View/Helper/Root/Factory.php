@@ -298,6 +298,20 @@ class Factory
     }
 
     /**
+     * Construct the Recaptcha helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Recaptcha
+     */
+    public static function getRecaptcha(ServiceManager $sm)
+    {
+        return new Recaptcha(
+            $sm->getServiceLocator()->get('VuFind\Recaptcha')
+        );
+    }
+
+    /**
      * Construct the Record helper.
      *
      * @param ServiceManager $sm Service manager.
