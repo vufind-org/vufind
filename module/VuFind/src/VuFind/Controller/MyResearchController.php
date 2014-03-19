@@ -176,13 +176,10 @@ class MyResearchController extends AbstractBase
         if (!isset($followup->url)) {
             $followup->url = $this->getRequest()->getServer()->get('HTTP_REFERER');
         }
-        
-        // Process form submission:
-        if ($this->params()->fromPost('submit') && $this->recaptcha()->validate()) {
 
         // Process request, if necessary:
         if (!is_null($this->params()->fromPost('submit', null))
-        && $this->validateCaptcha($recaptcha)
+         && $this->recaptcha()->validate()
         ) {
             try {
                 $this->getAuthManager()->create($this->getRequest());

@@ -1,7 +1,7 @@
 <?=$this->reCaptchaOptions ?>
-<? if ($this->theme == 'custom'): ?>
-  <div id="custom_recaptcha_widget" style="display:none">
 
+<div id="custom_recaptcha_widget" style="display:none">
+<? if ($this->theme == 'custom'): ?>
     <div id="recaptcha_image"></div>
     <div class="recaptcha_only_if_incorrect_sol" style="color:red">Incorrect please try again</div>
 
@@ -15,12 +15,15 @@
     <div class="recaptcha_only_if_audio"><a href="javascript:Recaptcha.switch_type('image')">Get an image CAPTCHA</a></div>
 
     <div><a href="javascript:Recaptcha.showhelp()">Help</a></div>
-
-  </div>
 <? endif; ?>
-<script type="text/javascript" src="<?=$this->host ?>/challenge?k=<?=$this->publicKey ?>"></script>
+</div>
+
 <noscript>
   <iframe src="<?=$this->host ?>/noscript?k=<?=$this->publicKey ?><?=$this->errorPart ?>" height="300" width="500" frameborder="0"></iframe>
   <textarea name="<?=$this->challengeField ?>" rows="3" cols="40"></textarea>
   <input type="hidden" name="<?=$this->responseField ?>" value="manual_challenge"/>
 </noscript>
+
+<script type="text/javascript">
+  Recaptcha.create("<?=$this->publicKey ?>", 'custom_recaptcha_widget', <?=$this->options ?>);
+</script>

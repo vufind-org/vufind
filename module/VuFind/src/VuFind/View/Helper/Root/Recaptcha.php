@@ -45,15 +45,23 @@ class Recaptcha extends AbstractHelper
      * @var Recaptcha
      */
     protected $recaptcha;
+    
+    /**
+     * Recaptcha config
+     *
+     * @var Config
+     */
+    protected $active;
 
     /**
      * Constructor
      *
      * @param \ZendService\Recaptcha\Recaptcha $recaptcha Custom formatted Recaptcha object
      */
-    public function __construct($rc)
+    public function __construct($rc, $config)
     {
         $this->recaptcha = $rc;
+        $this->active = isset($config->Captcha);
     }
 
     /**
@@ -62,6 +70,16 @@ class Recaptcha extends AbstractHelper
      * @return string $html
      */
     public function __invoke()
+    {
+        return $this;
+    }
+
+    /**
+     * Generate flash message <div>'s with appropriate classes based on message type.
+     *
+     * @return string $html
+     */
+    public function html()
     {
         if ($this->recaptcha->getPublicKey() === null) {
             throw new Exception('Missing public key');
@@ -84,11 +102,8 @@ class Recaptcha extends AbstractHelper
         $options = $this->recaptcha->getOptions();
         if (!empty($options)) {
             $encoded = \Zend\Json\Json::encode($options);
-            $reCaptchaOptions = <<<SCRIPT
-<script type="text/javascript">
-    var RecaptchaOptions = {$encoded};
-</script>
-SCRIPT;
+        } else {
+            $encoded = "{}";
         }
         $challengeField = 'recaptcha_challenge_field';
         $responseField  = 'recaptcha_response_field';
@@ -103,11 +118,21 @@ SCRIPT;
                 'challengeField'   => $challengeField,
                 'errorPart'        => $errorPart,
                 'host'             => $host,
+                'options'          => $encoded,
                 'publicKey'        => $this->recaptcha->getPublicKey(),
-                'reCaptchaOptions' => $reCaptchaOptions,
                 'responseField'    => $responseField,
                 'theme'            => $options['theme'],
             )
         );
+    }
+    
+    /**
+     *
+     *
+     *
+     */
+    public function active($domain)
+    {
+        return $this->active;
     }
 }

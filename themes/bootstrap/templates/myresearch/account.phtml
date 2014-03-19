@@ -14,7 +14,7 @@
   <? if(isset($this->useRecaptcha) && $this->useRecaptcha): ?>
     <div class="control-group">
       <div class="controls">
-        <?=$this->recaptcha(); ?>
+        <?=$this->recaptcha()->html(); ?>
       </div>
     </div>
   <? endif; ?>
