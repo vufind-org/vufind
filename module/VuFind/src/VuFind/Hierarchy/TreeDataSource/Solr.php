@@ -148,32 +148,36 @@ class Solr extends AbstractBase
      */
     protected function getChildren($parentID, &$count)
     {
-        $query   = new Query(
+        $query = new Query(
             'hierarchy_parent_id:"' . addcslashes($parentID, '"') . '"'
         );
-        $results = $this->searchService->search('Solr', $query, 0, $this->CHILD_LIMIT);
+        $results = $this->searchService->search(
+            'Solr', $query, 0, 10000, new ParamBag(array('fq' => $this->filters))
+        );
         if ($results->getTotal() < 1) {
             return '';
         }
-        $xml     = array();
+        $xml = array();
         $sorting = $this->getHierarchyDriver()->treeSorting();
 
         foreach ($results->getRecords() as $current) {
             ++$count;
             if ($sorting) {
                 $positions = $current->getHierarchyPositionsInParents();
-                $titles = $current->getHierarchyTitlesInParents();
+                $titles = $current->getTitlesInHierarchy();
                 if (isset($positions[$parentID])) {
                     $sequence = $positions[$parentID];
-                    $title    = $titles[$parentID];
+                }
+                if (is_array($titles)) {
+                    $title = $titles[$parentID];
                 }
                 else {
-                    $title = $current->getIs_hierarchy_title();
+                    $title = $current->getTitle();
                 }
             }
 
             $this->debug("$parentID: " . $current->getUniqueID());
-            $xmlNode      = '';
+            $xmlNode = '';
             $isCollection = $current->isCollection() ? "true" : "false";
             $xmlNode .= '<item id="' . htmlspecialchars($current->getUniqueID()) .
                 '" isCollection="' . $isCollection . '"><content><name>' .
