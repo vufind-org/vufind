@@ -197,7 +197,12 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             = (isset($this->config['pickUpLocations']))
             ? $this->config['pickUpLocations'] : false;
         $this->defaultPickUpLocation
-            = $this->config['Holds']['defaultPickUpLocation'];
+            = isset($this->config['Holds']['defaultPickUpLocation'])
+            ? $this->config['Holds']['defaultPickUpLocation']
+            : '';
+        if ($this->defaultPickUpLocation === 'user-selected') {
+            $this->defaultPickUpLocation = false;
+        }
         $this->holdCheckLimit
             = isset($this->config['Holds']['holdCheckLimit'])
             ? $this->config['Holds']['holdCheckLimit'] : "15";
@@ -1692,8 +1697,15 @@ EOT;
         $mfhdId = isset($details['holdings_id']) ? $details['holdings_id'] : false;
         $comment = $details['comment'];
         $bibId = $details['id'];
-        $pickUpLocation = !empty($details['pickUpLocation'])
-            ? $details['pickUpLocation'] : '';
+
+        // Make Sure Pick Up Location is Valid
+        if (isset($details['pickUpLocation'])
+            && !$this->pickUpLocationIsValid(
+                $details['pickUpLocation'], $patron, $details
+            )
+        ) {
+            return $this->holdError("hold_invalid_pickup");
+        }
 
         // Attempt Request
         $hierarchy = array();
@@ -1723,18 +1735,18 @@ EOT;
                 'dbkey' => $this->ws_dbKey,
                 'mfhdId' => $mfhdId
             );
-            if ($pickUpLocation) {
+            if (isset($details['pickUpLocation'])) {
                 $xml['call-slip-title-parameters']['pickup-location']
-                    = $pickUpLocation;
+                    = $details['pickUpLocation'];
             }
         } else {
             $xml['call-slip-parameters'] = array(
                 'comment' => $comment,
                 'dbkey' => $this->ws_dbKey
             );
-            if ($pickUpLocation) {
+            if (isset($details['pickUpLocation'])) {
                 $xml['call-slip-parameters']['pickup-location']
-                    = $pickUpLocation;
+                    = $details['pickUpLocation'];
             }
         }
 
