@@ -64,9 +64,9 @@ class Recaptcha extends AbstractPlugin
     }
     
     /**
+     * Return the raw service object
      *
-     *
-     *
+     * @return VuFind\Service\Recaptcha
      */
     public function getObject()
     {
@@ -74,9 +74,9 @@ class Recaptcha extends AbstractPlugin
     }
     
     /**
+     * Pull the captcha field from POST and check them for accuracy
      *
-     *
-     *
+     * @return boolean
      */
     public function validate()
     {
@@ -89,20 +89,23 @@ class Recaptcha extends AbstractPlugin
             $recaptchaResponse = 'manual_challenge';
         }
         if (!empty($recaptchaChallenge)) {
-            $result = $this->recaptcha->verify($recaptchaChallenge, $recaptchaResponse);
+            $result = $this->recaptcha->verify(
+                $recaptchaChallenge,
+                $recaptchaResponse
+            );
             $captchaPassed = $result->isValid();
             if (!$captchaPassed) {
-                $this->getController()->flashMessenger()
-                    ->setNamespace('error')->addMessage('CAPTCHA not passed');
+                $this->getController()->flashMessenger()->setNamespace('error')
+                    ->addMessage('CAPTCHA not passed');
             }
         }
         return $captchaPassed;
     }
     
     /**
+     * Return whether a specific form is set for Captcha in the config
      *
-     *
-     *
+     * @return boolean
      */
     public function active($domain)
     {

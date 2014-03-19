@@ -65,9 +65,9 @@ class Recaptcha extends AbstractHelper
     }
 
     /**
-     * Generate flash message <div>'s with appropriate classes based on message type.
+     * Return this object
      *
-     * @return string $html
+     * @return VuFind\View\Helper\Root\Recaptcha
      */
     public function __invoke()
     {
@@ -75,7 +75,7 @@ class Recaptcha extends AbstractHelper
     }
 
     /**
-     * Generate flash message <div>'s with appropriate classes based on message type.
+     * Generate <div> with ReCaptcha from render.
      *
      * @return string $html
      */
@@ -127,9 +127,9 @@ class Recaptcha extends AbstractHelper
     }
     
     /**
+     * Return whether Captcha is active in the config
      *
-     *
-     *
+     * @return boolean
      */
     public function active($domain)
     {
