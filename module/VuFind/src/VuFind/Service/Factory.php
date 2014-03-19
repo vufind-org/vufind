@@ -256,7 +256,7 @@ class Factory
         );
         if (isset($config->Captcha->theme)) {
             $recaptcha->setOption('theme', $config->Captcha->theme);
-            $recaptcha->setOption('custom_theme_widget', $config->Captcha->elementID);
+            $recaptcha->setOption('custom_theme_widget', 'custom_recaptcha_widget');
         }
         return $recaptcha;
     }
