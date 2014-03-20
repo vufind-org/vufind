@@ -63,6 +63,13 @@ class SideFacets extends AbstractFacets
     protected $checkboxFacets = array();
 
     /**
+     * Collapsed facet setting
+     *
+     * @var bool|string
+     */
+    protected $collapsedFacets = false;
+
+    /**
      * setConfig
      *
      * Store the configuration of the recommendation module.
@@ -105,6 +112,11 @@ class SideFacets extends AbstractFacets
             ? $config->$checkboxSection->toArray() : array();
         if (isset($flipCheckboxes) && $flipCheckboxes) {
             $this->checkboxFacets = array_flip($this->checkboxFacets);
+        }
+
+        // Collapsed facets:
+        if (isset($config->Results_Settings->collapsedFacets)) {
+            $this->collapsedFacets = $config->Results_Settings->collapsedFacets;
         }
     }
 
@@ -179,17 +191,11 @@ class SideFacets extends AbstractFacets
      */
     public function getCollapsedFacets()
     {
-        $config = $this->configLoader->get('facets');
-        if (!isset($config->Results_Settings->collapsedFacets)
-            || empty($config->Results_Settings->collapsedFacets)
-        ) {
+        if (empty($this->collapsedFacets)) {
             return array();
-        } elseif ($config->Results_Settings->collapsedFacets == '*') {
+        } elseif ($this->collapsedFacets == '*') {
             return array_keys($this->getFacetSet());
-        } else {
-            return array_map(
-                'trim', explode(',', $config->Results_Settings->collapsedFacets)
-            );
         }
+        return array_map('trim', explode(',', $this->collapsedFacets));
     }
 }

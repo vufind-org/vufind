@@ -538,12 +538,10 @@ class Holds
     {
         // Group by holdings id unless configured otherwise or holdings id not
         // available
-        if ($this->config->Catalog->holdings_grouping != 'location_name'
-            && isset($copy['holdings_id'])
-        ) {
-            return $copy['holdings_id'];
-        }
-        return $copy['location'];
+        $grouping = isset($this->config->Catalog->holdings_grouping)
+            ? $this->config->Catalog->holdings_grouping : 'holdings_id';
+        return ($grouping != 'location_name' && isset($copy['holdings_id']))
+            ? $copy['holdings_id'] : $copy['location'];
     }
 
     /**

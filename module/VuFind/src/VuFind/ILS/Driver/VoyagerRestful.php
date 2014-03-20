@@ -197,7 +197,12 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             = (isset($this->config['pickUpLocations']))
             ? $this->config['pickUpLocations'] : false;
         $this->defaultPickUpLocation
-            = $this->config['Holds']['defaultPickUpLocation'];
+            = isset($this->config['Holds']['defaultPickUpLocation'])
+            ? $this->config['Holds']['defaultPickUpLocation']
+            : '';
+        if ($this->defaultPickUpLocation === 'user-selected') {
+            $this->defaultPickUpLocation = false;
+        }
         $this->holdCheckLimit
             = isset($this->config['Holds']['holdCheckLimit'])
             ? $this->config['Holds']['holdCheckLimit'] : "15";
@@ -352,7 +357,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
      * @param array $holdingsRow The holdings row to analyze.
      *
      * @return bool Whether an item is holdable
-     * @access protected
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function isILLRequestAllowed($holdingsRow)
     {
@@ -1405,9 +1410,8 @@ EOT;
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @return mixed        Array of the patron's transactions on success,
-     * PEAR_Error otherwise.
-     * @access public
+     * @throws ILSException
+     * @return mixed        Array of the patron's transactions on success.
      */
     public function getMyTransactions($patron)
     {
@@ -1694,8 +1698,15 @@ EOT;
         $mfhdId = isset($details['holdings_id']) ? $details['holdings_id'] : false;
         $comment = $details['comment'];
         $bibId = $details['id'];
-        $pickUpLocation = !empty($details['pickUpLocation'])
-            ? $details['pickUpLocation'] : '';
+
+        // Make Sure Pick Up Location is Valid
+        if (isset($details['pickUpLocation'])
+            && !$this->pickUpLocationIsValid(
+                $details['pickUpLocation'], $patron, $details
+            )
+        ) {
+            return $this->holdError("hold_invalid_pickup");
+        }
 
         // Attempt Request
         $hierarchy = array();
@@ -1725,18 +1736,18 @@ EOT;
                 'dbkey' => $this->ws_dbKey,
                 'mfhdId' => $mfhdId
             );
-            if ($pickUpLocation) {
+            if (isset($details['pickUpLocation'])) {
                 $xml['call-slip-title-parameters']['pickup-location']
-                    = $pickUpLocation;
+                    = $details['pickUpLocation'];
             }
         } else {
             $xml['call-slip-parameters'] = array(
                 'comment' => $comment,
                 'dbkey' => $this->ws_dbKey
             );
-            if ($pickUpLocation) {
+            if (isset($details['pickUpLocation'])) {
                 $xml['call-slip-parameters']['pickup-location']
-                    = $pickUpLocation;
+                    = $details['pickUpLocation'];
             }
         }
 
@@ -1893,7 +1904,7 @@ EOT;
             return false;
         }
 
-        list($catSource, $catUsername) = explode('.', $patron['cat_username'], 2);
+        list(, $catUsername) = explode('.', $patron['cat_username'], 2);
         $patronId = $this->encodeXML($patronId);
         $patronHomeUbId = $this->encodeXML(
             $this->config['ILLRequestSources'][$source]
@@ -2145,6 +2156,7 @@ EOT;
      *
      * @return bool|array False if request not allowed, or an array of
      * locations.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getILLPickupLocations($id, $pickupLib, $patron)
     {
@@ -2157,14 +2169,13 @@ EOT;
             return $this->holdError('ill_request_unknown_patron_source');
         }
 
-        list($catSource, $catUsername) = explode('.', $patron['cat_username'], 2);
+        list(, $catUsername) = explode('.', $patron['cat_username'], 2);
         $patronId = $this->encodeXML($patronId);
         $patronHomeUbId = $this->encodeXML(
             $this->config['ILLRequestSources'][$source]
         );
         $lastname = $this->encodeXML($patron['lastname']);
         $barcode = $this->encodeXML($catUsername);
-        $localUbId = $this->encodeXML($this->ws_patronHomeUbId);
         $pickupLib = $this->encodeXML($pickupLib);
 
         $xml =  <<<EOT
@@ -2188,7 +2199,7 @@ EOT;
         );
 
         if ($response === false) {
-            return new PEAR_Error('ill_request_error_technical');
+            throw new ILSException('ill_request_error_technical');
         }
         // Process
         $response->registerXPathNamespace(
@@ -2197,9 +2208,9 @@ EOT;
         $response->registerXPathNamespace(
             'req', 'http://www.endinfosys.com/Voyager/requests'
         );
-        foreach ($response->xpath('//ser:message') as $message) {
+        if ($response->xpath('//ser:message')) {
             // Any message means a problem, right?
-            return new PEAR_Error('ill_request_error_technical');
+            throw new ILSException('ill_request_error_technical');
         }
         $locations = array();
         foreach ($response->xpath('//req:location') as $location) {
@@ -2222,7 +2233,6 @@ EOT;
      *
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
-     * @access public
      */
     public function placeILLRequest($details)
     {
@@ -2232,7 +2242,7 @@ EOT;
             return $this->holdError('ill_request_error_unknown_patron_source');
         }
 
-        list($catSource, $catUsername) = explode('.', $patron['cat_username'], 2);
+        list(, $catUsername) = explode('.', $patron['cat_username'], 2);
         $patronId = htmlspecialchars($patronId, ENT_COMPAT, 'UTF-8');
         $patronHomeUbId = $this->encodeXML(
             $this->config['ILLRequestSources'][$source]
@@ -2363,9 +2373,8 @@ EOT;
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @return mixed        Array of the patron's holds on success, PEAR_Error
-     * otherwise.
-     * @access public
+     * @throws ILSException
+     * @return mixed        Array of the patron's holds on success.
      */
     public function getMyILLRequests($patron)
     {
@@ -2373,8 +2382,6 @@ EOT;
             $this->getRemoteHolds($patron),
             $this->getRemoteCallSlips($patron)
         );
-
-        return $holds;
     }
 
     /**
@@ -2388,7 +2395,6 @@ EOT;
      *
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
-     * @access public
      */
     public function cancelILLRequests($cancelDetails)
     {
@@ -2462,7 +2468,6 @@ EOT;
      * @param array $details An array of item data
      *
      * @return string Data for use in a form field
-     * @access public
      */
     public function getCancelILLRequestDetails($details)
     {

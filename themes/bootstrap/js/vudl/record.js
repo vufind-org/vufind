@@ -4,7 +4,6 @@ var currTab = 'medium-tab';
 var updateFunction;
 var lastID = false;
 function ajaxGetView(pageObject) {
-  console.log(pageObject);
   pageObject['counts'] = counts;
   if (currTab == 'master-tab' && lastID == pageObject['id']) {
     // Trigger file download
@@ -57,23 +56,19 @@ function updateTechInfo(record) {
     }
   });
 }
-
 // ====== GET MORE THUMBNAILS ====== //
 var loadWait = false;
 // AJAX load all records flagged as on screen
 function findVisible() {
-  var chunk = true,min = -1,max;
+  var min = -1,max;
   // Flag pages on screen
-  $('.page-link').each(function(index, item) {
-    if($(item).offset().top > $('#collapse1').position().top-100
-    && $(item).offset().top < $('#collapse1').position().top+$('#collapse1').height()+300
-    && $(item).hasClass('loading')) {
-      $(item).removeClass('muted');
-      $(item).removeClass('loading');
+  $('.page-link.unloaded').each(function(index, item) {
+    if($(item).offset().top > $('#collapse1').position().top-vudlSettings.scroll.top
+    && $(item).offset().top < $('#collapse1').position().top+$('#collapse1').height()+vudlSettings.scroll.bottom
+    && $(item).hasClass('unloaded')) {
+      $(item).addClass('loading');
       max = parseInt($(item).attr('title'));
       if(min < 0) min = max;
-    } else {
-      if(min > -1) chunk = false;
     }
   });
   if(min > -1) {
@@ -102,10 +97,9 @@ function ajaxLoadPages(min, max) {
           .attr('id', 'item'+response.data.start)
           .html('<br/>'+page.label)
           .prepend(img)
-          .addClass('pointer')
+          .addClass('active')
           .removeClass('loading')
-          .removeClass('onscreen')
-          .removeClass('muted');
+          .removeClass('unloaded');
         response.data.start++;
       }
       findVisible();
@@ -118,21 +112,27 @@ function ajaxLoadPages(min, max) {
 }
 // Pages
 function prevPage() {
-  $('.page-link.alert-info').prev('.page-link').click();
+  $('.page-link.selected').prev('.page-link').click();
   scrollToSelected();
 }
 function nextPage() {  
-  $('.page-link.alert-info').next('.page-link').click();
+  $('.page-link.selected').next('.page-link').click();
   scrollToSelected();
 }
 function scrollToSelected() {
-  $('#collapse1').scrollTop($('#collapse1').scrollTop()+$('#collapse1 .alert-info').position().top-10);
+  $('#collapse1').scrollTop($('#collapse1').scrollTop()+$('#collapse1 .selected').position().top-vudlSettings.scroll.selected);
 }
 // Accordion size
 function resizeAccordions(offset) {
-  var height = $(window).innerHeight()-40;
-  $('.tab-content').css('min-height',height-$('.tab-content').position().top-46);
-  var accordionHeight = height-160-($('#side-nav .accordion-heading').length-2)*30;
+  var accordionHeight = window.innerHeight // Window height
+    // Add scroll distance
+    + Math.min($('#side-nav').position().top, document.body.scrollTop)
+    // Minus the top of the accordion
+    - $('#side-nav').position().top
+    // Minus the target distance from the bottom
+    - vudlSettings.accordion.bottom
+    // Subtract height of the headers
+    - ($('#side-nav .accordion-heading').length*vudlSettings.accordion.headerHeight);
   // All accordions
   $('#side-nav .accordion-body').css({
     'max-height':accordionHeight,
@@ -142,7 +142,12 @@ function resizeAccordions(offset) {
   $('#side-nav .accordion-body.in').css({
     'height':accordionHeight
   });
-  $('.zoomy-container').css('height',height-$('.zoomy-container').parent().position().top+2);
+  $('.zoomy-container').css('height',
+    window.innerHeight
+    + $('#side-nav').position().top
+    -vudlSettings.accordion.bottom
+    -$('.zoomy-container').parent().position().top+2
+  );
 }
 // Toggle side menu
 function toggleSideNav() {
@@ -159,11 +164,11 @@ function toggleSideNav() {
 // Ready? Let's go
 $(document).ready(function() {
   $('.page-link').click(function() {
-    $('.page-link.alert-info').removeClass('alert-info');
-    $(this).addClass('alert-info');
+    $('.page-link.selected').removeClass('selected');
+    $(this).addClass('selected');
   });  
   // Load clicked items
-  $('.loading').click(function() {
+  $('.unloaded').click(function() {
     scrollToSelected();
     findVisible();
     });
@@ -180,3 +185,4 @@ $(document).ready(function() {
 $( window ).load( scrollToSelected );
 // Accordion size
 $( window ).resize( resizeAccordions );
+$( document ).scroll( resizeAccordions );

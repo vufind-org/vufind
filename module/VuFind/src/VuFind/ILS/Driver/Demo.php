@@ -561,13 +561,15 @@ class Demo extends AbstractBase
     public function getMyProfile($patron)
     {
         $patron = array(
-            'firstname' => trim("Lib"),
-            'lastname'  => trim("Rarian"),
-            'address1'  => trim("Somewhere ..."),
-            'address2'  => trim("Other the Rainbow"),
-            'zip'       => trim("12345"),
-            'phone'     => trim("1900 CALL ME"),
-            'group'     => trim("Library Staff")
+            'firstname' => 'Lib',
+            'lastname'  => 'Rarian',
+            'address1'  => 'Somewhere...',
+            'address2'  => 'Over the Rainbow',
+            'zip'       => '12345',
+            'city'      => 'City',
+            'country'   => 'Country',
+            'phone'     => '1900 CALL ME',
+            'group'     => 'Library Staff'
         );
         return $patron;
     }
@@ -671,6 +673,7 @@ class Demo extends AbstractBase
      * @param array $patron The patron array from patronLogin
      *
      * @return mixed        Array of the patron's ILL requests
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyILLRequests($patron)
     {
@@ -725,6 +728,9 @@ class Demo extends AbstractBase
                     $renew = 0;
                 }
 
+                // Renewal limit
+                $renewLimit = $renew + rand()%3;
+                
                 // Pending requests : 0,0,0,0,0,1,2,3,4,5
                 $req = rand()%10 - 5;
                 if ($req < 0) {
@@ -738,10 +744,11 @@ class Demo extends AbstractBase
                         'dueStatus' => $dueStatus,
                         'barcode' => sprintf("%08d", rand()%50000),
                         'renew'   => $renew,
+                        'renewLimit' => $renewLimit,
                         'request' => $req,
                         'id'      => "ill_institution_$i",
                         'item_id' => $i,
-                        'renewable' => $renew,
+                        'renewable' => $renew < $renewLimit,
                         'title'   => "ILL Loan Title $i",
                         'institution_id' => 'ill_institution',
                         'institution_name' => 'ILL Library',
@@ -753,9 +760,10 @@ class Demo extends AbstractBase
                         'dueStatus' => $dueStatus,
                         'barcode' => sprintf("%08d", rand()%50000),
                         'renew'   => $renew,
+                        'renewLimit' => $renewLimit,
                         'request' => $req,
                         'item_id' => $i,
-                        'renewable' => true
+                        'renewable' => $renew < $renewLimit
                     );
                     if ($this->idsInMyResearch) {
                         $transList[$i]['id'] = $this->getRandomBibId();
@@ -1127,6 +1135,10 @@ class Demo extends AbstractBase
                     $old = $transactions[$i]['duedate'];
                     $transactions[$i]['duedate']
                         = date("j-M-y", strtotime($old . " + 7 days"));
+                    $transactions[$i]['renew'] = $transactions[$i]['renew'] + 1;
+                    $transactions[$i]['renewable']
+                        = $transactions[$i]['renew']
+                        < $transactions[$i]['renewLimit'];
 
                     $finalResult['details'][$current['item_id']] = array(
                         "success" => true,
@@ -1367,6 +1379,7 @@ class Demo extends AbstractBase
      * @param patron $patron An array of patron data
      *
      * @return string True if request is valid, false if not
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function checkILLRequestIsValid($id, $data, $patron)
     {
@@ -1483,6 +1496,7 @@ class Demo extends AbstractBase
      *
      * @return bool|array False if request not allowed, or an array of associative 
      * arrays with libraries.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getILLPickupLibraries($id, $patron)
     {
@@ -1518,6 +1532,7 @@ class Demo extends AbstractBase
      *
      * @return boo|array False if request not allowed, or an array of  
      * locations.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getILLPickupLocations($id, $pickupLib, $patron)
     {

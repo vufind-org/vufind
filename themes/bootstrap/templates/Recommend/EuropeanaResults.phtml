@@ -12,7 +12,7 @@
         <li class="suggestedResult <? (++$i % 2) ? 'alt ' : ''?>record<?=$i?>">
           <div class="resultitem">
             <? if (isset($work['enclosure'])): ?>
-              <span class="europeanaImg"><img class="img-polaroid" src="<?=$this->escapeHtml($work['enclosure'])?>" id="europeanaImage<?=$this->escapeHtml($workKey)?>"/></span>
+              <span class="europeanaImg"><img src="<?=$this->escapeHtml($work['enclosure'])?>" id="europeanaImage<?=$this->escapeHtml($workKey)?>"/></span>
             <? endif; ?>
             <a href="<?=$this->escapeHtml($work['link'])?>" target="_blank">
               <span><?=$this->escapeHtml($this->truncate($work['title'], 90))?></span>

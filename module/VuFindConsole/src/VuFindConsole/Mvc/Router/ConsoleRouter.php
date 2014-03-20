@@ -26,8 +26,9 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFindConsole\Mvc\Router;
-use Zend\Mvc\Router\Http\RouteMatch, Zend\Mvc\Router\RouteStackInterface,
+use Zend\Mvc\Router\Http\RouteMatch,
     Zend\Stdlib\RequestInterface as Request;
+use Zend\Mvc\Router\Console\SimpleRouteStack;
 
 /**
  * VuFind Console Router
@@ -38,7 +39,7 @@ use Zend\Mvc\Router\Http\RouteMatch, Zend\Mvc\Router\RouteStackInterface,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class ConsoleRouter implements RouteStackInterface
+class ConsoleRouter extends SimpleRouteStack
 {
     /**
      * Present working directory
@@ -48,33 +49,32 @@ class ConsoleRouter implements RouteStackInterface
     protected $pwd = '';
 
     /**
-     * Constructor
+     * Check CLIDIR
      *
-     * @param string $pwd Present working directory
+     * @return string
      */
-    public function __construct($pwd = null)
+    public function getCliDir()
     {
-        if (null !== $pwd) {
-            $this->pwd = $pwd;
-        } else if (defined('CLI_DIR')) {
+        if ($this->pwd == '' && defined('CLI_DIR')) {
             $this->pwd = CLI_DIR;
         }
+        return $this->pwd;
     }
 
     /**
-     * Create a new route with given options.
+     * Set CLIDIR (used primarily for testing)
      *
-     * @param array|\Traversable $options Router options
+     * @param string $pwd Present directory
      *
      * @return void
      */
-    public static function factory($options = array())
+    public function setCliDir($pwd)
     {
-        return new ConsoleRouter(isset($options['pwd']) ? $options['pwd'] : null);
+        $this->pwd = $pwd;
     }
 
     /**
-     * Match a given request.
+     * Legacy handling for scripts: Match a given request.
      *
      * @param Request $request Request to match
      *
@@ -86,13 +86,28 @@ class ConsoleRouter implements RouteStackInterface
         // server superglobal:
         $filename = $request->getScriptName();
 
+        // WARNING: cwd is $VUFIND_HOME, so that throws off realpath!
+        //
         // Convert base filename (minus .php extension and underscores) and
         // containing directory name into action and controller, respectively:
-        $baseFilename = str_replace('_', '', basename($filename));
-        $baseFilename = substr($baseFilename, 0, strlen($baseFilename) - 4);
-        $baseDirname = basename(dirname(realpath($this->pwd . '/' . $filename)));
+        $base = basename($filename, ".php");
+        $actionName = str_replace('_', '', $base);      // action is the easy part
+
+        $dir = dirname($filename);
+        if ($dir == false || $dir == '' || $dir == '.' || basename($dir) == '.') {
+            // legacy style: cd to subdir, but set CLI_DIR
+            $dir  = $this->getCliDir();
+            $path = $dir . '/' . $filename;
+        } else {
+            // modern style: invoked as, e.g. $base=util/ping.php, already has path
+            $level1 = basename(dirname($filename));
+            // but we need to re-orient relative to VUFIND_HOME
+            $path   = $level1 . '/' . basename($filename);
+        }
+        $controller = basename($dir);       // the last directory part
+
         $routeMatch = new RouteMatch(
-            array('controller' => $baseDirname, 'action' => $baseFilename), 1
+            array('controller' => $controller, 'action' => $actionName), 1
         );
 
         // Override standard routing:
@@ -100,71 +115,4 @@ class ConsoleRouter implements RouteStackInterface
         return $routeMatch;
     }
 
-    /**
-     * Assemble the route.
-     *
-     * @param array $params  Route parameters
-     * @param array $options Route options
-     *
-     * @return mixed
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function assemble(array $params = array(), array $options = array())
-    {
-        throw new \Exception('assemble not supported');
-    }
-
-    /**
-     * Add a route to the stack.
-     *
-     * @param string  $name     Route name
-     * @param mixed   $route    Route details
-     * @param integer $priority Priority
-     *
-     * @return RouteStackInterface
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function addRoute($name, $route, $priority = null)
-    {
-        throw new \Exception('addRoute not supported');
-    }
-
-    /**
-     * Add multiple routes to the stack.
-     *
-     * @param array|\Traversable $routes Routes to add
-     *
-     * @return RouteStackInterface
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function addRoutes($routes)
-    {
-        throw new \Exception('addRoutes not supported');
-    }
-
-    /**
-     * Remove a route from the stack.
-     *
-     * @param string $name Route name
-     *
-     * @return RouteStackInterface
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function removeRoute($name)
-    {
-        throw new \Exception('removeRoute not supported');
-    }
-
-    /**
-     * Remove all routes from the stack and set new ones.
-     *
-     * @param array|\Traversable $routes Routes to set
-     *
-     * @return RouteStackInterface
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function setRoutes($routes)
-    {
-        throw new \Exception('setRoutes not supported');
-    }
 }

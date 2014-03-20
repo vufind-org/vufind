@@ -46,72 +46,13 @@ class ConsoleRouterTest extends \PHPUnit_Framework_TestCase
      */
     public function testRoute()
     {
-        $router = ConsoleRouter::factory(array('pwd' => __DIR__));
+        $router = ConsoleRouter::factory();
+        $router->setCliDir(__DIR__);
         $request = $this->getMock('Zend\Console\Request', array('getScriptName'));
         $request->expects($this->any())->method('getScriptName')
             ->will($this->returnValue('ConsoleRouterTest.php'));
         $result = $router->match($request);
         $this->assertEquals($result->getParam('controller'), 'Router');
         $this->assertEquals($result->getParam('action'), 'ConsoleRouterTest');
-    }
-
-    /**
-     * Test addRoute.
-     *
-     * @return void
-     */
-    public function testAddRoute()
-    {
-        $this->setExpectedException('Exception');
-        $router = ConsoleRouter::factory();
-        $router->addRoute('fake', 'fake');
-    }
-
-    /**
-     * Test assemble.
-     *
-     * @return void
-     */
-    public function testAssemble()
-    {
-        $this->setExpectedException('Exception');
-        $router = ConsoleRouter::factory();
-        $router->assemble();
-    }
-
-    /**
-     * Test addRoutes.
-     *
-     * @return void
-     */
-    public function testAddRoutes()
-    {
-        $this->setExpectedException('Exception');
-        $router = ConsoleRouter::factory();
-        $router->addRoutes(array());
-    }
-
-    /**
-     * Test removeRoute.
-     *
-     * @return void
-     */
-    public function testRemoveRoute()
-    {
-        $this->setExpectedException('Exception');
-        $router = ConsoleRouter::factory();
-        $router->removeRoute('fake');
-    }
-
-    /**
-     * Test setRoutes.
-     *
-     * @return void
-     */
-    public function testSetRoutes()
-    {
-        $this->setExpectedException('Exception');
-        $router = ConsoleRouter::factory();
-        $router->setRoutes(array());
     }
 }

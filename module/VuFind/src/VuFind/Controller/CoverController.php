@@ -74,7 +74,10 @@ class CoverController extends AbstractBase
         $this->getLoader()->loadImage(
             $this->params()->fromQuery('isn'),
             $this->params()->fromQuery('size'),
-            $this->params()->fromQuery('contenttype')
+            $this->params()->fromQuery('contenttype'),
+            $this->params()->fromQuery('title'),
+            $this->params()->fromQuery('author'),
+            $this->params()->fromQuery('callnumber')
         );
         return $this->displayImage();
     }
