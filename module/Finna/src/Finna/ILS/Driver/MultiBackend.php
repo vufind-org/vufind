@@ -51,7 +51,7 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
      * @var SessionContainer
      */
     protected $session;
-    
+
     /**
      * Initialize the driver.
      *
@@ -64,11 +64,11 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
     public function init()
     {
         parent::init();
-        
+
         // Establish a namespace in the session for persisting cached data
         $this->session = new SessionContainer('MultiBackend');
     }
-    
+
     /**
      * Get the drivers (data source IDs) enabled in MultiBackend for login
      *
@@ -88,8 +88,8 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
      */
     public function getDefaultLoginDriver()
     {
-        return isset($this->config['Login']['default_driver']) 
-            ? $this->config['Login']['default_driver'] 
+        return isset($this->config['Login']['default_driver'])
+            ? $this->config['Login']['default_driver']
             : $this->config['General']['default_driver'];
     }
 
@@ -147,7 +147,7 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
         $driver = $this->getDriver($source);
         if ($driver) {
             $holdings = $driver->getHolding(
-                $this->getLocalId($id), 
+                $this->getLocalId($id),
                 $patron ? $this->stripIdPrefixes($patron, $source) : false
             );
             if ($holdings) {
@@ -442,7 +442,7 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
             }
             return $driver->checkRequestIsValid(
                 $this->stripIdPrefixes($id, $source),
-                $this->stripIdPrefixes($data, $source), 
+                $this->stripIdPrefixes($data, $source),
                 $this->stripIdPrefixes($patron, $source)
             );
         }
@@ -515,34 +515,6 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
     }
 
     /**
-     * Get request groups
-     *
-     * @param integer $bibId    BIB ID
-     * @param array   $patronId Patron information returned by the patronLogin
-     * method.
-     *
-     * @return array  An array of associative arrays with requestGroupId and
-     * name keys
-     */
-    public function getRequestGroups($bibId, $patronId)
-    {
-        $source = $this->getSource($bibId);
-        $driver = $this->getDriver($source);
-        if ($driver) {
-            if ($this->getSource($patronId) != $source) {
-                // Return empty array since the sources don't match
-                return array();
-            }
-            $groups = $driver->getRequestGroups(
-                $this->stripIdPrefixes($bibId, $source),
-                $this->stripIdPrefixes($patronId, $source)
-            );
-            return $groups;
-        }
-        throw new ILSException('No suitable backend driver found');
-    }
-
-    /**
      * Get Default Pick Up Location
      *
      * Returns the default pick up location
@@ -577,6 +549,34 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
     }
 
     /**
+     * Get request groups
+     *
+     * @param integer $bibId  BIB ID
+     * @param array   $patron Patron information returned by the patronLogin
+     * method.
+     *
+     * @return array  An array of associative arrays with requestGroupId and
+     * name keys
+     */
+    public function getRequestGroups($bibId, $patron)
+    {
+        $source = $this->getSource($bibId);
+        $driver = $this->getDriver($source);
+        if ($driver) {
+            if ($this->getSource($patron['id']) != $source) {
+                // Return empty array since the sources don't match
+                return array();
+            }
+            $groups = $driver->getRequestGroups(
+                $this->stripIdPrefixes($bibId, $source),
+                $this->stripIdPrefixes($patron, $source)
+            );
+            return $groups;
+        }
+        throw new ILSException('No suitable backend driver found');
+    }
+
+    /**
      * Get Default Request Group
      *
      * Returns the default request group
@@ -585,17 +585,17 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the request group 
+     * placeHold, minus the patron data.  May be used to limit the request group
      * options or may be ignored.
      *
      * @return string A location ID
      */
-    public function getDefaultRequestGroup($patron = false, $holdDetails = null)
+    public function getDefaultRequestGroup($patron, $holdDetails = null)
     {
         $source = $this->getSource($patron['cat_username']);
         $driver = $this->getDriver($source);
         if ($driver) {
-            if ($holdDetails) {
+            if (!empty($holdDetails)) {
                 if ($this->getSource($holdDetails['id']) != $source) {
                     // Return false since the sources don't match
                     return false;
@@ -718,7 +718,7 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
      * Cancel Call Slips
      *
      * Attempts to Cancel a call slip on a particular item. The
-     * data in $cancelDetails['details'] is determined by 
+     * data in $cancelDetails['details'] is determined by
      * getCancelStorageRetrievalRequestDetails().
      *
      * @param array $cancelDetails An array of item and patron data
@@ -970,7 +970,7 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
         $patron = null;
 
         $source = null;
-        if ($id) {
+        if (!empty($id)) {
             $source = $this->getSource($id);
         }
         if (!$source) {
@@ -984,7 +984,9 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend
             }
         }
 
-        $driver = $this->getDriver($source);
+        $driver = $this->getDriver(
+            $source, empty($id) ? null : $this->getLocalId($id)
+        );
 
         // If we have resolved the needed driver, just getConfig and return.
         if ($driver && method_exists($driver, 'getConfig')) {

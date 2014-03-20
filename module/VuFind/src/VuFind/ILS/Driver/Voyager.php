@@ -35,7 +35,7 @@ use File_MARC, PDO, PDOException,
     VuFind\I18n\Translator\TranslatorAwareInterface,
     Zend\Validator\EmailAddress as EmailAddressValidator,
     Zend\Log\LoggerInterface;
-    
+
 /**
  * Voyager ILS Driver
  *
@@ -92,7 +92,7 @@ class Voyager extends AbstractBase
      * @var LoggerInterface|bool
      */
     protected $logger = false;
-    
+
     /**
      * Constructor
      *
@@ -131,11 +131,11 @@ class Voyager extends AbstractBase
 
     /**
      * Log an SQL statement debug message.
-     * 
+     *
      * @param string $func   Function name or description
      * @param string $sql    The SQL statement
      * @param array  $params SQL bind parameters
-     * 
+     *
      * @return void
      */
     protected function debugSQL($func, $sql, $params = null)
@@ -148,7 +148,7 @@ class Voyager extends AbstractBase
             $this->debug($logString);
         }
     }
-    
+
     /**
      * Log an error message.
      *
@@ -289,8 +289,8 @@ class Voyager extends AbstractBase
                 $this->statusRankings[$row['ITEM_STATUS_DESC']]
                     = $row['ITEM_STATUS_TYPE'];
             }
-            
-            if (isset($this->config['StatusRankings']) 
+
+            if (isset($this->config['StatusRankings'])
                 && $this->config['StatusRankings']
             ) {
                 $this->statusRankings = array_merge(
@@ -668,7 +668,7 @@ class Voyager extends AbstractBase
                                 "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
                                     "LOCATION.LOCATION_NAME) as location",
                                 "null as TEMP_LOCATION",
-                                "null as PERM_LOCATION",            
+                                "null as PERM_LOCATION",
                                 "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
                                 "BIB_MFHD.BIB_ID", "MFHD_MASTER.MFHD_ID",
                                 "null as duedate", "0 AS TEMP_LOCATION"
@@ -755,12 +755,12 @@ class Voyager extends AbstractBase
 
     /**
      * Get specified fields from an MFHD MARC Record
-     * 
+     *
      * @param object       $record     File_MARC object
-     * @param array|string $fieldSpecs Array or colon-separated list of 
-     * field/subfield specifications (3 chars for field code and then subfields, 
+     * @param array|string $fieldSpecs Array or colon-separated list of
+     * field/subfield specifications (3 chars for field code and then subfields,
      * e.g. 866az)
-     * 
+     *
      * @return string|string[] Results as a string if single, array if multiple
      */
     protected function getMFHDData($record, $fieldSpecs)
@@ -771,7 +771,7 @@ class Voyager extends AbstractBase
         $results = '';
         foreach ($fieldSpecs as $fieldSpec) {
             $fieldCode = substr($fieldSpec, 0, 3);
-            $subfieldCodes = substr($fieldSpec, 3); 
+            $subfieldCodes = substr($fieldSpec, 3);
             if ($fields = $record->getFields($fieldCode)) {
                 foreach ($fields as $field) {
                     if ($subfields = $field->getSubfields()) {
@@ -806,9 +806,9 @@ class Voyager extends AbstractBase
                 }
             }
         }
-        return $results;         
+        return $results;
     }
-    
+
     /**
      * Protected support method for getHolding.
      *
@@ -847,7 +847,7 @@ class Voyager extends AbstractBase
                 if ($data) {
                     $marcDetails['summary'] = $data;
                 }
-                
+
                 // Get Supplements
                 if (isset($this->config['Holdings']['supplements'])) {
                     $data = $this->getMFHDData(
@@ -922,7 +922,7 @@ class Voyager extends AbstractBase
             'reserve' => $sqlRow['ON_RESERVE'],
             'callnumber' => $sqlRow['CALLNUMBER'],
             'barcode' => $sqlRow['ITEM_BARCODE'],
-            'use_unknown_message' => 
+            'use_unknown_message' =>
                 in_array('No information available', $sqlRow['STATUS_ARRAY'])
         );
     }
@@ -949,7 +949,7 @@ class Voyager extends AbstractBase
             && $this->config['Holdings']['purchase_history']
         ) {
             $purchaseHistory = $this->getPurchaseHistory($id);
-        } 
+        }
         $i = 0;
         foreach ($data as $item) {
             foreach ($item as $number => $row) {
@@ -1088,7 +1088,7 @@ class Voyager extends AbstractBase
         if (isset($this->config['Catalog']['purchase_history']) && !$this->config['Catalog']['purchase_history']) {
             return array();
         }
-                
+
         $sql = "select LINE_ITEM_COPY_STATUS.MFHD_ID, SERIAL_ISSUES.ENUMCHRON " .
                "from $this->dbName.SERIAL_ISSUES, $this->dbName.COMPONENT, ".
                "$this->dbName.ISSUES_RECEIVED, $this->dbName.SUBSCRIPTION, ".
@@ -1152,11 +1152,11 @@ class Voyager extends AbstractBase
         } else {
             $sql .= "lower(PATRON.{$login_field}) = :login";
         }
-        
+
         try {
             $bindLogin = strtolower(utf8_decode($login));
             $bindBarcode = strtolower(utf8_decode($barcode));
-            
+
             $this->debugSQL(__FUNCTION__, $sql, array(':login' => $bindLogin));
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->bindParam(':login', $bindLogin, PDO::PARAM_STR);
@@ -1477,7 +1477,8 @@ class Voyager extends AbstractBase
             "MFHD_ITEM.ITEM_ENUM",
             "MFHD_ITEM.YEAR",
             "BIB_TEXT.TITLE_BRIEF",
-            "BIB_TEXT.TITLE"
+            "BIB_TEXT.TITLE",
+            "REQUEST_GROUP.GROUP_NAME as REQUEST_GROUP_NAME"
         );
 
         // From
@@ -1486,7 +1487,8 @@ class Voyager extends AbstractBase
             $this->dbName.".HOLD_RECALL_ITEMS",
             $this->dbName.".MFHD_ITEM",
             $this->dbName.".BIB_TEXT",
-            $this->dbName.".VOYAGER_DATABASES"
+            $this->dbName.".VOYAGER_DATABASES",
+            $this->dbName.".REQUEST_GROUP"
         );
 
         // Where
@@ -1498,7 +1500,8 @@ class Voyager extends AbstractBase
             "HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS < 3)",
             "BIB_TEXT.BIB_ID = HOLD_RECALL.BIB_ID",
             "(HOLD_RECALL.HOLDING_DB_ID IS NULL OR (HOLD_RECALL.HOLDING_DB_ID = " .
-            "VOYAGER_DATABASES.DB_ID AND VOYAGER_DATABASES.DB_CODE = 'LOCAL'))"
+            "VOYAGER_DATABASES.DB_ID AND VOYAGER_DATABASES.DB_CODE = 'LOCAL'))",
+            "HOLD_RECALL.REQUEST_GROUP_ID = REQUEST_GROUP.GROUP_ID(+)"
         );
 
         // Bind
@@ -1546,6 +1549,7 @@ class Voyager extends AbstractBase
             'id' => $sqlRow['BIB_ID'],
             'type' => $sqlRow['HOLD_RECALL_TYPE'],
             'location' => $sqlRow['PICKUP_LOCATION'],
+            'requestGroup' => $sqlRow['REQUEST_GROUP_NAME'],
             'expire' => $expireDate,
             'create' => $createDate,
             'position' => $sqlRow['QUEUE_POSITION'],
@@ -2137,7 +2141,7 @@ class Voyager extends AbstractBase
     public function getCourses()
     {
         $courseList = array();
-        
+
         $sql = "select COURSE.COURSE_NUMBER || ': ' || COURSE.COURSE_NAME as NAME," .
                " COURSE.COURSE_ID " .
                "from $this->dbName.RESERVE_LIST, " .
@@ -2325,14 +2329,14 @@ class Voyager extends AbstractBase
         return null !== $this->translator
             ? $this->translator->translate($msg) : $msg;
     }
-    
+
     /**
      * Execute an SQL query
-     * 
+     *
      * @param string|array $sql  SQL statement (string or array that includes
      * bind params)
      * @param array        $bind Bind parameters (if $sql is string)
-     * 
+     *
      * @return PDOStatement
      */
     protected function executeSQL($sql, $bind = array())

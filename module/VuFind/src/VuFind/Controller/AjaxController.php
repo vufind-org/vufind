@@ -1428,6 +1428,63 @@ class AjaxController extends AbstractBase
     }
 
     /**
+     * Get pick up locations for a request group
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function getRequestGroupPickupLocationsAjax()
+    {
+        $this->writeSession();  // avoid session write timing bug
+        $id = $this->params()->fromQuery('id');
+        $requestGroupId = $this->params()->fromQuery('requestGroupId');
+        if (!empty($id) && !empty($requestGroupId)) {
+            // check if user is logged in
+            $user = $this->getUser();
+            if (!$user) {
+                return $this->output(
+                    array(
+                        'status' => false,
+                        'msg' => $this->translate('You must be logged in first')
+                    ),
+                    self::STATUS_NEED_AUTH
+                );
+            }
+
+            try {
+                $catalog = $this->getILS();
+                $patron = $this->getAuthManager()->storedCatalogLogin();
+                if ($patron) {
+                    $details = array(
+                        'id' => $id,
+                        'requestGroupId' => $requestGroupId
+                    );
+                    $results = $catalog->getPickupLocations(
+                        $patron, $details
+                    );
+                    foreach ($results as &$result) {
+                        if (isset($result['locationDisplay'])) {
+                            $result['locationDisplay'] = $this->translate(
+                                'location_' . $result['locationDisplay'],
+                                array(),
+                                $result['locationDisplay']
+                            );
+                        }
+                    }
+                    return $this->output(
+                        array('locations' => $results), self::STATUS_OK
+                    );
+                }
+            } catch (\Exception $e) {
+                // Do nothing -- just fail through to the error message below.
+            }
+        }
+
+        return $this->output(
+            $this->translate('An error has occurred'), self::STATUS_ERROR
+        );
+    }
+
+    /**
      * Convenience method for accessing results
      *
      * @return \VuFind\Search\Results\PluginManager

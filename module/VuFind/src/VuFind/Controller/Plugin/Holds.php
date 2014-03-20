@@ -191,7 +191,7 @@ class Holds extends AbstractPlugin
                     );
                 }
             }
-            
+
             foreach ($details as $info) {
                 // If the user input contains a value not found in the session
                 // whitelist, something has been tampered with -- abort the process.
@@ -300,6 +300,48 @@ class Holds extends AbstractPlugin
     {
         foreach ($pickUpLibs as $lib) {
             if ($location == $lib['locationID']) {
+                return true;
+            }
+        }
+
+        // If we got this far, something is wrong!
+         return false;
+    }
+
+    /**
+     * Check if the user-provided request group is valid.
+     *
+     * @param string $requestGroupId  Id of user-specified request group
+     * @param array  $extraHoldFields Hold form fields enabled by
+     * configuration/driver
+     * @param array  $requestGroups   Request group list from driver
+     *
+     * @return bool
+     */
+    public function validateRequestGroupInput(
+        $requestGroupId, $extraHoldFields, $requestGroups
+    ) {
+        // Not having to care for pickUpLocation is equivalent to having a valid one.
+        if (!in_array('requestGroup', $extraHoldFields)) {
+            return true;
+        }
+
+        // Check the valid pickup locations for a match against user input:
+        return $this->validateRequestGroup($requestGroupId, $requestGroups);
+    }
+
+    /**
+     * Check if the provided request group is valid.
+     *
+     * @param string $requestGroupId Id of the request group to check
+     * @param array  $requestGroups  Request group list from driver
+     *
+     * @return bool
+     */
+    public function validateRequestGroup($requestGroupId, $requestGroups)
+    {
+        foreach ($requestGroups as $group) {
+            if ($requestGroupId == $group['id']) {
                 return true;
             }
         }
