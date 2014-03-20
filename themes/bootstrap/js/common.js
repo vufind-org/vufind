@@ -380,9 +380,11 @@ $(document).ready(function() {
     return false;
   });
   Lightbox.addFormCallback('accountForm', function() {
+    /*
     Lightbox.addCloseAction(function() {
       document.location.href = path+'/MyResearch/';
     });
+    */
     Lightbox.getByUrl(Lightbox.openingURL);
     Lightbox.openingURL = false;
   });

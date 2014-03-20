@@ -149,6 +149,7 @@ function registerUpdateCart($form) {
 // Ajax cart submission for the lightbox
 var lastCartSubmit = false;
 function cartSubmit($form) {
+  lastCartSubmit = $form;
   var submit = $form.find('input[type="submit"][clicked=true]').attr('name');
   if (submit == 'print') {
     //redirect page
@@ -199,6 +200,16 @@ $(document).ready(function() {
     $('.createAccountLink').click(function() {
       return Lightbox.get('MyResearch', 'Account');
     });
+  });
+  // Overwrite 
+  Lightbox.addFormCallback('accountForm', function() {
+    if (lastCartSubmit !== false) {
+      cartSubmit(lastCartSubmit);
+      lastCartSubmit = false;
+    } else {
+      Lightbox.getByUrl(Lightbox.openingURL);
+      Lightbox.openingURL = false;
+    }
   });
   Lightbox.addFormHandler('cartForm', function(evt) {
     cartSubmit($(evt.target));
