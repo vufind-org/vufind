@@ -50,3 +50,24 @@ div.xml.collapsed > div { display:none;margin-left:2px }
 .sidebar .collapsed li:not(.nav-header) {display:none}
 .sidebar .collapsed.open .nav-header:before {content:'\25B2'}
 .sidebar .collapsed.open li:not(.hidden) {display:block}
+/* --- Search result flexing --- */
+@media (min-width: 601px) and (max-width: 767px) {
+  .result .left,.result .middle,.result .right {
+    display:table;
+    float:left;
+    margin:0 10px;
+    max-width:44%;
+    width:auto;
+  }
+  .result .right {float:right}
+}
+@media (max-width: 600px) {
+  .result .left,.result .middle,.result .right {
+    display:table;
+    margin:auto;
+    width:auto;
+  }
+  .result .middle {
+    width:75%;
+  }
+}
