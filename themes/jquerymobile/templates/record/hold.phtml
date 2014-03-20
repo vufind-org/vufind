@@ -1,4 +1,7 @@
 <?
+    // Set up hold script:
+    $this->headScript()->appendFile("hold.js");
+
     // Set page title.
     $this->headTitle($this->translate('request_place_text') . ': ' . $this->driver->getBreadcrumb());
 ?>
@@ -25,18 +28,54 @@
           </div>
         <? endif; ?>
 
-        <? if (in_array("pickUpLocation", $this->extraHoldFields)): ?>
+        <? if ($this->requestGroupNeeded): ?>
           <div>
-          <? if (count($this->pickup) > 1): ?>
             <?
-              if (isset($this->gatheredDetails['pickUpLocation']) && $this->gatheredDetails['pickUpLocation'] !== "") {
-                  $selected = $this->gatheredDetails['pickUpLocation'];
-              } elseif (isset($this->homeLibrary) && $this->homeLibrary !== "") {
-                  $selected = $this->homeLibrary;
+              if (isset($this->gatheredDetails['requestGroupId']) && $this->gatheredDetails['requestGroupId'] !== "") {
+                  $selected = $this->gatheredDetails['requestGroupId'];
               } else {
-                  $selected = $this->defaultPickup;
+                  $selected = $this->defaultRequestGroup;
               }
-            ?>
+           ?>
+            <strong><?=$this->transEsc("hold_request_group")?>:</strong>
+            <select id="requestGroupId" name="gatheredDetails[requestGroupId]">
+            <? if ($selected === false): ?>
+              <option value="" selected="selected">
+                <?=$this->transEsc('select_request_group')?>
+              </option>
+            <? endif; ?>
+            <? foreach ($this->requestGroups as $group): ?>
+              <option value="<?=$this->escapeHtml($group['id'])?>"<?=($selected == $group['id']) ? ' selected="selected"' : ''?>>
+                <?=$this->transEsc('location_' . $group['name'], array(), $group['name'])?>
+              </option>
+            <? endforeach; ?>
+            </select>
+          </div>
+        <? endif; ?>
+
+        <? if (in_array("pickUpLocation", $this->extraHoldFields)): ?>
+          <?
+            if (isset($this->gatheredDetails['pickUpLocation']) && $this->gatheredDetails['pickUpLocation'] !== "") {
+                $selected = $this->gatheredDetails['pickUpLocation'];
+            } elseif (isset($this->homeLibrary) && $this->homeLibrary !== "") {
+                $selected = $this->homeLibrary;
+            } else {
+                $selected = $this->defaultPickup;
+            }
+          ?>
+          <? if ($this->requestGroupNeeded): ?>
+          <div>
+            <span id="pickUpLocationLabel"><strong><?=$this->transEsc("pick_up_location")?>:
+              <noscript> (<?=$this->transEsc("Please enable JavaScript.")?>)</noscript>
+            </strong></span>
+            <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" data-default="<?=$this->escapeHtml($selected)?>">
+              <? if ($selected === false): ?>
+              <option value="" selected="selected">
+                <?=$this->transEsc('select_pickup_location')?>
+              </option>
+              <? endif; ?>
+            </select>
+          <? elseif (count($this->pickup) > 1): ?>
             <strong><?=$this->transEsc("pick_up_location")?>:</strong><br/>
             <select name="gatheredDetails[pickUpLocation]">
             <? if ($selected === false): ?>
@@ -64,3 +103,9 @@
   </div>
   <?=$this->mobileMenu()->footer()?>
 </div>
+
+<script type="text/javascript">
+$(document).bind("pageinit", function(){
+    setUpHoldRequestForm('<?=$this->escapeHtml($this->driver->getUniqueId()) ?>');
+});
+</script>
