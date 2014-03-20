@@ -676,7 +676,7 @@ class Voyager extends AbstractBase
                           "MFHD_MASTER.MFHD_ID = BIB_MFHD.MFHD_ID",
                           "MFHD_DATA.MFHD_ID = BIB_MFHD.MFHD_ID",
                           "MFHD_MASTER.SUPPRESS_IN_OPAC='N'",
-                          "NOT EXISTS (SELECT MFHD_ID FROM MFHD_ITEM WHERE MFHD_ITEM.MFHD_ID=MFHD_MASTER.MFHD_ID)"
+                          "NOT EXISTS (SELECT MFHD_ID FROM {$this->dbName}.MFHD_ITEM WHERE MFHD_ITEM.MFHD_ID=MFHD_MASTER.MFHD_ID)"
                          );
 
         // Order
@@ -1158,7 +1158,7 @@ class Voyager extends AbstractBase
         } else {
             $sql .= "lower(PATRON.{$login_field}) = :login";
         }
-        
+
         try {
             $bindLogin = strtolower(utf8_decode($login));
             $bindBarcode = strtolower(utf8_decode($barcode));
