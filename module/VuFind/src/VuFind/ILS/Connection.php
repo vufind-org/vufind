@@ -672,6 +672,20 @@ class Connection implements TranslatorAwareInterface
     }
 
     /**
+     * Get Names of Textual Holdings Fields
+     *
+     * Obtain information on which textual holdings fields should be displayed
+     *
+     * @return string[]
+     */
+    public function getHoldingsTextFieldNames()
+    {
+        return isset($this->config->holdings_text_fields)
+            ? $this->config->holdings_text_fields
+            : array('notes', 'summary', 'supplements', 'indexes');
+    }
+    
+    /**
      * Default method -- pass along calls to the driver if available; return
      * false otherwise.  This allows custom functions to be implemented in
      * the driver without constant modification to the connection class.

@@ -33,9 +33,9 @@
 <? $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); if (!empty($holdingTitleHold)): ?>
     <a rel="external" class="holdPlace" href="<?=$this->recordLink()->getRequestUrl($holdingTitleHold, false)?>"><?=$this->transEsc('title_hold_place')?></a>
 <? endif; ?>
-<? foreach ($holdings as $location => $holding): ?>
-<h4><?=$this->transEsc($location)?></h4>
-<table class="holdings" summary="<?=$this->transEsc('Holdings details from')?> <?=$this->transEsc($location)?>">
+<? foreach ($holdings as $holding): ?>
+<h4><?=$this->transEsc($holding['location'])?></h4>
+<table class="holdings" summary="<?=$this->transEsc('Holdings details from')?> <?=$this->transEsc($holding['location'])?>">
   <? $callNos = $this->tab->getUniqueCallNumbers($holding['items']); if (!empty($callNos)): ?>
   <tr>
     <th><?=$this->transEsc("Call Number")?>: </th>
@@ -46,26 +46,19 @@
     </td>
   </tr>
   <? endif; ?>
-  <? if (!empty($holding['summary'])): ?>
-  <tr>
-    <th><?=$this->transEsc("Volume Holdings")?>: </th>
-    <td>
-      <? foreach ($holding['summary'] as $current): ?>
-        <?=$this->escapeHtml($current)?><br/>
-      <? endforeach; ?>
-    </td>
-  </tr>
-  <? endif; ?>
-  <? if (!empty($holding['notes'])): ?>
-  <tr>
-    <th><?=$this->transEsc("Notes")?>: </th>
-    <td>
-      <? foreach ($holding['notes'] as $data): ?>
-        <?=$this->escapeHtml($data)?><br/>
-      <? endforeach; ?>
-    </td>
-  </tr>
-  <? endif; ?>
+  <? foreach ($this->ils()->getHoldingsTextFieldNames() as $textField): ?>
+    <? if (!empty($holding[$textField])): ?>
+      <tr>
+        <? // Translation for summary is a special case for backwards-compatibility ?>
+        <th><?=$textField == 'summary' ? $this->transEsc("Volume Holdings") : $this->transEsc(ucfirst($textField))?>: </th>
+        <td>
+          <? foreach ($holding[$textField] as $current): ?>
+            <?=$this->escapeHtml($current)?><br/>
+          <? endforeach; ?>
+        </td>
+      </tr>
+    <? endif; ?>
+  <? endforeach; ?>
   <? foreach ($holding['items'] as $row): ?>
     <? $check = (isset($row['check']) && $row['check']); ?>
     <? if (isset($row['barcode']) && $row['barcode'] != ""): ?>
@@ -105,6 +98,16 @@
       </tr>
     <? endif; ?>
   <? endforeach; ?>
+  <? if (!empty($holding['purchase_history'])): ?>
+    <tr>
+      <th><?=$this->transEsc("Most Recent Received Issues")?>:</th>
+      <td>
+        <? foreach ($holding['purchase_history'] as $current): ?>
+          <?=$this->escapeHtml($current['issue'])?><br/>
+        <? endforeach; ?>
+      </td>
+    </tr>
+  <? endif; ?>
 </table>
 <? endforeach; ?>
 
