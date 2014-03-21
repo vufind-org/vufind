@@ -440,7 +440,8 @@ class Upgrade
      */
     protected function isDefaultBulkExportOptions($eo)
     {
-        return ($this->from == '1.4' && $eo == 'MARC:MARCXML:EndNote:RefWorks:BibTeX')
+        return
+            ($this->from == '1.4' && $eo == 'MARC:MARCXML:EndNote:RefWorks:BibTeX')
             || ($this->from == '1.3' && $eo == 'MARC:EndNote:RefWorks:BibTeX')
             || ($this->from == '1.2' && $eo == 'MARC:EndNote:BibTeX')
             || ($this->from == '1.1' && $eo == 'MARC:EndNote');
