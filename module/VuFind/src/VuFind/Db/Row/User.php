@@ -144,7 +144,7 @@ class User extends ServiceLocatorAwareGateway
      * @return string|bool    The encrypted/decrypted string
      * @throws \VuFind\Exception\PasswordSecurity
      */
-    protected function encryptOrDecrypt($text, $encrypt = true)
+    public function encryptOrDecrypt($text, $encrypt = true)
     {
         // Ignore empty text:
         if (empty($text)) {
@@ -405,5 +405,39 @@ class User extends ServiceLocatorAwareGateway
 
         // Remove the user itself:
         return parent::delete();
+    }
+    
+    public function updateHash()
+    {
+        $config = $this->getServiceLocator()->getServiceLocator()
+            ->get('VuFind\Config')->get('config');
+        if (isset($config->Authentication->encrypt_ils_password)
+            && $config->Authentication->hash_passwords
+        ) {
+            $this->verify_hash = $this->username
+                . md5($this->username . $this->pass_hash . time())
+                . time();
+        } else {
+            $this->verify_hash = $this->username
+                . md5($this->username . $this->password . time())
+                . time();
+        }
+        return $this->save();
+    }
+    
+    public function setNewPassword($password)
+    {
+        $config = $this->getServiceLocator()->getServiceLocator()
+            ->get('VuFind\Config')->get('config');
+        if (isset($config->Authentication->encrypt_ils_password)
+            && $config->Authentication->hash_passwords
+        ) {
+            $bcrypt = new Bcrypt();
+            $this->pass_hash = $bcrypt->create($password);
+        } else {
+            $this->password = $password;
+        }
+        $this->updateHash();
+        return $this->save();
     }
 }

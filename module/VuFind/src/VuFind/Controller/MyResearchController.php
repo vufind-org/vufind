@@ -1076,4 +1076,175 @@ class MyResearchController extends AbstractBase
         $url = $this->getServerUrl('myresearch-home');
         return $this->getAuthManager()->getSessionInitiator($url);
     }
+
+    /**
+     * Send account recovery email
+     *
+     * @return mixed
+     */
+    public function recoverAction()
+    {
+        // Make sure we're configured to do this
+        $config = $this->getConfig();
+        if (!isset($config->Authentication->recover_password)
+        || $config->Authentication->recover_password == false) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('recovery_disabled');
+            return $this->redirect()->toRoute('myresearch-login');
+        }
+        // Database
+        $table = $this->getTable('User');
+        $user = false;
+        // Check if we're doing a full verification
+        if ($email = $this->params()->fromPost('email')) {
+            $user = $table->getByEmail($email);
+        } elseif ($username = $this->params()->fromPost('username')) {
+            $user = $table->getByUsername($username, false);
+        }
+        // If we have a submitted form
+        if (null != $email || null != $username) {
+            // If we can't find a record
+            if (null == $user) {
+                $this->flashMessenger()->setNamespace('error')
+                    ->addMessage('recovery_email_not_found');
+            } else {
+                // Make sure we've waiting long enough
+                $hashTime = intval(substr($user->verify_hash, -10));
+                if (time()-$hashTime < $config->Authentication->recover_interval) {
+                    $this->flashMessenger()->setNamespace('error')
+                        ->addMessage('recovery_too_soon');
+                } else {
+                    // Attempt to send the email
+                    try {
+                        $user->updateHash();
+                        $config = $this->getConfig();
+                        $message = '<a href="'
+                            . $this->getServerUrl('myresearch-verify')
+                            . '?hash=' . $user->verify_hash . '">Verify</a>';
+                        $this->getServiceLocator()->get('VuFind\Mailer')->send(
+                            $user->email,
+                            $config->Site->email,
+                            'VuFind Account Recovery',
+                            $message
+                        );
+                        $this->flashMessenger()->setNamespace('info')
+                            ->addMessage('recovery_email_sent');
+                    } catch (MailException $e) {
+                        $this->flashMessenger()->setNamespace('error')
+                            ->addMessage($e->getMessage());
+                    }
+                }
+            }
+        }
+        return $this->createViewModel();
+    }
+    
+    /**
+     *
+     *
+     *
+     */
+    public function verifyAction()
+    {
+        // If we have a submitted form
+        $hash = $this->params()->fromQuery('hash');
+        if (null != $hash) {
+            $table = $this->getTable('User');
+            $user = $table->getByVerifyHash($hash);
+            // Valid hash that gave us a user
+            if (null != $user) {
+                $view = $this->createViewModel();
+                $view->hash = $hash;
+                $view->userid = $user->id;
+                $view->username = $user->username;
+                $view->setTemplate('myresearch/newpassword');
+                return $view;
+            }
+        }
+        $this->flashMessenger()->setNamespace('error')
+            ->addMessage('recovery_invalid_hash');
+        return $this->forwardTo('MyResearch', 'Login');
+    }
+    
+    /**
+     *
+     *
+     *
+     */
+    public function newPasswordAction()
+    {
+        // Have we submitted the form
+        $hash   = $this->params()->fromPost('hash');
+        if (null != $hash) {
+            // Pull in from POST
+            $userid = $this->params()->fromPost('userid');
+            $pwd    = $this->params()->fromPost('newpwd');
+            $cpwd   = $this->params()->fromPost('confirm');
+            // Get user
+            $table = $this->getTable('User');
+            $user = $table->select(array('id' => $userid))->current();
+            // Verify old password if we're logged in
+            if ($this->params()->fromPost('verifyold', false)) {
+                try {
+                    $authClass = $this->getAuthManager()->login($this->request);
+                } catch(Exception $e) {
+                    $this->flashMessenger()->setNamespace('error')
+                        ->addMessage('authentication_error_denied');
+                    return $this->createViewModel(
+                        array(
+                            'hash' => $hash,
+                            'userid' => $userid,
+                            'username' => $this->params()->fromPost('username'),
+                            'verifyold' => true
+                        )
+                    );
+                }
+            }
+            // Make sure the passwords match
+            if (empty($pwd) || empty($cpwd) || $pwd != $cpwd) {
+                $this->flashMessenger()->setNamespace('error')
+                    ->addMessage('Passwords do not match');
+                return $this->createViewModel(
+                    array(
+                        'hash' => $hash,
+                        'userid' => $userid,
+                        'username' => $this->params()->fromPost('username'),
+                        'verifyold' => $this->params()->fromPost('verifyold'),
+                    )
+                );
+            }
+            // Update hash
+            $user->setNewPassword($pwd);
+            $this->flashMessenger()->setNamespace('info')
+                ->addMessage('recover_new_password_success');
+            // Login (swap new password in for usual one)
+            $request = $this->getRequest();
+            $post = $request->getPost();
+            $post->password = $post->newpwd;
+            $request->setPost($post);
+            $this->getAuthManager()->login($request);
+            // Go to favorites
+            return $this->redirect()->toRoute('myresearch-favorites');
+        } elseif ($this->getAuthManager()->isLoggedIn()) {
+            // Clicking the new password link
+            // Make sure this is enabled in config
+            $config = $this->getConfig();
+            if (!isset($config->Authentication->new_password)
+            || $config->Authentication->new_password == false) {
+                $this->flashMessenger()->setNamespace('error')
+                    ->addMessage('recovery_new_disabled');
+                return $this->createViewModel();
+            }
+            $user = $this->getUser();
+            return $this->createViewModel(
+                array(
+                    'hash' => $user->verify_hash,
+                    'userid' => $user->id,
+                    'username' => $user->username,
+                    'verifyold' => true
+                )
+            );
+        }
+        return $this->redirect()->toRoute('home');
+    }
 }

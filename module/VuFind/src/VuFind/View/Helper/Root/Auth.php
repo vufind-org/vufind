@@ -55,6 +55,11 @@ class Auth extends \Zend\View\Helper\AbstractHelper
     protected $manager;
 
     /**
+     * Config
+     */
+    protected $config;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Auth\Manager $manager Authentication manager
@@ -226,5 +231,15 @@ class Auth extends \Zend\View\Helper\AbstractHelper
     {
         $classParts = explode('\\', $className);
         return array_pop($classParts);
+    }
+    
+    /**
+     * Is new passwords currently allowed?
+     *
+     * @return bool
+     */
+    public function newPasswordEnabled()
+    {
+        return $this->getManager()->newPasswordEnabled();
     }
 }

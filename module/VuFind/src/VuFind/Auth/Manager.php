@@ -529,4 +529,14 @@ class Manager implements ServiceLocatorAwareInterface
         $this->authProxied = false;
     }
 
+    /**
+     * Is new passwords currently allowed?
+     *
+     * @return bool
+     */
+    public function newPasswordEnabled()
+    {
+        return isset($this->config->Authentication->new_password)
+            && $this->config->Authentication->new_password;
+    }
 }

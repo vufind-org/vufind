@@ -10,7 +10,7 @@
     $showHomeLibForm = (isset($this->pickup) && count($this->pickup) > 1);
 
     // Template for use by the renderArray helper:
-    $arrTemplate = '<tr><th>%%LABEL%%:</th><td> %%VALUE%%</td></tr>';
+    $arrTemplate = '<tr><th>%%LABEL%%:</th><td>%%VALUE%%</td></tr>';
 ?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
@@ -33,7 +33,7 @@
             ? $this->profile['home_library'] : $this->defaultPickupLocation
       ?>
       <td>
-        <form method="post" action="" id="profile_form">
+        <form id="profile_form" class="form-inline" action="" method="post">
           <select id="home_library" name="home_library">
             <? foreach ($this->pickup as $lib): ?>
               <option value="<?=$this->escapeHtml($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->escapeHtml($lib['locationDisplay'])?></option>
