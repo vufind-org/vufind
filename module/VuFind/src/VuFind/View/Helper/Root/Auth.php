@@ -55,11 +55,6 @@ class Auth extends \Zend\View\Helper\AbstractHelper
     protected $manager;
 
     /**
-     * Config
-     */
-    protected $config;
-
-    /**
      * Constructor
      *
      * @param \VuFind\Auth\Manager $manager Authentication manager

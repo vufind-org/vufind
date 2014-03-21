@@ -144,7 +144,7 @@ class User extends ServiceLocatorAwareGateway
      * @return string|bool    The encrypted/decrypted string
      * @throws \VuFind\Exception\PasswordSecurity
      */
-    public function encryptOrDecrypt($text, $encrypt = true)
+    protected function encryptOrDecrypt($text, $encrypt = true)
     {
         // Ignore empty text:
         if (empty($text)) {
