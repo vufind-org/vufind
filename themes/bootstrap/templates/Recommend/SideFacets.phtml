@@ -65,7 +65,7 @@
               </label>
             </div>
             <? if ($rangeFacets[$title]['type'] == 'date'): ?>
-              <div class="row-fluid"><input type="text" class="span10 hidden" id="<?=$this->escapeHtml($title)?>dateSlider"/></div>
+              <div class="row-fluid"><input type="text" class="span10 hidden" id="<?=$this->escapeHtml($title)?><?=$this->escapeHtml($rangeFacets[$title]['type'])?>Slider"/></div>
             <? endif; ?>
             <input class="btn" type="submit" value="<?=$this->transEsc('Set')?>"/>
           </form>
