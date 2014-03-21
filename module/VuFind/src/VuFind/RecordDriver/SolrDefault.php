@@ -1036,6 +1036,17 @@ class SolrDefault extends AbstractBase
     }
 
     /**
+     * Get the item's source.
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        // Not supported in base class:
+        return '';
+    }
+
+    /**
      * Get the subtitle of the record.
      *
      * @return string
