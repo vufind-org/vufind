@@ -392,15 +392,13 @@ class MultiBackend extends AbstractBase
     protected function addIdPrefixes($data, $source,
         $modifyFields = array('id', 'cat_username')
     ) {
-
-        if (!isset($data) || empty($data) ) {
+        if (!isset($data) || empty($data) || !is_array($data)) {
             return $data;
         }
-        $array = is_array($data) ? $data : array($data);
 
-        foreach ($array as $key => $value) {
+        foreach ($data as $key => $value) {
             if (is_array($value)) {
-                $array[$key] = $this->addIdPrefixes(
+                $data[$key] = $this->addIdPrefixes(
                     $value, $source, $modifyFields
                 );
             } else {
@@ -408,11 +406,11 @@ class MultiBackend extends AbstractBase
                     && $value !== ''
                     && in_array($key, $modifyFields)
                 ) {
-                    $array[$key] = $source . '.' . $value;
+                    $data[$key] = $source . '.' . $value;
                 }
             }
         }
-        return is_array($data) ? $array : $array[0];
+        return $data;
     }
 
     /**

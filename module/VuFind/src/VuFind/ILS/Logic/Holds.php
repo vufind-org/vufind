@@ -114,36 +114,35 @@ class Holds
     {
         $retVal = array();
 
-        foreach ($holdings as $location => $items) {
-            $notes = array();
-            $summaries = array();
+        // Handle purchase history alongside other textual fields
+        $textFieldNames = $this->catalog->getHoldingsTextFieldNames();
+        $textFieldNames[] = 'purchase_history';
+
+        foreach ($holdings as $groupKey => $items) {
+            $retVal[$groupKey] = array(
+                'items' => $items,
+                'location' => isset($items[0]['location'])
+                    ? $items[0]['location']
+                    : ''
+            );
+            // Copy all text fields from the item to the holdings level
             foreach ($items as $item) {
-                if (isset($item['notes'])) {
-                    if (!is_array($item['notes'])) {
-                        $item['notes'] = empty($item['notes'])
-                            ? array() : array($item['notes']);
-                    }
-                    foreach ($item['notes'] as $note) {
-                        if (!in_array($note, $notes)) {
-                            $notes[] = $note;
-                        }
-                    }
-                }
-                if (isset($item['summary'])) {
-                    if (!is_array($item['summary'])) {
-                        $item['summary'] = empty($item['summary'])
-                            ? array() : array($item['summary']);
-                    }
-                    foreach ($item['summary'] as $summary) {
-                        if (!in_array($summary, $summaries)) {
-                            $summaries[] = $summary;
+                foreach ($textFieldNames as $fieldName) {
+                    if (!empty($item[$fieldName])) {
+                        $fields = is_array($item[$fieldName])
+                            ? $item[$fieldName]
+                            : array($item[$fieldName]);
+
+                        foreach ($fields as $field) {
+                            if (empty($retVal[$groupKey][$fieldName])
+                                || !in_array($field, $retVal[$groupKey][$fieldName])
+                            ) {
+                                $retVal[$groupKey][$fieldName][] = $field;
+                            }
                         }
                     }
                 }
             }
-            $retVal[$location] = array(
-                'notes' => $notes, 'summary' => $summaries, 'items' => $items
-            );
         }
 
         return $retVal;
@@ -199,7 +198,8 @@ class Holds
             foreach ($result as $copy) {
                 $show = !in_array($copy['location'], $this->hideHoldings);
                 if ($show) {
-                    $holdings[$copy['location']][] = $copy;
+                    $groupKey = $this->getHoldingsGroupKey($copy);
+                    $holdings[$groupKey][] = $copy;
                 }
             }
         }
@@ -241,7 +241,8 @@ class Holds
                         }
                     }
 
-                    $holdings[$copy['location']][] = $copy;
+                    $groupKey = $this->getHoldingsGroupKey($copy);
+                    $holdings[$groupKey][] = $copy;
                 }
             }
         }
@@ -269,7 +270,8 @@ class Holds
             foreach ($result as $copy) {
                 $show = !in_array($copy['location'], $this->hideHoldings);
                 if ($show) {
-                    $holdings[$copy['location']][] = $copy;
+                    $groupKey = $this->getHoldingsGroupKey($copy);
+                    $holdings[$groupKey][] = $copy;
                     // Are any copies available?
                     if ($copy['availability'] == true) {
                         $any_available = true;
@@ -523,6 +525,23 @@ class Holds
             'action' => 'BlockedILLRequest',
             'record' => $details['id']
         );
+    }
+
+    /**
+     * Get a grouping key for a holdings item
+     *
+     * @param array $copy Item information
+     *
+     * @return string Grouping key
+     */
+    protected function getHoldingsGroupKey($copy)
+    {
+        // Group by holdings id unless configured otherwise or holdings id not
+        // available
+        $grouping = isset($this->config->Catalog->holdings_grouping)
+            ? $this->config->Catalog->holdings_grouping : 'holdings_id';
+        return ($grouping != 'location_name' && isset($copy['holdings_id']))
+            ? $copy['holdings_id'] : $copy['location'];
     }
 
     /**
