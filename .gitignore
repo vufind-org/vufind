@@ -10,3 +10,6 @@ vendor/.git
 /.buildpath
 /.project
 /.gitignore
+/nohup.out
+/vufind.bat
+/local
