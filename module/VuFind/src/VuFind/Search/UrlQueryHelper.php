@@ -123,6 +123,16 @@ class UrlQueryHelper
     }
 
     /**
+     * Is query suppressed?
+     *
+     * @return bool
+     */
+    public function isQuerySuppressed()
+    {
+        return $this->suppressQuery;
+    }
+
+    /**
      * Get an array of URL parameters.
      *
      * @return array
