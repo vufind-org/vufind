@@ -7,7 +7,7 @@
     . '<li class="active">' . $this->transEsc('History') . '</li>';
 ?>
 
-<div class="<?=$this->layoutClass('mainbody')?>">
+<div <? if ($this->auth()->isLoggedIn()): ?>class="<?=$this->layoutClass('mainbody')?>"<?endif;?>>
   <? if (!empty($this->saved)): ?>
     <h2><?=$this->transEsc("history_saved_searches")?></h2>
     <?=$this->context()->renderInContext('search/history-table.phtml', array('showSaved' => true));?>
@@ -21,6 +21,7 @@
   <? endif; ?>
 </div>
 
+<? if ($this->auth()->isLoggedIn()): ?>
 <div class="<?=$this->layoutClass('sidebar')?>">
   <?=$this->context($this)->renderInContext(
       "myresearch/menu.phtml",
@@ -29,3 +30,4 @@
     );
   ?>
 </div>
+<?endif;?>
