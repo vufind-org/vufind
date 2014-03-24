@@ -6,10 +6,3 @@ ChangeLog
 TAGS
 *~
 vendor/.git
-/.settings
-/.buildpath
-/.project
-/.gitignore
-/nohup.out
-/vufind.bat
-/local
