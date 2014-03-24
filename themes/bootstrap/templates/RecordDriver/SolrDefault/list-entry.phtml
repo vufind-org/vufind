@@ -165,9 +165,10 @@
       $deleteUrl = is_null($list_id)
           ? $this->url('myresearch-favorites')
           : $this->url('userList', array('id' => $list_id));
+      $deleteUrlGet = $deleteUrl . '?delete=' . urlencode($id) . '&amp;source=' . urlencode($source);
     ?>
     <div class="dropdown">
-      <i class="icon-trash"></i> <a class="dropdown-toggle" id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="<?=$deleteUrl ?>">
+      <i class="icon-trash"></i> <a class="dropdown-toggle" id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="<?=$deleteUrlGet ?>">
         <?=$this->transEsc('Delete') ?>
       </a>
       <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
