@@ -650,8 +650,9 @@ class AbstractRecord extends AbstractBase
             return $patron;
         }
 
+        $tabs = $this->getAllTabs();
         $view = $this->createViewModel();
-        $view->tabs = $this->getAllTabs();
+        $view->tabs = $tabs;
         $view->activeTab = strtolower($tab);
         $view->defaultTab = strtolower($this->getDefaultTab());
 
