@@ -242,6 +242,39 @@ class SpellingProcessorTest extends TestCase
     }
 
     /**
+     * Test a shingle suggestion.
+     *
+     * @return void
+     */
+    public function testShingleSuggestion()
+    {
+        $spelling = $this->getFixture('spell2');
+        $query = $this->getFixture('query2');
+        $params = $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
+            ->get('Solr');
+        $params->setBasicSearch($query->getString(), $query->getHandler());
+        $sp = new SpellingProcessor();
+        $suggestions = $sp->getSuggestions($spelling, $query);
+        $this->assertEquals(
+            array(
+                'preamble gribble' => array(
+                    'freq' => 0,
+                    'suggestions' => array(
+                        'preamble article' => array(
+                            'freq' => 1,
+                            'new_term' => 'preamble article',
+                            'expand_term' => '((preamble gribble) OR (preamble article))',
+                        ),
+                    ),
+                ),
+            ),
+            $sp->processSuggestions(
+                $suggestions, $spelling->getQuery(), $params
+            )
+        );
+    }
+
+    /**
      * Test that spelling tokenization works correctly.
      *
      * @return void
