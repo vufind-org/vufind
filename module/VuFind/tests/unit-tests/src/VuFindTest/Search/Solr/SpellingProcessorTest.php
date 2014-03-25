@@ -70,6 +70,154 @@ class SpellingProcessorTest extends TestCase
     }
 
     /**
+     * Test suggestion processing.
+     *
+     * @return void
+     */
+    public function testSuggestionProcessing()
+    {
+        $sp = new SpellingProcessor();
+        $spelling = $this->getFixture('spell1');
+        $query = $this->getFixture('query1');
+        $this->assertEquals(
+            array(
+                'grumble' => array(
+                    'freq' => 2,
+                    'suggestions' => array(
+                        'grumbler' => 4,
+                        'rumble' => 40,
+                        'crumble' => 15,
+                    ),
+                ),
+                'grimble' => array(
+                    'freq' => 7,
+                    'suggestions' => array(
+                        'trimble' => 110,
+                        'gribble' => 21,
+                        'grimsley' => 24
+                    ),
+                ),
+            ),
+            $sp->getSuggestions($spelling, $query)
+        );
+    }
+
+    /**
+     * Test suggestion processing.
+     *
+     * @return void
+     */
+    public function testSuggestionProcessingWithNonDefaultLimit()
+    {
+        $config = new Config(array('limit' => 5));
+        $sp = new SpellingProcessor($config);
+        $spelling = $this->getFixture('spell1');
+        $query = $this->getFixture('query1');
+        $this->assertEquals(
+            array(
+                'grumble' => array(
+                    'freq' => 2,
+                    'suggestions' => array(
+                        'grumbler' => 4,
+                        'rumble' => 40,
+                        'crumble' => 15,
+                        'trumble' => 13,
+                        'brumble' => 3,
+                    ),
+                ),
+                'grimble' => array(
+                    'freq' => 7,
+                    'suggestions' => array(
+                        'trimble' => 110,
+                        'gribble' => 21,
+                        'grimsley' => 24,
+                        'grimalde' => 8,
+                    ),
+                ),
+            ),
+            $sp->getSuggestions($spelling, $query)
+        );
+    }
+
+    /**
+     * Test basic suggestions.
+     *
+     * @return void
+     */
+    public function testBasicSuggestions()
+    {
+        $suggestions = array(
+            'grumble' => array(
+                'freq' => 2,
+                'suggestions' => array(
+                    'grumbler' => 4,
+                    'rumble' => 40,
+                    'crumble' => 15,
+                ),
+            ),
+            'grimble' => array(
+                'freq' => 7,
+                'suggestions' => array(
+                    'trimble' => 110,
+                    'gribble' => 21,
+                    'grimsley' => 24
+                ),
+            ),
+        );
+        $spelling = $this->getFixture('spell1');
+        $query = $this->getFixture('query1');
+        $params = $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
+            ->get('Solr');
+        $params->setBasicSearch($query->getString(), $query->getHandler());
+        $sp = new SpellingProcessor();
+        $this->assertEquals(
+            array(
+                'grumble' => array(
+                    'freq' => 2,
+                    'suggestions' => array(
+                        'grumbler' => array(
+                            'freq' => 4,
+                            'new_term' => 'grumbler',
+                            'expand_term' => '(grumble OR grumbler)',
+                        ),
+                        'rumble' => array(
+                            'freq' => 40,
+                            'new_term' => 'rumble',
+                            'expand_term' => '(grumble OR rumble)',
+                        ),
+                        'crumble' => array(
+                            'freq' => 15,
+                            'new_term' => 'crumble',
+                            'expand_term' => '(grumble OR crumble)',
+                        ),
+                    ),
+                ),
+                'grimble' => array(
+                    'freq' => 7,
+                    'suggestions' => array(
+                        'trimble' => array(
+                            'freq' => 110,
+                            'new_term' => 'trimble',
+                            'expand_term' => '(grimble OR trimble)',
+                        ),
+                        'gribble' => array(
+                            'freq' => 21,
+                            'new_term' => 'gribble',
+                            'expand_term' => '(grimble OR gribble)',
+                        ),
+                        'grimsley' => array(
+                            'freq' => 24,
+                            'new_term' => 'grimsley',
+                            'expand_term' => '(grimble OR grimsley)',
+                        ),
+                    ),
+                ),
+            ),
+            $sp->processSuggestions($suggestions, $spelling->getQuery(), $params)
+        );
+    }
+
+    /**
      * Test that spelling tokenization works correctly.
      *
      * @return void
@@ -97,5 +245,16 @@ class SpellingProcessorTest extends TestCase
         $this->assertEquals(array('"unfinished phrase'), $sp->tokenize('"unfinished phrase'));
         $this->assertEquals(array('"'), $sp->tokenize('"'));
         $this->assertEquals(array('""'), $sp->tokenize('""'));
+    }
+
+    /**
+     * Get a fixture object
+     *
+     * @return mixed
+     */
+    protected function getFixture($file)
+    {
+        $fixturePath = realpath(__DIR__ . '/../../../../../fixtures/spell') . '/';
+        return unserialize(file_get_contents($fixturePath . $file));
     }
 }
