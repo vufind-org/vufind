@@ -291,7 +291,8 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         // ISBNs. If no file exists, we'll favor the 10-digit number if
         // available for the sake of brevity.
         if ($hasISBN) {
-            $this->localFile = $this->getCachePath($this->size, $this->isbn->get13());
+            $this->localFile
+                = $this->getCachePath($this->size, $this->isbn->get13());
             if (!is_readable($this->localFile) && $this->isbn->get10()) {
                 $this->localFile
                     = $this->getCachePath($this->size, $this->isbn->get10());
