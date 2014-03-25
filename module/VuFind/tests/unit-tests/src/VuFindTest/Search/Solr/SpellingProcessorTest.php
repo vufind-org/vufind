@@ -80,24 +80,7 @@ class SpellingProcessorTest extends TestCase
         $spelling = $this->getFixture('spell1');
         $query = $this->getFixture('query1');
         $this->assertEquals(
-            array(
-                'grumble' => array(
-                    'freq' => 2,
-                    'suggestions' => array(
-                        'grumbler' => 4,
-                        'rumble' => 40,
-                        'crumble' => 15,
-                    ),
-                ),
-                'grimble' => array(
-                    'freq' => 7,
-                    'suggestions' => array(
-                        'trimble' => 110,
-                        'gribble' => 21,
-                        'grimsley' => 24
-                    ),
-                ),
-            ),
+            $this->getExpectedQuery1Suggestions(),
             $sp->getSuggestions($spelling, $query)
         );
     }
@@ -146,24 +129,6 @@ class SpellingProcessorTest extends TestCase
      */
     public function testBasicSuggestions()
     {
-        $suggestions = array(
-            'grumble' => array(
-                'freq' => 2,
-                'suggestions' => array(
-                    'grumbler' => 4,
-                    'rumble' => 40,
-                    'crumble' => 15,
-                ),
-            ),
-            'grimble' => array(
-                'freq' => 7,
-                'suggestions' => array(
-                    'trimble' => 110,
-                    'gribble' => 21,
-                    'grimsley' => 24
-                ),
-            ),
-        );
         $spelling = $this->getFixture('spell1');
         $query = $this->getFixture('query1');
         $params = $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
@@ -213,7 +178,66 @@ class SpellingProcessorTest extends TestCase
                     ),
                 ),
             ),
-            $sp->processSuggestions($suggestions, $spelling->getQuery(), $params)
+            $sp->processSuggestions(
+                $this->getExpectedQuery1Suggestions(), $spelling->getQuery(), $params
+            )
+        );
+    }
+
+    /**
+     * Test basic suggestions with expansions disabled and phrase display on.
+     *
+     * @return void
+     */
+    public function testBasicSuggestionsWithNonDefaultSettings()
+    {
+        $spelling = $this->getFixture('spell1');
+        $query = $this->getFixture('query1');
+        $params = $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
+            ->get('Solr');
+        $params->setBasicSearch($query->getString(), $query->getHandler());
+        $config = new Config(array('expand' => false, 'phrase' => true));
+        $sp = new SpellingProcessor($config);
+        $this->assertEquals(
+            array(
+                'grumble' => array(
+                    'freq' => 2,
+                    'suggestions' => array(
+                        'grumbler grimble' => array(
+                            'freq' => 4,
+                            'new_term' => 'grumbler',
+                        ),
+                        'rumble grimble' => array(
+                            'freq' => 40,
+                            'new_term' => 'rumble',
+                        ),
+                        'crumble grimble' => array(
+                            'freq' => 15,
+                            'new_term' => 'crumble',
+                        ),
+                    ),
+                ),
+                'grimble' => array(
+                    'freq' => 7,
+                    'suggestions' => array(
+                        'grumble trimble' => array(
+                            'freq' => 110,
+                            'new_term' => 'trimble',
+                        ),
+                        'grumble gribble' => array(
+                            'freq' => 21,
+                            'new_term' => 'gribble',
+                        ),
+                        'grumble grimsley' => array(
+                            'freq' => 24,
+                            'new_term' => 'grimsley',
+                        ),
+                    ),
+                ),
+            ),
+            $sp->processSuggestions(
+                $this->getExpectedQuery1Suggestions(), $spelling->getQuery(), $params
+            )
         );
     }
 
@@ -245,6 +269,33 @@ class SpellingProcessorTest extends TestCase
         $this->assertEquals(array('"unfinished phrase'), $sp->tokenize('"unfinished phrase'));
         $this->assertEquals(array('"'), $sp->tokenize('"'));
         $this->assertEquals(array('""'), $sp->tokenize('""'));
+    }
+
+    /**
+     * Get expected suggestions for the "query1" example.
+     *
+     * @return array
+     */
+    protected function getExpectedQuery1Suggestions()
+    {
+        return array(
+            'grumble' => array(
+                'freq' => 2,
+                'suggestions' => array(
+                    'grumbler' => 4,
+                    'rumble' => 40,
+                    'crumble' => 15,
+                ),
+            ),
+            'grimble' => array(
+                'freq' => 7,
+                'suggestions' => array(
+                    'trimble' => 110,
+                    'gribble' => 21,
+                    'grimsley' => 24
+                ),
+            ),
+        );
     }
 
     /**
