@@ -420,20 +420,12 @@ class Summon extends SolrDefault
      */
     public function getThumbnail($size = 'small')
     {
+        $params = parent::getThumbnail($size);
         $formats = $this->getFormats();
-        if (($isbn = $this->getCleanISBN()) || !empty($formats)) {
-            $params = array('size' => $size);
-            if ($isbn) {
-                $params['isn'] = $isbn;
-            }
-            if (!empty($formats)) {
-                $params['contenttype'] = $formats[0];
-            }
-            $params['title'] = $this->getTitle();
-            $params['author'] = $this->getPrimaryAuthor();
-            return $params;
+        if (!empty($formats)) {
+            $params['contenttype'] = $formats[0];
         }
-        return false;
+        return $params;
     }
 
     /**
