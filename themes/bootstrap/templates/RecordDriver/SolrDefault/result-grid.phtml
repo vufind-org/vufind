@@ -1,3 +1,13 @@
+<?
+/* We need to find out if we're supposed to display an OpenURL link ($openUrlActive),
+   but even if we don't plan to display the link, we still want to get the $openUrl
+   value for use in generating a COinS (Z3988) tag -- see bottom of file.
+*/
+$openUrl = $this->driver->getOpenURL();
+$openUrlActive = $this->driver->openURLActive('results');
+$urls = $this->record($this->driver)->getLinkDetails();
+?>
+
 <div class="result <?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
   <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueID())?>" class="hiddenId" />
   <?=$this->record($this->driver)->getCheckbox() ?></br>
@@ -29,13 +39,6 @@
           echo $this->transEsc('Title not available');
       }
     ?></a>
-    <? /* We need to find out if we're supposed to display an OpenURL link ($openUrlActive),
-          but even if we don't plan to display the link, we still want to get the $openUrl
-          value for use in generating a COinS (Z3988) tag -- see bottom of file.
-        */
-       $openUrl = $this->driver->getOpenURL();
-       $openUrlActive = $this->driver->openURLActive('results');
-       $urls = $this->record($this->driver)->getLinkDetails(); ?>
     <? if ($openUrlActive || !empty($urls)): ?>
       <br/><br/>
       <? if ($openUrlActive): ?>
