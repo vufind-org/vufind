@@ -176,6 +176,11 @@ class AbstractRecord extends AbstractBase
      */
     public function addtagAction()
     {
+        // Make sure tags are enabled:
+        if (!$this->tagsEnabled()) {
+            throw new \Exception('Tags disabled');
+        }
+
         // Force login:
         if (!($user = $this->getUser())) {
             return $this->forceLogin();

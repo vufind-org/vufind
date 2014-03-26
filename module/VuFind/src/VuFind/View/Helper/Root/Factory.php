@@ -444,6 +444,22 @@ class Factory
     }
 
     /**
+     * Construct the UserTags helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return UserTags
+     */
+    public static function getUserTags(ServiceManager $sm)
+    {
+        $cfg = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $mode = !isset($cfg->Social->tags)
+            || ($cfg->Social->tags && $cfg->Social->tags !== 'disabled')
+            ? 'enabled' : 'disabled';
+        return new UserTags($mode);
+    }
+
+    /**
      * Construct the VideoClips helper.
      *
      * @param ServiceManager $sm Service manager.

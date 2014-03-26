@@ -1,6 +1,6 @@
 <?php
 /**
- * Tag Controller
+ * Tag view helper
  *
  * PHP version 5
  *
@@ -20,44 +20,49 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Controller
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-namespace VuFind\Controller;
+namespace VuFind\View\Helper\Root;
+use Zend\View\Helper\AbstractHelper;
 
 /**
- * Tag Controller
+ * Tag view helper
  *
  * @category VuFind2
- * @package  Controller
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class TagController extends AbstractSearch
+class UserTags extends AbstractHelper
 {
     /**
-     * Constructor
+     * Tag mode (enabled or disabled)
+     *
+     * @var string
      */
-    public function __construct()
+    protected $mode;
+
+    /**
+     * Constructor
+     *
+     * @param string $mode Tag mode (enabled or disabled)
+     */
+    public function __construct($mode = 'enabled')
     {
-        $this->searchClassId = 'Tags';
-        parent::__construct();
+        $this->mode = $mode;
     }
 
     /**
-     * Home action
+     * Get mode
      *
-     * @return mixed
+     * @return string
      */
-    public function homeAction()
+    public function getMode()
     {
-        if (!$this->tagsEnabled()) {
-            throw new \Exception('Tags disabled');
-        }
-        return $this->resultsAction();
+        return $this->mode;
     }
 }
-

@@ -49,12 +49,14 @@
     </div>
   </div>
 
-  <div class="control-group">
-    <label class="control-label" for="add_mytags"><?=$this->transEsc('Add Tags') ?></label>
-    <div class="controls">
-      <input class="mainFocus" id="add_mytags" type="text" name="mytags" value=""/>
+  <? if ($this->usertags()->getMode() !== 'disabled'): ?>
+    <div class="control-group">
+      <label class="control-label" for="add_mytags"><?=$this->transEsc('Add Tags') ?></label>
+      <div class="controls">
+        <input class="mainFocus" id="add_mytags" type="text" name="mytags" value=""/>
+      </div>
     </div>
-  </div>
+  <? endif; ?>
   <div class="control-group">
     <div class="controls">
       <input class="btn" type="submit" name="submit" value="<?=$this->transEsc('Save') ?>"/>
