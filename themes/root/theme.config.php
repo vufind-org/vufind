@@ -32,6 +32,7 @@ return array(
             'searchtabs' => 'VuFind\View\Helper\Root\Factory::getSearchTabs',
             'syndeticsplus' => 'VuFind\View\Helper\Root\Factory::getSyndeticsPlus',
             'systememail' => 'VuFind\View\Helper\Root\Factory::getSystemEmail',
+            'usertags' => 'VuFind\View\Helper\Root\Factory::getUserTags',
             'videoclips' => 'VuFind\View\Helper\Root\Factory::getVideoClips',
             'worldcat' => 'VuFind\View\Helper\Root\Factory::getWorldCat',
         ),
