@@ -266,6 +266,54 @@ class SpellingProcessorTest extends TestCase
     }
 
     /**
+     * Test an advanced search -- this is important because advanced searches
+     * sometimes generate false positive phrase suggestions due to the way
+     * flattened spelling queries are created; this test exercises the code
+     * that fails over to a secondary query when the main query fails to turn
+     * up any relevant suggestions.
+     *
+     * @return void
+     */
+    public function testAdvancedQuerySuggestions()
+    {
+        $this->runSpellingTest(
+            4,
+            array(
+                'lake' => array(
+                    'freq' => 2719,
+                    'suggestions' => array(
+                        'late' => array(
+                            'freq' => 30753,
+                            'new_term' => 'late',
+                            'expand_term' => '(lake OR late)',
+                        ),
+                        'lane' => array(
+                            'freq' => 8054,
+                            'new_term' => 'lane',
+                            'expand_term' => '(lake OR lane)',
+                        ),
+                        'make' => array(
+                            'freq' => 5735,
+                            'new_term' => 'make',
+                            'expand_term' => '(lake OR make)',
+                        )
+                    )
+                ),
+                'geneve' => array(
+                    'freq' => 662,
+                    'suggestions' => array(
+                        'geneva' => array(
+                            'freq' => 1170,
+                            'new_term' => 'geneva',
+                            'expand_term' => '(geneve OR geneva)',
+                        )
+                    )
+                )
+            )
+        );
+    }
+
+    /**
      * Test that spelling tokenization works correctly.
      *
      * @return void
@@ -367,7 +415,7 @@ class SpellingProcessorTest extends TestCase
         $query = $this->getFixture('query' . $testNum);
         $params = $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
             ->get('Solr');
-        $params->setBasicSearch($query->getString(), $query->getHandler());
+        $this->setProperty($params, 'query', $query);
         $sp = new SpellingProcessor(new Config($config));
         $suggestions = $sp->getSuggestions($spelling, $query);
         $this->assertEquals(
