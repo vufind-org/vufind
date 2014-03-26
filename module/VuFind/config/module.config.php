@@ -364,6 +364,7 @@ $config = array(
                     'holdingsils' => 'VuFind\RecordTab\Factory::getHoldingsILS',
                     'map' => 'VuFind\RecordTab\Factory::getMap',
                     'reviews' => 'VuFind\RecordTab\Factory::getReviews',
+                    'usercomments' => 'VuFind\RecordTab\Factory::getUserComments',
                 ),
                 'invokables' => array(
                     'description' => 'VuFind\RecordTab\Description',
@@ -371,7 +372,6 @@ $config = array(
                     'staffviewarray' => 'VuFind\RecordTab\StaffViewArray',
                     'staffviewmarc' => 'VuFind\RecordTab\StaffViewMARC',
                     'toc' => 'VuFind\RecordTab\TOC',
-                    'usercomments' => 'VuFind\RecordTab\UserComments',
                 ),
             ),
             'related' => array(
