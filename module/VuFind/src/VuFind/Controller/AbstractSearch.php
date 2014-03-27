@@ -26,6 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller;
+use VuFind\Solr\Utils as SolrUtils;
 use Zend\Stdlib\Parameters;
 
 /**
@@ -365,5 +366,50 @@ class AbstractSearch extends AbstractBase
     protected function getResultsManager()
     {
         return $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager');
+    }
+
+    /**
+     * Get the current settings for the date range facet, if it is set:
+     *
+     * @param object $savedSearch Saved search object (false if none)
+     * @param string $config      Name of config file
+     *
+     * @return array
+     */
+    protected function getDateRangeSettings($savedSearch = false, $config = 'facets')
+    {
+        $parts = array();
+
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get($config);
+
+        if (isset($config->SpecialFacets->dateRange)) {
+            foreach ($config->SpecialFacets->dateRange as $field) {
+                // Default to blank strings:
+                $from = $to = '';
+
+                // Check to see if there is an existing range in the search object:
+                if ($savedSearch) {
+                    $filters = $savedSearch->getParams()->getFilters();
+                    if (isset($filters[$field])) {
+                        foreach ($filters[$field] as $current) {
+                            if ($range = SolrUtils::parseRange($current)) {
+                                $from = $range['from'] == '*' ? '' : $range['from'];
+                                $to = $range['to'] == '*' ? '' : $range['to'];
+                                $savedSearch->getParams()
+                                    ->removeFilter($field . ':' . $current);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // Send back the settings:
+                $parts[] = array(
+                    'field' => $field,
+                    'values' => array($from, $to)
+                );
+            }
+        }
+        return $parts;
     }
 }

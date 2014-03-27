@@ -21,7 +21,7 @@
  *
  * @category VuFind2
  * @package  Resolver_Drivers
- * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
@@ -33,7 +33,7 @@ use Zend\ServiceManager\ServiceManager;
  *
  * @category VuFind2
  * @package  Resolver_Drivers
- * @author   Luke O'Sullivan <l.osullivan@swansea.ac.uk>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:hierarchy_components Wiki
  */
@@ -46,7 +46,7 @@ class Factory
      *
      * @return Threesixtylink
      */
-    public function getThreesixtylink(ServiceManager $sm)
+    public static function getThreesixtylink(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         return new Threesixtylink(
@@ -62,7 +62,7 @@ class Factory
      *
      * @return Ezb
      */
-    public function getEzb(ServiceManager $sm)
+    public static function getEzb(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         return new Ezb(
@@ -78,7 +78,7 @@ class Factory
      *
      * @return Sfx
      */
-    public function getSfx(ServiceManager $sm)
+    public static function getSfx(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         return new Sfx(

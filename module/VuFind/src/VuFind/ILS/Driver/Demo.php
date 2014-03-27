@@ -614,6 +614,7 @@ class Demo extends AbstractBase
      * @param array $patron The patron array from patronLogin
      *
      * @return mixed        Array of the patron's holds
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getMyStorageRetrievalRequests($patron)
     {
@@ -722,6 +723,22 @@ class Demo extends AbstractBase
                 'locationDisplay' => 'Campus C'
             )
         );
+    }
+
+    /**
+     * Get Default "Hold Required By" Date (as Unix timestamp) or null if unsupported
+     *
+     * @param array $patron   Patron information returned by the patronLogin method.
+     * @param array $holdInfo Contains most of the same values passed to
+     * placeHold, minus the patron data.
+     *
+     * @return int
+     */
+    public function getHoldDefaultRequiredDate($patron, $holdInfo)
+    {
+        // 5 years in the future (but similate intermittent failure):
+        return rand(0, 1) == 1
+            ? mktime(0, 0, 0, date('m'), date('d'), date('Y')+5) : null;
     }
 
     /**
@@ -1084,6 +1101,7 @@ class Demo extends AbstractBase
      * @param patron $patron An array of patron data
      *
      * @return string True if request is valid, false if not
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function checkRequestIsValid($id, $data, $patron)
     {
@@ -1172,6 +1190,7 @@ class Demo extends AbstractBase
      * @param patron $patron An array of patron data
      *
      * @return string True if request is valid, false if not
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
@@ -1270,7 +1289,8 @@ class Demo extends AbstractBase
         if ($function == 'Holds') {
             return array(
                 'HMACKeys' => 'id',
-                'extraHoldFields' => 'comments:pickUpLocation:requiredByDate'
+                'extraHoldFields' => 'comments:pickUpLocation:requiredByDate',
+                'defaultRequiredDate' => 'driver:0:2:0',
             );
         }
         if ($function == 'StorageRetrievalRequests'

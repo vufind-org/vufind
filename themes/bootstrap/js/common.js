@@ -1,4 +1,4 @@
-/*global path, vufindString */
+/*global Lightbox, path, vufindString */
 
 /* --- GLOBAL FUNCTIONS --- */
 function htmlEncode(value){
@@ -116,18 +116,19 @@ $(document).ready(function() {
             }
           }
         });
-      }, 600); // Delay request submission
+      }, 500); // Delay request submission
+    },
+    updater : function(item) { // Submit on update
+      console.log(this.$element[0].form.submit);
+      this.$element[0].value = item;
+      this.$element[0].form.submit();
+      return item;
     }
   });
 
   // Checkbox select all
   $('.checkbox-select-all').change(function() {
     $(this).closest('form').find('.checkbox-select-item').attr('checked', this.checked);
-  });
-  $('#modal').find('.checkbox-select-item').change(function() {
-    if(!this.checked) {
-      $(this).closest('form').find('.checkbox-select-all').attr('checked', false);
-    }
   });
   
   // handle QR code links
@@ -145,7 +146,11 @@ $(document).ready(function() {
   var url = window.location.href;
   if(url.indexOf('?' + 'print' + '=') != -1  || url.indexOf('&' + 'print' + '=') != -1) {
     $("link[media='print']").attr("media", "all");
-    window.print();
+    $(document).ajaxStop(function() {
+      window.print();
+    });
+    // Make an ajax call to ensure that ajaxStop is triggered
+    $.getJSON(path + '/AJAX/JSON', {method: 'keepAlive'});
   }
     
   // Collapsing facets
@@ -153,4 +158,61 @@ $(document).ready(function() {
   
   // Advanced facets
   setupOrFacets();
+  
+  /**************************
+   * LIGHTBOX OPENING LINKS *
+   **************************/
+  
+  // Help links
+  $('.help-link').click(function() {
+    var split = this.href.split('=');
+    return Lightbox.get('Help','Home',{topic:split[1]});
+  });
+  // Hierarchy links
+  $('.hierarchyTreeLink a').click(function() {
+    var id = $(this).parent().parent().parent().find(".hiddenId")[0].value;
+    var hierarchyID = $(this).parent().find(".hiddenHierarchyId")[0].value;
+    return Lightbox.get('Record','AjaxTab',{id:id},{hierarchy:hierarchyID,tab:'HierarchyTree'});
+  });
+  // Login link
+  $('#loginOptions a').click(function() {
+    return Lightbox.get('MyResearch','Login',{},{'loggingin':true});
+  });
+  // Email search link
+  $('.mailSearch').click(function() {
+    return Lightbox.get('Search','Email',{url:document.URL});
+  });
+  // Save record links
+  $('.save-record').click(function() {
+    var parts = this.href.split('/');
+    return Lightbox.get(parts[parts.length-3],'Save',{id:$(this).attr('id')});
+  });
+  Lightbox.addFormCallback('emailSearch', function(x) {
+    Lightbox.confirm(vufindString['bulk_email_success']);
+  });
 });
+
+/* --- BOOTSTRAP LIBRARY TWEAKS --- */
+// Prevent typeahead highlighting
+$.fn.typeahead.Constructor.prototype.render = function(items) {
+  var that = this
+
+  items = $(items).map(function (i, item) {
+    i = $(that.options.item).attr('data-value', item)
+    i.find('a').html(that.highlighter(item))
+    return i[0]
+  })
+
+  this.$menu.html(items)
+  return this
+};
+// Enter without highlight does not delete the query
+$.fn.typeahead.Constructor.prototype.select = function () {
+  var val = this.$menu.find('.active')
+  if(val.length > 0) val = val.attr('data-value')
+  else val = this.$element.val()
+  this.$element
+    .val(this.updater(val))
+    .change()
+  return this.hide()
+}

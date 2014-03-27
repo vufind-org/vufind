@@ -1,6 +1,6 @@
 <?php
   $skip = array(
-    'license', 'special_license', 'description', 'title', 'title_alt'
+    'license', 'special_license', 'description', 'title'
   );
   $no_link = array('title', 'description');
 ?>
@@ -11,7 +11,9 @@
     </a>
   </div>
   <div id="collapse0" class="accordion-body collapse">
-    <table class="table table-striped small details">
+    <div class="accordion-inner">
+      <table class="table small details">
+        <tr><td><?=$this->transEsc('Full Title') ?></td><td><?=$this->details['title']['value'] ?></td></tr>
       <? foreach ($this->details as $attr=>$val):
         // Skip items not placed in this table
         if(in_array($attr, $skip)) continue; ?>
@@ -63,6 +65,7 @@
         <? endif; ?>
       <? endif; ?>
     </table>
+    </div>
     <div class="pad text-center small">
       <? if(isset($this->details['license'])): ?>
         <div class="block text-center">
@@ -81,9 +84,10 @@
         </div>
         <br/><br/>
       <? endif; ?>
-      <a href="<?=$this->url('vudl-record', array('id'=>$this->id))?>"><i class="icon-link"></i> Permanent Link</a>
+      <a href="<?=$this->url('record', array('id'=>$this->id))?>"><i class="icon-link"></i> <?=$this->transEsc('More Details') ?></a><br/>
+      <a href="<?=$this->url('vudl-record', array('id'=>$this->id))?>"><i class="icon-save"></i> <?=$this->transEsc('Permanent Link') ?></a><br/>
       <br/><br/>
-      <? if(isset($this->details['description'])): ?><p class="text-left"><?=html_entity_decode($this->details['description']['value']) ?></p><? endif ?>
+      <? if(isset($this->details['description'])): ?><p class="text-left"><?=html_entity_decode($this->details['description']['value'],  ENT_COMPAT|ENT_HTML401, 'UTF-8') ?></p><? endif ?>
     </div>
   </div>
 </div>

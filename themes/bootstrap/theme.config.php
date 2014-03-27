@@ -12,7 +12,7 @@ return array(
     ),
     'js' => array(
         'core/jquery.min.js',
-        'core/bootstrap.js',
+        'core/bootstrap.min.js',
         'common.js',
         'lightbox.js',
         'rc4.js'

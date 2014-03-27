@@ -504,7 +504,7 @@ class MyResearchController extends AbstractBase
         $source = $this->params()->fromPost(
             'source', $this->params()->fromQuery('source', 'VuFind')
         );
-        $driver = $this->getRecordLoader()->load($id, $source);
+        $driver = $this->getRecordLoader()->load($id, $source, true);
         $listID = $this->params()->fromPost(
             'list_id', $this->params()->fromQuery('list_id', null)
         );
@@ -565,7 +565,7 @@ class MyResearchController extends AbstractBase
     {
         // Normally list ID is found in the route match, but in lightbox context it
         // may sometimes be a GET parameter.  We must cover both cases.
-        $listID = $this->params()->fromRoute('id');
+        $listID = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
         if (empty($listID)) {
             $url = $this->url()->fromRoute('myresearch-favorites');
         } else {
@@ -789,21 +789,9 @@ class MyResearchController extends AbstractBase
      */
     protected function getDriverForILSRecord($current)
     {
-        try {
-            if (!isset($current['id'])) {
-                throw new RecordMissingException();
-            }
-            $record = $this->getServiceLocator()->get('VuFind\RecordLoader')
-                ->load($current['id']);
-        } catch (RecordMissingException $e) {
-            $factory = $this->getServiceLocator()
-                ->get('VuFind\RecordDriverPluginManager');
-            $record = $factory->get('Missing');
-            $record->setRawData(
-                array('id' => isset($current['id']) ? $current['id'] : null)
-            );
-            $record->setSourceIdentifier('Solr');
-        }
+        $id = isset($current['id']) ? $current['id'] : null;
+        $record = $this->getServiceLocator()->get('VuFind\RecordLoader')
+            ->load($id, 'VuFind', true);
         $record->setExtraDetail('ils_details', $current);
         return $record;
     }

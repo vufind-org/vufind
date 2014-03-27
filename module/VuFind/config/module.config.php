@@ -101,8 +101,9 @@ $config = array(
     'controller_plugins' => array(
         'factories' => array(
             'holds' => array('VuFind\Controller\Plugin\Factory', 'getHolds'),
-            'storageRetrievalRequests' => array('VuFind\Controller\Plugin\Factory', 'getStorageRetrievalRequests'),
+            'newitems' => array('VuFind\Controller\Plugin\Factory', 'getNewItems'),
             'reserves' => array('VuFind\Controller\Plugin\Factory', 'getReserves'),
+            'storageRetrievalRequests' => array('VuFind\Controller\Plugin\Factory', 'getStorageRetrievalRequests'),
         ),
         'invokables' => array(
             'db-upgrade' => 'VuFind\Controller\Plugin\DbUpgrade',
@@ -332,6 +333,8 @@ $config = array(
                     'openlibrarysubjectsdeferred' => 'VuFind\Recommend\OpenLibrarySubjectsDeferred',
                     'pubdatevisajax' => 'VuFind\Recommend\PubDateVisAjax',
                     'resultgooglemapajax' => 'VuFind\Recommend\ResultGoogleMapAjax',
+                    'summonbestbetsdeferred' => 'VuFind\Recommend\SummonBestBetsDeferred',
+                    'summondatabasesdeferred' => 'VuFind\Recommend\SummonDatabasesDeferred',
                     'summonresultsdeferred' => 'VuFind\Recommend\SummonResultsDeferred',
                     'switchtype' => 'VuFind\Recommend\SwitchType',
                 ),

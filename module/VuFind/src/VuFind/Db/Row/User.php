@@ -146,6 +146,11 @@ class User extends ServiceLocatorAwareGateway
      */
     protected function encryptOrDecrypt($text, $encrypt = true)
     {
+        // Ignore empty text:
+        if (empty($text)) {
+            return $text;
+        }
+
         // Load encryption key from configuration if not already present:
         if (null === $this->encryptionKey) {
             $config = $this->getServiceLocator()->getServiceLocator()
