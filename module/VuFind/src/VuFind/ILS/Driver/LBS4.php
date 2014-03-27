@@ -35,7 +35,6 @@ use VuFind\ILS\Driver\AbstractBase as AbstractBase;
  *
  * @category VuFind2
  * @package  ILS_Drivers
- * @author   Goetz Hatop <vufind-tech@lists.sourceforge.net>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
@@ -57,7 +56,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
     protected $opcloan;
 
     /**
-     * ILN 
+     * ILN
      *
      * @var string
      */
@@ -117,25 +116,17 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      * This is responsible for retrieving the status information of a certain
      * record.
      *
-     * @param string $id The record id to retrieve the holdings for
+     * @param string $ppn The record id to retrieve the holdings for
      *
      * @throws ILSException
      * @return mixed     On success, an associative array with the following keys:
-     * id, availability (boolean), status, location, reserve, callnumber.
+     * ppn, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus($id) {
-        if ($this->db == FALSE) {
-            return array();
-        } else {
-            return $this->getSybStatus($id,$this->opacfno,$this->opaciln);
-        }
-    }
-
-    protected function getSybStatus($ppn, $fno, $iln) {
+    public function getStatus($ppn) {
         $sybid = substr($ppn,0,-1); //strip checksum
         $sql = "select o.loan_indication, o.signature, v.loan_status"
              . " from ous_copy_cache o, volume v"
-             . " where o.iln=".$iln
+             . " where o.iln=".$this->opaciln
              . " and o.ppn=".$sybid
              . " and o.epn *= v.epn"; //outer join
         try {
@@ -146,7 +137,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                 $loan_indi  = $row[0];
                 $label = substr($row[1],4);
                 $locid = substr($row[1],0,3);
-                $location = $this->translate($iln."/". $locid);
+                $location = $this->translate($this->opaciln."/". $locid);
                 $loan_status  = $row[2];
 
                 $available = true;
@@ -197,33 +188,15 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      * This is responsible for retrieving the holding information of a certain
      * record.
      *
-     * @param string $id     The record id to retrieve the holdings for
+     * @param string $ppn    The record id to retrieve the holdings for
      * @param array  $patron Patron data
      *
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, $patron = false) {
-        return $this->getSybHolding($id, $this->opacfno, $this->opaciln);
-    }
-
-    protected function getNotes($locid, $callnumber) {
-        if ( strpos($callnumber, 'LBS')===0) {
-            $note = $this->translate("Textbook Collection");
-        } else {
-            $note = $this->translate("Lending Collection");
-        }
-        return $note;
-    }
-
-    /** return storage link */
-    protected function getStorage($locid, $callnumber) {
-        return false;
-    }
-
-    protected function getSybHolding($ppn, $fno, $iln) {
-        $sybid = substr($ppn,0,-1); //no checksum
+    public function getHolding($ppn, $patron = false) {
+        $sybid = substr($ppn,0,-1); //strip checksum
         $sql = "select o.epn, o.loan_indication"
              . ", v.volume_bar, v.loan_status"
              . ", v.volume_number"
@@ -231,7 +204,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
              . ", o.holding"
              . ", o.type_of_material_copy"
              . " from ous_copy_cache o, volume v, titles_copy t"
-             . " where o.iln=".$iln
+             . " where o.iln=".$this->opaciln
              . " and o.ppn=".$sybid
              . " and o.epn *= v.epn"//outer join
              . " and t.epn = o.epn"
@@ -251,10 +224,11 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
 
                 //library location identifier is a callnumber prefix
                 $locid = substr($row[5],0,3);
-                //suppress multiple callnumbers, comma separated items
+
+                //suppress multiple callnumbers, those are comma separated items
                 $callnumber = current(explode(',',substr($row[5],4)));
                 if ($locid!='')
-                    $location = $iln."/". $locid;
+                    $location = $this->opaciln."/". $locid;
 
                 $notes = array();
                 if ($row[6]!='')
@@ -362,6 +336,53 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
         return $holding;
     }
 
+    /**
+     * Get Notes
+     *
+     * This is responsible for retrieving library specific
+     * notes for a record. You may want to override this.
+     *
+     * @param string $locid  The library location identifier
+     * @param array  $callnumber The callnumber of the item
+     *
+     * @return string On success, a string to be displayed near the item
+     */
+    protected function getNotes($locid, $callnumber) {
+        if ( strpos($callnumber, 'LBS')===0) {
+            $note = $this->translate("Textbook Collection");
+        } else {
+            $note = $this->translate("Lending Collection");
+        }
+        return $note;
+    }
+
+    /**
+     * Get Storage
+     *
+     * This is responsible for retrieving library specific
+     * storage urls if available, e.g. bibmap links.
+     *
+     * @param string $locid  The library location identifier
+     * @param array  $callnumber The callnumber of the item
+     *
+     * @return string On success, a url string to be displayed as 
+     * storage link.
+     */
+    protected function getStorage($locid, $callnumber) {
+        return false;
+    }
+
+    /**
+     * Get Loanexpire
+     *
+     * This is responsible for retrieving loan expiration dates
+     * for an item.
+     *
+     * @param string $vol  The volume number
+     *
+     * @return string On success, a string to be displayed as 
+     *  loan expiration date.
+     */
     protected function getLoanexpire($vol) {
         $sql = "select expiry_date_loan from loans_requests"
              . " where volume_number=".$vol."";
@@ -377,21 +398,6 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
             throw new ILSException($e->getMessage());
         }
         return false;
-    }
-
-    /**
-     * Get Purchase History
-     *
-     * This is responsible for retrieving the acquisitions history data for the
-     * specific record (usually recently received issues of a serial).
-     *
-     * @param string $id The record id to retrieve the info for
-     *
-     * @return mixed     An array with the acquisitions data on success.
-     */
-    public function getPurchaseHistory($id)
-    {
-        return array(/* may be later */);
     }
 
     /**
@@ -415,11 +421,6 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
             return $hold;
         }
         return false;
-    }
-
-    public function getPickUpLocations($patron = false, $holdDetails = null)
-    {
-        return array(/* may be later */);
     }
 
     /**
@@ -464,7 +465,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
              . ",b.borrower_type"
              . ",b.institution_code"
              . ",b.address_id_nr"
-             . ",b.iln"
+             . ",b.this->opaciln"
              . ",b.language_code"
              . " from borrower b, pincode p"
              . " where b.borrower_bar='".$barcode."'"
@@ -542,7 +543,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                           'firstname' => $row[1],
                           'lastname'  => $row[2],
                           'address1'  => $row[10].', '.$row[9].' '.$row[11],
-                          //'zip'       => $row[14],
+                          //'zip'     => $row[14],
                           'email'     => $row[3],
                           'phone'     => $row[12],
                           'group'     => $row[6],
@@ -556,10 +557,10 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                 $row = sybase_fetch_row($sqlStmt);
                 if ($row) {
                     if ($row[8]==$row[13]) { //reminder address first
-                      $result['address2'] = $result['address1'];
-                      $result['address1'] = $row[10].', '.$row[9].' '.$row[11];
+                        $result['address2'] = $result['address1'];
+                        $result['address1'] = $row[10].', '.$row[9].' '.$row[11];
                     } else {
-                      $result['address2'] = $row[10].', '.$row[9].' '.$row[11];
+                        $result['address2'] = $row[10].', '.$row[9].' '.$row[11];
                     }
                 }
                 return $result;
@@ -667,6 +668,21 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
+     * Get Purchase History
+     *
+     * This is responsible for retrieving the acquisitions history data for the
+     * specific record (usually recently received issues of a serial).
+     *
+     * @param string $id The record id to retrieve the info for
+     *
+     * @return mixed     An array with the acquisitions data on success.
+     */
+    public function getPurchaseHistory($id)
+    {
+        return array();
+    }
+
+    /**
      * Get Patron Fines
      *
      * This is responsible for retrieving all fines by a specific patron.
@@ -737,22 +753,6 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Place Hold
-     *
-     * Attempts to place a hold or recall on a particular item and returns
-     * an array with result details.
-     *
-     * @param array $holdDetails An array of item and patron data
-     *
-     * @return mixed An array of data on the request including
-     * whether or not it was successful and a system message (if available)
-     */
-      public function placeHold($holdDetails)
-      {
-          return array(/*may be later*/);
-      }
-
-    /**
      * Set a translator
      *
      * @param \Zend\I18n\Translator\Translator $translator Translator
@@ -778,11 +778,18 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
             ? $this->translator->translate($msg) : $msg;
     }
 
+    /**
+     * Helper function to clean up bad characters
+     */
     protected function picaRecode($str) {
         $clean = preg_replace('/[^(\x20-\x7F)]*/','', $str);
 	    return $clean;
     }
 
+    /**
+     * Helper function to compute the module 11 based
+     * control number for a ppn/epn
+     */
     protected function prfz($str) {
         $x = 0; $y = 0; $w = 2;
         $stra = str_split($str);
