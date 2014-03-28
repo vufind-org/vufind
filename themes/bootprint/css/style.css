@@ -41,7 +41,7 @@ mark {background:0;color:inherit;font-weight:bold}
 input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input,
 .row-fluid input[class*="span"], .btn:not(.btn-large) {border:1px solid #AAA;border-radius:2px;font-size:12px;height:26px;margin:0;min-height:1px;padding:2px 6px}
 .btn {padding:2px 8px}
-.btn.btn-small {height:20px;padding:0 4px}
+.btn.btn-small {height:19px;padding:1px 4px}
 .btn.btn-link {border:0}
 select {padding:2px}
 select, .btn:not(.btn-link){vertical-align:top}
@@ -138,7 +138,8 @@ select, .btn:not(.btn-link){vertical-align:top}
 .result:nth-child(odd) {background:#EEE}
 .result>.checkbox {font-weight:bold;margin:2px 0 2px 1%;max-width:6%}
 .result>.checkbox input[type="checkbox"] {margin:3px auto}
-.result .span7 {margin-left:1%;width:52%}
+.result .middle {margin-left:1%;width:52%}
+@media (max-width: 600px) {.result .middle {margin-left:auto;width:75%;}}
 .result .savedLists {margin:2px 0;padding:6px}
 .result .savedLists ul {margin-bottom:0}
 .span9>.noprint>.help-block {margin-bottom:0}
@@ -151,14 +152,21 @@ select, .btn:not(.btn-link){vertical-align:top}
 #sort_options_1 {height:26px;width:100px}
 
 /* --- VUDL --- */
-.btn.grid-btn {height:16px;padding:3px 6px 5px 6px}
+.btn.grid-btn {height:14px;padding:2px 6px 5px 6px}
 .btn.grid-btn i {font-size:14px}
 #download-button {background:linear-gradient(to bottom, #D7E991 0%,#B5C770 100%);padding:10px 8px 6px 16px}
 #download-button:hover {background:linear-gradient(to bottom, #72A255 0%,#508033 100%);text-shadow:0 1px 0 rgba(0,0,0,.5)}
 #download-button:active {background:linear-gradient(to bottom, #508033 0%,#72A255 100%)}
+.progress-striped .bar {background-color:#619144}
 .inspector_container {margin-top:6px}
+.page-link,.page-grid {color:#888;padding:5px}
+#side-nav .accordion-inner {padding:4px}
+#side-nav .page-link.selected {background:#D7E991}
+.page-link.active,.page-grid.active {color:#000}
+.page-link.loading,.page-grid.loading {color:#000}
 .siblings-form {margin:3px auto}
 .table.details {font-size:10px;border-bottom:1px solid #DDD}
+#trail {height:26px}
 
 /* --- ChoiceAuth --- */
 #authcontainer .authmethod0 {padding-left:25px}

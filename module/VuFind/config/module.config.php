@@ -62,10 +62,10 @@ $config = array(
     ),
     'controllers' => array(
         'factories' => array(
-            'browse' => array('VuFind\Controller\Factory', 'getBrowseController'),
-            'collection' => array('VuFind\Controller\Factory', 'getCollectionController'),
-            'collections' => array('VuFind\Controller\Factory', 'getCollectionsController'),
-            'record' => array('VuFind\Controller\Factory', 'getRecordController'),
+            'browse' => 'VuFind\Controller\Factory::getBrowseController',
+            'collection' => 'VuFind\Controller\Factory::getCollectionController',
+            'collections' => 'VuFind\Controller\Factory::getCollectionsController',
+            'record' => 'VuFind\Controller\Factory::getRecordController',
         ),
         'invokables' => array(
             'ajax' => 'VuFind\Controller\AjaxController',
@@ -100,10 +100,11 @@ $config = array(
     ),
     'controller_plugins' => array(
         'factories' => array(
-            'holds' => array('VuFind\Controller\Plugin\Factory', 'getHolds'),
-            'newitems' => array('VuFind\Controller\Plugin\Factory', 'getNewItems'),
-            'reserves' => array('VuFind\Controller\Plugin\Factory', 'getReserves'),
-            'storageRetrievalRequests' => array('VuFind\Controller\Plugin\Factory', 'getStorageRetrievalRequests'),
+            'holds' => 'VuFind\Controller\Plugin\Factory::getHolds',
+            'newitems' => 'VuFind\Controller\Plugin\Factory::getNewItems',
+            'ILLRequests' => 'VuFind\Controller\Plugin\Factory::getILLRequests',
+            'reserves' => 'VuFind\Controller\Plugin\Factory::getReserves',
+            'storageRetrievalRequests' => 'VuFind\Controller\Plugin\Factory::getStorageRetrievalRequests',
         ),
         'invokables' => array(
             'db-upgrade' => 'VuFind\Controller\Plugin\DbUpgrade',
@@ -116,32 +117,32 @@ $config = array(
     'service_manager' => array(
         'allow_override' => true,
         'factories' => array(
-            'VuFind\AuthManager' => array('VuFind\Auth\Factory', 'getManager'),
-            'VuFind\CacheManager' => array('VuFind\Service\Factory', 'getCacheManager'),
-            'VuFind\Cart' => array('VuFind\Service\Factory', 'getCart'),
-            'VuFind\DateConverter' => array('VuFind\Service\Factory', 'getDateConverter'),
-            'VuFind\DbAdapter' => array('VuFind\Service\Factory', 'getDbAdapter'),
-            'VuFind\DbAdapterFactory' => array('VuFind\Service\Factory', 'getDbAdapterFactory'),
-            'VuFind\Export' => array('VuFind\Service\Factory', 'getExport'),
-            'VuFind\Http' => array('VuFind\Service\Factory', 'getHttp'),
-            'VuFind\HMAC' => array('VuFind\Service\Factory', 'getHMAC'),
-            'VuFind\ILSConnection' => array('VuFind\Service\Factory', 'getILSConnection'),
-            'VuFind\ILSHoldLogic' => array('VuFind\Service\Factory', 'getILSHoldLogic'),
-            'VuFind\ILSHoldSettings' => array('VuFind\Service\Factory', 'getILSHoldSettings'),
-            'VuFind\ILSTitleHoldLogic' => array('VuFind\Service\Factory', 'getILSTitleHoldLogic'),
-            'VuFind\Logger' => array('VuFind\Service\Factory', 'getLogger'),
+            'VuFind\AuthManager' => 'VuFind\Auth\Factory::getManager',
+            'VuFind\CacheManager' => 'VuFind\Service\Factory::getCacheManager',
+            'VuFind\Cart' => 'VuFind\Service\Factory::getCart',
+            'VuFind\DateConverter' => 'VuFind\Service\Factory::getDateConverter',
+            'VuFind\DbAdapter' => 'VuFind\Service\Factory::getDbAdapter',
+            'VuFind\DbAdapterFactory' => 'VuFind\Service\Factory::getDbAdapterFactory',
+            'VuFind\Export' => 'VuFind\Service\Factory::getExport',
+            'VuFind\Http' => 'VuFind\Service\Factory::getHttp',
+            'VuFind\HMAC' => 'VuFind\Service\Factory::getHMAC',
+            'VuFind\ILSConnection' => 'VuFind\Service\Factory::getILSConnection',
+            'VuFind\ILSHoldLogic' => 'VuFind\Service\Factory::getILSHoldLogic',
+            'VuFind\ILSHoldSettings' => 'VuFind\Service\Factory::getILSHoldSettings',
+            'VuFind\ILSTitleHoldLogic' => 'VuFind\Service\Factory::getILSTitleHoldLogic',
+            'VuFind\Logger' => 'VuFind\Service\Factory::getLogger',
             'VuFind\Mailer' => 'VuFind\Mailer\Factory',
-            'VuFind\RecordLoader' => array('VuFind\Service\Factory', 'getRecordLoader'),
-            'VuFind\RecordRouter' => array('VuFind\Service\Factory', 'getRecordRouter'),
-            'VuFind\RecordStats' => array('VuFind\Service\Factory', 'getRecordStats'),
-            'VuFind\Search\BackendManager' => array('VuFind\Service\Factory', 'getSearchBackendManager'),
-            'VuFind\SearchSpecsReader' => array('VuFind\Service\Factory', 'getSearchSpecsReader'),
-            'VuFind\SearchStats' => array('VuFind\Service\Factory', 'getSearchStats'),
+            'VuFind\RecordLoader' => 'VuFind\Service\Factory::getRecordLoader',
+            'VuFind\RecordRouter' => 'VuFind\Service\Factory::getRecordRouter',
+            'VuFind\RecordStats' => 'VuFind\Service\Factory::getRecordStats',
+            'VuFind\Search\BackendManager' => 'VuFind\Service\Factory::getSearchBackendManager',
+            'VuFind\SearchSpecsReader' => 'VuFind\Service\Factory::getSearchSpecsReader',
+            'VuFind\SearchStats' => 'VuFind\Service\Factory::getSearchStats',
             'VuFind\SMS' => 'VuFind\SMS\Factory',
-            'VuFind\Solr\Writer' => array('VuFind\Service\Factory', 'getSolrWriter'),
-            'VuFind\Tags' => array('VuFind\Service\Factory', 'getTags'),
-            'VuFind\Translator' => array('VuFind\Service\Factory', 'getTranslator'),
-            'VuFind\WorldCatUtils' => array('VuFind\Service\Factory', 'getWorldCatUtils'),
+            'VuFind\Solr\Writer' => 'VuFind\Service\Factory::getSolrWriter',
+            'VuFind\Tags' => 'VuFind\Service\Factory::getTags',
+            'VuFind\Translator' => 'VuFind\Service\Factory::getTranslator',
+            'VuFind\WorldCatUtils' => 'VuFind\Service\Factory::getWorldCatUtils',
         ),
         'invokables' => array(
             'VuFind\SessionManager' => 'Zend\Session\SessionManager',
@@ -149,7 +150,7 @@ $config = array(
             'VuFind\Search\Memory'  => 'VuFind\Search\Memory',
         ),
         'initializers' => array(
-            array('VuFind\ServiceManager\Initializer', 'initInstance'),
+            'VuFind\ServiceManager\Initializer::initInstance',
         ),
         'aliases' => array(
             'mvctranslator' => 'VuFind\Translator',
@@ -159,7 +160,7 @@ $config = array(
     'translator' => array(),
     'view_helpers' => array(
         'initializers' => array(
-            array('VuFind\ServiceManager\Initializer', 'initZendPlugin'),
+            'VuFind\ServiceManager\Initializer::initZendPlugin',
         ),
     ),
     'view_manager' => array(
@@ -195,8 +196,8 @@ $config = array(
             'auth' => array(
                 'abstract_factories' => array('VuFind\Auth\PluginFactory'),
                 'factories' => array(
-                    'ils' => array('VuFind\Auth\Factory', 'getILS'),
-                    'multiils' => array('VuFind\Auth\Factory', 'getMultiILS'),
+                    'ils' => 'VuFind\Auth\Factory::getILS',
+                    'multiils' => 'VuFind\Auth\Factory::getMultiILS',
                 ),
                 'invokables' => array(
                     'choiceauth' => 'VuFind\Auth\ChoiceAuth',
@@ -216,10 +217,10 @@ $config = array(
             'autocomplete' => array(
                 'abstract_factories' => array('VuFind\Autocomplete\PluginFactory'),
                 'factories' => array(
-                    'solr' => array('VuFind\Autocomplete\Factory', 'getSolr'),
-                    'solrauth' => array('VuFind\Autocomplete\Factory', 'getSolrAuth'),
-                    'solrcn' => array('VuFind\Autocomplete\Factory', 'getSolrCN'),
-                    'solrreserves' => array('VuFind\Autocomplete\Factory', 'getSolrReserves'),
+                    'solr' => 'VuFind\Autocomplete\Factory::getSolr',
+                    'solrauth' => 'VuFind\Autocomplete\Factory::getSolrAuth',
+                    'solrcn' => 'VuFind\Autocomplete\Factory::getSolrCN',
+                    'solrreserves' => 'VuFind\Autocomplete\Factory::getSolrReserves',
                 ),
                 'invokables' => array(
                     'none' => 'VuFind\Autocomplete\None',
@@ -240,7 +241,7 @@ $config = array(
             'db_table' => array(
                 'abstract_factories' => array('VuFind\Db\Table\PluginFactory'),
                 'factories' => array(
-                    'resource' => array('VuFind\Db\Table\Factory', 'getResource'),
+                    'resource' => 'VuFind\Db\Table\Factory::getResource',
                 ),
                 'invokables' => array(
                     'changetracker' => 'VuFind\Db\Table\ChangeTracker',
@@ -258,13 +259,13 @@ $config = array(
             ),
             'hierarchy_driver' => array(
                 'factories' => array(
-                    'default' => array('VuFind\Hierarchy\Driver\Factory', 'getHierarchyDefault'),
-                    'flat' => array('VuFind\Hierarchy\Driver\Factory', 'getHierarchyFlat'),
+                    'default' => 'VuFind\Hierarchy\Driver\Factory::getHierarchyDefault',
+                    'flat' => 'VuFind\Hierarchy\Driver\Factory::getHierarchyFlat',
                 ),
             ),
             'hierarchy_treedatasource' => array(
                 'factories' => array(
-                    'solr' => array('VuFind\Hierarchy\TreeDataSource\Factory', 'getSolr'),
+                    'solr' => 'VuFind\Hierarchy\TreeDataSource\Factory::getSolr',
                 ),
                 'invokables' => array(
                     'xmlfile' => 'VuFind\Hierarchy\TreeDataSource\XMLFile',
@@ -278,15 +279,15 @@ $config = array(
             'ils_driver' => array(
                 'abstract_factories' => array('VuFind\ILS\Driver\PluginFactory'),
                 'factories' => array(
-                    'aleph' => array('VuFind\ILS\Driver\Factory', 'getAleph'),
-                    'demo' => array('VuFind\ILS\Driver\Factory', 'getDemo'),
-                    'horizon' => array('VuFind\ILS\Driver\Factory', 'getHorizon'),
-                    'horizonxmlapi' => array('VuFind\ILS\Driver\Factory', 'getHorizonXMLAPI'),
-                    'multibackend' => array('VuFind\ILS\Driver\Factory', 'getMultiBackend'),
-                    'noils' => array('VuFind\ILS\Driver\Factory', 'getNoILS'),
-                    'unicorn' => array('VuFind\ILS\Driver\Factory', 'getUnicorn'),
-                    'voyager' => array('VuFind\ILS\Driver\Factory', 'getVoyager'),
-                    'voyagerrestful' => array('VuFind\ILS\Driver\Factory', 'getVoyagerRestful'),
+                    'aleph' => 'VuFind\ILS\Driver\Factory::getAleph',
+                    'demo' => 'VuFind\ILS\Driver\Factory::getDemo',
+                    'horizon' => 'VuFind\ILS\Driver\Factory::getHorizon',
+                    'horizonxmlapi' => 'VuFind\ILS\Driver\Factory::getHorizonXMLAPI',
+                    'multibackend' => 'VuFind\ILS\Driver\Factory::getMultiBackend',
+                    'noils' => 'VuFind\ILS\Driver\Factory::getNoILS',
+                    'unicorn' => 'VuFind\ILS\Driver\Factory::getUnicorn',
+                    'voyager' => 'VuFind\ILS\Driver\Factory::getVoyager',
+                    'voyagerrestful' => 'VuFind\ILS\Driver\Factory::getVoyagerRestful',
                 ),
                 'invokables' => array(
                     'amicus' => 'VuFind\ILS\Driver\Amicus',
@@ -307,24 +308,24 @@ $config = array(
             'recommend' => array(
                 'abstract_factories' => array('VuFind\Recommend\PluginFactory'),
                 'factories' => array(
-                    'authorfacets' => array('VuFind\Recommend\Factory', 'getAuthorFacets'),
-                    'authorinfo' => array('VuFind\Recommend\Factory', 'getAuthorInfo'),
-                    'authorityrecommend' => array('VuFind\Recommend\Factory', 'getAuthorityRecommend'),
-                    'catalogresults' => array('VuFind\Recommend\Factory', 'getCatalogResults'),
-                    'collectionsidefacets' => array('VuFind\Recommend\Factory', 'getCollectionSideFacets'),
-                    'europeanaresults' => array('VuFind\Recommend\Factory', 'getEuropeanaResults'),
-                    'expandfacets' => array('VuFind\Recommend\Factory', 'getExpandFacets'),
-                    'favoritefacets' => array('VuFind\Recommend\Factory', 'getFavoriteFacets'),
-                    'sidefacets' => array('VuFind\Recommend\Factory', 'getSideFacets'),
-                    'summonbestbets' => array('VuFind\Recommend\Factory', 'getSummonBestBets'),
-                    'summondatabases' => array('VuFind\Recommend\Factory', 'getSummonDatabases'),
-                    'summonresults' => array('VuFind\Recommend\Factory', 'getSummonResults'),
-                    'summontopics' => array('VuFind\Recommend\Factory', 'getSummonTopics'),
-                    'switchquery' => array('VuFind\Recommend\Factory', 'getSwitchQuery'),
-                    'topfacets' => array('VuFind\Recommend\Factory', 'getTopFacets'),
-                    'webresults' => array('VuFind\Recommend\Factory', 'getWebResults'),
-                    'worldcatidentities' => array('VuFind\Recommend\Factory', 'getWorldCatIdentities'),
-                    'worldcatterms' => array('VuFind\Recommend\Factory', 'getWorldCatTerms'),
+                    'authorfacets' => 'VuFind\Recommend\Factory::getAuthorFacets',
+                    'authorinfo' => 'VuFind\Recommend\Factory::getAuthorInfo',
+                    'authorityrecommend' => 'VuFind\Recommend\Factory::getAuthorityRecommend',
+                    'catalogresults' => 'VuFind\Recommend\Factory::getCatalogResults',
+                    'collectionsidefacets' => 'VuFind\Recommend\Factory::getCollectionSideFacets',
+                    'europeanaresults' => 'VuFind\Recommend\Factory::getEuropeanaResults',
+                    'expandfacets' => 'VuFind\Recommend\Factory::getExpandFacets',
+                    'favoritefacets' => 'VuFind\Recommend\Factory::getFavoriteFacets',
+                    'sidefacets' => 'VuFind\Recommend\Factory::getSideFacets',
+                    'summonbestbets' => 'VuFind\Recommend\Factory::getSummonBestBets',
+                    'summondatabases' => 'VuFind\Recommend\Factory::getSummonDatabases',
+                    'summonresults' => 'VuFind\Recommend\Factory::getSummonResults',
+                    'summontopics' => 'VuFind\Recommend\Factory::getSummonTopics',
+                    'switchquery' => 'VuFind\Recommend\Factory::getSwitchQuery',
+                    'topfacets' => 'VuFind\Recommend\Factory::getTopFacets',
+                    'webresults' => 'VuFind\Recommend\Factory::getWebResults',
+                    'worldcatidentities' => 'VuFind\Recommend\Factory::getWorldCatIdentities',
+                    'worldcatterms' => 'VuFind\Recommend\Factory::getWorldCatTerms',
                 ),
                 'invokables' => array(
                     'europeanaresultsdeferred' => 'VuFind\Recommend\EuropeanaResultsDeferred',
@@ -342,27 +343,27 @@ $config = array(
             'recorddriver' => array(
                 'abstract_factories' => array('VuFind\RecordDriver\PluginFactory'),
                 'factories' => array(
-                    'missing' => array('VuFind\RecordDriver\Factory', 'getMissing'),
-                    'solrauth' => array('VuFind\RecordDriver\Factory', 'getSolrAuth'),
-                    'pazpar2' => array('VuFind\RecordDriver\Factory', 'getPazpar2'),
-                    'solrdefault' => array('VuFind\RecordDriver\Factory', 'getSolrDefault'),
-                    'solrmarc' => array('VuFind\RecordDriver\Factory', 'getSolrMarc'),
-                    'solrreserves' => array('VuFind\RecordDriver\Factory', 'getSolrReserves'),
-                    'solrweb' => array('VuFind\RecordDriver\Factory', 'getSolrWeb'),
-                    'summon' => array('VuFind\RecordDriver\Factory', 'getSummon'),
-                    'worldcat' => array('VuFind\RecordDriver\Factory', 'getWorldCat'),
+                    'missing' => 'VuFind\RecordDriver\Factory::getMissing',
+                    'solrauth' => 'VuFind\RecordDriver\Factory::getSolrAuth',
+                    'pazpar2' => 'VuFind\RecordDriver\Factory::getPazpar2',
+                    'solrdefault' => 'VuFind\RecordDriver\Factory::getSolrDefault',
+                    'solrmarc' => 'VuFind\RecordDriver\Factory::getSolrMarc',
+                    'solrreserves' => 'VuFind\RecordDriver\Factory::getSolrReserves',
+                    'solrweb' => 'VuFind\RecordDriver\Factory::getSolrWeb',
+                    'summon' => 'VuFind\RecordDriver\Factory::getSummon',
+                    'worldcat' => 'VuFind\RecordDriver\Factory::getWorldCat',
                 ),
             ),
             'recordtab' => array(
                 'abstract_factories' => array('VuFind\RecordTab\PluginFactory'),
                 'factories' => array(
-                    'collectionhierarchytree' => array('VuFind\RecordTab\Factory', 'getCollectionHierarchyTree'),
-                    'collectionlist' => array('VuFind\RecordTab\Factory', 'getCollectionList'),
-                    'excerpt' => array('VuFind\RecordTab\Factory', 'getExcerpt'),
-                    'hierarchytree' => array('VuFind\RecordTab\Factory', 'getHierarchyTree'),
-                    'holdingsils' => array('VuFind\RecordTab\Factory', 'getHoldingsILS'),
-                    'map' => array('VuFind\RecordTab\Factory', 'getMap'),
-                    'reviews' => array('VuFind\RecordTab\Factory', 'getReviews'),
+                    'collectionhierarchytree' => 'VuFind\RecordTab\Factory::getCollectionHierarchyTree',
+                    'collectionlist' => 'VuFind\RecordTab\Factory::getCollectionList',
+                    'excerpt' => 'VuFind\RecordTab\Factory::getExcerpt',
+                    'hierarchytree' => 'VuFind\RecordTab\Factory::getHierarchyTree',
+                    'holdingsils' => 'VuFind\RecordTab\Factory::getHoldingsILS',
+                    'map' => 'VuFind\RecordTab\Factory::getMap',
+                    'reviews' => 'VuFind\RecordTab\Factory::getReviews',
                 ),
                 'invokables' => array(
                     'description' => 'VuFind\RecordTab\Description',
@@ -376,18 +377,18 @@ $config = array(
             'related' => array(
                 'abstract_factories' => array('VuFind\Related\PluginFactory'),
                 'factories' => array(
-                    'editions' => array('VuFind\Related\Factory', 'getEditions'),
-                    'similar' => array('VuFind\Related\Factory', 'getSimilar'),
-                    'worldcateditions' => array('VuFind\Related\Factory', 'getWorldCatEditions'),
-                    'worldcatsimilar' => array('VuFind\Related\Factory', 'getWorldCatSimilar'),
+                    'editions' => 'VuFind\Related\Factory::getEditions',
+                    'similar' => 'VuFind\Related\Factory::getSimilar',
+                    'worldcateditions' => 'VuFind\Related\Factory::getWorldCatEditions',
+                    'worldcatsimilar' => 'VuFind\Related\Factory::getWorldCatSimilar',
                 ),
             ),
             'resolver_driver' => array(
                 'abstract_factories' => array('VuFind\Resolver\Driver\PluginFactory'),
                 'factories' => array(
-                    '360link' => array('VuFind\Resolver\Driver\Factory', 'getThreesixtylink'),
-                    'ezb' => array('VuFind\Resolver\Driver\Factory', 'getEzb'),
-                    'sfx' => array('VuFind\Resolver\Driver\Factory', 'getSfx'),
+                    '360link' => 'VuFind\Resolver\Driver\Factory::getThreesixtylink',
+                    'ezb' => 'VuFind\Resolver\Driver\Factory::getEzb',
+                    'sfx' => 'VuFind\Resolver\Driver\Factory::getSfx',
                 ),
                 'aliases' => array(
                     'threesixtylink' => '360link',
@@ -423,7 +424,7 @@ $config = array(
             'search_results' => array(
                 'abstract_factories' => array('VuFind\Search\Results\PluginFactory'),
                 'factories' => array(
-                    'solr' => array('VuFind\Search\Results\Factory', 'getSolr'),
+                    'solr' => 'VuFind\Search\Results\Factory::getSolr',
                 ),
             ),
             'session' => array(
@@ -443,8 +444,8 @@ $config = array(
             'statistics_driver' => array(
                 'abstract_factories' => array('VuFind\Statistics\Driver\PluginFactory'),
                 'factories' => array(
-                    'file' => array('VuFind\Statistics\Driver\Factory', 'getFile'),
-                    'solr' => array('VuFind\Statistics\Driver\Factory', 'getSolr'),
+                    'file' => 'VuFind\Statistics\Driver\Factory::getFile',
+                    'solr' => 'VuFind\Statistics\Driver\Factory::getSolr',
                 ),
                 'invokables' => array(
                     'db' => 'VuFind\Statistics\Driver\Db',
@@ -540,7 +541,7 @@ $recordRoutes = array(
 $nonTabRecordActions = array(
     'AddComment', 'DeleteComment', 'AddTag', 'Save', 'Email', 'SMS', 'Cite',
     'Export', 'RDF', 'Hold', 'BlockedHold', 'Home', 'StorageRetrievalRequest',
-    'BlockedStorageRetrievalRequest'
+    'BlockedStorageRetrievalRequest', 'ILLRequest', 'BlockedILLRequest'
 );
 
 // Define list-related routes -- route name => MyResearch action
@@ -564,7 +565,9 @@ $staticRoutes = array(
     'MyResearch/Account', 'MyResearch/CheckedOut', 'MyResearch/Delete',
     'MyResearch/DeleteList', 'MyResearch/Edit', 'MyResearch/Email',
     'MyResearch/Favorites', 'MyResearch/Fines',
-    'MyResearch/Holds', 'MyResearch/Home', 'MyResearch/Logout', 'MyResearch/Profile',
+    'MyResearch/Holds', 'MyResearch/Home',
+    'MyResearch/ILLRequests',
+    'MyResearch/Logout', 'MyResearch/Profile',
     'MyResearch/SaveSearch', 'MyResearch/StorageRetrievalRequests',
     'QRCode/Show', 'QRCode/Unavailable',
     'OAI/Server', 'Pazpar2/Home', 'Pazpar2/Search', 'Records/Home',

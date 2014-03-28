@@ -39,6 +39,11 @@
             ?>
             <strong><?=$this->transEsc("pick_up_location")?>:</strong><br/>
             <select name="gatheredDetails[pickUpLocation]">
+            <? if ($selected === false): ?>
+              <option value="" selected="selected">
+                <?=$this->transEsc('select_pickup_location')?>
+              </option>
+            <? endif; ?>
             <? foreach ($this->pickup as $lib): ?>
               <option value="<?=$this->escapeHtml($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
                 <?=$this->escapeHtml($lib['locationDisplay'])?>

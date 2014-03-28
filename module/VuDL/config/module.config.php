@@ -9,16 +9,16 @@ $config = array(
     ),
     'service_manager' => array(
         'factories' => array(
-            'VuDL\Connection\Manager' => array('VuDL\Factory', 'getConnectionManager'),
-            'VuDL\Connection\Fedora' => array('VuDL\Factory', 'getConnectionFedora'),
-            'VuDL\Connection\Solr' => array('VuDL\Factory', 'getConnectionSolr'),
+            'VuDL\Connection\Manager' => 'VuDL\Factory::getConnectionManager',
+            'VuDL\Connection\Fedora' => 'VuDL\Factory::getConnectionFedora',
+            'VuDL\Connection\Solr' => 'VuDL\Factory::getConnectionSolr',
         ),
     ),
     'vufind' => array(
         'plugin_managers' => array(
             'recorddriver' => array(
                 'factories' => array(
-                    'solrvudl' => array('VuDL\Factory', 'getRecordDriver'),
+                    'solrvudl' => 'VuDL\Factory::getRecordDriver',
                 ),
             ),
         ),

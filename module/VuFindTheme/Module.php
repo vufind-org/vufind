@@ -63,8 +63,7 @@ class Module
     {
         return array(
             'factories' => array(
-                'VuFindTheme\ThemeInfo' =>
-                    array('VuFindTheme\Module', 'getThemeInfo'),
+                'VuFindTheme\ThemeInfo' => 'VuFindTheme\Module::getThemeInfo',
             ),
             'invokables' => array(
                 'VuFindTheme\Mobile' => 'VuFindTheme\Mobile',
@@ -82,19 +81,14 @@ class Module
     {
         return array(
             'factories' => array(
-                'headlink' =>
-                    array('VuFindTheme\View\Helper\Factory', 'getHeadLink'),
-                'headscript' =>
-                    array('VuFindTheme\View\Helper\Factory', 'getHeadScript'),
-                'headthemeresources' => array(
-                    'VuFindTheme\View\Helper\Factory', 'getHeadThemeResources'
-                ),
-                'imagelink' =>
-                    array('VuFindTheme\View\Helper\Factory', 'getImageLink'),
+                'headlink' => 'VuFindTheme\View\Helper\Factory::getHeadLink',
+                'headscript' => 'VuFindTheme\View\Helper\Factory::getHeadScript',
+                'headthemeresources' =>
+                    'VuFindTheme\View\Helper\Factory::getHeadThemeResources',
+                'imagelink' => 'VuFindTheme\View\Helper\Factory::getImageLink',
                 'inlinescript' =>
-                    array('VuFindTheme\View\Helper\Factory', 'getInlineScript'),
-                'mobileurl' =>
-                    array('VuFindTheme\View\Helper\Factory', 'getMobileUrl'),
+                    'VuFindTheme\View\Helper\Factory::getInlineScript',
+                'mobileurl' => 'VuFindTheme\View\Helper\Factory::getMobileUrl',
             ),
         );
     }

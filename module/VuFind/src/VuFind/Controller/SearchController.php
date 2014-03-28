@@ -321,6 +321,9 @@ class SearchController extends AbstractSearch
             $this->getRequest()->getQuery()->set('hiddenFilters', $hiddenFilters);
         }
 
+        // Don't save to history -- history page doesn't handle correctly:
+        $this->saveToHistory = false;
+
         // Call rather than forward, so we can use custom template
         $view = $this->resultsAction();
 
@@ -420,6 +423,9 @@ class SearchController extends AbstractSearch
 
         // Use standard search action with override parameter to show results:
         $this->getRequest()->getQuery()->set('overrideIds', $bibIDs);
+
+        // Don't save to history -- history page doesn't handle correctly:
+        $this->saveToHistory = false;
 
         // Call rather than forward, so we can use custom template
         $view = $this->resultsAction();

@@ -20,6 +20,7 @@
 
   // HEADER FILES
   $this->headLink()->appendStylesheet('vudl.css');
+  $this->headScript()->appendFile('vudl/config.js');
   $this->headScript()->appendFile('vudl/record.js');
   $this->headScript()->appendFile('jquery.swipe.min.js');
   //$this->headScript()->appendFile('scrollto.js'); // scrolling stuff
@@ -49,8 +50,6 @@
     }
   }
 ?>
-  <? var_dump($this->initList) ?>
-  <? var_dump($this->initPage) ?>
 <script>
   google.load("swfobject", "2.2");
   var documentID = '<?=$this->id ?>';
@@ -106,11 +105,11 @@
           <div class="accordion-inner item-list" id="list<?=$key ?>">
             <!-- PRE LOADING PLACEHOLDERS -->
             <? for($i=0;$i<current(array_keys($list))-1;$i++): ?>
-              <a class="well well-small block text-center page-link loading muted" id="item<?=$i ?>" title="<?=$i ?>">Loading...</a>
+              <a class="page-link unloaded" id="item<?=$i ?>" title="<?=$i ?>">Loading...</a>
             <? endfor; ?>
             <!-- LOADED ITEMS -->
             <? foreach($list as $j=>$item): ?>
-              <a title="<?=$item['id'] ?>" onClick="ajaxGetView(<?=json_php_encode($item, true) ?>, this)" class="well well-small block text-center page-link pointer<?=$key == $this->initList && $j == $this->initPage ?' alert-info':''?>" id="item<?=$j?>">
+              <a title="<?=$item['id'] ?>" onClick="ajaxGetView(<?=json_php_encode($item, true) ?>, this)" class="page-link active<?=$key == $this->initList && $j == $this->initPage ?' selected':''?>" id="item<?=$j?>">
               <? if(isset($item['thumbnail'])): ?>
                 <img src="<?=$item['thumbnail'] ?>" alt="<?=$item['label'] ?>"/><br/>
               <? else: ?>
@@ -125,7 +124,7 @@
             <!-- POST LOADING PLACEHOLDERS -->
             <? if(isset($this->outline['counts'][$key])): ?>
               <? for($i=$this->page+count($list);$i<$this->outline['counts'][$key];$i++): ?>
-                <a class="well well-small block text-center page-link loading muted" id="item<?=($i) ?>" title="<?=$i ?>">Loading...</a>
+                <a class="page-link unloaded" id="item<?=($i) ?>" title="<?=$i ?>">Loading...</a>
               <? endfor; ?>
             <? endif; ?>
           </div>

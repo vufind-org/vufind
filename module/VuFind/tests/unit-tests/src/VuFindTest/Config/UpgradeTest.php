@@ -109,6 +109,9 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
             $this->assertEquals(0, count($warnings));
         }
 
+        // Make sure the obsolete Index/local setting is removed:
+        $this->assertFalse(isset($results['config.ini']['Index']['local']));
+
         return array('configs' => $results, 'warnings' => $warnings);
     }
 
