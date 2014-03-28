@@ -453,10 +453,16 @@ class Factory
     public static function getUserList(ServiceManager $sm)
     {
         $cfg = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $mode = !isset($cfg->Social->lists)
-            || ($cfg->Social->lists && $cfg->Social->lists !== 'disabled')
-            ? 'enabled' : 'disabled';
-        return new UserList($mode);
+        $setting = isset($cfg->Social->lists)
+            ? trim(strtolower($cfg->Social->lists)) : 'enabled';
+        if (!$setting) {
+            $setting = 'disabled';
+        }
+        $whitelist = array('enabled', 'disabled', 'public_only', 'private_only');
+        if (!in_array($setting, $whitelist)) {
+            $setting = 'enabled';
+        }
+        return new UserList($setting);
     }
 
     /**
