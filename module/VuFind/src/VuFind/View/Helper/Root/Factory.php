@@ -444,6 +444,22 @@ class Factory
     }
 
     /**
+     * Construct the UserList helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return UserList
+     */
+    public static function getUserList(ServiceManager $sm)
+    {
+        $cfg = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $mode = !isset($cfg->Social->lists)
+            || ($cfg->Social->lists && $cfg->Social->lists !== 'disabled')
+            ? 'enabled' : 'disabled';
+        return new UserList($mode);
+    }
+
+    /**
      * Construct the UserTags helper.
      *
      * @param ServiceManager $sm Service manager.
