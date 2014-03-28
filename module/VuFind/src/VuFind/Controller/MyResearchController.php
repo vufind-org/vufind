@@ -150,6 +150,11 @@ class MyResearchController extends AbstractBase
         $config = $this->getConfig();
         $page = isset($config->Site->defaultAccountPage)
             ? $config->Site->defaultAccountPage : 'Favorites';
+
+        // Default to search history if favorites are disabled:
+        if ($page == 'Favorites' && !$this->listsEnabled()) {
+            return $this->forwardTo('Search', 'History');
+        }
         return $this->forwardTo('MyResearch', $page);
     }
 
@@ -584,6 +589,11 @@ class MyResearchController extends AbstractBase
      */
     public function mylistAction()
     {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            throw new \Exception('Lists disabled');
+        }
+
         // Check for "delete item" request; parameter may be in GET or POST depending
         // on calling context.
         $deleteId = $this->params()->fromPost(
@@ -705,6 +715,11 @@ class MyResearchController extends AbstractBase
      */
     public function editlistAction()
     {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            throw new \Exception('Lists disabled');
+        }
+
         // User must be logged in to edit list:
         $user = $this->getUser();
         if ($user == false) {
@@ -736,6 +751,11 @@ class MyResearchController extends AbstractBase
      */
     public function deletelistAction()
     {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            throw new \Exception('Lists disabled');
+        }
+
         // Get requested list ID:
         $listID = $this->params()
             ->fromPost('listID', $this->params()->fromQuery('listID'));

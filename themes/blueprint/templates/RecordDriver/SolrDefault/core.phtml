@@ -231,10 +231,12 @@
     <img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtml($QRCode);?>"/>
   <? endif; ?>
 
-  <? /* Display the lists that this record is saved to */ ?>
-  <div class="savedLists info hide" id="savedLists">
-    <strong><?=$this->transEsc("Saved in")?>:</strong>
-  </div>
+  <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+    <? /* Display the lists that this record is saved to */ ?>
+    <div class="savedLists info hide" id="savedLists">
+      <strong><?=$this->transEsc("Saved in")?>:</strong>
+    </div>
+  <? endif; ?>
 
   <?=$this->record($this->driver)->getPreviews()?>
 </div>

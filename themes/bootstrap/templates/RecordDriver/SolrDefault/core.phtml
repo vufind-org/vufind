@@ -35,10 +35,12 @@
       <? endif; ?>
     <? endif; ?>
 
-    <? /* Display the lists that this record is saved to */ ?>
-    <div class="savedLists hide alert alert-info" id="savedLists">
-      <strong><?=$this->transEsc("Saved in")?>:</strong>
-    </div>
+    <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+      <? /* Display the lists that this record is saved to */ ?>
+      <div class="savedLists hide alert alert-info" id="savedLists">
+        <strong><?=$this->transEsc("Saved in")?>:</strong>
+      </div>
+    <? endif; ?>
 
     <?/* Display Main Details */?>
     <table class="table table-striped" summary="<?=$this->transEsc('Bibliographic Details')?>">
