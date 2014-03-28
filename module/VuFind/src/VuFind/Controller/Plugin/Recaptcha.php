@@ -80,6 +80,9 @@ class Recaptcha extends AbstractPlugin
      */
     public function validate()
     {
+        if(!$this->active()) {
+            return true;
+        }
         $captchaPassed = true;
         $recaptchaChallenge = $this->getController()->params()
             ->fromPost('recaptcha_challenge_field');
@@ -107,10 +110,10 @@ class Recaptcha extends AbstractPlugin
      *
      * @return boolean
      */
-    public function active($domain)
+    public function active($domain = false)
     {
         $config = $this->getController()->getConfig();
-        return isset($config->Captcha)
-        && in_array($domain, $config->Captcha->forms->toArray());
+        return isset($config->Captcha) && ($domain == false ||
+        && in_array($domain, $config->Captcha->forms->toArray()));
     }
 }

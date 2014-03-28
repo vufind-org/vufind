@@ -363,6 +363,7 @@ class AbstractRecord extends AbstractBase
             $view->useRecaptcha = true;
         }
         // Process form submission:
+        // Recaptcha Plugin checks if captcha validation is enabled in config
         if ($this->params()->fromPost('submit') && $this->recaptcha()->validate()) {
             // Attempt to send the email and show an appropriate flash message:
             try {
@@ -404,6 +405,7 @@ class AbstractRecord extends AbstractBase
             $view->useRecaptcha = true;
         }
         // Process form submission:
+        // Recaptcha Plugin checks if captcha validation is enabled in config
         if ($this->params()->fromPost('submit') && $this->recaptcha()->validate()) {
             // Send parameters back to view so form can be re-populated:
             $view->to = $this->params()->fromPost('to');

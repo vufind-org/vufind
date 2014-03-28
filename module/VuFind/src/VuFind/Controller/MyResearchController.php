@@ -178,6 +178,7 @@ class MyResearchController extends AbstractBase
         }
 
         // Process request, if necessary:
+        // Recaptcha Plugin checks if captcha validation is enabled in config
         if (!is_null($this->params()->fromPost('submit', null))
          && $this->recaptcha()->validate()
         ) {
