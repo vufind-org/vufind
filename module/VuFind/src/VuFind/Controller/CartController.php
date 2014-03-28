@@ -337,6 +337,11 @@ class CartController extends AbstractBase
      */
     public function saveAction()
     {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            throw new \Exception('Lists disabled');
+        }
+
         // Load record information first (no need to prompt for login if we just
         // need to display a "no records" error message):
         $ids = is_null($this->params()->fromPost('selectAll'))

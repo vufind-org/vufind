@@ -1,5 +1,7 @@
 <div data-role="controlgroup">
-  <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" data-role="button" rel="external"><?=$this->transEsc("Add to favorites")?></a>
+  <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+    <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" data-role="button" rel="external"><?=$this->transEsc("Add to favorites")?></a>
+  <? endif; ?>
   <? if ($this->usertags()->getMode() !== 'disabled'): ?>
     <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'AddTag')?>" data-role="button" rel="external"><?=$this->transEsc("Add Tag")?></a>
   <? endif; ?>
