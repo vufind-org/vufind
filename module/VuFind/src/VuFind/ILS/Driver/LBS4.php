@@ -18,11 +18,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- * @category VuFind2
- * @package  ILS_Drivers
- * @author   Goetz Hatop <vufind-tech@lists.sourceforge.net>
- * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
 use VuFind\Exception\ILS as ILSException;
@@ -91,10 +86,10 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
              $this->db = sybase_pconnect($this->config['Catalog']['sybase'], 
                                          $this->config['Catalog']['username'],
                                          $this->config['Catalog']['password']);
-        } else $this->db = FALSE;
-        if ($this->db==FALSE) {
+             sybase_select_db($this->config['Catalog']['database']);
+        } else {
              throw new ILSException('No Database.');
-        } else sybase_select_db($this->config['Catalog']['database']);
+        } 
     }
 
     /**
@@ -465,11 +460,12 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
              . ",b.borrower_type"
              . ",b.institution_code"
              . ",b.address_id_nr"
-             . ",b.this->opaciln"
+             . ",b.iln"
              . ",b.language_code"
              . " from borrower b, pincode p"
              . " where b.borrower_bar='".$barcode."'"
              . " and b.address_id_nr=p.address_id_nr"
+             . " and b.iln=".$this->opaciln
              . " and p.hashnumber = "
              . "     ascii(substring(convert(char(12),'".$pin."',104),1,1))"
              . " + 2*ascii(substring(convert(char(12),'".$pin."',104),2,1))"
@@ -787,8 +783,8 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Helper function to compute the module 11 based
-     * control number for a ppn/epn
+     * Helper function to compute the modulo 11 based
+     * ppn control number
      */
     protected function prfz($str) {
         $x = 0; $y = 0; $w = 2;
