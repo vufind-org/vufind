@@ -376,7 +376,7 @@ $(document).ready(function(){
     // Support holds cancel list buttons:
     function cancelHolds(type) {
       var typeIDS = type+'IDS';
-      var ids = $('[name="'+typeIDS+'[]"]');
+      var ids = $('[name="'+typeIDS+'[]"]:checked');
       var cancelIDS = [];
       for(var i=0;i<ids.length;i++) {
         cancelIDS.push(ids[i].value);
