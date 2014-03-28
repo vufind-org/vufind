@@ -1103,7 +1103,7 @@ class MyResearchController extends AbstractBase
         }
         // If we have a submitted form
         if (null != $email || null != $username) {
-            // If we can't find a record
+            // If we can't find a user
             if (null == $user) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('recovery_email_not_found');
@@ -1191,12 +1191,7 @@ class MyResearchController extends AbstractBase
                     $this->flashMessenger()->setNamespace('error')
                         ->addMessage('authentication_error_denied');
                     return $this->createViewModel(
-                        array(
-                            'hash' => $hash,
-                            'userid' => $userid,
-                            'username' => $this->params()->fromPost('username'),
-                            'verifyold' => true
-                        )
+                        $this->params()->fromPost()
                     );
                 }
             }
@@ -1205,16 +1200,11 @@ class MyResearchController extends AbstractBase
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('Passwords do not match');
                 return $this->createViewModel(
-                    array(
-                        'hash' => $hash,
-                        'userid' => $userid,
-                        'username' => $this->params()->fromPost('username'),
-                        'verifyold' => $this->params()->fromPost('verifyold'),
-                    )
+                    $this->params()->fromPost()
                 );
             }
             // Update hash
-            $user->setNewPassword($pwd);
+            $user->saveCredentials($this->params()->fromPost('username'), $pwd);
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage('recover_new_password_success');
             // Login (swap new password in for usual one)
@@ -1237,12 +1227,7 @@ class MyResearchController extends AbstractBase
             }
             $user = $this->getUser();
             return $this->createViewModel(
-                array(
-                    'hash' => $user->verify_hash,
-                    'userid' => $user->id,
-                    'username' => $user->username,
-                    'verifyold' => true
-                )
+                $this->params()->fromPost()
             );
         }
         return $this->redirect()->toRoute('home');

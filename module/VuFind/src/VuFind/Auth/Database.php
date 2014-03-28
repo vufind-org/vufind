@@ -163,14 +163,8 @@ class Database extends AbstractBase
         if ($this->passwordHashingEnabled()) {
             $bcrypt = new Bcrypt();
             $data['pass_hash'] = $bcrypt->create($params['password']);
-            $data['verify_hash'] = $data['username']
-                . md5($data['username'] . $data['pass_hash'] . time())
-                . time();
         } else {
             $data['password'] = $params['password'];
-            $data['verify_hash'] = $data['username']
-                . md5($data['username'] . $data['password'] . time())
-                . time();
         }
         // Create the row and send it back to the caller:
         $table->insert($data);

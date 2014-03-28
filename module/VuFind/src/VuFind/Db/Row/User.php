@@ -411,33 +411,9 @@ class User extends ServiceLocatorAwareGateway
     {
         $config = $this->getServiceLocator()->getServiceLocator()
             ->get('VuFind\Config')->get('config');
-        if (isset($config->Authentication->encrypt_ils_password)
-            && $config->Authentication->hash_passwords
-        ) {
-            $this->verify_hash = $this->username
-                . md5($this->username . $this->pass_hash . time())
-                . time();
-        } else {
-            $this->verify_hash = $this->username
-                . md5($this->username . $this->password . time())
-                . time();
-        }
-        return $this->save();
-    }
-    
-    public function setNewPassword($password)
-    {
-        $config = $this->getServiceLocator()->getServiceLocator()
-            ->get('VuFind\Config')->get('config');
-        if (isset($config->Authentication->encrypt_ils_password)
-            && $config->Authentication->hash_passwords
-        ) {
-            $bcrypt = new Bcrypt();
-            $this->pass_hash = $bcrypt->create($password);
-        } else {
-            $this->password = $password;
-        }
-        $this->updateHash();
+        $this->verify_hash = md5(
+            $this->username . $this->password . $this->pass_hash . time()
+        ) . time();
         return $this->save();
     }
 }
