@@ -122,6 +122,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         // Maintain an internal static count of line numbers:
         static $number = 1;
 
+        $current->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
+        
         // Extract details from the XML:
         $status = $current->xpath(
             'ns1:HoldingsSet/ns1:ItemInformation/' .
@@ -130,23 +132,30 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $status = empty($status) ? '' : (string)$status[0];
 
         $id = $current->xpath(
-            'ns1:BibliographicId/ns1:BibliographicItemId/' .
-            'ns1:BibliographicItemIdentifier'
+            'ns1:BibliographicId/ns1:BibliographicRecordId/' .
+            'ns1:BibliographicRecordIdentifier'
         );
 
+        $itemId = $current->xpath(
+            'ns1:HoldingsSet/ns1:ItemInformation/' .
+            'ns1:ItemId/ns1:ItemIdentifierValue'
+        );
         // Pick out the permanent location (TODO: better smarts for dealing with
         // temporary locations and multi-level location names):
-        $locationNodes = $current->xpath('ns1:HoldingsSet/ns1:Location');
-        $location = '';
-        foreach ($locationNodes as $curLoc) {
-            $type = $curLoc->xpath('ns1:LocationType');
-            if ((string)$type[0] == 'Permanent') {
-                $tmp = $curLoc->xpath(
-                    'ns1:LocationName/ns1:LocationNameInstance/ns1:LocationNameValue'
-                );
-                $location = (string)$tmp[0];
-            }
-        }
+//         $locationNodes = $current->xpath('ns1:HoldingsSet/ns1:Location');
+//         $location = '';
+//         foreach ($locationNodes as $curLoc) {
+//             $type = $curLoc->xpath('ns1:LocationType');
+//             if ((string)$type[0] == 'Permanent') {
+//                 $tmp = $curLoc->xpath(
+//                     'ns1:LocationName/ns1:LocationNameInstance/ns1:LocationNameValue'
+//                 );
+//                 $location = (string)$tmp[0];
+//             }
+//         }
+
+        $tmp = $current->xpath('//ns1:LocationNameValue');
+        $location = (string)$tmp[0];
 
         // Get both holdings and item level call numbers; we'll pick the most
         // specific available value below.
@@ -156,11 +165,20 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'ns1:HoldingsSet/ns1:ItemInformation/' .
             'ns1:ItemOptionalFields/ns1:ItemDescription/ns1:CallNumber'
         );
+        
         $itemCallNo = (string)$itemCallNo[0];
 
+        if ($status === "Not Charged") {
+            $holdType = "hold";
+        } else {
+            $holdType = "recall";
+        }
+        
+        $item_id = (string)$itemId[0];
         // Build return array:
         return array(
             'id' => empty($id) ? '' : (string)$id[0],
+            'item_id' => (string)$itemId[0],
             'availability' => ($status == 'Not Charged'),
             'status' => $status,
             'location' => $location,
@@ -170,7 +188,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'number' => $number++,
             // XC NCIP does not support barcode, but we need a placeholder here
             // to display anything on the record screen:
-            'barcode' => 'placeholder' . $number
+            'barcode' => 'placeholder' . $number,
+        	'is_holdable'  => true,
+        	'addLink' => true,
+            'holdtype' => $holdType,
+        	'storageRetrievalRequest' => 'auto',
+        	'addStorageRetrievalRequestLink' => 'true',
         );
     }
 
@@ -223,12 +246,14 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         // Add the ID list:
         foreach ($idList as $id) {
             $xml .= '<ns1:BibliographicId>' .
-                    '<ns1:BibliographicItemId>' .
-                        '<ns1:BibliographicItemIdentifier>' .
+                    '<ns1:BibliographicRecordId>' .
+                        '<ns1:BibliographicRecordIdentifier>' .
                             htmlspecialchars($id) .
-                        '</ns1:BibliographicItemIdentifier>' .
-                        '<ns1:AgencyId>LOCAL</ns1:AgencyId>' .
-                    '</ns1:BibliographicItemId>' .
+                        '</ns1:BibliographicRecordIdentifier>' .
+                        '<ns1:AgencyId>' .
+                            $this->config['Catalog']['agency'] .
+                        '</ns1:AgencyId>' .
+                    '</ns1:BibliographicRecordId>' .
                 '</ns1:BibliographicId>';
         }
 
@@ -313,7 +338,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * duedate, number, barcode.
      */
     public function getHolding($id, $patron = false)
-    {
+    {        
         $request = $this->getStatusRequest(array($id));
         $response = $this->sendRequest($request);
         $avail = $response->xpath(
@@ -344,49 +369,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         // TODO
         return array();
-    }
-
-    /**
-     * Build the request XML to log in a user:
-     *
-     * @param string $username Username for login
-     * @param string $password Password for login
-     * @param string $extras   Extra elements to include in the request
-     *
-     * @return string          NCIP request XML
-     */
-    protected function getLookupUserRequest($username, $password, $extras = array())
-    {
-        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
-            '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
-            'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
-            'xsd/ncip_v2_0.xsd">' .
-                '<ns1:LookupUser>' .
-                    '<ns1:AuthenticationInput>' .
-                        '<ns1:AuthenticationInputData>' .
-                            htmlspecialchars($username) .
-                        '</ns1:AuthenticationInputData>' .
-                        '<ns1:AuthenticationDataFormatType>' .
-                            'text' .
-                        '</ns1:AuthenticationDataFormatType>' .
-                        '<ns1:AuthenticationInputType>' .
-                            'Username' .
-                        '</ns1:AuthenticationInputType>' .
-                    '</ns1:AuthenticationInput>' .
-                    '<ns1:AuthenticationInput>' .
-                        '<ns1:AuthenticationInputData>' .
-                            htmlspecialchars($password) .
-                        '</ns1:AuthenticationInputData>' .
-                        '<ns1:AuthenticationDataFormatType>' .
-                            'text' .
-                        '</ns1:AuthenticationDataFormatType>' .
-                        '<ns1:AuthenticationInputType>' .
-                            'Password' .
-                        '</ns1:AuthenticationInputType>' .
-                    '</ns1:AuthenticationInput>' .
-                    implode('', $extras) .
-                '</ns1:LookupUser>' .
-            '</ns1:NCIPMessage>';
     }
 
     /**
@@ -453,16 +435,33 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $retVal = array();
         $list = $response->xpath('ns1:LookupUserResponse/ns1:LoanedItem');
+        
         foreach ($list as $current) {
-            $due = $current->xpath('ns1:DateDue');
+        	$current->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
+            $tmp = $current->xpath('ns1:DateDue');
+            $due = (string)$tmp[0];
+            $due = str_replace("T", " ", $due);
+            $due = str_replace("Z", "", $due);
             $title = $current->xpath('ns1:Title');
+            $item_id = $current->xpath('ns1:ItemId/ns1:ItemIdentifierValue');
+            $bib_id = $current->xpath('ns1:Ext/ns1:BibliographicDescription/' .
+                'ns1:BibliographicRecordId/ns1:BibliographicRecordIdentifier');
+            // Hack to account for bibs from other non-local institutions
+            // temporarily until consortial functionality is enabled.
+            if ((string)$bib_id[0]) {
+                $tmp = (string)$bib_id[0];
+            } else {
+                $tmp = "1";
+            }
             $retVal[] = array(
-                'id' => false,
-                'duedate' => (string)$due[0],
-                'title' => (string)$title[0]
+                'id' => $tmp,
+                'duedate' => $due,
+                'title' => (string)$title[0],
+            	'item_id' => (string)$item_id[0],
+            	'renewable' => true,
             );
-        }
-
+        } 
+        
         return $retVal;
     }
 
@@ -490,7 +489,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         );
 
         $fines = array();
+        $balance = 0;
         foreach ($list as $current) {
+            //pzurek
+        	$current->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
+        	 
             $tmp = $current->xpath(
                 'ns1:FiscalTransactionInformation/ns1:Amount/ns1:MonetaryValue'
             );
@@ -509,9 +512,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $id = (string)$tmp[0];
              */
             $id = '';
+            $balance += $amount;
             $fines[] = array(
                 'amount' => $amount,
-                'balance' => $amount,
+                'balance' => $balance,
                 'checkout' => '',
                 'fine' => $desc,
                 'duedate' => '',
@@ -544,16 +548,28 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $retVal = array();
         $list = $response->xpath('ns1:LookupUserResponse/ns1:RequestedItem');
         foreach ($list as $current) {
+            $id = $current->xpath('ns1:Ext/ns1:BibliographicDescription/' .
+                    'ns1:BibliographicRecordId/ns1:BibliographicRecordIdentifier');
             $created = $current->xpath('ns1:DatePlaced');
             $title = $current->xpath('ns1:Title');
             $pos = $current->xpath('ns1:HoldQueuePosition');
-            $retVal[] = array(
-                'id' => false,
-                'create' => (string)$created[0],
-                'expire' => '',
-                'title' => (string)$title[0],
-                'position' => (string)$pos[0]
-            );
+            $requestType = $current->xpath('ns1:RequestType');
+            $requestId = $current->xpath('ns1:RequestId/ns1:RequestIdentifierValue');
+            $itemId = $current->xpath('ns1:ItemId/ns1:ItemIdentifierValue');
+            $requestType = (string)$requestType[0];
+            // Only return requests of type Hold or Recall. Callslips/Stack
+            // Retrieval requests are fetched using getMyStorageRetrievalRequests
+            if ($requestType === "Hold" or $requestType === "Recall") {
+                $retVal[] = array(
+                    'id' => (string)$id[0],
+                    'create' => (string)$created[0],
+                    'expire' => '',
+                    'title' => (string)$title[0],
+                    'position' => (string)$pos[0],
+                    'requestId' => (string)$requestId[0],
+                    'item_id' => (string)$itemId[0],
+                );
+            }
         }
 
         return $retVal;
@@ -728,4 +744,601 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         // TODO
         return array();
     }
-}
+    
+    public function getConfig($function)
+    {
+    	if ($function == 'Holds') {
+    		return array(
+    				'HMACKeys' => 'item_id:holdtype',
+    				'extraHoldFields' => 'comments:pickUpLocation:requiredByDate',
+    				'defaultRequiredDate' => '0:2:0',
+    		);
+    	}
+    	if ($function == 'StorageRetrievalRequests') {
+    		return array(
+                'HMACKeys' => 'id:item_id',
+                'extraFields' => 'comments:pickUpLocation:requiredByDate:item-issue',
+    			'helpText' => 'This is a storage retrieval request help text' .
+    			' with some <span style="color: red">styling</span>.'
+    		);
+    	}
+    	return array();
+    }
+    
+    // TODO: Figure out how we're going to get this data into VuFind2 via NCIP
+    public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
+    {
+    	return "12";
+    }
+    
+    // TODO: Figure out how we're going to get this data into VuFind2 via NCIP
+    public function getPickUpLocations($patron) 
+    {
+    	return array(
+    			array(
+    					'locationID' => '3',
+    					'locationDisplay' => 'Main Circ Desk'
+    			),
+    			array(
+    					'locationID' => '115',
+    					'locationDisplay' => 'An invalid location (testing)'
+    			),
+    	);
+    	
+    }
+    
+    /**
+     * Get Patron Storage Retrieval Requests
+     *
+     * This is responsible for retrieving all call slips by a specific patron.
+     *
+     * @param array $patron The patron array from patronLogin
+     *
+     * @return array        Array of the patron's storage retrieval requests.
+     */
+    public function getMyStorageRetrievalRequests($patron = false) 
+    {
+    	$extras = array('<ns1:RequestedItemsDesired/>');
+        $request = $this->getLookupUserRequest(
+            $patron['cat_username'], $patron['cat_password'], $extras
+        );
+        $response = $this->sendRequest($request);
+
+        $retVal = array();
+        $list = $response->xpath('ns1:LookupUserResponse/ns1:RequestedItem');
+        foreach ($list as $current) {
+            $id = $current->xpath('ns1:Ext/ns1:BibliographicDescription/' .
+                    'ns1:BibliographicRecordId/ns1:BibliographicRecordIdentifier');
+            $created = $current->xpath('ns1:DatePlaced');
+            $title = $current->xpath('ns1:Title');
+            $pos = $current->xpath('ns1:HoldQueuePosition');
+            $requestId = $current->xpath('ns1:RequestId/ns1:RequestIdentifierValue');
+            $requestType = $current->xpath('ns1:RequestType');
+            $requestType = (string)$requestType[0];
+            $requestStatus = $current->xpath('ns1:RequestStatusType');
+            $requestStatus = (string)$requestStatus[0];
+            // Only return requests of type Stack Retrieval/Callslip. Hold
+            // and Recall requests are fetched using getMyHolds
+            if ($requestType === 'Stack Retrieval' and 
+                substr($requestStatus, 0, 8) !== 'Canceled')
+            {
+                $retVal[] = array(
+                    'id' => (string)$id[0],
+                    'create' => (string)$created[0],
+                    'expire' => '',
+                    'title' => (string)$title[0],
+                    'position' => (string)$pos[0], 
+                    'requestId' => (string)$requestId[0],
+                );
+            }
+        }
+
+        return $retVal;
+    }
+    
+    public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
+    {
+    	return true;
+    }
+    
+    /**
+     * Place Storage Retrieval Request (Call Slip)
+     *
+     * Attempts to place a call slip request on a particular item and returns
+     * an array with result details
+     *
+     * @param array $details An array of item and patron data
+     *
+     * @return mixed An array of data on the request including
+     * whether or not it was successful.
+     */
+    public function placeStorageRetrievalRequest($details)
+    {
+        $username = $details['patron']['cat_username'];
+        $password = $details['patron']['cat_password'];
+        $bibId = $details['id'];
+        $itemId = $details['item_id'];
+        $pickUpLocation = $details['pickUpLocation'];
+       
+		$request = $this->getRequest($username, $password, $bibId, $itemId, 
+		        "Stack Retrieval", "Item", $pickUpLocation);
+		$response = $this->sendRequest($request);
+		$success = $response->xpath(
+		        'ns1:RequestItemResponse/ns1:ItemId/ns1:ItemIdentifierValue');
+		
+		if ($success) {
+		    return array(
+		            'success' => true, 
+		            "sysMessage" => 'Storage Retrieval Request Successful.'
+		    );
+		} else {
+		    return array(
+		            'success' => false, 
+		            "sysMessage" => 'Storage Retrieval Request Not Successful.'
+		    );
+		}
+    }
+    
+    /**
+     * Get Renew Details
+     *
+     * This function returns the item id as a string which is then used
+     * as submitted form data in checkedOut.php. This value is then extracted by
+     * the RenewMyItems function.
+     *
+     * @param array $checkOutDetails An array of item data
+     *
+     * @return string Data for use in a form field
+     */
+    public function getRenewDetails($checkOutDetails)
+    {
+    	$renewDetails = $checkOutDetails['item_id'];
+    	return $renewDetails;
+    }
+    
+    /**
+     * Place Hold
+     *
+     * Attempts to place a hold or recall on a particular item and returns
+     * an array with result details or throws an exception on failure of support
+     * classes
+     *
+     * @param array $holdDetails An array of item and patron data
+     *
+     * @throws ILSException
+     * @return mixed An array of data on the request including
+     * whether or not it was successful
+     */
+    public function placeHold($details) 
+    {
+        $username = $details['patron']['cat_username'];
+        $password = $details['patron']['cat_password'];
+        $bibId = $details['id'];
+        $itemId = $details['item_id'];
+        $pickUpLocation = $details['pickUpLocation'];
+        $holdType = $details['holdtype'];
+        $lastInterestDate = $details['requiredBy'];
+        $lastInterestDate = substr($lastInterestDate, 6, 10) . '-' .
+                 substr($lastInterestDate, 0, 5);
+        $lastInterestDate = $lastInterestDate . "T00:00:00.000Z";
+       
+		$request = $this->getRequest($username, $password, $bibId, $itemId, 
+		         $holdType, "Item", $lastInterestDate, $pickUpLocation);
+		$response = $this->sendRequest($request);
+		$success = $response->xpath(
+		        'ns1:RequestItemResponse/ns1:ItemId/ns1:ItemIdentifierValue');
+		
+		if ($success) {
+		    return array(
+		            'success' => true, 
+		            "sysMessage" => 'Request Successful.'
+		    );
+		} else {
+		    return array(
+		            'success' => false, 
+		            "sysMessage" => 'Request Not Successful.'
+		    );
+		}
+    }
+    
+    /**
+     * Cancel Holds
+     *
+     * Attempts to Cancel a hold or recall on a particular item. The
+     * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
+     *
+     * @param array $cancelDetails An array of item and patron data
+     *
+     * @return array               An array of data on each request including
+     * whether or not it was successful.
+     */
+    public function cancelHolds($cancelDetails) 
+    {
+        $count = 0;
+        $username = $cancelDetails['patron']['cat_username'];
+        $password = $cancelDetails['patron']['cat_password'];
+        $details = $cancelDetails['details'];  
+        $response = array();
+
+        foreach ($details as $cancelDetails) {
+            list($itemId, $requestId) = explode("|", $cancelDetails);
+            $request = $this->getCancelRequest(
+                $username, $password, $requestId, "Hold"
+            );
+            $cancelRequestResponse = $this->sendRequest($request);
+            $userId = $cancelRequestResponse->xpath(
+                'ns1:CancelRequestItemResponse/' .
+                'ns1:UserId/ns1:UserIdentifierValue'
+            );
+            $itemId = (string)$itemId;
+            if($userId) {
+                $count++;
+                $response[$itemId] = array(
+                        'success' => true,
+                        'status' => 'hold_cancel_success',
+                );
+            } else {
+                $response[$itemId] = array(
+                        'success' => false,
+                        'status' => 'hold_cancel_fail',
+                );
+            }
+        }
+        $result = array('count' => $count, 'items' => $response);
+        return $result;
+    }
+    
+    /**
+     * Get Cancel Hold Details
+     *
+     * This function returns the item id and recall id as a string
+     * separated by a pipe, which is then submitted as form data in Hold.php. This
+     * value is then extracted by the CancelHolds function.  item id is used as the
+     * array key in the response.
+     *
+     * @param array $holdDetails An array of item data
+     *
+     * @return string Data for use in a form field
+     */
+    public function getCancelHoldDetails($holdDetails) 
+    {
+        $cancelDetails = $holdDetails['id']."|".$holdDetails['requestId'];
+        return $cancelDetails;
+    }
+    
+    /**
+     * Cancel Storage Retrieval Requests (Call Slips)
+     *
+     * Attempts to Cancel a call slip on a particular item. The
+     * data in $cancelDetails['details'] is determined by
+     * getCancelStorageRetrievalRequestDetails().
+     *
+     * @param array $cancelDetails An array of item and patron data
+     *
+     * @return array               An array of data on each request including
+     * whether or not it was successful.
+     */
+    public function cancelStorageRetrievalRequests($cancelDetails)
+    {
+        $count = 0;
+        $username = $cancelDetails['patron']['cat_username'];
+        $password = $cancelDetails['patron']['cat_password'];
+        $details = $cancelDetails['details'];
+        $response = array();
+    
+        foreach ($details as $cancelDetails) {
+            list($itemId, $requestId) = explode("|", $cancelDetails);
+            $request = $this->getCancelRequest(
+                $username, $password, $requestId, "Stack Retrieval"
+            );
+            $cancelRequestResponse = $this->sendRequest($request);
+            $userId = $cancelRequestResponse->xpath(
+                'ns1:CancelRequestItemResponse/'. 
+                'ns1:UserId/ns1:UserIdentifierValue'
+            );
+            $itemId = (string)$itemId;
+            if($userId) {
+                $count++;
+                $response[$itemId] = array(
+                        'success' => true,
+                        'status' => 'storage_retrieval_request_cancel_success',
+                );
+            } else {
+                $response[$itemId] = array(
+                        'success' => false,
+                        'status' => 'storage_retrieval_request_cancel_fail',
+                );
+            }
+        }
+        $result = array('count' => $count, 'items' => $response);
+        return $result;
+    }
+    
+    /**
+     * Get Cancel Storage Retrieval Request (Call Slip) Details
+     *
+     * This function returns the item id and call slip id as a
+     * string separated by a pipe, which is then submitted as form data. This
+     * value is then extracted by the CancelStorageRetrievalRequests function. 
+     * The item id is used as the key in the return value.
+     *
+     * @param array $details An array of item data
+     *
+     * @return string Data for use in a form field
+     */
+    public function getCancelStorageRetrievalRequestDetails($callslipDetails)
+    {
+        $cancelDetails = $callslipDetails['id']."|".$callslipDetails['requestId'];
+        return $cancelDetails;
+    }
+    
+    /**
+     * Renew My Items
+     *
+     * Function for attempting to renew a patron's items.  The data in
+     * $renewDetails['details'] is determined by getRenewDetails().
+     *
+     * @param array $renewDetails An array of data required for renewing items
+     * including the Patron ID and an array of renewal IDS
+     *
+     * @return array              An array of renewal information keyed by item ID
+     */
+    public function renewMyItems($renewDetails)
+    {
+        $details = array();
+        foreach ($renewDetails['details'] as $renewId) {
+            $request = $this->getRenewRequest(
+                    $renewDetails['patron']['cat_username'], 
+                    $renewDetails['patron']['cat_password'], $renewId);
+            $response = $this->sendRequest($request);
+            $dueDate = $response->xpath('ns1:RenewItemResponse/ns1:DateDue');
+            if ($dueDate) {
+                $tmp = $dueDate;
+                $newDueDate = (string)$tmp[0];
+                $tmp = split("T", $newDueDate);
+                $splitDate = $tmp[0];
+                $splitTime = $tmp[1];
+                $details[$renewId] = array(
+                    "success" => true,
+                    "new_date" => $splitDate,
+                    "new_time" => rtrim($splitTime, "Z"),
+                    "item_id" => $renewId,
+                );
+
+            } else {
+                $details[$renewId] = array(
+                    "success" => false,
+                    "item_id" => $renewId,
+                );
+            }
+        }
+
+    	return array(null, "details" => $details);
+    }    
+    
+    /**
+     * Helper function to build the request XML to cancel a request:
+     *
+     * @param string $username  Username for login
+     * @param string $password  Password for login
+     * @param string $requestId Id of the request to cancel
+     * @param string $type      The type of request to cancel (Hold, etc)
+     *
+     * @return string           NCIP request XML
+     */
+    protected function getCancelRequest($username, $password, $requestId, $type)
+    {
+        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
+            '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
+            'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
+            'xsd/ncip_v2_0.xsd">' .
+                '<ns1:CancelRequestItem>' .
+                    '<ns1:AuthenticationInput>' .
+                        '<ns1:AuthenticationInputData>' .
+                            htmlspecialchars($username) .
+                        '</ns1:AuthenticationInputData>' .
+                        '<ns1:AuthenticationDataFormatType>' .
+                            'text' .
+                        '</ns1:AuthenticationDataFormatType>' .
+                        '<ns1:AuthenticationInputType>' .
+                            'Username' .
+                        '</ns1:AuthenticationInputType>' .
+                    '</ns1:AuthenticationInput>' .
+                    '<ns1:AuthenticationInput>' .
+                        '<ns1:AuthenticationInputData>' .
+                            htmlspecialchars($password) .
+                        '</ns1:AuthenticationInputData>' .
+                        '<ns1:AuthenticationDataFormatType>' .
+                            'text' .
+                        '</ns1:AuthenticationDataFormatType>' .
+                        '<ns1:AuthenticationInputType>' .
+                            'Password' .
+                        '</ns1:AuthenticationInputType>' .
+                    '</ns1:AuthenticationInput>' .
+                    '<ns1:RequestId>' .
+                        '<ns1:RequestIdentifierValue>' .
+                            htmlspecialchars($requestId) .
+                        '</ns1:RequestIdentifierValue>' .
+                    '</ns1:RequestId>' .
+                    '<ns1:RequestType>' .
+                        htmlspecialchars($type) .
+                    '</ns1:RequestType>' .
+                '</ns1:CancelRequestItem>' .
+            '</ns1:NCIPMessage>';
+    }
+    
+    /**
+     * Helper function to build the request XML to request an item 
+     * (Hold, Storage Retrieval, etc)
+     *
+     * @param string $username         Username for login
+     * @param string $password         Password for login
+     * @param string $bibId            Bib Id of item to request
+     * @param string $itemId           Id of item to request
+     * @param string $requestType      Type of the request (Hold, Callslip, etc)
+     * @param string $requestScope     Level of request (title, item, etc)
+     * @param string $lastInterestDate Last date interested in item
+     * @param string $pickupLocation   Code of location to pickup request
+     *
+     * @return string          NCIP request XML
+     */
+    protected function getRequest($username, $password, $bibId, $itemId, 
+            $requestType, $requestScope, $lastInterestDate, $pickupLocation = null)
+    {
+    	return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
+            '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
+            'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
+            'xsd/ncip_v2_0.xsd">' .
+                '<ns1:RequestItem>' .
+                    '<ns1:AuthenticationInput>' .
+                        '<ns1:AuthenticationInputData>' .
+                            htmlspecialchars($username) .
+                        '</ns1:AuthenticationInputData>' .
+                        '<ns1:AuthenticationDataFormatType>' .
+                            'text' .
+                        '</ns1:AuthenticationDataFormatType>' .
+                        '<ns1:AuthenticationInputType>' .
+                            'Username' .
+                        '</ns1:AuthenticationInputType>' .
+                    '</ns1:AuthenticationInput>' .
+                    '<ns1:AuthenticationInput>' .
+                        '<ns1:AuthenticationInputData>' .
+                            htmlspecialchars($password) .
+                        '</ns1:AuthenticationInputData>' .
+                        '<ns1:AuthenticationDataFormatType>' .
+                            'text' .
+                        '</ns1:AuthenticationDataFormatType>' .
+                        '<ns1:AuthenticationInputType>' .
+                            'Password' .
+                        '</ns1:AuthenticationInputType>' .
+                    '</ns1:AuthenticationInput>' .
+                    '<ns1:BibliographicId>' .
+                        '<ns1:BibliographicRecordId>' .
+                            '<ns1:BibliographicRecordIdentifier>' .
+                                htmlspecialchars($bibId) .
+                            '</ns1:BibliographicRecordIdentifier>' .
+                        '</ns1:BibliographicRecordId>' .
+                    '</ns1:BibliographicId>' .
+                    '<ns1:ItemId>' .
+                        '<ns1:ItemIdentifierValue>' .
+                            htmlspecialchars($itemId) .
+                        '</ns1:ItemIdentifierValue>' .
+                    '</ns1:ItemId>' .
+                    '<ns1:RequestType>' .
+                            htmlspecialchars($requestType) .
+                    '</ns1:RequestType>' .
+                    '<ns1:RequestScopeType ' . 
+                        'ns1:Scheme="http://www.niso.org/ncip/v1_0/imp1/schemes' .
+                        '/requestscopetype/requestscopetype.scm">' .
+                            htmlspecialchars($requestScope) .
+                    '</ns1:RequestScopeType>' . 
+                    '<ns1:PickupLocation>' .
+                        htmlspecialchars($pickupLocation) .
+                    '</ns1:PickupLocation>' .
+                    '<ns1:PickupExpiryDate>' .
+                        htmlspecialchars($lastInterestDate) .
+                    '</ns1:PickupExpiryDate>' .
+                '</ns1:RequestItem>' .
+            '</ns1:NCIPMessage>';    	
+    }
+    
+    /**
+     * Helper function to build the request XML to renew an item:
+     *
+     * @param string $username Username for login
+     * @param string $password Password for login
+     * @param string $itemId   Id of item to renew
+     *
+     * @return string          NCIP request XML
+     */
+    protected function getRenewRequest($username, $password, $itemId) 
+    {
+        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
+            '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
+            'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
+            'xsd/ncip_v2_0.xsd">' .
+                '<ns1:RenewItem>' .
+                    '<ns1:AuthenticationInput>' .
+                        '<ns1:AuthenticationInputData>' .
+                            htmlspecialchars($username) .
+                        '</ns1:AuthenticationInputData>' .
+                        '<ns1:AuthenticationDataFormatType>' .
+                            'text' .
+                        '</ns1:AuthenticationDataFormatType>' .
+                        '<ns1:AuthenticationInputType>' .
+                            'Username' .
+                        '</ns1:AuthenticationInputType>' .
+                    '</ns1:AuthenticationInput>' .
+                    '<ns1:AuthenticationInput>' .
+                        '<ns1:AuthenticationInputData>' .
+                            htmlspecialchars($password) .
+                        '</ns1:AuthenticationInputData>' .
+                        '<ns1:AuthenticationDataFormatType>' .
+                            'text' .
+                        '</ns1:AuthenticationDataFormatType>' .
+                        '<ns1:AuthenticationInputType>' .
+                            'Password' .
+                        '</ns1:AuthenticationInputType>' .
+                    '</ns1:AuthenticationInput>' .
+                    '<ns1:BibliographicId>' .
+                        '<ns1:BibliographicRecordId>' .
+                            '<ns1:BibliographicRecordIdentifier>' .
+                                htmlspecialchars($itemId) .
+                            '</ns1:BibliographicRecordIdentifier>' .
+                        '</ns1:BibliographicRecordId>' .
+                    '</ns1:BibliographicId>' .
+                    '<ns1:ItemId>' .
+                        '<ns1:ItemIdentifierValue>' .
+                            htmlspecialchars($itemId) .
+                        '</ns1:ItemIdentifierValue>' .
+                    '</ns1:ItemId>' .
+                '</ns1:RenewItem>' .
+            '</ns1:NCIPMessage>';
+    }
+	
+	/**
+     * Helper function to build the request XML to log in a user
+     * and/or retrieve loaned items / request information
+     *
+     * @param string $username Username for login
+     * @param string $password Password for login
+     * @param string $extras   Extra elements to include in the request
+     *
+     * @return string          NCIP request XML
+     */
+    protected function getLookupUserRequest($username, $password, $extras = array())
+    {
+        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
+            '<ns1:NCIPMessage xmlns:ns1="http://www.niso.org/2008/ncip" ' .
+            'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
+            'xsd/ncip_v2_0.xsd">' .
+                '<ns1:LookupUser>' .
+                    '<ns1:AuthenticationInput>' .
+                        '<ns1:AuthenticationInputData>' .
+                            htmlspecialchars($username) .
+                        '</ns1:AuthenticationInputData>' .
+                        '<ns1:AuthenticationDataFormatType>' .
+                            'text' .
+                        '</ns1:AuthenticationDataFormatType>' .
+                        '<ns1:AuthenticationInputType>' .
+                            'Username' .
+                        '</ns1:AuthenticationInputType>' .
+                    '</ns1:AuthenticationInput>' .
+                    '<ns1:AuthenticationInput>' .
+                        '<ns1:AuthenticationInputData>' .
+                            htmlspecialchars($password) .
+                        '</ns1:AuthenticationInputData>' .
+                        '<ns1:AuthenticationDataFormatType>' .
+                            'text' .
+                        '</ns1:AuthenticationDataFormatType>' .
+                        '<ns1:AuthenticationInputType>' .
+                            'Password' .
+                        '</ns1:AuthenticationInputType>' .
+                    '</ns1:AuthenticationInput>' .
+                    implode('', $extras) .
+                '</ns1:LookupUser>' .
+            '</ns1:NCIPMessage>';
+    }
+	
+}	
+    
