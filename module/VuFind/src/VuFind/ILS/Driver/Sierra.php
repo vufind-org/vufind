@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Sierra (III) ILS Driver for Vufind2
+ * Sierra (III) ILS Driver for Vufind2 
  *
  * PHP version 5
  *
