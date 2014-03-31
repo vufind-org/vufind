@@ -152,7 +152,8 @@ class Solr extends AbstractBase
             'hierarchy_parent_id:"' . addcslashes($parentID, '"') . '"'
         );
         $results = $this->searchService->search(
-            'Solr', $query, 0, 10000, new ParamBag(array('fq' => $this->filters))
+            'Solr', $query, 0, 10000,
+            new ParamBag(array('fq' => $this->filters, 'hl' => 'false'))
         );
         if ($results->getTotal() < 1) {
             return '';
