@@ -20,5 +20,7 @@
     <textarea id="email_message" name="message" rows="3" cols="40"><?=isset($this->message) ? $this->message : ''?></textarea>
     <br/>
     <input class="button" type="submit" name="submit" value="<?=$this->transEsc('Send')?>"/>
-    <input type="checkbox" id="ccself" name="ccself"/><label for="ccself"><?=$this->translate('Send a copy to me'); ?></label>
+    <? if (!$this->disableFrom): ?>
+      <input type="checkbox" id="ccself" name="ccself"/><label for="ccself"><?=$this->translate('Send a copy to me'); ?></label>
+    <? endif; ?>
 </form>

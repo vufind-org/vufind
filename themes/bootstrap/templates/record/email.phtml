@@ -31,13 +31,15 @@
       <textarea id="email_message" class="input-xlarge" name="message" rows="4"><?=isset($this->message) ? $this->message : ''?></textarea>
     </div>
   </div>
-  <div class="control-group">
-    <div class="controls">
-      <label class="checkbox">
-        <input type="checkbox" name="ccself"/> <?=$this->translate('Send a copy to me'); ?>
-      </label>
+  <? if (!$this->disableFrom): ?>
+    <div class="control-group">
+      <div class="controls">
+        <label class="checkbox">
+          <input type="checkbox" name="ccself"/> <?=$this->translate('Send a copy to me'); ?>
+        </label>
+      </div>
     </div>
-  </div>
+  <? endif ?>
   <div class="control-group">
     <div class="controls">
       <input type="submit" class="btn btn-primary" name="submit" value="<?=$this->transEsc('Send Email')?>"/>
