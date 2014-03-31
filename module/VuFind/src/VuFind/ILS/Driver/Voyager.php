@@ -667,11 +667,10 @@ class Voyager extends AbstractBase
                                 "'No information available' as status",
                                 "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
                                     "LOCATION.LOCATION_NAME) as location",
-                                "null as TEMP_LOCATION",
-                                "null as PERM_LOCATION",
                                 "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
                                 "BIB_MFHD.BIB_ID", "MFHD_MASTER.MFHD_ID",
-                                "null as duedate", "0 AS TEMP_LOCATION"
+                                "null as duedate", "0 AS TEMP_LOCATION",
+                                "0 as PERM_LOCATION"
                                );
 
         // From
@@ -685,7 +684,8 @@ class Voyager extends AbstractBase
                           "MFHD_MASTER.MFHD_ID = BIB_MFHD.MFHD_ID",
                           "MFHD_DATA.MFHD_ID = BIB_MFHD.MFHD_ID",
                           "MFHD_MASTER.SUPPRESS_IN_OPAC='N'",
-                          "NOT EXISTS (SELECT MFHD_ID FROM MFHD_ITEM WHERE MFHD_ITEM.MFHD_ID=MFHD_MASTER.MFHD_ID)"
+                          "NOT EXISTS (SELECT MFHD_ID FROM {$this->dbName}.MFHD_ITEM"
+                          . " WHERE MFHD_ITEM.MFHD_ID=MFHD_MASTER.MFHD_ID)"
                          );
 
         // Order
@@ -754,6 +754,50 @@ class Voyager extends AbstractBase
     }
 
     /**
+     * Get Purchase History Data
+     *
+     * This is responsible for retrieving the acquisitions history data for the
+     * specific record (usually recently received issues of a serial). It is used
+     * by getHoldings() and getPurchaseHistory() depending on whether the purchase
+     * history is displayed by holdings or in a separate list.
+     *
+     * @param string $id The record id to retrieve the info for
+     *
+     * @throws ILSException
+     * @return array     An array with the acquisitions data on success.
+     */
+    protected function getPurchaseHistoryData($id)
+    {
+        $sql = "select LINE_ITEM_COPY_STATUS.MFHD_ID, SERIAL_ISSUES.ENUMCHRON " .
+               "from $this->dbName.SERIAL_ISSUES, $this->dbName.COMPONENT, ".
+               "$this->dbName.ISSUES_RECEIVED, $this->dbName.SUBSCRIPTION, ".
+               "$this->dbName.LINE_ITEM, $this->dbName.LINE_ITEM_COPY_STATUS " .
+               "where SERIAL_ISSUES.COMPONENT_ID = COMPONENT.COMPONENT_ID " .
+               "and ISSUES_RECEIVED.ISSUE_ID = SERIAL_ISSUES.ISSUE_ID " .
+               "and ISSUES_RECEIVED.COMPONENT_ID = COMPONENT.COMPONENT_ID " .
+               "and COMPONENT.SUBSCRIPTION_ID = SUBSCRIPTION.SUBSCRIPTION_ID " .
+               "and SUBSCRIPTION.LINE_ITEM_ID = LINE_ITEM.LINE_ITEM_ID " .
+               "and LINE_ITEM_COPY_STATUS.LINE_ITEM_ID = LINE_ITEM.LINE_ITEM_ID " .
+               "and SERIAL_ISSUES.RECEIVED > 0 " .
+               "and ISSUES_RECEIVED.OPAC_SUPPRESSED = 1 " .
+               "and LINE_ITEM.BIB_ID = :id " .
+               "order by LINE_ITEM_COPY_STATUS.MFHD_ID, SERIAL_ISSUES.ISSUE_ID DESC";
+        try {
+            $data = array();
+            $sqlStmt = $this->executeSQL($sql, array(':id' => $id));
+            while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
+                $data[] = array(
+                    'issue' => $row['ENUMCHRON'],
+                    'holdings_id' => $row['MFHD_ID']
+                );
+            }
+            return $data;
+        } catch (PDOException $e) {
+            throw new ILSException($e->getMessage());
+        }
+    }
+
+    /**
      * Get specified fields from an MFHD MARC Record
      *
      * @param object       $record     File_MARC object
@@ -783,14 +827,7 @@ class Voyager extends AbstractBase
                             if ($line) {
                                 $line .= ' ';
                             }
-/*                            if ($line
-                                && in_array($fieldCode, array('863', '864', '865'))
-                                && in_array($code, array('i', 'j', 'k', 'l', 'm'))
-                            ) {
-                                $line .= '(' . $subfield->getData() . ')';
-                            } else*/ {
-                                $line .= $subfield->getData();
-                            }
+                            $line .= $subfield->getData();
                         }
                         if ($line) {
                             if (!$results) {
@@ -946,9 +983,9 @@ class Voyager extends AbstractBase
         // Build Holdings Array
         $purchaseHistory = array();
         if (isset($this->config['Holdings']['purchase_history'])
-            && $this->config['Holdings']['purchase_history']
+            && $this->config['Holdings']['purchase_history'] === 'split'
         ) {
-            $purchaseHistory = $this->getPurchaseHistory($id);
+            $purchaseHistory = $this->getPurchaseHistoryData($id);
         }
         $i = 0;
         foreach ($data as $item) {
@@ -1051,8 +1088,7 @@ class Voyager extends AbstractBase
         $sqlArrayNoItems = $this->getHoldingNoItemsSQL($id);
         $possibleQueries[] = $this->buildSqlFromArray($sqlArrayNoItems);
 
-        // Loop through the possible queries and try each in turn -- the first one
-        // that yields results will cause us to break out of the loop.
+        // Loop through the possible queries and merge results.
         $data = array();
         foreach ($possibleQueries as $sql) {
             // Execute SQL
@@ -1085,37 +1121,12 @@ class Voyager extends AbstractBase
      */
     public function getPurchaseHistory($id)
     {
-        if (isset($this->config['Catalog']['purchase_history']) && !$this->config['Catalog']['purchase_history']) {
-            return array();
-        }
-
-        $sql = "select LINE_ITEM_COPY_STATUS.MFHD_ID, SERIAL_ISSUES.ENUMCHRON " .
-               "from $this->dbName.SERIAL_ISSUES, $this->dbName.COMPONENT, ".
-               "$this->dbName.ISSUES_RECEIVED, $this->dbName.SUBSCRIPTION, ".
-               "$this->dbName.LINE_ITEM, $this->dbName.LINE_ITEM_COPY_STATUS " .
-               "where SERIAL_ISSUES.COMPONENT_ID = COMPONENT.COMPONENT_ID " .
-               "and ISSUES_RECEIVED.ISSUE_ID = SERIAL_ISSUES.ISSUE_ID " .
-               "and ISSUES_RECEIVED.COMPONENT_ID = COMPONENT.COMPONENT_ID " .
-               "and COMPONENT.SUBSCRIPTION_ID = SUBSCRIPTION.SUBSCRIPTION_ID " .
-               "and SUBSCRIPTION.LINE_ITEM_ID = LINE_ITEM.LINE_ITEM_ID " .
-               "and LINE_ITEM_COPY_STATUS.LINE_ITEM_ID = LINE_ITEM.LINE_ITEM_ID " .
-               "and SERIAL_ISSUES.RECEIVED > 0 " .
-               "and ISSUES_RECEIVED.OPAC_SUPPRESSED = 1 " .
-               "and LINE_ITEM.BIB_ID = :id " .
-               "order by LINE_ITEM_COPY_STATUS.MFHD_ID, SERIAL_ISSUES.ISSUE_ID DESC";
-        try {
-            $data = array();
-            $sqlStmt = $this->executeSQL($sql, array(':id' => $id));
-            while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                $data[] = array(
-                    'issue' => $row['ENUMCHRON'],
-                    'holdings_id' => $row['MFHD_ID']
-                );
-            }
-            return $data;
-        } catch (PDOException $e) {
-            throw new ILSException($e->getMessage());
-        }
+        // Return empty array if purchase history is disabled or embedded
+        // in holdings
+        $setting = isset($this->config['Holdings']['purchase_history'])
+            ? $this->config['Holdings']['purchase_history'] : true;
+        return (!$setting || $setting === 'split')
+            ? array() : $this->getPurchaseHistoryData($id);
     }
 
     /**

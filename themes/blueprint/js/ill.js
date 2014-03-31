@@ -1,3 +1,4 @@
+/*global path */
 function setUpILLRequestForm(recordId) {
     $("#ILLRequestForm #pickupLibrary").change(function() {
         $("#ILLRequestForm #pickupLibraryLocation option").remove();

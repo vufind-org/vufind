@@ -45,7 +45,7 @@ use VuFind\Exception\ILS as ILSException,
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
-class MultiBackend extends AbstractBase 
+class MultiBackend extends AbstractBase
     implements ServiceLocatorAwareInterface, \Zend\Log\LoggerAwareInterface
 {
     /**
@@ -111,7 +111,7 @@ class MultiBackend extends AbstractBase
      * @var LoggerInterface|bool
      */
     protected $logger = false;
-    
+
     /**
      * Constructor
      *
@@ -147,7 +147,7 @@ class MultiBackend extends AbstractBase
             $this->logger->err(get_class($this) . ": $msg");
         }
     }
-    
+
     /**
      * Log a debug message.
      *
@@ -161,7 +161,7 @@ class MultiBackend extends AbstractBase
             $this->logger->debug(get_class($this) . ": $msg");
         }
     }
-    
+
     /**
      * Set the driver configuration.
      *
@@ -310,7 +310,7 @@ class MultiBackend extends AbstractBase
         if (isset($this->cache[$source])) {
             return $this->cache[$source];
         }
-        
+
         if (isset($this->drivers[$source])) {
             $driver = $this->drivers[$source];
             $config = $this->getDriverConfig($source);
@@ -392,15 +392,13 @@ class MultiBackend extends AbstractBase
     protected function addIdPrefixes($data, $source,
         $modifyFields = array('id', 'cat_username')
     ) {
-
-        if (!isset($data) || empty($data) ) {
+        if (!isset($data) || empty($data) || !is_array($data)) {
             return $data;
         }
-        $array = is_array($data) ? $data : array($data);
 
-        foreach ($array as $key => $value) {
+        foreach ($data as $key => $value) {
             if (is_array($value)) {
-                $array[$key] = $this->addIdPrefixes(
+                $data[$key] = $this->addIdPrefixes(
                     $value, $source, $modifyFields
                 );
             } else {
@@ -408,11 +406,11 @@ class MultiBackend extends AbstractBase
                     && $value !== ''
                     && in_array($key, $modifyFields)
                 ) {
-                    $array[$key] = $source . '.' . $value;
+                    $data[$key] = $source . '.' . $value;
                 }
             }
         }
-        return is_array($data) ? $array : $array[0];
+        return $data;
     }
 
     /**
@@ -590,7 +588,7 @@ class MultiBackend extends AbstractBase
 
     /**
      * Get available login targets (drivers enabled for login)
-     * 
+     *
      * @return string[] Source ID's
      */
     public function getLoginDrivers()
@@ -602,7 +600,7 @@ class MultiBackend extends AbstractBase
 
     /**
      * Get default login driver
-     * 
+     *
      * @return string Default login driver or empty string
      */
     public function getDefaultLoginDriver()
@@ -616,7 +614,7 @@ class MultiBackend extends AbstractBase
         }
         return '';
     }
-    
+
     /**
      * Function developed to reduce code duplication in supportsMethod() and __call()
      *
@@ -773,7 +771,7 @@ class MultiBackend extends AbstractBase
         }
         return false;
     }
-        
+
     /**
      * Default method -- pass along calls to the driver if available; return
      * false otherwise.  This allows custom functions to be implemented in

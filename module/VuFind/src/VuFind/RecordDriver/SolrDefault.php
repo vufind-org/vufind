@@ -1036,6 +1036,17 @@ class SolrDefault extends AbstractBase
     }
 
     /**
+     * Get the item's source.
+     *
+     * @return string
+     */
+    public function getSource()
+    {
+        // Not supported in base class:
+        return '';
+    }
+
+    /**
      * Get the subtitle of the record.
      *
      * @return string
@@ -1103,10 +1114,19 @@ class SolrDefault extends AbstractBase
      */
     public function getThumbnail($size = 'small')
     {
+        $arr = array(
+            'author'     => mb_substr($this->getPrimaryAuthor(), 0, 300, 'utf-8'),
+            'callnumber' => $this->getCallNumber(),
+            'size'       => $size,
+            'title'      => mb_substr($this->getTitle(), 0, 300, 'utf-8')
+        );
         if ($isbn = $this->getCleanISBN()) {
-            return array('isn' => $isbn, 'size' => $size);
+            $arr['isbn'] = $isbn;
         }
-        return false;
+        if ($issn = $this->getCleanISSN()) {
+            $arr['issn'] = $issn;
+        }
+        return $arr;
     }
 
     /**
