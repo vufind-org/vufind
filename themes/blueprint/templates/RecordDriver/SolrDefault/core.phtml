@@ -185,6 +185,13 @@
       </tr>
     <? endif; ?>
 
+    <? $source = $this->driver->getSource(); if (!empty($source)): ?>
+    <tr valign="top">
+      <th><?=$this->transEsc('Source')?>:</th>
+      <td><?=$this->escapeHtml($source)?></td>
+    </tr>
+    <? endif; ?>
+
     <? $tagList = $this->driver->getTags(); ?>
     <tr valign="top">
       <th><?=$this->transEsc('Tags')?>: </th>

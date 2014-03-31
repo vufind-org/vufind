@@ -139,7 +139,8 @@ select, .btn:not(.btn-link){vertical-align:top}
 .result:nth-child(odd) {background:#EEE}
 .result>.checkbox {font-weight:bold;margin:2px 0 2px 1%;max-width:6%}
 .result>.checkbox input[type="checkbox"] {margin:3px auto}
-.result .span7 {margin-left:1%;width:52%}
+.result .middle {margin-left:1%;width:52%}
+@media (max-width: 600px) {.result .middle {margin-left:auto;width:75%;}}
 .result .savedLists {margin:2px 0;padding:6px}
 .result .savedLists ul {margin-bottom:0}
 .span9>.noprint>.help-block {margin-bottom:0}

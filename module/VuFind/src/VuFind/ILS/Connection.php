@@ -227,8 +227,8 @@ class Connection implements TranslatorAwareInterface
      * if the system supports a particular function.
      *
      * @param string $function The name of the function to check.
-     * @param string $id       (optional) A record id used to identify the used 
-     * backend with MultiBackend driver  
+     * @param string $id       (optional) A record id used to identify the used
+     * backend with MultiBackend driver
      *
      * @return mixed On success, an associative array with specific function keys
      * and values; on failure, false.
@@ -443,17 +443,17 @@ class Connection implements TranslatorAwareInterface
             if (isset($functionConfig['helpText'])) {
                 $response['helpText'] = $this->getHelpText(
                     $functionConfig['helpText']
-                );  
+                );
             }
         }
         return $response;
     }
-    
+
     /**
      * Check Cancel ILL Requests
      *
      * A support method for checkFunction(). This is responsible for checking
-     * the driver configuration to determine if the system supports Cancelling 
+     * the driver configuration to determine if the system supports Cancelling
      * ILL Requests.
      *
      * @param string $functionConfig The Cancel function configuration values
@@ -481,7 +481,7 @@ class Connection implements TranslatorAwareInterface
         }
         return $response;
     }
-    
+
     /**
      * Get proper help text from the function config
      *
@@ -559,7 +559,7 @@ class Connection implements TranslatorAwareInterface
      * @param array  $data   Collected Holds Data
      * @param array  $patron Patron related data
      *
-     * @return mixed The result of the checkILLRequestIsValid 
+     * @return mixed The result of the checkILLRequestIsValid
      * function if it exists, false if it does not
      */
     public function checkILLRequestIsValid($id, $data, $patron)
@@ -569,11 +569,11 @@ class Connection implements TranslatorAwareInterface
                 $id, $data, $patron
             );
         }
-        // If the driver has no checkILLRequestIsValid method, we 
+        // If the driver has no checkILLRequestIsValid method, we
         // will assume that the request is not valid
         return false;
     }
-    
+
     /**
      * Get Holds Mode
      *
@@ -669,6 +669,20 @@ class Connection implements TranslatorAwareInterface
 
         // If we got this far, the feature is unsupported:
         return false;
+    }
+
+    /**
+     * Get Names of Textual Holdings Fields
+     *
+     * Obtain information on which textual holdings fields should be displayed
+     *
+     * @return string[]
+     */
+    public function getHoldingsTextFieldNames()
+    {
+        return isset($this->config->holdings_text_fields)
+            ? $this->config->holdings_text_fields->toArray()
+            : array('notes', 'summary', 'supplements', 'indexes');
     }
 
     /**

@@ -681,10 +681,6 @@ class MultiBackendTest extends \VuFindTest\Unit\TestCase
         $result = $this->callMethod($driver, 'addIdPrefixes', array($data, $source));
         $this->assertEquals($data, $result);
 
-        $data = "record";
-        $result = $this->callMethod($driver, 'addIdPrefixes', array($data, $source));
-        $this->assertEquals("$source.$data", $result);
-
         $data = array(
             "id" => "record1",
             "cat_username" => "record2"

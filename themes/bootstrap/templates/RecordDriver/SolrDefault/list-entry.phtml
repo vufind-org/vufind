@@ -165,13 +165,14 @@
       $deleteUrl = is_null($list_id)
           ? $this->url('myresearch-favorites')
           : $this->url('userList', array('id' => $list_id));
+      $deleteUrlGet = $deleteUrl . '?delete=' . urlencode($id) . '&amp;source=' . urlencode($source);
     ?>
     <div class="dropdown">
-      <i class="icon-trash"></i> <a class="dropdown-toggle" id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="<?=$deleteUrl ?>">
+      <i class="icon-trash"></i> <a class="dropdown-toggle" id="dLabel" role="button" data-toggle="dropdown" data-target="#" href="<?=$deleteUrlGet ?>">
         <?=$this->transEsc('Delete') ?>
       </a>
       <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-        <li><a onClick="$.post('<?=$deleteUrl?>', {'delete':'<?=urlencode($id) ?>','source':'<?=urlencode($source) ?>','confirm':true},function(){location.reload(true)})" title="<?=$this->transEsc('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+        <li><a onClick="$.post('<?=$deleteUrl?>', {'delete':'<?=$this->escapeHtml($id) ?>','source':'<?=$this->escapeHtml($source) ?>','confirm':true},function(){location.reload(true)})" title="<?=$this->transEsc('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
         <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
       </ul>
     </div>

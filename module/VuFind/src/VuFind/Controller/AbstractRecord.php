@@ -94,9 +94,7 @@ class AbstractRecord extends AbstractBase
     {
         $view = parent::createViewModel($params);
         $this->layout()->searchClassId = $view->searchClassId = $this->searchClassId;
-        if (!is_null($this->driver)) {
-            $view->driver = $this->driver;
-        }
+        $view->driver = $this->loadRecord();
         return $view;
     }
 
@@ -439,7 +437,6 @@ class AbstractRecord extends AbstractBase
      */
     public function citeAction()
     {
-        $this->loadRecord();
         $view = $this->createViewModel();
         $view->setTemplate('record/cite');
         return $view;
