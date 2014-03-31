@@ -72,12 +72,14 @@ class CoverController extends AbstractBase
     {
         $this->writeSession();  // avoid session write timing bug
         $this->getLoader()->loadImage(
-            $this->params()->fromQuery('isn'),
+            // Legacy support for "isn" param which has been superseded by isbn:
+            $this->params()->fromQuery('isbn', $this->params()->fromQuery('isn')),
             $this->params()->fromQuery('size'),
             $this->params()->fromQuery('contenttype'),
             $this->params()->fromQuery('title'),
             $this->params()->fromQuery('author'),
-            $this->params()->fromQuery('callnumber')
+            $this->params()->fromQuery('callnumber'),
+            $this->params()->fromQuery('issn')
         );
         return $this->displayImage();
     }

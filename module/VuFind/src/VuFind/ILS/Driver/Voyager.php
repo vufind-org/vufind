@@ -1115,14 +1115,10 @@ class Voyager extends AbstractBase
     {
         // Return empty array if purchase history is disabled or embedded
         // in holdings
-        if (isset($this->config['Holdings']['purchase_history'])
-            && (!$this->config['Holdings']['purchase_history']
-                || $this->config['Holdings']['purchase_history'] === 'split')
-        ) {
-            return array();
-        }
-
-        return $this->getPurchaseHistoryData($id);
+        $setting = isset($this->config['Holdings']['purchase_history'])
+            ? $this->config['Holdings']['purchase_history'] : true;
+        return (!$setting || $setting === 'split')
+            ? array() : $this->getPurchaseHistoryData($id);
     }
 
     /**
