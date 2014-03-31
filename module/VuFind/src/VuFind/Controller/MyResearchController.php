@@ -1080,7 +1080,7 @@ class MyResearchController extends AbstractBase
     /**
      * Send account recovery email
      *
-     * @return mixed
+     * @return View object
      */
     public function recoverAction()
     {
@@ -1103,47 +1103,56 @@ class MyResearchController extends AbstractBase
         }
         // If we have a submitted form
         if (null != $email || null != $username) {
-            // If we can't find a user
-            if (null == $user) {
+            $this->handleRecoverForm($user, $config);
+        }
+        return $this->createViewModel();
+    }
+    
+    /**
+     * Helper function for recoverAction
+     */
+    protected function handleRecoverForm($user, $config)
+    {
+        // If we can't find a user
+        if (null == $user) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('recovery_email_not_found');
+        } else {
+            // Make sure we've waiting long enough
+            $hashTime = intval(substr($user->verify_hash, -10));
+            if (time()-$hashTime < $config->Authentication->recover_interval) {
                 $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('recovery_email_not_found');
+                    ->addMessage('recovery_too_soon');
             } else {
-                // Make sure we've waiting long enough
-                $hashTime = intval(substr($user->verify_hash, -10));
-                if (time()-$hashTime < $config->Authentication->recover_interval) {
+                // Attempt to send the email
+                try {
+                    $user->updateHash();
+                    $config = $this->getConfig();
+                    $renderer = $this->getViewRenderer();
+                    // Custom template for emails (text-only)
+                    $message = $renderer->render(
+                        'Email/recover-password.phtml',
+                        array(
+                            'library' => $config->Site->title,
+                            'url' => $this->getServerUrl('myresearch-verify')
+                                . '?hash='
+                                . $user->verify_hash
+                        )
+                    );
+                    $this->getServiceLocator()->get('VuFind\Mailer')->send(
+                        $user->email,
+                        $config->Site->email,
+                        $renderer->translate('recovery_email_subject'),
+                        $message
+                    );
+                    $this->flashMessenger()->setNamespace('info')
+                        ->addMessage('recovery_email_sent');
+                } catch (MailException $e) {
                     $this->flashMessenger()->setNamespace('error')
-                        ->addMessage('recovery_too_soon');
-                } else {
-                    // Attempt to send the email
-                    try {
-                        $user->updateHash();
-                        $config = $this->getConfig();
-                        $renderer = $this->getViewRenderer();
-                        $message = $renderer->render(
-                            'Email/recover-password.phtml',
-                            array(
-                                'library' => $config->Site->title,
-                                'url' => $this->getServerUrl('myresearch-verify')
-                                    . '?hash='
-                                    . $user->verify_hash
-                            )
-                        );
-                        $this->getServiceLocator()->get('VuFind\Mailer')->send(
-                            $user->email,
-                            $config->Site->email,
-                            $renderer->translate('recovery_email_subject'),
-                            $message
-                        );
-                        $this->flashMessenger()->setNamespace('info')
-                            ->addMessage('recovery_email_sent');
-                    } catch (MailException $e) {
-                        $this->flashMessenger()->setNamespace('error')
-                            ->addMessage($e->getMessage());
-                    }
+                        ->addMessage($e->getMessage());
                 }
             }
         }
-        return $this->createViewModel();
     }
     
     /**
@@ -1155,8 +1164,9 @@ class MyResearchController extends AbstractBase
     {
         // If we have a submitted form
         $hash = $this->params()->fromQuery('hash');
-        $hashtime = intval(substr($hash, -10));
+        // Submitted form
         if (null != $hash) {
+            $hashtime = intval(substr($hash, -10));
             $config = $this->getConfig();
             if (time()-$hashtime < $config->Authentication->recover_hash_lifetime) {
                 $table = $this->getTable('User');
@@ -1192,12 +1202,15 @@ class MyResearchController extends AbstractBase
         $hash   = $this->params()->fromPost('hash');
         if (null != $hash) {
             // Pull in from POST
-            $userid = $this->params()->fromPost('userid');
             $pwd    = $this->params()->fromPost('newpwd');
             $cpwd   = $this->params()->fromPost('confirm');
             // Get user
             $table = $this->getTable('User');
-            $user = $table->select(array('id' => $userid))->current();
+            $user = $table->select(
+                array(
+                    'id' => $this->params()->fromPost('userid')
+                )
+            )->current();
             // Verify old password if we're logged in
             if ($this->params()->fromPost('verifyold', false)) {
                 try {
@@ -1218,17 +1231,20 @@ class MyResearchController extends AbstractBase
                     $this->params()->fromPost()
                 );
             }
-            // Update hash
-            $user->saveCredentials($this->params()->fromPost('username'), $pwd);
-            $this->flashMessenger()->setNamespace('info')
-                ->addMessage('recover_new_password_success');
-            // Login (swap new password in for usual one)
+            // Swap new password in for usual one)
             $request = $this->getRequest();
             $post = $request->getPost();
             $post->password = $post->newpwd;
             $request->setPost($post);
+            // Update password
+            $user = $this->getAuthManager()->updatePassword($request);
+            // Update hash to prevent reusing hash
+            $user->updateHash();
+            // Login
             $this->getAuthManager()->login($request);
             // Go to favorites
+            $this->flashMessenger()->setNamespace('info')
+                ->addMessage('recover_new_password_success');
             return $this->redirect()->toRoute('myresearch-favorites');
         } elseif ($this->getAuthManager()->isLoggedIn()) {
             // Clicking the new password link

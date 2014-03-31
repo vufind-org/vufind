@@ -170,6 +170,45 @@ class Database extends AbstractBase
         $table->insert($data);
         return $table->getByUsername($params['username'], false);
     }
+    
+    /**
+     * Update a user's password from the request.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * new account details.
+     *
+     * @throws AuthException
+     * @return \VuFind\Db\Row\User New user row.
+     */
+    public function updatePassword($request)
+    {
+        // Ensure that all expected parameters are populated to avoid notices
+        // in the code below.
+        $params = array(
+            'username' => '', 'password' => ''
+        );
+        foreach ($params as $param => $default) {
+            $params[$param] = $request->getPost()->get($param, $default);
+        }
+        // Needs a password
+        if (trim($params['username']) == '') {
+            throw new AuthException('Username cannot be blank');
+        }
+        // Needs a password
+        if (trim($params['password']) == '') {
+            throw new AuthException('Password cannot be blank');
+        }
+        if ($this->passwordHashingEnabled()) {
+            $bcrypt = new Bcrypt();
+            $data['pass_hash'] = $bcrypt->create($params['password']);
+        } else {
+            $data['password'] = $params['password'];
+        }
+        // Create the row and send it back to the caller:
+        $table = $this->getUserTable();
+        $table->update($data, 'username = "' . $params['username'] . '"');
+        return $table->getByUsername($params['username'], false);
+    }
 
     /**
      * Check that the user's password matches the provided value.

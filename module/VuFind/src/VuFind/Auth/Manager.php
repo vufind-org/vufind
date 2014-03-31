@@ -384,6 +384,22 @@ class Manager implements ServiceLocatorAwareInterface
         $this->updateSession($user);
         return $user;
     }
+    
+    /**
+     * Update a user's password from the request.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * new account details.
+     *
+     * @throws AuthException
+     * @return \VuFind\Db\Row\User New user row.
+     */
+    public function updatePassword($request)
+    {
+        $user = $this->getAuth()->updatePassword($request);
+        $this->updateSession($user);
+        return $user;
+    }
 
     /**
      * Try to log in the user using current query parameters; return User object
