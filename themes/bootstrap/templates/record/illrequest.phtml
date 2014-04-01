@@ -8,6 +8,10 @@
         . '<li class="active">' . $this->transEsc('ill_request_place_text') . '</li>';
 ?>
 <p class="lead"><?=$this->transEsc('ill_request_place_text')?></p>
+<? if ($this->helpText): ?>
+<p class="helptext"><?=$this->helpText?></p>
+<? endif; ?>
+
 <?=$this->flashmessages()?>
 <div id="ILLRequestForm" class="storage-retrieval-request-form">
   <form action="" name="placeILLRequest" class="form-horizontal" method="post">
@@ -26,7 +30,7 @@
         </div>
       </div>
     <? endif; ?>
-    
+
     <? if (in_array("pickUpLibrary", $this->extraFields)): ?>
       <div class="control-group">
       <? if (count($this->pickupLibraries) > 1): ?>
@@ -60,7 +64,7 @@
         </div>
       </div>
     <? endif; ?>
-  
+
     <? if (in_array("pickUpLocation", $this->extraFields)): ?>
       <? if (count($this->pickup) > 1): ?>
         <div class="control-group">
