@@ -1247,7 +1247,7 @@ class MyResearchController extends AbstractBase
             $this->getAuthManager()->login($request);
             // Go to favorites
             $this->flashMessenger()->setNamespace('info')
-                ->addMessage('recover_new_password_success');
+                ->addMessage('recovery_new_password_success');
             return $this->redirect()->toRoute('myresearch-favorites');
         } elseif ($this->getAuthManager()->isLoggedIn()) {
             // Clicking the new password link
