@@ -65,20 +65,6 @@
               <?=$this->transEsc('by')?>:
               <a href="<?=$this->record($resource)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><br/>
             <? endif; ?>
-            <? /* TODO: tags
-            {if $resource.tags}
-              <?=$this->transEsc('Your Tags')?>:
-              {foreach from=$resource.tags item=tag name=tagLoop}
-                <a href="{$url}/Search/Results?tag={$tag->tag|escape:"url"}">{$tag->tag|escape}</a>{if !$smarty.foreach.tagLoop.last},{/if}
-              {/foreach}
-              <br/>
-            {/if}
-             */ ?>
-            <? /* TODO: notes
-            {if $resource.notes}
-              <?=$this->transEsc('Notes')?>: {$resource.notes|escape}<br/>
-            {/if}
-             */ ?>
 
             <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
               <?=$this->record($resource)->getFormatList()?>
