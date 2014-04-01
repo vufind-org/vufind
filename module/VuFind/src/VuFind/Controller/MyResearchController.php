@@ -1110,6 +1110,9 @@ class MyResearchController extends AbstractBase
     
     /**
      * Helper function for recoverAction
+     *
+     * @param \VuFind\Db\Row\User $user   User object we're recovering
+     * @param \VuFind\Config      $config Configuration object
      */
     protected function handleRecoverForm($user, $config)
     {
@@ -1156,9 +1159,9 @@ class MyResearchController extends AbstractBase
     }
     
     /**
+     * Receive a hash and display the new password form if it's valid
      *
-     *
-     *
+     * @return view
      */
     public function verifyAction()
     {
@@ -1192,9 +1195,9 @@ class MyResearchController extends AbstractBase
     }
     
     /**
+     * Handling submission of a new password for a user.
      *
-     *
-     *
+     * @return view
      */
     public function newPasswordAction()
     {
