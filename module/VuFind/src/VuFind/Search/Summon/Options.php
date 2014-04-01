@@ -90,6 +90,9 @@ class Options extends \VuFind\Search\Base\Options
         }
 
         // Load search preferences:
+        if (isset($searchSettings->General->default_view)) {
+            $this->defaultView = $searchSettings->General->default_view;
+        }
         if (isset($searchSettings->General->retain_filters_by_default)) {
             $this->retainFiltersByDefault
                 = $searchSettings->General->retain_filters_by_default;
@@ -125,6 +128,17 @@ class Options extends \VuFind\Search\Base\Options
             foreach ($searchSettings->DefaultSortingByType as $key => $val) {
                 $this->defaultSortByHandler[$key] = $val;
             }
+        }
+
+        // Load view preferences (or defaults if none in .ini file):
+        if (isset($searchSettings->Views)) {
+            foreach ($searchSettings->Views as $key => $value) {
+                $this->viewOptions[$key] = $value;
+            }
+        } elseif (isset($searchSettings->General->default_view)) {
+            $this->viewOptions = array($this->defaultView => $this->defaultView);
+        } else {
+            $this->viewOptions = array('list' => 'List');
         }
     }
 
