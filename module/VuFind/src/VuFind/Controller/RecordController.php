@@ -217,7 +217,8 @@ class RecordController extends AbstractRecord
                 'defaultRequiredDate' => $defaultRequired,
                 'requestGroups' => $requestGroups,
                 'defaultRequestGroup' => $defaultRequestGroup,
-                'requestGroupNeeded' => $requestGroupNeeded
+                'requestGroupNeeded' => $requestGroupNeeded,
+                'helpText' => $checkHolds['helpText']
             )
         );
     }

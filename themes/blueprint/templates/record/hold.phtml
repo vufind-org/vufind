@@ -10,6 +10,10 @@
         $this->recordLink()->getBreadcrumb($this->driver) . '<span>&gt;</span><em>' . $this->transEsc('request_place_text') . '</em>';
 ?>
 <h2><?=$this->transEsc('request_place_text')?></h2>
+<? if ($this->helpText): ?>
+<p class="helptext"><?=$this->helpText?></p>
+<? endif; ?>
+
 <?=$this->flashmessages()?>
 <div class="hold-form">
 

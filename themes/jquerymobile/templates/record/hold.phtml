@@ -9,6 +9,9 @@
   <?=$this->mobileMenu()->header()?>
   <div data-role="content">
     <h2><?=$this->transEsc('request_place_text')?></h2>
+    <? if ($this->helpText): ?>
+    <p class="helptext"><?=$this->helpText?></p>
+    <? endif; ?>
     <?=$this->flashmessages()?>
     <div class="hold-form">
 
