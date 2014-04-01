@@ -5,7 +5,9 @@
   <? if ($this->usertags()->getMode() !== 'disabled'): ?>
     <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'AddTag')?>" data-role="button" rel="external"><?=$this->transEsc("Add Tag")?></a>
   <? endif; ?>
-  <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Cite')?>" data-role="button" rel="external"><?=$this->transEsc("Cite this")?></a>
+  <? if (count($this->driver->getCitationFormats()) > 0): ?>
+    <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Cite')?>" data-role="button" rel="external"><?=$this->transEsc("Cite this")?></a>
+  <? endif; ?>
   <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Email')?>" data-role="button" rel="external"><?=$this->transEsc("Email this")?></a>
   <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'SMS')?>" data-role="button" rel="external"><?=$this->transEsc("Text this")?></a>
 </div>
