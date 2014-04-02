@@ -456,4 +456,28 @@ class AbstractBase extends AbstractActionController
     {
         return $this->getServiceLocator()->get('VuFind\Search\Memory');
     }
+
+    /**
+     * Are lists enabled?
+     *
+     * @return bool
+     */
+    protected function listsEnabled()
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $tagSetting = isset($config->Social->lists) ? $config->Social->lists : true;
+        return $tagSetting && $tagSetting !== 'disabled';
+    }
+
+    /**
+     * Are tags enabled?
+     *
+     * @return bool
+     */
+    protected function tagsEnabled()
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $tagSetting = isset($config->Social->tags) ? $config->Social->tags : true;
+        return $tagSetting && $tagSetting !== 'disabled';
+    }
 }

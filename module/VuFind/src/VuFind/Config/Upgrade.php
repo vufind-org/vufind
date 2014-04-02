@@ -513,6 +513,9 @@ class Upgrade
             );
         }
 
+        // Disable unused, obsolete setting:
+        unset($newConfig['Index']['local']);
+
         // Warn the user if they are using an unsupported theme:
         $this->checkTheme('theme', 'blueprint');
         $this->checkTheme('mobile_theme', 'jquerymobile');

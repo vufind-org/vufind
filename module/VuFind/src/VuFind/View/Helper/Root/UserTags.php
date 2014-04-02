@@ -1,6 +1,6 @@
 <?php
 /**
- * User comments tab
+ * Tag view helper
  *
  * PHP version 5
  *
@@ -20,58 +20,49 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  RecordTabs
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-namespace VuFind\RecordTab;
+namespace VuFind\View\Helper\Root;
+use Zend\View\Helper\AbstractHelper;
 
 /**
- * User comments tab
+ * Tag view helper
  *
  * @category VuFind2
- * @package  RecordTabs
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
+ * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class UserComments extends AbstractBase
+class UserTags extends AbstractHelper
 {
     /**
-     * Is this tab enabled?
+     * Tag mode (enabled or disabled)
      *
-     * @var bool
+     * @var string
      */
-    protected $enabled;
+    protected $mode;
 
     /**
      * Constructor
      *
-     * @param bool $enabled is this tab enabled?
+     * @param string $mode Tag mode (enabled or disabled)
      */
-    public function __construct($enabled = true)
+    public function __construct($mode = 'enabled')
     {
-        $this->enabled = $enabled;
+        $this->mode = $mode;
     }
 
     /**
-     * Is this tab active?
-     *
-     * @return bool
-     */
-    public function isActive()
-    {
-        return $this->enabled;
-    }
-
-    /**
-     * Get the on-screen description for this tab.
+     * Get mode
      *
      * @return string
      */
-    public function getDescription()
+    public function getMode()
     {
-        return 'Comments';
+        return $this->mode;
     }
 }

@@ -176,6 +176,11 @@ class AbstractRecord extends AbstractBase
      */
     public function addtagAction()
     {
+        // Make sure tags are enabled:
+        if (!$this->tagsEnabled()) {
+            throw new \Exception('Tags disabled');
+        }
+
         // Force login:
         if (!($user = $this->getUser())) {
             return $this->forceLogin();
@@ -275,6 +280,11 @@ class AbstractRecord extends AbstractBase
      */
     public function saveAction()
     {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            throw new \Exception('Lists disabled');
+        }
+
         // Process form submission:
         if ($this->params()->fromPost('submit')) {
             return $this->processSave();
@@ -345,8 +355,9 @@ class AbstractRecord extends AbstractBase
     {
         // Force login if necessary:
         $config = $this->getConfig();
+        $user = $this->getUser();
         if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
-            && !$this->getUser()
+            && !$user
         ) {
             return $this->forceLogin();
         }
@@ -363,6 +374,12 @@ class AbstractRecord extends AbstractBase
                     $view->to, $view->from, $view->message, $driver,
                     $this->getViewRenderer()
                 );
+                if ($this->params()->fromPost('ccself')) {
+                    $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
+                        $view->from, $view->from, $view->message, $driver,
+                        $this->getViewRenderer()
+                    );
+                }
                 $this->flashMessenger()->setNamespace('info')
                     ->addMessage('email_success');
                 return $this->redirectToRecord();
@@ -374,6 +391,9 @@ class AbstractRecord extends AbstractBase
 
         // Display the template:
         $view->setTemplate('record/email');
+        if ($user) {
+            $view->from = $user->email;
+        }
         return $view;
     }
 

@@ -248,14 +248,8 @@ class SpellingProcessorTest extends TestCase
      */
     public function testShingleSuggestion()
     {
-        $spelling = $this->getFixture('spell2');
-        $query = $this->getFixture('query2');
-        $params = $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
-            ->get('Solr');
-        $params->setBasicSearch($query->getString(), $query->getHandler());
-        $sp = new SpellingProcessor();
-        $suggestions = $sp->getSuggestions($spelling, $query);
-        $this->assertEquals(
+        $this->runSpellingTest(
+            2,
             array(
                 'preamble gribble' => array(
                     'freq' => 0,
@@ -267,9 +261,54 @@ class SpellingProcessorTest extends TestCase
                         ),
                     ),
                 ),
-            ),
-            $sp->processSuggestions(
-                $suggestions, $spelling->getQuery(), $params
+            )
+        );
+    }
+
+    /**
+     * Test an advanced search -- this is important because advanced searches
+     * sometimes generate false positive phrase suggestions due to the way
+     * flattened spelling queries are created; this test exercises the code
+     * that fails over to a secondary query when the main query fails to turn
+     * up any relevant suggestions.
+     *
+     * @return void
+     */
+    public function testAdvancedQuerySuggestions()
+    {
+        $this->runSpellingTest(
+            4,
+            array(
+                'lake' => array(
+                    'freq' => 2719,
+                    'suggestions' => array(
+                        'late' => array(
+                            'freq' => 30753,
+                            'new_term' => 'late',
+                            'expand_term' => '(lake OR late)',
+                        ),
+                        'lane' => array(
+                            'freq' => 8054,
+                            'new_term' => 'lane',
+                            'expand_term' => '(lake OR lane)',
+                        ),
+                        'make' => array(
+                            'freq' => 5735,
+                            'new_term' => 'make',
+                            'expand_term' => '(lake OR make)',
+                        )
+                    )
+                ),
+                'geneve' => array(
+                    'freq' => 662,
+                    'suggestions' => array(
+                        'geneva' => array(
+                            'freq' => 1170,
+                            'new_term' => 'geneva',
+                            'expand_term' => '(geneve OR geneva)',
+                        )
+                    )
+                )
             )
         );
     }
@@ -302,6 +341,89 @@ class SpellingProcessorTest extends TestCase
         $this->assertEquals(array('"unfinished phrase'), $sp->tokenize('"unfinished phrase'));
         $this->assertEquals(array('"'), $sp->tokenize('"'));
         $this->assertEquals(array('""'), $sp->tokenize('""'));
+    }
+
+    /**
+     * Test inclusion of numeric terms.
+     *
+     * @return void
+     */
+    public function testNumericInclusion()
+    {
+        $this->runSpellingTest(
+            3,
+            array(
+                '1234567980' => array(
+                    'freq' => 0,
+                    'suggestions' => array(
+                        '12345678' => array(
+                            'freq' => 1,
+                            'new_term' => '12345678'
+                        )
+                    )
+                ),
+                'sqid' => array(
+                    'freq' => 0,
+                    'suggestions' => array(
+                        'squid' => array(
+                            'freq' => 34,
+                            'new_term' => 'squid'
+                        )
+                    )
+                ),
+            ),
+            array('limit' => 1, 'skip_numeric' => false, 'expand' => false)
+        );
+    }
+
+    /**
+     * Test exclusion of numeric terms.
+     *
+     * @return void
+     */
+    public function testNumericExclusion()
+    {
+        $this->runSpellingTest(
+            3,
+            array(
+                'sqid' => array(
+                    'freq' => 0,
+                    'suggestions' => array(
+                        'squid' => array(
+                            'freq' => 34,
+                            'new_term' => 'squid'
+                        )
+                    )
+                ),
+            ),
+            array('limit' => 1, 'skip_numeric' => true, 'expand' => false)
+        );
+    }
+
+    /**
+     * Generic test.
+     *
+     * @param int   $testNum  Test data number to load
+     * @param array $expected Expected output
+     * @param array $config   SpellingProcessor configuration
+     *
+     * @return void
+     */
+    protected function runSpellingTest($testNum, $expected, $config = array())
+    {
+        $spelling = $this->getFixture('spell' . $testNum);
+        $query = $this->getFixture('query' . $testNum);
+        $params = $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
+            ->get('Solr');
+        $this->setProperty($params, 'query', $query);
+        $sp = new SpellingProcessor(new Config($config));
+        $suggestions = $sp->getSuggestions($spelling, $query);
+        $this->assertEquals(
+            $expected,
+            $sp->processSuggestions(
+                $suggestions, $spelling->getQuery(), $params
+            )
+        );
     }
 
     /**

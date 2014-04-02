@@ -27,7 +27,7 @@
  */
 namespace VuFind;
 use VuFindSearch\Backend\Solr\Backend, VuFind\Search\BackendManager,
-    Zend\Config\Config;
+    VuFindSearch\ParamBag, Zend\Config\Config;
 
 /**
  * Class for generating sitemaps
@@ -104,6 +104,13 @@ class Sitemap
     protected $warnings = array();
 
     /**
+     * Mode of retrieving IDs from the index (may be 'terms' or 'search')
+     *
+     * @var string
+     */
+    protected $retrievalMode = 'terms';
+
+    /**
      * Constructor
      *
      * @param BackendManager $bm      Search backend
@@ -133,6 +140,9 @@ class Sitemap
         $this->countPerPage = $this->config->Sitemap->countPerPage;
         $this->fileStart = $this->config->Sitemap->fileLocation . "/" .
             $this->config->Sitemap->fileName;
+        if (isset($this->config->Sitemap->retrievalMode)) {
+            $this->retrievalMode = $this->config->Sitemap->retrievalMode;
+        }
         if (isset($this->config->SitemapIndex->indexFileName)) {
             $this->indexFile = $this->config->Sitemap->fileLocation . "/" .
                 $this->config->SitemapIndex->indexFileName. ".xml";
@@ -185,34 +195,101 @@ class Sitemap
      */
     protected function generateForBackend(Backend $backend, $recordUrl, $currentPage)
     {
-        $last_term = '';
-        $key = $backend->getConnector()->getUniqueKey();
+        $lastTerm = '';
+        $count = 0;
 
         while (true) {
-            // Get
-            $currentPageInfo = $backend->terms($key, $last_term, $this->countPerPage)
-                ->getFieldTerms($key);
-            if (null === $currentPageInfo || count($currentPageInfo) < 1) {
+            // Get IDs and break out of the loop if we've run out:
+            $ids = $this->getIdsFromBackend($backend, $lastTerm, $count);
+            if (empty($ids)) {
                 break;
-            } else {
-                $filename = $this->getFilenameForPage($currentPage);
-                $smf = $this->openSitemapFile($filename, 'urlset');
-                foreach (array_keys($currentPageInfo->toArray()) as $item) {
-                    $loc = htmlspecialchars($recordUrl . urlencode($item));
-                    if (strpos($loc, 'http') === false) {
-                        $loc = 'http://'.$loc;
-                    }
-                    $this->writeSitemapEntry($smf, $loc);
-                    $last_term = $item;
-                }
-
-                fwrite($smf, '</urlset>');
-                fclose($smf);
             }
 
+            // Write the current entry:
+            $filename = $this->getFilenameForPage($currentPage);
+            $smf = $this->openSitemapFile($filename, 'urlset');
+            foreach ($ids as $item) {
+                $loc = htmlspecialchars($recordUrl . urlencode($item));
+                if (strpos($loc, 'http') === false) {
+                    $loc = 'http://'.$loc;
+                }
+                $this->writeSitemapEntry($smf, $loc);
+                $lastTerm = $item;
+            }
+            fwrite($smf, '</urlset>');
+            fclose($smf);
+
+            // Update counters:
+            $count += $this->countPerPage;
             $currentPage++;
         }
         return $currentPage;
+    }
+
+    /**
+     * Retrieve a batch of IDs.
+     *
+     * @param Backend $backend  Search backend
+     * @param string  $lastTerm Last term retrieved
+     * @param int     $offset   Number of terms previously retrieved
+     *
+     * @return array
+     */
+    protected function getIdsFromBackend(Backend $backend, $lastTerm, $offset)
+    {
+        if ($this->retrievalMode == 'terms') {
+            return $this->getIdsFromBackendUsingTerms($backend, $lastTerm);
+        }
+        return $this->getIdsFromBackendUsingSearch($backend, $offset);
+    }
+
+    /**
+     * Retrieve a batch of IDs using the terms component.
+     *
+     * @param Backend $backend  Search backend
+     * @param string  $lastTerm Last term retrieved
+     *
+     * @return array
+     */
+    protected function getIdsFromBackendUsingTerms(Backend $backend, $lastTerm)
+    {
+        $key = $backend->getConnector()->getUniqueKey();
+        $info = $backend->terms($key, $lastTerm, $this->countPerPage)
+            ->getFieldTerms($key);
+        return null === $info ? array() : array_keys($info->toArray());
+    }
+
+    /**
+     * Retrieve a batch of IDs using regular search.
+     *
+     * @param Backend $backend  Search backend
+     * @param int     $offset   Number of terms previously retrieved
+     *
+     * @return array
+     */
+    protected function getIdsFromBackendUsingSearch(Backend $backend, $offset)
+    {
+        $connector = $backend->getConnector();
+        $key = $connector->getUniqueKey();
+        $params = new ParamBag(
+            array(
+                'q' => '*:*',
+                'fl' => $key,
+                'rows' => $this->countPerPage,
+                'start' => $offset,
+                'wt' => 'json',
+                'sort' => $key . ' asc',
+            )
+        );
+        $raw = $connector->search($params);
+        $result = json_decode($raw);
+        $ids = array();
+        if (isset($result->response->docs)) {
+            foreach ($result->response->docs as $doc) {
+                $ids[] = $doc->$key;
+            }
+        }
+        return $ids;
     }
 
     /**
