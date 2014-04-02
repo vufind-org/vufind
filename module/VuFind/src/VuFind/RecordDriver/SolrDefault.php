@@ -1114,6 +1114,9 @@ class SolrDefault extends AbstractBase
      */
     public function getThumbnail($size = 'small')
     {
+        if (isset($this->fields['thumbnail']) && $this->fields['thumbnail']) {
+            return $this->fields['thumbnail'];
+        }
         $arr = array(
             'author'     => mb_substr($this->getPrimaryAuthor(), 0, 300, 'utf-8'),
             'callnumber' => $this->getCallNumber(),

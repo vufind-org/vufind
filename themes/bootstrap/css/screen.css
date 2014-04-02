@@ -60,6 +60,10 @@ div.xml.collapsed > div { display:none;margin-left:2px }
     width:auto;
   }
   .result .right {float:right}
+  .grid[id^=result] {
+    float:left;
+    width:25%;
+  }
 }
 @media (max-width: 600px) {
   .result .left,.result .middle,.result .right {

@@ -33,6 +33,8 @@ return array(
             'searchtabs' => 'VuFind\View\Helper\Root\Factory::getSearchTabs',
             'syndeticsplus' => 'VuFind\View\Helper\Root\Factory::getSyndeticsPlus',
             'systememail' => 'VuFind\View\Helper\Root\Factory::getSystemEmail',
+            'userlist' => 'VuFind\View\Helper\Root\Factory::getUserList',
+            'usertags' => 'VuFind\View\Helper\Root\Factory::getUserTags',
             'videoclips' => 'VuFind\View\Helper\Root\Factory::getVideoClips',
             'worldcat' => 'VuFind\View\Helper\Root\Factory::getWorldCat',
         ),
@@ -53,7 +55,6 @@ return array(
             'transesc' => 'VuFind\View\Helper\Root\TransEsc',
             'translate' => 'VuFind\View\Helper\Root\Translate',
             'truncate' => 'VuFind\View\Helper\Root\Truncate',
-            'userlist' => 'VuFind\View\Helper\Root\UserList',
         )
     ),
 );

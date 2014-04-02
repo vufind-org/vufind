@@ -27,7 +27,9 @@
       </ul>
     </li>
     <? endif; ?>
-    <li id="saveLink"><a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="saveRecord fav <?=$controllerClass?>" id="saveRecord" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a></li>
+    <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+      <li id="saveLink"><a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="saveRecord fav <?=$controllerClass?>" id="saveRecord" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a></li>
+    <? endif; ?>
     <? if (!empty($addThis)): ?>
     <li id="addThis"><a class="addThis addthis_button" href="https://www.addthis.com/bookmark.php?v=250&amp;pub=<?=urlencode($addThis)?>"><?=$this->transEsc('Bookmark')?></a></li>
     <? endif; ?>

@@ -24,6 +24,13 @@
         <input type="email" id="email_from" class="input-xlarge" oninvalid="$('#modal .icon-spinner').remove()" name="from" value="<?=isset($this->from) ? $this->from : ''?>" size="40"/>
       </div>
     </div>
+    <div class="control-group">
+      <div class="controls">
+        <label class="checkbox">
+          <input type="checkbox" name="ccself"/> <?=$this->translate('send_an_email_copy'); ?>
+        </label>
+      </div>
+    </div>
   <? endif; ?>
   <div class="control-group">
     <label class="control-label" for="email_message"><?=$this->transEsc('Message')?>:</label>
@@ -31,11 +38,11 @@
       <textarea id="email_message" class="input-xlarge" name="message" rows="4"><?=isset($this->message) ? $this->message : ''?></textarea>
     </div>
   </div>
-  <? if (!$this->disableFrom): ?>
+  <? if ($this->disableFrom && $this->userEmailInFrom): ?>
     <div class="control-group">
       <div class="controls">
         <label class="checkbox">
-          <input type="checkbox" name="ccself"/> <?=$this->translate('Send a copy to me'); ?>
+          <input type="checkbox" name="ccself"/> <?=$this->translate('send_email_copy_to_me'); ?>
         </label>
       </div>
     </div>

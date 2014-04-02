@@ -32,10 +32,10 @@
       <?=$this->transEsc('by')?>:
       <a href="<?=$this->record($this->driver)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><br/>
     <? endif; ?>
-    <? $listTags = $this->driver->getTags(
+    <? $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(
         $list_id, // get tags for all lists if no single list is selected
         $user_id, 'tag'
-       );
+       ) : array();
     ?>
     <? if (count($listTags) > 0): ?>
       <strong><?=$this->transEsc('Your Tags')?>:</strong>
