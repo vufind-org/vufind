@@ -84,7 +84,7 @@
           }
         }
       } ?>
-        
+
     <? $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(
         $list_id, // get tags for all lists if no single list is selected
         $user_id, 'tag'
@@ -103,7 +103,7 @@
         <?=$this->escapeHtml($note)?><br/>
       <? endforeach; ?>
     <? endif; ?>
-    
+
     <? if (count($this->lists) > 0): ?>
         <strong><?=$this->transEsc('Saved in')?>:</strong>
         <? $i=0;foreach($this->lists as $current): ?>
@@ -145,7 +145,8 @@
         <? if (!is_array($urls)) $urls = array();
           if(!$this->driver->isCollection()):
             foreach ($urls as $current): ?>
-          <? endforeach; ?>
+              <a href="<?=$this->escapeHtml($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
+            <? endforeach; ?>
         <? endif; ?>
       <? endif; ?>
       <br/>
@@ -161,7 +162,7 @@
 
   <div class="span2">
     <i class="icon-edit"></i> <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><? if (!is_null($list_id)):?>&amp;list_id=<?=urlencode($list_id)?><? endif; ?>" class="edit tool"><?=$this->transEsc('Edit')?></a><br/>
-    <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */ 
+    <? /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
       $deleteUrl = is_null($list_id)
           ? $this->url('myresearch-favorites')
           : $this->url('userList', array('id' => $list_id));
@@ -176,7 +177,7 @@
         <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
       </ul>
     </div>
-    
+
   </div>
 </div>
 <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtml($openUrl).'"></span>':''?>
