@@ -195,14 +195,9 @@ $(document).ready(function() {
   $('#cartItems').click(function() {
     return Lightbox.get('Cart','Cart');
   });
-  Lightbox.addOpenAction(function() {
-    // New account link handler
-    $('.createAccountLink').click(function() {
-      return Lightbox.get('MyResearch', 'Account');
-    });
-  });
   // Overwrite 
   Lightbox.addFormCallback('accountForm', function() {
+    updatePageForLogin();
     if (lastCartSubmit !== false) {
       cartSubmit(lastCartSubmit);
       lastCartSubmit = false;

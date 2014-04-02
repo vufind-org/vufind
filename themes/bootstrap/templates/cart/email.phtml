@@ -16,13 +16,17 @@
     <label class="control-label"><?=$this->transEsc('Title')?></label>
     <div class="controls">
     <? if(count($this->records) > 1): ?>
-      <div class="item-list">
-        <ul>
-          <? foreach ($this->records as $current): ?>
-            <li><?=$this->escapeHtml($current->getBreadcrumb())?></li>
-          <? endforeach; ?>
-        </ul>
-      </div>
+        <button type="button" class="btn" data-toggle="collapse" data-target="#itemhide">
+          <?=count($this->records).' '.$this->transEsc('items') ?>
+        </button>
+         
+        <div id="itemhide" class="collapse">
+          <ul>
+            <? foreach ($this->records as $current): ?>
+              <li><?=$this->escapeHtml($current->getBreadcrumb())?></li>
+            <? endforeach; ?>
+          </ul>
+        </div>
     <? else: ?>
       <span class="uneditable-input"><?=$this->records[0]->getBreadcrumb() ?></span>
     <? endif; ?>
@@ -54,14 +58,3 @@
     </div>
   </div>
 </form>
-<?
-  $items = $this->transEsc('items');
-  $script = <<<JS
-    var list = $('.item-list');
-    var items = list.find('li').length;
-    var bubble = list.html();
-    list.html('<span class="btn">'+items+' {$items}</span>');
-    list.find('.btn').popover({html:true,content:bubble});
-JS;
-?>
-<?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

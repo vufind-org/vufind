@@ -403,4 +403,24 @@ class CartController extends AbstractBase
         }
         return $this->redirect()->toUrl($target);
     }
+    
+    /**
+     * Redirect the user to the login screen.
+     *
+     * @param string $msg     Flash message to display on login screen
+     * @param array  $extras  Associative array of extra fields to store
+     * @param bool   $forward True to forward, false to redirect
+     *
+     * @return mixed
+     */
+    protected function forceLogin($msg = null, $extras = array(), $forward = true)
+    {
+        // When forcing login in the cart, we should clear any existing
+        // followup URL to prevent weird behavior in lightboxes:
+        $followup = $this->followup()->retrieve();
+        if (isset($followup->url)) {
+            unset($followup->url);
+        }
+        return parent::forceLogin($msg, $extras, $forward);
+    }
 }
