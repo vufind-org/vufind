@@ -277,7 +277,7 @@ class XCNCIP extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, $patron = false)
+    public function getHolding($id, array $patron = null)
     {
         $request = $this->getStatusRequest($id);
         $response = $this->sendRequest($request);

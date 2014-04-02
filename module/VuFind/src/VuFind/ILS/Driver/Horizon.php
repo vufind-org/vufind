@@ -272,7 +272,7 @@ class Horizon extends AbstractBase
      * @return array Keyed data
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function processHoldingRow($id, $row, $patron)
+    protected function processHoldingRow($id, $row)
     {
         $duedate     = $row['DUEDATE'];
         $item_status = $row['STATUS_CODE']; //get the item status code
@@ -328,7 +328,7 @@ class Horizon extends AbstractBase
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, $patron = false)
+    public function getHolding($id, array $patron = null)
     {
         $sqlArray = $this->getHoldingSql($id);
         $sql = $this->buildSqlFromArray($sqlArray);
@@ -337,7 +337,7 @@ class Horizon extends AbstractBase
             $holding = array();
             $sqlStmt = mssql_query($sql);
             while ($row = mssql_fetch_assoc($sqlStmt)) {
-                $holding[] = $this->processHoldingRow($id, $row, $patron);
+                $holding[] = $this->processHoldingRow($id, $row);
             }
             return $holding;
         } catch (\Exception $e) {

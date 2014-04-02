@@ -499,7 +499,7 @@ class MultiBackend extends AbstractBase
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, $patron = false)
+    public function getHolding($id, array $patron = null)
     {
         return $this->getStatusOrHolding($id, "Holding", $patron);
     }
@@ -513,7 +513,7 @@ class MultiBackend extends AbstractBase
      *
      * @return array
      */
-    protected function getStatusOrHolding($id, $method, $patron = false)
+    protected function getStatusOrHolding($id, $method, array $patron = null)
     {
         $method = "get".ucfirst($method);
         $source = $this->getSource($id);

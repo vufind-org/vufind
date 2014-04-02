@@ -224,13 +224,13 @@ class Demo extends AbstractBase
      *
      * @param string $id     set id
      * @param string $number set number for multiple items
-     * @param array  $patron Patron data
      *
      * @return array
      */
-    protected function getRandomHolding($id, $number, $patron)
+    protected function getRandomHolding($id, $number)
     {
         $status = $this->getFakeStatus();
+
         return array(
             'id'           => $id,
             'number'       => $number,
@@ -242,15 +242,11 @@ class Demo extends AbstractBase
             'callnumber'   => $this->getFakeCallNum(),
             'duedate'      => '',
             'is_holdable'  => true,
-            'addLink'      => $patron ? rand()%10 == 0 ? 'block' : true : false,
+            'addLink'      => false, //previous version depended on $patron. Returned false if $patron was false.
             'storageRetrievalRequest' => 'auto',
-            'addStorageRetrievalRequestLink' => $patron
-                ? rand()%10 == 0 ? 'block' : 'check'
-                : false,
+            'addStorageRetrievalRequestLink' => false, //previous version depended on $patron. Returned false if $patron was false.
             'ILLRequest'   => 'auto',
-            'addILLRequestLink' => $patron
-                ? rand()%10 == 0 ? 'block' : 'check'
-                : false
+            'addILLRequestLink' => false, //previous version depended on $patron. Returned false if $patron was false.
         );
     }
 
@@ -330,7 +326,7 @@ class Demo extends AbstractBase
         }
         return $list;        
     }
-    
+
     /**
      * Get Status
      *
@@ -338,12 +334,11 @@ class Demo extends AbstractBase
      * record.
      *
      * @param string $id     The record id to retrieve the holdings for
-     * @param array  $patron Patron data
      *
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus($id, $patron = false)
+    public function getStatus($id)
     {
         $id = $id.""; // make it a string for consistency
         // How many items are there?
@@ -367,7 +362,7 @@ class Demo extends AbstractBase
 
         // Create a fake entry for each one
         for ($i = 0; $i < $records; $i++) {
-            $holding[] = $this->getRandomHolding($id, $i+1, $patron);
+            $holding[] = $this->getRandomHolding($id, $i+1);
         }
         return $holding;
     }
@@ -477,7 +472,7 @@ class Demo extends AbstractBase
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, $patron = false)
+    public function getHolding($id, array $patron = null)
     {
         // Get basic status info:
         $status = $this->getStatus($id, $patron);
