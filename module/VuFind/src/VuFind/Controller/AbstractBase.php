@@ -101,6 +101,7 @@ class AbstractBase extends AbstractActionController
             if ($user && isset($config->Mail->user_email_in_from)
                 && $config->Mail->user_email_in_from
             ) {
+                $view->userEmailInFrom = true;
                 $view->from = $user->email;
             } else if (isset($config->Mail->default_from)
                 && $config->Mail->default_from

@@ -120,7 +120,9 @@ function nextPage() {
   scrollToSelected();
 }
 function scrollToSelected() {
-  $('#collapse1').scrollTop($('#collapse1').scrollTop()+$('#collapse1 .selected').position().top-vudlSettings.scroll.selected);
+  $('#collapse1').animate({
+    scrollTop: $('#collapse1 .selected').offset().top-$('#collapse1').offset().top+$('#collapse1').scrollTop()-12
+  });
 }
 // Accordion size
 function resizeAccordions(offset) {

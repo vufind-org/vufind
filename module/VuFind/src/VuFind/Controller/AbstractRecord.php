@@ -373,7 +373,9 @@ class AbstractRecord extends AbstractBase
                     $view->to, $view->from, $view->message, $driver,
                     $this->getViewRenderer()
                 );
-                if ($this->params()->fromPost('ccself')) {
+                if ($this->params()->fromPost('ccself')
+                    && $view->from != $view->to
+                ) {
                     $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
                         $view->from, $view->from, $view->message, $driver,
                         $this->getViewRenderer()
