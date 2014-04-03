@@ -345,9 +345,8 @@ class AbstractRecord extends AbstractBase
     {
         // Force login if necessary:
         $config = $this->getConfig();
-        $user = $this->getUser();
         if ((!isset($config->Mail->require_login) || $config->Mail->require_login)
-            && !$user
+            && !$this->getUser()
         ) {
             return $this->forceLogin();
         }
@@ -364,12 +363,6 @@ class AbstractRecord extends AbstractBase
                     $view->to, $view->from, $view->message, $driver,
                     $this->getViewRenderer()
                 );
-                if ($this->params()->fromPost('ccself')) {
-                    $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
-                        $view->from, $view->from, $view->message, $driver,
-                        $this->getViewRenderer()
-                    );
-                }
                 $this->flashMessenger()->setNamespace('info')
                     ->addMessage('email_success');
                 return $this->redirectToRecord();
@@ -381,9 +374,6 @@ class AbstractRecord extends AbstractBase
 
         // Display the template:
         $view->setTemplate('record/email');
-        if ($user) {
-            $view->from = $user->email;
-        }
         return $view;
     }
 
