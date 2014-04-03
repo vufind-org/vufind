@@ -1487,7 +1487,8 @@ EOT;
         // Build request
         $xml =  <<<EOT
 <?xml version="1.0" encoding="UTF-8"?>
-<ser:serviceParameters xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
+<ser:serviceParameters
+  xmlns:ser="http://www.endinfosys.com/Voyager/serviceParameters">
   <ser:parameters>
     <ser:parameter key="bibDbCode">
       <ser:value>LOCAL</ser:value>
@@ -1514,20 +1515,27 @@ EOT;
         }
         $xml .= <<<EOT
   </ser:parameters>
-  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$localUbId" patronId="$patronId">
+  <ser:patronIdentifier lastName="$lastname" patronHomeUbId="$localUbId"
+    patronId="$patronId">
     <ser:authFactor type="B">$barcode</ser:authFactor>
   </ser:patronIdentifier>
 </ser:serviceParameters>
 EOT;
 
-        $response = $this->makeRequest(array('SendPatronRequestService' => false), array(), 'POST', $xml);
+        $response = $this->makeRequest(
+            array('SendPatronRequestService' => false), array(), 'POST', $xml
+        );
 
         if ($response === false) {
             return $this->holdError('hold_error_system');
         }
         // Process
-        $response->registerXPathNamespace('ser', 'http://www.endinfosys.com/Voyager/serviceParameters');
-        $response->registerXPathNamespace('req', 'http://www.endinfosys.com/Voyager/requests');
+        $response->registerXPathNamespace(
+            'ser', 'http://www.endinfosys.com/Voyager/serviceParameters'
+        );
+        $response->registerXPathNamespace(
+            'req', 'http://www.endinfosys.com/Voyager/requests'
+        );
         foreach ($response->xpath('//ser:message') as $message) {
             if ($message->attributes()->type == 'success') {
                 return array(
@@ -1867,13 +1875,12 @@ EOT;
 
             // Optional check that the bib has items
         if ($this->checkItemsExist) {
-            if (!$this->itemsExist(
+            $exist = $this->itemsExist(
                 $bibId,
                 isset($holdDetails['requestGroupId'])
-                    ? $holdDetails['requestGroupId']
-                    : null
-                )
-            ) {
+                ? $holdDetails['requestGroupId'] : null
+            );
+            if (!$exist) {
                 return $this->holdError('hold_no_items');
             }
         }
@@ -1881,25 +1888,19 @@ EOT;
         // Optional check that the bib has no available items
         if ($this->checkItemsNotAvailable) {
             $disabledGroups = array();
-            if (isset(
-                $this->config['Holds']['disableAvailabilityCheckForRequestGroups']
-            )) {
-                $disabledGroups = explode(
-                    ':',
-                    $this->config['Holds']
-                        ['disableAvailabilityCheckForRequestGroups']
-                );
+            $key = 'disableAvailabilityCheckForRequestGroups';
+            if (isset($this->config['Holds'][$key])) {
+                $disabledGroups = explode(':', $this->config['Holds'][$key]);
             }
             if (!isset($holdDetails['requestGroupId'])
                 || !in_array($holdDetails['requestGroupId'], $disabledGroups)
             ) {
-                if ($this->itemsAvailable(
+                $available = $this->itemsAvailable(
                     $bibId,
                     isset($holdDetails['requestGroupId'])
-                        ? $holdDetails['requestGroupId']
-                        : null
-                    )
-                ) {
+                    ? $holdDetails['requestGroupId'] : null
+                );
+                if ($available) {
                     return $this->holdError('hold_items_available');
                 }
             }
