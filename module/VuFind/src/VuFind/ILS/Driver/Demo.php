@@ -865,8 +865,8 @@ class Demo extends AbstractBase
      * method.
      * @param array $holdDetails Optional array, only passed in when getting a list
      * in the context of placing a hold; contains most of the same values passed to
-     * placeHold, minus the patron data.  May be used to limit the request group options
-     * or may be ignored.
+     * placeHold, minus the patron data.  May be used to limit the request group
+     * options or may be ignored.
      *
      * @return false|string      The default request group for the patron.
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
