@@ -233,6 +233,7 @@ class Demo extends AbstractBase
         $status = $this->getFakeStatus();
         return array(
             'id'           => $id,
+            'item_id'      => $number,
             'number'       => $number,
             'barcode'      => sprintf("%08d", rand()%50000),
             'availability' => $status == 'Available',
@@ -243,6 +244,7 @@ class Demo extends AbstractBase
             'duedate'      => '',
             'is_holdable'  => true,
             'addLink'      => $patron ? rand()%10 == 0 ? 'block' : true : false,
+            'level'        => 'copy',
             'storageRetrievalRequest' => 'auto',
             'addStorageRetrievalRequestLink' => $patron
                 ? rand()%10 == 0 ? 'block' : 'check'
@@ -1697,7 +1699,7 @@ class Demo extends AbstractBase
     {
         if ($function == 'Holds') {
             return array(
-                'HMACKeys' => 'id',
+                'HMACKeys' => 'id:item_id:level',
                 'extraHoldFields' =>
                     'comments:requestGroup:pickUpLocation:requiredByDate',
                 'defaultRequiredDate' => 'driver:0:2:0',
