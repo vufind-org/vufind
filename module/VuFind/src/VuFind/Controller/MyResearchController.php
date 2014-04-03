@@ -1146,7 +1146,7 @@ class MyResearchController extends AbstractBase
                     $this->getServiceLocator()->get('VuFind\Mailer')->send(
                         $user->email,
                         $config->Site->email,
-                        $config->Authentication->recovery_email_subject,
+                        $this->translate('recovery_email_subject'),
                         $message
                     );
                     $this->flashMessenger()->setNamespace('info')
