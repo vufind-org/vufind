@@ -311,10 +311,9 @@ class Holds extends AbstractPlugin
     /**
      * Check if the user-provided request group is valid.
      *
-     * @param array  $gatheredDetails User hold parameters
-     * @param array  $extraHoldFields Hold form fields enabled by
-     * configuration/driver
-     * @param array  $requestGroups   Request group list from driver
+     * @param array $gatheredDetails User hold parameters
+     * @param array $extraHoldFields Form fields enabled by configuration/driver
+     * @param array $requestGroups   Request group list from driver
      *
      * @return bool
      */
