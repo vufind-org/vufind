@@ -311,7 +311,7 @@ class Holds extends AbstractPlugin
     /**
      * Check if the user-provided request group is valid.
      *
-     * @param string $requestGroupId  Id of user-specified request group
+     * @param array  $gatheredDetails User hold parameters
      * @param array  $extraHoldFields Hold form fields enabled by
      * configuration/driver
      * @param array  $requestGroups   Request group list from driver
@@ -319,15 +319,22 @@ class Holds extends AbstractPlugin
      * @return bool
      */
     public function validateRequestGroupInput(
-        $requestGroupId, $extraHoldFields, $requestGroups
+        $gatheredDetails, $extraHoldFields, $requestGroups
     ) {
-        // Not having to care for pickUpLocation is equivalent to having a valid one.
+        // Not having to care for requestGroup is equivalent to having a valid one.
         if (!in_array('requestGroup', $extraHoldFields)) {
+            return true;
+        }
+        if (!isset($gatheredDetails['level'])
+            || $gatheredDetails['level'] !== 'title'
+        ) {
             return true;
         }
 
         // Check the valid pickup locations for a match against user input:
-        return $this->validateRequestGroup($requestGroupId, $requestGroups);
+        return $this->validateRequestGroup(
+            $gatheredDetails['requestGroupId'], $requestGroups
+        );
     }
 
     /**
