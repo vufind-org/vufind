@@ -1593,8 +1593,7 @@ class Demo extends AbstractBase
      * @param string $pickupLib Pickup library ID
      * @param array  $patron    Patron
      *
-     * @return boo|array False if request not allowed, or an array of
-     * locations.
+     * @return bool|array False if request not allowed, or an array of locations.
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getILLPickupLocations($id, $pickupLib, $patron)
