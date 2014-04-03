@@ -109,7 +109,7 @@ function registerLightboxEvents() {
       $(op).hide();
     }
   });
-  $('.collapse').on('hidden', function(e){ e.stopPropagation(); });
+  $('#modal .collapse').on('hidden', function(e){ e.stopPropagation(); });
 }
 /**
  * This is a full handler for the login form
