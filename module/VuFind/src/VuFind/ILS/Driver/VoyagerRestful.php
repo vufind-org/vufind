@@ -333,18 +333,6 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             $functionConfig = false;
         }
 
-        // Make sure request group selection is displayed if request groups are
-        // enabled
-        if ($function == 'Holds' && $this->requestGroupsEnabled
-            && strpos($functionConfig['extraHoldFields'], 'requestGroup') === false
-        ) {
-            if (!empty($functionConfig['extraHoldFields'])) {
-                $functionConfig['extraHoldFields'] .= ':requestGroup';
-            } else {
-                $functionConfig['extraHoldFields'] = 'requestGroup';
-            }
-        }
-
         return $functionConfig;
     }
 
