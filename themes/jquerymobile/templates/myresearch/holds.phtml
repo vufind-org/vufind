@@ -58,7 +58,7 @@
 
             <? if (!empty($ilsDetails['requestGroup'])): ?>
               <p>
-                <strong><?=$this->transEsc('hold_request_group') ?>:</strong>
+                <strong><?=$this->transEsc('hold_requested_group') ?>:</strong>
                 <?=$this->transEsc('location_' . $ilsDetails['requestGroup'], array(), $ilsDetails['requestGroup'])?>
               </p>
             <? endif; ?>
