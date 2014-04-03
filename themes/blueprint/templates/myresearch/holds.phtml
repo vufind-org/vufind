@@ -80,6 +80,11 @@
               <br />
             <? endif; ?>
 
+            <? if (!empty($ilsDetails['requestGroup'])): ?>
+              <strong><?=$this->transEsc('hold_requested_group') ?>:</strong> <?=$this->transEsc('location_' . $ilsDetails['requestGroup'], array(), $ilsDetails['requestGroup'])?>
+              <br />
+            <? endif; ?>
+
             <? /* Depending on the ILS driver, the "location" value may be a string or an ID; figure out the best
                value to display... */ ?>
             <? $pickupDisplay = ''; ?>

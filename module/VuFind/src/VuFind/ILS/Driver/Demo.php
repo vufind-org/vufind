@@ -90,7 +90,7 @@ class Demo extends AbstractBase
      * @var bool
      */
     protected $ILLRequests = true;
-    
+
     /**
      * Date converter object
      *
@@ -132,7 +132,7 @@ class Demo extends AbstractBase
         if (isset($this->config['Catalog']['ILLRequests'])) {
             $this->ILLRequests = $this->config['Catalog']['ILLRequests'];
         }
-        
+
         // Establish a namespace in the session for persisting fake data (to save
         // on Solr hits):
         $this->session = new SessionContainer('DemoDriver');
@@ -233,6 +233,7 @@ class Demo extends AbstractBase
         $status = $this->getFakeStatus();
         return array(
             'id'           => $id,
+            'item_id'      => $number,
             'number'       => $number,
             'barcode'      => sprintf("%08d", rand()%50000),
             'availability' => $status == 'Available',
@@ -243,6 +244,7 @@ class Demo extends AbstractBase
             'duedate'      => '',
             'is_holdable'  => true,
             'addLink'      => $patron ? rand()%10 == 0 ? 'block' : true : false,
+            'level'        => 'copy',
             'storageRetrievalRequest' => 'auto',
             'addStorageRetrievalRequestLink' => $patron
                 ? rand()%10 == 0 ? 'block' : 'check'
@@ -256,10 +258,10 @@ class Demo extends AbstractBase
 
     /**
      * Generate a list of holds, storage retrieval requests or ILL requests.
-     * 
+     *
      * @param string $requestType Request type (Holds, StorageRetrievalRequests or
      * ILLRequests)
-     * 
+     *
      * @return ArrayObject List of requests
      */
     protected function createRequestList($requestType)
@@ -272,6 +274,8 @@ class Demo extends AbstractBase
         // loop.
         $this->prepSolr();
 
+        $requestGroups = $this->getRequestGroups(null, null);
+
         $list = new ArrayObject();
         for ($i = 0; $i < $items; $i++) {
             $location = $this->getFakeLoc(false);
@@ -283,7 +287,7 @@ class Demo extends AbstractBase
                 "item_id" => $i,
                 "reqnum" => $i
             );
-            
+
             if ($i == 2 || rand()%5 == 1) {
                 // Mimic an ILL request
                 $currentItem["id"] = "ill_request_$i";
@@ -291,7 +295,7 @@ class Demo extends AbstractBase
                 $currentItem['institution_id'] = 'ill_institution';
                 $currentItem['institution_name'] = 'ILL Library';
                 $currentItem['institution_dbkey'] = 'ill_institution';
-            } else {    
+            } else {
                 if ($this->idsInMyResearch) {
                     $currentItem['id'] = $this->getRandomBibId();
                 } else {
@@ -306,31 +310,33 @@ class Demo extends AbstractBase
                 } else {
                     $currentItem['available'] = true;
                 }
+                $pos = rand(0, count($requestGroups) - 1);
+                $currentItem['requestGroup'] = $requestGroups[$pos]['name'];
             } else {
                 $status = rand()%5;
                 $currentItem['available'] = $status == 1;
                 $currentItem['canceled'] = $status == 2;
                 $currentItem['processed'] = ($status == 1 || rand(1, 3) == 3)
-                    ? date("j-M-y") 
+                    ? date("j-M-y")
                     : '';
                 if ($requestType == 'ILLRequests') {
                     $transit = rand()%2;
-                    if (!$currentItem['available'] 
+                    if (!$currentItem['available']
                         && !$currentItem['canceled']
                         && $transit == 1
                     ) {
-                        $currentItem['in_transit'] = $location;  
+                        $currentItem['in_transit'] = $location;
                     } else {
                         $currentItem['in_transit'] = false;
                     }
                 }
             }
-            
+
             $list->append($currentItem);
         }
-        return $list;        
+        return $list;
     }
-    
+
     /**
      * Get Status
      *
@@ -664,7 +670,7 @@ class Demo extends AbstractBase
         }
         return $this->session->storageRetrievalRequests;
     }
-    
+
     /**
      * Get Patron ILL Requests
      *
@@ -683,7 +689,7 @@ class Demo extends AbstractBase
         }
         return $this->session->ILLRequests;
     }
-    
+
     /**
      * Get Patron Transactions
      *
@@ -730,7 +736,7 @@ class Demo extends AbstractBase
 
                 // Renewal limit
                 $renewLimit = $renew + rand()%3;
-                
+
                 // Pending requests : 0,0,0,0,0,1,2,3,4,5
                 $req = rand()%10 - 5;
                 if ($req < 0) {
@@ -738,7 +744,7 @@ class Demo extends AbstractBase
                 }
 
                 if ($i == 2 || rand()%5 == 1) {
-                    // Mimic an ILL loan    
+                    // Mimic an ILL loan
                     $transList[] = array(
                         'duedate' => $due_date,
                         'dueStatus' => $dueStatus,
@@ -848,6 +854,55 @@ class Demo extends AbstractBase
     {
         $locations = $this->getPickUpLocations($patron);
         return $locations[0]['locationID'];
+    }
+
+    /**
+     * Get Default Request Group
+     *
+     * Returns the default request group
+     *
+     * @param array $patron      Patron information returned by the patronLogin
+     * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data.  May be used to limit the request group options
+     * or may be ignored.
+     *
+     * @return false|string      The default request group for the patron.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getDefaultRequestGroup($patron = false, $holdDetails = null)
+    {
+        if (rand(0, 1) == 1) {
+            return false;
+        }
+        $requestGroups = $this->getRequestGroups(0, 0);
+        return $requestGroups[0]['id'];
+    }
+
+    /**
+     * Get request groups
+     *
+     * @param integer $bibId  BIB ID
+     * @param array   $patron Patron information returned by the patronLogin
+     * method.
+     *
+     * @return array  False if request groups not in use or an array of
+     * associative arrays with id and name keys
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getRequestGroups($bibId = null, $patron = null)
+    {
+        return array(
+            array(
+                'id' => 1,
+                'name' => 'Main Library'
+            ),
+            array(
+                'id' => 2,
+                'name' => 'Branch Library'
+            )
+        );
     }
 
     /**
@@ -1182,7 +1237,7 @@ class Demo extends AbstractBase
     {
         return $checkOutDetails['item_id'];
     }
-    
+
     /**
      * Check if hold or recall available
      *
@@ -1202,7 +1257,7 @@ class Demo extends AbstractBase
         }
         return true;
     }
-    
+
     /**
      * Place Hold
      *
@@ -1256,6 +1311,13 @@ class Demo extends AbstractBase
             );
         }
 
+        $requestGroup = '';
+        foreach ($this->getRequestGroups(null, null) as $group) {
+            if ($group['id'] == $holdDetails['requestGroupId']) {
+                $requestGroup = $group['name'];
+                break;
+            }
+        }
         $this->session->holds->append(
             array(
                 "id"       => $holdDetails['id'],
@@ -1265,7 +1327,8 @@ class Demo extends AbstractBase
                 "reqnum"   => sprintf("%06d", $nextId),
                 "item_id" => $nextId,
                 "volume" => '',
-                "processed" => ''
+                "processed" => '',
+                "requestGroup" => $requestGroup
             )
         );
 
@@ -1291,7 +1354,7 @@ class Demo extends AbstractBase
         }
         return true;
     }
-    
+
     /**
      * Place a Storage Retrieval Request
      *
@@ -1326,9 +1389,9 @@ class Demo extends AbstractBase
         }
         $lastRequest = count($this->session->storageRetrievalRequests) - 1;
         $nextId = $lastRequest >= 0
-            ? $this->session->storageRetrievalRequests[$lastRequest]['item_id'] + 1 
+            ? $this->session->storageRetrievalRequests[$lastRequest]['item_id'] + 1
             : 0;
-        
+
         // Figure out appropriate expiration date:
         if (!isset($details['requiredBy'])
             || empty($details['requiredBy'])
@@ -1353,7 +1416,7 @@ class Demo extends AbstractBase
                 'sysMessage' => 'storage_retrieval_request_date_past'
             );
         }
-        
+
         $this->session->storageRetrievalRequests->append(
             array(
                 "id"       => $details['id'],
@@ -1388,7 +1451,7 @@ class Demo extends AbstractBase
         }
         return true;
     }
-    
+
     /**
      * Place ILL Request
      *
@@ -1423,9 +1486,9 @@ class Demo extends AbstractBase
         }
         $lastRequest = count($this->session->ILLRequests) - 1;
         $nextId = $lastRequest >= 0
-            ? $this->session->ILLRequests[$lastRequest]['item_id'] + 1 
+            ? $this->session->ILLRequests[$lastRequest]['item_id'] + 1
             : 0;
-        
+
         // Figure out appropriate expiration date:
         if (!isset($details['requiredBy'])
             || empty($details['requiredBy'])
@@ -1450,7 +1513,7 @@ class Demo extends AbstractBase
                 'sysMessage' => 'ill_request_date_past'
             );
         }
-        
+
         // Verify pickup library and location
         $pickupLocation = '';
         $pickupLocations = $this->getILLPickupLocations(
@@ -1470,7 +1533,7 @@ class Demo extends AbstractBase
                 'sysMessage' => 'ill_request_place_fail_missing'
             );
         }
-                
+
         $this->session->ILLRequests->append(
             array(
                 "id"       => $details['id'],
@@ -1485,7 +1548,7 @@ class Demo extends AbstractBase
 
         return array('success' => true);
     }
-    
+
     /**
      * Get ILL Pickup Libraries
      *
@@ -1494,7 +1557,7 @@ class Demo extends AbstractBase
      * @param string $id     Record ID
      * @param array  $patron Patron
      *
-     * @return bool|array False if request not allowed, or an array of associative 
+     * @return bool|array False if request not allowed, or an array of associative
      * arrays with libraries.
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -1503,34 +1566,34 @@ class Demo extends AbstractBase
         if (!$this->ILLRequests) {
             return false;
         }
-        
+
         $details = array(
             array(
                 'id' => 1,
                 'name' => 'Main Library',
                 'isDefault' => true
-            ),                
+            ),
             array(
                 'id' => 2,
                 'name' => 'Branch Library',
                 'isDefault' => false
-            )                
+            )
         );
-        
+
         return $details;
     }
-    
+
     /**
      * Get ILL Pickup Locations
-     * 
-     * This is responsible for getting a list of possible pickup locations for a 
+     *
+     * This is responsible for getting a list of possible pickup locations for a
      * library
      *
      * @param string $id        Record ID
      * @param string $pickupLib Pickup library ID
      * @param array  $patron    Patron
      *
-     * @return boo|array False if request not allowed, or an array of  
+     * @return boo|array False if request not allowed, or an array of
      * locations.
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
@@ -1543,7 +1606,7 @@ class Demo extends AbstractBase
                     'id' => 1,
                     'name' => 'Circulation Desk',
                     'isDefault' => true
-                ),                
+                ),
                 array(
                     'id' => 2,
                     'name' => 'Reference Desk',
@@ -1564,7 +1627,7 @@ class Demo extends AbstractBase
                 )
             );
         }
-        return array();                
+        return array();
     }
 
     /**
@@ -1624,7 +1687,7 @@ class Demo extends AbstractBase
     {
         return $details['reqnum'];
     }
-    
+
     /**
      * Public Function which specifies renew, hold and cancel settings.
      *
@@ -1636,8 +1699,9 @@ class Demo extends AbstractBase
     {
         if ($function == 'Holds') {
             return array(
-                'HMACKeys' => 'id',
-                'extraHoldFields' => 'comments:pickUpLocation:requiredByDate',
+                'HMACKeys' => 'id:item_id:level',
+                'extraHoldFields' =>
+                    'comments:requestGroup:pickUpLocation:requiredByDate',
                 'defaultRequiredDate' => 'driver:0:2:0',
             );
         }
@@ -1655,7 +1719,7 @@ class Demo extends AbstractBase
             return array(
                 'enabled' => true,
                 'HMACKeys' => 'number',
-                'extraFields' => 
+                'extraFields' =>
                     'comments:pickUpLibrary:pickUpLibraryLocation:requiredByDate',
                 'defaultRequiredDate' => '0:1:0',
                 'helpText' => 'This is an ILL request help text'

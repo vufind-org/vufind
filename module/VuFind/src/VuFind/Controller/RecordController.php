@@ -97,7 +97,7 @@ class RecordController extends AbstractRecord
     public function holdAction()
     {
         $driver = $this->loadRecord();
-        
+
         // If we're not supposed to be here, give up now!
         $catalog = $this->getILS();
         $checkHolds = $catalog->checkFunction("Holds", $driver->getUniqueID());
@@ -126,18 +126,28 @@ class RecordController extends AbstractRecord
 
         // Send various values to the view so we can build the form:
         $pickup = $catalog->getPickUpLocations($patron, $gatheredDetails);
+        $requestGroups = $catalog->checkCapability('getRequestGroups')
+            ? $catalog->getRequestGroups($driver->getUniqueID(), $patron)
+            : array();
         $extraHoldFields = isset($checkHolds['extraHoldFields'])
             ? explode(":", $checkHolds['extraHoldFields']) : array();
 
         // Process form submissions if necessary:
         if (!is_null($this->params()->fromPost('placeHold'))) {
-            // If the form contained a pickup location, make sure that
-            // the value has not been tampered with:
-            if (!$this->holds()->validatePickUpInput(
+            // If the form contained a pickup location or request group, make sure
+            // they are valid:
+            if (!$this->holds()->validateRequestGroupInput(
+                    $gatheredDetails['requestGroupId'],
+                    $extraHoldFields,
+                    $requestGroups)
+            ) {
+                $this->flashMessenger()->setNamespace('error')
+                    ->addMessage('hold_invalid_request_group');
+            } elseif (!$this->holds()->validatePickUpInput(
                 $gatheredDetails['pickUpLocation'], $extraHoldFields, $pickup
             )) {
                 $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('error_inconsistent_parameters');
+                    ->addMessage('hold_invalid_pickup');
             } else {
                 // If we made it this far, we're ready to place the hold;
                 // if successful, we will redirect and can stop here.
@@ -184,6 +194,18 @@ class RecordController extends AbstractRecord
         } catch (\Exception $e) {
             $defaultPickup = false;
         }
+        try {
+            $defaultRequestGroup = empty($requestGroups)
+                ? false
+                : $catalog->getDefaultRequestGroup($patron, $gatheredDetails);
+        } catch (\Exception $e) {
+            $defaultRequestGroup = false;
+        }
+
+        $requestGroupNeeded = in_array('requestGroup', $extraHoldFields)
+            && !empty($requestGroups)
+            && (empty($gatheredDetails['level'])
+                || $gatheredDetails['level'] != 'copy');
 
         return $this->createViewModel(
             array(
@@ -192,7 +214,11 @@ class RecordController extends AbstractRecord
                 'defaultPickup' => $defaultPickup,
                 'homeLibrary' => $this->getUser()->home_library,
                 'extraHoldFields' => $extraHoldFields,
-                'defaultRequiredDate' => $defaultRequired
+                'defaultRequiredDate' => $defaultRequired,
+                'requestGroups' => $requestGroups,
+                'defaultRequestGroup' => $defaultRequestGroup,
+                'requestGroupNeeded' => $requestGroupNeeded,
+                'helpText' => $checkHolds['helpText']
             )
         );
     }
@@ -311,11 +337,11 @@ class RecordController extends AbstractRecord
     public function illRequestAction()
     {
         $driver = $this->loadRecord();
-        
+
         // If we're not supposed to be here, give up now!
         $catalog = $this->getILS();
         $checkRequests = $catalog->checkFunction(
-            'ILLRequests', 
+            'ILLRequests',
             $driver->getUniqueID()
         );
         if (!$checkRequests) {
@@ -344,7 +370,7 @@ class RecordController extends AbstractRecord
         }
 
         // Send various values to the view so we can build the form:
-        
+
         $extraFields = isset($checkRequests['extraFields'])
             ? explode(":", $checkRequests['extraFields']) : array();
 
@@ -396,10 +422,10 @@ class RecordController extends AbstractRecord
         );
 
         // Get pickup locations. Note that these are independent of pickup library,
-        // and library specific locations must be retrieved when a library is 
+        // and library specific locations must be retrieved when a library is
         // selected.
         $pickupLocations = $catalog->getPickUpLocations($patron, $gatheredDetails);
-        
+
         return $this->createViewModel(
             array(
                 'gatheredDetails' => $gatheredDetails,
