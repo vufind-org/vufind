@@ -1087,7 +1087,8 @@ class MyResearchController extends AbstractBase
         // Make sure we're configured to do this
         $config = $this->getConfig();
         if (!isset($config->Authentication->recover_password)
-        || $config->Authentication->recover_password == false) {
+            || $config->Authentication->recover_password == false
+        ) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('recovery_disabled');
             return $this->redirect()->toRoute('myresearch-login');
@@ -1247,9 +1248,9 @@ class MyResearchController extends AbstractBase
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage('recovery_new_password_success');
             return $this->redirect()->toRoute('myresearch-favorites');
-        // If not submitted, are we logged in?
         } elseif ($this->getAuthManager()->isLoggedIn()) {
-            // Make sure this is enabled in config
+            // If not submitted, are we logged in?
+            // Make sure password changing is enabled in config
             $config = $this->getConfig();
             if (!isset($config->Authentication->new_password)
             || $config->Authentication->new_password == false) {
