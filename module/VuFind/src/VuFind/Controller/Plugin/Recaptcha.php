@@ -80,7 +80,7 @@ class Recaptcha extends AbstractPlugin
      */
     public function validate()
     {
-        if(!$this->active()) {
+        if (!$this->active()) {
             return true;
         }
         $captchaPassed = true;

@@ -367,12 +367,12 @@ class AbstractRecord extends AbstractBase
         // Create view
         $view = $this->createEmailViewModel();
         // Set up reCaptcha
-        if ($this->recaptcha()->active('email')) {
-            $view->useRecaptcha = true;
-        }
+        $view->useRecaptcha = $this->recaptcha()->active('email');
         // Process form submission:
         // Recaptcha Plugin checks if captcha validation is enabled in config
-        if ($this->params()->fromPost('submit') && $this->recaptcha()->validate()) {
+        if ($this->params()->fromPost('submit')
+            && $view->useRecaptcha && $this->recaptcha()->validate()
+        ) {
             // Attempt to send the email and show an appropriate flash message:
             try {
                 $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
@@ -417,12 +417,12 @@ class AbstractRecord extends AbstractBase
         $view->carriers = $sms->getCarriers();
         $view->validation = $sms->getValidationType();
         // Set up reCaptcha
-        if ($this->recaptcha()->active('sms')) {
-            $view->useRecaptcha = true;
-        }
+        $view->useRecaptcha = $this->recaptcha()->active('sms');
         // Process form submission:
         // Recaptcha Plugin checks if captcha validation is enabled in config
-        if ($this->params()->fromPost('submit') && $this->recaptcha()->validate()) {
+        if ($this->params()->fromPost('submit')
+            && $view->useRecaptcha && $this->recaptcha()->validate()
+        ) {
             // Send parameters back to view so form can be re-populated:
             $view->to = $this->params()->fromPost('to');
             $view->provider = $this->params()->fromPost('provider');

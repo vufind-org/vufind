@@ -182,10 +182,16 @@ class MyResearchController extends AbstractBase
             $followup->url = $this->getRequest()->getServer()->get('HTTP_REFERER');
         }
 
+        // Make view
+        $view = $this->createViewModel();
+        // Pass request to view so we can repopulate user parameters in form:
+        $view->request = $this->getRequest()->getPost();
+        // Set up reCaptcha
+        $view->useRecaptcha = $this->recaptcha()->active('newAccount');
         // Process request, if necessary:
         // Recaptcha Plugin checks if captcha validation is enabled in config
         if (!is_null($this->params()->fromPost('submit', null))
-         && $this->recaptcha()->validate()
+            && $view->useRecaptcha && $this->recaptcha()->validate()
         ) {
             try {
                 $this->getAuthManager()->create($this->getRequest());
@@ -194,15 +200,6 @@ class MyResearchController extends AbstractBase
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage($e->getMessage());
             }
-        }
-
-        // Make view
-        $view = $this->createViewModel();
-        // Pass request to view so we can repopulate user parameters in form:
-        $view->request = $this->getRequest()->getPost();
-        // Set up reCaptcha
-        if ($this->recaptcha()->active('newAccount')) {
-            $view->useRecaptcha = true;
         }
         return $view;
     }

@@ -241,7 +241,7 @@ class Factory
     }
 
     /**
-     * Construct the record loader.
+     * Construct the recaptcha helper
      *
      * @param ServiceManager $sm Service manager.
      *
@@ -251,8 +251,12 @@ class Factory
     {
         $config = $sm->get('VuFind\Config')->get('config');
         $recaptcha = new \ZendService\ReCaptcha\ReCaptcha(
-            $config->Captcha->publicKey,
-            $config->Captcha->privateKey
+            isset($config->Captcha->publicKey)
+                ? $config->Captcha->publicKey
+                : '',
+            isset($config->Captcha->privateKey)
+                ? $config->Captcha->privateKey
+                : ''
         );
         if (isset($config->Captcha->theme)) {
             $recaptcha->setOption('theme', $config->Captcha->theme);
