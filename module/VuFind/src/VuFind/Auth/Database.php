@@ -113,25 +113,15 @@ class Database extends AbstractBase
         $params = array(
             'firstname' => '', 'lastname' => '', 'username' => '',
             'password' => '', 'password2' => '', 'email' => '',
-            'verify_hash' => time().''
+            'verify_hash' => ''
         );
         foreach ($params as $param => $default) {
             $params[$param] = $request->getPost()->get($param, $default);
         }
 
         // Validate Input
-        // Needs a username
-        if (trim($params['username']) == '') {
-            throw new AuthException('Username cannot be blank');
-        }
-        // Needs a password
-        if (trim($params['password']) == '') {
-            throw new AuthException('Password cannot be blank');
-        }
-        // Passwords don't match
-        if ($params['password'] != $params['password2']) {
-            throw new AuthException('Passwords do not match');
-        }
+        $this->validateUsernameAndPassword($params);
+        
         // Invalid Email Check
         $validator = new \Zend\Validator\EmailAddress();
         if (!$validator->isValid($params['email'])) {
@@ -185,12 +175,37 @@ class Database extends AbstractBase
         // Ensure that all expected parameters are populated to avoid notices
         // in the code below.
         $params = array(
-            'username' => '', 'password' => ''
+            'username' => '', 'password' => '', 'password2' => ''
         );
         foreach ($params as $param => $default) {
             $params[$param] = $request->getPost()->get($param, $default);
         }
-        // Needs a password
+        
+        // Validate Input
+        $this->validateUsernameAndPassword($params);
+        
+        // Create the row and send it back to the caller:
+        $table = $this->getUserTable();
+        $user = $table->getByUsername($params['username'], false);
+        if ($this->passwordHashingEnabled()) {
+            $bcrypt = new Bcrypt();
+            $user->pass_hash = $bcrypt->create($params['password']);
+        } else {
+            $user->password = $params['password'];
+        }
+        $user->save();
+        return $user;
+    }
+    
+    /**
+     * Make sure username and password aren't blank
+     * Make sure passwords match
+     *
+     * @param array $params
+     */
+    protected function validateUsernameAndPassword($params)
+    {
+        // Needs a username
         if (trim($params['username']) == '') {
             throw new AuthException('Username cannot be blank');
         }
@@ -198,16 +213,10 @@ class Database extends AbstractBase
         if (trim($params['password']) == '') {
             throw new AuthException('Password cannot be blank');
         }
-        if ($this->passwordHashingEnabled()) {
-            $bcrypt = new Bcrypt();
-            $data['pass_hash'] = $bcrypt->create($params['password']);
-        } else {
-            $data['password'] = $params['password'];
+        // Passwords don't match
+        if ($params['password'] != $params['password2']) {
+            throw new AuthException('Passwords do not match');
         }
-        // Create the row and send it back to the caller:
-        $table = $this->getUserTable();
-        $table->update($data, 'username = "' . $params['username'] . '"');
-        return $table->getByUsername($params['username'], false);
     }
 
     /**

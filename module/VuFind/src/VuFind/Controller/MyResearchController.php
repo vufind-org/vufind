@@ -1145,7 +1145,7 @@ class MyResearchController extends AbstractBase
                     $this->getServiceLocator()->get('VuFind\Mailer')->send(
                         $user->email,
                         $config->Site->email,
-                        $renderer->translate('recovery_email_subject'),
+                        $config->Authentication->recovery_email_subject,
                         $message
                     );
                     $this->flashMessenger()->setNamespace('info')
@@ -1202,11 +1202,10 @@ class MyResearchController extends AbstractBase
     public function newPasswordAction()
     {
         // Have we submitted the form
-        $hash   = $this->params()->fromPost('hash');
-        if (null != $hash) {
+        if ($this->params()->fromPost('submit', false)) {
             // Pull in from POST
-            $pwd    = $this->params()->fromPost('newpwd');
-            $cpwd   = $this->params()->fromPost('confirm');
+            $pwd    = $this->params()->fromPost('password');
+            $cpwd   = $this->params()->fromPost('password2');
             // Get user
             $table = $this->getTable('User');
             $user = $table->select(
@@ -1217,40 +1216,39 @@ class MyResearchController extends AbstractBase
             // Verify old password if we're logged in
             if ($this->params()->fromPost('verifyold', false)) {
                 try {
-                    $authClass = $this->getAuthManager()->login($this->request);
-                } catch(Exception $e) {
+                    $request = $this->getRequest();
+                    $post = $request->getPost();
+                    $post->password = $post->oldpwd;
+                    $request->setPost($post);
+                    $authClass = $this->getAuthManager()->login($request);
+                } catch(AuthException $e) {
                     $this->flashMessenger()->setNamespace('error')
-                        ->addMessage('authentication_error_denied');
+                        ->addMessage($e->getMessage());
                     return $this->createViewModel(
                         $this->params()->fromPost()
                     );
                 }
             }
-            // Make sure the passwords match
-            if (empty($pwd) || empty($cpwd) || $pwd != $cpwd) {
+            // Update password
+            try {
+                $user = $this->getAuthManager()->updatePassword($this->getRequest());
+            } catch (AuthException $e) {
                 $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('Passwords do not match');
+                    ->addMessage($e->getMessage());
                 return $this->createViewModel(
                     $this->params()->fromPost()
                 );
             }
-            // Swap new password in for usual one)
-            $request = $this->getRequest();
-            $post = $request->getPost();
-            $post->password = $post->newpwd;
-            $request->setPost($post);
-            // Update password
-            $user = $this->getAuthManager()->updatePassword($request);
             // Update hash to prevent reusing hash
             $user->updateHash();
             // Login
-            $this->getAuthManager()->login($request);
+            $this->getAuthManager()->login($this->request);
             // Go to favorites
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage('recovery_new_password_success');
             return $this->redirect()->toRoute('myresearch-favorites');
+        // If not submitted, are we logged in?
         } elseif ($this->getAuthManager()->isLoggedIn()) {
-            // Clicking the new password link
             // Make sure this is enabled in config
             $config = $this->getConfig();
             if (!isset($config->Authentication->new_password)
@@ -1259,10 +1257,11 @@ class MyResearchController extends AbstractBase
                     ->addMessage('recovery_new_disabled');
                 return $this->createViewModel();
             }
-            $user = $this->getUser();
-            return $this->createViewModel(
-                $this->params()->fromPost()
-            );
+            $view = $this->createViewModel($this->params()->fromPost());
+            // Verify user password
+            $view->username = $this->getUser()->username;
+            $view->verifyold = true;
+            return $view;
         }
         return $this->redirect()->toRoute('home');
     }
