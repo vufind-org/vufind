@@ -49,7 +49,6 @@
             <? for ($j = 0; $j < $numRows; $j++): ?>
               <? $currRow = isset($currentGroup[$j]) ? $currentGroup[$j] : false; ?>
               <div class="row-fluid">
-                <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtml($currRow->getString()):''?>" size="30" name="lookfor<?=$i?>[]" class="span6"/>
                 <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="span3">
                 <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
                   <option value="<?=$this->escapeHtml($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
@@ -60,6 +59,7 @@
                     <option value="<?=$this->escapeHtml($searchVal)?>"<?=($currRow && $currRow->getOperator() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
                   <? endforeach; ?>
                 </select>
+                <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtml($currRow->getString()):''?>" size="30" name="lookfor<?=$i?>[]" class="span6"/>
               </div>
             <? endfor; ?>
           </div>
