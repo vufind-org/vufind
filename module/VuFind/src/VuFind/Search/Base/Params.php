@@ -1066,6 +1066,21 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Initialize all range filters.
+     *
+     * @param \Zend\StdLib\Parameters $request         Parameter object representing
+     * user request.
+     *
+     * @return void
+     */
+    protected function initRangeFilters($request)
+    {
+        $this->initDateFilters($request);
+        $this->initGenericRangeFilters($request);
+        $this->initNumericRangeFilters($request);
+    }
+
+    /**
      * Support method for initDateFilters() -- normalize a year for use in a date
      * range.
      *
@@ -1089,6 +1104,110 @@ class Params implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Support method for initNumericRangeFilters() -- normalize a year for use in
+     * a date range.
+     *
+     * @param string $num Value to format into a number.
+     *
+     * @return string     Formatted number.
+     */
+    protected function formatValueForNumericRange($num)
+    {
+        // empty strings are always wildcards:
+        if ($num == '') {
+            return '*';
+        }
+
+        // it's a string by default so this will kick it into interpreting it as a
+        // number
+        $num = $num + 0;
+        return $num = !is_float($num) && !is_int($num) ? '*' : $num;
+    }
+
+    /**
+     * Support method for initGenericRangeFilters() -- build a filter query based on
+     * a range of values.
+     *
+     * @param string $field field to use for filtering.
+     * @param string $from  start of range.
+     * @param string $to    end of range.
+     *
+     * @return string       filter query.
+     */
+    protected function buildGenericRangeFilter($field, $from, $to)
+    {
+        // Assume Solr syntax -- this should be overridden in child classes where
+        // other indexing methodologies are used.
+        return "{$field}:[{$from} TO {$to}]";
+    }
+
+    /**
+     * Support method for initFilters() -- initialize range filters.  Factored
+     * out as a separate method so that it can be more easily overridden by child
+     * classes.
+     *
+     * @param \Zend\StdLib\Parameters $request         Parameter object representing
+     * user request.
+     * @param string                  $requestParam    Name of parameter containing
+     * names of range filter fields.
+     * @param Callable                $valueFilter     Optional callback to process
+     * values in the range.
+     * @param Callable                $filterGenerator Optional callback to create
+     * a filter query from the range values.
+     *
+     * @return void
+     */
+     protected function initGenericRangeFilters($request,
+        $requestParam = 'genericrange', $valueFilter = null, $filterGenerator = null
+     ) {
+         $rangeFacets = $request->get($requestParam);
+         if (!empty($rangeFacets)) {
+             $ranges = is_array($rangeFacets) ? $rangeFacets : array($rangeFacets);
+             foreach ($ranges as $range) {
+                 // Load start and end of range:
+                 $from = $request->get($range . 'from');
+                 $to = $request->get($range . 'to');
+
+                 // Apply filtering/validation if necessary:
+                 if (is_callable($valueFilter)) {
+                     $from = call_user_func($valueFilter, $from);
+                     $to = call_user_func($valueFilter, $to);
+                 }
+
+                 // Build filter only if necessary:
+                 if (!empty($range) && ($from != '*' || $to != '*')) {
+                     $rangeFacet = is_callable($filterGenerator)
+                        ? call_user_func($filterGenerator, $range, $from, $to)
+                        : $this->buildGenericRangeFilter($range, $from, $to);
+                     $this->addFilter($rangeFacet);
+                 }
+             }
+         }
+     }
+
+    /**
+     * Support method for initNumericRangeFilters() -- build a filter query based on
+     * a range of numbers.
+     *
+     * @param string $field field to use for filtering.
+     * @param string $from  number for start of range.
+     * @param string $to    number for end of range.
+     *
+     * @return string       filter query.
+     */
+    protected function buildNumericRangeFilter($field, $from, $to)
+    {
+        // Make sure that $to is less than $from:
+        if ($to != '*' && $from!= '*' && $to < $from) {
+            $tmp = $to;
+            $to = $from;
+            $from = $tmp;
+        }
+
+        return $this->buildGenericRangeFilter($field, $from, $to);
+    }
+
+    /**
      * Support method for initDateFilters() -- build a filter query based on a range
      * of dates.
      *
@@ -1100,16 +1219,8 @@ class Params implements ServiceLocatorAwareInterface
      */
     protected function buildDateRangeFilter($field, $from, $to)
     {
-        // Make sure that $to is less than $from:
-        if ($to != '*' && $from!= '*' && $to < $from) {
-            $tmp = $to;
-            $to = $from;
-            $from = $tmp;
-        }
-
-        // Assume Solr syntax -- this should be overridden in child classes where
-        // other indexing methodologies are used.
-        return "{$field}:[{$from} TO {$to}]";
+        // Dates work just like numbers:
+        return $this->buildNumericRangeFilter($field, $from, $to);
     }
 
     /**
@@ -1124,26 +1235,28 @@ class Params implements ServiceLocatorAwareInterface
      */
     protected function initDateFilters($request)
     {
-        $daterange = $request->get('daterange');
-        if (!empty($daterange)) {
-            $ranges = is_array($daterange) ? $daterange : array($daterange);
-            foreach ($ranges as $range) {
-                // Validate start and end of range:
-                $yearFrom = $this->formatYearForDateRange(
-                    $request->get($range . 'from')
-                );
-                $yearTo = $this->formatYearForDateRange(
-                    $request->get($range . 'to')
-                );
+        return $this->initGenericRangeFilters(
+            $request, 'daterange', array($this, 'formatYearForDateRange'),
+            array($this, 'buildDateRangeFilter')
+        );
+    }
 
-                // Build filter only if necessary:
-                if (!empty($range) && ($yearFrom != '*' || $yearTo != '*')) {
-                    $dateFilter
-                        = $this->buildDateRangeFilter($range, $yearFrom, $yearTo);
-                    $this->addFilter($dateFilter);
-                }
-            }
-        }
+    /**
+     * Support method for initFilters() -- initialize numeric range filters. Factored
+     * out as a separate method so that it can be more easily overridden by child
+     * classes.
+     *
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
+     *
+     * @return void
+     */
+    protected function initNumericRangeFilters($request)
+    {
+        return $this->initGenericRangeFilters(
+            $request, 'numericrange', array($this, 'formatValueForNumericRange'),
+            array($this, 'buildNumericRangeFilter')
+        );
     }
 
     /**
@@ -1168,8 +1281,8 @@ class Params implements ServiceLocatorAwareInterface
             }
         }
 
-        // Handle date range filters:
-        $this->initDateFilters($request);
+        // Handle range filters:
+        $this->initRangeFilters($request);
     }
 
     /**
