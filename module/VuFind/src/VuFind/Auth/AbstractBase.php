@@ -202,6 +202,28 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
     }
 
     /**
+     * Does this authentication method support password recovery
+     *
+     * @return bool
+     */
+    public function supportsRecovery()
+    {
+        // By default, password recovery is not supported.
+        return false;
+    }
+
+    /**
+     * Does this authentication method support password changing
+     *
+     * @return bool
+     */
+    public function supportsNewPassword()
+    {
+        // By default, password changing is not supported.
+        return false;
+    }
+
+    /**
      * Does the class allow for authentication from more than one auth method?
      * If so return an array that lists the classes for the methods allowed.
      *

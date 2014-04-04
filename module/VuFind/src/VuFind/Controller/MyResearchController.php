@@ -1228,12 +1228,9 @@ class MyResearchController extends AbstractBase
             $pwd    = $this->params()->fromPost('password');
             $cpwd   = $this->params()->fromPost('password2');
             // Get user
-            $table = $this->getTable('User');
-            $user = $table->select(
-                array(
-                    'id' => $this->params()->fromPost('userid')
-                )
-            )->current();
+            $table = $this->getTable('User')->getByVerifyHash(
+                $this->params()->fromPost('hash')
+            );
             // Verify old password if we're logged in
             if ($this->params()->fromPost('verifyold', false)) {
                 try {
@@ -1268,22 +1265,39 @@ class MyResearchController extends AbstractBase
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage('recovery_new_password_success');
             return $this->redirect()->toRoute('myresearch-favorites');
-        } elseif ($this->getAuthManager()->isLoggedIn()) {
-            // If not submitted, are we logged in?
-            // Make sure password changing is enabled in config
-            $config = $this->getConfig();
-            if (!isset($config->Authentication->new_password)
-            || $config->Authentication->new_password == false) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('recovery_new_disabled');
-                return $this->createViewModel();
-            }
-            $view = $this->createViewModel($this->params()->fromPost());
-            // Verify user password
-            $view->username = $this->getUser()->username;
-            $view->verifyold = true;
-            return $view;
         }
         return $this->redirect()->toRoute('home');
+    }
+    
+    /**
+     * Handling submission of a new password for a user.
+     *
+     * @return view
+     */
+    public function changePasswordAction()
+    {
+        if (!$this->getAuthManager()->isLoggedIn()) {
+            return $this->forceLogin();
+        }
+        // If not submitted, are we logged in?
+        // Make sure password changing is enabled in config
+        $config = $this->getConfig();
+        if (!isset($config->Authentication->new_password)
+        || $config->Authentication->new_password == false) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('recovery_new_disabled');
+            return $this->redirect()->toRoute('home');
+        }
+        $view = $this->createViewModel();
+        $view = $this->createViewModel($this->params()->fromPost());
+        // Verify user password
+        $view->verifyold = true;
+        // Display username
+        $view->username = $this->getUser()->username;
+        // Identification
+        $view->hash = $this->getUser()->updateHash();
+        $view->hash = $this->getUser()->verify_hash;
+        $view->setTemplate('myresearch/newpassword');
+        return $view;
     }
 }

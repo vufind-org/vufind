@@ -170,6 +170,35 @@ class Manager implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Does the current configuration support password recovery?
+     *
+     *@param string $authMethod optional; check this auth method rather than 
+     *  the one in config file
+     *
+     * @return bool
+     */
+    public function supportsRecovery($authMethod=null)
+    {
+        if ($authMethod != null) {
+            $this->setActiveAuthClass($authMethod);
+        }
+        return $this->getAuth()->supportsRecovery();
+    }
+
+    /**
+     * Is new passwords currently allowed?
+     *
+     * @return bool
+     */
+    public function supportsNewPassword($authMethod=null)
+    {
+        if ($authMethod != null) {
+            $this->setActiveAuthClass($authMethod);
+        }
+        return $this->getAuth()->supportsNewPassword();
+    }
+    
+    /**
      * Get the URL to establish a session (needed when the internal VuFind login
      * form is inadequate).  Returns false when no session initiator is needed.
      *
@@ -543,16 +572,5 @@ class Manager implements ServiceLocatorAwareInterface
     {
         $this->authToProxy = $method;
         $this->authProxied = false;
-    }
-
-    /**
-     * Is new passwords currently allowed?
-     *
-     * @return bool
-     */
-    public function newPasswordEnabled()
-    {
-        return isset($this->config->Authentication->new_password)
-            && $this->config->Authentication->new_password;
     }
 }

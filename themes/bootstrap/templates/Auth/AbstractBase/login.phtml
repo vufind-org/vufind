@@ -11,7 +11,9 @@
         <? endif; ?>
         <input class="btn btn-primary" type="submit" name="processLogin" value="Login">
         <br/>
-        <a class="btn btn-link" href="<?=$this->url('myresearch-recover') ?>"><?=$this->transEsc('Forgot Password')?></a>
+        <? if ($account->supportsRecovery()): ?>
+          <a class="btn btn-link" href="<?=$this->url('myresearch-recover') ?>"><?=$this->transEsc('Forgot Password')?></a>
+        <? endif; ?>
       </div>
     </div>
   </form>

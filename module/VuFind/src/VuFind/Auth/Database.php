@@ -289,4 +289,27 @@ class Database extends AbstractBase
     {
         return true;
     }
+    
+    /**
+     * Does this authentication method support password recovery
+     *
+     * @return bool
+     */
+    public function supportsRecovery()
+    {
+        // Check the configuration for activation.
+        $config = $this->getConfig();
+        return $config->Authentication->recover_password;
+    }
+    /**
+     * Does this authentication method support password changing
+     *
+     * @return bool
+     */
+    public function supportsNewPassword()
+    {
+        // Check the configuration for activation.
+        $config = $this->getConfig();
+        return $config->Authentication->new_password;
+    }
 }
