@@ -147,7 +147,9 @@ function registerUpdateCart($form) {
 }
 
 // Ajax cart submission for the lightbox
+var lastCartSubmit = false;
 function cartSubmit($form) {
+  lastCartSubmit = $form;
   var submit = $form.find('input[type="submit"][clicked=true]').attr('name');
   if (submit == 'print') {
     //redirect page
@@ -192,6 +194,17 @@ $(document).ready(function() {
   // Cart lightbox
   $('#cartItems').click(function() {
     return Lightbox.get('Cart','Cart');
+  });
+  // Overwrite 
+  Lightbox.addFormCallback('accountForm', function() {
+    updatePageForLogin();
+    if (lastCartSubmit !== false) {
+      cartSubmit(lastCartSubmit);
+      lastCartSubmit = false;
+    } else {
+      Lightbox.getByUrl(Lightbox.openingURL);
+      Lightbox.openingURL = false;
+    }
   });
   Lightbox.addFormHandler('cartForm', function(evt) {
     cartSubmit($(evt.target));
