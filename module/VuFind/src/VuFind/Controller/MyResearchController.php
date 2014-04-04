@@ -138,10 +138,10 @@ class MyResearchController extends AbstractBase
             return $this->forwardTo('MyResearch', 'Login');
         }
 
-        // Logged in?  Forward user to followup action (if set) or default action
-        // (if no followup provided):
+        // Logged in?  Forward user to followup action (if set and not in lightbox)
+        // or default action (if no followup provided):
         $followup = $this->followup()->retrieve();
-        if (isset($followup->url)) {
+        if (isset($followup->url) && !$this->inLightbox()) {
             $url = $followup->url;
             unset($followup->url);
             return $this->redirect()->toUrl($url);
