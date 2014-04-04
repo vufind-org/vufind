@@ -85,8 +85,10 @@ $config = array(
             'missingrecord' => 'VuFind\Controller\MissingrecordController',
             'my-research' => 'VuFind\Controller\MyResearchController',
             'oai' => 'VuFind\Controller\OaiController',
-            'qrcode' => 'VuFind\Controller\QRCodeController',
             'pazpar2' => 'VuFind\Controller\Pazpar2Controller',
+            'primo' => 'VuFind\Controller\PrimoController',
+            'primorecord' => 'VuFind\Controller\PrimorecordController',
+            'qrcode' => 'VuFind\Controller\QRCodeController',
             'records' => 'VuFind\Controller\RecordsController',
             'search' => 'VuFind\Controller\SearchController',
             'summon' => 'VuFind\Controller\SummonController',
@@ -346,6 +348,7 @@ $config = array(
                     'missing' => 'VuFind\RecordDriver\Factory::getMissing',
                     'solrauth' => 'VuFind\RecordDriver\Factory::getSolrAuth',
                     'pazpar2' => 'VuFind\RecordDriver\Factory::getPazpar2',
+                    'primo' => 'VuFind\RecordDriver\Factory::getPrimo',
                     'solrdefault' => 'VuFind\RecordDriver\Factory::getSolrDefault',
                     'solrmarc' => 'VuFind\RecordDriver\Factory::getSolrMarc',
                     'solrreserves' => 'VuFind\RecordDriver\Factory::getSolrReserves',
@@ -364,6 +367,7 @@ $config = array(
                     'holdingsils' => 'VuFind\RecordTab\Factory::getHoldingsILS',
                     'map' => 'VuFind\RecordTab\Factory::getMap',
                     'reviews' => 'VuFind\RecordTab\Factory::getReviews',
+                    'usercomments' => 'VuFind\RecordTab\Factory::getUserComments',
                 ),
                 'invokables' => array(
                     'description' => 'VuFind\RecordTab\Description',
@@ -371,7 +375,6 @@ $config = array(
                     'staffviewarray' => 'VuFind\RecordTab\StaffViewArray',
                     'staffviewmarc' => 'VuFind\RecordTab\StaffViewMARC',
                     'toc' => 'VuFind\RecordTab\TOC',
-                    'usercomments' => 'VuFind\RecordTab\UserComments',
                 ),
             ),
             'related' => array(
@@ -397,6 +400,7 @@ $config = array(
             'search_backend' => array(
                 'factories' => array(
                     'Pazpar2' => 'VuFind\Search\Factory\Pazpar2BackendFactory',
+                    'Primo' => 'VuFind\Search\Factory\PrimoBackendFactory',
                     'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
                     'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
                     'SolrReserves' => 'VuFind\Search\Factory\SolrReservesBackendFactory',
@@ -479,6 +483,15 @@ $config = array(
                  ),
                 'defaultTab' => null,
             ),
+            'VuFind\RecordDriver\Primo' => array(
+                'tabs' => array(
+                    'Description' => 'Description',
+                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
+                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+                    'Details' => 'StaffViewArray',
+                ),
+                'defaultTab' => null,
+            ),
             'VuFind\RecordDriver\SolrAuth' => array(
                 'tabs' => array (
                     'Details' => 'StaffViewMARC',
@@ -532,6 +545,7 @@ $recordRoutes = array(
     'record' => 'Record',
     'collection' => 'Collection',
     'missingrecord' => 'MissingRecord',
+    'primorecord' => 'PrimoRecord',
     'solrauthrecord' => 'Authority',
     'summonrecord' => 'SummonRecord',
     'worldcatrecord' => 'WorldcatRecord'
@@ -570,6 +584,7 @@ $staticRoutes = array(
     'MyResearch/NewPassword', 'MyResearch/Profile',
     'MyResearch/Recover', 'MyResearch/SaveSearch',
     'MyResearch/StorageRetrievalRequests', 'MyResearch/Verify',
+    'Primo/Advanced', 'Primo/Home', 'Primo/Search',
     'QRCode/Show', 'QRCode/Unavailable',
     'OAI/Server', 'Pazpar2/Home', 'Pazpar2/Search', 'Records/Home',
     'Search/Advanced', 'Search/Email', 'Search/History', 'Search/Home',

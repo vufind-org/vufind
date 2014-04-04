@@ -1155,7 +1155,7 @@ class Voyager extends AbstractBase
         } else {
             $sql .= "lower(PATRON.{$login_field}) = :login";
         }
-        
+
         try {
             $bindLogin = strtolower(utf8_decode($login));
             $bindBarcode = strtolower(utf8_decode($barcode));
@@ -1480,7 +1480,8 @@ class Voyager extends AbstractBase
             "MFHD_ITEM.ITEM_ENUM",
             "MFHD_ITEM.YEAR",
             "BIB_TEXT.TITLE_BRIEF",
-            "BIB_TEXT.TITLE"
+            "BIB_TEXT.TITLE",
+            "REQUEST_GROUP.GROUP_NAME as REQUEST_GROUP_NAME"
         );
 
         // From
@@ -1488,7 +1489,9 @@ class Voyager extends AbstractBase
             $this->dbName.".HOLD_RECALL",
             $this->dbName.".HOLD_RECALL_ITEMS",
             $this->dbName.".MFHD_ITEM",
-            $this->dbName.".BIB_TEXT"
+            $this->dbName.".BIB_TEXT",
+            $this->dbName.".VOYAGER_DATABASES",
+            $this->dbName.".REQUEST_GROUP"
         );
 
         // Where
@@ -1498,7 +1501,10 @@ class Voyager extends AbstractBase
             "HOLD_RECALL_ITEMS.ITEM_ID = MFHD_ITEM.ITEM_ID(+)",
             "(HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS IS NULL OR " .
             "HOLD_RECALL_ITEMS.HOLD_RECALL_STATUS < 3)",
-            "BIB_TEXT.BIB_ID = HOLD_RECALL.BIB_ID"
+            "BIB_TEXT.BIB_ID = HOLD_RECALL.BIB_ID",
+            "(HOLD_RECALL.HOLDING_DB_ID IS NULL OR (HOLD_RECALL.HOLDING_DB_ID = " .
+            "VOYAGER_DATABASES.DB_ID AND VOYAGER_DATABASES.DB_CODE = 'LOCAL'))",
+            "HOLD_RECALL.REQUEST_GROUP_ID = REQUEST_GROUP.GROUP_ID(+)"
         );
 
         // Bind
@@ -1546,6 +1552,7 @@ class Voyager extends AbstractBase
             'id' => $sqlRow['BIB_ID'],
             'type' => $sqlRow['HOLD_RECALL_TYPE'],
             'location' => $sqlRow['PICKUP_LOCATION'],
+            'requestGroup' => $sqlRow['REQUEST_GROUP_NAME'],
             'expire' => $expireDate,
             'create' => $createDate,
             'position' => $sqlRow['QUEUE_POSITION'],

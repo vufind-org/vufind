@@ -86,6 +86,23 @@ class Factory
     }
 
     /**
+     * Factory for Primo record driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Primo
+     */
+    public static function getPrimo(ServiceManager $sm)
+    {
+        $primo = $sm->getServiceLocator()->get('VuFind\Config')->get('Primo');
+        $driver = new Primo(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            $primo, $primo
+        );
+        return $driver;
+    }
+
+    /**
      * Factory for SolrDefault record driver.
      *
      * @param ServiceManager $sm Service manager.

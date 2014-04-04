@@ -57,6 +57,7 @@
     <?=$this->recommend($current)?>
   <? endforeach; ?>
 <? else: ?>
-  <?=$this->render('search/list-' . $params->getView() . '.phtml', array('results' => $results, 'params' => $params))?>
+  <? $viewType = in_array('list', array_keys($params->getViewList())) ? 'list' : $params->getView(); ?>
+  <?=$this->render('search/list-' . $viewType . '.phtml', array('results' => $results, 'params' => $params))?>
   <p class="more_link"><a href="<?=$moreUrl?>"><?=$this->transEsc($currentSearch['more_link'])?></a></p>
 <? endif; ?>

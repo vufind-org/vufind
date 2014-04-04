@@ -51,6 +51,12 @@ class FavoriteFacets extends SideFacets
      */
     public function setConfig($settings)
     {
-        $this->mainFacets = array('tags' => 'Your Tags');
+        $config = $this->configLoader->get('config');
+        $tagSetting = isset($config->Social->tags)
+            ? $config->Social->tags : true;
+
+        // Only display tags when enabled:
+        $this->mainFacets = ($tagSetting && $tagSetting !== 'disabled')
+            ? array('tags' => 'Your Tags') : array();
     }
 }
