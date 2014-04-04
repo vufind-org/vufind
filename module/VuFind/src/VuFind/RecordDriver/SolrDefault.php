@@ -1363,6 +1363,29 @@ class SolrDefault extends AbstractBase
         }
         return $retVal;
     }
+    
+     /**
+     * Get the titles of this item within parent collections.  Returns an array
+     * of parent ID => sequence number.
+     *
+     * @return Array
+     */
+    public function getTitlesInHierarchy()
+    {
+        $retVal = array();
+        if (isset($this->fields['title_in_hierarchy'])
+            && is_array($this->fields['title_in_hierarchy'])
+        ) {
+            $titles = $this->fields['title_in_hierarchy'];
+            $parentIDs = $this->fields['hierarchy_parent_id'];
+            if (count($titles) === count($parentIDs)) {
+                foreach ($parentIDs as $key => $val) {
+                    $retVal[$val] = $titles[$key];
+                }
+            }
+        }
+        return $retVal;
+    }
 
     /**
      * Get a list of hierarchy trees containing this record.
