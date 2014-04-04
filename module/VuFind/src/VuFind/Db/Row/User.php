@@ -407,13 +407,18 @@ class User extends ServiceLocatorAwareGateway
         return parent::delete();
     }
     
+    /**
+     * Update the verification hash for this user
+     *
+     * @return bool save success
+     */
     public function updateHash()
     {
         $config = $this->getServiceLocator()->getServiceLocator()
             ->get('VuFind\Config')->get('config');
         $this->verify_hash = md5(
             $this->username . $this->password . $this->pass_hash . time()
-        ) . time();
+        ) . (time() % pow(10,10));
         return $this->save();
     }
 }
