@@ -156,7 +156,7 @@ class Manager implements ServiceLocatorAwareInterface
     /**
      * Does the current configuration support account creation?
      *
-     *@param string $authMethod optional; check this auth method rather than 
+     * @param string $authMethod optional; check this auth method rather than
      *  the one in config file
      *
      * @return bool

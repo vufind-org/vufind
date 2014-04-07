@@ -414,8 +414,6 @@ class User extends ServiceLocatorAwareGateway
      */
     public function updateHash()
     {
-        $config = $this->getServiceLocator()->getServiceLocator()
-            ->get('VuFind\Config')->get('config');
         $this->verify_hash = md5(
             $this->username . $this->password . $this->pass_hash . time()
         ) . (time() % pow(10,10));

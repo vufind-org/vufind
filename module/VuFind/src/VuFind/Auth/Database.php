@@ -112,8 +112,7 @@ class Database extends AbstractBase
         // in the code below.
         $params = array(
             'firstname' => '', 'lastname' => '', 'username' => '',
-            'password' => '', 'password2' => '', 'email' => '',
-            'verify_hash' => ''
+            'password' => '', 'password2' => '', 'email' => ''
         );
         foreach ($params as $param => $default) {
             $params[$param] = $request->getPost()->get($param, $default);
@@ -301,6 +300,7 @@ class Database extends AbstractBase
         $config = $this->getConfig();
         return $config->Authentication->recover_password;
     }
+    
     /**
      * Does this authentication method support password changing
      *

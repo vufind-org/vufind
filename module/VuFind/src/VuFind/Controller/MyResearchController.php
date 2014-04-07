@@ -1116,15 +1116,16 @@ class MyResearchController extends AbstractBase
         // Database
         $table = $this->getTable('User');
         $user = false;
-        // Check if we're doing a full verification
+        // Check if we have a submitted form, and use the information to get
+        // the user's information
         if ($email = $this->params()->fromPost('email')) {
             $user = $table->getByEmail($email);
         } elseif ($username = $this->params()->fromPost('username')) {
             $user = $table->getByUsername($username, false);
         }
         // If we have a submitted form
-        if (null != $email || null != $username) {
-            $this->handleRecoverForm($user, $config);
+        if (false != $user) {
+            $this->sendRecoveryEmail($user, $config);
         }
         return $this->createViewModel();
     }
@@ -1134,8 +1135,10 @@ class MyResearchController extends AbstractBase
      *
      * @param \VuFind\Db\Row\User $user   User object we're recovering
      * @param \VuFind\Config      $config Configuration object
+     *
+     * @return void (sends email or adds error message)
      */
-    protected function handleRecoverForm($user, $config)
+    protected function sendRecoveryEmail($user, $config)
     {
         // If we can't find a user
         if (null == $user) {
@@ -1150,6 +1153,7 @@ class MyResearchController extends AbstractBase
             } else {
                 // Attempt to send the email
                 try {
+                    // Create a fresh hash
                     $user->updateHash();
                     $config = $this->getConfig();
                     $renderer = $this->getViewRenderer();
@@ -1192,10 +1196,15 @@ class MyResearchController extends AbstractBase
         if (null != $hash) {
             $hashtime = intval(substr($hash, -10));
             $config = $this->getConfig();
-            if (time()-$hashtime < $config->Authentication->recover_hash_lifetime) {
+            // Check if hash is expired
+            if (time()-$hashtime > $config->Authentication->recover_hash_lifetime) {
+                $this->flashMessenger()->setNamespace('error')
+                    ->addMessage('recovery_expired_hash');
+                return $this->forwardTo('MyResearch', 'Login');
+            } else {
                 $table = $this->getTable('User');
                 $user = $table->getByVerifyHash($hash);
-                // Valid hash that gave us a user
+                // If the hash is valid, forward user to create new password
                 if (null != $user) {
                     $view = $this->createViewModel();
                     $view->hash = $hash;
@@ -1204,10 +1213,6 @@ class MyResearchController extends AbstractBase
                     $view->setTemplate('myresearch/newpassword');
                     return $view;
                 }
-            } else {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('recovery_expired_hash');
-                return $this->forwardTo('MyResearch', 'Login');
             }
         }
         $this->flashMessenger()->setNamespace('error')
@@ -1234,6 +1239,7 @@ class MyResearchController extends AbstractBase
             // Verify old password if we're logged in
             if ($this->params()->fromPost('verifyold', false)) {
                 try {
+                    // Reassign oldpwd to password in the request so login works
                     $request = $this->getRequest();
                     $post = $request->getPost();
                     $post->password = $post->oldpwd;
@@ -1283,7 +1289,8 @@ class MyResearchController extends AbstractBase
         // Make sure password changing is enabled in config
         $config = $this->getConfig();
         if (!isset($config->Authentication->new_password)
-        || $config->Authentication->new_password == false) {
+            || $config->Authentication->new_password == false
+        ) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('recovery_new_disabled');
             return $this->redirect()->toRoute('home');
@@ -1293,10 +1300,11 @@ class MyResearchController extends AbstractBase
         // Verify user password
         $view->verifyold = true;
         // Display username
-        $view->username = $this->getUser()->username;
+        $user = $this->getUser();
+        $view->username = $user->username;
         // Identification
-        $view->hash = $this->getUser()->updateHash();
-        $view->hash = $this->getUser()->verify_hash;
+        $user->updateHash();
+        $view->hash = $user->verify_hash;
         $view->setTemplate('myresearch/newpassword');
         return $view;
     }
