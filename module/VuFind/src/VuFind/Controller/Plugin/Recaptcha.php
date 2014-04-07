@@ -39,7 +39,20 @@ use Zend\Mvc\Controller\Plugin\AbstractPlugin;
  */
 class Recaptcha extends AbstractPlugin
 {
+    /**
+     * \ZendService\ReCaptcha\ReCaptcha
+     */
     protected $recaptcha;
+    
+    /**
+     * String array of forms where ReCaptcha is active
+     */
+    protected $domains;
+    
+    /**
+     * Captcha activated in config
+     */
+    protected $active = false;
 
     /**
      * Constructor
@@ -54,13 +67,21 @@ class Recaptcha extends AbstractPlugin
     /**
      * Constructor
      *
-     * @param VuFind\Service\Recaptcha $r Service object
+     * @param \ZendService\ReCaptcha\ReCaptcha $r      Customed reCAPTCHA object
+     * @param \VuFind\Config                   $config Config file
      *
-     * @param \VuFind\Crypt\HMAC $hmac HMAC generator
+     * @return void
      */
-    public function __construct($r)
+    public function __construct($r, $config)
     {
         $this->recaptcha = $r;
+        if (isset($config->Captcha)) {
+            $this->active = true;
+            $this->domains = array_map(
+                'trim',
+                explode(',', $config->Captcha->forms)
+            );
+        }
     }
     
     /**
@@ -99,7 +120,7 @@ class Recaptcha extends AbstractPlugin
             $captchaPassed = $result->isValid();
             if (!$captchaPassed) {
                 $this->getController()->flashMessenger()->setNamespace('error')
-                    ->addMessage('CAPTCHA not passed');
+                    ->addMessage('recaptcha_not_passed');
             }
         }
         return $captchaPassed;
@@ -112,9 +133,7 @@ class Recaptcha extends AbstractPlugin
      */
     public function active($domain = false)
     {
-        $config = $this->getController()->getConfig();
-        $kingdom = $config->Captcha->forms->toArray();
-        return isset($config->Captcha)
-        && ($domain == false || in_array($domain, $kingdom));
+        return $this->active
+        && ($domain == false || in_array($domain, $this->domains));
     }
 }

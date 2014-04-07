@@ -132,7 +132,7 @@ class Recaptcha extends AbstractHelper
      *
      * @return boolean
      */
-    public function active($domain)
+    public function active()
     {
         return $this->active;
     }
