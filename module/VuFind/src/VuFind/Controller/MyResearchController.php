@@ -98,7 +98,8 @@ class MyResearchController extends AbstractBase
         // that the user is repeatedly mistyping their password. We should
         // ignore this and instead rely on any previously stored referer.
         $myResearchHomeUrl = $this->url()->fromRoute('myresearch-home');
-        $mrhuNorm = trim(end(explode('://', $myResearchHomeUrl, 2)), '/');
+        $data  = explode('://', $myResearchHomeUrl, 2);
+        $mrhuNorm = trim(end($data), '/');
         if ($mrhuNorm === $refererNorm) {
             return;
         }
