@@ -82,13 +82,15 @@ class MyResearchController extends AbstractBase
         // Normalize the referer URL so that inconsistencies in protocol
         // and trailing slashes do not break comparisons; this same normalization
         // is applied to all URLs examined below.
-        $refererNorm = trim(end(explode('://', $referer, 2)), '/');
+        $data = explode('://', $referer, 2);
+        $refererNorm = trim(end($data), '/');
 
         // If the referer lives outside of VuFind, don't store it! We only
         // want internal post-login redirects.
         $baseUrl = $this->url()->fromRoute('home');
-        $baseUrlNorm = trim(end(explode('://', $baseUrl, 2)), '/');
-        if (0 !== strpos($refererNorm, $baseUrlNorm)) {
+        $data = explode('://', $baseUrl, 2);
+        $baseUrlNorm = trim(end($data), '/');
+        if ('' == $baseUrlNorm || (0 !== strpos($refererNorm, $baseUrlNorm))) {
             return;
         }
 
@@ -96,7 +98,8 @@ class MyResearchController extends AbstractBase
         // that the user is repeatedly mistyping their password. We should
         // ignore this and instead rely on any previously stored referer.
         $myResearchHomeUrl = $this->url()->fromRoute('myresearch-home');
-        $mrhuNorm = trim(end(explode('://', $myResearchHomeUrl, 2)), '/');
+        $data  = explode('://', $myResearchHomeUrl, 2);
+        $mrhuNorm = trim(end($data), '/');
         if ($mrhuNorm === $refererNorm) {
             return;
         }
