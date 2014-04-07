@@ -3,18 +3,18 @@
 <div id="custom_recaptcha_widget" style="display:none">
 <? if ($this->theme == 'custom'): ?>
     <div id="recaptcha_image"></div>
-    <div class="recaptcha_only_if_incorrect_sol" style="color:red">Incorrect please try again</div>
+    <div class="recaptcha_only_if_incorrect_sol" class="text-error"><?=$this->translate('recaptcha_incorrect_try_again') ?></div>
 
-    <span class="recaptcha_only_if_image">Enter the words above:</span>
-    <span class="recaptcha_only_if_audio">Enter the numbers you hear:</span>
+    <span class="recaptcha_only_if_image"><?=$this->translate('recaptcha_instructions_visual') ?></span>
+    <span class="recaptcha_only_if_audio"><?=$this->translate('recaptcha_instructions_audio') ?></span>
 
     <input type="text" id="<?=$this->responseField ?>" name="<?=$this->responseField ?>" />
 
-    <div><a href="javascript:Recaptcha.reload()">Get another CAPTCHA</a></div>
-    <div class="recaptcha_only_if_image"><a href="javascript:Recaptcha.switch_type('audio')">Get an audio CAPTCHA</a></div>
-    <div class="recaptcha_only_if_audio"><a href="javascript:Recaptcha.switch_type('image')">Get an image CAPTCHA</a></div>
+    <div><a href="javascript:Recaptcha.reload()"><?=$this->translate('recaptcha_refresh_btn') ?></a></div>
+    <div class="recaptcha_only_if_image"><a href="javascript:Recaptcha.switch_type('audio')"><?=$this->translate('recaptcha_audio_challenge') ?></a></div>
+    <div class="recaptcha_only_if_audio"><a href="javascript:Recaptcha.switch_type('image')"><?=$this->translate('recaptcha_visual_challenge') ?></a></div>
 
-    <div><a href="javascript:Recaptcha.showhelp()">Help</a></div>
+    <div><a href="javascript:Recaptcha.showhelp()"><?=$this->translate('recaptcha_help_btn') ?></a></div>
 <? endif; ?>
 </div>
 

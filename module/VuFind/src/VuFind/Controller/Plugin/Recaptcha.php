@@ -113,7 +113,8 @@ class Recaptcha extends AbstractPlugin
     public function active($domain = false)
     {
         $config = $this->getController()->getConfig();
-        return isset($config->Captcha) && ($domain == false ||
-        && in_array($domain, $config->Captcha->forms->toArray()));
+        $kingdom = $config->Captcha->forms->toArray();
+        return isset($config->Captcha)
+        && ($domain == false || in_array($domain, $kingdom));
     }
 }
