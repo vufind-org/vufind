@@ -13,6 +13,7 @@ return array(
     'js' => array(
         'jquery.min.js',
         'jquery.form.js',
+        //'jquery-migrate.js',
         'jquery.metadata.js',
         'jquery.validate.min.js',
         'jquery-ui/js/jquery-ui.js',

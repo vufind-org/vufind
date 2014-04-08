@@ -202,7 +202,7 @@ $(document).ready(function()
                 hideFullHierarchy($(this).parent());
             }
         });
-
+/*
         var jsTreeNode = $(".jsTreeID:input[value='"+recordID+"']").parent();
         // Open Nodes to Current Path
         jsTreeNode.parents("li").removeClass("jstree-closed").addClass("jstree-open");
@@ -221,43 +221,37 @@ $(document).ready(function()
         // Scroll to the current record
         $(scroller).delay(250).animate({
             scrollTop: jsTreeNode.offset().top - $(scroller).offset().top + $(scroller).scrollTop()
-        });
+        }); */
     })
     .jstree({
-        "xml_data" : {
-            "ajax" : {
-                "url" : path + '/Hierarchy/GetTree?' + $.param({'hierarchyID': hierarchyID, 'id': recordID, 'context': context, mode: "Tree"}),
-                success: function(data)
-                {
-                    // Necessary as data is a string
-                    var dataAsXML = $.parseXML(data);
-                    if(dataAsXML) {
-                        var error = $(dataAsXML).find("error");
-                        if (error.length > 0) {
-                            showTreeError($(error).text());
-                            return false;
-                        } else {
-                            return data;
-                        }
+        "core" : {
+            "url" : path + '/Hierarchy/GetTree?' + $.param({'hierarchyID': hierarchyID, 'id': recordID, 'context': context, mode: "Tree"}),
+            "success": function(data) {
+                // Necessary as data is a string
+                var dataAsXML = $.parseXML(data);
+                if(dataAsXML) {
+                    var error = $(dataAsXML).find("error");
+                    if (error.length > 0) {
+                        showTreeError($(error).text());
+                        return false;
                     } else {
-                        showTreeError("Unable to Parse XML");
+                        return data;
                     }
-                },
-                failure: function()
-                {
-                    showTreeError("Unable to Load Tree");
+                } else {
+                    console.log("Unable to Parse XML");
+                    showTreeError("Unable to Parse XML");
                 }
             },
-            "xsl" : "nest"
+            "failure": function() {
+                console.log("Unable to Load Tree");
+                showTreeError("Unable to Load Tree");
+            },
         },
-        "plugins" : [ "themes", "xml_data", "ui" ],
-        "themes" : {
-            "url": path + '/themes/blueprint/js/jsTree/themes/vufind/style.css'
-        }
     }).bind("open_node.jstree close_node.jstree", function (e, data)
     {
         $(data.args[0]).find("li").show();
     });
+    console.log(path + '/Hierarchy/GetTree?' + $.param({'hierarchyID': hierarchyID, 'id': recordID, 'context': context, mode: "Tree"}));
 
     $('#treeSearch').show();
     $('#treeSearchText').bind('keypress', function(e)
