@@ -38,8 +38,7 @@ use VuFindSearch\Query\Query;
 use VuFindSearch\ParamBag;
 
 /**
- * Primo Central QueryBuilder.  (Currently extends Solr query builder for access to
- * capitalizeCaseInsensitiveBooleans() support method).
+ * Primo Central QueryBuilder.
  *
  * @category VuFind2
  * @package  Search
