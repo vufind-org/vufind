@@ -47,6 +47,14 @@ class Options extends \VuFind\Search\Base\Options
     {
         $this->searchIni = $this->facetsIni = 'LibGuides';
         parent::__construct($configLoader);
+        $searchSettings = $configLoader->get($this->searchIni);
+        if (isset($searchSettings->General->default_limit)) {
+            $this->defaultLimit = $searchSettings->General->default_limit;
+        }
+        if (isset($searchSettings->General->limit_options)) {
+            $this->limitOptions
+                = explode(",", $searchSettings->General->limit_options);
+        }
     }
 
     /**
