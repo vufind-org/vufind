@@ -141,7 +141,7 @@ $(document).ready(function()
 	
   hierarchyID = $("#hierarchyTree").find(".hiddenHierarchyId")[0].value;
   var recordID = $("#hierarchyTree").find(".hiddenRecordId")[0].value;
-  var scroller = hierarchySettings.lightboxMode ? '#modalDialog' : '#hierarchyTree';
+  var scroller = hierarchySettings.lightboxMode ? '#modal .modal-body' : '#hierarchyTree';
   var context = $("#hierarchyTree").find(".hiddenContext")[0].value;
 
   if (!hierarchySettings.fullHierarchy) {
@@ -213,6 +213,7 @@ $(document).ready(function()
       $("#hierarchyTree").jstree("toggle_dots");
     }
     // Scroll to the current record
+    console.log(scroller);
     $(scroller).delay(250).animate({
       scrollTop: jsTreeNode.offset().top - $(scroller).offset().top + $(scroller).scrollTop()
     });
