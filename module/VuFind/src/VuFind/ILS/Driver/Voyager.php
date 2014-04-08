@@ -94,6 +94,13 @@ class Voyager extends AbstractBase
     protected $logger = false;
 
     /**
+     * Whether to use holdings sort groups to sort holdings records
+     *
+     * @var bool
+     */
+    protected $useHoldingsSortGroups;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
@@ -212,6 +219,10 @@ class Voyager extends AbstractBase
             );
             throw $e;
         }
+
+        $this->useHoldingsSortGroups
+            = isset($this->config['Holdings']['use_sort_groups'])
+            ? $this->config['Holdings']['use_sort_groups'] : true;
     }
 
     /**
@@ -337,6 +348,27 @@ class Voyager extends AbstractBase
     }
 
     /**
+     * Helper function that returns SQL for getting a sort sequence for a location
+     *
+     * @param string $locationColumn Column in the full where clause containing
+     * the column id
+     *
+     * @return string
+     */
+    protected function getItemSortSequenceSQL($locationColumn)
+    {
+        if (!$this->useHoldingsSortGroups) {
+            return '0 as SORT_SEQ';
+        }
+
+        return '(SELECT SORT_GROUP_LOCATION.SEQUENCE_NUMBER ' .
+            "FROM $this->dbName.SORT_GROUP, $this->dbName.SORT_GROUP_LOCATION " .
+            "WHERE SORT_GROUP.SORT_GROUP_DEFAULT = 'Y' " .
+            'AND SORT_GROUP_LOCATION.SORT_GROUP_ID = SORT_GROUP.SORT_GROUP_ID ' .
+            "AND SORT_GROUP_LOCATION.LOCATION_ID = $locationColumn) SORT_SEQ";
+    }
+
+    /**
      * Protected support method for getStatus -- get components required for standard
      * status lookup SQL.
      *
@@ -353,7 +385,9 @@ class Voyager extends AbstractBase
             "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
                 "LOCATION.LOCATION_NAME) as location",
             "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
-            "ITEM.TEMP_LOCATION", "ITEM.ITEM_TYPE_ID"
+            "ITEM.TEMP_LOCATION", "ITEM.ITEM_TYPE_ID",
+            "ITEM.ITEM_SEQUENCE_NUMBER",
+            $this->getItemSortSequenceSQL('ITEM.PERM_LOCATION')
         );
 
         // From
@@ -401,35 +435,43 @@ class Voyager extends AbstractBase
     protected function getStatusNoItemsSQL($id)
     {
         // Expressions
-        $sqlExpressions = array("BIB_MFHD.BIB_ID",
-                                "1 as ITEM_ID", "'N' as ON_RESERVE",
-                                "'No information available' as status",
-                                "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
-                                    "LOCATION.LOCATION_NAME) as location",
-                                "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
-                                "0 AS TEMP_LOCATION"
-                               );
+        $sqlExpressions = array(
+            "BIB_MFHD.BIB_ID",
+            "1 as ITEM_ID", "'N' as ON_RESERVE",
+            "'No information available' as status",
+            "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
+                "LOCATION.LOCATION_NAME) as location",
+            "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
+            "0 AS TEMP_LOCATION",
+            "0 as ITEM_SEQUENCE_NUMBER",
+            $this->getItemSortSequenceSQL('LOCATION.LOCATION_ID'),
+        );
 
         // From
-        $sqlFrom = array($this->dbName.".BIB_MFHD", $this->dbName.".LOCATION",
-                         $this->dbName.".MFHD_MASTER"
-                        );
+        $sqlFrom = array(
+            $this->dbName.".BIB_MFHD", $this->dbName.".LOCATION",
+            $this->dbName.".MFHD_MASTER"
+        );
 
         // Where
-        $sqlWhere = array("BIB_MFHD.BIB_ID = :id",
-                          "LOCATION.LOCATION_ID = MFHD_MASTER.LOCATION_ID",
-                          "MFHD_MASTER.MFHD_ID = BIB_MFHD.MFHD_ID",
-                          "MFHD_MASTER.SUPPRESS_IN_OPAC='N'"
-                         );
+        $sqlWhere = array(
+            "BIB_MFHD.BIB_ID = :id",
+            "LOCATION.LOCATION_ID = MFHD_MASTER.LOCATION_ID",
+            "MFHD_MASTER.MFHD_ID = BIB_MFHD.MFHD_ID",
+            "MFHD_MASTER.SUPPRESS_IN_OPAC='N'",
+            "NOT EXISTS (SELECT MFHD_ID FROM {$this->dbName}.MFHD_ITEM " .
+            "WHERE MFHD_ITEM.MFHD_ID=MFHD_MASTER.MFHD_ID)"
+        );
 
         // Bind
         $sqlBind = array(':id' => $id);
 
-        $sqlArray = array('expressions' => $sqlExpressions,
-                          'from' => $sqlFrom,
-                          'where' => $sqlWhere,
-                          'bind' => $sqlBind,
-                          );
+        $sqlArray = array(
+            'expressions' => $sqlExpressions,
+            'from' => $sqlFrom,
+            'where' => $sqlWhere,
+            'bind' => $sqlBind,
+        );
 
         return $sqlArray;
     }
@@ -456,7 +498,11 @@ class Voyager extends AbstractBase
                         ? $this->getLocationName($row['TEMP_LOCATION'])
                         : utf8_encode($row['LOCATION']),
                     'reserve' => $row['ON_RESERVE'],
-                    'callnumber' => $row['CALLNUMBER']
+                    'callnumber' => $row['CALLNUMBER'],
+                    'item_sort_seq' => $row['ITEM_SEQUENCE_NUMBER'],
+                    'sort_seq' => isset($row['SORT_SEQ'])
+                        ? $row['SORT_SEQ']
+                        : PHP_INT_MAX
                 );
             } else {
                 if (!in_array(
@@ -496,6 +542,17 @@ class Voyager extends AbstractBase
             $status[] = $current;
         }
 
+        if ($this->useHoldingsSortGroups) {
+            uksort(
+                $status,
+                function($a, $b) {
+                    return $status[$a]['sort_seq'] == $status[$b]['sort_seq']
+                        ? $status[$a]['item_sort_seq'] - $status[$b]['item_sort_seq']
+                        : $status[$a]['sort_seq'] - $status[$b]['sort_seq'];
+                }
+            );
+        }
+
         return $status;
     }
 
@@ -524,8 +581,8 @@ class Voyager extends AbstractBase
             $this->buildSqlFromArray($sqlArrayNoItems)
         );
 
-        // Loop through the possible queries and try each in turn -- the first one
-        // that yields results will cause us to break out of the loop.
+        // Loop through the possible queries and merge results.
+        $data = array();
         foreach ($possibleQueries as $sql) {
             // Execute SQL
             try {
@@ -539,13 +596,7 @@ class Voyager extends AbstractBase
                 $sqlRows[] = $row;
             }
 
-            $data = $this->getStatusData($sqlRows);
-
-            // If we found data, we can leave the foreach loop -- we don't need to
-            // try any more queries.
-            if (count($data) > 0) {
-                break;
-            }
+            $data = array_merge($data, $this->getStatusData($sqlRows));
         }
         return $this->processStatusData($data);
     }
@@ -595,7 +646,9 @@ class Voyager extends AbstractBase
             "to_char(CIRC_TRANSACTIONS.CURRENT_DUE_DATE, 'MM-DD-YY') as duedate",
             "(SELECT TO_CHAR(MAX(CIRC_TRANS_ARCHIVE.DISCHARGE_DATE), " .
             "'MM-DD-YY HH24:MI') FROM $this->dbName.CIRC_TRANS_ARCHIVE " .
-            "WHERE CIRC_TRANS_ARCHIVE.ITEM_ID = ITEM.ITEM_ID) RETURNDATE"
+            "WHERE CIRC_TRANS_ARCHIVE.ITEM_ID = ITEM.ITEM_ID) RETURNDATE",
+            "ITEM.ITEM_SEQUENCE_NUMBER",
+            $this->getItemSortSequenceSQL('ITEM.PERM_LOCATION')
         );
 
         // From
@@ -653,32 +706,37 @@ class Voyager extends AbstractBase
     protected function getHoldingNoItemsSQL($id)
     {
         // Expressions
-        $sqlExpressions = array("null as ITEM_BARCODE", "null as ITEM_ID",
-                                "MFHD_DATA.RECORD_SEGMENT", "null as ITEM_ENUM",
-                                "'N' as ON_RESERVE", "1 as ITEM_SEQUENCE_NUMBER",
-                                "'No information available' as status",
-                                "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
-                                    "LOCATION.LOCATION_NAME) as location",
-                                "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
-                                "BIB_MFHD.BIB_ID", "MFHD_MASTER.MFHD_ID",
-                                "null as duedate", "0 AS TEMP_LOCATION",
-                                "0 as PERM_LOCATION"
-                               );
+        $sqlExpressions = array(
+            "null as ITEM_BARCODE", "null as ITEM_ID",
+            "MFHD_DATA.RECORD_SEGMENT", "null as ITEM_ENUM",
+            "'N' as ON_RESERVE", "1 as ITEM_SEQUENCE_NUMBER",
+            "'No information available' as status",
+            "NVL(LOCATION.LOCATION_DISPLAY_NAME, " .
+                "LOCATION.LOCATION_NAME) as location",
+            "MFHD_MASTER.DISPLAY_CALL_NO as callnumber",
+            "BIB_MFHD.BIB_ID", "MFHD_MASTER.MFHD_ID",
+            "null as duedate", "0 AS TEMP_LOCATION",
+            "0 as PERM_LOCATION",
+            "0 as ITEM_SEQUENCE_NUMBER",
+            $this->getItemSortSequenceSQL('LOCATION.LOCATION_ID')
+        );
 
         // From
-        $sqlFrom = array($this->dbName.".BIB_MFHD", $this->dbName.".LOCATION",
-                         $this->dbName.".MFHD_MASTER", $this->dbName.".MFHD_DATA"
-                        );
+        $sqlFrom = array(
+            $this->dbName.".BIB_MFHD", $this->dbName.".LOCATION",
+            $this->dbName.".MFHD_MASTER", $this->dbName.".MFHD_DATA"
+        );
 
         // Where
-        $sqlWhere = array("BIB_MFHD.BIB_ID = :id",
-                          "LOCATION.LOCATION_ID = MFHD_MASTER.LOCATION_ID",
-                          "MFHD_MASTER.MFHD_ID = BIB_MFHD.MFHD_ID",
-                          "MFHD_DATA.MFHD_ID = BIB_MFHD.MFHD_ID",
-                          "MFHD_MASTER.SUPPRESS_IN_OPAC='N'",
-                          "NOT EXISTS (SELECT MFHD_ID FROM {$this->dbName}.MFHD_ITEM"
-                          . " WHERE MFHD_ITEM.MFHD_ID=MFHD_MASTER.MFHD_ID)"
-                         );
+        $sqlWhere = array(
+            "BIB_MFHD.BIB_ID = :id",
+            "LOCATION.LOCATION_ID = MFHD_MASTER.LOCATION_ID",
+            "MFHD_MASTER.MFHD_ID = BIB_MFHD.MFHD_ID",
+            "MFHD_DATA.MFHD_ID = BIB_MFHD.MFHD_ID",
+            "MFHD_MASTER.SUPPRESS_IN_OPAC='N'",
+            "NOT EXISTS (SELECT MFHD_ID FROM {$this->dbName}.MFHD_ITEM"
+            . " WHERE MFHD_ITEM.MFHD_ID=MFHD_MASTER.MFHD_ID)"
+        );
 
         // Order
         $sqlOrder = array("MFHD_DATA.MFHD_ID", "MFHD_DATA.SEQNUM");
@@ -686,12 +744,13 @@ class Voyager extends AbstractBase
         // Bind
         $sqlBind = array(':id' => $id);
 
-        $sqlArray = array('expressions' => $sqlExpressions,
-                          'from' => $sqlFrom,
-                          'where' => $sqlWhere,
-                          'order' => $sqlOrder,
-                          'bind' => $sqlBind,
-                          );
+        $sqlArray = array(
+            'expressions' => $sqlExpressions,
+            'from' => $sqlFrom,
+            'where' => $sqlWhere,
+            'order' => $sqlOrder,
+            'bind' => $sqlBind,
+        );
 
         return $sqlArray;
     }
@@ -952,7 +1011,11 @@ class Voyager extends AbstractBase
             'callnumber' => $sqlRow['CALLNUMBER'],
             'barcode' => $sqlRow['ITEM_BARCODE'],
             'use_unknown_message' =>
-                in_array('No information available', $sqlRow['STATUS_ARRAY'])
+                in_array('No information available', $sqlRow['STATUS_ARRAY']),
+            'item_sort_seq' => $sqlRow['ITEM_SEQUENCE_NUMBER'],
+            'sort_seq' => isset($sqlRow['SORT_SEQ'])
+                ? $sqlRow['SORT_SEQ']
+                : PHP_INT_MAX
         );
     }
 
@@ -1047,6 +1110,18 @@ class Voyager extends AbstractBase
                 $i++;
             }
         }
+
+        if ($this->useHoldingsSortGroups) {
+            usort(
+                $holding,
+                function($a, $b) {
+                    return $a['sort_seq'] == $b['sort_seq']
+                        ? $a['item_sort_seq'] - $b['item_sort_seq']
+                        : $a['sort_seq'] - $b['sort_seq'];
+                }
+            );
+        }
+
         return $holding;
     }
 
