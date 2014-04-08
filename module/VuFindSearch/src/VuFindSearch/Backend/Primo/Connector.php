@@ -377,7 +377,7 @@ class Connector
      *
      * @param array $data The raw xml from Primo
      *
-     * @return array      The processed response from Summon
+     * @return array      The processed response from Primo
      */
     protected function process($data)
     {
