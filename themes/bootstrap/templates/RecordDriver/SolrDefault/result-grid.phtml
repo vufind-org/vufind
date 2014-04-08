@@ -10,7 +10,9 @@ $urls = $this->record($this->driver)->getLinkDetails();
 
 <div class="result <?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
   <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueID())?>" class="hiddenId" />
-  <?=$this->record($this->driver)->getCheckbox() ?></br>
+  <? if (!isset($this->hideCartControls) && $this->cart()->isActive()): ?>
+    <?=$this->record($this->driver)->getCheckbox() ?></br>
+  <? endif; ?>
   <div class="text-center" style="margin:auto;max-width:70px">
     <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
       <? if ($summThumb = $this->record($this->driver)->getThumbnail('large')): ?>

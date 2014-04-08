@@ -136,6 +136,7 @@ select, .btn:not(.btn-link){vertical-align:top}
 .bulkActionButtons {border-bottom:1px solid #DDD;margin-top:6px;padding-bottom:6px}
 .result {padding:6px 0}
 .result:nth-child(odd) {background:#EEE}
+.grid .result {background:none}
 .result>.checkbox {font-weight:bold;margin:2px 0 2px 1%;max-width:6%}
 .result>.checkbox input[type="checkbox"] {margin:3px auto}
 .result .middle {margin-left:1%;width:52%}
