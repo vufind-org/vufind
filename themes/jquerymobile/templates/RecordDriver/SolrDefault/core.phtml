@@ -154,7 +154,7 @@
     </dd>
   <? endif; ?>
 
-  <? $tagList = $this->driver->getTags(); ?>
+  <? $tagList = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags() : array(); ?>
   <? if (count($tagList) > 0): ?>
     <dt><?=$this->transEsc('Tags')?>: </dt>
     <dd>

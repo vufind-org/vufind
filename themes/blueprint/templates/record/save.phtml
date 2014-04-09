@@ -39,9 +39,11 @@
   <a href="<?=$this->url('editList', array('id' => 'NEW'))?>?recordId=<?=urlencode($this->driver->getUniqueId())?>&amp;recordSource=<?=urlencode($this->driver->getResourceSource())?>" class="listEdit controller<?=$this->record($this->driver)->getController()?>" title="<?=$this->transEsc('Create a List') ?>"><? if ($showLists) echo $this->transEsc('or create a new list'); else echo $this->transEsc('Create a List'); ?></a>
 
   <? if ($showLists): ?>
-    <label class="displayBlock" for="add_mytags"><?=$this->transEsc('Add Tags') ?></label>
-    <input class="mainFocus" id="add_mytags" type="text" name="mytags" value="" size="50"/>
-    <p><?=$this->transEsc("add_tag_note") ?></p>
+    <? if ($this->usertags()->getMode() !== 'disabled'): ?>
+      <label class="displayBlock" for="add_mytags"><?=$this->transEsc('Add Tags') ?></label>
+      <input class="mainFocus" id="add_mytags" type="text" name="mytags" value="" size="50"/>
+      <p><?=$this->transEsc("add_tag_note") ?></p>
+    <? endif; ?>
     <label class="displayBlock" for="add_notes"><?=$this->transEsc('Add a Note') ?></label>
     <textarea id="add_notes" name="notes" rows="3" cols="50"></textarea>
     <br/>

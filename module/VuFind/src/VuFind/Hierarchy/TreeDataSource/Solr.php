@@ -152,7 +152,8 @@ class Solr extends AbstractBase
             'hierarchy_parent_id:"' . addcslashes($parentID, '"') . '"'
         );
         $results = $this->searchService->search(
-            'Solr', $query, 0, 10000, new ParamBag(array('fq' => $this->filters))
+            'Solr', $query, 0, 10000,
+            new ParamBag(array('fq' => $this->filters, 'hl' => 'false'))
         );
         if ($results->getTotal() < 1) {
             return '';
@@ -164,9 +165,12 @@ class Solr extends AbstractBase
             ++$count;
             if ($sorting) {
                 $positions = $current->getHierarchyPositionsInParents();
+                $titles = $current->getTitlesInHierarchy();
                 if (isset($positions[$parentID])) {
                     $sequence = $positions[$parentID];
                 }
+                $title = isset($titles[$parentID])
+                    ? $titles[$parentID] : $current->getTitle();
             }
 
             $this->debug("$parentID: " . $current->getUniqueID());
@@ -174,7 +178,7 @@ class Solr extends AbstractBase
             $isCollection = $current->isCollection() ? "true" : "false";
             $xmlNode .= '<item id="' . htmlspecialchars($current->getUniqueID()) .
                 '" isCollection="' . $isCollection . '"><content><name>' .
-                htmlspecialchars($current->getTitle()) . '</name></content>';
+                htmlspecialchars($title) . '</name></content>';
             $xmlNode .= $this->getChildren($current->getUniqueID(), $count);
             $xmlNode .= '</item>';
             array_push($xml, array((isset($sequence) ? $sequence : 0), $xmlNode));
