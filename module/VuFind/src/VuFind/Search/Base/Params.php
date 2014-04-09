@@ -1168,7 +1168,7 @@ class Params implements ServiceLocatorAwareInterface
      * @return void
      */
     protected function initGenericRangeFilters($request,
-       $requestParam = 'genericrange', $valueFilter = null, $filterGenerator = null
+        $requestParam = 'genericrange', $valueFilter = null, $filterGenerator = null
     ) {
         $rangeFacets = $request->get($requestParam);
         if (!empty($rangeFacets)) {
