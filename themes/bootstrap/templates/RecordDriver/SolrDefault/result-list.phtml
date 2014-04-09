@@ -1,4 +1,4 @@
-<div class="row-fluid result<?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
+<div class="row-fluid <?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
   <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueID())?>" class="hiddenId" />
   <input type="hidden" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>" class="hiddenSource" />
   <div class="span2 left">
