@@ -134,7 +134,7 @@ select, .btn:not(.btn-link){vertical-align:top}
 
 /* --- SEARCH --- */
 .bulkActionButtons {border-bottom:1px solid #DDD;margin-top:6px;padding-bottom:6px}
-.bulkActionButtons .btn-link {padding:2px}
+[name="bulkActionForm"] .btn-link { margin:1px 0;padding:2px }
 .result {border:0;padding:3px 0}
 .result:nth-child(odd) {background:#EEE}
 .grid .result {background:none}
