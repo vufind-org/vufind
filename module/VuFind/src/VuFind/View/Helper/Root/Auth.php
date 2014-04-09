@@ -233,8 +233,8 @@ class Auth extends \Zend\View\Helper\AbstractHelper
      *
      * @return bool
      */
-    public function newPasswordEnabled()
+    public function changePasswordEnabled()
     {
-        return $this->getManager()->newPasswordEnabled();
+        return $this->getManager()->supportsPasswordChange();
     }
 }

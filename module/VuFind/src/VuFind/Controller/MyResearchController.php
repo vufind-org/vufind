@@ -1288,9 +1288,7 @@ class MyResearchController extends AbstractBase
         // If not submitted, are we logged in?
         // Make sure password changing is enabled in config
         $config = $this->getConfig();
-        if (!isset($config->Authentication->new_password)
-            || $config->Authentication->new_password == false
-        ) {
+        if (!$this->getAuthManager()->supportsPasswordChange()) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('recovery_new_disabled');
             return $this->redirect()->toRoute('home');

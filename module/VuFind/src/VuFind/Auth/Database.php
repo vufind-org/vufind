@@ -296,9 +296,7 @@ class Database extends AbstractBase
      */
     public function supportsRecovery()
     {
-        // Check the configuration for activation.
-        $config = $this->getConfig();
-        return $config->Authentication->recover_password;
+        return true;
     }
     
     /**
@@ -306,10 +304,8 @@ class Database extends AbstractBase
      *
      * @return bool
      */
-    public function supportsNewPassword()
+    public function supportsPasswordChange()
     {
-        // Check the configuration for activation.
-        $config = $this->getConfig();
-        return $config->Authentication->new_password;
+        return true;
     }
 }

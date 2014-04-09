@@ -217,7 +217,7 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
      *
      * @return bool
      */
-    public function supportsNewPassword()
+    public function supportsPasswordChange()
     {
         // By default, password changing is not supported.
         return false;
