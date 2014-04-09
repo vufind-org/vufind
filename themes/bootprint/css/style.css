@@ -85,19 +85,20 @@ select, .btn:not(.btn-link){vertical-align:top}
 /* --- SIDEBAR --- */
 .row-fluid .span3.sidebar {margin-left:1%;width:24%}
 .sidebar h4 {border-bottom:2px solid #DDD;font-size:14px;font-weight:normal;margin-bottom:4px;margin-right:0}
-.sidebar .nav-list {font-size:12px;margin-bottom:6px;padding:0 0 0 8px}
 .sidebar .nav-list .divider {display:none}
 .sidebar .nav-list li {border-bottom:1px solid #DDD;margin:0;padding:0}
-.sidebar .nav-list li.applied {padding-left:3px}
-.sidebar .nav-list li.applied [class*="icon"] {color:transparent;margin-top:1px}
-.sidebar .nav-list li.active a {background:#FFA500;text-shadow:none}
-.sidebar .nav-list li.active a:hover {background:#FFA500}
-.sidebar .nav-list li.active a i.icon-remove {background:url('../images/icons/delete.png')}
+.sidebar .nav-list li .icon-ok {background-repeat:no-repeat;padding-top:3px}
 .sidebar .nav-list li a {margin:0;padding:3px}
 .sidebar .nav-list li a:hover {background:none}
 .sidebar .nav-list li span.main {width:auto}
-.sidebar .nav-list li .icon-ok {background-repeat:no-repeat;padding-top:3px}
+.sidebar .nav-list li span.pull-right {display:block;text-align:center;width:16px}
+.sidebar .nav-list li.active a i.icon-remove {background:url('../images/icons/delete.png')}
+.sidebar .nav-list li.active a {background:#FFA500;text-shadow:none}
+.sidebar .nav-list li.active a:hover {background:#FFA500}
+.sidebar .nav-list li.applied [class*="icon"] {color:transparent;margin-top:1px}
+.sidebar .nav-list li.applied {padding-left:3px}
 .sidebar .nav-list li.nav-header {background:#EEE;border-color:#DDD;min-height:1px;padding:2px 4px}
+.sidebar .nav-list {font-size:12px;margin-bottom:6px;padding:0 0 0 8px}
 .sidebar .small {margin-top:10px}
 #publishDateFilter {margin:6px 0}
 #publishDateFilter .btn {margin-top:.5em;padding:1px 12px}
