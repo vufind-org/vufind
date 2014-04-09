@@ -1068,8 +1068,8 @@ class Params implements ServiceLocatorAwareInterface
     /**
      * Initialize all range filters.
      *
-     * @param \Zend\StdLib\Parameters $request         Parameter object representing
-     * user request.
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
      *
      * @return void
      */
@@ -1167,33 +1167,33 @@ class Params implements ServiceLocatorAwareInterface
      *
      * @return void
      */
-     protected function initGenericRangeFilters($request,
-        $requestParam = 'genericrange', $valueFilter = null, $filterGenerator = null
-     ) {
-         $rangeFacets = $request->get($requestParam);
-         if (!empty($rangeFacets)) {
-             $ranges = is_array($rangeFacets) ? $rangeFacets : array($rangeFacets);
-             foreach ($ranges as $range) {
-                 // Load start and end of range:
-                 $from = $request->get($range . 'from');
-                 $to = $request->get($range . 'to');
+    protected function initGenericRangeFilters($request,
+       $requestParam = 'genericrange', $valueFilter = null, $filterGenerator = null
+    ) {
+        $rangeFacets = $request->get($requestParam);
+        if (!empty($rangeFacets)) {
+            $ranges = is_array($rangeFacets) ? $rangeFacets : array($rangeFacets);
+            foreach ($ranges as $range) {
+                // Load start and end of range:
+                $from = $request->get($range . 'from');
+                $to = $request->get($range . 'to');
 
-                 // Apply filtering/validation if necessary:
-                 if (is_callable($valueFilter)) {
-                     $from = call_user_func($valueFilter, $from);
-                     $to = call_user_func($valueFilter, $to);
-                 }
+                // Apply filtering/validation if necessary:
+                if (is_callable($valueFilter)) {
+                    $from = call_user_func($valueFilter, $from);
+                    $to = call_user_func($valueFilter, $to);
+                }
 
-                 // Build filter only if necessary:
-                 if (!empty($range) && ($from != '*' || $to != '*')) {
-                     $rangeFacet = is_callable($filterGenerator)
+                // Build filter only if necessary:
+                if (!empty($range) && ($from != '*' || $to != '*')) {
+                    $rangeFacet = is_callable($filterGenerator)
                         ? call_user_func($filterGenerator, $range, $from, $to)
                         : $this->buildGenericRangeFilter($range, $from, $to, false);
-                     $this->addFilter($rangeFacet);
-                 }
-             }
-         }
-     }
+                    $this->addFilter($rangeFacet);
+                }
+            }
+        }
+    }
 
     /**
      * Support method for initNumericRangeFilters() -- build a filter query based on

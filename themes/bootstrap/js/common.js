@@ -111,6 +111,51 @@ function registerLightboxEvents() {
   });
   $('#modal .collapse').on('hidden', function(e){ e.stopPropagation(); });
 }
+function updatePageForLogin()
+{
+  // Hide "log in" options and show "log out" options:
+  $('#loginOptions').hide();
+  $('.logoutOptions').show();
+  
+  var recordId = $('#record_id').val();
+
+  // Update user save statuses if the current context calls for it:
+  if (typeof(checkSaveStatuses) == 'function') {
+    checkSaveStatuses();
+  }
+
+  // refresh the comment list so the "Delete" links will show
+  $('.commentList').each(function(){
+    var recordSource = extractSource($('#record'));
+    refreshCommentList(recordId, recordSource);
+  });
+  
+  var summon = false;
+  $('.hiddenSource').each(function(i, e) {
+    if(e.value == 'Summon') {
+      summon = true;
+      // If summon, queue reload for when we close
+      Lightbox.addCloseAction(function(){document.location.reload(true);});
+    }
+  });
+  
+  // Refresh tab content
+  var recordTabs = $('.recordTabs');
+  if(!summon && recordTabs.length > 0) { // If summon, skip: about to reload anyway
+    var tab = recordTabs.find('.active a').attr('id');
+    $.ajax({ // Shouldn't be cancelled, not assigned to XHR
+      type:'POST',
+      url:path+'/AJAX/JSON?method=get&submodule=Record&subaction=AjaxTab&id='+recordId,
+      data:{tab:tab},
+      success:function(html) {
+        recordTabs.next('.tab-container').html(html);
+      },
+      error:function(d,e) {
+        console.log(d,e); // Error reporting
+      }
+    });
+  }
+}
 /**
  * This is a full handler for the login form
  */
@@ -170,52 +215,6 @@ function ajaxLogin(form) {
       }
     }
   });
-}
-
-function updatePageForLogin()
-{
-  // Hide "log in" options and show "log out" options:
-  $('#loginOptions').hide();
-  $('.logoutOptions').show();
-  
-  var recordId = $('#record_id').val();
-
-  // Update user save statuses if the current context calls for it:
-  if (typeof(checkSaveStatuses) == 'function') {
-    checkSaveStatuses();
-  }
-
-  // refresh the comment list so the "Delete" links will show
-  $('.commentList').each(function(){
-    var recordSource = extractSource($('#record'));
-    refreshCommentList(recordId, recordSource);
-  });
-  
-  var summon = false;
-  $('.hiddenSource').each(function(i, e) {
-    if(e.value == 'Summon') {
-      summon = true;
-      // If summon, queue reload for when we close
-      Lightbox.addCloseAction(function(){document.location.reload(true);});
-    }
-  });
-  
-  // Refresh tab content
-  var recordTabs = $('.recordTabs');
-  if(!summon && recordTabs.length > 0) { // If summon, skip: about to reload anyway
-    var tab = recordTabs.find('.active a').attr('id');
-    $.ajax({ // Shouldn't be cancelled, not assigned to XHR
-      type:'POST',
-      url:path+'/AJAX/JSON?method=get&submodule=Record&subaction=AjaxTab&id='+recordId,
-      data:{tab:tab},
-      success:function(html) {
-        recordTabs.next('.tab-container').html(html);
-      },
-      error:function(d,e) {
-        console.log(d,e); // Error reporting
-      }
-    });
-  }
 }
 
 /* --- BOOTSTRAP LIBRARY TWEAKS --- */
