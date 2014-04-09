@@ -16,12 +16,12 @@ body h3 {font-size:20px}
 .accordion-heading .accordion-toggle {font-size:14px;padding:2px 15px}
 .centered-pills .nav-pills > li > a {padding-bottom:4px}
 .container a:not(.btn,.text-error) {color:#06C}
-.form-horizontal .controls {margin-left:165px}
 .dropdown-menu>.active>a,
 .dropdown-menu>.active>a:hover,
-.dropdown-menu>.active>a:focus {
-  background:#619144;
-}
+.dropdown-menu>.active>a:focus { background:#619144 }
+.form-horizontal .controls {margin-left:165px}
+.form-horizontal .control-group {margin-bottom:5px}
+.form-horizontal input+.help-block {margin-top:5px}
 .hero-unit {margin:-5px}
 hr {margin:4px 0}
 input[type="text"] {border-color:#AAA;font-size:12px}
@@ -39,7 +39,7 @@ mark {background:0;color:inherit;font-weight:bold}
 .tab-container {margin:0}
 
 input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input,
-.row-fluid input[class*="span"], .btn:not(.btn-large) {border:1px solid #AAA;border-radius:2px;font-size:12px;height:26px;margin:0;min-height:1px;padding:2px 6px}
+.row-fluid input[class*="span"], .btn:not(.btn-large) {border:1px solid #AAA;border-radius:2px;font-size:12px;margin:2px 0 0 0;min-height:1px;padding:2px 6px}
 .btn {padding:2px 8px}
 .btn.btn-small {height:19px;padding:1px 4px}
 .btn.btn-link {border:0}
