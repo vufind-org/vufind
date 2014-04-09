@@ -43,7 +43,7 @@ input[type="text"], input[type="password"], input[type="datetime"], input[type="
 .btn {padding:2px 8px}
 .btn.btn-small {height:19px;padding:1px 4px}
 .btn.btn-link {border:0}
-select {padding:2px}
+select {height:26px;padding:2px}
 select, .btn:not(.btn-link){vertical-align:top}
 .btn-link {color:#06C;text-shadow:none}
 .btn.btn-primary {background:#C6D880;border:1px solid #619144;color:#111;text-shadow:none}
