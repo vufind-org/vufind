@@ -1111,7 +1111,7 @@ class MyResearchController extends AbstractBase
         ) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('recovery_disabled');
-            return $this->redirect()->toRoute('myresearch-login');
+            return $this->redirect()->toRoute('myresearch-home');
         }
         // Database
         $table = $this->getTable('User');
