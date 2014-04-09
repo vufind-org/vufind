@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Primo Central QueryBuilder.
+ * LibGuides QueryBuilder.
  *
  * PHP version 5
  *
@@ -22,14 +22,13 @@
  *
  * @category VuFind2
  * @package  Search
- * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
- * @author   David Maus <maus@hab.de>
+ * @author   Chelsea Lobdell <clobdel1@swarthmore.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
  */
 
-namespace VuFindSearch\Backend\Primo;
+namespace VuFindSearch\Backend\LibGuides;
 
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\QueryGroup;
@@ -38,12 +37,11 @@ use VuFindSearch\Query\Query;
 use VuFindSearch\ParamBag;
 
 /**
- * Primo Central QueryBuilder.
+ * LibGuides QueryBuilder.
  *
  * @category VuFind2
  * @package  Search
- * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
- * @author   David Maus <maus@hab.de>
+ * @author   Chelsea Lobdell <clobdel1@swarthmore.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org
@@ -53,7 +51,7 @@ class QueryBuilder
     /// Public API
 
     /**
-     * Return Primo search parameters based on a user query and params.
+     * Return LibGuides search parameters based on a user query and params.
      *
      * @param AbstractQuery $query User query
      *
@@ -63,7 +61,15 @@ class QueryBuilder
     {
         // Send back results
         $params = new ParamBag();
-        $params->set('query', $this->abstractQueryToArray($query));
+
+        // Convert the query to an array, then flatten that to a string
+        // (right now, we're ignoring a lot of data -- we may want to
+        // revisit this and see if more detail can be utilized).
+        $array = $this->abstractQueryToArray($query);
+        if (isset($array[0]['lookfor'])) {
+            $params->set('search', $array[0]['lookfor']);
+        }
+
         return $params;
     }
 
@@ -94,15 +100,7 @@ class QueryBuilder
      */
     protected function queryGroupToArray(QueryGroup $query)
     {
-        $nextLevel = $query->getQueries();
-        $parts = array();
-        foreach ($nextLevel[0]->getQueries() as $q) {
-            $index = $q->getHandler();
-            $op = $q->getOperator();
-            $lookfor = $q->getString();
-            $parts[] = compact('index', 'op', 'lookfor');
-        }
-        return $parts;
+        throw new \Exception('Advanced search not supported.');
     }
 
     /**

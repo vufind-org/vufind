@@ -269,7 +269,8 @@ class DeduplicationListener
                 $recordSources,
                 $sourcePriority
             );
-            $record->setRawData($localRecordData);
+            $foundLocalRecord->setRawData($localRecordData);
+            $result->replace($record, $foundLocalRecord);
         }
     }
 

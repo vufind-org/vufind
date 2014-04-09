@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Primo Central record collection.
+ * LibGuides record collection.
  *
  * PHP version 5
  *
@@ -27,12 +27,12 @@
  * @link     http://vufind.org
  */
 
-namespace VuFindSearch\Backend\Primo\Response;
+namespace VuFindSearch\Backend\LibGuides\Response;
 
 use VuFindSearch\Response\AbstractRecordCollection;
 
 /**
- * Primo Central record collection.
+ * WorldCat record collection.
  *
  * @category VuFind2
  * @package  Search
@@ -52,7 +52,7 @@ class RecordCollection extends AbstractRecordCollection
     /**
      * Constructor.
      *
-     * @param array $response Primo response
+     * @param array $response LibGuides response
      *
      * @return void
      */
@@ -79,8 +79,8 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getFacets()
     {
-        return isset($this->response['facets'])
-            ? $this->response['facets'] : array();
+        // Not supported:
+        return array();
     }
 
     /**
@@ -90,10 +90,7 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getOffset()
     {
-        $page = isset($this->response['query']['pageNumber'])
-            ? $this->response['query']['pageNumber'] - 1 : 0;
-        $size = isset($this->response['query']['pageSize'])
-            ? $this->response['query']['pageSize'] : 0;
-        return $page * $size;
+        return isset($this->response['offset'])
+            ? $this->response['offset'] : 0;
     }
 }
