@@ -32,7 +32,7 @@ namespace VuFindSearch\Backend\Primo\Response;
 use VuFindSearch\Response\AbstractRecordCollection;
 
 /**
- * WorldCat record collection.
+ * Primo Central record collection.
  *
  * @category VuFind2
  * @package  Search

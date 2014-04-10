@@ -50,7 +50,7 @@ fieldset, #IE8#HACK { padding-top:0.4em; }
 }
 
 #logo {
-    background:url("../images/vufind_logo.jpg") no-repeat scroll left center transparent;
+    background:url("../images/vufind_logo.png") no-repeat scroll left center transparent;
     float:left;
     height:65px;
     width:300px;

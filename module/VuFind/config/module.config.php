@@ -82,6 +82,7 @@ $config = array(
             'hierarchy' => 'VuFind\Controller\HierarchyController',
             'index' => 'VuFind\Controller\IndexController',
             'install' => 'VuFind\Controller\InstallController',
+            'libguides' => 'VuFind\Controller\LibGuidesController',
             'missingrecord' => 'VuFind\Controller\MissingrecordController',
             'my-research' => 'VuFind\Controller\MyResearchController',
             'oai' => 'VuFind\Controller\OaiController',
@@ -345,10 +346,11 @@ $config = array(
             'recorddriver' => array(
                 'abstract_factories' => array('VuFind\RecordDriver\PluginFactory'),
                 'factories' => array(
+                    'libguides' => 'VuFind\RecordDriver\Factory::getLibGuides',
                     'missing' => 'VuFind\RecordDriver\Factory::getMissing',
-                    'solrauth' => 'VuFind\RecordDriver\Factory::getSolrAuth',
                     'pazpar2' => 'VuFind\RecordDriver\Factory::getPazpar2',
                     'primo' => 'VuFind\RecordDriver\Factory::getPrimo',
+                    'solrauth' => 'VuFind\RecordDriver\Factory::getSolrAuth',
                     'solrdefault' => 'VuFind\RecordDriver\Factory::getSolrDefault',
                     'solrmarc' => 'VuFind\RecordDriver\Factory::getSolrMarc',
                     'solrreserves' => 'VuFind\RecordDriver\Factory::getSolrReserves',
@@ -399,6 +401,7 @@ $config = array(
             ),
             'search_backend' => array(
                 'factories' => array(
+                    'LibGuides' => 'VuFind\Search\Factory\LibGuidesBackendFactory',
                     'Pazpar2' => 'VuFind\Search\Factory\Pazpar2BackendFactory',
                     'Primo' => 'VuFind\Search\Factory\PrimoBackendFactory',
                     'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
@@ -576,6 +579,7 @@ $staticRoutes = array(
     'Install/FixDatabase', 'Install/FixDependencies', 'Install/FixILS',
     'Install/FixSecurity', 'Install/FixSolr', 'Install/Home',
     'Install/PerformSecurityFix', 'Install/ShowSQL',
+    'LibGuides/Home', 'LibGuides/Results',
     'MyResearch/Account', 'MyResearch/CheckedOut', 'MyResearch/Delete',
     'MyResearch/DeleteList', 'MyResearch/Edit', 'MyResearch/Email',
     'MyResearch/Favorites', 'MyResearch/Fines',

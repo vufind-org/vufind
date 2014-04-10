@@ -11,6 +11,7 @@
   }
 ?>
 <div class="row-fluid result<? if($this->driver->supportsAjaxStatus()): ?> ajaxItem<? endif ?>">
+  <?=$this->record($this->driver)->getCheckbox() ?>
   <input type="hidden" value="<?=$id ?>" class="hiddenId"/>
   <div class="span2 text-center">
     <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
@@ -186,5 +187,5 @@
     </div>
 
   </div>
+  <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtml($openUrl).'"></span>':''?>
 </div>
-<?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtml($openUrl).'"></span>':''?>
