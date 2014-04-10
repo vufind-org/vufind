@@ -325,6 +325,7 @@ class InstallController extends AbstractBase
         $view->dbuser = $this->params()->fromPost('dbuser', 'vufind');
         $view->dbhost = $this->params()->fromPost('dbhost', 'localhost');
         $view->dbrootuser = $this->params()->fromPost('dbrootuser', 'root');
+	$view->driver = $this->params()->fromPost('driver', 'mysql');
 
         $skip = $this->params()->fromPost('printsql', 'nope') == 'Skip';
 
@@ -345,17 +346,17 @@ class InstallController extends AbstractBase
                     ->addMessage('Password fields must match.');
             } else {
                 // Connect to database:
-                $connection = 'mysql://' . $view->dbrootuser . ':'
+                $connection = $view->driver . '://' . $view->dbrootuser . ':'
                     . $this->params()->fromPost('dbrootpass') . '@'
                     . $view->dbhost;
                 try {
                     $db = $this->getServiceLocator()->get('VuFind\DbAdapterFactory')
-                        ->getAdapterFromConnectionString($connection . '/mysql');
+                        ->getAdapterFromConnectionString($connection . '/' . $view->driver);
                 } catch (\Exception $e) {
                     $this->flashMessenger()->setNamespace('error')
                         ->addMessage(
                             'Problem initializing database adapter; '
-                            . 'check for missing Mysqli library.  Details: '
+                            . 'check for missing ' . $view->driver . ' library .  Details: '
                             . $e->getMessage()
                         );
                     return $view;
@@ -369,7 +370,7 @@ class InstallController extends AbstractBase
                         . "IDENTIFIED BY " . $db->getPlatform()->quoteValue($newpass)
                         . " WITH GRANT OPTION";
                     $sql = file_get_contents(
-                        APPLICATION_PATH . '/module/VuFind/sql/mysql.sql'
+                        APPLICATION_PATH . '/module/VuFind/sql/' . $view->driver . '.sql'
                     );
                     if ($skip == 'Skip') {
                         $omnisql = $query . ";\n". $grant
@@ -395,7 +396,7 @@ class InstallController extends AbstractBase
                         }
                         // If we made it this far, we can update the config file and
                         // forward back to the home action!
-                        $string = "mysql://{$view->dbuser}:{$newpass}@"
+                        $string = "{$view->driver}://{$view->dbuser}:{$newpass}@"
                             . $view->dbhost . '/' . $view->dbname;
                         $config = ConfigLocator::getLocalConfigPath(
                             'config.ini', null, true

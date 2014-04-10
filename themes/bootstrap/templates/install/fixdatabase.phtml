@@ -13,6 +13,13 @@
 <p>To create a new database for VuFind, please fill in this form:</p>
 
 <form class="form-horizontal" action="" method="post">
+  <div class="control-group">
+    <label class="control-label" for="dbname">Select database type:</label>
+    <div class="controls">
+      <select name="driver"><option value="mysql"><?="mysql"?></option><option value="pgsql"><?="pgsql"?></option></select>
+    </div>
+  </div>
+
   <div class="control-group">    
     <label class="control-label" for="dbname">New database name:</label>
     <div class="controls">
@@ -38,19 +45,19 @@
     </div>
   </div>
   <div class="control-group">    
-    <label class="control-label" for="dbhost">MySQL Host:</label>
+    <label class="control-label" for="dbhost">SQL Host:</label>
     <div class="controls">
       <input type="text" name="dbhost" value="<?=$this->escapeHtml($this->dbhost)?>"/>
     </div>
   </div>
   <div class="control-group">    
-    <label class="control-label" for="dbrootuser">MySQL Root User:</label>
+    <label class="control-label" for="dbrootuser">SQL Root User:</label>
     <div class="controls">
       <input type="text" name="dbrootuser" value="<?=$this->escapeHtml($this->dbrootuser)?>"/>
     </div>
   </div>
   <div class="control-group">    
-    <label class="control-label" for="dbrootpass">MySQL Root Password:</label>
+    <label class="control-label" for="dbrootpass">SQL Root Password:</label>
     <div class="controls">
       <input type="password" name="dbrootpass" value=""/>
     </div>
