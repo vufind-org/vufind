@@ -133,6 +133,13 @@ select, .btn:not(.btn-link){vertical-align:top}
 .searchHomeContent #searchForm_lookfor {height:30px}
 .searchHomeContent #searchForm_type {height:30px}
 .searchHomeContent .unstyled li {margin-bottom:0}
+@media (max-width: 979px) {
+  #searchForm_lookfor { display:block;margin-bottom:3px;width:100%; }
+  #searchForm_type { width:50%; }
+}
+@media (max-width: 600px) {
+  #searchForm_type { display:block;margin-bottom:3px;width:100%; }
+}
 
 /* --- SEARCH --- */
 .bulkActionButtons {border-bottom:1px solid #DDD;margin-top:6px;padding-bottom:6px}
