@@ -1,6 +1,7 @@
 @CHARSET "UTF-8";
 
 /** General ***/
+
 body {
     margin: 1.5em 0;
     /*background:url("../images/bg_body.jpg") no-repeat scroll center top;*/
@@ -480,11 +481,6 @@ li.result blockquote {
 .groupCallnumber {
     margin-left: 18px;
 }
-.result .qrcodeHolder, .recordsubcontent  .qrcodeHolder {
-    border: 1px solid #cfcfcf;
-    position: absolute;
-    display: none;
-}
 
 /** Side facets */
 
@@ -524,28 +520,10 @@ dl.narrowList a {
     margin: 0;
 }
 .navmenu dt {
-    cursor:pointer;
     margin-top:.75em;
     font-weight:bold;
     padding:0.2em 0.4em;
     background-color: #eee;
-}
-.navmenu dt:before {
-    content:'\25BC';
-    display:block;
-    float:right;
-    width:10px;
-    margin:1px 3px 0 0;
-    text-align:center;
-    font-size:8pt;
-}
-.navmenu dd {display:none}
-.navmenu.open dt:before {content:'\25B2'}
-.navmenu.open dd {display:block}
-
-dd input[type="checkbox"] {
-    margin:0 4px 0 0;
-    vertical-align:text-bottom;
 }
 
 /* Icon Classes */
@@ -880,12 +858,6 @@ h3.list {
     padding:0 .5em .5em 20px;
     margin-right:1em;
 }
-.qrcodeLink {
-    background-image:url(../images/fugue/qrcode.png);
-    background-repeat:no-repeat;
-    padding:0 .5em .5em 20px;
-    display: block;
-}
 .software {
     background-image:url(../images/silk/disk_multiple.png);
     background-repeat:no-repeat;
@@ -987,18 +959,11 @@ div.recordsubcontent {
     padding:1em 1.5em 1em 1.5em;
 }
 .recordcover {
-    display: block;
     padding:3px;
     background-color:#eee;
     border:1px solid #cfcfcf;
-    margin: 1em auto 0;
+    margin-top: 1em;
     max-width: 120px;
-}
-
-div.record img.qrcode {
-    display: block;
-    margin: 1em auto 0;
-    border:1px solid #cfcfcf;
 }
 .holdsMessage {
     margin-top: 1em;
@@ -1223,15 +1188,6 @@ table.datagrid tr.oddrow {
     background-color: #DDDDDD;
 }
 
-.qrcodeHoldings {
-    float: right;
-    text-align: left;
-}
-
-.qrcodeHoldings a {
-    float: none;
-}
-
 /* Comments */
 
 ul.commentList {
@@ -1299,10 +1255,6 @@ p.citationText {
 .advSearchContent {
     /* Needed for IE7 compatibility: */
     width: 96%;
-}
-.advSearchContent div[class*="span-"] select {
-    display:block;
-    width:100%;
 }
 .groupSearchHolder {
     clear: both;
@@ -2251,27 +2203,38 @@ div.handle {
     border-top: 1px solid #eee;
 }
 
-.authmethod0 {
-  width:47%;
-  float:left;
-  padding:1%;
-  border-right:1px solid rgb(204, 204, 204);
+.node {
+  border: solid 1px white;
+  font: 10px sans-serif;
+  line-height: 12px;
+  overflow: hidden;
+  position: absolute;
+  margin:-1px;
 }
 
-.authmethod1 {
-  width:47%;
-  float:left;
-  padding:1%;
-  border-left:1px solid rgb(204, 204, 204);
-  margin:-1px; /* keep the borders on top of one another; longest one will win */
+.node div {
+        margin-left: 3px;
+        margin-top: 0px;
 }
 
-#authcontainer {
-  float:left;
-  width:100%;
+.toplevel {
+        border: 2px solid black;
 }
 
-/* Admin styling */
-.tagForm select {
-  width:200px;
+.label {
+  display: block;
+  line-height: 1;
+  padding: 2px;
+  background: rgba(0, 0, 0, 0.2);
+  color: #000000;
+  border-radius: 2px;
+  z-index: 200;
+  position: absolute;
+  bottom: 0;
+  right: 0;
 }
+
+#viz-instructions {
+        padding-top:600px;
+}
+
