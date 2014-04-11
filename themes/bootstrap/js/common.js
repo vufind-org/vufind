@@ -116,7 +116,7 @@ function updatePageForLogin()
   // Hide "log in" options and show "log out" options:
   $('#loginOptions').hide();
   $('.logoutOptions').show();
-  
+
   var recordId = $('#record_id').val();
 
   // Update user save statuses if the current context calls for it:
@@ -129,7 +129,7 @@ function updatePageForLogin()
     var recordSource = extractSource($('#record'));
     refreshCommentList(recordId, recordSource);
   });
-  
+
   var summon = false;
   $('.hiddenSource').each(function(i, e) {
     if(e.value == 'Summon') {
@@ -138,7 +138,7 @@ function updatePageForLogin()
       Lightbox.addCloseAction(function(){document.location.reload(true);});
     }
   });
-  
+
   // Refresh tab content
   var recordTabs = $('.recordTabs');
   if(!summon && recordTabs.length > 0) { // If summon, skip: about to reload anyway
@@ -244,6 +244,9 @@ $.fn.typeahead.Constructor.prototype.select = function () {
 };
 
 $(document).ready(function() {
+  // support "jump menu" dropdown boxes
+  $('select.jumpMenu').change(function(){ $(this).parent('form').submit(); });
+
   // Highlight previous links, grey out following
   $('.backlink')
     .mouseover(function() {
@@ -312,7 +315,7 @@ $(document).ready(function() {
   $('.checkbox-select-all').change(function() {
     $(this).closest('form').find('.checkbox-select-item').attr('checked', this.checked);
   });
-  
+
   // handle QR code links
   $('a.qrcodeLink').click(function() {
     if ($(this).hasClass("active")) {
@@ -334,13 +337,13 @@ $(document).ready(function() {
     // Make an ajax call to ensure that ajaxStop is triggered
     $.getJSON(path + '/AJAX/JSON', {method: 'keepAlive'});
   }
-    
+
   // Collapsing facets
   $('.sidebar .collapsed .nav-header').click(function(){$(this).parent().toggleClass('open');});
-  
+
   // Advanced facets
   setupOrFacets();
-  
+
   /******************************
    * LIGHTBOX DEFAULT BEHAVIOUR *
    ******************************/
@@ -355,7 +358,7 @@ $(document).ready(function() {
     Lightbox.getByUrl(Lightbox.openingURL);
     Lightbox.openingURL = false;
   });
-  
+
   // Help links
   $('.help-link').click(function() {
     var split = this.href.split('=');
