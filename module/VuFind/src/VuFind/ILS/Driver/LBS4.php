@@ -362,9 +362,9 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
             $note = "Interlibrary Loan";
         } else if ($loanind == 3) {
             $note = $this->translate("Presence");
-        } else if ($loan_indi==8) {
+        } else if ($loanind==8) {
             $note = $this->translate("Missed");
-        } else if ($loan_indi==9) {
+        } else if ($loanind==9) {
             $note = $this->translate("In Progress");
         }
         return $note;
