@@ -330,7 +330,11 @@ $(document).ready(function(){
 
     // assign action to the "select all checkboxes" class
     $('input[type="checkbox"].selectAllCheckboxes').change(function(){
-        $(this.form).find('input[type="checkbox"]').attr('checked', $(this).is(':checked'));
+        var selectAll = this;
+        $(this.form).find('input[type="checkbox"]').each(function(index, obj) {
+            obj.checked = selectAll.checked;
+            console.log(obj, obj.checked, selectAll.checked);
+        });
     });
 
     // attach mouseover event to grid view records
