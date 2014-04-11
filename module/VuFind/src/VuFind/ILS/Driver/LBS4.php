@@ -274,7 +274,6 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                 $status = $this->getStatusText($loan_status);
 
                 if (empty($storage)) {
-                    $is_holdable = $this->isHoldable($loan_indi);
                     $check = $this->checkHold($loan_indi, $material);
                 } else if (empty($volbar)) {
                     $volbar = $locid;
@@ -286,6 +285,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                 } else if ($loan_status==5) {
                     $available = false;
                     $duedate = $this->getLoanexpire($volnum);
+                    $is_holdable = true;
                 } else if ($loan_indi==3) {
                     $available = true;
                 } else if ($loan_indi>6) {
@@ -319,7 +319,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * test wether hold needs to be checked
+     * Test whether holds needs to be checked
      *
      * @param string $loanind  The loan indicator 
      * @param string $material The material code 
@@ -334,20 +334,6 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
         } else if ($loanindi==3) {
             return true;
         } else if ($loanindi==6) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * test if item is holdable 
-     *
-     * @param string $loanind    The loan indicator 
-     * @return boolean indicate, wheter the ittem is holdable
-     */
-    protected function isHoldable($loanindi) {
-        if ($loanindi==0) {
             return true;
         } else {
             return false;
@@ -413,7 +399,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      * @param string $vol The volume number
      *
      * @return string On success, a string to be displayed as
-     *  loan expiration date.
+     *                loan expiration date.
      */
     protected function getLoanexpire($vol)
     {
@@ -671,8 +657,8 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
         //$lang = $patron['lang'];
         $sql="select o.ppn"
             .", o.shorttitle"
-            .", rtrim(convert(char(20),l.date_time_of_loans_request,104))"
             .", rtrim(convert(char(20),r.reservation_date_time,104))"
+            .", rtrim(convert(char(20),l.expiry_date_reminder,104))"
             .", r.counter_nr_destination"
             .", l.no_reminders"
             .", l.period_of_loan"
@@ -687,12 +673,14 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
         try {
             $result = array();
             $sqlStmt = sybase_query($sql);
+            error_log($sql);
+            $expire = $row[3]; // empty ?
             while ($row = sybase_fetch_row($sqlStmt)) {
                 $title = $this->picaRecode($row[1]);
                 $result[] = array(
                     'id'       => $this->prfz($row[0]),
                     'create'   => $row[2],
-                    'expire'   => $row[3],
+                    'expire'   => $expire,
                     //'location' => $row[4],
                     'title'    => $title
                 );
