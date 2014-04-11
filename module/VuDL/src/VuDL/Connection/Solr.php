@@ -198,7 +198,8 @@ class Solr extends AbstractBase
             )
         )) {
             $record = json_decode($response);
-            return $record->response->docs[0]->$modfield;
+            $date = $record->response->docs[0]->$modfield;
+            return $date[0];
         }
         return null;
     }
