@@ -1243,27 +1243,44 @@ class MyResearchController extends AbstractBase
         // Have we submitted the form
         if ($this->params()->fromPost('submit', false)) {
             // Pull in from POST
-            $pwd    = $this->params()->fromPost('password');
-            $cpwd   = $this->params()->fromPost('password2');
-            // Get user
-            $table = $this->getTable('User')->getByVerifyHash(
-                $this->params()->fromPost('hash')
-            );
+            $request = $this->getRequest();
+            $post = $request->getPost();
+            // Verify hash
+            $userFromHash = $this->getTable('User')->getByVerifyHash($post->hash);
+            // Missing or invalid hash
+            if (!isset($post->hash) || false == $userFromHash) {
+                $this->flashMessenger()->setNamespace('error')
+                    ->addMessage('recovery_email_not_found');
+                // Force login or restore hash
+                return $this->forwardTo('MyResearch', 'ChangePassword');
+            } else if ($userFromHash->username !== $post->username) {
+                $this->flashMessenger()->setNamespace('error')
+                    ->addMessage('authentication_error_invalid');
+                $userFromHash->updateHash();
+                $post->username = $userFromHash->username;
+                $post->hash = $userFromHash->verify_hash;
+                return $this->createViewModel($post);
+            }
             // Verify old password if we're logged in
-            if ($this->params()->fromPost('verifyold', false)) {
-                try {
-                    // Reassign oldpwd to password in the request so login works
-                    $request = $this->getRequest();
-                    $post = $request->getPost();
-                    $post->password = $post->oldpwd;
-                    $request->setPost($post);
-                    $authClass = $this->getAuthManager()->login($request);
-                } catch(AuthException $e) {
+            if ($this->getUser()) {
+                if (isset($post->oldpwd)) {
+                    try {
+                        // Reassign oldpwd to password in the request so login works
+                        $post->password = $post->oldpwd;
+                        $request->setPost($post);
+                        $authClass = $this->getAuthManager()->login($request);
+                    } catch(AuthException $e) {
+                        $this->flashMessenger()->setNamespace('error')
+                            ->addMessage($e->getMessage());
+                        return $this->createViewModel(
+                            $this->params()->fromPost()
+                        );
+                    }
+                } else {
                     $this->flashMessenger()->setNamespace('error')
-                        ->addMessage($e->getMessage());
-                    return $this->createViewModel(
-                        $this->params()->fromPost()
-                    );
+                        ->addMessage('authentication_error_invalid');
+                    $post['verifyold'] = true;
+                    return $this->createViewModel($post);
                 }
             }
             // Update password
@@ -1283,7 +1300,7 @@ class MyResearchController extends AbstractBase
             // Go to favorites
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage('recovery_new_password_success');
-            return $this->redirect()->toRoute('myresearch-favorites');
+            return $this->redirect()->toRoute('myresearch-home');
         }
         return $this->redirect()->toRoute('home');
     }

@@ -202,17 +202,6 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface
     }
 
     /**
-     * Does this authentication method support password recovery
-     *
-     * @return bool
-     */
-    public function supportsRecovery()
-    {
-        // By default, password recovery is not supported.
-        return false;
-    }
-
-    /**
      * Does this authentication method support password changing
      *
      * @return bool

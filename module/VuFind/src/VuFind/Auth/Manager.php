@@ -182,8 +182,10 @@ class Manager implements ServiceLocatorAwareInterface
         if ($authMethod != null) {
             $this->setActiveAuthClass($authMethod);
         }
-        if ($this->getAuth()->supportsRecovery()) {
-            return $this->config->Authentication->recover_password;
+        if ($this->getAuth()->supportsPasswordChange()) {
+            return isset($this->config->Authentication)
+                && isset($this->config->Authentication->recover_password)
+                && $this->config->Authentication->recover_password;
         }
         return false;
     }
@@ -199,7 +201,9 @@ class Manager implements ServiceLocatorAwareInterface
             $this->setActiveAuthClass($authMethod);
         }
         if ($this->getAuth()->supportsPasswordChange()) {
-            return $this->config->Authentication->change_password;
+            return isset($this->config->Authentication)
+                && isset($this->config->Authentication->change_password)
+                && $this->config->Authentication->change_password;
         }
         return false;
     }

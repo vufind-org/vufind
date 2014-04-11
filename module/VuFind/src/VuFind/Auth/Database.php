@@ -290,16 +290,6 @@ class Database extends AbstractBase
     }
     
     /**
-     * Does this authentication method support password recovery
-     *
-     * @return bool
-     */
-    public function supportsRecovery()
-    {
-        return true;
-    }
-    
-    /**
      * Does this authentication method support password changing
      *
      * @return bool
