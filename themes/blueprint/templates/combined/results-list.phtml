@@ -4,7 +4,12 @@
   $params = $results->getParams();
   $lookfor = $params->getDisplayQuery();
   $recordTotal = $results->getResultTotal();
+
+  // More link should use default limit, not custom limit:
+  $limit = $params->getLimit();
+  $params->setLimit($params->getOptions()->getDefaultLimit());
   $moreUrl = $this->url($params->getOptions()->getSearchAction()) . $results->getUrlQuery()->setPage(1);
+  $params->setLimit($limit);
 ?>
 <? if ($currentSearch['more_link']): ?>
   <div style="float: right;">
