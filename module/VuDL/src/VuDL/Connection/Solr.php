@@ -218,7 +218,7 @@ class Solr extends AbstractBase
             new ParamBag(
                 array(
                     'q'  => 'relsext.isMemberOf:"'.$id.'"',
-                    'sort'  => $seqField.' asc',
+                    'sort'  => $seqField.' asc,fgs.label asc',
                     'fl' => 'id',
                     'rows' => 99999,
                 )
