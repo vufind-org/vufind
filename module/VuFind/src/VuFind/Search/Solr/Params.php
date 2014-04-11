@@ -68,6 +68,13 @@ class Params extends \VuFind\Search\Base\Params
     protected $facetSort = null;
 
     /**
+     * Fields for visual faceting
+     *
+     * @var string
+     */
+    protected $pivotFacet = null;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
@@ -488,9 +495,37 @@ class Params extends \VuFind\Search\Base\Params
         // Highlighting -- on by default, but we should disable if necessary:
         if (!$this->getOptions()->highlightEnabled()) {
             $backendParams->add('hl', 'false');
-        }
+	}
+
+	// Pivot facets for visual results
+
+	if ($this->getVisualFacets()) {
+		$backendParams->add('facet.pivot', $this->getVisualFacets());
+	}
 
         return $backendParams;
+    }
+
+    /**
+     * Set pivot facet fields to use for visual results
+     *
+     * @param string $facets A comma-separated list of fields
+     *
+     * @return void
+     */
+
+    public function setVisualFacets($facets) {
+	    $this->pivotFacets = $facets;
+    }
+
+    /**
+     * Get pivot facet information for visual facets
+     *
+     * @return string
+     */
+
+    public function getVisualFacets() {
+        return $this->pivotFacets;
     }
 
     /**
@@ -516,4 +551,5 @@ class Params extends \VuFind\Search\Base\Params
 
         return $filter;
     }
+
 }

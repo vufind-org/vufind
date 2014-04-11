@@ -633,7 +633,12 @@ $config = array(
                         return new \VuFind\Recommend\TopFacets(
                             $sm->getServiceLocator()->get('VuFind\Config')
                         );
-                    },
+		    },
+                    'visualfacets' => function ($sm) {
+			return new \VuFind\Recommend\VisualFacets(
+			    $sm->getServiceLocator()->get('VuFind\Config')
+		        );
+		    },
                     'webresults' => function ($sm) {
                         return new \VuFind\Recommend\WebResults(
                             $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager')

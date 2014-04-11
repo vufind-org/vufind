@@ -26,7 +26,6 @@
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
 namespace VuFind\Recommend;
-use VuFind\Solr\Utils as SolrUtils;
 
 /**
  * VisualFacets Recommendations Module
@@ -40,7 +39,7 @@ use VuFind\Solr\Utils as SolrUtils;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
-class VisualFacets implements \VuFind\Recommend\RecommendInterface
+class VisualFacets extends AbstractFacets
 {
     /**
      * Facet configuration
@@ -57,44 +56,28 @@ class VisualFacets implements \VuFind\Recommend\RecommendInterface
     protected $baseSettings;
 
     /**
-     * Search results
-     *
-     * @var \VuFind\Search\Base\Results
-     */
-    protected $results;
-
-    /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
-    {
-        $this->configLoader = $configLoader;
-    }
-
-    /**
      * setConfig
      *
      * Store the configuration of the recommendation module.
      *
-     * Currently not implemented, since there is no configuration to store; 
-     * the visualization is hard-coded to use callnumber-first and topic_facet. 
-     * If and when the choice of which facets to visualize becomes a configurable 
-     * option, this will need to be added.
+     * VisualFacets:[ini section]:[ini name]
+     *      Display facets listed in the specified section of the specified ini file;
+     *      if [ini name] is left out, it defaults to "facets."
+     *
+     * @param string $settings Settings from searches.ini.
      *
      * @return void
      */
     public function setConfig($settings)
     {
+        $settings = explode(':', $settings);
+        $mainSection = empty($settings[0]) ? 'Visual_Settings':$settings[0];
+        $iniName = isset($settings[1]) ? $settings[1] : 'facets';
 
+        // Load the desired facet information:
+        $config = $this->configLoader->get($iniName);
+        $this->facets = isset($config->$mainSection)
+            ? $config->$mainSection->visual_facets : null;
     }
 
     /**
@@ -108,33 +91,8 @@ class VisualFacets implements \VuFind\Recommend\RecommendInterface
      */
     public function init($params, $request)
     {
-
-    }
-
-    /**
-     * process
-     *
-     * Called after the Search Results object has performed its main search.  This
-     * may be used to extract necessary information from the Search Results object
-     * or to perform completely unrelated processing.
-     *
-     * @param \VuFind\Search\Base\Results $results Search results object
-     *
-     * @return void
-     */
-    public function process($results)
-    {
-        $this->results = $results;
-    }
-
-    /**
-     * Get results stored in the object.
-     *
-     * @return \VuFind\Search\Base\Results
-     */
-    public function getResults()
-    {
-        return $this->results;
+        // Turn on pivot facets:
+        $params->setVisualFacets($this->facets);
     }
 
     /**
