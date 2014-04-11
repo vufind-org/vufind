@@ -1,4 +1,4 @@
-<div class="row-fluid result<?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
+<div class="row-fluid <?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
   <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueID())?>" class="hiddenId" />
   <input type="hidden" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>" class="hiddenSource" />
   <div class="span2 left">
@@ -165,14 +165,16 @@
         </div><br/>
       </span>
     <? endif; ?>
-    
-    <? /* Add to favorites */ ?>
-    <i class="icon-heart"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br/>
 
-    <? /* Saved lists */ ?>
-    <div class="savedLists alert alert-info hide">
-      <strong><?=$this->transEsc("Saved in")?>:</strong>
-    </div>
+    <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+      <? /* Add to favorites */ ?>
+      <i class="icon-heart"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br/>
+
+      <? /* Saved lists */ ?>
+      <div class="savedLists alert alert-info hide">
+        <strong><?=$this->transEsc("Saved in")?>:</strong>
+      </div>
+    <? endif; ?>
 
     <? /* Hierarchy tree link */ ?>
     <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>

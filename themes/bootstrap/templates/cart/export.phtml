@@ -20,7 +20,10 @@
       <label class="control-label"><?=$this->transEsc('Title')?></label>
       <div class="controls">
       <? if(count($this->records) > 1): ?>
-        <div class="item-list">
+        <button type="button" class="btn hidden" data-toggle="collapse" data-target="#itemhide">
+          <?=count($this->records).' '.$this->transEsc('items') ?>
+        </button>
+        <div id="itemhide" class="collapse in">
           <ul>
             <? foreach ($this->records as $current): ?>
               <li><?=$this->escapeHtml($current->getBreadcrumb())?></li>
@@ -50,13 +53,9 @@
   </form>
 <? endif; ?>
 <?
-  $items = $this->transEsc('items');
   $script = <<<JS
-    var list = $('.item-list');
-    var items = list.find('li').length;
-    var bubble = list.html();
-    list.html('<span class="btn">'+items+' {$items}</span>');
-    list.find('.btn').popover({html:true,content:bubble});
+    $('button.btn.hidden').removeClass('hidden');
+    $('.collapse.in').removeClass('in');
 JS;
 ?>
 <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

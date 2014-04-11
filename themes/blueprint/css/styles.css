@@ -50,7 +50,7 @@ fieldset, #IE8#HACK { padding-top:0.4em; }
 }
 
 #logo {
-    background:url("../images/vufind_logo.jpg") no-repeat scroll left center transparent;
+    background:url("../images/vufind_logo.png") no-repeat scroll left center transparent;
     float:left;
     height:65px;
     width:300px;
@@ -91,7 +91,7 @@ div.dialogLoading {
     height:100%;
 }
 
-.ajax_availability, .ajax_hold_availability, .ajax_storage_retrieval_request_availability, .ajax_ill_request_availability, .ajax_ill_request_loading {
+.ajax_availability, .ajax_hold_availability, .ajax_storage_retrieval_request_availability, .ajax_ill_request_availability, .ajax_ill_request_loading, .ajax_hold_request_loading {
     background: url(../images/ajax_loading.gif) no-repeat left top;
     padding:0 .5em .5em 20px;
 }

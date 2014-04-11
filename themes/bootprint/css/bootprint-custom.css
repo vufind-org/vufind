@@ -16,12 +16,12 @@ body h3 {font-size:20px}
 .accordion-heading .accordion-toggle {font-size:14px;padding:2px 15px}
 .centered-pills .nav-pills > li > a {padding-bottom:4px}
 .container a:not(.btn,.text-error) {color:#06C}
-.form-horizontal .controls {margin-left:165px}
 .dropdown-menu>.active>a,
 .dropdown-menu>.active>a:hover,
-.dropdown-menu>.active>a:focus {
-  background:#619144;
-}
+.dropdown-menu>.active>a:focus { background:#619144 }
+.form-horizontal .controls {margin-left:165px}
+.form-horizontal .control-group {margin-bottom:5px}
+.form-horizontal input+.help-block {margin-top:5px}
 .hero-unit {margin:-5px}
 hr {margin:4px 0}
 input[type="text"] {border-color:#AAA;font-size:12px}
@@ -39,11 +39,11 @@ mark {background:0;color:inherit;font-weight:bold}
 .tab-container {margin:0}
 
 input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input,
-.row-fluid input[class*="span"], .btn:not(.btn-large) {border:1px solid #AAA;border-radius:2px;font-size:12px;height:26px;margin:0;min-height:1px;padding:2px 6px}
+.row-fluid input[class*="span"], .btn:not(.btn-large) {border:1px solid #AAA;border-radius:2px;font-size:12px;margin:2px 0 0 0;min-height:1px;padding:2px 6px}
 .btn {padding:2px 8px}
-.btn.btn-small {height:19px;padding:1px 4px}
+.btn.btn-small {height:19px;line-height:12px;padding:3px 4px}
 .btn.btn-link {border:0}
-select {padding:2px}
+select {height:26px;padding:2px}
 select, .btn:not(.btn-link){vertical-align:top}
 .btn-link {color:#06C;text-shadow:none}
 .btn.btn-primary {background:#C6D880;border:1px solid #619144;color:#111;text-shadow:none}
@@ -85,19 +85,20 @@ select, .btn:not(.btn-link){vertical-align:top}
 /* --- SIDEBAR --- */
 .row-fluid .span3.sidebar {margin-left:1%;width:24%}
 .sidebar h4 {border-bottom:2px solid #DDD;font-size:14px;font-weight:normal;margin-bottom:4px;margin-right:0}
-.sidebar .nav-list {font-size:12px;margin-bottom:6px;padding:0 0 0 8px}
 .sidebar .nav-list .divider {display:none}
 .sidebar .nav-list li {border-bottom:1px solid #DDD;margin:0;padding:0}
-.sidebar .nav-list li.applied {padding-left:3px}
-.sidebar .nav-list li.applied [class*="icon"] {color:transparent;margin-top:1px}
-.sidebar .nav-list li.active a {background:#FFA500;text-shadow:none}
-.sidebar .nav-list li.active a:hover {background:#FFA500}
-.sidebar .nav-list li.active a i.icon-remove {background:url('../images/icons/delete.png')}
+.sidebar .nav-list li .icon-ok {background-repeat:no-repeat;padding-top:3px}
 .sidebar .nav-list li a {margin:0;padding:3px}
 .sidebar .nav-list li a:hover {background:none}
 .sidebar .nav-list li span.main {width:auto}
-.sidebar .nav-list li .icon-ok {background-repeat:no-repeat;padding-top:3px}
+.sidebar .nav-list li span.pull-right {display:block;text-align:center;min-width:16px}
+.sidebar .nav-list li.active a i.icon-remove {background:url('../images/icons/delete.png')}
+.sidebar .nav-list li.active a {background:#FFA500;text-shadow:none}
+.sidebar .nav-list li.active a:hover {background:#FFA500}
+.sidebar .nav-list li.applied [class*="icon"] {color:transparent;margin-top:1px}
+.sidebar .nav-list li.applied {padding-left:3px}
 .sidebar .nav-list li.nav-header {background:#EEE;border-color:#DDD;min-height:1px;padding:2px 4px}
+.sidebar .nav-list {font-size:12px;margin-bottom:6px;padding:0 0 0 8px}
 .sidebar .small {margin-top:10px}
 #publishDateFilter {margin:6px 0}
 #publishDateFilter .btn {margin-top:.5em;padding:1px 12px}
@@ -106,6 +107,7 @@ select, .btn:not(.btn-link){vertical-align:top}
 #publishDateFilter .slider-handle {background:#CCC;border:1px solid #AAA}
 .unstyled li {margin-bottom:6px}
 .unstyled li a {text-decoration:underline}
+#modal .unstyled li {margin-bottom:0}
 
 .filters li a {background:#FFA500;color:#FFF;display:block;padding:2px 0;text-decoration:none;width:100%}
 
@@ -131,24 +133,34 @@ select, .btn:not(.btn-link){vertical-align:top}
 .searchHomeContent #searchForm_lookfor {height:30px}
 .searchHomeContent #searchForm_type {height:30px}
 .searchHomeContent .unstyled li {margin-bottom:0}
+@media (max-width: 979px) {
+  #searchForm_lookfor { display:block;margin-bottom:3px;width:100%; }
+  #searchForm_type { width:50%; }
+}
+@media (max-width: 600px) {
+  #searchForm_type { display:block;margin-bottom:3px;width:100%; }
+}
 
 /* --- SEARCH --- */
 .bulkActionButtons {border-bottom:1px solid #DDD;margin-top:6px;padding-bottom:6px}
-.result {padding:6px 0}
+[name="bulkActionForm"] .btn-link { margin:1px 0;padding:2px }
+.result {border:0;padding:3px 0}
 .result:nth-child(odd) {background:#EEE}
+.grid .result {background:none}
 .result>.checkbox {font-weight:bold;margin:2px 0 2px 1%;max-width:6%}
 .result>.checkbox input[type="checkbox"] {margin:3px auto}
+.result .left {text-align:center}
 .result .middle {margin-left:1%;width:52%}
 @media (max-width: 600px) {.result .middle {margin-left:auto;width:75%;}}
 .result .savedLists {margin:2px 0;padding:6px}
 .result .savedLists ul {margin-bottom:0}
+.search-controls {padding:4px 0 4px 4px}
 .span9>.noprint>.help-block {margin-bottom:0}
 .result .img-polaroid {margin-left:2px;max-width:96px}
 .top-row [class*="span"] {min-height:1px;padding:0 3px}
 
 /* -- MY RESEARCH -- */
 .bulkActionForm .btn-link {padding:1px 2px}
-.bulkActionForm .result {background:#FFF}
 #sort_options_1 {height:26px;width:100px}
 
 /* --- VUDL --- */

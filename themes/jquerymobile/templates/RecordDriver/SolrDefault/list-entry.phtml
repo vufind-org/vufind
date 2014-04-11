@@ -26,10 +26,10 @@
     <? $listAuthor = $this->driver->getPrimaryAuthor(); if (!empty($listAuthor)): ?>
       <p><?=$this->transEsc('by')?> <?=$this->escapeHtml($listAuthor)?></p>
     <? endif; ?>
-    <? $listTags = $this->driver->getTags(
+    <? $listTags = ($this->usertags()->getMode() !== 'disabled') ? $this->driver->getTags(
         $list_id, // get tags for all lists if no single list is selected
         $user_id, 'tag'
-       );
+       ) : array();
     ?>
     <? if (count($listTags) > 0): ?>
       <p>

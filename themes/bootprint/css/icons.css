@@ -1,3 +1,4 @@
+i.icon-archive,
 i.icon-asterisk,
 i.icon-bell,
 i.icon-book,
@@ -15,6 +16,7 @@ i.icon-email,
 i.icon-envelope,
 i.icon-envelope-alt,
 i.icon-export,
+i.icon-exchange,
 i.icon-flag,
 i.icon-heart,
 i.icon-home,
@@ -24,6 +26,7 @@ i.icon-list-alt,
 i.icon-minus-sign,
 i.icon-ok,
 i.icon-phone-sign,
+i.icon-plus,
 i.icon-plus-sign,
 i.icon-print,
 i.icon-qrcode,
@@ -74,6 +77,7 @@ i.icon-user {
   height:16px;
   width:16px
 }
+.small i.icon-archive,
 .small i.icon-asterisk,
 .small i.icon-bell,
 .small i.icon-book,
@@ -91,6 +95,7 @@ i.icon-user {
 .small i.icon-envelope,
 .small i.icon-envelope-alt,
 .small i.icon-export,
+.small i.icon-exchange,
 .small i.icon-flag,
 .small i.icon-heart,
 .small i.icon-home,
@@ -100,6 +105,7 @@ i.icon-user {
 .small i.icon-minus-sign,
 .small i.icon-ok,
 .small i.icon-phone-sign,
+.small i.icon-plus,
 .small i.icon-plus-sign,
 .small i.icon-print,
 .small i.icon-qrcode,
@@ -124,6 +130,7 @@ i.icon-user {
   height:13px;
   width:13px;
 }
+i.icon-archive {background:url('../images/icons/package.png')}
 i.icon-asterisk {background:url('../images/icons/list.png')}
 i.icon-bell {background:url('../images/icons/bell.png')}
 i.icon-book {background:url('../images/icons/book.png')}
@@ -140,6 +147,7 @@ i.icon-edit {background:url('../images/icons/edit.png')}
 i.icon-email,
 i.icon-envelope,
 i.icon-envelope-alt {background:url('../images/icons/email.png')}
+i.icon-exchange {background:url('../images/icons/arrow_refresh.png')}
 i.icon-flag {background:url('../images/icons/flag_red.png')}
 i.icon-heart {background:url('../images/icons/heart.png')}
 i.icon-home {background:url('../images/icons/house.png')}
@@ -149,6 +157,7 @@ i.icon-list-alt,i.icon-export {background:url('../images/icons/application_add.p
 i.icon-minus-sign {background:url('../images/icons/delete.png')}
 i.icon-ok {background:url('../images/icons/tick.png')}
 i.icon-phone-sign {background:url('../images/icons/phone.png')}
+i.icon-plus {background:url('../images/icons/add.png')}
 i.icon-plus-sign {background:url('../images/icons/add.png')}
 i.icon-print {background:url('../images/icons/printer.png')}
 i.icon-qrcode {background:url('../images/icons/qrcode.png')}

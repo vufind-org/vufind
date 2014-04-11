@@ -117,12 +117,20 @@ class MultiIndexListener
         $backend = $event->getTarget();
         if ($backend === $this->backend) {
             $params = $event->getParam('params');
-            $shards = explode(',', implode(',', $params->get('shards')));
-            $fields = $this->getFields($shards);
-            $specs  = $this->getSearchSpecs($fields);
-            $backend->getQueryBuilder()->setSpecs($specs);
-            $facets = $params->get('facet.field') ?: array();
-            $params->set('facet.field', array_diff($facets, $fields));
+            if ($event->getParam('context') == 'retrieve') {
+                // If we're retrieving a record, we should pull all shards to be
+                // sure we find it.
+                $params->set('shards', implode(',', $this->shards));
+            } else {
+                // In any other context, we should make sure our field values are
+                // all legal.
+                $shards = explode(',', implode(',', $params->get('shards')));
+                $fields = $this->getFields($shards);
+                $specs  = $this->getSearchSpecs($fields);
+                $backend->getQueryBuilder()->setSpecs($specs);
+                $facets = $params->get('facet.field') ?: array();
+                $params->set('facet.field', array_diff($facets, $fields));
+            }
         }
         return $event;
     }

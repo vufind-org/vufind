@@ -1114,6 +1114,9 @@ class SolrDefault extends AbstractBase
      */
     public function getThumbnail($size = 'small')
     {
+        if (isset($this->fields['thumbnail']) && $this->fields['thumbnail']) {
+            return $this->fields['thumbnail'];
+        }
         $arr = array(
             'author'     => mb_substr($this->getPrimaryAuthor(), 0, 300, 'utf-8'),
             'callnumber' => $this->getCallNumber(),
@@ -1356,6 +1359,29 @@ class SolrDefault extends AbstractBase
         ) {
             foreach ($this->fields['hierarchy_parent_id'] as $key => $val) {
                 $retVal[$val] = $this->fields['hierarchy_sequence'][$key];
+            }
+        }
+        return $retVal;
+    }
+    
+     /**
+     * Get the titles of this item within parent collections.  Returns an array
+     * of parent ID => sequence number.
+     *
+     * @return Array
+     */
+    public function getTitlesInHierarchy()
+    {
+        $retVal = array();
+        if (isset($this->fields['title_in_hierarchy'])
+            && is_array($this->fields['title_in_hierarchy'])
+        ) {
+            $titles = $this->fields['title_in_hierarchy'];
+            $parentIDs = $this->fields['hierarchy_parent_id'];
+            if (count($titles) === count($parentIDs)) {
+                foreach ($parentIDs as $key => $val) {
+                    $retVal[$val] = $titles[$key];
+                }
             }
         }
         return $retVal;
