@@ -1118,8 +1118,7 @@ class MyResearchController extends AbstractBase
     public function recoverAction()
     {
         // Make sure we're configured to do this
-        $config = $this->getConfig();
-        if (Auth\Manager::supportsRecovery()) {
+        if (!$this->getAuthManager()->supportsRecovery()) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('recovery_disabled');
             return $this->redirect()->toRoute('myresearch-home');
@@ -1136,7 +1135,7 @@ class MyResearchController extends AbstractBase
         }
         // If we have a submitted form
         if (false != $user) {
-            $this->sendRecoveryEmail($user, $config);
+            $this->sendRecoveryEmail($user, $this->getConfig());
         }
         return $this->createViewModel();
     }
@@ -1274,7 +1273,6 @@ class MyResearchController extends AbstractBase
                 try {
                     // Reassign oldpwd to password in the request so login works
                     $post->password = $post->oldpwd;
-                    $request->setPost($post);
                     $authClass = $this->getAuthManager()->login($request);
                 } catch(AuthException $e) {
                     $this->flashMessenger()->setNamespace('error')
