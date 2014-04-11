@@ -1119,9 +1119,7 @@ class MyResearchController extends AbstractBase
     {
         // Make sure we're configured to do this
         $config = $this->getConfig();
-        if (!isset($config->Authentication->recover_password)
-            || $config->Authentication->recover_password == false
-        ) {
+        if (Auth\Manager::supportsRecovery()) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('recovery_disabled');
             return $this->redirect()->toRoute('myresearch-home');
@@ -1156,11 +1154,14 @@ class MyResearchController extends AbstractBase
         // If we can't find a user
         if (null == $user) {
             $this->flashMessenger()->setNamespace('error')
-                ->addMessage('recovery_email_not_found');
+                ->addMessage('recovery_user_not_found');
         } else {
             // Make sure we've waiting long enough
             $hashTime = intval(substr($user->verify_hash, -10));
-            if (time()-$hashTime < $config->Authentication->recover_interval) {
+            $recoveryInterval = isset($config->Authentication->recover_interval)
+                ? $config->Authentication->recover_interval
+                : 60;
+            if (time()-$hashTime < $recoveryInterval) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('recovery_too_soon');
             } else {
@@ -1210,7 +1211,10 @@ class MyResearchController extends AbstractBase
             $hashtime = intval(substr($hash, -10));
             $config = $this->getConfig();
             // Check if hash is expired
-            if (time()-$hashtime > $config->Authentication->recover_hash_lifetime) {
+            $hashLifetime = isset($config->Authentication->recover_hash_lifetime)
+                ? $config->Authentication->recover_hash_lifetime
+                : 1209600; // Two weeks
+            if (time()-$hashtime > $hashLifetime) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('recovery_expired_hash');
                 return $this->forwardTo('MyResearch', 'Login');
@@ -1221,7 +1225,6 @@ class MyResearchController extends AbstractBase
                 if (null != $user) {
                     $view = $this->createViewModel();
                     $view->hash = $hash;
-                    $view->userid = $user->id;
                     $view->username = $user->username;
                     $view->setTemplate('myresearch/newpassword');
                     return $view;
@@ -1240,69 +1243,71 @@ class MyResearchController extends AbstractBase
      */
     public function newPasswordAction()
     {
-        // Have we submitted the form
-        if ($this->params()->fromPost('submit', false)) {
-            // Pull in from POST
-            $request = $this->getRequest();
-            $post = $request->getPost();
-            // Verify hash
-            $userFromHash = $this->getTable('User')->getByVerifyHash($post->hash);
-            // Missing or invalid hash
-            if (!isset($post->hash) || false == $userFromHash) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage('recovery_email_not_found');
-                // Force login or restore hash
-                return $this->forwardTo('MyResearch', 'ChangePassword');
-            } else if ($userFromHash->username !== $post->username) {
+        // Have we submitted the form?
+        if (!$this->params()->fromPost('submit', false)) {
+            return $this->redirect()->toRoute('home');
+        }
+        // Pull in from POST
+        $request = $this->getRequest();
+        $post = $request->getPost();
+        // Verify hash
+        $userFromHash = $userFromHash = isset($post->hash)
+            ? $this->getTable('User')->getByVerifyHash($post->hash)
+            : false;
+        // Missing or invalid hash
+        if (false == $userFromHash) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('recovery_user_not_found');
+            // Force login or restore hash
+            return $this->forwardTo('MyResearch', 'ChangePassword');
+        } else if ($userFromHash->username !== $post->username) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('authentication_error_invalid');
+            $userFromHash->updateHash();
+            $post->username = $userFromHash->username;
+            $post->hash = $userFromHash->verify_hash;
+            return $this->createViewModel($post);
+        }
+        // Verify old password if we're logged in
+        if ($this->getUser()) {
+            if (isset($post->oldpwd)) {
+                try {
+                    // Reassign oldpwd to password in the request so login works
+                    $post->password = $post->oldpwd;
+                    $request->setPost($post);
+                    $authClass = $this->getAuthManager()->login($request);
+                } catch(AuthException $e) {
+                    $this->flashMessenger()->setNamespace('error')
+                        ->addMessage($e->getMessage());
+                    return $this->createViewModel(
+                        $this->params()->fromPost()
+                    );
+                }
+            } else {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('authentication_error_invalid');
-                $userFromHash->updateHash();
-                $post->username = $userFromHash->username;
-                $post->hash = $userFromHash->verify_hash;
+                $post['verifyold'] = true;
                 return $this->createViewModel($post);
             }
-            // Verify old password if we're logged in
-            if ($this->getUser()) {
-                if (isset($post->oldpwd)) {
-                    try {
-                        // Reassign oldpwd to password in the request so login works
-                        $post->password = $post->oldpwd;
-                        $request->setPost($post);
-                        $authClass = $this->getAuthManager()->login($request);
-                    } catch(AuthException $e) {
-                        $this->flashMessenger()->setNamespace('error')
-                            ->addMessage($e->getMessage());
-                        return $this->createViewModel(
-                            $this->params()->fromPost()
-                        );
-                    }
-                } else {
-                    $this->flashMessenger()->setNamespace('error')
-                        ->addMessage('authentication_error_invalid');
-                    $post['verifyold'] = true;
-                    return $this->createViewModel($post);
-                }
-            }
-            // Update password
-            try {
-                $user = $this->getAuthManager()->updatePassword($this->getRequest());
-            } catch (AuthException $e) {
-                $this->flashMessenger()->setNamespace('error')
-                    ->addMessage($e->getMessage());
-                return $this->createViewModel(
-                    $this->params()->fromPost()
-                );
-            }
-            // Update hash to prevent reusing hash
-            $user->updateHash();
-            // Login
-            $this->getAuthManager()->login($this->request);
-            // Go to favorites
-            $this->flashMessenger()->setNamespace('info')
-                ->addMessage('recovery_new_password_success');
-            return $this->redirect()->toRoute('myresearch-home');
         }
-        return $this->redirect()->toRoute('home');
+        // Update password
+        try {
+            $user = $this->getAuthManager()->updatePassword($this->getRequest());
+        } catch (AuthException $e) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage($e->getMessage());
+            return $this->createViewModel(
+                $this->params()->fromPost()
+            );
+        }
+        // Update hash to prevent reusing hash
+        $user->updateHash();
+        // Login
+        $this->getAuthManager()->login($this->request);
+        // Go to favorites
+        $this->flashMessenger()->setNamespace('info')
+            ->addMessage('recovery_new_password_success');
+        return $this->redirect()->toRoute('myresearch-home');
     }
     
     /**
@@ -1316,8 +1321,6 @@ class MyResearchController extends AbstractBase
             return $this->forceLogin();
         }
         // If not submitted, are we logged in?
-        // Make sure password changing is enabled in config
-        $config = $this->getConfig();
         if (!$this->getAuthManager()->supportsPasswordChange()) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('recovery_new_disabled');

@@ -172,7 +172,7 @@ class Manager implements ServiceLocatorAwareInterface
     /**
      * Does the current configuration support password recovery?
      *
-     *@param string $authMethod optional; check this auth method rather than 
+     * @param string $authMethod optional; check this auth method rather than 
      *  the one in config file
      *
      * @return bool
@@ -183,8 +183,7 @@ class Manager implements ServiceLocatorAwareInterface
             $this->setActiveAuthClass($authMethod);
         }
         if ($this->getAuth()->supportsPasswordChange()) {
-            return isset($this->config->Authentication)
-                && isset($this->config->Authentication->recover_password)
+            return isset($this->config->Authentication->recover_password)
                 && $this->config->Authentication->recover_password;
         }
         return false;
@@ -201,8 +200,7 @@ class Manager implements ServiceLocatorAwareInterface
             $this->setActiveAuthClass($authMethod);
         }
         if ($this->getAuth()->supportsPasswordChange()) {
-            return isset($this->config->Authentication)
-                && isset($this->config->Authentication->change_password)
+            return isset($this->config->Authentication->change_password)
                 && $this->config->Authentication->change_password;
         }
         return false;

@@ -227,14 +227,4 @@ class Auth extends \Zend\View\Helper\AbstractHelper
         $classParts = explode('\\', $className);
         return array_pop($classParts);
     }
-    
-    /**
-     * Is new passwords currently allowed?
-     *
-     * @return bool
-     */
-    public function changePasswordEnabled()
-    {
-        return $this->getManager()->supportsPasswordChange();
-    }
 }
