@@ -20,7 +20,6 @@
  * @category VuFind2
  * @package  ILS_Drivers
  * @author   Götz Hatop <vufind-tech@lists.sourceforge.net>
- * @version  0.5
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/building_an_ils_driver Wiki
  */
@@ -149,7 +148,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                 $loan_status  = $row[2];
 
                 $reserve = 'N';
-                $status = $this->getStatusText($loan_indi);
+                $status = $this->getStatusText($loan_status);
                 $available = true;
                
                 if ($loan_indi == 7) {
@@ -272,7 +271,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                 }
 
                 $storage = $this->getStorage($loan_indi, $locid, $callnumber);
-                $status = $this->getStatusText($loan_indi);
+                $status = $this->getStatusText($loan_status);
 
                 if (empty($storage)) {
                     $is_holdable = $this->isHoldable($loan_indi);
