@@ -148,7 +148,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                 $loan_status  = $row[2];
 
                 $reserve = 'N';
-                $status = $this->getStatusText($loan_status);
+                $status = $this->getStatusText($loan_indi, $loan_status);
                 $available = true;
                
                 if ($loan_indi == 7) {
@@ -187,17 +187,16 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      * @return string the message to be displayed
      *
      */
-    private function getStatusText($status)
+    private function getStatusText($indi, $status)
     {
-        $text = false;
-        if ($status==0) {
+        if ($indi==0 && $status==0) {
             $text = 'Available';
-        } else if ($status==3) {
-            $text = 'Presence';
-        } else if ($status==4) {
+        } else if ($indi==0 && $status==4) {
             $text = 'On Reserve';
-        } else if ($status==5) {
+        } else if ($indi==0 && $status==5) {
             $text = 'Checked Out';
+        } else if ($indi==3) {
+            $text = 'Presence';
         } else {
             $text = 'Not Available';
         }
@@ -237,7 +236,6 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
             $sqlStmt = sybase_query($sql);
             $holding = array();
             while ($row = sybase_fetch_row($sqlStmt)) {
-                $status = 'Not Available';
                 $epn   = $row[0];
                 $loan_indi  = (string)$row[1];
                 $volbar = $row[2];
@@ -246,8 +244,10 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
 
                 //library location identifier is a callnumber prefix
                 $locid = substr($row[5], 0, 3);
+
                 //suppress multiple callnumbers, comma separated items
                 $callnumber = current(explode(',', substr($row[5], 4)));
+
                 if ($locid!='') {
                     $location = $this->opaciln."/". $locid;
                 }
@@ -263,15 +263,11 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
 
                 $check = false;
                 $reserve = 'N';
-                $storage = false;
                 $is_holdable = false;
-                $note=$this->getNote($loan_indi, $locid, $callnumber);
-                if (!empty($note)) {
-                    $notes[] = $note;
-                }
 
                 $storage = $this->getStorage($loan_indi, $locid, $callnumber);
-                $status = $this->getStatusText($loan_status);
+                $status = $this->getStatusText($loan_indi, $loan_status);
+                $note = $this->getNote($loan_indi, $locid, $callnumber);
 
                 if (empty($storage)) {
                     $check = $this->checkHold($loan_indi, $material);
@@ -302,7 +298,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                     'duedate'        => $duedate,
                     'number'         => $volbar,
                     'barcode'        => $volbar,
-                    'notes'          => $notes,
+                    'notes'          => array($note),
                     'summary'        => $summary,
                     'is_holdable'    => $is_holdable,
                     'item_id'        => $epn,
@@ -673,7 +669,6 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
         try {
             $result = array();
             $sqlStmt = sybase_query($sql);
-            error_log($sql);
             $expire = $row[3]; // empty ?
             while ($row = sybase_fetch_row($sqlStmt)) {
                 $title = $this->picaRecode($row[1]);
