@@ -37,4 +37,12 @@
       </li>
     </ul>
   <? endif ?>
+  <? if ($this->auth()->isLoggedIn() && $this->auth()->getManager()->supportsPasswordChange()): ?>
+    <h4 class="gear"><?=$this->transEsc('Preferences')?></h4>
+    <ul>
+      <li>
+        <a href="<?=$this->url('myresearch-changepassword') ?>">Change Password</a>
+      </li>
+    </ul>
+  <? endif; ?>
 </div>

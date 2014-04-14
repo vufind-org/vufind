@@ -647,6 +647,12 @@ input.bookbagEmpty {
     background-position: left;
     padding:.5em .5em .5em 20px;
 }
+.forgot_password {
+    background-image:url(../images/silk/key_go.png);
+    background-repeat:no-repeat;
+    background-position: left;
+    padding:.5em .5em .5em 20px;
+}
 .cite {
     background-image:url(../images/silk/report.png);
     background-repeat:no-repeat;
@@ -722,6 +728,13 @@ input.bookbagEmpty {
     background-repeat:no-repeat;
     background-position: left;
     padding:.5em .5em .5em 20px;
+    /*margin-left:1em;*/
+}
+.gear {
+    background-image:url(../images/silk/cog.png);
+    background-repeat:no-repeat;
+    background-position: left;
+    padding:.6em .5em .5em 20px;
     /*margin-left:1em;*/
 }
 h3.list {
