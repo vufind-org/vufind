@@ -1249,6 +1249,7 @@ class MyResearchController extends AbstractBase
         // Pull in from POST
         $request = $this->getRequest();
         $post = $request->getPost();
+        var_dump($post);
         // Verify hash
         $userFromHash = isset($post->hash)
             ? $this->getTable('User')->getByVerifyHash($post->hash)
@@ -1272,8 +1273,10 @@ class MyResearchController extends AbstractBase
             if (isset($post->oldpwd)) {
                 try {
                     // Reassign oldpwd to password in the request so login works
+                    $temp_password = $post->password;
                     $post->password = $post->oldpwd;
                     $authClass = $this->getAuthManager()->login($request);
+                    $post->password = $temp_password;
                 } catch(AuthException $e) {
                     $this->flashMessenger()->setNamespace('error')
                         ->addMessage($e->getMessage());

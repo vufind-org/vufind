@@ -204,6 +204,7 @@ class Database extends AbstractBase
      */
     protected function validateUsernameAndPassword($params)
     {
+        var_dump($params);
         // Needs a username
         if (trim($params['username']) == '') {
             throw new AuthException('Username cannot be blank');
