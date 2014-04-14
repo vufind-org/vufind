@@ -1249,7 +1249,6 @@ class MyResearchController extends AbstractBase
         // Pull in from POST
         $request = $this->getRequest();
         $post = $request->getPost();
-        var_dump($post);
         // Verify hash
         $userFromHash = isset($post->hash)
             ? $this->getTable('User')->getByVerifyHash($post->hash)
