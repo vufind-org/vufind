@@ -93,4 +93,15 @@ class User extends Gateway
         };
         return $this->select($callback);
     }
+
+    /**
+     * Return a row by a verification hash
+     *
+     * @return mixed
+     */
+    public function getByVerifyHash($hash)
+    {
+        $row = $this->select(array('verify_hash' => $hash))->current();
+        return $row;
+    }
 }
