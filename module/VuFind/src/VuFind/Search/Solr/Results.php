@@ -264,11 +264,8 @@ class Results extends \VuFind\Search\Base\Results
                 $currentSettings['displayText']
                     = $translate ? $this->translate($value) : $value;
                 $currentSettings['count'] = $count;
-                $currentSettings['operator']
-                    = $this->getParams()->getFacetOperator($field);
                 $currentSettings['isApplied']
-                    = $this->getParams()->hasFilter("$field:".$value)
-                    || $this->getParams()->hasFilter("~$field:".$value);
+                    = $this->getParams()->hasFilter("$field:".$value);
 
                 // Store the collected values:
                 $list[$field]['list'][] = $currentSettings;
@@ -325,5 +322,43 @@ class Results extends \VuFind\Search\Base\Results
 
         // Send back data:
         return $result;
+    }
+
+        /**
+     * Returns D3 flare-formatted data on pivot facets for the last search
+     *
+     * @return ArrayObject        Flare-formatted object
+     */
+    public function getVisualFacetList()
+    {
+        // Make sure we have processed the search before proceeding:
+        if (null === $this->responseFacets) {
+            $this->performAndProcessSearch();
+        }
+
+        // Start building the flare object:
+     $flare->name = "flare";
+     $flare->total = $this->resultTotal;
+     $flarechildren = array();
+     $visualFacets = $this->responseFacets->getPivotFacets();
+        foreach ($visualFacets as $toplevelfacet) { //Data for one call number range
+          $toplevelinfo = array();      
+          $toplevelchildren = array();
+          $toplevelinfo['name'] = $toplevelfacet['value'];
+          $toplevelinfo['field'] = $toplevelfacet['field'];
+          $toplevelinfo['size'] = $toplevelfacet['count'];
+          foreach($toplevelfacet['pivot'] as $secondlevelfacet) {
+               $secondlevelinfo = array();
+               $secondlevelinfo['name'] = $secondlevelfacet['value'];
+               $secondlevelinfo['size'] = $secondlevelfacet['count'];
+               $secondlevelinfo['field'] = $secondlevelfacet['field'];
+               $secondlevelinfo['parentlevel'] = $toplevelinfo['name'];
+               array_push($toplevelchildren, $secondlevelinfo);
+          }
+          $toplevelinfo['children'] = $toplevelchildren;
+          array_push($flarechildren, $toplevelinfo);   
+     }
+     $flare->children = $flarechildren;
+        return $flare;
     }
 }
