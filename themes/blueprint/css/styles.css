@@ -653,6 +653,12 @@ input.bookbagEmpty {
     background-position: left;
     padding:.5em .5em .5em 20px;
 }
+.lock {
+    background-image:url(../images/silk/lock.png);
+    background-repeat:no-repeat;
+    background-position: left;
+    padding:.5em .5em .5em 20px;
+}
 .cite {
     background-image:url(../images/silk/report.png);
     background-repeat:no-repeat;

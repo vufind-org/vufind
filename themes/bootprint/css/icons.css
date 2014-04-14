@@ -21,6 +21,7 @@ i.icon-home,
 i.icon-inbox,
 i.icon-leaf,
 i.icon-list-alt,
+i.icon-lock,
 i.icon-minus-sign,
 i.icon-ok,
 i.icon-phone-sign,
@@ -97,6 +98,7 @@ i.icon-user {
 .small i.icon-inbox,
 .small i.icon-leaf,
 .small i.icon-list-alt,
+.small i.icon-lock,
 .small i.icon-minus-sign,
 .small i.icon-ok,
 .small i.icon-phone-sign,
@@ -146,6 +148,7 @@ i.icon-home {background:url('../images/icons/house.png')}
 i.icon-inbox {background:url('../images/icons/box.png')}
 i.icon-leaf,.icon-sitemap {background:url('../images/icons/treeCurrent.png')}
 i.icon-list-alt,i.icon-export {background:url('../images/icons/application_add.png')}
+i.icon-lock {background:url('../images/icons/lock.png')}
 i.icon-minus-sign {background:url('../images/icons/delete.png')}
 i.icon-ok {background:url('../images/icons/tick.png')}
 i.icon-phone-sign {background:url('../images/icons/phone.png')}

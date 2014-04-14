@@ -20,6 +20,12 @@
     <li><a href="<?=$this->url('myresearch-logout')?>"><?=$this->transEsc("Log Out")?> <i class="icon-signout pull-right"></i></a></li>
   <? endif; ?>
 </ul>
+<? if ($this->auth()->isLoggedIn() && $this->auth()->getManager()->supportsPasswordChange()): ?>
+  <h4><?=$this->transEsc('Preferences')?></h4>
+  <ul class="nav nav-list">
+    <li><a href="<?=$this->url('myresearch-changepassword') ?>"><?=$this->transEsc('Change Password') ?> <i class="icon-lock pull-right"></i></a></li>
+  </ul>
+<? endif; ?>
 <? if ($this->userlist()->getMode() !== 'disabled' && $user = $this->auth()->isLoggedIn()): ?>
   <h4><?=$this->transEsc('Your Lists')?></h4>
   <ul class="nav nav-list">
@@ -31,9 +37,3 @@
     <li><a href="<?=$this->url('editList', array('id'=>'NEW'))?>" title="<?=$this->transEsc('Create a List') ?>"><?=$this->transEsc('Create a List') ?> <span class="pull-right"><i class="icon-plus"></i></span></a></li>
   </ul>
 <? endif ?>
-<? if ($this->auth()->isLoggedIn() && $this->auth()->getManager()->supportsPasswordChange()): ?>
-  <h4><?=$this->transEsc('Preferences')?></h4>
-  <ul class="nav nav-list">
-    <li><a href="<?=$this->url('myresearch-changepassword') ?>"><?=$this->transEsc('Change Password') ?> <i class="icon-lock pull-right"></i></a></li>
-  </ul>
-<? endif; ?>
