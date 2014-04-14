@@ -406,4 +406,17 @@ class User extends ServiceLocatorAwareGateway
         // Remove the user itself:
         return parent::delete();
     }
+    
+    /**
+     * Update the verification hash for this user
+     *
+     * @return bool save success
+     */
+    public function updateHash()
+    {
+        $this->verify_hash = md5(
+            $this->username . $this->password . $this->pass_hash . rand()
+        ) . (time() % pow(10,10));
+        return $this->save();
+    }
 }
