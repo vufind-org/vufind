@@ -1136,6 +1136,9 @@ class MyResearchController extends AbstractBase
         // If we have a submitted form
         if (false != $user) {
             $this->sendRecoveryEmail($user, $this->getConfig());
+        } else {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('recovery_user_not_found');
         }
         return $this->createViewModel();
     }
@@ -1156,7 +1159,7 @@ class MyResearchController extends AbstractBase
                 ->addMessage('recovery_user_not_found');
         } else {
             // Make sure we've waiting long enough
-            $hashtime = getHashAge($user->verify_hash);
+            $hashtime = $this->getHashAge($user->verify_hash);
             $recoveryInterval = isset($config->Authentication->recover_interval)
                 ? $config->Authentication->recover_interval
                 : 60;
@@ -1207,7 +1210,7 @@ class MyResearchController extends AbstractBase
         $hash = $this->params()->fromQuery('hash');
         // Submitted form
         if (null != $hash) {
-            $hashtime = getHashAge($hash);
+            $hashtime = $this->getHashAge($hash);
             $config = $this->getConfig();
             // Check if hash is expired
             $hashLifetime = isset($config->Authentication->recover_hash_lifetime)
