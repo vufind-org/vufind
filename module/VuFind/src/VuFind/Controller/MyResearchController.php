@@ -1156,7 +1156,7 @@ class MyResearchController extends AbstractBase
                 ->addMessage('recovery_user_not_found');
         } else {
             // Make sure we've waiting long enough
-            $hashTime = intval(substr($user->verify_hash, -10));
+            $hashtime = getHashAge($user->verify_hash);
             $recoveryInterval = isset($config->Authentication->recover_interval)
                 ? $config->Authentication->recover_interval
                 : 60;
@@ -1207,7 +1207,7 @@ class MyResearchController extends AbstractBase
         $hash = $this->params()->fromQuery('hash');
         // Submitted form
         if (null != $hash) {
-            $hashtime = intval(substr($hash, -10));
+            $hashtime = getHashAge($hash);
             $config = $this->getConfig();
             // Check if hash is expired
             $hashLifetime = isset($config->Authentication->recover_hash_lifetime)
@@ -1250,7 +1250,7 @@ class MyResearchController extends AbstractBase
         $request = $this->getRequest();
         $post = $request->getPost();
         // Verify hash
-        $userFromHash = $userFromHash = isset($post->hash)
+        $userFromHash = isset($post->hash)
             ? $this->getTable('User')->getByVerifyHash($post->hash)
             : false;
         // Missing or invalid hash
@@ -1324,7 +1324,6 @@ class MyResearchController extends AbstractBase
                 ->addMessage('recovery_new_disabled');
             return $this->redirect()->toRoute('home');
         }
-        $view = $this->createViewModel();
         $view = $this->createViewModel($this->params()->fromPost());
         // Verify user password
         $view->verifyold = true;
@@ -1336,5 +1335,15 @@ class MyResearchController extends AbstractBase
         $view->hash = $user->verify_hash;
         $view->setTemplate('myresearch/newpassword');
         return $view;
+    }
+    
+    /**
+     * Helper function for verification hashes
+     *
+     * @return int age in seconds
+     */
+    protected function getHashAge($hash)
+    {
+        return intval(substr($hash, -10));
     }
 }
