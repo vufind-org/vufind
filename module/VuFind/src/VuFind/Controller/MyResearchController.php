@@ -28,6 +28,7 @@
 namespace VuFind\Controller;
 
 use VuFind\Exception\Auth as AuthException,
+    VuFind\Exception\Mail as MailException,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\RecordMissing as RecordMissingException,
     Zend\Stdlib\Parameters;
@@ -1163,7 +1164,7 @@ class MyResearchController extends AbstractBase
             $recoveryInterval = isset($config->Authentication->recover_interval)
                 ? $config->Authentication->recover_interval
                 : 60;
-            if (time()-$hashTime < $recoveryInterval) {
+            if (time()-$hashtime < $recoveryInterval) {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('recovery_too_soon');
             } else {
