@@ -1137,7 +1137,7 @@ class MyResearchController extends AbstractBase
         // If we have a submitted form
         if (false != $user) {
             $this->sendRecoveryEmail($user, $this->getConfig());
-        } else {
+        } else if ($this->params()->fromPost('submit')) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('recovery_user_not_found');
         }
