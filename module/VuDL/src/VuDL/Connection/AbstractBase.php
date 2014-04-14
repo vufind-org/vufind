@@ -138,12 +138,26 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         $details = array();
         foreach ($detailsList as $key=>$title) {
             $keys = explode(',', $key);
+            $field = false;
+            for ($i=0;$i<count($keys);$i++) {
+                if (isset($record[$keys[$i]])) {
+                    $field = $keys[$i];
+                    break;
+                }
+            }
+            if (false === $field) {
+                continue;
+            }
             if (count($keys) == 1) {
                 if (isset($record[$keys[0]])) {
-                    $value = $record[$keys[0]];
+                    $details[$field] = array(
+                        'title' => $title,
+                        'value' => $record[$keys[0]]
+                    );
                 }
             } else {
                 $value = array();
+                $field = false;
                 foreach ($keys as $k) {
                     if (isset($record[$k])) {
                         if (is_array($record[$k])) {
@@ -153,14 +167,12 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
                         }
                     }
                 }
+                $details[$field] = array(
+                    'title' => $title,
+                    'value' => $record[$keys[0]]
+                );
             }
-            $details[$keys[0]] = array(
-                'title' => $title,
-                'value' => $value
-            );
         }
-        var_dump($detailsList);
-        var_dump($details);
         return $details;
     }
 }
