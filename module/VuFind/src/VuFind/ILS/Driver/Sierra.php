@@ -365,16 +365,16 @@ class Sierra extends AbstractBase
                     . "checkout.due_gmt "
                     . "FROM sierra_view.item_view "
                     . "LEFT JOIN sierra_view.varfield_view "
-		    . "ON (item_view.id = varfield_view.record_id) "
-	            . "LEFT JOIN sierra_view.location "
+                    . "ON (item_view.id = varfield_view.record_id) "
+                    . "LEFT JOIN sierra_view.location "
                     . "ON (item_view.location_code = location.code) "
                     . "LEFT JOIN sierra_view.location_name "
                     . "ON (location.id = location_name.location_id) "
                     . "LEFT JOIN sierra_view.checkout "
                     . "ON (item_view.id = checkout.item_record_id) "
                     . "WHERE item_view.id = $1 "
-		    . "AND varfield_view.record_type_code = 'i' "
-		    . "AND location_name.iii_language_id = '1';";
+                    . "AND varfield_view.record_type_code = 'i' "
+                    . "AND location_name.iii_language_id = '1';";
             pg_prepare($this->db, "prep_query", $query1);
             foreach ($itemIds as $item) {
                 $callnumber = null;
@@ -436,15 +436,15 @@ class Sierra extends AbstractBase
             $itemIds = $this->getIds($id);
             // Use the database ids to get the item-level information (status,
             // location, and potentially call number) associated with that bib record
-        $query1 = "SELECT
+            $query1 = "SELECT
                         item_view.item_status_code,
                         location_name.name,
                         checkout.due_gmt,
                         varfield_view.field_content,
                         varfield_view.varfield_type_code
                             FROM
-			    sierra_view.item_view
-			LEFT JOIN sierra_view.location
+                            sierra_view.item_view
+                        LEFT JOIN sierra_view.location
                         ON (item_view.location_code = location.code) 
                         LEFT JOIN sierra_view.location_name 
                         ON (location.id = location_name.location_id) 
@@ -453,8 +453,8 @@ class Sierra extends AbstractBase
                         LEFT JOIN sierra_view.varfield_view
                         ON (item_view.id = varfield_view.record_id)
                         WHERE item_view.id = $1
-			AND varfield_view.record_type_code = 'i'
-			AND location_name.iii_language_id = '1';";
+                        AND varfield_view.record_type_code = 'i'
+                        AND location_name.iii_language_id = '1';";
             pg_prepare($this->db, "prep_query", $query1);
             foreach ($itemIds as $item) {
                 $callnumber = null;
@@ -524,8 +524,8 @@ class Sierra extends AbstractBase
     {
         try {
             $newItems = array();
-	    $offset = $limit * ($page - 1);
-	    $daysOld = (int) $daysOld;
+            $offset = $limit * ($page - 1);
+            $daysOld = (int) $daysOld;
             if (is_int($daysOld) == false || $daysOld > 30) {
                 $daysOld = "30";
             }
