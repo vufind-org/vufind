@@ -1306,7 +1306,7 @@ class MyResearchController extends AbstractBase
         $this->getAuthManager()->login($this->request);
         // Go to favorites
         $this->flashMessenger()->setNamespace('info')
-            ->addMessage('recovery_new_password_success');
+            ->addMessage('new_password_success');
         return $this->redirect()->toRoute('myresearch-home');
     }
     
