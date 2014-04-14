@@ -1119,11 +1119,12 @@ class MyResearchController extends AbstractBase
     public function recoverAction()
     {
         // Make sure we're configured to do this
-        if (!$this->getAuthManager()->supportsRecovery()
-            || $this->getUser()
-        ) {
+        if (!$this->getAuthManager()->supportsRecovery()) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('recovery_disabled');
+            return $this->redirect()->toRoute('myresearch-home');
+        }
+        if ($this->getUser()) {
             return $this->redirect()->toRoute('myresearch-home');
         }
         // Database
