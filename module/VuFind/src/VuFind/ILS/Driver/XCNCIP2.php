@@ -859,9 +859,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $bibId = $details['id'];
         $itemId = $details['item_id'];
         $pickUpLocation = $details['pickUpLocation'];
+        $lastInterestDate = $details['requiredBy'];
+        $lastInterestDate = substr($lastInterestDate, 6, 10) . '-' .
+                substr($lastInterestDate, 0, 5);
+        $lastInterestDate = $lastInterestDate . "T00:00:00.000Z";
        
 		$request = $this->getRequest($username, $password, $bibId, $itemId, 
-		        "Stack Retrieval", "Item", $pickUpLocation);
+		        "Stack Retrieval", "Item", $lastInterestDate, $pickUpLocation);
 		$response = $this->sendRequest($request);
 		$success = $response->xpath(
 		        'ns1:RequestItemResponse/ns1:ItemId/ns1:ItemIdentifierValue');
