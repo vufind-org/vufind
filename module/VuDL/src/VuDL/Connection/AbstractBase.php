@@ -135,54 +135,32 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         if (empty($detailsList)) {
             throw new \Exception('Missing [Details] in VuDL.ini');
         }
+        $details = array();
         foreach ($detailsList as $key=>$title) {
             $keys = explode(',', $key);
-            foreach ($keys as $k) {
-                $fields[$k] = $title;
-            }
-            // Link up to top combined field
-            if (count($keys) > 1) {
-                $combinedFields[] = $keys;
-            }
-        }
-        // Pool details
-        $details = array();
-        foreach ($fields as $key=>$title) {
-            if (isset($record[$key])) {
-                $details[$key] = array('title' => $title, 'value' => $record[$key]);
-            }
-        }
-        // Rearrange combined fields
-        foreach ($combinedFields as $fields) {
-            $main = $fields[0];
-            if (!isset($details[$main]['value'])
-                || !is_array($details[$main]['value'])
-            ) {
-                if (isset($details[$main]['value'])) {
-                    $details[$main]['value'] = array($details[$main]['value']);
-                } else {
-                    $details[$main]['value'] = array();
+            if (count($keys) == 1) {
+                if (isset($record[$keys[0]])) {
+                    $value = $record[$keys[0]];
                 }
-            }
-            for ($i=1;$i<count($fields);$i++) {
-                if (isset($details[$fields[$i]])) {
-                    if (!isset($details[$main]['title'])) {
-                        $details[$main]['title'] = $details[$fields[$i]]['title'];
-                    }
-                    if (is_array($details[$main]['value'])) {
-                        foreach ($details[$fields[$i]]['value'] as $value) {
-                            $details[$main]['value'][] = $value;
+            } else {
+                $value = array();
+                foreach ($keys as $k) {
+                    if (isset($record[$k])) {
+                        if (is_array($record[$k])) {
+                            $value = array_merge($value, $record[$k]);
+                        } else {
+                            $value[] = $record[$k];
                         }
-                    } else {
-                        $details[$main]['value'][] = $details[$fields[$i]]['value'];
                     }
-                    unset($details[$fields[$i]]);
                 }
             }
-            if (empty($details[$main]['value'])) {
-                unset($details[$main]);
-            }
+            $details[$keys[0]] = array(
+                'title' => $title,
+                'value' => $value
+            );
         }
+        var_dump($detailsList);
+        var_dump($details);
         return $details;
     }
 }
