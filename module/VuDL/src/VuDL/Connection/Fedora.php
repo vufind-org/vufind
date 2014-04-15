@@ -58,7 +58,7 @@ class Fedora extends AbstractBase
             ? $this->config->Fedora->url_base
             : null;
     }
-    
+
     /**
      * Returns an array of classes for this object
      *
@@ -157,7 +157,7 @@ class Fedora extends AbstractBase
         }
         return $details;
     }
-    
+
     /**
      * Get an HTTP client
      *
@@ -172,7 +172,7 @@ class Fedora extends AbstractBase
         }
         return new \Zend\Http\Client($url);
     }
-    
+
     /**
      * Get an item's label
      *
@@ -235,7 +235,7 @@ class Fedora extends AbstractBase
         $list = explode("\n", $response->getBody());
         return $list[1];
     }
-    
+
     /**
      * Returns file contents of the structmap, our most common call
      *
@@ -316,6 +316,7 @@ class Fedora extends AbstractBase
         if (isset($this->parentLists[$id])) {
             return $this->parentLists[$id];
         }
+        // Walk to get all parents to root
         $query = 'select $child $parent $parentTitle from <#ri> '
                 . 'where walk ('
                         . '<info:fedora/' .$id. '> '
@@ -323,52 +324,55 @@ class Fedora extends AbstractBase
                         . '$parent '
                     . 'and $child <fedora-rels-ext:isMemberOf> $parent) '
                 . 'and $parent <fedora-model:label> $parentTitle';
+        // Parse out relationships
         $response = $this->query($query);
-        $list = explode("\n", $response->getBody());
+        $list = explode("\n", trim($response->getBody(), "\n"));
         $tree = array();
-        $items = array();
-        $roots = array();
         for ($i=1;$i<count($list);$i++) {
-            if (empty($list[$i])) {
-                continue;
-            }
             list($child, $parent, $title) = explode(',', substr($list[$i], 12), 3);
             $parent = substr($parent, 12);
-            if ($parent == $this->getRootId()) {
-                $roots[] = $child;
-                continue;
+            if (!isset($tree[$parent])) {
+                $tree[$parent] = array(
+                    'children' => array(),
+                    'title' => $title
+                );
             }
-            if ($child == $this->getRootId()) {
-                continue;
-            }
-            if (isset($tree[$parent])) {
-                $tree[$parent][] = $child;
-            } else {
-                $tree[$parent] = array($child);
-            }
-            $items[$parent] = str_replace('""', '"', trim($title, '" '));
+            $tree[$parent]['children'][] = $child;
         }
+        // BFS from top (root id) to target $id
+        $queue = array(
+            array(
+                'id' => $this->getRootId(),
+                'path' => array()
+            )
+        );
         $ret = array();
-        $queue = array();
-        foreach ($roots as $root) {
-            $queue[] = array($root, array());
-        }
-        while ($path = array_pop($queue)) {
-            $tid = $path[0];
-            while ($tid != $id) {
-                $path[1][$tid] = $items[$tid];
-                for ($i=1;$i<count($tree[$tid]);$i++) {
-                    $queue[] = array($tree[$tid][$i], $path[1]);
+        while (!empty($queue)) {
+            $current = array_shift($queue);
+            $record = $tree[$current['id']];
+            $path = $current['path'];
+            $path[$current['id']] = $record['title'];
+            foreach ($record['children'] as $cid) {
+                var_dump($cid);
+                // At target
+                if ($cid == $id) {
+                    array_push($ret, $path);
+                } else { // Add to queue for more
+                    array_push(
+                        $queue,
+                        array(
+                            'id' => $cid,
+                            'path' => $path
+                        )
+                    );
                 }
-                $tid = $tree[$tid][0];
             }
-            $ret[] = array_reverse($path[1]);
         }
-        //var_dump('---', $ret);
+        // Store in cache
         $this->parentLists[$id] = $ret;
         return $ret;
     }
-    
+
     /**
      * Get Fedora Query URL.
      *
@@ -446,7 +450,7 @@ class Fedora extends AbstractBase
         }
         return array();
     }
-    
+
     /**
      * Consolidation of Zend Client calls
      *

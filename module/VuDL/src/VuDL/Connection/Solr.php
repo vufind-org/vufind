@@ -251,7 +251,7 @@ class Solr extends AbstractBase
      *
      * @return array of parents in order from top-down
      */
-    public function getParentList($id)
+    public function getParentList2($id)
     {
         // Cache
         if (isset($this->parentLists[$id])) {
