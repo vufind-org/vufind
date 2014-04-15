@@ -210,7 +210,7 @@ class Fedora extends AbstractBase
             if (empty($list[$i])) {
                 continue;
             }
-            list($id, $title) = explode(',', $list[$i], 2);
+            list($id,) = explode(',', $list[$i], 2);
             $items[] = $id;
         }
         return $items;
@@ -339,34 +339,7 @@ class Fedora extends AbstractBase
             }
             $tree[$parent]['children'][] = $child;
         }
-        // BFS from top (root id) to target $id
-        $queue = array(
-            array(
-                'id' => $this->getRootId(),
-                'path' => array()
-            )
-        );
-        $ret = array();
-        while (!empty($queue)) {
-            $current = array_shift($queue);
-            $record = $tree[$current['id']];
-            $path = $current['path'];
-            $path[$current['id']] = $record['title'];
-            foreach ($record['children'] as $cid) {
-                // At target
-                if ($cid == $id) {
-                    array_push($ret, $path);
-                } else { // Add to queue for more
-                    array_push(
-                        $queue,
-                        array(
-                            'id' => $cid,
-                            'path' => $path
-                        )
-                    );
-                }
-            }
-        }
+        $ret = $this->traceParents($tree, $id);
         // Store in cache
         $this->parentLists[$id] = $ret;
         return $ret;

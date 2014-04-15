@@ -53,7 +53,7 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @var array
      */
     protected $parentLists = array();
-    
+
     /**
      * HTTP service
      *
@@ -70,7 +70,7 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
         $this->config = $config;
     }
-    
+
     /**
      * Set the HTTP service to be used for HTTP requests.
      *
@@ -94,7 +94,7 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             ? $this->config->General->root_id
             : null;
     }
-    
+
     /**
      * Get VuDL detail fields.
      *
@@ -106,7 +106,7 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             ? $this->config->Details->toArray()
             : array();
     }
-    
+
     /**
      * Get Fedora Page Length.
      *
@@ -174,5 +174,40 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             }
         }
         return $details;
+    }
+
+    protected function traceParents($tree, $id)
+    {
+        // BFS from top (root id) to target $id
+        $queue = array(
+            array(
+                'id' => $this->getRootId(),
+                'path' => array()
+            )
+        );
+        $ret = array();
+        while (!empty($queue)) {
+            $current = array_shift($queue);
+            $record = $tree[$current['id']];
+            $path = $current['path'];
+            if ($current['id'] != $this->getRootId()) {
+                $path[$current['id']] = $record['title'];
+            }
+            foreach ($record['children'] as $cid) {
+                // At target
+                if ($cid == $id) {
+                    array_push($ret, $path);
+                } else { // Add to queue for more
+                    array_push(
+                        $queue,
+                        array(
+                            'id' => $cid,
+                            'path' => $path
+                        )
+                    );
+                }
+            }
+        }
+        return $ret;
     }
 }
