@@ -62,7 +62,7 @@ class VudlController extends AbstractVuDL
      */
     protected function getRoot($id)
     {
-        $parents = $this->getConnector()->getParentList($id);
+        $parents = array_reverse($this->getConnector()->getParentList($id));
         foreach (array_keys($parents[0]) as $i) {
             if (in_array(
                 'ResourceCollection',
