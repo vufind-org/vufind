@@ -295,6 +295,40 @@ class Solr extends AbstractBase
     }
 
     /**
+     * Get copyright URL and compare it to special cases from VuDL.ini
+     *
+     * @param array $setLicenses ids are urls, then abbrev
+     *   parsed in details.phtml later
+     *
+     * @return array
+     */
+    public function getCopyright($id, $setLicenses)
+    {
+        $licenseField = 'license.mdRef';
+        $response = $this->search(
+            new ParamBag(
+                array(
+                    'q'     => 'id:"'.$id.'"',
+                    'fl'    => $licenseField,
+                )
+            )
+        );
+        $data = json_decode($response);
+        $docs = $data->response->docs[0];
+        if ($data->response->numFound == 0 || !isset($docs->$licenseField)) {
+            return null;
+        }
+        $license = $docs->$licenseField;
+        $license = $license[0];
+        foreach ($setLicenses as $tell=>$value) {
+            if (strpos($license, $tell)) {
+                return array($license, $value);
+            }
+        }
+        return array($license, false);
+    }
+
+    /**
      * Perform a search with clean params
      *
      * @param ParamBag $paramBag The params you'd normally send to solr

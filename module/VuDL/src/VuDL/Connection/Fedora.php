@@ -424,6 +424,31 @@ class Fedora extends AbstractBase
     }
 
     /**
+     * Get copyright URL and compare it to special cases from VuDL.ini
+     *
+     * @param array $setLicenses ids are urls, then abbrev
+     *   parsed in details.phtml later
+     *
+     * @return array
+     */
+    public function getCopyright($id, $setLicenses)
+    {
+        $check = $this->getDatastreamHeaders($id, 'LICENSE');
+        if (!strpos($check[0], '404')) {
+            $xml = $this->getDatastreamContent($id, 'LICENSE');
+            preg_match('/xlink:href="(.*?)"/', $xml, $license);
+            $license = $license[1];
+            foreach ($setLicenses as $tell=>$value) {
+                if (strpos($license, $tell)) {
+                    return array($license, $value);
+                }
+            }
+            return array($license, false);
+        }
+        return null;
+    }
+
+    /**
      * Consolidation of Zend Client calls
      *
      * @param string $query   Query for call
