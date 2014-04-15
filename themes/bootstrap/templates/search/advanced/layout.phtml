@@ -37,13 +37,13 @@
       <div id="groupJoin" class="pull-right hidden">
         <label for="join"><?=$this->transEsc("search_match")?>:</label>
         <select id="search_bool0" name="join">
-          <option value="AND"<? if($searchDetails && $searchDetails->getOperator()=='ALL'):?> selected<?endif?>>ALL Groups</option>
-          <option value="OR"<? if($searchDetails && $searchDetails->getOperator()=='OR'):?> selected<?endif?>>ANY Groups</option>
+          <option value="AND"<? if($searchDetails && $searchDetails->getOperator()=='ALL'):?> selected<?endif?>><?= $this->transEsc('ALL Groups') ?></option>
+          <option value="OR"<? if($searchDetails && $searchDetails->getOperator()=='OR'):?> selected<?endif?>><?= $this->transEsc('ANY Groups') ?></option>
         </select>
       </div>
     </div>
     <div class="row-fluid">
-      <i id="groupPlaceHolder" class="icon-plus-sign"></i> <a href="#" onClick="addGroup()">Add Group</a>
+      <i id="groupPlaceHolder" class="icon-plus-sign"></i> <a href="#" onClick="addGroup()"><?= $this->transEsc('Add Group') ?></a>
     </div>
     <div class="pad"><input class="btn btn-primary pull-right" type="submit" value="Find"></div>
     <?=$this->render('search/advanced/solr.phtml')?>
