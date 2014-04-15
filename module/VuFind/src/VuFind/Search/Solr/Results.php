@@ -264,8 +264,11 @@ class Results extends \VuFind\Search\Base\Results
                 $currentSettings['displayText']
                     = $translate ? $this->translate($value) : $value;
                 $currentSettings['count'] = $count;
+                $currentSettings['operator']
+                    = $this->getParams()->getFacetOperator($field);
                 $currentSettings['isApplied']
-                    = $this->getParams()->hasFilter("$field:".$value);
+                    = $this->getParams()->hasFilter("$field:".$value)
+                    || $this->getParams()->hasFilter("~$field:".$value);
 
                 // Store the collected values:
                 $list[$field]['list'][] = $currentSettings;
@@ -324,7 +327,7 @@ class Results extends \VuFind\Search\Base\Results
         return $result;
     }
 
-        /**
+    /**
      * Returns D3 flare-formatted data on pivot facets for the last search
      *
      * @return ArrayObject        Flare-formatted object
