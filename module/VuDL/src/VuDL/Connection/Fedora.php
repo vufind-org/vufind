@@ -353,7 +353,6 @@ class Fedora extends AbstractBase
             $path = $current['path'];
             $path[$current['id']] = $record['title'];
             foreach ($record['children'] as $cid) {
-                var_dump($cid);
                 // At target
                 if ($cid == $id) {
                     array_push($ret, $path);
