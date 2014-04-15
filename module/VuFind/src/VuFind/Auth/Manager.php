@@ -156,7 +156,7 @@ class Manager implements ServiceLocatorAwareInterface
     /**
      * Does the current configuration support account creation?
      *
-     *@param string $authMethod optional; check this auth method rather than 
+     * @param string $authMethod optional; check this auth method rather than
      *  the one in config file
      *
      * @return bool
@@ -167,6 +167,43 @@ class Manager implements ServiceLocatorAwareInterface
             $this->setActiveAuthClass($authMethod);
         }
         return $this->getAuth()->supportsCreation();
+    }
+
+    /**
+     * Does the current configuration support password recovery?
+     *
+     * @param string $authMethod optional; check this auth method rather than 
+     *  the one in config file
+     *
+     * @return bool
+     */
+    public function supportsRecovery($authMethod=null)
+    {
+        if ($authMethod != null) {
+            $this->setActiveAuthClass($authMethod);
+        }
+        if ($this->getAuth()->supportsPasswordChange()) {
+            return isset($this->config->Authentication->recover_password)
+                && $this->config->Authentication->recover_password;
+        }
+        return false;
+    }
+
+    /**
+     * Is new passwords currently allowed?
+     *
+     * @return bool
+     */
+    public function supportsPasswordChange($authMethod=null)
+    {
+        if ($authMethod != null) {
+            $this->setActiveAuthClass($authMethod);
+        }
+        if ($this->getAuth()->supportsPasswordChange()) {
+            return isset($this->config->Authentication->change_password)
+                && $this->config->Authentication->change_password;
+        }
+        return false;
     }
 
     /**
@@ -386,6 +423,22 @@ class Manager implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Update a user's password from the request.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * new account details.
+     *
+     * @throws AuthException
+     * @return \VuFind\Db\Row\User New user row.
+     */
+    public function updatePassword($request)
+    {
+        $user = $this->getAuth()->updatePassword($request);
+        $this->updateSession($user);
+        return $user;
+    }
+
+    /**
      * Try to log in the user using current query parameters; return User object
      * on success, throws exception on failure.
      *
@@ -528,5 +581,4 @@ class Manager implements ServiceLocatorAwareInterface
         $this->authToProxy = $method;
         $this->authProxied = false;
     }
-
 }
