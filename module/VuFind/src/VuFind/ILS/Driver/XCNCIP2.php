@@ -46,6 +46,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected $httpService = null;
 
+    protected $consortium = false;
+    protected $agency = array();
+    protected $agency_url = array();
+    
     /**
      * Set the HTTP service to be used for HTTP requests.
      *
@@ -71,6 +75,18 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         if (empty($this->config)) {
             throw new ILSException('Configuration needs to be set.');
+        }
+        
+        if ($this->config['Catalog']['consortium']) {
+            $this->consortium = true;
+            foreach ($this->config['Catalog']['agency'] as $agency) {
+                $this->agency[] = $agency;
+                $this->agency_url[$agency] = $this->config['Agency_' . $agency]['url'];
+            }
+        } else {
+            $this->consortium = false;
+            $this->agency[] = $this->config['Catalog']['agency'];
+            $this->agency_url[$this->config['Catalog']['agency']] = $this->config['Catalog']['url'];
         }
     }
 
@@ -189,11 +205,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             // XC NCIP does not support barcode, but we need a placeholder here
             // to display anything on the record screen:
             'barcode' => 'placeholder' . $number,
-        	'is_holdable'  => true,
-        	'addLink' => true,
+            'is_holdable'  => true,
+            'addLink' => true,
             'holdtype' => $holdType,
-        	'storageRetrievalRequest' => 'auto',
-        	'addStorageRetrievalRequestLink' => 'true',
+            'storageRetrievalRequest' => 'auto',
+            'addStorageRetrievalRequestLink' => 'true',
         );
     }
 
@@ -224,8 +240,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return string            XML request
      */
-    protected function getStatusRequest($idList, $resumption = null)
+    protected function getStatusRequest($idList, $resumption = null, $agency = null)
     {
+        if (is_null($agency)) $agency = "LOCAL";
+
         // Build a list of the types of information we want to retrieve:
         $desiredParts = array(
             'Bibliographic Description',
@@ -251,7 +269,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                             htmlspecialchars($id) .
                         '</ns1:BibliographicRecordIdentifier>' .
                         '<ns1:AgencyId>' .
-                            $this->config['Catalog']['agency'] .
+                            htmlspecialchars($agency) .
                         '</ns1:AgencyId>' .
                     '</ns1:BibliographicRecordId>' .
                 '</ns1:BibliographicId>';
@@ -338,18 +356,42 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * duedate, number, barcode.
      */
     public function getHolding($id, $patron = false)
-    {        
-        $request = $this->getStatusRequest(array($id));
-        $response = $this->sendRequest($request);
-        $avail = $response->xpath(
-            'ns1:Ext/ns1:LookupItemSetResponse/ns1:BibInformation'
-        );
-
-        // Build the array of holdings:
-        $holdings = array();
-        foreach ($avail as $current) {
-            $holdings[] = $this->getHoldingsForChunk($current);
+    {
+        if (is_array($id)) $ids = $id;
+        else $ids = array($id);
+        
+        $agency_id = array();
+        if ($this->consortium) {
+            // Need to parse out the 035$a, e.g., (Agency)ID
+            foreach ($ids as $id) { 
+                if (preg_match('/\(([^\)]+)\)\s*([0-9]+)/', $id, $matches)) {
+                    $matched_agency = $matches[1];
+                    $matched_id = $matches[2];
+                    if ($this->agency_url[$matched_agency]) {
+                        $agency_id[$matched_agency] = $matched_id;
+                    }
+                }
+            }
+        } else {
+            $agency_id['LOCAL'] = $ids;
         }
+
+        $holdings = array();
+        foreach ($agency_id as $_agency => $_id) {
+            $request = $this->getStatusRequest(array($_id), null, $_agency);
+            $response = $this->sendRequest($request);
+            $avail = $response->xpath(
+                'ns1:Ext/ns1:LookupItemSetResponse/ns1:BibInformation'
+            );
+
+            // Build the array of holdings:
+            //$holdings = array();
+            foreach ($avail as $current) {
+                $holdings[] = $this->getHoldingsForChunk($current);
+            }
+            
+        }
+
         return $holdings;
     }
 
@@ -437,7 +479,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $list = $response->xpath('ns1:LookupUserResponse/ns1:LoanedItem');
         
         foreach ($list as $current) {
-        	$current->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
+            $current->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
             $tmp = $current->xpath('ns1:DateDue');
             $due = (string)$tmp[0];
             $due = str_replace("T", " ", $due);
@@ -457,8 +499,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'id' => $tmp,
                 'duedate' => $due,
                 'title' => (string)$title[0],
-            	'item_id' => (string)$item_id[0],
-            	'renewable' => true,
+                'item_id' => (string)$item_id[0],
+                'renewable' => true,
             );
         } 
         
@@ -492,8 +534,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $balance = 0;
         foreach ($list as $current) {
             //pzurek
-        	$current->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
-        	 
+            $current->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
+             
             $tmp = $current->xpath(
                 'ns1:FiscalTransactionInformation/ns1:Amount/ns1:MonetaryValue'
             );
@@ -760,7 +802,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'extraFields' => 'comments:pickUpLocation:requiredByDate:item-issue',
                 'helpText' => 'This is a storage retrieval request help text' .
                 ' with some <span style="color: red">styling</span>.'
-                );
+            );
         }
         return array();
     }
@@ -784,6 +826,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                         'locationDisplay' => 'An invalid location (testing)'
                 ),
         );
+        
     }
     
     /**
@@ -837,7 +880,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
     public function checkStorageRetrievalRequestIsValid($id, $data, $patron)
     {
-    	return true;
+        return true;
     }
 
     /**
