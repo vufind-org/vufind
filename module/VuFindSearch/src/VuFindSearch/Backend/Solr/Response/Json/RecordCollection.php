@@ -155,7 +155,4 @@ class RecordCollection extends AbstractRecordCollection
         return isset($this->response['highlighting'])
             ? $this->response['highlighting'] : array();
     }
-
-    public function getOffset() {
-    }
 }
