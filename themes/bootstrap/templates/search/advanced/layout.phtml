@@ -45,9 +45,9 @@
     <div class="row-fluid">
       <i id="groupPlaceHolder" class="icon-plus-sign"></i> <a href="#" onClick="addGroup()">Add Group</a>
     </div>
-    <div class="pad"><input class="btn btn-primary pull-right" type="submit" value="Find"></div>
+    <div class="pad"><input class="btn btn-primary pull-right" type="submit" value="<?= $this->transEsc('Find')?>"></div>
     <?=$this->render('search/advanced/solr.phtml')?>
-    <div class="pad"><input class="btn btn-primary pull-right" type="submit" value="Find"></div>
+    <div class="pad"><input class="btn btn-primary pull-right" type="submit" value="<?= $this->transEsc('Find')?>"></div>
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>">
