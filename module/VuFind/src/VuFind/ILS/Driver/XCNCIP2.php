@@ -1283,13 +1283,6 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                             'Password' .
                         '</ns1:AuthenticationInputType>' .
                     '</ns1:AuthenticationInput>' .
-                    '<ns1:BibliographicId>' .
-                        '<ns1:BibliographicRecordId>' .
-                            '<ns1:BibliographicRecordIdentifier>' .
-                                htmlspecialchars($itemId) .
-                            '</ns1:BibliographicRecordIdentifier>' .
-                        '</ns1:BibliographicRecordId>' .
-                    '</ns1:BibliographicId>' .
                     '<ns1:ItemId>' .
                         '<ns1:ItemIdentifierValue>' .
                             htmlspecialchars($itemId) .
