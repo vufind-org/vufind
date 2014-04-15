@@ -176,6 +176,15 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         return $details;
     }
 
+    /**
+     * A method to search from the root id down to the current record
+     *   creating multiple breadcrumb paths along the way
+     *
+     * @param array  $tree Array of parents by id with title and array of children
+     * @param string $id   Target id to stop at
+     *
+     * @return array Array of arrays with parents in order
+     */
     protected function traceParents($tree, $id)
     {
         // BFS from top (root id) to target $id
