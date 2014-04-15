@@ -416,7 +416,7 @@ class User extends ServiceLocatorAwareGateway
     {
         $this->verify_hash = md5(
             $this->username . $this->password . $this->pass_hash . rand()
-        ) . (time() % pow(10,10));
+        ) . (time() % pow(10, 10));
         return $this->save();
     }
 }

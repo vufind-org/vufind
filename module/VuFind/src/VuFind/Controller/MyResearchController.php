@@ -992,7 +992,7 @@ class MyResearchController extends AbstractBase
             $current = $this->ILLRequests()->addCancelDetails(
                 $catalog, $current, $cancelStatus, $patron
             );
-            if ($cancelStatus 
+            if ($cancelStatus
                 && $cancelStatus['function'] != "getCancelILLRequestLink"
                 && isset($current['cancel_details'])
             ) {
@@ -1211,9 +1211,7 @@ class MyResearchController extends AbstractBase
     public function verifyAction()
     {
         // If we have a submitted form
-        $hash = $this->params()->fromQuery('hash');
-        // Submitted form
-        if (null != $hash) {
+        if ($hash = $this->params()->fromQuery('hash')) {
             $hashtime = $this->getHashAge($hash);
             $config = $this->getConfig();
             // Check if hash is expired

@@ -166,9 +166,6 @@ class OutlineGenerator
             'names'=>array(),
             'lists'=>array()
         );
-
-        // Check modification date
-        $rootModDate = $this->connector->getModDate($root);
         // Get lists
         $lists = $this->connector->getOrderedMembers($root);
         // Get list items
