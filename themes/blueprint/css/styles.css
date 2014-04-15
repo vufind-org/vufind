@@ -2322,10 +2322,6 @@ div.handle {
   margin-top: 0px;
 }
 
-.node a {
-  color: #000000;
-}
-
 .toplevel {
   border: 2px solid black;
 }
@@ -2341,6 +2337,10 @@ div.handle {
   position: absolute;
   bottom: 0;
   right: 0;
+}
+
+.notalabel a {
+  color: #000000;
 }
 
 #viz-instructions {
