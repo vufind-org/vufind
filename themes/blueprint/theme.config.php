@@ -17,8 +17,8 @@ return array(
         'jquery.validate.min.js',
         'jquery-ui/js/jquery-ui.js',
         'lightbox.js',
-	'common.js',
-	'd3.js',
+        'common.js',
+        'd3.js',
     ),
     'favicon' => 'vufind-favicon.ico',
     'helpers' => array(
