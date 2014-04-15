@@ -1,7 +1,6 @@
 @CHARSET "UTF-8";
 
 /** General ***/
-
 body {
     margin: 1.5em 0;
     /*background:url("../images/bg_body.jpg") no-repeat scroll center top;*/
@@ -51,7 +50,7 @@ fieldset, #IE8#HACK { padding-top:0.4em; }
 }
 
 #logo {
-    background:url("../images/vufind_logo.jpg") no-repeat scroll left center transparent;
+    background:url("../images/vufind_logo.png") no-repeat scroll left center transparent;
     float:left;
     height:65px;
     width:300px;
@@ -92,7 +91,7 @@ div.dialogLoading {
     height:100%;
 }
 
-.ajax_availability, .ajax_hold_availability {
+.ajax_availability, .ajax_hold_availability, .ajax_storage_retrieval_request_availability, .ajax_ill_request_availability, .ajax_ill_request_loading, .ajax_hold_request_loading {
     background: url(../images/ajax_loading.gif) no-repeat left top;
     padding:0 .5em .5em 20px;
 }
@@ -481,6 +480,11 @@ li.result blockquote {
 .groupCallnumber {
     margin-left: 18px;
 }
+.result .qrcodeHolder, .recordsubcontent  .qrcodeHolder {
+    border: 1px solid #cfcfcf;
+    position: absolute;
+    display: none;
+}
 
 /** Side facets */
 
@@ -520,10 +524,28 @@ dl.narrowList a {
     margin: 0;
 }
 .navmenu dt {
+    cursor:pointer;
     margin-top:.75em;
     font-weight:bold;
     padding:0.2em 0.4em;
     background-color: #eee;
+}
+.navmenu dt:before {
+    content:'\25BC';
+    display:block;
+    float:right;
+    width:10px;
+    margin:1px 3px 0 0;
+    text-align:center;
+    font-size:8pt;
+}
+.navmenu dd {display:none}
+.navmenu.open dt:before {content:'\25B2'}
+.navmenu.open dd {display:block}
+
+dd input[type="checkbox"] {
+    margin:0 4px 0 0;
+    vertical-align:text-bottom;
 }
 
 /* Icon Classes */
@@ -625,6 +647,18 @@ input.bookbagEmpty {
     background-position: left;
     padding:.5em .5em .5em 20px;
 }
+.forgot_password {
+    background-image:url(../images/silk/key_go.png);
+    background-repeat:no-repeat;
+    background-position: left;
+    padding:.5em .5em .5em 20px;
+}
+.lock {
+    background-image:url(../images/silk/lock.png);
+    background-repeat:no-repeat;
+    background-position: left;
+    padding:.5em .5em .5em 20px;
+}
 .cite {
     background-image:url(../images/silk/report.png);
     background-repeat:no-repeat;
@@ -700,6 +734,13 @@ input.bookbagEmpty {
     background-repeat:no-repeat;
     background-position: left;
     padding:.5em .5em .5em 20px;
+    /*margin-left:1em;*/
+}
+.gear {
+    background-image:url(../images/silk/cog.png);
+    background-repeat:no-repeat;
+    background-position: left;
+    padding:.6em .5em .5em 20px;
     /*margin-left:1em;*/
 }
 h3.list {
@@ -858,6 +899,12 @@ h3.list {
     padding:0 .5em .5em 20px;
     margin-right:1em;
 }
+.qrcodeLink {
+    background-image:url(../images/fugue/qrcode.png);
+    background-repeat:no-repeat;
+    padding:0 .5em .5em 20px;
+    display: block;
+}
 .software {
     background-image:url(../images/silk/disk_multiple.png);
     background-repeat:no-repeat;
@@ -877,21 +924,21 @@ h3.list {
     padding:.5em .5em .5em 20px;
     margin-right:1em;
 }
-.holdPlace {
+.holdPlace, .storageRetrievalRequestPlace, .ILLRequestPlace {
     background-image:url(../images/fugue/holdPlace.png);
     background-repeat:no-repeat;
     background-position: left;
     padding:.5em .5em .5em 20px;
     margin-right:1em;
 }
-.holdCancel {
+.holdCancel, .storageRetrievalRequestCancel, .ILLRequestCancel {
     background-image:url(../images/fugue/holdCancel.png);
     background-repeat:no-repeat;
     background-position: left;
     padding:.5em .5em .5em 20px;
     margin-right:1em;
 }
-.holdCancelAll {
+.holdCancelAll, .storageRetrievalRequestCancelAll, .ILLRequestCancelAll {
     background-image:url(../images/fugue/holdCancelAll.png);
     background-repeat:no-repeat;
     background-position: left;
@@ -912,7 +959,7 @@ h3.list {
     padding:.5em .5em .5em 20px;
     margin-right:1em;
 }
-.checkRequest {
+.checkRequest, .checkStorageRetrievalRequest, .checkILLRequest {
     background-image:url(../images/fugue/checkRequest.png);
     background-repeat:no-repeat;
     padding-left:18px;
@@ -959,11 +1006,18 @@ div.recordsubcontent {
     padding:1em 1.5em 1em 1.5em;
 }
 .recordcover {
+    display: block;
     padding:3px;
     background-color:#eee;
     border:1px solid #cfcfcf;
-    margin-top: 1em;
+    margin: 1em auto 0;
     max-width: 120px;
+}
+
+div.record img.qrcode {
+    display: block;
+    margin: 1em auto 0;
+    border:1px solid #cfcfcf;
 }
 .holdsMessage {
     margin-top: 1em;
@@ -1111,6 +1165,17 @@ ul.similar li {
     margin: 0px;
 }
 
+/*********** Storage Retrieval Request Form ************/
+.storageRetrievalRequestForm .label {
+    width: 70px;
+    text-align: right;
+    float: left;
+    margin-right: 12px;
+}
+.storageRetrievalRequestReference {
+    margin-left: 12px;
+}
+
 /*********** Toolbar (Favorites View) ************/
 .toolbar ul li input.button {
     background-color:transparent;
@@ -1188,6 +1253,15 @@ table.datagrid tr.oddrow {
     background-color: #DDDDDD;
 }
 
+.qrcodeHoldings {
+    float: right;
+    text-align: left;
+}
+
+.qrcodeHoldings a {
+    float: none;
+}
+
 /* Comments */
 
 ul.commentList {
@@ -1255,6 +1329,10 @@ p.citationText {
 .advSearchContent {
     /* Needed for IE7 compatibility: */
     width: 96%;
+}
+.advSearchContent div[class*="span-"] select {
+    display:block;
+    width:100%;
 }
 .groupSearchHolder {
     clear: both;
@@ -2203,6 +2281,33 @@ div.handle {
     border-top: 1px solid #eee;
 }
 
+.authmethod0 {
+  width:47%;
+  float:left;
+  padding:1%;
+  border-right:1px solid rgb(204, 204, 204);
+}
+
+.authmethod1 {
+  width:47%;
+  float:left;
+  padding:1%;
+  border-left:1px solid rgb(204, 204, 204);
+  margin:-1px; /* keep the borders on top of one another; longest one will win */
+}
+
+#authcontainer {
+  float:left;
+  width:100%;
+}
+
+/* Admin styling */
+.tagForm select {
+  width:200px;
+}
+
+/************Styles for results visualizations************/
+
 .node {
   border: solid 1px white;
   font: 10px sans-serif;
@@ -2213,12 +2318,16 @@ div.handle {
 }
 
 .node div {
-        margin-left: 3px;
-        margin-top: 0px;
+  margin-left: 3px;
+  margin-top: 0px;
+}
+
+.node a {
+  color: #000000;
 }
 
 .toplevel {
-        border: 2px solid black;
+  border: 2px solid black;
 }
 
 .label {
@@ -2237,4 +2346,3 @@ div.handle {
 #viz-instructions {
         padding-top:600px;
 }
-
