@@ -1135,18 +1135,18 @@ class MyResearchController extends AbstractBase
         // Database
         $table = $this->getTable('User');
         $user = false;
-        // Check if we have a submitted form, and use the information to get
-        // the user's information
+        // Check if we have a submitted form, and use the information
+        // to get the user's information
         if ($email = $this->params()->fromPost('email')) {
             $user = $table->getByEmail($email);
         } elseif ($username = $this->params()->fromPost('username')) {
             $user = $table->getByUsername($username, false);
         }
         $view = $this->createViewModel();
-        $view->useRecaptcha = $this->recaptcha()->active('newAccount');
+        $view->useRecaptcha = $this->recaptcha()->active('passwordRecovery');
         // If we have a submitted form
         if (false != $user) {
-            if ($view->useRecaptcha && $this->recaptcha()->validate()) {
+            if (!$view->useRecaptcha || $this->recaptcha()->validate()) {
                 $this->sendRecoveryEmail($user, $this->getConfig());
             }
         } elseif ($this->params()->fromPost('submit')) {
@@ -1239,6 +1239,8 @@ class MyResearchController extends AbstractBase
                     $view = $this->createViewModel();
                     $view->hash = $hash;
                     $view->username = $user->username;
+                    $view->useRecaptcha
+                        = $this->recaptcha()->active('passwordRecovery');
                     $view->setTemplate('myresearch/newpassword');
                     return $view;
                 }
@@ -1267,19 +1269,27 @@ class MyResearchController extends AbstractBase
         $userFromHash = isset($post->hash)
             ? $this->getTable('User')->getByVerifyHash($post->hash)
             : false;
+        // View and reCaptcha
+        $view = $this->createViewModel($post);
+        $view->useRecaptcha = $this->recaptcha()->active('changePassword');
+        // Check reCaptcha
+        if ($view->useRecaptcha && !$this->recaptcha()->validate()) {
+            return $view;
+        }
         // Missing or invalid hash
         if (false == $userFromHash) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('recovery_user_not_found');
             // Force login or restore hash
-            return $this->forwardTo('MyResearch', 'ChangePassword');
-        } else if ($userFromHash->username !== $post->username) {
+            $post->username = false;
+            return $this->forwardTo('MyResearch', 'Recover');
+        } elseif ($userFromHash->username !== $post->username) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('authentication_error_invalid');
             $userFromHash->updateHash();
-            $post->username = $userFromHash->username;
-            $post->hash = $userFromHash->verify_hash;
-            return $this->createViewModel($post);
+            $view->username = $userFromHash->username;
+            $view->hash = $userFromHash->verify_hash;
+            return $view;
         }
         // Verify old password if we're logged in
         if ($this->getUser()) {
@@ -1293,15 +1303,13 @@ class MyResearchController extends AbstractBase
                 } catch(AuthException $e) {
                     $this->flashMessenger()->setNamespace('error')
                         ->addMessage($e->getMessage());
-                    return $this->createViewModel(
-                        $this->params()->fromPost()
-                    );
+                    return $view;
                 }
             } else {
                 $this->flashMessenger()->setNamespace('error')
                     ->addMessage('authentication_error_invalid');
-                $post['verifyold'] = true;
-                return $this->createViewModel($post);
+                $view->verifyold = true;
+                return $view;
             }
         }
         // Update password
@@ -1310,9 +1318,7 @@ class MyResearchController extends AbstractBase
         } catch (AuthException $e) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage($e->getMessage());
-            return $this->createViewModel(
-                $this->params()->fromPost()
-            );
+            return $view;
         }
         // Update hash to prevent reusing hash
         $user->updateHash();
@@ -1350,6 +1356,7 @@ class MyResearchController extends AbstractBase
         $user->updateHash();
         $view->hash = $user->verify_hash;
         $view->setTemplate('myresearch/newpassword');
+        $view->useRecaptcha = $this->recaptcha()->active('changePassword');
         return $view;
     }
 
