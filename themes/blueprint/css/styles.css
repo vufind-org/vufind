@@ -50,7 +50,7 @@ fieldset, #IE8#HACK { padding-top:0.4em; }
 }
 
 #logo {
-    background:url("../images/vufind_logo.jpg") no-repeat scroll left center transparent;
+    background:url("../images/vufind_logo.png") no-repeat scroll left center transparent;
     float:left;
     height:65px;
     width:300px;
@@ -647,6 +647,18 @@ input.bookbagEmpty {
     background-position: left;
     padding:.5em .5em .5em 20px;
 }
+.forgot_password {
+    background-image:url(../images/silk/key_go.png);
+    background-repeat:no-repeat;
+    background-position: left;
+    padding:.5em .5em .5em 20px;
+}
+.lock {
+    background-image:url(../images/silk/lock.png);
+    background-repeat:no-repeat;
+    background-position: left;
+    padding:.5em .5em .5em 20px;
+}
 .cite {
     background-image:url(../images/silk/report.png);
     background-repeat:no-repeat;
@@ -722,6 +734,13 @@ input.bookbagEmpty {
     background-repeat:no-repeat;
     background-position: left;
     padding:.5em .5em .5em 20px;
+    /*margin-left:1em;*/
+}
+.gear {
+    background-image:url(../images/silk/cog.png);
+    background-repeat:no-repeat;
+    background-position: left;
+    padding:.6em .5em .5em 20px;
     /*margin-left:1em;*/
 }
 h3.list {

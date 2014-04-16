@@ -198,7 +198,8 @@ class Solr extends AbstractBase
             )
         )) {
             $record = json_decode($response);
-            return $record->response->docs[0]->$modfield;
+            $date = $record->response->docs[0]->$modfield;
+            return $date[0];
         }
         return null;
     }
@@ -206,19 +207,24 @@ class Solr extends AbstractBase
     /**
      * Returns file contents of the structmap, our most common call
      *
-     * @param string $id record id
+     * @param string $id         record id
+     * @param array  $extra_sort extra fields to sort on
      *
      * @return string $id
      */
-    public function getOrderedMembers($id)
+    public function getOrderedMembers($id, $extra_sort = array())
     {
         // Try to find members in order
         $seqField = 'sequence_'.str_replace(':', '_', $id).'_str';
+        $sort = array($seqField.' asc');
+        foreach ($extra_sort as $sf) {
+            $sort[] = $sf;
+        }
         $response = $this->search(
             new ParamBag(
                 array(
                     'q'  => 'relsext.isMemberOf:"'.$id.'"',
-                    'sort'  => $seqField.' asc',
+                    'sort'  => implode(',', $sort),
                     'fl' => 'id',
                     'rows' => 99999,
                 )

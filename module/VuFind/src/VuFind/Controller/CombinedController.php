@@ -85,6 +85,8 @@ class CombinedController extends AbstractSearch
         list($controller, $action)
             = explode('-', $currentOptions->getSearchAction());
         $settings = $config[$searchClassId];
+
+        $this->adjustQueryForSettings($settings);
         $settings['view'] = $this->forwardTo($controller, $action);
 
         // Send response:
@@ -130,6 +132,7 @@ class CombinedController extends AbstractSearch
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('combined')
             ->toArray();
         foreach ($config as $current => $settings) {
+            $this->adjustQueryForSettings($settings);
             $currentOptions = $options->get($current);
             list($controller, $action)
                 = explode('-', $currentOptions->getSearchAction());
@@ -188,5 +191,19 @@ class CombinedController extends AbstractSearch
         default:
             throw new \Exception('Unexpected search type.');
         }
+    }
+
+    /**
+     * Adjust the query context to reflect the current settings.
+     *
+     * @param array $settings Settings
+     *
+     * @return void
+     */
+    protected function adjustQueryForSettings($settings)
+    {
+        // Apply limit setting, if any:
+        $query = $this->getRequest()->getQuery();
+        $query->limit = isset($settings['limit']) ? $settings['limit'] : null;
     }
 }
