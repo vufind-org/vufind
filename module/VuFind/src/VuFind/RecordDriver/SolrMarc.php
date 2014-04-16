@@ -307,6 +307,16 @@ class SolrMarc extends SolrDefault
     }
 
     /**
+     * Get a human readable place of publication.
+     *
+     * @return array
+     */
+    public function getHumanReadablePublicationDates()
+    {
+        return $this->getPublicationInfo('c');
+    }
+
+    /**
      * Get an array of newer titles for the record.
      *
      * @return array
@@ -321,46 +331,58 @@ class SolrMarc extends SolrDefault
     }
 
     /**
+     * Get the item's publication information
+     *
+     * @param string $subfield The subfield to retrieve ('a' = location, 'c' = date)
+     *
+     * @return array
+     */
+    public function getPublicationInfo($subfield = 'a')
+    {
+        // First check old-style 260a place:
+        $results = $this->getFieldArray('260');
+
+        // Now track down relevant RDA-style 264a places; we only care about
+        // copyright and publication places (and ignore copyright places if
+        // publication places are present).  This behavior is designed to be
+        // consistent with default SolrMarc handling of names/dates.
+        $pubResults = $copyResults = array();
+
+        $fields = $this->marcRecord->getFields('264');
+        if (is_array($fields)) {
+            foreach ($fields as $currentField) {
+                $currentPlace = $currentField->getSubfield($subfield);
+                $currentPlace = is_object($currentPlace)
+                    ? $currentPlace->getData() : null;
+                if (!empty($currentPlace)) {
+                    switch ($currentField->getIndicator('2')) {
+                    case '1':
+                        $pubResults[] = $currentPlace;
+                        break;
+                    case '4':
+                        $copyResults[] = $currentPlace;
+                        break;
+                    }
+                }
+            }
+        }
+        if (count($pubResults) > 0) {
+            $results = array_merge($results, $pubResults);
+        } else if (count($copyPlaces) > 0) {
+            $results = array_merge($results, $copyResults);
+        }
+
+        return $results;
+    }
+
+    /**
      * Get the item's places of publication.
      *
      * @return array
      */
     public function getPlacesOfPublication()
     {
-        // First check old-style 260a place:
-        $places = $this->getFieldArray('260');
-
-        // Now track down relevant RDA-style 264a places; we only care about
-        // copyright and publication places (and ignore copyright places if
-        // publication places are present).  This behavior is designed to be
-        // consistent with default SolrMarc handling of names/dates.
-        $pubPlaces = $copyPlaces = array();
-
-        $fields = $this->marcRecord->getFields('264');
-        if (is_array($fields)) {
-            foreach ($fields as $currentField) {
-                $currentPlace = $currentField->getSubfield('a');
-                $currentPlace = is_object($currentPlace)
-                    ? $currentPlace->getData() : null;
-                if (!empty($currentPlace)) {
-                    switch ($currentField->getIndicator('2')) {
-                    case '1':
-                        $pubPlaces[] = $currentPlace;
-                        break;
-                    case '4':
-                        $copyPlaces[] = $currentPlace;
-                        break;
-                    }
-                }
-            }
-        }
-        if (count($pubPlaces) > 0) {
-            $places = array_merge($places, $pubPlaces);
-        } else if (count($copyPlaces) > 0) {
-            $places = array_merge($places, $copyPlaces);
-        }
-
-        return $places;
+        return $this->getPublicationInfo();
     }
 
     /**
