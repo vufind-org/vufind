@@ -89,12 +89,12 @@ class Compass implements ExtensionInterface
         $root = ($last_letter == '\\' || $last_letter == '/') ? $root : $root . DIRECTORY_SEPARATOR;
 
         $directories[] = $root;
-
+        
         while (sizeof($directories)) {
             $dir = array_pop($directories);
             if ($handle = opendir($dir)) {
                 while (false !== ($file = readdir($handle))) {
-                    if ($file == '.' || $file == '..') {
+                    if ($file == '.' || $file == '..' || substr($file,0,1)=='.') {
                         continue;
                     }
                     $file = $dir . $file;
@@ -152,7 +152,7 @@ class Compass implements ExtensionInterface
         if ($path) {
             return $path;
         }
-
+        
         return false;
     }
 
@@ -444,10 +444,101 @@ class Compass implements ExtensionInterface
         print_r(func_get_args());
         die;
     }
+    
+    public static function compassPrefixed ($prefix, $list) {
+    	$list = static::compassList( $list );
+    	$prefix = trim ( preg_replace ( '/[^a-z]/', '', strtolower ( $prefix ) ) );
+    	
+    	$reqs = array (
+    			'pie' => array (
+    					'border-radius',
+    					'box-shadow',
+    					'border-image',
+    					'background',
+    					'linear-gradient'
+    			),
+    			'webkit' => array (
+    					'background-clip',
+    					'background-origin',
+    					'border-radius',
+    					'box-shadow',
+    					'box-sizing',
+    					'columns',
+    					'gradient',
+    					'linear-gradient',
+    					'text-stroke'
+    			),
+    			'moz' => array (
+    					'background-size',
+    					'border-radius',
+    					'box-shadow',
+    					'box-sizing',
+    					'columns',
+    					'gradient',
+    					'linear-gradient'
+    			),
+    			'o' => array (
+    					'background-origin',
+    					'text-overflow'
+    			)
+    	);
+    	foreach ( $list as $item ) {
+    		$aspect = trim ( current ( explode ( '(', $item ) ) );
+    		if (isset ( $reqs [$prefix] ) && in_array ( $aspect, $reqs [$prefix] )) {
+    			return new SassBoolean ( TRUE );
+    		}
+    	}
+    	return new SassBoolean ( FALSE );
+    }
+    
+    public static function compassPrefix ($vendor, $input) {
+    	if (is_object($vendor)) {
+    		$vendor = $vendor->value;
+    	}
+    	
+    	$list = static::compassList($input, ',');
+    	$output = '';
+    	foreach($list as $key=>$value) {
+    		$list[$key] = '-' . $vendor . '-' . $value;
+    	}
+    	return new SassString(implode(', ', $list));
+    }
+    
+    public static function compassWebkit ($input) {
+    	return static::compassPrefix('webkit', $input);
+    }
+    
+    public static function compassMoz ($input) {
+    	return static::compassPrefix('moz', $input);
+    }
+    
+    public static function compassO ($input) {
+    	return static::compassPrefix('o', $input);
+    }
+    
+    public static function compassMs ($input) {
+    	return static::compassPrefix('ms', $input);
+    }
+    
+    public static function compassSvg ($input) {
+    	return static::compassPrefix('svg', $input);
+    }
+    
+    public static function compassPie ($input) {
+    	return static::compassPrefix('ms', $input);
+    }
+    
+    public static function compassCss2 ($input) {
+    	return static::compassPrefix('ms', $input);
+    }
+    
+    public static function compassOwg ($input) {
+    	return static::compassPrefix('ms', $input);
+    }
 
-    public static function compassPrefixedForTransition($prefix, $property)
+    public static function compassPrefixedForTransition($prefix, $list)
     {
-
+    	
     }
 
     public static function compassPi()

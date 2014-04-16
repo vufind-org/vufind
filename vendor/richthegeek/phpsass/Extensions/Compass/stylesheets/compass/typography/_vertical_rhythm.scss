@@ -55,9 +55,9 @@ $base-half-leader: $base-leader / 2;
 
 // Establishes a font baseline for the given font-size.
 @mixin establish-baseline($font-size: $base-font-size) {
-// IE 6 refuses to resize fonts set in pixels and it weirdly resizes fonts
-// whose root is set in ems. So we set the root font size in percentages of
-// the default font size.
+  // IE 6 refuses to resize fonts set in pixels and it weirdly resizes fonts
+  // whose root is set in ems. So we set the root font size in percentages of
+  // the default font size.
   * html {
     font-size: 100% * ($font-size / $browser-default-font-size);
   }
@@ -109,14 +109,16 @@ $base-half-leader: $base-leader / 2;
 }
 
 // Calculate rhythm units.
-@function rhythm($lines: 1,
-$font-size: $base-font-size,
-$offset: 0) {
+@function rhythm(
+  $lines: 1,
+  $font-size: $base-font-size,
+  $offset: 0
+) {
   @if not $relative-font-sizing and $font-size != $base-font-size {
     @warn "$relative-font-sizing is false but a relative font size was passed to the rhythm function";
   }
   $rhythm: $font-unit * ($lines * $base-line-height - $offset) / $font-size;
-// Round the pixels down to nearest integer.
+  // Round the pixels down to nearest integer.
   @if unit($rhythm) == px {
     $rhythm: floor($rhythm);
   }
@@ -126,7 +128,8 @@ $offset: 0) {
 // Calculate the minimum multiple of rhythm units needed to contain the font-size.
 @function lines-for-font-size($font-size) {
   $lines: if($round-to-nearest-half-line,
-    ceil(2 * $font-size / $base-line-height) / 2, ceil($font-size / $base-line-height));
+              ceil(2 * $font-size / $base-line-height) / 2,
+              ceil($font-size / $base-line-height));
   @if $lines * $base-line-height - $font-size < $min-line-padding * 2 {
     $lines: $lines + if($round-to-nearest-half-line, 0.5, 1);
   }
@@ -180,8 +183,7 @@ $offset: 0) {
   border-#{$side}: {
     style: $border-style;
     width: $font-unit * $width / $font-size;
-  }
-;
+  };
   padding-#{$side}: rhythm($lines, $font-size, $offset: $width);
 }
 
@@ -193,8 +195,7 @@ $offset: 0) {
   border: {
     style: $border-style;
     width: $font-unit * $width / $font-size;
-  }
-;
+  };
   padding: rhythm($lines, $font-size, $offset: $width);
 }
 

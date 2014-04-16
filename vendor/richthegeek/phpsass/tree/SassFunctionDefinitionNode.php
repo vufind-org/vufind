@@ -18,7 +18,7 @@
 class SassFunctionDefinitionNode extends SassNode
 {
   const NODE_IDENTIFIER = FALSE;
-  const MATCH = '/^@function\s+([_-\w]+)\s*(?:\((.*?)\))?\s*$/im';
+  const MATCH = '/^@function\s+([_\-\w]+)\s*(?:\((.*?)\))?\s*$/im';
   const IDENTIFIER = 1;
   const NAME = 1;
   const ARGUMENTS = 2;

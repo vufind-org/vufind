@@ -12,11 +12,12 @@ $sprite-selectors: hover, target, active !default;
 // sprite of the given `$sprite` name. You can move the image relative to its
 // natural position by passing `$offset-x` and `$offset-y`.
 @mixin sprite-background-position($map, $sprite, $offset-x: 0, $offset-y: 0) {
-  background-position: sprite-position($map, $sprite, $offset-x, $offset-y);
+  background-position: sprite-position($map, $sprite, $offset-x, $offset-y);  
 }
 
+
 // Determines if you want to include magic selectors in your sprites
-$disable-magic-sprite-selectors: false !default;
+$disable-magic-sprite-selectors:false !default;
 
 // Include the position and (optionally) dimensions of this `$sprite`
 // in the given sprite `$map`. The sprite url should come from either a base
@@ -40,7 +41,7 @@ $disable-magic-sprite-selectors: false !default;
   @each $selector in $sprite-selectors {
     @if sprite_has_selector($map, $sprite-name, $selector) {
       &:#{$selector}, &.#{$full-sprite-name}_#{$selector}, &.#{$full-sprite-name}-#{$selector} {
-        @include sprite-background-position($map, "#{$sprite-name}_#{$selector}", $offset-x, $offset-y);
+          @include sprite-background-position($map, "#{$sprite-name}_#{$selector}", $offset-x, $offset-y);
       }
     }
   }
@@ -57,9 +58,7 @@ $disable-magic-sprite-selectors: false !default;
     @if sprite_does_not_have_parent($map, $sprite-name) {
       $full-sprite-name: "#{$prefix}-#{$sprite-name}";
       .#{$full-sprite-name} {
-        @if $base-class {
-          @extend #{$base-class};
-        }
+        @if $base-class { @extend #{$base-class}; }
         @include sprite($map, $sprite-name, $dimensions, $offset-x, $offset-y);
       }
     }

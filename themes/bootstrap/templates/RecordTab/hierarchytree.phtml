@@ -44,7 +44,7 @@
           <span id="treeSearchLoadingImg" class="hide"><i class="icon-spinner icon-large icon-spin"></i></span>
         </div>
         <div id="treeSearchNoResults" class="alert alert-error hide"><?=$this->transEsc('nohit_heading')?></div>
-        <div id="treeSearchLimitReached" class="alert alert-error hide"><?=$this->translate('tree_search_limit_reached_html', array('%%url%%' => $this->url('search-results'), '%%limit%%' => $this->tab->getSearchLimit()))?></div>
+        <div id="treeSearchLimitReached" class="alert alert-error hide"><?=$this->transEsc('tree_search_limit_reached_html', array('%%url%%' => $this->url('search-results'), '%%limit%%' => $this->tab->getSearchLimit()))?></div>
       <? endif; ?>
       <div id="hierarchyTree" class="pad">
         <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>" class="hiddenRecordId" />

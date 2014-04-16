@@ -244,32 +244,78 @@
         "description": "Package containes ISPN (International Standard Product Numbers) validations such as:\n * ISSN\n * ISBN\n * ISMN\n * ISRC (International Standard Recording Code)\n * EAN8\n * EAN13\n * EAN14\n * UCC12\n * SSCC"
     },
     {
-        "name": "zendframework/zendrest",
-        "version": "2.0.1",
-        "version_normalized": "2.0.1.0",
+        "name": "zendframework/zendxml",
+        "version": "1.0.0",
+        "version_normalized": "1.0.0.0",
         "source": {
             "type": "git",
-            "url": "https://github.com/zendframework/ZendRest.git",
-            "reference": "release-2.0.1"
+            "url": "https://github.com/zendframework/ZendXml.git",
+            "reference": "559b34f426d33a11c3db118e00ce14bb8dc64e5f"
         },
         "dist": {
             "type": "zip",
-            "url": "https://packages.zendframework.com/composer/zendframework-zendrest-2.0.1-release-2.0.1-97c8b5.zip",
-            "reference": "2.0.1",
-            "shasum": "e5c2ae15280bfbfb090601752dcb1f193d8617f8"
+            "url": "https://packages.zendframework.com/composer/zendframework-zendxml-559b34f426d33a11c3db118e00ce14bb8dc64e5f-zip-6cf7a2.zip",
+            "reference": "1.0.0",
+            "shasum": "39abc614b5c26bcbf8102e203c52dee73c4460a8"
         },
         "require": {
-            "php": ">=5.3.3",
-            "zendframework/zend-http": ">=2.0.0",
-            "zendframework/zend-uri": ">=2.0.0"
+            "php": ">=5.3.3"
         },
-        "time": "2012-09-24 15:17:53",
+        "require-dev": {
+            "fabpot/php-cs-fixer": "*@dev",
+            "phpunit/phpunit": "~3.7"
+        },
+        "time": "2014-03-05 22:25:44",
         "type": "library",
         "extra": {
             "branch-alias": {
-                "dev-master": "2.0.x-dev"
+                "dev-master": "1.0-dev"
             }
         },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "ZendXml": "library/"
+            }
+        },
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "description": "Utility library for XML usage, best practices, and security in PHP",
+        "homepage": "http://packages.zendframework.com/",
+        "keywords": [
+            "security",
+            "xml",
+            "zf2"
+        ],
+        "support": {
+            "source": "https://github.com/zendframework/ZendXml/tree/master",
+            "issues": "https://github.com/zendframework/ZendXml/issues"
+        }
+    },
+    {
+        "name": "zendframework/zendrest",
+        "version": "2.0.2",
+        "version_normalized": "2.0.2.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/zendframework/ZendRest.git",
+            "reference": "7427d242b4546e5aef1206d2c97e402109d8843e"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://packages.zendframework.com/composer/zendframework-zendrest-7427d242b4546e5aef1206d2c97e402109d8843e-zip-da96cc.zip",
+            "reference": "2.0.2",
+            "shasum": "cd304d9e2fccccbd98348bfbead7d42b102e565a"
+        },
+        "require": {
+            "php": ">=5.3.3",
+            "zendframework/zend-http": "~2.0",
+            "zendframework/zend-uri": "~2.0",
+            "zendframework/zendxml": "~1.0-dev"
+        },
+        "time": "2014-03-05 22:32:09",
+        "type": "library",
         "installation-source": "dist",
         "autoload": {
             "psr-0": {
@@ -286,86 +332,28 @@
             "zf2"
         ],
         "support": {
-            "source": "https://github.com/zendframework/ZendRest/tree/release-2.0.1",
+            "source": "https://github.com/zendframework/ZendRest/tree/release-2.0.2",
             "issues": "https://github.com/zendframework/ZendRest/issues"
         }
     },
     {
-        "name": "zendframework/zendservice-amazon",
-        "version": "2.0.2",
-        "version_normalized": "2.0.2.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/zendframework/ZendService_Amazon.git",
-            "reference": "release-2.0.2"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://packages.zendframework.com/composer/zendframework-zendservice-amazon-2.0.2-release-2.0.2-91b73f.zip",
-            "reference": "2.0.2",
-            "shasum": "4d83d67516a107b0110ca3473c8ef6c37464eddb"
-        },
-        "require": {
-            "php": ">=5.3.3",
-            "zendframework/zend-crypt": ">=2.0.0",
-            "zendframework/zend-http": ">=2.0.0",
-            "zendframework/zend-json": ">=2.0.0",
-            "zendframework/zendrest": ">=2.0.0"
-        },
-        "require-dev": {
-            "zendframework/zend-i18n": ">=2.0.0"
-        },
-        "suggest": {
-            "zendframework/zend-uri": "Zend\\Uri component"
-        },
-        "time": "2012-10-17 19:02:58",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.0.x-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "ZendService": "library/"
-            }
-        },
-        "license": [
-            "BSD-3-Clause"
-        ],
-        "description": "OOP wrapper for the Amazon web service",
-        "homepage": "http://packages.zendframework.com/",
-        "keywords": [
-            "amazon",
-            "ec2",
-            "s3",
-            "simpledb",
-            "sqs",
-            "zf2"
-        ],
-        "support": {
-            "source": "https://github.com/zendframework/ZendService_Amazon/tree/release-2.0.2",
-            "issues": "https://github.com/zendframework/ZendService_Amazon/issues"
-        }
-    },
-    {
         "name": "zendframework/zendframework",
-        "version": "2.2.5",
-        "version_normalized": "2.2.5.0",
+        "version": "2.2.6",
+        "version_normalized": "2.2.6.0",
         "source": {
             "type": "git",
             "url": "https://github.com/zendframework/zf2.git",
-            "reference": "4a7cf6a4cf791244e14aa0ca49d1f06916b63202"
+            "reference": "5eae447d46b00a280573b94c398b2f46f45a6903"
         },
         "dist": {
             "type": "zip",
-            "url": "https://packages.zendframework.com/composer/zendframework-zendframework-4a7cf6a4cf791244e14aa0ca49d1f06916b63202-zip-2661de.zip",
-            "reference": "2.2.5",
-            "shasum": "3c699626517e16aa7b3d9a0c811fe41a2586179d"
+            "url": "https://packages.zendframework.com/composer/zendframework-zendframework-5eae447d46b00a280573b94c398b2f46f45a6903-zip-cbc7a8.zip",
+            "reference": "2.2.6",
+            "shasum": "fd15c9f720744a28ea2a93dda737ca37bd3c40b2"
         },
         "require": {
-            "php": ">=5.3.3"
+            "php": ">=5.3.3",
+            "zendframework/zendxml": "~1.0-dev"
         },
         "replace": {
             "zendframework/zend-authentication": "self.version",
@@ -436,7 +424,7 @@
             "zendframework/zendpdf": "ZendPdf for creating PDF representations of barcodes",
             "zendframework/zendservice-recaptcha": "ZendService\\ReCaptcha for rendering ReCaptchas in Zend\\Captcha and/or Zend\\Form"
         },
-        "time": "2013-10-31 15:48:16",
+        "time": "2014-03-06 17:27:03",
         "bin": [
             "bin/classmap_generator.php",
             "bin/pluginmap_generator.php",
@@ -465,9 +453,211 @@
             "zf2"
         ],
         "support": {
-            "source": "https://github.com/zendframework/zf2/tree/release-2.2.5",
+            "source": "https://github.com/zendframework/zf2/tree/release-2.2.6",
             "issues": "https://github.com/zendframework/zf2/issues"
         }
+    },
+    {
+        "name": "leafo/lessphp",
+        "version": "v0.3.9",
+        "version_normalized": "0.3.9.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/leafo/lessphp.git",
+            "reference": "a11a6141b5715162b933c405379765d817891c5d"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/leafo/lessphp/zipball/a11a6141b5715162b933c405379765d817891c5d",
+            "reference": "a11a6141b5715162b933c405379765d817891c5d",
+            "shasum": ""
+        },
+        "time": "2013-03-02 16:13:31",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "0.3-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "lessc.inc.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT",
+            "GPL-3.0"
+        ],
+        "authors": [
+            {
+                "name": "Leaf Corcoran",
+                "email": "leafot@gmail.com",
+                "homepage": "http://leafo.net"
+            }
+        ],
+        "description": "lessphp is a compiler for LESS written in PHP.",
+        "homepage": "http://leafo.net/lessphp/"
+    },
+    {
+        "name": "zendframework/zendservice-amazon",
+        "version": "2.0.3",
+        "version_normalized": "2.0.3.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/zendframework/ZendService_Amazon.git",
+            "reference": "f3d44e3488908323c34bf040c045ee71e1196796"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://packages.zendframework.com/composer/zendframework-zendservice-amazon-f3d44e3488908323c34bf040c045ee71e1196796-zip-31bbc0.zip",
+            "reference": "2.0.3",
+            "shasum": "b7f77cced220f6738248fc827952ab2c6604a08f"
+        },
+        "require": {
+            "php": ">=5.3.3",
+            "zendframework/zend-crypt": "~2.0",
+            "zendframework/zend-http": "~2.0",
+            "zendframework/zend-json": "~2.0",
+            "zendframework/zendrest": "~2.0",
+            "zendframework/zendxml": "~1.0-dev"
+        },
+        "require-dev": {
+            "zendframework/zend-i18n": "~2.0"
+        },
+        "suggest": {
+            "zendframework/zend-uri": "Zend\\Uri component"
+        },
+        "time": "2014-03-05 22:37:42",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "ZendService\\Amazon\\": "library/"
+            }
+        },
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "description": "OOP wrapper for the Amazon web service",
+        "homepage": "http://packages.zendframework.com/",
+        "keywords": [
+            "amazon",
+            "ec2",
+            "s3",
+            "simpledb",
+            "sqs",
+            "zf2"
+        ],
+        "support": {
+            "source": "https://github.com/zendframework/ZendService_Amazon/tree/master",
+            "issues": "https://github.com/zendframework/ZendService_Amazon/issues"
+        }
+    },
+    {
+        "name": "richthegeek/phpsass",
+        "version": "2014-03-20",
+        "version_normalized": "2014-03-20",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/richthegeek/phpsass.git",
+            "reference": "22659dc78b070ae7479fada8868d6abdc7896197"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/richthegeek/phpsass/zipball/22659dc78b070ae7479fada8868d6abdc7896197",
+            "reference": "22659dc78b070ae7479fada8868d6abdc7896197",
+            "shasum": ""
+        },
+        "time": "2014-03-20 17:07:47",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "script/",
+                "renderers/",
+                "tree/",
+                "SassException.php",
+                "SassFile.php",
+                "SassParser.php"
+            ]
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-2-Clause"
+        ],
+        "authors": [
+            {
+                "name": "Richard Lyon",
+                "homepage": "https://github.com/richthegeek"
+            },
+            {
+                "name": "Sebastian Siemssen",
+                "homepage": "https://twitter.com/thefubhy"
+            },
+            {
+                "name": "Steve Jones",
+                "homepage": "https://github.com/darthsteven"
+            },
+            {
+                "name": "Sam Richard",
+                "homepage": "https://github.com/snugug"
+            }
+        ],
+        "description": "PHPSass is a PHP compiler for SASS, a popular CSS pre-processor language.",
+        "homepage": "http://phpsass.com"
+    },
+    {
+        "name": "aferrandini/phpqrcode",
+        "version": "1.0.1",
+        "version_normalized": "1.0.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/aferrandini/PHPQRCode.git",
+            "reference": "3c1c0454d43710ab5bbe19a51ad4cb41c22e3d46"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/aferrandini/PHPQRCode/zipball/3c1c0454d43710ab5bbe19a51ad4cb41c22e3d46",
+            "reference": "3c1c0454d43710ab5bbe19a51ad4cb41c22e3d46",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.0"
+        },
+        "time": "2013-07-08 09:39:08",
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "PHPQRCode": "lib/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Ariel Ferrandini",
+                "email": "arielferrandini@gmail.com",
+                "homepage": "http://www.ferrandini.com/",
+                "role": "Developer"
+            }
+        ],
+        "description": "PHPQRCode porting and changed for PHP 5.3 compatibility",
+        "homepage": "https://github.com/aferrandini/PHPQRCode",
+        "keywords": [
+            "barcode",
+            "php",
+            "qrcode"
+        ]
     },
     {
         "name": "serialssolutions/summon",
@@ -506,129 +696,6 @@
             "source": "https://github.com/summon/Summon.php/tree/master",
             "issues": "https://github.com/summon/Summon.php/issues"
         }
-    },
-    {
-        "name": "aferrandini/phpqrcode",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/aferrandini/PHPQRCode.git",
-            "reference": "1cedb4ccd266b18dcc8c734555deb5f21315426b"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/aferrandini/PHPQRCode/zipball/1cedb4ccd266b18dcc8c734555deb5f21315426b",
-            "reference": "1cedb4ccd266b18dcc8c734555deb5f21315426b",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.0"
-        },
-        "time": "2013-12-16 07:21:25",
-        "type": "library",
-        "installation-source": "source",
-        "autoload": {
-            "psr-0": {
-                "PHPQRCode": "lib/"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Ariel Ferrandini",
-                "email": "arielferrandini@gmail.com",
-                "homepage": "http://www.ferrandini.com/",
-                "role": "Developer"
-            }
-        ],
-        "description": "PHPQRCode porting and changed for PHP 5.3 compatibility",
-        "homepage": "https://github.com/aferrandini/PHPQRCode",
-        "keywords": [
-            "barcode",
-            "php",
-            "qrcode"
-        ]
-    },
-    {
-        "name": "pear-pear.php.net/File_MARC",
-        "version": "1.1.1",
-        "version_normalized": "1.1.1.0",
-        "dist": {
-            "type": "file",
-            "url": "http://pear.php.net/get/File_MARC-1.1.1.tgz",
-            "reference": null,
-            "shasum": null
-        },
-        "require": {
-            "php": ">=5.3.0.0"
-        },
-        "replace": {
-            "pear-pear/file_marc": "== 1.1.1.0"
-        },
-        "type": "pear-library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                ""
-            ]
-        },
-        "include-path": [
-            "/"
-        ],
-        "description": "The standard for machine-readable cataloging (MARC) records is documented at http://loc.gov/marc/. This package enables you to read existing MARC records from a file, string, or (using the YAZ extension), from a Z39.50 source. You can also use this package to create new MARC records.\n\nThis package is based on the PHP MARC package, originally called \"php-marc\", that is part of the Emilda Project (http://www.emilda.org).  Christoffer Landtman generously agreed to make the \"php-marc\" code available under the GNU LGPL so it could be used as the basis of this PEAR package."
-    },
-    {
-        "name": "symfony/yaml",
-        "version": "v2.4.1",
-        "version_normalized": "2.4.1.0",
-        "target-dir": "Symfony/Component/Yaml",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/symfony/Yaml.git",
-            "reference": "4e1a237fc48145fae114b96458d799746ad89aa0"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/symfony/Yaml/zipball/4e1a237fc48145fae114b96458d799746ad89aa0",
-            "reference": "4e1a237fc48145fae114b96458d799746ad89aa0",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.3.3"
-        },
-        "time": "2013-12-28 08:12:03",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "2.4-dev"
-            }
-        },
-        "installation-source": "dist",
-        "autoload": {
-            "psr-0": {
-                "Symfony\\Component\\Yaml\\": ""
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT"
-        ],
-        "authors": [
-            {
-                "name": "Fabien Potencier",
-                "email": "fabien@symfony.com"
-            },
-            {
-                "name": "Symfony Community",
-                "homepage": "http://symfony.com/contributors"
-            }
-        ],
-        "description": "Symfony Yaml Component",
-        "homepage": "http://symfony.com"
     },
     {
         "name": "jasig/phpcas",
@@ -684,147 +751,82 @@
         }
     },
     {
-        "name": "leafo/lessphp",
-        "version": "v0.3.9",
-        "version_normalized": "0.3.9.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/leafo/lessphp.git",
-            "reference": "a11a6141b5715162b933c405379765d817891c5d"
-        },
+        "name": "pear-pear.php.net/File_MARC",
+        "version": "1.1.1",
+        "version_normalized": "1.1.1.0",
         "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/leafo/lessphp/zipball/a11a6141b5715162b933c405379765d817891c5d",
-            "reference": "a11a6141b5715162b933c405379765d817891c5d",
-            "shasum": ""
+            "type": "file",
+            "url": "http://pear.php.net/get/File_MARC-1.1.1.tgz",
+            "reference": null,
+            "shasum": null
         },
-        "time": "2013-03-02 16:13:31",
-        "type": "library",
-        "extra": {
-            "branch-alias": {
-                "dev-master": "0.3-dev"
-            }
+        "require": {
+            "php": ">=5.3.0.0"
         },
+        "replace": {
+            "pear-pear/file_marc": "== 1.1.1.0"
+        },
+        "type": "pear-library",
         "installation-source": "dist",
         "autoload": {
             "classmap": [
-                "lessc.inc.php"
+                ""
             ]
         },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "MIT",
-            "GPL-3.0"
+        "include-path": [
+            "/"
         ],
-        "authors": [
-            {
-                "name": "Leaf Corcoran",
-                "email": "leafot@gmail.com",
-                "homepage": "http://leafo.net"
-            }
-        ],
-        "description": "lessphp is a compiler for LESS written in PHP.",
-        "homepage": "http://leafo.net/lessphp/"
+        "description": "The standard for machine-readable cataloging (MARC) records is documented at http://loc.gov/marc/. This package enables you to read existing MARC records from a file, string, or (using the YAZ extension), from a Z39.50 source. You can also use this package to create new MARC records.\n\nThis package is based on the PHP MARC package, originally called \"php-marc\", that is part of the Emilda Project (http://www.emilda.org).  Christoffer Landtman generously agreed to make the \"php-marc\" code available under the GNU LGPL so it could be used as the basis of this PEAR package."
     },
     {
-        "name": "richthegeek/phpsass",
-        "version": "2012-06-27",
-        "version_normalized": "2012-06-27",
+        "name": "symfony/yaml",
+        "version": "v2.4.3",
+        "version_normalized": "2.4.3.0",
+        "target-dir": "Symfony/Component/Yaml",
         "source": {
             "type": "git",
-            "url": "https://github.com/richthegeek/phpsass.git",
-            "reference": "3ed604470630a11897e580f9551ad83dde715c1f"
+            "url": "https://github.com/symfony/Yaml.git",
+            "reference": "77a41c2835ab7cfe8bf6d15e25d3af8f3eb3bacd"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/richthegeek/phpsass/zipball/3ed604470630a11897e580f9551ad83dde715c1f",
-            "reference": "3ed604470630a11897e580f9551ad83dde715c1f",
-            "shasum": ""
-        },
-        "time": "2013-06-27 14:12:37",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                "script/",
-                "renderers/",
-                "tree/",
-                "SassException.php",
-                "SassFile.php",
-                "SassParser.php"
-            ]
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "BSD-2-Clause"
-        ],
-        "authors": [
-            {
-                "name": "Richard Lyon",
-                "homepage": "https://github.com/richthegeek"
-            },
-            {
-                "name": "Sebastian Siemssen",
-                "homepage": "https://twitter.com/thefubhy"
-            },
-            {
-                "name": "Steve Jones",
-                "homepage": "https://github.com/darthsteven"
-            },
-            {
-                "name": "Sam Richard",
-                "homepage": "https://github.com/snugug"
-            }
-        ],
-        "description": "PHPSass is a PHP compiler for SASS, a popular CSS pre-processor language.",
-        "homepage": "http://phpsass.com"
-    },
-    {
-        "name": "leafo/scssphp",
-        "version": "v0.0.9",
-        "version_normalized": "0.0.9.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/leafo/scssphp.git",
-            "reference": "a06d702ebf9fabb22542bbb27cc12a905813bb6d"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/leafo/scssphp/zipball/a06d702ebf9fabb22542bbb27cc12a905813bb6d",
-            "reference": "a06d702ebf9fabb22542bbb27cc12a905813bb6d",
+            "url": "https://api.github.com/repos/symfony/Yaml/zipball/77a41c2835ab7cfe8bf6d15e25d3af8f3eb3bacd",
+            "reference": "77a41c2835ab7cfe8bf6d15e25d3af8f3eb3bacd",
             "shasum": ""
         },
         "require": {
-            "php": ">=5.2.0"
+            "php": ">=5.3.3"
         },
-        "require-dev": {
-            "php": ">=5.3.0",
-            "phpunit/phpunit": "3.7.*"
-        },
-        "time": "2013-12-23 23:28:02",
-        "bin": [
-            "pscss"
-        ],
+        "time": "2014-03-12 18:29:58",
         "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.4-dev"
+            }
+        },
         "installation-source": "dist",
         "autoload": {
-            "classmap": [
-                "scss.inc.php"
-            ]
+            "psr-0": {
+                "Symfony\\Component\\Yaml\\": ""
+            }
         },
         "notification-url": "https://packagist.org/downloads/",
         "license": [
-            "MIT",
-            "GPL-3.0"
+            "MIT"
         ],
         "authors": [
             {
-                "name": "Leaf Corcoran",
-                "email": "leafot@gmail.com",
-                "homepage": "http://leafo.net"
+                "name": "Fabien Potencier",
+                "email": "fabien@symfony.com",
+                "homepage": "http://fabien.potencier.org",
+                "role": "Lead Developer"
+            },
+            {
+                "name": "Symfony Community",
+                "homepage": "http://symfony.com/contributors"
             }
         ],
-        "description": "scssphp is a compiler for SCSS written in PHP.",
-        "homepage": "http://leafo.net/scssphp/"
+        "description": "Symfony Yaml Component",
+        "homepage": "http://symfony.com"
     }
 ]

@@ -101,6 +101,7 @@ class AbstractBase extends AbstractActionController
             if ($user && isset($config->Mail->user_email_in_from)
                 && $config->Mail->user_email_in_from
             ) {
+                $view->userEmailInFrom = true;
                 $view->from = $user->email;
             } else if (isset($config->Mail->default_from)
                 && $config->Mail->default_from
@@ -374,15 +375,17 @@ class AbstractBase extends AbstractActionController
     /**
      * Translate a string if a translator is available.
      *
-     * @param string $msg Message to translate
+     * @param string $msg     Message to translate
+     * @param array  $tokens  Tokens to inject into the translated string
+     * @param string $default Default value to use if no translation is found (null
+     * for no default).
      *
      * @return string
      */
-    public function translate($msg)
+    public function translate($msg, $tokens = array(), $default = null)
     {
-        return $this->getServiceLocator()->has('VuFind\Translator')
-            ? $this->getServiceLocator()->get('VuFind\Translator')->translate($msg)
-            : $msg;
+        return $this->getViewRenderer()->plugin('translate')
+            ->__invoke($msg, $tokens, $default);
     }
 
     /**
@@ -453,5 +456,29 @@ class AbstractBase extends AbstractActionController
     public function getSearchMemory()
     {
         return $this->getServiceLocator()->get('VuFind\Search\Memory');
+    }
+
+    /**
+     * Are lists enabled?
+     *
+     * @return bool
+     */
+    protected function listsEnabled()
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $tagSetting = isset($config->Social->lists) ? $config->Social->lists : true;
+        return $tagSetting && $tagSetting !== 'disabled';
+    }
+
+    /**
+     * Are tags enabled?
+     *
+     * @return bool
+     */
+    protected function tagsEnabled()
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $tagSetting = isset($config->Social->tags) ? $config->Social->tags : true;
+        return $tagSetting && $tagSetting !== 'disabled';
     }
 }

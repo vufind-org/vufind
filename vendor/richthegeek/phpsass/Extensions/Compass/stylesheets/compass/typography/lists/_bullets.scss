@@ -1,16 +1,14 @@
 // Turn off the bullet for an element of a list
 @mixin no-bullet {
-  list-style-image: none;
-  list-style-type: none;
-  margin-left: 0;
+  list-style-image : none;
+  list-style-type  : none;
+  margin-left      : 0;
 }
 
 // turns off the bullets for an entire list
 @mixin no-bullets {
   list-style: none;
-  li {
-    @include no-bullet;
-  }
+  li { @include no-bullet; }
 }
 
 // Make a list(ul/ol) have an image bullet.

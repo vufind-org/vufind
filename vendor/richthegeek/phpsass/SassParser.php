@@ -203,6 +203,8 @@ class SassParser
    */
   public $syntax;
 
+  private $_tokenLevel = 0;
+
   /**
    * debug:
    * If enabled it causes exceptions to be thrown on errors. This can be
@@ -488,6 +490,15 @@ class SassParser
     $root = new SassRootNode($this);
     $this->buildTree($root);
 
+    if ($this->_tokenLevel != 0 && $this->debug) {
+        if ($this->_tokenLevel < 0) {
+            $message = 'Too many closing brackets';
+        } else {
+            $message = 'One or more missing closing brackets';
+        }
+        throw new SassException($message, $this);
+    }
+
     return $root;
   }
 
@@ -758,10 +769,7 @@ class SassParser
    * @param string source statement
    * @return SassToken
    */
-  public function createToken($statement)
-  {
-    static $level = 0;
-
+  public function createToken($statement) {
     $this->line += substr_count($statement, "\n");
     $statement = trim($statement);
     if (substr($statement, 0, strlen(self::BEGIN_CSS_COMMENT)) !== self::BEGIN_CSS_COMMENT) {
@@ -773,12 +781,11 @@ class SassParser
     $statement = (preg_match('/#\{.+?\}$/i', $statement) ? $statement : rtrim($statement, self::END_BLOCK));
     $token = ($statement ? (object) array(
       'source' => $statement,
-      'level' => $level,
+      'level' => $this->_tokenLevel,
       'filename' => $this->filename,
       'line' => $this->line,
     ) : null);
-    $level += ($last === self::BEGIN_BLOCK ? 1 : ($last === self::END_BLOCK ? -1 : 0));
-
+    $this->_tokenLevel += ($last === self::BEGIN_BLOCK ? 1 : ($last === self::END_BLOCK ? -1 : 0));
     return $token;
   }
 

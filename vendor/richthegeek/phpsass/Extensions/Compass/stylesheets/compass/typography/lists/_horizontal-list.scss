@@ -24,8 +24,7 @@
 // to have a horizontal layout. Used to implement +horizontal-list.
 @mixin horizontal-list-container {
   @include reset-box-model;
-  @include clearfix;
-}
+  @include clearfix; }
 
 // Can be mixed into any li selector that is meant to participate in a horizontal layout.
 // Used to implement +horizontal-list.
@@ -46,15 +45,9 @@
       left: $padding;
       right: $padding;
     }
-    &:first-child, &.first {
-      padding-#{$direction}: 0;
-    }
-    &:last-child {
-      padding-#{opposite-position($direction)}: 0;
-    }
-    &.last {
-      padding-#{opposite-position($direction)}: 0;
-    }
+    &:first-child, &.first { padding-#{$direction}: 0; }
+    &:last-child { padding-#{opposite-position($direction)}: 0; }
+    &.last { padding-#{opposite-position($direction)}: 0; }
   }
 }
 
@@ -65,6 +58,4 @@
 @mixin horizontal-list($padding: 4px, $direction: left) {
   @include horizontal-list-container;
   li {
-    @include horizontal-list-item($padding, $direction);
-  }
-}
+    @include horizontal-list-item($padding, $direction); } }

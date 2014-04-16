@@ -17,14 +17,21 @@
 //      word-break: break-all;
 //      word-break: break-word;}
 //
-@mixin word-break($value: normal) {
+@mixin word-break($value: normal){
   @if $value == break-all {
-  //Most browsers handle the break-all case the same...
-    @include experimental(word-break, $value, not -moz, not -webkit, not -o, -ms, not -khtml, official);
-  //Webkit handles break-all differently... as break-word
-    @include experimental(word-break, break-word, not -moz, not -webkit, not -o, not -ms, not -khtml, official);
-  } @else {
-    @include experimental(word-break, $value, not -moz, not -webkit, not -o, -ms, not -khtml, official);
+    //Most browsers handle the break-all case the same...
+    @include experimental(word-break, $value,
+      not -moz, not -webkit, not -o, -ms, not -khtml, official
+    );
+    //Webkit handles break-all differently... as break-word
+    @include experimental(word-break, break-word,
+      not -moz, not -webkit, not -o, not -ms, not -khtml, official
+    );
+  }
+  @else {
+    @include experimental(word-break, $value,
+      not -moz, not -webkit, not -o, -ms, not -khtml, official
+    );
   }
 }
 
@@ -42,8 +49,10 @@
 //    -webkit-hyphens: auto;
 //    hyphens: auto;}
 //
-@mixin hyphens($value: auto) {
-  @include experimental(hyphens, $value, -moz, -webkit, not -o, not -ms, not -khtml, official);
+@mixin hyphens($value: auto){
+  @include experimental(hyphens, $value,
+    -moz, -webkit, not -o, not -ms, not -khtml, official
+  );
 }
 
 // Mixin for x-browser hyphenation based on @auchenberg's post:
@@ -62,7 +71,7 @@
 //      -webkit-hyphens: auto;
 //      hyphens: auto;}
 //
-@mixin hyphenation {
+@mixin hyphenation{
   @include word-break(break-all);
   @include hyphens;
 }

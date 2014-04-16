@@ -1,5 +1,6 @@
 <? $list = $this->params->getSortList(); if (!empty($list)): ?>
-  <form action="<?=$this->currentPath() . $this->results->getUrlQuery()->setSort(null)?>" class="sortSelector" method="post">
+  <form action="<?=$this->currentPath()?>" class="sortSelector" method="get">
+    <?=$this->results->getUrlQuery()->asHiddenFields(array('sort' => '/.*/'));?>
     <label for="sort_options_1"><?=$this->transEsc('Sort')?></label>
     <select id="sort_options_1" name="sort" class="jumpMenu">
       <? foreach ($list as $sortType => $sortData): ?>

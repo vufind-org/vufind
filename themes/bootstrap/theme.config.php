@@ -14,7 +14,7 @@ return array(
     ),
     'js' => array(
         'core/jquery.min.js',
-        'core/bootstrap.js',
+        'core/bootstrap.min.js',
         'common.js',
         'lightbox.js',
         'rc4.js'
@@ -22,19 +22,11 @@ return array(
     'favicon' => 'vufind-favicon.ico',
     'helpers' => array(
         'factories' => array(
-            'flashmessages' => function ($sm) {
-                $messenger = $sm->getServiceLocator()->get('ControllerPluginManager')
-                    ->get('FlashMessenger');
-                return new \VuFind\View\Helper\Bootstrap\Flashmessages($messenger);
-            },
-            'layoutclass' => function ($sm) {
-                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-                $left = !isset($config->Site->sidebarOnLeft)
-                    ? false : $config->Site->sidebarOnLeft;
-                return new \VuFind\View\Helper\Bootstrap\LayoutClass($left);
-            },
+            'flashmessages' => 'VuFind\View\Helper\Bootstrap\Factory::getFlashmessages',
+            'layoutclass' => 'VuFind\View\Helper\Bootstrap\Factory::getLayoutClass',
         ),
         'invokables' => array(
+            'highlight' => 'VuFind\View\Helper\Bootstrap\Highlight',
             'search' => 'VuFind\View\Helper\Bootstrap\Search',
             'vudl' => 'VuDL\View\Helper\Bootstrap\VuDL',
         )

@@ -9,12 +9,17 @@ $use-mozilla-ellipsis-binding: false !default;
 // published [here](http://mattsnider.com/css/css-string-truncation-with-ellipsis/).
 // Firefox implementation by [Rikkert Koppes](http://www.rikkertkoppes.com/thoughts/2008/6/).
 @mixin ellipsis($no-wrap: true) {
-  @if $no-wrap {
-    white-space: nowrap;
-  }
+  @if $no-wrap { white-space: nowrap; }
   overflow: hidden;
-  @include experimental(text-overflow, ellipsis, not -moz, not -webkit, -o, -ms, not -khtml, official);
+  @include experimental(text-overflow, ellipsis,
+    not -moz,
+    not -webkit,
+    -o,
+    -ms,
+    not -khtml,
+    official
+  );
   @if $experimental-support-for-mozilla and $use-mozilla-ellipsis-binding {
-    -moz-binding: stylesheet-url(unquote("xml/ellipsis.xml#ellipsis"));
+    -moz-binding: stylesheet-url(unquote("xml/ellipsis.xml#ellipsis"));    
   }
 }

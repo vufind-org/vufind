@@ -42,17 +42,46 @@ use Zend\I18n\Exception\InvalidArgumentException,
 class ExtendedIni implements FileLoaderInterface
 {
     /**
-     * Parsed translation data
+     * List of directories to search for language files.
      *
-     * @var TextDomain
+     * @var array
      */
-    protected $data;
+    protected $pathStack;
+
+    /**
+     * Fallback locale to use for language strings missing from selected file.
+     *
+     * @var string
+     */
+    protected $fallbackLocale;
+
+    /**
+     * List of files loaded during the current run -- avoids infinite loops and
+     * duplicate loading.
+     *
+     * @var array
+     */
+    protected $loadedFiles = array();
+
+    /**
+     * Constructor
+     *
+     * @param array  $pathStack      List of directories to search for language
+     * files.
+     * @param string $fallbackLocale Fallback locale to use for language strings
+     * missing from selected file.
+     */
+    public function __construct($pathStack = array(), $fallbackLocale = null)
+    {
+        $this->pathStack = $pathStack;
+        $this->fallbackLocale = $fallbackLocale;
+    }
 
     /**
      * load(): defined by LoaderInterface.
      *
      * @param string $locale   Locale to read from language file
-     * @param string $filename Language file to read
+     * @param string $filename Language file to read (not used)
      *
      * @return TextDomain
      * @throws InvalidArgumentException
@@ -60,21 +89,96 @@ class ExtendedIni implements FileLoaderInterface
      */
     public function load($locale, $filename)
     {
-        $this->data = new TextDomain();
-        if (!file_exists($filename)) {
-            throw new InvalidArgumentException("Ini file '".$filename."' not found");
-        }
+        // Reset the loaded files list:
+        $this->resetLoadedFiles();
 
         // Load base data:
-        $this->loadLanguageFile($filename);
+        $data = $this->loadLanguageFile($locale . '.ini');
 
-        // Load local overrides, if available:
-        $localFile = LOCAL_OVERRIDE_DIR . '/languages/' . basename($filename);
-        if (file_exists($localFile)) {
-            $this->loadLanguageFile($localFile);
+        // Load fallback data, if any:
+        if (!empty($this->fallbackLocale)) {
+            $newData = $this->loadLanguageFile($this->fallbackLocale . '.ini');
+            $newData->merge($data);
+            $data = $newData;
         }
 
-        return $this->data;
+        return $data;
+    }
+
+    /**
+     * Reset the loaded file list.
+     *
+     * @return void
+     */
+    protected function resetLoadedFiles()
+    {
+        $this->loadedFiles = array();
+    }
+
+    /**
+     * Check if a file has already been loaded; mark it loaded if it is not already.
+     *
+     * @param string $filename Name of file to check and mark as loaded.
+     *
+     * @return bool True if loaded, false if new.
+     */
+    protected function checkAndMarkLoadedFile($filename)
+    {
+        if (isset($this->loadedFiles[$filename])) {
+            return true;
+        }
+        $this->loadedFiles[$filename] = true;
+        return false;
+    }
+
+    /**
+     * Search the path stack for language files and merge them together.
+     *
+     * @param string $filename Name of file to search path stack for.
+     *
+     * @return TextDomain
+     */
+    protected function loadLanguageFile($filename)
+    {
+        // Don't load a file that has already been loaded:
+        if ($this->checkAndMarkLoadedFile($filename)) {
+            return new TextDomain();
+        }
+
+        $data = false;
+        foreach ($this->pathStack as $path) {
+            if (file_exists($path . '/' . $filename)) {
+                $current = $this->languageFileToTextDomain($path . '/' . $filename);
+                if ($data === false) {
+                    $data = $current;
+                } else {
+                    $data->merge($current);
+                }
+            }
+        }
+        if ($data === false) {
+            throw new InvalidArgumentException("Ini file '{$filename}' not found");
+        }
+
+        // Load parent data, if necessary:
+        return $this->loadParentData($data);
+    }
+
+    /**
+     * Support method for loadLanguageFile: retrieve parent data.
+     *
+     * @param TextDomain $data TextDomain to populate with parent information.
+     *
+     * @return TextDomain
+     */
+    protected function loadParentData($data)
+    {
+        if (!isset($data['@parent_ini'])) {
+            return $data;
+        }
+        $parent = $this->loadLanguageFile($data['@parent_ini']);
+        $parent->merge($data);
+        return $parent;
     }
 
     /**
@@ -82,10 +186,12 @@ class ExtendedIni implements FileLoaderInterface
      *
      * @param string $file Filename to load
      *
-     * @return void
+     * @return TextDomain
      */
-    protected function loadLanguageFile($file)
+    protected function languageFileToTextDomain($file)
     {
+        $data = new TextDomain();
+
         // Manually parse the language file:
         $contents = file($file);
         if (is_array($contents)) {
@@ -101,11 +207,20 @@ class ExtendedIni implements FileLoaderInterface
                         );
 
                         // Store the key/value pair (allow empty values -- sometimes
-                        // we want to replace a language token with a blank string):
-                        $this->data[$key] = $value;
+                        // we want to replace a language token with a blank string,
+                        // but Zend translator doesn't support them so replace with
+                        // a zero-width non-joiner):
+                        if ($value === '') {
+                            $value = html_entity_decode(
+                                '&#x200C;', ENT_NOQUOTES, 'UTF-8'
+                            );
+                        }
+                        $data[$key] = $value;
                     }
                 }
             }
         }
+
+        return $data;
     }
 }

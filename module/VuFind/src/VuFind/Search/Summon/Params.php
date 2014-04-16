@@ -290,10 +290,37 @@ class Params extends \VuFind\Search\Base\Params
         );
 
         // Convert range queries to a language-non-specific format:
+        $caseInsensitiveRegex = '/^\(\[(.*) TO (.*)\] OR \[(.*) TO (.*)\]\)$/';
         if (preg_match('/^\[(.*) TO (.*)\]$/', $value, $matches)) {
+            // Simple case: [X TO Y]
             $filter['displayText'] = $matches[1] . '-' . $matches[2];
+        } else if (preg_match($caseInsensitiveRegex, $value, $matches)) {
+            // Case insensitive case: [x TO y] OR [X TO Y]; convert
+            // only if values in both ranges match up!
+            if (strtolower($matches[3]) == strtolower($matches[1])
+                && strtolower($matches[4]) == strtolower($matches[2])
+            ) {
+                $filter['displayText'] = $matches[1] . '-' . $matches[2];
+            }
         }
 
         return $filter;
+    }
+
+    /**
+     * Load all available facet settings.  This is mainly useful for showing
+     * appropriate labels when an existing search has multiple filters associated
+     * with it.
+     *
+     * @param string $preferredSection Section to favor when loading settings; if
+     * multiple sections contain the same facet, this section's description will
+     * be favored.
+     *
+     * @return void
+     */
+    public function activateAllFacets($preferredSection = false)
+    {
+        $this->initFacetList('Facets', 'Results_Settings', 'Summon');
+        $this->initFacetList('Advanced_Facets', 'Advanced_Facet_Settings', 'Summon');
     }
 }

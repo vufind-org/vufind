@@ -131,6 +131,38 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test that the appropriate handler gets called for a quoted search when exact
+     * settings are enabled.
+     *
+     * @return void
+     */
+    public function testExactQueryHandler()
+    {
+        $qb = new QueryBuilder(
+            array(
+                'test' => array(
+                    'DismaxFields' => array('a', 'b'),
+                    'ExactSettings' => array(
+                        'DismaxFields' => array('c', 'd')
+                    )
+                )
+            )
+        );
+
+        // non-quoted search uses main DismaxFields
+        $q = new Query('q', 'test');
+        $response = $qb->build($q);
+        $qf = $response->get('qf');
+        $this->assertEquals('a b', $qf[0]);
+
+        // quoted search uses ExactSettings>DismaxFields
+        $q = new Query('"q"', 'test');
+        $response = $qb->build($q);
+        $qf = $response->get('qf');
+        $this->assertEquals('c d', $qf[0]);
+    }
+
+    /**
      * Test generation with a query handler with a filter set and DisMax settings
      *
      * @return void
@@ -272,5 +304,36 @@ class QueryBuilderTest extends \VuFindTest\Unit\TestCase
         $response = $qb->build($q);
         $processedQ = $response->get('q');
         $this->assertEquals('((_query_:"{!dismax qf=\"field_a\" }value1") OR (_query_:"{!dismax qf=\"field_b\" }value2"))', $processedQ[0]);
+    }
+
+    /**
+     * Test generation from a QueryGroup with advanced syntax
+     *
+     * @return void
+     */
+    public function testQueryGroupWithAdvancedSyntax()
+    {
+        $qb = new QueryBuilder(
+            array(
+                'a' => array(
+                    'DismaxFields' => array('field_a'),
+                    'QueryFields' => array(
+                        'field_a' => array(array('and', 100)),
+                        'field_c' => array(array('and', 200))
+                    )
+                ),
+                'b' => array(
+                    'DismaxFields' => array('field_b'),
+                )
+            )
+        );
+
+        $q1 = new Query('value*', 'a');
+        $q2 = new Query('value2', 'b');
+        $q = new QueryGroup('OR', array($q1, $q2));
+
+        $response = $qb->build($q);
+        $processedQ = $response->get('q');
+        $this->assertEquals('((field_a:(value*)^100 OR field_c:(value*)^200) OR (_query_:"{!dismax qf=\"field_b\" }value2"))', $processedQ[0]);
     }
 }

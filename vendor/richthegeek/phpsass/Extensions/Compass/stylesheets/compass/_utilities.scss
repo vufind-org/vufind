@@ -1,8 +1,9 @@
-@import "utilities/utilities/_color";
-@import "utilities/utilities/_general";
-@import "utilities/utilities/_sprites";
-@import "utilities/utilities/tables";
+@import "utilities/color";
+@import "utilities/general";
+@import "utilities/sprites";
+@import "utilities/tables";
+
 // deprecated
-@import "typography/typography/_links";
-@import "typography/typography/lists";
-@import "typography/typography/_text";
+@import "typography/links";
+@import "typography/lists";
+@import "typography/text";

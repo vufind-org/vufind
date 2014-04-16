@@ -2,30 +2,6 @@
 <div class="sidegroup">
   <? $sideFacetSet = $this->recommend->getFacetSet(); ?>
 
-  <? if (isset($sideFacetSet['lists']) && !empty($sideFacetSet['lists']['list'])): ?>
-    <div class="sidegroup">
-      <h4 class="list"><?=$this->transEsc($sideFacetSet['lists']['label'])?></h4>
-      <ul>
-        <? foreach ($sideFacetSet['lists']['list'] as $current): ?>
-          <li>
-            <? if ($current['isApplied']): ?>
-              <strong><?=$this->escapeHtml($current['displayText'])?></strong>
-            <? else: ?>
-              <a href="<?=$this->url('userList', array('id' => $current['value']))?>"><?=$this->escapeHtml($current['displayText'])?></a>
-            <? endif; ?>
-            (<?=$this->escapeHtml($current['count'])?>)
-          </li>
-        <? endforeach; ?>
-        <li>
-          <a href="<?=$this->url('editList', array('id'=>'NEW'))?>" title="<?=$this->transEsc('Create a List') ?>">
-            <?=$this->transEsc('Create a List') ?> 
-          </a>
-          <img src="<?=$this->imageLink('silk/add.png')?>" style="margin-left:2px;vertical-align:text-bottom"/>
-        </li>
-      </ul>
-    </div>
-  <? endif; ?>
-
   <? if (isset($sideFacetSet['tags']) && !empty($sideFacetSet['tags']['list'])): ?>
     <div class="sidegroup">
       <h4 class="tag"><?=$this->transEsc($sideFacetSet['tags']['label'])?></h4>

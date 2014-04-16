@@ -49,7 +49,7 @@ fi
 # -XX:+UseParallelGC
 # -XX:+AggressiveOpts
 ##################################################
-INDEX_OPTIONS='-Xms512m -Xmx512m'
+INDEX_OPTIONS='-Xms512m -Xmx512m -DentityExpansionLimit=0'
 
 
 ##################################################

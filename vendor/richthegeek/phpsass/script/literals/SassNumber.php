@@ -55,6 +55,7 @@ class SassNumber extends SassLiteral
     'px' => 96
   );
   private static $validUnits = array(
+    'vw', 'vh', 'vmin', 'vmax',
     'in', 'cm', 'mm', 'pc', 'pt', 'em', 'rem', 'ex', 'px', '%', 's', 'deg'
   );
 

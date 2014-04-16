@@ -154,7 +154,8 @@ class SassScriptFunction
   {
     $files = array();
 
-    foreach (array_slice(scandir($dir), 2) as $file) {
+    foreach (scandir($dir) as $file) {
+      if (($file === '.') || ($file === '..')) continue;
       if (is_file($dir . DIRECTORY_SEPARATOR . $file)) {
         $files[] = $file;
         require_once($dir . DIRECTORY_SEPARATOR . $file);

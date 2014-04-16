@@ -28,6 +28,7 @@
 namespace VuFind\Controller;
 
 use VuFind\Exception\Auth as AuthException,
+    VuFind\Exception\Mail as MailException,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\RecordMissing as RecordMissingException,
     Zend\Stdlib\Parameters;
@@ -67,7 +68,10 @@ class MyResearchController extends AbstractBase
 
     /**
      * Store a referer (if appropriate) to keep post-login redirect pointing
-     * to an appropriate location.
+     * to an appropriate location. This is used when the user clicks the
+     * log in link from an arbitrary page or when a password is mistyped;
+     * separate logic is used for storing followup information when VuFind
+     * forces the user to log in from another context.
      *
      * @return void
      */
@@ -78,16 +82,12 @@ class MyResearchController extends AbstractBase
         if (empty($referer)) {
             return;
         }
-
-        // Normalize the referer URL so that inconsistencies in protocol
-        // and trailing slashes do not break comparisons; this same normalization
-        // is applied to all URLs examined below.
-        $refererNorm = trim(end(explode('://', $referer, 2)), '/');
+        $refererNorm = $this->normalizeUrlForComparison($referer);
 
         // If the referer lives outside of VuFind, don't store it! We only
         // want internal post-login redirects.
-        $baseUrl = $this->url()->fromRoute('home');
-        $baseUrlNorm = trim(end(explode('://', $baseUrl, 2)), '/');
+        $baseUrl = $this->getServerUrl('home');
+        $baseUrlNorm = $this->normalizeUrlForComparison($baseUrl);
         if (0 !== strpos($refererNorm, $baseUrlNorm)) {
             return;
         }
@@ -95,14 +95,28 @@ class MyResearchController extends AbstractBase
         // If the referer is the MyResearch/Home action, it probably means
         // that the user is repeatedly mistyping their password. We should
         // ignore this and instead rely on any previously stored referer.
-        $myResearchHomeUrl = $this->url()->fromRoute('myresearch-home');
-        $mrhuNorm = trim(end(explode('://', $myResearchHomeUrl, 2)), '/');
+        $myResearchHomeUrl = $this->getServerUrl('myresearch-home');
+        $mrhuNorm = $this->normalizeUrlForComparison($myResearchHomeUrl);
         if ($mrhuNorm === $refererNorm) {
             return;
         }
 
         // If we got this far, we want to store the referer:
         $this->followup()->store(array(), $referer);
+    }
+
+    /**
+     * Normalize the referer URL so that inconsistencies in protocol and trailing
+     * slashes do not break comparisons.
+     *
+     * @param string $url URL to normalize
+     *
+     * @return string
+     */
+    protected function normalizeUrlForComparison($url)
+    {
+        $parts = explode('://', $url, 2);
+        return trim(end($parts), '/');
     }
 
     /**
@@ -138,10 +152,10 @@ class MyResearchController extends AbstractBase
             return $this->forwardTo('MyResearch', 'Login');
         }
 
-        // Logged in?  Forward user to followup action (if set) or default action
-        // (if no followup provided):
+        // Logged in?  Forward user to followup action (if set and not in lightbox)
+        // or default action (if no followup provided):
         $followup = $this->followup()->retrieve();
-        if (isset($followup->url)) {
+        if (isset($followup->url) && !$this->inLightbox()) {
             $url = $followup->url;
             unset($followup->url);
             return $this->redirect()->toUrl($url);
@@ -150,6 +164,11 @@ class MyResearchController extends AbstractBase
         $config = $this->getConfig();
         $page = isset($config->Site->defaultAccountPage)
             ? $config->Site->defaultAccountPage : 'Favorites';
+
+        // Default to search history if favorites are disabled:
+        if ($page == 'Favorites' && !$this->listsEnabled()) {
+            return $this->forwardTo('Search', 'History');
+        }
         return $this->forwardTo('MyResearch', $page);
     }
 
@@ -504,7 +523,7 @@ class MyResearchController extends AbstractBase
         $source = $this->params()->fromPost(
             'source', $this->params()->fromQuery('source', 'VuFind')
         );
-        $driver = $this->getRecordLoader()->load($id, $source);
+        $driver = $this->getRecordLoader()->load($id, $source, true);
         $listID = $this->params()->fromPost(
             'list_id', $this->params()->fromQuery('list_id', null)
         );
@@ -584,6 +603,11 @@ class MyResearchController extends AbstractBase
      */
     public function mylistAction()
     {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            throw new \Exception('Lists disabled');
+        }
+
         // Check for "delete item" request; parameter may be in GET or POST depending
         // on calling context.
         $deleteId = $this->params()->fromPost(
@@ -705,6 +729,11 @@ class MyResearchController extends AbstractBase
      */
     public function editlistAction()
     {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            throw new \Exception('Lists disabled');
+        }
+
         // User must be logged in to edit list:
         $user = $this->getUser();
         if ($user == false) {
@@ -736,6 +765,11 @@ class MyResearchController extends AbstractBase
      */
     public function deletelistAction()
     {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            throw new \Exception('Lists disabled');
+        }
+
         // Get requested list ID:
         $listID = $this->params()
             ->fromPost('listID', $this->params()->fromQuery('listID'));
@@ -789,21 +823,9 @@ class MyResearchController extends AbstractBase
      */
     protected function getDriverForILSRecord($current)
     {
-        try {
-            if (!isset($current['id'])) {
-                throw new RecordMissingException();
-            }
-            $record = $this->getServiceLocator()->get('VuFind\RecordLoader')
-                ->load($current['id']);
-        } catch (RecordMissingException $e) {
-            $factory = $this->getServiceLocator()
-                ->get('VuFind\RecordDriverPluginManager');
-            $record = $factory->get('Missing');
-            $record->setRawData(
-                array('id' => isset($current['id']) ? $current['id'] : null)
-            );
-            $record->setSourceIdentifier('Solr');
-        }
+        $id = isset($current['id']) ? $current['id'] : null;
+        $record = $this->getServiceLocator()->get('VuFind\RecordLoader')
+            ->load($id, 'VuFind', true);
         $record->setExtraDetail('ils_details', $current);
         return $record;
     }
@@ -828,6 +850,10 @@ class MyResearchController extends AbstractBase
         $view = $this->createViewModel();
         $view->cancelResults = $cancelStatus
             ? $this->holds()->cancelHolds($catalog, $patron) : array();
+        // If we need to confirm
+        if (!is_array($view->cancelResults)) {
+            return $view->cancelResults;
+        }
 
         // By default, assume we will not need to display a cancel form:
         $view->cancelForm = false;
@@ -859,6 +885,125 @@ class MyResearchController extends AbstractBase
             // Do nothing; if we're unable to load information about pickup
             // locations, they are not supported and we should ignore them.
         }
+        $view->recordList = $recordList;
+        return $view;
+    }
+
+    /**
+     * Send list of storage retrieval requests to view
+     *
+     * @return mixed
+     */
+    public function storageRetrievalRequestsAction()
+    {
+        // Stop now if the user does not have valid catalog credentials available:
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+
+        // Connect to the ILS:
+        $catalog = $this->getILS();
+
+        // Process cancel requests if necessary:
+        $cancelSRR = $catalog->checkFunction('cancelStorageRetrievalRequests');
+        $view = $this->createViewModel();
+        $view->cancelResults = $cancelSRR
+            ? $this->storageRetrievalRequests()->cancelStorageRetrievalRequests(
+                $catalog, $patron
+            )
+            : array();
+        // If we need to confirm
+        if (!is_array($view->cancelResults)) {
+            return $view->cancelResults;
+        }
+
+        // By default, assume we will not need to display a cancel form:
+        $view->cancelForm = false;
+
+        // Get request details:
+        $result = $catalog->getMyStorageRetrievalRequests($patron);
+        $recordList = array();
+        $this->storageRetrievalRequests()->resetValidation();
+        foreach ($result as $current) {
+            // Add cancel details if appropriate:
+            $current = $this->storageRetrievalRequests()->addCancelDetails(
+                $catalog, $current, $cancelSRR, $patron
+            );
+            if ($cancelSRR
+                && $cancelSRR['function'] != "getCancelStorageRetrievalRequestLink"
+                && isset($current['cancel_details'])
+            ) {
+                // Enable cancel form if necessary:
+                $view->cancelForm = true;
+            }
+
+            // Build record driver:
+            $recordList[] = $this->getDriverForILSRecord($current);
+        }
+
+        // Get List of PickUp Libraries based on patron's home library
+        try {
+            $view->pickup = $catalog->getPickUpLocations($patron);
+        } catch (\Exception $e) {
+            // Do nothing; if we're unable to load information about pickup
+            // locations, they are not supported and we should ignore them.
+        }
+        $view->recordList = $recordList;
+        return $view;
+    }
+
+    /**
+     * Send list of ill requests to view
+     *
+     * @return mixed
+     */
+    public function illRequestsAction()
+    {
+        // Stop now if the user does not have valid catalog credentials available:
+        if (!is_array($patron = $this->catalogLogin())) {
+            return $patron;
+        }
+
+        // Connect to the ILS:
+        $catalog = $this->getILS();
+
+        // Process cancel requests if necessary:
+        $cancelStatus = $catalog->checkFunction('cancelILLRequests');
+        $view = $this->createViewModel();
+        $view->cancelResults = $cancelStatus
+            ? $this->ILLRequests()->cancelILLRequests(
+                $catalog, $patron
+            )
+            : array();
+        // If we need to confirm
+        if (!is_array($view->cancelResults)) {
+            return $view->cancelResults;
+        }
+
+        // By default, assume we will not need to display a cancel form:
+        $view->cancelForm = false;
+
+        // Get request details:
+        $result = $catalog->getMyILLRequests($patron);
+        $recordList = array();
+        $this->ILLRequests()->resetValidation();
+        foreach ($result as $current) {
+            // Add cancel details if appropriate:
+            $current = $this->ILLRequests()->addCancelDetails(
+                $catalog, $current, $cancelStatus, $patron
+            );
+            if ($cancelStatus
+                && $cancelStatus['function'] != "getCancelILLRequestLink"
+                && isset($current['cancel_details'])
+            ) {
+                // Enable cancel form if necessary:
+                $view->cancelForm = true;
+            }
+
+            // Build record driver:
+            $recordList[] = $this->getDriverForILSRecord($current);
+        }
+
         $view->recordList = $recordList;
         return $view;
     }
@@ -964,5 +1109,248 @@ class MyResearchController extends AbstractBase
     {
         $url = $this->getServerUrl('myresearch-home');
         return $this->getAuthManager()->getSessionInitiator($url);
+    }
+
+    /**
+     * Send account recovery email
+     *
+     * @return View object
+     */
+    public function recoverAction()
+    {
+        // Make sure we're configured to do this
+        if (!$this->getAuthManager()->supportsRecovery()) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('recovery_disabled');
+            return $this->redirect()->toRoute('myresearch-home');
+        }
+        if ($this->getUser()) {
+            return $this->redirect()->toRoute('myresearch-home');
+        }
+        // Database
+        $table = $this->getTable('User');
+        $user = false;
+        // Check if we have a submitted form, and use the information to get
+        // the user's information
+        if ($email = $this->params()->fromPost('email')) {
+            $user = $table->getByEmail($email);
+        } elseif ($username = $this->params()->fromPost('username')) {
+            $user = $table->getByUsername($username, false);
+        }
+        // If we have a submitted form
+        if (false != $user) {
+            $this->sendRecoveryEmail($user, $this->getConfig());
+        } else if ($this->params()->fromPost('submit')) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('recovery_user_not_found');
+        }
+        return $this->createViewModel();
+    }
+
+    /**
+     * Helper function for recoverAction
+     *
+     * @param \VuFind\Db\Row\User $user   User object we're recovering
+     * @param \VuFind\Config      $config Configuration object
+     *
+     * @return void (sends email or adds error message)
+     */
+    protected function sendRecoveryEmail($user, $config)
+    {
+        // If we can't find a user
+        if (null == $user) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('recovery_user_not_found');
+        } else {
+            // Make sure we've waiting long enough
+            $hashtime = $this->getHashAge($user->verify_hash);
+            $recoveryInterval = isset($config->Authentication->recover_interval)
+                ? $config->Authentication->recover_interval
+                : 60;
+            if (time()-$hashtime < $recoveryInterval) {
+                $this->flashMessenger()->setNamespace('error')
+                    ->addMessage('recovery_too_soon');
+            } else {
+                // Attempt to send the email
+                try {
+                    // Create a fresh hash
+                    $user->updateHash();
+                    $config = $this->getConfig();
+                    $renderer = $this->getViewRenderer();
+                    // Custom template for emails (text-only)
+                    $message = $renderer->render(
+                        'Email/recover-password.phtml',
+                        array(
+                            'library' => $config->Site->title,
+                            'url' => $this->getServerUrl('myresearch-verify')
+                                . '?hash='
+                                . $user->verify_hash
+                        )
+                    );
+                    $this->getServiceLocator()->get('VuFind\Mailer')->send(
+                        $user->email,
+                        $config->Site->email,
+                        $this->translate('recovery_email_subject'),
+                        $message
+                    );
+                    $this->flashMessenger()->setNamespace('info')
+                        ->addMessage('recovery_email_sent');
+                } catch (MailException $e) {
+                    $this->flashMessenger()->setNamespace('error')
+                        ->addMessage($e->getMessage());
+                }
+            }
+        }
+    }
+
+    /**
+     * Receive a hash and display the new password form if it's valid
+     *
+     * @return view
+     */
+    public function verifyAction()
+    {
+        // If we have a submitted form
+        if ($hash = $this->params()->fromQuery('hash')) {
+            $hashtime = $this->getHashAge($hash);
+            $config = $this->getConfig();
+            // Check if hash is expired
+            $hashLifetime = isset($config->Authentication->recover_hash_lifetime)
+                ? $config->Authentication->recover_hash_lifetime
+                : 1209600; // Two weeks
+            if (time()-$hashtime > $hashLifetime) {
+                $this->flashMessenger()->setNamespace('error')
+                    ->addMessage('recovery_expired_hash');
+                return $this->forwardTo('MyResearch', 'Login');
+            } else {
+                $table = $this->getTable('User');
+                $user = $table->getByVerifyHash($hash);
+                // If the hash is valid, forward user to create new password
+                if (null != $user) {
+                    $view = $this->createViewModel();
+                    $view->hash = $hash;
+                    $view->username = $user->username;
+                    $view->setTemplate('myresearch/newpassword');
+                    return $view;
+                }
+            }
+        }
+        $this->flashMessenger()->setNamespace('error')
+            ->addMessage('recovery_invalid_hash');
+        return $this->forwardTo('MyResearch', 'Login');
+    }
+
+    /**
+     * Handling submission of a new password for a user.
+     *
+     * @return view
+     */
+    public function newPasswordAction()
+    {
+        // Have we submitted the form?
+        if (!$this->params()->fromPost('submit', false)) {
+            return $this->redirect()->toRoute('home');
+        }
+        // Pull in from POST
+        $request = $this->getRequest();
+        $post = $request->getPost();
+        // Verify hash
+        $userFromHash = isset($post->hash)
+            ? $this->getTable('User')->getByVerifyHash($post->hash)
+            : false;
+        // Missing or invalid hash
+        if (false == $userFromHash) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('recovery_user_not_found');
+            // Force login or restore hash
+            return $this->forwardTo('MyResearch', 'ChangePassword');
+        } else if ($userFromHash->username !== $post->username) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('authentication_error_invalid');
+            $userFromHash->updateHash();
+            $post->username = $userFromHash->username;
+            $post->hash = $userFromHash->verify_hash;
+            return $this->createViewModel($post);
+        }
+        // Verify old password if we're logged in
+        if ($this->getUser()) {
+            if (isset($post->oldpwd)) {
+                try {
+                    // Reassign oldpwd to password in the request so login works
+                    $temp_password = $post->password;
+                    $post->password = $post->oldpwd;
+                    $authClass = $this->getAuthManager()->login($request);
+                    $post->password = $temp_password;
+                } catch(AuthException $e) {
+                    $this->flashMessenger()->setNamespace('error')
+                        ->addMessage($e->getMessage());
+                    return $this->createViewModel(
+                        $this->params()->fromPost()
+                    );
+                }
+            } else {
+                $this->flashMessenger()->setNamespace('error')
+                    ->addMessage('authentication_error_invalid');
+                $post['verifyold'] = true;
+                return $this->createViewModel($post);
+            }
+        }
+        // Update password
+        try {
+            $user = $this->getAuthManager()->updatePassword($this->getRequest());
+        } catch (AuthException $e) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage($e->getMessage());
+            return $this->createViewModel(
+                $this->params()->fromPost()
+            );
+        }
+        // Update hash to prevent reusing hash
+        $user->updateHash();
+        // Login
+        $this->getAuthManager()->login($this->request);
+        // Go to favorites
+        $this->flashMessenger()->setNamespace('info')
+            ->addMessage('new_password_success');
+        return $this->redirect()->toRoute('myresearch-home');
+    }
+
+    /**
+     * Handling submission of a new password for a user.
+     *
+     * @return view
+     */
+    public function changePasswordAction()
+    {
+        if (!$this->getAuthManager()->isLoggedIn()) {
+            return $this->forceLogin();
+        }
+        // If not submitted, are we logged in?
+        if (!$this->getAuthManager()->supportsPasswordChange()) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('recovery_new_disabled');
+            return $this->redirect()->toRoute('home');
+        }
+        $view = $this->createViewModel($this->params()->fromPost());
+        // Verify user password
+        $view->verifyold = true;
+        // Display username
+        $user = $this->getUser();
+        $view->username = $user->username;
+        // Identification
+        $user->updateHash();
+        $view->hash = $user->verify_hash;
+        $view->setTemplate('myresearch/newpassword');
+        return $view;
+    }
+
+    /**
+     * Helper function for verification hashes
+     *
+     * @return int age in seconds
+     */
+    protected function getHashAge($hash)
+    {
+        return intval(substr($hash, -10));
     }
 }

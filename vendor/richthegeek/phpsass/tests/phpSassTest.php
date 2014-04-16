@@ -406,4 +406,13 @@ class PHPSass_TestCase extends PHPUnit_Framework_TestCase
   {
     $this->runSassTest('mixin_setvar.scss');
   }
+
+  public function testTokenLevelException() {
+      try {
+        $this->runSassTest('token_level.scss', false, array('debug' => true));
+      } catch (SassException $e) {
+          $message = 'Too many closing brackets';
+          $this->assertEquals($message, substr($e->getMessage(), 0, strlen($message)));
+      }
+  }
 }

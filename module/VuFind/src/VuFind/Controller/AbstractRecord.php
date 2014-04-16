@@ -94,9 +94,7 @@ class AbstractRecord extends AbstractBase
     {
         $view = parent::createViewModel($params);
         $this->layout()->searchClassId = $view->searchClassId = $this->searchClassId;
-        if (!is_null($this->driver)) {
-            $view->driver = $this->driver;
-        }
+        $view->driver = $this->loadRecord();
         return $view;
     }
 
@@ -178,6 +176,11 @@ class AbstractRecord extends AbstractBase
      */
     public function addtagAction()
     {
+        // Make sure tags are enabled:
+        if (!$this->tagsEnabled()) {
+            throw new \Exception('Tags disabled');
+        }
+
         // Force login:
         if (!($user = $this->getUser())) {
             return $this->forceLogin();
@@ -277,6 +280,11 @@ class AbstractRecord extends AbstractBase
      */
     public function saveAction()
     {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            throw new \Exception('Lists disabled');
+        }
+
         // Process form submission:
         if ($this->params()->fromPost('submit')) {
             return $this->processSave();
@@ -365,6 +373,14 @@ class AbstractRecord extends AbstractBase
                     $view->to, $view->from, $view->message, $driver,
                     $this->getViewRenderer()
                 );
+                if ($this->params()->fromPost('ccself')
+                    && $view->from != $view->to
+                ) {
+                    $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
+                        $view->from, $view->from, $view->message, $driver,
+                        $this->getViewRenderer()
+                    );
+                }
                 $this->flashMessenger()->setNamespace('info')
                     ->addMessage('email_success');
                 return $this->redirectToRecord();
@@ -429,7 +445,6 @@ class AbstractRecord extends AbstractBase
      */
     public function citeAction()
     {
-        $this->loadRecord();
         $view = $this->createViewModel();
         $view->setTemplate('record/cite');
         return $view;

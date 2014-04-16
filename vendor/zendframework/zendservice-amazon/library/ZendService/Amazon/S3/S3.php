@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_Service
  */
@@ -42,6 +42,12 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
      */
     protected $_endpoint;
 
+    private static $lastThrottle = null;
+
+    // Amazon terms of use compliance: no more than one query per second
+    // Make it slightly more than one second to account for possible one second timing precision on the server
+    const S3_REQUEST_THROTTLE_TIME = 1.001;
+
     const S3_ENDPOINT = 's3.amazonaws.com';
 
     const S3_ACL_PRIVATE = 'private';
@@ -56,7 +62,7 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
     /**
      * Set S3 endpoint to use
      *
-     * @param string|Uri\Uri $endpoint
+     * @param  string|Uri\Uri                     $endpoint
      * @return S3
      * @throws Exception\InvalidArgumentException
      */
@@ -69,6 +75,7 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
             throw new Exception\InvalidArgumentException('Invalid endpoint supplied');
         }
         $this->_endpoint = $endpoint;
+
         return $this;
     }
 
@@ -89,9 +96,9 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
      * @param string $secretKey
      * @param string $region
      */
-    public function __construct($accessKey = null, $secretKey = null, $region = null)
+    public function __construct($accessKey = null, $secretKey = null, HttpClient $httpClient = null)
     {
-        parent::__construct($accessKey, $secretKey, $region);
+        parent::__construct($accessKey, $secretKey, $httpClient);
 
         $this->setEndpoint('http://'.self::S3_ENDPOINT);
     }
@@ -100,7 +107,7 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
      * Verify if the bucket name is valid
      * For reference: http://docs.amazonwebservices.com/AmazonS3/latest/dev/BucketRestrictions.html
      *
-     * @param string $bucket
+     * @param  string                             $bucket
      * @return boolean
      * @throws Exception\InvalidArgumentException
      */
@@ -153,15 +160,15 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
     /**
      * Add a new bucket
      *
-     * @param string $bucket
-     * @param string $location
+     * @param  string $bucket
+     * @param  string $location
      * @return bool
      */
     public function createBucket($bucket, $location = null)
     {
         $this->_validBucketName($bucket);
 
-        if($location) {
+        if ($location) {
             $data = '<CreateBucketConfiguration><LocationConstraint>'.$location.'</LocationConstraint></CreateBucketConfiguration>';
         } else {
             $data = null;
@@ -174,20 +181,31 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
     /**
      * Checks if a given bucket name is available
      *
-     * @param  string $bucket
+     * To determine whether a bucket name exists using REST, use HEAD, specify the name of the bucket, and set max-keys to 0.
+     * http://docs.amazonwebservices.com/AmazonS3/2006-03-01/dev/UsingBucket.html
+     *
+     * Most common responses:
+     * HTTP 200 OK: Success -- you own the bucket or have permission to access it
+     * HTTP 403 Forbidden: AccessDenied -- someone else owns the bucket
+     * HTTP 404 Not Found: NoSuchBucket -- bucket is not available
+     * For full list, see: http://docs.amazonwebservices.com/AmazonS3/2006-03-01/API/ErrorResponses.html
+     *
+     * @param  string  $bucket
      * @return boolean
      */
     public function isBucketAvailable($bucket)
     {
+        $this->_validBucketName($bucket);
+
         $response = $this->_makeRequest('HEAD', $bucket, array('max-keys'=>0));
 
-        return ($response->getStatusCode() != 404);
+        return ($response->getStatusCode() == 200);
     }
 
     /**
      * Checks if a given object exists
      *
-     * @param  string $object
+     * @param  string  $object
      * @return boolean
      */
     public function isObjectAvailable($object)
@@ -201,7 +219,7 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
      * Remove a given bucket. All objects in the bucket must be removed prior
      * to removing the bucket.
      *
-     * @param  string $bucket
+     * @param  string  $bucket
      * @return boolean
      */
     public function removeBucket($bucket)
@@ -215,7 +233,7 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
     /**
      * Get metadata information for a given object
      *
-     * @param  string $object
+     * @param  string      $object
      * @return array|false
      */
     public function getInfo($object)
@@ -232,7 +250,7 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
             $info['type']  = $headers->get('Content-type');
             $info['size']  = $headers->get('Content-length');
             $info['mtime'] = $headers->get('Last-modified');
-            $info['etag']  = $headers->get('Content-type');
+            $info['etag']  = $headers->get('ETag');
 
             //Prevents from the fatal error method call on a non-object
             foreach ($info as $key => $value)
@@ -268,7 +286,7 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
 
         $buckets = array();
         foreach ($xml->Buckets->Bucket as $bucket) {
-            $buckets[] = (string)$bucket->Name;
+            $buckets[] = (string) $bucket->Name;
         }
 
         return $buckets;
@@ -277,7 +295,7 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
     /**
      * Remove all objects in the bucket.
      *
-     * @param string $bucket
+     * @param  string  $bucket
      * @return boolean
      */
     public function cleanBucket($bucket)
@@ -290,6 +308,7 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
         foreach ($objects as $object) {
             $this->removeObject("$bucket/$object");
         }
+
         return true;
     }
 
@@ -302,8 +321,8 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
      * max-keys - The maximum number of keys you'd like to see in the response body. The server might return fewer than this many keys, but will not return more.
      * delimiter - Causes keys that contain the same string between the prefix and the first occurrence of the delimiter to be rolled up into a single result element in the CommonPrefixes collection. These rolled-up keys are not returned elsewhere in the response.
      *
-     * @param  string $bucket
-     * @param array $params S3 GET Bucket Parameter
+     * @param  string      $bucket
+     * @param  array       $params S3 GET Bucket Parameter
      * @return array|false
      */
     public function getObjectsByBucket($bucket, $params = array())
@@ -320,11 +339,11 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
         if (isset($xml->Contents)) {
             foreach ($xml->Contents as $contents) {
                 foreach ($contents->Key as $object) {
-                    $objects[] = (string)$object;
+                    $objects[] = (string) $object;
                 }
             }
         }
-        if(count($objects) === 0) {
+        if (count($objects) === 0) {
             return false;
         }
 
@@ -340,8 +359,8 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
      * max-keys - The maximum number of keys you'd like to see in the response body. The server might return fewer than this many keys, but will not return more.
      * delimiter - Causes keys that contain the same string between the prefix and the first occurrence of the delimiter to be rolled up into a single result element in the CommonPrefixes collection. These rolled-up keys are not returned elsewhere in the response.
      *
-     * @param  string $bucket
-     * @param array $params S3 GET Bucket Parameter
+     * @param  string      $bucket
+     * @param  array       $params S3 GET Bucket Parameter
      * @return array|false
      */
     public function getObjectsAndPrefixesByBucket($bucket, $params = array())
@@ -358,7 +377,7 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
         if (isset($xml->Contents)) {
             foreach ($xml->Contents as $contents) {
                 foreach ($contents->Key as $object) {
-                    $objects[] = (string)$object;
+                    $objects[] = (string) $object;
                 }
             }
         }
@@ -366,7 +385,7 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
         if (isset($xml->CommonPrefixes)) {
             foreach ($xml->CommonPrefixes as $prefix) {
                 foreach ($prefix->Prefix as $object) {
-                    $prefixes[] = (string)$object;
+                    $prefixes[] = (string) $object;
                 }
             }
         }
@@ -400,8 +419,8 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
     /**
      * Get an object
      *
-     * @param  string $object
-     * @param  bool   $paidobject This is "requestor pays" object
+     * @param  string       $object
+     * @param  bool         $paidobject This is "requestor pays" object
      * @return string|false
      */
     public function getObject($object, $paidobject=false)
@@ -425,9 +444,9 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
      *
      * Can use either provided filename for storage or create a temp file if none provided.
      *
-     * @param  string $object Object path
-     * @param  string $streamfile File to write the stream to
-     * @param  bool   $paidobject This is "requestor pays" object
+     * @param  string               $object     Object path
+     * @param  string               $streamfile File to write the stream to
+     * @param  bool                 $paidobject This is "requestor pays" object
      * @return StreamResponse|false
      */
     public function getObjectStream($object, $streamfile = null, $paidobject=false)
@@ -451,9 +470,9 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
     /**
      * Upload an object by a PHP string
      *
-     * @param  string $object Object name
+     * @param  string          $object Object name
      * @param  string|resource $data   Object data (can be string or stream)
-     * @param  array  $meta   Metadata
+     * @param  array           $meta   Metadata
      * @return boolean
      */
     public function putObject($object, $data, $meta=null)
@@ -461,7 +480,7 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
         $object = $this->_fixupObjectName($object);
         $headers = (is_array($meta)) ? $meta : array();
 
-        if(!is_resource($data)) {
+        if (!is_resource($data)) {
             $headers['Content-MD5'] = base64_encode(md5($data, true));
         }
         $headers['Expect'] = '100-continue';
@@ -494,9 +513,9 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
     /**
      * Put file to S3 as object
      *
-     * @param string $path   File name
-     * @param string $object Object name
-     * @param array  $meta   Metadata
+     * @param  string                     $path   File name
+     * @param  string                     $object Object name
+     * @param  array                      $meta   Metadata
      * @return boolean
      * @throws Exception\RuntimeException
      */
@@ -521,9 +540,9 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
     /**
      * Put file to S3 as object, using streaming
      *
-     * @param string $path   File name
-     * @param string $object Object name
-     * @param array  $meta   Metadata
+     * @param  string                     $path   File name
+     * @param  string                     $object Object name
+     * @param  array                      $meta   Metadata
      * @return boolean
      * @throws Exception\RuntimeException
      */
@@ -552,7 +571,7 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
     /**
      * Remove a given object
      *
-     * @param  string $object
+     * @param  string  $object
      * @return boolean
      */
     public function removeObject($object)
@@ -567,9 +586,9 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
     /**
      * Copy an object
      *
-     * @param  string $sourceObject  Source object name
-     * @param  string $destObject    Destination object name
-     * @param  array  $meta          (OPTIONAL) Metadata to apply to desination object.
+     * @param string $sourceObject Source object name
+     * @param string $destObject   Destination object name
+     * @param array  $meta         (OPTIONAL) Metadata to apply to desination object.
      *                               Set to null to copy metadata from source object.
      * @return boolean
      */
@@ -596,9 +615,9 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
      *
      * Performs a copy to dest + verify + remove source
      *
-     * @param string $sourceObject  Source object name
-     * @param string $destObject    Destination object name
-     * @param array  $meta          (OPTIONAL) Metadata to apply to destination object.
+     * @param string $sourceObject Source object name
+     * @param string $destObject   Destination object name
+     * @param array  $meta         (OPTIONAL) Metadata to apply to destination object.
      *                              Set to null to retain existing metadata.
      * @return bool
      */
@@ -619,11 +638,11 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
     /**
      * Make a request to Amazon S3
      *
-     * @param  string $method         Request method
-     * @param  string $path           Path to requested object
-     * @param  array  $params         Request parameters
-     * @param  array  $headers        HTTP headers
-     * @param  string|resource $data  Request data
+     * @param  string                             $method  Request method
+     * @param  string                             $path    Path to requested object
+     * @param  array                              $params  Request parameters
+     * @param  array                              $headers HTTP headers
+     * @param  string|resource                    $data    Request data
      * @return \Zend\Http\Response
      * @throws Exception\InvalidArgumentException
      */
@@ -662,7 +681,7 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
         $client->resetParameters();
 
         $hasContentType = false;
-        foreach($headers as $key => $value) {
+        foreach ($headers as $key => $value) {
             if (strtolower($key) == 'content-type') {
                 $hasContentType = true;
             }
@@ -693,7 +712,7 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
 
         do {
             $retry                = false;
-            $this->lastResponse   = $client->send();
+            $this->lastResponse   = $this->throttle(array($client, 'send'));
             $responseCode         = $this->lastResponse->getStatusCode();
 
             // Some 5xx errors are expected, so retry automatically
@@ -710,6 +729,35 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
         } while ($retry);
 
         return $this->lastResponse;
+    }
+
+    /**
+     * Make sure calls are throttled with a minimum time interval $throttleTime
+     *
+     * @param callback $callback     The function to be throttled
+     * @param array    $params       Parameters for the callback
+     * @param int      $throttleTime Maximum seconds to throttle between calls
+     */
+    public function throttle($callback, $params = array(), $throttleTime = 1.0)
+    {
+        if (self::$lastThrottle) {
+            $last = self::$lastThrottle;
+        } else {
+            $last = microtime(true);
+            self::$lastThrottle = $last - $throttleTime; // Do not throttle for the first time
+        }
+
+        $sleepySecs = (self::$lastThrottle + $throttleTime) - $last;
+
+        if ($sleepySecs > 0) {
+            // @TODO warn with monolog?
+            // printf("Throttling for %3.4f milliseconds...\n", 1e3 * $sleepySecs);
+            usleep(1e6 * $sleepySecs);
+        }
+
+        self::$lastThrottle = microtime(true);
+
+        return call_user_func_array($callback, $params);
     }
 
     /**
@@ -796,7 +844,7 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
     {
         $ext = substr(strrchr($path, '.'), 1);
 
-        if(!$ext) {
+        if (!$ext) {
             // shortcut
             return 'binary/octet-stream';
         }
@@ -957,6 +1005,7 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
     public function registerAsClient($name)
     {
         self::$_wrapperClients[$name] = $this;
+
         return $this;
     }
 
@@ -969,6 +1018,7 @@ class S3 extends \ZendService\Amazon\AbstractAmazon
     public function unregisterAsClient($name)
     {
         unset(self::$_wrapperClients[$name]);
+
         return $this;
     }
 

@@ -8,15 +8,31 @@
 ?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$this->translate('Your Holds and Recalls') ?></h2>
+  <h2><?=$this->transEsc('Your Holds and Recalls') ?></h2>
 
   <?=$this->flashmessages()?>
 
   <? if (!empty($this->recordList)): ?>
     <? if ($this->cancelForm): ?>
-      <form name="cancelForm" action="" method="post" id="cancelHold">
-        <button type="submit" class="btn btn-link" name="cancelSelected" onClick="return confirm('<?=$this->translate("confirm_hold_cancel_selected_text") ?>')"><i class="icon-cancel-holds"></i> <?=$this->translate("hold_cancel_selected") ?></button>
-        <button type="submit" class="btn btn-link" name="cancelAll" onClick="return confirm('<?=$this->translate("confirm_hold_cancel_all_text") ?>')"><i class="icon-cancel-all-holds"></i> <?=$this->translate("hold_cancel_all") ?></button>
+      <form name="cancelForm" class="inline" action="" method="post" id="cancelHold">
+        <input type="hidden" id="submitType" name="cancelSelected" value="1"/>
+        <input type="hidden" id="cancelConfirm" name="confirm" value="0"/>
+        <div class="btn-group">
+          <button type="submit" id="cancelSelected" class="btn btn-link dropdown-toggle" data-toggle="dropdown" name="cancelSelected" value="1"><i class="icon-cancel-holds"></i> <?=$this->transEsc("hold_cancel_selected") ?></button>
+          <ul class="dropdown-menu">
+            <li class="disabled"><a><?=$this->transEsc("confirm_hold_cancel_selected_text") ?></a></li>
+            <li><a href="#" onClick="$('#cancelConfirm').val(1);$('#submitType').attr('name','cancelSelected');$(this).parents('form').submit(); return false;"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
+            <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+          </ul>
+        </div>
+        <div class="btn-group">
+          <button type="submit" id="cancelAll" class="btn btn-link dropdown-toggle" data-toggle="dropdown" name="cancelAll" value="1"><i class="icon-cancel-all-holds"></i> <?=$this->transEsc("hold_cancel_all") ?></button>>
+          <ul class="dropdown-menu">
+            <li class="disabled"><a><?=$this->transEsc("confirm_hold_cancel_all_text") ?></a></li>
+            <li><a href="#" onClick="$('#cancelConfirm').val(1);$('#submitType').attr('name','cancelAll');$(this).parents('form').submit(); return false;"><?=$this->transEsc('confirm_dialog_yes') ?></a></li>
+            <li><a href="#" onClick="return false;"><?=$this->transEsc('confirm_dialog_no')?></a></li>
+          </ul>
+        </div>
     <? endif; ?>
 
     <? $iteration = 0; ?>
@@ -59,20 +75,6 @@
             <?=$this->transEsc('by')?>:
             <a href="<?=$this->record($resource)->getLink('author', $listAuthor)?>"><?=$this->escapeHtml($listAuthor)?></a><br/>
           <? endif; ?>
-          <? /* TODO: tags
-          {if $resource.tags}
-            <?=$this->transEsc('Your Tags')?>:
-            {foreach from=$resource.tags item=tag name=tagLoop}
-              <a href="{$url}/Search/Results?tag={$tag->tag|escape:"url"}">{$tag->tag|escape}</a>{if !$smarty.foreach.tagLoop.last},{/if}
-            {/foreach}
-            <br/>
-          {/if}
-           */ ?>
-          <? /* TODO: notes
-          {if $resource.notes}
-            <?=$this->transEsc('Notes')?>: {$resource.notes|escape}<br/>
-          {/if}
-           */ ?>
 
           <? $formats = $resource->getFormats(); if (count($formats) > 0): ?>
             <?=str_replace('class="', 'class="label label-info ', $this->record($resource)->getFormatList())?>
@@ -85,6 +87,11 @@
 
           <? if (isset($ilsDetails['publication_year']) && !empty($ilsDetails['publication_year'])): ?>
             <strong><?=$this->transEsc('Year of Publication')?>:</strong> <?=$this->escapeHtml($ilsDetails['publication_year'])?>
+            <br />
+          <? endif; ?>
+
+          <? if (!empty($ilsDetails['requestGroup'])): ?>
+            <strong><?=$this->transEsc('hold_requested_group') ?>:</strong> <?=$this->transEsc('location_' . $ilsDetails['requestGroup'], array(), $ilsDetails['requestGroup'])?>
             <br />
           <? endif; ?>
 

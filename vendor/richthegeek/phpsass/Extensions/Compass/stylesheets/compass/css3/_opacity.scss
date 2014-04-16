@@ -13,11 +13,7 @@
 }
 
 // Make an element completely transparent.
-@mixin transparent {
-  @include opacity(0);
-}
+@mixin transparent { @include opacity(0); }
 
 // Make an element completely opaque.
-@mixin opaque {
-  @include opacity(1);
-}
+@mixin opaque { @include opacity(1); }

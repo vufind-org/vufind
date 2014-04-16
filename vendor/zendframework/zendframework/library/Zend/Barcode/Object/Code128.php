@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  */
 
@@ -208,7 +208,8 @@ class Code128 extends AbstractObject
         $currentCharset = null;
         $result = array();
 
-        for ($pos = 0; $pos < strlen($string); $pos++) {
+        $strlen = strlen($string);
+        for ($pos = 0; $pos < $strlen; $pos++) {
             $char = $string[$pos];
             $code = null;
 

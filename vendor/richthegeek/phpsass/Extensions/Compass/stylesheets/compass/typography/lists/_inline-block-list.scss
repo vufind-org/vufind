@@ -27,8 +27,7 @@
 // Can be mixed into any selector that target a ul or ol that is meant
 // to have an inline-block layout. Used to implement `inline-block-list`.
 @mixin inline-block-list-container {
-  @include horizontal-list-container;
-}
+  @include horizontal-list-container; }
 
 // Can be mixed into any li selector that is meant to participate in a horizontal layout.
 // Used to implement `inline-block-list`.
@@ -40,8 +39,7 @@
     padding: {
       left: $padding;
       right: $padding;
-    }
-  ;
+    };    
   }
 }
 
@@ -49,6 +47,4 @@
 @mixin inline-block-list($padding: false) {
   @include inline-block-list-container;
   li {
-    @include inline-block-list-item($padding);
-  }
-}
+    @include inline-block-list-item($padding); } }

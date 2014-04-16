@@ -39,11 +39,26 @@ $default-border-radius: 5px !default;
 @mixin border-radius($radius: $default-border-radius, $vertical-radius: false) {
 
   @if $vertical-radius {
-  // Webkit doesn't understand the official shorthand syntax for specifying
-  // a vertical radius unless so in case there's several we only take the first.
-    @include experimental(border-radius, first-value-of($radius) first-value-of($vertical-radius), not -moz, -webkit, not -o, not -ms, not -khtml, not official);
-    @include experimental("border-radius", $radius unquote("/") $vertical-radius, -moz, not -webkit, not -o, not -ms, -khtml, official);
-  } @else {
+    // Webkit doesn't understand the official shorthand syntax for specifying
+    // a vertical radius unless so in case there's several we only take the first.
+    @include experimental(border-radius, first-value-of($radius) first-value-of($vertical-radius),
+      not -moz,
+      -webkit,
+      not -o,
+      not -ms,
+      not -khtml,
+      not official
+    );
+    @include experimental("border-radius", $radius unquote("/") $vertical-radius,
+      -moz,
+      not -webkit,
+      not -o,
+      not -ms,
+      -khtml,
+      official
+    );
+  }
+  @else {
     @include experimental(border-radius, $radius);
   }
 }
@@ -54,56 +69,62 @@ $default-border-radius: 5px !default;
 // * legal values for `$horz`: `left`, `right`
 
 @mixin border-corner-radius($vert, $horz, $radius: $default-border-radius) {
-// Support for mozilla's syntax for specifying a corner
-  @include experimental("border-radius-#{$vert}#{$horz}", $radius, -moz, not -webkit, not -o, not -ms, not -khtml, not official);
-  @include experimental("border-#{$vert}-#{$horz}-radius", $radius, not -moz, -webkit, not -o, not -ms, -khtml, official);
-
+  // Support for mozilla's syntax for specifying a corner
+  @include experimental("border-radius-#{$vert}#{$horz}", $radius,
+    -moz,
+    not -webkit,
+    not -o,
+    not -ms,
+    not -khtml,
+    not official
+  );
+  @include experimental("border-#{$vert}-#{$horz}-radius", $radius,
+    not -moz,
+    -webkit,
+    not -o,
+    not -ms,
+    -khtml,
+    official
+  );
+  
 }
 
 // Round top-left corner only
 
 @mixin border-top-left-radius($radius: $default-border-radius) {
-  @include border-corner-radius(top, left, $radius);
-}
+  @include border-corner-radius(top, left, $radius); }
 
 // Round top-right corner only
 
 @mixin border-top-right-radius($radius: $default-border-radius) {
-  @include border-corner-radius(top, right, $radius);
-}
+  @include border-corner-radius(top, right, $radius); }
 
 // Round bottom-left corner only
 
 @mixin border-bottom-left-radius($radius: $default-border-radius) {
-  @include border-corner-radius(bottom, left, $radius);
-}
+  @include border-corner-radius(bottom, left, $radius); }
 
 // Round bottom-right corner only
 
 @mixin border-bottom-right-radius($radius: $default-border-radius) {
-  @include border-corner-radius(bottom, right, $radius);
-}
+  @include border-corner-radius(bottom, right, $radius); }
 
 // Round both top corners by amount
 @mixin border-top-radius($radius: $default-border-radius) {
   @include border-top-left-radius($radius);
-  @include border-top-right-radius($radius);
-}
+  @include border-top-right-radius($radius); }
 
 // Round both right corners by amount
 @mixin border-right-radius($radius: $default-border-radius) {
   @include border-top-right-radius($radius);
-  @include border-bottom-right-radius($radius);
-}
+  @include border-bottom-right-radius($radius); }
 
 // Round both bottom corners by amount
 @mixin border-bottom-radius($radius: $default-border-radius) {
   @include border-bottom-left-radius($radius);
-  @include border-bottom-right-radius($radius);
-}
+  @include border-bottom-right-radius($radius); }
 
 // Round both left corners by amount
 @mixin border-left-radius($radius: $default-border-radius) {
   @include border-top-left-radius($radius);
-  @include border-bottom-left-radius($radius);
-}
+  @include border-bottom-left-radius($radius); }

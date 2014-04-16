@@ -3,3 +3,5 @@
 /tests/.sass-cache
 vendor
 composer.lock
+/.project
+/.settings

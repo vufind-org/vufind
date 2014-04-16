@@ -440,7 +440,8 @@ class Upgrade
      */
     protected function isDefaultBulkExportOptions($eo)
     {
-        return ($this->from == '1.4' && $eo == 'MARC:MARCXML:EndNote:RefWorks:BibTeX')
+        return
+            ($this->from == '1.4' && $eo == 'MARC:MARCXML:EndNote:RefWorks:BibTeX')
             || ($this->from == '1.3' && $eo == 'MARC:EndNote:RefWorks:BibTeX')
             || ($this->from == '1.2' && $eo == 'MARC:EndNote:BibTeX')
             || ($this->from == '1.1' && $eo == 'MARC:EndNote');
@@ -493,12 +494,6 @@ class Upgrade
         // Set up reference for convenience (and shorter lines):
         $newConfig = & $this->newConfigs['config.ini'];
 
-        // Brazilian Portuguese language file is now disabled by default (since
-        // it is very incomplete, and regular Portuguese file is now available):
-        if (isset($newConfig['Languages']['pt-br'])) {
-            unset($newConfig['Languages']['pt-br']);
-        }
-
         // If the [BulkExport] options setting is an old default, update it to
         // reflect the fact that we now support more options.
         if ($this->isDefaultBulkExportOptions($newConfig['BulkExport']['options'])) {
@@ -517,6 +512,9 @@ class Upgrade
                 . 'longer supported due to changes in Google APIs.'
             );
         }
+
+        // Disable unused, obsolete setting:
+        unset($newConfig['Index']['local']);
 
         // Warn the user if they are using an unsupported theme:
         $this->checkTheme('theme', 'blueprint');

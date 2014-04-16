@@ -34,6 +34,7 @@ use VuFind\Search\Solr\InjectSpellingListener;
 use VuFind\Search\Solr\MultiIndexListener;
 use VuFind\Search\Solr\V3\ErrorListener as LegacyErrorListener;
 use VuFind\Search\Solr\V4\ErrorListener;
+use VuFind\Search\Solr\DeduplicationListener;
 
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\LuceneSyntaxHelper;
@@ -41,6 +42,8 @@ use VuFindSearch\Backend\Solr\QueryBuilder;
 use VuFindSearch\Backend\Solr\HandlerMap;
 use VuFindSearch\Backend\Solr\Connector;
 use VuFindSearch\Backend\Solr\Backend;
+
+use Zend\Config\Config;
 
 use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
@@ -160,12 +163,14 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     {
         $events = $this->serviceLocator->get('SharedEventManager');
 
+        // Load configurations:
+        $config = $this->config->get('config');
+        $search = $this->config->get($this->searchConfig);
+
         // Highlighting
-        $highlightListener = new InjectHighlightingListener($backend);
-        $highlightListener->attach($events);
+        $this->getInjectHighlightingListener($backend, $search)->attach($events);
 
         // Spellcheck
-        $config  = $this->config->get('config');
         if (isset($config->Spelling->enabled) && $config->Spelling->enabled) {
             if (isset($config->Spelling->simple) && $config->Spelling->simple) {
                 $dictionaries = array('basicSpell');
@@ -177,7 +182,6 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
         }
 
         // Apply field stripping if applicable:
-        $search = $this->config->get($this->searchConfig);
         if (isset($search->StripFields) && isset($search->IndexShards)) {
             $strip = $search->StripFields->toArray();
             foreach ($strip as $k => $v) {
@@ -190,6 +194,13 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
                 $this->loadSpecs()
             );
             $mindexListener->attach($events);
+        }
+
+        // Apply deduplication if applicable:
+        if (isset($search->Records->deduplication)
+            && $search->Records->deduplication
+        ) {
+            $this->getDeduplicationListener($backend)->attach($events);
         }
 
         // Attach error listeners for Solr 3.x and Solr 4.x (for backward
@@ -315,5 +326,37 @@ abstract class AbstractSolrBackendFactory implements FactoryInterface
     {
         return $this->serviceLocator->get('VuFind\SearchSpecsReader')
             ->get($this->searchYaml);
+    }
+    
+    /**
+     * Get a deduplication listener for the backend
+     * 
+     * @param BackendInterface $backend Search backend
+     * 
+     * @return DeduplicationListener
+     */
+    protected function getDeduplicationListener(BackendInterface $backend)
+    {
+        return new DeduplicationListener(
+            $backend,
+            $this->serviceLocator,
+            $this->searchConfig
+        );
+    }
+
+    /**
+     * Get a highlighting listener for the backend
+     * 
+     * @param BackendInterface $backend Search backend
+     * @param Config           $search  Search configuration
+     *
+     * @return InjectHighlightingListener
+     */
+    protected function getInjectHighlightingListener(BackendInterface $backend,
+        Config $search
+    ) {
+        $fl = isset($search->General->highlighting_fields)
+            ? $search->General->highlighting_fields : '*';
+        return new InjectHighlightingListener($backend, $fl);
     }
 }

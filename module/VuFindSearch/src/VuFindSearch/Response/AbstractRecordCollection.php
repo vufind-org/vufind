@@ -138,6 +138,22 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
         }
     }
 
+    /**
+     * Replace a record in the collection.
+     *
+     * @param RecordInterface $record      Record to be replaced
+     * @param RecordInterface $replacement Replacement record
+     *
+     * @return void
+     */
+    public function replace(RecordInterface $record, RecordInterface $replacement)
+    {
+        $key = array_search($record, $this->records, true);
+        if ($key !== false) {
+            $this->records[$key] = $replacement;
+        }
+    }
+
     /// Iterator interface
 
     /**

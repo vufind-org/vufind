@@ -1,14 +1,15 @@
 <form action="<?=$this->url('myresearch-delete')?>" method="post" name="bulkDelete">
   <div id="popupMessages"><?=$this->flashmessages()?></div>
   <div id="popupDetails">
+    <h2 class="hideinlightbox"><?=$this->transEsc('delete_selected_favorites')?></h2>
     <? if (!$this->list): ?>
-      <div class="info"><?=$this->transEsc("fav_delete_warn") ?></div>
+      <div class="alert alert-info"><?=$this->transEsc("fav_delete_warn") ?></div>
     <? else: ?>
-      <h2><?=$this->transEsc("List") ?>: <?=$this->escapeHtml($this->list->title) ?></h2>
+      <h3><?=$this->transEsc("List") ?>: <?=$this->escapeHtml($this->list->title) ?></h3>
     <? endif; ?>
-    
+
     <? foreach ($this->records as $favorite): ?>
-      <strong><?=$this->translate('Title') ?>:</strong>
+      <strong><?=$this->transEsc('Title') ?>:</strong>
       <?=$this->escapeHtml($favorite->getBreadcrumb())?><br />
     <? endforeach; ?>
     <br />

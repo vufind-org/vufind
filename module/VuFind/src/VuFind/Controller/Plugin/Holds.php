@@ -26,10 +26,11 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller\Plugin;
+use VuFind\ILS\Connection;
 use Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Session\Container;
 
 /**
- * Zend action helper to perform renewal-related actions
+ * Zend action helper to perform holds-related actions
  *
  * @category VuFind2
  * @package  Controller_Plugins
@@ -105,7 +106,7 @@ class Holds extends AbstractPlugin
     }
 
     /**
-     * Update ILS details with renewal-specific information, if appropriate.
+     * Update ILS details with cancellation-specific information, if appropriate.
      *
      * @param \VuFind\ILS\Connection $catalog      ILS connection object
      * @param array                  $ilsDetails   Hold details from ILS driver's
@@ -113,7 +114,7 @@ class Holds extends AbstractPlugin
      * @param array                  $cancelStatus Cancel settings from ILS driver's
      * checkFunction() method
      *
-     * @return array $ilsDetails with renewal info added
+     * @return array $ilsDetails with cancellation info added
      */
     public function addCancelDetails($catalog, $ilsDetails, $cancelStatus)
     {
@@ -136,13 +137,13 @@ class Holds extends AbstractPlugin
     }
 
     /**
-     * Process renewal requests.
+     * Process cancellation requests.
      *
      * @param \VuFind\ILS\Connection $catalog ILS connection object
      * @param array                  $patron  Current logged in patron
      *
-     * @return array                          The result of the renewal, an
-     * associative array keyed by item ID (empty if no renewals performed)
+     * @return array                          The result of the cancellation, an
+     * associative array keyed by item ID (empty if no cancellations performed)
      */
     public function cancelHolds($catalog, $patron)
     {
@@ -150,7 +151,7 @@ class Holds extends AbstractPlugin
         $flashMsg = $this->getController()->flashMessenger();
         $params = $this->getController()->params();
 
-        // Pick IDs to renew based on which button was pressed:
+        // Pick IDs to cancel based on which button was pressed:
         $all = $params->fromPost('cancelAll');
         $selected = $params->fromPost('cancelSelected');
         if (!empty($all)) {
@@ -163,6 +164,34 @@ class Holds extends AbstractPlugin
         }
 
         if (!empty($details)) {
+            // Confirm?
+            if ($params->fromPost('confirm') === "0") {
+                if ($params->fromPost('cancelAll') !== null) {
+                    return $this->getController()->confirm(
+                        'hold_cancel_all',
+                        $this->getController()->url()->fromRoute('myresearch-holds'),
+                        $this->getController()->url()->fromRoute('myresearch-holds'),
+                        'confirm_hold_cancel_all_text',
+                        array(
+                            'cancelAll' => 1,
+                            'cancelAllIDS' => $params->fromPost('cancelAllIDS')
+                        )
+                    );
+                } else {
+                    return $this->getController()->confirm(
+                        'hold_cancel_selected',
+                        $this->getController()->url()->fromRoute('myresearch-holds'),
+                        $this->getController()->url()->fromRoute('myresearch-holds'),
+                        'confirm_hold_cancel_selected_text',
+                        array(
+                            'cancelSelected' => 1,
+                            'cancelSelectedIDS' =>
+                                $params->fromPost('cancelSelectedIDS')
+                        )
+                    );
+                }
+            }
+
             foreach ($details as $info) {
                 // If the user input contains a value not found in the session
                 // whitelist, something has been tampered with -- abort the process.
@@ -198,7 +227,7 @@ class Holds extends AbstractPlugin
     }
 
     /**
-     * Method for validating contents of a "place hold" request; returns an array of
+     * Method for validating contents of a request; returns an array of
      * collected details if request is valid, otherwise returns false.
      *
      * @param array $linkData An array of keys to check
@@ -221,7 +250,7 @@ class Holds extends AbstractPlugin
         }
 
         // Initialize gatheredDetails with any POST values we find; this will
-        // allow us to repopulate the hold form with user-entered values if there
+        // allow us to repopulate the form with user-entered values if there
         // is an error.  However, it is important that we load the POST data
         // FIRST and then override it with GET values in order to ensure that
         // the user doesn't bypass the hashkey verification by manipulating POST
@@ -230,7 +259,7 @@ class Holds extends AbstractPlugin
 
         // Make sure the bib ID is included, even if it's not loaded as part of
         // the validation loop below.
-        $gatheredDetails['id'] = $params->fromRoute('id');
+        $gatheredDetails['id'] = $params->fromRoute('id', $params->fromQuery('id'));
 
         // Get Values Passed from holdings.php
         $gatheredDetails = array_merge($gatheredDetails, $keyValueArray);
@@ -280,21 +309,112 @@ class Holds extends AbstractPlugin
     }
 
     /**
+     * Check if the user-provided request group is valid.
+     *
+     * @param array $gatheredDetails User hold parameters
+     * @param array $extraHoldFields Form fields enabled by configuration/driver
+     * @param array $requestGroups   Request group list from driver
+     *
+     * @return bool
+     */
+    public function validateRequestGroupInput(
+        $gatheredDetails, $extraHoldFields, $requestGroups
+    ) {
+        // Not having to care for requestGroup is equivalent to having a valid one.
+        if (!in_array('requestGroup', $extraHoldFields)) {
+            return true;
+        }
+        if (!isset($gatheredDetails['level'])
+            || $gatheredDetails['level'] !== 'title'
+        ) {
+            return true;
+        }
+
+        // Check the valid pickup locations for a match against user input:
+        return $this->validateRequestGroup(
+            $gatheredDetails['requestGroupId'], $requestGroups
+        );
+    }
+
+    /**
+     * Check if the provided request group is valid.
+     *
+     * @param string $requestGroupId Id of the request group to check
+     * @param array  $requestGroups  Request group list from driver
+     *
+     * @return bool
+     */
+    public function validateRequestGroup($requestGroupId, $requestGroups)
+    {
+        foreach ($requestGroups as $group) {
+            if ($requestGroupId == $group['id']) {
+                return true;
+            }
+        }
+
+        // If we got this far, something is wrong!
+         return false;
+    }
+
+    /**
      * Getting a default required date based on hold settings.
      *
-     * @param array $checkHolds Hold settings returned by the ILS driver's
+     * @param array      $checkHolds Hold settings returned by the ILS driver's
      * checkFunction method.
+     * @param Connection $catalog    ILS connection (optional)
+     * @param array      $patron     Patron details (optional)
+     * @param array      $holdInfo   Hold details (optional)
      *
      * @return int A timestamp representing the default required date
      */
-    public function getDefaultRequiredDate($checkHolds)
-    {
+    public function getDefaultRequiredDate($checkHolds, $catalog = null,
+        $patron = null, $holdInfo = null
+    ) {
+        // Load config:
         $dateArray = isset($checkHolds['defaultRequiredDate'])
              ? explode(":", $checkHolds['defaultRequiredDate'])
              : array(0, 1, 0);
+
+        // Process special "driver" prefix and adjust default date
+        // settings accordingly:
+        if ($dateArray[0] == 'driver') {
+            $useDriver = true;
+            array_shift($dateArray);
+            if (count($dateArray) < 3) {
+                $dateArray = array(0, 1, 0);
+            }
+        } else {
+            $useDriver = false;
+        }
+
+        // If the driver setting is active, try it out:
+        if ($useDriver && $catalog
+            && $catalog->checkCapability('getHoldDefaultRequiredDate')
+        ) {
+            $result = $catalog->getHoldDefaultRequiredDate($patron, $holdInfo);
+            if (!empty($result)) {
+                return $result;
+            }
+        }
+
+        // If the driver setting is off or the driver didn't work, use the
+        // standard relative date mechanism:
+        return $this->getDateFromArray($dateArray);
+    }
+
+    /**
+     * Support method for getDefaultRequiredDate() -- generate a date based
+     * on a days/months/years offset array.
+     *
+     * @param array $dateArray 3-element array containing day/month/year offsets
+     *
+     * @return int A timestamp representing the default required date
+     */
+    protected function getDateFromArray($dateArray)
+    {
         list($d, $m, $y) = $dateArray;
         return mktime(
-            0, 0, 0, date("m")+$m,   date("d")+$d,   date("Y")+$y
+            0, 0, 0, date('m')+$m, date('d')+$d, date('Y')+$y
         );
     }
 }

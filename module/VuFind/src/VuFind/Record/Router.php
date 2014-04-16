@@ -102,7 +102,7 @@ class Router
                 && $this->config->Collections->collections
             ) {
                 if (!is_object($driver)) {
-                    list($source, $id) = explode('|', $driver, 2);
+                    list($source, $id) = $this->extractSourceAndId($driver);
                     $driver = $this->loader->load($id, $source);
                 }
                 if (true === $driver->tryMethod('isCollection')) {
@@ -125,7 +125,7 @@ class Router
      *
      * @return array
      */
-    public function getRouteDetails($driver, $routeSuffix,
+    public function getRouteDetails($driver, $routeSuffix = '',
         $extraParams = array()
     ) {
         // Extract source and ID from driver or string:
@@ -133,22 +133,12 @@ class Router
             $source = $driver->getResourceSource();
             $id = $driver->getUniqueId();
         } else {
-            $parts = explode('|', $driver, 2);
-            if (count($parts) < 2) {
-                $source = 'VuFind';
-                $id = $parts[0];
-            } else {
-                $source = $parts[0];
-                $id = $parts[1];
-            }
+            list($source, $id) = $this->extractSourceAndId($driver);
         }
 
         // Build URL parameters:
         $params = $extraParams;
         $params['id'] = $id;
-        if (!empty($action)) {
-            $params['action'] = $action;
-        }
 
         // Determine route based on naming convention (default VuFind route is
         // the exception to the rule):
@@ -158,5 +148,26 @@ class Router
         return array(
             'params' => $params, 'route' => $routeBase . $routeSuffix
         );
+    }
+
+    /**
+     * Extract source and ID from a pipe-delimited string, adding a default
+     * source if appropriate.
+     *
+     * @param string $driver source|ID string
+     *
+     * @return array
+     */
+    protected function extractSourceAndId($driver)
+    {
+        $parts = explode('|', $driver, 2);
+        if (count($parts) < 2) {
+            $source = 'VuFind';
+            $id = $parts[0];
+        } else {
+            $source = $parts[0];
+            $id = $parts[1];
+        }
+        return array($source, $id);
     }
 }

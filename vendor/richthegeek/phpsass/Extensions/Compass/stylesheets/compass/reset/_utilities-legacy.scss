@@ -13,27 +13,19 @@
   fieldset, form, label, legend,
   table, caption, tbody, tfoot, thead, tr, th, td {
     @include reset-box-model;
-    @include reset-font;
-  }
+    @include reset-font; }
   body {
-    @include reset-body;
-  }
+    @include reset-body; }
   ol, ul {
-    @include reset-list-style;
-  }
+    @include reset-list-style; }
   table {
-    @include reset-table;
-  }
+    @include reset-table; }
   caption, th, td {
-    @include reset-table-cell;
-  }
+    @include reset-table-cell; }
   q, blockquote {
-    @include reset-quotation;
-  }
+    @include reset-quotation; }
   a img {
-    @include reset-image-anchor-border;
-  }
-}
+    @include reset-image-anchor-border; } }
 
 // Reset all elements within some selector scope. To reset the selector itself,
 // mixin the appropriate reset mixin for that element type as well. This could be
@@ -45,29 +37,22 @@
   pre, a, abbr, acronym, address, code, del, dfn, em, img,
   dl, dt, dd, ol, ul, li, fieldset, form, label, legend, caption, tbody, tfoot, thead, tr {
     @include reset-box-model;
-    @include reset-font;
-  }
+    @include reset-font; }
   table {
-    @include reset-table;
-  }
+    @include reset-table; }
   caption, th, td {
-    @include reset-table-cell;
-  }
+    @include reset-table-cell; }
   q, blockquote {
-    @include reset-quotation;
-  }
+    @include reset-quotation; }
   a img {
-    @include reset-image-anchor-border;
-  }
-}
+    @include reset-image-anchor-border; } }
 
 // Reset the box model measurements.
 @mixin reset-box-model {
   margin: 0;
   padding: 0;
   border: 0;
-  outline: 0;
-}
+  outline: 0; }
 
 // Reset the font and vertical alignment.
 @mixin reset-font {
@@ -75,56 +60,45 @@
     weight: inherit;
     style: inherit;
     size: 100%;
-    family: inherit;
-  }
-;
-  vertical-align: baseline;
-}
+    family: inherit; };
+  vertical-align: baseline; }
 
 // Resets the outline when focus.
 // For accessibility you need to apply some styling in its place.
 @mixin reset-focus {
-  outline: 0;
-}
+  outline: 0; }
 
 // Reset a body element.
 @mixin reset-body {
   line-height: 1;
   color: black;
-  background: white;
-}
+  background: white; }
 
 // Reset the list style of an element.
 @mixin reset-list-style {
-  list-style: none;
-}
+  list-style: none; }
 
 // Reset a table
 @mixin reset-table {
   border-collapse: separate;
   border-spacing: 0;
-  vertical-align: middle;
-}
+  vertical-align: middle; }
 
 // Reset a table cell (`th`, `td`)
 @mixin reset-table-cell {
   text-align: left;
   font-weight: normal;
-  vertical-align: middle;
-}
+  vertical-align: middle; }
 
 // Reset a quotation (`q`, `blockquote`)
 @mixin reset-quotation {
   quotes: "" "";
   &:before, &:after {
-    content: "";
-  }
-}
+    content: ""; } }
 
 // Resets the border.
 @mixin reset-image-anchor-border {
-  border: none;
-}
+  border: none; }
 
 // Unrecognized elements are displayed inline.
 // This reset provides a basic reset for html5 elements
@@ -133,9 +107,7 @@
 @mixin reset-html5 {
   #{elements-of-type(html5-block)} {
     @include reset-box-model;
-    display: block;
-  }
-}
+    display: block; } }
 
 // Resets the display of inline and block elements to their default display
 // according to their tag type. Elements that have a default display that varies across
@@ -153,16 +125,11 @@
 @mixin reset-display($selector: "", $important: false) {
   #{append-selector(elements-of-type("inline"), $selector)} {
     @if $important {
-      display: inline !important;
-    } @else {
-      display: inline;
-    }
-  }
+      display: inline !important; }
+    @else {
+      display: inline; } }
   #{append-selector(elements-of-type("block"), $selector)} {
     @if $important {
-      display: block !important;
-    } @else {
-      display: block;
-    }
-  }
-}
+      display: block !important; }
+    @else {
+      display: block; } } }

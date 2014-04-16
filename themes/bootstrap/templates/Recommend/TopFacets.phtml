@@ -7,7 +7,7 @@
     <? $moreClass = ' NarrowGroupHidden_'.$this->escapeHtml($title).' hidden'; ?>
     <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
     <strong><?=$this->transEsc($cluster['label'])?></strong><?=$this->transEsc("top_facet_suffix") ?>
-    <div class="row-fluid">
+    <div class="row-fluid top-row">
     <? $iter=1;$corner=$topFacetSettings['rows']*$topFacetSettings['cols']; ?>
     <? foreach($cluster['list'] as $thisFacet): ?>
       <? /* More link */ ?>
@@ -21,7 +21,7 @@
         <? if ($thisFacet['isApplied']): ?>
           <?=$this->escapeHtml($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="<?=$this->transEsc('Selected') ?>"/>
         <? else: ?>
-          <a href="<?=$this->currentPath().$this->recommend->getResults()->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> (<?=$thisFacet['count'] ?>)
+          <a href="<?=$this->currentPath().$this->recommend->getResults()->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> (<?=number_format($thisFacet['count']) ?>)
           <? if ($allowExclude): ?>
             <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>"><?=$this->transEsc('exclude_facet')?></a>
           <? endif; ?>

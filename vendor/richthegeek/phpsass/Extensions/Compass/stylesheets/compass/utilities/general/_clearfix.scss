@@ -20,12 +20,12 @@
 // outside the bounds of the container at the expense of more tricky CSS.
 @mixin legacy-pie-clearfix {
   &:after {
-    content: "\0020";
-    display: block;
-    height: 0;
-    clear: both;
-    overflow: hidden;
-    visibility: hidden;
+    content    : "\0020";
+    display    : block;
+    height     : 0;
+    clear      : both;
+    overflow   : hidden;
+    visibility : hidden;
   }
   @include has-layout;
 }

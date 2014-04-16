@@ -67,7 +67,7 @@
           try {
             $result = $fn($dir . '/' . $file);
           } catch (Exception $e) {
-            $result = $e->__toString();
+            return $e->__toString();
           }
           file_put_contents('/tmp/scss_test_' . $i, trim($result) . "\n");
         }

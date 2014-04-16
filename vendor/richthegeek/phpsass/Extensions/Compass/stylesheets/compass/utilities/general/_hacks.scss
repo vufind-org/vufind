@@ -29,12 +29,10 @@ $default-has-layout-approach: zoom !default;
 
 @mixin has-layout-block {
   @if $legacy-support-for-ie {
-  // This makes ie6 get layout
+    // This makes ie6 get layout
     display: inline-block;
-  // and this puts it back to block
-    & {
-      display: block;
-    }
+    // and this puts it back to block
+    & { display: block; }
   }
 }
 

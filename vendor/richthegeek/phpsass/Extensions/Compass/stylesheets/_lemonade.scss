@@ -8,7 +8,7 @@
 }
 
 @mixin sized-sprite-image($file) {
-  background: sprite-image($file);
+  background: sprite-image($file);  
   @include image-dimensions($file);
 }
 
@@ -16,7 +16,8 @@
   .#{$folder} {
     @if $image-dimensions {
       background: sprite-url($folder);
-    } @else {
+    }
+    @else {
       background: sprite-url($folder) no-repeat;
     }
   }

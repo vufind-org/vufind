@@ -1,10 +1,10 @@
-/*global closeLightbox, extractClassParams, getLightbox, path */
+/*global deparam, extractClassParams, htmlEncode, Lightbox, path, vufindString */
 
 /**
  * Functions and event handlers specific to record pages.
  */
 
-function checkRequestIsValid(element, requestURL) {
+function checkRequestIsValid(element, requestURL, requestType, blockedClass) {
   var recordId = requestURL.match(/\/Record\/([^\/]+)\//)[1];
   var vars = {}, hash;
   var hashes = requestURL.slice(requestURL.indexOf('?') + 1).split('&');
@@ -18,7 +18,7 @@ function checkRequestIsValid(element, requestURL) {
   }
   vars['id'] = recordId;
 
-  var url = path + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, data: vars});
+  var url = path + '/AJAX/JSON?' + $.param({method:'checkRequestIsValid', id: recordId, requestType: requestType, data: vars});
   $.ajax({
     dataType: 'json',
     cache: false,
@@ -26,12 +26,14 @@ function checkRequestIsValid(element, requestURL) {
     success: function(response) {
       if (response.status == 'OK') {
         if (response.data.status) {
-          $(element).removeClass('disabled').html(response.data.msg);
+          $(element).removeClass('disabled')
+            .attr('title', response.data.msg)
+            .html('<i class="icon-flag"></i>&nbsp;'+response.data.msg);
         } else {
           $(element).remove();
         }
       } else if (response.status == 'NEED_AUTH') {
-        $(element).replaceWith('<span class="holdBlocked">' + response.data.msg + '</span>');
+        $(element).replaceWith('<span class="' + blockedClass + '">' + response.data.msg + '</span>');
       }
     }
   });
@@ -39,8 +41,20 @@ function checkRequestIsValid(element, requestURL) {
 
 function setUpCheckRequest() {
   $('.checkRequest').each(function(i) {
-    if($(this).hasClass('checkRequest')) {
-      var isValid = checkRequestIsValid(this, this.href);
+    if ($(this).hasClass('checkRequest')) {
+      var isValid = checkRequestIsValid(this, this.href, 'Hold', 'holdBlocked');
+    }
+  });
+  $('.checkStorageRetrievalRequest').each(function(i) {
+    if ($(this).hasClass('checkStorageRetrievalRequest')) {
+      var isValid = checkRequestIsValid(this, this.href, 'StorageRetrievalRequest',
+          'StorageRetrievalRequestBlocked');
+    }
+  });
+  $('.checkILLRequest').each(function(i) {
+    if ($(this).hasClass('checkILLRequest')) {
+      var isValid = checkRequestIsValid(this, this.href, 'ILLRequest',
+          'ILLRequestBlocked');
     }
   });
 }
@@ -103,14 +117,15 @@ function registerAjaxCommentRecord() {
           $(form).find('textarea[name="comment"]').val('');
         } else if (response.status == 'NEED_AUTH') {
           data['loggingin'] = true;
-          return getLightbox(
-            'Record', 'AddComment', data, data,
-            function(){
-              closeLightbox();
-              $.ajax({type:'POST',url:url,data:data});
-              refreshCommentList(id, recordSource);
-            }
-          );
+          Lightbox.addCloseAction(function() {
+            $.ajax({
+              type: 'POST',
+              url:  url,
+              data: data,
+              dataType: 'json'
+            });
+          });
+          return Lightbox.get('Record', 'AddComment', data, data);
         } else {
           $('#modal').find('.modal-body').html(response.data+'!');
           $('#modal').find('.modal-header h3').html('Error!');
@@ -124,32 +139,93 @@ function registerAjaxCommentRecord() {
   // Delete links
   $('.delete').click(function(){deleteRecordComment(this, $('.hiddenId').val(), $('.hiddenSource').val(), this.id.substr(13));return false;});
 }
+
 $(document).ready(function(){
   var id = document.getElementById('record_id').value;
-  
+
+  // register the record comment form to be submitted via AJAX
+  registerAjaxCommentRecord();
+
+  setUpCheckRequest();
+
+  /* --- LIGHTBOX --- */
   // Cite lightbox
   $('#cite-record').click(function() {
     var params = extractClassParams(this);
-    return getLightbox(params['controller'], 'Cite', {id:id});
-  });
-  // SMS lightbox
-  $('#sms-record').click(function() {
-    var params = extractClassParams(this);
-    return getLightbox(params['controller'], 'SMS', {id:id});
+    return Lightbox.get(params['controller'], 'Cite', {id:id});
   });
   // Mail lightbox
   $('#mail-record').click(function() {
     var params = extractClassParams(this);
-    return getLightbox(params['controller'], 'Email', {id:id});
+    return Lightbox.get(params['controller'], 'Email', {id:id});
+  });
+  // Place a Hold
+  // Place a Storage Hold
+  $('.placehold,.placeStorageRetrievalRequest,.placeILLRequest').click(function() {
+    var parts = $(this).attr('href').split('?');
+    parts = parts[0].split('/');
+    var params = deparam($(this).attr('href'));
+    params.id = parts[parts.length-2];
+    params.hashKey = params.hashKey.split('#')[0]; // Remove #tabnav
+    return Lightbox.get('Record', parts[parts.length-1], params, {}, function(html) {
+      Lightbox.checkForError(html, Lightbox.changeContent);
+    });
   });
   // Save lightbox
   $('#save-record').click(function() {
     var params = extractClassParams(this);
-    return getLightbox(params['controller'], 'Save', {id:id});
+    return Lightbox.get(params['controller'], 'Save', {id:id});
   });
-  
-  // register the record comment form to be submitted via AJAX
-  registerAjaxCommentRecord();
-  
-  setUpCheckRequest();
+  // SMS lightbox
+  $('#sms-record').click(function() {
+    var params = extractClassParams(this);
+    return Lightbox.get(params['controller'], 'SMS', {id:id});
+  });
+  // Tag lightbox
+  $('#tagRecord').click(function() {
+    var id = $('.hiddenId')[0].value;
+    var parts = this.href.split('/');
+    Lightbox.addCloseAction(function() {
+      var recordId = $('#record_id').val();
+      var recordSource = $('.hiddenSource').val();
+
+      // Update tag list (add tag)
+      var tagList = $('#tagList');
+      if (tagList.length > 0) {
+        tagList.empty();
+        var url = path + '/AJAX/JSON?' + $.param({method:'getRecordTags',id:recordId,'source':recordSource});
+        $.ajax({
+          dataType: 'json',
+          url: url,
+          success: function(response) {
+            if (response.status == 'OK') {
+              $.each(response.data, function(i, tag) {
+                var href = path + '/Tag?' + $.param({lookfor:tag.tag});
+                var html = (i>0 ? ', ' : ' ') + '<a href="' + htmlEncode(href) + '">' + htmlEncode(tag.tag) +'</a> (' + htmlEncode(tag.cnt) + ')';
+                tagList.append(html);
+              });
+            } else if (response.data && response.data.length > 0) {
+              tagList.append(response.data);
+            }
+          }
+        });
+      }
+    });
+    return Lightbox.get(parts[parts.length-3],'AddTag',{id:id});
+  });
+  // Form handlers
+  Lightbox.addFormCallback('saveRecord', function(){Lightbox.confirm(vufindString['bulk_save_success']);});
+  Lightbox.addFormCallback('smsRecord', function(){Lightbox.confirm(vufindString['sms_success']);});
+  Lightbox.addFormCallback('emailRecord', function(){
+    Lightbox.confirm(vufindString['bulk_email_success']);
+  });
+  Lightbox.addFormCallback('placeHold', function() {
+    document.location.href = path+'/MyResearch/Holds';
+  });
+  Lightbox.addFormCallback('placeStorageRetrievalRequest', function() {
+    document.location.href = path+'/MyResearch/StorageRetrievalRequests';
+  });
+  Lightbox.addFormCallback('placeILLRequest', function() {
+    document.location.href = path+'/MyResearch/ILLRequests';
+  });
 });
