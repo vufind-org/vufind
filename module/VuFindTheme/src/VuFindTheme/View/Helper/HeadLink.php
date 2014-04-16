@@ -134,9 +134,12 @@ class HeadLink extends \Zend\View\Helper\HeadLink
         $inputFile  = $home . $relPath;
         list($fileName, ) = explode('.', $file);
         $outputFile = $home . 'css/sass/' . $fileName . '.css';
-        
-        $sass = new \scssc;
-        $css = $sass->compile($inputFile);
+
+        $sass = new \SassParser(array(
+            'debug_info' => true,
+            'style'      => 'compressed',
+        ));
+        $css = $sass->toCss($inputFile);
         $int = file_put_contents($outputFile, $css);
 
         $urlHelper = $this->getView()->plugin('url');
