@@ -128,7 +128,7 @@ select, .btn:not(.btn-link){vertical-align:top}
 .nav-pills {margin:3px 0 0 0}
 
 /* --- HOME --- */
-.searchHomeContent {margin:2em auto;width:85%}
+.searchHomeContent {margin:2em auto;width:83%}
 .searchHomeContent .hero-unit {background:#E6EFC2;border:2px solid #C6D880;border-radius:5px}
 .searchHomeContent .nav-tabs {border:0}
 .searchHomeContent .nav-tabs li a {border:1px solid transparent;border-bottom:0;font-size:14px}
@@ -155,7 +155,7 @@ select, .btn:not(.btn-link){vertical-align:top}
 .result {border:0;padding:3px 0}
 .result:nth-child(odd) {background:#EEE}
 .grid .result {background:none}
-.result>.checkbox {font-weight:bold;margin:2px 0 2px 1%;max-width:6%;min-width:27px}
+.result>.checkbox {font-weight:bold;margin:2px 0 2px 1%;max-width:6%}
 .result>.checkbox input[type="checkbox"] {margin:3px auto}
 .result .left {text-align:center}
 .result .middle {margin-left:1%;width:52%}
