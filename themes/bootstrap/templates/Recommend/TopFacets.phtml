@@ -7,7 +7,7 @@
     <? $moreClass = ' NarrowGroupHidden_'.$this->escapeHtml($title).' hidden'; ?>
     <? $allowExclude = $this->recommend->excludeAllowed($title); ?>
     <strong><?=$this->transEsc($cluster['label'])?></strong><?=$this->transEsc("top_facet_suffix") ?>
-    <div class="row-fluid">
+    <div class="row-fluid top-row">
     <? $iter=1;$corner=$topFacetSettings['rows']*$topFacetSettings['cols']; ?>
     <? foreach($cluster['list'] as $thisFacet): ?>
       <? /* More link */ ?>

@@ -7,7 +7,11 @@
         . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '<span class="divider">&gt;</span> </li>'
         . '<li class="active">' . $this->transEsc('storage_retrieval_request_place_text') . '</li>';
 ?>
-<p class="lead"><?=$this->transEsc('storage_retrieval_request_place_text')?></p>
+<h2><?=$this->transEsc('storage_retrieval_request_place_text')?></h2>
+<? if ($this->helpText): ?>
+<p class="helptext"><?=$this->helpText?></p>
+<? endif; ?>
+
 <?=$this->flashmessages()?>
 <div class="storage-retrieval-request-form">
   <form name="placeStorageRetrievalRequest" action="" class="form-horizontal" method="post">

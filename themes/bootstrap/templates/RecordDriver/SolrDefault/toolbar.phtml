@@ -6,7 +6,6 @@
 
   // Set up some variables for convenience:
   $id = $this->driver->getUniqueId();
-  $ajaxHref = '/AJAX/JSON?method=getLightbox&submodule=Record&id=' . $id;
   $controllerClass = 'controller:' . $this->record($this->driver)->getController();
   $cart = $this->cart();
   $cartId = $this->driver->getResourceSource() . '|' . $id;

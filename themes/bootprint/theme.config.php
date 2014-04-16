@@ -3,7 +3,7 @@ return array(
     'extends' => 'bootstrap',
     'css' => array(
         'icons.css',
-        'style.css',
+        'bootprint-custom.css',
     ),
     'helpers' => array(
         'factories' => array(

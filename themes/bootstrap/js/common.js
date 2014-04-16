@@ -77,6 +77,10 @@ function registerLightboxEvents() {
     get['id'] = 'NEW';
     return Lightbox.get('MyResearch', 'EditList', get);
   });
+  // New account link handler
+  $('.createAccountLink').click(function() {
+    return Lightbox.get('MyResearch', 'Account');
+  });
   // Select all checkboxes
   $(modal).find('.checkbox-select-all').change(function() {
     $(this).closest('.modal-body').find('.checkbox-select-item').attr('checked', this.checked);
@@ -89,7 +93,6 @@ function registerLightboxEvents() {
   // Highlight which submit button clicked
   $(modal).find("form input[type=submit]").click(function() {
     // Abort requests triggered by the lightbox
-    if(Lightbox.XHR) { Lightbox.XHR.abort(); }
     $('#modal .icon-spinner').remove();
     // Add useful information
     $(this).attr("clicked", "true");
@@ -106,40 +109,50 @@ function registerLightboxEvents() {
       $(op).hide();
     }
   });
+  $('#modal .collapse').on('hidden', function(e){ e.stopPropagation(); });
 }
-/**
- * This function adds submission events to forms loaded inside the lightbox
- *
- * First, it will check for custom handlers, for those who want to handle everything.
- *
- * Then, it will check for custom form callbacks. These will be added to an anonymous
- * function that will call Lightbox.submit with the form and the callback.
- *
- * Finally, if nothing custom is setup, it will add the default function which
- * calls Lightbox.submit with a callback to close if there are no errors to display.
- *
- * This is a default open action, so it runs every time changeContent
- * is called and the 'shown' lightbox event is triggered
- */
-function registerLightboxForms() {
-  var form = $("#modal").find('form');
-  var name = $(form).attr('name');
-  // Assign form handler based on name
-  if(typeof name !== "undefined" && typeof Lightbox.formHandlers[name] !== "undefined") {
-    $(form).unbind('submit').submit(Lightbox.formHandlers[name]);
-  // Default action, with custom callback
-  } else if(typeof Lightbox.formCallbacks[name] !== "undefined") {
-    $(form).unbind('submit').submit(function(evt){
-      Lightbox.submit($(evt.target), Lightbox.formCallbacks[name]);
-      return false;
-    });
-  // Default
-  } else {
-    $(form).unbind('submit').submit(function(evt){
-      Lightbox.submit($(evt.target), function(html){
-        Lightbox.checkForError(html, Lightbox.close);
-      });
-      return false;
+function updatePageForLogin()
+{
+  // Hide "log in" options and show "log out" options:
+  $('#loginOptions').hide();
+  $('.logoutOptions').show();
+
+  var recordId = $('#record_id').val();
+
+  // Update user save statuses if the current context calls for it:
+  if (typeof(checkSaveStatuses) == 'function') {
+    checkSaveStatuses();
+  }
+
+  // refresh the comment list so the "Delete" links will show
+  $('.commentList').each(function(){
+    var recordSource = extractSource($('#record'));
+    refreshCommentList(recordId, recordSource);
+  });
+
+  var summon = false;
+  $('.hiddenSource').each(function(i, e) {
+    if(e.value == 'Summon') {
+      summon = true;
+      // If summon, queue reload for when we close
+      Lightbox.addCloseAction(function(){document.location.reload(true);});
+    }
+  });
+
+  // Refresh tab content
+  var recordTabs = $('.recordTabs');
+  if(!summon && recordTabs.length > 0) { // If summon, skip: about to reload anyway
+    var tab = recordTabs.find('.active a').attr('id');
+    $.ajax({ // Shouldn't be cancelled, not assigned to XHR
+      type:'POST',
+      url:path+'/AJAX/JSON?method=get&submodule=Record&subaction=AjaxTab&id='+recordId,
+      data:{tab:tab},
+      success:function(html) {
+        recordTabs.next('.tab-container').html(html);
+      },
+      error:function(d,e) {
+        console.log(d,e); // Error reporting
+      }
     });
   }
 }
@@ -167,10 +180,10 @@ function ajaxLogin(form) {
 
         // get any other form values
         for (var i = 0; i < form.length; i++) {
-            if (form.elements[i].name == 'password') {
-                continue;
-            }
-            params[form.elements[i].name] = form.elements[i].value;
+          if (form.elements[i].name == 'password') {
+            continue;
+          }
+          params[form.elements[i].name] = form.elements[i].value;
         }
 
         // login via ajax
@@ -181,48 +194,7 @@ function ajaxLogin(form) {
           data: params,
           success: function(response) {
             if (response.status == 'OK') {
-              // Hide "log in" options and show "log out" options:
-              $('#loginOptions').hide();
-              $('.logoutOptions').show();
-              
-              var recordId = $('#record_id').val();
-
-              // Update user save statuses if the current context calls for it:
-              if (typeof(checkSaveStatuses) == 'function') {
-                checkSaveStatuses();
-              }
-
-              // refresh the comment list so the "Delete" links will show
-              $('.commentList').each(function(){
-                var recordSource = extractSource($('#record'));
-                refreshCommentList(recordId, recordSource);
-              });
-              
-              var summon = false;
-              $('.hiddenSource').each(function(i, e) {
-                if(e.value == 'Summon') {
-                  summon = true;
-                  // If summon, queue reload for when we close
-                  Lightbox.addCloseAction(function(){document.location.reload(true);});
-                }
-              });
-              
-              // Refresh tab content
-              var recordTabs = $('.recordTabs');
-              if(!summon && recordTabs.length > 0) { // If summon, skip: about to reload anyway
-                var tab = recordTabs.find('.active a').attr('id');
-                $.ajax({ // Shouldn't be cancelled, not assigned to XHR
-                  type:'POST',
-                  url:path+'/AJAX/JSON?method=get&submodule=Record&subaction=AjaxTab&id='+recordId,
-                  data:{tab:tab},
-                  success:function(html) {
-                    recordTabs.next('.tab-container').html(html);
-                  },
-                  error:function(d,e) {
-                    console.log(d,e); // Error reporting
-                  }
-                });
-              }
+              updatePageForLogin();
               // and we update the modal
               if(Lightbox.lastPOST && Lightbox.lastPOST['loggingin']) {
                 Lightbox.close();
@@ -272,6 +244,9 @@ $.fn.typeahead.Constructor.prototype.select = function () {
 };
 
 $(document).ready(function() {
+  // support "jump menu" dropdown boxes
+  $('select.jumpMenu').change(function(){ $(this).parent('form').submit(); });
+
   // Highlight previous links, grey out following
   $('.backlink')
     .mouseover(function() {
@@ -340,7 +315,7 @@ $(document).ready(function() {
   $('.checkbox-select-all').change(function() {
     $(this).closest('form').find('.checkbox-select-item').attr('checked', this.checked);
   });
-  
+
   // handle QR code links
   $('a.qrcodeLink').click(function() {
     if ($(this).hasClass("active")) {
@@ -362,24 +337,28 @@ $(document).ready(function() {
     // Make an ajax call to ensure that ajaxStop is triggered
     $.getJSON(path + '/AJAX/JSON', {method: 'keepAlive'});
   }
-    
+
   // Collapsing facets
   $('.sidebar .collapsed .nav-header').click(function(){$(this).parent().toggleClass('open');});
-  
+
   // Advanced facets
   setupOrFacets();
-  
+
   /******************************
    * LIGHTBOX DEFAULT BEHAVIOUR *
    ******************************/
   Lightbox.addOpenAction(registerLightboxEvents);
-  Lightbox.addOpenAction(registerLightboxForms);
   Lightbox.addFormCallback('newList', Lightbox.changeContent);
   Lightbox.addFormHandler('loginForm', function(evt) {
     ajaxLogin(evt.target);
     return false;
   });
-  
+  Lightbox.addFormCallback('accountForm', function() {
+    updatePageForLogin();
+    Lightbox.getByUrl(Lightbox.openingURL);
+    Lightbox.openingURL = false;
+  });
+
   // Help links
   $('.help-link').click(function() {
     var split = this.href.split('=');

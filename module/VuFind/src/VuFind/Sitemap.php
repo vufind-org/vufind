@@ -262,8 +262,8 @@ class Sitemap
     /**
      * Retrieve a batch of IDs using regular search.
      *
-     * @param Backend $backend  Search backend
-     * @param int     $offset   Number of terms previously retrieved
+     * @param Backend $backend Search backend
+     * @param int     $offset  Number of terms previously retrieved
      *
      * @return array
      */
