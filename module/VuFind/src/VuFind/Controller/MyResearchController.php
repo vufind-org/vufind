@@ -1142,14 +1142,18 @@ class MyResearchController extends AbstractBase
         } elseif ($username = $this->params()->fromPost('username')) {
             $user = $table->getByUsername($username, false);
         }
+        $view = $this->createViewModel();
+        $view->useRecaptcha = $this->recaptcha()->active('newAccount');
         // If we have a submitted form
         if (false != $user) {
-            $this->sendRecoveryEmail($user, $this->getConfig());
-        } else if ($this->params()->fromPost('submit')) {
+            if ($view->useRecaptcha && $this->recaptcha()->validate()) {
+                $this->sendRecoveryEmail($user, $this->getConfig());
+            }
+        } elseif ($this->params()->fromPost('submit')) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('recovery_user_not_found');
         }
-        return $this->createViewModel();
+        return $view;
     }
 
     /**

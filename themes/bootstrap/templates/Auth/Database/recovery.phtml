@@ -1,14 +1,24 @@
 <div class="control-group">
   <label class="control-label"><?=$this->transEsc('recovery_by_username') ?>:</label>
   <div class="controls">
-    <input type="text" name="username"/>
-    <input class="btn" name="submit" type="submit"/>
+    <input type="text" name="username"/> <?=$this->translate('or') ?>
   </div>
 </div>
 <div class="control-group">
   <label class="control-label"><?=$this->transEsc('recovery_by_email') ?>:</label>
   <div class="controls">
     <input type="email" name="email"/>
+  </div>
+</div>
+<? if(isset($this->useRecaptcha) && $this->useRecaptcha): ?>
+  <div class="control-group">
+    <div class="controls">
+      <?=$this->recaptcha()->html(); ?>
+    </div>
+  </div>
+<? endif; ?>
+<div class="control-group">
+  <div class="controls">
     <input class="btn" name="submit" type="submit"/>
   </div>
 </div>
