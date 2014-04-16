@@ -1,0 +1,7 @@
+h1 {
+	opacity: 0.3;
+	color: red;
+	-moz-transition: opacity 1s ease 1s;
+	-webkit-transition: opacity 1s ease 1s;
+	-o-transition: opacity 1s ease 1s;
+	transition: opacity 1s ease 1s; }

@@ -1,0 +1,38 @@
+{
+    "name": "richthegeek/phpsass",
+    "description": "PHPSass is a PHP compiler for SASS, a popular CSS pre-processor language.",
+    "license": "BSD-2-Clause",
+    "homepage": "http://phpsass.com",
+    "support": {
+        "issues": "https://github.com/richthegeek/phpsass/issues",
+        "source": "https://github.com/richthegeek/phpsass"
+    },
+    "authors": [
+        {
+            "name": "Richard Lyon",
+            "homepage": "https://github.com/richthegeek"
+        },
+        {
+            "name": "Sebastian Siemssen",
+            "homepage": "https://twitter.com/thefubhy"
+        },
+        {
+            "name": "Steve Jones",
+            "homepage": "https://github.com/darthsteven"
+        },
+        {
+            "name": "Sam Richard",
+            "homepage": "https://github.com/snugug"
+        }
+    ],
+    "autoload": {
+        "classmap": [
+            "script/",
+            "renderers/",
+            "tree/",
+            "SassException.php",
+            "SassFile.php",
+            "SassParser.php"
+        ]
+    }
+}

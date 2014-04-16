@@ -1,0 +1,18 @@
+@mixin getMediaDimensions() {
+    @content;
+}
+
+@mixin getDimensions() {
+    @include getMediaDimensions() {
+        @media (min-width: 768px) {
+            body {
+                height: 50px;
+                @content;
+            }
+        }
+    }
+}
+
+@include getDimensions() {
+    width: 50px;
+}

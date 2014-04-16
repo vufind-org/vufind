@@ -1,0 +1,14 @@
+.sidebar {
+	width: 300px; }
+@media screen and (max-width: 1024px) {
+	.sidebar {
+		width: 500px; }
+    .sidebar .subclass {
+      height: 100px; }
+      .sidebar .subclass .subsubclass {
+        height: 200px; } }
+@media screen and (max-width:1024px) {
+  .subclass {
+    height: 100px; }
+    .subclass .subsubclass {
+      height: 200px; } }

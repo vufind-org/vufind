@@ -1,0 +1,5 @@
+#other-color {
+  background: adjust-color(#f28500, $green: .1, $red: .2, $blue: .3, $alpha: .4);
+  background: scale-color(#f28500, $lightness: 10%);
+  background: change-color(#f28500, $alpha: .5);
+}

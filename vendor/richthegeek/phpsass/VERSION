@@ -1,0 +1,24 @@
+Version 201403201700 - Version bump to reflect multiple merged pull requests
+Version 201306271500 - Verbump, merge pr #119
+Version 201306181400 - Run PHP-CS-Fixer on all files to fix coding style
+Version 201306071300 - Version bump to reflect multiple merged pull requests
+Version 201304222300 - Version bump to reflect multiple merged pull requests
+Version 201211282000 - Version bump to reflect multiple pull requests being merged over time.
+Version 201209040040 - Fixed a bunch of issues
+Version 201209031740 - Almost up to 3.2.1; Directive interp, splats, new functions, some fixes
+Version 201207301030 - Fix to issue 28, extending from included files
+Version 201207271000 - Fixed scale-color function (attrib: Steve Jones)
+Version 201207262300 - Various issue fixes, better testing framework
+Version 201206291700 - Fixed some tests, minor changes to string and import handling
+Version 201203071100 - Hotfix to functions, overhauled evaluation method to be less rubbish
+Version 201203061130 - Added min/max functions, fix to lists (evaluation instead of just lexing of values)
+Version 201203042100 - Fixes to interpolation in selectors, test coverage, and some cleanup
+Version 201203021700 - Placeholder selectors! Fixes to [selectors] when nested leaving a space.
+Version 201203011100 - Hotfix for unfound function arguments in url() turning up empty from @imported files.
+Version 201203010930 - Fix to minor issues and notices (regressions due to changes in prior version)
+Version 201203010000 - Proper list support, functions: if, adjust-color, scale-color, change-color, named parameters for functions+mixins, various minor bugfixes
+Version 201202100115 - fix to @import parsing of url(x.css)
+Version 201202100100 - fix to @each parsing of things like rgba(*,*,*,*) which previously removed braces incorrectly.
+Version 201202092300 - fix to @mixins calling @mixins involving variable-name collisions, minor fix to interpolation fail
+Version 201202081100 - fix to @media contexts
+Version 201202072300 - first version with versions!

@@ -1,0 +1,8 @@
+input {
+  &:-moz-placeholder {
+    color: #ccc;
+  }
+  &::-webkit-input-placeholder {
+    color: #ccc;
+  }
+}

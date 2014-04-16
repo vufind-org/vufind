@@ -1,0 +1,7 @@
+@mixin some-mixin($value) {
+  box-shadow: $value;
+}
+
+.box {
+  @include some-mixin(5px 5px 20px rgba(0, 0, 0, .8));
+}

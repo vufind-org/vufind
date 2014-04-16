@@ -1,0 +1,5 @@
+fn {
+	three: 1, 2, 3;
+	four: 1, 2, 3, 4; }
+box {
+	box-shadow: 0 0 0 black, inset 5px 30px 10px red; }

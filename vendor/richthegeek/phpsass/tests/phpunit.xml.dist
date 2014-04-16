@@ -1,0 +1,14 @@
+<!-- Copy and rename to phpunit.xml. Customize as needed. -->
+<phpunit backupGlobals="false"
+    backupStaticAttributes="false"
+    syntaxCheck="false">
+  <testsuites>
+    <testsuite name="PHPSass Test Suite">
+      <directory>.</directory>
+    </testsuite>
+  </testsuites>
+
+  <php>
+    <includePath>.</includePath>
+  </php>
+</phpunit>

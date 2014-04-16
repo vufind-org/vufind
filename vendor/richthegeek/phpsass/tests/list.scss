@@ -1,0 +1,8 @@
+#list {
+  $test-list: 'apple', 'banana', 'orange';
+  $list-join: 'pear';
+  font-size: length($test-list);
+  content: nth($test-list, 2);
+  $test-list: join($test-list, $list-join);
+  content: nth($test-list, 4);
+}

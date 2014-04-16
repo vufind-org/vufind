@@ -1,0 +1,8 @@
+#opacity {
+  background: alpha(rgba(#f28500, .5));
+  background: opacity(rgba(#f28500, .5));
+  background: opacify(rgba(#f28500, .2), .5);
+  background: fade-in(rgba(#f28500, .2), .5);
+  background: transparentize(#f28500, .5);
+  background: fade-out(#f28500, .5);
+}

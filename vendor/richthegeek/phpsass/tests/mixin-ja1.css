@@ -1,0 +1,8 @@
+.messages h2 {
+  display: -moz-inline-box;
+  -moz-box-orient: vertical;
+  display: inline-block;
+  vertical-align: middle;
+  *vertical-align: auto; }
+.messages h2 {
+  *display: inline; }

@@ -1,0 +1,5 @@
+p {
+	background-image: -webkit-linear-gradient(bottom, #eff4f8 23%, white 62%);
+    background-image: -moz-linear-gradient(bottom, #eff4f8 23%, white 62%);
+    background-image: linear-gradient(bottom, #eff4f8 23%, white 62%);
+}

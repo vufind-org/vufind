@@ -1,0 +1,7 @@
+@import "compass/compass";
+
+p {
+	@include background-image(
+        linear-gradient(bottom, #eff4f8 23%, #fff 62%)
+    );
+}

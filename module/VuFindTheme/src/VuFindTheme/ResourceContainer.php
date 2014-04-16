@@ -39,6 +39,20 @@ namespace VuFindTheme;
 class ResourceContainer
 {
     /**
+     * Less CSS files
+     *
+     * @var array
+     */
+    protected $less = array();
+    
+    /**
+     * Sass CSS files
+     *
+     * @var array
+     */
+    protected $sass = array();
+
+    /**
      * CSS files
      *
      * @var array
@@ -74,6 +88,40 @@ class ResourceContainer
     protected $generator = '';
 
     /**
+     * Add a Less CSS file.
+     *
+     * @param array|string $css Less CSS file (or array of Less CSS files) to add
+     *
+     * @return void
+     */
+    public function addLessCss($less)
+    {
+        if (!is_array($less) && !is_a($less, 'Traversable')) {
+            $less = array($less);
+        }
+        foreach ($less as $current) {
+            $this->less[] = $current;
+        }
+    }
+
+    /**
+     * Add a Sass CSS file.
+     *
+     * @param array|string $css Less CSS file (or array of Less CSS files) to add
+     *
+     * @return void
+     */
+    public function addSassCss($sass)
+    {
+        if (!is_array($sass) && !is_a($less, 'Traversable')) {
+            $sass = array($sass);
+        }
+        foreach ($sass as $current) {
+            $this->sass[] = $current;
+        }
+    }
+
+    /**
      * Add a CSS file.
      *
      * @param array|string $css CSS file (or array of CSS files) to add (possibly
@@ -107,6 +155,25 @@ class ResourceContainer
         foreach ($js as $current) {
             $this->js[] = $current;
         }
+    }
+
+    /**
+     * Get Less CSS files.
+     *
+     * @return array
+     */
+    public function getLessCss()
+    {
+        return array_unique($this->less);
+    }
+    /**
+     * Get Sass CSS files.
+     *
+     * @return array
+     */
+    public function getSassCss()
+    {
+        return array_unique($this->sass);
     }
 
     /**

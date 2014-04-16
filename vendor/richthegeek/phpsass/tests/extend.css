@@ -1,0 +1,13 @@
+.error,
+.seriousError,
+.hoverlink {
+  border: 1px red;
+  background-color: #ffdddd; }
+
+.seriousError,
+.hoverlink {
+  border-width: 3px; }
+
+.comment a:hover,
+.comment .hoverlink {
+	text-decoration: underline; }

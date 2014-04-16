@@ -1,0 +1,28 @@
+@mixin test($one: 'foo', $two: 'bar') {
+	one: $one;
+	two: $two;
+}
+
+default {
+	@include test();
+}
+
+one {
+	@include test('one');
+}
+
+two {
+	@include test($two: 'two');
+}
+
+both {
+	@include test('one', 'two');
+}
+
+whitespace {
+  @include test ('one', 'two');
+}
+
+parens {
+  @include test('one', rgb(255, 255, 255) );
+}

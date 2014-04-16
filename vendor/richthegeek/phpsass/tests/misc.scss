@@ -1,0 +1,103 @@
+/* Source: http://code.google.com/p/phamlp/issues/detail?id=117; */
+@import url("http://fonts.googleapis.com/css?family=Actor");
+
+/* Source: http://code.google.com/p/phamlp/issues/detail?id=116; */
+@import "somefile.css";
+
+/* Source: http://code.google.com/p/phamlp/issues/detail?id=101; */
+@mixin nav-boolean {
+ ol {
+    li {
+       input:checked + label { color: red; }
+    }
+  }
+}
+
+.nav-boolean { @include nav-boolean; }
+
+/* Source: http://code.google.com/p/phamlp/issues/detail?id=100; */
+.zero {
+  margin: 0 0;
+  padding: 0px;
+}
+
+/* Source: http://code.google.com/p/phamlp/issues/detail?id=99; */
+/* Variables */
+
+$blue: #3bbfce;
+$margin: 16px;
+
+.content-navigation {
+  border-color: $blue;
+  color:
+    darken($blue, 9%);
+}
+
+.border {
+  padding: $margin;
+  margin: $margin / 2;
+  border-color: $blue;
+}
+
+/* Nesting */
+
+table.hl {
+  margin: 2em 0;
+  td.ln {
+    text-align: right;
+  }
+}
+
+li {
+  font: {
+    family: serif;
+    weight: bold;
+    size: 1.2em;
+  }
+}
+
+/* Mixins */
+
+@mixin table-base {
+  th {
+    text-align: center;
+    font-weight: bold;
+  }
+  td, th {padding: 2px}
+}
+
+@mixin left($dist) {
+  float: left;
+  margin-left: $dist;
+}
+
+#data {
+  @include left(10px);
+  @include table-base;
+}
+
+/* Selector Inheritance */
+
+.error {
+  border: 1px red;
+  background: #ffdddd;
+}
+.error.intrusion {
+  font-size: 1.3em;
+  font-weight: bold;
+}
+
+.madError {
+  @extend .error;
+  border-width: 3px;
+}
+
+git20 {
+  $fluidGridGutterWidth: 1%;
+  $gridRowWidth: 60px;
+  *margin-left: $fluidGridGutterWidth - (0.5 / $gridRowWidth * 100px * 1%);
+}
+
+git30 {
+  width: 30px!important;
+}

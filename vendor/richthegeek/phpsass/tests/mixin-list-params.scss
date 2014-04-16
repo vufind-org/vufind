@@ -1,0 +1,17 @@
+@mixin multi-backgrounds($image, $gradient, $color) {
+  $angle: nth($gradient, 1);
+  $colorStart: nth($gradient, 2);
+  $colorStop: nth($gradient, 3);
+  $newAngle: (90-$angle) % 360;
+
+  background: #{$image}, -moz-linear-gradient(#{$gradient}), #{$color};
+  background: #{$image}, -webkit-gradient(#{$gradient}), #{$color};
+  background: #{$image}, -webkit-linear-gradient(#{$gradient}), #{$color};
+  background: #{$image}, -o-linear-gradient(#{$gradient}), #{$color};
+  background: #{$image}, -ms-linear-gradient(#{$gradient}), #{$color};
+  background: #{$image}, linear-gradient(#{$newAngle}, #{$colorStart}, #{$colorStop}), #{$color};
+}
+
+.box {
+  @include multi-backgrounds(url('sprite.png') 0 -276px no-repeat, (320deg, #e2d0ec, lighten(#e2d0ec, 10%)), lighten(#e2d0ec, 5%));
+}

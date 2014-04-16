@@ -1,0 +1,23 @@
+default {
+	one: 'foo';
+	two: 'bar'; }
+
+one {
+	one: 'one';
+	two: 'bar'; }
+
+two {
+	one: 'foo';
+	two: 'two'; }
+
+both {
+	one: 'one';
+	two: 'two'; }
+
+whitespace {
+	one: 'one';
+	two: 'two'; }
+
+parens {
+	one: 'one';
+	two: white; }

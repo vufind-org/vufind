@@ -1,0 +1,48 @@
+/*
+ * test basic placeholder usage, with multiple extenders
+ */
+.bar,
+.baz {
+	color: blue; }
+
+/*
+ * test unused placeholder
+ */
+ /* 
+ * test placeholder descendant selector
+ */
+#context .bar a {
+	color: blue; }
+
+/*
+ * test placeholder-descendant with multiple extenders
+ */
+.bar .baz {
+	color: blue; }
+/*
+ * test placeholder selector as modifier
+ */
+a.bar.baz {
+	color: blue; }
+
+/*
+ * the div should not be rendered as it results in adiv (invalid)
+ */
+
+/*
+ * test placeholder selector modifier again
+ */
+.hello.goodbye {
+	color: blue; }
+
+/*
+ * test placeholder interpolation
+ */
+.inter {
+	color: blue; }
+
+/*
+ * test media in a plaecholder
+ */
+.media {
+	c: d; }

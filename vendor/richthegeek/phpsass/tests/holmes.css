@@ -1,0 +1,227 @@
+body.holmes-debug a:not([href]),
+body.holmes-debug a[href=""] {
+  outline: 2px solid red; }
+body.holmes-debug a[href="#"],
+body.holmes-debug a[href^="javascript"],
+body.holmes-debug a:not([title]),
+body.holmes-debug a[title=""] {
+  outline: 2px solid #ffdd00; }
+body.holmes-debug img:not([alt]),
+body.holmes-debug img[alt=""] {
+  outline: 2px solid red; }
+body.holmes-debug label:not([for]),
+body.holmes-debug label[for=""],
+body.holmes-debug input:not([name]),
+body.holmes-debug input[name=""],
+body.holmes-debug select:not([name]),
+body.holmes-debug select[name=""],
+body.holmes-debug textarea:not([name]),
+body.holmes-debug textarea[name=""],
+body.holmes-debug abbr:not([title]),
+body.holmes-debug abbr[title=""],
+body.holmes-debug [class=""],
+body.holmes-debug [id=""],
+body.holmes-debug table:not([summary]),
+body.holmes-debug table[summary=""] {
+  outline: 2px solid red; }
+body.holmes-debug [style],
+body.holmes-debug [onclick],
+body.holmes-debug [onblur],
+body.holmes-debug [onfocus],
+body.holmes-debug [onselect],
+body.holmes-debug [onload],
+body.holmes-debug [onunload] {
+  outline: 2px solid #ffdd00; }
+body.holmes-debug applet,
+body.holmes-debug acronym,
+body.holmes-debug center,
+body.holmes-debug dir,
+body.holmes-debug font,
+body.holmes-debug strike,
+body.holmes-debug u,
+body.holmes-debug big,
+body.holmes-debug tt,
+body.holmes-debug marquee,
+body.holmes-debug plaintext,
+body.holmes-debug xmp {
+  border: 2px solid #a9a9a9; }
+body.holmes-debug[bgproperties],
+body.holmes-debug[topmargin],
+body.holmes-debug[rightmargin],
+body.holmes-debug[bottommargin], 
+body.holmes-debug[leftmargin] {
+  outline: 2px solid #a9a9a9; }
+body.holmes-debug *[bordercolor],
+body.holmes-debug *[bordercolordark],
+body.holmes-debug *[bordercolorlight],
+body.holmes-debug table[frame] {
+  border: 2px solid #a9a9a9; }
+body.holmes-debug div:empty,
+body.holmes-debug span:empty,
+body.holmes-debug li:empty,
+body.holmes-debug p:empty,
+body.holmes-debug td:empty,
+body.holmes-debug th:empty {
+  border: 2px solid #ff1100; }
+body.holmes-debug a[href="#"]:hover::after,
+body.holmes-debug a[href^="javascript"]:hover::after,
+body.holmes-debug a:not([title]):hover::after,
+body.holmes-debug a[title=""]:hover::after,
+body.holmes-debug div:empty:hover::after,
+body.holmes-debug span:empty:hover::after,
+body.holmes-debug li:empty:hover::after,
+body.holmes-debug p:empty:hover::after,
+body.holmes-debug td:empty:hover::after,
+body.holmes-debug th:empty:hover::after,
+body.holmes-debug [style]:hover::after {
+  border-radius: 0.5em;
+  display: block;
+  padding: 1em;
+  margin: 1em;
+  background: #ffdd00;
+  position: fixed;
+  color: black;
+  left: 0;
+  top: 0;
+  z-index: 9999; }
+body.holmes-debug a:not([href]):hover::after,
+body.holmes-debug a[href=""]:hover::after,
+body.holmes-debug img:not([alt]):hover:after,
+body.holmes-debug img[alt=""]:hover::after,
+body.holmes-debug label:not([for]):hover::after,
+body.holmes-debug label[for=""]:hover::after,
+body.holmes-debug input:not([name]):hover::after,
+body.holmes-debug input[name=""]:hover::after,
+body.holmes-debug select:not([name]):hover::after,
+body.holmes-debug select[name=""]:hover::after,
+body.holmes-debug textarea:not([name]):hover::after,
+body.holmes-debug textarea[name=""]:hover::after,
+body.holmes-debug abbr:not([title]):hover::after,
+body.holmes-debug abbr[title=""]:hover::after,
+body.holmes-debug [class=""]:hover::after,
+body.holmes-debug [id=""]:hover::after,
+body.holmes-debug table:not([summary]):hover::after,
+body.holmes-debug table[summary=""]:hover::after {
+  border-radius: 0.5em;
+  display: block;
+  padding: 1em;
+  margin: 1em;
+  background: red;
+  position: fixed;
+  color: black;
+  left: 0;
+  top: 0;
+  z-index: 9999;
+  text-decoration: none; }
+body.holmes-debug applet:hover::after,
+body.holmes-debug acronym:hover::after,
+body.holmes-debug center:hover::after,
+body.holmes-debug dir:hover::after,
+body.holmes-debug font:hover::after,
+body.holmes-debug strike:hover::after,
+body.holmes-debug big:hover::after,
+body.holmes-debug tt:hover::after,
+body.holmes-debug marquee:hover::after,
+body.holmes-debug plaintext:hover::after,
+body.holmes-debug xmp:hover::after,
+body.holmes-debug *[bordercolor]:hover::after,
+body.holmes-debug *[bordercolordark]:hover::after,
+body.holmes-debug *[bordercolorlight]:hover::after,
+body.holmes-debug table[frame]:hover::after {
+  border-radius: 0.5em;
+  display: block;
+  padding: 1em;
+  margin: 1em;
+  background: red;
+  position: fixed;
+  background: #a9a9a9;
+  color: black;
+  left: 0;
+  top: 0;
+  z-index: 9999; }
+body.holmes-debug[bgproperties]:hover::after,
+body.holmes-debug[topmargin]:hover::after,
+body.holmes-debug[rightmargin]:hover::after,
+body.holmes-debug[bottommargin]:hover::after,
+body.holmes-debug[leftmargin]:hover::after {
+  border-radius: 0.5em;
+  display: block;
+  padding: 1em;
+  margin: 1em;
+  background: red;
+  position: fixed;
+  background: #a9a9a9;
+  color: black;
+  bottom: 0;
+  right: 0;
+  z-index: 9999; }
+body.holmes-debug td:empty:hover::after,
+body.holmes-debug th:empty:hover::after {
+  top: 4em; }
+body.holmes-debug a:not([href]):hover::after,
+body.holmes-debug a[href=""]:hover::after {
+  content: "Missing href attribute"; }
+body.holmes-debug a[href="#"]:hover:after {
+  content: "href='#'"; }
+body.holmes-debug a[href^="javascript"]:hover:after {
+  content: "href has JavaScript"; }
+body.holmes-debug a:not([title]):hover::after,
+body.holmes-debug a[title=""]:hover::after {
+  content: "Missing title attribute"; }
+body.holmes-debug img:not([alt]):hover::after,
+body.holmes-debug img[alt=""]:hover::after {
+  content: "Missing alt attribute"; }
+body.holmes-debug label:not([for]):hover::after,
+body.holmes-debug label[for=""]:hover::after {
+  content: "Missing for attribute"; }
+body.holmes-debug input:not([name]):hover::after,
+body.holmes-debug input[name=""]:hover::after,
+body.holmes-debug select:not([name]):hover::after,
+body.holmes-debug select[name=""]:hover::after,
+body.holmes-debug textarea:not([name]):hover::after,
+body.holmes-debug textarea[name=""]:hover::after {
+  content: "Missing name attribute"; }
+body.holmes-debug abbr:not([title]):hover::after,
+body.holmes-debug abbr[title=""]:hover::after {
+  content: "Missing title attribute"; }
+body.holmes-debug [class=""]:hover::after {
+  content: "Blank class attribute"; }
+body.holmes-debug [id=""]:hover::after {
+  content: "Blank id attribute"; }
+body.holmes-debug table:not([summary]):hover::after,
+body.holmes-debug table[summary=""]:hover::after {
+  content: "Missing summary attribute"; }
+body.holmes-debug [style]:hover::after {
+  content: "Element has inline styles"; }
+body.holmes-debug applet:hover::after,
+body.holmes-debug acronym:hover::after,
+body.holmes-debug center:hover::after,
+body.holmes-debug dir:hover::after,
+body.holmes-debug font:hover::after,
+body.holmes-debug strike:hover::after,
+body.holmes-debug big:hover::after,
+body.holmes-debug tt:hover::after,
+body.holmes-debug marquee:hover::after,
+body.holmes-debug plaintext:hover::after,
+body.holmes-debug xmp:hover::after {
+  content: "Deprecated or Non-W3C element"; }
+body.holmes-debug[bgproperties]:hover::after {
+  content: "Deprecated or Non-W3C body attribute bgproperties"; }
+body.holmes-debug[topmargin]:hover::after,
+body.holmes-debug[rightmargin]:hover::after,
+body.holmes-debug[bottommargin]:hover::after,
+body.holmes-debug[leftmargin]:hover::after {
+  content: "Deprecated or Non-W3C body attribute *margin"; }
+body.holmes-debug *[bordercolor]:hover::after,
+body.holmes-debug *[bordercolordark]:hover::after,
+body.holmes-debug *[bordercolorlight]:hover::after {
+  content: "Deprecated or Non-W3C body attribute bordercolor"; }
+body.holmes-debug table[frame]:hover::after {
+  content: "Deprecated or Non-W3C attribute frame"; }
+body.holmes-debug div:empty:hover::after,
+body.holmes-debug span:empty:hover::after,
+body.holmes-debug li:empty:hover::after,
+body.holmes-debug p:empty:hover::after,
+body.holmes-debug td:empty:hover::after,
+body.holmes-debug th:empty:hover::after {
+  content: "Empty element!"; }

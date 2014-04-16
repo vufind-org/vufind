@@ -1,0 +1,6 @@
+$value: 10px;
+body {
+    @if (unit($value) == px or unit($value) == rem) {
+        width: 100px;
+    }
+}

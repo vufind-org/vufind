@@ -1,0 +1,15 @@
+@mixin mixin1() {
+    @content;
+}
+
+@mixin mixin2() {
+    @include mixin1() {
+        @content;
+    }
+}
+
+body {
+    @include mixin2() {
+        width: 50px;
+    }
+}

@@ -1,0 +1,14 @@
+$fiver: 500px;
+@mixin ie6 {
+	* html & {
+		@content
+	}
+}
+
+#logo {
+	background-image: url("/images/logo.png");
+	@include ie6 {
+		width: $fiver;
+		background-image: url("/images/logo.gif");
+	}
+}

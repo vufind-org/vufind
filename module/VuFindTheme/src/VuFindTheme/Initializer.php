@@ -337,6 +337,12 @@ class Initializer
             $templatePathStack[] = $this->tools->getBaseDir() . "/$key/templates";
 
             // Add CSS and JS dependencies:
+            if (isset($currentThemeInfo['less'])) {
+                $resources->addLessCss($currentThemeInfo['less']);
+            }
+            if (isset($currentThemeInfo['sass'])) {
+                $resources->addSassCss($currentThemeInfo['sass']);
+            }
             if (isset($currentThemeInfo['css'])) {
                 $resources->addCss($currentThemeInfo['css']);
             }

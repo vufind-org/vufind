@@ -1,0 +1,58 @@
+/* test basic placeholder usage, with multiple extenders */
+%foo { color: blue; }
+.bar { @extend %foo; }
+.baz { @extend %foo; }
+
+/* test unused placeholder */
+%bar { color: red; }
+
+/* test placeholder descendant selector */
+#context %context a {
+	color: blue;
+}
+.bar {
+	@extend %context;
+}
+
+/* test placeholder-descendant with multiple extenders */
+#three %three, .bar .baz {
+	color: blue;
+}
+
+/* test placeholder selector as modifier */
+a%four.baz {
+	color: blue;
+}
+.bar { @extend %four; }
+/* the div should not be rendered as it results in adiv (invalid) */
+div { @extend %four; }
+
+/* test placeholder selector modifier again */
+.hello%hello {
+	color: blue;
+}
+
+.goodbye {
+	@extend %hello;
+}
+
+/* test placeholder interpolation */
+$in: 'inter';
+%#{$in} {
+	color: blue;
+}
+.inter {
+	@extend %inter;
+}
+
+/* test media in a plaecholder */
+%medias {
+	bar {
+		@media screen {
+			a: b;
+		}
+	}
+}
+.media {
+	c: d;
+}

@@ -1,0 +1,5 @@
+#list {
+  $test-list: ();
+  $test-list: join($test-list, 10px);
+  width: nth($test-list, 1)
+}

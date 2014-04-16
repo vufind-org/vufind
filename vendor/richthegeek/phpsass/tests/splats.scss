@@ -1,0 +1,19 @@
+@function test($in...) {
+	@return $in;
+}
+
+fn {
+	three: test(1,2,3);
+
+	$foo: 1, 2, 3, 4;
+	four: test($foo...);
+}
+
+@mixin box-shadow($shadows...) {
+	box-shadow: $shadows;
+}
+
+box {
+	$shadows: 0 0 0 #000, inset 5px 30px 10px red;
+	@include box-shadow($shadows...);
+}

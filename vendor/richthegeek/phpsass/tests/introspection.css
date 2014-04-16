@@ -1,0 +1,13 @@
+#introspection {
+  append: 'apple', 'banana', 'pear', 2px, 2, 2em, 4px, 'hello';
+  content: list;
+  content: string;
+  content: number;
+  content: number;
+  content: px;
+  content: ;
+  content: false;
+  content: true;
+  content: true;
+  content: false;
+  content: true; }

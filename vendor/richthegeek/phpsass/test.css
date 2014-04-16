@@ -1,0 +1,39 @@
+body {
+  margin: 41px 0 0;
+  font-family: Lato, Calibri, "Trebuchet MS", Verdana, sans-serif;
+}
+
+body::before {
+  content: 'PHPSass Test Suite';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 5px 10px;
+  background: #222;
+  color: #fff;
+  font-size: 18pt;
+}
+
+p {
+  font-size: 12pt;
+  padding: 5px 10px;
+  margin: 0 0 1px;
+  background: #eee;
+  border-left: 10px solid #eee;
+}
+
+.pass {
+  border-color: #0c0;
+  color: #888;
+  font-size: 8pt;
+}
+
+.fail {
+  border-color:#c00;
+  font-weight: bold;
+}
+
+.warn, .debug {
+  border-color: #27a;
+}

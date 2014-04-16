@@ -1,0 +1,11 @@
+#misc-function {
+  $bool: true;
+
+  font-size: if($bool, 12px, 10px);
+}
+
+.min-max {
+	$list: 34, 42, 29, 3, -42;
+	min: min($list...);
+	max: max($list...);
+}

@@ -1,0 +1,13 @@
+@import extend_included.scss;
+
+.seriousError
+	@extend .error
+	border-width: 3px
+
+
+.hoverlink
+	@extend a:hover
+	@extend .seriousError
+
+.comment a:hover
+	text-decoration: underline

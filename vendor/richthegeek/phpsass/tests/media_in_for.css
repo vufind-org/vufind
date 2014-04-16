@@ -1,0 +1,6 @@
+@media only screen and (min-width: 500px) {
+  #gallery {
+  width: 520px; } }
+@media only screen and (min-width: 1000px) {
+  #gallery {
+  width: 1020px; } }

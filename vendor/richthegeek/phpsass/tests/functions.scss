@@ -1,0 +1,16 @@
+@function test() {
+	@return 'foo, bar, foo + bar';
+}
+
+@function x($one: 'one', $two: 'two') {
+    @return $one + ' ' + $two;
+}
+
+#{test()} {
+    content: x()                 if(x() == 'one two', true, false);
+    content: x('foo', 'bar')     if(x('foo', 'bar') == 'foo bar', true, false);
+    content: x('foo')            if(x('foo') == 'foo two', true, false);
+    content: x($two: 'foo')      if(x($two: 'foo') == 'one foo', true, false);
+    content: x($two: 'foo', bar) if(x($two: 'foo', bar) == bar foo, true, false);
+    adjust-color: adjust-color(#00F, $blue: -15);
+}

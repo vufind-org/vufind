@@ -1,0 +1,9 @@
+@function test($columns) {
+  @each $var in $columns {
+      @return $var;
+  }
+}
+
+body {
+    width: test(10px 20px 30px);
+}

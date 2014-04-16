@@ -76,4 +76,73 @@ class HeadLink extends \Zend\View\Helper\HeadLink
 
         return parent::itemToString($item);
     }
+
+    /**
+     * Compile a less file to css and add to css folder
+     *
+     * @param string $file path to less file
+     *
+     * @return void
+     */
+    public function addLessStylesheet($file)
+    {
+        $relPath = 'less/' . $file;
+        $currentTheme = $this->themeInfo->findContainingTheme($relPath);
+        $home = APPLICATION_PATH . "/themes/$currentTheme/";
+        $inputFile  = $home . $relPath;
+        list($fileName, ) = explode('.', $file);
+        $outputFile = $home . 'css/less/' . $fileName . '.css';
+        $cacheFile  = $home . 'css/less/' . $fileName . '.cache';
+
+        $lesscss = new \lessc;
+        $lesscss->setFormatter('compressed');
+        $lesscss->setImportDir(array($home . 'less', APPLICATION_PATH . "/themes/bootstrap/less"));
+
+        if (file_exists($cacheFile)) {
+            $cache = unserialize(file_get_contents($cacheFile));
+        } else {
+            $cache = $inputFile;
+        }
+
+        try {
+            $newCache = $lesscss->cachedCompile($cache, true);
+
+            if (!is_array($cache) || $newCache["updated"] > $cache["updated"]) {
+                file_put_contents($cacheFile, serialize($newCache));
+                file_put_contents($outputFile, $newCache['compiled']);
+            }
+        } catch(\Exception $e) {
+            var_dump($e->getMessage());
+        }
+
+        $urlHelper = $this->getView()->plugin('url');
+        $this->prependStylesheet($urlHelper('home') . "themes/$currentTheme/css/less/" . $fileName . '.css');
+    }
+
+    /**
+     * Compile a less file to css and add to css folder
+     *
+     * @param string $file path to less file
+     *
+     * @return void
+     */
+    public function addSassStylesheet($file)
+    {
+        $relPath = 'sass/' . $file;
+        $currentTheme = $this->themeInfo->findContainingTheme($relPath);
+        $home = APPLICATION_PATH . "/themes/$currentTheme/";
+        $inputFile  = $home . $relPath;
+        list($fileName, ) = explode('.', $file);
+        $outputFile = $home . 'css/sass/' . $fileName . '.css';
+
+        $sass = new \SassParser(array(
+            'debug_info' => true,
+            'style'      => 'compressed',
+        ));
+        $css = $sass->toCss($inputFile);
+        $int = file_put_contents($outputFile, $css);
+
+        $urlHelper = $this->getView()->plugin('url');
+        $this->prependStylesheet($urlHelper('home') . "themes/$currentTheme/css/sass/" . $fileName . '.css');
+    }
 }

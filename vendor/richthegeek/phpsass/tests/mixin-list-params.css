@@ -1,0 +1,7 @@
+.box {
+  background: url('sprite.png') 0 -276px no-repeat, -moz-linear-gradient(320deg, #e2d0ec, #f8f4fb), #ede2f3;
+  background: url('sprite.png') 0 -276px no-repeat, -webkit-gradient(320deg, #e2d0ec, #f8f4fb), #ede2f3;
+  background: url('sprite.png') 0 -276px no-repeat, -webkit-linear-gradient(320deg, #e2d0ec, #f8f4fb), #ede2f3;
+  background: url('sprite.png') 0 -276px no-repeat, -o-linear-gradient(320deg, #e2d0ec, #f8f4fb), #ede2f3;
+  background: url('sprite.png') 0 -276px no-repeat, -ms-linear-gradient(320deg, #e2d0ec, #f8f4fb), #ede2f3;
+  background: url('sprite.png') 0 -276px no-repeat, linear-gradient(-230deg, #e2d0ec, #f8f4fb), #ede2f3; }
