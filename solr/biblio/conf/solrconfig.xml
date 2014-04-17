@@ -179,11 +179,16 @@
          autowarmCount - the number of entries to prepopulate from
            and old cache.
          -->
+
+    <!-- VuFind uses the default Solr settings for filterCache, which should produce a high
+         hit rate. You can carefully adjust the filterCache and check the hit ratio in 
+         admin>plugins>stats -->  
+
     <filterCache
       class="solr.FastLRUCache"
-      size="300000"
-      initialSize="300000"
-      autowarmCount="50000"/>
+      size="512"
+      initialSize="512"
+      autowarmCount="256"/>
 
    <!-- queryResultCache caches results of searches - ordered lists of
          document ids (DocList) based on a query, a sort, and the range
