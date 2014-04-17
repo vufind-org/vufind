@@ -749,9 +749,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         if ($function == 'Holds') {
             return array(
-                    'HMACKeys' => 'item_id:holdtype',
-                    'extraHoldFields' => 'comments:pickUpLocation:requiredByDate',
-                    'defaultRequiredDate' => '0:2:0',
+                'HMACKeys' => 'item_id:holdtype',
+                'extraHoldFields' => 'comments:pickUpLocation:requiredByDate',
+                'defaultRequiredDate' => '0:2:0',
             );
         }
         if ($function == 'StorageRetrievalRequests') {
@@ -759,8 +759,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'HMACKeys' => 'id:item_id',
                 'extraFields' => 'comments:pickUpLocation:requiredByDate:item-issue',
                 'helpText' => 'This is a storage retrieval request help text' .
-                ' with some <span style="color: red">styling</span>.'
-                );
+                    ' with some <span style="color: red">styling</span>.',
+                'defaultRequiredDate' => '0:2:0',
+            );
         }
         return array();
     }
@@ -828,6 +829,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     'title' => (string)$title[0],
                     'position' => (string)$pos[0], 
                     'requestId' => (string)$requestId[0],
+                    'location' => 'test',
+                    'canceled' => false,
+                    'processed' => false,
                 );
             }
         }
@@ -851,7 +855,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @return mixed An array of data on the request including
      * whether or not it was successful.
      */
-    public function RetrievalRequest($details)
+    public function placeStorageRetrievalRequest($details)
     {
         $username = $details['patron']['cat_username'];
         $password = $details['patron']['cat_password'];
