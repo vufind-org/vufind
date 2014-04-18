@@ -256,11 +256,6 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                 }
                 $material = $row[7];
 
-                $available = true;
-                if ($loan_status=='') {
-                    $available = false;
-                }
-
                 $check = false;
                 $reserve = 'N';
                 $is_holdable = false;
@@ -275,15 +270,16 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                     $volbar = $locid;
                 }
 
-                if ($loan_status==4) {
+                $available = true;
+                if ($loan_status=='') {
+                    $available = false;
+                } else if ($loan_status==4) {
                     $available = false;
                     $reserve = 'Y';
                 } else if ($loan_status==5) {
                     $available = false;
                     $duedate = $this->getLoanexpire($volnum);
                     $is_holdable = true;
-                } else if ($loan_indi==3) {
-                    $available = true;
                 } else if ($loan_indi>6) {
                     $available = false;
                 }
