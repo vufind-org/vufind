@@ -97,6 +97,8 @@ class User extends Gateway
     /**
      * Return a row by a verification hash
      *
+     * @param string $hash User-unique hash string
+     *
      * @return mixed
      */
     public function getByVerifyHash($hash)

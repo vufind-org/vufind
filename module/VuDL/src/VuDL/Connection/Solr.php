@@ -297,8 +297,9 @@ class Solr extends AbstractBase
     /**
      * Get copyright URL and compare it to special cases from VuDL.ini
      *
-     * @param array $setLicenses ids are urls, then abbrev
-     *   parsed in details.phtml later
+     * @param array $id          record id
+     * @param array $setLicenses ids are strings to match urls to,
+     *  the values are abbreviations. Parsed in details.phtml later.
      *
      * @return array
      */

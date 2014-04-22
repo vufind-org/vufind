@@ -138,14 +138,14 @@ class Manager implements ServiceLocatorAwareInterface
         }
     }
 
-    /** 
+    /**
      * Helper
      *
      * @param string $method auth method to instantiate
      *
      * @return AbstractBase
      */
-    protected function makeAuth($method) 
+    protected function makeAuth($method)
     {
         $manager = $this->getServiceLocator()->get('VuFind\AuthPluginManager');
         $auth = $manager->get($method);
@@ -172,7 +172,7 @@ class Manager implements ServiceLocatorAwareInterface
     /**
      * Does the current configuration support password recovery?
      *
-     * @param string $authMethod optional; check this auth method rather than 
+     * @param string $authMethod optional; check this auth method rather than
      *  the one in config file
      *
      * @return bool
@@ -191,6 +191,9 @@ class Manager implements ServiceLocatorAwareInterface
 
     /**
      * Is new passwords currently allowed?
+     *
+     * @param string $authMethod optional; check this auth method rather than
+     *  the one in config file
      *
      * @return bool
      */
@@ -231,7 +234,7 @@ class Manager implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Does the current auth class allow for authentication from more than 
+     * Does the current auth class allow for authentication from more than
      * one auth method? (e.g. choiceauth)
      * If so return an array that lists the classes for the methods allowed.
      *
@@ -248,7 +251,7 @@ class Manager implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Does the current auth class allow for authentication from more than 
+     * Does the current auth class allow for authentication from more than
      * one target? (e.g. MultiILS)
      * If so return an array that lists the targets.
      *
@@ -262,7 +265,7 @@ class Manager implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Does the current auth class allow for authentication from more than 
+     * Does the current auth class allow for authentication from more than
      * one target? (e.g. MultiILS)
      * If so return the default target.
      *
@@ -576,7 +579,7 @@ class Manager implements ServiceLocatorAwareInterface
      *
      * @return void
      */
-    public function setActiveAuthClass($method) 
+    public function setActiveAuthClass($method)
     {
         $this->authToProxy = $method;
         $this->authProxied = false;

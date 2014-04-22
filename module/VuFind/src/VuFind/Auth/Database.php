@@ -179,10 +179,10 @@ class Database extends AbstractBase
         foreach ($params as $param => $default) {
             $params[$param] = $request->getPost()->get($param, $default);
         }
-        
+
         // Validate Input
         $this->validateUsernameAndPassword($params);
-        
+
         // Create the row and send it back to the caller:
         $table = $this->getUserTable();
         $user = $table->getByUsername($params['username'], false);
@@ -200,7 +200,9 @@ class Database extends AbstractBase
      * Make sure username and password aren't blank
      * Make sure passwords match
      *
-     * @param array $params
+     * @param array $params request parameters
+     *
+     * @return void
      */
     protected function validateUsernameAndPassword($params)
     {

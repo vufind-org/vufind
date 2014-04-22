@@ -1347,6 +1347,8 @@ class MyResearchController extends AbstractBase
     /**
      * Helper function for verification hashes
      *
+     * @param string $hash User-unique hash string from request
+     *
      * @return int age in seconds
      */
     protected function getHashAge($hash)
