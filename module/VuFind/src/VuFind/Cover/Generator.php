@@ -83,7 +83,7 @@ class Generator
         $default['titleFont']  = $this->fontPath($default['titleFont']);
         $this->settings = (object) $default;
     }
-    
+
     /**
      * Generates a dynamic cover image from elements of the book
      *
@@ -98,7 +98,7 @@ class Generator
         // Set up common variables
         $half = $this->settings->size/2;
         $box  = $this->settings->size/8;
-                
+
         // Create image
         $im = imagecreate($this->settings->size, $this->settings->size)
             or die("Cannot Initialize new GD image stream");
@@ -106,7 +106,7 @@ class Generator
         $this->white = imagecolorallocate($im, 255, 255, 255);
         // this->black
         $this->black = imagecolorallocate($im, 0, 0, 0);
-        
+
         // Generate seed from callnumber, title back up
         $seed = $this->createSeed($title, $author, $callnumber);
         // Number to color, hsb to control saturation and lightness
@@ -119,7 +119,7 @@ class Generator
         // Render the grid
         $pattern = $this->createPattern($seed);
         $this->render($pattern, $im, $grid_color, $half, $box);
-        
+
         if (null !== $title) {
             $this->drawTitle($im, $title, $box);
         }
@@ -137,7 +137,7 @@ class Generator
         // GTFO
         return $img;
     }
-    
+
     /**
      * Generates a dynamic cover image from elements of the book
      *
@@ -164,7 +164,7 @@ class Generator
             return ceil(rand(pow(2, 4), pow(2, 32)));
         }
     }
-    
+
     /**
      * Turn number into pattern
      *
@@ -193,7 +193,7 @@ class Generator
         }
         return $bc;
     }
-    
+
     /**
      * Render title in wrapped, black text with white border
      *
@@ -263,7 +263,7 @@ class Generator
             );
         }
     }
-    
+
     /**
      * Render author at bottom in wrapped, white text with black border
      *
@@ -295,7 +295,7 @@ class Generator
         $this->drawText(
             $im,
             $author,
-            3,
+            5,
             $this->settings->size-3,
             $this->settings->authorFont,
             $fontSize,
@@ -304,7 +304,7 @@ class Generator
             $alignment
         );
     }
-    
+
     /**
      * Find font in the theme folder
      *
@@ -319,7 +319,7 @@ class Generator
         $fileMatch = $this->themeTools->findContainingTheme($filenames, true);
         return empty($fileMatch) ? false : $fileMatch;
     }
-    
+
     /**
      * Returns the width a string would render to
      *
@@ -334,7 +334,7 @@ class Generator
         $p = imagettfbbox($size, 0, $font, $text);
         return $p[2]-$p[0]-4;
     }
-    
+
     /**
      * Simulate outlined text
      *
@@ -375,7 +375,7 @@ class Generator
             $txtWidth = $p[2]-$p[0]-4;
             $x = $this->settings->size-$txtWidth-$x;
         }
-        
+
         // Generate 5 lines of text, 4 offset in a border color
         imagettftext($im, $fontSize, 0, $x,   $y+1, $scolor, $font, $text);
         imagettftext($im, $fontSize, 0, $x,   $y-1, $scolor, $font, $text);
@@ -384,7 +384,7 @@ class Generator
         // 1 centered in main color
         imagettftext($im, $fontSize, 0, $x,   $y,   $mcolor, $font, $text);
     }
-    
+
     /**
      * Convert 16 long binary string to 8x8 color grid
      * Reflects vertically and horizontally
@@ -418,7 +418,7 @@ class Generator
         }
         //imagefilledrectangle($im,0,$size-11,$size-1,$size,$color);
     }
-    
+
     /**
      * Using HSB allows us to control the contrast while allowing randomness
      *
