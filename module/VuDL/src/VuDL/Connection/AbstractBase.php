@@ -53,7 +53,7 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
      * @var array
      */
     protected $parentLists = array();
-    
+
     /**
      * HTTP service
      *
@@ -70,7 +70,7 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
         $this->config = $config;
     }
-    
+
     /**
      * Set the HTTP service to be used for HTTP requests.
      *
@@ -94,7 +94,7 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             ? $this->config->General->root_id
             : null;
     }
-    
+
     /**
      * Get VuDL detail fields.
      *
@@ -106,7 +106,7 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
             ? $this->config->Details->toArray()
             : array();
     }
-    
+
     /**
      * Get Fedora Page Length.
      *
@@ -135,54 +135,88 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
         if (empty($detailsList)) {
             throw new \Exception('Missing [Details] in VuDL.ini');
         }
+        $details = array();
         foreach ($detailsList as $key=>$title) {
             $keys = explode(',', $key);
-            foreach ($keys as $k) {
-                $fields[$k] = $title;
-            }
-            // Link up to top combined field
-            if (count($keys) > 1) {
-                $combinedFields[] = $keys;
-            }
-        }
-        // Pool details
-        $details = array();
-        foreach ($fields as $key=>$title) {
-            if (isset($record[$key])) {
-                $details[$key] = array('title' => $title, 'value' => $record[$key]);
-            }
-        }
-        // Rearrange combined fields
-        foreach ($combinedFields as $fields) {
-            $main = $fields[0];
-            if (!isset($details[$main]['value'])
-                || !is_array($details[$main]['value'])
-            ) {
-                if (isset($details[$main]['value'])) {
-                    $details[$main]['value'] = array($details[$main]['value']);
-                } else {
-                    $details[$main]['value'] = array();
+            $field = false;
+            for ($i=0;$i<count($keys);$i++) {
+                if (isset($record[$keys[$i]])) {
+                    $field = $keys[$i];
+                    break;
                 }
             }
-            for ($i=1;$i<count($fields);$i++) {
-                if (isset($details[$fields[$i]])) {
-                    if (!isset($details[$main]['title'])) {
-                        $details[$main]['title'] = $details[$fields[$i]]['title'];
-                    }
-                    if (is_array($details[$main]['value'])) {
-                        foreach ($details[$fields[$i]]['value'] as $value) {
-                            $details[$main]['value'][] = $value;
+            if (false === $field) {
+                continue;
+            }
+            if (count($keys) == 1) {
+                if (isset($record[$keys[0]])) {
+                    $details[$field] = array(
+                        'title' => $title,
+                        'value' => $record[$keys[0]]
+                    );
+                }
+            } else {
+                $value = array();
+                $field = false;
+                foreach ($keys as $k) {
+                    if (isset($record[$k])) {
+                        if (is_array($record[$k])) {
+                            $value = array_merge($value, $record[$k]);
+                        } else {
+                            $value[] = $record[$k];
                         }
-                    } else {
-                        $details[$main]['value'][] = $details[$fields[$i]]['value'];
                     }
-                    unset($details[$fields[$i]]);
                 }
-            }
-            if (empty($details[$main]['value'])) {
-                unset($details[$main]);
+                $details[$field] = array(
+                    'title' => $title,
+                    'value' => $record[$keys[0]]
+                );
             }
         }
         return $details;
+    }
+
+    /**
+     * A method to search from the root id down to the current record
+     *   creating multiple breadcrumb paths along the way
+     *
+     * @param array  $tree Array of parents by id with title and array of children
+     * @param string $id   Target id to stop at
+     *
+     * @return array Array of arrays with parents in order
+     */
+    protected function traceParents($tree, $id)
+    {
+        // BFS from top (root id) to target $id
+        $queue = array(
+            array(
+                'id' => $this->getRootId(),
+                'path' => array()
+            )
+        );
+        $ret = array();
+        while (!empty($queue)) {
+            $current = array_shift($queue);
+            $record = $tree[$current['id']];
+            $path = $current['path'];
+            if ($current['id'] != $this->getRootId()) {
+                $path[$current['id']] = $record['title'];
+            }
+            foreach ($record['children'] as $cid) {
+                // At target
+                if ($cid == $id) {
+                    array_push($ret, $path);
+                } else { // Add to queue for more
+                    array_push(
+                        $queue,
+                        array(
+                            'id' => $cid,
+                            'path' => $path
+                        )
+                    );
+                }
+            }
+        }
+        return $ret;
     }
 }
