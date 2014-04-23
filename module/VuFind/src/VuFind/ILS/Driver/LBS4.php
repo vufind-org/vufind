@@ -147,36 +147,26 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                 $location = $this->translate($this->opaciln."/". $locid);
                 $loan_status  = $row[2];
 
+                $reserve = 'N';
+                $status = $this->getStatusText($loan_indi, $loan_status);
                 $available = true;
-                if ($loan_indi==7) {
+
+                if ($loan_indi == 7) {
                     $available = false; //not for loan
-                } else if ($loan_indi==8) {
+                } else if ($loan_indi == 8) {
                     $available = false; //missed items
-                } else if ($loan_indi==9) {
+                } else if ($loan_indi == 9) {
                     $available = false; //not ready yet
                 }
-
-                $reserve = 'N';
-                if ($available) {
-                    if ($loan_indi==3) {
-                        $status = 'Presence'; //available, but not for loan
-                    } else if ($loan_status==0) {
-                        $status = 'Available';
-                    } else if ($loan_status==5) {
-                        $available = false;
-                        $status = 'Checked Out';
-                    } else if ($loan_status==4) {
-                        $available = false;
-                        $status = 'On Reserve';
-                        $reserve = 'Y';
-                    }
-                } else {
-                    $status = 'Not Available';
+                if ($loan_status == 5) {
+                    $available = false;
+                } else if ($loan_status==4) {
+                    $available = false;
                 }
 
                 $holding[] = array(
                     'id'             => $ppn,
-                    'availability'   => $available?'1':'0',
+                    'availability'   => $available,
                     'status'         => $status,
                     'location'       => $location,
                     'reserve'        => $reserve,
@@ -187,6 +177,31 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
             throw new ILSException($e->getMessage());
         }
         return $holding;
+    }
+
+    /**
+     * Get status text
+     *
+     * @param string $indi   Indicator value
+     * @param string $status status as retrieved from db
+     *
+     * @return string the message to be displayed
+     *
+     */
+    protected function getStatusText($indi, $status)
+    {
+        if ($indi==0 && $status==0) {
+            $text = 'Available';
+        } else if ($indi==0 && $status==4) {
+            $text = 'On Reserve';
+        } else if ($indi==0 && $status==5) {
+            $text = 'Checked Out';
+        } else if ($indi==3) {
+            $text = 'Presence';
+        } else {
+            $text = 'Not Available';
+        }
+        return $text;
     }
 
     /**
@@ -201,16 +216,15 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getHolding($ppn, $patron = false)
     {
         $sybid = substr($ppn, 0, -1); //strip checksum
         $sql = "select o.epn, o.loan_indication"
              . ", v.volume_bar, v.loan_status"
-             . ", v.volume_number"
-             . ", o.signature"
-             . ", o.holding"
-             . ", o.type_of_material_copy"
+             . ", v.volume_number, o.signature"
+             . ", o.holding, o.type_of_material_copy"
              . " from ous_copy_cache o, volume v, titles_copy t"
              . " where o.iln=".$this->opaciln
              . " and o.ppn=".$sybid
@@ -223,7 +237,6 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
             $sqlStmt = sybase_query($sql);
             $holding = array();
             while ($row = sybase_fetch_row($sqlStmt)) {
-                $status = 'Not Available';
                 $epn   = $row[0];
                 $loan_indi  = (string)$row[1];
                 $volbar = $row[2];
@@ -233,103 +246,48 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                 //library location identifier is a callnumber prefix
                 $locid = substr($row[5], 0, 3);
 
-                //suppress multiple callnumbers, those are comma separated items
+                //suppress multiple callnumbers, comma separated items
                 $callnumber = current(explode(',', substr($row[5], 4)));
+
                 if ($locid!='') {
                     $location = $this->opaciln."/". $locid;
                 }
-
-                $notes = array();
                 if ($row[6]!='') {
                     $summary = array($row[6]);
                 }
                 $material = $row[7];
 
+                $check = false;
+                $reserve = 'N';
+                $is_holdable = false;
+
+                $storage = $this->getStorage($loan_indi, $locid, $callnumber);
+                $status = $this->getStatusText($loan_indi, $loan_status);
+                $note = $this->getNote($loan_indi, $locid, $callnumber);
+
+                if (empty($storage)) {
+                    $check = $this->checkHold($loan_indi, $material);
+                } else if (empty($volbar)) {
+                    $volbar = $locid;
+                }
+
                 $available = true;
                 if ($loan_status=='') {
                     $available = false;
-                }
-
-                $check = false;
-                $reserve = 'N';
-                $storage = false;
-                $is_holdable = false;
-
-                if ($loan_indi==0) {
-                    $storage = $this->getStorage($locid, $callnumber);
-                    if ($note=$this->getNotes($locid, $callnumber)) {
-                        $notes[] = $note;
-                    }
-                    if (empty($storage)) {
-                        $is_holdable = true;
-                        if (substr($material, 0, 2)=='Ab') {
-                            $check = true;
-                            $available = true;
-                            if (empty($volbar)) {
-                                $volbar = $locid;
-                            }
-                        }
-                    }
-                } else if ($loan_indi==1) {
-                    $storage = $this->getStorage($locid, $callnumber);
-                    $notes[] = $this->translate("Short loan");//Short time loan?
-                } else if ($loan_indi==2) {
-                    $notes[] = "Interlibrary Loan";
-                } else if ($loan_indi==3) {
-                    $storage = $this->getStorage($locid, $callnumber);
-                    $notes[] = $this->translate("Presence");
-                    if (empty($storage)) {
-                        $check = true;
-                    } else {
-                        $is_holdable = false;
-                    }
-                    $available = true;
-                    if (empty($volbar)) { //force storage link
-                        $volbar = $locid;
-                    }
-                } else if ($loan_indi==4) {
-                    $notes[] = $this->translate("No Media");
-                } else if ($loan_indi==5) {
-                    $notes[] = $this->translate("Reading Room");
-                } else if ($loan_indi==6) {
-                    $storage = $this->getStorage($locid, $callnumber);
-                    $notes[] = $this->translate("Short loan")
-                             . " 8 ".$this->translate("Days");
-                    $check = true;
-                    $available = true;
-                    if (empty($volbar)) {
-                        $volbar = $locid;
-                    }
-                } else if ($loan_indi==7) {
-                    $notes[] = $this->translate("Interlibrary Loan");
+                } else if ($loan_status==4) {
                     $available = false;
-                } else if ($loan_indi==8) {
-                    $notes[] = $this->translate("Missed");
+                    $reserve = 'Y';
+                } else if ($loan_status==5) {
                     $available = false;
-                } else if ($loan_indi==9) {
-                    $notes[] = $this->translate("In Progress");
+                    $duedate = $this->getLoanexpire($volnum);
+                    $is_holdable = true;
+                } else if ($loan_indi>6) {
                     $available = false;
-                }
-
-                if ($available) {
-                    if ($loan_status==0) {
-                        $status = 'Available';
-                    } else if ($loan_status==5) {
-                        $available = false;
-                        $status = 'Checked Out';
-                        $duedate = $this->getLoanexpire($volnum);
-                    } else if ($loan_status==4) {
-                        $available = false;
-                        $status = 'On Reserve';
-                        $reserve = 'Y';
-                    }
-                } else {
-                        $status = 'Not Available';
                 }
 
                 $holding[] = array(
                     'id'             => $ppn,
-                    'availability'   => $available?'1':'0',
+                    'availability'   => $available,
                     'status'         => $status,
                     'location'       => $location,
                     'reserve'        => $reserve,
@@ -337,12 +295,13 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                     'duedate'        => $duedate,
                     'number'         => $volbar,
                     'barcode'        => $volbar,
-                    'notes'          => $notes,
+                    'notes'          => array($note),
                     'summary'        => $summary,
                     'is_holdable'    => $is_holdable,
                     'item_id'        => $epn,
                     'check'          => $check,
                     'storageRetrievalRequestLink' => $storage,
+                    'checkStorageRetrievalRequest' => !empty($storage),
                     'material'       => $material,
                 );
             }
@@ -353,22 +312,54 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
+     * Test whether holds needs to be checked
+     *
+     * @param string $loanindi The loan indicator
+     * @param string $material The material code
+     *
+     * @return boolean
+     */
+    protected function checkHold($loanindi, $material)
+    {
+        if ($loanindi==0) {
+            if (substr($material, 0, 2)=='Ab') {
+                return true;
+            }
+        } else if ($loanindi==3) {
+            return true;
+        } else if ($loanindi==6) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * Get Notes
      *
      * This is responsible for retrieving library specific
      * notes for a record. You may want to override this.
      *
+     * @param string $loanind    The library loan indicator
      * @param string $locid      The library location identifier
      * @param array  $callnumber The callnumber of the item
      *
      * @return string On success, a string to be displayed near the item
      */
-    protected function getNotes($locid, $callnumber)
+    protected function getNote($loanind, $locid, $callnumber)
     {
-        if ( strpos($callnumber, 'LBS')===0) {
+        if ( $loanind == 0 && $locid=='000') {
             $note = $this->translate("Textbook Collection");
-        } else {
-            $note = $this->translate("Lending Collection");
+        } else if ($loanind == 1) {
+            $note = $this->translate("Short loan");//Short time loan?
+        } else if ($loanind == 2) {
+            $note = "Interlibrary Loan";
+        } else if ($loanind == 3) {
+            $note = $this->translate("Presence");
+        } else if ($loanind==8) {
+            $note = $this->translate("Missed");
+        } else if ($loanind==9) {
+            $note = $this->translate("In Progress");
         }
         return $note;
     }
@@ -377,13 +368,16 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      * Get Storage
      *
      * This is responsible for retrieving library specific
-     * storage urls if available, e.g. bibmap links.
+     * storage urls if available, i.e. bibmap links.
+     *
+     * You may want to override this.
      *
      * @param string $locid      The library location identifier
      * @param array  $callnumber The callnumber of the item
      *
      * @return string On success, a url string to be displayed as
      * storage link.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getStorage($locid, $callnumber)
     {
@@ -399,7 +393,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      * @param string $vol The volume number
      *
      * @return string On success, a string to be displayed as
-     *  loan expiration date.
+     *                loan expiration date.
      */
     protected function getLoanexpire($vol)
     {
@@ -441,7 +435,8 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                         ."&EPN=".$this->prfz($epn);
             return $hold;
         }
-        return false;
+        return $this->opcloan."?MTR=mon" ."&BES=".$this->opacfno
+               ."&EPN=".$this->prfz($id);
     }
 
     /**
@@ -513,7 +508,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
                               'cat_password' => $pin,
                               'email' => $row[3],
                               'major' => $row[4],    // registration_number
-                              'college' => $row[6],
+                              'college' => $row[5],  // borrower_type
                               'address_id_nr' => $row[7],
                               'iln' => $row[8],
                               'lang' => $row[9]);
@@ -653,12 +648,11 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
     {
         $aid = $patron['address_id_nr'];
         $iln = $patron['iln'];
-        $lang = $patron['lang'];
-        $count = 0;
+        //$lang = $patron['lang'];
         $sql="select o.ppn"
             .", o.shorttitle"
-            .", rtrim(convert(char(20),l.date_time_of_loans_request,104))"
             .", rtrim(convert(char(20),r.reservation_date_time,104))"
+            .", rtrim(convert(char(20),l.expiry_date_reminder,104))"
             .", r.counter_nr_destination"
             .", l.no_reminders"
             .", l.period_of_loan"
@@ -673,12 +667,13 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
         try {
             $result = array();
             $sqlStmt = sybase_query($sql);
+            $expire = $row[3]; // empty ?
             while ($row = sybase_fetch_row($sqlStmt)) {
                 $title = $this->picaRecode($row[1]);
                 $result[] = array(
                     'id'       => $this->prfz($row[0]),
                     'create'   => $row[2],
-                    'expire'   => $row[3],
+                    'expire'   => $expire,
                     //'location' => $row[4],
                     'title'    => $title
                 );
@@ -699,6 +694,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      * @param string $id The record id to retrieve the info for
      *
      * @return mixed     An array with the acquisitions data on success.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
     {
@@ -720,8 +716,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
     {
         $aid = $patron['address_id_nr'];
         $iln = $patron['iln'];
-        $lang = $patron['lang'];
-        $count = 0;
+        //$lang = $patron['lang'];
         $sql="select o.ppn"
             .", r.costs_code"
             .", r.costs"
