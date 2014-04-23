@@ -912,6 +912,16 @@ class SolrDefault extends AbstractBase
     }
 
     /**
+     * Get a human readable place of publication.
+     *
+     * @return array
+     */
+    public function getHumanReadablePublicationDates()
+    {
+        return $this->getPublicationDates();
+    }
+
+    /**
      * Get an array of publication detail lines combining information from
      * getPublicationDates(), getPublishers() and getPlacesOfPublication().
      *
@@ -921,7 +931,7 @@ class SolrDefault extends AbstractBase
     {
         $places = $this->getPlacesOfPublication();
         $names = $this->getPublishers();
-        $dates = $this->getPublicationDates();
+        $dates = $this->getHumanReadablePublicationDates();
 
         $i = 0;
         $retval = array();
@@ -1363,7 +1373,7 @@ class SolrDefault extends AbstractBase
         }
         return $retVal;
     }
-    
+
      /**
      * Get the titles of this item within parent collections.  Returns an array
      * of parent ID => sequence number.
@@ -1677,13 +1687,13 @@ class SolrDefault extends AbstractBase
 
     /**
      * Get information on records deduplicated with this one
-     * 
+     *
      * @return array Array keyed by source id containing record id
      */
     public function getDedupData()
     {
         return isset($this->fields['dedup_data'])
             ? $this->fields['dedup_data']
-            : array(); 
+            : array();
     }
 }
