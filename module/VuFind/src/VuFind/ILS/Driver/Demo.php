@@ -343,7 +343,7 @@ class Demo extends AbstractBase
      * This is responsible for retrieving the status information of a certain
      * record.
      *
-     * @param string $id     The record id to retrieve the holdings for
+     * @param string $id The record id to retrieve the holdings for
      *
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
