@@ -218,7 +218,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      * duedate, number, barcode.
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($ppn, $patron = false)
+    public function getHolding($ppn, array $patron = null)
     {
         $sybid = substr($ppn, 0, -1); //strip checksum
         $sql = "select o.epn, o.loan_indication"
