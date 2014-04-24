@@ -455,6 +455,5 @@ class Generator
         default:
             return imagecolorallocate($im, $v, $p, $q);
         }
-        return imagecolorallocate($im, $R, $G, $B);
     }
 }
