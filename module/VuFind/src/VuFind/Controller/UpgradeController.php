@@ -388,7 +388,7 @@ class UpgradeController extends AbstractBase
             $dbrootuser = $this->params()->fromPost('dbrootuser', 'root');
 
             // Process form submission:
-            if (strlen($this->params()->fromPost('submit', '')) > 0) {
+            if ($this->formWasSubmitted('submit')) {
                 $pass = $this->params()->fromPost('dbrootpass');
 
                 // Test the connection:
@@ -443,7 +443,7 @@ class UpgradeController extends AbstractBase
         }
 
         // Handle submit action:
-        if (strlen($this->params()->fromPost('submit', '')) > 0) {
+        if ($this->formWasSubmitted('submit')) {
             $user = $this->params()->fromPost('username');
             if (empty($user)) {
                 $this->flashMessenger()->setNamespace('error')
@@ -486,7 +486,7 @@ class UpgradeController extends AbstractBase
         }
 
         // Handle submit action:
-        if (strlen($this->params()->fromPost('submit', '')) > 0) {
+        if ($this->formWasSubmitted('submit')) {
             $this->getTable('Tags')->fixDuplicateTags();
             return $this->forwardTo('Upgrade', 'FixDatabase');
         }
@@ -521,7 +521,7 @@ class UpgradeController extends AbstractBase
         }
 
         // Process submit button:
-        if (strlen($this->params()->fromPost('submit', '')) > 0) {
+        if ($this->formWasSubmitted('submit')) {
             $converter = $this->getServiceLocator()->get('VuFind\DateConverter');
             foreach ($problems as $problem) {
                 try {

@@ -408,6 +408,23 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     *
+     *
+     *
+     */
+    protected function formWasSubmitted($submitElement = 'submit', $useRecaptcha = false)
+    {
+        // Fail if the expected submission element was missing from the POST:
+        if (!$this->params()->fromPost($submitElement)) {
+            return false;
+        }
+        // Form was submitted; if CAPTCHA is expected, validate it now.
+        return $useRecaptcha && $this->recaptcha()->active($useRecaptcha)
+            ? $this->recaptcha()->validate()
+            : true;
+    }
+
+    /**
      * Confirm an action.
      *
      * @param string       $title     Title of confirm dialog

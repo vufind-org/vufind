@@ -198,15 +198,12 @@ class MyResearchController extends AbstractBase
 
         // Make view
         $view = $this->createViewModel();
-        // Pass request to view so we can repopulate user parameters in form:
-        $view->request = $this->getRequest()->getPost();
         // Set up reCaptcha
         $view->useRecaptcha = $this->recaptcha()->active('newAccount');
+        // Pass request to view so we can repopulate user parameters in form:
+        $view->request = $this->getRequest()->getPost();
         // Process request, if necessary:
-        // Recaptcha Plugin checks if captcha validation is enabled in config
-        if (!is_null($this->params()->fromPost('submit', null))
-            && $view->useRecaptcha && $this->recaptcha()->validate()
-        ) {
+        if ($this->formWasSubmitted('submit', 'newAccount')) {
             try {
                 $this->getAuthManager()->create($this->getRequest());
                 return $this->forwardTo('MyResearch', 'Home');
@@ -405,7 +402,7 @@ class MyResearchController extends AbstractBase
         }
 
         // Process the deletes if necessary:
-        if (!is_null($this->params()->fromPost('submit'))) {
+        if ($this->formWasSubmitted('submit')) {
             $this->favorites()->delete($ids, $listID, $user);
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage('fav_delete_success');
@@ -534,7 +531,7 @@ class MyResearchController extends AbstractBase
         );
 
         // Process save action if necessary:
-        if ($this->params()->fromPost('submit')) {
+        if ($this->formWasSubmitted('submit')) {
             return $this->processEditSubmit($user, $driver, $listID);
         }
 
@@ -753,7 +750,7 @@ class MyResearchController extends AbstractBase
         $list = $newList ? $table->getNew($user) : $table->getExisting($id);
 
         // Process form submission:
-        if ($this->params()->fromPost('submit')) {
+        if ($this->formWasSubmitted('submit')) {
             if ($redirect = $this->processEditList($user, $list)) {
                 return $redirect;
             }
@@ -1149,7 +1146,7 @@ class MyResearchController extends AbstractBase
             if (!$view->useRecaptcha || $this->recaptcha()->validate()) {
                 $this->sendRecoveryEmail($user, $this->getConfig());
             }
-        } elseif ($this->params()->fromPost('submit')) {
+        } elseif ($this->formWasSubmitted('submit')) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('recovery_user_not_found');
         }
@@ -1259,7 +1256,7 @@ class MyResearchController extends AbstractBase
     public function newPasswordAction()
     {
         // Have we submitted the form?
-        if (!$this->params()->fromPost('submit', false)) {
+        if (!$this->formWasSubmitted('submit')) {
             return $this->redirect()->toRoute('home');
         }
         // Pull in from POST

@@ -43,12 +43,12 @@ class Recaptcha extends AbstractPlugin
      * \ZendService\ReCaptcha\ReCaptcha
      */
     protected $recaptcha;
-    
+
     /**
      * String array of forms where ReCaptcha is active
      */
     protected $domains;
-    
+
     /**
      * Captcha activated in config
      */
@@ -63,7 +63,7 @@ class Recaptcha extends AbstractPlugin
     {
         return $this;
     }
-    
+
     /**
      * Constructor
      *
@@ -77,13 +77,15 @@ class Recaptcha extends AbstractPlugin
         $this->recaptcha = $r;
         if (isset($config->Captcha)) {
             $this->active = true;
-            $this->domains = array_map(
-                'trim',
-                explode(',', $config->Captcha->forms)
-            );
+            $this->domains = '*' == trim($config->Captcha->forms)
+                ? true
+                : array_map(
+                    'trim',
+                    explode(',', $config->Captcha->forms)
+                );
         }
     }
-    
+
     /**
      * Return the raw service object
      *
@@ -93,7 +95,7 @@ class Recaptcha extends AbstractPlugin
     {
         return $this->recaptcha;
     }
-    
+
     /**
      * Pull the captcha field from POST and check them for accuracy
      *
@@ -125,7 +127,7 @@ class Recaptcha extends AbstractPlugin
         }
         return $captchaPassed;
     }
-    
+
     /**
      * Return whether a specific form is set for Captcha in the config
      *
@@ -134,6 +136,7 @@ class Recaptcha extends AbstractPlugin
     public function active($domain = false)
     {
         return $this->active
-        && ($domain == false || in_array($domain, $this->domains));
+        && ($domain == false || $this->domains === true
+        || in_array($domain, $this->domains));
     }
 }
