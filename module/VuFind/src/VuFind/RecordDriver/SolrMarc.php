@@ -369,7 +369,7 @@ class SolrMarc extends SolrDefault
         }
         if (count($pubResults) > 0) {
             $results = array_merge($results, $pubResults);
-        } else if (count($copyPlaces) > 0) {
+        } else if (count($copyResults) > 0) {
             $results = array_merge($results, $copyResults);
         }
 
