@@ -217,7 +217,8 @@ class RecordController extends AbstractRecord
                 'requestGroups' => $requestGroups,
                 'defaultRequestGroup' => $defaultRequestGroup,
                 'requestGroupNeeded' => $requestGroupNeeded,
-                'helpText' => $checkHolds['helpText']
+                'helpText' => isset($checkHolds['helpText'])
+                    ? $checkHolds['helpText'] : null
             )
         );
     }
@@ -323,7 +324,8 @@ class RecordController extends AbstractRecord
                 'homeLibrary' => $this->getUser()->home_library,
                 'extraFields' => $extraFields,
                 'defaultRequiredDate' => $defaultRequired,
-                'helpText' => $checkRequests['helpText']
+                'helpText' => isset($checkRequests['helpText'])
+                    ? $checkRequests['helpText'] : null
             )
         );
     }
@@ -433,7 +435,8 @@ class RecordController extends AbstractRecord
                 'homeLibrary' => $this->getUser()->home_library,
                 'extraFields' => $extraFields,
                 'defaultRequiredDate' => $defaultRequired,
-                'helpText' => $checkRequests['helpText']
+                'helpText' => isset($checkRequests['helpText'])
+                    ? $checkRequests['helpText'] : null
             )
         );
     }

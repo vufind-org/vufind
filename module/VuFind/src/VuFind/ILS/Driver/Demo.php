@@ -1329,7 +1329,9 @@ class Demo extends AbstractBase
 
         $requestGroup = '';
         foreach ($this->getRequestGroups(null, null) as $group) {
-            if ($group['id'] == $holdDetails['requestGroupId']) {
+            if (isset($holdDetails['requestGroupId'])
+                && $group['id'] == $holdDetails['requestGroupId']
+            ) {
                 $requestGroup = $group['name'];
                 break;
             }
