@@ -23,8 +23,8 @@
         <input type="radio" id="storageRetrievalRequestTitle" name="gatheredDetails[level]" value="title"<?=isset($this->gatheredDetails['level']) && $this->gatheredDetails['level'] == 'title' ? ' checked="checked"' : ''?>>
         <strong><label for="storageRetrievalRequestTitle"><?=$this->transEsc('storage_retrieval_request_reference')?></label></strong><br/>
         <div id="storageRetrievalRequestReference" class="storageRetrievalRequestReference">
-          <span class="label"><?=$this->transEsc('storage_retrieval_request_volume')?>:</span> <input type="text" name="gatheredDetails[volume]" value="<?=isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['volume']) : ''?>"></input><br/>
-          <span class="label"><?=$this->transEsc('storage_retrieval_request_issue')?>:</span> <input type="text" name="gatheredDetails[issue]" value="<?=isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['issue']) : ''?>"></input><br/>
+          <span class="label"><?=$this->transEsc('storage_retrieval_request_volume')?>:</span> <input type="text" name="gatheredDetails[volume]" value="<?=isset($this->gatheredDetails['volume']) ? $this->escapeHtml($this->gatheredDetails['volume']) : ''?>"></input><br/>
+          <span class="label"><?=$this->transEsc('storage_retrieval_request_issue')?>:</span> <input type="text" name="gatheredDetails[issue]" value="<?=isset($this->gatheredDetails['issue']) ? $this->escapeHtml($this->gatheredDetails['issue']) : ''?>"></input><br/>
           <span class="label"><?=$this->transEsc('storage_retrieval_request_year')?>:</span> <input type="text" name="gatheredDetails[year]" value="<?=isset($this->gatheredDetails['year']) ? $this->escapeHtml($this->gatheredDetails['year']) : ''?>"></input><br/>
         </div>
       </div>

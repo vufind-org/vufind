@@ -228,7 +228,7 @@ class Demo extends AbstractBase
      *
      * @return array
      */
-    protected function getRandomHolding($id, $number, $patron)
+    protected function getRandomHolding($id, $number, array $patron = null)
     {
         $status = $this->getFakeStatus();
         return array(
@@ -343,13 +343,29 @@ class Demo extends AbstractBase
      * This is responsible for retrieving the status information of a certain
      * record.
      *
+     * @param string $id The record id to retrieve the holdings for
+     *
+     * @return mixed     On success, an associative array with the following keys:
+     * id, availability (boolean), status, location, reserve, callnumber.
+     */
+    public function getStatus($id)
+    {
+        return $this->getSimulatedStatus($id);
+    }
+
+    /**
+     * Get Simulated Status (support method for getStatus/getHolding)
+     *
+     * This is responsible for retrieving the status information of a certain
+     * record.
+     *
      * @param string $id     The record id to retrieve the holdings for
      * @param array  $patron Patron data
      *
      * @return mixed     On success, an associative array with the following keys:
      * id, availability (boolean), status, location, reserve, callnumber.
      */
-    public function getStatus($id, $patron = false)
+    public function getSimulatedStatus($id, array $patron = null)
     {
         $id = $id.""; // make it a string for consistency
         // How many items are there?
@@ -483,10 +499,10 @@ class Demo extends AbstractBase
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, $patron = false)
+    public function getHolding($id, array $patron = null)
     {
         // Get basic status info:
-        $status = $this->getStatus($id, $patron);
+        $status = $this->getSimulatedStatus($id, $patron);
 
         // Add notes and summary:
         foreach (array_keys($status) as $i) {
@@ -1313,7 +1329,9 @@ class Demo extends AbstractBase
 
         $requestGroup = '';
         foreach ($this->getRequestGroups(null, null) as $group) {
-            if ($group['id'] == $holdDetails['requestGroupId']) {
+            if (isset($holdDetails['requestGroupId'])
+                && $group['id'] == $holdDetails['requestGroupId']
+            ) {
                 $requestGroup = $group['name'];
                 break;
             }

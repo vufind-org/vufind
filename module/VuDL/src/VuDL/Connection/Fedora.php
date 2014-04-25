@@ -58,7 +58,7 @@ class Fedora extends AbstractBase
             ? $this->config->Fedora->url_base
             : null;
     }
-    
+
     /**
      * Returns an array of classes for this object
      *
@@ -157,7 +157,7 @@ class Fedora extends AbstractBase
         }
         return $details;
     }
-    
+
     /**
      * Get an HTTP client
      *
@@ -172,7 +172,7 @@ class Fedora extends AbstractBase
         }
         return new \Zend\Http\Client($url);
     }
-    
+
     /**
      * Get an item's label
      *
@@ -210,7 +210,7 @@ class Fedora extends AbstractBase
             if (empty($list[$i])) {
                 continue;
             }
-            list($id, $title) = explode(',', $list[$i], 2);
+            list($id,) = explode(',', $list[$i], 2);
             $items[] = $id;
         }
         return $items;
@@ -235,7 +235,7 @@ class Fedora extends AbstractBase
         $list = explode("\n", $response->getBody());
         return $list[1];
     }
-    
+
     /**
      * Returns file contents of the structmap, our most common call
      *
@@ -316,6 +316,7 @@ class Fedora extends AbstractBase
         if (isset($this->parentLists[$id])) {
             return $this->parentLists[$id];
         }
+        // Walk to get all parents to root
         $query = 'select $child $parent $parentTitle from <#ri> '
                 . 'where walk ('
                         . '<info:fedora/' .$id. '> '
@@ -323,52 +324,27 @@ class Fedora extends AbstractBase
                         . '$parent '
                     . 'and $child <fedora-rels-ext:isMemberOf> $parent) '
                 . 'and $parent <fedora-model:label> $parentTitle';
+        // Parse out relationships
         $response = $this->query($query);
-        $list = explode("\n", $response->getBody());
+        $list = explode("\n", trim($response->getBody(), "\n"));
         $tree = array();
-        $items = array();
-        $roots = array();
         for ($i=1;$i<count($list);$i++) {
-            if (empty($list[$i])) {
-                continue;
-            }
             list($child, $parent, $title) = explode(',', substr($list[$i], 12), 3);
             $parent = substr($parent, 12);
-            if ($parent == $this->getRootId()) {
-                $roots[] = $child;
-                continue;
+            if (!isset($tree[$parent])) {
+                $tree[$parent] = array(
+                    'children' => array(),
+                    'title' => $title
+                );
             }
-            if ($child == $this->getRootId()) {
-                continue;
-            }
-            if (isset($tree[$parent])) {
-                $tree[$parent][] = $child;
-            } else {
-                $tree[$parent] = array($child);
-            }
-            $items[$parent] = str_replace('""', '"', trim($title, '" '));
+            $tree[$parent]['children'][] = $child;
         }
-        $ret = array();
-        $queue = array();
-        foreach ($roots as $root) {
-            $queue[] = array($root, array());
-        }
-        while ($path = array_pop($queue)) {
-            $tid = $path[0];
-            while ($tid != $id) {
-                $path[1][$tid] = $items[$tid];
-                for ($i=1;$i<count($tree[$tid]);$i++) {
-                    $queue[] = array($tree[$tid][$i], $path[1]);
-                }
-                $tid = $tree[$tid][0];
-            }
-            $ret[] = array_reverse($path[1]);
-        }
-        //var_dump('---', $ret);
+        $ret = $this->traceParents($tree, $id);
+        // Store in cache
         $this->parentLists[$id] = $ret;
         return $ret;
     }
-    
+
     /**
      * Get Fedora Query URL.
      *
@@ -446,7 +422,33 @@ class Fedora extends AbstractBase
         }
         return array();
     }
-    
+
+    /**
+     * Get copyright URL and compare it to special cases from VuDL.ini
+     *
+     * @param array $id          record id
+     * @param array $setLicenses ids are strings to match urls to,
+     *  the values are abbreviations. Parsed in details.phtml later.
+     *
+     * @return array
+     */
+    public function getCopyright($id, $setLicenses)
+    {
+        $check = $this->getDatastreamHeaders($id, 'LICENSE');
+        if (!strpos($check[0], '404')) {
+            $xml = $this->getDatastreamContent($id, 'LICENSE');
+            preg_match('/xlink:href="(.*?)"/', $xml, $license);
+            $license = $license[1];
+            foreach ($setLicenses as $tell=>$value) {
+                if (strpos($license, $tell)) {
+                    return array($license, $value);
+                }
+            }
+            return array($license, false);
+        }
+        return null;
+    }
+
     /**
      * Consolidation of Zend Client calls
      *

@@ -448,7 +448,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, $patron = false)
+    public function getHolding($id, array $patron = null)
     {
         include_once 'File/MARC.php';
 
