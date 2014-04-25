@@ -732,5 +732,53 @@
             "source": "https://github.com/zendframework/zf2/tree/release-2.2.7",
             "issues": "https://github.com/zendframework/zf2/issues"
         }
+    },
+    {
+        "name": "zendframework/zendservice-recaptcha",
+        "version": "2.0.1",
+        "version_normalized": "2.0.1.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/zendframework/ZendService_ReCaptcha.git",
+            "reference": "4324cca8502d9f47b3b43a18acdd3fdbeb965536"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://packages.zendframework.com/composer/zendframework-zendservice-recaptcha-4324cca8502d9f47b3b43a18acdd3fdbeb965536-zip-8c45bf.zip",
+            "reference": "2.0.1",
+            "shasum": "fab92465cda889ff975c1ec79bb378d7e3f39081"
+        },
+        "require": {
+            "php": ">=5.3.3",
+            "zendframework/zend-http": ">=2.0.0",
+            "zendframework/zend-uri": ">=2.0.0",
+            "zendframework/zend-version": ">=2.0.0"
+        },
+        "time": "2012-09-24 15:18:29",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.0.x-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-0": {
+                "ZendService": "library/"
+            }
+        },
+        "license": [
+            "BSD-3-Clause"
+        ],
+        "description": "OOP wrapper for the ReCaptcha web service",
+        "homepage": "http://packages.zendframework.com/",
+        "keywords": [
+            "recaptcha",
+            "zf2"
+        ],
+        "support": {
+            "source": "https://github.com/zendframework/ZendService_ReCaptcha/tree/release-2.0.1",
+            "issues": "https://github.com/zendframework/ZendService_ReCaptcha/issues"
+        }
     }
 ]

@@ -66,6 +66,7 @@
         "zendframework/zendframework": "2.2.7",
         "zendframework/zendrest": "2.*",
         "zendframework/zendservice-amazon": "2.*",
+        "zendframework/zendservice-recaptcha": "2.*",
         "jasig/phpCAS": "dev-master"
     }
 }
