@@ -369,7 +369,7 @@ class AbstractRecord extends AbstractBase
         // Set up reCaptcha
         $view->useRecaptcha = $this->recaptcha()->active('email');
         // Process form submission:
-        if ($this->formWasSubmitted('submit', 'email')) {
+        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             // Attempt to send the email and show an appropriate flash message:
             try {
                 $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
@@ -416,7 +416,7 @@ class AbstractRecord extends AbstractBase
         // Set up reCaptcha
         $view->useRecaptcha = $this->recaptcha()->active('sms');
         // Process form submission:
-        if ($this->formWasSubmitted('submit', 'sms')) {
+        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             // Send parameters back to view so form can be re-populated:
             $view->to = $this->params()->fromPost('to');
             $view->provider = $this->params()->fromPost('provider');

@@ -45,7 +45,7 @@ class Recaptcha extends AbstractHelper
      * @var Recaptcha
      */
     protected $recaptcha;
-    
+
     /**
      * Recaptcha config
      *
@@ -80,8 +80,12 @@ class Recaptcha extends AbstractHelper
      *
      * @return string $html
      */
-    public function html()
+    public function html($useRecaptcha = true)
     {
+        if (!isset($useRecaptcha) || !$useRecaptcha) {
+            return false;
+        }
+
         if ($this->recaptcha->getPublicKey() === null) {
             throw new Exception('Missing public key');
         }
@@ -99,7 +103,7 @@ class Recaptcha extends AbstractHelper
         }
 
         $reCaptchaOptions = '';
-        
+
         $options = $this->recaptcha->getOptions();
         if (!empty($options)) {
             $encoded = \Zend\Json\Json::encode($options);
@@ -112,7 +116,7 @@ class Recaptcha extends AbstractHelper
             $challengeField = $name . '[' . $challengeField . ']';
             $responseField  = $name . '[' . $responseField . ']';
         }
-        
+
         return $this->view->render(
             'Service/recaptcha.phtml',
             array(
@@ -123,10 +127,11 @@ class Recaptcha extends AbstractHelper
                 'publicKey'        => $this->recaptcha->getPublicKey(),
                 'responseField'    => $responseField,
                 'theme'            => $options['theme'],
+                'useRecaptcha'     => $useRecaptcha,
             )
         );
     }
-    
+
     /**
      * Return whether Captcha is active in the config
      *

@@ -4,4 +4,5 @@
 <br/><br/>
 <label class="span-4"><?=$this->transEsc('recovery_by_email') ?>:</label>
 <input type="email" name="email"/>
+<?=$this->recaptcha()->html($this->useRecaptcha) ?>
 <input type="submit" name="submit"/>

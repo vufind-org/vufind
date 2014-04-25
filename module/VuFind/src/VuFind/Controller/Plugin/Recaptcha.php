@@ -57,16 +57,6 @@ class Recaptcha extends AbstractPlugin
     /**
      * Constructor
      *
-     * @param \VuFind\Crypt\HMAC $hmac HMAC generator
-     */
-    public function __invoke()
-    {
-        return $this;
-    }
-
-    /**
-     * Constructor
-     *
      * @param \ZendService\ReCaptcha\ReCaptcha $r      Customed reCAPTCHA object
      * @param \VuFind\Config                   $config Config file
      *

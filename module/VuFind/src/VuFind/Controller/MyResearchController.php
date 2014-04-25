@@ -203,7 +203,7 @@ class MyResearchController extends AbstractBase
         // Pass request to view so we can repopulate user parameters in form:
         $view->request = $this->getRequest()->getPost();
         // Process request, if necessary:
-        if ($this->formWasSubmitted('submit', 'newAccount')) {
+        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             try {
                 $this->getAuthManager()->create($this->getRequest());
                 return $this->forwardTo('MyResearch', 'Home');
