@@ -866,7 +866,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
             // First get hold information for the list of items Voyager
             // thinks are holdable
             $request = $this->determineHoldType($patron['id'], $bibId);
-            if ($request != 'hold' && $result != 'recall') {
+            if ($request != 'hold' && $request != 'recall') {
                 return false;
             }
 
