@@ -843,6 +843,7 @@ class Demo extends AbstractBase
      * placeHold, minus the patron data.
      *
      * @return int
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getHoldDefaultRequiredDate($patron, $holdInfo)
     {

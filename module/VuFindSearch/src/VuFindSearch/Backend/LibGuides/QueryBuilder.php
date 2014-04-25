@@ -97,6 +97,7 @@ class QueryBuilder
      * @param QueryGroup $query QueryGroup to convert
      *
      * @return array
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function queryGroupToArray(QueryGroup $query)
     {

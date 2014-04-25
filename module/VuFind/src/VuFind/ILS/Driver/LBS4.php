@@ -345,6 +345,7 @@ class LBS4 extends AbstractBase implements TranslatorAwareInterface
      * @param array  $callnumber The callnumber of the item
      *
      * @return string On success, a string to be displayed near the item
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getNote($loanind, $locid, $callnumber)
     {

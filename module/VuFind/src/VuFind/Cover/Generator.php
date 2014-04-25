@@ -109,7 +109,7 @@ class Generator
         $this->black = imagecolorallocate($im, 0, 0, 0);
 
         // Generate seed from callnumber, title back up
-        $seed = $this->createSeed($title, $author, $callnumber);
+        $seed = $this->createSeed($title, $callnumber);
         // Number to color, hsb to control saturation and lightness
         $grid_color = $this->makeHSBColor(
             $im,
@@ -143,12 +143,11 @@ class Generator
      * Generates a dynamic cover image from elements of the book
      *
      * @param string $title      Title of the book
-     * @param string $author     Author of the book
      * @param string $callnumber Callnumber of the book
      *
      * @return integer unique number for this record
      */
-    protected function createSeed($title, $author, $callnumber)
+    protected function createSeed($title, $callnumber)
     {
         // Turn callnumber into number
         if (null == $callnumber) {
