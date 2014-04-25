@@ -3,7 +3,7 @@
         "This file locks the dependencies of your project to a known state",
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
     ],
-    "hash": "62e7c688185a99c2490f6124b718e711",
+    "hash": "0189fc21275f21ae6fd5abdc6dfb2f1e",
     "packages": [
         {
             "name": "aferrandini/phpqrcode",
@@ -439,17 +439,17 @@
         },
         {
             "name": "zendframework/zendframework",
-            "version": "2.2.6",
+            "version": "2.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zendframework/zf2.git",
-                "reference": "5eae447d46b00a280573b94c398b2f46f45a6903"
+                "reference": "ffca3e3eefd7fbe0f316ed0224edff368949223d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-5eae447d46b00a280573b94c398b2f46f45a6903-zip-cbc7a8.zip",
-                "reference": "2.2.6",
-                "shasum": "fd15c9f720744a28ea2a93dda737ca37bd3c40b2"
+                "url": "https://packages.zendframework.com/composer/zendframework-zendframework-ffca3e3eefd7fbe0f316ed0224edff368949223d-zip-486378.zip",
+                "reference": "2.2.7",
+                "shasum": "0e386ea1eed09bbb50be7d957f8f3d7cefb7bd3d"
             },
             "require": {
                 "php": ">=5.3.3",
@@ -551,10 +551,10 @@
                 "zf2"
             ],
             "support": {
-                "source": "https://github.com/zendframework/zf2/tree/release-2.2.6",
+                "source": "https://github.com/zendframework/zf2/tree/release-2.2.7",
                 "issues": "https://github.com/zendframework/zf2/issues"
             },
-            "time": "2014-03-06 17:27:03"
+            "time": "2014-04-15 14:31:59"
         },
         {
             "name": "zendframework/zendrest",
