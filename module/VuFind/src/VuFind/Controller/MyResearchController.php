@@ -1279,7 +1279,7 @@ class MyResearchController extends AbstractBase
                     // Reassign oldpwd to password in the request so login works
                     $temp_password = $post->password;
                     $post->password = $post->oldpwd;
-                    $authClass = $this->getAuthManager()->login($request);
+                    $this->getAuthManager()->login($request);
                     $post->password = $temp_password;
                 } catch(AuthException $e) {
                     $this->flashMessenger()->setNamespace('error')

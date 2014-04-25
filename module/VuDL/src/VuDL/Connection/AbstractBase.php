@@ -130,7 +130,6 @@ class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface
     {
         // Format details
         // Get config for which details we want
-        $fields = $combinedFields = array(); // Save to combine later
         $detailsList = $this->getDetailsList();
         if (empty($detailsList)) {
             throw new \Exception('Missing [Details] in VuDL.ini');

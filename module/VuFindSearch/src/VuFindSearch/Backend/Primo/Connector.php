@@ -233,7 +233,7 @@ class Connector
         $lookfor = "";
 
         if (is_array($terms)) {
-            foreach ($terms as $key => $thisTerm) {
+            foreach ($terms as $thisTerm) {
                 //set the index to search
                 switch ($thisTerm['index']) {
                 case "AllFields":
