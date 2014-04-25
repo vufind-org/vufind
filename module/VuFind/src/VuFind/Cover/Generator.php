@@ -100,8 +100,9 @@ class Generator
         $box  = $this->settings->size/8;
 
         // Create image
-        $im = imagecreate($this->settings->size, $this->settings->size)
-            or die("Cannot Initialize new GD image stream");
+        if (!($im = imagecreate($this->settings->size, $this->settings->size))) {
+            throw new \Exception("Cannot Initialize new GD image stream");
+        }
         // this->white backdrop
         $this->white = imagecolorallocate($im, 255, 255, 255);
         // this->black
