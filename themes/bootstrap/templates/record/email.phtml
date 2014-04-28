@@ -47,6 +47,7 @@
       </div>
     </div>
   <? endif ?>
+  <?=$this->recaptcha()->html($this->useRecaptcha) ?>
   <div class="control-group">
     <div class="controls">
       <input type="submit" class="btn btn-primary" name="submit" value="<?=$this->transEsc('Send Email')?>"/>

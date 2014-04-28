@@ -334,7 +334,7 @@ class InstallController extends AbstractBase
         } else if (!preg_match('/^\w*$/', $view->dbuser)) {
             $this->flashMessenger()->setNamespace('error')
                 ->addMessage('Database user must be alphanumeric.');
-        } else if ($skip || strlen($this->params()->fromPost('submit', '')) > 0) {
+        } else if ($skip || $this->formWasSubmitted('submit')) {
             $newpass = $this->params()->fromPost('dbpass');
             $newpassConf = $this->params()->fromPost('dbpassconfirm');
             if ((empty($newpass) || empty($newpassConf))) {

@@ -408,6 +408,24 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Check to see if a form was submitted from its post value
+     * Also validate the Captcha, if it's activated
+     *
+     * @param string  $submitElement Name of the post field of the submit button
+     * @param boolean $useRecaptcha  Are we using captcha in this situation?
+     *
+     * @return boolean
+     */
+    protected function formWasSubmitted($submitElement = 'submit',
+        $useRecaptcha = false
+    ) {
+        // Fail if the expected submission element was missing from the POST:
+        // Form was submitted; if CAPTCHA is expected, validate it now.
+        return $this->params()->fromPost($submitElement, false)
+            && (!$useRecaptcha || $this->recaptcha()->validate());
+    }
+
+    /**
      * Confirm an action.
      *
      * @param string       $title     Title of confirm dialog

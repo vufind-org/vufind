@@ -189,7 +189,7 @@ class CartController extends AbstractBase
         $view->records = $this->getRecordLoader()->loadBatch($ids);
 
         // Process form submission:
-        if ($this->params()->fromPost('submit')) {
+        if ($this->formWasSubmitted('submit')) {
             // Build the URL to share:
             $params = array();
             foreach ($ids as $current) {
@@ -264,7 +264,7 @@ class CartController extends AbstractBase
         $export = $this->getExport();
 
         // Process form submission if necessary:
-        if (!is_null($this->params()->fromPost('submit'))) {
+        if ($this->formWasSubmitted('submit')) {
             $format = $this->params()->fromPost('format');
             $url = $export->getBulkUrl($this->getViewRenderer(), $format, $ids);
             if ($export->needsRedirect($format)) {
@@ -358,7 +358,7 @@ class CartController extends AbstractBase
         }
 
         // Process submission if necessary:
-        if (!is_null($this->params()->fromPost('submit'))) {
+        if ($this->formWasSubmitted('submit')) {
             $this->favorites()
                 ->saveBulk($this->getRequest()->getPost()->toArray(), $user);
             $this->flashMessenger()->setNamespace('info')

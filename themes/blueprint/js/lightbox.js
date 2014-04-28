@@ -72,6 +72,9 @@ function displayLightboxFeedback($form, message, type) {
 function displayFormError($form, error) {
     $form.parent().find('.error').remove();
     $form.prepend('<div class="error">' + error + '</div>');
+    if (Recaptcha) {
+      Recaptcha.reload();
+    }
 }
 
 function displayFormInfo($form, msg) {

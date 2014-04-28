@@ -950,6 +950,13 @@ class AjaxController extends AbstractBase
         $this->writeSession();  // avoid session write timing bug
         // Attempt to send the email:
         try {
+            // Check captcha
+            $this->recaptcha()->setErrorMode('throw');
+            $useRecaptcha = $this->recaptcha()->active('sms');
+            // Process form submission:
+            if (!$this->formWasSubmitted('id', $useRecaptcha)) {
+                throw new \Exception('recaptcha_not_passed');
+            }
             $record = $this->getRecordLoader()->load(
                 $this->params()->fromPost('id'),
                 $this->params()->fromPost('source', 'VuFind')
@@ -970,7 +977,6 @@ class AjaxController extends AbstractBase
             );
         }
     }
-
 
     /**
      * Email a record.
@@ -994,6 +1000,14 @@ class AjaxController extends AbstractBase
 
         // Attempt to send the email:
         try {
+            // Check captcha
+            $this->recaptcha()->setErrorMode('throw');
+            $useRecaptcha = $this->recaptcha()->active('sms');
+            // Process form submission:
+            if (!$this->formWasSubmitted('id', $useRecaptcha)) {
+                throw new \Exception('recaptcha_not_passed');
+            }
+
             $record = $this->getRecordLoader()->load(
                 $this->params()->fromPost('id'),
                 $this->params()->fromPost('source', 'VuFind')
