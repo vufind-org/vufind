@@ -83,14 +83,14 @@ class SearchSpecsReader
             $local = Locator::getLocalConfigPath($filename);
 
             // Generate cache key:
-            $key = $filename . '-' . filemtime($fullpath);
+            $cacheKey = $filename . '-' . filemtime($fullpath);
             if (!empty($local)) {
-                $key .= '-local-' . filemtime($local);
+                $cacheKey .= '-local-' . filemtime($local);
             }
-            $key = md5($key);
+            $cacheKey = md5($cacheKey);
 
             // Generate data if not found in cache:
-            if (!$cache || !($results = $cache->getItem($key))) {
+            if (!$cache || !($results = $cache->getItem($cacheKey))) {
                 $results = Yaml::parse($fullpath);
                 if (!empty($local)) {
                     $localResults = Yaml::parse($local);
@@ -99,7 +99,7 @@ class SearchSpecsReader
                     }
                 }
                 if ($cache) {
-                    $cache->setItem($key, $results);
+                    $cache->setItem($cacheKey, $results);
                 }
             }
             $this->searchSpecs[$filename] = $results;
