@@ -3,8 +3,9 @@
     <div class="controls">
       <?=$this->reCaptchaOptions ?>
 
-      <div id="custom_recaptcha_widget" style="display:none">
+      <div id="recaptcha_widget" style="display:none">
       <? if ($this->theme == 'custom'): ?>
+        <div id="custom_recaptcha_widget">
           <div id="recaptcha_image"></div>
           <div class="recaptcha_only_if_incorrect_sol" class="text-error"><?=$this->translate('recaptcha_incorrect_try_again') ?></div>
 
@@ -18,6 +19,7 @@
           <div class="recaptcha_only_if_audio"><a href="javascript:Recaptcha.switch_type('image')"><?=$this->translate('recaptcha_visual_challenge') ?></a></div>
 
           <div><a href="javascript:Recaptcha.showhelp()"><?=$this->translate('recaptcha_help_btn') ?></a></div>
+        </div>
       <? endif; ?>
       </div>
 
@@ -28,7 +30,7 @@
       </noscript>
 
       <script type="text/javascript">
-        Recaptcha.create("<?=$this->publicKey ?>", 'custom_recaptcha_widget', <?=$this->options ?>);
+        Recaptcha.create("<?=$this->publicKey ?>", 'recaptcha_widget', <?=$this->options ?>);
       </script>
     </div>
   </div>

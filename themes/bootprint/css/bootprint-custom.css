@@ -193,9 +193,9 @@ select, .btn:not(.btn-link){vertical-align:top}
 #authcontainer .control-label {width:80px}
 #authcontainer .controls {margin-left:90px}
 
-/* --- Captcha ---
+/* --- Captcha --- */
 #custom_recaptcha_widget { display:table; }
 #custom_recaptcha_widget embed { display:none; }
 #custom_recaptcha_widget #recaptcha_image { border:1px solid #000;padding:6px;margin:1em 0; }
+#custom_recaptcha_widget #recaptcha_response_field { margin:0 .5em }
 #custom_recaptcha_widget > div > a { display:inline-block;float:left;margin:5px 10px 5px 0; }
-*/
