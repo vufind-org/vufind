@@ -1142,13 +1142,13 @@ class MyResearchController extends AbstractBase
         $view = $this->createViewModel();
         $view->useRecaptcha = $this->recaptcha()->active('passwordRecovery');
         // If we have a submitted form
-        if (false != $user) {
-            if (!$view->useRecaptcha || $this->recaptcha()->validate()) {
+        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+            if ($user) {
                 $this->sendRecoveryEmail($user, $this->getConfig());
+            } else {
+                $this->flashMessenger()->setNamespace('error')
+                    ->addMessage('recovery_user_not_found');
             }
-        } elseif ($this->formWasSubmitted('submit')) {
-            $this->flashMessenger()->setNamespace('error')
-                ->addMessage('recovery_user_not_found');
         }
         return $view;
     }
