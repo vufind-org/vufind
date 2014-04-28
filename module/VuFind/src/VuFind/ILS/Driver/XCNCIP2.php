@@ -97,12 +97,16 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return object     SimpleXMLElement parsed from response
      */
-    protected function sendRequest($xml)
+    protected function sendRequest($xml, $url = null)
     {
+    	$_url = "";
+    	if (is_null($url)) $_url = $this->config['Catalog']['url'];
+    	else $_url = $url;
+
         // Make the NCIP request:
         try {
             $client = $this->httpService
-                ->createClient($this->config['Catalog']['url']);
+                ->createClient($_url);
             $client->setRawBody($xml);
             $client->setEncType('application/xml; "charset=utf-8"');
             $result = $client->setMethod('POST')->send();
@@ -379,7 +383,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $holdings = array();
         foreach ($agency_id as $_agency => $_id) {
             $request = $this->getStatusRequest(array($_id), null, $_agency);
-            $response = $this->sendRequest($request);
+            $response = $this->sendRequest($request, $this->agency_url[$_agency]);
             $avail = $response->xpath(
                 'ns1:Ext/ns1:LookupItemSetResponse/ns1:BibInformation'
             );
@@ -387,10 +391,23 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             // Build the array of holdings:
             //$holdings = array();
             foreach ($avail as $current) {
+ob_start();
+var_dump($current->asXML());
+$debug = ob_get_clean();
+file_put_contents('/usr/local/vufind2/look.txt', "\n\npartial:\n\n" . $debug,  FILE_APPEND);
                 $holdings[] = $this->getHoldingsForChunk($current);
             }
+//ob_start();
+//var_dump($holdings);
+//$debug = ob_get_clean();
+//file_put_contents('/usr/local/vufind2/look.txt', "\n\npartial:\n\n" . $debug,  FILE_APPEND);
             
         }
+
+//ob_start();
+//var_dump($holdings);
+//$debug = ob_get_clean();
+//file_put_contents('/usr/local/vufind2/look.txt', "\n\nresult:\n\n" . $debug,  FILE_APPEND);
 
         return $holdings;
     }
