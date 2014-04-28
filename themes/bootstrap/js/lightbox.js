@@ -152,7 +152,6 @@ var Lightbox = {
     for(var i=0;i<Lightbox.openStack.length;i++) {
       Lightbox.openStack[i]();
     }
-    console.log('open');
   },
   /**
    * This function changes the content of the lightbox to a message with a close button
