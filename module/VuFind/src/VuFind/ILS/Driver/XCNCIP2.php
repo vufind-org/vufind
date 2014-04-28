@@ -146,7 +146,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         
         // Extract details from the XML:
         $status = $current->xpath(
-            'ns1:HoldingsSet/ns1:ItemInformation/' .
+            'ns1:ItemInformation/' .
             'ns1:ItemOptionalFields/ns1:CirculationStatus'
         );
         $status = empty($status) ? '' : (string)$status[0];
@@ -157,7 +157,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         );
 
         $itemId = $current->xpath(
-            'ns1:HoldingsSet/ns1:ItemInformation/' .
+            'ns1:ItemInformation/' .
             'ns1:ItemId/ns1:ItemIdentifierValue'
         );
         // Pick out the permanent location (TODO: better smarts for dealing with
@@ -179,10 +179,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         // Get both holdings and item level call numbers; we'll pick the most
         // specific available value below.
-        $holdCallNo = $current->xpath('ns1:HoldingsSet/ns1:CallNumber');
+        $holdCallNo = $current->xpath('ns1:CallNumber');
         $holdCallNo = (string)$holdCallNo[0];
         $itemCallNo = $current->xpath(
-            'ns1:HoldingsSet/ns1:ItemInformation/' .
+            'ns1:ItemInformation/' .
             'ns1:ItemOptionalFields/ns1:ItemDescription/ns1:CallNumber'
         );
         
@@ -385,29 +385,16 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $request = $this->getStatusRequest(array($_id), null, $_agency);
             $response = $this->sendRequest($request, $this->agency_url[$_agency]);
             $avail = $response->xpath(
-                'ns1:Ext/ns1:LookupItemSetResponse/ns1:BibInformation'
+                'ns1:Ext/ns1:LookupItemSetResponse/ns1:BibInformation/ns1:HoldingsSet'
             );
 
             // Build the array of holdings:
             //$holdings = array();
             foreach ($avail as $current) {
-ob_start();
-var_dump($current->asXML());
-$debug = ob_get_clean();
-file_put_contents('/usr/local/vufind2/look.txt', "\n\npartial:\n\n" . $debug,  FILE_APPEND);
                 $holdings[] = $this->getHoldingsForChunk($current);
             }
-//ob_start();
-//var_dump($holdings);
-//$debug = ob_get_clean();
-//file_put_contents('/usr/local/vufind2/look.txt', "\n\npartial:\n\n" . $debug,  FILE_APPEND);
             
         }
-
-//ob_start();
-//var_dump($holdings);
-//$debug = ob_get_clean();
-//file_put_contents('/usr/local/vufind2/look.txt', "\n\nresult:\n\n" . $debug,  FILE_APPEND);
 
         return $holdings;
     }
@@ -485,7 +472,7 @@ file_put_contents('/usr/local/vufind2/look.txt', "\n\npartial:\n\n" . $debug,  F
      * @return array        Array of the patron's transactions on success.
      */
     public function getMyTransactions($patron)
-    {
+    {        
         $extras = array('<ns1:LoanedItemsDesired/>');
         $request = $this->getLookupUserRequest(
             $patron['cat_username'], $patron['cat_password'], $extras
@@ -498,9 +485,8 @@ file_put_contents('/usr/local/vufind2/look.txt', "\n\npartial:\n\n" . $debug,  F
         foreach ($list as $current) {
             $current->registerXPathNamespace('ns1', 'http://www.niso.org/2008/ncip');
             $tmp = $current->xpath('ns1:DateDue');
-            $due = (string)$tmp[0];
-            $due = str_replace("T", " ", $due);
-            $due = str_replace("Z", "", $due);
+            $due = strtotime((string)$tmp[0]);
+            $due = date("l, d-M-y h:i a", $due);
             $title = $current->xpath('ns1:Title');
             $item_id = $current->xpath('ns1:ItemId/ns1:ItemIdentifierValue');
             $bib_id = $current->xpath('ns1:Ext/ns1:BibliographicDescription/' .
@@ -615,18 +601,23 @@ file_put_contents('/usr/local/vufind2/look.txt', "\n\npartial:\n\n" . $debug,  F
             $requestType = $current->xpath('ns1:RequestType');
             $requestId = $current->xpath('ns1:RequestId/ns1:RequestIdentifierValue');
             $itemId = $current->xpath('ns1:ItemId/ns1:ItemIdentifierValue');
+            $pickupLocation = $current->xpath('ns1:PickupLocation');
+            $expireDate = $current->xpath('ns1:PickupExpiryDate');
+            $expireDate = strtotime((string)$expireDate[0]);
+            $expireDate = date("l, d-M-y", $expireDate);
             $requestType = (string)$requestType[0];
             // Only return requests of type Hold or Recall. Callslips/Stack
             // Retrieval requests are fetched using getMyStorageRetrievalRequests
             if ($requestType === "Hold" or $requestType === "Recall") {
                 $retVal[] = array(
                     'id' => (string)$id[0],
-                    'create' => (string)$created[0],
-                    'expire' => '',
+                    'create' => '',
+                    'expire' => $expireDate,
                     'title' => (string)$title[0],
                     'position' => (string)$pos[0],
                     'requestId' => (string)$requestId[0],
                     'item_id' => (string)$itemId[0],
+                    'location' => (string)$pickupLocation[0],
                 );
             }
         }
@@ -867,30 +858,35 @@ file_put_contents('/usr/local/vufind2/look.txt', "\n\npartial:\n\n" . $debug,  F
         $retVal = array();
         $list = $response->xpath('ns1:LookupUserResponse/ns1:RequestedItem');
         foreach ($list as $current) {
+            $cancelled = true;
             $id = $current->xpath('ns1:Ext/ns1:BibliographicDescription/' .
                     'ns1:BibliographicRecordId/ns1:BibliographicRecordIdentifier');
-            $created = $current->xpath('ns1:DatePlaced');
+            //$created = $current->xpath('ns1:DatePlaced');
             $title = $current->xpath('ns1:Title');
             $pos = $current->xpath('ns1:HoldQueuePosition');
+            $pickupLocation = $current->xpath('ns1:PickupLocation');
             $requestId = $current->xpath('ns1:RequestId/ns1:RequestIdentifierValue');
             $requestType = $current->xpath('ns1:RequestType');
             $requestType = (string)$requestType[0];
-            $requestStatus = $current->xpath('ns1:RequestStatusType');
-            $requestStatus = (string)$requestStatus[0];
+            $tmpStatus = $current->xpath('ns1:RequestStatusType');
+            list($status, $created) = explode(" ", (string)$tmpStatus[0], 2);
+            if ($status === "Accepted") {
+                $cancelled = false;
+            }
             // Only return requests of type Stack Retrieval/Callslip. Hold
             // and Recall requests are fetched using getMyHolds
-            if ($requestType === 'Stack Retrieval' and 
-                substr($requestStatus, 0, 8) !== 'Canceled')
+            if ($requestType === 'Stack Retrieval')
             {
                 $retVal[] = array(
                     'id' => (string)$id[0],
-                    'create' => (string)$created[0],
+                    'create' => $created,
                     'expire' => '',
                     'title' => (string)$title[0],
                     'position' => (string)$pos[0], 
                     'requestId' => (string)$requestId[0],
                     'location' => 'test',
-                    'canceled' => false,
+                    'canceled' => $cancelled,
+                    'location' => (string)$pickupLocation[0],
                     'processed' => false,
                 );
             }
