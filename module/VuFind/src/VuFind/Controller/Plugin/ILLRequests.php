@@ -28,7 +28,6 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller\Plugin;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Session\Container;
 
 /**
  * Zend action helper to perform ILL request related actions
@@ -40,22 +39,8 @@ use Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Session\Container;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class ILLRequests extends Holds
+class ILLRequests extends AbstractRequestBase
 {
-    /**
-     * Grab the Container object for storing helper-specific session
-     * data.
-     *
-     * @return Container
-     */
-    protected function getSession()
-    {
-        if (!isset($this->session)) {
-            $this->session = new Container('ILLRequests_Helper');
-        }
-        return $this->session;
-    }
-
     /**
      * Update ILS details with cancellation-specific information, if appropriate.
      *
@@ -63,7 +48,7 @@ class ILLRequests extends Holds
      * @param array                  $ilsDetails   Details from ILS driver's
      * getMyILLRequests() method
      * @param array                  $cancelStatus Cancellation settings from ILS
-     * @param array                  $patron       ILS patron 
+     * @param array                  $patron       ILS patron
      * driver's checkFunction() method
      *
      * @return array $ilsDetails with cancellation info added
@@ -153,7 +138,7 @@ class ILLRequests extends Holds
                     );
                 }
             }
-            
+
             foreach ($details as $info) {
                 // If the user input contains a value not found in the session
                 // whitelist, something has been tampered with -- abort the process.

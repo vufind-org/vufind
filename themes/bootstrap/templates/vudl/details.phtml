@@ -24,6 +24,7 @@
             
           <? // If we need exploding and backlinking ?>
           <? elseif($attr == 'topic' || $attr == 'series'): ?>
+            <? if(!is_array($val['value'])) $val['value'] = array($val['value']); ?>
             <? if(count($val['value']) > 1): ?><ul class="unstyled"><? endif ?>
             <? foreach($val['value'] as $v): ?>
               <? if(count($val['value']) > 1): ?><li><? endif ?>
@@ -87,7 +88,7 @@
       <a href="<?=$this->url('record', array('id'=>$this->id))?>"><i class="icon-link"></i> <?=$this->transEsc('More Details') ?></a><br/>
       <a href="<?=$this->url('vudl-record', array('id'=>$this->id))?>"><i class="icon-save"></i> <?=$this->transEsc('Permanent Link') ?></a><br/>
       <br/><br/>
-      <? if(isset($this->details['description'])): ?><p class="text-left"><?=html_entity_decode($this->details['description']['value'],  ENT_COMPAT|ENT_HTML401, 'UTF-8') ?></p><? endif ?>
+      <? if(isset($this->details['description'])): ?><p class="text-left"><?=html_entity_decode($this->details['description']['value'], 2 /*ENT_COMPAT|ENT_HTML401*/, 'UTF-8') ?></p><? endif ?>
     </div>
   </div>
 </div>
