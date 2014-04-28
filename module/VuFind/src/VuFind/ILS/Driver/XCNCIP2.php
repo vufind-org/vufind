@@ -126,7 +126,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         
         // Extract details from the XML:
         $status = $current->xpath(
-            'ns1:HoldingsSet/ns1:ItemInformation/' .
+            'ns1:ItemInformation/' .
             'ns1:ItemOptionalFields/ns1:CirculationStatus'
         );
         $status = empty($status) ? '' : (string)$status[0];
@@ -137,7 +137,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         );
 
         $itemId = $current->xpath(
-            'ns1:HoldingsSet/ns1:ItemInformation/' .
+            'ns1:ItemInformation/' .
             'ns1:ItemId/ns1:ItemIdentifierValue'
         );
         // Pick out the permanent location (TODO: better smarts for dealing with
@@ -159,10 +159,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         // Get both holdings and item level call numbers; we'll pick the most
         // specific available value below.
-        $holdCallNo = $current->xpath('ns1:HoldingsSet/ns1:CallNumber');
+        $holdCallNo = $current->xpath('ns1:CallNumber');
         $holdCallNo = (string)$holdCallNo[0];
         $itemCallNo = $current->xpath(
-            'ns1:HoldingsSet/ns1:ItemInformation/' .
+            'ns1:ItemInformation/' .
             'ns1:ItemOptionalFields/ns1:ItemDescription/ns1:CallNumber'
         );
         
@@ -342,7 +342,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $request = $this->getStatusRequest(array($id));
         $response = $this->sendRequest($request);
         $avail = $response->xpath(
-            'ns1:Ext/ns1:LookupItemSetResponse/ns1:BibInformation'
+            'ns1:Ext/ns1:LookupItemSetResponse/ns1:BibInformation/ns1:HoldingsSet'
         );
 
         // Build the array of holdings:
