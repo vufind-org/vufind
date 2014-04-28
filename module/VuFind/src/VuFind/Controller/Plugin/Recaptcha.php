@@ -47,7 +47,7 @@ class Recaptcha extends AbstractPlugin
     /**
      * String array of forms where ReCaptcha is active
      */
-    protected $domains;
+    protected $domains = array();
 
     /**
      * Captcha activated in config
@@ -65,7 +65,7 @@ class Recaptcha extends AbstractPlugin
     public function __construct($r, $config)
     {
         $this->recaptcha = $r;
-        if (isset($config->Captcha)) {
+        if (isset($config->Captcha->forms)) {
             $this->active = true;
             $this->domains = '*' == trim($config->Captcha->forms)
                 ? true
