@@ -86,7 +86,7 @@ class Recaptcha extends AbstractPlugin
      *
      * @param string $mode 'flash' or 'throw'
      *
-     * @return void
+     * @return bool
      */
     public function setErrorMode($mode)
     {

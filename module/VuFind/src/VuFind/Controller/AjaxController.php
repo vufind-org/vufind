@@ -952,9 +952,9 @@ class AjaxController extends AbstractBase
         try {
             // Check captcha
             $this->recaptcha()->setErrorMode('throw');
-            $view->useRecaptcha = $this->recaptcha()->active('sms');
+            $useRecaptcha = $this->recaptcha()->active('sms');
             // Process form submission:
-            if (!$this->formWasSubmitted('id', $view->useRecaptcha)) {
+            if (!$this->formWasSubmitted('id', $useRecaptcha)) {
                 throw new \Exception('recaptcha_not_passed');
             }
             $record = $this->getRecordLoader()->load(
@@ -1002,9 +1002,9 @@ class AjaxController extends AbstractBase
         try {
             // Check captcha
             $this->recaptcha()->setErrorMode('throw');
-            $view->useRecaptcha = $this->recaptcha()->active('sms');
+            $useRecaptcha = $this->recaptcha()->active('sms');
             // Process form submission:
-            if (!$this->formWasSubmitted('id', $view->useRecaptcha)) {
+            if (!$this->formWasSubmitted('id', $useRecaptcha)) {
                 throw new \Exception('recaptcha_not_passed');
             }
 
