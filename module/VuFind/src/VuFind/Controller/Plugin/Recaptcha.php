@@ -55,6 +55,11 @@ class Recaptcha extends AbstractPlugin
     protected $active = false;
 
     /**
+     * Flash message or throw Exception
+     */
+    protected $errorMode = 'flash';
+
+    /**
      * Constructor
      *
      * @param \ZendService\ReCaptcha\ReCaptcha $r      Customed reCAPTCHA object
@@ -74,6 +79,22 @@ class Recaptcha extends AbstractPlugin
                     explode(',', $config->Captcha->forms)
                 );
         }
+    }
+
+    /**
+     * Flash messages ('flash') or throw exceptions ('throw')
+     *
+     * @param string $mode 'flash' or 'throw'
+     *
+     * @return void
+     */
+    public function setErrorMode($mode)
+    {
+        if (in_array($mode, array('flash', 'throw'))) {
+            $this->errorMode = $mode;
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -101,9 +122,6 @@ class Recaptcha extends AbstractPlugin
             ->fromPost('recaptcha_challenge_field');
         $recaptchaResponse = $this->getController()->params()
             ->fromPost('recaptcha_response_field', 'manual_challenge');
-        if (empty($recaptchaResponse)) {
-            $recaptchaResponse = 'manual_challenge';
-        }
         if (!empty($recaptchaChallenge)) {
             $result = $this->recaptcha->verify(
                 $recaptchaChallenge,
@@ -111,8 +129,12 @@ class Recaptcha extends AbstractPlugin
             );
             $captchaPassed = $result->isValid();
             if (!$captchaPassed) {
-                $this->getController()->flashMessenger()->setNamespace('error')
-                    ->addMessage('recaptcha_not_passed');
+                if ($this->errorMode == 'flash') {
+                    $this->getController()->flashMessenger()->setNamespace('error')
+                        ->addMessage('recaptcha_not_passed');
+                } else {
+                    throw new \Exception('recaptcha_not_passed');
+                }
             }
         }
         return $captchaPassed;
