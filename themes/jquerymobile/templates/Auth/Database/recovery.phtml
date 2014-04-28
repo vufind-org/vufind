@@ -7,5 +7,5 @@
   <label for="email"><?=$this->transEsc('recovery_by_email') ?>:</label>
   <input type="email" id="email" name="email" style="margin-top:.5em;height:28px"/>
 </div>
-<?=$this->recaptcha()->html() ?>
+<?=$this->recaptcha()->html($this->useRecaptcha) ?>
 <input type="submit" name="submit" value="<?=$this->transEsc('Submit') ?>"/>

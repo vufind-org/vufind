@@ -16,7 +16,6 @@ return array(
         'core/bootstrap.min.js',
         'common.js',
         'lightbox.js',
-        'recaptcha_ajax.js',
         'rc4.js'
     ),
     'favicon' => 'vufind-favicon.ico',
