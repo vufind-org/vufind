@@ -10,13 +10,7 @@
     <input type="email" name="email"/>
   </div>
 </div>
-<? if(isset($this->useRecaptcha) && $this->useRecaptcha): ?>
-  <div class="control-group">
-    <div class="controls">
-      <?=$this->recaptcha()->html() ?>
-    </div>
-  </div>
-<? endif; ?>
+<?=$this->recaptcha()->html($this->useRecaptcha) ?>
 <div class="control-group">
   <div class="controls">
     <input class="btn" name="submit" type="submit"/>

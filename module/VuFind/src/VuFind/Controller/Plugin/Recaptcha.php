@@ -96,7 +96,7 @@ class Recaptcha extends AbstractPlugin
         if (!$this->active()) {
             return true;
         }
-        $captchaPassed = true;
+        $captchaPassed = false;
         $recaptchaChallenge = $this->getController()->params()
             ->fromPost('recaptcha_challenge_field');
         $recaptchaResponse = $this->getController()->params()
