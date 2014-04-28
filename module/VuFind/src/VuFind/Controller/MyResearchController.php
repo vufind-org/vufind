@@ -1270,7 +1270,7 @@ class MyResearchController extends AbstractBase
         $view = $this->createViewModel($post);
         $view->useRecaptcha = $this->recaptcha()->active('changePassword');
         // Check reCaptcha
-        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+        if (!$this->formWasSubmitted('submit', $view->useRecaptcha)) {
             return $view;
         }
         // Missing or invalid hash
