@@ -27,6 +27,7 @@ function deparam(url) {
   for (var i = 0; i < pairs.length; i++) {
     var pair = pairs[i].split('=');
     var name = decodeURIComponent(pair[0]);
+    if(name.length == 0) continue;
     if(name.substring(name.length-2) == '[]') {
       name = name.substring(0,name.length-2);
       if(!request[name]) {
@@ -304,7 +305,7 @@ $(document).ready(function() {
       }, 500); // Delay request submission
     },
     updater : function(item) { // Submit on update
-      console.log(this.$element[0].form.submit);
+      // console.log(this.$element[0].form.submit);
       this.$element[0].value = item;
       this.$element[0].form.submit();
       return item;
@@ -354,9 +355,12 @@ $(document).ready(function() {
     return false;
   });
   Lightbox.addFormCallback('accountForm', function() {
-    updatePageForLogin();
-    Lightbox.getByUrl(Lightbox.openingURL);
-    Lightbox.openingURL = false;
+    if (params['subaction'] != 'Login') {
+      Lightbox.getByUrl(Lightbox.openingURL);
+      Lightbox.openingURL = false;
+    } else {
+      Lightbox.close();
+    }
   });
 
   // Help links
