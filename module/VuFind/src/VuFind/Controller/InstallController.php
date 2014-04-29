@@ -325,6 +325,7 @@ class InstallController extends AbstractBase
         $view->dbuser = $this->params()->fromPost('dbuser', 'vufind');
         $view->dbhost = $this->params()->fromPost('dbhost', 'localhost');
         $view->dbrootuser = $this->params()->fromPost('dbrootuser', 'root');
+	$view->driver = $this->params()->fromPost('driver', 'mysql');
 
         $skip = $this->params()->fromPost('printsql', 'nope') == 'Skip';
 
@@ -345,17 +346,22 @@ class InstallController extends AbstractBase
                     ->addMessage('Password fields must match.');
             } else {
                 // Connect to database:
-                $connection = 'mysql://' . $view->dbrootuser . ':'
+                $connection = $view->driver . '://' . $view->dbrootuser . ':'
                     . $this->params()->fromPost('dbrootpass') . '@'
                     . $view->dbhost;
                 try {
+		    if($view->driver == 'pgsql') {
                     $db = $this->getServiceLocator()->get('VuFind\DbAdapterFactory')
-                        ->getAdapterFromConnectionString($connection . '/mysql');
+                        ->getAdapterFromConnectionString($connection . '/template1');
+		    } else {
+                    $db = $this->getServiceLocator()->get('VuFind\DbAdapterFactory')
+                        ->getAdapterFromConnectionString($connection . '/' . $view->driver);
+		    }
                 } catch (\Exception $e) {
                     $this->flashMessenger()->setNamespace('error')
                         ->addMessage(
                             'Problem initializing database adapter; '
-                            . 'check for missing Mysqli library.  Details: '
+                            . 'check for missing ' . $view->driver . ' library .  Details: '
                             . $e->getMessage()
                         );
                     return $view;
@@ -363,23 +369,44 @@ class InstallController extends AbstractBase
                 try {
                     // Get SQL together
                     $query = 'CREATE DATABASE ' . $view->dbname;
+		    if($view->driver == 'pgsql') {
+		        $escape = "ALTER DATABASE " . $view->dbname . " SET bytea_output='escape'";
+			$cuser = "CREATE USER " . $view->dbuser . " WITH PASSWORD '" . $newpass . "'";
+                    $grant = "GRANT ALL PRIVILEGES ON DATABASE "
+                        . $view->dbname
+                        . " TO {$view->dbuser} ";
+		    $grant_tables =  "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO {$view->dbuser} ";
+		    $grant_sequences =  "GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO {$view->dbuser} ";
+		    } else {
                     $grant = "GRANT SELECT,INSERT,UPDATE,DELETE ON "
                         . $view->dbname
                         . ".* TO '{$view->dbuser}'@'{$view->dbhost}' "
                         . "IDENTIFIED BY " . $db->getPlatform()->quoteValue($newpass)
                         . " WITH GRANT OPTION";
+		    }
                     $sql = file_get_contents(
-                        APPLICATION_PATH . '/module/VuFind/sql/mysql.sql'
+                        APPLICATION_PATH . '/module/VuFind/sql/' . $view->driver . '.sql'
                     );
                     if ($skip == 'Skip') {
+			if($view->driver == 'pgsql') {
+			$omnisql = $query . ";\n". $escape . ";\n". $cuser . ";\n".$grant
+                            . ";\n\n" . $sql;
+			} else {
                         $omnisql = $query . ";\n". $grant
                             . ";\nFLUSH PRIVILEGES;\n\n" . $sql;
+			}
                         $this->getRequest()->getQuery()->set('sql', $omnisql);
                         return $this->forwardTo('Install', 'showsql');
                     } else {
                         $db->query($query, $db::QUERY_MODE_EXECUTE);
+			if($view->driver == 'pgsql') {
+				$db->query($escape, $db::QUERY_MODE_EXECUTE);
+				$db->query($cuser, $db::QUERY_MODE_EXECUTE);
+			}
                         $db->query($grant, $db::QUERY_MODE_EXECUTE);
+			if($view->driver != 'pgsql') {
                         $db->query('FLUSH PRIVILEGES', $db::QUERY_MODE_EXECUTE);
+			}
                         $dbFactory = $this->getServiceLocator()
                             ->get('VuFind\DbAdapterFactory');
                         $db = $dbFactory->getAdapterFromConnectionString(
@@ -393,9 +420,13 @@ class InstallController extends AbstractBase
                             }
                             $db->query($current, $db::QUERY_MODE_EXECUTE);
                         }
+			if($view->driver == 'pgsql') {
+			    $db->query($grant_tables, $db::QUERY_MODE_EXECUTE);
+			    $db->query($grant_sequences, $db::QUERY_MODE_EXECUTE);
+			}
                         // If we made it this far, we can update the config file and
                         // forward back to the home action!
-                        $string = "mysql://{$view->dbuser}:{$newpass}@"
+                        $string = "{$view->driver}://{$view->dbuser}:{$newpass}@"
                             . $view->dbhost . '/' . $view->dbname;
                         $config = ConfigLocator::getLocalConfigPath(
                             'config.ini', null, true
