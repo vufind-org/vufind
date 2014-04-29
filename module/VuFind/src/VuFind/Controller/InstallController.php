@@ -325,6 +325,7 @@ class InstallController extends AbstractBase
         $view->dbuser = $this->params()->fromPost('dbuser', 'vufind');
         $view->dbhost = $this->params()->fromPost('dbhost', 'localhost');
         $view->dbrootuser = $this->params()->fromPost('dbrootuser', 'root');
+        $view->driver = $this->params()->fromPost('driver', 'mysql');
 
         $skip = $this->params()->fromPost('printsql', 'nope') == 'Skip';
 
@@ -345,41 +346,48 @@ class InstallController extends AbstractBase
                     ->addMessage('Password fields must match.');
             } else {
                 // Connect to database:
-                $connection = 'mysql://' . $view->dbrootuser . ':'
+                $connection = $view->driver . '://' . $view->dbrootuser . ':'
                     . $this->params()->fromPost('dbrootpass') . '@'
                     . $view->dbhost;
                 try {
+                    $dbName = ($view->driver == 'pgsql')
+                        ? 'template1' : $view->driver;
                     $db = $this->getServiceLocator()->get('VuFind\DbAdapterFactory')
-                        ->getAdapterFromConnectionString($connection . '/mysql');
+                        ->getAdapterFromConnectionString("{$connection}/{$dbName}");
                 } catch (\Exception $e) {
                     $this->flashMessenger()->setNamespace('error')
                         ->addMessage(
                             'Problem initializing database adapter; '
-                            . 'check for missing Mysqli library.  Details: '
-                            . $e->getMessage()
+                            . 'check for missing ' . $view->driver
+                            . ' library .  Details: ' . $e->getMessage()
                         );
                     return $view;
                 }
                 try {
                     // Get SQL together
-                    $query = 'CREATE DATABASE ' . $view->dbname;
-                    $grant = "GRANT SELECT,INSERT,UPDATE,DELETE ON "
-                        . $view->dbname
-                        . ".* TO '{$view->dbuser}'@'{$view->dbhost}' "
-                        . "IDENTIFIED BY " . $db->getPlatform()->quoteValue($newpass)
-                        . " WITH GRANT OPTION";
+                    $escapedPass = $skip
+                        ? "'" . addslashes($newpass) . "'"
+                        : $db->getPlatform()->quoteValue($newpass);
+                    $preCommands = $this->getPreCommands($view, $escapedPass);
+                    $postCommands = $this->getPostCommands($view);
                     $sql = file_get_contents(
-                        APPLICATION_PATH . '/module/VuFind/sql/mysql.sql'
+                        APPLICATION_PATH . "/module/VuFind/sql/{$view->driver}.sql"
                     );
-                    if ($skip == 'Skip') {
-                        $omnisql = $query . ";\n". $grant
-                            . ";\nFLUSH PRIVILEGES;\n\n" . $sql;
+                    if ($skip) {
+                        $omnisql = '';
+                        foreach ($preCommands as $query) {
+                            $omnisql .= $query . ";\n";
+                        }
+                        $omnisql .= "\n" . $sql . "\n";
+                        foreach ($postCommands as $query) {
+                            $omnisql .= $query . ";\n";
+                        }
                         $this->getRequest()->getQuery()->set('sql', $omnisql);
                         return $this->forwardTo('Install', 'showsql');
                     } else {
-                        $db->query($query, $db::QUERY_MODE_EXECUTE);
-                        $db->query($grant, $db::QUERY_MODE_EXECUTE);
-                        $db->query('FLUSH PRIVILEGES', $db::QUERY_MODE_EXECUTE);
+                        foreach ($preCommands as $query) {
+                            $db->query($query, $db::QUERY_MODE_EXECUTE);
+                        }
                         $dbFactory = $this->getServiceLocator()
                             ->get('VuFind\DbAdapterFactory');
                         $db = $dbFactory->getAdapterFromConnectionString(
@@ -393,9 +401,12 @@ class InstallController extends AbstractBase
                             }
                             $db->query($current, $db::QUERY_MODE_EXECUTE);
                         }
+                        foreach ($postCommands as $query) {
+                            $db->query($query, $db::QUERY_MODE_EXECUTE);
+                        }
                         // If we made it this far, we can update the config file and
                         // forward back to the home action!
-                        $string = "mysql://{$view->dbuser}:{$newpass}@"
+                        $string = "{$view->driver}://{$view->dbuser}:{$newpass}@"
                             . $view->dbhost . '/' . $view->dbname;
                         $config = ConfigLocator::getLocalConfigPath(
                             'config.ini', null, true
@@ -414,6 +425,59 @@ class InstallController extends AbstractBase
             }
         }
         return $view;
+    }
+
+    /**
+     * Get SQL commands needed to set up a particular database before
+     * loading the main SQL file of table definitions.
+     *
+     * @param \Zend\View\Model $view        View object containing DB settings.
+     * @param string           $escapedPass Password to set for new DB (escaped
+     * appropriately for target database).
+     *
+     * @return array
+     */
+    protected function getPreCommands($view, $escapedPass)
+    {
+        $create = 'CREATE DATABASE ' . $view->dbname;
+        // Special case: PostgreSQL:
+        if ($view->driver == 'pgsql') {
+            $escape = "ALTER DATABASE " . $view->dbname
+                . " SET bytea_output='escape'";
+            $cuser = "CREATE USER " . $view->dbuser
+                . " WITH PASSWORD {$escapedPass}";
+            $grant = "GRANT ALL PRIVILEGES ON DATABASE "
+                . "{$view->dbname} TO {$view->dbuser} ";
+            return array($create, $escape, $cuser, $grant);
+        }
+        // Default: MySQL:
+        $grant = "GRANT SELECT,INSERT,UPDATE,DELETE ON "
+            . $view->dbname
+            . ".* TO '{$view->dbuser}'@'{$view->dbhost}' "
+            . "IDENTIFIED BY {$escapedPass} WITH GRANT OPTION";
+        return array($create, $grant, 'FLUSH PRIVILEGES');
+    }
+
+    /**
+     * Get SQL commands needed to set up a particular database after
+     * loading the main SQL file of table definitions.
+     *
+     * @param \Zend\View\Model $view View object containing DB settings.
+     *
+     * @return array
+     */
+    protected function getPostCommands($view)
+    {
+        // Special case: PostgreSQL:
+        if ($view->driver == 'pgsql') {
+            $grantTables =  "GRANT ALL PRIVILEGES ON ALL TABLES IN "
+                . "SCHEMA public TO {$view->dbuser} ";
+            $grantSequences =  "GRANT ALL PRIVILEGES ON ALL SEQUENCES"
+                ." IN SCHEMA public TO {$view->dbuser} ";
+            return array($grantTables, $grantSequences);
+        }
+        // Default: MySQL:
+        return array();
     }
 
     /**

@@ -120,7 +120,7 @@
         <exec command="sudo su -c &quot;psql -c \&quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
         <exec command="sudo su -c &quot;psql -c \&quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />
         <!--<exec command="sudo su -c &quot;psql -c \&quot;select 'grant SELECT,INSERT,UPDATE,DELETE on '||schemaname||'.'||tablename||' to ${vufinddbuser};' from pg_tables where schemaname in ('${vufinddb}') order by schemaname, tablename;\&quot;&quot; ${pgsqlrootuser}" checkreturn="true" />-->
-        <exec command="PGPASSWORD=${vufinddbpass} psql -U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/postgres.sql ${vufinddb}" checkreturn="true" />
+        <exec command="PGPASSWORD=${vufinddbpass} psql -U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/pgsql.sql ${vufinddb}" checkreturn="true" />
 
         <!-- configure VuFind -->
         <exec command="sed -e &quot;s!mysql://root@localhost/vufind!pgsql://${vufinddbuser}:${vufinddbpass}@${pgsqlhost}/${vufinddb}!&quot; ${srcdir}/config/vufind/config.ini &gt; ${srcdir}/local/config/vufind/config.ini" />
