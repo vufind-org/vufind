@@ -570,7 +570,7 @@ class Connector
         // Query String Parameters
         if (isset($recordId)) {
             $qs   = array();
-            $qs[] = "query=any,contains,$recordId";
+            $qs[] = "query=any,contains,\"$recordId\"";
             $qs[] = "institution=$inst_code";
             $qs[] = "onCampus=true";
             $qs[] = "indx=1";
