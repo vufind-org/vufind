@@ -78,6 +78,8 @@ class Recaptcha extends AbstractHelper
     /**
      * Generate <div> with ReCaptcha from render.
      *
+     * @param boolean $useRecaptcha Boolean of active state, for compact templating
+     *
      * @return string $html
      */
     public function html($useRecaptcha = true)

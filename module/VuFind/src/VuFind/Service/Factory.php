@@ -251,12 +251,8 @@ class Factory
     {
         $config = $sm->get('VuFind\Config')->get('config');
         $recaptcha = new \ZendService\ReCaptcha\ReCaptcha(
-            isset($config->Captcha->publicKey)
-                ? $config->Captcha->publicKey
-                : '',
-            isset($config->Captcha->privateKey)
-                ? $config->Captcha->privateKey
-                : ''
+            isset($config->Captcha->publicKey) ? $config->Captcha->publicKey : '',
+            isset($config->Captcha->privateKey) ? $config->Captcha->privateKey : ''
         );
         if (isset($config->Captcha->theme)) {
             $recaptcha->setOption('theme', $config->Captcha->theme);
@@ -265,27 +261,27 @@ class Factory
             $recaptcha->setOption(
                 'custom_translations',
                 array(
-                    'audio_challenge' => 
+                    'audio_challenge' =>
                         $translator->translate('recaptcha_audio_challenge'),
-                    'cant_hear_this' => 
+                    'cant_hear_this' =>
                         $translator->translate('recaptcha_cant_hear_this'),
-                    'help_btn' => 
+                    'help_btn' =>
                         $translator->translate('recaptcha_help_btn'),
-                    'image_alt_text' => 
+                    'image_alt_text' =>
                         $translator->translate('recaptcha_image_alt_text'),
-                    'incorrect_try_again' => 
+                    'incorrect_try_again' =>
                         $translator->translate('recaptcha_incorrect_try_again'),
-                    'instructions_audio' => 
+                    'instructions_audio' =>
                         $translator->translate('recaptcha_instructions_audio'),
-                    'instructions_visual' => 
+                    'instructions_visual' =>
                         $translator->translate('recaptcha_instructions_visual'),
-                    'play_again' => 
+                    'play_again' =>
                         $translator->translate('recaptcha_play_again'),
-                    'privacy_and_terms' => 
+                    'privacy_and_terms' =>
                         $translator->translate('recaptcha_privacy_and_terms'),
-                    'refresh_btn' => 
+                    'refresh_btn' =>
                         $translator->translate('recaptcha_refresh_btn'),
-                    'visual_challenge' => 
+                    'visual_challenge' =>
                         $translator->translate('recaptcha_visual_challenge')
                 )
             );

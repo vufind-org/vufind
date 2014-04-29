@@ -143,6 +143,8 @@ class Recaptcha extends AbstractPlugin
     /**
      * Return whether a specific form is set for Captcha in the config
      *
+     * @param string $domain The specific config term are we checking; ie. "sms"
+     *
      * @return boolean
      */
     public function active($domain = false)

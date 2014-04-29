@@ -1,4 +1,4 @@
-/*global Cookies, path, vufindString, Lightbox, updatePageForLogin */
+/*global Cookies, deparam, path, vufindString, Lightbox, updatePageForLogin */
 
 var _CART_COOKIE = 'vufind_cart';
 var _CART_COOKIE_SOURCES = 'vufind_cart_src';
