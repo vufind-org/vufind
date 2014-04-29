@@ -20,6 +20,7 @@
           <label for="email_message"><?=$this->transEsc('Message')?>:</label>
           <textarea id="email_message" name="message"><?=isset($this->message) ? $this->message : ''?></textarea>
         </div>
+        <?=$this->recaptcha()->html($this->useRecaptcha) ?>
         <div data-role="fieldcontain">
           <input class="button" type="submit" name="submit" value="<?=$this->transEsc('Send')?>"/>
         </div>

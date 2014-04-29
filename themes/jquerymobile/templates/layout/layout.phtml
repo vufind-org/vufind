@@ -19,6 +19,9 @@
                 . $this->KeepAlive());
             $this->headScript()->appendFile("keep_alive.js");
         }
+        if ($this->recaptcha()->active()) {
+            $this->headScript()->appendFile("recaptcha_ajax.js");
+        }
     ?>
     <?=$this->headScript()?>
   </head>
