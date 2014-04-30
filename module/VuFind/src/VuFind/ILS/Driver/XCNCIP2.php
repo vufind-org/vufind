@@ -137,7 +137,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return array
      */
-    protected function getHoldingsForChunk($current)
+    protected function getHoldingsForChunk($current, $aggregate_id = null, $bib_id = null)
     {
         // Maintain an internal static count of line numbers:
         static $number = 1;
@@ -151,15 +151,23 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         );
         $status = empty($status) ? '' : (string)$status[0];
 
-        $id = $current->xpath(
-            'ns1:BibliographicId/ns1:BibliographicRecordId/' .
-            'ns1:BibliographicRecordIdentifier'
-        );
+        if (empty($bib_id)) {
+           $bib_id = $current->xpath(
+               'ns1:BibliographicId/ns1:BibliographicRecordId/' .
+               'ns1:BibliographicRecordIdentifier'
+           );
+        }
 
         $itemId = $current->xpath(
             'ns1:ItemInformation/' .
             'ns1:ItemId/ns1:ItemIdentifierValue'
         );
+
+        $agencyId = $current->xpath(
+            'ns1:ItemInformation/' .
+            'ns1:ItemId/ns1:AgencyId'
+        );
+
         // Pick out the permanent location (TODO: better smarts for dealing with
         // temporary locations and multi-level location names):
 //         $locationNodes = $current->xpath('ns1:HoldingsSet/ns1:Location');
@@ -197,8 +205,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $item_id = (string)$itemId[0];
         // Build return array:
         return array(
-            'id' => empty($id) ? '' : (string)$id[0],
+            'id' => empty($aggregate_id) ? (empty($bib_id[0]) ? '' : $bib_id[0]) : $aggregate_id,
             'item_id' => (string)$itemId[0],
+            'bib_id' => (string)$bib_id[0],
+            'agency_id' => (string)$agencyId[0],
+            'aggregate_id' => $aggregate_id,
             'availability' => ($status == 'Not Charged'),
             'status' => $status,
             'location' => $location,
@@ -361,14 +372,27 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getHolding($id, $patron = false)
     {
-        if (is_array($id)) $ids = $id;
-        else $ids = array($id);
+        // we will either be passed in...
+        // ...an array of IDs (coming from a consortial, aggregated record)
+        if (is_array($id)) {
+           $ids = $id;
+        // ... or a single ID (non-consortial)
+        } else {
+           $aggregate_id = $id;
+           $ids = array($id);
+        }
         
         $agency_id = array();
         if ($this->consortium) {
-            // Need to parse out the 035$a, e.g., (Agency)ID
+            // The first one in the list is the aggregated record ID
+            $first = 1;
             foreach ($ids as $id) { 
-                if (preg_match('/\(([^\)]+)\)\s*([0-9]+)/', $id, $matches)) {
+                if ($first) {
+                     $aggregate_id = $id;
+                     $first = 0;
+                }
+                // Need to parse out the 035$a, e.g., (Agency)ID
+                else if (preg_match('/\(([^\)]+)\)\s*([0-9]+)/', $id, $matches)) {
                     $matched_agency = $matches[1];
                     $matched_id = $matches[2];
                     if ($this->agency_url[$matched_agency]) {
@@ -388,10 +412,16 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 'ns1:Ext/ns1:LookupItemSetResponse/ns1:BibInformation/ns1:HoldingsSet'
             );
 
+            $bib_id = $response->xpath(
+                'ns1:Ext/ns1:LookupItemSetResponse/ns1:BibInformation/' .
+                'ns1:BibliographicId/ns1:BibliographicRecordId/' .
+                'ns1:BibliographicRecordIdentifier'
+            );
+
             // Build the array of holdings:
-            //$holdings = array();
+            $holdings = array();
             foreach ($avail as $current) {
-                $holdings[] = $this->getHoldingsForChunk($current);
+                $holdings[] = $this->getHoldingsForChunk($current, $aggregate_id, (string)$bib_id[0]);
             }
             
         }
@@ -799,14 +829,14 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         if ($function == 'Holds') {
             return array(
-                'HMACKeys' => 'item_id:holdtype',
+                'HMACKeys' => 'item_id:holdtype:agency_id:aggregate_id:bib_id',
                 'extraHoldFields' => 'comments:pickUpLocation:requiredByDate',
                 'defaultRequiredDate' => '0:2:0',
             );
         }
         if ($function == 'StorageRetrievalRequests') {
             return array(
-                'HMACKeys' => 'id:item_id',
+                'HMACKeys' => 'id:item_id:agency_id:aggregate_id:bib_id',
                 'extraFields' => 'comments:pickUpLocation:requiredByDate:item-issue',
                 'helpText' => 'This is a storage retrieval request help text' .
                     ' with some <span style="color: red">styling</span>.',
@@ -915,7 +945,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $username = $details['patron']['cat_username'];
         $password = $details['patron']['cat_password'];
-        $bibId = $details['id'];
+        $bibId = $details['bib_id'];
         $itemId = $details['item_id'];
         $pickUpLocation = $details['pickUpLocation'];
         $lastInterestDate = $details['requiredBy'];
@@ -925,7 +955,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $request = $this->getRequest($username, $password, $bibId, $itemId, 
                 "Stack Retrieval", "Item", $lastInterestDate, $pickUpLocation);
-        $response = $this->sendRequest($request);
+        $response = $this->sendRequest($request, $this->agency_url[$details['agency_id']]);
         $success = $response->xpath(
                 'ns1:RequestItemResponse/ns1:ItemId/ns1:ItemIdentifierValue');
 
