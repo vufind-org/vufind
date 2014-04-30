@@ -8,7 +8,6 @@ function showTreeError(msg)
     $("#hierarchyTreeHolder").html('<p class="error">' + msg + '</p>');
 }
 
-
 function getRecord(recordID)
 {
     $.ajax({
@@ -47,13 +46,13 @@ function scroll(scroller, mode)
     if (mode == "show") {
         $('#hierarchyTree li').show();
         $(scroller).animate({
-                scrollTop: -$(scroller).scrollTop()
+            scrollTop: -$(scroller).scrollTop()
         });
         $('#toggleTree').html(vufindString.hideTree);
     } else {
         hideFullHierarchy(jsTreeNode);
         $(scroller).animate({
-                scrollTop: $(jsTreeNode).offset().top - $(scroller).offset().top + $(scroller).scrollTop()
+            scrollTop: $(jsTreeNode).offset().top - $(scroller).offset().top + $(scroller).scrollTop()
         });
         $('#toggleTree').html(vufindString.showTree);
     }
@@ -93,7 +92,7 @@ function doTreeSearch()
             if(typeof(baseTreeSearchFullURL) == "undefined" || baseTreeSearchFullURL == null){
                 baseTreeSearchFullURL = $("#fullSearchLink").attr("href");
             }
-            $("#fullSearchLink").attr("href", baseTreeSearchFullURL + "?lookfor="+ keyword + "&filter[]=hierarchy_top_id:\"" + hierarchyID    + "\"");
+            $("#fullSearchLink").attr("href", baseTreeSearchFullURL + "?lookfor="+ keyword + "&filter[]=hierarchy_top_id:\"" + hierarchyID + "\"");
             changeLimitReachedLabel(true);
         } else {
             changeLimitReachedLabel(false);
@@ -247,7 +246,7 @@ $(document).ready(function()
         },
         "plugins" : [ "themes", "xml_data", "ui" ],
         "themes" : {
-                "url": path + '/themes/blueprint/js/jsTree/themes/vufind/style.css'
+            "url": path + '/themes/blueprint/js/jsTree/themes/vufind/style.css'
         }
     }).bind("open_node.jstree close_node.jstree", function (e, data)
     {
