@@ -333,7 +333,6 @@ $(document).ready(function(){
         var selectAll = this;
         $(this.form).find('input[type="checkbox"]').each(function(index, obj) {
             obj.checked = selectAll.checked;
-            console.log(obj, obj.checked, selectAll.checked);
         });
     });
 
@@ -352,7 +351,7 @@ $(document).ready(function(){
         var $dialog = getLightbox('Cart', 'Home', null, null, this.title, '', '', '', {viewCart:"1"});
         return false;
     });
-    
+
     // handle QR code links
     $('a.qrcodeLink').click(function() {
         if ($(this).hasClass("active")) {
@@ -370,7 +369,7 @@ $(document).ready(function(){
         $("link[media='print']").attr("media", "all");
         window.print();
     }
-    
+
     // Collapsing facets
     $('.narrowList dt').click(function(){
       $(this).parent().toggleClass('open');
@@ -409,7 +408,7 @@ $(document).ready(function(){
     //ContextHelp
     contextHelp.init();
     contextHelp.contextHelpSys.load();
-    
+
     // Advanced facets
     setupOrFacets();
 });
