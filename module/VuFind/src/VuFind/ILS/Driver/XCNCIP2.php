@@ -85,8 +85,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             }
         } else {
             $this->consortium = false;
-            $this->agency[] = $this->config['Catalog']['agency'];
-            $this->agency_url[$this->config['Catalog']['agency']] = $this->config['Catalog']['url'];
+            if (is_array($this->config['Catalog']['agency'])) {
+               $this->agency[0] = $this->config['Catalog']['agency'][0];
+            } else {
+               $this->agency[0] = $this->config['Catalog']['agency'];
+            }
+            $this->agency_url[$this->agency[0]] = $this->config['Catalog']['url'];
         }
     }
 
@@ -156,6 +160,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                'ns1:BibliographicId/ns1:BibliographicRecordId/' .
                'ns1:BibliographicRecordIdentifier'
            );
+           $bib_id = (string)$bib_id[0];
         }
 
         $itemId = $current->xpath(
@@ -205,9 +210,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $item_id = (string)$itemId[0];
         // Build return array:
         return array(
-            'id' => empty($aggregate_id) ? (empty($bib_id[0]) ? '' : $bib_id[0]) : $aggregate_id,
+            'id' => empty($aggregate_id) ? (empty($bib_id) ? '' : $bib_id) : $aggregate_id,
             'item_id' => (string)$itemId[0],
-            'bib_id' => (string)$bib_id[0],
+            'bib_id' => $bib_id,
             'agency_id' => (string)$agencyId[0],
             'aggregate_id' => $aggregate_id,
             'availability' => ($status == 'Not Charged'),
@@ -257,7 +262,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     protected function getStatusRequest($idList, $resumption = null, $agency = null)
     {
-        if (is_null($agency)) $agency = "LOCAL";
+        if (is_null($agency)) $agency = $this->agency[0];
 
         // Build a list of the types of information we want to retrieve:
         $desiredParts = array(
@@ -401,13 +406,14 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 }
             }
         } else {
-            $agency_id['LOCAL'] = $ids;
+            $agency_id[$this->agency[0]] = $ids[0];
         }
 
         $holdings = array();
         foreach ($agency_id as $_agency => $_id) {
             $request = $this->getStatusRequest(array($_id), null, $_agency);
             $response = $this->sendRequest($request, $this->agency_url[$_agency]);
+
             $avail = $response->xpath(
                 'ns1:Ext/ns1:LookupItemSetResponse/ns1:BibInformation/ns1:HoldingsSet'
             );
