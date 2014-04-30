@@ -169,7 +169,7 @@ class TagsController extends AbstractAdmin
             }
 
             if (false === $confirm) {
-                return $this->confirmTagsDelete($tags, $ids, $originUrl, $newUrl);
+                return $this->confirmTagsDelete($ids, $originUrl, $newUrl);
             }
             $delete = $tags->deleteByIdArray($ids);
 
@@ -194,14 +194,13 @@ class TagsController extends AbstractAdmin
     /**
      * Confirm Delete by Id
      *
-     * @param object $tagModel  A tag object
      * @param array  $ids       A list of resource tag Ids
      * @param string $originUrl An origin url
      * @param string $newUrl    The url of the desired action
      *
      * @return $this->confirmAction
      */
-    protected function confirmTagsDelete($tagModel, $ids, $originUrl, $newUrl)
+    protected function confirmTagsDelete($ids, $originUrl, $newUrl)
     {
         $messages = array();
         $count = count($ids);

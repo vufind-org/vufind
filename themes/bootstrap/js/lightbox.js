@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, console, deparam, path, refreshCommentList, vufindString */
+/*global checkSaveStatuses, console, deparam, path, Recaptcha, refreshCommentList, vufindString */
 
 var Lightbox = {
   /**
@@ -126,18 +126,18 @@ var Lightbox = {
     $('#modal').removeData('modal');
     $('#modal').find('.modal-header h3').html('');
     $('#modal').find('.modal-body').html(vufindString.loading + "...");
-    
+
     /**
      * Below here, we're doing content updates (sample events that affect content)
-     */ 
+     */
     var recordId = $('#record_id').val();
     var recordSource = $('.hiddenSource').val();
-     
+
     // Update the "Saved In" lists (add favorite, login)
     if(typeof checkSaveStatuses === 'function') {
       checkSaveStatuses();
     }
-    
+
     // Update the comment list (add comment, login)
     if(typeof refreshCommentList === 'function') {
       refreshCommentList(recordId, recordSource);
@@ -179,12 +179,15 @@ var Lightbox = {
    */
   displayError: function(message) {
     var alert = $('#modal .modal-body .alert');
-    if(alert.length > 0) {
+    if (alert.length > 0) {
       $(alert).html(message);
     } else if($('#modal .modal-body').html() == vufindString.loading+"...") {
       $('#modal .modal-body').html('<div class="alert alert-error">'+message+'</div><button class="btn" onClick="Lightbox.close()">'+vufindString['close']+'</button>');
     } else {
       $('#modal .modal-body').prepend('<div class="alert alert-error">'+message+'</div>');
+    }
+    if (Recaptcha) {
+      Recaptcha.reload();
     }
     $('.icon-spinner').remove();
   },
@@ -347,7 +350,7 @@ var Lightbox = {
    * and the method="" attribute to send it the proper way
    *
    * In the wild, forms without an action="" are submitted to the current URL.
-   * In the case where we have a form with no action in the lightbox, 
+   * In the case where we have a form with no action in the lightbox,
    * we emulate that behaviour by submitting the last URL loaded through
    * .getByUrl, stored in lastURL in the Lightbox object.
    */

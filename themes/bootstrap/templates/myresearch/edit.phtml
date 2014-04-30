@@ -10,7 +10,7 @@
   $this->headScript()->appendFile("bulk_actions.js");
 ?>
 <div class="record">
-  <p class="lead"><?=$this->escapeHtml($this->driver->getBreadcrumb())?></p>
+  <h2><?=$this->escapeHtml($this->driver->getBreadcrumb())?></h2>
 
   <form class="form-horizontal" method="post" name="editForm" action="">
   <? if (empty($this->savedData)): ?>

@@ -89,7 +89,7 @@ class Solr extends AbstractBase
         }
         return null;
     }
-    
+
     /**
      * Get details from Solr
      *
@@ -116,7 +116,7 @@ class Solr extends AbstractBase
         }
         return null;
     }
-    
+
     /**
      * Get an item's label
      *
@@ -131,7 +131,7 @@ class Solr extends AbstractBase
             new ParamBag(
                 array(
                     'q'     => 'id:"'.$id.'"',
-                    'fl'    => $labelField,                    
+                    'fl'    => $labelField,
                 )
             )
         );
@@ -142,7 +142,7 @@ class Solr extends AbstractBase
         }
         return null;
     }
-    
+
     /**
      * Tuple call to return and parse a list of members...
      *
@@ -198,27 +198,33 @@ class Solr extends AbstractBase
             )
         )) {
             $record = json_decode($response);
-            return $record->response->docs[0]->$modfield;
+            $date = $record->response->docs[0]->$modfield;
+            return $date[0];
         }
         return null;
     }
-    
+
     /**
      * Returns file contents of the structmap, our most common call
      *
-     * @param string $id record id
+     * @param string $id         record id
+     * @param array  $extra_sort extra fields to sort on
      *
      * @return string $id
      */
-    public function getOrderedMembers($id)
+    public function getOrderedMembers($id, $extra_sort = array())
     {
         // Try to find members in order
         $seqField = 'sequence_'.str_replace(':', '_', $id).'_str';
+        $sort = array($seqField.' asc');
+        foreach ($extra_sort as $sf) {
+            $sort[] = $sf;
+        }
         $response = $this->search(
             new ParamBag(
                 array(
                     'q'  => 'relsext.isMemberOf:"'.$id.'"',
-                    'sort'  => $seqField.' asc',
+                    'sort'  => implode(',', $sort),
                     'fl' => 'id',
                     'rows' => 99999,
                 )
@@ -251,92 +257,76 @@ class Solr extends AbstractBase
         if (isset($this->parentLists[$id])) {
             return $this->parentLists[$id];
         }
-        // Get info on our record
-        $origin = $this->search(
+        $queue = array($id);
+        $tree = array();
+        while (!empty($queue)) {
+            $current = array_shift($queue);
+            $response = $this->search(
+                new ParamBag(
+                    array(
+                        'q'     => 'id:"'.$current.'"',
+                        'fl'    => 'hierarchy_parent_id,hierarchy_parent_title',
+                    )
+                )
+            );
+            $data = json_decode($response);
+            if ($current == $id && $data->response->numFound == 0) {
+                return null;
+            }
+            // Get info on our record
+            $parents = $data->response->docs[0];
+            if ($current != $this->getRootId()) {
+                foreach ($parents->hierarchy_parent_id as $i=>$cid) {
+                    array_push($queue, $cid);
+                    if (!isset($tree[$cid])) {
+                        $tree[$cid] = array(
+                            'children' => array(),
+                            'title' => $parents->hierarchy_parent_title[$i]
+                        );
+                    }
+                    $tree[$cid]['children'][] = $current;
+                }
+            }
+        }
+        $ret = $this->traceParents($tree, $id);
+        // Store in cache
+        $this->parentLists[$id] = $ret;
+        return $ret;
+    }
+
+    /**
+     * Get copyright URL and compare it to special cases from VuDL.ini
+     *
+     * @param array $id          record id
+     * @param array $setLicenses ids are strings to match urls to,
+     *  the values are abbreviations. Parsed in details.phtml later.
+     *
+     * @return array
+     */
+    public function getCopyright($id, $setLicenses)
+    {
+        $licenseField = 'license.mdRef';
+        $response = $this->search(
             new ParamBag(
                 array(
                     'q'     => 'id:"'.$id.'"',
-                    'fl'    => 'hierarchy_all_parents_str_mv,'
-                        . 'hierarchy_top_id,'
-                        . 'title_short,'
-                        . 'hierarchy_parent_id,'
-                        . 'hierarchy_parent_title',
+                    'fl'    => $licenseField,
                 )
             )
         );
-        $origin = json_decode($origin);
-        // These are our targets
-        $top = $origin->response->docs[0]->hierarchy_top_id;
-        // If we have results, find the structure
-        if ($origin->response->numFound > 0) {
-            // Immediate parents
-            $parents = array_unique(
-                $origin->response->docs[0]->hierarchy_all_parents_str_mv
-            );
-            if (empty($parents)) {
-                return null;
-            }
-            $ret = array();
-            $hierarchyParents = $origin->response->docs[0]->hierarchy_parent_id;
-            foreach ($hierarchyParents as $i=>$parent) {
-                $ret[] = array(
-                    $origin->response->docs[0]->hierarchy_parent_id[$i]
-                        => $origin->response->docs[0]->hierarchy_parent_title[$i]
-                );
-            }
-            $current = 0;
-            $last = key($ret[0]);
-            $limit = 50;
-            while ($limit-- && $current < count($ret)) {
-                $path = $ret[$current];
-                $partOf = $this->search(
-                    new ParamBag(
-                        array(
-                            'q'     => 'id:"'.$last.'"',
-                            'fl'    => 'hierarchy_top_id,'
-                                . 'hierarchy_parent_id,'
-                                . 'hierarchy_parent_title',
-                        )
-                    )
-                );
-                $partOf = json_decode($partOf);
-                $parentIDs = $partOf->response->docs[0]->hierarchy_parent_id;
-                $parentTitles = $partOf->response->docs[0]->hierarchy_parent_title;
-                $topIDs = $partOf->response->docs[0]->hierarchy_top_id;
-                $count = 0;
-                foreach ($parentIDs as $i=>$pid) {
-                    $ptitle = trim($parentTitles[$i]);
-                    if (in_array($pid, $parents)) {
-                        if ($count == 0) {
-                            $ret[$current][$pid] = $ptitle;
-                            if (in_array($pid, $top)) {
-                                $current ++;
-                                if ($current == count($ret)) {
-                                    break 2;
-                                }
-                                end($ret[$current]);
-                                $last = key($ret[$current]);
-                            } else {
-                                foreach ($topIDs as $tid) {
-                                    if (!in_array($tid, $top)) {
-                                        $top[] = $tid;
-                                    }
-                                }
-                                $last = $pid;
-                            }
-                        } else {
-                            $path2 = $path;
-                            $path2[$pid] = $ptitle;
-                            $ret[] = $path2;
-                        }
-                        $count ++;
-                    }
-                }
-            }
-            $this->parentLists[$id] = $ret;
-            return $ret;
+        $data = json_decode($response);
+        $docs = $data->response->docs[0];
+        if ($data->response->numFound == 0 || !isset($docs->$licenseField)) {
+            return null;
         }
-        return null;
+        $license = $docs->$licenseField;
+        $license = $license[0];
+        foreach ($setLicenses as $tell=>$value) {
+            if (strpos($license, $tell)) {
+                return array($license, $value);
+            }
+        }
+        return array($license, false);
     }
 
     /**
@@ -359,7 +349,7 @@ class Solr extends AbstractBase
         $response = $this->solr->search($paramBag);
         // Reapply the global filters
         $map->setParameters('select', 'appends', $params->getArrayCopy());
-        
+
         return $response;
     }
 }

@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2014 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_Service
  */
@@ -323,9 +323,9 @@ class Sqs extends Amazon\AbstractAmazon
             $client->resetParameters();
             $client->setParameterGet($params);
 
-            $response = $client->request('GET');
+            $response = $client->send();
 
-            $response_code = $response->getStatus();
+            $response_code = $response->getStatusCode();
 
             // Some 5xx errors are expected, so retry automatically
             if ($response_code >= 500 && $response_code < 600 && $retry_count <= 5) {

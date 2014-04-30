@@ -325,7 +325,7 @@ class ClaviusSQL extends AbstractBase
       *
       * todo: reserve
       */
-    public function getHolding($id, $patron = false)
+    public function getHolding($id, array $patron = null)
     {
         $holding = array();
         $originalId = $id;

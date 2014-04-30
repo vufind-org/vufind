@@ -24,8 +24,6 @@ body h3 {font-size:20px}
 .form-horizontal input+.help-block {margin-top:5px}
 .hero-unit {margin:-5px}
 hr {margin:4px 0}
-input[type="text"] {border-color:#AAA;font-size:12px}
-input[type="text"]:focus {border-color:#619144;box-shadow:inset 0px 1px 2px rgba(0,0,0,.14)}
 .label {font-size:11px}
 mark {background:0;color:inherit;font-weight:bold}
 .modal a {color:#08C}
@@ -38,19 +36,26 @@ mark {background:0;color:inherit;font-weight:bold}
 .slider.slider-horizontal .slider-handle {background:#C6D880;border:1px solid #619144;margin-top:-6px}
 .tab-container {margin:0}
 
-input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input,
-.row-fluid input[class*="span"], .btn:not(.btn-large) {border:1px solid #AAA;border-radius:2px;font-size:12px;margin:2px 0 0 0;min-height:1px;padding:2px 6px}
+textarea:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="datetime"]:focus, input[type="datetime-local"]:focus, input[type="date"]:focus, input[type="month"]:focus, input[type="time"]:focus, input[type="week"]:focus, input[type="number"]:focus, input[type="email"]:focus, input[type="url"]:focus, input[type="search"]:focus, input[type="tel"]:focus, input[type="color"]:focus, .uneditable-input:focus {
+  border-color: rgba(97,145,68,0.8);
+  outline: 0;
+  outline: thin dotted \9;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075),0 0 8px rgba(97,145,68,0.6);
+  -moz-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075),0 0 8px rgba(97,145,68,0.6);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,0.075),0 0 8px rgba(97,145,68,0.6);
+}
+
 .btn {padding:2px 8px}
 .btn.btn-small {height:19px;line-height:12px;padding:3px 4px}
 .btn.btn-link {border:0}
-select {height:26px;padding:2px}
+select {height:26px}
 select, .btn:not(.btn-link){vertical-align:top}
 .btn-link {color:#06C;text-shadow:none}
 .btn.btn-primary {background:#C6D880;border:1px solid #619144;color:#111;text-shadow:none}
 .btn.btn-primary:hover,
 .btn.btn-primary:focus,
 .btn.btn-primary:active {background:#619144;color:#FFF}
-.controls select {margin-top:4px;width:100%}
+.controls select {margin-top:4px}
 
 /* --- HEADER --- */
 #header {border-bottom:1px solid #DDD;color:#000;padding:8px 12px 6px 10px}
@@ -91,7 +96,7 @@ select, .btn:not(.btn-link){vertical-align:top}
 .sidebar .nav-list li a {margin:0;padding:3px}
 .sidebar .nav-list li a:hover {background:none}
 .sidebar .nav-list li span.main {width:auto}
-.sidebar .nav-list li span.pull-right {display:block;text-align:center;width:16px}
+.sidebar .nav-list li span.pull-right {display:block;text-align:center;min-width:16px}
 .sidebar .nav-list li.active a i.icon-remove {background:url('../images/icons/delete.png')}
 .sidebar .nav-list li.active a {background:#FFA500;text-shadow:none}
 .sidebar .nav-list li.active a:hover {background:#FFA500}
@@ -120,7 +125,7 @@ select, .btn:not(.btn-link){vertical-align:top}
 .nav-pills {margin:3px 0 0 0}
 
 /* --- HOME --- */
-.searchHomeContent {margin:2em auto;width:80%}
+.searchHomeContent {margin:2em auto;width:83%}
 .searchHomeContent .hero-unit {background:#E6EFC2;border:2px solid #C6D880;border-radius:5px}
 .searchHomeContent .nav-tabs {border:0}
 .searchHomeContent .nav-tabs li a {border:1px solid transparent;border-bottom:0;font-size:14px}
@@ -187,3 +192,10 @@ select, .btn:not(.btn-link){vertical-align:top}
 .modal #authcontainer .authmethod1 {border:0;float:none;padding:0 0 10px 0;margin:0;width:auto}
 #authcontainer .control-label {width:80px}
 #authcontainer .controls {margin-left:90px}
+
+/* --- Captcha --- */
+#custom_recaptcha_widget { display:table; }
+#custom_recaptcha_widget embed { display:none; }
+#custom_recaptcha_widget #recaptcha_image { border:1px solid #000;padding:6px;margin:1em 0; }
+#custom_recaptcha_widget #recaptcha_response_field { margin:0 .5em }
+#custom_recaptcha_widget > div > a { display:inline-block;float:left;margin:5px 10px 5px 0; }

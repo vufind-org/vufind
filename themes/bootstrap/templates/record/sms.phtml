@@ -6,7 +6,7 @@
   $this->layout()->breadcrumbs = '<li>' . $this->getLastSearchLink($this->transEsc('Search'), '', '<span class="divider">&gt;</span> </li>')
     . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '<span class="divider">&gt;</span> </li>'
     . '<li class="active">' . $this->transEsc('Text this') . '</li>';
-  
+
   if ($this->validation == 'US') {
     $phone_pattern = '^(\([2-9]\d{2}\)|[2-9]\d{2})[ -\.]?[2-9]\d{2}[-\.]?\d{4}$';
   }
@@ -37,6 +37,7 @@
     <? $keys = is_array($this->carriers) ? array_keys($this->carriers) : array(); ?>
     <input type="hidden" name="provider" value="<?=isset($keys[0]) ? $keys[0] : ''?>" />
   <? endif; ?>
+  <?=$this->recaptcha()->html($this->useRecaptcha) ?>
   <div class="control-group">
     <div class="controls">
       <input class="btn btn-primary" type="submit" name="submit" value="<?=$this->transEsc('Send Text')?>"/>

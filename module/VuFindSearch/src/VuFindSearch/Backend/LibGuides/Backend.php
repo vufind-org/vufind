@@ -65,22 +65,31 @@ class Backend extends AbstractBackend
     protected $queryBuilder = null;
 
     /**
+     * Default search (performed if another search has 0 results; null to disable.
+     *
+     * @var string
+     */
+    protected $defaultSearch;
+
+    /**
      * Constructor.
      *
-     * @param Connector                        $connector LibGuides connector
-     * @param RecordCollectionFactoryInterface $factory   Record collection factory
-     * (null for default)
+     * @param Connector                        $connector     LibGuides connector
+     * @param RecordCollectionFactoryInterface $factory       Record collection
+     * factory (null for default)
+     * @param string                           $defaultSearch Default search query
      *
      * @return void
      */
     public function __construct(Connector $connector,
-        RecordCollectionFactoryInterface $factory = null
+        RecordCollectionFactoryInterface $factory = null, $defaultSearch = null
     ) {
         if (null !== $factory) {
             $this->setRecordCollectionFactory($factory);
         }
         $this->connector    = $connector;
         $this->identifier   = null;
+        $this->defaultSearch = $defaultSearch;
     }
 
     /**
@@ -103,6 +112,11 @@ class Backend extends AbstractBackend
         $args = $this->paramBagToArray($baseParams);
         try {
             $response = $this->connector->query($args, $offset, $limit);
+            // Apply default search if necessary:
+            if ($response['recordCount'] < 1 && isset($this->defaultSearch)) {
+                $args['search'] = $this->defaultSearch;
+                $response = $this->connector->query($args, $offset, $limit);
+            }
         } catch (\Exception $e) {
             throw new BackendException(
                 $e->getMessage(),

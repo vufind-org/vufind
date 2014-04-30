@@ -227,4 +227,30 @@ class Auth extends \Zend\View\Helper\AbstractHelper
         $classParts = explode('\\', $className);
         return array_pop($classParts);
     }
+
+    
+    /**
+     * Render the new password form template.
+     *
+     * @param array $context Context for rendering template
+     *
+     * @return string
+     */
+    public function getNewPasswordForm($context = array())
+    {
+        return $this->renderTemplate('newpassword.phtml', $context);
+    }
+
+    
+    /**
+     * Render the password recovery form template.
+     *
+     * @param array $context Context for rendering template
+     *
+     * @return string
+     */
+    public function getPasswordRecoveryForm($context = array())
+    {
+        return $this->renderTemplate('recovery.phtml', $context);
+    }
 }

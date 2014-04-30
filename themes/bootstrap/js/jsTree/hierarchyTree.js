@@ -136,7 +136,7 @@ function doTreeSearch()
 
 $(document).ready(function()
 {
-	// Code for the search button
+  // Code for the search button
   $('#treeSearch input[type="submit"]').click(doTreeSearch);
 
   hierarchyID = $("#hierarchyTree").find(".hiddenHierarchyId")[0].value;

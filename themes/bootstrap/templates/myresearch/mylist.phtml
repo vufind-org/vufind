@@ -39,7 +39,7 @@
         </div>
       <? endif; ?>
     </div>
-    <p class="lead"><?=$this->escapeHtml($list->title)?></p>
+    <h2><?=$this->escapeHtml($list->title)?></h2>
     <? if (!empty($list->description)): ?>
       <p><?=$this->escapeHtml($list->description)?></p><hr />
     <? endif; ?>
@@ -49,7 +49,7 @@
       <strong><?=$this->escapeHtml($this->results->getStartRecord())?></strong> - <strong><?=$this->escapeHtml($this->results->getEndRecord())?></strong>
       <?=$this->transEsc('of')?> <strong><?=number_format($recordTotal)?></strong>
     </div>
-    <p class="lead"><?=$this->transEsc("Your Favorites")?></p>
+    <h2><?=$this->transEsc("Your Favorites")?></h2>
   <? endif; ?>
   </div>
   <? if ($recordTotal > 0): ?>

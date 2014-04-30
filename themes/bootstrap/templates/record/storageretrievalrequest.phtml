@@ -7,7 +7,7 @@
         . '<li>' . $this->recordLink()->getBreadcrumb($this->driver) . '<span class="divider">&gt;</span> </li>'
         . '<li class="active">' . $this->transEsc('storage_retrieval_request_place_text') . '</li>';
 ?>
-<p class="lead"><?=$this->transEsc('storage_retrieval_request_place_text')?></p>
+<h2><?=$this->transEsc('storage_retrieval_request_place_text')?></h2>
 <? if ($this->helpText): ?>
 <p class="helptext"><?=$this->helpText?></p>
 <? endif; ?>
@@ -31,11 +31,11 @@
         <div id="storageRetrievalRequestReference" class="storageRetrievalRequestReference">
           <label class="control-label"><?=$this->transEsc('storage_retrieval_request_volume')?>:</label>
           <div class="controls">
-            <input type="text" name="gatheredDetails[volume]" value="<?=isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['volume']) : ''?>"></input><br/>
+            <input type="text" name="gatheredDetails[volume]" value="<?=isset($this->gatheredDetails['volume']) ? $this->escapeHtml($this->gatheredDetails['volume']) : ''?>"></input><br/>
           </div>
           <label class="control-label"><?=$this->transEsc('storage_retrieval_request_issue')?>:</label>
           <div class="controls">
-            <input type="text" name="gatheredDetails[issue]" value="<?=isset($this->gatheredDetails['comment']) ? $this->escapeHtml($this->gatheredDetails['issue']) : ''?>"></input><br/>
+            <input type="text" name="gatheredDetails[issue]" value="<?=isset($this->gatheredDetails['issue']) ? $this->escapeHtml($this->gatheredDetails['issue']) : ''?>"></input><br/>
           </div>
           <label class="control-label"><?=$this->transEsc('storage_retrieval_request_year')?>:</label>
           <div class="controls">

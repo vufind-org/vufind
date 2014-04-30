@@ -190,7 +190,7 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Save tags, if any:
-        if ($this->params()->fromPost('submit')) {
+        if ($this->formWasSubmitted('submit')) {
             $tags = $this->params()->fromPost('tag');
             $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
             $driver->addTags($user, $tagParser->parse($tags));
@@ -286,7 +286,7 @@ class AbstractRecord extends AbstractBase
         }
 
         // Process form submission:
-        if ($this->params()->fromPost('submit')) {
+        if ($this->formWasSubmitted('submit')) {
             return $this->processSave();
         }
 
@@ -364,9 +364,12 @@ class AbstractRecord extends AbstractBase
         // Retrieve the record driver:
         $driver = $this->loadRecord();
 
-        // Process form submission:
+        // Create view
         $view = $this->createEmailViewModel();
-        if ($this->params()->fromPost('submit')) {
+        // Set up reCaptcha
+        $view->useRecaptcha = $this->recaptcha()->active('email');
+        // Process form submission:
+        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             // Attempt to send the email and show an appropriate flash message:
             try {
                 $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
@@ -410,9 +413,10 @@ class AbstractRecord extends AbstractBase
         $view = $this->createViewModel();
         $view->carriers = $sms->getCarriers();
         $view->validation = $sms->getValidationType();
-
+        // Set up reCaptcha
+        $view->useRecaptcha = $this->recaptcha()->active('sms');
         // Process form submission:
-        if ($this->params()->fromPost('submit')) {
+        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             // Send parameters back to view so form can be re-populated:
             $view->to = $this->params()->fromPost('to');
             $view->provider = $this->params()->fromPost('provider');

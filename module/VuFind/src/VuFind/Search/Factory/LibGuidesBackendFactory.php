@@ -99,7 +99,11 @@ class LibGuidesBackendFactory implements FactoryInterface
      */
     protected function createBackend(Connector $connector)
     {
-        $backend = new Backend($connector, $this->createRecordCollectionFactory());
+        $defaultSearch = isset($this->libGuidesConfig->General->defaultSearch)
+            ? $this->libGuidesConfig->General->defaultSearch : null;
+        $backend = new Backend(
+            $connector, $this->createRecordCollectionFactory(), $defaultSearch
+        );
         $backend->setLogger($this->logger);
         $backend->setQueryBuilder($this->createQueryBuilder());
         return $backend;
