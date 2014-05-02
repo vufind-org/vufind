@@ -45,7 +45,8 @@
           <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
           <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtml($ilsDetails['cancel_details']) ?>" />
           <div class="pull-left">
-            <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtml($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>" />
+            <? $disabled = (isset($ilsDetails['cancelable']) && 'N' == $ilsDetails['cancelable']) ? 'disabled="disabled"' : ''; ?>
+            <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtml($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>" <?=$disabled?>/>
           </div>
         <? endif; ?>
         <div class="span2 text-center">
