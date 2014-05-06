@@ -40,6 +40,11 @@ use Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Session\Container;
  */
 class Followup extends AbstractPlugin
 {
+    /**
+     * Session container
+     *
+     * @var Container
+     */
     protected $session;
 
     /**
