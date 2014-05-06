@@ -63,8 +63,15 @@
     <?=$this->recommend($current)?>
   <? endforeach; ?>
 <? else: ?>
-  <? $viewType = in_array('list', array_keys($params->getViewList())) ? 'list' : $params->getView(); ?>
-  <?=$this->render('search/list-' . $viewType . '.phtml', array('results' => $results, 'params' => $params))?>
+  <?
+    $viewType = in_array('list', array_keys($params->getViewList()))
+      ? 'list' : $params->getView();
+    $viewParams = array('results' => $results, 'params' => $params);
+    if (!$params->getOptions()->supportsCart()) {
+      $viewParams['hideCartControls'] = true;
+    }
+  ?>
+  <?=$this->render('search/list-' . $viewType . '.phtml', $viewParams)?>
   <? if ($currentSearch['more_link']): ?>
     <p class="pad text-right"><a href="<?=$moreUrl?>"><?=$this->transEsc($currentSearch['more_link'])?> <i class="icon-long-arrow-right"></i></a></p>
   <? endif; ?>

@@ -38,7 +38,7 @@
 ?>
 <?=$this->flashmessages()?>
 <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>">
-  <? if ($this->cart()->isActive()): ?>
+  <? if ($this->supportsCart && $this->cart()->isActive()): ?>
     <div class="clearfix">
       <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
     </div>
