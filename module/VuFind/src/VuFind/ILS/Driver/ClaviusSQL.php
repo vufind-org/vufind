@@ -208,7 +208,7 @@ class ClaviusSQL extends AbstractBase
     }
 
     /**
-      * Get a list of funds that can be used to limit the “new item” search
+      * Get a list of funds that can be used to limit the "new item" search
       *
       * @throws ILSException
       *
