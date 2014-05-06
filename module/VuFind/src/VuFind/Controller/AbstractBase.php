@@ -227,6 +227,18 @@ class AbstractBase extends AbstractActionController
         );
     }
 
+    protected function delightboxURL($url) {
+        $parts = parse_url($url);
+        parse_str($parts['query'], $query);
+        if (false === strpos($parts['path'], '/AJAX/JSON')) {
+            return $url;
+        }
+        $controller = strtolower($query['submodule']);
+        $action     = strtolower($query['subaction']);
+        unset($query['method'], $query['subaction'], $query['submodule']);
+        return $this->url()->fromRoute($controller.'-'.$action, $query);
+    }
+
     /**
      * Redirect the user to the login screen.
      *
@@ -247,6 +259,9 @@ class AbstractBase extends AbstractActionController
         // lightbox (since lightboxes use a different followup mechanism).
         if (!$this->inLightbox()) {
             $this->followup()->store($extras);
+        } elseif ($this->getAuthManager()->getSessionInitiator()) {
+            $url = $this->delightboxURL($this->getServerUrl());
+            $this->followup()->store($extras, $url);
         }
         if (!empty($msg)) {
             $this->flashMessenger()->setNamespace('error')->addMessage($msg);
