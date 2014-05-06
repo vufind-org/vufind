@@ -228,6 +228,27 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Support method for forceLogin() -- convert a lightbox URL to a non-lightbox
+     * URL.
+     *
+     * @param string $url URL to convert
+     *
+     * @return string
+     */
+    protected function delightboxURL($url)
+    {
+        $parts = parse_url($url);
+        parse_str($parts['query'], $query);
+        if (false === strpos($parts['path'], '/AJAX/JSON')) {
+            return $url;
+        }
+        $controller = strtolower($query['submodule']);
+        $action     = strtolower($query['subaction']);
+        unset($query['method'], $query['subaction'], $query['submodule']);
+        return $this->url()->fromRoute($controller.'-'.$action, $query);
+    }
+
+    /**
      * Redirect the user to the login screen.
      *
      * @param string $msg     Flash message to display on login screen
@@ -247,6 +268,15 @@ class AbstractBase extends AbstractActionController
         // lightbox (since lightboxes use a different followup mechanism).
         if (!$this->inLightbox()) {
             $this->followup()->store($extras);
+        } elseif ($this->getAuthManager()->getSessionInitiator()) {
+            // If we're in a lightbox and using an authentication method
+            // with a session initiator, the user will be redirected outside
+            // of VuFind and then redirected back. Thus, we need to store a
+            // followup URL to avoid losing context, but we don't want to
+            // store the AJAX request URL that populated the lightbox. The
+            // delightboxURL() routine will remap the URL appropriately.
+            $url = $this->delightboxURL($this->getServerUrl());
+            $this->followup()->store($extras, $url);
         }
         if (!empty($msg)) {
             $this->flashMessenger()->setNamespace('error')->addMessage($msg);
