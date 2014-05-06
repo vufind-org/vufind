@@ -257,7 +257,7 @@ class AbstractBase extends AbstractActionController
 
         // Store the current URL as a login followup action unless we are in a
         // lightbox (since lightboxes use a different followup mechanism).
-        if (!$this->inLightbox()){
+        if (!$this->inLightbox()) {
             $this->followup()->store($extras);
         } elseif ($this->getAuthManager()->getSessionInitiator()) {
             $url = $this->delightboxURL($this->getServerUrl());
