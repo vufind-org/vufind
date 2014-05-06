@@ -131,9 +131,13 @@ class CombinedController extends AbstractSearch
             ->get('VuFind\SearchOptionsPluginManager');
         $config = $this->getServiceLocator()->get('VuFind\Config')->get('combined')
             ->toArray();
+        $supportsCart = false;
         foreach ($config as $current => $settings) {
             $this->adjustQueryForSettings($settings);
             $currentOptions = $options->get($current);
+            if ($currentOptions->supportsCart()) {
+                $supportsCart = true;
+            }
             list($controller, $action)
                 = explode('-', $currentOptions->getSearchAction());
             $combinedResults[$current] = $settings;
@@ -154,7 +158,8 @@ class CombinedController extends AbstractSearch
             array(
                 'results' => $results,
                 'params' => $params,
-                'combinedResults' => $combinedResults
+                'combinedResults' => $combinedResults,
+                'supportsCart' => $supportsCart,
             )
         );
     }
