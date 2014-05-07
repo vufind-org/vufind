@@ -333,7 +333,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $request = $this->getStatusRequest($idList, $resumption);
             $response = $this->sendRequest($request);
             $avail = $response->xpath(
-                'ns1:Ext/ns1:LookupItemSetResponse/ns1:BibInformation'
+                'ns1:Ext/ns1:LookupItemSetResponse/ns1:BibInformation/ns1:HoldingsSet'
             );
 
             // Build the array of statuses:
