@@ -227,18 +227,6 @@ class AbstractBase extends AbstractActionController
         );
     }
 
-    protected function delightboxURL($url) {
-        $parts = parse_url($url);
-        parse_str($parts['query'], $query);
-        if (false === strpos($parts['path'], '/AJAX/JSON')) {
-            return $url;
-        }
-        $controller = strtolower($query['submodule']);
-        $action     = strtolower($query['subaction']);
-        unset($query['method'], $query['subaction'], $query['submodule']);
-        return $this->url()->fromRoute($controller.'-'.$action, $query);
-    }
-
     /**
      * Support method for forceLogin() -- convert a lightbox URL to a non-lightbox
      * URL.

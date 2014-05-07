@@ -279,6 +279,7 @@ $config = array(
             'hierarchy_treerenderer' => array(
                 'invokables' => array(
                     'jstree' => 'VuFind\Hierarchy\TreeRenderer\JSTree',
+                    'fancytree' => 'VuFind\Hierarchy\TreeRenderer\FancyTree',
                 )
             ),
             'ils_driver' => array(
