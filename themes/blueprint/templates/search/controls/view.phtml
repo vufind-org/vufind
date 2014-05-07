@@ -7,7 +7,7 @@
     <? $src = $this->imageLink('view_'.$viewType.'.png'); if (!empty($src)): ?>
       <img <? if ($viewData['selected']): ?>class="selected" <? endif; ?>src="<?=$src?>"<?=$viewData['selected'] ? ' title="' . $this->transEsc($viewData['desc']) . ' ' . $this->transEsc('view already selected') . '"' : ''?> alt="<?=$this->transEsc($viewData['desc'])?>" />
     <? else: ?>
-      <?=$this->transEsc($viewData['desc'])?>
+      <span<? if ($viewData['selected']): ?> class="selected" <? endif; ?>><?=$this->transEsc($viewData['desc'])?></span>
     <? endif; ?>
     <? if (!$viewData['selected']): ?>
       </a>
