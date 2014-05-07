@@ -134,7 +134,17 @@ class SearchBox extends \Zend\View\Helper\AbstractHelper
             }
         }
         foreach ($checkboxFilters as $current) {
-            if ($current['selected'] && !in_array($current['filter'], $results)) {
+            // Check a normalized version of the checkbox facet against the existing
+            // filter list to avoid unnecessary duplication. Note that we don't
+            // actually use this normalized version for anything beyond dupe-checking
+            // in case it breaks advanced syntax.
+            $regex = '/^([^:]*):([^"].*[^"]|[^"]{1,2})$/';
+            $normalized
+                = preg_match($regex, $current['filter'], $match)
+                ? "{$match[1]}:\"{$match[2]}\"" : $current['filter'];
+            if ($current['selected'] && !in_array($normalized, $results)
+                && !in_array($current['filter'], $results)
+            ) {
                 $results[] = $current['filter'];
             }
         }
