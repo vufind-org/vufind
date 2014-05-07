@@ -168,7 +168,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'ns1:ItemId/ns1:ItemIdentifierValue'
         );
 
-        $agencyId = $current->xpath(
+        $itemAgencyId = $current->xpath(
             'ns1:ItemInformation/' .
             'ns1:ItemId/ns1:AgencyId'
         );
@@ -213,7 +213,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'id' => empty($aggregate_id) ? (empty($bib_id) ? '' : $bib_id) : $aggregate_id,
             'item_id' => (string)$itemId[0],
             'bib_id' => $bib_id,
-            'agency_id' => (string)$agencyId[0],
+            'item_agency_id' => (string)$itemAgencyId[0],
             'aggregate_id' => $aggregate_id,
             'availability' => ($status == 'Not Charged'),
             'status' => $status,
@@ -387,7 +387,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
            $ids = array($id);
         }
         
-        $agency_id = array();
+        $item_agency_id = array();
         if ($this->consortium) {
             // The first one in the list is the aggregated record ID
             $first = 1;
@@ -401,16 +401,16 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     $matched_agency = $matches[1];
                     $matched_id = $matches[2];
                     if ($this->agency_url[$matched_agency]) {
-                        $agency_id[$matched_agency] = $matched_id;
+                        $item_agency_id[$matched_agency] = $matched_id;
                     }
                 }
             }
         } else {
-            $agency_id[$this->agency[0]] = $ids[0];
+            $item_agency_id[$this->agency[0]] = $ids[0];
         }
 
         $holdings = array();
-        foreach ($agency_id as $_agency => $_id) {
+        foreach ($item_agency_id as $_agency => $_id) {
             $request = $this->getStatusRequest(array($_id), null, $_agency);
             $response = $this->sendRequest($request, $this->agency_url[$_agency]);
 
@@ -472,10 +472,14 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $id = $response->xpath(
             'ns1:LookupUserResponse/ns1:UserId/ns1:UserIdentifierValue'
         );
+        $patron_agency_id = $response->xpath(
+            'ns1:LookupUserResponse/ns1:UserId/ns1:AgencyId'
+        );
         if (!empty($id)) {
             // Fill in basic patron details:
             $patron = array(
                 'id' => (string)$id[0],
+                'patron_agency_id' => (string)$patron_agency_id[0],
                 'cat_username' => $username,
                 'cat_password' => $password,
                 'email' => null,
@@ -835,14 +839,14 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         if ($function == 'Holds') {
             return array(
-                'HMACKeys' => 'item_id:holdtype:agency_id:aggregate_id:bib_id',
+                'HMACKeys' => 'item_id:holdtype:item_agency_id:aggregate_id:bib_id',
                 'extraHoldFields' => 'comments:pickUpLocation:requiredByDate',
                 'defaultRequiredDate' => '0:2:0',
             );
         }
         if ($function == 'StorageRetrievalRequests') {
             return array(
-                'HMACKeys' => 'id:item_id:agency_id:aggregate_id:bib_id',
+                'HMACKeys' => 'id:item_id:item_agency_id:aggregate_id:bib_id',
                 'extraFields' => 'comments:pickUpLocation:requiredByDate:item-issue',
                 'helpText' => 'This is a storage retrieval request help text' .
                     ' with some <span style="color: red">styling</span>.',
@@ -960,7 +964,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $lastInterestDate = $lastInterestDate . "T00:00:00.000Z";
 
         $request = $this->getRequest($username, $password, $bibId, $itemId, 
+                $details['patron']['patron_agency_id'], 
+                'KCCdb', // TODO: need to handle pickup locations dynamically (hard-coded for now)
+                $details['item_agency_id'], 
                 "Stack Retrieval", "Item", $lastInterestDate, $pickUpLocation);
+
         $response = $this->sendRequest($request, $this->agency_url[$details['agency_id']]);
         $success = $response->xpath(
                 'ns1:RequestItemResponse/ns1:ItemId/ns1:ItemIdentifierValue');
@@ -1012,7 +1020,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         $username = $details['patron']['cat_username'];
         $password = $details['patron']['cat_password'];
-        $bibId = $details['id'];
+        $bibId = $details['bib_id'];
         $itemId = $details['item_id'];
         $pickUpLocation = $details['pickUpLocation'];
         $holdType = $details['holdtype'];
@@ -1022,6 +1030,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $lastInterestDate = $lastInterestDate . "T00:00:00.000Z";
        
         $request = $this->getRequest($username, $password, $bibId, $itemId, 
+                 $details['patron']['patron_agency_id'], 
+                 'KCCdb', // TODO: need to handle pickup locations dynamically (hard-coded for now)
+                 $details['item_agency_id'], 
                  $holdType, "Item", $lastInterestDate, $pickUpLocation);
         $response = $this->sendRequest($request);
         $success = $response->xpath(
@@ -1282,6 +1293,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * @return string          NCIP request XML
      */
     protected function getRequest($username, $password, $bibId, $itemId,
+            $patron_agency_id, $pickup_agency_id, $item_agency_id,
             $requestType, $requestScope, $lastInterestDate, $pickupLocation = null)
     {
     	return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' .
@@ -1289,6 +1301,18 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             'ns1:version="http://www.niso.org/schemas/ncip/v2_0/imp1/' .
             'xsd/ncip_v2_0.xsd">' .
                 '<ns1:RequestItem>' .
+                   '<ns1:InitiationHeader>' .
+                        '<ns1:FromAgencyId>' .
+                            '<ns1:AgencyId>' .
+                                htmlspecialchars($patron_agency_id) .
+                            '</ns1:AgencyId>' .
+                        '</ns1:FromAgencyId>' .
+                        '<ns1:ToAgencyId>' .
+                            '<ns1:AgencyId>' .
+                                htmlspecialchars($pickup_agency_id) .
+                            '</ns1:AgencyId>' .
+                        '</ns1:ToAgencyId>' .
+                    '</ns1:InitiationHeader>' .
                     '<ns1:AuthenticationInput>' .
                         '<ns1:AuthenticationInputData>' .
                             htmlspecialchars($username) .
@@ -1313,6 +1337,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     '</ns1:AuthenticationInput>' .
                     '<ns1:BibliographicId>' .
                         '<ns1:BibliographicRecordId>' .
+                            '<ns1:AgencyId>' . 
+                                htmlspecialchars($item_agency_id) .
+                            '</ns1:AgencyId>' .
                             '<ns1:BibliographicRecordIdentifier>' .
                                 htmlspecialchars($bibId) .
                             '</ns1:BibliographicRecordIdentifier>' .
