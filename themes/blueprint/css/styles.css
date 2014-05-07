@@ -1516,11 +1516,15 @@ div.debug code {
 
 .viewButtons {
     text-align: right;
+    margin-bottom: 2px;
 }
 .viewButtons a {
     text-decoration:none;
 }
-.viewButtons img {
+.viewButtons span {
+    padding: 2px;
+}
+.viewButtons img, .viewButtons span {
     border:1px solid transparent;
     border-radius:3px;
 }

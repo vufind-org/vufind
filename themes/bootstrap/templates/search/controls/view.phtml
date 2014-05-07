@@ -5,7 +5,7 @@
       <a href="<?=$this->results->getUrlQuery()->setViewParam($viewType)?>" title="<?=$this->transEsc('Switch view to')?> <?=$this->transEsc($viewData['desc'])?>" >
     <? endif; ?>
     <i class="icon-<?=$viewType ?>"<? if($viewData['selected']): ?> title="<?=$this->transEsc($viewData['desc']) ?> <?=$this->transEsc('view already selected') ?>" <? endif ?> alt="<?=$this->transEsc($viewData['desc'])?>"></i>
-    <?=ucfirst($this->transEsc($viewType)) ?> <?=$this->transEsc('view') ?><? if (!$viewData['selected']): ?></a><? endif; ?>&nbsp;
+    <?=$this->transEsc($viewData['desc']) ?><? if (!$viewData['selected']): ?></a><? endif; ?>&nbsp;
   <? endforeach; ?>
 <? endif; ?>
 </div>
