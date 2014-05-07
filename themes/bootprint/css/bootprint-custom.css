@@ -149,6 +149,7 @@ select, .btn:not(.btn-link){vertical-align:top}
 /* --- SEARCH --- */
 .bulkActionButtons {border-bottom:1px solid #DDD;margin-top:6px;padding-bottom:6px}
 [name="bulkActionForm"] .btn-link { margin:1px 0;padding:2px }
+.limitSelect form {margin:0}
 .result {border:0;padding:3px 0}
 .result:nth-child(odd) {background:#EEE}
 .grid .result {background:none}
@@ -160,6 +161,9 @@ select, .btn:not(.btn-link){vertical-align:top}
 .result .savedLists {margin:2px 0;padding:6px}
 .result .savedLists ul {margin-bottom:0}
 .search-controls {padding:4px 0 4px 4px}
+.search-controls form {margin-bottom:0}
+.search-controls .help-inline {margin:0;vertical-align:baseline}
+.search-controls .pull-right div {margin:5px 0;line-height:15px}
 .span9>.noprint>.help-block {margin-bottom:0}
 .result .img-polaroid {margin-left:2px;max-width:96px}
 .top-row [class*="span"] {min-height:1px;padding:0 3px}
