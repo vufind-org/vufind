@@ -388,6 +388,10 @@ var Lightbox = {
  * We do it here so that non-JS users still have a good time.
  */
 $(document).ready(function() {
+  // save the currently-focused element
+  $('#modal').on('show', function(e) {
+    Lightbox.focusFrom = document.activeElement;
+  });
   // Add handlers to the forms
   Lightbox.addOpenAction(Lightbox.registerForms);
   /**
@@ -396,6 +400,10 @@ $(document).ready(function() {
    * Yes, the secret's out, our beloved Lightbox is a modal
    */
   $('#modal').on('hidden', Lightbox.closeActions);
+  // refocus the previously-focused element
+  $('#modal').on('hidden', function(e) {
+    Lightbox.focusFrom.focus();
+  });
   /**
    * If a link with the class .modal-link triggers the lightbox,
    * look for a title="" to use as our lightbox title.
