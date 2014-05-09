@@ -120,6 +120,11 @@ select, .btn:not(.btn-link){vertical-align:top}
 .filters li a:hover {color:#FFF}
 .filters li a i {display:inline-block;margin:2px 0 0 3px;vertical-align:top}
 
+.search-controls [class^=icon-] {background-position:0 0;background-repeat:no-repeat;height:14px;margin-top:1px;width:14px}
+.search-controls .icon-list {background:url('../images/view_list.png')}
+.search-controls .icon-grid {background:url('../images/view_grid.png')}
+.search-controls .pull-right > [class^=icon-] {border:1px solid #FFA500}
+
 /* --- MAIN --- */
 .centered-pills {border-bottom:1px solid #DDD;font-size:12px;margin-right:14px}
 .nav-pills {margin:3px 0 0 0}
