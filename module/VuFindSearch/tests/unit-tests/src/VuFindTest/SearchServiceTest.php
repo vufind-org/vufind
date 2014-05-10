@@ -34,6 +34,7 @@ use VuFindSearch\ParamBag;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Feature\RetrieveBatchInterface;
+use VuFindSearch\Feature\RandomInterface;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Response\AbstractRecordCollection;
 
@@ -241,6 +242,235 @@ class SearchServiceTest extends TestCase
     }
 
     /**
+     * Test random (with RandomInterface).
+     *
+     * @return void
+     */
+    public function testRandomInterface()
+    {
+        // Use a special backend for this test...
+        $this->backend = $this->getMock('VuFindTest\TestClassForRandomInterface');
+
+        $service = $this->getService();
+        $backend = $this->getBackend();
+        $response = $this->getRecordCollection();
+        $params = new ParamBag(array('x' => 'y'));
+        $query = new Query('test');
+
+        $backend->expects($this->once())->method('random')
+            ->with(
+                 $this->equalTo($query),
+                 $this->equalTo("10"),
+                 $this->equalTo($params)
+             )->will($this->returnValue($response)
+        );
+        $em = $service->getEventManager();
+        $em->expects($this->at(0))->method('trigger')
+            ->with($this->equalTo('pre'), $this->equalTo($backend));
+        $em->expects($this->at(1))->method('trigger')
+            ->with($this->equalTo('post'), $this->equalTo($response));
+        $service->random('foo', $query, "10", $params);
+
+        // Put the backend back to the default:
+        unset($this->backend);
+    }
+
+    /**
+     * Test random (with RandomInterface) exception.
+     *
+     * @return void
+     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     * @expectedExceptionMessage test
+     */
+    public function testRandomInterfaceWithException()
+    {
+        // Use a special backend for this test...
+        $this->backend = $this->getMock('VuFindTest\TestClassForRandomInterface');
+
+        $service = $this->getService();
+        $backend = $this->getBackend();
+        $exception = new BackendException('test');
+        $params = new ParamBag(array('x' => 'y'));
+        $query = new Query('test');
+
+        $backend->expects($this->once())->method('random')
+        ->with(
+            $this->equalTo($query),
+            $this->equalTo("10"),
+            $this->equalTo($params)
+        )->will($this->throwException($exception));
+
+        $em = $service->getEventManager();
+        $em->expects($this->at(0))->method('trigger')
+            ->with($this->equalTo('pre'), $this->equalTo($backend));
+        $em->expects($this->at(1))->method('trigger')
+            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $service->random('foo', $query, "10", $params);
+
+        // Put the backend back to the default:
+        unset($this->backend);
+    }
+
+    /**
+     * Test random (without RandomInterface).
+     *
+     * @return void
+     */
+    public function testRandomNoInterface()
+    {
+        $limit = 10;
+        $total = 20;
+        $service = $this->getService();
+        $backend = $this->getBackend();
+        $responseForZero = $this->getRecordCollection();
+
+        $params = new ParamBag(array('x' => 'y'));
+        $query = new Query('test');
+
+        // First Search Grabs 0 records but uses get total method
+        $backend->expects($this->at(0))->method('search')
+        ->with(
+            $this->equalTo($query),
+            $this->equalTo("0"),
+            $this->equalTo("0"),
+            $this->equalTo($params)
+        )->will($this->returnValue($responseForZero));
+
+        $responseForZero->expects($this->once())->method('getTotal')
+            ->will($this->returnValue($total));
+
+        for ($i=1; $i<$limit+1; $i++) {
+            $response = $this->getRecordCollection();
+            $response->expects($this->any())->method('first')
+                ->will($this->returnValue($this->getMock('VuFindSearch\Response\RecordInterface')));
+            $backend->expects($this->at($i))->method('search')
+                ->with(
+                    $this->equalTo($query),
+                    $this->anything(),
+                    $this->equalTo("1"),
+                    $this->equalTo($params)
+                )->will($this->returnValue($response)
+            );
+        }
+
+        $em = $service->getEventManager();
+        $em->expects($this->at(0))->method('trigger')
+            ->with($this->equalTo('pre'), $this->equalTo($backend));
+        $em->expects($this->at(1))->method('trigger')
+            ->with($this->equalTo('post'), $this->anything());
+        $service->random('foo', $query, $limit, $params);
+    }
+
+    /**
+     * Test random (without RandomInterface).
+     *
+     * @return void
+     */
+    public function testRandomNoInterfaceWithNoResults()
+    {
+        $limit = 10;
+        $total = 0;
+        $service = $this->getService();
+        $backend = $this->getBackend();
+        $responseForZero = $this->getRecordCollection();
+
+        $params = new ParamBag(array('x' => 'y'));
+        $query = new Query('test');
+
+        // First Search Grabs 0 records but uses get total method
+        // This should only be called once as the total results returned is 0
+        $backend->expects($this->once())->method('search')
+            ->with(
+                $this->equalTo($query),
+                $this->equalTo("0"),
+                $this->equalTo("0"),
+                $this->equalTo($params)
+            )->will($this->returnValue($responseForZero));
+
+        $responseForZero->expects($this->once())->method('getTotal')
+            ->will($this->returnValue($total));
+
+        $em = $service->getEventManager();
+        $em->expects($this->at(0))->method('trigger')
+            ->with($this->equalTo('pre'), $this->equalTo($backend));
+        $em->expects($this->at(1))->method('trigger')
+            ->with($this->equalTo('post'), $this->equalTo($responseForZero));
+        $service->random('foo', $query, $limit, $params);
+    }
+
+    /**
+     * Test random (without RandomInterface).
+     *
+     * @return void
+     */
+    public function testRandomNoInterfaceWithLessResultsThanLimit()
+    {
+        $limit = 10;
+        $total = 5;
+        $service = $this->getService();
+        $backend = $this->getBackend();
+        $responseForZero = $this->getRecordCollection();
+        $response = $this->getRecordCollection();
+
+        $params = new ParamBag(array('x' => 'y'));
+        $query = new Query('test');
+
+        // First Search Grabs 0 records but uses get total method
+        $backend->expects($this->at(0))->method('search')
+            ->with(
+                $this->equalTo($query),
+                $this->equalTo("0"),
+                $this->equalTo("0"),
+                $this->equalTo($params)
+            )->will($this->returnValue($responseForZero));
+
+        $responseForZero->expects($this->once())->method('getTotal')
+            ->will($this->returnValue($total));
+
+        // Second search grabs all the records and calls shuffle
+        $backend->expects($this->at(1))->method('search')
+            ->with(
+                    $this->equalTo($query),
+                    $this->equalTo("0"),
+                    $this->equalTo($limit),
+                    $this->equalTo($params)
+            )->will($this->returnValue($response));
+        $response->expects($this->once())->method('shuffle');
+
+        $em = $service->getEventManager();
+        $em->expects($this->at(0))->method('trigger')
+            ->with($this->equalTo('pre'), $this->equalTo($backend));
+        $em->expects($this->at(1))->method('trigger')
+            ->with($this->equalTo('post'), $this->equalTo($responseForZero));
+        $service->random('foo', $query, $limit, $params);
+    }
+
+    /**
+     * Test random (without RandomInterface) exception.
+     *
+     * @return void
+     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     * @expectedExceptionMessage test
+     */
+    public function testRandomNoInterfaceWithException()
+    {
+        $service = $this->getService();
+        $backend = $this->getBackend();
+        $exception = new BackendException('test');
+        $params = new ParamBag(array('x' => 'y'));
+        $query = new Query('test');
+
+        $backend->expects($this->once())->method('search')
+            ->will($this->throwException($exception));
+        $em = $service->getEventManager();
+        $em->expects($this->at(0))->method('trigger')
+            ->with($this->equalTo('pre'), $this->equalTo($backend));
+        $em->expects($this->at(1))->method('trigger')
+            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $service->random('foo', $query, "10", $params);
+    }
+
+    /**
      * Test similar action.
      *
      * @return void
@@ -376,4 +606,13 @@ abstract class TestBackendClassForSimilar
     implements BackendInterface
 {
     abstract function similar();
+}
+
+/**
+ * Stub Class to test random interfaces.
+ */
+abstract class TestClassForRandomInterface
+implements BackendInterface, RandomInterface
+{
+
 }

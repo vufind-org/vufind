@@ -12,22 +12,26 @@
 
 <form class="form-horizontal" method="post" action="<?=$this->url('cart-save')?>" name="bulkSave">
   <? $idParams = array(); ?>
+  <? foreach ($this->records as $current): ?>
+    <? $idParams[] = urlencode('ids[]') . '=' . urlencode($current->getResourceSource() . '|' . $current->getUniqueId()) ?>
+    <input type="hidden" name="ids[]" value="<?=$this->escapeHtml($current->getResourceSource() . '|' . $current->getUniqueId())?>" />
+  <? endforeach; ?>
   <div class="control-group">
     <label class="control-label"><?=$this->transEsc('Title')?></label>
     <div class="controls">
     <? if(count($this->records) > 1): ?>
-      <div class="item-list">
+      <button type="button" class="btn hidden" data-toggle="collapse" data-target="#itemhide">
+        <?=count($this->records).' '.$this->transEsc('items') ?>
+      </button>
+      <div id="itemhide" class="collapse in">
         <ul>
           <? foreach ($this->records as $current): ?>
-            <? $idParams[] = urlencode('ids[]') . '=' . urlencode($current->getResourceSource() . '|' . $current->getUniqueId()) ?>
             <li><?=$this->escapeHtml($current->getBreadcrumb())?></li>
-            <input type="hidden" name="ids[]" value="<?=$this->escapeHtml($current->getResourceSource() . '|' . $current->getUniqueId())?>" />
           <? endforeach; ?>
         </ul>
       </div>
     <? else: ?>
       <span class="uneditable-input"><?=$this->records[0]->getBreadcrumb() ?></span>
-      <input type="hidden" name="ids[]" value="<?=$this->escapeHtml($this->records[0]->getResourceSource() . '|' . $this->records[0]->getUniqueId())?>" />
     <? endif; ?>
     </div>
   </div>
@@ -48,12 +52,14 @@
     </div>
   </div>
 
-  <div class="control-group">
-    <label class="control-label" for="add_mytags"><?=$this->transEsc('Add Tags') ?></label>
-    <div class="controls">
-      <input class="mainFocus" id="add_mytags" type="text" name="mytags" value=""/>
+  <? if ($this->usertags()->getMode() !== 'disabled'): ?>
+    <div class="control-group">
+      <label class="control-label" for="add_mytags"><?=$this->transEsc('Add Tags') ?></label>
+      <div class="controls">
+        <input class="mainFocus" id="add_mytags" type="text" name="mytags" value=""/>
+      </div>
     </div>
-  </div>
+  <? endif; ?>
   <div class="control-group">
     <div class="controls">
       <input class="btn" type="submit" name="submit" value="<?=$this->transEsc('Save') ?>"/>
@@ -62,13 +68,9 @@
 </form>
 
 <?
-  $items = $this->transEsc('items');
   $script = <<<JS
-    var list = $('.item-list');
-    var items = list.find('li').length;
-    var bubble = list.html();
-    list.html('<span class="btn">'+items+' {$items}</span>');
-    list.find('.btn').popover({html:true,content:bubble});
+    $('button.btn.hidden').removeClass('hidden');
+    $('.collapse.in').removeClass('in');
 JS;
 ?>
 <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>

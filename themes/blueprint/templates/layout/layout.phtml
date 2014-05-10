@@ -26,7 +26,7 @@
     <?
         // Set global path for Javascript code:
         $this->headScript()->prependScript("path = '" . rtrim($this->url('home'), '/') . "';");
-        
+
         $this->jsTranslations()->addStrings(
           array(
             'loading'=>'Loading'
@@ -58,6 +58,16 @@
         if ($feedback) {
             $this->headScript()->appendFile("jquery.tabSlideOut.v2.0.js");
             $this->headScript()->appendFile("feedback.js");
+        }
+
+        // Session keep-alive
+        if ($this->KeepAlive()) {
+            $this->headScript()->appendScript('var keepAliveInterval = '
+                . $this->KeepAlive());
+            $this->headScript()->appendFile("keep_alive.js");
+        }
+        if ($this->recaptcha()->active()) {
+            $this->headScript()->appendFile("recaptcha_ajax.js");
         }
     ?>
     <?=$this->headScript()?>

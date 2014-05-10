@@ -101,6 +101,7 @@ class AbstractBase extends AbstractActionController
             if ($user && isset($config->Mail->user_email_in_from)
                 && $config->Mail->user_email_in_from
             ) {
+                $view->userEmailInFrom = true;
                 $view->from = $user->email;
             } else if (isset($config->Mail->default_from)
                 && $config->Mail->default_from
@@ -227,6 +228,27 @@ class AbstractBase extends AbstractActionController
     }
 
     /**
+     * Support method for forceLogin() -- convert a lightbox URL to a non-lightbox
+     * URL.
+     *
+     * @param string $url URL to convert
+     *
+     * @return string
+     */
+    protected function delightboxURL($url)
+    {
+        $parts = parse_url($url);
+        parse_str($parts['query'], $query);
+        if (false === strpos($parts['path'], '/AJAX/JSON')) {
+            return $url;
+        }
+        $controller = strtolower($query['submodule']);
+        $action     = strtolower($query['subaction']);
+        unset($query['method'], $query['subaction'], $query['submodule']);
+        return $this->url()->fromRoute($controller.'-'.$action, $query);
+    }
+
+    /**
      * Redirect the user to the login screen.
      *
      * @param string $msg     Flash message to display on login screen
@@ -246,6 +268,15 @@ class AbstractBase extends AbstractActionController
         // lightbox (since lightboxes use a different followup mechanism).
         if (!$this->inLightbox()) {
             $this->followup()->store($extras);
+        } elseif ($this->getAuthManager()->getSessionInitiator()) {
+            // If we're in a lightbox and using an authentication method
+            // with a session initiator, the user will be redirected outside
+            // of VuFind and then redirected back. Thus, we need to store a
+            // followup URL to avoid losing context, but we don't want to
+            // store the AJAX request URL that populated the lightbox. The
+            // delightboxURL() routine will remap the URL appropriately.
+            $url = $this->delightboxURL($this->getServerUrl());
+            $this->followup()->store($extras, $url);
         }
         if (!empty($msg)) {
             $this->flashMessenger()->setNamespace('error')->addMessage($msg);
@@ -374,15 +405,17 @@ class AbstractBase extends AbstractActionController
     /**
      * Translate a string if a translator is available.
      *
-     * @param string $msg Message to translate
+     * @param string $msg     Message to translate
+     * @param array  $tokens  Tokens to inject into the translated string
+     * @param string $default Default value to use if no translation is found (null
+     * for no default).
      *
      * @return string
      */
-    public function translate($msg)
+    public function translate($msg, $tokens = array(), $default = null)
     {
-        return $this->getServiceLocator()->has('VuFind\Translator')
-            ? $this->getServiceLocator()->get('VuFind\Translator')->translate($msg)
-            : $msg;
+        return $this->getViewRenderer()->plugin('translate')
+            ->__invoke($msg, $tokens, $default);
     }
 
     /**
@@ -402,6 +435,24 @@ class AbstractBase extends AbstractActionController
 
         // Dispatch the requested controller/action:
         return $this->forward()->dispatch($controller, $params);
+    }
+
+    /**
+     * Check to see if a form was submitted from its post value
+     * Also validate the Captcha, if it's activated
+     *
+     * @param string  $submitElement Name of the post field of the submit button
+     * @param boolean $useRecaptcha  Are we using captcha in this situation?
+     *
+     * @return boolean
+     */
+    protected function formWasSubmitted($submitElement = 'submit',
+        $useRecaptcha = false
+    ) {
+        // Fail if the expected submission element was missing from the POST:
+        // Form was submitted; if CAPTCHA is expected, validate it now.
+        return $this->params()->fromPost($submitElement, false)
+            && (!$useRecaptcha || $this->recaptcha()->validate());
     }
 
     /**
@@ -453,5 +504,29 @@ class AbstractBase extends AbstractActionController
     public function getSearchMemory()
     {
         return $this->getServiceLocator()->get('VuFind\Search\Memory');
+    }
+
+    /**
+     * Are lists enabled?
+     *
+     * @return bool
+     */
+    protected function listsEnabled()
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $tagSetting = isset($config->Social->lists) ? $config->Social->lists : true;
+        return $tagSetting && $tagSetting !== 'disabled';
+    }
+
+    /**
+     * Are tags enabled?
+     *
+     * @return bool
+     */
+    protected function tagsEnabled()
+    {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('config');
+        $tagSetting = isset($config->Social->tags) ? $config->Social->tags : true;
+        return $tagSetting && $tagSetting !== 'disabled';
     }
 }

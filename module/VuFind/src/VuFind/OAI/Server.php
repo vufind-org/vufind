@@ -50,6 +50,13 @@ class Server
     protected $baseURL;
 
     /**
+     * Base URL of host containing VuFind.
+     *
+     * @var string
+     */
+    protected $baseHostURL;
+
+    /**
      * Incoming request parameters
      *
      * @var array
@@ -148,6 +155,13 @@ class Server
     protected $tableManager;
 
     /**
+     * Record link helper (optional)
+     *
+     * @var \VuFind\View\Helper\Root\RecordLink
+     */
+    protected $recordLinkHelper = null;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Results\PluginManager $results Search manager for
@@ -168,9 +182,27 @@ class Server
         $this->recordLoader = $loader;
         $this->tableManager = $tables;
         $this->baseURL = $baseURL;
+        $parts = parse_url($baseURL);
+        $this->baseHostURL = $parts['scheme'] . '://' . $parts['host'];
+        if (isset($parts['port'])) {
+            $this->baseHostURL .= $parts['port'];
+        }
         $this->params = isset($params) && is_array($params) ? $params : array();
         $this->initializeMetadataFormats(); // Load details on supported formats
         $this->initializeSettings($config); // Load config.ini settings
+    }
+
+    /**
+     * Add a record link helper (optional -- allows enhancement of some metadata
+     * with VuFind-specific links).
+     *
+     * @param \VuFind\View\Helper\Root\RecordLink $helper Helper to set
+     *
+     * @return void
+     */
+    public function setRecordLinkHelper($helper)
+    {
+        $this->recordLinkHelper = $helper;
     }
 
     /**
@@ -266,7 +298,8 @@ class Server
         if ($format === false) {
             $xml = '';      // no metadata if in header-only mode!
         } else {
-            $xml = $record->getXML($format);
+            $xml = $record
+                ->getXML($format, $this->baseHostURL, $this->recordLinkHelper);
             if ($xml === false) {
                 return false;
             }
@@ -959,4 +992,3 @@ class Server
         throw new \Exception("Unexpected fatal error -- {$msg}.");
     }
 }
-?>

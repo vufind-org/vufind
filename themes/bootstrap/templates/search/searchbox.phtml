@@ -47,23 +47,10 @@
       <? elseif ($handlerCount == 1): ?>
         <input type="hidden" name="type" value="<?=$this->escapeHtml($handlers[0]['value'])?>" />
       <? endif; ?>
-      <button type="submit" name="submit" class="btn" value="<?=$this->transEsc("Find")?>"><i class="icon-search"></i> <?=$this->transEsc("Find")?></button>
+      <button type="submit" class="btn"><i class="icon-search"></i> <?=$this->transEsc("Find")?></button>
       <? if ($advSearch): ?>
         <a href="<?=$this->url($advSearch)?>" class="btn btn-link"><?=$this->transEsc("Advanced")?></a>
       <? endif; ?>
-
-      <?
-      /* Do we have any checkbox filters? */
-      $hasCheckboxFilters = false;
-      if (isset($this->checkboxFilters) && count($this->checkboxFilters) > 0) {
-        foreach ($this->checkboxFilters as $current) {
-          if ($current['selected']) {
-            $hasCheckboxFilters = true;
-            break;
-          }
-        }
-      }
-      ?>
 
       <? $shards = $options->getShards(); if ($options->showShardCheckboxes() && !empty($shards)): ?>
         <?
@@ -76,36 +63,30 @@
           <input type="checkbox" <?=$isSelected ? 'checked="checked" ' : ''?>name="shard[]" value='<?=$this->escapeHtml($shard)?>' /> <?=$this->transEsc($shard)?>
         <? endforeach; ?>
       <? endif; ?>
-      <? if ((isset($this->filterList) && is_array($this->filterList) && count($this->filterList) > 0) || $hasCheckboxFilters): ?>
+      <?
+        $filterDetails = $this->searchbox()->getFilterDetails(
+            isset($this->filterList) && is_array($this->filterList) ? $this->filterList : array(),
+            isset($this->checkboxFilters) && is_array($this->checkboxFilters) ? $this->checkboxFilters : array()
+        );
+      ?>
+      <? if (!empty($filterDetails)): ?>
         <? $defaultFilterState = $options->getRetainFilterSetting() ? ' checked="checked"' : ''; ?>
         <label class="checkbox">
           <input onChange="$('.applied-filter').click()" type="checkbox"<?=$defaultFilterState?> id="searchFormKeepFilters"/>
           <?=$this->transEsc("basic_search_keep_filters")?>
         </label>
         <div class="hidden">
-          <? if (isset($this->filterList) && is_array($this->filterList)): ?>
-            <? $i = 0; foreach ($this->filterList as $field => $data): ?>
-              <? foreach ($data as $value): ?>                  
-                <label class="checkbox">
-                  <input class="applied-filter" id="applied_filter_<?=++$i?>" type="checkbox"<?=$defaultFilterState?> name="filter[]" value="<?=$this->escapeHtml($field)?>:&quot;<?=$this->escapeHtml($value)?>&quot;" />
-                  <?=$this->escapeHtml($field)?>:&quot;<?=$this->escapeHtml($value)?>&quot;
-                </label>
-              <? endforeach; ?>
-            <? endforeach; ?>
-          <? endif; ?>
-          <? if ($hasCheckboxFilters): ?>
-            <? $i = 0; foreach ($checkboxFilters as $current): ?>
-              <? if ($current['selected']): ?>
-                <label class="checkbox">
-                  <input class="applied-filter" id="applied_checkbox_filter_<?=++$i?>" type="checkbox"<?=$defaultFilterState?> name="filter[]" value="<?=$this->escapeHtml($current['filter'])?>" />
-                  <?=$this->escapeHtml($current['filter'])?>
-                </label>
-              <? endif; ?>
-            <? endforeach; ?>
-          <? endif; ?>
+          <? foreach ($filterDetails as $current): ?>
+            <input id="<?=$this->escapeHtml($current['id'])?>" type="checkbox"<?=$defaultFilterState?> name="filter[]" value="<?=$this->escapeHtml($current['value'])?>" />
+            <label for="<?=$this->escapeHtml($current['id'])?>"><?=$this->escapeHtml($current['value'])?></label>
+          <? endforeach; ?>
         </div>
       <? endif; ?>
       <?
+      /* Show hidden field for active search class when in combined handler mode. */
+      if ($this->searchbox()->combinedHandlersActive()) {
+        echo '<input type="hidden" name="activeSearchClassId" value="' . $this->escapeHtml($this->searchClassId) . '" />';
+      }
       /* Load hidden limit preference from Session */
       if (!empty($lastLimit)) {
         echo '<input type="hidden" name="limit" value="' . $this->escapeHtml($lastLimit) . '" />';

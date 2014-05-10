@@ -33,7 +33,7 @@
             ? $this->profile['home_library'] : $this->defaultPickupLocation
       ?>
       <td>
-        <form method="post" action="" id="profile_form">
+        <form id="profile_form" class="form-inline" action="" method="post">
           <select id="home_library" name="home_library">
             <? foreach ($this->pickup as $lib): ?>
               <option value="<?=$this->escapeHtml($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->escapeHtml($lib['locationDisplay'])?></option>
@@ -50,6 +50,8 @@
                 $this->transEsc('Address') . ' 1' => 'address1',
                 $this->transEsc('Address') . ' 2' => 'address2',
                 $this->transEsc('Zip') => 'zip',
+                $this->transEsc('City') => 'city',
+                $this->transEsc('Country') => 'country',
                 $this->transEsc('Phone Number') => 'phone',
                 $this->transEsc('Group') => 'group'
             )

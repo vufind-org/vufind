@@ -54,9 +54,11 @@ class NoILSTest extends \VuFindTest\Unit\TestCase
     protected $driver;
 
     /**
-     * Constructor
+     * Standard setup method.
+     *
+     * @return void
      */
-    public function __construct()
+    public function setUp()
     {
         $this->loader = $this->getMock(
             'VuFind\Record\Loader', array(),

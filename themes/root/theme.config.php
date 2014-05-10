@@ -3,165 +3,40 @@ return array(
     'extends' => false,
     'helpers' => array(
         'factories' => array(
-            'addthis' => function ($sm) {
-                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-                return new \VuFind\View\Helper\Root\AddThis(
-                    isset($config->AddThis->key) ? $config->AddThis->key : false
-                );
-            },
-            'auth' => function ($sm) {
-                return new \VuFind\View\Helper\Root\Auth(
-                    $sm->getServiceLocator()->get('VuFind\AuthManager')
-                );
-            },
-            'authornotes' => function ($sm) {
-                return new \VuFind\View\Helper\Root\AuthorNotes(
-                    $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-                );
-            },
-            'cart' => function ($sm) {
-                return new \VuFind\View\Helper\Root\Cart(
-                    $sm->getServiceLocator()->get('VuFind\Cart')
-                );
-            },
-            'citation' => function ($sm) {
-                return new \VuFind\View\Helper\Root\Citation(
-                    $sm->getServiceLocator()->get('VuFind\DateConverter')
-                );
-            },
-            'datetime' => function ($sm) {
-                return new \VuFind\View\Helper\Root\DateTime(
-                    $sm->getServiceLocator()->get('VuFind\DateConverter')
-                );
-            },
-            'displaylanguageoption' => function ($sm) {
-                return new VuFind\View\Helper\Root\DisplayLanguageOption(
-                    $sm->getServiceLocator()->get('VuFind\Translator')
-                );
-            },
-            'excerpt' => function ($sm) {
-                return new \VuFind\View\Helper\Root\Excerpt(
-                    $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-                );
-            },
-            'export' => function ($sm) {
-                return new \VuFind\View\Helper\Root\Export(
-                    $sm->getServiceLocator()->get('VuFind\Export')
-                );
-            },
-            'feedback' => function ($sm) {
-                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-                $enabled = isset($config->Feedback->tab_enabled)
-                    ? $config->Feedback->tab_enabled : false;
-                return new \VuFind\View\Helper\Root\Feedback($enabled);
-            },
-            'flashmessages' => function ($sm) {
-                $messenger = $sm->getServiceLocator()->get('ControllerPluginManager')
-                    ->get('FlashMessenger');
-                return new \VuFind\View\Helper\Root\Flashmessages($messenger);
-            },
-            'googleanalytics' => function ($sm) {
-                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-                $key = isset($config->GoogleAnalytics->apiKey)
-                    ? $config->GoogleAnalytics->apiKey : false;
-                return new \VuFind\View\Helper\Root\GoogleAnalytics($key);
-            },
-            'getlastsearchlink' => function ($sm) {
-                return new \VuFind\View\Helper\Root\GetLastSearchLink(
-                    $sm->getServiceLocator()->get('VuFind\Search\Memory')
-                );
-            },
-            'historylabel' => function ($sm) {
-                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-                $config = isset($config->SearchHistoryLabels)
-                    ? $config->SearchHistoryLabels->toArray() : array();
-                return new VuFind\View\Helper\Root\HistoryLabel(
-                    $config, $sm->get('transesc')
-                );
-            },
-            'ils' => function ($sm) {
-                return new \VuFind\View\Helper\Root\Ils(
-                    $sm->getServiceLocator()->get('VuFind\ILSConnection')
-                );
-            },
-            'jstranslations' => function($sm) {
-                return new \VuFind\View\Helper\Root\JsTranslations($sm->get('transesc'));
-            },
-            'proxyurl' => function ($sm) {
-                return new \VuFind\View\Helper\Root\ProxyUrl(
-                    $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-                );
-            },
-            'openurl' => function ($sm) {
-                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-                return new \VuFind\View\Helper\Root\OpenUrl(
-                    $sm->get('context'),
-                    isset($config->OpenURL) ? $config->OpenURL : null
-                );
-            },
-            'record' => function ($sm) {
-                return new \VuFind\View\Helper\Root\Record(
-                    $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-                );
-            },
-            'recordlink' => function ($sm) {
-                return new \VuFind\View\Helper\Root\RecordLink(
-                    $sm->getServiceLocator()->get('VuFind\RecordRouter')
-                );
-            },
-            'related' => function ($sm) {
-                return new \VuFind\View\Helper\Root\Related(
-                    $sm->getServiceLocator()->get('VuFind\RelatedPluginManager')
-                );
-            },
-            'reviews' => function ($sm) {
-                return new \VuFind\View\Helper\Root\Reviews(
-                    $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-                );
-            },
-            'searchbox' => function ($sm) {
-                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('searchbox')->toArray();
-                return new \VuFind\View\Helper\Root\SearchBox(
-                    $sm->getServiceLocator()->get('VuFind\SearchOptionsPluginManager'),
-                    $config
-                );
-            },
-            'searchoptions' => function ($sm) {
-                return new VuFind\View\Helper\Root\SearchOptions(
-                    $sm->getServiceLocator()->get('VuFind\SearchOptionsPluginManager')
-                );
-            },
-            'searchtabs' => function ($sm) {
-                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-                $config = isset($config->SearchTabs)
-                    ? $config->SearchTabs->toArray() : array();
-                return new VuFind\View\Helper\Root\SearchTabs(
-                    $sm->getServiceLocator()->get('VuFind\SearchResultsPluginManager'),
-                    $config, $sm->get('url')
-                );
-            },
-            'syndeticsplus' => function ($sm) {
-                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-                return new \VuFind\View\Helper\Root\SyndeticsPlus(
-                    isset($config->Syndetics) ? $config->Syndetics : null
-                );
-            },
-            'systememail' => function ($sm) {
-                $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-                return new \VuFind\View\Helper\Root\SystemEmail(
-                    isset($config->Site->email) ? $config->Site->email : ''
-                );
-            },
-            'videoclips' => function ($sm) {
-                return new \VuFind\View\Helper\Root\VideoClips(
-                    $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-                );
-            },
-            'worldcat' => function ($sm) {
-                return new \VuFind\View\Helper\Root\WorldCat(
-                    $sm->getServiceLocator()->get('VuFind\Search\BackendManager')->get('WorldCat')->getConnector()
-                );
-            }
+            'addthis' => 'VuFind\View\Helper\Root\Factory::getAddThis',
+            'auth' => 'VuFind\View\Helper\Root\Factory::getAuth',
+            'authornotes' => 'VuFind\View\Helper\Root\Factory::getAuthorNotes',
+            'cart' => 'VuFind\View\Helper\Root\Factory::getCart',
+            'citation' => 'VuFind\View\Helper\Root\Factory::getCitation',
+            'datetime' => 'VuFind\View\Helper\Root\Factory::getDateTime',
+            'displaylanguageoption' => 'VuFind\View\Helper\Root\Factory::getDisplayLanguageOption',
+            'excerpt' => 'VuFind\View\Helper\Root\Factory::getExcerpt',
+            'export' => 'VuFind\View\Helper\Root\Factory::getExport',
+            'feedback' => 'VuFind\View\Helper\Root\Factory::getFeedback',
+            'flashmessages' => 'VuFind\View\Helper\Root\Factory::getFlashmessages',
+            'googleanalytics' => 'VuFind\View\Helper\Root\Factory::getGoogleAnalytics',
+            'getlastsearchlink' => 'VuFind\View\Helper\Root\Factory::getGetLastSearchLink',
+            'historylabel' => 'VuFind\View\Helper\Root\Factory::getHistoryLabel',
+            'ils' => 'VuFind\View\Helper\Root\Factory::getIls',
+            'jstranslations' => 'VuFind\View\Helper\Root\Factory::getJsTranslations',
+            'keepalive' => 'VuFind\View\Helper\Root\Factory::getKeepAlive',
+            'proxyurl' => 'VuFind\View\Helper\Root\Factory::getProxyUrl',
+            'openurl' => 'VuFind\View\Helper\Root\Factory::getOpenUrl',
+            'recaptcha' => 'VuFind\View\Helper\Root\Factory::getRecaptcha',
+            'record' => 'VuFind\View\Helper\Root\Factory::getRecord',
+            'recordlink' => 'VuFind\View\Helper\Root\Factory::getRecordLink',
+            'related' => 'VuFind\View\Helper\Root\Factory::getRelated',
+            'reviews' => 'VuFind\View\Helper\Root\Factory::getReviews',
+            'searchbox' => 'VuFind\View\Helper\Root\Factory::getSearchBox',
+            'searchoptions' => 'VuFind\View\Helper\Root\Factory::getSearchOptions',
+            'searchparams' => 'VuFind\View\Helper\Root\Factory::getSearchParams',
+            'searchtabs' => 'VuFind\View\Helper\Root\Factory::getSearchTabs',
+            'syndeticsplus' => 'VuFind\View\Helper\Root\Factory::getSyndeticsPlus',
+            'systememail' => 'VuFind\View\Helper\Root\Factory::getSystemEmail',
+            'userlist' => 'VuFind\View\Helper\Root\Factory::getUserList',
+            'usertags' => 'VuFind\View\Helper\Root\Factory::getUserTags',
+            'videoclips' => 'VuFind\View\Helper\Root\Factory::getVideoClips',
+            'worldcat' => 'VuFind\View\Helper\Root\Factory::getWorldCat',
         ),
         'invokables' => array(
             'addellipsis' => 'VuFind\View\Helper\Root\AddEllipsis',
@@ -180,7 +55,6 @@ return array(
             'transesc' => 'VuFind\View\Helper\Root\TransEsc',
             'translate' => 'VuFind\View\Helper\Root\Translate',
             'truncate' => 'VuFind\View\Helper\Root\Truncate',
-            'userlist' => 'VuFind\View\Helper\Root\UserList',
         )
     ),
 );

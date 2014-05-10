@@ -25,7 +25,15 @@
         // Deal with cart stuff:
         if (!isset($this->renderingError)) {
             $cart = $this->cart();
-            $this->jsTranslations()->addStrings(array('loading' => 'Loading'));
+            $this->jsTranslations()->addStrings(
+                array(
+                    'bulk_email_success' => 'bulk_email_success',
+                    'bulk_save_success' => 'bulk_save_success',
+                    'close' => 'close',
+                    'loading' => 'Loading',
+                    'sms_success' => 'sms_success'
+                )
+            );
             if ($cart->isActive()) {
                 $this->headScript()->appendFile("cookies.js");
                 $this->headScript()->appendFile("cart.js");
@@ -45,6 +53,16 @@
                 );
             }
             $this->headScript()->appendScript($this->jsTranslations()->getScript());
+        }
+        
+        // Session keep-alive
+        if ($this->KeepAlive()) {
+            $this->headScript()->appendScript('var keepAliveInterval = '
+                . $this->KeepAlive());
+            $this->headScript()->appendFile("keep_alive.js");
+        }
+        if ($this->recaptcha()->active()) {
+            $this->headScript()->appendFile("recaptcha_ajax.js");
         }
     ?>
     <?=$this->headScript()?>
@@ -103,7 +121,7 @@
       </div>
     </div>
     <!-- MODAL IN CASE WE NEED ONE -->
-    <div id="modal" class="modal hide fade">
+    <div id="modal" class="modal hide fade" tabindex="-1">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h3></h3>

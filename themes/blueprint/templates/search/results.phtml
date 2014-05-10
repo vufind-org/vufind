@@ -1,6 +1,6 @@
 <?
     // Set up page title:
-    $lookfor = $this->params->getDisplayQuery();
+    $lookfor = $this->results->getUrlQuery()->isQuerySuppressed() ? '' : $this->params->getDisplayQuery();
     if (isset($this->overrideTitle)) {
         $this->headTitle($this->overrideTitle);
     } else {
@@ -28,6 +28,11 @@
     } else {
         $this->layout()->breadcrumbs = '<em>' . $this->transEsc('Search') . ': ' .
             $this->escapeHtml($lookfor) . '</em>';
+    }
+
+    // Disable cart if appropriate:
+    if (!$this->params->getOptions()->supportsCart()) {
+        $this->hideCartControls = true;
     }
 
     // Load Javascript dependencies into header:

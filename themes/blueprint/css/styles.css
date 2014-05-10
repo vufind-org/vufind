@@ -1126,6 +1126,31 @@ ul.similar li {
     padding-bottom:10px;
 }
 
+/** Random Items (results view) **/
+
+ul.random {
+    list-style: none;
+    padding: 0;
+    margin: 0px;
+    text-align:justified;
+}
+
+ul.random li {
+    padding-bottom:10px;
+}
+
+ul.random li img {
+    margin: 0 auto 1em auto;
+}
+
+ul.random.image, ul.random.mixed {
+    text-align: center;
+}
+
+ul.random.image li img {
+    margin: 0 auto;
+}
+
 /*********** Toolbar (Record View) ************/
 .toolbar {
     border-bottom:1px solid #eee;
@@ -1516,11 +1541,15 @@ div.debug code {
 
 .viewButtons {
     text-align: right;
+    margin-bottom: 2px;
 }
 .viewButtons a {
     text-decoration:none;
 }
-.viewButtons img {
+.viewButtons span {
+    padding: 2px;
+}
+.viewButtons img, .viewButtons span {
     border:1px solid transparent;
     border-radius:3px;
 }
@@ -2305,6 +2334,7 @@ div.handle {
 .tagForm select {
   width:200px;
 }
+<<<<<<< HEAD
 
 /********** Styles for results visualizations **********/
 
@@ -2346,3 +2376,5 @@ div.handle {
 #viz-instructions {
   padding-top:600px;
 }
+=======
+>>>>>>> upstream/master

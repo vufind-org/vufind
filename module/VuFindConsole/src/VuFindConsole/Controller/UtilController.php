@@ -366,30 +366,26 @@ class UtilController extends AbstractBase
      */
     public function expiresearchesAction()
     {
-        // Get command-line arguments
-        $argv = $this->consoleOpts->getRemainingArgs();
+        return $this->expire(
+            'Search',
+            '%%count%% expired searches deleted.',
+            'No expired searches to delete.'
+        );
+    }
 
-        // Use command line value as expiration age, or default to 2.
-        $daysOld = isset($argv[0]) ? intval($argv[0]) : 2;
-
-        // Abort if we have an invalid expiration age.
-        if ($daysOld < 2) {
-            Console::writeLine("Expiration age must be at least two days.");
-            return $this->getFailureResponse();
-        }
-
-        // Delete the expired searches--this cleans up any junk left in the database
-        // from old search histories that were not
-        // caught by the session garbage collector.
-        $search = $this->getTable('Search');
-        $query = $search->getExpiredQuery($daysOld);
-        if (($count = count($search->select($query))) == 0) {
-            Console::writeLine("No expired searches to delete.");
-            return $this->getSuccessResponse();
-        }
-        $search->delete($query);
-        Console::writeLine("{$count} expired searches deleted.");
-        return $this->getSuccessResponse();
+    /**
+     * Command-line tool to clear unwanted entries
+     * from session database table.
+     *
+     * @return \Zend\Console\Response
+     */
+    public function expiresessionsAction()
+    {
+        return $this->expire(
+            'Session',
+            '%%count%% expired sessions deleted.',
+            'No expired sessions to delete.'
+        );
     }
 
     /**
@@ -457,6 +453,53 @@ class UtilController extends AbstractBase
                     ->getXML($hierarchy['value'], array('refresh' => true));
             }
         }
+        return $this->getSuccessResponse();
+    }
+
+    /**
+     * Abstract delete method.
+     *
+     * @param string $table         Table to operate on.
+     * @param string $successString String for reporting success.
+     * @param string $failString    String for reporting failure.
+     * @param int    $minAge        Minimum age allowed for expiration (also used
+     * as default value).
+     *
+     * @return mixed
+     */
+    protected function expire($table, $successString, $failString, $minAge = 2)
+    {
+        // Get command-line arguments
+        $argv = $this->consoleOpts->getRemainingArgs();
+
+        // Use command line value as expiration age, or default to $minAge.
+        $daysOld = isset($argv[0]) ? intval($argv[0]) : $minAge;
+
+        // Abort if we have an invalid expiration age.
+        if ($daysOld < 2) {
+            Console::writeLine(
+                str_replace(
+                    '%%age%%', $minAge,
+                    'Expiration age must be at least %%age%% days.'
+                )
+            );
+            return $this->getFailureResponse();
+        }
+
+        // Delete the expired searches--this cleans up any junk left in the database
+        // from old search histories that were not
+        // caught by the session garbage collector.
+        $search = $this->getTable($table);
+        if (!method_exists($search, 'getExpiredQuery')) {
+            throw new \Exception($table . ' does not support getExpiredQuery()');
+        }
+        $query = $search->getExpiredQuery($daysOld);
+        if (($count = count($search->select($query))) == 0) {
+            Console::writeLine($failString);
+            return $this->getSuccessResponse();
+        }
+        $search->delete($query);
+        Console::writeLine(str_replace('%%count%%', $count, $successString));
         return $this->getSuccessResponse();
     }
 }

@@ -210,10 +210,9 @@ class Results extends \VuFind\Search\Base\Results
      */
     public function getSpellingSuggestions()
     {
-        $suggestions = $this->getRawSuggestions();
-        $tokens = $this->spellingTokens($this->spellingQuery);
-        return $this->getSpellingProcessor()
-            ->processSuggestions($suggestions, $tokens, $this->getParams());
+        return $this->getSpellingProcessor()->processSuggestions(
+            $this->getRawSuggestions(), $this->spellingQuery, $this->getParams()
+        );
     }
 
     /**

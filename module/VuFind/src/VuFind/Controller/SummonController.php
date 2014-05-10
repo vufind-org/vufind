@@ -98,6 +98,11 @@ class SummonController extends AbstractSearch
         $view->facetList = $this->processAdvancedFacets(
             $this->getAdvancedFacets()->getFacetList(), $view->saved
         );
+        $specialFacets = $this->parseSpecialFacetsSetting(
+            $view->options->getSpecialAdvancedFacets()
+        );
+        $view->ranges = $this
+            ->getAllRangeSettings($specialFacets, $view->saved, 'Summon');
 
         return $view;
     }

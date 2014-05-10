@@ -94,9 +94,7 @@ class AbstractRecord extends AbstractBase
     {
         $view = parent::createViewModel($params);
         $this->layout()->searchClassId = $view->searchClassId = $this->searchClassId;
-        if (!is_null($this->driver)) {
-            $view->driver = $this->driver;
-        }
+        $view->driver = $this->loadRecord();
         return $view;
     }
 
@@ -178,6 +176,11 @@ class AbstractRecord extends AbstractBase
      */
     public function addtagAction()
     {
+        // Make sure tags are enabled:
+        if (!$this->tagsEnabled()) {
+            throw new \Exception('Tags disabled');
+        }
+
         // Force login:
         if (!($user = $this->getUser())) {
             return $this->forceLogin();
@@ -187,7 +190,7 @@ class AbstractRecord extends AbstractBase
         $driver = $this->loadRecord();
 
         // Save tags, if any:
-        if ($this->params()->fromPost('submit')) {
+        if ($this->formWasSubmitted('submit')) {
             $tags = $this->params()->fromPost('tag');
             $tagParser = $this->getServiceLocator()->get('VuFind\Tags');
             $driver->addTags($user, $tagParser->parse($tags));
@@ -277,8 +280,13 @@ class AbstractRecord extends AbstractBase
      */
     public function saveAction()
     {
+        // Fail if lists are disabled:
+        if (!$this->listsEnabled()) {
+            throw new \Exception('Lists disabled');
+        }
+
         // Process form submission:
-        if ($this->params()->fromPost('submit')) {
+        if ($this->formWasSubmitted('submit')) {
             return $this->processSave();
         }
 
@@ -356,15 +364,26 @@ class AbstractRecord extends AbstractBase
         // Retrieve the record driver:
         $driver = $this->loadRecord();
 
-        // Process form submission:
+        // Create view
         $view = $this->createEmailViewModel();
-        if ($this->params()->fromPost('submit')) {
+        // Set up reCaptcha
+        $view->useRecaptcha = $this->recaptcha()->active('email');
+        // Process form submission:
+        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             // Attempt to send the email and show an appropriate flash message:
             try {
                 $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
                     $view->to, $view->from, $view->message, $driver,
                     $this->getViewRenderer()
                 );
+                if ($this->params()->fromPost('ccself')
+                    && $view->from != $view->to
+                ) {
+                    $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
+                        $view->from, $view->from, $view->message, $driver,
+                        $this->getViewRenderer()
+                    );
+                }
                 $this->flashMessenger()->setNamespace('info')
                     ->addMessage('email_success');
                 return $this->redirectToRecord();
@@ -394,9 +413,10 @@ class AbstractRecord extends AbstractBase
         $view = $this->createViewModel();
         $view->carriers = $sms->getCarriers();
         $view->validation = $sms->getValidationType();
-
+        // Set up reCaptcha
+        $view->useRecaptcha = $this->recaptcha()->active('sms');
         // Process form submission:
-        if ($this->params()->fromPost('submit')) {
+        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             // Send parameters back to view so form can be re-populated:
             $view->to = $this->params()->fromPost('to');
             $view->provider = $this->params()->fromPost('provider');
@@ -429,7 +449,6 @@ class AbstractRecord extends AbstractBase
      */
     public function citeAction()
     {
-        $this->loadRecord();
         $view = $this->createViewModel();
         $view->setTemplate('record/cite');
         return $view;

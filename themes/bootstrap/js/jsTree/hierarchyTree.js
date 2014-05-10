@@ -136,12 +136,12 @@ function doTreeSearch()
 
 $(document).ready(function()
 {
-	// Code for the search button
+  // Code for the search button
   $('#treeSearch input[type="submit"]').click(doTreeSearch);
-	
+
   hierarchyID = $("#hierarchyTree").find(".hiddenHierarchyId")[0].value;
   var recordID = $("#hierarchyTree").find(".hiddenRecordId")[0].value;
-  var scroller = hierarchySettings.lightboxMode ? '#modalDialog' : '#hierarchyTree';
+  var scroller = hierarchySettings.lightboxMode ? '#modal .modal-body' : '#hierarchyTree';
   var context = $("#hierarchyTree").find(".hiddenContext")[0].value;
 
   if (!hierarchySettings.fullHierarchy) {
@@ -281,7 +281,7 @@ function html_entity_decode(string, quote_style) {
     tmp_str = tmp_str.split(entity).join(symbol);
   }
   tmp_str = tmp_str.split('&#039;').join("'");
-  
+
   return tmp_str;
 }
 

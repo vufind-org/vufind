@@ -42,22 +42,6 @@ use Zend\I18n\Translator\TextDomain;
 class DevtoolsController extends \VuFind\Controller\AbstractBase
 {
     /**
-     * Get the path to the language files
-     *
-     * @param string $language Language file to include on path (null for base)
-     *
-     * @return string
-     */
-    protected function getLanguagePath($language = null)
-    {
-        $path = APPLICATION_PATH . '/languages';
-        if (null !== $language) {
-            $path .= '/' . $language . '.ini';
-        }
-        return $path;
-    }
-
-    /**
      * Get a list of help files in the specified language.
      *
      * @param string $language Language to check.
@@ -90,7 +74,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
     protected function getLanguages()
     {
         $langs = array();
-        $dir = opendir($this->getLanguagePath());
+        $dir = opendir(APPLICATION_PATH . '/languages');
         while ($file = readdir($dir)) {
             if (substr($file, -4) == '.ini') {
                 $lang = current(explode('.', $file));
@@ -165,15 +149,22 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
      */
     public function languageAction()
     {
-        $loader = new \VuFind\I18n\Translator\Loader\ExtendedIni();
+        // Test languages with no local overrides and no fallback:
+        $loader = new \VuFind\I18n\Translator\Loader\ExtendedIni(
+            array(APPLICATION_PATH  . '/languages')
+        );
         $mainLanguage = $this->params()->fromQuery('main', 'en');
-        $main = $loader->load(null, $this->getLanguagePath($mainLanguage));
+        $main = $loader->load($mainLanguage, null);
 
         $details = array();
         $allLangs = $this->getLanguages();
         sort($allLangs);
         foreach ($allLangs as $langCode) {
-            $lang = $loader->load(null, $this->getLanguagePath($langCode));
+            $lang = $loader->load($langCode, null);
+            if (isset($lang['@parent_ini'])) {
+                // don't count macros in comparison:
+                unset($lang['@parent_ini']);
+            }
             $details[$langCode] = $this->compareLanguages($main, $lang);
             $details[$langCode]['object'] = $lang;
             $details[$langCode]['name'] = $this->getLangName($langCode);

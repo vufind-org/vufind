@@ -3011,7 +3011,7 @@
     // Added LOS 03/04/12
     $.vakata.xslt = function (xml, xsl, callback) {
     var rs = "", xm, xs, processor, support;
-    if(window.ActiveXObject) {    
+    if(window.ActiveXObject || "ActiveXObject" in window) {    
       var xslt = new ActiveXObject("Msxml2.XSLTemplate");
       var xmlDoc = new ActiveXObject("Msxml2.DOMDocument");
       var xslDoc = new ActiveXObject("Msxml2.FreeThreadedDOMDocument");

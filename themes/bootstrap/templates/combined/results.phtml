@@ -38,14 +38,15 @@
 ?>
 <?=$this->flashmessages()?>
 <form class="form-inline" method="post" name="bulkActionForm" action="<?=$this->url('cart-home')?>">
-  <? if ($this->cart()->isActive()): ?>
+  <? if ($this->supportsCart && $this->cart()->isActive()): ?>
     <div class="clearfix">
       <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
     </div>
   <? endif; ?>
   <div class="row-fluid">
+    <? $columns = count($this->combinedResults); ?>
     <? foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
-      <div class="span6 combined-list" id="combined_<?=$this->escapeHtml($searchClassId)?>">
+      <div class="span<?=floor(12/$columns)?> combined-list" id="combined_<?=$this->escapeHtml($searchClassId)?>">
         <? if (isset($currentSearch['ajax']) && $currentSearch['ajax']): ?>
           <?=$this->render('combined/results-ajax.phtml', array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch))?>
         <? else: ?>

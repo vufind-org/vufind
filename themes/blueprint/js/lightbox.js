@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, confirm, extractController, extractSource, getItemsFromCartCookie, hexEncode, htmlEncode, path, printIDs, rc4Encrypt, redrawCartStatus, refreshCommentList, removeRecordState, saveCartCookie, vufindString*/
+/*global checkSaveStatuses, confirm, extractController, extractSource, getItemsFromCartCookie, hexEncode, htmlEncode, path, printIDs, rc4Encrypt, Recaptcha, redrawCartStatus, refreshCommentList, removeRecordState, saveCartCookie, vufindString*/
 
 // keep a handle to the current opened dialog so we can access it later
 var __dialogHandle = {dialog: null, processFollowup:false, followupModule: null, followupAction: null, recordId: null, postParams: null};
@@ -72,6 +72,9 @@ function displayLightboxFeedback($form, message, type) {
 function displayFormError($form, error) {
     $form.parent().find('.error').remove();
     $form.prepend('<div class="error">' + error + '</div>');
+    if (Recaptcha) {
+      Recaptcha.reload();
+    }
 }
 
 function displayFormInfo($form, msg) {
@@ -98,9 +101,8 @@ function registerAjaxLogin() {
                 if (response.status == 'OK') {
                     var salt = response.data;
 
-                    // get the user entered username/password
+                    // get the user entered password
                     var password = form.password.value;
-                    var username = form.username.value;
 
                     // encrypt the password with the salt
                     password = rc4Encrypt(salt, password);
@@ -108,12 +110,22 @@ function registerAjaxLogin() {
                     // hex encode the encrypted password
                     password = hexEncode(password);
 
+                    var params = {password:password};
+
+                    // get any other form values
+                    for (var i = 0; i < form.length; i++) {
+                        if (form.elements[i].name == 'password') {
+                            continue;
+                        }
+                        params[form.elements[i].name] = form.elements[i].value;
+                    }
+
                     // login via ajax
                     $.ajax({
                         type: 'POST',
                         url: path + '/AJAX/JSON?method=login',
                         dataType: 'json',
-                        data: {username:username, password:password},
+                        data: params,
                         success: function(response) {
                             if (response.status == 'OK') {
                                 // Hide "log in" options and show "log out" options:

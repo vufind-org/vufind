@@ -450,6 +450,17 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Does this search option support the cart/book bag?
+     *
+     * @return bool
+     */
+    public function supportsCart()
+    {
+        // Assume true by default.
+        return true;
+    }
+
+    /**
      * Get a session namespace specific to the current class.
      *
      * @return SessionContainer

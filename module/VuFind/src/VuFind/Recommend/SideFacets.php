@@ -49,6 +49,20 @@ class SideFacets extends AbstractFacets
     protected $dateFacets = array();
 
     /**
+     * Generic range facet configuration
+     *
+     * @var array
+     */
+    protected $genericRangeFacets = array();
+
+    /**
+     * Numeric range facet configuration
+     *
+     * @var array
+     */
+    protected $numericRangeFacets = array();
+
+    /**
      * Main facet configuration
      *
      * @var array
@@ -61,6 +75,13 @@ class SideFacets extends AbstractFacets
      * @var array
      */
     protected $checkboxFacets = array();
+
+    /**
+     * Collapsed facet setting
+     *
+     * @var bool|string
+     */
+    protected $collapsedFacets = false;
 
     /**
      * setConfig
@@ -89,10 +110,18 @@ class SideFacets extends AbstractFacets
         // Load boolean configurations:
         $this->loadBooleanConfigs($config, array_keys($this->mainFacets));
 
-        // Get a list of fields that should be displayed as date ranges rather than
+        // Get a list of fields that should be displayed as ranges rather than
         // standard facet lists.
         if (isset($config->SpecialFacets->dateRange)) {
             $this->dateFacets = $config->SpecialFacets->dateRange->toArray();
+        }
+        if (isset($config->SpecialFacets->genericRange)) {
+            $this->genericRangeFacets
+                = $config->SpecialFacets->genericRange->toArray();
+        }
+        if (isset($config->SpecialFacets->numericRange)) {
+            $this->numericRangeFacets
+                = $config->SpecialFacets->numericRange->toArray();
         }
 
         // Checkbox facets:
@@ -105,6 +134,11 @@ class SideFacets extends AbstractFacets
             ? $config->$checkboxSection->toArray() : array();
         if (isset($flipCheckboxes) && $flipCheckboxes) {
             $this->checkboxFacets = array_flip($this->checkboxFacets);
+        }
+
+        // Collapsed facets:
+        if (isset($config->Results_Settings->collapsedFacets)) {
+            $this->collapsedFacets = $config->Results_Settings->collapsedFacets;
         }
     }
 
@@ -154,22 +188,54 @@ class SideFacets extends AbstractFacets
      */
     public function getDateFacets()
     {
-        $filters = $this->results->getParams()->getFilters();
-        $result = array();
-        foreach ($this->dateFacets as $current) {
-            $from = $to = '';
-            if (isset($filters[$current])) {
-                foreach ($filters[$current] as $filter) {
-                    if ($range = SolrUtils::parseRange($filter)) {
-                        $from = $range['from'] == '*' ? '' : $range['from'];
-                        $to = $range['to'] == '*' ? '' : $range['to'];
-                        break;
-                    }
-                }
+        return $this->getRangeFacets('dateFacets');
+    }
+
+    /**
+     * getGenericRangeFacets
+     *
+     * Return generic range facet information in a format processed for use in the
+     * view.
+     *
+     * @return array Array of from/to value arrays keyed by field.
+     */
+    public function getGenericRangeFacets()
+    {
+        return $this->getRangeFacets('genericRangeFacets');
+    }
+
+    /**
+     * getNumericRangeFacets
+     *
+     * Return numeric range facet information in a format processed for use in the
+     * view.
+     *
+     * @return array Array of from/to value arrays keyed by field.
+     */
+    public function getNumericRangeFacets()
+    {
+        return $this->getRangeFacets('numericRangeFacets');
+    }
+
+    /**
+     * Get combined range details.
+     *
+     * @return array
+     */
+    public function getAllRangeFacets()
+    {
+        $raw = array(
+            'date' => $this->getDateFacets(),
+            'generic' => $this->getGenericRangeFacets(),
+            'numeric' => $this->getNumericRangeFacets()
+        );
+        $processed = array();
+        foreach ($raw as $type => $values) {
+            foreach ($values as $field => $range) {
+                $processed[$field] = array('type' => $type, 'values' => $range);
             }
-            $result[$current] = array($from, $to);
         }
-        return $result;
+        return $processed;
     }
 
     /**
@@ -179,17 +245,42 @@ class SideFacets extends AbstractFacets
      */
     public function getCollapsedFacets()
     {
-        $config = $this->configLoader->get('facets');
-        if (!isset($config->Results_Settings->collapsedFacets)
-            || empty($config->Results_Settings->collapsedFacets)
-        ) {
+        if (empty($this->collapsedFacets)) {
             return array();
-        } elseif ($config->Results_Settings->collapsedFacets == '*') {
+        } elseif ($this->collapsedFacets == '*') {
             return array_keys($this->getFacetSet());
-        } else {
-            return array_map(
-                'trim', explode(',', $config->Results_Settings->collapsedFacets)
-            );
         }
+        return array_map('trim', explode(',', $this->collapsedFacets));
+    }
+
+    /**
+     * getRangeFacets
+     *
+     * Return range facet information in a format processed for use in the view.
+     *
+     * @param string $property Name of property containing active range facets
+     *
+     * @return array Array of from/to value arrays keyed by field.
+     */
+    protected function getRangeFacets($property)
+    {
+        $filters = $this->results->getParams()->getFilters();
+        $result = array();
+        if (isset($this->$property) && is_array($this->$property)) {
+            foreach ($this->$property as $current) {
+                $from = $to = '';
+                if (isset($filters[$current])) {
+                    foreach ($filters[$current] as $filter) {
+                        if ($range = SolrUtils::parseRange($filter)) {
+                            $from = $range['from'] == '*' ? '' : $range['from'];
+                            $to = $range['to'] == '*' ? '' : $range['to'];
+                            break;
+                        }
+                    }
+                }
+                $result[$current] = array($from, $to);
+            }
+        }
+        return $result;
     }
 }
