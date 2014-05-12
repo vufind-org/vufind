@@ -48,7 +48,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
     protected $consortium = false;
     protected $agency = array();
-    protected $agency_url = array();
+    protected $url;
     
     /**
      * Set the HTTP service to be used for HTTP requests.
@@ -77,20 +77,19 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             throw new ILSException('Configuration needs to be set.');
         }
         
+        $this->url = $this->config['Catalog']['url'];
         if ($this->config['Catalog']['consortium']) {
             $this->consortium = true;
             foreach ($this->config['Catalog']['agency'] as $agency) {
-                $this->agency[] = $agency;
-                $this->agency_url[$agency] = $this->config['Agency_' . $agency]['url'];
+                $this->agency[$agency] = 1;
             }
         } else {
             $this->consortium = false;
             if (is_array($this->config['Catalog']['agency'])) {
-               $this->agency[0] = $this->config['Catalog']['agency'][0];
+               $this->agency[$this->config['Catalog']['agency'][0]] = 1;
             } else {
-               $this->agency[0] = $this->config['Catalog']['agency'];
+               $this->agency[$this->config['Catalog']['agency']] = 1;
             }
-            $this->agency_url[$this->agency[0]] = $this->config['Catalog']['url'];
         }
     }
 
@@ -101,16 +100,12 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @return object     SimpleXMLElement parsed from response
      */
-    protected function sendRequest($xml, $url = null)
+    protected function sendRequest($xml)
     {
-    	$_url = "";
-    	if (is_null($url)) $_url = $this->config['Catalog']['url'];
-    	else $_url = $url;
-
         // Make the NCIP request:
         try {
             $client = $this->httpService
-                ->createClient($_url);
+                ->createClient($this->url);
             $client->setRawBody($xml);
             $client->setEncType('application/xml; "charset=utf-8"');
             $result = $client->setMethod('POST')->send();
@@ -400,19 +395,22 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 else if (preg_match('/\(([^\)]+)\)\s*([0-9]+)/', $id, $matches)) {
                     $matched_agency = $matches[1];
                     $matched_id = $matches[2];
-                    if ($this->agency_url[$matched_agency]) {
+                    if ($this->agency[$matched_agency]) {
                         $item_agency_id[$matched_agency] = $matched_id;
                     }
                 }
             }
         } else {
-            $item_agency_id[$this->agency[0]] = $ids[0];
+            foreach ($this->agency as $_agency) {
+               $item_agency_id[$_agency] = $ids[0];
+               break;
+            }
         }
 
         $holdings = array();
         foreach ($item_agency_id as $_agency => $_id) {
             $request = $this->getStatusRequest(array($_id), null, $_agency);
-            $response = $this->sendRequest($request, $this->agency_url[$_agency]);
+            $response = $this->sendRequest($request);
 
             $avail = $response->xpath(
                 'ns1:Ext/ns1:LookupItemSetResponse/ns1:BibInformation/ns1:HoldingsSet'
@@ -969,7 +967,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $details['item_agency_id'], 
                 "Stack Retrieval", "Item", $lastInterestDate, $pickUpLocation);
 
-        $response = $this->sendRequest($request, $this->agency_url[$details['agency_id']]);
+        $response = $this->sendRequest($request);
         $success = $response->xpath(
                 'ns1:RequestItemResponse/ns1:ItemId/ns1:ItemIdentifierValue');
 
