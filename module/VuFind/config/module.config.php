@@ -323,6 +323,7 @@ $config = array(
                     'expandfacets' => 'VuFind\Recommend\Factory::getExpandFacets',
                     'favoritefacets' => 'VuFind\Recommend\Factory::getFavoriteFacets',
                     'sidefacets' => 'VuFind\Recommend\Factory::getSideFacets',
+                    'randomrecommend' => 'VuFind\Recommend\Factory::getRandomRecommend',
                     'summonbestbets' => 'VuFind\Recommend\Factory::getSummonBestBets',
                     'summondatabases' => 'VuFind\Recommend\Factory::getSummonDatabases',
                     'summonresults' => 'VuFind\Recommend\Factory::getSummonResults',

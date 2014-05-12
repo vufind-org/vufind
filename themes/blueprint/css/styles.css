@@ -1126,6 +1126,31 @@ ul.similar li {
     padding-bottom:10px;
 }
 
+/** Random Items (results view) **/
+
+ul.random {
+    list-style: none;
+    padding: 0;
+    margin: 0px;
+    text-align:justified;
+}
+
+ul.random li {
+    padding-bottom:10px;
+}
+
+ul.random li img {
+    margin: 0 auto 1em auto;
+}
+
+ul.random.image, ul.random.mixed {
+    text-align: center;
+}
+
+ul.random.image li img {
+    margin: 0 auto;
+}
+
 /*********** Toolbar (Record View) ************/
 .toolbar {
     border-bottom:1px solid #eee;

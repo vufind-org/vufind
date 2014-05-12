@@ -208,3 +208,28 @@ select, .btn:not(.btn-link){vertical-align:top}
 #custom_recaptcha_widget #recaptcha_image { border:1px solid #000;padding:6px;margin:1em 0; }
 #custom_recaptcha_widget #recaptcha_response_field { margin:0 .5em }
 #custom_recaptcha_widget > div > a { display:inline-block;float:left;margin:5px 10px 5px 0; }
+
+/* --- Random Items (results view) --- */
+
+ul.random {
+    list-style: none;
+    padding: 0;
+    margin: 0px;
+    text-align:justified;
+}
+
+ul.random li {
+    padding-bottom:10px;
+}
+
+ul.random li img {
+    margin: 0 auto 1em auto;
+}
+
+ul.random.image, ul.random.mixed {
+    text-align: center;
+}
+
+ul.random.image li img {
+    margin: 0 auto;
+}
