@@ -105,7 +105,9 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function loadPickupLocations($filename)
     {
+file_put_contents('/usr/local/vufind2/look.txt', "\n\nin load pickup... :\n\n" . $debug,  FILE_APPEND);
         if (($handle = fopen($filename, "r")) !== FALSE) {
+file_put_contents('/usr/local/vufind2/look.txt', "\n\nin load pickup... SUCCESS:\n\n" . $debug,  FILE_APPEND);
             while (($data = fgetcsv($handle, 1000, "\t")) !== FALSE) {
                 $this->pickupLocations[$data[0]][] = 
                     array(
@@ -114,6 +116,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                     );
             }
             fclose($handle);
+ob_start();
+var_dump($this->pickupLocations);
+$debug = ob_get_clean();
+file_put_contents('/usr/local/vufind2/look.txt', "\n\npickup locations:\n\n" . $debug,  FILE_APPEND);
         }
     }
 
@@ -434,6 +440,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         $holdings = array();
         foreach ($item_agency_id as $_agency => $_id) {
             $request = $this->getStatusRequest(array($_id), null, $_agency);
+ob_start();
+var_dump($request);
+$debug = ob_get_clean();
+file_put_contents('/usr/local/vufind2/look.txt', "\n\nrequest:\n\n" . $debug,  FILE_APPEND);
             $response = $this->sendRequest($request);
 
             $avail = $response->xpath(
@@ -978,6 +988,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 $details['patron']['patron_agency_id'], 
                 $details['item_agency_id'], 
                 "Stack Retrieval", "Item", $lastInterestDate, $pickUpLocation);
+ob_start();
+var_dump($request);
+$debug = ob_get_clean();
+file_put_contents('/usr/local/vufind2/look.txt', "\n\nrequest:\n\n" . $debug,  FILE_APPEND);
 
         $response = $this->sendRequest($request);
         $success = $response->xpath(
@@ -1044,6 +1058,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                  $details['patron']['patron_agency_id'], 
                  $details['item_agency_id'], 
                  $holdType, "Item", $lastInterestDate, $pickUpLocation);
+ob_start();
+var_dump($request);
+$debug = ob_get_clean();
+file_put_contents('/usr/local/vufind2/look.txt', "\n\nplace hold:\n\n" . $debug,  FILE_APPEND);
         $response = $this->sendRequest($request);
         $success = $response->xpath(
                 'ns1:RequestItemResponse/ns1:ItemId/ns1:ItemIdentifierValue');
@@ -1085,6 +1103,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $request = $this->getCancelRequest(
                 $username, $password, $requestId, "Hold"
             );
+ob_start();
+var_dump($request);
+$debug = ob_get_clean();
+file_put_contents('/usr/local/vufind2/look.txt', "\n\ncancel holds:\n\n" . $debug,  FILE_APPEND);
             $cancelRequestResponse = $this->sendRequest($request);
             $userId = $cancelRequestResponse->xpath(
                 'ns1:CancelRequestItemResponse/' .
@@ -1151,6 +1173,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $request = $this->getCancelRequest(
                 $username, $password, $requestId, "Stack Retrieval"
             );
+ob_start();
+var_dump($request);
+$debug = ob_get_clean();
+file_put_contents('/usr/local/vufind2/look.txt', "\n\ncancel callslip:\n\n" . $debug,  FILE_APPEND);
             $cancelRequestResponse = $this->sendRequest($request);
             $userId = $cancelRequestResponse->xpath(
                 'ns1:CancelRequestItemResponse/'. 

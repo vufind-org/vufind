@@ -1,0 +1,2 @@
+KCCdb	3	Main Circ Desk
+KCCdb	115	An invalid location (testing)
