@@ -452,7 +452,7 @@ class SearchServiceTest extends TestCase
      * @expectedException VuFindSearch\Backend\Exception\BackendException
      * @expectedExceptionMessage test
      */
-    public function testRandomNoInterfaceWithException()
+    public function testRandomNoInterfaceWithExceptionAtFirstSearch()
     {
         $service = $this->getService();
         $backend = $this->getBackend();
@@ -460,6 +460,7 @@ class SearchServiceTest extends TestCase
         $params = new ParamBag(array('x' => 'y'));
         $query = new Query('test');
 
+        // Exception at first search
         $backend->expects($this->once())->method('search')
             ->will($this->throwException($exception));
         $em = $service->getEventManager();
@@ -468,6 +469,92 @@ class SearchServiceTest extends TestCase
         $em->expects($this->at(1))->method('trigger')
             ->with($this->equalTo('error'), $this->equalTo($exception));
         $service->random('foo', $query, "10", $params);
+    }
+
+    /**
+     * Test random (without RandomInterface) exception at item retrieval search.
+     *
+     * @return void
+     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     * @expectedExceptionMessage test
+     */
+    public function testRandomNoInterfaceWithExceptionAtItemSearch()
+    {
+        $limit = 10;
+        $total = 20;
+        $service = $this->getService();
+        $backend = $this->getBackend();
+        $responseForZero = $this->getRecordCollection();
+        $exception = new BackendException('test');
+
+        $params = new ParamBag(array('x' => 'y'));
+        $query = new Query('test');
+
+        // First Search Grabs 0 records but uses get total method
+        $backend->expects($this->at(0))->method('search')
+        ->with(
+            $this->equalTo($query),
+            $this->equalTo("0"),
+            $this->equalTo("0"),
+            $this->equalTo($params)
+        )->will($this->returnValue($responseForZero));
+
+        $responseForZero->expects($this->once())->method('getTotal')
+            ->will($this->returnValue($total));
+
+        // Exception at item search
+        $backend->expects($this->at(1))->method('search')
+            ->will($this->throwException($exception));
+        $em = $service->getEventManager();
+        $em->expects($this->at(0))->method('trigger')
+            ->with($this->equalTo('pre'), $this->equalTo($backend));
+        $em->expects($this->at(1))->method('trigger')
+            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $service->random('foo', $query, "10", $params);
+    }
+
+    /**
+     * Test random (without RandomInterface) exception with less results than limit.
+     *
+     * @return void
+     * @expectedException VuFindSearch\Backend\Exception\BackendException
+     * @expectedExceptionMessage test
+     */
+    public function testRandomNoInterfaceExceptionWithLessResultsThanLimit()
+    {
+        $limit = 10;
+        $total = 5;
+        $service = $this->getService();
+        $backend = $this->getBackend();
+        $responseForZero = $this->getRecordCollection();
+        $response = $this->getRecordCollection();
+        $exception = new BackendException('test');
+
+        $params = new ParamBag(array('x' => 'y'));
+        $query = new Query('test');
+
+        // First Search Grabs 0 records but uses get total method
+        $backend->expects($this->at(0))->method('search')
+        ->with(
+            $this->equalTo($query),
+            $this->equalTo("0"),
+            $this->equalTo("0"),
+            $this->equalTo($params)
+        )->will($this->returnValue($responseForZero));
+
+        $responseForZero->expects($this->once())->method('getTotal')
+            ->will($this->returnValue($total));
+
+        // Second search grabs all the records
+        $backend->expects($this->at(1))->method('search')
+            ->will($this->throwException($exception));
+
+        $em = $service->getEventManager();
+        $em->expects($this->at(0))->method('trigger')
+            ->with($this->equalTo('pre'), $this->equalTo($backend));
+        $em->expects($this->at(1))->method('trigger')
+            ->with($this->equalTo('error'), $this->equalTo($exception));
+        $service->random('foo', $query, $limit, $params);
     }
 
     /**

@@ -57,13 +57,173 @@ class RandomRecommendTest extends TestCase
     }
 
     /**
-     * Test load
+     * Test settings
+     *
+     * @return void
+     */
+    public function testCanSetSettings()
+    {
+        //[backend]:[limit]:[display mode]:[random mode]:[minimumset]:[facet1]:[facetvalue1]
+        $this->recommend->setConfig("Solr:10:mixed:disregard:20:facet1:value1:facet2:value2");
+        $this->assertEquals(
+            "Solr", \PHPUnit_Framework_Assert::readAttribute(
+                $this->recommend, 'backend'
+            )
+        );
+        $this->assertEquals(
+            "10", \PHPUnit_Framework_Assert::readAttribute(
+                $this->recommend, 'limit'
+            )
+        );
+        $this->assertEquals(
+            "mixed", \PHPUnit_Framework_Assert::readAttribute(
+                $this->recommend, 'displayMode'
+            )
+        );
+        $this->assertEquals(
+            "disregard", \PHPUnit_Framework_Assert::readAttribute(
+                $this->recommend, 'mode'
+            )
+        );
+        $this->assertEquals(
+            "20", \PHPUnit_Framework_Assert::readAttribute(
+                $this->recommend, 'minimum'
+            )
+        );
+        $filters = \PHPUnit_Framework_Assert::readAttribute($this->recommend, 'filters');
+        $this->assertInternalType("array", $filters);
+        $this->assertCount(2, $filters);
+        $this->assertEquals("facet1:value1", $filters[0]);
+        $this->assertEquals("facet2:value2", $filters[1]);
+    }
+
+    /**
+     * Test initialisation
+     *
+     * @return void
+     */
+    public function testCanInitialise()
+    {
+        $service = $this->getMock('VuFindSearch\Service');
+        $paramManager = $this->getMock('VuFind\Search\Params\PluginManager');
+        $recommend = new Random($service, $paramManager);
+
+        // Use Solr since some Base components are abstract:
+        $params = $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
+            ->get('Solr');
+        $query = $this->getFixture('query');
+        $params->setBasicSearch($query->getString(), $query->getHandler());
+        $request = $this->getMock('\Zend\StdLib\Parameters');
+
+        $service->expects($this->once())->method('random')
+            ->with(
+                $this->equalTo("Solr"),
+                $this->equalTo($params->getQuery()),
+                $this->equalTo(10)
+            )->will($this->returnValue($this->getMock('VuFindTest\Recommend\TestSearchResultsForRandom')));
+
+
+        $recommend->setConfig("Solr:10:mixed:retain:20:facet1:value1:facet2:value2");
+        $recommend->init($params, $request);
+    }
+
+    /**
+     * Test initialisation
+     *
+     * @return void
+     */
+    public function testCanInitialiseInDisregardMode()
+    {
+        $service = $this->getMock('VuFindSearch\Service');
+        $paramManager = $this->getMock('VuFind\Search\Params\PluginManager');
+        $recommend = new Random($service, $paramManager);
+
+        $paramManager->expects($this->once())->method('get')
+            ->with($this->equalTo("Solr"))
+            ->will($this->returnValue(
+                $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
+                    ->get('Solr')
+                )
+            );
+
+        // Use Solr since some Base components are abstract:
+        $params = $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
+            ->get('Solr');
+        $query = $this->getFixture('query');
+        $params->setBasicSearch($query->getString(), $query->getHandler());
+        $request = $this->getMock('\Zend\StdLib\Parameters');
+
+        $service->expects($this->once())->method('random')
+            ->with($this->equalTo("Solr"))
+            ->will($this->returnValue($this->getMock('VuFindTest\Recommend\TestSearchResultsForRandom')));
+
+        $recommend->setConfig("Solr:10:mixed:disregard:20:facet1:value1:facet2:value2");
+        $recommend->init($params, $request);
+    }
+
+    /**
+     * Test initialisation
+     *
+     * @return void
+     */
+    public function testWillReturnEmptyForMinimumResultLimit()
+    {
+        $service = $this->getMock('VuFindSearch\Service');
+        $paramManager = $this->getMock('VuFind\Search\Params\PluginManager');
+        $recommend = new Random($service, $paramManager);
+        $records = array("1", "2", "3", "4", "5");
+
+        // Use Solr since some Base components are abstract:
+        $params = $this->getServiceManager()->get('VuFind\SearchParamsPluginManager')
+            ->get('Solr');
+        $query = $this->getFixture('query');
+        $params->setBasicSearch($query->getString(), $query->getHandler());
+        $request = $this->getMock('\Zend\StdLib\Parameters');
+
+        $results = $this->getMock('VuFindTest\Recommend\TestSearchResultsForRandom');
+        $results->expects($this->once())->method('getRecords')
+            ->will($this->returnValue($records));
+
+        $service->expects($this->once())->method('random')
+        ->with(
+            $this->equalTo("Solr"),
+            $this->equalTo($params->getQuery()),
+            $this->equalTo(10)
+        )->will($this->returnValue($results));
+
+        $recommend->setConfig("Solr:10:mixed:retain:20:facet1:value1:facet2:value2");
+        $recommend->init($params, $request);
+        $output = $recommend->getResults();
+        $this->assertEmpty($output);
+    }
+
+    /**
+     * Test displaymode
      *
      * @return void
      */
     public function testCanSetDisplayMode()
     {
-        $this->recommend->setConfig("Solr:10:disregard");
-        $this->assertEquals("disregard", $this->recommend->getDisplayMode());
+        $this->recommend->setConfig("Solr:10:mixed");
+        $this->assertEquals("mixed", $this->recommend->getDisplayMode());
     }
+
+    /**
+     * Get a fixture object
+     *
+     * @return mixed
+     */
+    protected function getFixture($file)
+    {
+        $fixturePath = realpath(__DIR__ . '/../../../../fixtures/searches/basic') . '/';
+        return unserialize(file_get_contents($fixturePath . $file));
+    }
+}
+
+/**
+ * Stub class to test random.
+ */
+abstract class TestSearchResultsForRandom
+{
+    abstract function getRecords();
 }
