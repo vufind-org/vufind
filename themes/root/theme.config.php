@@ -35,7 +35,6 @@ return array(
             'systememail' => 'VuFind\View\Helper\Root\Factory::getSystemEmail',
             'userlist' => 'VuFind\View\Helper\Root\Factory::getUserList',
             'usertags' => 'VuFind\View\Helper\Root\Factory::getUserTags',
-            'videoclips' => 'VuFind\View\Helper\Root\Factory::getVideoClips',
             'worldcat' => 'VuFind\View\Helper\Root\Factory::getWorldCat',
         ),
         'invokables' => array(

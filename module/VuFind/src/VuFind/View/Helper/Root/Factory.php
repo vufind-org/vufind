@@ -497,20 +497,6 @@ class Factory
     }
 
     /**
-     * Construct the VideoClips helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return VideoClips
-     */
-    public static function getVideoClips(ServiceManager $sm)
-    {
-        return new VideoClips(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-        );
-    }
-
-    /**
      * Construct the WorldCat helper.
      *
      * @param ServiceManager $sm Service manager.
