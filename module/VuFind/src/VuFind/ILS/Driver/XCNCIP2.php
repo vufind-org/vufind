@@ -885,7 +885,17 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
     public function getPickUpLocations($patron) 
     {
-        return $this->pickupLocations[$patron['patron_agency_id']];
+        $locations = array();
+        foreach ($this->agency as $agency => $agencyID) {
+            foreach ($this->pickupLocations[$agency] as $thisAgency) {
+                $locations[] = 
+                    array(
+                        'locationID' => $thisAgency['locationID'],
+                        'locationDisplay' => $thisAgency['locationDisplay'],
+                    );
+            }
+        }
+        return $locations;
     }
     
     /**
