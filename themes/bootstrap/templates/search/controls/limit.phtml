@@ -1,4 +1,4 @@
-<div class="limitSelect">
+<div class="limitSelect text-right">
   <? $limitList = $this->params->getLimitList(); if (count($limitList) > 1): ?>
     <form action="<?=$this->currentPath() . $this->results->getUrlQuery()->setLimit(null)?>" class="form-inline" method="post">
       <label for="limit" class="help-inline"><?=$this->transEsc('Results per page')?></label>
