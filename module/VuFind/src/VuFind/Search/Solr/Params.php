@@ -482,13 +482,13 @@ class Params extends \VuFind\Search\Base\Params
         // Highlighting -- on by default, but we should disable if necessary:
         if (!$this->getOptions()->highlightEnabled()) {
             $backendParams->add('hl', 'false');
-    }
+        }
 
-    // Pivot facets for visual results
+        // Pivot facets for visual results
 
-    if ($this->getVisualFacets()) {
-        $backendParams->add('facet.pivot', $this->getVisualFacets());
-    }
+        if ($this->getVisualFacets()) {
+            $backendParams->add('facet.pivot', $this->getVisualFacets());
+        }
 
         return $backendParams;
     }
