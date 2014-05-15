@@ -257,13 +257,18 @@ class MyResearchController extends AbstractBase
      */
     public function logoutAction()
     {
-        $logoutTarget = $this->getRequest()->getServer()->get('HTTP_REFERER');
-        if (empty($logoutTarget)) {
-            $logoutTarget = $this->getServerUrl('home');
-        }
+        $config = $this->getConfig();
+        if (isset($config->Site->logOutRoute)) {
+            $logoutTarget = $this->getServerUrl($config->Site->logOutRoute);
+        } else {
+            $logoutTarget = $this->getRequest()->getServer()->get('HTTP_REFERER');
+            if (empty($logoutTarget)) {
+                $logoutTarget = $this->getServerUrl('home');
+            }
 
-        // clear querystring parameters
-        $logoutTarget = preg_replace('/\?.*/', '', $logoutTarget);
+            // clear querystring parameters
+            $logoutTarget = preg_replace('/\?.*/', '', $logoutTarget);
+        }
 
         return $this->redirect()
             ->toUrl($this->getAuthManager()->logout($logoutTarget));
