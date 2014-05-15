@@ -482,13 +482,13 @@ class Params extends \VuFind\Search\Base\Params
         // Highlighting -- on by default, but we should disable if necessary:
         if (!$this->getOptions()->highlightEnabled()) {
             $backendParams->add('hl', 'false');
-    }
+        }
 
-    // Pivot facets for visual results
+        // Pivot facets for visual results
 
-    if ($this->getVisualFacets()) {
-        $backendParams->add('facet.pivot', $this->getVisualFacets());
-    }
+        if ($this->getPivotFacets()) {
+            $backendParams->add('facet.pivot', $this->getPivotFacets());
+        }
 
         return $backendParams;
     }
@@ -501,7 +501,7 @@ class Params extends \VuFind\Search\Base\Params
      * @return void
      */
 
-    public function setVisualFacets($facets) {
+    public function setPivotFacets($facets) {
         $this->pivotFacets = $facets;
     }
 
@@ -511,7 +511,7 @@ class Params extends \VuFind\Search\Base\Params
      * @return string
      */
 
-    public function getVisualFacets() {
+    public function getPivotFacets() {
         return $this->pivotFacets;
     }
 
@@ -548,5 +548,4 @@ class Params extends \VuFind\Search\Base\Params
 
         return $filter;
     }
-
 }
