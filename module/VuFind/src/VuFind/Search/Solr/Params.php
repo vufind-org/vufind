@@ -486,13 +486,8 @@ class Params extends \VuFind\Search\Base\Params
 
         // Pivot facets for visual results
 
-<<<<<<< HEAD
         if ($this->getPivotFacets()) {
             $backendParams->add('facet.pivot', $this->getPivotFacets());
-=======
-        if ($this->getVisualFacets()) {
-            $backendParams->add('facet.pivot', $this->getVisualFacets());
->>>>>>> 5d94af970b366b9f1ab99a0115fad3f4c11dac23
         }
 
         return $backendParams;
