@@ -378,7 +378,7 @@ $(document).ready(function() {
     return Lightbox.get('Record','AjaxTab',{id:id},{hierarchy:hierarchyID,tab:'HierarchyTree'});
   });
   // Login link
-  $('#loginOptions a').click(function() {
+  $('#loginOptions a.modal-link').click(function() {
     return Lightbox.get('MyResearch','Login',{},{'loggingin':true});
   });
   // Email search link
