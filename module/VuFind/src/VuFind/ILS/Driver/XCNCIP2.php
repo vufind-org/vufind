@@ -1349,4 +1349,4 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             '</ns1:NCIPMessage>';
     }
 }
-    
+ 
