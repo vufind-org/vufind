@@ -11,9 +11,9 @@
         </div>
     <? endforeach; ?>
   <? endif; ?>
-  <? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : array(); ?>
   <? $collapsedFacets = $this->recommend->getCollapsedFacets() ?>
-  <? $filterList = array_merge($results->getParams()->getFilterList(true), $extraFilters); if (!empty($filterList)): ?>
+  <? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : array(); ?>
+  <? $filterList = $this->recommend->getVisibleFilters($extraFilters); if (!empty($filterList)): ?>
     <strong><?=$this->transEsc('Remove Filters')?></strong>
     <ul class="filters">
     <? foreach ($filterList as $field => $filters): ?>
