@@ -80,6 +80,18 @@ class ChoiceAuth extends AbstractBase
     protected $manager;
 
     /**
+     * Session container
+     *
+     * @var \Zend\Session\Container
+     */
+    protected $session;
+
+    public function __construct() 
+    {
+        $this->session = new \Zend\Session\Container('ChoiceAuth');
+    }
+
+    /**
      * Validate configuration parameters.  This is a support method for getConfig(),
      * so the configuration MUST be accessed using $this->config; do not call
      * $this->getConfig() from within this method!
@@ -131,8 +143,13 @@ class ChoiceAuth extends AbstractBase
         $this->password = trim($request->getPost()->get('password'));
         $this->method = trim($request->getPost()->get('auth_method'));
 
-        if ($this->method == '') {
-            throw new AuthException('authentication_error_technical');
+        if ($this->method == '')
+        {
+            if (isset($this->session->auth_method)) {
+                $this->method = $this->session->auth_method;
+            } else {
+                throw new AuthException('authentication_error_technical');
+            }
         }
 
         // Do the actual authentication work:
@@ -156,6 +173,9 @@ class ChoiceAuth extends AbstractBase
         $authenticator->setConfig($this->getConfig());
         try {
             $user = $authenticator->authenticate($request);
+            if ($user) {
+                $this->session->auth_method = $this->method;
+            }
         } catch (AuthException $exception) {
             throw $exception;
         }
@@ -208,4 +228,43 @@ class ChoiceAuth extends AbstractBase
         }
         return $classes;
     }
+    /**
+     * Perform cleanup at logout time.
+     *
+     * @param string $url URL to redirect user to after logging out.
+     *
+     * @return string     Redirect URL (usually same as $url, but modified in
+     * some authentication modules).
+     */
+    public function logout($url)
+    {
+        // clear user's login choice
+        unset($this->session->auth_method);
+        // TODO: proxy logout
+        // No special cleanup or URL modification needed by default.
+        return $url;
+    }
+
+    /**
+     * Get the URL to establish a session (needed when the internal VuFind login
+     * form is inadequate).  Returns false when no session initiator is needed.
+     *
+     * @param string $target Full URL where external authentication method should
+     * send user after login (some drivers may override this).
+     *
+     * @return bool|string
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getSessionInitiator($target)
+    {
+        if (isset($this->session->auth_method)) {
+            // if user has chosen and logged in; use that auth's method
+            $manager = $this->getPluginManager();
+            $authenticator = $manager->get($this->session->auth_method);
+            $authenticator->setConfig($this->getConfig());
+            return $authenticator->getSessionInitiator($target);
+        }
+        return false;
+    }
+
 }
