@@ -21,9 +21,16 @@
     // Step 1: Define our search arrays so they are usuable in the javascript
     $this->headScript()->appendScript($this->render('search/advanced/globals.phtml'));
     // Step 2: Call the javascript to make use of the above
-    $this->headScript()->appendFile('advanced_search.js');
+    $this->headScript()->appendFile(
+        isset($this->advancedSearchJsOverride) ? $this->advancedSearchJsOverride : 'advanced_search.js'
+    );
     // Step 3: Build the page
-    $this->headScript()->appendScript($this->partial('search/advanced/build_page.phtml', array('searchDetails' => $searchDetails)));
+    $this->headScript()->appendScript(
+        $this->partial(
+            isset($this->buildPageOverride) ? $this->buildPageOverride : 'search/advanced/build_page.phtml',
+            array('searchDetails' => $searchDetails)
+        )
+    );
 ?>
 <form method="get" action="<?=$this->url($this->options->getSearchAction())?>" id="advSearchForm" name="searchForm" class="search">
   <div class="<?=$this->layoutClass('mainbody')?>">
