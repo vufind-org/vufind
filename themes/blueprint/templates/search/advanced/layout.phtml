@@ -11,7 +11,12 @@
     // Set up saved search details:
     if (isset($this->saved) && is_object($this->saved)) {
         $searchDetails = $this->saved->getParams()->getQuery();
-        $groups = $searchDetails->getQueries();
+        if ($searchDetails instanceof \VuFindSearch\Query\Query) {
+            // Not an advanced query -- ignore it.
+            $searchDetails = $groups = false;
+        } else {
+            $groups = $searchDetails->getQueries();
+        }
         $hasDefaultsApplied = $this->saved->getParams()->hasDefaultsApplied();
         $searchFilters = $this->saved->getParams()->getFilterList();
     } else {
