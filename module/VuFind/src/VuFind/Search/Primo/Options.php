@@ -84,6 +84,10 @@ class Options extends \VuFind\Search\Base\Options
             $this->retainFiltersByDefault
                 = $searchSettings->General->retain_filters_by_default;
         }
+        if (isset($searchSettings->General->default_filters)) {
+            $this->defaultFilters = $searchSettings->General->default_filters
+                ->toArray();
+        }
 
         // Result limit:
         if (isset($searchSettings->General->result_limit)) {

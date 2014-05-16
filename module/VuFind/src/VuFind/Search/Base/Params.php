@@ -88,6 +88,13 @@ class Params implements ServiceLocatorAwareInterface
     protected $serviceLocator;
 
     /**
+     * Are default filters applied?
+     *
+     * @var bool
+     */
+    protected $defaultsApplied = false;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
@@ -1291,6 +1298,20 @@ class Params implements ServiceLocatorAwareInterface
             }
         }
 
+        // If we don't have the special flag indicating that defaults have
+        // been applied, and if we do have defaults, apply them:
+        if ($request->get('dfApplied')) {
+            $this->defaultsApplied = true;
+        } else {
+            $defaults = $this->getOptions()->getDefaultFilters();
+            if (!empty($defaults)) {
+                foreach ($defaults as $current) {
+                    $this->addFilter($current);
+                }
+                $this->defaultsApplied = true;
+            }
+        }
+
         // Handle range filters:
         $this->initRangeFilters($request);
     }
@@ -1386,6 +1407,13 @@ class Params implements ServiceLocatorAwareInterface
         // Some values will transfer without changes
         $this->filterList   = $minified->f;
         $this->searchType   = $minified->ty;
+
+        // Deminified searches will always have defaults already applied;
+        // we don't want to accidentally manipulate them further.
+        $defaults = $this->getOptions()->getDefaultFilters();
+        if (!empty($defaults)) {
+            $this->defaultsApplied = true;
+        }
 
         // Search terms, we need to expand keys
         $this->query = QueryAdapter::deminify($minified->t);
@@ -1579,5 +1607,15 @@ class Params implements ServiceLocatorAwareInterface
             $this->addFacet($key, $value, $useOr);
         }
         return true;
+    }
+
+    /**
+     * Are default filters applied?
+     *
+     * @return bool
+     */
+    public function hasDefaultsApplied()
+    {
+        return $this->defaultsApplied;
     }
 }

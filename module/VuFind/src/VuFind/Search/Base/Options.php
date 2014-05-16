@@ -54,6 +54,7 @@ abstract class Options implements TranslatorAwareInterface
     protected $basicHandlers = array();
     protected $specialAdvancedFacets = '';
     protected $retainFiltersByDefault = true;
+    protected $defaultFilters = array();
 
     // Available limit options
     protected $defaultLimit = 20;
@@ -550,6 +551,16 @@ abstract class Options implements TranslatorAwareInterface
     {
         $session = $this->getSession();
         return isset($session->lastView) ? $session->lastView : null;
+    }
+
+    /**
+     * Get default filters to apply to an empty search.
+     *
+     * @return array
+     */
+    public function getDefaultFilters()
+    {
+        return $this->defaultFilters;
     }
 
     /**

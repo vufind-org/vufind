@@ -13,9 +13,10 @@
   if (isset($this->saved) && is_object($this->saved)) {
     $searchDetails = $this->saved->getParams()->getQuery();
     $groups = $searchDetails->getQueries();
+    $hasDefaultsApplied = $this->saved->getParams()->hasDefaultsApplied();
     $searchFilters = $this->saved->getParams()->getFilterList();
   } else {
-    $searchDetails = $searchFilters = $groups = false;
+    $hasDefaultsApplied = $searchDetails = $searchFilters = $groups = false;
   }
 
   // Set up Javascript:
@@ -58,6 +59,9 @@
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>">
+    <? if ($hasDefaultsApplied): ?>
+      <input type="hidden" name="dfApplied" value="1" />
+    <? endif ?>
     <? if (!empty($searchFilters)): ?>
       <div class="filterList">
         <h4><?=$this->transEsc("adv_search_filters")?></h4>
