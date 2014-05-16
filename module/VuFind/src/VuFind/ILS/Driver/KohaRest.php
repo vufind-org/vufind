@@ -26,9 +26,10 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use PDO, PDOException, VuFind\Exception\ILS as ILSException;
+use VuFind\Exception\ILS as ILSException;
 use VuFindHttp\HttpServiceInterface;
 use Zend\Log\LoggerInterface;
+use VuFind\Exception\Date as DateException;
 
 /**
  * VuFind Driver for Koha, using web APIs (version: 0.1)
@@ -49,21 +50,14 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
      *
      * @var string
      */
-    protected $ws_host = "http://localhost";
+    protected $host;
 
     /**
      * Web services application path
      *
      * @var string
      */
-    protected $ws_app = "/cgi-bin/koha/ilsdi.pl?service=";
-
-    /**
-     * Database connection
-     *
-     * @var PDO
-     */
-    protected $db;
+    protected $api_path = "/cgi-bin/koha/ilsdi.pl?service=";
 
     /**
      * ILS base URL
@@ -77,7 +71,14 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
      *
      * @var array
      */
-    protected $locCodes;
+    protected $locations;
+
+    /**
+     * Location codes
+     *
+     * @var string
+     */
+    protected $default_location;
 
     /**
      * Set the logger
@@ -127,6 +128,13 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
     }
 
     /**
+     * Date converter object
+     *
+     * @var \VuFind\Date\Converter
+     */
+    protected $dateConverter;
+
+    /**
      * Initialize the driver.
      *
      * Validate configuration and perform all resource-intensive tasks needed to
@@ -141,17 +149,37 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
             throw new ILSException('Configuration needs to be set.');
         }
 
-        $this->ws_host = "http://" . $this->config['Catalog']['host'];
+        // Is debugging enabled?
         $this->debug_enabled = isset($this->config['Catalog']['debug'])
             ? $this->config['Catalog']['debug'] : false;
-        //Connect to MySQL
 
-        //Storing the base URL of ILS
+        // Base for API address
+        $this->host = isset($this->config['Catalog']['host']) ?
+            $this->config['Catalog']['host'] : "http://localhost";
+
+        // Storing the base URL of ILS
         $this->ilsBaseUrl = $this->config['Catalog']['url'];
 
-        // Location codes are defined in 'Koha.ini' file according to current
-        // version (0.1)
-        $this->locCodes = $this->config['Location_Codes'];
+        // Location codes are defined in 'KohaRest.ini'
+        $this->locations = isset($this->config['pickUpLocations'])
+            ? $this->config['pickUpLocations'] : false;
+
+        // Default location defined in 'KohaRest.ini'
+        $this->default_location
+            = isset($this->config['Holds']['defaultPickUpLocation'])
+            ? $this->config['Holds']['defaultPickUpLocation'] : null;
+
+        // Create a dateConverter
+        $this->dateConverter = new \VuFind\Date\Converter;
+
+        if ($this->debug_enabled) {
+            $this->debug("Config Summary:");
+            $this->debug("Debug: " . $this->debug_enabled);
+            $this->debug("API Host: " . $this->host);
+            $this->debug("ILS URL: " . $this->ilsBaseUrl);
+            $this->debug("Locations: " . $this->locations);
+            $this->debug("Default Location: " . $this->default_location);
+        }
     }
 
     /**
@@ -186,7 +214,7 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
      */
     protected function makeRequest($api_query, $http_method="GET")
     {
-        $url = $this->ws_host . $this->ws_app . $api_query;
+        $url = $this->host . $this->api_path . $api_query;
 
         if ($this->debug_enabled) {
             $this->debug("URL: '$url'");
