@@ -255,6 +255,218 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
     }
 
     /**
+     * toKohaDate
+     *
+     * Turns a display date into a date format expected by Koha.
+     *
+     * @param string $display_date Date to be converted
+     *
+     * @throws ILSException
+     * @return string $koha_date
+     */
+    protected function toKohaDate($display_date)
+    {
+        $koha_date = "";
+
+        // Convert last interest date from Display Format to Voyager required format
+        $koha_date = $this->dateConverter->convertFromDisplayDate(
+            "Y-m-d", $display_date
+        );
+
+        $checkTime =  $this->dateConverter->convertFromDisplayDate(
+            "U", $display_date
+        );
+        if (!is_numeric($checkTime)) {
+            throw new DateException('Result should be numeric');
+        }
+
+        if (time() > $checkTime) {
+            // Hold Date is in the past
+            throw new DateException('hold_date_past');
+        }
+        return $koha_date;
+    }
+
+    /**
+     * Public Function which retrieves renew, hold and cancel settings from the
+     * driver ini file.
+     *
+     * @param string $function The name of the feature to be checked
+     *
+     * @return array An array with key-value pairs.
+     */
+    public function getConfig($function)
+    {
+        $functionConfig = "";
+        if (isset($this->config[$function])) {
+            $functionConfig = $this->config[$function];
+        } else {
+            $functionConfig = false;
+        }
+        return $functionConfig;
+    }
+
+    /**
+     * Get Pick Up Locations
+     *
+     * This is responsible for gettting a list of valid library locations for
+     * holds / recall retrieval
+     *
+     * @param array $patron      Patron information returned by the patronLogin
+     * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data.    May be used to limit the pickup options
+     * or may be ignored.  The driver must not add new options to the return array
+     * based on this data or other areas of VuFind may behave incorrectly.
+     *
+     * @throws ILSException
+     * @return array             An array of associative arrays with locationID
+     * and locationDisplay keys
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getPickUpLocations($patron = false, $holdDetails = null)
+    {
+        if ($this->locations) {
+            // hardcoded pickup locations in the .ini file? or...
+            foreach ($this->locations as $code => $library) {
+                $locations[] = array(
+                    'locationID'      => $code,
+                    'locationDisplay' => $library,
+                );
+            }
+        } else {
+            if (!$this->default_location) {
+                throw new ILSException(
+                    "Neither locations nor default_location defined in KohaRest.ini."
+                );
+            }
+            // we get them from the API
+            // FIXME: Not yet possible: API incomplete.
+            /* $response = $this->makeRequest("organizations/branch"); */
+            /* $locations_response_array = $response->OrganizationsGetRows; */
+            /* foreach ($locations_response_array as $location_response) { */
+            /*     $locations[] = array( */
+            /*         'locationID'      => $location_response->OrganizationID, */
+            /*         'locationDisplay' => $location_response->Name, */
+            /*     ); */
+            /* } */
+        }
+        return $locations;
+    }
+
+    /**
+     * Get Default Pick Up Location
+     *
+     * Returns the default pick up location set in VoyagerRestful.ini
+     *
+     * @param array $patron      Patron information returned by the patronLogin
+     * method.
+     * @param array $holdDetails Optional array, only passed in when getting a list
+     * in the context of placing a hold; contains most of the same values passed to
+     * placeHold, minus the patron data.    May be used to limit the pickup options
+     * or may be ignored.
+     *
+     * @return string           The default pickup location for the patron.
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getDefaultPickUpLocation($patron = false, $holdDetails = null)
+    {
+        return $this->default_location;
+    }
+
+    /**
+     * Place Hold
+     *
+     * Attempts to place a hold or recall on a particular item and returns
+     * an array with result details or throws an exception on failure of support
+     * classes
+     *
+     * @param array $holdDetails An array of item and patron data
+     *
+     * @throws ILSException
+     * @return mixed An array of data on the request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function placeHold($holdDetails)
+    {
+        $this->debug(print_r($holdDetails));
+        print_r($holdDetails);
+        $rsvLst             = array();
+        $patron             = $holdDetails['patron'];
+        $patron_id          = $patron['id'];
+        $request_location   = isset($patron['ip']) ? $patron['ip'] : "127.0.0.1";
+        $bib_id             = $holdDetails['id'];
+        $item_id            = $holdDetails['item_id'];
+        $pickup_location    = !empty($holdDetails['pickUpLocation'])
+            ? $holdDetails['pickUpLocation'] : $this->default_location;
+        $level              = isset($holdDetails['level'])
+            && !empty($holdDetails['level']) ? $holdDetails['level'] : "bib";
+
+        try {
+            $needed_before_date = $this->toKohaDate($holdDetails['requiredBy']);
+        } catch (DateException $e) {
+            return array(
+                "success" => false,
+                "sysMessage" => "It seems you entered an invalid expiration date."
+            );
+        }
+
+        if ($this->debug_enabled) {
+            $this->debug("patron: " . $patron);
+            $this->debug("patron_id: " . $patron_id);
+            $this->debug("request_location: " . $request_location);
+            $this->debug("item_id: " . $item_id);
+            $this->debug("bib_id: " . $bib_id);
+            $this->debug("pickup loc: " . $pickup_location);
+            $this->debug("Needed before date: " . $needed_before_date);
+            $this->debug("Level: " . $level);
+        }
+
+        //Make Sure Pick Up Library is Valid
+        /* if (!$this->pickUpLocationIsValid( */
+        /* $pickUpLocation, $patron, $holdDetails)) { */
+        /*     return $this->holdError("hold_invalid_pickup"); */
+        /* } */
+
+        if ( $level == "bib" ) {
+            $rqString = "HoldTitle&patron_id=$patron_id&bib_id=$bib_id"
+                . "&request_location=$request_location"
+                . "&pickup_location=$pickup_location"
+                . "&pickup_expiry_date=$needed_before_date";
+        } else {
+            $rqString = "HoldItem&patron_id=$patron_id&bib_id=$bib_id"
+                . "&item_id=$item_id"
+                . "&pickup_location=$pickup_location"
+                . "&needed_before_date=$needed_before_date"
+                . "&pickup_expiry_date=$needed_before_date";
+                //. "&request_location=$request_location"
+        }
+
+        $rsp = $this->makeRequest($rqString);
+
+        if ($this->debug_enabled) {
+            $this->debug("Title: " . $rsp->{'title'});
+            $this->debug("Pickup Location: " . $rsp->{'pickup_location'});
+            $this->debug("Code: " . $rsp->{'code'});
+        }
+
+        if ($rsp->{'code'} != "") {
+            return array(
+                "success"    => false,
+                "sysMessage" => $this->getField($rsp->{'code'}),
+            );
+        }
+        return array(
+            "success"    => true,
+        );
+    }
+
+    //FIXME: checkRequestIsValid
+    //FIXME: renewMyItems
+    //FIXME: getRenewDetails: required for Vufind renewMyItems
+    //FIXME: getNewItems: low priority together with getFunds.
+    /**
      * Get Holding
      *
      * This is responsible for retrieving the holding information of a certain
@@ -286,6 +498,7 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
         foreach ($rsp->{'record'}->{'items'}->{'item'} as $item) {
             if ($this->debug_enabled) {
                 $this->debug("Biblio: " . $item->{'biblioitemnumber'});
+                $this->debug("ItemNo: " . $item->{'itemnumber'});
             }
             switch ($item->{'notforloan'}) {
             case 0:
@@ -315,7 +528,7 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
             $holding[] = array(
                 'id'           => (string) $id,
                 'availability' => (string) $available,
-                'item_num'     => $this->getField($item->{'itemnumber'}),
+                'item_id'      => $this->getField($item->{'itemnumber'}),
                 'status'       => (string) $status,
                 'location'     => $this->getField($item->{'holdingbranchname'}),
                 'reserve'      => (string) $reserves,
@@ -423,6 +636,61 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
             );
         }
         return $holdLst;
+    }
+
+    /**
+     * Get Cancel Hold Details
+     *
+     * In order to cancel a hold, Voyager requires the patron details an item ID
+     * and a recall ID. This function returns the item id and recall id as a string
+     * separated by a pipe, which is then submitted as form data in Hold.php. This
+     * value is then extracted by the CancelHolds function.
+     *
+     * @param array $holdDetails An array of item data
+     *
+     * @return string Data for use in a form field
+     */
+    public function getCancelHoldDetails($holdDetails)
+    {
+        return $holdDetails['id'];
+    }
+
+    /**
+     * Cancel Holds
+     *
+     * Attempts to Cancel a hold or recall on a particular item. The
+     * data in $cancelDetails['details'] is determined by getCancelHoldDetails().
+     *
+     * @param array $cancelDetails An array of item and patron data
+     *
+     * @return array               An array of data on each request including
+     * whether or not it was successful and a system message (if available)
+     */
+    public function cancelHolds($cancelDetails)
+    {
+
+        $retVal         = array('count' => 0, 'items' => array());
+        $details        = $cancelDetails['details'];
+        $patron_id      = $cancelDetails['patron']['id'];
+        $request_prefix = "CancelHold&patron_id=" . $patron_id . "&item_id=";
+
+        foreach ($details as $cancelItem) {
+            $rsp = $this->makeRequest($request_prefix . $cancelItem);
+            if ($rsp->{'message'} != "Canceled") {
+                $retVal['items'][$cancelItem] = array(
+                    'success'    => false,
+                    'status'     => 'hold_cancel_fail',
+                    'sysMessage' => $this->getField($rsp->{'code'}),
+                );
+            } else {
+                $retVal['count']++;
+                $retVal['items'][$current['item_id']] = array(
+                    'success' => true,
+                    'status' => 'hold_cancel_success',
+                );
+            }
+        }
+        return $retVal;
     }
 
     /**
