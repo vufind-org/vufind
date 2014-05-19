@@ -100,7 +100,7 @@ class Backend extends AbstractBackend
         if (null !== $params) {
             $baseParams->mergeWith($params);
         }
-        $baseParams->set('pageSize', $limit);
+        $baseParams->set('limit', $limit);
         $page = $limit > 0 ? floor($offset / $limit) + 1 : 1;
         $baseParams->set('pageNumber', $page);
 
