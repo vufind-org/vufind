@@ -760,13 +760,75 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
 
         foreach ($rsp->{'loans'}->{'loan'} as $loan) {
             $transactionLst[] = array(
-                'duedate' => $this->getField($loan->{'date_due'}),
-                'id'      => $this->getField($loan->{'biblionumber'}),
-                'barcode' => $this->getField($loan->{'barcode'}),
-                'renew'   => $this->getField($loan->{'renewals'}, '0'),
+                'duedate'   => $this->getField($loan->{'date_due'}),
+                'id'        => $this->getField($loan->{'biblionumber'}),
+                'item_id'   => $this->getField($loan->{'itemnumber'}),
+                'barcode'   => $this->getField($loan->{'barcode'}),
+                'renew'     => $this->getField($loan->{'renewals'}, '0'),
+                'renewable' => true,
+                // FIXME: could do with a proper 'renewable' key from
+                // Koha API.
             );
         }
         return $transactionLst;
+    }
+
+    /**
+     * Get Renew Details
+     *
+     * In order to renew an item, Voyager requires the patron details and an item
+     * id. This function returns the item id as a string which is then used
+     * as submitted form data in checkedOut.php. This value is then extracted by
+     * the RenewMyItems function.
+     *
+     * @param array $checkOutDetails An array of item data
+     *
+     * @return string Data for use in a form field
+     */
+    public function getRenewDetails($checkOutDetails)
+    {
+        return $checkOutDetails['item_id'];
+    }
+
+    /**
+     * Renew My Items
+     *
+     * Function for attempting to renew a patron's items.  The data in
+     * $renewDetails['details'] is determined by getRenewDetails().
+     *
+     * @param array $renewDetails An array of data required for renewing items
+     * including the Patron ID and an array of renewal IDS
+     *
+     * @return array              An array of renewal information keyed by item ID
+     */
+    public function renewMyItems($renewDetails)
+    {
+        $retVal         = array('blocks' => false, 'details' => array());
+        $details        = $renewDetails['details'];
+        $patron_id      = $renewDetails['patron']['id'];
+        $request_prefix = "RenewLoan&patron_id=" . $patron_id . "&item_id=";
+
+        foreach ($details as $renewItem) {
+            $rsp = $this->makeRequest($request_prefix . $renewItem);
+            if ($rsp->{'success'} != '0') {
+                list($date, $time)
+                    = explode(" ", $this->getField($rsp->{'date_due'}));
+                $retVal['details'][$renewItem] = array(
+                    "success"  => true,
+                    "new_date" => $date,
+                    "new_time" => $time,
+                    "item_id"  => $renewItem,
+                );
+            } else {
+                $retVal['details'][$renewItem] = array(
+                    "success"    => false,
+                    "new_date"   => false,
+                    "item_id"    => $renewItem,
+                    //"sysMessage" => $this->getField($rsp->{'error'}),
+                );
+            }
+        }
+        return $retVal;
     }
 
     /**
