@@ -4,7 +4,7 @@
  *
  * PHP version 5
  *
- * Copyright (C) Ayesha Abed Library, BRAC University 2010.
+ * Copyright (C) Alex Sassmannshausen, PTFS Europe 2014.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -343,6 +343,7 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
             }
             // we get them from the API
             // FIXME: Not yet possible: API incomplete.
+            // TODO: When API: pull locations dynamically from API.
             /* $response = $this->makeRequest("organizations/branch"); */
             /* $locations_response_array = $response->OrganizationsGetRows; */
             /* foreach ($locations_response_array as $location_response) { */
@@ -390,8 +391,6 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
      */
     public function placeHold($holdDetails)
     {
-        $this->debug(print_r($holdDetails));
-        print_r($holdDetails);
         $rsvLst             = array();
         $patron             = $holdDetails['patron'];
         $patron_id          = $patron['id'];
@@ -462,10 +461,6 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
         );
     }
 
-    //FIXME: checkRequestIsValid
-    //FIXME: renewMyItems
-    //FIXME: getRenewDetails: required for Vufind renewMyItems
-    //FIXME: getNewItems: low priority together with getFunds.
     /**
      * Get Holding
      *
@@ -589,14 +584,14 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
             $fineLst[] = array(
                 'amount'     => 100 * $this->getField($fine->{'amount'}),
                 // FIXME: require accountlines.itemnumber -> issues.issuedate data
-                'checkout'   => "",
+                'checkout'   => "N/A",
                 'fine'       => $this->getField($fine->{'description'}),
                 'balance'    => 100 * $this->getField($fine->{'amountoutstanding'}),
                 'createdate' => $this->getField($fine->{'date'}),
                 // FIXME: require accountlines.itemnumber -> issues.date_due data.
-                'duedate'    => "",
+                'duedate'    => "N/A",
                 // FIXME: require accountlines.itemnumber -> items.biblionumber data 
-                'id'         => "",
+                'id'         => "N/A",
             );
         }
         return $fineLst;
@@ -624,6 +619,7 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
 
         if ($this->debug_enabled) {
             $this->debug("ID: " . $rsp->{'borrowernumber'});
+            //print_r($rsp); // Proof that no itemnumber is returned.
         }
 
         foreach ($rsp->{'holds'}->{'hold'} as $hold) {
@@ -631,7 +627,7 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
                 'id'       => $this->getField($hold->{'biblionumber'}),
                 'location' => $this->getField($hold->{'branchname'}),
                 // FIXME: require exposure of reserves.expirationdate
-                'expire'   => "FIXME",
+                'expire'   => "N/A",
                 'create'   => $this->getField($hold->{'reservedate'}),
             );
         }
@@ -652,7 +648,10 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
      */
     public function getCancelHoldDetails($holdDetails)
     {
-        return $holdDetails['id'];
+        // Get the full details of this item
+        $rsp = $this->getHolding($holdDetails['id']);
+        // Fetch the item_id.
+        return $rsp[0]['item_id'];
     }
 
     /**
@@ -668,7 +667,7 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
      */
     public function cancelHolds($cancelDetails)
     {
-
+        // FIXME: Currently fails due to 1) limitation of API; 2) error in API.
         $retVal         = array('count' => 0, 'items' => array());
         $details        = $cancelDetails['details'];
         $patron_id      = $cancelDetails['patron']['id'];
@@ -845,7 +844,7 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
      */
     public function getPurchaseHistory($id)
     {
-        // FIXME: TODO
+        // TODO
         return array();
     }
 
@@ -897,7 +896,7 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
      */
     public function getSuppressedRecords()
     {
-        // FIXME: TODO
+        // FIXME: TODO: use hardcoded list in .ini if available.
         return array();
     }
 
