@@ -219,7 +219,6 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
         if ($this->debug_enabled) {
             $this->debug("URL: '$url'");
         }
-
         $http_headers = array(
             "Accept: text/xml",
             "Accept-encoding: plain",
@@ -268,7 +267,7 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
     {
         $koha_date = "";
 
-        // Convert last interest date from Display Format to Voyager required format
+        // Convert last interest date from format to Koha format
         $koha_date = $this->dateConverter->convertFromDisplayDate(
             "Y-m-d", $display_date
         );
@@ -359,7 +358,7 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
     /**
      * Get Default Pick Up Location
      *
-     * Returns the default pick up location set in VoyagerRestful.ini
+     * Returns the default pick up location set in KohaRest.ini
      *
      * @param array $patron      Patron information returned by the patronLogin
      * method.
@@ -637,10 +636,9 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
     /**
      * Get Cancel Hold Details
      *
-     * In order to cancel a hold, Voyager requires the patron details an item ID
-     * and a recall ID. This function returns the item id and recall id as a string
-     * separated by a pipe, which is then submitted as form data in Hold.php. This
-     * value is then extracted by the CancelHolds function.
+     * In order to cancel a hold, Koha requires the patron details and
+     * an item ID. This function returns the item id as a string. This
+     * value is then used by the CancelHolds function.
      *
      * @param array $holdDetails An array of item data
      *
@@ -775,10 +773,10 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
     /**
      * Get Renew Details
      *
-     * In order to renew an item, Voyager requires the patron details and an item
-     * id. This function returns the item id as a string which is then used
-     * as submitted form data in checkedOut.php. This value is then extracted by
-     * the RenewMyItems function.
+     * In order to renew an item, Koha requires the patron details and
+     * an item id. This function returns the item id as a string which
+     * is then used as submitted form data in checkedOut.php. This
+     * value is then extracted by the RenewMyItems function.
      *
      * @param array $checkOutDetails An array of item data
      *
@@ -795,10 +793,11 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
      * Function for attempting to renew a patron's items.  The data in
      * $renewDetails['details'] is determined by getRenewDetails().
      *
-     * @param array $renewDetails An array of data required for renewing items
-     * including the Patron ID and an array of renewal IDS
+     * @param array $renewDetails An array of data required for
+     * renewing items including the Patron ID and an array of renewal
+     * IDS
      *
-     * @return array              An array of renewal information keyed by item ID
+     * @return array An array of renewal information keyed by item ID
      */
     public function renewMyItems($renewDetails)
     {
