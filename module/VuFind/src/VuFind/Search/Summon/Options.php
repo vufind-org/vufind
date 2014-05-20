@@ -79,6 +79,15 @@ class Options extends \VuFind\Search\Base\Options
         // Load the search configuration file:
         $searchSettings = $configLoader->get($this->searchIni);
 
+        // Set up limit preferences
+        if (isset($searchSettings->General->default_limit)) {
+            $this->defaultLimit = $searchSettings->General->default_limit;
+        }
+        if (isset($searchSettings->General->limit_options)) {
+            $this->limitOptions
+                = explode(",", $searchSettings->General->limit_options);
+        }
+
         // Set up highlighting preference
         if (isset($searchSettings->General->highlighting)) {
             $this->highlight = $searchSettings->General->highlighting;
@@ -96,6 +105,10 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($searchSettings->General->retain_filters_by_default)) {
             $this->retainFiltersByDefault
                 = $searchSettings->General->retain_filters_by_default;
+        }
+        if (isset($searchSettings->General->default_filters)) {
+            $this->defaultFilters = $searchSettings->General->default_filters
+                ->toArray();
         }
         if (isset($searchSettings->General->result_limit)) {
             $this->resultLimit = $searchSettings->General->result_limit;

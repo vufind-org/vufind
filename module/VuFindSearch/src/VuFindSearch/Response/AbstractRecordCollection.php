@@ -82,6 +82,16 @@ abstract class AbstractRecordCollection implements RecordCollectionInterface
     }
 
     /**
+     * Shuffles records.
+     *
+     * @return bool
+     */
+    public function shuffle()
+    {
+        return shuffle($this->records);
+    }
+
+    /**
      * Return first record in response.
      *
      * @return RecordInterface|null

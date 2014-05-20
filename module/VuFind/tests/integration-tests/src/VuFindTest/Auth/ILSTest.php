@@ -39,31 +39,19 @@ use VuFind\Auth\ILS, VuFind\Db\Table\User;
  */
 class ILSTest extends \VuFindTest\Unit\DbTestCase
 {
+    /**
+     * Object to test
+     *
+     * @var ILS
+     */
     protected $auth;
-    protected $driver;
 
     /**
-     * Constructor
+     * Mock ILS driver
+     *
+     * @var \VuFind\ILS\Driver\Sample
      */
-    public function __construct()
-    {
-        $this->driver = $this->getMock('VuFind\ILS\Driver\Sample');
-        $driverManager = new \VuFind\ILS\Driver\PluginManager();
-        $driverManager->setService('Sample', $this->driver);
-        $mockConfigReader = $this->getMock('VuFind\Config\PluginManager');
-        $mockConfigReader->expects($this->any())->method('get')
-            ->will($this->returnValue(new \Zend\Config\Config(array())));
-        $this->auth = new \VuFind\Auth\ILS(
-            new \VuFind\ILS\Connection(
-                new \Zend\Config\Config(array('driver' => 'Sample')),
-                $driverManager, $mockConfigReader
-            )
-        );
-        $this->auth->setDbTableManager(
-            $this->getServiceManager()->get('VuFind\DbTablePluginManager')
-        );
-        $this->auth->getCatalog()->setDriver($this->driver);
-    }
+    protected $driver;
 
     /**
      * Standard setup method.
@@ -98,6 +86,22 @@ class ILSTest extends \VuFindTest\Unit\DbTestCase
         if (!$this->continuousIntegrationRunning()) {
             return $this->markTestSkipped('Continuous integration not running.');
         }
+        $this->driver = $this->getMock('VuFind\ILS\Driver\Sample');
+        $driverManager = new \VuFind\ILS\Driver\PluginManager();
+        $driverManager->setService('Sample', $this->driver);
+        $mockConfigReader = $this->getMock('VuFind\Config\PluginManager');
+        $mockConfigReader->expects($this->any())->method('get')
+            ->will($this->returnValue(new \Zend\Config\Config(array())));
+        $this->auth = new \VuFind\Auth\ILS(
+            new \VuFind\ILS\Connection(
+                new \Zend\Config\Config(array('driver' => 'Sample')),
+                $driverManager, $mockConfigReader
+            )
+        );
+        $this->auth->setDbTableManager(
+            $this->getServiceManager()->get('VuFind\DbTablePluginManager')
+        );
+        $this->auth->getCatalog()->setDriver($this->driver);
     }
 
     /**

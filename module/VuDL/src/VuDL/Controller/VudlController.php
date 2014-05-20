@@ -62,7 +62,7 @@ class VudlController extends AbstractVuDL
      */
     protected function getRoot($id)
     {
-        $parents = $this->getConnector()->getParentList($id);
+        $parents = array_reverse($this->getConnector()->getParentList($id));
         foreach (array_keys($parents[0]) as $i) {
             if (in_array(
                 'ResourceCollection',
@@ -263,20 +263,9 @@ class VudlController extends AbstractVuDL
         $fileDetails = $this->getConnector()->getDetails($root, true);
 
         // Copyright information
-        $check = $this->getConnector()->getDatastreamHeaders($root, 'LICENSE');
-        if (!strpos($check[0], '404')) {
-            $xml = $this->getConnector()->getDatastreamContent($root, 'LICENSE');
-            preg_match('/xlink:href="(.*?)"/', $xml, $license);
-            $fileDetails['license'] = $license[1];
-            $fileDetails['special_license'] = false;
-            $licenseValues = $this->getLicenses();
-            foreach ($licenseValues as $tell=>$value) {
-                if (strpos($fileDetails['license'], $tell)) {
-                    $fileDetails['special_license'] = $value;
-                    break;
-                }
-            }
-        }
+        list($fileDetails['license'], $fileDetails['special_license'])
+            = $this->getConnector()->getCopyright($root, $this->getLicenses());
+
         $view->details = $fileDetails;
 
         // Get ids for all files

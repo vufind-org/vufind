@@ -76,7 +76,7 @@ class Connector
      *
      * Sets up the LibGuides Client
      *
-     * @param string     $iid   Institution ID
+     * @param string     $iid    Institution ID
      * @param HttpClient $client HTTP client
      */
     public function __construct($iid, $client)

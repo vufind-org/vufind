@@ -22,6 +22,7 @@ return array(
             'keepalive' => 'VuFind\View\Helper\Root\Factory::getKeepAlive',
             'proxyurl' => 'VuFind\View\Helper\Root\Factory::getProxyUrl',
             'openurl' => 'VuFind\View\Helper\Root\Factory::getOpenUrl',
+            'recaptcha' => 'VuFind\View\Helper\Root\Factory::getRecaptcha',
             'record' => 'VuFind\View\Helper\Root\Factory::getRecord',
             'recordlink' => 'VuFind\View\Helper\Root\Factory::getRecordLink',
             'related' => 'VuFind\View\Helper\Root\Factory::getRelated',
@@ -34,7 +35,6 @@ return array(
             'systememail' => 'VuFind\View\Helper\Root\Factory::getSystemEmail',
             'userlist' => 'VuFind\View\Helper\Root\Factory::getUserList',
             'usertags' => 'VuFind\View\Helper\Root\Factory::getUserTags',
-            'videoclips' => 'VuFind\View\Helper\Root\Factory::getVideoClips',
             'worldcat' => 'VuFind\View\Helper\Root\Factory::getWorldCat',
         ),
         'invokables' => array(

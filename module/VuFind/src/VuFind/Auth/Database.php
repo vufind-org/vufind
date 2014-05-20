@@ -119,18 +119,8 @@ class Database extends AbstractBase
         }
 
         // Validate Input
-        // Needs a username
-        if (trim($params['username']) == '') {
-            throw new AuthException('Username cannot be blank');
-        }
-        // Needs a password
-        if (trim($params['password']) == '') {
-            throw new AuthException('Password cannot be blank');
-        }
-        // Passwords don't match
-        if ($params['password'] != $params['password2']) {
-            throw new AuthException('Passwords do not match');
-        }
+        $this->validateUsernameAndPassword($params);
+
         // Invalid Email Check
         $validator = new \Zend\Validator\EmailAddress();
         if (!$validator->isValid($params['email'])) {
@@ -168,6 +158,66 @@ class Database extends AbstractBase
         // Create the row and send it back to the caller:
         $table->insert($data);
         return $table->getByUsername($params['username'], false);
+    }
+
+    /**
+     * Update a user's password from the request.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * new account details.
+     *
+     * @throws AuthException
+     * @return \VuFind\Db\Row\User New user row.
+     */
+    public function updatePassword($request)
+    {
+        // Ensure that all expected parameters are populated to avoid notices
+        // in the code below.
+        $params = array(
+            'username' => '', 'password' => '', 'password2' => ''
+        );
+        foreach ($params as $param => $default) {
+            $params[$param] = $request->getPost()->get($param, $default);
+        }
+
+        // Validate Input
+        $this->validateUsernameAndPassword($params);
+
+        // Create the row and send it back to the caller:
+        $table = $this->getUserTable();
+        $user = $table->getByUsername($params['username'], false);
+        if ($this->passwordHashingEnabled()) {
+            $bcrypt = new Bcrypt();
+            $user->pass_hash = $bcrypt->create($params['password']);
+        } else {
+            $user->password = $params['password'];
+        }
+        $user->save();
+        return $user;
+    }
+
+    /**
+     * Make sure username and password aren't blank
+     * Make sure passwords match
+     *
+     * @param array $params request parameters
+     *
+     * @return void
+     */
+    protected function validateUsernameAndPassword($params)
+    {
+        // Needs a username
+        if (trim($params['username']) == '') {
+            throw new AuthException('Username cannot be blank');
+        }
+        // Needs a password
+        if (trim($params['password']) == '') {
+            throw new AuthException('Password cannot be blank');
+        }
+        // Passwords don't match
+        if ($params['password'] != $params['password2']) {
+            throw new AuthException('Passwords do not match');
+        }
     }
 
     /**
@@ -237,6 +287,16 @@ class Database extends AbstractBase
      * @return bool
      */
     public function supportsCreation()
+    {
+        return true;
+    }
+
+    /**
+     * Does this authentication method support password changing
+     *
+     * @return bool
+     */
+    public function supportsPasswordChange()
     {
         return true;
     }

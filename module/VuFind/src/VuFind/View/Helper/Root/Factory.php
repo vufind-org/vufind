@@ -298,6 +298,21 @@ class Factory
     }
 
     /**
+     * Construct the Recaptcha helper.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Recaptcha
+     */
+    public static function getRecaptcha(ServiceManager $sm)
+    {
+        return new Recaptcha(
+            $sm->getServiceLocator()->get('VuFind\Recaptcha'),
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+        );
+    }
+
+    /**
      * Construct the Record helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -479,20 +494,6 @@ class Factory
             || ($cfg->Social->tags && $cfg->Social->tags !== 'disabled')
             ? 'enabled' : 'disabled';
         return new UserTags($mode);
-    }
-
-    /**
-     * Construct the VideoClips helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return VideoClips
-     */
-    public static function getVideoClips(ServiceManager $sm)
-    {
-        return new VideoClips(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-        );
     }
 
     /**

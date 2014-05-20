@@ -99,9 +99,11 @@ class PluginFactoryTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
-     * Constructor
+     * Standard setup method.
+     *
+     * @return void
      */
-    public function __construct()
+    public function setUp()
     {
         $this->factory = new \VuFind\Config\PluginFactory();
     }

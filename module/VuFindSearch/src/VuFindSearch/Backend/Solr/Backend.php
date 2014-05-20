@@ -40,6 +40,7 @@ use VuFindSearch\Backend\Solr\Response\Json\Terms;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Feature\SimilarInterface;
 use VuFindSearch\Feature\RetrieveBatchInterface;
+use VuFindSearch\Feature\RandomInterface;
 
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Backend\Exception\RemoteErrorException;
@@ -56,7 +57,7 @@ use VuFindSearch\Exception\InvalidArgumentException;
  * @link     http://vufind.org
  */
 class Backend extends AbstractBackend
-    implements SimilarInterface, RetrieveBatchInterface
+    implements SimilarInterface, RetrieveBatchInterface, RandomInterface
 {
     /**
      * Connector.
@@ -109,6 +110,28 @@ class Backend extends AbstractBackend
         $this->injectSourceIdentifier($collection);
 
         return $collection;
+    }
+
+    /**
+     * Get Random records
+     *
+     * @param AbstractQuery $query  Search query
+     * @param integer       $limit  Search limit
+     * @param ParamBag      $params Search backend parameters
+     *
+     * @return RecordCollectionInterface
+     */
+    public function random(
+        AbstractQuery $query, $limit, ParamBag $params = null
+    ) {
+        $params = $params ?: new ParamBag();
+        $this->injectResponseWriter($params);
+
+        $random = rand(0, 1000000);
+        $sort = "{$random}_random asc";
+        $params->set('sort', $sort);
+
+        return $this->search($query, 0, $limit, $params);
     }
 
     /**

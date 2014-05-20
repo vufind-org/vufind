@@ -241,6 +241,55 @@ class Factory
     }
 
     /**
+     * Construct the recaptcha helper
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return \VuFind\Record\Loader
+     */
+    public static function getRecaptcha(ServiceManager $sm)
+    {
+        $config = $sm->get('VuFind\Config')->get('config');
+        $recaptcha = new \ZendService\ReCaptcha\ReCaptcha(
+            isset($config->Captcha->publicKey) ? $config->Captcha->publicKey : '',
+            isset($config->Captcha->privateKey) ? $config->Captcha->privateKey : ''
+        );
+        if (isset($config->Captcha->theme)) {
+            $recaptcha->setOption('theme', $config->Captcha->theme);
+            $recaptcha->setOption('custom_theme_widget', 'custom_recaptcha_widget');
+            $translator = $sm->get('VuFind\Translator');
+            $recaptcha->setOption(
+                'custom_translations',
+                array(
+                    'audio_challenge' =>
+                        $translator->translate('recaptcha_audio_challenge'),
+                    'cant_hear_this' =>
+                        $translator->translate('recaptcha_cant_hear_this'),
+                    'help_btn' =>
+                        $translator->translate('recaptcha_help_btn'),
+                    'image_alt_text' =>
+                        $translator->translate('recaptcha_image_alt_text'),
+                    'incorrect_try_again' =>
+                        $translator->translate('recaptcha_incorrect_try_again'),
+                    'instructions_audio' =>
+                        $translator->translate('recaptcha_instructions_audio'),
+                    'instructions_visual' =>
+                        $translator->translate('recaptcha_instructions_visual'),
+                    'play_again' =>
+                        $translator->translate('recaptcha_play_again'),
+                    'privacy_and_terms' =>
+                        $translator->translate('recaptcha_privacy_and_terms'),
+                    'refresh_btn' =>
+                        $translator->translate('recaptcha_refresh_btn'),
+                    'visual_challenge' =>
+                        $translator->translate('recaptcha_visual_challenge')
+                )
+            );
+        }
+        return $recaptcha;
+    }
+
+    /**
      * Construct the record loader.
      *
      * @param ServiceManager $sm Service manager.

@@ -88,6 +88,13 @@ class Params implements ServiceLocatorAwareInterface
     protected $serviceLocator;
 
     /**
+     * Are default filters applied?
+     *
+     * @var bool
+     */
+    protected $defaultsApplied = false;
+
+    /**
      * Constructor
      *
      * @param \VuFind\Search\Base\Options  $options      Options to use
@@ -1068,8 +1075,8 @@ class Params implements ServiceLocatorAwareInterface
     /**
      * Initialize all range filters.
      *
-     * @param \Zend\StdLib\Parameters $request         Parameter object representing
-     * user request.
+     * @param \Zend\StdLib\Parameters $request Parameter object representing user
+     * request.
      *
      * @return void
      */
@@ -1167,33 +1174,33 @@ class Params implements ServiceLocatorAwareInterface
      *
      * @return void
      */
-     protected function initGenericRangeFilters($request,
+    protected function initGenericRangeFilters($request,
         $requestParam = 'genericrange', $valueFilter = null, $filterGenerator = null
-     ) {
-         $rangeFacets = $request->get($requestParam);
-         if (!empty($rangeFacets)) {
-             $ranges = is_array($rangeFacets) ? $rangeFacets : array($rangeFacets);
-             foreach ($ranges as $range) {
-                 // Load start and end of range:
-                 $from = $request->get($range . 'from');
-                 $to = $request->get($range . 'to');
+    ) {
+        $rangeFacets = $request->get($requestParam);
+        if (!empty($rangeFacets)) {
+            $ranges = is_array($rangeFacets) ? $rangeFacets : array($rangeFacets);
+            foreach ($ranges as $range) {
+                // Load start and end of range:
+                $from = $request->get($range . 'from');
+                $to = $request->get($range . 'to');
 
-                 // Apply filtering/validation if necessary:
-                 if (is_callable($valueFilter)) {
-                     $from = call_user_func($valueFilter, $from);
-                     $to = call_user_func($valueFilter, $to);
-                 }
+                // Apply filtering/validation if necessary:
+                if (is_callable($valueFilter)) {
+                    $from = call_user_func($valueFilter, $from);
+                    $to = call_user_func($valueFilter, $to);
+                }
 
-                 // Build filter only if necessary:
-                 if (!empty($range) && ($from != '*' || $to != '*')) {
-                     $rangeFacet = is_callable($filterGenerator)
+                // Build filter only if necessary:
+                if (!empty($range) && ($from != '*' || $to != '*')) {
+                    $rangeFacet = is_callable($filterGenerator)
                         ? call_user_func($filterGenerator, $range, $from, $to)
                         : $this->buildGenericRangeFilter($range, $from, $to, false);
-                     $this->addFilter($rangeFacet);
-                 }
-             }
-         }
-     }
+                    $this->addFilter($rangeFacet);
+                }
+            }
+        }
+    }
 
     /**
      * Support method for initNumericRangeFilters() -- build a filter query based on
@@ -1288,6 +1295,20 @@ class Params implements ServiceLocatorAwareInterface
                 }
             } else {
                 $this->addFilter($filter);
+            }
+        }
+
+        // If we don't have the special flag indicating that defaults have
+        // been applied, and if we do have defaults, apply them:
+        if ($request->get('dfApplied')) {
+            $this->defaultsApplied = true;
+        } else {
+            $defaults = $this->getOptions()->getDefaultFilters();
+            if (!empty($defaults)) {
+                foreach ($defaults as $current) {
+                    $this->addFilter($current);
+                }
+                $this->defaultsApplied = true;
             }
         }
 
@@ -1386,6 +1407,13 @@ class Params implements ServiceLocatorAwareInterface
         // Some values will transfer without changes
         $this->filterList   = $minified->f;
         $this->searchType   = $minified->ty;
+
+        // Deminified searches will always have defaults already applied;
+        // we don't want to accidentally manipulate them further.
+        $defaults = $this->getOptions()->getDefaultFilters();
+        if (!empty($defaults)) {
+            $this->defaultsApplied = true;
+        }
 
         // Search terms, we need to expand keys
         $this->query = QueryAdapter::deminify($minified->t);
@@ -1579,5 +1607,15 @@ class Params implements ServiceLocatorAwareInterface
             $this->addFacet($key, $value, $useOr);
         }
         return true;
+    }
+
+    /**
+     * Are default filters applied?
+     *
+     * @return bool
+     */
+    public function hasDefaultsApplied()
+    {
+        return $this->defaultsApplied;
     }
 }

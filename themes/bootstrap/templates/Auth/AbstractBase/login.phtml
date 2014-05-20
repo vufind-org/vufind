@@ -6,9 +6,13 @@
     <input type="hidden" name="auth_method" value="<?=$this->auth()->getActiveAuthMethod()?>">
     <div class="control-group">
       <div class="controls">
-        <input class="btn btn-primary" type="submit" name="processLogin" value="Login">
         <? if ($account->supportsCreation()): ?>
           <a class="btn btn-link createAccountLink" href="<?=$this->url('myresearch-account') ?>"><?=$this->transEsc('Create New Account')?></a>
+        <? endif; ?>
+        <input class="btn btn-primary" type="submit" name="processLogin" value="Login">
+        <? if ($account->supportsRecovery()): ?>
+          <br/>
+          <a class="btn btn-link" href="<?=$this->url('myresearch-recover') ?>"><?=$this->transEsc('Forgot Password')?></a>
         <? endif; ?>
       </div>
     </div>

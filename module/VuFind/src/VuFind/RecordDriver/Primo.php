@@ -298,6 +298,7 @@ class Primo extends SolrDefault
      * @param string $format Export format
      *
      * @return bool
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function exportDisabled($format)
     {

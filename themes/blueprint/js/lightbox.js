@@ -1,4 +1,4 @@
-/*global checkSaveStatuses, confirm, extractController, extractSource, getItemsFromCartCookie, hexEncode, htmlEncode, path, printIDs, rc4Encrypt, redrawCartStatus, refreshCommentList, removeRecordState, saveCartCookie, vufindString*/
+/*global checkSaveStatuses, confirm, extractController, extractSource, getItemsFromCartCookie, hexEncode, htmlEncode, path, printIDs, rc4Encrypt, Recaptcha, redrawCartStatus, refreshCommentList, removeRecordState, saveCartCookie, vufindString*/
 
 // keep a handle to the current opened dialog so we can access it later
 var __dialogHandle = {dialog: null, processFollowup:false, followupModule: null, followupAction: null, recordId: null, postParams: null};
@@ -72,6 +72,9 @@ function displayLightboxFeedback($form, message, type) {
 function displayFormError($form, error) {
     $form.parent().find('.error').remove();
     $form.prepend('<div class="error">' + error + '</div>');
+    if (Recaptcha) {
+      Recaptcha.reload();
+    }
 }
 
 function displayFormInfo($form, msg) {

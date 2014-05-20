@@ -1,4 +1,4 @@
-﻿-- 
+-- 
 -- Table structure for table comments
 -- 
 
@@ -110,6 +110,7 @@ college varchar(100) NOT NULL DEFAULT '',
 major varchar(100) NOT NULL DEFAULT '',
 home_library varchar(100) NOT NULL DEFAULT '',
 created timestamp NOT NULL DEFAULT '1970-01-01 00:00:00',
+verify_hash varchar(42) NOT NULL DEFAULT '',
 PRIMARY KEY (id),
 UNIQUE (username)
 ); 

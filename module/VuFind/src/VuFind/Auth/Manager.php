@@ -138,14 +138,14 @@ class Manager implements ServiceLocatorAwareInterface
         }
     }
 
-    /** 
+    /**
      * Helper
      *
      * @param string $method auth method to instantiate
      *
      * @return AbstractBase
      */
-    protected function makeAuth($method) 
+    protected function makeAuth($method)
     {
         $manager = $this->getServiceLocator()->get('VuFind\AuthPluginManager');
         $auth = $manager->get($method);
@@ -156,7 +156,7 @@ class Manager implements ServiceLocatorAwareInterface
     /**
      * Does the current configuration support account creation?
      *
-     *@param string $authMethod optional; check this auth method rather than 
+     * @param string $authMethod optional; check this auth method rather than
      *  the one in config file
      *
      * @return bool
@@ -170,11 +170,51 @@ class Manager implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Does the current configuration support password recovery?
+     *
+     * @param string $authMethod optional; check this auth method rather than
+     *  the one in config file
+     *
+     * @return bool
+     */
+    public function supportsRecovery($authMethod=null)
+    {
+        if ($authMethod != null) {
+            $this->setActiveAuthClass($authMethod);
+        }
+        if ($this->getAuth()->supportsPasswordChange()) {
+            return isset($this->config->Authentication->recover_password)
+                && $this->config->Authentication->recover_password;
+        }
+        return false;
+    }
+
+    /**
+     * Is new passwords currently allowed?
+     *
+     * @param string $authMethod optional; check this auth method rather than
+     *  the one in config file
+     *
+     * @return bool
+     */
+    public function supportsPasswordChange($authMethod=null)
+    {
+        if ($authMethod != null) {
+            $this->setActiveAuthClass($authMethod);
+        }
+        if ($this->getAuth()->supportsPasswordChange()) {
+            return isset($this->config->Authentication->change_password)
+                && $this->config->Authentication->change_password;
+        }
+        return false;
+    }
+
+    /**
      * Get the URL to establish a session (needed when the internal VuFind login
      * form is inadequate).  Returns false when no session initiator is needed.
      *
      * @param string $target Full URL where external authentication method should
-     * send user to after login (some drivers may override this).
+     * send user after login (some drivers may override this).
      *
      * @return bool|string
      */
@@ -194,7 +234,7 @@ class Manager implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Does the current auth class allow for authentication from more than 
+     * Does the current auth class allow for authentication from more than
      * one auth method? (e.g. choiceauth)
      * If so return an array that lists the classes for the methods allowed.
      *
@@ -211,7 +251,7 @@ class Manager implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Does the current auth class allow for authentication from more than 
+     * Does the current auth class allow for authentication from more than
      * one target? (e.g. MultiILS)
      * If so return an array that lists the targets.
      *
@@ -225,7 +265,7 @@ class Manager implements ServiceLocatorAwareInterface
     }
 
     /**
-     * Does the current auth class allow for authentication from more than 
+     * Does the current auth class allow for authentication from more than
      * one target? (e.g. MultiILS)
      * If so return the default target.
      *
@@ -386,6 +426,22 @@ class Manager implements ServiceLocatorAwareInterface
     }
 
     /**
+     * Update a user's password from the request.
+     *
+     * @param \Zend\Http\PhpEnvironment\Request $request Request object containing
+     * new account details.
+     *
+     * @throws AuthException
+     * @return \VuFind\Db\Row\User New user row.
+     */
+    public function updatePassword($request)
+    {
+        $user = $this->getAuth()->updatePassword($request);
+        $this->updateSession($user);
+        return $user;
+    }
+
+    /**
      * Try to log in the user using current query parameters; return User object
      * on success, throws exception on failure.
      *
@@ -523,10 +579,9 @@ class Manager implements ServiceLocatorAwareInterface
      *
      * @return void
      */
-    public function setActiveAuthClass($method) 
+    public function setActiveAuthClass($method)
     {
         $this->authToProxy = $method;
         $this->authProxied = false;
     }
-
 }

@@ -158,6 +158,21 @@ class Factory
     }
 
     /**
+     * Factory for Random Recommendations.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return RandomRecommend
+     */
+    public static function getRandomRecommend(ServiceManager $sm)
+    {
+        return new RandomRecommend(
+            $sm->getServiceLocator()->get('VuFind\Search'),
+            $sm->getServiceLocator()->get('VuFind\SearchParamsPluginManager')
+        );
+    }
+
+    /**
      * Factory for SideFacets module.
      *
      * @param ServiceManager $sm Service manager.

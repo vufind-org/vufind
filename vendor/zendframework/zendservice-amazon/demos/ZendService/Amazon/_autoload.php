@@ -6,4 +6,3 @@ if (file_exists($vendor.'/autoload.php')) {
 } else {
     throw new RuntimeException('Unable to load vendors. Run `php composer.phar install`');
 }
-

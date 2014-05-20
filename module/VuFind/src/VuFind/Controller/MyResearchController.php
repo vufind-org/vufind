@@ -28,6 +28,7 @@
 namespace VuFind\Controller;
 
 use VuFind\Exception\Auth as AuthException,
+    VuFind\Exception\Mail as MailException,
     VuFind\Exception\ListPermission as ListPermissionException,
     VuFind\Exception\RecordMissing as RecordMissingException,
     Zend\Stdlib\Parameters;
@@ -195,8 +196,14 @@ class MyResearchController extends AbstractBase
             $followup->url = $this->getRequest()->getServer()->get('HTTP_REFERER');
         }
 
+        // Make view
+        $view = $this->createViewModel();
+        // Set up reCaptcha
+        $view->useRecaptcha = $this->recaptcha()->active('newAccount');
+        // Pass request to view so we can repopulate user parameters in form:
+        $view->request = $this->getRequest()->getPost();
         // Process request, if necessary:
-        if (!is_null($this->params()->fromPost('submit', null))) {
+        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
             try {
                 $this->getAuthManager()->create($this->getRequest());
                 return $this->forwardTo('MyResearch', 'Home');
@@ -205,10 +212,6 @@ class MyResearchController extends AbstractBase
                     ->addMessage($e->getMessage());
             }
         }
-
-        // Pass request to view so we can repopulate user parameters in form:
-        $view = $this->createViewModel();
-        $view->request = $this->getRequest()->getPost();
         return $view;
     }
 
@@ -254,13 +257,18 @@ class MyResearchController extends AbstractBase
      */
     public function logoutAction()
     {
-        $logoutTarget = $this->getRequest()->getServer()->get('HTTP_REFERER');
-        if (empty($logoutTarget)) {
-            $logoutTarget = $this->getServerUrl('home');
-        }
+        $config = $this->getConfig();
+        if (isset($config->Site->logOutRoute)) {
+            $logoutTarget = $this->getServerUrl($config->Site->logOutRoute);
+        } else {
+            $logoutTarget = $this->getRequest()->getServer()->get('HTTP_REFERER');
+            if (empty($logoutTarget)) {
+                $logoutTarget = $this->getServerUrl('home');
+            }
 
-        // clear querystring parameters
-        $logoutTarget = preg_replace('/\?.*/', '', $logoutTarget);
+            // clear querystring parameters
+            $logoutTarget = preg_replace('/\?.*/', '', $logoutTarget);
+        }
 
         return $this->redirect()
             ->toUrl($this->getAuthManager()->logout($logoutTarget));
@@ -399,7 +407,7 @@ class MyResearchController extends AbstractBase
         }
 
         // Process the deletes if necessary:
-        if (!is_null($this->params()->fromPost('submit'))) {
+        if ($this->formWasSubmitted('submit')) {
             $this->favorites()->delete($ids, $listID, $user);
             $this->flashMessenger()->setNamespace('info')
                 ->addMessage('fav_delete_success');
@@ -528,7 +536,7 @@ class MyResearchController extends AbstractBase
         );
 
         // Process save action if necessary:
-        if ($this->params()->fromPost('submit')) {
+        if ($this->formWasSubmitted('submit')) {
             return $this->processEditSubmit($user, $driver, $listID);
         }
 
@@ -747,7 +755,7 @@ class MyResearchController extends AbstractBase
         $list = $newList ? $table->getNew($user) : $table->getExisting($id);
 
         // Process form submission:
-        if ($this->params()->fromPost('submit')) {
+        if ($this->formWasSubmitted('submit')) {
             if ($redirect = $this->processEditList($user, $list)) {
                 return $redirect;
             }
@@ -991,7 +999,7 @@ class MyResearchController extends AbstractBase
             $current = $this->ILLRequests()->addCancelDetails(
                 $catalog, $current, $cancelStatus, $patron
             );
-            if ($cancelStatus 
+            if ($cancelStatus
                 && $cancelStatus['function'] != "getCancelILLRequestLink"
                 && isset($current['cancel_details'])
             ) {
@@ -1108,5 +1116,261 @@ class MyResearchController extends AbstractBase
     {
         $url = $this->getServerUrl('myresearch-home');
         return $this->getAuthManager()->getSessionInitiator($url);
+    }
+
+    /**
+     * Send account recovery email
+     *
+     * @return View object
+     */
+    public function recoverAction()
+    {
+        // Make sure we're configured to do this
+        if (!$this->getAuthManager()->supportsRecovery()) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('recovery_disabled');
+            return $this->redirect()->toRoute('myresearch-home');
+        }
+        if ($this->getUser()) {
+            return $this->redirect()->toRoute('myresearch-home');
+        }
+        // Database
+        $table = $this->getTable('User');
+        $user = false;
+        // Check if we have a submitted form, and use the information
+        // to get the user's information
+        if ($email = $this->params()->fromPost('email')) {
+            $user = $table->getByEmail($email);
+        } elseif ($username = $this->params()->fromPost('username')) {
+            $user = $table->getByUsername($username, false);
+        }
+        $view = $this->createViewModel();
+        $view->useRecaptcha = $this->recaptcha()->active('passwordRecovery');
+        // If we have a submitted form
+        if ($this->formWasSubmitted('submit', $view->useRecaptcha)) {
+            if ($user) {
+                $this->sendRecoveryEmail($user, $this->getConfig());
+            } else {
+                $this->flashMessenger()->setNamespace('error')
+                    ->addMessage('recovery_user_not_found');
+            }
+        }
+        return $view;
+    }
+
+    /**
+     * Helper function for recoverAction
+     *
+     * @param \VuFind\Db\Row\User $user   User object we're recovering
+     * @param \VuFind\Config      $config Configuration object
+     *
+     * @return void (sends email or adds error message)
+     */
+    protected function sendRecoveryEmail($user, $config)
+    {
+        // If we can't find a user
+        if (null == $user) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('recovery_user_not_found');
+        } else {
+            // Make sure we've waiting long enough
+            $hashtime = $this->getHashAge($user->verify_hash);
+            $recoveryInterval = isset($config->Authentication->recover_interval)
+                ? $config->Authentication->recover_interval
+                : 60;
+            if (time()-$hashtime < $recoveryInterval) {
+                $this->flashMessenger()->setNamespace('error')
+                    ->addMessage('recovery_too_soon');
+            } else {
+                // Attempt to send the email
+                try {
+                    // Create a fresh hash
+                    $user->updateHash();
+                    $config = $this->getConfig();
+                    $renderer = $this->getViewRenderer();
+                    // Custom template for emails (text-only)
+                    $message = $renderer->render(
+                        'Email/recover-password.phtml',
+                        array(
+                            'library' => $config->Site->title,
+                            'url' => $this->getServerUrl('myresearch-verify')
+                                . '?hash='
+                                . $user->verify_hash
+                        )
+                    );
+                    $this->getServiceLocator()->get('VuFind\Mailer')->send(
+                        $user->email,
+                        $config->Site->email,
+                        $this->translate('recovery_email_subject'),
+                        $message
+                    );
+                    $this->flashMessenger()->setNamespace('info')
+                        ->addMessage('recovery_email_sent');
+                } catch (MailException $e) {
+                    $this->flashMessenger()->setNamespace('error')
+                        ->addMessage($e->getMessage());
+                }
+            }
+        }
+    }
+
+    /**
+     * Receive a hash and display the new password form if it's valid
+     *
+     * @return view
+     */
+    public function verifyAction()
+    {
+        // If we have a submitted form
+        if ($hash = $this->params()->fromQuery('hash')) {
+            $hashtime = $this->getHashAge($hash);
+            $config = $this->getConfig();
+            // Check if hash is expired
+            $hashLifetime = isset($config->Authentication->recover_hash_lifetime)
+                ? $config->Authentication->recover_hash_lifetime
+                : 1209600; // Two weeks
+            if (time()-$hashtime > $hashLifetime) {
+                $this->flashMessenger()->setNamespace('error')
+                    ->addMessage('recovery_expired_hash');
+                return $this->forwardTo('MyResearch', 'Login');
+            } else {
+                $table = $this->getTable('User');
+                $user = $table->getByVerifyHash($hash);
+                // If the hash is valid, forward user to create new password
+                if (null != $user) {
+                    $view = $this->createViewModel();
+                    $view->hash = $hash;
+                    $view->username = $user->username;
+                    $view->useRecaptcha
+                        = $this->recaptcha()->active('passwordRecovery');
+                    $view->setTemplate('myresearch/newpassword');
+                    return $view;
+                }
+            }
+        }
+        $this->flashMessenger()->setNamespace('error')
+            ->addMessage('recovery_invalid_hash');
+        return $this->forwardTo('MyResearch', 'Login');
+    }
+
+    /**
+     * Handling submission of a new password for a user.
+     *
+     * @return view
+     */
+    public function newPasswordAction()
+    {
+        // Have we submitted the form?
+        if (!$this->formWasSubmitted('submit')) {
+            return $this->redirect()->toRoute('home');
+        }
+        // Pull in from POST
+        $request = $this->getRequest();
+        $post = $request->getPost();
+        // Verify hash
+        $userFromHash = isset($post->hash)
+            ? $this->getTable('User')->getByVerifyHash($post->hash)
+            : false;
+        // View and reCaptcha
+        $view = $this->createViewModel($post);
+        $view->useRecaptcha = $this->recaptcha()->active('changePassword');
+        // Check reCaptcha
+        if (!$this->formWasSubmitted('submit', $view->useRecaptcha)) {
+            return $view;
+        }
+        // Missing or invalid hash
+        if (false == $userFromHash) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('recovery_user_not_found');
+            // Force login or restore hash
+            $post->username = false;
+            return $this->forwardTo('MyResearch', 'Recover');
+        } elseif ($userFromHash->username !== $post->username) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('authentication_error_invalid');
+            $userFromHash->updateHash();
+            $view->username = $userFromHash->username;
+            $view->hash = $userFromHash->verify_hash;
+            return $view;
+        }
+        // Verify old password if we're logged in
+        if ($this->getUser()) {
+            if (isset($post->oldpwd)) {
+                try {
+                    // Reassign oldpwd to password in the request so login works
+                    $temp_password = $post->password;
+                    $post->password = $post->oldpwd;
+                    $this->getAuthManager()->login($request);
+                    $post->password = $temp_password;
+                } catch(AuthException $e) {
+                    $this->flashMessenger()->setNamespace('error')
+                        ->addMessage($e->getMessage());
+                    return $view;
+                }
+            } else {
+                $this->flashMessenger()->setNamespace('error')
+                    ->addMessage('authentication_error_invalid');
+                $view->verifyold = true;
+                return $view;
+            }
+        }
+        // Update password
+        try {
+            $user = $this->getAuthManager()->updatePassword($this->getRequest());
+        } catch (AuthException $e) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage($e->getMessage());
+            return $view;
+        }
+        // Update hash to prevent reusing hash
+        $user->updateHash();
+        // Login
+        $this->getAuthManager()->login($this->request);
+        // Go to favorites
+        $this->flashMessenger()->setNamespace('info')
+            ->addMessage('new_password_success');
+        return $this->redirect()->toRoute('myresearch-home');
+    }
+
+    /**
+     * Handling submission of a new password for a user.
+     *
+     * @return view
+     */
+    public function changePasswordAction()
+    {
+        if (!$this->getAuthManager()->isLoggedIn()) {
+            return $this->forceLogin();
+        }
+        // If not submitted, are we logged in?
+        if (!$this->getAuthManager()->supportsPasswordChange()) {
+            $this->flashMessenger()->setNamespace('error')
+                ->addMessage('recovery_new_disabled');
+            return $this->redirect()->toRoute('home');
+        }
+        $view = $this->createViewModel($this->params()->fromPost());
+        // Verify user password
+        $view->verifyold = true;
+        // Display username
+        $user = $this->getUser();
+        $view->username = $user->username;
+        // Identification
+        $user->updateHash();
+        $view->hash = $user->verify_hash;
+        $view->setTemplate('myresearch/newpassword');
+        $view->useRecaptcha = $this->recaptcha()->active('changePassword');
+        return $view;
+    }
+
+    /**
+     * Helper function for verification hashes
+     *
+     * @param string $hash User-unique hash string from request
+     *
+     * @return int age in seconds
+     */
+    protected function getHashAge($hash)
+    {
+        return intval(substr($hash, -10));
     }
 }

@@ -543,12 +543,12 @@ class Voyager extends AbstractBase
         }
 
         if ($this->useHoldingsSortGroups) {
-            uksort(
+            usort(
                 $status,
-                function($a, $b) {
-                    return $status[$a]['sort_seq'] == $status[$b]['sort_seq']
-                        ? $status[$a]['item_sort_seq'] - $status[$b]['item_sort_seq']
-                        : $status[$a]['sort_seq'] - $status[$b]['sort_seq'];
+                function ($a, $b) {
+                    return $a['sort_seq'] == $b['sort_seq']
+                        ? $a['item_sort_seq'] - $b['item_sort_seq']
+                        : $a['sort_seq'] - $b['sort_seq'];
                 }
             );
         }
@@ -596,7 +596,7 @@ class Voyager extends AbstractBase
                 $sqlRows[] = $row;
             }
 
-            $data = array_merge($data, $this->getStatusData($sqlRows));
+            $data += $this->getStatusData($sqlRows);
         }
         return $this->processStatusData($data);
     }
@@ -1114,7 +1114,7 @@ class Voyager extends AbstractBase
         if ($this->useHoldingsSortGroups) {
             usort(
                 $holding,
-                function($a, $b) {
+                function ($a, $b) {
                     return $a['sort_seq'] == $b['sort_seq']
                         ? $a['item_sort_seq'] - $b['item_sort_seq']
                         : $a['sort_seq'] - $b['sort_seq'];
@@ -1140,7 +1140,7 @@ class Voyager extends AbstractBase
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, $patron = false)
+    public function getHolding($id, array $patron = null)
     {
         $possibleQueries = array();
 

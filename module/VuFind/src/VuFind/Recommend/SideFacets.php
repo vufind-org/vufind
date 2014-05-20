@@ -254,6 +254,39 @@ class SideFacets extends AbstractFacets
     }
 
     /**
+     * Get the list of filters to display
+     *
+     * @param array $extraFilters Extra filters to add to the list.
+     *
+     * @return array
+     */
+    public function getVisibleFilters($extraFilters = array())
+    {
+        // Merge extras into main list:
+        $filterList = array_merge(
+            $this->results->getParams()->getFilterList(true), $extraFilters
+        );
+
+        // Filter out suppressed values:
+        $final = array();
+        foreach ($filterList as $field => $filters) {
+            $current = array();
+            foreach ($filters as $i => $filter) {
+                if (!isset($filter['suppressDisplay'])
+                    || !$filter['suppressDisplay']
+                ) {
+                    $current[] = $filter;
+                }
+            }
+            if (!empty($current)) {
+                $final[$field] = $current;
+            }
+        }
+
+        return $final;
+    }
+
+    /**
      * getRangeFacets
      *
      * Return range facet information in a format processed for use in the view.
