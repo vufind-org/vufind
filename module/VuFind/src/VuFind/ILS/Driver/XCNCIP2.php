@@ -425,7 +425,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
                 }
             }
         } else {
-            foreach ($this->agency as $_agency) {
+            foreach ($this->agency as $_agency => $_dummy) {
                $item_agency_id[$_agency] = $ids[0];
                break;
             }
