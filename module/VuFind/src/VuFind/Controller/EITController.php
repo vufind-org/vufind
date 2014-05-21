@@ -1,6 +1,6 @@
 <?php
 /**
- * EBSCO Record Controller
+ * WorldCat Controller
  *
  * PHP version 5
  *
@@ -21,38 +21,29 @@
  *
  * @category VuFind2
  * @package  Controller
- * @author   Julia Bauder <bauderj@grinnell.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind\Controller;
-use Zend\Mvc\MvcEvent;
 
 /**
- * EBSCO Record Controller
- * Largely copied from Summon Record Controller
+ * VuFind Controller
  *
  * @category VuFind2
  * @package  Controller
- * @author   Julia Bauder <bauderj@grinnell.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-
-class EBSCOrecordController extends AbstractRecord
+class EITController extends AbstractSearch
 {
     /**
      * Constructor
      */
     public function __construct()
     {
-        // Override some defaults:
-        $this->searchClassId = 'EBSCO';
-        $this->defaultTab = 'Description';
-
-        // Call standard record controller initialization:
+        $this->searchClassId = 'EIT';
         parent::__construct();
     }
 
@@ -63,9 +54,35 @@ class EBSCOrecordController extends AbstractRecord
      */
     protected function resultScrollerActive()
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('EBSCO');
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get('EIT');
         return (isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation);
     }
 
+    /**
+     * Home action
+     *
+     * @return mixed
+     */
+    public function homeAction()
+    {
+        // Set up default parameters:
+        return $this->createViewModel();
+    }
+
+    /**
+     * Search action -- call standard results action
+     *
+     * @return mixed
+     */
+    public function searchAction()
+    {
+
+        $account = $this->getAuthManager();
+        if ($account->isLoggedIn() == false) {
+            	return $this->forceLogin();
+       	}
+        return $this->resultsAction();
+    }
 }
+

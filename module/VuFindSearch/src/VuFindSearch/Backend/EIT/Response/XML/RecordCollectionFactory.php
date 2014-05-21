@@ -29,7 +29,7 @@
  * @link     http://vufind.org
  */
 
-namespace VuFindSearch\Backend\EBSCO\Response\XML;
+namespace VuFindSearch\Backend\EIT\Response\XML;
 
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Exception\InvalidArgumentException;
@@ -76,7 +76,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
         }
         $this->recordFactory = $recordFactory;
         $this->collectionClass = (null === $collectionClass)
-            ? 'VuFindSearch\Backend\EBSCO\Response\XML\RecordCollection'
+            ? 'VuFindSearch\Backend\EIT\Response\XML\RecordCollection'
             : $collectionClass;
     }
 

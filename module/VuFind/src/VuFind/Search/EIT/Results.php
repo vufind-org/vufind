@@ -90,7 +90,7 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Support method for performSearch(): given a WorldCat MARC record,
+     * Support method for performSearch(): given an EIT record,
      * construct an appropriate record driver object.
      *
      * @param string $data Raw record data
@@ -101,7 +101,7 @@ class Results extends \VuFind\Search\Base\Results
     {
         $factory = $this->getServiceLocator()
             ->get('VuFind\RecordDriverPluginManager');
-        $driver = $factory->get('EBSCO');
+        $driver = $factory->get('EIT');
         $driver->setRawData($data);
         return $driver;
     }
@@ -117,7 +117,7 @@ class Results extends \VuFind\Search\Base\Results
      */
     public function getFacetList($filter = null)
     {
-        // No facets in WorldCat:
+        // No facets in EIT:
         return array();
     }
 }

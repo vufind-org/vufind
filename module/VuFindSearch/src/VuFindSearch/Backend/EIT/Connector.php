@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Central class for connecting to EBSCO resources used by VuFind.
+ * Central class for connecting to EIT resources used by VuFind.
  *
  * PHP version 5
  *
@@ -26,7 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/system_classes Wiki
  */
-namespace VuFindSearch\Backend\EBSCO;
+namespace VuFindSearch\Backend\EIT;
 
 use VuFindSearch\ParamBag;
 use VuFindSearch\Backend\Exception\HttpErrorException;
@@ -35,7 +35,7 @@ use Zend\Http\Request;
 
 use Zend\Log\LoggerInterface;
 /**
- * Central class for connecting to EBSCO resources used by VuFind.
+ * Central class for connecting to EIT resources used by VuFind.
  *
  * @category VuFind2
  * @package  Connection
