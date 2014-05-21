@@ -20,13 +20,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Search_EIT
+ * @package  Search_EBSCO
  * @author   Julia Bauder <bauderj@grinnell.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-namespace VuFind\Search\EIT;
+namespace VuFind\Search\EBSCO;
 use VuFindSearch\ParamBag;
 use VuFind\Search\Base\Params as BaseParams;
 
@@ -34,7 +34,7 @@ use VuFind\Search\Base\Params as BaseParams;
  * EBSCO Search Parameters
  *
  * @category VuFind2
- * @package  Search_EIT
+ * @package  Search_EBSCO
  * @author   Julia Bauder <bauderj@grinnell.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License

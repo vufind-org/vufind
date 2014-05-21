@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EIT record collection.
+ * EBSCO record collection.
  *
  * PHP version 5
  *
@@ -28,12 +28,12 @@
  * @link     http://vufind.org
  */
 
-namespace VuFindSearch\Backend\EIT\Response\XML;
+namespace VuFindSearch\Backend\EBSCO\Response\XML;
 
 use VuFindSearch\Response\AbstractRecordCollection;
 
 /**
- * EIT record collection.
+ * EBSCO record collection.
  * Largely copied from the WorldCat record collection
  *
  * @category VuFind2
@@ -54,7 +54,7 @@ class RecordCollection extends AbstractRecordCollection
     /**
      * Constructor.
      *
-     * @param array $response EIT response
+     * @param array $response EBSCO response
      *
      * @return void
      */
@@ -81,7 +81,7 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getFacets()
     {
-        return array(); // not supported by EIT
+        return array(); // not supported by EBSCO
     }
 
     /**

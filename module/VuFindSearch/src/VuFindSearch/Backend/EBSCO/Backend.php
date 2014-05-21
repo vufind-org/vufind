@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EIT backend.
+ * EBSCO backend.
  *
  * PHP version 5
  *
@@ -27,7 +27,7 @@
  * @link     http://vufind.org
  */
 
-namespace VuFindSearch\Backend\EIT;
+namespace VuFindSearch\Backend\EBSCO;
 
 use VuFindSearch\Query\AbstractQuery;
 
@@ -41,7 +41,7 @@ use VuFindSearch\Backend\BackendInterface;
 use Zend\Log\LoggerInterface;
 
 /**
- * EIT backend.
+ * EBSCO backend.
  *
  * @category VuFind2
  * @package  Search
@@ -89,7 +89,7 @@ class Backend implements BackendInterface
     /**
      * Constructor.
      *
-     * @param Connector                        $connector EIT connector
+     * @param Connector                        $connector EBSCO connector
      * @param RecordCollectionFactoryInterface $factory   Record collection factory
      *
      * @return void
@@ -243,7 +243,7 @@ class Backend implements BackendInterface
     }
 
     /**
-     * Return the EIT connector.
+     * Return the EBSCO connector.
      *
      * @return Connector
      */

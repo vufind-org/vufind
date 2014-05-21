@@ -20,20 +20,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  * @category VuFind2
- * @package  Search_EIT
+ * @package  Search_EBSCO
  * @author   Julia Bauder <bauderj@grinnell.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-namespace VuFind\Search\EIT;
+namespace VuFind\Search\EBSCO;
 
 /**
  * EBSCO EIT Search Options
  * Largely copied from WorldCat Search Options
  *
  * @category VuFind2
- * @package  Search_EIT
+ * @package  Search_EBSCO
  * @author   Julia Bauder <bauderj@grinnell.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
@@ -50,7 +50,7 @@ class Options extends \VuFind\Search\Base\Options
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
         parent::__construct($configLoader);
-	$this->searchIni = $this->facetsIni = 'EIT';
+	$this->searchIni = $this->facetsIni = 'EBSCO';
 	;
 
         // Load the configuration file:
@@ -91,7 +91,7 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getSearchAction()
     {
-        return 'eit-search';
+        return 'ebsco-search';
     }
 
     /**
@@ -102,6 +102,6 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getAdvancedSearchAction()
     {
-        return 'eit-advanced';
+        return 'ebsco-advanced';
     }
 }
