@@ -14,10 +14,10 @@
         <a class="logout" href="<?=$this->url('myresearch-logout')?>"><?=$this->transEsc("Log Out")?></a>
       </div>
       <div id="loginOptions"<?=$account->isLoggedIn() ? ' class="hide"' : ''?>>
-      <? if ($sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-home')))): ?>
+      <? if ($sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-newlogin')))): ?>
         <a class="login" href="<?=$this->escapeHtml($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
       <? else: ?>
-        <a class="login" href="<?=$this->url('myresearch-home')?>"><?=$this->transEsc("Login")?></a>
+        <a class="login" href="<?=$this->url('myresearch-newlogin')?>"><?=$this->transEsc("Login")?></a>
       <? endif; ?>
       </div>
     <? endif; ?>

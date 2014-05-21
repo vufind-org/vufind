@@ -251,6 +251,24 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * New login action -- clear any previous follow-up information prior to
+     * triggering a login process. This is used for explicit login links within
+     * the UI to differentiate them from contextual login links that are triggered
+     * by attempting to access protected actions.
+     *
+     * @return mixed
+     */
+    public function newloginAction()
+    {
+        $followup = $this->followup()->retrieve();
+        if (isset($followup->url)) {
+            unset($followup->url);
+        }
+        $this->storeRefererForPostLoginRedirect();
+        return $this->forwardTo('MyResearch', 'Login');
+    }
+
+    /**
      * Logout Action
      *
      * @return mixed
