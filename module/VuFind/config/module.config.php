@@ -68,7 +68,6 @@ $config = array(
             'record' => 'VuFind\Controller\Factory::getRecordController',
         ),
         'invokables' => array(
-            'admin' => 'VuFind\Controller\AdminController',
             'ajax' => 'VuFind\Controller\AjaxController',
             'alphabrowse' => 'VuFind\Controller\AlphabrowseController',
             'author' => 'VuFind\Controller\AuthorController',
@@ -99,7 +98,6 @@ $config = array(
             'summonrecord' => 'VuFind\Controller\SummonrecordController',
             'tag' => 'VuFind\Controller\TagController',
             'upgrade' => 'VuFind\Controller\UpgradeController',
-            'vudl' => 'VuFind\Controller\VudlController',
             'web' => 'VuFind\Controller\WebController',
             'worldcat' => 'VuFind\Controller\WorldcatController',
             'worldcatrecord' => 'VuFind\Controller\WorldcatrecordController',
@@ -209,10 +207,12 @@ $config = array(
                     'multiils' => 'VuFind\Auth\Factory::getMultiILS',
                 ),
                 'invokables' => array(
+                    'choiceauth' => 'VuFind\Auth\ChoiceAuth',
                     'database' => 'VuFind\Auth\Database',
                     'ldap' => 'VuFind\Auth\LDAP',
                     'multiauth' => 'VuFind\Auth\MultiAuth',
                     'shibboleth' => 'VuFind\Auth\Shibboleth',
+                    'cas' => 'VuFind\Auth\CAS',
                     'sip2' => 'VuFind\Auth\SIP2',
                 ),
                 'aliases' => array(
@@ -470,16 +470,29 @@ $config = array(
                 ),
             ),
         ),
+        // This section behaves just like recorddriver_tabs below, but is used for
+        // the collection module instead of the standard record view.
+        'recorddriver_collection_tabs' => array(
+            'VuFind\RecordDriver\AbstractBase' => array(
+                'tabs' => array(
+                    'CollectionList' => 'CollectionList',
+                    'HierarchyTree' => 'CollectionHierarchyTree',
+                ),
+                'defaultTab' => null,
+            ),
+        ),
         // This section controls which tabs are used for which record driver classes.
         // Each sub-array is a map from a tab name (as used in a record URL) to a tab
         // service (found in recordtab_plugin_manager, below).  If a particular record
         // driver is not defined here, it will inherit configuration from a configured
-        // parent class.
+        // parent class.  The defaultTab setting may be used to specify the default
+        // active tab; if null, the value from the relevant .ini file will be used.
         'recorddriver_tabs' => array(
             'VuFind\RecordDriver\Pazpar2' => array(
                 'tabs' => array (
                     'Details' => 'StaffViewMARC',
                  ),
+                'defaultTab' => null,
             ),
             'VuFind\RecordDriver\Primo' => array(
                 'tabs' => array(
@@ -494,6 +507,7 @@ $config = array(
                 'tabs' => array (
                     'Details' => 'StaffViewMARC',
                  ),
+                'defaultTab' => null,
             ),
             'VuFind\RecordDriver\SolrDefault' => array(
                 'tabs' => array (
@@ -503,6 +517,7 @@ $config = array(
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
                     'Details' => 'StaffViewArray',
                 ),
+                'defaultTab' => null,
             ),
             'VuFind\RecordDriver\SolrMarc' => array(
                 'tabs' => array(
@@ -512,6 +527,7 @@ $config = array(
                     'HierarchyTree' => 'HierarchyTree', 'Map' => 'Map',
                     'Details' => 'StaffViewMARC',
                 ),
+                'defaultTab' => null,
             ),
             'VuFind\RecordDriver\Summon' => array(
                 'tabs' => array(
@@ -520,6 +536,7 @@ $config = array(
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
                     'Details' => 'StaffViewArray',
                 ),
+                'defaultTab' => null,
             ),
             'VuFind\RecordDriver\WorldCat' => array(
                 'tabs' => array (
@@ -528,6 +545,7 @@ $config = array(
                     'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
                     'Details' => 'StaffViewMARC',
                 ),
+                'defaultTab' => null,
             ),
         ),
     ),
@@ -557,15 +575,13 @@ $listRoutes = array('userList' => 'MyList', 'editList' => 'EditList');
 
 // Define static routes -- Controller/Action strings
 $staticRoutes = array(
-    'Admin/Config', 'Admin/DeleteExpiredSearches', 'Admin/EnableAutoConfig',
-    'Admin/Home', 'Admin/Maintenance', 'Admin/SocialStats', 'Admin/Statistics',
     'Alphabrowse/Home', 'Author/Home', 'Author/Search',
     'Authority/Home', 'Authority/Record', 'Authority/Search',
     'Browse/Author', 'Browse/Dewey', 'Browse/Era', 'Browse/Genre', 'Browse/Home',
     'Browse/LCC', 'Browse/Region', 'Browse/Tag', 'Browse/Topic',
     'Cart/doExport', 'Cart/Email', 'Cart/Export', 'Cart/Home', 'Cart/MyResearchBulk',
     'Cart/Save', 'Collections/ByTitle', 'Collections/Home',
-    'Combined/Home', 'Combined/Results', 'Combined/Advanced', 'Combined/SearchBox', 'Confirm/Confirm',
+    'Combined/Home', 'Combined/Results', 'Combined/SearchBox', 'Confirm/Confirm',
     'Cover/Show', 'Cover/Unavailable',
     'EIT/Advanced', 'EIT/Home', 'EIT/Search',
     'Error/Unavailable', 'Feedback/Email', 'Feedback/Home', 'Help/Home',
@@ -595,9 +611,8 @@ $staticRoutes = array(
     'Upgrade/GetDBCredentials', 'Upgrade/GetDbEncodingPreference',
     'Upgrade/GetSourceDir', 'Upgrade/GetSourceVersion', 'Upgrade/Reset',
     'Upgrade/ShowSQL',
-    'VuDL/Browse', 'VuDL/DSRecord', 'VuDL/Record',
     'Web/Home', 'Web/Results',
-    'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search',
+    'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search'
 );
 
 // Build record routes
