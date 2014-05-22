@@ -64,7 +64,7 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
     {
         // Set up encoding:
         $headMeta = $this->getView()->plugin('headmeta');
-        $headMeta()->appendHttpEquiv(
+        $headMeta()->prependHttpEquiv(
             'Content-Type', 'text/html; charset=' . $this->container->getEncoding()
         );
 

@@ -39,7 +39,14 @@
   </div>
 <? endif; ?>
 <ul class="nav nav-tabs">
-  <li class="active"><a>Original</a></li>
+  <li class="opener">
+    <a onClick="toggleSideNav()">
+      <i class="icon-caret-right"></i>
+      <i class="icon-caret-right"></i>
+      <i class="icon-caret-right"></i>
+    </a>
+  </li>
+  <li class="active"><a>Player and Downloads</a></li>
   <? if($this->counts[0] > 1): ?>
     <div class="btn-group pull-right hidden-phone">
       <a href="javascript:prevPage()" class="btn btn-small">Prev Page</a>

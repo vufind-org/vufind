@@ -26,10 +26,9 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller\Plugin;
-use Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Session\Container;
 
 /**
- * Zend action helper to perform renewal-related actions
+ * Zend action helper to perform holds-related actions
  *
  * @category VuFind2
  * @package  Controller_Plugins
@@ -37,75 +36,10 @@ use Zend\Mvc\Controller\Plugin\AbstractPlugin, Zend\Session\Container;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-class Holds extends AbstractPlugin
+class Holds extends AbstractRequestBase
 {
     /**
-     * Session data
-     *
-     * @var Container
-     */
-    protected $session;
-
-    /**
-     * HMAC generator
-     *
-     * @var \VuFind\Crypt\HMAC
-     */
-    protected $hmac;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Crypt\HMAC $hmac HMAC generator
-     */
-    public function __construct(\VuFind\Crypt\HMAC $hmac)
-    {
-        $this->hmac = $hmac;
-    }
-
-    /**
-     * Grab the Container object for storing helper-specific session
-     * data.
-     *
-     * @return Container
-     */
-    protected function getSession()
-    {
-        if (!isset($this->session)) {
-            $this->session = new Container('Holds_Helper');
-        }
-        return $this->session;
-    }
-
-    /**
-     * Reset the array of valid IDs in the session (used for form submission
-     * validation)
-     *
-     * @return void
-     */
-    public function resetValidation()
-    {
-        $this->getSession()->validIds = array();
-    }
-
-    /**
-     * Add an ID to the validation array.
-     *
-     * @param string $id ID to remember
-     *
-     * @return void
-     */
-    public function rememberValidId($id)
-    {
-        // The session container doesn't allow modification of entries (as of
-        // ZF2beta5 anyway), so we have to do this in a roundabout way.
-        $existingArray = $this->getSession()->validIds;
-        $existingArray[] = $id;
-        $this->getSession()->validIds = $existingArray;
-    }
-
-    /**
-     * Update ILS details with renewal-specific information, if appropriate.
+     * Update ILS details with cancellation-specific information, if appropriate.
      *
      * @param \VuFind\ILS\Connection $catalog      ILS connection object
      * @param array                  $ilsDetails   Hold details from ILS driver's
@@ -113,7 +47,7 @@ class Holds extends AbstractPlugin
      * @param array                  $cancelStatus Cancel settings from ILS driver's
      * checkFunction() method
      *
-     * @return array $ilsDetails with renewal info added
+     * @return array $ilsDetails with cancellation info added
      */
     public function addCancelDetails($catalog, $ilsDetails, $cancelStatus)
     {
@@ -136,13 +70,13 @@ class Holds extends AbstractPlugin
     }
 
     /**
-     * Process renewal requests.
+     * Process cancellation requests.
      *
      * @param \VuFind\ILS\Connection $catalog ILS connection object
      * @param array                  $patron  Current logged in patron
      *
-     * @return array                          The result of the renewal, an
-     * associative array keyed by item ID (empty if no renewals performed)
+     * @return array                          The result of the cancellation, an
+     * associative array keyed by item ID (empty if no cancellations performed)
      */
     public function cancelHolds($catalog, $patron)
     {
@@ -150,7 +84,7 @@ class Holds extends AbstractPlugin
         $flashMsg = $this->getController()->flashMessenger();
         $params = $this->getController()->params();
 
-        // Pick IDs to renew based on which button was pressed:
+        // Pick IDs to cancel based on which button was pressed:
         $all = $params->fromPost('cancelAll');
         $selected = $params->fromPost('cancelSelected');
         if (!empty($all)) {
@@ -190,7 +124,7 @@ class Holds extends AbstractPlugin
                     );
                 }
             }
-            
+
             foreach ($details as $info) {
                 // If the user input contains a value not found in the session
                 // whitelist, something has been tampered with -- abort the process.
@@ -223,106 +157,5 @@ class Holds extends AbstractPlugin
              $flashMsg->setNamespace('error')->addMessage('hold_empty_selection');
         }
         return array();
-    }
-
-    /**
-     * Method for validating contents of a "place hold" request; returns an array of
-     * collected details if request is valid, otherwise returns false.
-     *
-     * @param array $linkData An array of keys to check
-     *
-     * @return boolean|array
-     */
-    public function validateRequest($linkData)
-    {
-        $controller = $this->getController();
-        $params = $controller->params();
-
-        $keyValueArray = array();
-        foreach ($linkData as $details) {
-            $keyValueArray[$details] = $params->fromQuery($details);
-        }
-        $hashKey = $this->hmac->generate($linkData, $keyValueArray);
-
-        if ($params->fromQuery('hashKey') != $hashKey) {
-            return false;
-        }
-
-        // Initialize gatheredDetails with any POST values we find; this will
-        // allow us to repopulate the hold form with user-entered values if there
-        // is an error.  However, it is important that we load the POST data
-        // FIRST and then override it with GET values in order to ensure that
-        // the user doesn't bypass the hashkey verification by manipulating POST
-        // values.
-        $gatheredDetails = $params->fromPost('gatheredDetails', array());
-
-        // Make sure the bib ID is included, even if it's not loaded as part of
-        // the validation loop below.
-        $gatheredDetails['id'] = $params->fromRoute('id');
-
-        // Get Values Passed from holdings.php
-        $gatheredDetails = array_merge($gatheredDetails, $keyValueArray);
-
-        return $gatheredDetails;
-    }
-
-    /**
-     * Check if the user-provided pickup location is valid.
-     *
-     * @param string $pickup          User-specified pickup location
-     * @param array  $extraHoldFields Hold form fields enabled by
-     * configuration/driver
-     * @param array  $pickUpLibs      Pickup library list from driver
-     *
-     * @return bool
-     */
-    public function validatePickUpInput($pickup, $extraHoldFields, $pickUpLibs)
-    {
-        // Not having to care for pickUpLocation is equivalent to having a valid one.
-        if (!in_array('pickUpLocation', $extraHoldFields)) {
-            return true;
-        }
-
-        // Check the valid pickup locations for a match against user input:
-        return $this->validatePickUpLocation($pickup, $pickUpLibs);
-    }
-
-    /**
-     * Check if the provided pickup location is valid.
-     *
-     * @param string $location   Location to check
-     * @param array  $pickUpLibs Pickup locations list from driver
-     *
-     * @return bool
-     */
-    public function validatePickUpLocation($location, $pickUpLibs)
-    {
-        foreach ($pickUpLibs as $lib) {
-            if ($location == $lib['locationID']) {
-                return true;
-            }
-        }
-
-        // If we got this far, something is wrong!
-         return false;
-    }
-
-    /**
-     * Getting a default required date based on hold settings.
-     *
-     * @param array $checkHolds Hold settings returned by the ILS driver's
-     * checkFunction method.
-     *
-     * @return int A timestamp representing the default required date
-     */
-    public function getDefaultRequiredDate($checkHolds)
-    {
-        $dateArray = isset($checkHolds['defaultRequiredDate'])
-             ? explode(":", $checkHolds['defaultRequiredDate'])
-             : array(0, 1, 0);
-        list($d, $m, $y) = $dateArray;
-        return mktime(
-            0, 0, 0, date("m")+$m,   date("d")+$d,   date("Y")+$y
-        );
     }
 }

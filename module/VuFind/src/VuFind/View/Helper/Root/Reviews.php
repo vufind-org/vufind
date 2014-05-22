@@ -173,7 +173,8 @@ class Reviews extends AbstractSyndetics implements \Zend\Log\LoggerAwareInterfac
      *
      * @param string $id Amazon access key
      *
-     * @return array     Returns array with review data, otherwise a PEAR_Error.
+     * @return array     Returns array with review data
+     * @throws \Exception
      * @author Andrew Nagy <vufind-tech@lists.sourceforge.net>
      */
     protected function loadAmazoneditorial($id)
@@ -218,7 +219,8 @@ class Reviews extends AbstractSyndetics implements \Zend\Log\LoggerAwareInterfac
      *
      * @param string $id UNUSED, accepted for API uniformity
      *
-     * @return array     Returns array with review data, otherwise a PEAR_Error.
+     * @return array     Returns array with review data.
+     * @throws \Exception
      * @author Joe Atzberger
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */

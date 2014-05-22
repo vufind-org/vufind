@@ -4,7 +4,11 @@
     <? if (!$viewData['selected']): ?>
       <a href="<?=$this->results->getUrlQuery()->setViewParam($viewType)?>" title="<?=$this->transEsc('Switch view to')?> <?=$this->transEsc($viewData['desc'])?>" >
     <? endif; ?>
-    <img <? if ($viewData['selected']): ?>class="selected" <? endif; ?>src="<?=$this->imageLink('view_' . $viewType . '.png')?>"<?=$viewData['selected'] ? ' title="' . $this->transEsc($viewData['desc']) . ' ' . $this->transEsc('view already selected') . '"' : ''?> alt="<?=$this->transEsc($viewData['desc'])?>" />
+    <? $src = $this->imageLink('view_'.$viewType.'.png'); if (!empty($src)): ?>
+      <img <? if ($viewData['selected']): ?>class="selected" <? endif; ?>src="<?=$src?>"<?=$viewData['selected'] ? ' title="' . $this->transEsc($viewData['desc']) . ' ' . $this->transEsc('view already selected') . '"' : ''?> alt="<?=$this->transEsc($viewData['desc'])?>" />
+    <? else: ?>
+      <span<? if ($viewData['selected']): ?> class="selected" <? endif; ?>><?=$this->transEsc($viewData['desc'])?></span>
+    <? endif; ?>
     <? if (!$viewData['selected']): ?>
       </a>
     <? endif; ?>

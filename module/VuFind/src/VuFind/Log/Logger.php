@@ -322,12 +322,7 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
                 if (!empty($line['args'])) {
                     $args = array();
                     foreach ($line['args'] as $i => $arg) {
-                        $val = is_object($arg)
-                            ? get_class($arg) . ' Object'
-                            : is_array($arg)
-                                ? count($arg) . '-element Array'
-                                : $arg;
-                        $args[] = $i . ' = ' . $val;
+                        $args[] = $i . ' = ' . $this->argumentToString($arg);
                     }
                     $detailedBacktraceLine .= ', args: ' . implode(', ', $args);
                 } else {
@@ -346,5 +341,37 @@ class Logger extends BaseLogger implements ServiceLocatorAwareInterface
         );
 
         $this->log(BaseLogger::CRIT, $errorDetails);
+    }
+    
+    /**
+     * Convert function argument to a loggable string
+     * 
+     * @param mixed $arg Argument
+     * 
+     * @return string
+     */
+    protected function argumentToString($arg)
+    {
+        
+        if (is_object($arg)) {
+            return get_class($arg) . ' Object';
+        }
+        if (is_array($arg)) {
+            $args = array();
+            foreach ($arg as $key => $item) {
+                $args[] = "$key => " . $this->argumentToString($item);
+            }
+            return 'array(' . implode(', ', $args) . ')';
+        }
+        if (is_bool($arg)) {
+            return $arg ? 'true' : 'false';
+        }
+        if (is_int($arg) || is_float($arg)) {
+            return (string)$arg;
+        }
+        if (is_null($arg)) {
+            return 'null';
+        }
+        return "'$arg'";        
     }
 }

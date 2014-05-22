@@ -1,12 +1,12 @@
-<div class="row-fluid result<?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
+<div class="row-fluid <?=$this->driver->supportsAjaxStatus()?' ajaxItem':''?>">
   <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueID())?>" class="hiddenId" />
   <input type="hidden" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>" class="hiddenSource" />
-  <div class="span2 text-center left">
+  <div class="span2 left">
     <a href="<?=$this->recordLink()->getUrl($this->driver)?>" class="title">
       <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
-        <img class="img-polaroid" src="<?=$this->escapeHtml($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
+        <img src="<?=$this->escapeHtml($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
       <? else: ?>
-        <img class="img-polaroid" src="<?=$this->url('cover-unavailable')?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
+        <img src="<?=$this->url('cover-unavailable')?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
       <? endif; ?>
     </a>
   </div>
@@ -76,6 +76,31 @@
         <br/>
       <? endif; ?>
       
+      <?
+      /* Display information on duplicate records if available */
+      $dedupData = $this->driver->getDedupData();
+      if ($dedupData): ?> 
+      <div class="dedupInformation">
+      <?
+        $i = 0;
+        foreach ($dedupData as $source => $current) {
+          if (++$i == 1) {
+            ?><span class="currentSource"><a href="<?=$this->recordLink()->getUrl($this->driver)?>"><?=$this->transEsc("source_$source", array(), $source)?></a></span><?
+          } else {
+            if ($i == 2) {
+              ?> <span class="otherSources">(<?=$this->transEsc('Other Sources')?>: <?
+            } else {
+              ?>, <?
+            }
+            ?><a href="<?=$this->recordLink()->getUrl($current['id'])?>"><?=$this->transEsc("source_$source", array(), $source)?></a><?
+          }
+        }
+        if ($i > 1) {
+          ?>)</span><?
+        }?>
+      </div>
+      <? endif; ?>
+      
       <div class="callnumAndLocation ajax-availability hide">
         <? if ($this->driver->supportsAjaxStatus()): ?>
           <strong class="hideIfDetailed"><?=$this->transEsc('Call Number')?>:</strong>
@@ -126,7 +151,7 @@
     </div>
   </div>
 
-  <div class="span2 noprint">
+  <div class="span2 right noprint">
     <? /* Display qrcode if appropriate: */ ?>
     <? if ($QRCode = $this->record($this->driver)->getQRCode("results")): ?>
       <?
@@ -140,14 +165,16 @@
         </div><br/>
       </span>
     <? endif; ?>
-    
-    <? /* Add to favorites */ ?>
-    <i class="icon-heart"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br/>
 
-    <? /* Saved lists */ ?>
-    <div class="savedLists alert alert-info hide">
-      <strong><?=$this->transEsc("Saved in")?>:</strong>
-    </div>
+    <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+      <? /* Add to favorites */ ?>
+      <i class="icon-heart"></i> <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'Save')?>" class="save-record modal-link" id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEsc('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br/>
+
+      <? /* Saved lists */ ?>
+      <div class="savedLists alert alert-info hide">
+        <strong><?=$this->transEsc("Saved in")?>:</strong>
+      </div>
+    <? endif; ?>
 
     <? /* Hierarchy tree link */ ?>
     <? $trees = $this->driver->tryMethod('getHierarchyTrees'); if (!empty($trees)): ?>

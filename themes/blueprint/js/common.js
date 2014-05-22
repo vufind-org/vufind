@@ -45,6 +45,8 @@ function filterAll(element, formId) {
     }
     $("#" + formId + " :input[type='checkbox'][name='filter[]']")
         .attr('checked', element.checked);
+    $("#" + formId + " :input[type='checkbox'][name='dfApplied']")
+        .attr('checked', element.checked);
 }
 
 function extractParams(str) {
@@ -376,10 +378,18 @@ $(document).ready(function(){
     // Support holds cancel list buttons:
     function cancelHolds(type) {
       var typeIDS = type+'IDS';
-      var ids = $('[name="'+typeIDS+'[]"]');
+      var selector = '[name="'+typeIDS+'[]"]';
+      if (type == 'cancelSelected') {
+          selector += ':checked';
+      }
+      var ids = $(selector);
       var cancelIDS = [];
       for(var i=0;i<ids.length;i++) {
         cancelIDS.push(ids[i].value);
+      }
+      // Skip submission if no selection.
+      if (cancelIDS.length < 1) {
+          return false;
       }
       var postParams = {'confirm':0};
       postParams[type] = 1;

@@ -185,22 +185,31 @@
       </tr>
     <? endif; ?>
 
-    <? $tagList = $this->driver->getTags(); ?>
+    <? $source = $this->driver->getSource(); if (!empty($source)): ?>
     <tr valign="top">
-      <th><?=$this->transEsc('Tags')?>: </th>
-      <td>
-        <span style="float:right;">
-          <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'AddTag')?>" class="tool add tagRecord controller<?=$this->record($this->driver)->getController()?>" title="<?=$this->transEsc('Add Tag')?>" id="tagRecord"><?=$this->transEsc('Add Tag')?></a>
-        </span>
-        <div id="tagList">
-          <? if (count($tagList) > 0): ?>
-            <? $i = 0; foreach ($tagList as $tag): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->url('tag-home')?>?lookfor=<?=urlencode($tag->tag)?>"><?=$this->escapeHtml($tag->tag)?></a> (<?=$this->escapeHtml($tag->cnt)?>)<? endforeach; ?>
-          <? else: ?>
-            <?=$this->transEsc('No Tags')?>, <?=$this->transEsc('Be the first to tag this record')?>!
-          <? endif; ?>
-        </div>
-      </td>
+      <th><?=$this->transEsc('Source')?>:</th>
+      <td><?=$this->escapeHtml($source)?></td>
     </tr>
+    <? endif; ?>
+
+    <? if ($this->usertags()->getMode() !== 'disabled'): ?>
+      <? $tagList = $this->driver->getTags(); ?>
+      <tr valign="top">
+        <th><?=$this->transEsc('Tags')?>: </th>
+        <td>
+          <span style="float:right;">
+            <a href="<?=$this->recordLink()->getActionUrl($this->driver, 'AddTag')?>" class="tool add tagRecord controller<?=$this->record($this->driver)->getController()?>" title="<?=$this->transEsc('Add Tag')?>" id="tagRecord"><?=$this->transEsc('Add Tag')?></a>
+          </span>
+          <div id="tagList">
+            <? if (count($tagList) > 0): ?>
+              <? $i = 0; foreach ($tagList as $tag): ?><?=($i++ == 0)?'':', '?><a href="<?=$this->url('tag-home')?>?lookfor=<?=urlencode($tag->tag)?>"><?=$this->escapeHtml($tag->tag)?></a> (<?=$this->escapeHtml($tag->cnt)?>)<? endforeach; ?>
+            <? else: ?>
+              <?=$this->transEsc('No Tags')?>, <?=$this->transEsc('Be the first to tag this record')?>!
+            <? endif; ?>
+          </div>
+        </td>
+      </tr>
+    <? endif; ?>
   </table>
   <?/* End Main Details */?>
 </div>
@@ -222,10 +231,12 @@
     <img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtml($QRCode);?>"/>
   <? endif; ?>
 
-  <? /* Display the lists that this record is saved to */ ?>
-  <div class="savedLists info hide" id="savedLists">
-    <strong><?=$this->transEsc("Saved in")?>:</strong>
-  </div>
+  <? if ($this->userlist()->getMode() !== 'disabled'): ?>
+    <? /* Display the lists that this record is saved to */ ?>
+    <div class="savedLists info hide" id="savedLists">
+      <strong><?=$this->transEsc("Saved in")?>:</strong>
+    </div>
+  <? endif; ?>
 
   <?=$this->record($this->driver)->getPreviews()?>
 </div>

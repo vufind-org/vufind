@@ -522,7 +522,7 @@ class AjaxController extends AbstractBase
             throw new \Exception('Unsupported output mode: ' . $this->outputMode);
         }
     }
-    
+
     /**
      * Store the errors for later, to be added to the output
      *
@@ -950,6 +950,13 @@ class AjaxController extends AbstractBase
         $this->writeSession();  // avoid session write timing bug
         // Attempt to send the email:
         try {
+            // Check captcha
+            $this->recaptcha()->setErrorMode('throw');
+            $useRecaptcha = $this->recaptcha()->active('sms');
+            // Process form submission:
+            if (!$this->formWasSubmitted('id', $useRecaptcha)) {
+                throw new \Exception('recaptcha_not_passed');
+            }
             $record = $this->getRecordLoader()->load(
                 $this->params()->fromPost('id'),
                 $this->params()->fromPost('source', 'VuFind')
@@ -970,7 +977,6 @@ class AjaxController extends AbstractBase
             );
         }
     }
-
 
     /**
      * Email a record.
@@ -994,6 +1000,14 @@ class AjaxController extends AbstractBase
 
         // Attempt to send the email:
         try {
+            // Check captcha
+            $this->recaptcha()->setErrorMode('throw');
+            $useRecaptcha = $this->recaptcha()->active('sms');
+            // Process form submission:
+            if (!$this->formWasSubmitted('id', $useRecaptcha)) {
+                throw new \Exception('recaptcha_not_passed');
+            }
+
             $record = $this->getRecordLoader()->load(
                 $this->params()->fromPost('id'),
                 $this->params()->fromPost('source', 'VuFind')
@@ -1003,6 +1017,14 @@ class AjaxController extends AbstractBase
                 $view->to, $view->from, $view->message, $record,
                 $this->getViewRenderer()
             );
+            if ($this->params()->fromPost('ccself')
+                && $view->from != $view->to
+            ) {
+                $this->getServiceLocator()->get('VuFind\Mailer')->sendRecord(
+                    $view->from, $view->from, $view->message, $record,
+                    $this->getViewRenderer()
+                );
+            }
             return $this->output(
                 $this->translate('email_success'), self::STATUS_OK
             );
@@ -1068,12 +1090,16 @@ class AjaxController extends AbstractBase
         $this->writeSession();  // avoid session write timing bug
         $id = $this->params()->fromQuery('id');
         $data = $this->params()->fromQuery('data');
+        $requestType = $this->params()->fromQuery('requestType');
         if (!empty($id) && !empty($data)) {
             // check if user is logged in
             $user = $this->getUser();
             if (!$user) {
                 return $this->output(
-                    $this->translate('You must be logged in first'),
+                    array(
+                        'status' => false,
+                        'msg' => $this->translate('You must be logged in first')
+                    ),
                     self::STATUS_NEED_AUTH
                 );
             }
@@ -1082,11 +1108,43 @@ class AjaxController extends AbstractBase
                 $catalog = $this->getILS();
                 $patron = $this->getAuthManager()->storedCatalogLogin();
                 if ($patron) {
-                    $results = $catalog->checkRequestIsValid($id, $data, $patron);
+                    switch ($requestType) {
+                    case 'ILLRequest':
+                        $results = $catalog->checkILLRequestIsValid(
+                            $id, $data, $patron
+                        );
 
-                    $msg = $results
-                        ? $this->translate('request_place_text')
-                        : $this->translate('hold_error_blocked');
+                        $msg = $results
+                            ? $this->translate(
+                                'ill_request_place_text'
+                            )
+                            : $this->translate(
+                                'ill_request_error_blocked'
+                            );
+                        break;
+                    case 'StorageRetrievalRequest':
+                        $results = $catalog->checkStorageRetrievalRequestIsValid(
+                            $id, $data, $patron
+                        );
+
+                        $msg = $results
+                            ? $this->translate(
+                                'storage_retrieval_request_place_text'
+                            )
+                            : $this->translate(
+                                'storage_retrieval_request_error_blocked'
+                            );
+                        break;
+                    default:
+                        $results = $catalog->checkRequestIsValid(
+                            $id, $data, $patron
+                        );
+
+                        $msg = $results
+                            ? $this->translate('request_place_text')
+                            : $this->translate('hold_error_blocked');
+                        break;
+                    }
                     return $this->output(
                         array('status' => $results, 'msg' => $msg), self::STATUS_OK
                     );
@@ -1246,7 +1304,9 @@ class AjaxController extends AbstractBase
         return $this->output(
             array(
                 'result' => $this->translate('Done'),
-                'result_additional' => $html
+                'result_additional' => $html,
+                'needs_redirect' => $export->needsRedirect($format),
+                'result_url' => $url
             ), self::STATUS_OK
         );
     }
@@ -1321,6 +1381,129 @@ class AjaxController extends AbstractBase
 
         // output HTML encoded in JSON object
         return $this->output($html, self::STATUS_OK);
+    }
+
+    /**
+     * Keep Alive
+     *
+     * This is responsible for keeping the session alive whenever called
+     * (via JavaScript)
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function keepAliveAjax()
+    {
+        return $this->output(true, self::STATUS_OK);
+    }
+
+    /**
+     * Get pick up locations for a library
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function getLibraryPickupLocationsAjax()
+    {
+        $this->writeSession();  // avoid session write timing bug
+        $id = $this->params()->fromQuery('id');
+        $pickupLib = $this->params()->fromQuery('pickupLib');
+        if (!empty($id) && !empty($pickupLib)) {
+            // check if user is logged in
+            $user = $this->getUser();
+            if (!$user) {
+                return $this->output(
+                    array(
+                        'status' => false,
+                        'msg' => $this->translate('You must be logged in first')
+                    ),
+                    self::STATUS_NEED_AUTH
+                );
+            }
+
+            try {
+                $catalog = $this->getILS();
+                $patron = $this->getAuthManager()->storedCatalogLogin();
+                if ($patron) {
+                    $results = $catalog->getILLPickupLocations(
+                        $id, $pickupLib, $patron
+                    );
+                    foreach ($results as &$result) {
+                        if (isset($result['name'])) {
+                            $result['name'] = $this->translate(
+                                'location_' . $result['name'],
+                                array(),
+                                $result['name']
+                            );
+                        }
+                    }
+                    return $this->output(
+                        array('locations' => $results), self::STATUS_OK
+                    );
+                }
+            } catch (\Exception $e) {
+                // Do nothing -- just fail through to the error message below.
+            }
+        }
+
+        return $this->output(
+            $this->translate('An error has occurred'), self::STATUS_ERROR
+        );
+    }
+
+    /**
+     * Get pick up locations for a request group
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function getRequestGroupPickupLocationsAjax()
+    {
+        $this->writeSession();  // avoid session write timing bug
+        $id = $this->params()->fromQuery('id');
+        $requestGroupId = $this->params()->fromQuery('requestGroupId');
+        if (!empty($id) && !empty($requestGroupId)) {
+            // check if user is logged in
+            $user = $this->getUser();
+            if (!$user) {
+                return $this->output(
+                    array(
+                        'status' => false,
+                        'msg' => $this->translate('You must be logged in first')
+                    ),
+                    self::STATUS_NEED_AUTH
+                );
+            }
+
+            try {
+                $catalog = $this->getILS();
+                $patron = $this->getAuthManager()->storedCatalogLogin();
+                if ($patron) {
+                    $details = array(
+                        'id' => $id,
+                        'requestGroupId' => $requestGroupId
+                    );
+                    $results = $catalog->getPickupLocations(
+                        $patron, $details
+                    );
+                    foreach ($results as &$result) {
+                        if (isset($result['locationDisplay'])) {
+                            $result['locationDisplay'] = $this->translate(
+                                'location_' . $result['locationDisplay'],
+                                array(),
+                                $result['locationDisplay']
+                            );
+                        }
+                    }
+                    return $this->output(
+                        array('locations' => $results), self::STATUS_OK
+                    );
+                }
+            } catch (\Exception $e) {
+                // Do nothing -- just fail through to the error message below.
+            }
+        }
+
+        return $this->output(
+            $this->translate('An error has occurred'), self::STATUS_ERROR
+        );
     }
 
     /**

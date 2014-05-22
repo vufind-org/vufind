@@ -232,7 +232,7 @@ class VuFindSitemap extends VuFind
     {
         $parser = static::getParser();
         if ($parser == 'None') {
-            return '';
+            return array();
         }
 
         // Grab the HTML and write it to disk:

@@ -101,4 +101,15 @@ class Options extends \VuFind\Search\Base\Options
     {
         return false;
     }
+
+    /**
+     * Does this search option support the cart/book bag?
+     *
+     * @return bool
+     */
+    public function supportsCart()
+    {
+        // Not currently supported
+        return false;
+    }
 }

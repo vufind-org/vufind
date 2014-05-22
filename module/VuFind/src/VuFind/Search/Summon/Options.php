@@ -79,6 +79,15 @@ class Options extends \VuFind\Search\Base\Options
         // Load the search configuration file:
         $searchSettings = $configLoader->get($this->searchIni);
 
+        // Set up limit preferences
+        if (isset($searchSettings->General->default_limit)) {
+            $this->defaultLimit = $searchSettings->General->default_limit;
+        }
+        if (isset($searchSettings->General->limit_options)) {
+            $this->limitOptions
+                = explode(",", $searchSettings->General->limit_options);
+        }
+
         // Set up highlighting preference
         if (isset($searchSettings->General->highlighting)) {
             $this->highlight = $searchSettings->General->highlighting;
@@ -90,9 +99,16 @@ class Options extends \VuFind\Search\Base\Options
         }
 
         // Load search preferences:
+        if (isset($searchSettings->General->default_view)) {
+            $this->defaultView = $searchSettings->General->default_view;
+        }
         if (isset($searchSettings->General->retain_filters_by_default)) {
             $this->retainFiltersByDefault
                 = $searchSettings->General->retain_filters_by_default;
+        }
+        if (isset($searchSettings->General->default_filters)) {
+            $this->defaultFilters = $searchSettings->General->default_filters
+                ->toArray();
         }
         if (isset($searchSettings->General->result_limit)) {
             $this->resultLimit = $searchSettings->General->result_limit;
@@ -125,6 +141,17 @@ class Options extends \VuFind\Search\Base\Options
             foreach ($searchSettings->DefaultSortingByType as $key => $val) {
                 $this->defaultSortByHandler[$key] = $val;
             }
+        }
+
+        // Load view preferences (or defaults if none in .ini file):
+        if (isset($searchSettings->Views)) {
+            foreach ($searchSettings->Views as $key => $value) {
+                $this->viewOptions[$key] = $value;
+            }
+        } elseif (isset($searchSettings->General->default_view)) {
+            $this->viewOptions = array($this->defaultView => $this->defaultView);
+        } else {
+            $this->viewOptions = array('list' => 'List');
         }
     }
 

@@ -26,6 +26,7 @@
  * @link     http://www.vufind.org  Main Page
  */
 namespace VuFind\Controller;
+use VuFind\Solr\Utils as SolrUtils;
 use Zend\Stdlib\Parameters;
 
 /**
@@ -109,6 +110,17 @@ class AbstractSearch extends AbstractBase
         $searchId = $this->params()->fromQuery('edit', false);
         if ($searchId !== false) {
             $view->saved = $this->restoreAdvancedSearch($searchId);
+        }
+
+        // If we have default filters, set them up as a fake "saved" search
+        // to properly populate special controls on the advanced screen.
+        if (!$view->saved && count($view->options->getDefaultFilters()) > 0) {
+            $view->saved = $this->getServiceLocator()
+                ->get('VuFind\SearchResultsPluginManager')
+                ->get($this->searchClassId);
+            $view->saved->getParams()->initFromRequest(
+                new \Zend\StdLib\Parameters(array())
+            );
         }
 
         return $view;
@@ -365,5 +377,180 @@ class AbstractSearch extends AbstractBase
     protected function getResultsManager()
     {
         return $this->getServiceLocator()->get('VuFind\SearchResultsPluginManager');
+    }
+
+    /**
+     * Get the current settings for the specified range facet, if it is set:
+     *
+     * @param array  $fields      Fields to check
+     * @param string $type        Type of range to include in return value
+     * @param object $savedSearch Saved search object (false if none)
+     *
+     * @return array
+     */
+    protected function getRangeSettings($fields, $type, $savedSearch = false)
+    {
+        $parts = array();
+
+        foreach ($fields as $field) {
+            // Default to blank strings:
+            $from = $to = '';
+
+            // Check to see if there is an existing range in the search object:
+            if ($savedSearch) {
+                $filters = $savedSearch->getParams()->getFilters();
+                if (isset($filters[$field])) {
+                    foreach ($filters[$field] as $current) {
+                        if ($range = SolrUtils::parseRange($current)) {
+                            $from = $range['from'] == '*' ? '' : $range['from'];
+                            $to = $range['to'] == '*' ? '' : $range['to'];
+                            $savedSearch->getParams()
+                                ->removeFilter($field . ':' . $current);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            // Send back the settings:
+            $parts[] = array(
+                'field' => $field,
+                'type' => $type,
+                'values' => array($from, $to)
+            );
+        }
+
+        return $parts;
+    }
+
+    /**
+     * Get the current settings for the date range facets, if set:
+     *
+     * @param object $savedSearch Saved search object (false if none)
+     * @param string $config      Name of config file
+     * @param array  $filter      Whitelist of fields to include (if empty, all
+     * fields will be returned)
+     *
+     * @return array
+     */
+    protected function getDateRangeSettings($savedSearch = false, $config = 'facets',
+        $filter = array()
+    ) {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get($config);
+
+        $fields = isset($config->SpecialFacets->dateRange)
+            ? $config->SpecialFacets->dateRange->toArray()
+            : array();
+
+        if (!empty($filter)) {
+            $fields = array_intersect($fields, $filter);
+        }
+
+        return $this->getRangeSettings($fields, 'date', $savedSearch);
+    }
+
+    /**
+     * Get the current settings for the generic range facets, if set:
+     *
+     * @param object $savedSearch Saved search object (false if none)
+     * @param string $config      Name of config file
+     * @param array  $filter      Whitelist of fields to include (if empty, all
+     * fields will be returned)
+     *
+     * @return array
+     */
+    protected function getGenericRangeSettings($savedSearch = false,
+        $config = 'facets', $filter = array()
+    ) {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get($config);
+
+        $fields = isset($config->SpecialFacets->genericRange)
+            ? $config->SpecialFacets->genericRange->toArray()
+            : array();
+
+        if (!empty($filter)) {
+            $fields = array_intersect($fields, $filter);
+        }
+
+        return $this->getRangeSettings($fields, 'generic', $savedSearch);
+    }
+
+    /**
+     * Get the current settings for the numeric range facets, if set:
+     *
+     * @param object $savedSearch Saved search object (false if none)
+     * @param string $config      Name of config file
+     * @param array  $filter      Whitelist of fields to include (if empty, all
+     * fields will be returned)
+     *
+     * @return array
+     */
+    protected function getNumericRangeSettings($savedSearch = false,
+        $config = 'facets', $filter = array()
+    ) {
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get($config);
+
+        $fields = isset($config->SpecialFacets->numericRange)
+            ? $config->SpecialFacets->numericRange->toArray()
+            : array();
+
+        if (!empty($filter)) {
+            $fields = array_intersect($fields, $filter);
+        }
+
+        return $this->getRangeSettings($fields, 'numeric', $savedSearch);
+    }
+
+    /**
+     * Get all active range facets:
+     *
+     * @param array  $specialFacets Special facet setting (in parsed format)
+     * @param object $savedSearch   Saved search object (false if none)
+     * @param string $config        Name of config file
+     *
+     * @return array
+     */
+    protected function getAllRangeSettings($specialFacets, $savedSearch = false,
+        $config = 'facets'
+    ) {
+        $result = array();
+        if (isset($specialFacets['daterange'])) {
+            $dates = $this->getDateRangeSettings(
+                $savedSearch, $config, $specialFacets['daterange']
+            );
+            $result = array_merge($result, $dates);
+        }
+        if (isset($specialFacets['genericrange'])) {
+            $generic = $this->getGenericRangeSettings(
+                $savedSearch, $config, $specialFacets['genericrange']
+            );
+            $result = array_merge($result, $generic);
+        }
+        if (isset($specialFacets['numericrange'])) {
+            $numeric = $this->getNumericRangeSettings(
+                $savedSearch, $config, $specialFacets['numericrange']
+            );
+            $result = array_merge($result, $numeric);
+        }
+        return $result;
+    }
+
+    /**
+     * Parse the "special facets" setting.
+     *
+     * @param string $specialFacets Unparsed string
+     *
+     * @return array
+     */
+    protected function parseSpecialFacetsSetting($specialFacets)
+    {
+        // Parse the special facets into a more useful format:
+        $parsed = array();
+        foreach (explode(',', $specialFacets) as $current) {
+            $parts = explode(':', $current);
+            $key = array_shift($parts);
+            $parsed[$key] = $parts;
+        }
+        return $parsed;
     }
 }

@@ -772,13 +772,13 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, $patron = false)
+    public function getHolding($id, array $patron = null)
     {
         $holding = array();
         list($bib, $sys_no) = $this->parseId($id);
         $resource = $bib . $sys_no;
         $params = array('view' => 'full');
-        if ($patron) {
+        if (!empty($patron['id'])) {
             $params['patron'] = $patron['id'];
         } else if (isset($this->defaultPatronId)) {
             $params['patron'] = $this->defaultPatronId;
@@ -825,7 +825,7 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
             if ($item_status['request'] == 'Y' && $availability == false) {
                 $addLink = true;
             }
-            if ($patron) {
+            if (!empty($patron)) {
                 $hold_request = $item->xpath('info[@type="HoldRequest"]/@allowed');
                 $addLink = ($hold_request[0] == 'Y');
             }
@@ -1473,6 +1473,36 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     }
 
     /**
+     * Get Default "Hold Required By" Date (as Unix timestamp) or null if unsupported
+     *
+     * @param array $patron   Patron information returned by the patronLogin method.
+     * @param array $holdInfo Contains most of the same values passed to
+     * placeHold, minus the patron data.
+     *
+     * @return int
+     */
+    public function getHoldDefaultRequiredDate($patron, $holdInfo)
+    {
+        if ($holdInfo != null) {
+            $details = $this->getHoldingInfoForItem(
+                $patron['id'], $holdInfo['id'], $holdInfo['item_id']
+            );
+        }
+        if (isset($details['last-interest-date'])) {
+            try {
+                return $this->dateConverter
+                    ->convert('d.m.Y', 'U', $details['last-interest-date']);
+            } catch (DateException $e) {
+                // If we couldn't convert the date, fail gracefully.
+                $this->debug(
+                    'Could not convert date: ' . $details['last-interest-date']
+                );
+            }
+        }
+        return null;
+    }
+
+    /**
      * Place Hold
      *
      * Attempts to place a hold or recall on a particular item and returns
@@ -1615,6 +1645,9 @@ class Aleph extends AbstractBase implements \Zend\Log\LoggerAwareInterface,
     public function getConfig($func)
     {
         if ($func == "Holds") {
+            if (isset($this->config['Holds'])) {
+                return $this->config['Holds'];
+            }
             return array(
                 "HMACKeys" => "id:item_id",
                 "extraHoldFields" => "comments:requiredByDate:pickUpLocation",
