@@ -24,7 +24,7 @@
       <span id="loginOptions"<? if($account->isLoggedIn()): ?> class="hide"<? endif ?>>
         <i class="icon-signin"></i> 
         <? if ($sessionInitiator = $account->getSessionInitiator($this->serverUrl($this->url('myresearch-newlogin')))): ?>
-          <a href="<?=$this->escapeHtml($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
+          <a href="<?=$this->url('myresearch-newinstitutionallogin')?>"><?=$this->transEsc("Institutional Login")?></a>
         <? else: ?>
           <a href="<?=$this->url('myresearch-newlogin')?>" class="modal-link" title="<?=$this->transEsc("Login")?>"><?=$this->transEsc("Login")?></a>
         <? endif; ?>

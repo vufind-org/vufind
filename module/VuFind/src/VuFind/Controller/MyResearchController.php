@@ -269,6 +269,25 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * New institutional login action -- middleman the link to a SessionInitiator-
+     * type authenticator so we can clear any previous follow-up information
+     * prior to triggering a login process. As above, used for explicit login
+     * links within the UI to differentiate them from contextual login links
+     * that are triggered by attempting to access protected actions.
+     *
+     * @return mixed
+     */
+    public function newinstitutionalloginAction()
+    {
+        $followup = $this->followup()->retrieve();
+        if (isset($followup->url)) {
+            unset($followup->url);
+        }
+        $this->storeRefererForPostLoginRedirect();
+        return $this->redirect()->toUrl($this->getSessionInitiator());
+    }
+
+    /**
      * Logout Action
      *
      * @return mixed
