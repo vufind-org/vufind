@@ -30,16 +30,16 @@ namespace VuFind\RecordDriver;
 
 use Zend\Log\LoggerInterface;
 
-class EBSCO extends SolrDefault
+class EIT extends SolrDefault
 {
+    public $fields;
 
-	public $fields;
     /**
      * Used for identifying search backends
      *
      * @var string
      */
-    protected $sourceIdentifier = 'EBSCO';
+    protected $sourceIdentifier = 'EIT';
 
     /**
      * Logger, if any.
@@ -119,7 +119,7 @@ class EBSCO extends SolrDefault
 	if (isset($data['fields'])) {
 		$this->fields = $data['fields'];
 	} else {
-	// The following works for EBSCORecord pages
+	// The following works for EITRecord pages
 		$this->fields['fields'] = $data;
 	}
     }
@@ -139,7 +139,7 @@ class EBSCO extends SolrDefault
     {
         $su = isset($this->fields['fields']['header']['controlInfo']['artinfo']['su']) ? $this->fields['fields']['header']['controlInfo']['artinfo']['su'] : array();
 
-        // The EBSCO index doesn't currently subject headings in a broken-down
+        // The EIT index doesn't currently subject headings in a broken-down
         // format, so we'll just send each value as a single chunk.
         $retval = array();
         foreach ($su as $s) {
@@ -504,7 +504,7 @@ class EBSCO extends SolrDefault
         } else if (in_array('Journal', $formats)) {
             return 'Journal';
 //        } else if (isset($formats[0])) {
-//            return $formats[0]; // Problematic because EBSCO has way too many strange options that are really articles to list here.
+//            return $formats[0]; // Problematic because EIT has way too many strange options that are really articles to list here.
 //        } else if (strlen($this->getCleanISSN()) > 0) {
 //            return 'Journal'; // Problematic because we often get to this point with things that are really articles.
         }

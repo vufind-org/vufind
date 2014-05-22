@@ -93,8 +93,8 @@ $config = array(
             'combined' => 'VuFind\Controller\CombinedController',
             'confirm' => 'VuFind\Controller\ConfirmController',
             'cover' => 'VuFind\Controller\CoverController',
-	    'ebsco' => 'VuFind\Controller\EBSCOController',
-	    'ebscorecord' => '\VuFind\Controller\EBSCOrecordController',
+            'eit' => 'VuFind\Controller\EITController',
+            'eitrecord' => '\VuFind\Controller\EITrecordController',
             'error' => 'VuFind\Controller\ErrorController',
             'feedback' => 'VuFind\Controller\FeedbackController',
             'help' => 'VuFind\Controller\HelpController',
@@ -731,14 +731,14 @@ $config = array(
                             $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
                             $sm->getServiceLocator()->get('VuFind\Config')->get('WorldCat')
                         );
-                   }, 
-		   'ebsco' => function($sm) {
-			return new \VuFind\RecordDriver\EBSCO(
-               			$sm->getServiceLocator()->get('VuFind\Config')->get('config'),
-				$sm->getServiceLocator()->get('VuFind\Config')->get('EBSCO')
-			);
-		}, 
-		),
+                    },
+                    'eit' => function($sm) {
+                        return new \VuFind\RecordDriver\EIT(
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+                            $sm->getServiceLocator()->get('VuFind\Config')->get('EIT')
+                        );
+                    },
+                ),
             ),
             'recordtab' => array(
                 'abstract_factories' => array('VuFind\RecordTab\PluginFactory'),
@@ -856,7 +856,7 @@ $config = array(
             ),
             'search_backend' => array(
                 'factories' => array(
-		    'EBSCO' => 'VuFind\Search\Factory\EBSCOBackendFactory',
+                    'EIT' => 'VuFind\Search\Factory\EITBackendFactory',
                     'Pazpar2' => 'VuFind\Search\Factory\Pazpar2BackendFactory',
                     'Solr' => 'VuFind\Search\Factory\SolrDefaultBackendFactory',
                     'SolrAuth' => 'VuFind\Search\Factory\SolrAuthBackendFactory',
@@ -997,7 +997,7 @@ $recordRoutes = array(
     'collection' => 'Collection',
     'missingrecord' => 'MissingRecord',
     'solrauthrecord' => 'Authority',
-    'ebscorecord' => 'EBSCORecord', 
+    'eitrecord' => 'EITRecord',
     'summonrecord' => 'SummonRecord',
     'worldcatrecord' => 'WorldcatRecord'
 );
@@ -1044,7 +1044,7 @@ $staticRoutes = array(
     'Upgrade/ShowSQL',
     'VuDL/Browse', 'VuDL/DSRecord', 'VuDL/Record',
     'Web/Home', 'Web/Results',
-    'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search', 'EBSCO/Advanced', 'EBSCO/Home', 'EBSCO/Search'
+    'Worldcat/Advanced', 'Worldcat/Home', 'Worldcat/Search', 'EIT/Advanced', 'EIT/Home', 'EIT/Search'
 );
 
 // Build record routes

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * EBSCO QueryBuilder.
+ * EIT QueryBuilder.
  *
  * PHP version 5
  *
@@ -30,7 +30,7 @@
  * @link     http://vufind.org
  */
 
-namespace VuFindSearch\Backend\EBSCO;
+namespace VuFindSearch\Backend\EIT;
 
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\QueryGroup;
@@ -38,7 +38,7 @@ use VuFindSearch\Query\Query;
 
 use VuFindSearch\ParamBag;
 /**
- * EBSCO QueryBuilder.
+ * EIT QueryBuilder.
  * Largely copied from the WorldCat QueryBuilder
  * @category VuFind2
  * @package  Search
@@ -63,7 +63,7 @@ class QueryBuilder
     }
 
     /**
-     * Return EBSCO search parameters based on a user query and params.
+     * Return EIT search parameters based on a user query and params.
      *
      * @param AbstractQuery $query User query
      *
