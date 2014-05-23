@@ -1,5 +1,12 @@
-<? if (!empty($this->facetList)): ?>
+<? if (!empty($this->facetList) || !empty($this->checkboxFacets)): ?>
   <h3><?=$this->transEsc('Limit To')?></h3>
+<? endif; ?>
+
+<? if (!empty($this->checkboxFacets)): ?>
+  <?=$this->render('search/advanced/checkbox-filters.phtml')?>
+<? endif; ?>
+
+<? if (!empty($this->facetList)): ?>
   <? foreach ($this->facetList as $field => $list): ?>
   <div class="<?=($field=='callnumber-first')?'span-7':'span-4'?>">
     <label class="displayBlock" for="limit_<?=$this->escapeHtml(str_replace(' ', '', $field))?>"><?=$this->transEsc($list['label'])?>:</label>
