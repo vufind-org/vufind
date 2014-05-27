@@ -26,7 +26,7 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://www.vufind.org  Main Page
  */
-namespace VuFind\Search\EBSCO;
+namespace VuFind\Search\EIT;
 
 /**
  * EBSCO Search Parameters
