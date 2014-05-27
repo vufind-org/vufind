@@ -12,19 +12,32 @@
   // Set up saved search details:
   if (isset($this->saved) && is_object($this->saved)) {
     $searchDetails = $this->saved->getParams()->getQuery();
-    $groups = $searchDetails->getQueries();
+    if ($searchDetails instanceof \VuFindSearch\Query\Query) {
+        // Not an advanced query -- ignore it.
+        $searchDetails = $groups = false;
+    } else {
+        $groups = $searchDetails->getQueries();
+    }
+    $hasDefaultsApplied = $this->saved->getParams()->hasDefaultsApplied();
     $searchFilters = $this->saved->getParams()->getFilterList();
   } else {
-    $searchDetails = $searchFilters = $groups = false;
+    $hasDefaultsApplied = $searchDetails = $searchFilters = $groups = false;
   }
 
   // Set up Javascript:
   // Step 1: Define our search arrays so they are usuable in the javascript
   $this->headScript()->appendScript($this->render('search/advanced/globals.phtml'));
   // Step 2: Call the javascript to make use of the above
-  $this->headScript()->appendFile('advanced_search.js');
+  $this->headScript()->appendFile(
+    isset($this->advancedSearchJsOverride) ? $this->advancedSearchJsOverride : 'advanced_search.js'
+  );
   // Step 3: Build the page
-  $this->headScript()->appendScript($this->partial('search/advanced/build_page.phtml', array('searchDetails' => $searchDetails)));
+  $this->headScript()->appendScript(
+    $this->partial(
+      isset($this->buildPageOverride) ? $this->buildPageOverride : 'search/advanced/build_page.phtml',
+      array('searchDetails' => $searchDetails)
+    )
+  );
 ?>
 
 <?=$this->flashmessages()?>
@@ -51,6 +64,9 @@
   </div>
 
   <div class="<?=$this->layoutClass('sidebar')?>">
+    <? if ($hasDefaultsApplied): ?>
+      <input type="hidden" name="dfApplied" value="1" />
+    <? endif ?>
     <? if (!empty($searchFilters)): ?>
       <div class="filterList">
         <h4><?=$this->transEsc("adv_search_filters")?></h4>

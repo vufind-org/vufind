@@ -69,7 +69,7 @@
             isset($this->checkboxFilters) && is_array($this->checkboxFilters) ? $this->checkboxFilters : array()
         );
       ?>
-      <? if (!empty($filterDetails)): ?>
+      <? if ((isset($hasDefaultsApplied) && $hasDefaultsApplied) || !empty($filterDetails)): ?>
         <? $defaultFilterState = $options->getRetainFilterSetting() ? ' checked="checked"' : ''; ?>
         <label class="checkbox">
           <input onChange="$('.applied-filter').click()" type="checkbox"<?=$defaultFilterState?> id="searchFormKeepFilters"/>
@@ -77,9 +77,14 @@
         </label>
         <div class="hidden">
           <? foreach ($filterDetails as $current): ?>
-            <input id="<?=$this->escapeHtml($current['id'])?>" type="checkbox"<?=$defaultFilterState?> name="filter[]" value="<?=$this->escapeHtml($current['value'])?>" />
+            <input class="applied-filter" id="<?=$this->escapeHtml($current['id'])?>" type="checkbox"<?=$defaultFilterState?> name="filter[]" value="<?=$this->escapeHtml($current['value'])?>" />
             <label for="<?=$this->escapeHtml($current['id'])?>"><?=$this->escapeHtml($current['value'])?></label>
           <? endforeach; ?>
+          <? if (isset($hasDefaultsApplied) && $hasDefaultsApplied): ?>
+            <!-- this is a hidden element that flags whether or not default filters have been applied;
+                 it is intentionally unlabeled, as users are not meant to manipulate it directly. -->
+            <input class="applied-filter" id="dfApplied" type="checkbox" name="dfApplied" value="1" />
+          <? endif; ?>
         </div>
       <? endif; ?>
       <?

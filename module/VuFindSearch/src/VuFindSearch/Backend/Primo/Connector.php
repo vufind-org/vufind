@@ -423,7 +423,7 @@ class Connector
             //   that means it has the prim namespace prefix.
             // So first set the right prefix
             $prefix = $doc;
-            if ($doc->PrimoNMBib != 'true') {
+            if ($doc->PrimoNMBib != 'true' && isset($namespaces['prim'])) {
                 // Use the namespace prefix to get those missing child
                 //   elements out of $doc.
                 $prefix = $doc->children($namespaces['prim']);

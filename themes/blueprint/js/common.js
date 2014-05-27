@@ -45,6 +45,8 @@ function filterAll(element, formId) {
     }
     $("#" + formId + " :input[type='checkbox'][name='filter[]']")
         .attr('checked', element.checked);
+    $("#" + formId + " :input[type='checkbox'][name='dfApplied']")
+        .attr('checked', element.checked);
 }
 
 function extractParams(str) {

@@ -112,6 +112,17 @@ class AbstractSearch extends AbstractBase
             $view->saved = $this->restoreAdvancedSearch($searchId);
         }
 
+        // If we have default filters, set them up as a fake "saved" search
+        // to properly populate special controls on the advanced screen.
+        if (!$view->saved && count($view->options->getDefaultFilters()) > 0) {
+            $view->saved = $this->getServiceLocator()
+                ->get('VuFind\SearchResultsPluginManager')
+                ->get($this->searchClassId);
+            $view->saved->getParams()->initFromRequest(
+                new \Zend\StdLib\Parameters(array())
+            );
+        }
+
         return $view;
     }
 
