@@ -190,6 +190,7 @@ class Connector
         }
 
 	$dbs = explode(',', $this->dbs);
+	$dblist = '';
 	foreach ($dbs as $db) {
 		$dblist .= "&db=" . $db;
 	}
