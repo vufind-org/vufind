@@ -62,7 +62,7 @@ class Results extends \VuFind\Search\Base\Results
 	$offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
         $collection = $this->getSearchService()
-            ->search('EBSCO', $query, $offset, $limit, $params);
+            ->search('EIT', $query, $offset, $limit, $params);
 
         $this->resultTotal = $collection->getTotal();
     	$records = $collection->getRecords();
