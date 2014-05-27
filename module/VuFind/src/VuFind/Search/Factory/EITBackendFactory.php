@@ -40,7 +40,7 @@ use Zend\ServiceManager\ServiceLocatorInterface;
 use Zend\ServiceManager\FactoryInterface;
 
 /**
- * Factory for EBSCO backends.
+ * Factory for EIT backends.
  *
  * @category VuFind2
  * @package  Search
@@ -49,7 +49,7 @@ use Zend\ServiceManager\FactoryInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class EBSCOBackendFactory implements FactoryInterface
+class EITBackendFactory implements FactoryInterface
 {
     /**
      * Logger.
@@ -92,7 +92,7 @@ class EBSCOBackendFactory implements FactoryInterface
     }
 
     /**
-     * Create the EBSCO backend.
+     * Create the EIT backend.
      *
      * @param Connector $connector Connector
      *
@@ -107,7 +107,7 @@ class EBSCOBackendFactory implements FactoryInterface
     }
 
     /**
-     * Create the EBSCO connector.
+     * Create the EIT connector.
      *
      * @return Connector
      */
@@ -130,7 +130,7 @@ class EBSCOBackendFactory implements FactoryInterface
     }
 
     /**
-     * Create the EBSCO query builder.
+     * Create the EIT query builder.
      *
      * @return QueryBuilder
      */
