@@ -587,7 +587,6 @@
        </lst>
        -->
   </requestHandler>
-  <requestHandler name="/update/json" class="solr.JsonUpdateRequestHandler"/>
 
   <!-- Field Analysis Request Handler
 
