@@ -640,40 +640,41 @@ class EIT extends SolrDefault
     }
 
     /**
-     * Get an array of publication detail lines combining information from
-     * getPublicationDates(), getPublishers() and getPlacesOfPublication().
+     * Get a full, free-form reference to the context of the item that contains this
+     * record (i.e. volume, year, issue, pages).
      *
-     * @return array
+     * @return string
      */
-    public function getPublicationDetails()
+    public function getContainerReference()
     {
-//        $places = $this->getPlacesOfPublication(); // place of publication doesn't make sense for a journal
-//        $names = $this->getPublishers();
-        $dates = $this->getPublicationDates();
-	$volume = array($this->getContainerVolume());
-	$issue = array($this->getContainerIssue());
-	$start = array($this->getContainerStartPage());
-	$end = array($this->getContainerEndPage());
-
-        $i = 0;
-        $retval = array();
-        while (isset($dates[$i]) || isset($volume[$i]) || isset($issue[$i])) {
-            // Put all the pieces together, and do a little processing to clean up
-            // unwanted whitespace.
-            $retval[] = trim(
-                str_replace(
-                    '  ', ' ',
-                    ((isset($volume[$i]) ? "Vol. " . $volume[$i] . ' ' : '') .
-                    (isset($issue[$i]) ? "No. " . $issue[$i] . ' ' : '') .
-                    (isset($start[$i]) ? "p. " . $start[$i] . ' ' : '') .
-                    (isset($end[$i]) ? "- " . $end[$i] . '. ' : '') .
-                    (isset($dates[$i]) ? $dates[$i] : ''))
-                )
-            );
-            $i++;
+        $str = '';
+        $vol = $this->getContainerVolume();
+        if (!empty($vol)) {
+            $str .= $this->translate('citation_volume_abbrev')
+                . ' ' . $vol;
         }
-
-        return $retval;
+        $no = $this->getContainerIssue();
+        if (!empty($no)) {
+            if (strlen($str) > 0) {
+                $str .= '; ';
+            }
+            $str .= $this->translate('citation_issue_abbrev')
+                . ' ' . $no;
+        }
+        $start = $this->getContainerStartPage();
+        if (!empty($start)) {
+            if (strlen($str) > 0) {
+                $str .= '; ';
+            }
+            $end = $this->getContainerEndPage();
+            if ($start == $end) {
+                $str .= $this->translate('citation_singlepage_abbrev')
+                    . ' ' . $start;
+            } else {
+                $str .= $this->translate('citation_multipage_abbrev')
+                    . ' ' . $start . ' - ' . $end;
+            }
+        }
+        return $str;
     }
-
 }
