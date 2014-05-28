@@ -44,6 +44,8 @@ class PICATest extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function __construct()
     {
-        $this->driver = new PICA();
+        $this->driver = new PICA(
+            new \VuFind\Auth\Database(), new \VuFind\Auth\LDAP()
+        );
     }
 }

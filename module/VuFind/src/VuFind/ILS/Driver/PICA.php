@@ -46,13 +46,52 @@ use DOMDocument, VuFind\Exception\ILS as ILSException;
  */
 class PICA extends DAIA
 {
-    protected $username;
-    protected $password;
-    protected $ldapConfigurationParameter;
-
+    /**
+     * Catalog host setting
+     *
+     * @var string
+     */
     protected $catalogHost;
+
+    /**
+     * Renewals script setting
+     *
+     * @var string
+     */
     protected $renewalsScript;
+
+    /**
+     * Database ID setting
+     *
+     * @var string
+     */
     protected $dbsid;
+
+    /**
+     * Database auth module
+     *
+     * @var \VuFind\Auth\Database
+     */
+    protected $db;
+
+    /**
+     * LDAP auth module
+     *
+     * @var \VuFind\Auth\LDAP
+     */
+    protected $ldap;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Auth\Database $db   Database auth module
+     * @param \VuFind\Auth\LDAP     $ldap LDAP auth module
+     */
+    public function __construct(\VuFind\Auth\Database $db, \VuFind\Auth\LDAP $ldap)
+    {
+        $this->db = $db;
+        $this->ldap = $ldap;
+    }
 
     /**
      * Initialize the driver.
@@ -96,13 +135,11 @@ class PICA extends DAIA
             ->set('password', $password);
 
         // First try local database:
-        $db = new \VuFind\Auth\Database();
         try {
-            $user = $db->authenticate($request);
+            $user = $this->db->authenticate($request);
         } catch (\VuFind\Exception\Auth $e) {
             // Next try LDAP:
-            $ldap = new \VuFind\Auth\LDAP();
-            $user = $ldap->authenticate($request);
+            $user = $this->ldap->authenticate($request);
         }
 
         $_SESSION['picauser'] = $user;
