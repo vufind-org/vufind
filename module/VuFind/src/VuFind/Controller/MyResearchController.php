@@ -265,8 +265,8 @@ class MyResearchController extends AbstractBase
             unset($followup->url);
         }
         $this->storeRefererForPostLoginRedirect();
-        if ($this->getSessionInitiator) {
-            return $this->redirect()->toUrl($this->getSessionInitiator());
+        if ($si = $this->getSessionInitiator()) {
+            return $this->redirect()->toUrl($si);
         }
         return $this->forwardTo('MyResearch', 'Login');
     }
