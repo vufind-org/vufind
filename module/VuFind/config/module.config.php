@@ -588,7 +588,7 @@ $staticRoutes = array(
     'MyResearch/Delete', 'MyResearch/DeleteList', 'MyResearch/Edit',
     'MyResearch/Email', 'MyResearch/Favorites', 'MyResearch/Fines',
     'MyResearch/Holds', 'MyResearch/Home',
-    'MyResearch/ILLRequests', 'MyResearch/Logout',
+    'MyResearch/ILLRequests', 'MyResearch/Logout', 'MyResearch/UserLogin',
     'MyResearch/NewPassword', 'MyResearch/Profile',
     'MyResearch/Recover', 'MyResearch/SaveSearch',
     'MyResearch/StorageRetrievalRequests', 'MyResearch/Verify',
