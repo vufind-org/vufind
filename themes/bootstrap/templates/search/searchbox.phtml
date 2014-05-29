@@ -22,14 +22,14 @@
   <ul class="nav nav-tabs">
   <? foreach ($searchTabs as $tab): ?>
     <li<?=$tab['selected'] ? ' class="active"' : ''?>>
-      <a href="<?=$tab['selected'] ? '' : $this->escapeHtml($tab['url'])?>"><?=$this->transEsc($tab['label']); ?></a>
+      <a href="<?=$tab['selected'] ? '' : $this->escapeHtmlAttr($tab['url'])?>"><?=$this->transEsc($tab['label']); ?></a>
     </li>
   <? endforeach; ?>
   </ul>
 <? endif; ?>
 <div class="navbar">
   <? if ($this->searchType == 'advanced'): ?>
-    <a class="btn btn-link small" href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtml($this->searchId)?>"><?=$this->transEsc("Edit this Advanced Search")?></a>
+    <a class="btn btn-link small" href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($this->searchId)?>"><?=$this->transEsc("Edit this Advanced Search")?></a>
     <span class="help-inline">|</span>
     <a class="btn btn-link small" href="<?=$this->url($advSearch)?>"><?=$this->transEsc("Start a new Advanced Search")?></a>    
     <span class="help-inline">|</span>
