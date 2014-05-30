@@ -41,15 +41,14 @@ namespace VuFind\Search\EIT;
  */
 class Results extends \VuFind\Search\Base\Results
 {
-
     /**
      * Logger instance.
      *
      * @var LoggerInterface
      */
-    protected $logger = false;    
+    protected $logger = false;
 
-	/**
+    /**
      * Support method for performAndProcessSearch -- perform a search based on the
      * parameters passed to the object.
      *
@@ -59,53 +58,14 @@ class Results extends \VuFind\Search\Base\Results
     {
         $query  = $this->getParams()->getQuery();
         $limit  = $this->getParams()->getLimit();
-	$offset = $this->getStartRecord() - 1;
+        $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
         $collection = $this->getSearchService()
             ->search('EIT', $query, $offset, $limit, $params);
 
         $this->resultTotal = $collection->getTotal();
-    	$records = $collection->getRecords();
-	        // Construct record drivers for all the items in the response:
-        $this->results = array();
-        foreach ($records as $current) {
-            $this->results[] = $this->initRecordDriver($current);
-        }
+        $this->results = $collection->getRecords();
     }
-
-    /**
-     * Method to retrieve a record by ID.  Returns a record driver object.
-     *
-     * @param string $id Unique identifier of record
-     *
-     * @return \VuFind\RecordDriver\AbstractBase
-     */
-
-    public function getRecord($id)
-    {
-        $collection = $this->getSearchService()->retrieve($id);
-    	$records = $collection->getRecords();
-	// Construct a record driver for the item:
-        return $this->initRecordDriver($records[0]);
-    }
-
-    /**
-     * Support method for performSearch(): given an EIT record,
-     * construct an appropriate record driver object.
-     *
-     * @param string $data Raw record data
-     *
-     * @return \VuFind\RecordDriver\Base
-     */
-    protected function initRecordDriver($data)
-    {
-        $factory = $this->getServiceLocator()
-            ->get('VuFind\RecordDriverPluginManager');
-        $driver = $factory->get('EIT');
-        $driver->setRawData($data);
-        return $driver;
-    }
-
 
     /**
      * Returns the stored list of facets for the last search
