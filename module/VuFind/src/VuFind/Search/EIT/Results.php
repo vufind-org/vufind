@@ -30,7 +30,8 @@ namespace VuFind\Search\EIT;
 
 /**
  * EBSCO Search Parameters
- * Partially copied from WorldCat Search Parameters; partially copied from other pieces of VuFind code
+ * Partially copied from WorldCat Search Parameters; partially copied from other
+ * pieces of VuFind code
  *
  * @category VuFind2
  * @package  Search_EBSCO

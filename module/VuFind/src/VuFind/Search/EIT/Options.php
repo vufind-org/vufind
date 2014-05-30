@@ -54,7 +54,7 @@ class Options extends \VuFind\Search\Base\Options
 
         // Load the configuration file:
         $searchSettings = $configLoader->get($this->searchIni);
-                if (isset($searchSettings->Basic_Searches)) {
+        if (isset($searchSettings->Basic_Searches)) {
             foreach ($searchSettings->Basic_Searches as $key => $value) {
                 $this->basicHandlers[$key] = $value;
             }

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Model for records retrieved via EBSCO's EIT API.
  *
@@ -30,10 +29,17 @@ namespace VuFind\RecordDriver;
 
 use Zend\Log\LoggerInterface;
 
+/**
+ * Model for records retrieved via EBSCO's EIT API.
+ *
+ * @category VuFind2
+ * @package  RecordDrivers
+ * @author   Julia Bauder <bauderj@grinnell.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
+ */
 class EIT extends SolrDefault
 {
-    public $fields;
-
     /**
      * Used for identifying search backends
      *
@@ -49,6 +55,13 @@ class EIT extends SolrDefault
     protected $logger;
 
     /**
+     * Reference to controlInfo section of fields, for readability
+     *
+     * @var array
+     */
+    protected $controlInfo;
+
+    /**
      * Set the Logger.
      *
      * @param LoggerInterface $logger Logger
@@ -59,7 +72,6 @@ class EIT extends SolrDefault
     {
         $this->logger = $logger;
     }
-
 
     /**
      * Log a debug message.
@@ -75,29 +87,6 @@ class EIT extends SolrDefault
         }
     }
 
-
-     /**
-     * These fields should be used for snippets if available (listed in order
-     * of preference).
-     *
-     * @var array
-     */
-//    protected $preferredSnippetFields = array(
-//        'ab', 'keyword'
-//);
-
-        /**
-     * These fields should NEVER be used for snippets.  (We exclude author
-     * and title because they are already covered by displayed fields; we exclude
-     * spelling because it contains lots of fields jammed together and may cause
-     * glitchy output; we exclude ID because random numbers are not helpful).
-     *
-     * @var array
-     */
-//    protected $forbiddenSnippetFields = array(
-//        'au', 'plink', 'jid', 'issn', 'maglogo', 'dt', 'vid', 'iid', 'pub', 'ui', 'ppf', 'ppct', 'pubtype', 'doctype', 'src', 'language'
-//    );
-
     /**
      * Set raw data to initialize the object.
      *
@@ -111,33 +100,30 @@ class EIT extends SolrDefault
      */
     public function setRawData($data)
     {
-	    //Easy way to recursively convert a SimpleXML Object to an array
-
-	$data = json_decode(json_encode((array) $data), 1);
-
-	//	$data = json_decode(json_encode((array) $data->rec['0']), 1);
-	if (isset($data['fields'])) {
-		$this->fields = $data['fields'];
-	} else {
-	// The following works for EITRecord pages
-		$this->fields['fields'] = $data;
-	}
+        // Easy way to recursively convert a SimpleXML Object to an array
+        $data = json_decode(json_encode((array) $data), 1);
+        if (isset($data['fields'])) {
+            $this->fields = $data['fields'];
+        } else {
+            // The following works for EITRecord pages
+            $this->fields['fields'] = $data;
+        }
+        if (isset($this->fields['fields']['header']['controlInfo'])) {
+            $this->controlInfo = & $this->fields['fields']['header']['controlInfo'];
+        }
     }
 
-
-
-
-   /**
+    /**
      * Get all subject headings associated with this record.  Each heading is
      * returned as an array of chunks, increasing from least specific to most
      * specific.
      *
      * @return array
      */
-
     public function getAllSubjectHeadings()
     {
-        $su = isset($this->fields['fields']['header']['controlInfo']['artinfo']['su']) ? $this->fields['fields']['header']['controlInfo']['artinfo']['su'] : array();
+        $su = isset($this->controlInfo['artinfo']['su'])
+            ? $this->controlInfo['artinfo']['su'] : array();
 
         // The EIT index doesn't currently subject headings in a broken-down
         // format, so we'll just send each value as a single chunk.
@@ -156,19 +142,18 @@ class EIT extends SolrDefault
      */
     public function getBreadcrumb()
     {
-        return isset($this->fields['fields']['header']['controlInfo']['artinfo']['tig']['atl']) ?
-            $this->fields['fields']['header']['controlInfo']['artinfo']['tig']['atl'] : '';
-    
+        return isset($this->controlInfo['artinfo']['tig']['atl']) ?
+            $this->controlInfo['artinfo']['tig']['atl'] : '';
     }
 
-   /**
+    /**
      * Get the call number associated with the record (empty string if none).
      *
      * @return string
      */
     public function getCallNumber()
     {
-	return "";
+        return "";
     }
 
     /**
@@ -178,7 +163,7 @@ class EIT extends SolrDefault
      */
     public function getCleanOCLCNum()
     {
-	    return FALSE;
+        return false;
     }
 
     /**
@@ -188,8 +173,8 @@ class EIT extends SolrDefault
      */
     public function getCleanISSN()
     {
-        return isset($this->fields['fields']['header']['controlInfo']['jinfo']['issn']) ?
-            $this->fields['fields']['header']['controlInfo']['jinfo']['issn'] : FALSE;
+        return isset($this->controlInfo['jinfo']['issn']) ?
+            $this->controlInfo['jinfo']['issn'] : false;
     }
 
         /**
@@ -201,7 +186,7 @@ class EIT extends SolrDefault
      */
     public function getDateSpan()
     {
-       return array();
+        return array();
     }
 
     /**
@@ -225,7 +210,7 @@ class EIT extends SolrDefault
         }
         if (!empty($duplicates)) {
             $authors['secondary'] = array_diff($authors['secondary'], $duplicates);
-	}
+        }
         return $authors;
     }
 
@@ -236,7 +221,7 @@ class EIT extends SolrDefault
      */
     public function getEdition()
     {
-        return NULL;
+        return null;
     }
 
     /**
@@ -246,7 +231,8 @@ class EIT extends SolrDefault
      */
     public function getFormats()
     {
-        return isset($this->fields['fields']['header']['controlInfo']['artinfo']['doctype']) ? array($this->fields['fields']['header']['controlInfo']['artinfo']['doctype']) : array();
+        return isset($this->controlInfo['artinfo']['doctype'])
+            ? array($this->controlInfo['artinfo']['doctype']) : array();
     }
 
     /**
@@ -256,12 +242,15 @@ class EIT extends SolrDefault
      */
     public function getPrimaryAuthor()
     {
-	    if (is_array($this->fields['fields']['header']['controlInfo']['artinfo']['aug']['au'])) {
-		    return $this->fields['fields']['header']['controlInfo']['artinfo']['aug']['au']['0'];
-	    } else {
-		    return isset($this->fields['fields']['header']['controlInfo']['artinfo']['aug']['au']) ? $this->fields['fields']['header']['controlInfo']['artinfo']['aug']['au'] : '';
-	    }
-	
+        if (isset($this->controlInfo['artinfo']['aug']['au'])
+            && is_array($this->controlInfo['artinfo']['aug']['au'])
+        ) {
+            return $this->controlInfo['artinfo']['aug']['au']['0'];
+        } else {
+            return isset($this->controlInfo['artinfo']['aug']['au'])
+                ? $this->controlInfo['artinfo']['aug']['au'] : '';
+        }
+
     }
 
     /**
@@ -271,13 +260,15 @@ class EIT extends SolrDefault
      */
     public function getPublicationDates()
     {
-        if (isset($this->fields['fields']['header']['controlInfo']['pubinfo']['dt']['@attributes']['year'])) {
-		return array($this->fields['fields']['header']['controlInfo']['pubinfo']['dt']['@attributes']['year']);
-	} else if (isset($this->fields['fields']['header']['controlInfo']['pubinfo']['dt'])) {
-		return array($this->fields['fields']['header']['controlInfo']['pubinfo']['dt']);
-	} else {
-		return array();
-	}
+        if (isset($this->controlInfo['pubinfo']['dt']['@attributes']['year'])) {
+            return array(
+                $this->controlInfo['pubinfo']['dt']['@attributes']['year']
+            );
+        } else if (isset($this->controlInfo['pubinfo']['dt'])) {
+            return array($this->controlInfo['pubinfo']['dt']);
+        } else {
+            return array();
+        }
     }
 
     /**
@@ -287,8 +278,8 @@ class EIT extends SolrDefault
      */
     public function getPublishers()
     {
-        return isset($this->fields['fields']['header']['controlInfo']['pubinfo']['pub']) ?
-            array($this->fields['fields']['header']['controlInfo']['pubinfo']['pub']) : array();
+        return isset($this->controlInfo['pubinfo']['pub'])
+            ? array($this->controlInfo['pubinfo']['pub']) : array();
     }
 
     /**
@@ -298,8 +289,8 @@ class EIT extends SolrDefault
      */
     public function getSecondaryAuthors()
     {
-        return is_array($this->fields['fields']['header']['controlInfo']['artinfo']['aug']['au']) ?
-            $this->fields['fields']['header']['controlInfo']['artinfo']['aug']['au'] : array();
+        return is_array($this->controlInfo['artinfo']['aug']['au'])
+            ? $this->controlInfo['artinfo']['aug']['au'] : array();
     }
 
     /**
@@ -309,8 +300,8 @@ class EIT extends SolrDefault
      */
     public function getShortTitle()
     {
-        return isset($this->fields['fields']['header']['controlInfo']['artinfo']['tig']['atl']) ?
-            $this->fields['fields']['header']['controlInfo']['artinfo']['tig']['atl'] : '';
+        return isset($this->controlInfo['artinfo']['tig']['atl'])
+            ? $this->controlInfo['artinfo']['tig']['atl'] : '';
     }
 
 
@@ -325,11 +316,12 @@ class EIT extends SolrDefault
         // array as needed (it should be a flat string according to the default
         // schema, but we might as well support the array case just to be on the safe
         // side:
-        if (isset($this->fields['fields']['header']['controlInfo']['artinfo']['ab'])
-            && !empty($this->fields['fields']['header']['controlInfo']['artinfo']['ab'])
+        if (isset($this->controlInfo['artinfo']['ab'])
+            && !empty($this->controlInfo['artinfo']['ab'])
         ) {
-            return is_array($this->fields['fields']['header']['controlInfo']['artinfo']['ab'])
-                ? $this->fields['fields']['header']['controlInfo']['artinfo']['ab'] : array($this->fields['fields']['header']['controlInfo']['artinfo']['ab']);
+            return is_array($this->controlInfo['artinfo']['ab'])
+                ? $this->controlInfo['artinfo']['ab']
+                : array($this->controlInfo['artinfo']['ab']);
         }
 
         // If we got this far, no description was found:
@@ -343,8 +335,8 @@ class EIT extends SolrDefault
      */
     public function getTitle()
     {
-        return isset($this->fields['fields']['header']['controlInfo']['artinfo']['tig']['atl']) ?
-            $this->fields['fields']['header']['controlInfo']['artinfo']['tig']['atl'] : '';
+        return isset($this->controlInfo['artinfo']['tig']['atl'])
+            ? $this->controlInfo['artinfo']['tig']['atl'] : '';
     }
 
         /**
@@ -366,17 +358,18 @@ class EIT extends SolrDefault
         // If non-empty, map internal URL array to expected return format;
         // otherwise, return empty array:
         if (isset($this->fields['fields']['plink'])) {
-		$links = array($this->fields['fields']['plink']);    
-		$filter = function ($url) {
-                	return array('url' => $url, 'desc' => 'View this record in EBSCOhost');
-	            };
+            $links = array($this->fields['fields']['plink']);
+            $desc = $this->translate('View this record in EBSCOhost');
+            $filter = function ($url) use ($desc) {
+                return compact('url', 'desc');
+            };
             return array_map($filter, $links);
         } else {
-		return array();
-	}
+            return array();
+        }
     }
 
-        /**
+    /**
      * Return the unique identifier of this record within the Solr index;
      * useful for retrieving additional information (like tags and user
      * comments) from the external MySQL database.
@@ -385,9 +378,10 @@ class EIT extends SolrDefault
      */
     public function getUniqueID()
     {
-//	    $this->debug(print_r($this->fields['fields'], true));
-	if (!isset($this->fields['fields']['header']['@attributes']['uiTerm'])) {
-            throw new \Exception('ID not set!' . print_r($this->fields['fields'], true));
+        if (!isset($this->fields['fields']['header']['@attributes']['uiTerm'])) {
+            throw new \Exception(
+                'ID not set!' . print_r($this->fields['fields'], true)
+            );
         }
         return $this->fields['fields']['header']['@attributes']['uiTerm'];
     }
@@ -400,8 +394,8 @@ class EIT extends SolrDefault
      */
     public function getContainerTitle()
     {
-        return isset($this->fields['fields']['header']['controlInfo']['jinfo']['jtl'])
-            ? $this->fields['fields']['header']['controlInfo']['jinfo']['jtl'] : '';
+        return isset($this->controlInfo['jinfo']['jtl'])
+            ? $this->controlInfo['jinfo']['jtl'] : '';
     }
 
     /**
@@ -412,8 +406,8 @@ class EIT extends SolrDefault
      */
     public function getContainerVolume()
     {
-        return isset($this->fields['fields']['header']['controlInfo']['pubinfo']['vid'])
-            ? $this->fields['fields']['header']['controlInfo']['pubinfo']['vid'] : NULL;
+        return isset($this->controlInfo['pubinfo']['vid'])
+            ? $this->controlInfo['pubinfo']['vid'] : null;
     }
 
     /**
@@ -424,8 +418,8 @@ class EIT extends SolrDefault
      */
     public function getContainerIssue()
     {
-        return isset($this->fields['fields']['header']['controlInfo']['pubinfo']['iid'])
-            ? $this->fields['fields']['header']['controlInfo']['pubinfo']['iid'] : NULL;
+        return isset($this->controlInfo['pubinfo']['iid'])
+            ? $this->controlInfo['pubinfo']['iid'] : null;
     }
 
     /**
@@ -436,14 +430,19 @@ class EIT extends SolrDefault
      */
     public function getContainerStartPage()
     {
-        return isset($this->fields['fields']['header']['controlInfo']['artinfo']['ppf'])
-            ? $this->fields['fields']['header']['controlInfo']['artinfo']['ppf'] : NULL;
+        return isset($this->controlInfo['artinfo']['ppf'])
+            ? $this->controlInfo['artinfo']['ppf'] : null;
     }
 
-    private function getContainerPageCount()
+    /**
+     * Support method for getContainerEndPage()
+     *
+     * @return string
+     */
+    protected function getContainerPageCount()
     {
-        return isset($this->fields['fields']['header']['controlInfo']['artinfo']['ppct'])
-            ? $this->fields['fields']['header']['controlInfo']['artinfo']['ppct'] : NULL;
+        return isset($this->controlInfo['artinfo']['ppct'])
+            ? $this->controlInfo['artinfo']['ppct'] : null;
     }
 
     /**
@@ -453,14 +452,14 @@ class EIT extends SolrDefault
      */
     public function getContainerEndPage()
     {
-	$startpage = $this->getContainerStartPage();
-	$pagecount = $this->getContainerPageCount();
-	$endpage = $startpage + $pagecount;
-	if ($endpage != 0) {
-	        return $endpage;
-	} else {
-		return NULL;
-	}
+        $startpage = $this->getContainerStartPage();
+        $pagecount = $this->getContainerPageCount();
+        $endpage = $startpage + $pagecount;
+        if ($endpage != 0) {
+                return $endpage;
+        } else {
+            return null;
+        }
     }
 
         /**
@@ -470,8 +469,8 @@ class EIT extends SolrDefault
      */
     public function getSortTitle()
     {
-        return isset($this->fields['fields']['header']['controlInfo']['artinfo']['tig']['atl'])
-            ? $this->fields['fields']['header']['controlInfo']['artinfo']['tig']['atl'] : '';
+        return isset($this->controlInfo['artinfo']['tig']['atl'])
+            ? $this->controlInfo['artinfo']['tig']['atl'] : '';
     }
 
         /**
@@ -503,12 +502,10 @@ class EIT extends SolrDefault
             return 'Article';
         } else if (in_array('Journal', $formats)) {
             return 'Journal';
-//        } else if (isset($formats[0])) {
-//            return $formats[0]; // Problematic because EIT has way too many strange options that are really articles to list here.
-//        } else if (strlen($this->getCleanISSN()) > 0) {
-//            return 'Journal'; // Problematic because we often get to this point with things that are really articles.
         }
-        // Defaulting to "Article" because many EBSCO databases have things like "Film Criticism" instead of "Article"
+        // Defaulting to "Article" because many EBSCO databases have things like
+        // "Film Criticism" instead of "Article" -- the other defaults from the
+        // SolrDefault driver don't work well in this context.
         return 'Article';
     }
 
