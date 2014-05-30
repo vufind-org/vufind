@@ -143,10 +143,10 @@ class Backend implements BackendInterface
         ParamBag $params = null
     ) {
         $params->mergeWith($this->getQueryBuilder()->build($query));
-	$response   = $this->connector->search($params, $offset, $limit);
-	$this->debug(print_r($response, true));
+        $response   = $this->connector->search($params, $offset, $limit);
+        $this->debug(print_r($response, true));
         $collection = $this->createRecordCollection($response);
-	$this->injectSourceIdentifier($collection);
+        $this->injectSourceIdentifier($collection);
         return $collection;
     }
 

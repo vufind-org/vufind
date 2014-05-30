@@ -59,20 +59,18 @@ class Connector
      */
     protected $client;
 
-   /**
-    * EBSCO EIT Profile used for authentication
-    *
-    * @var string
-    */
-
+    /**
+     * EBSCO EIT Profile used for authentication
+     *
+     * @var string
+     */
     protected $prof;
 
-   /**
-    * Password associated with the EBSCO EIT Profile
-    *
-    * @var string
-    */
-
+    /**
+     * Password associated with the EBSCO EIT Profile
+     *
+     * @var string
+     */
     protected $pwd;
 
     /**
@@ -82,7 +80,6 @@ class Connector
      */
     protected $logger = false;
 
-
     /**
      * Array of 3-character EBSCO database abbreviations to include in search
      *
@@ -90,14 +87,22 @@ class Connector
      */
     protected $dbs = array();
 
-
+    /**
+     * Constructor
+     *
+     * @param string            $base   Base URL
+     * @param \Zend\Http\Client $client HTTP client
+     * @param string            $prof   Profile
+     * @param string            $pwd    Password
+     * @param string            $dbs    Database list (comma-separated abbrevs.)
+     */
     public function __construct($base, \Zend\Http\Client $client, $prof, $pwd, $dbs)
     {
         $this->base = $base;
-	$this->client = $client;
-	$this->prof = $prof;
-	$this->pwd = $pwd;
-	$this->dbs = $dbs;
+        $this->client = $client;
+        $this->prof = $prof;
+        $this->pwd = $pwd;
+        $this->dbs = $dbs;
     }
 
     /**
@@ -133,26 +138,27 @@ class Connector
      * @param integer  $offset Search offset
      * @param integer  $limit  Search limit
      *
-     * @return string
+     * @return array
      */
     public function search(ParamBag $params, $offset, $limit)
     {
-	$startrec = $offset + 1;    
-	$params->set('startrec', $startrec);
+        $startrec = $offset + 1;
+        $params->set('startrec', $startrec);
         $params->set('numrec', $limit);
         $params->set('prof', $this->prof);
-	$params->set('pwd', $this->pwd);
+        $params->set('pwd', $this->pwd);
         $response = $this->call('POST', $params->getArrayCopy(), false);
-	$xml = simplexml_load_string($response);
-	$docs = isset($xml->SearchResults->records) ? $xml->SearchResults->record : array();
+        $xml = simplexml_load_string($response);
+        $docs = isset($xml->SearchResults->records)
+            ? $xml->SearchResults->record : array();
         $finalDocs = array();
         foreach ($xml->SearchResults->records->rec as $doc) {
             $finalDocs[] = simplexml_load_string($doc->asXML());
-	}
+        }
         return array(
             'docs' => $finalDocs,
             'offset' => $offset,
-	    'total' => (integer)$xml->Hits
+            'total' => (integer)$xml->Hits
         );
     }
 
@@ -171,6 +177,14 @@ class Connector
         }
     }
 
+    /**
+     * Make an API call
+     *
+     * @param string $method GET or POST
+     * @param array  $params Parameters to send
+     *
+     * @return \SimpleXMLElement
+     */
     protected function call($method = 'GET', $params = null)
     {
         if ($params) {
@@ -189,19 +203,21 @@ class Connector
             $queryString = implode('&', $query);
         }
 
-	$dbs = explode(',', $this->dbs);
-	$dblist = '';
-	foreach ($dbs as $db) {
-		$dblist .= "&db=" . $db;
-	}
+        $dbs = explode(',', $this->dbs);
+        $dblist = '';
+        foreach ($dbs as $db) {
+            $dblist .= "&db=" . $db;
+        }
 
-        $this->debug('Connect: ' . print_r($this->base . '?' . $queryString . $dblist, true));
+        $this->debug(
+            'Connect: ' . print_r($this->base . '?' . $queryString . $dblist, true)
+        );
 
         // Send Request
         $this->client->resetParameters();
         $this->client->setUri($this->base . '?' . $queryString . $dblist);
         $result = $this->client->send();
-	$body = $result->getBody();
+        $body = $result->getBody();
         $xml = simplexml_load_string($body);
         $this->debug(print_r($xml, true));
         return $body;
@@ -218,26 +234,24 @@ class Connector
      */
     public function getRecord($id, ParamBag $params = null)
     {
- 	$query = "AN " . $id;   
-	$params = $params ?: new ParamBag();  
+        $query = "AN " . $id;
+        $params = $params ?: new ParamBag();
         $params->set('prof', $this->prof);
-	$params->set('pwd', $this->pwd);
-	$params->set('query', $query);
-	$this->client->resetParameters();
-	$response = $this->call('POST', $params->getArrayCopy(), false);
-	$xml = simplexml_load_string($response);
-	$docs = isset($xml->SearchResults->records) ? $xml->SearchResults->record : array();
+        $params->set('pwd', $this->pwd);
+        $params->set('query', $query);
+        $this->client->resetParameters();
+        $response = $this->call('POST', $params->getArrayCopy(), false);
+        $xml = simplexml_load_string($response);
+        $docs = isset($xml->SearchResults->records)
+            ? $xml->SearchResults->record : array();
         $finalDocs = array();
         foreach ($xml->SearchResults->records->rec as $doc) {
             $finalDocs[] = simplexml_load_string($doc->asXML());
-	}
+        }
         return array(
             'docs' => $finalDocs,
             'offset' => 0,
-	    'total' => (integer)$xml->Hits
+            'total' => (integer)$xml->Hits
         );
     }
-
 }
-
-?>

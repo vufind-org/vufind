@@ -1,5 +1,4 @@
 <?php
-
 /**
  * EIT QueryBuilder.
  *
@@ -40,6 +39,7 @@ use VuFindSearch\ParamBag;
 /**
  * EIT QueryBuilder.
  * Largely copied from the WorldCat QueryBuilder
+ *
  * @category VuFind2
  * @package  Search
  * @author   Julia Bauder <bauderj@grinnell.edu>
@@ -51,7 +51,6 @@ use VuFindSearch\ParamBag;
  */
 class QueryBuilder
 {
-
     /// Public API
 
     /**
