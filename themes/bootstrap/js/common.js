@@ -379,7 +379,7 @@ $(document).ready(function() {
   });
   // Login link
   $('#loginOptions a.modal-link').click(function() {
-    return Lightbox.get('MyResearch','Login',{},{'loggingin':true});
+    return Lightbox.get('MyResearch','UserLogin',{},{'loggingin':true});
   });
   // Email search link
   $('.mailSearch').click(function() {
