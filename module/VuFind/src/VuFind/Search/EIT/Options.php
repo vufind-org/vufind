@@ -50,12 +50,11 @@ class Options extends \VuFind\Search\Base\Options
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
         parent::__construct($configLoader);
-	$this->searchIni = $this->facetsIni = 'EIT';
-	;
+        $this->searchIni = $this->facetsIni = 'EIT';
 
         // Load the configuration file:
-	$searchSettings = $configLoader->get($this->searchIni);
-	        if (isset($searchSettings->Basic_Searches)) {
+        $searchSettings = $configLoader->get($this->searchIni);
+                if (isset($searchSettings->Basic_Searches)) {
             foreach ($searchSettings->Basic_Searches as $key => $value) {
                 $this->basicHandlers[$key] = $value;
             }
@@ -70,9 +69,9 @@ class Options extends \VuFind\Search\Base\Options
         if (isset($searchSettings->Sorting)) {
             foreach ($searchSettings->Sorting as $key => $value) {
                 $this->sortOptions[$key] = $value;
-	    }
-	}
-	if (isset($searchSettings->General->default_sort)) {
+            }
+        }
+        if (isset($searchSettings->General->default_sort)) {
             $this->defaultSort = $searchSettings->General->default_sort;
         }
         if (isset($searchSettings->DefaultSortingByType)
