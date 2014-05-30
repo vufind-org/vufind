@@ -21,7 +21,7 @@
  *
  * @category VuFind2
  * @package  OpenLibrary
- * @author   Eoghan ” Carrag·in <eoghan.ocarragain@gmail.com>
+ * @author   Eoghan √ì Carrag√°in <eoghan.ocarragain@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
@@ -34,7 +34,7 @@ namespace VuFind\Connection;
  *
  * @category VuFind2
  * @package  OpenLibrary
- * @author   Eoghan ” Carrag·in <eoghan.ocarragain@gmail.com>
+ * @author   Eoghan √ì Carrag√°in <eoghan.ocarragain@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
