@@ -188,6 +188,30 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test Syndetics upgrade.
+     *
+     * @return void
+     */
+    public function testSyndetics()
+    {
+        // Test upgrading an SSL URL
+        $upgrader = $this->getUpgrader('syndeticsurlssl');
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            1, $results['config.ini']['Syndetics']['use_ssl']
+        );
+
+        // Test upgrading a non-SSL URL
+        $upgrader = $this->getUpgrader('syndeticsurlnossl');
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            '', $results['config.ini']['Syndetics']['use_ssl']
+        );
+    }
+
+    /**
      * Test "meaningful line" detection in SolrMarc properties files.
      *
      * @return void

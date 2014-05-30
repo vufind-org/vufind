@@ -561,6 +561,14 @@ class Upgrade
             $newConfig['Site']['generator'] = 'VuFind ' . $this->to;
         }
 
+        // Update Syndetics config:
+        if (isset($newConfig['Syndetics']['url'])) {
+            $newConfig['Syndetics']['use_ssl']
+                = (strpos($newConfig['Syndetics']['url'], 'https://') === false)
+                ? '' : 1;
+            unset($newConfig['Syndetics']['url']);
+        }
+
         // Deal with shard settings (which may have to be moved to another file):
         $this->upgradeShardSettings();
 
