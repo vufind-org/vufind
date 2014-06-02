@@ -106,31 +106,39 @@ findDirectory()
 ##################################################
 # Set Performance options for JETTY
 ##################################################
-# Xms is the initial amount of memory allocated to the JAVA heap
-# Xmx is the maximum amount of memory for the JAVA heap
+# -Xms    Sets the initial heap size for when the JVM starts.
+# -Xmx    Sets the maximum heap size.
 # If you often get a "catalog error" or need to restart vufind you
 # may need to increase the Xmx value if your system has the memory
 # to support it. For example, on a system with 4GB of memory that is
 # dedicated to running Vufind you may want to set the Xmx value to
-# 2048m or 3,072m. You may not want to skip setting the Xms value
+# 2048m or 3,072m.
+#
+# IMPORTANT NOTE: You may want to skip setting the Xms value
 # so that JAVA / Vufind will only use what it needs - potentialy
 # leaving more memory for the rest of the system. To see the JVM memory
 # usage visit your solr URL, possibly the same URL as your vufind,
 # instance but appended with :8080/solr/
+#
 # The most important factors for determining the amount of memory
 # that you will need to allocate are the number of records you have
 # indexed, and how much traffic your site receives. It may also be
 # beneficial to limit or block crawlers and robots as they can,
 # at times, generate so many requests that your site has poor
 # performance for your human patrons
-# For more information on tuning vufind and java, see the
-# wikipedia article at https://vufind.org/wiki/performance
 #
-#JAVA_OPTIONS="-server -Xms1048576k -Xmx1048576k -XX:+UseParallelGC -XX:NewRatio=5"
-#JAVA_OPTIONS="-server -Xms1024m -Xmx1024m -XX:+UseParallelGC -XX:NewRatio=5"
+# For more information on tuning vufind and java, see the
+# vufind wiki article at https://vufind.org/wiki/performance
+# and http://www.oracle.com/technetwork/java/gc-tuning-5-138395.html
+#
+# Some example settings:
+# JAVA_OPTIONS="-server -Xms1048576k -Xmx1048576k -XX:+UseParallelGC -XX:NewRatio=5"
+# JAVA_OPTIONS="-server -Xmx1048576k -XX:+UseParallelGC -XX:NewRatio=5"
+# JAVA_OPTIONS="-server -Xms1024m -Xmx1024m -XX:+UseParallelGC -XX:NewRatio=5"
+# JAVA_OPTIONS="-server -Xmx1024m -XX:+UseParallelGC -XX:NewRatio=5"
 if [ -z "$JAVA_OPTIONS" ]
 then
-  JAVA_OPTIONS="-server -Xmx1024m -XX:+UseParallelGC -XX:NewRatio=5"
+  JAVA_OPTIONS="-server -Xms1024m -Xmx1024m -XX:+UseParallelGC -XX:NewRatio=5"
 fi
 
 ##################################################
