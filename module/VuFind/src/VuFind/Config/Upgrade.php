@@ -744,6 +744,17 @@ class Upgrade
         );
         $this->applyOldSettings('Summon.ini', $groups);
 
+        // Turn on advanced checkbox facets if we're upgrading from a version
+        // prior to 2.3.
+        if ((float)$this->from < 2.3) {
+            $cfg = & $this->newConfigs['Summon.ini']['Advanced_Facet_Settings'];
+            if (!isset($cfg['special_facets']) || empty($cfg['special_facets'])) {
+                $cfg['special_facets'] = 'checkboxes:Summon';
+            } else if (false === strpos('checkboxes', $cfg['special_facets'])) {
+                $cfg['special_facets'] .= ',checkboxes:Summon';
+            }
+        }
+
         // save the file
         $this->saveModifiedConfig('Summon.ini');
     }

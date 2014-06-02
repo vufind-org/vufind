@@ -61,7 +61,13 @@ class SearchController extends AbstractSearch
             $view->illustratedLimit
                 = $this->getIllustrationSettings($view->saved);
         }
+        if (isset($specialFacets['checkboxes'])) {
+            $view->checkboxFacets = $this->processAdvancedCheckboxes(
+                $specialFacets['checkboxes'], $view->saved
+            );
+        }
         $view->ranges = $this->getAllRangeSettings($specialFacets, $view->saved);
+
         return $view;
     }
 
