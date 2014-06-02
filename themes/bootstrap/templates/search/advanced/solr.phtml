@@ -1,5 +1,12 @@
-<? if (!empty($this->facetList)): ?>
+<? if (!empty($this->facetList) || !empty($this->checkboxFacets)): ?>
   <p class="lead"><?=$this->transEsc('Limit To')?></p>
+<? endif; ?>
+
+<? if (!empty($this->checkboxFacets)): ?>
+  <?=$this->render('search/advanced/checkbox-filters.phtml')?>
+<? endif; ?>
+
+<? if (!empty($this->facetList)): ?>
   <div class="row-fluid">
     <? foreach ($this->facetList as $field => $list): ?>
       <div class="span<?=floor(12/count($this->facetList)) ?>">

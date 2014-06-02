@@ -109,6 +109,13 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
             $this->assertEquals(0, count($warnings));
         }
 
+        // Summon should always have the checkboxes setting turned on after
+        // upgrade:
+        $this->assertEquals(
+            'daterange,checkboxes:Summon',
+            $results['Summon.ini']['Advanced_Facet_Settings']['special_facets']
+        );
+
         // Make sure the obsolete Index/local setting is removed:
         $this->assertFalse(isset($results['config.ini']['Index']['local']));
 

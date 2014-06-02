@@ -268,13 +268,15 @@ class AbstractBase extends AbstractActionController
         // lightbox (since lightboxes use a different followup mechanism).
         if (!$this->inLightbox()) {
             $this->followup()->store($extras);
-        } elseif ($this->getAuthManager()->getSessionInitiator()) {
+        } else {
             // If we're in a lightbox and using an authentication method
             // with a session initiator, the user will be redirected outside
             // of VuFind and then redirected back. Thus, we need to store a
             // followup URL to avoid losing context, but we don't want to
             // store the AJAX request URL that populated the lightbox. The
             // delightboxURL() routine will remap the URL appropriately.
+            // We can set this whether or not there's a session initiator
+            // because it will be cleared when needed.
             $url = $this->delightboxURL($this->getServerUrl());
             $this->followup()->store($extras, $url);
         }
