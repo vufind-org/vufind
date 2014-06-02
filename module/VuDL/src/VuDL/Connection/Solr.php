@@ -284,7 +284,9 @@ class Solr extends AbstractBase
                             'title' => $parents->hierarchy_parent_title[$i]
                         );
                     }
-                    $tree[$cid]['children'][] = $current;
+                    if (!in_array($current, $tree[$cid]['children'])) {
+                        $tree[$cid]['children'][] = $current;
+                    }
                 }
             }
         }
