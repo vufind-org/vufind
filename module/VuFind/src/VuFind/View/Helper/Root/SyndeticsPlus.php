@@ -78,8 +78,8 @@ class SyndeticsPlus extends \Zend\View\Helper\AbstractHelper
     {
         // Determine whether to include script tag for SyndeticsPlus
         if (isset($this->config->plus_id)) {
-            $baseUrl = isset($this->config->use_ssl)
-                ? $this->config->use_ssl : 'http://plus.syndetics.com';
+            $baseUrl = (isset($this->config->use_ssl) && $this->config->use_ssl)
+                ? 'https://secure.syndetics.com' : 'http://plus.syndetics.com';
             return $baseUrl . "/widget.php?id="
                 . urlencode($this->config->plus_id);
         }
