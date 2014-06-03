@@ -90,7 +90,7 @@ class SearchSpecsReader
             $cacheKey = md5($cacheKey);
 
             // Generate data if not found in cache:
-            if (!$cache || !($results = $cache->getItem($cacheKey))) {
+            if ($cache === false || !($results = $cache->getItem($cacheKey))) {
                 $results = Yaml::parse($fullpath);
                 if (!empty($local)) {
                     $localResults = Yaml::parse($local);
@@ -98,7 +98,7 @@ class SearchSpecsReader
                         $results[$key] = $value;
                     }
                 }
-                if ($cache) {
+                if ($cache !== false) {
                     $cache->setItem($cacheKey, $results);
                 }
             }
