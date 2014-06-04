@@ -15,7 +15,7 @@
   $this->jsTranslations()->addStrings(
     array('showTree' => 'hierarchy_show_tree', 'hideTree' => 'hierarchy_hide_tree')
   );
-  $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'jsTree/jquery.jstree.js');
+  $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'jsTree/jstree.js');
   $this->inlineScript(\Zend\View\Helper\HeadScript::FILE, 'jsTree/hierarchyTree.js');
   echo $this->inlineScript();
 ?>
@@ -36,7 +36,7 @@
       <? if ($this->tab->searchActive()): ?>
         <div id="treeSearch" class="form-search row-fluid">
           <input type="text" id="treeSearchText" class="search-query span6" value="">
-          <select class="span3 id="treeSearchType" name="type">
+          <select class="span3" id="treeSearchType" name="type">
             <option value="AllFields"><?=$this->transEsc('All Fields')?></option>
             <option value="Title"><?=$this->transEsc('Title')?></option>
           </select>

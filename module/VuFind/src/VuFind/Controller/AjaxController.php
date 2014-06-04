@@ -1507,6 +1507,146 @@ class AjaxController extends AbstractBase
     }
 
     /**
+     * Get hierarchical facet data for jsTree
+     *
+     * Parameters:
+     * facetName  The facet to retrieve
+     * facetSort  By default all facets are sorted by count. Two values are available
+     * for alternative sorting:
+     *   top = sort the top level alphabetically, rest by count
+     *   all = sort all levels alphabetically
+     *
+     * @return \Zend\Http\Response
+     */
+    protected function getFacetDataAjax()
+    {
+        $this->writeSession();  // avoid session write timing bug
+        $results = $this->getResultsManager()->get('Solr');
+        $params = $results->getParams();
+        $params->recommendationsEnabled(true);
+        $params->initFromRequest($this->getRequest()->getQuery());
+
+        $facet = $this->params()->fromQuery('facetName');
+        $sort = $this->params()->fromQuery('facetSort');
+
+        $facets = $results->getFullFieldFacets(array($facet), false);
+        if (empty($facets[$facet]['data']['list'])) {
+            return $this->output(array(), self::STATUS_OK);
+        }
+
+        $facetList = $facets[$facet]['data']['list'];
+
+        if (!empty($sort)) {
+            // Parse level from each facet value so that the sort function
+            // can run faster
+            foreach ($facetList as &$facetItem) {
+                list($facetItem['level']) = explode('/', $facetItem['value'], 2);
+            }
+            // Avoid problems having the reference set further below
+            unset($facetItem);
+            $sortFunc = null;
+            if ($sort == 'top') {
+                $sortFunc = function($a, $b) {
+                    if ($a['level'] == 0 && $b['level'] == 0) {
+                        return strcasecmp($a['displayText'], $b['displayText']);
+                    }
+                    return $a['level'] == $b['level']
+                        ? $b['count'] - $a['count']
+                        : $b['level'] - $a['level'];
+                };
+            } else {
+                $sortFunc = function($a, $b) {
+                    return $a['level'] == $b['level']
+                        ? strcasecmp($a['displayText'], $b['displayText'])
+                        : $b['level'] - $a['level'];
+                };
+            }
+            uasort($facetList, $sortFunc);
+        }
+
+        // First build associative arrays of currently active filters
+        $filterKeys = array();
+        $parentFilterKeys = array();
+        $filterList = $params->getFilterList();
+        foreach ($filterList as $filters) {
+            foreach ($filters as $filterItem) {
+                if ($filterItem['field'] == $facet) {
+                    $filterKeys[$filterItem['value']] = true;
+                    list($filterLevel, $filterValue)
+                        = explode('/', $filterItem['value'], 2);
+                    for (; $filterLevel > 0; $filterLevel--) {
+                        $parentKey = ($filterLevel - 1) . '/' . implode(
+                            '/',
+                            array_slice(
+                                explode('/', $filterValue),
+                                0,
+                                $filterLevel
+                            )
+                        ) . '/';
+                        $parentFilterKeys[$parentKey] = true;
+                    }
+                }
+            }
+        }
+
+        // Create a keyed array of facets
+        $keyedList = array();
+        $query = $results->getUrlQuery();
+        $paramArray = $query->getParamArray();
+        foreach ($facetList as $item) {
+            $href = '';
+            if (isset($filterKeys[$item['value']])) {
+                $href = $query->removeFacet(
+                    $facet, $item['value'], true, $item['operator'], $paramArray
+                );
+            } else {
+                $href = $query->addFacet(
+                    $facet, $item['value'], $item['operator'], $paramArray
+                );
+            }
+            $exclude = $query->addFacet(
+                $facet, $item['value'], 'NOT', $paramArray
+            );
+
+            $facetItem = array(
+                'text' => $item['displayText'],
+                'count' => $item['count'],
+                'state' => array(
+                    'opened' => isset($parentFilterKeys[$item['value']]),
+                ),
+                'applied' => isset($filterKeys[$item['value']]),
+                'href' => $href,
+                'exclude' => $exclude,
+                'operator' => $item['operator'],
+                'children' => array()
+            );
+
+            $keyedList[$item['value']] = $facetItem;
+        }
+
+        // Convert the keyed array to a hierarchical array
+        $facetList = array();
+        foreach ($keyedList as $key => &$item) {
+            list($level, $value) = explode('/', $key, 2);
+            if ($level > 0) {
+                $parentId = ($level - 1) . '/' . implode(
+                    '/',
+                    array_slice(
+                        explode('/', $value),
+                        0,
+                        $level
+                    )
+                ) . '/';
+                $keyedList[$parentId]['children'][] = &$item;
+            } else {
+                $facetList[] = &$item;
+            }
+        }
+
+        return $this->output($facetList, self::STATUS_OK);
+    }
+
+    /**
      * Convenience method for accessing results
      *
      * @return \VuFind\Search\Results\PluginManager

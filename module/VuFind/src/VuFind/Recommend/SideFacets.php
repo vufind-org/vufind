@@ -84,6 +84,20 @@ class SideFacets extends AbstractFacets
     protected $collapsedFacets = false;
 
     /**
+     * Hierarchical facet setting
+     *
+     * @var bool|string
+     */
+    protected $hierarchicalFacets = false;
+
+    /**
+     * Hierarchical facet sort options
+     *
+     * @var array
+     */
+    protected $hierarchicalFacetSortOptions = array();
+
+    /**
      * setConfig
      *
      * Store the configuration of the recommendation module.
@@ -139,6 +153,18 @@ class SideFacets extends AbstractFacets
         // Collapsed facets:
         if (isset($config->Results_Settings->collapsedFacets)) {
             $this->collapsedFacets = $config->Results_Settings->collapsedFacets;
+        }
+
+        // Hierarchical facets:
+        if (isset($config->Results_Settings->hierarchicalFacets)) {
+            $this->hierarchicalFacets
+                = $config->Results_Settings->hierarchicalFacets;
+        }
+
+        // Hierarchical facet sort options:
+        if (isset($config->Results_Settings->hierarchicalFacetSortOptions)) {
+            $this->hierarchicalFacetSortOptions
+                = $config->Results_Settings->hierarchicalFacetSortOptions;
         }
     }
 
@@ -316,4 +342,30 @@ class SideFacets extends AbstractFacets
         }
         return $result;
     }
+
+    /**
+     * Return the list of facets configured to be hierarchical
+     *
+     * @return array
+     */
+    public function getHierarchicalFacets()
+    {
+        if (empty($this->hierarchicalFacets)) {
+            return array();
+        } elseif ($this->hierarchicalFacets == '*') {
+            return array_keys($this->getFacetSet());
+        }
+        return array_map('trim', explode(',', $this->hierarchicalFacets));
+    }
+
+    /**
+     * Return the list of configured hierarchical facet sort options
+     *
+     * @return array
+     */
+    public function getHierarchicalFacetSortOptions()
+    {
+        return $this->hierarchicalFacetSortOptions;
+    }
+
 }

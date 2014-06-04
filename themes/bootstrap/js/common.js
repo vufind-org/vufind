@@ -60,7 +60,7 @@ function updateOrFacets(url, op) {
   list.html(header[0].outerHTML+'<div class="alert alert-info">'+vufindString.loading+'...</div>');
 }
 function setupOrFacets() {
-  $('.facetOR').find('.icon-check').replaceWith('<input type="checkbox" checked onChange="updateOrFacets($(this).parent().parent().attr(\'href\'), this)"/>');
+  $('.facetOR').find('.icon-check').replaceWith('<input type="checkbox" checked onChange="updateOrFacets($(this).parent().attr(\'href\'), this)"/>');
   $('.facetOR').find('.icon-check-empty').replaceWith('<input type="checkbox" onChange="updateOrFacets($(this).parent().attr(\'href\'), this)"/> ');
 }
 
@@ -342,7 +342,14 @@ $(document).ready(function() {
   }
 
   // Collapsing facets
-  $('.sidebar .collapsed .nav-header').click(function(){$(this).parent().toggleClass('open');});
+  $('.sidebar .collapsed .nav-header').click(function(){
+    var parent = $(this).parent();
+    parent.toggleClass('open');
+    var treeNode = parent.find('li.jstree-facet');
+    if (treeNode.length > 0) {
+      initFacetTree(treeNode);  
+    }
+  });
 
   // Advanced facets
   setupOrFacets();
@@ -394,3 +401,9 @@ $(document).ready(function() {
     Lightbox.confirm(vufindString['bulk_email_success']);
   });
 });
+
+// escape element id so that it can be used as a selector
+function jqEscape(myid) 
+{
+  return String(myid).replace(/[!"#$%&'()*+,.\/:;<=>?@[\\\]^`{|}~]/g, "\\$&");
+}
