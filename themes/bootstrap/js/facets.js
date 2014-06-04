@@ -33,15 +33,8 @@ function buildFacetNodes(data, currentPath, allowExclude, excludeTitle)
     html += '</span>';
 
     var children = null;
-    var childrenActive = false;
     if (typeof this.children !== 'undefined' && this.children.length > 0) {
       children = buildFacetNodes(this.children, currentPath, allowExclude, excludeTitle);
-      $(children).each(function() {
-        if (this.applied) {
-          childrenActive = true;
-          return false;
-        }
-      });
     }
     json.push({
       'text': html,
