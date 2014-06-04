@@ -37,9 +37,9 @@
 <?=$this->record($this->driver)->getToolbar()?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <div class="record recordId source<?=$this->escapeHtml($this->driver->getResourceSource())?>" id="record">
-    <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
-    <input type="hidden" value="<?=$this->escapeHtml($this->driver->getResourceSource()) ?>" class="hiddenSource" />
+  <div class="record recordId source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" id="record">
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource()) ?>" class="hiddenSource" />
     <?=$this->flashmessages()?>
     <?=$this->record($this->driver)->getCoreMetadata()?>
   </div>
@@ -67,7 +67,7 @@
     <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
   </div>
 
-  <span class="Z3988" title="<?=$this->escapeHtml($this->driver->getOpenURL())?>"></span>
+  <span class="Z3988" title="<?=$this->escapeHtmlAttr($this->driver->getOpenURL())?>"></span>
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>">

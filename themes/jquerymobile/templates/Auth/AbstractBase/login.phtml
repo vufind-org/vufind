@@ -19,5 +19,5 @@
     <a rel="external" data-role="button" class="recover_password" href="<?=$this->url('myresearch-recover')?>"><?=$this->transEsc('Forgot Password')?></a>
   <? endif; ?>
 <? else: ?>
-  <a rel="external" data-role="button" href="<?=$this->escapeHtml($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
+  <a rel="external" data-role="button" href="<?=$this->escapeHtmlAttr($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
 <? endif; ?>

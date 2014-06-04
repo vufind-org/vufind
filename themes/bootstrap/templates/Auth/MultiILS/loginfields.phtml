@@ -4,7 +4,7 @@
     <?$currentTarget = $this->request->get('target'); if (!$currentTarget) $currentTarget = $this->auth()->getManager()->getDefaultLoginTarget();?>
     <select id="login_target" name="target">
     <?foreach ($this->auth()->getManager()->getLoginTargets() as $target):?>
-      <option value="<?=$this->escapeHtml($target)?>"<?=($target == $currentTarget ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
+      <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $currentTarget ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
     <? endforeach ?>
     </select> 
   </div>
@@ -12,7 +12,7 @@
 <div class="control-group">
   <label class="control-label" for="login_username"><?=$this->transEsc('Username')?>:</label>
   <div class="controls">
-    <input id="login_username" type="text" name="username" value="<?=$this->escapeHtml($this->request->get('username'))?>"/>
+    <input id="login_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>"/>
   </div>
 </div>
 <div class="control-group">

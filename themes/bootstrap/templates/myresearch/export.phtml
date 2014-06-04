@@ -14,22 +14,22 @@
       <label for="format"><?=$this->transEsc('Format') ?>:</label>
       <select id="format" name="format">
         <? foreach ($exportOptions as $exportOption): ?>
-          <option value="<?=$this->escapeHtml($exportOption) ?>"><?=$this->transEsc($exportOption) ?></option>
+          <option value="<?=$this->escapeHtmlAttr($exportOption) ?>"><?=$this->transEsc($exportOption) ?></option>
         <? endforeach; ?>
       </select>
       <br />
       <input class="button" type="submit" name="submit" value="<?=$this->transEsc('Export') ?>" />
       <? foreach ($exportIDS as $exportID): ?>
-        <input type="hidden" name="ids[]" value="<?=$this->escapeHtml($exportID) ?>" />
+        <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($exportID) ?>" />
       <? endforeach; ?>
       <? if ($listID): ?>
-        <input type="hidden" name="listID" value="<?=$this->escapeHtml($listID) ?>" />
+        <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($listID) ?>" />
       <? endif; ?>
       <? if ($followupModule): ?>
-        <input type="hidden" name="followupModule" value="<?=$this->escapeHtml($followupModule) ?>" />
+        <input type="hidden" name="followupModule" value="<?=$this->escapeHtmlAttr($followupModule) ?>" />
       <? endif; ?>
       <? if ($followupAction): ?>
-        <input type="hidden" name="followupAction" value="<?=$this->escapeHtml($followupAction) ?>" />
+        <input type="hidden" name="followupAction" value="<?=$this->escapeHtmlAttr($followupAction) ?>" />
       <? endif; ?>
     <? endif; ?>
   </div>

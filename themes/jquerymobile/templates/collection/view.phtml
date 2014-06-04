@@ -11,7 +11,7 @@
 ?>
 <div data-role="page" id="Record-view">
   <?=$this->mobileMenu()->header()?>
-  <div class="record" data-role="content" data-record-id="<?=$this->escapeHtml($this->driver->getUniqueId())?>">
+  <div class="record" data-role="content" data-record-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>">
     <?=$this->flashmessages()?>
     <? if ($this->activeTab == $this->defaultTab): ?>
       <?=$this->record($this->driver)->getCollectionMetadata()?>

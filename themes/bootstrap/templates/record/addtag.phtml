@@ -10,8 +10,8 @@
 <div class="record">
   <form action="" method="post" name="tagRecord" class="form-horizontal">
     <input type="hidden" name="submit" value="1" />
-    <input type="hidden" name="id" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>" />
-    <input type="hidden" name="source" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>" />
+    <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
+    <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" />
     <div class="control-group">
       <label class="control-label" for="addtag_tag"><?=$this->transEsc("Tags")?>:</label>
       <div class="controls">

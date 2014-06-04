@@ -3,7 +3,7 @@
 ?>
 <div class="listentry span-15">
   <div class="resultItemLine1">
-    <a href="<?=$this->escapeHtml($url)?>" class="title"><?
+    <a href="<?=$this->escapeHtmlAttr($url)?>" class="title"><?
       $summHighlightedTitle = $this->driver->getHighlightedTitle();
       $summTitle = $this->driver->getTitle();
       if (!empty($summHighlightedTitle)) {

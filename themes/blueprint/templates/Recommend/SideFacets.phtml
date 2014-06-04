@@ -4,10 +4,10 @@
   <? $checkboxFilters = $results->getParams()->getCheckboxFacets(); if (count($checkboxFilters) > 0): ?>
     <? foreach ($checkboxFilters as $current): ?>
         <div class="checkboxFilter<?=($results->getResultTotal() < 1 && !$current['selected'] && !$current['alwaysVisible']) ? ' hide' : ''?>">
-          <input type="checkbox" name="filter[]" value="<?=$this->escapeHtml($current['filter'])?>"
-            <?=$current['selected'] ? 'checked="checked"' : ''?> id="<?=$this->escapeHtml(str_replace(' ', '', $current['desc']))?>"
+          <input type="checkbox" name="filter[]" value="<?=$this->escapeHtmlAttr($current['filter'])?>"
+            <?=$current['selected'] ? 'checked="checked"' : ''?> id="<?=$this->escapeHtmlAttr(str_replace(' ', '', $current['desc']))?>"
             onclick="document.location.href='<?=$current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter'])?>';" />
-          <label for="<?=$this->escapeHtml(str_replace(' ', '', $current['desc']))?>"><?=$this->transEsc($current['desc'])?></label>
+          <label for="<?=$this->escapeHtmlAttr(str_replace(' ', '', $current['desc']))?>"><?=$this->transEsc($current['desc'])?></label>
         </div>
     <? endforeach; ?>
   <? endif; ?>
@@ -47,27 +47,27 @@
         <? if ($rangeFacets[$title]['type'] == 'date'): ?>
           <? /* Load the publication date slider UI widget */ $this->headScript()->appendFile('pubdate_slider.js'); ?>
         <? endif; ?>
-        <form action="" name="<?=$this->escapeHtml($title)?>Filter" id="<?=$this->escapeHtml($title)?>Filter">
+        <form action="" name="<?=$this->escapeHtmlAttr($title)?>Filter" id="<?=$this->escapeHtmlAttr($title)?>Filter">
           <?=$results->getUrlQuery()->asHiddenFields(array('page' => '/./', 'filter' => "/^{$title}:.*/"))?>
-          <input type="hidden" name="<?=$this->escapeHtml($rangeFacets[$title]['type'])?>range[]" value="<?=$this->escapeHtml($title)?>"/>
-          <fieldset class="publishDateLimit" id="<?=$this->escapeHtml($title)?>">
+          <input type="hidden" name="<?=$this->escapeHtmlAttr($rangeFacets[$title]['type'])?>range[]" value="<?=$this->escapeHtmlAttr($title)?>"/>
+          <fieldset class="publishDateLimit" id="<?=$this->escapeHtmlAttr($title)?>">
             <legend><?=$this->transEsc($cluster['label'])?></legend>
-            <label for="<?=$this->escapeHtml($title)?>from"><?=$this->transEsc('date_from')?>:</label>
-            <input type="text" size="4" maxlength="4" class="yearbox" name="<?=$this->escapeHtml($title)?>from" id="<?=$this->escapeHtml($title)?>from" value="<?=isset($rangeFacets[$title]['values'][0])?$this->escapeHtml($rangeFacets[$title]['values'][0]):''?>" />
-            <label for="<?=$this->escapeHtml($title)?>to"><?=$this->transEsc('date_to')?>:</label>
-            <input type="text" size="4" maxlength="4" class="yearbox" name="<?=$this->escapeHtml($title)?>to" id="<?=$this->escapeHtml($title)?>to" value="<?=isset($rangeFacets[$title]['values'][1])?$this->escapeHtml($rangeFacets[$title]['values'][1]):''?>" />
-            <div id="<?=$this->escapeHtml($title)?>Slider" class="<?=$this->escapeHtml($rangeFacets[$title]['type'])?>Slider"></div>
-            <input type="submit" value="<?=$this->transEsc('Set')?>" id="<?=$this->escapeHtml($title)?>goButton"/>
+            <label for="<?=$this->escapeHtmlAttr($title)?>from"><?=$this->transEsc('date_from')?>:</label>
+            <input type="text" size="4" maxlength="4" class="yearbox" name="<?=$this->escapeHtmlAttr($title)?>from" id="<?=$this->escapeHtmlAttr($title)?>from" value="<?=isset($rangeFacets[$title]['values'][0])?$this->escapeHtmlAttr($rangeFacets[$title]['values'][0]):''?>" />
+            <label for="<?=$this->escapeHtmlAttr($title)?>to"><?=$this->transEsc('date_to')?>:</label>
+            <input type="text" size="4" maxlength="4" class="yearbox" name="<?=$this->escapeHtmlAttr($title)?>to" id="<?=$this->escapeHtmlAttr($title)?>to" value="<?=isset($rangeFacets[$title]['values'][1])?$this->escapeHtmlAttr($rangeFacets[$title]['values'][1]):''?>" />
+            <div id="<?=$this->escapeHtmlAttr($title)?>Slider" class="<?=$this->escapeHtmlAttr($rangeFacets[$title]['type'])?>Slider"></div>
+            <input type="submit" value="<?=$this->transEsc('Set')?>" id="<?=$this->escapeHtmlAttr($title)?>goButton"/>
           </fieldset>
         </form>
       <? else: ?>
         <dl class="narrowList navmenu<? if(!in_array($title, $collapsedFacets)): ?> open<? endif ?>">
-          <dt class="facet_<?=$this->escapeHtml($title)?>"><?=$this->transEsc($cluster['label'])?></dt>
+          <dt class="facet_<?=$this->escapeHtmlAttr($title)?>"><?=$this->transEsc($cluster['label'])?></dt>
           <? $i = 0; foreach ($cluster['list'] as $thisFacet): ?>
             <? if (++$i == 6): ?>
-            <dd id="more<?=$this->escapeHtml($title)?>"><a href="#" onclick="moreFacets('<?=$this->escapeHtml($title)?>'); return false;"><?=$this->transEsc('more')?> ...</a></dd>
+            <dd id="more<?=$this->escapeHtmlAttr($title)?>"><a href="#" onclick="moreFacets('<?=$this->escapeHtmlAttr($title)?>'); return false;"><?=$this->transEsc('more')?> ...</a></dd>
           </dl>
-          <dl class="narrowList navmenu offscreen<? if(!in_array($title, $collapsedFacets)): ?> open<? endif ?>" id="narrowGroupHidden_<?=$this->escapeHtml($title)?>">
+          <dl class="narrowList navmenu offscreen<? if(!in_array($title, $collapsedFacets)): ?> open<? endif ?>" id="narrowGroupHidden_<?=$this->escapeHtmlAttr($title)?>">
             <? endif; ?>
             <? if ($thisFacet['isApplied']): ?>
               <dd class="facet<?=$thisFacet['operator'] ?> applied"<? if($thisFacet['operator'] == 'OR'): ?> href="<?=$this->currentPath().$results->getUrlQuery()->removeFacet($title, $thisFacet['value'], true, $thisFacet['operator']) ?>"<? endif ?>><?=$this->escapeHtml($thisFacet['displayText'])?> <img src="<?=$this->imageLink('silk/tick.png')?>" alt="Selected"/></dd>
@@ -80,7 +80,7 @@
               </dd>
             <? endif; ?>
           <? endforeach; ?>
-          <? if ($i > 5): ?><dd><a href="#" onclick="lessFacets('<?=$this->escapeHtml($title)?>'); return false;"><?=$this->transEsc('less')?> ...</a></dd><? endif; ?>
+          <? if ($i > 5): ?><dd><a href="#" onclick="lessFacets('<?=$this->escapeHtmlAttr($title)?>'); return false;"><?=$this->transEsc('less')?> ...</a></dd><? endif; ?>
         </dl>
       <? endif; ?>
     <? endforeach; ?>

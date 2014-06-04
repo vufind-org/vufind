@@ -8,8 +8,8 @@
     <h3><?=$this->transEsc("add_favorite_prefix") ?> <?=$this->escapeHtml($this->driver->getBreadcrumb())?> <?=$this->transEsc("add_favorite_suffix") ?></h3>
     <form method="post" name="saveRecord" data-ajax="false">
       <input type="hidden" name="submit" value="1" />
-      <input type="hidden" name="id" value="<?=$this->escapeHtml($this->driver->getUniqueId()) ?>" />
-      <input type="hidden" name="source" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>" />
+      <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" />
+      <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" />
       <? if (!empty($this->containingLists)): ?>
         <ul data-role="listview" data-dividertheme="e" data-inset="true">
           <li data-role="list-divider"><?=$this->transEsc('This item is already part of the following list/lists') ?>:</li>

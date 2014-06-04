@@ -41,8 +41,8 @@
 
 <div class="<?=$this->layoutClass('mainbody') ?>">
   <div class="record">
-    <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
-    <input type="hidden" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>" class="hiddenSource" />
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id" />
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" class="hiddenSource" />
     <?=$this->flashmessages()?>
     <?=$this->record($this->driver)->getCollectionMetadata()?>
   </div>
@@ -71,7 +71,7 @@
     <?=isset($activeTabObj) ? $this->record($this->driver)->getTab($activeTabObj) : '' ?>
   </div>
 
-  <span class="Z3988" title="<?=$this->escapeHtml($this->driver->getOpenURL())?>"></span>
+  <span class="Z3988" title="<?=$this->escapeHtmlAttr($this->driver->getOpenURL())?>"></span>
 </div>
 
 <? if (isset($activeTabObj) && is_callable(array($activeTabObj, 'getSideRecommendations'))): ?>

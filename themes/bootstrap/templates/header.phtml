@@ -38,7 +38,7 @@
         <div class="controls">
           <select onChange="document.themeForm.submit()" id="themeForm_ui" name="ui">
           <? foreach ($this->layout()->themeOptions as $current): ?>
-            <option value="<?=$this->escapeHtml($current['name'])?>"<?=$current['selected'] ? ' selected="selected"' : ''?>><?=$this->transEsc($current['desc'])?></option>
+            <option value="<?=$this->escapeHtmlAttr($current['name'])?>"<?=$current['selected'] ? ' selected="selected"' : ''?>><?=$this->transEsc($current['desc'])?></option>
           <? endforeach; ?>
           </select>
           <noscript><input type="submit" value="<?=$this->transEsc("Set")?>" /></noscript>

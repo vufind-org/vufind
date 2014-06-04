@@ -9,8 +9,8 @@
 <? if (!empty($this->facetList)): ?>
   <? foreach ($this->facetList as $field => $list): ?>
   <div class="<?=($field=='callnumber-first')?'span-7':'span-4'?>">
-    <label class="displayBlock" for="limit_<?=$this->escapeHtml(str_replace(' ', '', $field))?>"><?=$this->transEsc($list['label'])?>:</label>
-    <select id="limit_<?=$this->escapeHtml(str_replace(' ', '', $field))?>" name="filter[]" multiple="multiple" size="10">
+    <label class="displayBlock" for="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>"><?=$this->transEsc($list['label'])?>:</label>
+    <select id="limit_<?=$this->escapeHtmlAttr(str_replace(' ', '', $field))?>" name="filter[]" multiple="multiple" size="10">
       <?
           // Sort the current facet list alphabetically; we'll use this data
           // along with the foreach below to display facet options in the
@@ -23,7 +23,7 @@
       ?>
       <? foreach ($sorted as $i => $display): ?>
         <? $value = $list['list'][$i]; ?>
-        <option value="<?=$this->escapeHtml(($value['operator'] == 'OR' ? '~' : '') . $field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected'])?' selected="selected"':''?>><?=$this->escapeHtml($display)?></option>
+        <option value="<?=$this->escapeHtmlAttr(($value['operator'] == 'OR' ? '~' : '') . $field . ':"' . $value['value'] . '"')?>"<?=(isset($value['selected']) && $value['selected'])?' selected="selected"':''?>><?=$this->escapeHtml($display)?></option>
       <? endforeach; ?>
     </select>
   </div>
@@ -34,8 +34,8 @@
   <fieldset class="span-4">
     <legend><?=$this->transEsc("Illustrated")?>:</legend>
     <? foreach ($this->illustratedLimit as $current): ?>
-      <input id="illustrated_<?=$this->escapeHtml($current['value'])?>" type="radio" name="illustration" value="<?=$this->escapeHtml($current['value'])?>"<?=$current['selected']?' checked="checked"':''?>/>
-      <label for="illustrated_<?=$this->escapeHtml($current['value'])?>"><?=$this->transEsc($current['text'])?></label><br/>
+      <input id="illustrated_<?=$this->escapeHtmlAttr($current['value'])?>" type="radio" name="illustration" value="<?=$this->escapeHtmlAttr($current['value'])?>"<?=$current['selected']?' checked="checked"':''?>/>
+      <label for="illustrated_<?=$this->escapeHtmlAttr($current['value'])?>"><?=$this->transEsc($current['text'])?></label><br/>
     <? endforeach; ?>
   </fieldset>
 <? endif; ?>

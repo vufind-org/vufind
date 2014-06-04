@@ -12,11 +12,11 @@
         <? $smallThumb = $this->record($driver)->getThumbnail('small'); $mediumThumb = $this->record($driver)->getThumbnail('medium'); ?>
         <? if ($smallThumb): ?>
           <a href="<?=$this->recordLink()->getUrl($driver)?>">
-           <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtml($smallThumb);?>"/>
+           <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($smallThumb);?>"/>
           </a>
         <?elseif($mediumThumb):?>
           <a href="<?=$this->recordLink()->getUrl($driver)?>">
-            <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtml($mediumThumb);?>"/>
+            <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($mediumThumb);?>"/>
           </a>
         <? else: ?>
           <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>

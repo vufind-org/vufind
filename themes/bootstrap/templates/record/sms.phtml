@@ -13,8 +13,8 @@
 ?>
 <?=$this->flashmessages()?>
 <form method="post" action="" name="smsRecord" class="form-horizontal">
-  <input type="hidden" name="id" value="<?=$this->escapeHtml($this->driver->getUniqueId())?>" />
-  <input type="hidden" name="source" value="<?=$this->escapeHtml($this->driver->getResourceSource())?>" />
+  <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" />
+  <input type="hidden" name="source" value="<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?>" />
   <div class="control-group">
     <label class="control-label" for="sms_to"><?=$this->transEsc('Number')?>:</label>
     <div class="controls">
@@ -28,7 +28,7 @@
         <select id="sms_provider" name="provider">
           <option selected="selected" value=""><?=$this->transEsc('Select your carrier')?></option>
           <? foreach ($this->carriers as $val => $details): ?>
-            <option value="<?=$this->escapeHtml($val)?>"><?=$this->escapeHtml($details['name'])?></option>
+            <option value="<?=$this->escapeHtmlAttr($val)?>"><?=$this->escapeHtml($details['name'])?></option>
           <? endforeach; ?>
         </select>
       </div>
