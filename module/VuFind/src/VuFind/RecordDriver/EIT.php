@@ -231,8 +231,14 @@ class EIT extends SolrDefault
      */
     public function getFormats()
     {
-        return isset($this->controlInfo['artinfo']['doctype'])
-            ? array($this->controlInfo['artinfo']['doctype']) : array();
+        if (isset($this->controlInfo['artinfo']['doctype'])
+            && is_array($this->controlInfo['artinfo']['doctype'])
+        ) {
+            return $this->controlInfo['artinfo']['doctype']
+        } else {
+            return isset($this->controlInfo['artinfo']['doctype'])
+                ? array($this->controlInfo['artinfo']['doctype']) : array();
+        }
     }
 
     /**
