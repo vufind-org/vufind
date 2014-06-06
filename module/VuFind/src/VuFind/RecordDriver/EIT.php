@@ -234,11 +234,10 @@ class EIT extends SolrDefault
         if (isset($this->controlInfo['artinfo']['doctype'])
             && is_array($this->controlInfo['artinfo']['doctype'])
         ) {
-            return $this->controlInfo['artinfo']['doctype']
-        } else {
-            return isset($this->controlInfo['artinfo']['doctype'])
-                ? array($this->controlInfo['artinfo']['doctype']) : array();
+            return $this->controlInfo['artinfo']['doctype'];
         }
+        return isset($this->controlInfo['artinfo']['doctype'])
+            ? array($this->controlInfo['artinfo']['doctype']) : array();
     }
 
     /**
