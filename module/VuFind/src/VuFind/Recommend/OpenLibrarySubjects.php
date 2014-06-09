@@ -22,7 +22,7 @@
  * @category VuFind2
  * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Eoghan ” Carrag·in <eoghan.ocarragain@gmail.com>
+ * @author   Eoghan √ì Carrag√°in <eoghan.ocarragain@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */
@@ -38,7 +38,7 @@ use VuFind\Connection\OpenLibrary, VuFind\Solr\Utils as SolrUtils;
  * @category VuFind2
  * @package  Recommendations
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Eoghan ” Carrag·in <eoghan.ocarragain@gmail.com>
+ * @author   Eoghan √ì Carrag√°in <eoghan.ocarragain@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:recommendation_modules Wiki
  */

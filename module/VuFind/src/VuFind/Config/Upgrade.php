@@ -561,6 +561,14 @@ class Upgrade
             $newConfig['Site']['generator'] = 'VuFind ' . $this->to;
         }
 
+        // Update Syndetics config:
+        if (isset($newConfig['Syndetics']['url'])) {
+            $newConfig['Syndetics']['use_ssl']
+                = (strpos($newConfig['Syndetics']['url'], 'https://') === false)
+                ? '' : 1;
+            unset($newConfig['Syndetics']['url']);
+        }
+
         // Deal with shard settings (which may have to be moved to another file):
         $this->upgradeShardSettings();
 
@@ -743,6 +751,17 @@ class Upgrade
             'Facets', 'FacetsTop', 'Basic_Searches', 'Advanced_Searches', 'Sorting'
         );
         $this->applyOldSettings('Summon.ini', $groups);
+
+        // Turn on advanced checkbox facets if we're upgrading from a version
+        // prior to 2.3.
+        if ((float)$this->from < 2.3) {
+            $cfg = & $this->newConfigs['Summon.ini']['Advanced_Facet_Settings'];
+            if (!isset($cfg['special_facets']) || empty($cfg['special_facets'])) {
+                $cfg['special_facets'] = 'checkboxes:Summon';
+            } else if (false === strpos('checkboxes', $cfg['special_facets'])) {
+                $cfg['special_facets'] .= ',checkboxes:Summon';
+            }
+        }
 
         // save the file
         $this->saveModifiedConfig('Summon.ini');

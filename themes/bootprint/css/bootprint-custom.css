@@ -33,6 +33,7 @@ mark {background:0;color:inherit;font-weight:bold}
 .nav-tabs li a {margin:0 4px 0 0;padding:3px 5px}
 .nav-tabs li.active a:hover,
 .nav-tabs li.active a {color:#555}
+p.lead {margin-bottom:10px}
 .slider.slider-horizontal .slider-handle {background:#C6D880;border:1px solid #619144;margin-top:-6px}
 .tab-container {margin:0}
 
@@ -78,8 +79,6 @@ select, .btn:not(.btn-link){vertical-align:top}
 #searchForm .btn i {font-size:14px}
 #searchForm_lookfor {border-radius:5px;font-size:14px;height:22px;margin:0;padding:1px 8px}
 #searchForm_type {font-size:14px;height:26px;margin-top:0;padding:2px 4px}
-
-.group .search {margin:1px 0}
 
 /* --- BREADCRUMBS --- */
 .breadcrumb {background:#FFF;border-bottom:1px solid #DDD;border-radius:0;margin:0 0 3px 0;padding:6px 12px}
@@ -172,6 +171,11 @@ select, .btn:not(.btn-link){vertical-align:top}
 .span9>.noprint>.help-block {margin-bottom:0}
 .result .img-polaroid {margin-left:2px;max-width:96px}
 .top-row [class*="span"] {min-height:1px;padding:0 3px}
+
+/* --- ADVANCED SEARCH --- */
+.group .search {margin:1px 0}
+.checkboxFilter {border:1px solid #CCC;display:inline-table;margin-bottom:10px;padding:10px;width:auto}
+.checkboxFilter label {display:table}
 
 /* -- MY RESEARCH -- */
 .bulkActionForm .btn-link {padding:1px 2px}

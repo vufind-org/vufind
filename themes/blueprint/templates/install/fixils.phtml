@@ -16,7 +16,7 @@
     Pick a driver: 
     <select name="driver">
       <? foreach ($this->drivers as $driver): ?>
-        <option value="<?=$this->escapeHtml($driver)?>"><?=$this->escapeHtml($driver)?></option>
+        <option value="<?=$this->escapeHtmlAttr($driver)?>"><?=$this->escapeHtml($driver)?></option>
       <? endforeach; ?>
     </select>
     <input type="submit"/>

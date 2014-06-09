@@ -40,6 +40,21 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
+     * Factory for EIT record driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return EIT
+     */
+    public static function getEIT(ServiceManager $sm)
+    {
+        return new EIT(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            $sm->getServiceLocator()->get('VuFind\Config')->get('EIT')
+        );
+    }
+
+    /**
      * Factory for LibGuides record driver.
      *
      * @return LibGuides

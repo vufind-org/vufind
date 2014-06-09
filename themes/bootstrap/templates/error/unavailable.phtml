@@ -16,7 +16,7 @@
   <p>
     <?=$this->transEsc('Please contact the Library Reference Department for assistance')?>
     <br/>
-    <? $supportEmail = $this->escapeHtml($this->systemEmail()); ?>
+    <? $supportEmail = $this->escapeHtmlAttr($this->systemEmail()); ?>
     <a href="mailto:<?=$supportEmail?>"><?=$supportEmail?></a>
   </p>
 </div>

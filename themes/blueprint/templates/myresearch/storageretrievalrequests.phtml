@@ -34,13 +34,13 @@
         <? if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
           <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
           <label for="checkbox_<?=$safeId?>" class="offscreen"><?=$this->transEsc("Select this record")?></label>
-          <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtml($ilsDetails['cancel_details']) ?>" />
-          <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtml($ilsDetails['cancel_details']) ?>" class="checkbox" style="margin-left:0;" id="checkbox_<?=$safeId?>" />
+          <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" />
+          <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" class="checkbox" style="margin-left:0;" id="checkbox_<?=$safeId?>" />
         <? endif; ?>
-        <div id="record<?=$this->escapeHtml($resource->getUniqueId()) ?>">
+        <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>">
           <div class="span-2">
             <? if ($summThumb = $this->record($resource)->getThumbnail()): ?>
-              <img src="<?=$this->escapeHtml($summThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+              <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
             <? else: ?>
               <img src="<?=$this->url('cover-unavailable')?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
             <? endif; ?>
@@ -132,7 +132,7 @@
               <div class="info"><?=$this->transEsc("storage_retrieval_request_canceled") . (is_string($ilsDetails['canceled']) ? ': ' . $ilsDetails['canceled'] : '') ?></div>
             <? endif; ?>
             <? if (isset($ilsDetails['cancel_link'])): ?>
-              <p><a href="<?=$this->escapeHtml($ilsDetails['cancel_link']) ?>"><?=$this->transEsc("storage_retrieval_request_cancel") ?></a></p>
+              <p><a href="<?=$this->escapeHtmlAttr($ilsDetails['cancel_link']) ?>"><?=$this->transEsc("storage_retrieval_request_cancel") ?></a></p>
             <? endif; ?>
 
           </div>

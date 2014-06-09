@@ -10,11 +10,11 @@
         $user_id = $this->user ? $this->user->id : null;
     }
 ?>
-<div class="listentry recordId source<?=$this->escapeHtml($source)?><?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>" id="record<?=$this->escapeHtml($id)?>">
-  <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueID())?>" class="hiddenId" />
+<div class="listentry recordId source<?=$this->escapeHtmlAttr($source)?><?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>" id="record<?=$this->escapeHtmlAttr($id)?>">
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
   <div class="span-2">
     <? if ($listThumb = $this->record($this->driver)->getThumbnail()): ?>
-      <img src="<?=$this->escapeHtml($listThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+      <img src="<?=$this->escapeHtmlAttr($listThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
     <? else: ?>
       <img src="<?=$this->url('cover-unavailable')?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
     <? endif; ?>
@@ -91,7 +91,7 @@
       <? endif; ?>
       <? if (!is_array($urls)) $urls = array(); foreach ($urls as $current): ?>
         <br/>
-        <a href="<?=$this->escapeHtml($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
+        <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
       <? endforeach; ?>
     <? endif; ?>
 
@@ -114,9 +114,11 @@
             : $this->url('userList', array('id' => $list_id));
         $deleteUrl .= '?delete=' . urlencode($id) . '&amp;source=' . urlencode($source);
       ?>
-      <a href="<?=$deleteUrl?>" title="<?=$this->transEsc('confirm_delete_brief')?>" class="delete tool source<?=$this->escapeHtml($source)?>"><?=$this->transEsc('Delete')?></a>
+      <a href="<?=$deleteUrl?>" title="<?=$this->transEsc('confirm_delete_brief')?>" class="delete tool source<?=$this->escapeHtmlAttr($source)?>"><?=$this->transEsc('Delete')?></a>
     </div>
   <? endif; ?>
 
   <div class="clear"></div>
 </div>
+
+<?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>

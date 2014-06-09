@@ -1,9 +1,9 @@
 <? /* Display thumbnail if appropriate: */ ?>
 <? $mediumThumb = $this->record($this->driver)->getThumbnail('medium'); $largeThumb = $this->record($this->driver)->getThumbnail('large'); ?>
 <? if ($mediumThumb): ?>
-  <? if ($largeThumb): ?><a rel="external" href="<?=$this->escapeHtml($largeThumb)?>"><? endif; ?>
+  <? if ($largeThumb): ?><a rel="external" href="<?=$this->escapeHtmlAttr($largeThumb)?>"><? endif; ?>
     <div class="recordcover">
-      <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtml($mediumThumb);?>"/>
+      <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($mediumThumb);?>"/>
     </div>
   <? if ($largeThumb): ?></a><? endif; ?>
 <? endif; ?>
@@ -134,7 +134,7 @@
     <dt><?=$this->transEsc('Online Access')?>: </dt>
     <dd>
       <? foreach ($urls as $current): ?>
-        <p><a rel="external" href="<?=$this->escapeHtml($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a></p>
+        <p><a rel="external" href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a></p>
       <? endforeach; ?>
       <? if ($openUrl): ?>
         <?=$this->openUrl($openUrl)?><br/>

@@ -15,7 +15,7 @@
   <? foreach ($this->records as $current): ?>
     <? $idParams[] = urlencode('ids[]') . '=' . urlencode($current->getResourceSource() . '|' . $current->getUniqueId()) ?>
     <strong><?=$this->transEsc('Title')?>:</strong> <?=$this->escapeHtml($current->getBreadcrumb())?><br />
-    <input type="hidden" name="ids[]" value="<?=$this->escapeHtml($current->getResourceSource() . '|' . $current->getUniqueId())?>" />
+    <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getResourceSource() . '|' . $current->getUniqueId())?>" />
   <? endforeach; ?>
 
   <label class="displayBlock" for="save_list"><?=$this->transEsc('Choose a List') ?></label>

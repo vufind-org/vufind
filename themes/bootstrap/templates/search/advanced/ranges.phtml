@@ -1,13 +1,13 @@
 <? if (isset($this->ranges) && !empty($this->ranges)): ?>
   <? $params = $this->searchParams($this->searchClassId); $params->activateAllFacets(); ?>
-  <? foreach ($this->ranges as $current): $escField = $this->escapeHtml($current['field']); ?>
+  <? foreach ($this->ranges as $current): $escField = $this->escapeHtmlAttr($current['field']); ?>
     <fieldset class="span4 text-center">
       <legend class="text-left"><?=$this->transEsc($params->getFacetLabel($current['field']))?></legend>
-      <input type="hidden" name="<?=$this->escapeHtml($current['type'])?>range[]" value="<?=$escField?>"/>
+      <input type="hidden" name="<?=$this->escapeHtmlAttr($current['type'])?>range[]" value="<?=$escField?>"/>
       <label for="<?=$escField?>from"><?=$this->transEsc('date_from')?>:</label>
-      <input type="text" maxlength="4" class="yearbox span4" name="<?=$escField?>from" id="<?=$escField?>from" value="<?=isset($current['values'][0])?$this->escapeHtml($current['values'][0]):''?>" />
+      <input type="text" maxlength="4" class="yearbox span4" name="<?=$escField?>from" id="<?=$escField?>from" value="<?=isset($current['values'][0])?$this->escapeHtmlAttr($current['values'][0]):''?>" />
       <label for="<?=$escField?>to"><?=$this->transEsc('date_to')?>:</label>
-      <input type="text" maxlength="4" class="yearbox span4" name="<?=$escField?>to" id="<?=$escField?>to" value="<?=isset($current['values'][1])?$this->escapeHtml($current['values'][1]):''?>" />
+      <input type="text" maxlength="4" class="yearbox span4" name="<?=$escField?>to" id="<?=$escField?>to" value="<?=isset($current['values'][1])?$this->escapeHtmlAttr($current['values'][1]):''?>" />
       <? if ($current['type'] == 'date'): ?>
         <div class="pad"><input type="text" id="<?=$escField?><?=$this->escapeHtml($current['type'])?>Slider"></div>
       <? endif; ?>

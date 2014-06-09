@@ -424,7 +424,7 @@ class Reviews extends AbstractSyndetics implements \Zend\Log\LoggerAwareInterfac
      *
      * @throws \Exception
      * @return array     Returns array with review data
-     * @author Eoghan ” Carrag·in <eoghan.ocarragain@gmail.com>
+     * @author Eoghan √ì Carrag√°in <eoghan.ocarragain@gmail.com>
      */
     protected function loadGuardian($id)
     {

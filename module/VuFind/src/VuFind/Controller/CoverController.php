@@ -109,6 +109,22 @@ class CoverController extends AbstractBase
         $headers->addHeaderLine(
             'Content-type', $this->getLoader()->getContentType()
         );
+
+        // Send proper caching headers so that the user's browser
+        // is able to cache the cover images and not have to re-request
+        // then on each page load. Default TTL set at 14 days
+
+        $coverImageTtl = (60*60*24*14); // 14 days
+        $headers->addHeaderLine(
+            'Cache-Control', "maxage=".$coverImageTtl
+        );
+        $headers->addHeaderLine(
+            'Pragma', 'public'
+        );
+        $headers->addHeaderLine(
+            'Expires', gmdate('D, d M Y H:i:s', time()+$coverImageTtl) . ' GMT'
+        );
+
         $response->setContent($this->getLoader()->getImage());
         return $response;
     }

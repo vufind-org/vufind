@@ -24,7 +24,7 @@
         <strong><?=$this->transEsc('ill_request_item')?>:</strong><br/>
         <select name="gatheredDetails[itemId]">
           <? foreach ($this->items as $item): ?>
-          <option value="<?=$this->escapeHtml($item['id'])?>"<?=($this->gatheredDetails['itemId'] == $item['id']) ? ' selected="selected"' : ''?>><?=$this->escapeHtml($item['name'])?></option>
+          <option value="<?=$this->escapeHtmlAttr($item['id'])?>"<?=($this->gatheredDetails['itemId'] == $item['id']) ? ' selected="selected"' : ''?>><?=$this->escapeHtml($item['name'])?></option>
           <? endforeach; ?>
         </select>
       </div>
@@ -43,7 +43,7 @@
         <strong><?=$this->transEsc("ill_request_pick_up_library")?>:</strong><br/>
         <select id="pickupLibrary" name="gatheredDetails[pickUpLibrary]">
         <? foreach ($this->pickupLibraries as $lib): ?>
-          <option value="<?=$this->escapeHtml($lib['id'])?>"<?=(($selected === false && isset($lib['isDefault']) && $lib['isDefault']) || $selected === $lib['id']) ? ' selected="selected"' : ''?>>
+          <option value="<?=$this->escapeHtmlAttr($lib['id'])?>"<?=(($selected === false && isset($lib['isDefault']) && $lib['isDefault']) || $selected === $lib['id']) ? ' selected="selected"' : ''?>>
             <?=$this->transEsc('library_' . $lib['name'], null, $lib['name'])?>
           </option>
         <? endforeach; ?>
@@ -80,7 +80,7 @@
         <strong><?=$this->transEsc("pick_up_location")?>:</strong><br/>
         <select id="pickupLocation" name="gatheredDetails[pickUpLocation]">
         <? foreach ($this->pickupLocations as $loc): ?>
-          <option value="<?=$this->escapeHtml($loc['id'])?>"<?=(($selected === false && isset($loc['isDefault']) && $loc['isDefault']) || $selected === $loc['id']) ? ' selected="selected"' : ''?>>
+          <option value="<?=$this->escapeHtmlAttr($loc['id'])?>"<?=(($selected === false && isset($loc['isDefault']) && $loc['isDefault']) || $selected === $loc['id']) ? ' selected="selected"' : ''?>>
             <?=$this->escapeHtml($loc['name'])?>
           </option>
         <? endforeach; ?>
@@ -92,7 +92,7 @@
     <? if (in_array("requiredByDate", $this->extraFields)): ?>
       <div>
       <strong><?=$this->transEsc("hold_required_by")?>: </strong>
-      <div id="requiredByHolder"><input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtml($this->gatheredDetails['requiredBy']) : $this->escapeHtml($this->defaultRequiredDate)?>" size="8" /> <strong>(<?=$this->dateTime()->getDisplayDateFormat()?>)</strong></div>
+      <div id="requiredByHolder"><input id="requiredByDate" type="text" name="gatheredDetails[requiredBy]" value="<?=(isset($this->gatheredDetails['requiredBy']) && !empty($this->gatheredDetails['requiredBy'])) ? $this->escapeHtmlAttr($this->gatheredDetails['requiredBy']) : $this->escapeHtmlAttr($this->defaultRequiredDate)?>" size="8" /> <strong>(<?=$this->dateTime()->getDisplayDateFormat()?>)</strong></div>
       </div>
     <? endif; ?>
 

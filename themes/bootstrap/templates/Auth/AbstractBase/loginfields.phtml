@@ -1,7 +1,7 @@
 <div class="control-group">
   <label class="control-label" for="login_username"><?=$this->transEsc('Username')?>:</label>
   <div class="controls">
-    <input id="login_username" type="text" name="username" value="<?=$this->escapeHtml($this->request->get('username'))?>"/>
+    <input id="login_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>"/>
   </div>
 </div>
 <div class="control-group">

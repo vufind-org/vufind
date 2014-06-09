@@ -76,6 +76,8 @@ $config = array(
             'combined' => 'VuFind\Controller\CombinedController',
             'confirm' => 'VuFind\Controller\ConfirmController',
             'cover' => 'VuFind\Controller\CoverController',
+            'eit' => 'VuFind\Controller\EITController',
+            'eitrecord' => '\VuFind\Controller\EITrecordController',
             'error' => 'VuFind\Controller\ErrorController',
             'feedback' => 'VuFind\Controller\FeedbackController',
             'help' => 'VuFind\Controller\HelpController',
@@ -350,6 +352,7 @@ $config = array(
             'recorddriver' => array(
                 'abstract_factories' => array('VuFind\RecordDriver\PluginFactory'),
                 'factories' => array(
+                    'eit' => 'VuFind\RecordDriver\Factory::getEIT',
                     'libguides' => 'VuFind\RecordDriver\Factory::getLibGuides',
                     'missing' => 'VuFind\RecordDriver\Factory::getMissing',
                     'pazpar2' => 'VuFind\RecordDriver\Factory::getPazpar2',
@@ -405,6 +408,7 @@ $config = array(
             ),
             'search_backend' => array(
                 'factories' => array(
+                    'EIT' => 'VuFind\Search\Factory\EITBackendFactory',
                     'LibGuides' => 'VuFind\Search\Factory\LibGuidesBackendFactory',
                     'Pazpar2' => 'VuFind\Search\Factory\Pazpar2BackendFactory',
                     'Primo' => 'VuFind\Search\Factory\PrimoBackendFactory',
@@ -551,6 +555,7 @@ $config = array(
 $recordRoutes = array(
     'record' => 'Record',
     'collection' => 'Collection',
+    'eitrecord' => 'EITRecord',
     'missingrecord' => 'MissingRecord',
     'primorecord' => 'PrimoRecord',
     'solrauthrecord' => 'Authority',
@@ -577,8 +582,9 @@ $staticRoutes = array(
     'Cart/doExport', 'Cart/Email', 'Cart/Export', 'Cart/Home', 'Cart/MyResearchBulk',
     'Cart/Save', 'Collections/ByTitle', 'Collections/Home',
     'Combined/Home', 'Combined/Results', 'Combined/SearchBox', 'Confirm/Confirm',
-    'Cover/Show', 'Cover/Unavailable', 'Error/Unavailable',
-    'Feedback/Email', 'Feedback/Home', 'Help/Home',
+    'Cover/Show', 'Cover/Unavailable',
+    'EIT/Advanced', 'EIT/Home', 'EIT/Search',
+    'Error/Unavailable', 'Feedback/Email', 'Feedback/Home', 'Help/Home',
     'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',
     'Install/FixDatabase', 'Install/FixDependencies', 'Install/FixILS',
     'Install/FixSecurity', 'Install/FixSolr', 'Install/Home',
@@ -591,7 +597,8 @@ $staticRoutes = array(
     'MyResearch/ILLRequests', 'MyResearch/Logout',
     'MyResearch/NewPassword', 'MyResearch/Profile',
     'MyResearch/Recover', 'MyResearch/SaveSearch',
-    'MyResearch/StorageRetrievalRequests', 'MyResearch/Verify',
+    'MyResearch/StorageRetrievalRequests', 'MyResearch/UserLogin',
+    'MyResearch/Verify',
     'Primo/Advanced', 'Primo/Home', 'Primo/Search',
     'QRCode/Show', 'QRCode/Unavailable',
     'OAI/Server', 'Pazpar2/Home', 'Pazpar2/Search', 'Records/Home',

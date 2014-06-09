@@ -16,7 +16,7 @@
   <div class="span2 text-center">
     <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
       <? if ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
-        <img src="<?=$this->escapeHtml($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
+        <img src="<?=$this->escapeHtmlAttr($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
       <? else: ?>
         <img src="<?=$this->url('cover-unavailable')?>" alt="<?=$this->transEsc('No Cover Image')?>"/>
       <? endif; ?>
@@ -153,7 +153,7 @@
         <? if (!is_array($urls)) { $urls = array(); }
           if(!$this->driver->isCollection()):
             foreach ($urls as $current): ?>
-              <a href="<?=$this->escapeHtml($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="icon-external-link"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
+              <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><i class="icon-external-link"></i> <?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
             <? endforeach; ?>
           <? endif; ?>
         <? endif; ?>
@@ -181,11 +181,11 @@
         <?=$this->transEsc('Delete') ?>
       </a>
       <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-        <li><a onClick="$.post('<?=$deleteUrl?>', {'delete':'<?=$this->escapeHtml($id) ?>','source':'<?=$this->escapeHtml($source) ?>','confirm':true},function(){location.reload(true)})" title="<?=$this->transEsc('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
+        <li><a onClick="$.post('<?=$deleteUrl?>', {'delete':'<?=$this->escapeHtmlAttr($id) ?>','source':'<?=$this->escapeHtmlAttr($source) ?>','confirm':true},function(){location.reload(true)})" title="<?=$this->transEsc('confirm_delete_brief')?>"><?=$this->transEsc('confirm_dialog_yes')?></a></li>
         <li><a><?=$this->transEsc('confirm_dialog_no')?></a></li>
       </ul>
     </div>
 
   </div>
-  <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtml($openUrl).'"></span>':''?>
+  <?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>
 </div>

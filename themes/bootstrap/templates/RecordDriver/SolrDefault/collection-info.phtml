@@ -5,8 +5,8 @@
       <? /* Display thumbnail if appropriate: */ ?>
       <? $mediumThumb = $this->record($this->driver)->getThumbnail('medium'); $largeThumb = $this->record($this->driver)->getThumbnail('large'); ?>
       <? if ($mediumThumb): ?>
-        <? if ($largeThumb): ?><a href="<?=$this->escapeHtml($largeThumb)?>"><? endif; ?>
-          <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtml($mediumThumb);?>"/>
+        <? if ($largeThumb): ?><a href="<?=$this->escapeHtmlAttr($largeThumb)?>"><? endif; ?>
+          <img alt="<?=$this->transEsc('Cover Image')?>" class="recordcover" src="<?=$this->escapeHtmlAttr($mediumThumb);?>"/>
         <? if ($largeThumb): ?></a><? endif; ?>
       <? else: ?>
         <img src="<?=$this->url('cover-unavailable')?>" class="recordcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
@@ -15,7 +15,7 @@
       <? /* Display qrcode if appropriate: */ ?>
       <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
       <? if($QRCode): ?>
-        <br/><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtml($QRCode);?>"/>
+        <br/><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
       <? endif; ?>
     </div>
 
@@ -140,7 +140,7 @@
             <? $i = 0; foreach ($field as $subfield): ?>
               <?=($i++ == 0) ? '' : ' &gt; '?>
               <? $subject = trim($subject . ' ' . $subfield); ?>
-              <a title="<?=$this->escapeHtml($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>" class="subjectHeading"><?=$this->escapeHtml($subfield)?></a>
+              <a title="<?=$this->escapeHtmlAttr($subject)?>" href="<?=$this->record($this->driver)->getLink('subject', $subject)?>" class="subjectHeading"><?=$this->escapeHtml($subfield)?></a>
             <? endforeach; ?>
           </div>
           <? endforeach; ?>
@@ -158,7 +158,7 @@
         <th><?=$this->transEsc('Online Access')?>: </th>
         <td>
           <? foreach ($urls as $current): ?>
-            <a href="<?=$this->escapeHtml($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
+            <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>"><?=$this->escapeHtml($current['desc'])?></a><br/>
           <? endforeach; ?>
           <? if ($openUrl): ?>
             <?=$this->openUrl($openUrl)?><br/>

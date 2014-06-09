@@ -5,7 +5,7 @@
   <tr>
     <th colspan="2">
       <? if (isset($holding->electronicAddress->text) && !empty($holding->electronicAddress->text)): ?>
-      <a href="<?=$this->escapeHtml($holding->electronicAddress->text)?>"><?=$this->escapeHtml($holding->physicalLocation)?></a>
+      <a href="<?=$this->escapeHtmlAttr($holding->electronicAddress->text)?>"><?=$this->escapeHtml($holding->physicalLocation)?></a>
       <? else: ?>
       <?=$this->escapeHtml($holding->physicalLocation)?>
       <? endif; ?>

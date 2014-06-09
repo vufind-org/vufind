@@ -109,6 +109,13 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
             $this->assertEquals(0, count($warnings));
         }
 
+        // Summon should always have the checkboxes setting turned on after
+        // upgrade:
+        $this->assertEquals(
+            'daterange,checkboxes:Summon',
+            $results['Summon.ini']['Advanced_Facet_Settings']['special_facets']
+        );
+
         // Make sure the obsolete Index/local setting is removed:
         $this->assertFalse(isset($results['config.ini']['Index']['local']));
 
@@ -177,6 +184,30 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
             'Custom Generator', $results['config.ini']['Site']['generator']
+        );
+    }
+
+    /**
+     * Test Syndetics upgrade.
+     *
+     * @return void
+     */
+    public function testSyndetics()
+    {
+        // Test upgrading an SSL URL
+        $upgrader = $this->getUpgrader('syndeticsurlssl');
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            1, $results['config.ini']['Syndetics']['use_ssl']
+        );
+
+        // Test upgrading a non-SSL URL
+        $upgrader = $this->getUpgrader('syndeticsurlnossl');
+        $upgrader->run();
+        $results = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            '', $results['config.ini']['Syndetics']['use_ssl']
         );
     }
 

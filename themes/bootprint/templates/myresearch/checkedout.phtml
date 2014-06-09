@@ -23,17 +23,17 @@
     <? $i = 0; foreach ($this->transactions as $resource): ?>
       <hr/>
       <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
-      <div id="record<?=$this->escapeHtml($resource->getUniqueId())?>" class="row-fluid">
+      <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="row-fluid">
         <? if ($this->renewForm): ?>
           <? if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
             <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
-            <input class="pull-left" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtml($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>" />
-            <input class="pull-left" type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtml($ilsDetails['renew_details'])?>" />
+            <input class="pull-left" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>" />
+            <input class="pull-left" type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" />
           <? endif; ?>
         <? endif; ?>
         <div class="span2 text-center">
           <? if ($summThumb = $this->record($resource)->getThumbnail()): ?>
-            <img src="<?=$this->escapeHtml($summThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+            <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
           <? else: ?>
             <img src="<?=$this->url('cover-unavailable')?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
           <? endif; ?>
@@ -112,7 +112,7 @@
             <div class="alert alert-info"><?=$this->transEsc($ilsDetails['message'])?></div>
           <? endif; ?>
           <? if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_link'])): ?>
-            <a href="<?=$this->escapeHtml($ilsDetails['renew_link'])?>"><?=$this->transEsc('renew_item')?></a>
+            <a href="<?=$this->escapeHtmlAttr($ilsDetails['renew_link'])?>"><?=$this->transEsc('renew_item')?></a>
           <? endif; ?>
         </div>
       </div>
