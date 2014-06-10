@@ -40,6 +40,22 @@ use Zend\ServiceManager\ServiceManager;
 class Factory
 {
     /**
+     * Factory for EDS record driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return EDS
+     */
+    public static function getEDS(ServiceManager $sm)
+    {
+        $eds = $sm->getServiceLocator()->get('VuFind\Config')->get('EDS');
+        return new EDS(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config'),
+            $eds, $eds
+        );
+    }
+
+    /**
      * Factory for EIT record driver.
      *
      * @param ServiceManager $sm Service manager.
