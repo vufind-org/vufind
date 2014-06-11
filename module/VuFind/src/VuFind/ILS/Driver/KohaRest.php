@@ -717,7 +717,7 @@ class KohaRest extends AbstractBase implements \VuFindHttp\HttpServiceAwareInter
         if ($rsp->{'code'} != 'PatronNotFound') {
             $profile = array(
                 'firstname' => $this->getField($rsp->{'firstname'}),
-                'lastname'  => $this->getField($rsp->{'lastname'}),
+                'lastname'  => $this->getField($rsp->{'surname'}),
                 'address1'  => $this->getField($rsp->{'address'}),
                 'address2'  => $this->getField($rsp->{'address2'}),
                 'zip'       => $this->getField($rsp->{'zipcode'}),
