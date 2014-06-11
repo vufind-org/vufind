@@ -752,18 +752,6 @@ class SolrMarc extends SolrDefault
                         $relationshipIndicator = '0';
                     }
 
-                    // The relationship type is one of the following and there is a
-                    // 580 field, the 580 field should be shown instead see:
-                    //     http://www.loc.gov/marc/bibliographic/bd580.html
-                    $has580 = $this->marcRecord->getFields('580');
-                    if ($has580
-                        && (($value == '780') && ($relationshipIndicator == '4'))
-                        || (($value == '785') && (($relationshipIndicator == '6')
-                        || ($relationshipIndicator =='7')))
-                    ) {
-                        continue;
-                    }
-
                     // Assign notes based on the relationship type
                     switch ($value) {
                     case '780':
