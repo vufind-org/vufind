@@ -327,11 +327,11 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Returns D3 flare-formatted data on pivot facets for the last search
+     * Returns data on pivot facets for the last search
      *
      * @return ArrayObject        Flare-formatted object
      */
-    public function getVisualFacetList()
+    public function getPivotFacetList()
     {
         // Make sure we have processed the search before proceeding:
         if (null === $this->responseFacets) {
@@ -339,28 +339,11 @@ class Results extends \VuFind\Search\Base\Results
         }
 
         // Start building the flare object:
+     $flare = "";    
      $flare->name = "flare";
      $flare->total = $this->resultTotal;
-     $flarechildren = array();
      $visualFacets = $this->responseFacets->getPivotFacets();
-        foreach ($visualFacets as $toplevelfacet) { //Data for one call number range
-          $toplevelinfo = array();      
-          $toplevelchildren = array();
-          $toplevelinfo['name'] = $toplevelfacet['value'];
-          $toplevelinfo['field'] = $toplevelfacet['field'];
-          $toplevelinfo['size'] = $toplevelfacet['count'];
-          foreach($toplevelfacet['pivot'] as $secondlevelfacet) {
-               $secondlevelinfo = array();
-               $secondlevelinfo['name'] = $secondlevelfacet['value'];
-               $secondlevelinfo['size'] = $secondlevelfacet['count'];
-               $secondlevelinfo['field'] = $secondlevelfacet['field'];
-               $secondlevelinfo['parentlevel'] = $toplevelinfo['name'];
-               array_push($toplevelchildren, $secondlevelinfo);
-          }
-          $toplevelinfo['children'] = $toplevelchildren;
-          array_push($flarechildren, $toplevelinfo);   
-     }
-     $flare->children = $flarechildren;
+     $flare->children = $visualFacets;
         return $flare;
     }
 }
