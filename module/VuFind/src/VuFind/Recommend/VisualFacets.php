@@ -102,7 +102,7 @@ class VisualFacets extends AbstractFacets
      */
     public function getVisualFacetSet()
     {
-        return $this->results->getVisualFacetList();
+        return $this->results->getPivotFacetList();
     }
 
     /**
