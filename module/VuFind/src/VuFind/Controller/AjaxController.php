@@ -1608,8 +1608,21 @@ class AjaxController extends AbstractBase
                 $facet, $item['value'], 'NOT', $paramArray
             );
 
+            $displayText = $item['displayText'];
+            if ($displayText == $item['value']) {
+                // Strip leading level indicator and any trailing slash
+                $parts = explode('/', rtrim($displayText, '/'));
+                $displayText = implode(
+                    '/',
+                    array_slice(
+                        $parts,
+                        1
+                    )
+                );
+            }
+
             $facetItem = array(
-                'text' => $item['displayText'],
+                'text' => $displayText,
                 'count' => $item['count'],
                 'state' => array(
                     'opened' => isset($parentFilterKeys[$item['value']]),
