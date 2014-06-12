@@ -50,13 +50,25 @@
       <? foreach ($this->tabs as $tab => $obj): ?>
       <? // add current tab to breadcrumbs if applicable:
         $desc = $obj->getDescription();
+        // guard against content-less tabs by checking on each pageload
+        // to improve usability at the expense of pageload / bandwidth
+        $hideTab = $obj->hideIfEmpty();
+        if ($hideTab) {
+          $isbn = $this->driver->getCleanISBN();
+          if ($isbn) {
+            $content = call_user_func(array($this, strtolower($desc)), $isbn);
+            if (!empty($content)) $hideTab = false;
+          }
+        }
+        // check for active tab
         $isCurrent = (strtolower($this->activeTab) == strtolower($tab));
         if ($isCurrent) {
           $this->layout()->breadcrumbs .= '<li class="active"><span class="divider">&gt;</span>' . $this->transEsc($desc) . '</li>';
           $activeTabObj = $obj;
         }
       ?>
-      <li<?=$isCurrent ? ' class="active"' : ''?>>
+      <? // a tab can't be both hidden and active ?>
+      <li<?=$hideTab ? ' class="hidden"' : '' ?><?=$isCurrent ? ' class="active"' : '' ?>>
         <a id="<?=$tab ?>" href="<?=$this->recordLink()->getTabUrl($this->driver, $tab)?>#tabnav"><?=$this->transEsc($desc)?></a>
       </li>
       <? endforeach; ?>
