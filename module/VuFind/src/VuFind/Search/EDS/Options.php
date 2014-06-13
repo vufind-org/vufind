@@ -212,15 +212,6 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
-     * Whether or not to specify highlighting in the API
-     *
-     * @return bool
-     */
-    public function getHighlight()
-    {
-        return $this->highlight;
-    }
-    /**
      * Return the expander ids that have the default on flag set in admin
      *
      * @return array
@@ -291,7 +282,7 @@ class Options extends \VuFind\Search\Base\Options
         }
 
         // Set up facet preferences
-        if (isset($searchSettings->General->highlighting)) {
+        if (isset($searchSettings->General->include_facets)) {
             $this->includeFacets = $searchSettings->General->include_facets;
         }
 

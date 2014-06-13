@@ -103,7 +103,7 @@ class Params extends \VuFind\Search\Base\Params
         $finalSort = ($sort == 'relevance') ? null : $sort;
         $backendParams->set('sort', $finalSort);
 
-        if ($options->getHighlight()) {
+        if ($options->highlightEnabled()) {
             $backendParams->set('highlight', true);
         }
 
