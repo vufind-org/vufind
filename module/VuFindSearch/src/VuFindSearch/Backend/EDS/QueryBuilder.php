@@ -124,7 +124,6 @@ class QueryBuilder
         foreach ($query->getQueries() as $params) {
             // Advanced Search
             if ($params instanceof QueryGroup) {
-                $thisGroup = array();
                 // Process each search group
                 foreach ($params->getQueries() as $q) {
                     // Build this group individually as a basic search

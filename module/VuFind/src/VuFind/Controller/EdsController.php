@@ -120,7 +120,6 @@ class EdsController extends AbstractSearch
 
         // Check if we have facet results stored in session. Build them if we don't.
         // pull them from the session cache
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('EDS');
         $results = $this->getResultsManager()->get('EDS');
         $params = $results->getParams();
         $options = $params->getOptions();
@@ -128,13 +127,7 @@ class EdsController extends AbstractSearch
         if (!$availableLimiters) {
             //execute a call to search just to pull in the limiters
             $this->setUp();
-
         }
-
-
-        $limit = isset($config->Advanced_Facet_Settings->facet_limit)
-                ? $config->Advanced_Facet_Settings->facet_limit : 100;
-        //filter the available limtiers
 
         return $availableLimiters;
     }
@@ -202,7 +195,6 @@ class EdsController extends AbstractSearch
      */
     protected function processAdvancedExpanders($searchObject = false)
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('EDS');
         $results = $this->getResultsManager()->get('EDS');
         $params = $results->getParams();
         $options = $params->getOptions();
@@ -265,7 +257,6 @@ class EdsController extends AbstractSearch
      */
     protected function processAdvancedSearchModes($searchObject = false)
     {
-        $config = $this->getServiceLocator()->get('VuFind\Config')->get('EDS');
         $results = $this->getResultsManager()->get('EDS');
         $params = $results->getParams();
         $options = $params->getOptions();

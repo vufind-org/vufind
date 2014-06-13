@@ -263,7 +263,7 @@ abstract class EdsApi_REST_Base
                         );
                     }
                     $cnt = 0;
-                    foreach ($value as $subKey => $subValue) {
+                    foreach ($value as $subValue) {
                         $cnt = $cnt + 1 ;
                         $finalParameterName = $parameterName;
                         if (SearchRequestModel::isParameterIndexed($key)) {

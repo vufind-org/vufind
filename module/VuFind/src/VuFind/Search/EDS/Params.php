@@ -195,7 +195,7 @@ class Params extends \VuFind\Search\Base\Params
         $filters = parent::getFilterList($excludeCheckboxFilters);
         $label = $this->getFacetLabel('SEARCHMODE');
         if (isset($filters[$label])) {
-            foreach ($filters[$label] as $i => $val) {
+            foreach (array_keys($filters[$label]) as $i) {
                 $filters[$label][$i]['suppressDisplay'] = true;
             }
         }
@@ -358,7 +358,7 @@ class Params extends \VuFind\Search\Base\Params
     {
         $ssLimiters = $options->getSearchScreenLimiters();
         if (isset($ssLimiters)) {
-            foreach ($ssLimiters as $key => $ssLimiter) {
+            foreach ($ssLimiters as $ssLimiter) {
                 $this->addCheckboxFacet(
                     $ssLimiter['selectedvalue'], $ssLimiter['description']
                 );
@@ -378,7 +378,7 @@ class Params extends \VuFind\Search\Base\Params
     {
         $availableExpanders = $options->getSearchScreenExpanders();
         if (isset($availableExpanders)) {
-            foreach ($availableExpanders as $key => $expander) {
+            foreach ($availableExpanders as $expander) {
                 $this->addCheckboxFacet(
                     $expander['selectedvalue'], $expander['description']
                 );

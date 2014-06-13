@@ -646,7 +646,6 @@ class Options extends \VuFind\Search\Base\Options
                     'description' => $this->getLabelForCheckboxFilter(
                         'eds_expander_' . $key, $expander['Label']
                     ),
-                    'selected' =>(isset($defaultExpander[$key]))? true : false
                 );
             }
         }
