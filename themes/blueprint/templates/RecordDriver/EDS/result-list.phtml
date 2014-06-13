@@ -63,14 +63,14 @@
     <? endif; ?>
 
     <div class="last">
-      <? if ($this->driver->getHTMLFullTextAvailability()): ?>
+      <? if ($this->driver->hasHTMLFullTextAvailable()): ?>
         <a href="<?= $this->recordLink()->getUrl($this->driver, 'fulltext') ?>#html" class="icon html fulltext _record_link">
           <?=$this->transEsc('HTML Full Text')?>
         </a>
         &nbsp; &nbsp;
       <? endif; ?>
 
-      <? if ($this->driver->getPdfAvailability()): ?>
+      <? if ($this->driver->hasPdfAvailable()): ?>
         <a href="<?= $this->recordLink()->getUrl($this->driver).'/PDF'; ?>" class="icon pdf fulltext">
           <?=$this->transEsc('PDF Full Text')?>
         </a>

@@ -38,7 +38,7 @@
           </a>
         </span><br />
       <? endif; ?>
-      <? if ($this->driver->getHTMLFullTextAvailability()): ?>
+      <? if ($this->driver->hasHTMLFullTextAvailable()): ?>
         <span>
           <a href="<?=$this->recordLink()->getUrl($this->driver, 'fulltext')?>#html" class="icon html fulltext">
             <?=$this->transEsc('HTML Full Text')?>
@@ -84,14 +84,14 @@
         </tr>
       <? endif; ?>
 
-      <?if ($this->driver->getHTMLFullTextAvailability() && !$restrictedView):
+      <?if ($this->driver->hasHTMLFullTextAvailable() && !$restrictedView):
           $fullText = $this->driver->getHtmlFullText();?>
         <tr id="html">
           <td colspan="2">
             <?=$fullText?>
           </td>
         </tr>
-      <? elseif ($this->driver->getHTMLFullTextAvailability() && $restrictedView): ?>
+      <? elseif ($this->driver->hasHTMLFullTextAvailable() && $restrictedView): ?>
         <tr id="html">
           <td>
             <?=$this->transEsc('Full text is not displayed to guests')?>

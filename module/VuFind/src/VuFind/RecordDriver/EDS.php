@@ -151,7 +151,7 @@ class EDS extends SolrDefault
     /**
      * Get the full text of the record.
      *
-     * @return boolean
+     * @return string
      */
     public function getHTMLFullText()
     {
@@ -164,9 +164,9 @@ class EDS extends SolrDefault
     /**
      * Get the full text availability of the record.
      *
-     * @return boolean
+     * @return bool
      */
-    public function getHTMLFullTextAvailability()
+    public function hasHTMLFullTextAvailable()
     {
         return (isset($this->fields['FullText']) &&
                 isset($this->fields['FullText']['Text']) &&
@@ -232,9 +232,9 @@ class EDS extends SolrDefault
     /**
      * Get the PDF availability of the record.
      *
-     * @return boolean
+     * @return bool
      */
-    public function getPdfAvailability()
+    public function hasPdfAvailable()
     {
         if (isset($this->fields['FullText'])
             && isset($this->fields['FullText']['Links'])

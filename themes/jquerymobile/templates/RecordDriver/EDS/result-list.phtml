@@ -34,12 +34,12 @@
         <? endforeach; ?>
       <? endif; ?>
 
-      <? if ($this->driver->getHTMLFullTextAvailability()): ?>
+      <? if ($this->driver->hasHTMLFullTextAvailable()): ?>
         <p class="ui-li-desc"><?=$this->transEsc('HTML Full Text')?></p>
         &nbsp; &nbsp;
       <? endif; ?>
 
-      <? if ($this->driver->getPdfAvailability()): ?>
+      <? if ($this->driver->hasPdfAvailable()): ?>
         <p class="ui-li-desc"><?=$this->transEsc('PDF Full Text')?></p>
       <? endif; ?>
     </div>

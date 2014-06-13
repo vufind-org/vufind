@@ -29,7 +29,7 @@
           <?=$this->transEsc('PDF Full Text')?>
         </a>
     <? endif; ?>
-    <? if ($this->driver->getHTMLFullTextAvailability()): ?>
+    <? if ($this->driver->hasHTMLFullTextAvailable()): ?>
       <br/><a href="<?=$this->recordLink()->getUrl($this->driver, 'fulltext')?>#html" class="icon html fulltext">
           <?=$this->transEsc('HTML Full Text')?>
         </a>
@@ -65,13 +65,13 @@
     <dd><?=$this->escapeHtml($dbLabel)?></dd>
   <? endif; ?>
 
-  <?if ($this->driver->getHTMLFullTextAvailability() && !$restrictedView):
+  <?if ($this->driver->hasHTMLFullTextAvailable() && !$restrictedView):
       $fullText = $this->driver->getHtmlFullText();?>
     <dt><?=$this->transEsc('Full Text')?>:</dt>
     <dd>
       <?=$fullText?>
     </dd>
-  <? elseif ($this->driver->getHTMLFullTextAvailability() && $restrictedView): ?>
+  <? elseif ($this->driver->hasHTMLFullTextAvailable() && $restrictedView): ?>
     <dd>
       <?=$this->transEsc('Full text is not displayed to guests')?>
     </dd>
