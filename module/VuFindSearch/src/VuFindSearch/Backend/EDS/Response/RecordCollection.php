@@ -104,7 +104,7 @@ class RecordCollection extends AbstractRecordCollection
         foreach ($facets as $facet) {
             $vufindFacet['displayName'] = $facet['Id'];
             $vufindFacet['displayText'] = $facet['Label'];
-            $vuFindFacet['fieldName'] = $facet['Id'];
+            $vufindFacet['fieldName'] = $facet['Id'];
             $values = array();
             foreach ($facet['AvailableFacetValues'] as $availableFacetValue) {
                 $values[] = array(
