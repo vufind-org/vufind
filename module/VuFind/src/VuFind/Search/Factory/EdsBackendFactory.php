@@ -194,7 +194,7 @@ class EdsBackendFactory implements FactoryInterface
             $accountData['profile'] = $this->edsConfig->EBSCO_Account->profile;
         }
         if (isset($this->edsConfig->EBSCO_Account->organization_id)) {
-            $acountData['orgid'] = $this->edsConfig->EBSCO_Account->organization_id;
+            $accountData['orgid'] = $this->edsConfig->EBSCO_Account->organization_id;
         }
         return $accountData;
 
