@@ -705,7 +705,8 @@ class Options extends \VuFind\Search\Base\Options
             $limiters = $this->getAvailableLimiters();
             foreach ($limiters as $key => $value) {
                 if ('select' == $value['Type'] && 'y' == $value['DefaultOn']) {
-                    //only select limiters can be defaulted on limiters can be defaulted
+                    // only select limiters can be defaulted on limiters can be
+                    // defaulted
                     $val = $value['LimiterValues'][0]['Value'];
                     $this->defaultFilters[] = 'LIMIT|'.$key.':'.$val;
                 }

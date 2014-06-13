@@ -60,10 +60,11 @@ class EdsrecordController extends AbstractRecord
     {
         $driver = $this->loadRecord();
         //if the user is a guest, redirect them to the login screen.
-        if(!$this->isAuthenticationIP() && false == $this->getUser())
-    		return $this->forceLogin();
-        else
-	        return $this->redirect()->toUrl($driver->getPdfLink());
+        if (!$this->isAuthenticationIP() && false == $this->getUser()) {
+            return $this->forceLogin();
+        } else {
+            return $this->redirect()->toUrl($driver->getPdfLink());
+        }
     }
 
     /**
@@ -77,8 +78,8 @@ class EdsrecordController extends AbstractRecord
         return (isset($config->Record->next_prev_navigation)
             && $config->Record->next_prev_navigation);
     }
-    
-    
+
+
      /**
      * Is IP Authentication being used?
      *
