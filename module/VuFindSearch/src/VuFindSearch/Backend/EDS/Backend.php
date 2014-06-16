@@ -328,7 +328,7 @@ class Backend implements BackendInterface
                 $an, $dbId, $authenticationToken, $sessionToken, $highlightTerms
             );
         } catch (\EbscoEdsApiException $e) {
-            if ($e->getApiErrorCode == 104) {
+            if ($e->getApiErrorCode() == 104) {
                 try {
                     $authenticationToken = $this->getAuthenticationToken(true);
                     $response = $this->client->retrieve(
