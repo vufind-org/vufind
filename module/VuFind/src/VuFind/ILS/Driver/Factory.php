@@ -120,6 +120,24 @@ class Factory
     }
 
     /**
+     * Factory for PICA driver.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return PICA
+     */
+    public static function getPICA(ServiceManager $sm)
+    {
+        $auth = $sm->getServiceLocator()->get('VuFind\AuthPluginManager');
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
+        $db = $auth->get('database');
+        $db->setConfig($config);
+        $ldap = $auth->get('ldap');
+        $ldap->setConfig($config);
+        return new PICA($db, $ldap);
+    }
+
+    /**
      * Factory for Unicorn driver.
      *
      * @param ServiceManager $sm Service manager.
