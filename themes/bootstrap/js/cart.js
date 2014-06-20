@@ -136,7 +136,6 @@ function registerUpdateCart($form) {
         if (updated.length >= vufindString.bookbagMax) {
           msg += vufindString.bookbagFull;
         }
-        console.log('!');
         $('#'+elId).popover({content:msg, trigger:'manual'}).popover('toggle');
         $('#cartItems strong').html(updated.length);
       } else {
