@@ -136,10 +136,11 @@ function registerUpdateCart($form) {
         if (updated.length >= vufindString.bookbagMax) {
           msg += vufindString.bookbagFull;
         }
-        $('#'+elId).popover({content:msg}).popover('show');
+        console.log('!');
+        $('#'+elId).popover({content:msg, trigger:'manual'}).popover('toggle');
         $('#cartItems strong').html(updated.length);
       } else {
-        $('#'+elId).popover({content:vufindString.bulk_noitems_advice}).popover('show');
+        $('#'+elId).popover({content:vufindString.bulk_noitems_advice, trigger:'manual'}).popover('toggle');
       }
       return false;
     });
