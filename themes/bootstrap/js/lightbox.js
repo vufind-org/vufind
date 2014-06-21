@@ -392,6 +392,10 @@ $(document).ready(function() {
   $('#modal').on('show', function(e) {
     Lightbox.focusFrom = document.activeElement;
   });
+  // focus on close button
+  $('#modal').on('shown', function (e) {
+    $('.modal-header > .close').focus();
+  })
   // Add handlers to the forms
   Lightbox.addOpenAction(Lightbox.registerForms);
   /**
