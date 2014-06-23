@@ -26,7 +26,8 @@
  * @link     http://vufind.org/wiki/vufind2:building_an_ils_driver Wiki
  */
 namespace VuFind\ILS\Driver;
-use VuFind\Exception\ILS as ILSException;
+use VuFind\Exception\ILS as ILSException,
+    VuFind\Config\Locator as ConfigLocator;
 
 /**
  * XC NCIP Toolkit (v2) ILS Driver
@@ -105,6 +106,11 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function loadPickupLocations($filename)
     {
+        // Load pickup locations file:
+        $pickupLocationsFile = ConfigLocator::getConfigPath($filename, 'config/vufind');
+        if (!file_exists($filename)) {
+            throw new \ILSException("Cannot load pickup locations file: {$filename}.");
+        }
         if (($handle = fopen($filename, "r")) !== FALSE) {
             while (($data = fgetcsv($handle, 1000, "\t")) !== FALSE) {
                 $this->pickupLocations[$data[0]][] = 
