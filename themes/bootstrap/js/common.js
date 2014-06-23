@@ -107,7 +107,11 @@ function registerLightboxEvents() {
    * if it matches the title bar of the lightbox
    */
   var header = $('#modal .modal-header h3').html();
-  $('#modal .modal-body .lead').each(function(i,op) {
+  var contentHeader = $('#modal .modal-body .lead');
+  if(contentHeader.length == 0) {
+    contentHeader = $('#modal .modal-body h2');
+  }
+  contentHeader.each(function(i,op) {
     if (op.innerHTML == header) {
       $(op).hide();
     }
