@@ -3,16 +3,16 @@
   <h4><?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?></h4>
 <? endif; ?>
 <? $checkboxFilters = $results->getParams()->getCheckboxFacets(); if (count($checkboxFilters) > 0): ?>
-  <? foreach ($checkboxFilters as $current): ?>
-    <div class="checkboxFilter<?=($results->getResultTotal() < 1 && !$current['selected'] && !$current['alwaysVisible']) ? ' hide' : ''?>">
+  <div class="checkboxFilter<?=($results->getResultTotal() < 1 && !$current['selected'] && !$current['alwaysVisible']) ? ' hide' : ''?>">
+    <? foreach ($checkboxFilters as $current): ?>
       <label class="checkbox">
         <input type="checkbox" name="filter[]" value="<?=$this->escapeHtmlAttr($current['filter'])?>"
         <?=$current['selected'] ? 'checked="checked"' : ''?> id="<?=$this->escapeHtmlAttr(str_replace(' ', '', $current['desc']))?>"
         onclick="document.location.href='<?=$current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter'])?>';" />
         <?=$this->transEsc($current['desc'])?>
       </label>
-    </div>
-  <? endforeach; ?>
+    <? endforeach; ?>
+  </div>
 <? endif; ?>
 <? $collapsedFacets = $this->recommend->getCollapsedFacets() ?>
 <? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : array(); ?>
@@ -21,7 +21,7 @@
     <li class="nav-header"><?=$this->transEsc('Remove Filters')?></li>
     <? foreach ($filterList as $field => $filters): ?>
       <? foreach ($filters as $i => $filter): ?>
-        <? 
+        <?
           $index = isset($filter['field']) ? array_search($filter['field'], $collapsedFacets) : false;
           if ($index !== false) {
               unset($collapsedFacets[$index]); // Open if we have a match
