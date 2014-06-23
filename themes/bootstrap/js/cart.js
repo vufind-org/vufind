@@ -143,7 +143,9 @@ function registerUpdateCart($form) {
         $('#'+elId).data('popover').options.content = vufindString.bulk_noitems_advice;
       }
       $('#'+elId).popover('toggle');
-      clearTimeout(cartNotificationTimeout);
+      if (cartNotificationTimeout !== false) {
+          clearTimeout(cartNotificationTimeout);
+      }
       cartNotificationTimeout = setTimeout(function() {
         $('#'+elId).popover('hide');
       }, 5000);
