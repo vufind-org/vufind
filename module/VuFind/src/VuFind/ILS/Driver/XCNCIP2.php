@@ -108,10 +108,10 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     {
         // Load pickup locations file:
         $pickupLocationsFile = ConfigLocator::getConfigPath($filename, 'config/vufind');
-        if (!file_exists($filename)) {
-            throw new \ILSException("Cannot load pickup locations file: {$filename}.");
+        if (!file_exists($pickupLocationsFile)) {
+            throw new ILSException("Cannot load pickup locations file: {$pickupLocationsFile}.");
         }
-        if (($handle = fopen($filename, "r")) !== FALSE) {
+        if (($handle = fopen($pickupLocationsFile, "r")) !== FALSE) {
             while (($data = fgetcsv($handle, 1000, "\t")) !== FALSE) {
                 $this->pickupLocations[$data[0]][] = 
                     array(
