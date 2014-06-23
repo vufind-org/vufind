@@ -161,6 +161,7 @@ select, .btn:not(.btn-link){vertical-align:top}
 .result>.checkbox input[type="checkbox"] {margin:3px auto}
 .result .left {text-align:center}
 .result .middle {margin-left:1%;width:52%}
+.result .right {margin-left:0;width:16%}
 @media (max-width: 600px) {.result .middle {margin-left:auto;width:75%;}}
 .result .savedLists {margin:2px 0;padding:6px}
 .result .savedLists ul {margin-bottom:0}

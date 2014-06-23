@@ -17,13 +17,12 @@
           }
         ?>
         <? $summAuthor = $driver->getPrimaryAuthor(); ?>
-          <? $summAuthor = $driver->getPrimaryAuthor(); ?>
-          <span class="small<? if (!empty($summAuthor)): ?> pull-right<? endif; ?>">
-            <? $summDate = $driver->getPublicationDates(); ?>
-            <? if (!empty($summDate)): ?>
-              <?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($summDate[0])?>)
-            <? endif; ?>
-          </span>
+        <span class="small<? if (!empty($summAuthor)): ?> pull-right<? endif; ?>">
+          <? $summDate = $driver->getPublicationDates(); ?>
+          <? if (!empty($summDate)): ?>
+            <?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($summDate[0])?>)
+          <? endif; ?>
+        </span>
       </a>
       <? if (!empty($summAuthor)): ?>
         <a class="small text-right" href="<?=$this->record($driver)->getLink('author', $summAuthor)?>">

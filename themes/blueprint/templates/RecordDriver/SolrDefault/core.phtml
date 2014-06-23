@@ -175,12 +175,19 @@
 
     <? $recordLinks = $this->driver->getAllRecordLinks(); if (!empty($recordLinks)): ?>
       <tr valign="top">
-        <th><?=$this->transEsc('Related Items')?></th>
+        <th><?=$this->transEsc('Related Items')?>:</th>
         <td>
           <? foreach ($recordLinks as $recordLink): ?>
             <?=$this->transEsc($recordLink['title'])?>:
             <a href="<?=$this->recordLink()->related($recordLink['link'])?>"><?=$this->escapeHtml($recordLink['value'])?></a><br />
           <? endforeach; ?>
+          <? /* if we have record links, display relevant explanatory notes */
+            $related = $this->driver->getRelationshipNotes();
+            if (!empty($related)): ?>
+              <? foreach ($related as $field): ?>
+                <?=$this->escapeHtml($field)?><br/>
+              <? endforeach; ?>
+          <? endif; ?>
         </td>
       </tr>
     <? endif; ?>

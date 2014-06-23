@@ -76,6 +76,8 @@ $config = array(
             'combined' => 'VuFind\Controller\CombinedController',
             'confirm' => 'VuFind\Controller\ConfirmController',
             'cover' => 'VuFind\Controller\CoverController',
+            'eds' => 'VuFind\Controller\EdsController',
+            'edsrecord' => 'VuFind\Controller\EdsrecordController',
             'eit' => 'VuFind\Controller\EITController',
             'eitrecord' => '\VuFind\Controller\EITrecordController',
             'error' => 'VuFind\Controller\ErrorController',
@@ -352,6 +354,7 @@ $config = array(
             'recorddriver' => array(
                 'abstract_factories' => array('VuFind\RecordDriver\PluginFactory'),
                 'factories' => array(
+                    'eds' => 'VuFind\RecordDriver\Factory::getEDS',
                     'eit' => 'VuFind\RecordDriver\Factory::getEIT',
                     'libguides' => 'VuFind\RecordDriver\Factory::getLibGuides',
                     'missing' => 'VuFind\RecordDriver\Factory::getMissing',
@@ -408,6 +411,7 @@ $config = array(
             ),
             'search_backend' => array(
                 'factories' => array(
+                    'EDS' => 'VuFind\Search\Factory\EdsBackendFactory',
                     'EIT' => 'VuFind\Search\Factory\EITBackendFactory',
                     'LibGuides' => 'VuFind\Search\Factory\LibGuidesBackendFactory',
                     'Pazpar2' => 'VuFind\Search\Factory\Pazpar2BackendFactory',
@@ -432,6 +436,9 @@ $config = array(
             ),
             'search_options' => array(
                 'abstract_factories' => array('VuFind\Search\Options\PluginFactory'),
+                'factories' => array(
+                    'eds' => 'VuFind\Search\Options\Factory::getEDS',
+                ),
             ),
             'search_params' => array(
                 'abstract_factories' => array('VuFind\Search\Params\PluginFactory'),
@@ -488,6 +495,15 @@ $config = array(
         // parent class.  The defaultTab setting may be used to specify the default
         // active tab; if null, the value from the relevant .ini file will be used.
         'recorddriver_tabs' => array(
+            'VuFind\RecordDriver\EDS' => array(
+                'tabs' => array(
+                    'Description' => 'Description',
+                    'TOC' => 'TOC', 'UserComments' => 'UserComments',
+                    'Reviews' => 'Reviews', 'Excerpt' => 'Excerpt',
+                    'Details' => 'StaffViewArray',
+                ),
+                'defaultTab' => null,
+            ),
             'VuFind\RecordDriver\Pazpar2' => array(
                 'tabs' => array (
                     'Details' => 'StaffViewMARC',
@@ -555,6 +571,7 @@ $config = array(
 $recordRoutes = array(
     'record' => 'Record',
     'collection' => 'Collection',
+    'edsrecord' => 'EdsRecord',
     'eitrecord' => 'EITRecord',
     'missingrecord' => 'MissingRecord',
     'primorecord' => 'PrimoRecord',
@@ -567,7 +584,7 @@ $recordRoutes = array(
 $nonTabRecordActions = array(
     'AddComment', 'DeleteComment', 'AddTag', 'Save', 'Email', 'SMS', 'Cite',
     'Export', 'RDF', 'Hold', 'BlockedHold', 'Home', 'StorageRetrievalRequest',
-    'BlockedStorageRetrievalRequest', 'ILLRequest', 'BlockedILLRequest'
+    'BlockedStorageRetrievalRequest', 'ILLRequest', 'BlockedILLRequest', 'PDF',
 );
 
 // Define list-related routes -- route name => MyResearch action
@@ -583,6 +600,7 @@ $staticRoutes = array(
     'Cart/Save', 'Collections/ByTitle', 'Collections/Home',
     'Combined/Home', 'Combined/Results', 'Combined/SearchBox', 'Confirm/Confirm',
     'Cover/Show', 'Cover/Unavailable',
+    'EDS/Advanced', 'EDS/Home', 'EDS/Search',
     'EIT/Advanced', 'EIT/Home', 'EIT/Search',
     'Error/Unavailable', 'Feedback/Email', 'Feedback/Home', 'Help/Home',
     'Install/Done', 'Install/FixBasicConfig', 'Install/FixCache',
