@@ -197,7 +197,9 @@ class Factory
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $key = isset($config->GoogleAnalytics->apiKey)
             ? $config->GoogleAnalytics->apiKey : false;
-        return new GoogleAnalytics($key);
+        $universal = isset($config->GoogleAnalytics->universal)
+            ? $config->GoogleAnalytics->universal : false;
+        return new GoogleAnalytics($key, $universal);
     }
 
     /**

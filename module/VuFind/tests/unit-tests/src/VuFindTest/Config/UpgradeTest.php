@@ -212,6 +212,32 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test Google-related warnings.
+     *
+     * @return void
+     */
+    public function testGoogleWarnings()
+    {
+        $upgrader = $this->getUpgrader('googlewarnings');
+        $upgrader->run();
+        $warnings = $upgrader->getWarnings();
+        $this->assertTrue(
+            in_array(
+                'The [GoogleSearch] section of config.ini is no '
+                . 'longer supported due to changes in Google APIs.',
+                $warnings
+            )
+        );
+        $this->assertTrue(
+            in_array(
+                'The [GoogleAnalytics] universal setting is off. See config.ini '
+                . 'for important information on how to upgrade your Analytics.',
+                $warnings
+            )
+        );
+    }
+
+    /**
      * Test "meaningful line" detection in SolrMarc properties files.
      *
      * @return void

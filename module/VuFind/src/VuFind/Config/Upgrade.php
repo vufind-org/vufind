@@ -512,6 +512,16 @@ class Upgrade
                 . 'longer supported due to changes in Google APIs.'
             );
         }
+        if (isset($newConfig['GoogleAnalytics']['apiKey'])) {
+            if (!isset($newConfig['GoogleAnalytics']['universal'])
+                || !$newConfig['GoogleAnalytics']['universal']
+            ) {
+                $this->addWarning(
+                    'The [GoogleAnalytics] universal setting is off. See config.ini '
+                    . 'for important information on how to upgrade your Analytics.'
+                );
+            }
+        }
 
         // Disable unused, obsolete setting:
         unset($newConfig['Index']['local']);
