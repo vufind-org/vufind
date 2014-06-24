@@ -1189,6 +1189,17 @@ class SolrDefault extends AbstractBase
     }
 
     /**
+     * Get hierarchical place names
+     *
+     * @return array
+     */
+    public function getHierarchicalPlaceNames()
+    {
+        // Not currently stored in the Solr index
+        return array();
+    }
+
+    /**
      * Return an array of associative URL arrays with one or more of the following
      * keys:
      *
