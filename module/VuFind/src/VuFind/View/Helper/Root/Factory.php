@@ -131,20 +131,6 @@ class Factory
     }
 
     /**
-     * Construct the Excerpt helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Excerpt
-     */
-    public static function getExcerpt(ServiceManager $sm)
-    {
-        $loader = $sm->getServiceLocator()->get('VuFind\ContentPluginManager')
-            ->get('excerpts');
-        return new ContentLoader($loader);
-    }
-
-    /**
      * Construct the Export helper.
      *
      * @param ServiceManager $sm Service manager.
@@ -352,20 +338,6 @@ class Factory
         return new Related(
             $sm->getServiceLocator()->get('VuFind\RelatedPluginManager')
         );
-    }
-
-    /**
-     * Construct the Reviews helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return Reviews
-     */
-    public static function getReviews(ServiceManager $sm)
-    {
-        $loader = $sm->getServiceLocator()->get('VuFind\ContentPluginManager')
-            ->get('reviews');
-        return new ContentLoader($loader);
     }
 
     /**

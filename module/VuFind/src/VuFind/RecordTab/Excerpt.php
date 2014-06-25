@@ -39,20 +39,20 @@ namespace VuFind\RecordTab;
 class Excerpt extends AbstractBase
 {
     /**
-     * Is this module enabled in the configuration?
+     * Content loader
      *
-     * @var bool
+     * @var \VuFind\Content\Loader
      */
-    protected $enabled;
+    protected $loader;
 
     /**
      * Constructor
      *
-     * @param bool $enabled Is this module enabled in the configuration?
+     * @param \VuFind\Content\Loader $loader Content loader (omit to disable)
      */
-    public function __construct($enabled = true)
+    public function __construct(\VuFind\Content\Loader $loader = null)
     {
-        $this->enabled = $enabled;
+        $this->loader = $loader;
     }
 
     /**
@@ -72,10 +72,23 @@ class Excerpt extends AbstractBase
      */
     public function isActive()
     {
-        if (!$this->enabled) {
+        if (null === $this->loader) {
             return false;
         }
         $isbns = $this->getRecordDriver()->tryMethod('getISBNs');
         return !empty($isbns);
+    }
+
+    /**
+     * Get excerpts for ISBN.
+     *
+     * @param string $isbn ISBN of book to find content for
+     *
+     * @return array
+     */
+    public function getExcerptsForIsbn($isbn)
+    {
+        return null === $this->loader
+            ? array() : $this->loader->loadByIsbn($isbn);
     }
 }

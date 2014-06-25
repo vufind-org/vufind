@@ -79,8 +79,14 @@ class Factory
     public static function getExcerpt(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $enabled = isset($config->Content->excerpts);
-        return new Excerpt($enabled);
+        // Only instantiate the loader if the feature is enabled:
+        if (isset($config->Content->excerpts)) {
+            $loader = $sm->getServiceLocator()->get('VuFind\ContentPluginManager')
+                ->get('excerpts');
+        } else {
+            $loader = null;
+        }
+        return new Excerpt($loader);
     }
 
     /**
@@ -144,8 +150,14 @@ class Factory
     public static function getReviews(ServiceManager $sm)
     {
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
-        $enabled = isset($config->Content->reviews);
-        return new Reviews($enabled);
+        // Only instantiate the loader if the feature is enabled:
+        if (isset($config->Content->reviews)) {
+            $loader = $sm->getServiceLocator()->get('VuFind\ContentPluginManager')
+                ->get('reviews');
+        } else {
+            $loader = null;
+        }
+        return new Reviews($loader);
     }
 
     /**
