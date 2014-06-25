@@ -211,8 +211,13 @@ $(document).ready(function() {
       cartSubmit(lastCartSubmit);
       lastCartSubmit = false;
     } else {
-      Lightbox.getByUrl(Lightbox.openingURL);
-      Lightbox.openingURL = false;
+      var params = deparam(Lightbox.openingURL);
+      if (params['subaction'] != 'Login') {
+        Lightbox.getByUrl(Lightbox.openingURL);
+        Lightbox.openingURL = false;
+      } else {
+        Lightbox.close();
+      }
     }
   });
   Lightbox.addFormHandler('cartForm', function(evt) {
