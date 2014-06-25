@@ -75,9 +75,9 @@ class Factory
      */
     public static function getAuthorNotes(ServiceManager $sm)
     {
-        return new AuthorNotes(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-        );
+        $loader = $sm->getServiceLocator()->get('VuFind\ContentPluginManager')
+            ->get('authornotes');
+        return new ContentLoader($loader);
     }
 
     /**
@@ -139,9 +139,9 @@ class Factory
      */
     public static function getExcerpt(ServiceManager $sm)
     {
-        return new Excerpt(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-        );
+        $loader = $sm->getServiceLocator()->get('VuFind\ContentPluginManager')
+            ->get('excerpts');
+        return new ContentLoader($loader);
     }
 
     /**
@@ -363,9 +363,9 @@ class Factory
      */
     public static function getReviews(ServiceManager $sm)
     {
-        return new Reviews(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-        );
+        $loader = $sm->getServiceLocator()->get('VuFind\ContentPluginManager')
+            ->get('reviews');
+        return new ContentLoader($loader);
     }
 
     /**

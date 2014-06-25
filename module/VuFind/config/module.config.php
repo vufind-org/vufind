@@ -247,6 +247,35 @@ $config = array(
                     'tagautocomplete' => 'Tag',
                 ),
             ),
+            'content' => array(
+                'factories' => array(
+                    'authornotes' => 'VuFind\Content\Factory::getAuthorNotes',
+                    'excerpts' => 'VuFind\Content\Factory::getExcerpts',
+                    'reviews' => 'VuFind\Content\Factory::getReviews',
+                ),
+            ),
+            'content_authornotes' => array(
+                'factories' => array(
+                    'syndetics' => 'VuFind\Content\AuthorNotes\Factory::getSyndetics',
+                    'syndeticsplus' => 'VuFind\Content\AuthorNotes\Factory::getSyndeticsPlus',
+                ),
+            ),
+            'content_excerpts' => array(
+                'factories' => array(
+                    'syndetics' => 'VuFind\Content\Excerpts\Factory::getSyndetics',
+                    'syndeticsplus' => 'VuFind\Content\Excerpts\Factory::getSyndeticsPlus',
+                ),
+            ),
+            'content_reviews' => array(
+                'factories' => array(
+                    'amazon' => 'VuFind\Content\Reviews\Factory::getAmazon',
+                    'amazoneditorial' => 'VuFind\Content\Reviews\Factory::getAmazonEditorial',
+                    'booksite' => 'VuFind\Content\Reviews\Factory::getBooksite',
+                    'guardian' => 'VuFind\Content\Reviews\Factory::getGuardian',
+                    'syndetics' => 'VuFind\Content\Reviews\Factory::getSyndetics',
+                    'syndeticsplus' => 'VuFind\Content\Reviews\Factory::getSyndeticsPlus',
+                ),
+            ),
             'db_table' => array(
                 'abstract_factories' => array('VuFind\Db\Table\PluginFactory'),
                 'factories' => array(
