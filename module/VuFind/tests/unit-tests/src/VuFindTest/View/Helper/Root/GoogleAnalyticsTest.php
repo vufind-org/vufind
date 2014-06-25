@@ -46,9 +46,7 @@ class GoogleAnalyticsTest extends \VuFindTest\Unit\ViewHelperTestCase
      */
     public function testOldSetup()
     {
-        $helper = new GoogleAnalytics('myfakekey', false);
-        $helper->setView($this->getPhpRenderer());
-        $output = $helper()->__toString();
+        $output = $this->renderGA('myfakekey', false);
         $this->assertTrue(false !== strstr($output, 'ga.js'));
         $this->assertFalse(strstr($output, 'analytics.js'));
         $this->assertTrue(false !== strstr($output, 'myfakekey'));
@@ -61,11 +59,34 @@ class GoogleAnalyticsTest extends \VuFindTest\Unit\ViewHelperTestCase
      */
     public function testNewSetup()
     {
-        $helper = new GoogleAnalytics('myfakekey', true);
-        $helper->setView($this->getPhpRenderer());
-        $output = $helper()->__toString();
+        $output = $this->renderGA('myfakekey', true);
         $this->assertTrue(false !== strstr($output, 'analytics.js'));
         $this->assertFalse(strstr($output, 'ga.js'));
         $this->assertTrue(false !== strstr($output, 'myfakekey'));
+    }
+
+    /**
+     * Test the helper (disabled mode)
+     *
+     * @return void
+     */
+    public function testDisabled()
+    {
+        $this->assertEquals('', $this->renderGA(false));
+    }
+
+    /**
+     * Render the GA code
+     *
+     * @param string $key GA key (false for disabled)
+     * @param bool   $uni Universal mode?
+     *
+     * @return string
+     */
+    protected function renderGA($key, $uni = false)
+    {
+        $helper = new GoogleAnalytics($key, $uni);
+        $helper->setView($this->getPhpRenderer());
+        return (string)$helper();
     }
 }
