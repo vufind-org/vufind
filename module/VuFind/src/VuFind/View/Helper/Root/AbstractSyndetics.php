@@ -100,8 +100,13 @@ abstract class AbstractSyndetics extends AbstractHelper
      */
     protected function getSyndeticsUrl($id, $file = 'index.xml', $type = 'rw12,h7')
     {
-        $baseUrl = (isset($this->config->use_ssl) && $this->config->use_ssl)
-            ? 'https://secure.syndetics.com' : 'http://syndetics.com';
+        if (isset($this->config->Syndetics->use_ssl)
+            && $this->config->Syndetics->use_ssl
+        ) {
+            $baseUrl = 'https://secure.syndetics.com';
+        } else {
+            $baseUrl = 'http://syndetics.com';
+        }
         return $baseUrl . '/index.aspx?isbn=' . $this->getIsbn10()
             . '/' . $file . '&client=' . $id . '&type=' . $type;
     }
