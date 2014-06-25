@@ -120,7 +120,8 @@ class Bootstrapper
 
         // Use naming conventions to set up a bunch of services based on namespace:
         $namespaces = array(
-            'Auth', 'Autocomplete', 'Db\Table', 'Hierarchy\Driver',
+            'Auth', 'Autocomplete', 'Content', 'Content\AuthorNotes',
+            'Content\Excerpts', 'Content\Reviews', 'Db\Table', 'Hierarchy\Driver',
             'Hierarchy\TreeDataSource', 'Hierarchy\TreeRenderer', 'ILS\Driver',
             'Recommend', 'RecordDriver', 'RecordTab', 'Related', 'Resolver\Driver',
             'Search\Options', 'Search\Params', 'Search\Results', 'Session',
