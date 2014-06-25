@@ -4,7 +4,7 @@
 
     // Grab excerpt data:
     $isbn = $this->driver->getCleanISBN();
-    $excerpts = empty($isbn) ? array() : $this->excerpt($isbn);
+    $excerpts = empty($isbn) ? array() : $this->tab->getExcerptsForIsbn($isbn);
 
     // Activate Syndetics Plus if necessary:
     if ($this->syndeticsPlus()->isActive()) {
