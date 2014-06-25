@@ -89,7 +89,7 @@
             <? if (isset($hasDefaultsApplied) && $hasDefaultsApplied): ?>
               <!-- this is a hidden element that flags whether or not default filters have been applied;
                    it is intentionally unlabeled, as users are not meant to manipulate it directly. -->
-              <input id="dfApplied" type="checkbox" name="dfApplied" value="1" />
+              <input id="dfApplied" type="checkbox" name="dfApplied" value="1"<?=$defaultFilterState?> />
             <? endif; ?>
           </div>
         </div>
