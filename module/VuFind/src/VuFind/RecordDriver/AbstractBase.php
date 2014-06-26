@@ -150,6 +150,18 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     abstract public function getUniqueID();
 
     /**
+     * Return the list of "source records" for this consortial record.
+     *
+     * @throws \Exception
+     * @return array
+     */
+    public function getConsortialIDs()
+    {
+        throw new \Exception("getConsortialIDs() was called, but not implemented.");
+    }
+
+
+    /**
      * Get comments associated with this record.
      *
      * @return array
@@ -560,5 +572,18 @@ abstract class AbstractBase implements \VuFind\Db\Table\DbTableAwareInterface,
     {
         return null !== $this->translator
             ? $this->translator->translate($msg) : $msg;
+    }
+
+    /**
+     * Is this a consortium?
+     *
+     * @return bool
+     */
+    public function isConsortium()
+    {
+        $isConsortium
+            = isset($this->mainConfig->Catalog->consortium)
+            ? $this->mainConfig->Catalog->consortium : false;
+        return $isConsortium;
     }
 }

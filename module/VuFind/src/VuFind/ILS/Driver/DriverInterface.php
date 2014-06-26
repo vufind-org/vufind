@@ -112,6 +112,23 @@ interface DriverInterface
     public function getHolding($id, array $patron = null);
 
     /**
+     * Get Consortial Holding
+     *
+     * This is responsible for retrieving the holding information of a certain
+     * record in a consortium catalog.
+     *
+     * @param string $id     The record id to retrieve the holdings for
+     * @param array $ids     The consortial source records for this record id 
+     * @param array  $patron Patron data
+     *
+     * @throws \VuFind\Exception\ILS
+     * @return array         On success, an associative array with the following
+     * keys: id, availability (boolean), status, location, reserve, callnumber,
+     * duedate, number, barcode.
+     */
+    public function getConsortialHolding($id, array $ids, array $patron = null);
+
+    /**
      * Get Purchase History
      *
      * This is responsible for retrieving the acquisitions history data for the

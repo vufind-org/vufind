@@ -153,11 +153,12 @@ class Holds
      * holding method to call
      *
      * @param string $id A Bib ID
+     * @param array $ids A list of Source Records (if catalog is for a consortium)
      *
      * @return array A sorted results set
      */
 
-    public function getHoldings($id)
+    public function getHoldings($id, $ids)
     {
         $holdings = array();
 
@@ -167,7 +168,10 @@ class Holds
             // controller and view to inform the user that these credentials are
             // needed for hold data.
             $patron = $this->account->storedCatalogLogin();
-            $result = $this->catalog->getHolding($id, $patron ? $patron : null);
+            if ($ids == null)
+                $result = $this->catalog->getHolding($id, $patron ? $patron : null);
+            else
+                $result = $this->catalog->getConsortialHolding($id, $ids, $patron ? $patron : null);
             $mode = $this->catalog->getHoldsMode();
 
             if ($mode == "disabled") {

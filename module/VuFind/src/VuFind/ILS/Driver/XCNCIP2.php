@@ -163,6 +163,8 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * by VuFind.
      *
      * @param array $current Current XCItemAvailability chunk.
+     * @param string $aggregate_id (Aggregate) ID of the consortial record
+     * @param string $bib_id Bib ID of one of the consortial record's source record(s)
      *
      * @return array
      */
@@ -386,12 +388,13 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     }
 
     /**
-     * Get Holding
+     * Get Consortial Holding
      *
      * This is responsible for retrieving the holding information of a certain
-     * record.
+     * consortial record.
      *
      * @param string $id     The record id to retrieve the holdings for
+     * @param array $ids     The (consortial) source records for the record id
      * @param array  $patron Patron data
      *
      * @throws \VuFind\Exception\Date
@@ -400,40 +403,19 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, array $patron = null)
+    public function getConsortialHolding($id, array $ids, array $patron = null)
     {
-        // we will either be passed in...
-        // ...an array of IDs (coming from a consortial, aggregated record)
-        if (is_array($id)) {
-           $ids = $id;
-        // ... or a single ID (non-consortial)
-        } else {
-           $aggregate_id = $id;
-           $ids = array($id);
-        }
+        $aggregate_id = $id;
         
         $item_agency_id = array();
-        if ($this->consortium) {
-            // The first one in the list is the aggregated record ID
-            $first = 1;
-            foreach ($ids as $id) { 
-                if ($first) {
-                     $aggregate_id = $id;
-                     $first = 0;
+        foreach ($ids as $_id) { 
+            // Need to parse out the 035$a format, e.g., "(Agency) 123"
+            if (preg_match('/\(([^\)]+)\)\s*([0-9]+)/', $_id, $matches)) {
+                $matched_agency = $matches[1];
+                $matched_id = $matches[2];
+                if ($this->agency[$matched_agency]) {
+                    $item_agency_id[$matched_agency] = $matched_id;
                 }
-                // Need to parse out the 035$a, e.g., (Agency)ID
-                else if (preg_match('/\(([^\)]+)\)\s*([0-9]+)/', $id, $matches)) {
-                    $matched_agency = $matches[1];
-                    $matched_id = $matches[2];
-                    if ($this->agency[$matched_agency]) {
-                        $item_agency_id[$matched_agency] = $matched_id;
-                    }
-                }
-            }
-        } else {
-            foreach ($this->agency as $_agency => $_dummy) {
-               $item_agency_id[$_agency] = $ids[0];
-               break;
             }
         }
 
@@ -453,15 +435,41 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             );
 
             // Build the array of holdings:
-            $holdings = array();
             foreach ($avail as $current) {
                 $holdings[] = $this->getHoldingsForChunk($current, $aggregate_id, (string)$bib_id[0]);
             }
-            
         }
 
         return $holdings;
     }
+
+    /**
+     * Get Holding
+     *
+     * This is responsible for retrieving the holding information of a certain
+     * record.
+     *
+     * @param string $id     The record id to retrieve the holdings for
+     * @param array  $patron Patron data
+     *
+     * @throws \VuFind\Exception\Date
+     * @throws ILSException
+     * @return array         On success, an associative array with the following
+     * keys: id, availability (boolean), status, location, reserve, callnumber,
+     * duedate, number, barcode.
+     */
+    public function getHolding($id, array $patron = null)
+    {
+        // Translate $id into consortial (035$a) format, e.g., "123" -> "(Agency) 123"
+        $sourceRecord = '';
+        foreach ($this->agency as $_agency => $_dummy) {
+           $sourceRecord = '(' . $_agency . ') ';
+        }
+        $sourceRecord .= $id;
+
+        return $this->getConsortialHolding($id, array($sourceRecord), $patron);
+    }
+
 
     /**
      * Get Purchase History
