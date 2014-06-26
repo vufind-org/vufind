@@ -704,7 +704,8 @@ class Params implements ServiceLocatorAwareInterface
 
         // Process recommendations for each location:
         $this->recommend = array(
-            'top' => array(), 'side' => array(), 'noresults' => array()
+            'top' => array(), 'side' => array(), 'noresults' => array(),
+            'bottom' => array(),
         );
         foreach ($settings as $location => $currentSet) {
             // If the current location is disabled, skip processing!

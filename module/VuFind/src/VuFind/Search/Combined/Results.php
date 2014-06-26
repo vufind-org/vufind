@@ -61,8 +61,7 @@ class Results extends \VuFind\Search\Base\Results
      */
     protected function performSearch()
     {
-        throw new \Exception(
-            'This is a placeholder class and is not meant to be called!'
-        );
+        // No actual processing goes on here, but we still need the class to
+        // generate recommendation module output.
     }
 }
