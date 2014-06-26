@@ -210,7 +210,10 @@ class AbstractSearch extends AbstractBase
 
         $results = $this->getResultsManager()->get($this->searchClassId);
         $params = $results->getParams();
-        $params->recommendationsEnabled(true);
+
+        // Enable recommendations unless explicitly told to disable them:
+        $noRecommend = $this->params()->fromQuery('noRecommend', false);
+        $params->recommendationsEnabled(!$noRecommend);
 
         // Send both GET and POST variables to search class:
         $params->initFromRequest(
