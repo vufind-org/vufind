@@ -271,6 +271,20 @@ class Factory
     }
 
     /**
+     * Factory for VisualFacets module.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return VisualFacets
+     */
+    public static function getVisualFacets(ServiceManager $sm)
+    {
+        return new VisualFacets(
+            $sm->getServiceLocator()->get('VuFind\Config')
+        );
+    }
+
+    /**
      * Factory for WebResults module.
      *
      * @param ServiceManager $sm Service manager.
