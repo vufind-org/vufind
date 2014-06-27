@@ -500,8 +500,8 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-
-    public function setPivotFacets($facets) {
+    public function setPivotFacets($facets)
+    {
         $this->pivotFacets = $facets;
     }
 
@@ -510,8 +510,8 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return string
      */
-
-    public function getPivotFacets() {
+    public function getPivotFacets()
+    {
         return $this->pivotFacets;
     }
 
