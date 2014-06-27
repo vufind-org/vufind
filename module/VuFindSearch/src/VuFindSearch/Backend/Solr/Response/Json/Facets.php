@@ -130,10 +130,10 @@ class Facets
             if (isset($this->facets['facet_pivot'])) {
                 foreach ($this->facets['facet_pivot'] as $facetdata) {
                     foreach ($facetdata as $onefacet) {
-                        // Gives us an ArrayObject with the callnumber-first value
-                        // as the key and the full data for that callnumber-first,
+                        // Gives us an ArrayObject with the field value
+                        // as the key and the full data for that field,
                         // including count and pivot, as the value.
-                        $this->pivotFacets->offsetSet($onefacet->value, $onefacet);
+                        $this->pivotFacets->offsetSet($onefacet['value'], $onefacet);
                     }
                 }
             }

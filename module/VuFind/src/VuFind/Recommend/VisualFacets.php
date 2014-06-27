@@ -44,16 +44,9 @@ class VisualFacets extends AbstractFacets
     /**
      * Facet configuration
      *
-     * @var array
+     * @var string
      */
     protected $facets;
-
-    /**
-     * Basic configurations
-     *
-     * @var array
-     */
-    protected $baseSettings;
 
     /**
      * setConfig
@@ -100,18 +93,8 @@ class VisualFacets extends AbstractFacets
      *
      * @return array
      */
-    public function getVisualFacetSet()
+    public function getPivotFacetSet()
     {
         return $this->results->getPivotFacetList();
-    }
-
-    /**
-     * Get configuration settings related to visual facets.
-     *
-     * @return array
-     */
-    public function getVisualFacetSettings()
-    {
-        return $this->baseSettings;
     }
 }
