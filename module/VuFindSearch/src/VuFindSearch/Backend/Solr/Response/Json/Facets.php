@@ -140,5 +140,4 @@ class Facets
         }
         return $this->pivotFacets;
     }
-
 }
