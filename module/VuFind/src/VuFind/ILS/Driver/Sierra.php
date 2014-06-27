@@ -395,6 +395,7 @@ class Sierra extends AbstractBase
                     $availability = true;
                 } else {
                     $availability = false;
+                }
 
                 $itemInfo = array(
                     "id" => $id,
@@ -676,4 +677,3 @@ class Sierra extends AbstractBase
 }
 
 ?>
-
