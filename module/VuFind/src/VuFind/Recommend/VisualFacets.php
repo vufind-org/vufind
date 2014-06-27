@@ -92,7 +92,7 @@ class VisualFacets extends AbstractFacets
     public function init($params, $request)
     {
         // Turn on pivot facets:
-        $params->setVisualFacets($this->facets);
+        $params->setPivotFacets($this->facets);
     }
 
     /**
