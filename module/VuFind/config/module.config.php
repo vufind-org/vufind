@@ -693,4 +693,3 @@ $config['router']['routes']['home'] = array(
 );
 
 return $config;
-
