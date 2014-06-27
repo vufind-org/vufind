@@ -186,10 +186,10 @@ var Lightbox = {
     } else {
       $('#modal .modal-body').prepend('<div class="alert alert-error">'+message+'</div>');
     }
-    if (Recaptcha) {
+    $('.icon-spinner').remove();
+    if (Recaptcha && Recaptcha.widget) {
       Recaptcha.reload();
     }
-    $('.icon-spinner').remove();
   },
 
   /***********************************/

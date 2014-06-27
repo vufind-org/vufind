@@ -24,7 +24,7 @@
         <a class="export-toggle dropdown-toggle" data-toggle="dropdown" href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>"><i class="icon-list-alt"></i> <?=$this->transEsc('Export Record') ?></a>
         <ul class="dropdown-menu" role="menu">
           <? foreach ($exportFormats as $exportFormat): ?>
-            <li><a <? if ($this->export()->needsRedirect($exportFormat)): ?>target="<?=$this->escapeHtml($exportFormat)?>Main" <? endif; ?>href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>?style=<?=$this->escapeHtml($exportFormat)?>"><?=$this->transEsc('Export to')?> <?=$this->transEsc($exportFormat)?></a></li>
+            <li><a <? if ($this->export()->needsRedirect($exportFormat)): ?>target="<?=$this->escapeHtmlAttr($exportFormat)?>Main" <? endif; ?>href="<?=$this->recordLink()->getActionUrl($this->driver, 'Export')?>?style=<?=$this->escapeHtmlAttr($exportFormat)?>"><?=$this->transEsc('Export to')?> <?=$this->transEsc($exportFormat)?></a></li>
           <? endforeach; ?>
         </ul>
       </li>
@@ -38,12 +38,12 @@
     <? endif; ?>
     <? if ($cart->isActive()): ?>
       <li id="bookbag-menu">
-        <input id="cartId" type="hidden" name="ids[]" value="<?=$this->escapeHtml($cartId)?>" />
+        <input id="cartId" type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($cartId)?>" />
         <a id="cart-add" class="<? if(!$cart->contains($cartId)): ?>correct <? endif ?>hidden" href="#"><i class="icon-plus-sign"></i> <?=$this->transEsc('Add to Book Bag') ?></a>
         <a id="cart-remove" class="<? if($cart->contains($cartId)): ?>correct <? endif ?>hidden" href="#"><i class="icon-minus-sign"></i> <?=$this->transEsc('Remove from Book Bag') ?></a>
         <noscript>
           <form method="post" name="addForm" action="<?=$this->url('cart-home')?>">
-            <input type="hidden" name="ids[]" value="<?=$this->escapeHtml($cartId)?>" />
+            <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($cartId)?>" />
             <? if ($cart->contains($cartId)): ?>
               <input class="btn" type="submit" name="delete" value="<?=$this->transEsc('Remove from Book Bag')?>"/>
             <? else: ?>

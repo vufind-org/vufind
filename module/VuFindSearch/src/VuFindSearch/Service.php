@@ -256,9 +256,14 @@ class Service
                         $nextIndex = rand(0, $total_records - 1);
                     }
                     $retrievedIndexes[] = $nextIndex;
-                    $currentBatch = $backend->search(
-                        $query, $nextIndex, 1, $params
-                    );
+                    try {
+                        $currentBatch = $backend->search(
+                            $query, $nextIndex, 1, $params
+                        );
+                    } catch (BackendException $e) {
+                        $this->triggerError($e, $args);
+                        throw $e;
+                    }
                     if (!$response) {
                         $response = $currentBatch;
                     } else if ($record = $currentBatch->first()) {

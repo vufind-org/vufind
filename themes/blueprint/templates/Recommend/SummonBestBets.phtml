@@ -3,7 +3,7 @@
   <? foreach ($summonBestBets as $current): ?>
     <p>
       <? if (isset($current['link']) && !empty($current['link'])):?>
-        <a href="<?=$this->escapeHtml($current['link'])?>"><?=$this->escapeHtml($current['title'])?></a>
+        <a href="<?=$this->escapeHtmlAttr($current['link'])?>"><?=$this->escapeHtml($current['title'])?></a>
       <? else: ?>
         <b><?=$this->escapeHtml($current['title'])?></b>
       <? endif; ?>

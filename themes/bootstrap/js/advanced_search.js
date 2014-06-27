@@ -21,15 +21,16 @@ function addSearch(group, term, field)
     }
     newSearch += ">" + searchFields[key] + "</option>";
   }
-  newSearch += '</select> <a href="#" onClick="deleteSearch('+group+','+inputIndex+')" class="help-inline" title="Remove this term">&times;</a></div>';
+  newSearch += '</select> <a href="#" onClick="deleteSearch('+group+','+inputIndex+')" class="help-inline delete" title="Remove this term">&times;</a></div>';
 
   // Insert it
   $("#group" + group + "Holder").before(newSearch);
   // Show x
-  $('#group'+group+' .search .help-inline').show();
+  $('#group'+group+' .search .delete').show();
 }
 
-function deleteSearch(group, eq) {
+function deleteSearch(group, eq)
+{
   var searches = $('#group'+group+' .search');
   for(var i=eq;i<searches.length-1;i++) {
     $(searches[i]).find('input').val($(searches[i+1]).find('input').val());
@@ -42,7 +43,7 @@ function deleteSearch(group, eq) {
   }
   // Hide x
   if($('#group'+group+' .search').length == 1) {
-    $('#group'+group+' .search .help-inline').hide();
+    $('#group'+group+' .search .delete').hide();
   }
 }
 
@@ -51,7 +52,7 @@ function addGroup(firstTerm, firstField, join)
   if (firstTerm  == undefined) {firstTerm  = '';}
   if (firstField == undefined) {firstField = '';}
   if (join       == undefined) {join       = '';}
-  
+
   var newGroup = '<div id="group'+nextGroup+'" class="group well clearfix">'
     + '<div class="span4 pull-right">'
     + '<label for="search_bool'+nextGroup+'"><span class="help-inline">'+searchMatch+':</span>&nbsp;</label>'
@@ -73,8 +74,8 @@ function addGroup(firstTerm, firstField, join)
   newGroup += '>NO Terms</option>'
     + '</select><a href="#" onClick="deleteGroup('+nextGroup+')" class="close hide" title="Remove Group">&times;</a></div><div class="span8 pull-left switch-margins row-fluid"><div class="span3 text-right"><span class="help-inline">'+searchLabel+':</span></div>'
     + '<div class="span9"><i id="group'+nextGroup+'Holder" class="icon-plus-sign"></i> <a href="#" onClick="addSearch('+nextGroup+')">'+addSearchString+'</a></div></div></div>';
-  
-  $('#groupPlaceHolder').before(newGroup);  
+
+  $('#groupPlaceHolder').before(newGroup);
   addSearch(nextGroup, firstTerm, firstField);
   // Show join menu
   if($('.group').length > 1) {

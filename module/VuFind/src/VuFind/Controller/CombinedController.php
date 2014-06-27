@@ -113,6 +113,7 @@ class CombinedController extends AbstractSearch
         // Set up current request context:
         $results = $this->getResultsManager()->get('Combined');
         $params = $results->getParams();
+        $params->recommendationsEnabled(true);
         $params->initFromRequest(
             new Parameters(
                 $this->getRequest()->getQuery()->toArray()
@@ -133,6 +134,10 @@ class CombinedController extends AbstractSearch
             ->toArray();
         $supportsCart = false;
         foreach ($config as $current => $settings) {
+            // Special case -- ignore recommendation config:
+            if ($current == 'RecommendationModules') {
+                continue;
+            }
             $this->adjustQueryForSettings($settings);
             $currentOptions = $options->get($current);
             if ($currentOptions->supportsCart()) {
@@ -152,6 +157,9 @@ class CombinedController extends AbstractSearch
                     . 'Solutions, a division of ProQuest.';
             }
         }
+
+        // Run the search to obtain recommendations:
+        $results->performAndProcessSearch();
 
         // Build view model:
         return $this->createViewModel(
@@ -210,5 +218,8 @@ class CombinedController extends AbstractSearch
         // Apply limit setting, if any:
         $query = $this->getRequest()->getQuery();
         $query->limit = isset($settings['limit']) ? $settings['limit'] : null;
+
+        // Disable recommendations:
+        $query->noRecommend = 1;
     }
 }

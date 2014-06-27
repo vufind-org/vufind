@@ -1,6 +1,6 @@
 <a rel="external" href="<?=$this->recordLink()->getUrl($this->driver)?>">
-  <div class="result source<?=$this->escapeHtml($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
-    <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueID())?>" class="hiddenId" />
+  <div class="result source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
     <h3><?
       $summHighlightedTitle = $this->driver->getHighlightedTitle();
       $summTitle = $this->driver->getTitle();

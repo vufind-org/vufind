@@ -18,9 +18,13 @@
             'searchClassId' => $this->params->getsearchClassId(),
             'checkboxFilters' => $this->params->getCheckboxFacets(),
             'filterList' => $this->params->getFilters(),
+            'hasDefaultsApplied' => $this->params->hasDefaultsApplied(),
             'selectedShards' => $this->params->getSelectedShards()
         )
     );
+
+    // Create shortcut to combined results (since $this->results may get overwritten in processing below):
+    $combinedResults = $this->results;
 
     // Set up breadcrumbs:
     if (isset($this->overrideTitle)) {
@@ -35,6 +39,13 @@
     $this->headScript()->appendFile("check_save_statuses.js");
 ?>
 <div>
+  <? $recs = $combinedResults->getRecommendations('top'); if (!empty($recs)): ?>
+    <div>
+      <? foreach ($recs as $current): ?>
+        <?=$this->recommend($current)?>
+      <? endforeach; ?>
+    </div>
+  <? endif; ?>
   <?=$this->flashmessages()?>
   <? foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
     <div class="combinedResult" id="combined_<?=$this->escapeHtml($searchClassId)?>">
@@ -50,3 +61,10 @@
 
 <div class="clear"></div>
 
+<? $recs = $combinedResults->getRecommendations('bottom'); if (!empty($recs)): ?>
+  <div>
+    <? foreach ($recs as $current): ?>
+      <?=$this->recommend($current)?>
+    <? endforeach; ?>
+  </div>
+<? endif; ?>

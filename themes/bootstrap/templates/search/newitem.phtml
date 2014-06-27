@@ -13,7 +13,7 @@
       <div class="controls">
         <? foreach ($this->ranges as $key => $range): ?>
           <label class="radio inline pad">
-            <input id="newitem_range_<?=$this->escapeHtml($key)?>" type="radio" name="range" value="<?=$this->escapeHtml($range)?>"<?= ($key == 0) ? ' checked="checked"' : ''?>/>
+            <input id="newitem_range_<?=$this->escapeHtmlAttr($key)?>" type="radio" name="range" value="<?=$this->escapeHtmlAttr($range)?>"<?= ($key == 0) ? ' checked="checked"' : ''?>/>
             <?=($range == 1) ? $this->transEsc('Yesterday') : $this->transEsc('Past') . ' ' . $this->escapeHtml($range) . ' ' . $this->transEsc('Days')?>
           </label>
         <? endforeach; ?>
@@ -25,7 +25,7 @@
         <div class="controls">
           <select id="newitem_department" name="department" size="10">
           <? foreach ($this->fundList as $fundId => $fund): ?>
-            <option value="<?=$this->escapeHtml($fundId)?>"><?=$this->transEsc($fund)?></option>
+            <option value="<?=$this->escapeHtmlAttr($fundId)?>"><?=$this->transEsc($fund)?></option>
           <? endforeach; ?>
           </select>
         </div>

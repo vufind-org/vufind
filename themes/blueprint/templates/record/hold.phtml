@@ -50,7 +50,7 @@
           </option>
         <? endif; ?>
         <? foreach ($this->requestGroups as $group): ?>
-          <option value="<?=$this->escapeHtml($group['id'])?>"<?=($selected == $group['id']) ? ' selected="selected"' : ''?>>
+          <option value="<?=$this->escapeHtmlAttr($group['id'])?>"<?=($selected == $group['id']) ? ' selected="selected"' : ''?>>
             <?=$this->escapeHtml($group['name'])?>
           </option>
         <? endforeach; ?>
@@ -73,7 +73,7 @@
         <span id="pickUpLocationLabel"><strong><?=$this->transEsc("pick_up_location")?>:
           <noscript> (<?=$this->transEsc("Please enable JavaScript.")?>)</noscript>
         </strong></span>
-        <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" data-default="<?=$this->escapeHtml($selected)?>">
+        <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" data-default="<?=$this->escapeHtmlAttr($selected)?>">
           <? if ($selected === false): ?>
           <option value="" selected="selected">
             <?=$this->transEsc('select_pickup_location')?>
@@ -89,13 +89,13 @@
           </option>
         <? endif; ?>
         <? foreach ($this->pickup as $lib): ?>
-          <option value="<?=$this->escapeHtml($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
+          <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID']) ? ' selected="selected"' : ''?>>
             <?=$this->escapeHtml($lib['locationDisplay'])?>
           </option>
         <? endforeach; ?>
         </select>
       <? else: ?>
-        <input type="hidden" name="gatheredDetails[pickUpLocation]" value="<?=$this->escapeHtml($this->defaultPickup)?>" />
+        <input type="hidden" name="gatheredDetails[pickUpLocation]" value="<?=$this->escapeHtmlAttr($this->defaultPickup)?>" />
       <? endif; ?>
       </div>
     <? endif; ?>

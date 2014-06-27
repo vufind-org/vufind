@@ -51,15 +51,15 @@
               <div class="row-fluid">
                 <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="span3">
                 <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
-                  <option value="<?=$this->escapeHtml($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
+                  <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
                 <? endforeach; ?>
                 </select>
                 <select name="op<?=$i?>[]" id="searchForm_op<?=$i?>_<?=$j?>" class="span3">
                   <? foreach ($this->options->getAdvancedOperators() as $searchVal => $searchDesc): ?>
-                    <option value="<?=$this->escapeHtml($searchVal)?>"<?=($currRow && $currRow->getOperator() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
+                    <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getOperator() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
                   <? endforeach; ?>
                 </select>
-                <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtml($currRow->getString()):''?>" size="30" name="lookfor<?=$i?>[]" class="span6"/>
+                <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtmlAttr($currRow->getString()):''?>" size="30" name="lookfor<?=$i?>[]" class="span6"/>
               </div>
             <? endfor; ?>
           </div>
@@ -68,7 +68,7 @@
     </div>
     <? $lastSort = $this->options->getLastSort(); ?>
     <? if (!empty($lastSort)): ?>
-      <input type="hidden" name="sort" value="<?=$this->escapeHtml($lastSort)?>" />
+      <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>" />
     <? endif; ?>
     <input type="submit" class="btn btn-primary" name="submit" value="<?=$this->transEsc("Find")?>"/>
   </div>
@@ -82,7 +82,7 @@
             <h4><?=$this->transEsc($field)?></h4>
             <ul>
               <? foreach ($data as $value): ?>
-                <li><input type="checkbox" checked="checked" name="filter[]" value='<?=$this->escapeHtml($value['field'])?>:"<?=$this->escapeHtml($value['value'])?>"' /> <?=$this->escapeHtml($value['displayText'])?></li>
+                <li><input type="checkbox" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"' /> <?=$this->escapeHtml($value['displayText'])?></li>
               <? endforeach; ?>
             </ul>
           </div>

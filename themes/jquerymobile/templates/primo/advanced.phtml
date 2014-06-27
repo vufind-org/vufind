@@ -46,26 +46,26 @@
           <div class="ui-block-a">
             <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]">
               <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
-                <option value="<?=$this->escapeHtml($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
+                <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
               <? endforeach; ?>
             </select>
           </div>
           <div class="ui-block-b">
             <select id="searchForm_op<?=$i?>_<?=$j?>" name="op<?=$i?>[]">
               <? foreach ($this->options->getAdvancedOperators() as $searchVal => $searchDesc): ?>
-                <option value="<?=$this->escapeHtml($searchVal)?>"<?=($currRow && $currRow->getOperator() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
+                <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getOperator() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
               <? endforeach; ?>
             </select>
           </div>
           <div class="ui-block-c">
-            <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtml($currRow->getString()):''?>" name="lookfor<?=$i?>[]" style="margin-top:.5em;height:28px"/>
+            <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtmlAttr($currRow->getString()):''?>" name="lookfor<?=$i?>[]" style="margin-top:.5em;height:28px"/>
           </div>
         <? endfor; ?>
         </fieldset>
       <? endfor; ?>
       <? $lastSort = $this->options->getLastSort(); ?>
       <? if (!empty($lastSort)): ?>
-        <input type="hidden" name="sort" value="<?=$this->escapeHtml($lastSort)?>" />
+        <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>" />
       <? endif; ?>
       <hr/>
       <fieldset class="ui-grid-solo">
@@ -76,10 +76,10 @@
       <?
         /* Load hidden limit preference from Session */
         if (!empty($lastLimit)) {
-          echo '<input type="hidden" name="limit" value="' . $this->escapeHtml($lastLimit) . '" />';
+          echo '<input type="hidden" name="limit" value="' . $this->escapeHtmlAttr($lastLimit) . '" />';
         }
         if (!empty($lastSort)) {
-          echo '<input type="hidden" name="sort" value="' . $this->escapeHtml($lastSort) . '" />';
+          echo '<input type="hidden" name="sort" value="' . $this->escapeHtmlAttr($lastSort) . '" />';
         }
       ?>
     </form>

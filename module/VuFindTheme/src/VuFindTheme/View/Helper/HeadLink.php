@@ -59,7 +59,7 @@ class HeadLink extends \Zend\View\Helper\HeadLink
     /**
      * Create HTML link element from data item
      *
-     * @param stdClass $item data item
+     * @param \stdClass $item data item
      *
      * @return string
      */

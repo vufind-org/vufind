@@ -5,7 +5,7 @@
   <ul class="similar">
     <? foreach ($results as $driver): ?>
     <li>
-      <a href="<?=$this->escapeHtml($driver->getUrl())?>" class="title"><?
+      <a href="<?=$this->escapeHtmlAttr($driver->getUrl())?>" class="title"><?
         $summHighlightedTitle = $driver->getHighlightedTitle();
         $summTitle = $driver->getTitle();
         if (!empty($summHighlightedTitle)) {

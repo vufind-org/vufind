@@ -1,11 +1,11 @@
-<div class="gridRecordBox source<?=$this->escapeHtml($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
-    <input type="hidden" value="<?=$this->escapeHtml($this->driver->getUniqueID())?>" class="hiddenId" />
+<div class="gridRecordBox source<?=$this->escapeHtmlAttr($this->driver->getResourceSource())?> recordId<?=$this->driver->supportsAjaxStatus()?' ajaxItemId':''?>">
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId" />
     <span class="gridImageBox">
       <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
         <? if ($summThumb = $this->record($this->driver)->getThumbnail('large')): ?>
-          <img src="<?=$this->escapeHtml($summThumb)?>" class="gridImage" alt="<?=$this->transEsc('Cover Image')?>"/>
+          <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="gridImage" alt="<?=$this->transEsc('Cover Image')?>"/>
         <? elseif ($summThumb = $this->record($this->driver)->getThumbnail()): ?>
-          <img src="<?=$this->escapeHtml($summThumb)?>" class="gridImage" alt="<?=$this->transEsc('Cover Image')?>"/>
+          <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="gridImage" alt="<?=$this->transEsc('Cover Image')?>"/>
         <? else: ?>
           <img src="<?=$this->url('cover-unavailable')?>" class="gridImage" alt="<?=$this->transEsc('No Cover Image')?>"/>
         <? endif; ?>
@@ -36,7 +36,7 @@
           <? if ($this->driver->replaceURLsWithOpenURL()) $urls = array(); // clear URL list if replace setting is active ?>
         <? endif; ?>
         <? if (!is_array($urls)) $urls = array(); foreach ($urls as $current): ?>
-          <a href="<?=$this->escapeHtml($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
+          <a href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" class="fulltext" target="new"><?=($current['url'] == $current['desc']) ? $this->transEsc('Get full text') : $this->escapeHtml($current['desc'])?></a>
           <br/>
         <? endforeach; ?>
       <? else: ?>
@@ -47,4 +47,4 @@
     </div>
 </div>
 
-<?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtml($openUrl).'"></span>':''?>
+<?=$openUrl?'<span class="Z3988" title="'.$this->escapeHtmlAttr($openUrl).'"></span>':''?>

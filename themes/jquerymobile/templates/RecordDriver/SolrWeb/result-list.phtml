@@ -1,7 +1,7 @@
 <?
     $url = $this->driver->getUrl();
 ?>
-<a rel="external" href="<?=$this->escapeHtml($url)?>">
+<a rel="external" href="<?=$this->escapeHtmlAttr($url)?>">
   <div class="result">
     <h3><?
       $summHighlightedTitle = $this->driver->getHighlightedTitle();

@@ -112,6 +112,17 @@ class AbstractSearch extends AbstractBase
             $view->saved = $this->restoreAdvancedSearch($searchId);
         }
 
+        // If we have default filters, set them up as a fake "saved" search
+        // to properly populate special controls on the advanced screen.
+        if (!$view->saved && count($view->options->getDefaultFilters()) > 0) {
+            $view->saved = $this->getServiceLocator()
+                ->get('VuFind\SearchResultsPluginManager')
+                ->get($this->searchClassId);
+            $view->saved->getParams()->initFromRequest(
+                new \Zend\StdLib\Parameters(array())
+            );
+        }
+
         return $view;
     }
 
@@ -199,7 +210,10 @@ class AbstractSearch extends AbstractBase
 
         $results = $this->getResultsManager()->get($this->searchClassId);
         $params = $results->getParams();
-        $params->recommendationsEnabled(true);
+
+        // Enable recommendations unless explicitly told to disable them:
+        $noRecommend = $this->params()->fromQuery('noRecommend', false);
+        $params->recommendationsEnabled(!$noRecommend);
 
         // Send both GET and POST variables to search class:
         $params->initFromRequest(
@@ -541,5 +555,51 @@ class AbstractSearch extends AbstractBase
             $parsed[$key] = $parts;
         }
         return $parsed;
+    }
+
+    /**
+     * Process the checkbox setting from special facets.
+     *
+     * @param array  $params      Parameters to the checkbox setting
+     * @param object $savedSearch Saved search object (false if none)
+     *
+     * @return array
+     */
+    protected function processAdvancedCheckboxes($params, $savedSearch = false)
+    {
+        // Set defaults for missing parameters:
+        $config = isset($params[0]) ? $params[0] : 'facets';
+        $section = isset($params[1]) ? $params[1] : 'CheckboxFacets';
+
+        // Load config file:
+        $config = $this->getServiceLocator()->get('VuFind\Config')->get($config);
+
+        // Process checkbox settings in config:
+        if (substr($section, 0, 1) == '~') {        // reverse flag
+            $section = substr($section, 1);
+            $flipCheckboxes = true;
+        }
+        $checkboxFacets = ($section && isset($config->$section))
+            ? $config->$section->toArray() : array();
+        if (isset($flipCheckboxes) && $flipCheckboxes) {
+            $checkboxFacets = array_flip($checkboxFacets);
+        }
+
+        // Reformat for convenience:
+        $formatted = array();
+        foreach ($checkboxFacets as $filter => $desc) {
+            $current = compact("desc", "filter");
+            $current['selected']
+                = $savedSearch && $savedSearch->getParams()->hasFilter($filter);
+            // We don't want to double-display checkboxes on advanced search, so
+            // if they are checked, we should remove them from the object to
+            // prevent display in the "other filters" area.
+            if ($current['selected']) {
+                $savedSearch->getParams()->removeFilter($filter);
+            }
+            $formatted[] = $current;
+        }
+
+        return $formatted;
     }
 }

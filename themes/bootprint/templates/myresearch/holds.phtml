@@ -40,17 +40,17 @@
       <hr/>
       <? $iteration++; ?>
       <? $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
-      <div id="record<?=$this->escapeHtml($resource->getUniqueId()) ?>" class="row-fluid">
+      <div id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" class="row-fluid">
         <? if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
           <? $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
-          <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtml($ilsDetails['cancel_details']) ?>" />
+          <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" />
           <div class="pull-left">
-            <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtml($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>" />
+            <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>" />
           </div>
         <? endif; ?>
         <div class="span2 text-center">
           <? if ($summThumb = $this->record($resource)->getThumbnail()): ?>
-            <img src="<?=$this->escapeHtml($summThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
+            <img src="<?=$this->escapeHtmlAttr($summThumb)?>" class="summcover" alt="<?=$this->transEsc('Cover Image')?>"/>
           <? else: ?>
             <img src="<?=$this->url('cover-unavailable')?>" class="summcover" alt="<?=$this->transEsc('No Cover Image')?>"/>
           <? endif; ?>
@@ -136,7 +136,7 @@
             <p><strong><?=$this->transEsc("hold_queue_position") ?>:</strong> <?=$this->escapeHtml($ilsDetails['position']) ?></p>
           <? endif; ?>
           <? if (isset($ilsDetails['cancel_link'])): ?>
-            <p><a href="<?=$this->escapeHtml($ilsDetails['cancel_link']) ?>"><?=$this->transEsc("hold_cancel") ?></a></p>
+            <p><a href="<?=$this->escapeHtmlAttr($ilsDetails['cancel_link']) ?>"><?=$this->transEsc("hold_cancel") ?></a></p>
           <? endif; ?>
 
         </div>

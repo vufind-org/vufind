@@ -251,19 +251,45 @@ class MyResearchController extends AbstractBase
     }
 
     /**
+     * User login action -- clear any previous follow-up information prior to
+     * triggering a login process. This is used for explicit login links within
+     * the UI to differentiate them from contextual login links that are triggered
+     * by attempting to access protected actions.
+     *
+     * @return mixed
+     */
+    public function userloginAction()
+    {
+        $followup = $this->followup()->retrieve();
+        if (isset($followup->url)) {
+            unset($followup->url);
+        }
+        $this->storeRefererForPostLoginRedirect();
+        if ($si = $this->getSessionInitiator()) {
+            return $this->redirect()->toUrl($si);
+        }
+        return $this->forwardTo('MyResearch', 'Login');
+    }
+
+    /**
      * Logout Action
      *
      * @return mixed
      */
     public function logoutAction()
     {
-        $logoutTarget = $this->getRequest()->getServer()->get('HTTP_REFERER');
-        if (empty($logoutTarget)) {
-            $logoutTarget = $this->getServerUrl('home');
-        }
+        $config = $this->getConfig();
+        if (isset($config->Site->logOutRoute)) {
+            $logoutTarget = $this->getServerUrl($config->Site->logOutRoute);
+        } else {
+            $logoutTarget = $this->getRequest()->getServer()->get('HTTP_REFERER');
+            if (empty($logoutTarget)) {
+                $logoutTarget = $this->getServerUrl('home');
+            }
 
-        // clear querystring parameters
-        $logoutTarget = preg_replace('/\?.*/', '', $logoutTarget);
+            // clear querystring parameters
+            $logoutTarget = preg_replace('/\?.*/', '', $logoutTarget);
+        }
 
         return $this->redirect()
             ->toUrl($this->getAuthManager()->logout($logoutTarget));

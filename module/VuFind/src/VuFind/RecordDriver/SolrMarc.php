@@ -654,6 +654,32 @@ class SolrMarc extends SolrDefault
     }
 
     /**
+     * Get hierarchical place names (MARC field 752)
+     *
+     * returns an array of formatted hierarchical place names, consisting of all
+     * alpha-subfields, concatenated for display
+     *
+     * @return array
+     */
+    public function getHierarchicalPlaceNames()
+    {
+        $placeNames = array();
+        if ($fields = $this->marcRecord->getFields('752')) {
+            foreach ($fields as $field) {
+                $subfields = $field->getSubfields();
+                $current = array();
+                foreach ($subfields as $subfield) {
+                    if (!is_numeric($subfield->getCode())) {
+                        $current[] = $subfield->getData();
+                    }
+                }
+                $placeNames[] = implode(' -- ', $current);
+            }
+        }
+        return $placeNames;
+    }
+
+    /**
      * Return an array of associative URL arrays with one or more of the following
      * keys:
      *
@@ -750,18 +776,6 @@ class SolrMarc extends SolrDefault
                     $relationshipIndicator = $field->getIndicator('2');
                     if ($relationshipIndicator == ' ') {
                         $relationshipIndicator = '0';
-                    }
-
-                    // The relationship type is one of the following and there is a
-                    // 580 field, the 580 field should be shown instead see:
-                    //     http://www.loc.gov/marc/bibliographic/bd580.html
-                    $has580 = $this->marcRecord->getFields('580');
-                    if ($has580
-                        && (($value == '780') && ($relationshipIndicator == '4'))
-                        || (($value == '785') && (($relationshipIndicator == '6')
-                        || ($relationshipIndicator =='7')))
-                    ) {
-                        continue;
                     }
 
                     // Assign notes based on the relationship type

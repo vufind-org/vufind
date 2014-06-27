@@ -107,7 +107,11 @@ function registerLightboxEvents() {
    * if it matches the title bar of the lightbox
    */
   var header = $('#modal .modal-header h3').html();
-  $('#modal .modal-body .lead').each(function(i,op) {
+  var contentHeader = $('#modal .modal-body .lead');
+  if(contentHeader.length == 0) {
+    contentHeader = $('#modal .modal-body h2');
+  }
+  contentHeader.each(function(i,op) {
     if (op.innerHTML == header) {
       $(op).hide();
     }
@@ -378,8 +382,8 @@ $(document).ready(function() {
     return Lightbox.get('Record','AjaxTab',{id:id},{hierarchy:hierarchyID,tab:'HierarchyTree'});
   });
   // Login link
-  $('#loginOptions a').click(function() {
-    return Lightbox.get('MyResearch','Login',{},{'loggingin':true});
+  $('#loginOptions a.modal-link').click(function() {
+    return Lightbox.get('MyResearch','UserLogin',{},{'loggingin':true});
   });
   // Email search link
   $('.mailSearch').click(function() {

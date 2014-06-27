@@ -27,6 +27,7 @@
  */
 namespace VuFind\ServiceManager;
 use Zend\ServiceManager\AbstractPluginManager as Base,
+    Zend\ServiceManager\ConfigInterface,
     Zend\ServiceManager\Exception\RuntimeException as ServiceManagerRuntimeException;
 
 /**
@@ -46,11 +47,10 @@ abstract class AbstractPluginManager extends Base
      *
      * Make sure table gateways are properly initialized.
      *
-     * @param null|ConfigInterface $configuration Configuration settings (optional)
+     * @param ConfigInterface $configuration Configuration settings (optional)
      */
-    public function __construct(
-        \Zend\ServiceManager\ConfigInterface $configuration = null
-    ) {
+    public function __construct(ConfigInterface $configuration = null)
+    {
         parent::__construct($configuration);
         $this->addInitializer(
             array('VuFind\ServiceManager\Initializer', 'initPlugin'), false

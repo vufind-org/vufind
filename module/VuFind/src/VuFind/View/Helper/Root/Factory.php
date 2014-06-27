@@ -197,7 +197,9 @@ class Factory
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         $key = isset($config->GoogleAnalytics->apiKey)
             ? $config->GoogleAnalytics->apiKey : false;
-        return new GoogleAnalytics($key);
+        $universal = isset($config->GoogleAnalytics->universal)
+            ? $config->GoogleAnalytics->universal : false;
+        return new GoogleAnalytics($key, $universal);
     }
 
     /**
@@ -494,20 +496,6 @@ class Factory
             || ($cfg->Social->tags && $cfg->Social->tags !== 'disabled')
             ? 'enabled' : 'disabled';
         return new UserTags($mode);
-    }
-
-    /**
-     * Construct the VideoClips helper.
-     *
-     * @param ServiceManager $sm Service manager.
-     *
-     * @return VideoClips
-     */
-    public static function getVideoClips(ServiceManager $sm)
-    {
-        return new VideoClips(
-            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
-        );
     }
 
     /**

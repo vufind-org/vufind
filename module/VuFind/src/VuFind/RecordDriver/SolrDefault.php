@@ -1189,6 +1189,17 @@ class SolrDefault extends AbstractBase
     }
 
     /**
+     * Get hierarchical place names
+     *
+     * @return array
+     */
+    public function getHierarchicalPlaceNames()
+    {
+        // Not currently stored in the Solr index
+        return array();
+    }
+
+    /**
      * Return an array of associative URL arrays with one or more of the following
      * keys:
      *
@@ -1542,7 +1553,7 @@ class SolrDefault extends AbstractBase
      */
     protected function getSupportedCitationFormats()
     {
-        return array('APA', 'MLA');
+        return array('APA', 'Chicago', 'MLA');
     }
 
     /**

@@ -33,6 +33,7 @@ mark {background:0;color:inherit;font-weight:bold}
 .nav-tabs li a {margin:0 4px 0 0;padding:3px 5px}
 .nav-tabs li.active a:hover,
 .nav-tabs li.active a {color:#555}
+p.lead {margin-bottom:10px}
 .slider.slider-horizontal .slider-handle {background:#C6D880;border:1px solid #619144;margin-top:-6px}
 .tab-container {margin:0}
 
@@ -79,8 +80,6 @@ select, .btn:not(.btn-link){vertical-align:top}
 #searchForm_lookfor {border-radius:5px;font-size:14px;height:22px;margin:0;padding:1px 8px}
 #searchForm_type {font-size:14px;height:26px;margin-top:0;padding:2px 4px}
 
-.group .search {margin:1px 0}
-
 /* --- BREADCRUMBS --- */
 .breadcrumb {background:#FFF;border-bottom:1px solid #DDD;border-radius:0;margin:0 0 3px 0;padding:6px 12px}
 .breadcrumb li {color:#888;font-size:12px;text-shadow:none}
@@ -120,6 +119,11 @@ select, .btn:not(.btn-link){vertical-align:top}
 .filters li a:hover {color:#FFF}
 .filters li a i {display:inline-block;margin:2px 0 0 3px;vertical-align:top}
 
+.search-controls [class^=icon-] {background-position:0 0;background-repeat:no-repeat;height:14px;margin-top:1px;width:14px}
+.search-controls .icon-list {background:url('../images/view_list.png')}
+.search-controls .icon-grid {background:url('../images/view_grid.png')}
+.search-controls .pull-right > [class^=icon-] {border:1px solid #FFA500}
+
 /* --- MAIN --- */
 .centered-pills {border-bottom:1px solid #DDD;font-size:12px;margin-right:14px}
 .nav-pills {margin:3px 0 0 0}
@@ -157,6 +161,7 @@ select, .btn:not(.btn-link){vertical-align:top}
 .result>.checkbox input[type="checkbox"] {margin:3px auto}
 .result .left {text-align:center}
 .result .middle {margin-left:1%;width:52%}
+.result .right {margin-left:0;width:16%}
 @media (max-width: 600px) {.result .middle {margin-left:auto;width:75%;}}
 .result .savedLists {margin:2px 0;padding:6px}
 .result .savedLists ul {margin-bottom:0}
@@ -167,6 +172,11 @@ select, .btn:not(.btn-link){vertical-align:top}
 .span9>.noprint>.help-block {margin-bottom:0}
 .result .img-polaroid {margin-left:2px;max-width:96px}
 .top-row [class*="span"] {min-height:1px;padding:0 3px}
+
+/* --- ADVANCED SEARCH --- */
+.group .search {margin:1px 0}
+.checkboxFilter {border:1px solid #CCC;display:inline-table;margin-bottom:10px;padding:10px;width:auto}
+.checkboxFilter label {display:table}
 
 /* -- MY RESEARCH -- */
 .bulkActionForm .btn-link {padding:1px 2px}

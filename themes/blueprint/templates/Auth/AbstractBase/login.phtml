@@ -19,5 +19,5 @@
     <a class="forgot_password" href="<?=$this->url('myresearch-recover')?>"><?=$this->transEsc('Forgot Password')?></a>
   <? endif; ?>
 <? else: ?>
-  <a href="<?=$this->escapeHtml($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
+  <a href="<?=$this->escapeHtmlAttr($sessionInitiator)?>"><?=$this->transEsc("Institutional Login")?></a>
 <? endif; ?>
