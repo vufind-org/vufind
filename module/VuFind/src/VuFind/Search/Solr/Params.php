@@ -72,7 +72,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @var string
      */
-    protected $pivotFacet = null;
+    protected $pivotFacets = null;
 
     /**
      * Constructor
@@ -486,8 +486,8 @@ class Params extends \VuFind\Search\Base\Params
 
         // Pivot facets for visual results
 
-        if ($this->getPivotFacets()) {
-            $backendParams->add('facet.pivot', $this->getPivotFacets());
+        if ($pf = $this->getPivotFacets()) {
+            $backendParams->add('facet.pivot', $pf);
         }
 
         return $backendParams;
