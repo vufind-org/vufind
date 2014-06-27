@@ -68,7 +68,7 @@ class Facets
      *
      * @var ArrayObject
      */
-    protected $pivotfacets;
+    protected $pivotFacets = null;
 
     /**
      * Constructor.
@@ -125,15 +125,20 @@ class Facets
      */
     public function getPivotFacets()
     {
-        $this->pivotfacets = new ArrayObject(); 
-        if (isset($this->facets['facet_pivot'])) {
-            foreach ($this->facets['facet_pivot'] as $facetdata) {
-                foreach ($facetdata as $onefacet) {
-                    $this->pivotfacets->offsetSet($onefacet->value, $onefacet); //Gives us an ArrayObject with the callnumber-first value as the key and the full data for that callnumber-first, including count and pivot, as the value.
+        if (null === $this->pivotFacets) {
+            $this->pivotFacets = new ArrayObject();
+            if (isset($this->facets['facet_pivot'])) {
+                foreach ($this->facets['facet_pivot'] as $facetdata) {
+                    foreach ($facetdata as $onefacet) {
+                        // Gives us an ArrayObject with the callnumber-first value
+                        // as the key and the full data for that callnumber-first,
+                        // including count and pivot, as the value.
+                        $this->pivotFacets->offsetSet($onefacet->value, $onefacet);
+                    }
                 }
             }
         }
-        return $this->pivotfacets;
+        return $this->pivotFacets;
     }
 
 }
