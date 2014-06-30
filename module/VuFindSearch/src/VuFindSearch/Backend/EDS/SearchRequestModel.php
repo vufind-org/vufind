@@ -339,7 +339,7 @@ class SearchRequestModel
     /**
      * Determines whether or not a querystring parameter is indexed
      *
-     * @param unknown $value parameter key to check
+     * @param string $value parameter key to check
      *
      * @return bool
      */
