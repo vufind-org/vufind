@@ -42,6 +42,11 @@ use Zend\Db\TableGateway\AbstractTableGateway,
  */
 class Gateway extends AbstractTableGateway implements ServiceLocatorAwareInterface
 {
+    /**
+     * Name of class used to represent rows (null for default)
+     *
+     * @var string
+     */
     protected $rowClass = null;
     
     /**
