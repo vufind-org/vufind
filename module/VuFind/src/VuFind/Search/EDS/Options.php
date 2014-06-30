@@ -258,6 +258,39 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
+     * Apply user settings. All legal values have already been loaded from the API
+     * at the time this method is called, so we just need to check if the
+     * user-supplied values are valid, and if so, filter/reorder accordingly.
+     *
+     * @param \Zend\Config\Config $searchSettings Configuration
+     * @param string              $section        Configuration section to read
+     * @param string              $property       Property of this object to read
+     * and/or modify.
+     *
+     * @return void
+     */
+    protected function filterAndReorderProperty($searchSettings, $section, $property)
+    {
+        if (!isset($searchSettings->$section)) {
+            return;
+        }
+
+        // Use a reference to access $this->$property to avoid the awkward/ambiguous
+        // expression $this->$property[$key] below.
+        $propertyRef = & $this->$property;
+
+        $newPropertyValues = array();
+        foreach ($searchSettings->$section as $key => $value) {
+            if (isset($propertyRef[$key])) {
+                $newPropertyValues[$key] = $value;
+            }
+        }
+        if (!empty($newPropertyValues)) {
+            $this->$property = $newPropertyValues;
+        }
+    }
+
+    /**
      * Load options from the configuration file. These will override the defaults set
      * from the values in the Info method. (If the values set in the config files in
      * not a 'valid' EDS API value, it will be ignored.
@@ -266,7 +299,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return void
      */
-    public function setOptionsFromConfig($searchSettings)
+    protected function setOptionsFromConfig($searchSettings)
     {
         if (isset($searchSettings->General->default_limit)) {
             $this->defaultLimit = $searchSettings->General->default_limit;
@@ -293,42 +326,15 @@ class Options extends \VuFind\Search\Base\Options
         }
 
         // Search handler setup. Only valid values set in the config files are used.
-        if (isset($searchSettings->Basic_Searches)) {
-            $newBasicHandlers = array();
-            foreach ($searchSettings->Basic_Searches as $key => $value) {
-                if (isset($this->basicHandlers[$key])) {
-                    $newBasicHandlers[$key] = $value;
-                }
-            }
-            if (!empty($newBasicHandlers)) {
-                $this->basicHandlers = $newBasicHandlers;
-            }
-        }
-
-        if (isset($searchSettings->Advanced_Searches)) {
-            $newAdvancedHandlers = array();
-            foreach ($searchSettings->Advanced_Searches as $key => $value) {
-                if (isset($this->advancedHandlers[$key])) {
-                    $newAdvancedHandlers[$key] = $value;
-                }
-            }
-            if (!empty($newAdvancedHandlers)) {
-                $this->advancedHandlers = $newAdvancedHandlers;
-            }
-        }
+        $this->filterAndReorderProperty(
+            $searchSettings, 'Basic_Searches', 'basicHandlers'
+        );
+        $this->filterAndReorderProperty(
+            $searchSettings, 'Advanced_Searches', 'advancedHandlers'
+        );
 
         // Sort preferences:
-        if (isset($searchSettings->Sorting)) {
-            $newSortOptions = array();
-            foreach ($searchSettings->Sorting as $key => $value) {
-                if (isset($this->sortOptions[$key])) {
-                    $newSortOptions = $value;
-                }
-            }
-            if (!empty($newSortOptions)) {
-                $this->sortOptions = $newSortOptions;
-            }
-        }
+        $this->filterAndReorderProperty($searchSettings, 'Sorting', 'sortOptions');
 
         if (isset($searchSettings->General->default_sort)
             && isset($this->sortOptions[$searchSettings->General->default_sort])
