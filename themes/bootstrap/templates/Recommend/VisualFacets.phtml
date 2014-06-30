@@ -44,10 +44,6 @@
 
         $('.pagination').css('display', 'none');
 
-        var nonsequitur = $('.floatleft').html().replace(/<?=$this->transEsc('Showing')?>(.*)\n(.*)<?=$this->transEsc('of')?>/g, '<strong><?=$this->transEsc('Results')?>:</strong>');
-
-        $('.floatleft').html(nonsequitur);
-
         //  Color scheme developed using the awesome site
         //  http://colorschemedesigner.com
         //  Hue degrees (in order) -- 90, 105, 120, 135, 150
@@ -65,12 +61,12 @@
           .domain(["A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "U", "V", "Z"]);
 
         var div = d3.select("#visualResults")
-          .style("width", "710px")
+          .style("width", $("#visualResults").width()+"px")
           .style("height", "575px")
           .style("position", "absolute");
 
         var treemap = d3.layout.treemap()
-          .size([710, 575])
+          .size([$("#visualResults").width(), 575])
           .sticky(true)
           .mode("squarify")
           .padding(0,0,0,18)
