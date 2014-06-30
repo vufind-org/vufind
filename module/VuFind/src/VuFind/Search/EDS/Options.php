@@ -291,6 +291,37 @@ class Options extends \VuFind\Search\Base\Options
     }
 
     /**
+     * Apply user-requested "common" settings.
+     *
+     * @param \Zend\Config\Config $searchSettings Configuration
+     * @param string              $setting        Name of common setting
+     * @param string              $list           Name of property containing valid
+     * values
+     * @param string              $target         Name of property to populate
+     *
+     * @return void
+     */
+    protected function setCommonSettings($searchSettings, $setting, $list, $target)
+    {
+        if (isset($searchSettings->General->$setting)) {
+            $userValues = explode(',', $searchSettings->General->$setting);
+
+            if (!empty($userValues) && isset($this->$list) && !empty($this->$list)) {
+                // Reference to property containing API-provided whitelist of values
+                $listRef = & $this->$list;
+                // Reference to property containing final common settings
+                $targetRef = & $this->$target;
+                foreach ($userValues as $current) {
+                    // Only add values that are valid according to the API's list
+                    if (isset($listRef[$current])) {
+                        $targetRef[] = $current;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Load options from the configuration file. These will override the defaults set
      * from the values in the Info method. (If the values set in the config files in
      * not a 'valid' EDS API value, it will be ignored.
@@ -366,43 +397,14 @@ class Options extends \VuFind\Search\Base\Options
                 = $searchSettings->Advanced_Facet_Settings->special_facets;
         }
 
-
-        //Only the common limiters that are valid limiters for this profile
-        //will be used
-        if (isset($searchSettings->General->common_limiters)) {
-            $commonLimiters = $searchSettings->General->common_limiters;
-            if (isset($commonLimiters)) {
-                $cLimiters = explode(',', $commonLimiters);
-
-                if (!empty($cLimiters) && isset($this->limiterOptions)
-                    && !empty($this->limiterOptions)
-                ) {
-                    foreach ($cLimiters as $cLimiter) {
-                        if (isset($this->limiterOptions[$cLimiter])) {
-                            $this->commonLimiters[] = $cLimiter;
-                        }
-                    }
-                }
-            }
-        }
-
-        //Only the common expanders that are valid expanders for this profile
-        //will be used
-        if (isset($searchSettings->General->common_expanders)) {
-            $commonExpanders= $searchSettings->General->common_expanders;
-            if (isset($commonExpanders)) {
-                $cExpanders = explode(',', $commonExpanders);
-                if (!empty($cExpanders) && isset($this->expanderOptions)
-                    && !empty($this->expanderOptions)
-                ) {
-                    foreach ($cExpanders as $cExpander) {
-                        if (isset($this->expanderOptions[$cExpander])) {
-                            $this->commonExpanders[] = $cExpander;
-                        }
-                    }
-                }
-            }
-        }
+        // Set common limiters and expanders.
+        // Only the values that are valid for this profile will be used.
+        $this->setCommonSettings(
+            $searchSettings, 'common_limiters', 'limiterOptions', 'commonLimiters'
+        );
+        $this->setCommonSettings(
+            $searchSettings, 'common_expanders', 'expanderOptions', 'commonExpanders'
+        );
     }
 
     /**
