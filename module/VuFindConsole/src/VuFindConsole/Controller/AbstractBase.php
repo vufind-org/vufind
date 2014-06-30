@@ -42,6 +42,11 @@ use Zend\Console\Console, Zend\Console\Getopt,
  */
 class AbstractBase extends AbstractActionController
 {
+    /**
+     * Console options
+     *
+     * @var Getopt
+     */
     protected $consoleOpts;
 
     /**
