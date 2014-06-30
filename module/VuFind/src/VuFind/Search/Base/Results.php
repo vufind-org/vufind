@@ -44,24 +44,82 @@ use VuFindSearch\Service as SearchService;
  */
 abstract class Results implements ServiceLocatorAwareInterface
 {
+    /**
+     * Search parameters
+     *
+     * @var Params
+     */
     protected $params;
-    // Total number of results available
+
+    /**
+     * Total number of results available
+     *
+     * @var int
+     */
     protected $resultTotal = null;
-    // Override (only for use in very rare cases)
+
+    /**
+     * Override (only for use in very rare cases)
+     *
+     * @var int
+     */
     protected $startRecordOverride = null;
-    // Array of results (represented as Record Driver objects) retrieved on latest
-    // search:
+
+    /**
+     * Array of results (represented as Record Driver objects) retrieved on latest
+     * search
+     *
+     * @var array
+     */
     protected $results = null;
-    // An ID number for saving/retrieving search
+
+    /**
+     * An ID number for saving/retrieving search
+     *
+     * @var int
+     */
     protected $searchId = null;
+
+    /**
+     * Is this a user-saved search?
+     *
+     * @var bool
+     */
     protected $savedSearch = null;
-    // STATS
+
+    /**
+     * Query start time
+     *
+     * @var float
+     */
     protected $queryStartTime = null;
+
+    /**
+     * Query end time
+     *
+     * @var float
+     */
     protected $queryEndTime = null;
+
+    /**
+     * Query time (total)
+     *
+     * @var float
+     */
     protected $queryTime = null;
-    // Helper objects
+
+    /**
+     * Helper objects
+     *
+     * @var array
+     */
     protected $helpers = array();
-    // Spelling
+
+    /**
+     * Spelling suggestions
+     *
+     * @var array
+     */
     protected $suggestions = null;
 
     /**
