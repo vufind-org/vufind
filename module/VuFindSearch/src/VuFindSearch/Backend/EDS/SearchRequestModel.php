@@ -321,10 +321,8 @@ class SearchRequestModel
             $qs['pagenumber'] = $this->pageNumber;
         }
 
-        if (isset($this->highlight)) {
-            $highlightVal = $this->highlight ? 'y' : 'n';
-            $qs['highlight']= $highlightVal;
-        }
+        $highlightVal = isset($this->highlight) && $this->highlight ? 'y' : 'n';
+        $qs['highlight']= $highlightVal;
 
         return $qs;
     }
