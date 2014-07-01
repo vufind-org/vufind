@@ -1,0 +1,53 @@
+@blue: #3CA0D0;
+@green: #8DC63F;
+@orange: #FF8800;
+
+@lgrey: #DDDFDD;
+@grey: #666766;
+@dgrey: #333344;
+
+.t-black {color:#000}
+.t-white {color:#FFF}
+
+.blue {background:@blue;.t-white}
+.green {background:@green;.t-black}
+.orange {background:@orange;.t-white}
+
+.lgrey {background:@lgrey;color:@grey}
+.grey {background:@grey;.t-white}
+.dgrey {background:@dgrey;.t-white}
+
+body {background:@lgrey;font:16px "Lato",Arial;text-align:center}
+h1,h2 {color:@dgrey}
+h1 {font-size:40px}
+h2 {font-size:32px;font-weight:normal}
+h3 {border:2px solid #FFF;border-radius:2px;display:table;margin:auto;padding:4px 10px}
+p {line-height:22px;text-align:left;text-indent:2em}
+.colors div {
+  padding:1em 0;
+}
+.header {
+  background:#FFF;
+  border:4px solid @green;
+  border-width:6px 0;
+  margin:0;
+  padding:10px;
+  text-align:center;
+  width:100%;
+}
+.body {
+  .blue;
+  margin:1em 0 0 0;
+  padding:16px 6px;
+  a {
+    .t-white;
+    text-decoration:underline;
+  }
+}
+.footer {
+  .lgrey;
+  border-top:1px solid @grey;
+  color:@grey;
+  font-size:85%;
+  padding:1em;
+}
