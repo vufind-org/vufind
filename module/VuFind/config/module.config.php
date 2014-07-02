@@ -266,6 +266,20 @@ $config = array(
                     'syndeticsplus' => 'VuFind\Content\Excerpts\Factory::getSyndeticsPlus',
                 ),
             ),
+            'content_covers' => array(
+                'factories' => array(
+                    'amazon' => 'VuFind\Content\Covers\Factory::getAmazon',
+                    'booksite' => 'VuFind\Content\Covers\Factory::getBooksite',
+                    'contentcafe' => 'VuFind\Content\Covers\Factory::getContentCafe',
+                    'syndetics' => 'VuFind\Content\Covers\Factory::getSyndetics',
+                ),
+                'invokables' => array(
+                    'google' => 'VuFind\Content\Covers\Google',
+                    'librarything' => 'VuFind\Content\Covers\LibraryThing',
+                    'openlibrary' => 'VuFind\Content\Covers\OpenLibrary',
+                    'summon' => 'VuFind\Content\Covers\Summon',
+                ),
+            ),
             'content_reviews' => array(
                 'factories' => array(
                     'amazon' => 'VuFind\Content\Reviews\Factory::getAmazon',
