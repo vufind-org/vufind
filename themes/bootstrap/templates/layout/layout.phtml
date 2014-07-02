@@ -31,7 +31,9 @@
                     'bulk_save_success' => 'bulk_save_success',
                     'close' => 'close',
                     'loading' => 'Loading',
-                    'sms_success' => 'sms_success'
+                    'sms_success' => 'sms_success',
+                    'hierarchy_hide_tree' => 'hierarchy_hide_tree',
+                    'hierarchy_show_tree' => 'hierarchy_show_tree'
                 )
             );
             if ($cart->isActive()) {
@@ -54,7 +56,7 @@
             }
             $this->headScript()->appendScript($this->jsTranslations()->getScript());
         }
-        
+
         // Session keep-alive
         if ($this->KeepAlive()) {
             $this->headScript()->appendScript('var keepAliveInterval = '
@@ -87,7 +89,7 @@
         <?=$this->layout()->searchbox?>
         <? endif; ?>
       </div>
-      
+
       <? if((!isset($this->layout()->showBreadcrumbs) || $this->layout()->showBreadcrumbs == true)
         && !empty($this->layout()->breadcrumbs)
         && $this->layout()->breadcrumbs !== false

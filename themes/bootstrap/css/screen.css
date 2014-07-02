@@ -22,12 +22,12 @@ li a.hidden {display:none}
 .sidebar .checkbox { margin-left:10px }
 .sidebar .nav-list li:not(.divider) { min-height:26px }
 .sidebar .nav-list li span.main { display:inline-block;padding:3px 0 }
-.sidebar .nav-list li input[type="checkbox"] { float:left;margin:4px 3px 0 0 }
+.sidebar .nav-list li input[type="checkbox"], .jstree-facet li input[type="checkbox"] { float:left;margin:4px 3px 0 0 }
 .sidebar .nav-list li.applied input[type="checkbox"] { margin-top:7px }
 .sidebar .nav-list li .icon-ok { margin-top:3px }
 .sidebar .nav-list li .icon-remove { margin-left:3px }
 .sidebar .small { color:#333;line-height:85% }
-.sidebar a .small { margin-top:6px }
+.sidebar .small { margin-top:8px }
 .sidebar a.small,.sidebar .small a { color:#08C }
 .small { font-size:85% }
 .switch-margins,.row .switch-margins,.row-fluid .switch-margins { display: inline-block; margin:auto 0 }
@@ -50,6 +50,29 @@ div.xml.collapsed > div { display:none;margin-left:2px }
 .sidebar .collapsed li:not(.nav-header) {display:none}
 .sidebar .collapsed.open .nav-header:before {content:'\25B2'}
 .sidebar .collapsed.open li:not(.hidden) {display:block}
+/* --- jsTree hierarchy tree and hierarchical facets --- */
+/*to make long titles wrap*/
+#hierarchyTree .jstree ins { cursor:pointer; }
+#hierarchyTree .jstree a { white-space:normal !important; height: auto; padding:1px 2px; text-decoration: none; } 
+#hierarchyTree .jstree li > ins { vertical-align:top;  }
+#hierarchyTree .jstree-default .jstree-hovered { background:#EEE; border-color:#F9F9F9; }
+#hierarchyTree .jstree-default .jstree-clicked { background:#006DCC; border-color:#006DCC; color:#FFF; }
+#hierarchyTree .jstree-default .jstree-focused { background:#FFF; }
+#hierarchyTree .jstree-default a.jstree-search { color:#9B4F42; }
+#hierarchyTree .jstree-themeicon { display: none; }
+#vakata-contextmenu.jstree-default-context a { color:#222222; }
+#vakata-contextmenu.jstree-default-context .vakata-hover > a { background:#006DCC; border-color:#006DCC; color:#222222; }
+.sidebar a.jstree-anchor { display: block; }
+.sidebar .jstree .small { display: inline-block; }
+.sidebar .jstree-container-ul.nav { margin-left: -10px; } 
+.sidebar .jstree-facet li span.main { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sidebar .jstree-facet li span.main.applied { color: #333333; }
+.sidebar .jstree-facet li a:hover, .sidebar .jstree-facet li a:focus { text-decoration: none; background-color: #EEEEEE }
+.sidebar .jstree-ocl:before { font-family: 'FontAwesome'; float: left; speak: none; font-weight: normal; font-style: normal; text-decoration: inherit; cursor: pointer; padding: 3px 0px; width: 10px; }
+.sidebar .jstree-default .jstree-open > .jstree-ocl:before { content: "\f0d7"; }
+.sidebar .jstree-default .jstree-closed > .jstree-ocl:before { content: "\f0da"; }
+.sidebar .jstree-default .jstree-leaf > .jstree-ocl:before { content: " "; }
+
 /* --- Search result flexing --- */
 @media (min-width: 601px) and (max-width: 767px) {
   .result .left,.result .middle,.result .right {

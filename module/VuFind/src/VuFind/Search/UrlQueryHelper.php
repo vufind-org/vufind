@@ -84,7 +84,7 @@ class UrlQueryHelper
         $this->params = $params;
         $this->options = $params->getOptions();
     }
-    
+
     /**
      * Set the name of the parameter used for basic search terms.
      *
@@ -137,7 +137,7 @@ class UrlQueryHelper
      *
      * @return array
      */
-    protected function getParamArray()
+    public function getParamArray()
     {
         $params = $this->defaultParams;
 
@@ -248,29 +248,33 @@ class UrlQueryHelper
     /**
      * Add a facet to the parameters.
      *
-     * @param string $field    Facet field
-     * @param string $value    Facet value
-     * @param string $operator Facet type to add (AND, OR, NOT)
+     * @param string $field      Facet field
+     * @param string $value      Facet value
+     * @param string $operator   Facet type to add (AND, OR, NOT)
+     * @param array  $paramArray Optional array of parameters to use instead of
+     * getParamArray()
      *
      * @return string
      */
-    public function addFacet($field, $value, $operator = 'AND')
+    public function addFacet($field, $value, $operator = 'AND', $paramArray = null)
     {
         // Facets are just a special case of filters:
         $prefix = ($operator == 'NOT') ? '-' : ($operator == 'OR' ? '~' : '');
-        return $this->addFilter($prefix . $field . ':"' . $value . '"');
+        return $this->addFilter($prefix . $field . ':"' . $value . '"', $paramArray);
     }
 
     /**
      * Add a filter to the parameters.
      *
-     * @param string $filter Filter to add
+     * @param string $filter     Filter to add
+     * @param array  $paramArray Optional array of parameters to use instead of
+     * getParamArray()
      *
      * @return string
      */
-    public function addFilter($filter)
+    public function addFilter($filter, $paramArray)
     {
-        $params = $this->getParamArray();
+        $params = is_null($paramArray) ? $this->getParamArray() : $paramArray;
 
         // Add the filter:
         if (!isset($params['filter'])) {
@@ -299,16 +303,19 @@ class UrlQueryHelper
     /**
      * Remove a facet from the parameters.
      *
-     * @param string $field    Facet field
-     * @param string $value    Facet value
-     * @param bool   $escape   Should we escape the string for use in the view?
-     * @param string $operator Facet type to add (AND, OR, NOT)
+     * @param string $field      Facet field
+     * @param string $value      Facet value
+     * @param bool   $escape     Should we escape the string for use in the view?
+     * @param string $operator   Facet type to add (AND, OR, NOT)
+     * @param array  $paramArray Optional array of parameters to use instead of
+     * getParamArray()
      *
      * @return string
      */
-    public function removeFacet($field, $value, $escape = true, $operator = 'AND')
-    {
-        $params = $this->getParamArray();
+    public function removeFacet($field, $value, $escape = true, $operator = 'AND',
+        $paramArray = null
+    ) {
+        $params = is_null($paramArray) ? $this->getParamArray() : $paramArray;
 
         // Account for operators:
         if ($operator == 'NOT') {
