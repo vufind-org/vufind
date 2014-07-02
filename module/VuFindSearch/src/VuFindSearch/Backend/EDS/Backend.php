@@ -59,23 +59,28 @@ class Backend implements BackendInterface
 {
     /**
      * Client user to make the actually requests to the EdsApi
+     *
      * @var ApiClient
      */
     protected $client;
 
     /**
      * Backend identifier
+     *
      * @var identifier
      */
     protected $identifier;
 
-
     /**
+     * Query builder
+     *
      * @var QueryBuilder
      */
     protected $queryBuilder;
 
     /**
+     * Record collection factory
+     *
      * @var RecordCollectionFactory
      */
     protected $collectionFactory;
@@ -89,30 +94,35 @@ class Backend implements BackendInterface
 
     /**
      * User name for EBSCO EDS API account if using UID Authentication
+     *
      * @var string
      */
     protected $userName = null;
 
     /**
      * Password for EBSCO EDS API account if using UID Authentication
+     *
      * @var string
      */
     protected $password = null;
 
     /**
      * Profile for EBSCO EDS API account
+     *
      * @var string
      */
     protected $profile = null;
 
     /**
      * Whether or not to use IP Authentication for communication with the EDS API
+     *
      * @var boolean
      */
     protected $ipAuth = false;
 
     /**
      * Organization EDS API requests are being made for
+     *
      * @var string
      */
     protected $orgid = null;
@@ -149,7 +159,6 @@ class Backend implements BackendInterface
         $this->ipAuth = isset($account['ipauth']) ? $account['ipauth'] : null;
         $this->profile = isset($account['profile']) ? $account['profile'] : null;
         $this->orgId = isset($account['orgid']) ? $account['orgid'] : null;
-
     }
 
     /**
@@ -172,8 +181,8 @@ class Backend implements BackendInterface
     public function getIdentifier()
     {
         return $this->identifier;
-
     }
+
     /**
      * Sets the superior service locator
      *

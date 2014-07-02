@@ -39,6 +39,11 @@ use VuFind\Cover\Loader;
  */
 class CoverController extends AbstractBase
 {
+    /**
+     * Cover loader
+     *
+     * @var Loader
+     */
     protected $loader = false;
 
     /**

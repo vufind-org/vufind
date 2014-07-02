@@ -138,4 +138,33 @@ class WriterTest extends \VuFindTest\Unit\TestCase
         $ini = parse_ini_string($test->getContent(), true);
         $this->assertEquals('val1b', $ini['test2']['key1']);
     }
+
+    /**
+     * Test that comments are maintained.
+     *
+     * @return void
+     */
+    public function testCommentMaintenance()
+    {
+        $cfg = "[test]\nkey1=val1 ; comment\n";
+        $test = new Writer('fake.ini', $cfg);
+        $test->set('test', 'key1', 'val2');
+        $this->assertEquals(
+            "[test]\nkey1 = \"val2\" ; comment", trim($test->getContent())
+        );
+    }
+
+    /**
+     * Test inserting an empty setting.
+     *
+     * @return void
+     */
+    public function testInsertEmpty()
+    {
+        $cfg = "[a]\none=1\n[b]\n";
+        $test = new Writer('fake.ini', $cfg);
+        $test->set('a', 'two', '');
+        $ini = parse_ini_string($test->getContent(), true);
+        $this->assertEquals('', $ini['a']['two']);
+    }
 }

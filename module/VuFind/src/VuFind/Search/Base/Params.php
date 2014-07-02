@@ -51,28 +51,102 @@ class Params implements ServiceLocatorAwareInterface
      */
     protected $query;
 
-    protected $searchTerms = array();
-    // Page number
+    /**
+     * Page number
+     *
+     * @var int
+     */
     protected $page = 1;
-    // Sort settings
+
+    /**
+     * Sort setting
+     *
+     * @var string
+     */
     protected $sort = null;
+
+    /**
+     * Override special RSS sort feature?
+     *
+     * @var bool
+     */
     protected $skipRssSort = false;
-    // Result limit
+
+    /**
+     * Result limit
+     *
+     * @var int
+     */
     protected $limit = 20;
+
+    /**
+     * Search type (basic or advanced)
+     *
+     * @var string
+     */
     protected $searchType  = 'basic';
-    // Shards
+
+    /**
+     * Shards
+     *
+     * @var array
+     */
     protected $selectedShards = array();
-    // View
+
+    /**
+     * View
+     *
+     * @var string
+     */
     protected $view = null;
-    // \VuFind\Search\Base\Options subclass
+
+    /**
+     * Search options
+     *
+     * @var Options
+     */
     protected $options;
-    // Recommendation settings
+
+    /**
+     * Recommendation settings
+     *
+     * @var array
+     */
     protected $recommend = array();
+
+    /**
+     * Are recommendations turned on?
+     *
+     * @var bool
+     */
     protected $recommendationEnabled = false;
-    // Facet settings
+
+    /**
+     * Main facet configuration
+     *
+     * @var array
+     */
     protected $facetConfig = array();
+
+    /**
+     * Checkbox facet configuration
+     *
+     * @var array
+     */
     protected $checkboxFacets = array();
+
+    /**
+     * Applied filters
+     *
+     * @var array
+     */
     protected $filterList = array();
+
+    /**
+     * Facets in "OR" mode
+     *
+     * @var array
+     */
     protected $orFacets = array();
 
     /**
@@ -478,7 +552,7 @@ class Params implements ServiceLocatorAwareInterface
     /**
      * Return the sorting value
      *
-     * @return int
+     * @return string
      */
     public function getSort()
     {
@@ -704,7 +778,8 @@ class Params implements ServiceLocatorAwareInterface
 
         // Process recommendations for each location:
         $this->recommend = array(
-            'top' => array(), 'side' => array(), 'noresults' => array()
+            'top' => array(), 'side' => array(), 'noresults' => array(),
+            'bottom' => array(),
         );
         foreach ($settings as $location => $currentSet) {
             // If the current location is disabled, skip processing!

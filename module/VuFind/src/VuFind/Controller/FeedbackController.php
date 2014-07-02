@@ -54,7 +54,7 @@ class FeedbackController extends AbstractBase
         }
         $validator = new \Zend\Validator\EmailAddress();
         if (!$validator->isValid($users_email)) {
-            throw \Exception('Email address is invalid');
+            throw new \Exception('Email address is invalid');
         }
 
         // These settings are set in the feedback settion of your config.ini
