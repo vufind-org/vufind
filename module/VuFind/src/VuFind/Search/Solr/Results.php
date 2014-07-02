@@ -339,11 +339,11 @@ class Results extends \VuFind\Search\Base\Results
         }
 
         // Start building the flare object:
-     $flare = "";    
-     $flare->name = "flare";
-     $flare->total = $this->resultTotal;
-     $visualFacets = $this->responseFacets->getPivotFacets();
-     $flare->children = $visualFacets;
+        $flare = new \stdClass();
+        $flare->name = "flare";
+        $flare->total = $this->resultTotal;
+        $visualFacets = $this->responseFacets->getPivotFacets();
+        $flare->children = $visualFacets;
         return $flare;
     }
 }
