@@ -18,24 +18,6 @@
         }
     },
     {
-        "name": "mobileesp/mdetect",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "dist": {
-            "type": "file",
-            "url": "http://mobileesp.googlecode.com/svn/PHP/mdetect.php",
-            "reference": null,
-            "shasum": null
-        },
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "classmap": [
-                "/"
-            ]
-        }
-    },
-    {
         "name": "pear-pear.php.net/Console_Getopt",
         "version": "1.3.1",
         "version_normalized": "1.3.1.0",
@@ -889,5 +871,23 @@
             "php",
             "stylesheet"
         ]
+    },
+    {
+        "name": "mobileesp/mdetect",
+        "version": "dev-master",
+        "version_normalized": "9999999-dev",
+        "dist": {
+            "type": "file",
+            "url": "http://mobileesp.googlecode.com/svn/PHP/mdetect.php",
+            "reference": null,
+            "shasum": null
+        },
+        "type": "library",
+        "installation-source": "dist",
+        "autoload": {
+            "classmap": [
+                "/"
+            ]
+        }
     }
 ]
