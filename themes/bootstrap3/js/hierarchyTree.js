@@ -90,17 +90,18 @@ function buildJSONNodes(xml)
 {
   var jsonNode = [];
   $(xml).children('item').each(function() {
-     var content = $(this).children('content');
-     var id = content.children("name[class='JSTreeID']");
-     var name = content.children('name[href]');
-     jsonNode.push({
-       'id': id.text().replace(':', '-'),
-       'text': name.text(),
-       'a_attr': {
-         'href': name.attr('href')
-       },
-       children: buildJSONNodes(this)
-     });
+    var content = $(this).children('content');
+    var id = content.children("name[class='JSTreeID']");
+    var name = content.children('name[href]');
+    jsonNode.push({
+      'id': id.text().replace(':', '-'),
+      'text': name.text(),
+      'a_attr': {
+        'href': name.attr('href')
+      },
+      'type': name.attr('href').match(/\/Collection\//) ? 'collection' : 'record',
+      children: buildJSONNodes(this)
+    });
   });
   return jsonNode;
 }
@@ -171,7 +172,7 @@ $(document).ready(function()
       }
     });
 
-  $('#treeSearch').removeClass('hidden');treeSearch
+  $('#treeSearch').removeClass('hidden');
   $('#treeSearch [type=submit]').click(doTreeSearch);
   $('#treeSearchText').keyup(function (e) {
     var code = (e.keyCode ? e.keyCode : e.which);

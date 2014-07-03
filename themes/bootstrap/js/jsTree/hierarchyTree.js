@@ -25,9 +25,9 @@ function getRecord(recordID)
 function changeNoResultLabel(display)
 {
   if (display) {
-    $("#treeSearchNoResults").show();
+    $("#treeSearchNoResults").removeClass('hidden');
   } else {
-    $("#treeSearchNoResults").hide();
+    $("#treeSearchNoResults").addClass('hidden');
   }
 }
 
@@ -58,17 +58,27 @@ function doTreeSearch()
     }
     searchAjax = $.ajax({
       "url" : path + '/Hierarchy/SearchTree?' + $.param({
+        'lookfor': keyword,
         'hierarchyID': hierarchyID,
         'type': $("#treeSearchType").val()
       }) + "&format=true",
       'success': function(data) {
-        $('#hierarchyTree').find('.jstree-search').removeClass('jstree-search');
-        var tree = $('#hierarchyTree').jstree(true);
-        tree.close_all();
-        for(var i=data.results.length;i--;) {
-          var id = data.results[i].replace(':', '-');
-          $('#hierarchyTree').find('#'+id).addClass('jstree-search');
-          tree._open_to(id);
+        if(data.results.length > 0) {
+          $('#hierarchyTree').find('.jstree-search').removeClass('jstree-search');
+          var tree = $('#hierarchyTree').jstree(true);
+          tree.close_all();
+          for(var i=data.results.length;i--;) {
+            var id = data.results[i].replace(':', '-');
+            tree._open_to(id);
+          }
+          for(var i=data.results.length;i--;) {
+            var id = data.results[i].replace(':', '-');
+            $('#hierarchyTree').find('#'+id).addClass('jstree-search');
+          }
+          changeNoResultLabel(false);
+          changeLimitReachedLabel(data.limitReached);
+        } else {
+          changeNoResultLabel(true);
         }
         $('#treeSearchLoadingImg').addClass('hidden');
       }
@@ -89,6 +99,7 @@ function buildJSONNodes(xml)
        'a_attr': {
          'href': name.attr('href')
        },
+      'type': name.attr('href').match(/\/Collection\//) ? 'collection' : 'record',
        children: buildJSONNodes(this)
      });
   });
@@ -130,7 +141,7 @@ $(document).ready(function()
       }
     })
     .jstree({
-      'plugins': ['search'],
+      'plugins': ['search','types'],
       'core' : {
         'data' : function (obj, cb) {
           $.ajax({
@@ -147,13 +158,22 @@ $(document).ready(function()
             }
           })
         },
-        "themes" : {
-          "url": path + '/themes/bootstrap3/js/vendor/jsTree/themes/default/style.css'
+        'themes' : {
+          'url': path + '/themes/bootstrap3/js/vendor/jsTree/themes/default/style.css'
+        }
+      },
+      'types' : {
+        'record': {
+          'icon':'icon icon-file'
+        },
+        'collection': {
+          'icon':'icon icon-folder-open'
         }
       }
     });
 
   $('#treeSearch').removeClass('hidden');
+  $('#treeSearch [type=submit]').click(doTreeSearch);
   $('#treeSearchText').keyup(function (e) {
     var code = (e.keyCode ? e.keyCode : e.which);
     if(code == 13 || $(this).val().length == 0) {
