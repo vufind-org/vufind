@@ -1,0 +1,93 @@
+<?
+    // Set page title.
+    $this->headTitle($this->translate('Advanced Search'));
+
+    // Disable top search box -- this page has a special layout.
+    $this->layout()->searchbox = false;
+
+    // Set up breadcrumbs:
+    $this->layout()->breadcrumbs = '<li class="active">' . $this->transEsc('Advanced Search') . '</li>';
+
+    // Set up saved search details:
+    if (isset($this->saved) && is_object($this->saved)) {
+        $searchDetails = $this->saved->getParams()->getQuery();
+        $groups = $searchDetails->getQueries();
+        $searchFilters = $this->saved->getParams()->getFilterList();
+    } else {
+        $searchDetails = $searchFilters = $groups = false;
+    }
+?>
+<form id="advSearchForm" name="searchForm"  method="get" action="<?=$this->url($this->options->getSearchAction())?>" class="form-horizontal">
+  <input type="hidden" name="join" value="AND" />
+  <div class="<?=$this->layoutClass('mainbody')?>">
+    <h3><?=$this->transEsc('Advanced Search')?></h3>
+    <? /* fallback to a fixed set of search groups/fields if JavaScript is turned off */ ?>
+    <? if ($groups !== false) {
+           $numGroups = count($groups);
+       }
+       if (!isset($numGroups) || $numGroups < 3) {
+           $numGroups = 1;
+       }
+    ?>
+    <div class="row">
+      <? for ($i = 0; $i < $numGroups; $i++): ?>
+        <input type="hidden" name="bool<?=$i?>[]" value="AND" />
+        <div class="group well clearfix" id="group<?=$i?>">
+          <div class="col-sm-2 text-right" id="group<?=$i?>SearchHolder"><?=$this->transEsc("adv_search_label")?>:</div>
+          <div class="span10">
+            <?
+              if (isset($groups[$i])) {
+                  $currentGroup = $groups[$i]->getQueries();
+                  $numRows = count($currentGroup);
+              } else {
+                  $currentGroup = false;
+              }
+              if (!isset($numRows) || $numRows < 3) {
+                  $numRows = 3;
+              }
+            ?>
+            <? for ($j = 0; $j < $numRows; $j++): ?>
+              <? $currRow = isset($currentGroup[$j]) ? $currentGroup[$j] : false; ?>
+              <div class="row">
+                <select id="search_type<?=$i?>_<?=$j?>" name="type<?=$i?>[]" class="col-sm-3">
+                <? foreach ($this->options->getAdvancedHandlers() as $searchVal => $searchDesc): ?>
+                  <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getHandler() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
+                <? endforeach; ?>
+                </select>
+                <select name="op<?=$i?>[]" id="searchForm_op<?=$i?>_<?=$j?>" class="col-sm-3">
+                  <? foreach ($this->options->getAdvancedOperators() as $searchVal => $searchDesc): ?>
+                    <option value="<?=$this->escapeHtmlAttr($searchVal)?>"<?=($currRow && $currRow->getOperator() == $searchVal)?' selected="selected"':''?>><?=$this->transEsc($searchDesc)?></option>
+                  <? endforeach; ?>
+                </select>
+                <input id="search_lookfor<?=$i?>_<?=$j?>" type="text" value="<?=$currRow?$this->escapeHtmlAttr($currRow->getString()):''?>" size="30" name="lookfor<?=$i?>[]" class="col-sm-6"/>
+              </div>
+            <? endfor; ?>
+          </div>
+        </div>
+      <? endfor; ?>
+    </div>
+    <? $lastSort = $this->options->getLastSort(); ?>
+    <? if (!empty($lastSort)): ?>
+      <input type="hidden" name="sort" value="<?=$this->escapeHtmlAttr($lastSort)?>" />
+    <? endif; ?>
+    <input type="submit" class="btn btn-primary" name="submit" value="<?=$this->transEsc("Find")?>"/>
+  </div>
+
+  <div class="<?=$this->layoutClass('sidebar')?>">
+    <? if (!empty($searchFilters)): ?>
+      <div class="filterList">
+        <h3><?=$this->transEsc("adv_search_filters")?><br/><span>(<?=$this->transEsc("adv_search_select_all")?> <input type="checkbox" checked="checked" onclick="filterAll(this, 'advSearchForm');" />)</span></h3>
+        <? foreach ($searchFilters as $field => $data): ?>
+          <div>
+            <h4><?=$this->transEsc($field)?></h4>
+            <ul>
+              <? foreach ($data as $value): ?>
+                <li><input type="checkbox" checked="checked" name="filter[]" value='<?=$this->escapeHtmlAttr($value['field'])?>:"<?=$this->escapeHtmlAttr($value['value'])?>"' /> <?=$this->escapeHtml($value['displayText'])?></li>
+              <? endforeach; ?>
+            </ul>
+          </div>
+        <? endforeach; ?>
+      </div>
+    <? endif; ?>
+  </div>
+</form>

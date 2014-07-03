@@ -1,0 +1,23 @@
+@import "bootstrap/bootstrap";
+@import "accessibility/bootstrap-accessibility.scss";
+
+.fa-grid:before {content: "\f00a"}
+.group [class^=col-] {padding-left:0}
+.icon-bar {background-color:#888}
+label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-left:35px}
+.list-group-item.title {font-weight:bold}
+#modal .modal-body > h2:first-child {display:none}
+/* --- Autocomplete --- */
+.twitter-typeahead .tt-hint {display:none}
+.tt-dropdown-menu {
+  @extend .list-group;
+  margin-top:10px;
+}
+.tt-suggestion {
+  @extend .list-group-item;
+  &.tt-cursor {
+    background-color:$brand-primary;
+    color:#FFF;
+  }
+  p {margin:0}
+}
