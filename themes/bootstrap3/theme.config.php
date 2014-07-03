@@ -5,8 +5,8 @@ return array(
         //'bootstrap.min.css',
         //'bootstrap-accessibility.css',
         //'bootstrap-custom.css',
-        'compiled.css',
-        'font-awesome/font-awesome.css',
+        //'compiled.css',
+        //'font-awesome/font-awesome.css',
         'print.css:print',
         'slider.css',
     ),
@@ -24,8 +24,8 @@ return array(
         //'font-awesome/font-awesome.less'
     ),
     'scss' => array(
-        //'core.scss',
-        //'font-awesome.scss'
+        'compiled.scss',
+        'font-awesome.scss'
     ),
     'favicon' => 'vufind-favicon.ico',
     'helpers' => array(
