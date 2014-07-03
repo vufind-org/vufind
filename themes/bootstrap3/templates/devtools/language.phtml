@@ -46,9 +46,8 @@
         </div>
         <div id="missing_<?=$langCode ?>" class="accordion-body collapse">
           <div class="accordion-inner">
-          <? foreach ($diffs['notInL2'] as $key): ?>
-            <?=$this->escapeHtml($key)?> = "<?=$this->escapeHtml($main[$key])?>"<br />
-          <? endforeach; ?>
+            <textarea class="form-control" rows="15"><? foreach ($diffs['notInL2'] as $key): ?><?=$this->escapeHtml($key)?> = "<?=$this->escapeHtml($main[$key])?>"
+<? endforeach; ?></textarea>
           </div>
         </div>
       </div>
