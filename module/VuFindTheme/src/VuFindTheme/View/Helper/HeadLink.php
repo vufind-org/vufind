@@ -129,7 +129,6 @@ class HeadLink extends \Zend\View\Helper\HeadLink
      */
     public function addSassStylesheet($file)
     {
-        $relPath = 'scss/' . $file;
         $themeParents = array_keys($this->themeInfo->getThemeInfo());
         $currentTheme = $themeParents[0];
         $home = APPLICATION_PATH . "/themes/$currentTheme/";
@@ -145,7 +144,7 @@ class HeadLink extends \Zend\View\Helper\HeadLink
         $scss->setImportPaths($paths);
         $scss->setFormatter('scss_formatter_compressed');
         $css = $scss->compile('@import "' . $file . '"');
-        $int = file_put_contents($outputFile, $css);
+        file_put_contents($outputFile, $css);
         $this->prependStylesheet($urlHelper('home') . "themes/$currentTheme/css/scss/" . $fileName . '.css');
     }
 }
