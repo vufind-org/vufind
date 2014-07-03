@@ -1,0 +1,31 @@
+<? $data = $this->recommend->getResult(); if (is_array($data)): ?>
+<div class="sidegroup">
+  <h4>Open Library <? /* Intentionally not translated -- this is a site name, not a phrase */ ?></h4>
+  <div><?=$this->transEsc('Results for')?> <?=$this->escapeHtmlAttr($data['subject'])?> ...</div>
+  <ul class="similar">
+    <? foreach ($data['worksArray'] as $work): ?>
+      <li>
+        <a href="http://openlibrary.org<?=$work['key']?>" title="<?=$this->transEsc('Get full text')?>" target="_blank">
+          <span class="olSubjectCover">
+          <? if (isset($work['cover_id'])  && !empty($work['cover_id'])): ?>
+            <img src="http://covers.openlibrary.org/b/<?=$this->escapeHtmlAttr($work['cover_id_type'])?>/<?=$this->escapeHtmlAttr($work['cover_id'])?>-S.jpg" class="olSubjectImage" alt="<?=$this->escapeHtmlAttr($work['title'])?>" />
+          <? else: ?>
+            <img src="<?=$this->imageLink('noCover2.gif')?>" class="olSubjectImage" alt="<?=$this->escapeHtmlAttr($work['title'])?>" />
+          <? endif; ?>
+          </span>
+          <span><?=$this->escapeHtmlAttr($this->truncate($work['title'], 50))?></span>
+          <? if (isset($work['mainAuthor'])): ?>
+            <span class="olSubjectAuthor"><?=$this->transEsc('by')?> <?=$this->escapeHtmlAttr($this->truncate($work['mainAuthor'], 40))?></span>
+          <? endif; ?>
+        </a>
+        <div class="clearfix"></div>
+      </li>
+    <? endforeach; ?>
+  </ul>
+  <p class="olSubjectMore">
+    <a href="http://openlibrary.org/subjects" title="Open Library" target="_blank">
+      <?=$this->transEsc('more')?>...
+    </a>
+  </p>
+</div>
+<? endif; ?>

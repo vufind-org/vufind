@@ -1,0 +1,64 @@
+.bp-icon {
+  background-position:center center;
+  background-repeat:no-repeat;
+  color:transparent;
+  content:'';
+  display:inline-block;
+  height:16px;
+  margin:0;
+  padding:0;
+  text-shadow:none;
+  vertical-align:text-bottom;
+  width:16px;
+}
+i.fa-archive {background-image:url('../../images/icons/package.png'); @extend .bp-icon;}
+i.fa-asterisk {background-image:url('../../images/icons/list.png'); @extend .bp-icon;}
+i.fa-bell {background-image:url('../../images/icons/bell.png'); @extend .bp-icon;}
+i.fa-book {background-image:url('../../images/icons/book.png'); @extend .bp-icon;}
+i.fa-bookbag-add {background-image:url('../../images/icons/bookbag_add.png'); @extend .bp-icon;}
+i.fa-bookbag-delete {background-image:url('../../images/icons/bookbag_delete.png'); @extend .bp-icon;}
+i.fa-bookbag-empty {background-image:url('../../images/icons/bookbag_empty.png'); @extend .bp-icon;}
+i.fa-bookmark {background-image:url('../../images/icons/bookmark_add.png'); @extend .bp-icon;}
+i.fa-cancel-all-holds {background-image:url('../../images/icons/holdCancelAll.png'); @extend .bp-icon;}
+i.fa-cancel-all-storage-retrieval-requests {background-image:url('../../images/icons/holdCancelAll.png'); @extend .bp-icon;}
+i.fa-cancel-holds {background-image:url('../../images/icons/holdCancel.png'); @extend .bp-icon;}
+i.fa-cancel-storage-retrieval-requests {background-image:url('../../images/icons/holdCancel.png'); @extend .bp-icon;}
+i.fa-edit {background-image:url('../../images/icons/edit.png'); @extend .bp-icon;}
+i.fa-email,
+i.fa-envelope,
+i.fa-envelope-alt {background-image:url('../../images/icons/email.png'); @extend .bp-icon;}
+i.fa-exchange {background-image:url('../../images/icons/arrow_refresh.png'); @extend .bp-icon;}
+i.fa-external-link {background-image:url('../../images/icons/link_go.png'); @extend .bp-icon;}
+i.fa-flag {@extend .bp-icon;background-image:url('../../images/icons/flag_red.png'); @extend .bp-icon;}
+i.fa-grid {background-image:url('../../images/icons/view_grid.png'); @extend .bp-icon;}
+i.fa-heart {background-image:url('../../images/icons/heart.png'); @extend .bp-icon;}
+i.fa-home {background-image:url('../../images/icons/house.png'); @extend .bp-icon;}
+i.fa-inbox {background-image:url('../../images/icons/box.png'); @extend .bp-icon;}
+i.fa-leaf,.fa-sitemap {background-image:url('../../images/icons/treeCurrent.png'); @extend .bp-icon;}
+i.fa-list {background-image:url('../../images/icons/view_list.png'); @extend .bp-icon;}
+i.fa-list-alt,i.fa-export {background-image:url('../../images/icons/application_add.png'); @extend .bp-icon;}
+i.fa-lock {background-image:url('../../images/icons/lock.png'); @extend .bp-icon;}
+i.fa-minus-sign {background-image:url('../../images/icons/delete.png'); @extend .bp-icon;}
+i.fa-ok {background-image:url('../../images/icons/tick.png'); @extend .bp-icon;}
+i.fa-phone {background-image:url('../../images/icons/phone.png'); @extend .bp-icon;}
+i.fa-plus {background-image:url('../../images/icons/add.png'); @extend .bp-icon;}
+i.fa-plus-sign {background-image:url('../../images/icons/add.png'); @extend .bp-icon;}
+i.fa-print {background-image:url('../../images/icons/printer.png'); @extend .bp-icon;}
+i.fa-qrcode {background-image:url('../../images/icons/qrcode.png'); @extend .bp-icon;}
+i.fa-remove {background-image:url('../../images/icons/delete.png'); @extend .bp-icon;}
+i.fa-renew {background-image:url('../../images/icons/renew.png'); @extend .bp-icon;}
+i.fa-renew-all {background-image:url('../../images/icons/renewAll.png'); @extend .bp-icon;}
+i.fa-report {background-image:url('../../images/icons/report.png'); @extend .bp-icon;}
+i.fa-rss {background-image:url('../../images/icons/feed.png'); @extend .bp-icon;}
+i.fa-search {background-image:url('../../images/icons/magnifier.png'); @extend .bp-icon;}
+i.fa-shopping-cart {background-image:url('../../images/icons/cart.png'); @extend .bp-icon;}
+i.fa-sign-in {background-image:url('../../images/icons/door_in.png'); @extend .bp-icon;}
+i.fa-sign-out {background-image:url('../../images/icons/door_out.png'); @extend .bp-icon;}
+i.fa-spinner {background-image:url('../../images/icons/ajax_loading.gif'); @extend .bp-icon;}
+i.fa-star {background-image:url('../../images/icons/star.png'); @extend .bp-icon;}
+i.fa-suitcase {background-image:url('../../images/icons/bookbag.png'); @extend .bp-icon;}
+i.fa-trash-o {background-image:url('../../images/icons/bin.png'); @extend .bp-icon;}
+i.fa-tree {background-image:url('../../images/icons/treeCurrent.png'); @extend .bp-icon;}
+i.fa-tree-muted {background-image:url('../../images/icons/treeMuted.png'); @extend .bp-icon;}
+i.fa-usd {background-image:url('../../images/icons/money_dollar.png'); @extend .bp-icon;}
+i.fa-user {background-image:url('../../images/icons/user.png'); @extend .bp-icon;}

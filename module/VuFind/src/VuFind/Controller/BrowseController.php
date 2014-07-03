@@ -372,8 +372,10 @@ class BrowseController extends AbstractBase
         list($view->filter, $hundredsList) = $this->getSecondaryList('dewey');
         $categoryList = array();
         foreach ($hundredsList as $dewey) {
-            $categoryList[$dewey['value']] = $dewey['displayText']
-                . ' (' . $dewey['count'] . ')';
+            $categoryList[$dewey['value']] = array(
+                'text' => $dewey['displayText'],
+                'count' => $dewey['count']
+            );
         }
         $view->categoryList = $categoryList;
         if ($this->params()->fromQuery('findby')) {

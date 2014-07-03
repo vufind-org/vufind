@@ -76,4 +76,75 @@ class HeadLink extends \Zend\View\Helper\HeadLink
 
         return parent::itemToString($item);
     }
+
+    /**
+     * Compile a less file to css and add to css folder
+     *
+     * @param string $file path to less file
+     *
+     * @return void
+     */
+    public function addLessStylesheet($file)
+    {
+        $relPath = 'less/' . $file;
+        $urlHelper = $this->getView()->plugin('url');
+        $currentTheme = $this->themeInfo->findContainingTheme($relPath);
+        $home = APPLICATION_PATH . "/themes/$currentTheme/";
+        $cssDirectory = $urlHelper('home') . "themes/$currentTheme/css/less/";
+
+        try {
+            $less_files = array(
+                APPLICATION_PATH . '/themes/' . $currentTheme . '/' . $relPath
+                    => $cssDirectory
+            );
+            $themeParents = array_keys($this->themeInfo->getThemeInfo());
+            $directories = array();
+            foreach ($themeParents as $theme) {
+                $directories[APPLICATION_PATH . '/themes/' . $theme . '/less/']
+                    = $cssDirectory;
+            }
+            $css_file_name = \Less_Cache::Get(
+                $less_files,
+                array(
+                    'cache_dir' => $home . 'css/less/',
+                    'cache_method' => false,
+                    'compress' => true,
+                    'import_dirs' => $directories
+                )
+            );
+            $this->prependStylesheet($cssDirectory . $css_file_name);
+        } catch (\Exception $e) {
+            error_log($e->getMessage());
+            list($fileName, ) = explode('.', $file);
+            $this->prependStylesheet($urlHelper('home') . "themes/$currentTheme/css/" . $fileName . '.css');
+        }
+    }
+
+    /**
+     * Compile a scss file to css and add to css folder
+     *
+     * @param string $file path to scss file
+     *
+     * @return void
+     */
+    public function addSassStylesheet($file)
+    {
+        $themeParents = array_keys($this->themeInfo->getThemeInfo());
+        $currentTheme = $themeParents[0];
+        $home = APPLICATION_PATH . "/themes/$currentTheme/";
+        list($fileName, ) = explode('.', $file);
+        $outputFile = $home . 'css/scss/' . $fileName . '.css';
+        $urlHelper = $this->getView()->plugin('url');
+
+        $scss = new \scssc();
+        $paths = array();
+        foreach ($themeParents as $theme) {
+            $paths[] = APPLICATION_PATH . '/themes/' . $theme . '/scss/';
+        }
+        $scss->setImportPaths($paths);
+        $scss->setFormatter('scss_formatter_compressed');
+        $css = $scss->compile('@import "' . $file . '"');
+        file_put_contents($outputFile, $css);
+        $this->prependStylesheet($urlHelper('home') . "themes/$currentTheme/css/scss/" . $fileName . '.css');
+    }
 }

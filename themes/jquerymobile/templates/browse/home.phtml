@@ -55,7 +55,13 @@
       <? elseif (!empty($this->categoryList)): ?>
       <? foreach($this->categoryList as $findby=>$category): ?>
       <li>
-        <a data-ajax="false" href="<?=$BROWSE_BASE ?>?findby=<?=urlencode($findby) ?>&query_field=<?=$this->browse()->getSolrField($findby, $this->currentAction) ?>"><?=$this->transEsc($category)/*html*/?></a>
+        <a data-ajax="false" href="<?=$BROWSE_BASE ?>?findby=<?=urlencode($findby) ?>&query_field=<?=$this->browse()->getSolrField($findby, $this->currentAction) ?>">
+          <? if(is_string($category)): ?>
+            <?=$this->transEsc($category)?>
+          <? else: ?>
+            <?=$this->transEsc($category['text'])?> (<?=number_format($category['count'])?>)
+          <? endif; ?>
+        </a>
       </li>
       <? endforeach; ?>
 
