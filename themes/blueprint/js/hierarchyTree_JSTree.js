@@ -11,19 +11,19 @@ function showTreeError(msg)
 function getRecord(recordID)
 {
     $.ajax({
-      url: path + '/Hierarchy/GetRecord?' + $.param({id: recordID}),
-      dataType: 'html',
-      success: function(response) {
-        if (response) {
-            $('#hierarchyRecord').html(response);
-            // Remove the old path highlighting
-            $('#hierarchyTree a').removeClass("jstree-highlight");
-            // Add Current path highlighting
-            var jsTreeNode = $(":input[value='"+recordID+"']").parent();
-            jsTreeNode.children("a").addClass("jstree-highlight");
-            jsTreeNode.parents("li").children("a").addClass("jstree-highlight");
+        url: path + '/Hierarchy/GetRecord?' + $.param({id: recordID}),
+        dataType: 'html',
+        success: function(response) {
+            if (response) {
+                $('#hierarchyRecord').html(response);
+                // Remove the old path highlighting
+                $('#hierarchyTree a').removeClass("jstree-highlight");
+                // Add Current path highlighting
+                var jsTreeNode = $(":input[value='"+recordID+"']").parent();
+                jsTreeNode.children("a").addClass("jstree-highlight");
+                jsTreeNode.parents("li").children("a").addClass("jstree-highlight");
+            }
         }
-      }
     });
 }
 
@@ -92,7 +92,7 @@ function doTreeSearch()
             if(typeof(baseTreeSearchFullURL) == "undefined" || baseTreeSearchFullURL == null){
                 baseTreeSearchFullURL = $("#fullSearchLink").attr("href");
             }
-            $("#fullSearchLink").attr("href", baseTreeSearchFullURL + "?lookfor="+ keyword + "&filter[]=hierarchy_top_id:\"" + hierarchyID  + "\"");
+            $("#fullSearchLink").attr("href", baseTreeSearchFullURL + "?lookfor="+ keyword + "&filter[]=hierarchy_top_id:\"" + hierarchyID + "\"");
             changeLimitReachedLabel(true);
         } else {
             changeLimitReachedLabel(false);
@@ -109,6 +109,7 @@ function doTreeSearch()
 
         $.each(results["results"], function(key, val)
         {
+            $("jstree-open").removeClass("jstree-open");
             var jsTreeNode = $('.jsTreeID:input[value="'+val+'"]').parent();
             if (jsTreeNode.hasClass("jstree-closed")) {
                 jsTreeNode.removeClass("jstree-closed").addClass("jstree-open");
@@ -132,19 +133,12 @@ function doTreeSearch()
         $("#treeSearchLoadingImg").hide();
     });
 }
-// Code for the search button
-$(function ()
-{
-    $("#treeSearch input").click(function ()
-    {
-        if (this.id == "search") {
-            doTreeSearch();
-        }
-    });
-});
 
 $(document).ready(function()
 {
+    // Code for the search button
+    $('#treeSearch input[type="submit"]').click(doTreeSearch);
+
     hierarchyID = $("#hierarchyTree").find(".hiddenHierarchyId")[0].value;
     var recordID = $("#hierarchyTree").find(".hiddenRecordId")[0].value;
     var scroller = hierarchySettings.lightboxMode ? '#modalDialog' : '#hierarchyTree';

@@ -266,8 +266,11 @@ function registerAjaxCart() {
     }
 
     // assign action to the "select all checkboxes" class
-    $('input[type="checkbox"].selectAllCheckboxes').change(function(){
-        $(this.form).find('input[type="checkbox"]').attr('checked', $(this).is(':checked'));
+    $('#cartCheckboxSelectAll').change(function(){
+        var selectAll = this;
+        $(this.form).find('input[type="checkbox"]').each(function(index, obj) {
+            obj.checked = selectAll.checked;
+        });
     });
 }
 

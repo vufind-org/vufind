@@ -332,7 +332,10 @@ $(document).ready(function(){
 
     // assign action to the "select all checkboxes" class
     $('input[type="checkbox"].selectAllCheckboxes').change(function(){
-        $(this.form).find('input[type="checkbox"]').attr('checked', $(this).is(':checked'));
+        var selectAll = this;
+        $(this.form).find('input[type="checkbox"]').each(function(index, obj) {
+            obj.checked = selectAll.checked;
+        });
     });
 
     // attach mouseover event to grid view records
@@ -350,7 +353,7 @@ $(document).ready(function(){
         var $dialog = getLightbox('Cart', 'Home', null, null, this.title, '', '', '', {viewCart:"1"});
         return false;
     });
-    
+
     // handle QR code links
     $('a.qrcodeLink').click(function() {
         if ($(this).hasClass("active")) {
@@ -368,7 +371,7 @@ $(document).ready(function(){
         $("link[media='print']").attr("media", "all");
         window.print();
     }
-    
+
     // Collapsing facets
     $('.narrowList dt').click(function(){
       $(this).parent().toggleClass('open');
@@ -407,7 +410,7 @@ $(document).ready(function(){
     //ContextHelp
     contextHelp.init();
     contextHelp.contextHelpSys.load();
-    
+
     // Advanced facets
     setupOrFacets();
 });
