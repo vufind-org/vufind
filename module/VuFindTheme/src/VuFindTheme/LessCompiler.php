@@ -153,7 +153,7 @@ class LessCompiler
      * @param string $less Relative LESS filename
      *
      * @return string
-     * @SuppressWarnings(PHPMD. UnusedLocalVariable)
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
     protected function makeRelative($css, $less)
     {
