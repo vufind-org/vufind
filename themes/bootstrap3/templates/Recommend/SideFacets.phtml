@@ -3,16 +3,22 @@
   <h4><?=$this->transEsc(isset($this->overrideSideFacetCaption) ? $this->overrideSideFacetCaption : 'Narrow Search')?></h4>
 <? endif; ?>
 <? $checkboxFilters = $results->getParams()->getCheckboxFacets(); if (count($checkboxFilters) > 0): ?>
-  <div class="checkboxFilter<?=($results->getResultTotal() < 1 && !$current['selected'] && !$current['alwaysVisible']) ? ' hidden' : ''?>">
-    <? foreach ($checkboxFilters as $current): ?>
-      <label class="checkbox">
-        <input type="checkbox" name="filter[]" value="<?=$this->escapeHtmlAttr($current['filter'])?>"
-        <?=$current['selected'] ? 'checked="checked"' : ''?> id="<?=$this->escapeHtmlAttr(str_replace(' ', '', $current['desc']))?>"
-        onclick="document.location.href='<?=$current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter'])?>';" />
-        <?=$this->transEsc($current['desc'])?>
-      </label>
-    <? endforeach; ?>
-  </div>
+<?
+  $html = '';
+  $shown = 0;
+  foreach ($checkboxFilters as $current) {
+    $html .= '<label class="checkbox';
+    if($results->getResultTotal() < 1 && !$current['selected'] && !$current['alwaysVisible']) {
+      $html .= ' hidden';
+    } else {
+      $shown ++;
+    }
+    $html .= '"><input type="checkbox" name="filter[]" value="'.$this->escapeHtmlAttr($current['filter']).'"
+      '. ($current['selected'] ? 'checked="checked"' : '') .' id="'.$this->escapeHtmlAttr(str_replace(' ', '', $current['desc'])).'"
+      onclick="document.location.href=\''.($current['selected'] ? $results->getUrlQuery()->removeFilter($current['filter']) : $results->getUrlQuery()->addFilter($current['filter'])).'\';" />'.$this->transEsc($current['desc']).'</label>';
+  }
+?>
+  <div class="checkboxFilter<?if($shown == 0):?> hidden<? endif; ?>"><?=$html ?></div>
 <? endif; ?>
 <? $extraFilters = isset($this->extraSideFacetFilters) ? $this->extraSideFacetFilters : array(); ?>
 <? $collapsedFacets = $this->recommend->getCollapsedFacets() ?>
