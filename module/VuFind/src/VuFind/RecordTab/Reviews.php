@@ -78,4 +78,14 @@ class Reviews extends AbstractBase
         $isbns = $this->getRecordDriver()->tryMethod('getISBNs');
         return !empty($isbns);
     }
+
+    /**
+     * Does the tab load external content such that it may end up empty?
+     *
+     * @return bool
+     */
+    public function hideIfEmpty()
+    {
+        return true;
+    }
 }
