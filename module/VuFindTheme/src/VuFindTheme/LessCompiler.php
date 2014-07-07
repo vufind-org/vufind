@@ -92,7 +92,7 @@ class LessCompiler
         if (!file_exists($config)) {
             return;
         }
-        $config = include($config);
+        $config = include $config;
         if (!isset($config['less'])) {
             Console::writeLine("No LESS in " . $theme);
             return;
