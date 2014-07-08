@@ -95,10 +95,20 @@ class CombinedController extends AbstractSearch
         $headers->addHeaderLine('Content-type', 'text/html');
         $headers->addHeaderLine('Cache-Control', 'no-cache, must-revalidate');
         $headers->addHeaderLine('Expires', 'Mon, 26 Jul 1997 05:00:00 GMT');
-        $html = $this->getViewRenderer()->render(
-            'combined/results-list.phtml',
-            array('searchClassId' => $searchClassId, 'currentSearch' => $settings)
-        );
+
+        // Should we suppress content due to emptiness?
+        if (isset($settings['hide_if_empty']) && $settings['hide_if_empty']
+            && $settings['view']->results->getResultTotal() == 0
+        ) {
+            $html = '';
+        } else {
+            $html = $this->getViewRenderer()->render(
+                'combined/results-list.phtml',
+                array(
+                    'searchClassId' => $searchClassId, 'currentSearch' => $settings
+                )
+            );
+        }
         $response->setContent($html);
         return $response;
     }
