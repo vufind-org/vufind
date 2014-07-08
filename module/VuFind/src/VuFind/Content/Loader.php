@@ -109,6 +109,7 @@ class Loader
                 }
             } catch (\Exception $e) {
                 // Ignore exceptions:
+                error_log($e->getMessage());
                 unset($results[$provider]);
             }
         }
