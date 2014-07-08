@@ -285,9 +285,11 @@ $config = array(
                     'amazon' => 'VuFind\Content\Reviews\Factory::getAmazon',
                     'amazoneditorial' => 'VuFind\Content\Reviews\Factory::getAmazonEditorial',
                     'booksite' => 'VuFind\Content\Reviews\Factory::getBooksite',
-                    'guardian' => 'VuFind\Content\Reviews\Factory::getGuardian',
                     'syndetics' => 'VuFind\Content\Reviews\Factory::getSyndetics',
                     'syndeticsplus' => 'VuFind\Content\Reviews\Factory::getSyndeticsPlus',
+                ),
+                'invokables' => array(
+                    'guardian' => 'VuFind\Content\Reviews\Guardian',
                 ),
             ),
             'db_table' => array(

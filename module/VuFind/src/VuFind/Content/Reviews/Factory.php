@@ -110,18 +110,6 @@ class Factory
     }
 
     /**
-     * Create Guardian loader
-     *
-     * @param ServiceManager $sm Service manager
-     *
-     * @return mixed
-     */
-    public static function getGuardian(ServiceManager $sm)
-    {
-        return new Guardian();
-    }
-
-    /**
      * Create Syndetics loader
      *
      * @param ServiceManager $sm Service manager
