@@ -85,6 +85,7 @@ abstract class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
      * @param string $url URL for client to use
      *
      * @return \Zend\Http\Client
+     * @throws \Exception
      */
     protected function getHttpClient($url)
     {
