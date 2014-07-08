@@ -36,25 +36,8 @@ namespace VuFind\RecordTab;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
  */
-class Excerpt extends AbstractBase
+class Excerpt extends AbstractContent
 {
-    /**
-     * Content loader
-     *
-     * @var \VuFind\Content\Loader
-     */
-    protected $loader;
-
-    /**
-     * Constructor
-     *
-     * @param \VuFind\Content\Loader $loader Content loader (omit to disable)
-     */
-    public function __construct(\VuFind\Content\Loader $loader = null)
-    {
-        $this->loader = $loader;
-    }
-
     /**
      * Get the on-screen description for this tab.
      *
@@ -63,32 +46,5 @@ class Excerpt extends AbstractBase
     public function getDescription()
     {
         return 'Excerpt';
-    }
-
-    /**
-     * Is this tab active?
-     *
-     * @return bool
-     */
-    public function isActive()
-    {
-        if (null === $this->loader) {
-            return false;
-        }
-        $isbns = $this->getRecordDriver()->tryMethod('getISBNs');
-        return !empty($isbns);
-    }
-
-    /**
-     * Get excerpts for ISBN.
-     *
-     * @param string $isbn ISBN of book to find content for
-     *
-     * @return array
-     */
-    public function getExcerptsForIsbn($isbn)
-    {
-        return null === $this->loader
-            ? array() : $this->loader->loadByIsbn($isbn);
     }
 }

@@ -58,9 +58,10 @@ class Amazon extends \VuFind\Content\AbstractAmazon
         // Collect all the parameters:
         $endpoint = 'webservices.amazon.com';
         $requestURI = '/onca/xml';
+        $isbn = $this->getIsbn10($isbnObj);
         $params = array(
             'AWSAccessKeyId' => $key,
-            'ItemId' => $this->getIsbn10($isbnObj),
+            'ItemId' => $isbn,
             'Service' => 'AWSECommerceService',
             'Operation' => 'ItemLookup',
             'ResponseGroup' => 'Reviews',
@@ -104,6 +105,7 @@ class Amazon extends \VuFind\Content\AbstractAmazon
                 $result[$i]['Rating'] = (string)$review->Rating;
                 $result[$i]['Summary'] = (string)$review->Summary;
                 $result[$i]['Content'] = (string)$review->Content;
+                $result[$i]['Copyright'] = $this->getCopyright($isbn);
                 $i++;
             }
         }
@@ -121,8 +123,9 @@ class Amazon extends \VuFind\Content\AbstractAmazon
                 $result[] = array(
                     'Rating' => '',
                     'Summary' => '',
+                    'Copyright' => $this->getCopyright($isbn),
                     'Content' =>
-                        "<iframe style=\"{$css}\" src=\"{$iframe}\" />"
+                        "<iframe style=\"{$css}\" src=\"{$iframe}\"></iframe>"
                 );
             }
         }

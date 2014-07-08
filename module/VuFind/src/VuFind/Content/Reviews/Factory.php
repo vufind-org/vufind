@@ -71,7 +71,10 @@ class Factory
             ? $config->Content->amazonassociate : null;
         $secret = isset($config->Content->amazonsecret)
             ? $config->Content->amazonsecret : null;
-        return new Amazon($associate, $secret);
+        $label = $sm->getServiceLocator()->get('VuFind\Translator')->translate(
+            'Supplied by Amazon'
+        );
+        return new Amazon($associate, $secret, $label);
     }
 
     /**
@@ -88,7 +91,10 @@ class Factory
             ? $config->Content->amazonassociate : null;
         $secret = isset($config->Content->amazonsecret)
             ? $config->Content->amazonsecret : null;
-        return new AmazonEditorial($associate, $secret);
+        $label = $sm->getServiceLocator()->get('VuFind\Translator')->translate(
+            'Supplied by Amazon'
+        );
+        return new AmazonEditorial($associate, $secret, $label);
     }
 
     /**

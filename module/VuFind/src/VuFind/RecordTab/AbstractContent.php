@@ -36,15 +36,48 @@ namespace VuFind\RecordTab;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
  */
-class Reviews extends AbstractContent
+abstract class AbstractContent extends AbstractBase
 {
     /**
-     * Get the on-screen description for this tab.
+     * Content loader
      *
-     * @return string
+     * @var \VuFind\Content\Loader
      */
-    public function getDescription()
+    protected $loader;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Content\Loader $loader Content loader (omit to disable)
+     */
+    public function __construct(\VuFind\Content\Loader $loader = null)
     {
-        return 'Reviews';
+        $this->loader = $loader;
+    }
+
+    /**
+     * Is this tab active?
+     *
+     * @return bool
+     */
+    public function isActive()
+    {
+        if (null === $this->loader) {
+            return false;
+        }
+        $isbn = $this->getRecordDriver()->tryMethod('getCleanISBN');
+        return !empty($isbn);
+    }
+
+    /**
+     * Get content for ISBN.
+     *
+     * @return array
+     */
+    public function getContent()
+    {
+        $isbn = $this->getRecordDriver()->tryMethod('getCleanISBN');
+        return (null === $this->loader || empty($isbn))
+            ? array() : $this->loader->loadByIsbn($isbn);
     }
 }

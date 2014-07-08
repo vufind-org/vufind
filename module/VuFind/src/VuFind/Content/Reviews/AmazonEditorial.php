@@ -60,7 +60,8 @@ class AmazonEditorial extends \VuFind\Content\AbstractAmazon
                 'ResponseGroup' => 'EditorialReview',
                 'AssociateTag' => $this->associate
             );
-            $data = $amazon->itemLookup($this->getIsbn10($isbnObj), $params);
+            $isbn = $this->getIsbn10($isbnObj);
+            $data = $amazon->itemLookup($isbn, $params);
         } catch (\Exception $e) {
             // Something went wrong?  Just return empty list.
             return array();
@@ -77,6 +78,9 @@ class AmazonEditorial extends \VuFind\Content\AbstractAmazon
                     if ((string)$review->Source != 'Product Description') {
                         foreach ($review as $key => $value) {
                             $result[$i][$key] = (string)$value;
+                        }
+                        if (!isset($result[$i]['Copyright'])) {
+                            $result[$i]['Copyright'] = $this->getCopyright($isbn);
                         }
                         $i++;
                     }
