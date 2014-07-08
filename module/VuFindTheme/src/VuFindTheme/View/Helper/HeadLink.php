@@ -116,7 +116,9 @@ class HeadLink extends \Zend\View\Helper\HeadLink
         } catch (\Exception $e) {
             error_log($e->getMessage());
             list($fileName, ) = explode('.', $file);
-            $this->prependStylesheet($urlHelper('home') . "themes/$currentTheme/css/" . $fileName . '.css');
+            $this->prependStylesheet(
+                $urlHelper('home') . "themes/{$currentTheme}/css/{$fileName}.css"
+            );
         }
     }
 
@@ -145,6 +147,8 @@ class HeadLink extends \Zend\View\Helper\HeadLink
         $scss->setFormatter('scss_formatter_compressed');
         $css = $scss->compile('@import "' . $file . '"');
         file_put_contents($outputFile, $css);
-        $this->prependStylesheet($urlHelper('home') . "themes/$currentTheme/css/scss/" . $fileName . '.css');
+        $this->prependStylesheet(
+            $urlHelper('home') . "themes/{$currentTheme}/css/scss/{$fileName}.css"
+        );
     }
 }
