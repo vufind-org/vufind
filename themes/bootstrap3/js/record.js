@@ -185,6 +185,10 @@ $(document).ready(function(){
   registerTabEvents();
 
   $('ul.recordTabs a').click(function (e) {
+    if($(this).parents('li.active').length > 0) {
+      window.location.href = $(this).attr('href');
+      return;
+    }
     var tabid = $(this).attr('id').toLowerCase();
     if($('#'+tabid+'-tab').length > 0) {
       $('#record-tabs .tab-pane.active').removeClass('active');
