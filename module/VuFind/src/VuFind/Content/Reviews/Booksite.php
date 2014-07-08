@@ -69,8 +69,8 @@ class BookSite extends \VuFind\Content\AbstractBase
      *
      * Connects to Booksite's API and retrieves reviews for the specific ISBN
      *
-     * @param string            $key  API key (unused here)
-     * @param \VuFind\Code\ISBN $isbn ISBN object
+     * @param string            $key     API key (unused here)
+     * @param \VuFind\Code\ISBN $isbnObj ISBN object
      *
      * @throws \Exception
      * @return array     Returns array with review data.

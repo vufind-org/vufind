@@ -48,7 +48,7 @@ class Syndetics extends \VuFind\Content\AbstractCover
     /**
      * Constructor
      *
-     * @param bool $useSSL  Use SSL URLs?
+     * @param bool $useSSL Use SSL URLs?
      */
     public function __construct($useSSL = false)
     {

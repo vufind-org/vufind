@@ -49,8 +49,8 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
      * for more information.
      * Configuration:  Sources are processed in order - refer to $sourceList.
      *
-     * @param string            $key  API key
-     * @param \VuFind\Code\ISBN $isbn ISBN object
+     * @param string            $key     API key
+     * @param \VuFind\Code\ISBN $isbnObj ISBN object
      *
      * @throws \Exception
      * @return array     Returns array with excerpt data.

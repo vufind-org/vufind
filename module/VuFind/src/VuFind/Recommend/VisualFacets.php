@@ -30,8 +30,11 @@ namespace VuFind\Recommend;
 /**
  * VisualFacets Recommendations Module
  *
- * This class supports visualizing pivot facet information as a treemap or circle packing visualization. 
- * It must be used in combination with a template file including the necessary Javascript in order to display the visualization to the user.
+ * This class supports visualizing pivot facet information as a treemap or circle
+ * packing visualization.
+ *
+ * It must be used in combination with a template file including the necessary
+ * Javascript in order to display the visualization to the user.
  *
  * @category VuFind2
  * @package  Recommendations

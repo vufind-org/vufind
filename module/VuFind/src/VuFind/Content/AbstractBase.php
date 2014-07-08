@@ -110,8 +110,8 @@ abstract class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
     /**
      * Load results for a particular API key and ISBN.
      *
-     * @param string            $key  API key
-     * @param \VuFind\Code\ISBN $isbn ISBN object
+     * @param string            $key     API key
+     * @param \VuFind\Code\ISBN $isbnObj ISBN object
      *
      * @return array
      */

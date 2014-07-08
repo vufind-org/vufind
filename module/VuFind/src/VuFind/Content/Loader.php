@@ -82,7 +82,7 @@ class Loader
     /**
      * Retrieve results for the providers specified.
      *
-     * @param string $isbn      ISBN to use for lookup
+     * @param string $isbn ISBN to use for lookup
      *
      * @return array
      */

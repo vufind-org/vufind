@@ -45,8 +45,8 @@ class AmazonEditorial extends \VuFind\Content\AbstractAmazon
      * This method is responsible for connecting to Amazon AWS and abstracting
      * editorial reviews for the specific ISBN
      *
-     * @param string            $key  API key
-     * @param \VuFind\Code\ISBN $isbn ISBN object
+     * @param string            $key     API key
+     * @param \VuFind\Code\ISBN $isbnObj ISBN object
      *
      * @throws \Exception
      * @return array     Returns array with review data.
