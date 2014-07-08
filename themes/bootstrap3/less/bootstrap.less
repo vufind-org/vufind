@@ -3,6 +3,7 @@
 
 .btn {&:extend(.btn-default all);}
 .fa-grid:before {content:"\f00a"}
+.fa-visual:before {content: "\f008"}
 .group [class^=col-] {padding-left:0}
 .highlight{&:extend(mark);}
 .icon-bar {background-color:#888}
@@ -107,3 +108,43 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 
 /* --- Table wrapping to prevent horizontal overflow --- */
 .table {word-wrap:break-word;table-layout:fixed}
+
+/* --- Visualization View --- */
+.node {
+  border:1px solid white;
+  box-sizing:content-box;
+  font: 10px sans-serif;
+  line-height: 12px;
+  overflow: hidden;
+  position: absolute;
+  margin:-1px;
+}
+
+.node div {
+  margin-top: 0px;
+
+}
+
+.toplevel {
+  border: 2px solid black;
+}
+
+.node .label {
+  background:rgba(0,0,0,.5);
+  border-radius:0;
+  font-size:85%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  text-shadow:none;
+  min-height:1px;
+  padding:2px 4px;
+}
+
+.notalabel {
+  color: #000000;
+}
+
+#viz-instructions {
+  padding-top:600px;
+}
