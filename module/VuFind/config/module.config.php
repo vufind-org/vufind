@@ -334,6 +334,7 @@ $config = array(
                     'summontopics' => 'VuFind\Recommend\Factory::getSummonTopics',
                     'switchquery' => 'VuFind\Recommend\Factory::getSwitchQuery',
                     'topfacets' => 'VuFind\Recommend\Factory::getTopFacets',
+                    'visualfacets' => 'VuFind\Recommend\Factory::getVisualFacets',
                     'webresults' => 'VuFind\Recommend\Factory::getWebResults',
                     'worldcatidentities' => 'VuFind\Recommend\Factory::getWorldCatIdentities',
                     'worldcatterms' => 'VuFind\Recommend\Factory::getWorldCatTerms',
