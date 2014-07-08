@@ -20,7 +20,6 @@ h2,#modal h3 {margin-bottom:20px;font-size:21px;font-weight:200;line-height:30px
 }
 
 .node div {
-  margin-left: 3px;
   margin-top: 0px;
 
 }
@@ -35,13 +34,11 @@ h2,#modal h3 {margin-bottom:20px;font-size:21px;font-weight:200;line-height:30px
   font-size:85%;
   position: absolute;
   bottom: 0;
-  right: 0;
+  left: 0;
   text-shadow:none;
   min-height:1px;
   padding:2px 4px;
 }
-
-
 
 .notalabel {
   color: #000000;
