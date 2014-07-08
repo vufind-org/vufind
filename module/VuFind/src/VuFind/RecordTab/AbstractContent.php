@@ -65,20 +65,19 @@ abstract class AbstractContent extends AbstractBase
         if (null === $this->loader) {
             return false;
         }
-        $isbns = $this->getRecordDriver()->tryMethod('getISBNs');
-        return !empty($isbns);
+        $isbn = $this->getRecordDriver()->tryMethod('getCleanISBN');
+        return !empty($isbn);
     }
 
     /**
      * Get content for ISBN.
      *
-     * @param string $isbn ISBN of book to find content for
-     *
      * @return array
      */
-    public function getContentByIsbn($isbn)
+    public function getContent()
     {
-        return null === $this->loader
+        $isbn = $this->getRecordDriver()->tryMethod('getCleanISBN');
+        return (null === $this->loader || empty($isbn))
             ? array() : $this->loader->loadByIsbn($isbn);
     }
 }
