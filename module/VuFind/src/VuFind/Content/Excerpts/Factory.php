@@ -52,7 +52,8 @@ class Factory
         $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         return new Syndetics(
             isset($config->Syndetics->use_ssl) && $config->Syndetics->use_ssl,
-            $plus
+            $plus,
+            isset($config->Syndetics->timeout) ? $config->Syndetics->timeout : 10
         );
     }
 

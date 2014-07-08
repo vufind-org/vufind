@@ -54,15 +54,39 @@ abstract class AbstractSyndetics extends AbstractBase
     protected $usePlus;
 
     /**
+     * HTTP timeout for API calls (in seconds)
+     *
+     * @var int
+     */
+    protected $timeout;
+
+    /**
      * Constructor
      *
      * @param bool $useSSL  Use SSL URLs?
      * @param bool $usePlus Use Syndetics Plus?
+     * @param int  $timeout HTTP timeout for API calls (in seconds)
      */
-    public function __construct($useSSL = false, $usePlus = false)
+    public function __construct($useSSL = false, $usePlus = false, $timeout = 10)
     {
         $this->useSSL = $useSSL;
         $this->usePlus = $usePlus;
+        $this->timeout = $timeout;
+    }
+
+    /**
+     * Get an HTTP client
+     *
+     * @param string $url URL for client to use
+     *
+     * @return \Zend\Http\Client
+     * @throws \Exception
+     */
+    protected function getHttpClient($url)
+    {
+        $client = parent::getHttpClient($url);
+        $client->setOptions(array('timeout' => $this->timeout));
+        return $client;
     }
 
     /**
