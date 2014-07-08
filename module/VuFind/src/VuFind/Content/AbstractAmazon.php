@@ -53,14 +53,36 @@ abstract class AbstractAmazon extends AbstractBase
     protected $secret;
 
     /**
+     * "Supplied by Amazon" label, appropriately translated
+     *
+     * @var string
+     */
+    protected $label;
+
+    /**
      * Constructor
      *
      * @param string $associate Associate ID
      * @param string $secret    Secret key
+     * @param string $label     "Supplied by Amazon" label, appropriately translated
      */
-    public function __construct($associate, $secret)
+    public function __construct($associate, $secret, $label)
     {
         $this->associate = $associate;
         $this->secret = $secret;
+        $this->label = $label;
+    }
+
+    /**
+     * Get copyright message
+     *
+     * @param string $isbn ISBN to use for linking
+     *
+     * @return string
+     */
+    protected function getCopyright($isbn)
+    {
+        return '<div><a target="new" href="http://amazon.com/dp/'
+            . $isbn . '">' . htmlspecialchars($this->label) . '</a></div>';
     }
 }

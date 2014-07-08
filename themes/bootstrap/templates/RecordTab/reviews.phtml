@@ -30,9 +30,6 @@
         <? endif; ?>
       </p>
       <?=isset($review['Copyright']) ? $review['Copyright'] : ''?>
-      <? if ($provider == "amazon" || $provider == "amazoneditorial"): ?>
-        <div><a target="new" href="http://amazon.com/dp/<?=$isbn?>"><?=$this->transEsc('Supplied by Amazon')?></a></div>
-      <? endif; ?>
       <hr/>
     <? endforeach; ?>
   <? endforeach; ?>
