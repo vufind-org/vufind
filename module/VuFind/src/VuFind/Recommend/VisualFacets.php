@@ -98,6 +98,8 @@ class VisualFacets extends AbstractFacets
      */
     public function getPivotFacetSet()
     {
-        return $this->results->getPivotFacetList();
+        // Avoid fatal error in case of unexpected results object (e.g. EmptySet):
+        return is_callable(array($this->results, 'getPivotFacetList'))
+            ? $this->results->getPivotFacetList() : array();
     }
 }
