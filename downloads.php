@@ -25,59 +25,66 @@
   To learn more about Subversion, see our <a href="http://vufind.org/wiki/subversion">Subversion documentation</a>. This is recommended reading if you plan on making significant customizations to the software!
 
   <h4>Release Archive</h4>
-  <table class="table">
-    <?
-      $versions = array(
-        '2.2' => array('tar','zip*','deb','github'),
-        '2.1.1' => array('tar','zip*','deb','github'),
-        '2.1' => array('tar','zip*','deb','github'),
-        '2.0.1' => array('tar','zip*','deb','github'),
-        '2.0' => array('tar','zip*','deb','github'),
-        '2.0RC1' => array('tar','zip*','deb','github'),
-        '2.0beta' => array('tar','zip*','deb','github'),
-        '2.0alpha' => array('tar'),
-        '1.4' => array('tar*','deb'),
-        '1.3' => array('tar*','deb'),
-        '1.2' => array('tar*','deb'),
-        '1.1' => array('tar*','deb'),
-        '1.0.1' => array('tar*','deb'),
-        '1.0' => array('tar*','deb'),
-        '1.0RC2' => array('tar'),
-        '1.0RC1' => array('tar'),
-        '0.8.2' => array('tar'),
-        '0.7' => array('tar'),
-        '0.6.1' => array('tar'),
-        '0.5' => array('tar')
-      );
-    ?>
-    <? foreach($versions as $ver => $types): ?>
-      <tr><th><?=str_replace('alpha', ' Alpha', str_replace('beta', ' Beta', str_replace('RC', ' Release Candidate ', $ver))) ?></th>
-      <td>
-      <? foreach($types as $i=>$type): ?>
-        <? if(strstr($type, '*')): ?>
-          <? $type = substr($type, 0, -1); ?>
-          <? $all = true; ?>
-        <? else: ?>
-          <? $all = false; ?>
-        <? endif;
-        switch($type) {
-          case 'tar':
-            echo '<a href="http://downloads.sourceforge.net/vufind/vufind-'.$ver.'.tar.gz?use_mirror=osdn">tar.gz</a>';
-            break;
-          case 'zip':
-            echo '<a href="http://downloads.sourceforge.net/vufind/vufind-'.$ver.'.zip?use_mirror=osdn">zip</a>';
-            break;
-          case 'deb':
-            echo '<a href="http://downloads.sourceforge.net/vufind/vufind-'.$ver.'.deb?use_mirror=osdn">deb</a>';
-            break;
-          case 'github':
-            echo '<a href="https://github.com/vufind-org/vufind/tree/v'.$ver.'">browse code</a> (GitHub)';
-            break;
-        } ?>
-        <? if($all): ?> (all platforms)<? endif; ?>
-        <? if($i < count($types)-1): ?>, <? endif; ?>
-      <? endforeach; ?>
-      </td>
-    <? endforeach; ?>
-  </table>
+  <div class="row">
+    <div class="col-md-9">
+      <table class="table">
+        <?
+          $versions = array(
+            '2.2' => array('tar','zip*','deb','github'),
+            '2.1.1' => array('tar','zip*','deb','github'),
+            '2.1' => array('tar','zip*','deb','github'),
+            '2.0.1' => array('tar','zip*','deb','github'),
+            '2.0' => array('tar','zip*','deb','github'),
+            '2.0RC1' => array('tar','zip*','deb','github'),
+            '2.0beta' => array('tar','zip*','deb','github'),
+            '2.0alpha' => array('tar'),
+            '1.4' => array('tar*','deb'),
+            '1.3' => array('tar*','deb'),
+            '1.2' => array('tar*','deb'),
+            '1.1' => array('tar*','deb'),
+            '1.0.1' => array('tar*','deb'),
+            '1.0' => array('tar*','deb'),
+            '1.0RC2' => array('tar'),
+            '1.0RC1' => array('tar'),
+            '0.8.2' => array('tar'),
+            '0.7' => array('tar'),
+            '0.6.1' => array('tar'),
+            '0.5' => array('tar')
+          );
+        ?>
+        <? foreach($versions as $ver => $types): ?>
+          <tr><th><?=str_replace('alpha', ' Alpha', str_replace('beta', ' Beta', str_replace('RC', ' Release Candidate ', $ver))) ?></th>
+          <td>
+          <? foreach($types as $i=>$type): ?>
+            <? if(strstr($type, '*')): ?>
+              <? $type = substr($type, 0, -1); ?>
+              <? $all = true; ?>
+            <? else: ?>
+              <? $all = false; ?>
+            <? endif;
+            switch($type) {
+              case 'tar':
+                echo '<a href="http://downloads.sourceforge.net/vufind/vufind-'.$ver.'.tar.gz?use_mirror=osdn">tar.gz</a>';
+                break;
+              case 'zip':
+                echo '<a href="http://downloads.sourceforge.net/vufind/vufind-'.$ver.'.zip?use_mirror=osdn">zip</a>';
+                break;
+              case 'deb':
+                echo '<a href="http://downloads.sourceforge.net/vufind/vufind-'.$ver.'.deb?use_mirror=osdn">deb</a>';
+                break;
+              case 'github':
+                echo '<a href="https://github.com/vufind-org/vufind/tree/v'.$ver.'">browse code</a> (GitHub)';
+                break;
+            } ?>
+            <? if($all): ?> (all platforms)<? endif; ?>
+            <? if($i < count($types)-1): ?>, <? endif; ?>
+          <? endforeach; ?>
+          </td>
+        <? endforeach; ?>
+      </table>
+    </div>
+    <div class="col-md-3">
+      <img src="http://vufind.org/images/module.png"/>
+    </div>
+  </div>
 <? include('footer.php'); ?>
