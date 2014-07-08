@@ -1189,43 +1189,39 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
     protected function checkAccountBlocks($patronId)
     {
         $cacheId = "blocks_$patronId";
-        $data = $this->getCachedData($cacheId);
-        if (!is_null($data)) {
-            return $data;
-        }
+        $blockReason = $this->getCachedData($cacheId);
+        if (null === $blockReason) {
+            // Build Hierarchy
+            $hierarchy = array(
+                "patron" =>  $patronId,
+                "patronStatus" => "blocks"
+            );
 
-        $blockReason = false;
+            // Add Required Params
+            $params = array(
+                "patron_homedb" => $this->ws_patronHomeUbId,
+                "view" => "full"
+            );
 
-        // Build Hierarchy
-        $hierarchy = array(
-            "patron" =>  $patronId,
-            "patronStatus" => "blocks"
-        );
+            $blockReason = array();
 
-        // Add Required Params
-        $params = array(
-            "patron_homedb" => $this->ws_patronHomeUbId,
-            "view" => "full"
-        );
+            $blocks = $this->makeRequest($hierarchy, $params);
+            if ($blocks) {
+                $node = "reply-text";
+                $reply = (string)$blocks->$node;
 
-        $blockReason = array();
-
-        $blocks = $this->makeRequest($hierarchy, $params);
-        if ($blocks) {
-            $node = "reply-text";
-            $reply = (string)$blocks->$node;
-
-            // Valid Response
-            if ($reply == "ok" && isset($blocks->blocks)) {
-                foreach ($blocks->blocks->institution->borrowingBlock
-                    as $borrowBlock
-                ) {
-                    $blockReason[] = (string)$borrowBlock->blockReason;
+                // Valid Response
+                if ($reply == "ok" && isset($blocks->blocks)) {
+                    foreach ($blocks->blocks->institution->borrowingBlock
+                        as $borrowBlock
+                    ) {
+                        $blockReason[] = (string)$borrowBlock->blockReason;
+                    }
                 }
             }
+            $this->putCachedData($cacheId, $blockReason);
         }
-        $this->putCachedData($cacheId, $blockReason);
-        return $blockReason;
+        return empty($blockReason) ? false : $blockReason;
     }
 
     /**
