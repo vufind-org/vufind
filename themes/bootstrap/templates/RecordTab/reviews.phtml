@@ -4,7 +4,7 @@
 
     // Grab review data:
     $isbn = $this->driver->getCleanISBN();
-    $reviews = empty($isbn) ? array() : $this->tab->getReviewsForIsbn($isbn);
+    $reviews = empty($isbn) ? array() : $this->tab->getContentByIsbn($isbn);
 
     // Activate Syndetics Plus if necessary:
     if ($this->syndeticsPlus()->isActive()) {
