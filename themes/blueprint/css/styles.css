@@ -2334,3 +2334,44 @@ div.handle {
 .tagForm select {
   width:200px;
 }
+
+/********** Styles for results visualizations **********/
+
+.node {
+  border: solid 1px white;
+  font: 10px sans-serif;
+  line-height: 12px;
+  overflow: hidden;
+  position: absolute;
+  margin:-1px;
+}
+
+.node div {
+  margin-left: 3px;
+  margin-top: 0px;
+}
+
+.toplevel {
+  border: 2px solid black;
+}
+
+.label {
+  display: block;
+  line-height: 1;
+  padding: 2px;
+  background: rgba(0, 0, 0, 0.2);
+  color: #000000;
+  border-radius: 2px;
+  z-index: 200;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.notalabel {
+  color: #000000;
+}
+
+#viz-instructions {
+  padding-top:600px;
+}
