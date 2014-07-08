@@ -1023,7 +1023,7 @@ class SolrMarc extends SolrDefault
     public function getRealTimeHoldings()
     {
         return $this->hasILS()
-            ? $this->holdLogic->getHoldings($this->getUniqueID(), $this->isConsortium() ? $this->getConsortialIDs() : null)
+            ? $this->holdLogic->getHoldings($this->getUniqueID(), $this->getConsortialIDs())
             : array();
     }
 

@@ -158,7 +158,7 @@ class Holds
      * @return array A sorted results set
      */
 
-    public function getHoldings($id, $ids)
+    public function getHoldings($id, $ids = null)
     {
         $holdings = array();
 
@@ -168,10 +168,7 @@ class Holds
             // controller and view to inform the user that these credentials are
             // needed for hold data.
             $patron = $this->account->storedCatalogLogin();
-            if ($ids == null)
-                $result = $this->catalog->getHolding($id, $patron ? $patron : null);
-            else
-                $result = $this->catalog->getConsortialHolding($id, $ids, $patron ? $patron : null);
+            $result = $this->catalog->getHolding($id, $patron ? $patron : null, $ids);
             $mode = $this->catalog->getHoldsMode();
 
             if ($mode == "disabled") {

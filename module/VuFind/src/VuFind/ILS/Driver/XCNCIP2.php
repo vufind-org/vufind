@@ -403,7 +403,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getConsortialHolding($id, array $ids, array $patron = null)
+    public function getConsortialHolding($id, array $patron, array $ids)
     {
         $aggregate_id = $id;
         
@@ -451,6 +451,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @param string $id     The record id to retrieve the holdings for
      * @param array  $patron Patron data
+     * @param array $ids     The consortial source records for this record id
      *
      * @throws \VuFind\Exception\Date
      * @throws ILSException
@@ -458,16 +459,19 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * keys: id, availability (boolean), status, location, reserve, callnumber,
      * duedate, number, barcode.
      */
-    public function getHolding($id, array $patron = null)
+    public function getHolding($id, array $patron = null, array $ids = null)
     {
-        // Translate $id into consortial (035$a) format, e.g., "123" -> "(Agency) 123"
-        $sourceRecord = '';
-        foreach ($this->agency as $_agency => $_dummy) {
-           $sourceRecord = '(' . $_agency . ') ';
+        if ($ids == null) {
+            // Translate $id into consortial (035$a) format, e.g., "123" -> "(Agency) 123"
+            $sourceRecord = '';
+            foreach ($this->agency as $_agency => $_dummy) {
+               $sourceRecord = '(' . $_agency . ') ';
+            }
+            $sourceRecord .= $id;
+            $ids = array($sourceRecord);
         }
-        $sourceRecord .= $id;
 
-        return $this->getConsortialHolding($id, array($sourceRecord), $patron);
+        return $this->getConsortialHolding($id, $patron, $ids);
     }
 
 
