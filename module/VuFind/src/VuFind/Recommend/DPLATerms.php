@@ -47,7 +47,7 @@ class DPLATerms implements RecommendInterface
     protected $config;
 
     /**
-     * Zend HTTP Client
+     * Vufind HTTP Client
      */
     protected $client;
 
@@ -66,7 +66,8 @@ class DPLATerms implements RecommendInterface
     /**
      * Constructor
      *
-     * @param WorldCatUtils $wcu WorldCat utilities object
+     * @param VufindConfig $config config.ini
+     * @param VuFindHttp   $client VuFind HTTP client
      */
     public function __construct($config, $client)
     {
