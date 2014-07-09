@@ -4,11 +4,6 @@
 
     // Grab clean ISBN for convenience:
     $isbn = $this->driver->getCleanISBN();
-
-    // Activate Syndetics Plus if necessary:
-    if ($this->syndeticsPlus()->isActive()) {
-        $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
-    }
 ?>
 <table class="table table-striped" summary="<?=$this->transEsc('Description')?>">
   <? $summ = $this->driver->getSummary(); if (!empty($summ)): ?>

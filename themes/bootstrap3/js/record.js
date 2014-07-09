@@ -175,6 +175,9 @@ function ajaxLoadTab(tabid) {
       $('#'+tabid+'-tab').html(data).addClass('active');
       $('#'+tabid).tab('show');
       registerTabEvents();
+      if(typeof syn_get_widget === "function") {
+        syn_get_widget();
+      }
     }
   });
 }

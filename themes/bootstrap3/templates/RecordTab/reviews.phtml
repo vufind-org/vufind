@@ -4,11 +4,6 @@
 
     // Grab review data:
     $reviews = $this->tab->getContent($isbn);
-
-    // Activate Syndetics Plus if necessary:
-    if ($this->syndeticsPlus()->isActive()) {
-        $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
-    }
 ?>
 <? if (count($reviews) > 0): ?>
   <? foreach ($reviews as $provider => $list): ?>

@@ -4,11 +4,6 @@
 
     // Grab excerpt data:
     $excerpts = $this->tab->getContent($isbn);
-
-    // Activate Syndetics Plus if necessary:
-    if ($this->syndeticsPlus()->isActive()) {
-        $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
-    }
 ?>
 <? if (count($excerpts) > 0): ?>
   <? foreach ($excerpts as $provider => $list): ?>
