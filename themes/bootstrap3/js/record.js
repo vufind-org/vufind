@@ -3,7 +3,6 @@
 /**
  * Functions and event handlers specific to record pages.
  */
-
 function checkRequestIsValid(element, requestURL, requestType, blockedClass) {
   var recordId = requestURL.match(/\/Record\/([^\/]+)\//)[1];
   var vars = {}, hash;
@@ -196,6 +195,8 @@ $(document).ready(function(){
       $('#'+tabid).tab('show');
     } else {
       $('#record-tabs').append('<div class="tab-pane" id="'+tabid+'-tab"><i class="fa fa-spinner fa-spin"></i> '+vufindString.loading+'...</div>');
+      $('#record-tabs .tab-pane.active').removeClass('active');
+      $('#'+tabid+'-tab').addClass('active');
       ajaxLoadTab(tabid);
     }
     return false;

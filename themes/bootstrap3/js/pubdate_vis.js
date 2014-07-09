@@ -28,7 +28,7 @@ function loadVis(facetFields, searchParams, baseURL, zooming) {
         fillColor: "rgb(234,234,234)"
       }
     },
-    colors: ["#0088CC"],
+    colors: ["#265680"],
     legend: { noColumns: 2 },
     xaxis: { tickDecimals: 0 },
     yaxis: { min: 0, ticks: [] },
