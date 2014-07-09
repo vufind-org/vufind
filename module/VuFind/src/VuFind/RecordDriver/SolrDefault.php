@@ -1140,6 +1140,9 @@ class SolrDefault extends AbstractBase
         if ($issn = $this->getCleanISSN()) {
             $arr['issn'] = $issn;
         }
+        if ($oclc = $this->getCleanOCLCNum()) {
+            $arr['oclc'] = $oclc;
+        }
         return $arr;
     }
 

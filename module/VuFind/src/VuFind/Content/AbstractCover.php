@@ -53,6 +53,13 @@ abstract class AbstractCover
     protected $supportsIssn = false;
 
     /**
+     * Does this plugin support OCLC numbers?
+     *
+     * @var bool
+     */
+    protected $supportsOclc = false;
+
+    /**
      * Are we allowed to cache images from this source?
      *
      * @var bool
@@ -80,7 +87,8 @@ abstract class AbstractCover
     {
         return
             ($this->supportsIsbn && isset($ids['isbn']))
-            || ($this->supportsIssn && isset($ids['issn']));
+            || ($this->supportsIssn && isset($ids['issn']))
+            || ($this->supportsOclc && isset($ids['oclc']));
     }
 
     /**
@@ -89,7 +97,8 @@ abstract class AbstractCover
      * @param string $key  API key
      * @param string $size Size of image to load (small/medium/large)
      * @param array  $ids  Associative array of identifiers (keys may include 'isbn'
-     * pointing to an ISBN object and 'issn' pointing to a string)
+     * pointing to an ISBN object, 'issn' pointing to a string and 'oclc' pointing
+     * to an OCLC number string)
      *
      * @return string|bool
      */
