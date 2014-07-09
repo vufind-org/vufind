@@ -336,11 +336,11 @@ class Loader implements \Zend\Log\LoggerAwareInterface
                 $provider = explode(':', trim($provider));
                 $apiName = strtolower(trim($provider[0]));
                 $key = isset($provider[1]) ? trim($provider[1]) : null;
-                $handler = $this->apiManager->get($apiName);
+                try {
+                    $handler = $this->apiManager->get($apiName);
 
-                // Is the current provider appropriate for the available data?
-                if ($handler->supports($ids)) {
-                    try {
+                    // Is the current provider appropriate for the available data?
+                    if ($handler->supports($ids)) {
                         if ($url = $handler->getUrl($key, $this->size, $ids)) {
                             $success = $this->processImageURLForSource(
                                 $url, $handler->isCacheAllowed(), $apiName
@@ -349,12 +349,12 @@ class Loader implements \Zend\Log\LoggerAwareInterface
                                 return true;
                             }
                         }
-                    } catch (\Exception $e) {
-                        $this->debug(
-                            get_class($e) . ' during processing of ' . $apiName
-                            . ': ' . $e->getMessage()
-                        );
                     }
+                } catch (\Exception $e) {
+                    $this->debug(
+                        get_class($e) . ' during processing of ' . $apiName
+                        . ': ' . $e->getMessage()
+                    );
                 }
             }
         }
