@@ -1,0 +1,18 @@
+<? $results = $this->recommend->getResults(); ?>
+<? if(!empty($results)): ?>
+  <ul class="list-group" id="side-panel-dpla">
+    <li class="list-group-item title<? if(in_array($title, $collapsedFacets)): ?> collapsed<? endif ?>" data-toggle="collapse" href="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>">
+      DPLA
+    </li>
+    <div id="side-collapse-dpla" class="collapse<? if(!in_array($title, $collapsedFacets)): ?> in<? endif ?>">
+    <? foreach($results as $item): ?>
+      <li class="list-group-item">
+        <a href="<?=$item['link'] ?>" target="new"><?=$item['title'] ?></a><br/>
+        <? if(!empty($item['desc'])): ?>
+          <span class="desc" title="<?=$item['desc'] ?>"><?=$this->truncate($item['desc'], 50) ?></span><br/>
+        <? endif; ?>
+        <span class="from">from <?=$item['provider'] ?></span>
+      </li>
+    <? endforeach; ?>
+  </ul>
+<? endif; ?>
