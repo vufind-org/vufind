@@ -25,7 +25,7 @@
 <?=$this->flashmessages()?>
 
 <? if ($hideLogin): ?>
-  <div class="alert alert-error"><?=$this->transEsc('login_disabled')?></div>
+  <div class="alert alert-danger"><?=$this->transEsc('login_disabled')?></div>
 <? else: ?>
   <?=$this->auth()->getLogin()?>
 <? endif; ?>

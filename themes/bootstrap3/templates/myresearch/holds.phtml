@@ -124,7 +124,7 @@
           <? if (isset($this->cancelResults['items'])): ?>
             <? foreach ($this->cancelResults['items'] as $itemId=>$cancelResult): ?>
               <? if ($itemId == $ilsDetails['item_id'] && $cancelResult['success'] == false): ?>
-                <div class="alert alert-error"><?=$this->transEsc($cancelResult['status']) ?><? if ($cancelResult['sysMessage']) echo ' : ' . $this->transEsc($cancelResult['sysMessage']); ?></div>
+                <div class="alert alert-danger"><?=$this->transEsc($cancelResult['status']) ?><? if ($cancelResult['sysMessage']) echo ' : ' . $this->transEsc($cancelResult['sysMessage']); ?></div>
               <? endif; ?>
             <? endforeach; ?>
           <? endif; ?>

@@ -45,7 +45,7 @@
 <? /* End Listing Options */ ?>
 
 <? if ($recordTotal < 1): ?>
-  <p class="alert alert-error">
+  <p class="alert alert-danger">
     <? if (isset($view->overrideEmptyMessage)): ?>
       <?=$view->overrideEmptyMessage?>
     <? else: ?>
@@ -53,7 +53,7 @@
     <? endif; ?>
   </p>
   <? if (isset($view->parseError)): ?>
-    <p class="alert alert-error"><?=$this->transEsc('nohit_parse_error')?></p>
+    <p class="alert alert-danger"><?=$this->transEsc('nohit_parse_error')?></p>
   <? endif; ?>
   <?=$this->search()->renderSpellingSuggestions($this->transEsc('nohit_spelling') . ':', $results, $this); ?>
   <? foreach ($results->getRecommendations('top') as $current): ?>

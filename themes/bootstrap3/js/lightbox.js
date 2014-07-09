@@ -218,12 +218,12 @@ var Lightbox = {
         if (d.status == 200) {
           try {
             var data = JSON.parse(d.responseText);
-            Lightbox.changeContent('<p class="alert alert-error">'+data.data+'</p>');
+            Lightbox.changeContent('<p class="alert alert-danger">'+data.data+'</p>');
           } catch(error) {
-            Lightbox.changeContent('<p class="alert alert-error">'+d.responseText+'</p>');
+            Lightbox.changeContent('<p class="alert alert-danger">'+d.responseText+'</p>');
           }
         } else {
-          Lightbox.changeContent('<p class="alert alert-error">'+d.statusText+' ('+d.status+')</p>');
+          Lightbox.changeContent('<p class="alert alert-danger">'+d.statusText+' ('+d.status+')</p>');
         }
         console.log(e,d); // Error reporting
         console.log(url,post);
