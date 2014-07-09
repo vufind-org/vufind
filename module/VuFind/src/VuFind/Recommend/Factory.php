@@ -113,6 +113,22 @@ class Factory
     }
 
     /**
+     * Factory for DPLA Terms module.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return DPLATerms
+     */
+    public static function getDPLATerms(ServiceManager $sm)
+    {
+        $config = $sm->getServiceLocator()->get('VuFind\Config');
+        return new DPLATerms(
+            $config,
+            $sm->getServiceLocator()->get('VuFind\Http')->createClient()
+        );
+    }
+
+    /**
      * Factory for EuropeanaResults module.
      *
      * @param ServiceManager $sm Service manager.

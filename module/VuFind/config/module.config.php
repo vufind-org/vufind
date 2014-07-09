@@ -368,6 +368,7 @@ $config = array(
                     'authorityrecommend' => 'VuFind\Recommend\Factory::getAuthorityRecommend',
                     'catalogresults' => 'VuFind\Recommend\Factory::getCatalogResults',
                     'collectionsidefacets' => 'VuFind\Recommend\Factory::getCollectionSideFacets',
+                    'dplaterms' => 'VuFind\Recommend\Factory::getDPLATerms',
                     'europeanaresults' => 'VuFind\Recommend\Factory::getEuropeanaResults',
                     'expandfacets' => 'VuFind\Recommend\Factory::getExpandFacets',
                     'favoritefacets' => 'VuFind\Recommend\Factory::getFavoriteFacets',

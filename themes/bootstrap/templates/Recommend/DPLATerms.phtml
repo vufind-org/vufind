@@ -1,0 +1,17 @@
+<? $results = $this->recommend->getResults(); ?>
+<? if(!empty($results)): ?>
+  <ul class="nav nav-list collapsed<? if($this->recommend->isCollapsed()): ?> open<? endif ?>">
+    <li class="nav-header">DPLA</li>
+    <? foreach($results as $item): ?>
+        <li>
+            <a href="<?=$item['link'] ?>" target="new"><?=$item['title'] ?></a>
+            <? if(!empty($item['desc'])): ?>
+                <span title="<?=$item['desc'] ?>"><?=$this->truncate($item['desc'], 50) ?></span></br>
+            <? endif; ?>
+            <span style="font-size:85%;font-style:italic">
+                from <?=$item['provider'] ?>
+            </span>
+        </li>
+    <? endforeach; ?>
+  </ul>
+<? endif; ?>
