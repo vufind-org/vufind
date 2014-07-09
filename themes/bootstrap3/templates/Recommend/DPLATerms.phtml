@@ -1,10 +1,10 @@
 <? $results = $this->recommend->getResults(); ?>
 <? if(!empty($results)): ?>
   <ul class="list-group" id="side-panel-dpla">
-    <li class="list-group-item title<? if(in_array($title, $collapsedFacets)): ?> collapsed<? endif ?>" data-toggle="collapse" href="#side-collapse-<?=$this->escapeHtmlAttr($title) ?>">
+    <li class="list-group-item title<? if($this->recommend->isCollapsed()): ?> collapsed<? endif ?>" data-toggle="collapse" href="#side-collapse-dpla">
       DPLA
     </li>
-    <div id="side-collapse-dpla" class="collapse<? if(!in_array($title, $collapsedFacets)): ?> in<? endif ?>">
+    <div id="side-collapse-dpla" class="collapse<? if(!$this->recommend->isCollapsed()): ?> in<? endif ?>">
     <? foreach($results as $item): ?>
       <li class="list-group-item">
         <a href="<?=$item['link'] ?>" target="new"><?=$item['title'] ?></a><br/>

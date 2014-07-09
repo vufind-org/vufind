@@ -1,6 +1,6 @@
 <? $results = $this->recommend->getResults(); ?>
 <? if(!empty($results)): ?>
-  <ul class="nav nav-list collapsed<? if($this->recommend->isCollapsed()): ?> open<? endif ?>">
+  <ul class="nav nav-list collapsed<? if(!$this->recommend->isCollapsed()): ?> open<? endif ?>">
     <li class="nav-header">DPLA</li>
     <? foreach($results as $item): ?>
       <li>

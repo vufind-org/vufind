@@ -201,10 +201,10 @@ class DPLATerms implements RecommendInterface
     public function isCollapsed()
     {
         if (empty($this->collapsedFacets)) {
-            return true;
-        } elseif ($this->collapsedFacets == '*') {
             return false;
+        } elseif ($this->collapsedFacets == '*') {
+            return true;
         }
-        return !strstr(strtolower($this->collapsedFacets), 'dpla');
+        return strstr(strtolower($this->collapsedFacets), 'dpla');
     }
 }

@@ -1,6 +1,6 @@
 <? $results = $this->recommend->getResults(); ?>
 <? if(!empty($results)): ?>
-  <dl class="narrowList navmenu<? if($this->recommend->isCollapsed()): ?> open<? endif ?>">
+  <dl class="narrowList navmenu<? if(!$this->recommend->isCollapsed()): ?> open<? endif ?>">
     <dt class="facet_dpla">DPLA</dt>
     <? foreach($results as $item): ?>
       <dd>
