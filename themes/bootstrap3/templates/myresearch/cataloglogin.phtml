@@ -20,12 +20,23 @@
   <h3><?=$this->transEsc('Library Catalog Profile')?></h3>
   <?=$this->flashmessages()?>
   <p><?=$this->transEsc('cat_establish_account')?></p>
-  <form method="post" action="">
-    <label for="profile_cat_username"><?=$this->transEsc('Library Catalog Username')?>:</label>
-    <input id="profile_cat_username" type="text" name="cat_username" value=""/>
-    <label for="profile_cat_password"><?=$this->transEsc('Library Catalog Password')?>:</label>
-    <input id="profile_cat_password" type="text" name="cat_password" value=""/>
-    <br/>
-    <input class="btn" type="submit" name="submit" value="<?=$this->transEsc('Save')?>"/>
+  <form method="post" action="" class="form-horizontal">
+    <div class="form-group">
+      <label class="col-sm-2 control-label" for="profile_cat_username"><?=$this->transEsc('Library Catalog Username')?>:</label>
+      <div class="col-sm-10">
+        <input id="profile_cat_username" type="text" name="cat_username" value="" class="form-control"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="col-sm-2 control-label" for="profile_cat_password"><?=$this->transEsc('Library Catalog Password')?>:</label>
+      <div class="col-sm-10">
+        <input id="profile_cat_username" type="text" name="cat_password" value="" class="form-control"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <input class="btn btn-primary" type="submit" name="processLogin" value="Login">
+      </div>
+    </div>
   </form>
 <? endif; ?>
