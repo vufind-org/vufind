@@ -40,9 +40,21 @@ namespace VuFind\Recommend;
  */
 class DPLATerms implements RecommendInterface
 {
+
+    /**
+     * Config
+     */
     protected $config;
+
+    /**
+     * Zend HTTP Client
+     */
     protected $client;
-    protected $collapsedFacets;
+
+    /**
+     * Setting of initial collapsedness
+     */
+    protected $collapsed;
 
     /**
      * Search results object
@@ -58,15 +70,8 @@ class DPLATerms implements RecommendInterface
      */
     public function __construct($config, $client)
     {
-        $mainConfig = $config->get('config');
-        $this->config = $mainConfig->DPLA;
+        $this->config = $config->DPLA;
         $this->client = $client;
-
-        // Collapsed facets:
-        $facetConfig = $config->get('facets');
-        if (isset($facetConfig->Results_Settings->collapsedFacets)) {
-            $this->collapsedFacets = $facetConfig->Results_Settings->collapsedFacets;
-        }
     }
 
     /**
@@ -80,20 +85,11 @@ class DPLATerms implements RecommendInterface
      */
     public function setConfig($settings)
     {
-        //var_dump($settings);
+        $this->collapsed = filter_var($settings, FILTER_VALIDATE_BOOLEAN);
     }
 
     /**
-     * init
-     *
-     * Called at the end of the Search Params objects' initFromRequest() method.
-     * This method is responsible for setting search parameters needed by the
-     * recommendation module and for reading any existing search parameters that may
-     * be needed.
-     *
-     * @param \VuFind\Search\Base\Params $params  Search parameter object
-     * @param \Zend\StdLib\Parameters    $request Parameter object representing user
-     * request.
+     * Abstract-required method
      *
      * @return void
      */
@@ -200,11 +196,6 @@ class DPLATerms implements RecommendInterface
      */
     public function isCollapsed()
     {
-        if (empty($this->collapsedFacets)) {
-            return false;
-        } elseif ($this->collapsedFacets == '*') {
-            return true;
-        }
-        return strstr(strtolower($this->collapsedFacets), 'dpla');
+        return $this->collapsed;
     }
 }

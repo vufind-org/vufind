@@ -121,7 +121,7 @@ class Factory
      */
     public static function getDPLATerms(ServiceManager $sm)
     {
-        $config = $sm->getServiceLocator()->get('VuFind\Config');
+        $config = $sm->getServiceLocator()->get('VuFind\Config')->get('config');
         return new DPLATerms(
             $config,
             $sm->getServiceLocator()->get('VuFind\Http')->createClient()
