@@ -54,7 +54,7 @@ class Syndetics extends \VuFind\Content\AbstractCover
     {
         $this->useSSL = $useSSL;
         $this->supportsIsbn = $this->supportsIssn = $this->supportsOclc
-            = $this->cacheAllowed = true;
+            = $this->supportsUpc = $this->cacheAllowed = true;
     }
 
     /**
@@ -102,7 +102,13 @@ class Syndetics extends \VuFind\Content\AbstractCover
         } else {
             $oclc = false;
         }
+        if (isset($ids['upc'])) {
+            $url .= "&upc={$ids['upc']}";
+            $upc = true;
+        } else {
+            $upc = false;
+        }
         $url .= "/{$size}&client={$key}";
-        return ($isbn || $issn || $oclc) ? $url : false;
+        return ($isbn || $issn || $oclc || $upc) ? $url : false;
     }
 }

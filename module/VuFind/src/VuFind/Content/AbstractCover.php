@@ -60,6 +60,13 @@ abstract class AbstractCover
     protected $supportsOclc = false;
 
     /**
+     * Does this plugin support UPC numbers?
+     *
+     * @var bool
+     */
+    protected $supportsUpc = false;
+
+    /**
      * Are we allowed to cache images from this source?
      *
      * @var bool
@@ -88,7 +95,8 @@ abstract class AbstractCover
         return
             ($this->supportsIsbn && isset($ids['isbn']))
             || ($this->supportsIssn && isset($ids['issn']))
-            || ($this->supportsOclc && isset($ids['oclc']));
+            || ($this->supportsOclc && isset($ids['oclc']))
+            || ($this->supportsUpc && isset($ids['upc']));
     }
 
     /**

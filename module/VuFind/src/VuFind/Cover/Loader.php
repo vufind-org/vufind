@@ -107,6 +107,13 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     protected $oclc = null;
 
     /**
+     * User UPC number parameter
+     *
+     * @var string
+     */
+    protected $upc = null;
+
+    /**
      * User size parameter
      *
      * @var string
@@ -244,12 +251,13 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      * @param string $callnumber Callnumber (unique id for dynamic covers)
      * @param string $issn       ISSN
      * @param string $oclc       OCLC number
+     * @param string $upc        UPC number
      *
      * @return void
      */
     public function loadImage($isbn = null, $size = 'small', $type = null,
         $title = null, $author = null, $callnumber = null, $issn = null,
-        $oclc = null
+        $oclc = null, $upc = null
     ) {
         // Sanitize parameters:
         $this->isbn = new ISBN($isbn);
@@ -257,6 +265,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
             ? null
             : substr(preg_replace('/[^0-9X]/', '', strtoupper($issn)), 0, 8);
         $this->oclc = $oclc;
+        $this->upc = $upc;
         $this->type = preg_replace("/[^a-zA-Z]/", "", $type);
         $this->size = $size;
 
@@ -301,6 +310,8 @@ class Loader implements \Zend\Log\LoggerAwareInterface
             return $this->getCachePath($this->size, $ids['issn']);
         } else if (isset($ids['oclc'])) {
             return $this->getCachePath($this->size, 'OCLC' . $ids['oclc']);
+        } else if (isset($ids['upc'])) {
+            return $this->getCachePath($this->size, 'UPC' . $ids['upc']);
         }
         throw new \Exception('Unexpected code path reached!');
     }
@@ -321,6 +332,9 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         }
         if ($this->oclc && strlen($this->oclc) > 0) {
             $ids['oclc'] = $this->oclc;
+        }
+        if ($this->upc && strlen($this->upc) > 0) {
+            $ids['upc'] = $this->upc;
         }
         return $ids;
     }
