@@ -95,9 +95,23 @@ class Loader implements \Zend\Log\LoggerAwareInterface
     /**
      * User ISSN parameter
      *
-     * @var ISSN
+     * @var string
      */
     protected $issn = null;
+
+    /**
+     * User OCLC number parameter
+     *
+     * @var string
+     */
+    protected $oclc = null;
+
+    /**
+     * User UPC number parameter
+     *
+     * @var string
+     */
+    protected $upc = null;
 
     /**
      * User size parameter
@@ -236,17 +250,22 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      * @param string $author     Author of the book (for dynamic covers)
      * @param string $callnumber Callnumber (unique id for dynamic covers)
      * @param string $issn       ISSN
+     * @param string $oclc       OCLC number
+     * @param string $upc        UPC number
      *
      * @return void
      */
     public function loadImage($isbn = null, $size = 'small', $type = null,
-        $title = null, $author = null, $callnumber = null, $issn = null
+        $title = null, $author = null, $callnumber = null, $issn = null,
+        $oclc = null, $upc = null
     ) {
         // Sanitize parameters:
         $this->isbn = new ISBN($isbn);
         $this->issn = empty($issn)
             ? null
             : substr(preg_replace('/[^0-9X]/', '', strtoupper($issn)), 0, 8);
+        $this->oclc = $oclc;
+        $this->upc = $upc;
         $this->type = preg_replace("/[^a-zA-Z]/", "", $type);
         $this->size = $size;
 
@@ -289,6 +308,10 @@ class Loader implements \Zend\Log\LoggerAwareInterface
             return $file;
         } else if (isset($ids['issn'])) {
             return $this->getCachePath($this->size, $ids['issn']);
+        } else if (isset($ids['oclc'])) {
+            return $this->getCachePath($this->size, 'OCLC' . $ids['oclc']);
+        } else if (isset($ids['upc'])) {
+            return $this->getCachePath($this->size, 'UPC' . $ids['upc']);
         }
         throw new \Exception('Unexpected code path reached!');
     }
@@ -306,6 +329,12 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         }
         if ($this->issn && strlen($this->issn) == 8) {
             $ids['issn'] = $this->issn;
+        }
+        if ($this->oclc && strlen($this->oclc) > 0) {
+            $ids['oclc'] = $this->oclc;
+        }
+        if ($this->upc && strlen($this->upc) > 0) {
+            $ids['upc'] = $this->upc;
         }
         return $ids;
     }
@@ -336,11 +365,11 @@ class Loader implements \Zend\Log\LoggerAwareInterface
                 $provider = explode(':', trim($provider));
                 $apiName = strtolower(trim($provider[0]));
                 $key = isset($provider[1]) ? trim($provider[1]) : null;
-                $handler = $this->apiManager->get($apiName);
+                try {
+                    $handler = $this->apiManager->get($apiName);
 
-                // Is the current provider appropriate for the available data?
-                if ($handler->supports($ids)) {
-                    try {
+                    // Is the current provider appropriate for the available data?
+                    if ($handler->supports($ids)) {
                         if ($url = $handler->getUrl($key, $this->size, $ids)) {
                             $success = $this->processImageURLForSource(
                                 $url, $handler->isCacheAllowed(), $apiName
@@ -349,12 +378,12 @@ class Loader implements \Zend\Log\LoggerAwareInterface
                                 return true;
                             }
                         }
-                    } catch (\Exception $e) {
-                        $this->debug(
-                            get_class($e) . ' during processing of ' . $apiName
-                            . ': ' . $e->getMessage()
-                        );
                     }
+                } catch (\Exception $e) {
+                    $this->debug(
+                        get_class($e) . ' during processing of ' . $apiName
+                        . ': ' . $e->getMessage()
+                    );
                 }
             }
         }

@@ -325,6 +325,17 @@ class SolrDefault extends AbstractBase
     }
 
     /**
+     * Get just the first listed UPC Number (or false if none available).
+     *
+     * @return mixed
+     */
+    public function getCleanUPC()
+    {
+        $nums = $this->getUPC();
+        return empty($nums) ? false : $nums[0];
+    }
+
+    /**
      * Get the main corporate author (if any) for the record.
      *
      * @return string
@@ -611,7 +622,7 @@ class SolrDefault extends AbstractBase
     }
 
     /**
-     * Get the OCLC number of the record.
+     * Get the OCLC number(s) of the record.
      *
      * @return array
      */
@@ -1140,6 +1151,21 @@ class SolrDefault extends AbstractBase
         if ($issn = $this->getCleanISSN()) {
             $arr['issn'] = $issn;
         }
+        if ($oclc = $this->getCleanOCLCNum()) {
+            $arr['oclc'] = $oclc;
+        }
+        if ($upc = $this->getCleanUPC()) {
+            $arr['upc'] = $upc;
+        }
+        // If an ILS driver has injected extra details, check for IDs in there
+        // to fill gaps:
+        if ($ilsDetails = $this->getExtraDetail('ils_details')) {
+            foreach (array('isbn', 'issn', 'oclc', 'upc') as $key) {
+                if (!isset($arr[$key]) && isset($ilsDetails[$key])) {
+                    $arr[$key] = $ilsDetails[$key];
+                }
+            }
+        }
         return $arr;
     }
 
@@ -1197,6 +1223,17 @@ class SolrDefault extends AbstractBase
     {
         // Not currently stored in the Solr index
         return array();
+    }
+
+    /**
+     * Get the UPC number(s) of the record.
+     *
+     * @return array
+     */
+    public function getUPC()
+    {
+        return isset($this->fields['upc_str_mv']) ?
+            $this->fields['upc_str_mv'] : array();
     }
 
     /**
