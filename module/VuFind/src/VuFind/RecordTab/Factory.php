@@ -86,7 +86,32 @@ class Factory
         } else {
             $loader = null;
         }
-        return new Excerpt($loader);
+        return new Excerpt($loader, static::getHideSetting($config, 'excerpts'));
+    }
+
+    /**
+     * Support method for construction of AbstractContent objects -- should we
+     * hide this tab if it is empty?
+     *
+     * @param \Zend\Config\Config $config VuFind configuration
+     * @param string              $tab    Name of tab to check config for
+     *
+     * @return bool
+     */
+    protected static function getHideSetting(\Zend\Config\Config $config, $tab)
+    {
+        $setting = isset($config->Content->hide_if_empty)
+            ? $config->Content->hide_if_empty : false;
+        if ($setting === true || $setting === false
+            || $setting === 1 || $setting === 0
+        ) {
+            return (bool)$setting;
+        }
+        if ($setting === 'true' || $setting === '1') {
+            return true;
+        }
+        $hide = array_map('trim', array_map('strtolower', explode(',', $setting)));
+        return in_array(strtolower($tab), $hide);
     }
 
     /**
@@ -157,7 +182,7 @@ class Factory
         } else {
             $loader = null;
         }
-        return new Reviews($loader);
+        return new Reviews($loader, static::getHideSetting($config, 'reviews'));
     }
 
     /**

@@ -26,6 +26,7 @@
  * @link     http://vufind.org/wiki/vufind2:record_tabs Wiki
  */
 namespace VuFind\RecordTab;
+use VuFind\Content\Loader;
 
 /**
  * Reviews tab
@@ -41,18 +42,35 @@ abstract class AbstractContent extends AbstractBase
     /**
      * Content loader
      *
-     * @var \VuFind\Content\Loader
+     * @var Loader
      */
     protected $loader;
 
     /**
+     * Should we hide the tab if no content is found?
+     *
+     * @var bool
+     */
+    protected $hideIfEmpty;
+
+    /**
+     * Cache for results.
+     *
+     * @var array
+     */
+    protected $results = null;
+
+    /**
      * Constructor
      *
-     * @param \VuFind\Content\Loader $loader Content loader (omit to disable)
+     * @param Loader $loader      Content loader (null to disable)
+     * @param bool   $hideIfEmpty Should we hide the tab if no content is found?
+     * (Note that turning this on has performance implications).
      */
-    public function __construct(\VuFind\Content\Loader $loader = null)
+    public function __construct(Loader $loader = null, $hideIfEmpty = false)
     {
         $this->loader = $loader;
+        $this->hideIfEmpty = $hideIfEmpty;
     }
 
     /**
@@ -62,11 +80,14 @@ abstract class AbstractContent extends AbstractBase
      */
     public function isActive()
     {
-        if (null === $this->loader) {
-            return false;
-        }
-        $isbn = $this->getRecordDriver()->tryMethod('getCleanISBN');
-        return !empty($isbn);
+        // Depending on the "hide if empty" setting, we either want to check if
+        // the API results are empty (an expensive operation) or if we have an
+        // ISBN that can be used to retrieve API results (much less expensive,
+        // but also less effective at consistently suppressing empty tabs).
+        $check = $this->hideIfEmpty
+            ? $this->getContent()
+            : $this->getRecordDriver()->tryMethod('getCleanISBN');
+        return !(null === $this->loader || empty($check));
     }
 
     /**
@@ -76,8 +97,11 @@ abstract class AbstractContent extends AbstractBase
      */
     public function getContent()
     {
-        $isbn = $this->getRecordDriver()->tryMethod('getCleanISBN');
-        return (null === $this->loader || empty($isbn))
-            ? array() : $this->loader->loadByIsbn($isbn);
+        if (null === $this->results) {
+            $isbn = $this->getRecordDriver()->tryMethod('getCleanISBN');
+            $this->results = (null === $this->loader || empty($isbn))
+                ? array() : $this->loader->loadByIsbn($isbn);
+        }
+        return $this->results;
     }
 }
