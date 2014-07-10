@@ -4,6 +4,8 @@
   <ul class="list-group">
     <? foreach ($similarRecords as $data): ?>
       <li class="list-group-item">
+        <? $formats = $data->getFormats(); ?>
+        <i class="fa fa-x<? if (count($formats) > 0): ?> fa-<?=preg_replace('/[^a-z0-9]/', '', strtolower($formats[0]))?><? endif; ?>"></i>
         <a href="<?=$this->recordLink()->getUrl($data)?>">
           <?=$this->escapeHtml($data->getTitle())?>
         </a>
