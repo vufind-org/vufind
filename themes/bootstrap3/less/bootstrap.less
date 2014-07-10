@@ -2,6 +2,7 @@
 @import "a11y";
 
 .btn {&:extend(.btn-default all);}
+.fa {cursor:default}
 .form-control {max-width:400px}
 .group [class^=col-] {padding-left:0}
 .highlight{&:extend(mark);}
@@ -22,6 +23,11 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 .tt-dropdown-menu {.list-group;margin-top:10px;}
 .tt-suggestion {
   .list-group-item;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  &.active {
+    white-space:inherit;
+  }
   &.tt-cursor {
     background-color:@brand-primary;
     color:#FFF;
@@ -47,6 +53,7 @@ label.list-group-item {border-radius:0;font-weight:normal;margin-top:0;padding-l
 // Search Icons
 .fa-grid:before   {content:"\f00a"} // .fa-th
 .fa-visual:before {content:"\f008"} // .fa-film
+.fa-mobile:before {content:"\f10a"} // .fa-tablet
 // Type Icons
 .fa-x:before              {content:"\f0f6"} // .fa-file-text-o
 .fa-atlas:before          {content:"\f14e"} // .fa-compass
