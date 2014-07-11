@@ -15,7 +15,7 @@
         <? elseif ($item['availability']): ?>
           <span class="text-success"><?=($item['reserve'] == 'Y') ? $this->transEsc("On Reserve") : $this->transEsc("Available")?></span>
         <? else: ?>
-          <span class="text-error"><?=$this->transEsc($item['status'])?></span>
+          <span class="text-danger"><?=$this->transEsc($item['status'])?></span>
         <? endif; ?>
       </td>
     </tr>
