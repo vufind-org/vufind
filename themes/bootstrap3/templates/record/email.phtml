@@ -14,14 +14,14 @@
   <div class="form-group">
     <label class="col-sm-3 control-label" for="email_to"><?=$this->transEsc('To')?>:</label>
     <div class="col-sm-9">
-      <input type="email" id="email_to" class="form-control" oninvalid="$('#modal .icon-spinner').remove()" name="to" value="<?=isset($this->to) ? $this->to : ''?>"/>
+      <input type="email" id="email_to" class="form-control" oninvalid="$('#modal .fa-spinner').remove()" name="to" value="<?=isset($this->to) ? $this->to : ''?>"/>
     </div>
   </div>
   <? if (!$this->disableFrom): ?>
     <div class="form-group">
       <label class="col-sm-3 control-label" for="email_from"><?=$this->transEsc('From')?>:</label>
       <div class="col-sm-9">
-        <input type="email" id="email_from" oninvalid="$('#modal .icon-spinner').remove()" name="from" value="<?=isset($this->from) ? $this->from : ''?>" size="40" class="form-control"/>
+        <input type="email" id="email_from" oninvalid="$('#modal .fa-spinner').remove()" name="from" value="<?=isset($this->from) ? $this->from : ''?>" size="40" class="form-control"/>
       </div>
     </div>
     <div class="form-group">

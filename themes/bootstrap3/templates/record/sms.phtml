@@ -18,7 +18,7 @@
   <div class="form-group">
     <label class="col-sm-3 control-label" for="sms_to"><?=$this->transEsc('Number')?>:</label>
     <div class="col-sm-9">
-      <input id="sms_to" type="tel"<? if(isset($phone_pattern)): ?> pattern="<?=$phone_pattern ?>"<? endif ?> name="to" placeholder="<?=$this->transEsc('sms_phone_number')?>" class="form-control" oninvalid="$('#modal .icon-spinner').remove()"/>
+      <input id="sms_to" type="tel"<? if(isset($phone_pattern)): ?> pattern="<?=$phone_pattern ?>"<? endif ?> name="to" placeholder="<?=$this->transEsc('sms_phone_number')?>" class="form-control" oninvalid="$('#modal .fa-spinner').remove()"/>
     </div>
   </div>
   <? if (is_array($this->carriers) && count($this->carriers) > 1): ?>

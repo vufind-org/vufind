@@ -10,6 +10,6 @@
         . "\$('#combined_" . $this->escapeHtml($searchClassId) . "').load(url, '', function(responseText) { if (responseText.length == 0) $('#combined_" . $this->escapeHtml($searchClassId) . "').hide(); });";
 ?>
 <h2><?=$this->transEsc($currentSearch['label'])?></h2>
-<p><i class="fa fa-spinner icon-spin"></i> <?=$this->transEsc("Loading")?>...</p>
+<p><i class="fa fa-spinner fa-spin"></i> <?=$this->transEsc("Loading")?>...</p>
 <?=$this->inlineScript(\Zend\View\Helper\HeadScript::SCRIPT, '$(document).ready(function(){' . $loadJs . '});', 'SET')?>
 <noscript><?=$this->transEsc('Please enable JavaScript.')?></noscript>
