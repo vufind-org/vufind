@@ -82,7 +82,7 @@
         // Add JS Variables for QrCode
         $this->jsTranslations()->addStrings(array('qrcode_hide' => 'qrcode_hide', 'qrcode_show' => 'qrcode_show'));
       ?>
-      <span class="hidden-phone">
+      <span class="hidden-xs">
         <i class="fa-qrcode"></i> <a href="<?=$this->escapeHtmlAttr($QRCode);?>" class="qrcodeLink"><?=$this->transEsc('qrcode_show')?></a>
         <div class="qrcode hidden">
           <img alt="<?=$this->transEsc('QR Code')?>" class="img-polaroid" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>

@@ -14,7 +14,7 @@
       <? /* Display qrcode if appropriate: */ ?>
       <? $QRCode = $this->record($this->driver)->getQRCode("core"); ?>
       <? if($QRCode): ?>
-        <span class="hidden-phone">
+        <span class="hidden-xs">
           <br/><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>"/>
         </span>
       <? endif; ?>
