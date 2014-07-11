@@ -6,7 +6,7 @@ return array(
         //'bootstrap-accessibility.css',
         //'bootstrap-custom.css',
         'compiled.css',
-        'font-awesome/font-awesome.css',
+        'font-awesome.min.css',
         'print.css:print',
         'slider.css',
     ),
@@ -20,12 +20,10 @@ return array(
         'lightbox.js',
     ),
     'less' => array(
-        //'compiled.less',
-        //'font-awesome/font-awesome.less'
+        //'compiled.less'
     ),
     'scss' => array(
-        //'compiled.scss',
-        //'font-awesome.scss'
+        //'compiled.scss'
     ),
     'favicon' => 'vufind-favicon.ico',
     'helpers' => array(
