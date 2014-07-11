@@ -99,7 +99,7 @@
 
       <? if (!$openUrlActive && empty($urls) && $this->driver->supportsAjaxStatus()): ?>
         <span class="status ajax-availability small ">
-          <span class="label"><?=$this->transEsc('Loading')?>...</span>
+          <span class="label label-default"><?=$this->transEsc('Loading')?>...</span>
         </span>
       <? endif; ?>
       <?=$this->record($this->driver)->getPreviews()?>
