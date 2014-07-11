@@ -2,13 +2,13 @@
 return array(
     'extends' => 'root',
     'css' => array(
-        //'bootstrap.min.css',
-        //'bootstrap-accessibility.css',
+        //'vendor/bootstrap.min.css',
+        //'vendor/bootstrap-accessibility.css',
         //'bootstrap-custom.css',
         'compiled.css',
-        'font-awesome.min.css',
+        'vendor/font-awesome.min.css',
+        'vendor/slider.css',
         'print.css:print',
-        'slider.css',
     ),
     'js' => array(
         'vendor/jquery.min.js',
