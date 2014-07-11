@@ -4,11 +4,11 @@ return array(
     'css' => array(
         //'vendor/bootstrap.min.css',
         //'bootprint-custom.css',
-        //'compiled.css',
+        'compiled.css',
         'icons.css'
     ),
     'less' => array(
-        'compiled.less',
+        //'compiled.less',
         //'icons.less'
     ),
     'scss' => array(
