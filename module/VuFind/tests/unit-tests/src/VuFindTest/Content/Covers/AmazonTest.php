@@ -77,41 +77,73 @@ class AmazonTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
+     * Test missing ISBN
+     *
+     * @return void
+     */
+    public function testMissingIsbn()
+    {
+        $this->assertEquals(false, $this->getUrl('small', ''));
+    }
+
+    /**
+     * Test broken Amazon service (we should just swallow exceptions)
+     *
+     * @return void
+     */
+    public function testServiceException()
+    {
+        $this->assertEquals(false, $this->getUrl('small', '0739313126', true));
+    }
+
+    /**
      * Simulate retrieval of a cover URL for a particular size.
      *
-     * @param string $size Size to retrieve
+     * @param string $size  Size to retrieve
+     * @param string $isbn  ISBN to retrieve (empty for none)
+     * @param bool   $throw Should the fake service throw an exception?
      *
      * @return string
      */
-    protected function getUrl($size)
+    protected function getUrl($size, $isbn = '0739313126', $throw = false)
     {
         $amazon = $this->getMock(
             'VuFind\Content\Covers\Amazon', array('getAmazonService'),
             array('fake', 'fakesecret')
         );
-        $amazon->expects($this->once())
-            ->method('getAmazonService')->with($this->equalTo('fakekey'))
-            ->will($this->returnValue($this->getFakeService()));
-        return $amazon->getUrl(
-            'fakekey', $size, array('isbn' => new ISBN('0739313126'))
-        );
+        $params = array();
+        if (!empty($isbn)) {
+            $behavior = $throw
+                ? $this->throwException(new \Exception('kaboom'))
+                : $this->returnValue($this->loadFixture());
+            $amazon->expects($this->once())
+                ->method('getAmazonService')->with($this->equalTo('fakekey'))
+                ->will($this->returnValue($this->getFakeService($isbn, $behavior)));
+            $params['isbn'] = new ISBN($isbn);
+        }
+        return $amazon->getUrl('fakekey', $size, $params);
     }
 
     /**
      * Create fake Amazon service
      *
+     * @param string $isbn             ISBN to retrieve (empty for none)
+     * @param mixed  $expectedBehavior Behavior of the itemLookup method
+     *
      * @return \ZendService\Amazon\Amazon
      */
-    protected function getFakeService()
+    protected function getFakeService($isbn, $expectedBehavior)
     {
         $service = $this->getMock(
             'ZendService\Amazon\Amazon', array('itemLookup'),
             array('fakekey', 'US', 'fakesecret')
         );
-        $service->expects($this->once())
-            ->method('itemLookup')
-            ->with($this->equalTo('0739313126'), $this->equalTo($this->params))
-            ->will($this->returnValue($this->loadFixture()));
+        if (!empty($isbn)) {
+            $service->expects($this->once())
+                ->method('itemLookup')
+                ->with($this->equalTo($isbn), $this->equalTo($this->params))
+                ->will($expectedBehavior);
+        }
         return $service;
     }
 
