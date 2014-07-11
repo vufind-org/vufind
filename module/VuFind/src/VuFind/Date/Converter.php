@@ -99,9 +99,9 @@ class Converter
     {
         $errors = "Date/time problem: Details: ";
 
-        // For compatibility with PHP 5.2.x, we have to restrict the input formats
-        // to a fixed list...  but we'll check to see if we have access to PHP 5.3.x
-        // before failing if we encounter an input format that isn't whitelisted.
+        // These are date formats that we definitely know how to handle, and some
+        // benefit from special processing. However, items not found in this list
+        // will still be attempted in a generic fashion before giving up.
         $validFormats = array(
             "m-d-Y", "m-d-y", "m/d/Y", "m/d/y", "U", "m-d-y H:i", "Y-m-d",
             "Y-m-d H:i"
@@ -129,11 +129,6 @@ class Converter
                 $getErrors['errors'][] = $e->getMessage();
             }
         } else {
-            if (!method_exists('DateTime', 'createFromFormat')) {
-                throw new DateException(
-                    "Date format {$inputFormat} requires PHP 5.3 or higher."
-                );
-            }
             $date = DateTime::createFromFormat($inputFormat, $dateString);
             $getErrors = DateTime::getLastErrors();
         }
