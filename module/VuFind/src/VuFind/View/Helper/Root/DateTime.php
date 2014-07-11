@@ -91,4 +91,17 @@ class DateTime extends \Zend\View\Helper\AbstractHelper
 
         return str_replace($search, $replace, $dueDateHelpString);
     }
+
+    /**
+     * By default, proxy method calls to the converter object.
+     *
+     * @param string $methodName The name of the called method.
+     * @param array  $params     Array of passed parameters.
+     *
+     * @return mixed
+     */
+    public function __call($methodName, $params)
+    {
+        return call_user_func_array(array($this->converter, $methodName), $params);
+    }
 }
