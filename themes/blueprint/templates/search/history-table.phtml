@@ -8,7 +8,7 @@
   </tr>
   <? foreach (($this->showSaved ? array_reverse($this->saved) : array_reverse($this->unsaved)) as $iteration => $info): ?>
     <tr class="<?=$iteration % 2 == 1 ? 'even' : 'odd'?>row">
-      <td><?=$this->escapeHtml(date("g:ia, jS M y", $info->getStartTime()))?></td>
+      <td><?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime("U", $info->getStartTime()))?></td>
       <td>
         <?=$this->historylabel($info->getParams()->getSearchClassId())?>
         <a href="<?=$this->url($info->getOptions()->getSearchAction()) . $info->getUrlQuery()->getParams()?>"><?
