@@ -3,7 +3,7 @@
 <div class="row">
   <? $i = 0; foreach ($worldCatTerms as $type => $section): ?>
     <? $moreClass = 'WCTerms'.$this->escapeHtml($type).' hidden'; ?>
-    <div class="span<?=floor(12/count($worldCatTerms)) ?>">
+    <div class="col-sm-<?=floor(12/count($worldCatTerms)) ?>">
       <dl>
         <dt><?=$this->transEsc('wcterms_' . $type)?></dt>
         <? $j = 0; foreach ($section as $subj): ?>

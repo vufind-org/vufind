@@ -34,7 +34,7 @@
         <input type="hidden" name="bool<?=$i?>[]" value="AND" />
         <div class="group well clearfix" id="group<?=$i?>">
           <div class="col-sm-2 text-right" id="group<?=$i?>SearchHolder"><?=$this->transEsc("adv_search_label")?>:</div>
-          <div class="span10">
+          <div class="col-sm-10">
             <?
               if (isset($groups[$i])) {
                   $currentGroup = $groups[$i]->getQueries();

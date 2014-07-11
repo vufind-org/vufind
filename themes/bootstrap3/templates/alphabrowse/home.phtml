@@ -62,7 +62,7 @@
             foreach ($this->extras as $ei => $extraName):
               $extraData = $item['extras'][$extraName];
           ?>
-            <div class="span<?=floor(6/count($this->extras)) ?>">
+            <div class="col-sm-<?=floor(6/count($this->extras)) ?>">
               <?
                 $extraDisplayArray = array();
                 foreach ($extraData as $j => $e) {
