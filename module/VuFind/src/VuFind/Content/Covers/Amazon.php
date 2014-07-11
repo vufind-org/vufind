@@ -116,7 +116,7 @@ class Amazon extends \VuFind\Content\AbstractCover
     /**
      * Get an AmazonService object for the specified key.
      *
-     * @param string $key  API key
+     * @param string $key API key
      *
      * @return AmazonService
      */
