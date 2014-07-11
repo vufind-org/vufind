@@ -101,6 +101,9 @@ class LessCompiler
         foreach ($config['less'] as $less) {
             $this->compileFile($theme, $less);
         }
+
+        \Less_Cache::SetCacheDir(APPLICATION_PATH.'/themes/'.$theme.'/css/less/');
+        \Less_Cache::CleanCache(); // deletes week old files
     }
 
     /**
