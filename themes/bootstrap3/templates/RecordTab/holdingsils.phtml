@@ -84,7 +84,7 @@
             <?=$this->transEsc("On Reserve - Ask at Circulation Desk")?><br />
           <? endif; ?>
           <? if (isset($row['use_unknown_message']) && $row['use_unknown_message']): ?>
-            <span class="muted"><?=$this->transEsc("status_unknown_message")?></span>
+            <span class="text-muted"><?=$this->transEsc("status_unknown_message")?></span>
           <? else: ?>
             <? if ($row['availability']): ?>
               <? /* Begin Available Items (Holds) */ ?>
