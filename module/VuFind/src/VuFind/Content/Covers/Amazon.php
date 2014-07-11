@@ -79,7 +79,6 @@ class Amazon extends \VuFind\Content\AbstractCover
     public function getUrl($key, $size, $ids)
     {
         try {
-            $amazon = new AmazonService($key, 'US', $this->secret);
             $params = array(
                 'ResponseGroup' => 'Images', 'AssociateTag' => $this->associate
             );
@@ -88,7 +87,7 @@ class Amazon extends \VuFind\Content\AbstractCover
             if (!$isbn) {
                 return false;
             }
-            $result = $amazon->itemLookup($isbn, $params);
+            $result = $this->getAmazonService($key)->itemLookup($isbn, $params);
         } catch (\Exception $e) {
             // Something went wrong?  Just report failure:
             return false;
@@ -97,13 +96,9 @@ class Amazon extends \VuFind\Content\AbstractCover
         // Where in the response can we find the URL we need?
         switch ($size) {
         case 'small':
-            $imageIndex = 'SmallImage';
-            break;
         case 'medium':
-            $imageIndex = 'MediumImage';
-            break;
         case 'large':
-            $imageIndex = 'LargeImage';
+            $imageIndex = ucwords($size) . 'Image';
             break;
         default:
             $imageIndex = false;
@@ -116,5 +111,17 @@ class Amazon extends \VuFind\Content\AbstractCover
         }
 
         return false;
+    }
+
+    /**
+     * Get an AmazonService object for the specified key.
+     *
+     * @param string $key  API key
+     *
+     * @return AmazonService
+     */
+    protected function getAmazonService($key)
+    {
+        return new AmazonService($key, 'US', $this->secret);
     }
 }
