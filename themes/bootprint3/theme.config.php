@@ -2,13 +2,13 @@
 return array(
     'extends' => 'bootstrap3',
     'css' => array(
-        //'bootstrap.min.css',
+        //'vendor/bootstrap.min.css',
         //'bootprint-custom.css',
-        'compiled.css',
+        //'compiled.css',
         'icons.css'
     ),
     'less' => array(
-        //'compiled.less',
+        'compiled.less',
         //'icons.less'
     ),
     'scss' => array(
