@@ -109,7 +109,7 @@
       <strong><?=$this->transEsc('Search Tools')?>:</strong>
       <i class="icon-bell"></i> <a href="<?=$this->results->getUrlQuery()->setViewParam('rss')?>"><?=$this->transEsc('Get RSS Feed')?></a>
       &mdash;
-      <i class="icon-envelope"></i> <a href="<?=$this->url('search-email')?>" class="mailSearch modal-link" id="mailSearch<?=$this->escapeHtml($this->results->getSearchId())?>" title="<?=$this->transEsc('Email this Search')?>"><?=$this->transEsc('Email this Search')?></a>
+      <i class="icon-envelope"></i> <a href="<?=$this->url('search-email')?>" class="mailSearch modal-link" id="mailSearch<?=$this->escapeHtmlAttr($this->results->getSearchId())?>" title="<?=$this->transEsc('Email this Search')?>"><?=$this->transEsc('Email this Search')?></a>
       &mdash;
       <? if (is_numeric($this->results->getSearchId())): ?>
         <? if ($this->results->isSavedSearch()): ?>
