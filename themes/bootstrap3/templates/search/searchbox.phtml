@@ -18,10 +18,12 @@
     $lastLimit = $options->getLastLimit();
 ?>
 <? if ($this->searchType == 'advanced'): ?>
-  <p class="navbar-text"><?=$this->transEsc("Your search terms")?> : "<strong><?=$this->escapeHtml($this->lookfor)?>"</strong></p>
-  <a class="navbar-text" href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($this->searchId)?>"><?=$this->transEsc("Edit this Advanced Search")?></a>
-  <a class="navbar-text" href="<?=$this->url($advSearch)?>"><?=$this->transEsc("Start a new Advanced Search")?></a>
-  <a class="navbar-text" href="<?=$this->url($searchHome)?>"><?=$this->transEsc("Start a new Basic Search")?></a>
+  <div id="searchForm">
+    <p class="navbar-text"><?=$this->transEsc("Your search terms")?> : "<strong><?=$this->escapeHtml($this->lookfor)?>"</strong></p>
+    <a class="navbar-text" href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($this->searchId)?>"><?=$this->transEsc("Edit this Advanced Search")?></a>
+    <a class="navbar-text" href="<?=$this->url($advSearch)?>"><?=$this->transEsc("Start a new Advanced Search")?></a>
+    <a class="navbar-text" href="<?=$this->url($searchHome)?>"><?=$this->transEsc("Start a new Basic Search")?></a>
+  </div>
 <? else: ?>
   <form role="search" class="navbar-form navbar-left" method="get" action="<?=$this->url($basicSearch)?>" name="searchForm" id="searchForm" autocomplete="off">
     <? $searchTabs = $this->searchtabs($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType); ?>
