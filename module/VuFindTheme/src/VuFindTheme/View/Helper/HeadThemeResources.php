@@ -87,7 +87,7 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
                 isset($parts[2]) ? trim($parts[2]) : false
             );
         }
-        
+
         // Compile and load LESS (make sure we prepend them in the appropriate order
         // theme resources should load before extras added by individual templates):
         foreach (array_reverse($this->container->getLessCss()) as $current) {
@@ -96,8 +96,8 @@ class HeadThemeResources extends \Zend\View\Helper\AbstractHelper
 
         // Compile and load SASS (make sure we prepend them in the appropriate order
         // theme resources should load before extras added by individual templates):
-        foreach (array_reverse($this->container->getSassCss()) as $current) {
-            $headLink()->addSassStylesheet($current);
+        foreach (array_reverse($this->container->getScssCss()) as $current) {
+            $headLink()->addScssStylesheet($current);
         }
 
         // Load Javascript (same ordering considerations as CSS, above):

@@ -341,7 +341,7 @@ class Initializer
                 $resources->addLessCss($currentThemeInfo['less']);
             }
             if (isset($currentThemeInfo['scss'])) {
-                $resources->addSassCss($currentThemeInfo['scss']);
+                $resources->addScssCss($currentThemeInfo['scss']);
             }
             if (isset($currentThemeInfo['css'])) {
                 $resources->addCss($currentThemeInfo['css']);

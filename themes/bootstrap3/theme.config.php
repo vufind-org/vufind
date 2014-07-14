@@ -20,10 +20,12 @@ return array(
         'lightbox.js',
     ),
     'less' => array(
-        //'compiled.less'
+        'active' => true,
+        'compiled.less'
     ),
     'scss' => array(
-        //'compiled.scss'
+        'active' => false,
+        'compiled.scss'
     ),
     'favicon' => 'vufind-favicon.ico',
     'helpers' => array(
