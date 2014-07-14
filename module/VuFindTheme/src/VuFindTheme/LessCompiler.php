@@ -88,17 +88,13 @@ class LessCompiler
      */
     protected function processTheme($theme)
     {
-        $config = $this->basePath . '/themes/' . $theme . '/theme.config.php';
-        if (!file_exists($config)) {
-            return;
-        }
-        $config = include $config;
-        if (!isset($config['less'])) {
+        $lessFiles = $this->getAllLessFiles($theme);
+        if (empty($lessFiles)) {
             Console::writeLine("No LESS in " . $theme);
             return;
         }
         Console::writeLine("Processing " . $theme);
-        foreach ($config['less'] as $less) {
+        foreach ($lessFiles as $less) {
             if (is_string($less)) {
                 $this->compileFile($theme, $less);
             }
@@ -106,6 +102,25 @@ class LessCompiler
 
         \Less_Cache::SetCacheDir(APPLICATION_PATH.'/themes/'.$theme.'/css/less/');
         \Less_Cache::CleanCache(); // deletes week old files
+    }
+
+    /**
+     * Get all less files that might exist in a theme.
+     *
+     * @return array
+     */
+    protected function getAllLessFiles($theme)
+    {
+        $config = $this->basePath . '/themes/' . $theme . '/theme.config.php';
+        if (!file_exists($config)) {
+            return array();
+        }
+        $configArr = include $config;
+        $base = (isset($configArr['extends']))
+            ? $this->getAllLessFiles($configArr['extends'])
+            : array();
+        $current = isset($configArr['less']) ? $configArr['less'] : array();
+        return array_merge($base, $current);
     }
 
     /**
@@ -132,6 +147,12 @@ class LessCompiler
                 = $this->fakePath . "themes/$curTheme/css/less";
         }
         $lessDir = $this->basePath . '/themes/' . $theme . '/less/';
+        if (!file_exists($lessDir . $less)) {
+            Console::writeLine(
+                "\t\t" . $lessDir . $less . ' does not exist; skipping.'
+            );
+            return;
+        }
         $outDir = sys_get_temp_dir();
         $outFile = \Less_Cache::Regen(
             array($lessDir . $less => $this->fakePath . "themes/$theme/css/less"),
