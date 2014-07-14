@@ -99,7 +99,9 @@ class LessCompiler
         }
         Console::writeLine("Processing " . $theme);
         foreach ($config['less'] as $less) {
-            $this->compileFile($theme, $less);
+            if (is_string($less)) {
+                $this->compileFile($theme, $less);
+            }
         }
 
         \Less_Cache::SetCacheDir(APPLICATION_PATH.'/themes/'.$theme.'/css/less/');
