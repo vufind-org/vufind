@@ -13,7 +13,7 @@ $urls = $this->record($this->driver)->getLinkDetails();
   <? if (!isset($this->hideCartControls) && $this->cart()->isActive()): ?>
     <?=$this->record($this->driver)->getCheckbox() ?></br>
   <? endif; ?>
-  <div class="text-center" style="margin:auto;max-width:70px">
+  <div class="text-center">
     <a href="<?=$this->recordLink()->getUrl($this->driver)?>">
       <? if ($summThumb = $this->record($this->driver)->getThumbnail('large')): ?>
         <img src="<?=$this->escapeHtmlAttr($summThumb)?>" alt="<?=$this->transEsc('Cover Image')?>"/>
@@ -26,11 +26,11 @@ $urls = $this->record($this->driver)->getLinkDetails();
   </div>
   <? if (!$openUrlActive && empty($urls)): ?>
     <? if ($this->driver->supportsAjaxStatus()): ?>
-      <div class="status ajax-availability hidden text-center pad"><span class="label label-default"><?=$this->transEsc('Loading')?>...</span></div>
+      <div class="status ajax-availability hidden text-center"><span class="label label-default"><?=$this->transEsc('Loading')?>...</span></div>
     <? endif; ?>
   <? endif; ?>
   <div>
-    <a class="gridTitle" href="<?=$this->recordLink()->getUrl($this->driver)?>"><?
+    <a class="title" href="<?=$this->recordLink()->getUrl($this->driver)?>"><?
       $summHighlightedTitle = $this->driver->getHighlightedTitle();
       $summTitle = $this->driver->getTitle();
       if (!empty($summHighlightedTitle)) {
