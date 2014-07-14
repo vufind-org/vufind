@@ -1300,7 +1300,7 @@ EOT;
                 array('AuthenticatePatronService' => false), array(), 'POST', $xml
             );
             if ($response === false) {
-                throw new ILSException('renew_error_system');
+                throw new ILSException('renew_error');
             }
 
             $xml = <<<EOT
@@ -1324,7 +1324,7 @@ EOT;
                 array('RenewService' => false), array(), 'POST', $xml
             );
             if ($response === false) {
-                throw new ILSException('renew_error_system');
+                throw new ILSException('renew_error');
             }
 
             // Process
@@ -1336,7 +1336,9 @@ EOT;
             // The service doesn't actually return messages (in Voyager 8.1),
             // but maybe in the future...
             foreach ($response->xpath('//ser:message') as $message) {
-                if ($message->attributes()->type == 'system') {
+                if ($message->attributes()->type == 'system'
+                    || $message->attributes()->type == 'error'
+                ) {
                     return false;
                 }
             }

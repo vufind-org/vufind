@@ -113,7 +113,7 @@ class Renewals extends AbstractPlugin
                 return $renewResult['details'];
             } else {
                 // System failure:
-                $flashMsg->setNamespace('error')->addMessage('renew_system_error');
+                $flashMsg->setNamespace('error')->addMessage('renew_error');
             }
         } else if (!empty($all) || !empty($selected)) {
             // Button was clicked but no items were selected:
