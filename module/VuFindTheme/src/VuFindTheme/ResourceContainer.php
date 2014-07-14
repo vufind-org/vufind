@@ -275,10 +275,10 @@ class ResourceContainer
      */
     private function dynamicallyParsed($file)
     {
-        if (empty($this->less)) {
+        if (empty($this->less) && empty($this->scss)) {
             return false;
         }
-        list($fileName,) = explode('.', $file);
+        list($fileName, ) = explode('.', $file);
         $lessFile = $fileName . '.less';
         $scssFile = $fileName . '.scss';
         return in_array($lessFile, $this->less, true) || in_array($scssFile, $this->scss, true);
