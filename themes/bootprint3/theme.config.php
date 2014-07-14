@@ -14,8 +14,8 @@ return array(
     ),
     'scss' => array(
         'active' => false,
-        'compiled.less',
-        'icons.less'
+        'compiled.scss',
+        'icons.scss'
     ),
     'js' => array(
         'vendor/bootstrap.min.js'
