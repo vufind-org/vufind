@@ -136,7 +136,15 @@ header {
   }
   .searchbox {
     display:block !important;
-    margin:0;
+    .nav-tabs {
+      padding:0 6px;
+    }
+    .tab-content {
+      border:0;
+      .navbar-text {
+        margin:5px 10px 5px 0;
+      }
+    }
   }
   @media (max-width: 767px) {
     #header-collapse .navbar-right li {

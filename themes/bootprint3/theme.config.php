@@ -8,12 +8,14 @@ return array(
         'icons.css'
     ),
     'less' => array(
-        //'compiled.less',
-        //'icons.less'
+        'active' => false,
+        'compiled.less',
+        'icons.less'
     ),
     'scss' => array(
-        //'compiled.scss',
-        //'icons.scss'
+        'active' => false,
+        'compiled.less',
+        'icons.less'
     ),
     'js' => array(
         'vendor/bootstrap.min.js'
