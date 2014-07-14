@@ -44,12 +44,6 @@ class ResourceContainer
      * @var array
      */
     protected $less = array();
-    /**
-     * Less CSS active boolean
-     *
-     * @var array
-     */
-    protected $lessActive = false;
 
     /**
      * scss CSS files
@@ -57,12 +51,6 @@ class ResourceContainer
      * @var array
      */
     protected $scss = array();
-    /**
-     * SCSS CSS active boolean
-     *
-     * @var array
-     */
-    protected $scssActive = false;
 
     /**
      * CSS files
@@ -111,13 +99,10 @@ class ResourceContainer
         if (!is_array($less) && !is_a($less, 'Traversable')) {
             $less = array($less);
         }
-        $this->lessActive = !isset($less['active']) || $less['active'] === true;
-        if ($this->lessActive) {
-            unset($less['active']);
-            foreach ($less as $index=>$current) {
-                $this->less[$index] = $current;
-                $this->removeCSS($current);
-            }
+        unset($less['active']);
+        foreach ($less as $index=>$current) {
+            $this->less[$index] = $current;
+            $this->removeCSS($current);
         }
     }
 
@@ -133,13 +118,10 @@ class ResourceContainer
         if (!is_array($scss) && !is_a($scss, 'Traversable')) {
             $scss = array($scss);
         }
-        $this->scssActive = !isset($scss['active']) || $scss['active'] === true;
-        if ($this->scssActive) {
-            unset($scss['active']);
-            foreach ($scss as $index=>$current) {
-                $this->scss[$index] = $current;
-                $this->removeCSS($current);
-            }
+        unset($scss['active']);
+        foreach ($scss as $index=>$current) {
+            $this->scss[$index] = $current;
+            $this->removeCSS($current);
         }
     }
 
@@ -157,7 +139,7 @@ class ResourceContainer
             $css = array($css);
         }
         foreach ($css as $current) {
-            if (!$this->activeInLess($current) && !$this->activeInScss($current)) {
+            if (!$this->dynamicallyParsed($current)) {
                 $this->css[] = $current;
             }
         }
@@ -291,29 +273,15 @@ class ResourceContainer
      *
      * @return boolean
      */
-    private function activeInLess($file)
+    private function dynamicallyParsed($file)
     {
-        if (empty($this->less) || $this->lessActive === false) {
+        if (empty($this->less)) {
             return false;
         }
-        list($lessFile,) = explode('.', $file);
-        $lessFile .= '.less';
-        return in_array($lessFile, $this->less, true) ? true : false;
-    }
-
-    /**
-     * Check if a CSS file is being dynamically compiled in SCSS
-     *
-     * @return boolean
-     */
-    private function activeInScss($file)
-    {
-        if (empty($this->scss) || $this->scssActive === false) {
-            return false;
-        }
-        list($scssFile,) = explode('.', $file);
-        $scssFile .= '.scss';
-        return in_array($scssFile, $this->scss, true) ? true : false;
+        list($fileName,) = explode('.', $file);
+        $lessFile = $fileName . '.less';
+        $scssFile = $fileName . '.scss';
+        return in_array($lessFile, $this->less, true) || in_array($scssFile, $this->scss, true);
     }
 
     /**
