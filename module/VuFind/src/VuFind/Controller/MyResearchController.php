@@ -67,56 +67,14 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Store a referer (if appropriate) to keep post-login redirect pointing
-     * to an appropriate location. This is used when the user clicks the
-     * log in link from an arbitrary page or when a password is mistyped;
-     * separate logic is used for storing followup information when VuFind
-     * forces the user to log in from another context.
+     * Maintaining this method for backwards compatibility;
+     * logic moved to parent and method re-named
      *
      * @return void
      */
     protected function storeRefererForPostLoginRedirect()
     {
-        // Get the referer -- if it's empty, there's nothing to store!
-        $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
-        if (empty($referer)) {
-            return;
-        }
-        $refererNorm = $this->normalizeUrlForComparison($referer);
-
-        // If the referer lives outside of VuFind, don't store it! We only
-        // want internal post-login redirects.
-        $baseUrl = $this->getServerUrl('home');
-        $baseUrlNorm = $this->normalizeUrlForComparison($baseUrl);
-        if (0 !== strpos($refererNorm, $baseUrlNorm)) {
-            return;
-        }
-
-        // If the referer is the MyResearch/Home action, it probably means
-        // that the user is repeatedly mistyping their password. We should
-        // ignore this and instead rely on any previously stored referer.
-        $myResearchHomeUrl = $this->getServerUrl('myresearch-home');
-        $mrhuNorm = $this->normalizeUrlForComparison($myResearchHomeUrl);
-        if ($mrhuNorm === $refererNorm) {
-            return;
-        }
-
-        // If we got this far, we want to store the referer:
-        $this->followup()->store(array(), $referer);
-    }
-
-    /**
-     * Normalize the referer URL so that inconsistencies in protocol and trailing
-     * slashes do not break comparisons.
-     *
-     * @param string $url URL to normalize
-     *
-     * @return string
-     */
-    protected function normalizeUrlForComparison($url)
-    {
-        $parts = explode('://', $url, 2);
-        return trim(end($parts), '/');
+        parent::setFollowupUrl();
     }
 
     /**
@@ -148,16 +106,13 @@ class MyResearchController extends AbstractBase
 
         // Not logged in?  Force user to log in:
         if (!$this->getAuthManager()->isLoggedIn()) {
-            $this->storeRefererForPostLoginRedirect();
+            $this->setFollowupUrl();
             return $this->forwardTo('MyResearch', 'Login');
         }
-
-        // Logged in?  Forward user to followup action (if set and not in lightbox)
+        // Logged in?  Forward user to followup action
         // or default action (if no followup provided):
-        $followup = $this->followup()->retrieve();
-        if (isset($followup->url) && !$this->inLightbox()) {
-            $url = $followup->url;
-            unset($followup->url);
+        if ($url = $this->getFollowupUrl()) {
+            $this->clearFollowupUrl();
             return $this->redirect()->toUrl($url);
         }
 
@@ -191,9 +146,9 @@ class MyResearchController extends AbstractBase
         // We may have come in from a lightbox.  In this case, a prior module
         // will not have set the followup information.  We should grab the referer
         // so the user doesn't get lost.
-        $followup = $this->followup()->retrieve();
-        if (!isset($followup->url)) {
-            $followup->url = $this->getRequest()->getServer()->get('HTTP_REFERER');
+        // i.e. if there's already a followup url, keep it; otherwise set one.
+        if (!$this->getFollowupUrl()) {
+            $this->setFollowupUrl();
         }
 
         // Make view
@@ -260,11 +215,8 @@ class MyResearchController extends AbstractBase
      */
     public function userloginAction()
     {
-        $followup = $this->followup()->retrieve();
-        if (isset($followup->url)) {
-            unset($followup->url);
-        }
-        $this->storeRefererForPostLoginRedirect();
+        $this->clearFollowupUrl();
+        $this->setFollowupUrl();
         if ($si = $this->getSessionInitiator()) {
             return $this->redirect()->toUrl($si);
         }
