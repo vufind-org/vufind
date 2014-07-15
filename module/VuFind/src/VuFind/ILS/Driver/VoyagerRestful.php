@@ -1090,6 +1090,7 @@ class VoyagerRestful extends Voyager implements \VuFindHttp\HttpServiceAwareInte
 
         // Attach XML if necessary
         if ($xml !== false) {
+            $client->setEncType('text/xml');
             $client->setRawBody($xml);
         }
 
