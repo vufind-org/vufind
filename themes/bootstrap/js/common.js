@@ -106,7 +106,9 @@ function registerLightboxEvents() {
   });
   // New account link handler
   $('.createAccountLink').click(function() {
-    return Lightbox.get('MyResearch', 'Account');
+    var parts = this.href.split('?');
+    var get = deparam(parts[1]);
+    return Lightbox.get('MyResearch', 'Account', get);
   });
   // Select all checkboxes
   $(modal).find('.checkbox-select-all').change(function() {
