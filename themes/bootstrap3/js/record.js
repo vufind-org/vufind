@@ -115,7 +115,6 @@ function registerAjaxCommentRecord() {
           refreshCommentList(id, recordSource);
           $(form).find('textarea[name="comment"]').val('');
         } else if (response.status == 'NEED_AUTH') {
-          data['loggingin'] = true;
           Lightbox.addCloseAction(function() {
             $.ajax({
               type: 'POST',
