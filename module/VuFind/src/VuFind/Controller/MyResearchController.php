@@ -134,6 +134,10 @@ class MyResearchController extends AbstractBase
      */
     public function accountAction()
     {
+        // If the user is already logged in, don't let them create an account:
+        if ($this->getAuthManager()->isLoggedIn()) {
+            return $this->redirect()->toRoute('myresearch-home');
+        }
         // if the current auth class proxies others, we'll get the proxied
         //   auth method as a querystring parameter.
         $method = trim($this->params()->fromQuery('auth_method'));
