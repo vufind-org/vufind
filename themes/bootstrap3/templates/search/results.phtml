@@ -41,14 +41,15 @@
 ?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
+  <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $this->results, $this); ?>
   <? if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>
     <? foreach ($this->results->getRecommendations('top') as $current): ?>
       <?=$this->recommend($current)?>
     <? endforeach; ?>
   <? endif; ?>
   <?=$this->flashmessages()?>
-  <div class="clearfix hidden-print search-controls">
-    <div class="pull-left">
+  <div class="hidden-print search-controls clearfix">
+    <div class="col-sm-6">
       <? if ($recordTotal > 0): ?>
         <?=$this->transEsc("Showing")?>
         <strong><?=number_format($this->results->getStartRecord())?></strong> - <strong><?=number_format($this->results->getEndRecord())?></strong>
@@ -63,14 +64,13 @@
         <? if ($qtime = $this->results->getQuerySpeed()): ?>
           <?=$this->transEsc('query time')?>: <?=$this->escapeHtml(round($qtime, 2))?>s
         <? endif; ?>
-        <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $this->results, $this); ?>
       <? else: ?>
         <p class="lead"><?=$this->transEsc('nohit_heading')?></p>
       <? endif; ?>
     </div>
 
     <? if ($recordTotal > 0): ?>
-      <div class="pull-right">
+      <div class="col-sm-6 text-right">
         <?=$this->render('search/controls/limit.phtml')?>
         <?=$this->render('search/controls/sort.phtml')?>
         <?=$this->render('search/controls/view.phtml')?>
