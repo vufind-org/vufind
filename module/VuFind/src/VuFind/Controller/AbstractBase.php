@@ -532,8 +532,6 @@ class AbstractBase extends AbstractActionController
         return $tagSetting && $tagSetting !== 'disabled';
     }
 
-    // TODO: I think we have now consolodated everything such that this 
-    // "separate logic" note is now incorrect.
     /**
      * Store a referer (if appropriate) to keep post-login redirect pointing
      * to an appropriate location. This is used when the user clicks the
