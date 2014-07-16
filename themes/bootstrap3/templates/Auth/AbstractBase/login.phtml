@@ -7,7 +7,7 @@
     <div class="form-group">
       <div class="col-sm-offset-2 col-sm-10">
         <? if ($account->supportsCreation()): ?>
-          <a class="btn btn-link createAccountLink" href="<?=$this->url('myresearch-account') ?>"><?=$this->transEsc('Create New Account')?></a>
+          <a class="btn btn-link createAccountLink" href="<?=$this->url('myresearch-account') ?>?auth_method=<?=$this->auth()->getActiveAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
         <? endif; ?>
         <input class="btn btn-primary" type="submit" name="processLogin" value="Login">
         <? if ($account->supportsRecovery()): ?>
