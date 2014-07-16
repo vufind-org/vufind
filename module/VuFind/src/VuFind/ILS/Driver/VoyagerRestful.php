@@ -2081,7 +2081,7 @@ EOT;
         if (isset($results->loans->institution)) {
             foreach ($results->loans->institution as $institution) {
                 foreach ($institution->loan as $loan) {
-                    if ((string)$institution->attributes()->id == 'LOCAL') {
+                    if ($this->isLocalInst((string)$institution->attributes()->id)) {
                         // Take only renewability for local loans, other information
                         // we have already
                         $renewable = (string)$loan->attributes()->canRenew == 'Y';
@@ -2186,7 +2186,7 @@ EOT;
         if (isset($results->holds->institution)) {
             foreach ($results->holds->institution as $institution) {
                 // Only take remote holds
-                if ($institution == 'LOCAL') {
+                if ($this->isLocalInst($institution)) {
                     continue;
                 }
 
@@ -2262,7 +2262,7 @@ EOT;
         $requests = array();
         if (isset($results->callslips->institution)) {
             foreach ($results->callslips->institution as $institution) {
-                if ((string)$institution->attributes()->id == 'LOCAL') {
+                if ($this->isLocalInst((string)$institution->attributes()->id)) {
                     // Ignore local callslips, we have them already
                     continue;
                 }
@@ -3113,5 +3113,21 @@ EOT;
             . '|' . $details['type']
             . '|' . $details['reqnum'];
         return $details;
+    }
+
+    /**
+     * Support method: is this institution code a local one?
+     *
+     * @param string $institution Institution code
+     *
+     * @return bool
+     */
+    protected function isLocalInst($institution)
+    {
+        // In some versions of Voyager, this will be 'LOCAL' while
+        // in others, it may be something like '1@LOCAL' -- for now,
+        // let's try checking the last 5 characters. If other options
+        // exist in the wild, we can make this method more sophisticated.
+        return substr($institution, -5) == 'LOCAL';
     }
 }
