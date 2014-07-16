@@ -271,9 +271,11 @@ class ResourceContainer
     /**
      * Check if a CSS file is being dynamically compiled in LESS
      *
+     * @param string $file Filename to check
+     *
      * @return boolean
      */
-    private function dynamicallyParsed($file)
+    protected function dynamicallyParsed($file)
     {
         if (empty($this->less) && empty($this->scss)) {
             return false;
@@ -281,15 +283,18 @@ class ResourceContainer
         list($fileName, ) = explode('.', $file);
         $lessFile = $fileName . '.less';
         $scssFile = $fileName . '.scss';
-        return in_array($lessFile, $this->less, true) || in_array($scssFile, $this->scss, true);
+        return in_array($lessFile, $this->less, true)
+            || in_array($scssFile, $this->scss, true);
     }
 
     /**
      * Check if a CSS file is being dynamically compiled in SCSS
      *
+     * @param string $file Filename to remove
+     *
      * @return boolean
      */
-    private function removeCSS($file)
+    protected function removeCSS($file)
     {
         list($name, ) = explode('.', $file);
         $name .= '.css';
