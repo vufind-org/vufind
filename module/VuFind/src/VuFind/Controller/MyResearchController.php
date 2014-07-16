@@ -74,7 +74,7 @@ class MyResearchController extends AbstractBase
      */
     protected function storeRefererForPostLoginRedirect()
     {
-        parent::setFollowupUrl();
+        $this->setFollowupUrl();
     }
 
     /**
