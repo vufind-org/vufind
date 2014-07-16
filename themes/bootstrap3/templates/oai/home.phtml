@@ -17,7 +17,7 @@
       <p class="help-block">Returns the Identification information of this OAI Server.</p>
       <input type="hidden" name="verb" value="Identify"/>
       <p class="help-block">Accepts no additional parameters.</p>
-      <input class="btn" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/>
+      <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/>
     </form>
   </dd>
 
@@ -48,7 +48,7 @@
           <td><input id="ListIdentifier_resumptionToken" type="text" name="resumptionToken"/></td>
         </tr>
       </table>
-      <input class="btn" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/>
+      <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/>
     </form>
   </dd>
 
@@ -58,7 +58,7 @@
       <p class="help-block">Returns a listing of available metadata formats.</p>
       <input type="hidden" name="verb" value="ListMetadataFormats"/>
       <label for="ListMetadataFormats_identifier"><?=$this->transEsc('Identifier')?>:</label> <input id="ListMetadataFormats_identifier" type="text" name="identifier"/><br/>
-      <input class="btn" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/>
+      <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/>
     </form>
   </dd>
 
@@ -69,7 +69,7 @@
       <input type="hidden" name="verb" value="ListSets"/>
       <label for="ListSets_metadataPrefix"><?=$this->transEsc('Metadata Prefix')?>:</label> <input id="ListSets_metadataPrefix" type="text" name="metadataPrefix"/><br class="clear"/>
       <label for="ListSets_resumptionToken"><?=$this->transEsc('Resumption Token')?>:</label> <input id="ListSets_resumptionToken" type="text" name="resumptionToken"/><br class="clear"/>
-      <input class="btn" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/><br class="clear"/>
+      <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/><br class="clear"/>
     </form>
   </dd>
 
@@ -100,7 +100,7 @@
           <td><input id="ListRecord_resumptionToken" type="text" name="resumptionToken"/></td>
         </tr>
       </table>
-      <input class="btn" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/>
+      <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/>
     </form>
   </dd>
 
@@ -111,7 +111,7 @@
       <input type="hidden" name="verb" value="GetRecord"/>
       <label for="GetRecord_identifier"><?=$this->transEsc('Identifier')?>:</label> <input id="GetRecord_identifier" type="text" name="identifier"/><br class="clear"/>
       <label for="GetRecord_metadataPrefix"><?=$this->transEsc('Metadata Prefix')?>:</label> <input id="GetRecord_metadataPrefix" type="text" name="metadataPrefix"/><br class="clear"/>
-      <input class="btn" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/><br class="clear"/>
+      <input class="btn btn-default" type="submit" name="submit" value="<?=$this->transEsc('Go')?>"/><br class="clear"/>
     </form>
   </dd>
 </dl>

@@ -81,7 +81,7 @@
               <? if ($rangeFacets[$title]['type'] == 'date'): ?>
                 <div class="slider-container"><input type="text" class="hidden" id="<?=$this->escapeHtmlAttr($title)?><?=$this->escapeHtml($rangeFacets[$title]['type'])?>Slider"/></div>
               <? endif; ?>
-              <input class="btn" type="submit" value="<?=$this->transEsc('Set')?>"/>
+              <input class="btn btn-default" type="submit" value="<?=$this->transEsc('Set')?>"/>
             </form>
           </li>
           <? if ($rangeFacets[$title]['type'] == 'date'): ?>

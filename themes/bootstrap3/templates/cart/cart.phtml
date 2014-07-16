@@ -14,15 +14,15 @@
         | <?=$this->transEsc('with_selected')?>:
     </label>
     <? if ($this->userlist()->getMode() !== 'disabled'): ?>
-      <input class="btn" type="submit" name="saveCart" value="<?=$this->transEsc('bookbag_save_selected')?>" title="<?=$this->transEsc('bookbag_save')?>"/>
+      <input class="btn btn-default" type="submit" name="saveCart" value="<?=$this->transEsc('bookbag_save_selected')?>" title="<?=$this->transEsc('bookbag_save')?>"/>
     <? endif; ?>
-    <input class="btn" type="submit" name="email" value="<?=$this->transEsc('bookbag_email_selected')?>" title="<?=$this->transEsc('bookbag_email')?>"/>
+    <input class="btn btn-default" type="submit" name="email" value="<?=$this->transEsc('bookbag_email_selected')?>" title="<?=$this->transEsc('bookbag_email')?>"/>
     <? $exportOptions = $this->export()->getBulkOptions(); if (count($exportOptions) > 0): ?>
-      <input class="btn" type="submit" name="export" value="<?=$this->transEsc('bookbag_export_selected')?>" title="<?=$this->transEsc('bookbag_export')?>"/>
+      <input class="btn btn-default" type="submit" name="export" value="<?=$this->transEsc('bookbag_export_selected')?>" title="<?=$this->transEsc('bookbag_export')?>"/>
     <? endif; ?>
-    <input class="btn" type="submit" name="print" value="<?=$this->transEsc('bookbag_print_selected')?>" title="<?=$this->transEsc('print_selected')?>"/>
-    <input class="btn" type="submit" name="delete" value="<?=$this->transEsc('bookbag_delete_selected')?>" title="<?=$this->transEsc('bookbag_delete')?>"/>
-    <input class="btn" type="submit" name="empty" value="<?=$this->transEsc('Empty Book Bag')?>" title="<?=$this->transEsc('Empty Book Bag')?>"/>
+    <input class="btn btn-default" type="submit" name="print" value="<?=$this->transEsc('bookbag_print_selected')?>" title="<?=$this->transEsc('print_selected')?>"/>
+    <input class="btn btn-default" type="submit" name="delete" value="<?=$this->transEsc('bookbag_delete_selected')?>" title="<?=$this->transEsc('bookbag_delete')?>"/>
+    <input class="btn btn-default" type="submit" name="empty" value="<?=$this->transEsc('Empty Book Bag')?>" title="<?=$this->transEsc('Empty Book Bag')?>"/>
   <? endif; ?>
   <?=$this->render('cart/contents.phtml')?>
 </form>

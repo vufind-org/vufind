@@ -38,7 +38,7 @@
               <option value="<?=$this->escapeHtmlAttr($lib['locationID'])?>"<?=($selected == $lib['locationID'])?' selected="selected"':''?>><?=$this->escapeHtml($lib['locationDisplay'])?></option>
             <? endforeach; ?>
           </select>
-          <input class="btn" type="submit" value="<?=$this->transEsc('Save')?>" />
+          <input class="btn btn-default" type="submit" value="<?=$this->transEsc('Save')?>" />
         </form>
       </td>
     <? endif; ?>

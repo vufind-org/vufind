@@ -50,7 +50,7 @@
 </script>
 <form class="form-horizontal text-center siblings-form" action="<?=$this->url('vudl-sibling') ?>" method="get">
   <input type="hidden" name="id" value="<?=$this->layout()->vudlID ?>"/>
-  <button class="btn" type="submit" name="prev_x" value="1" title="<?=$this->transEsc('Prev Item in Collection')?>">&larr; <?=$this->transEsc('Prev Item')?></button>
+  <button class="btn btn-default" type="submit" name="prev_x" value="1" title="<?=$this->transEsc('Prev Item in Collection')?>">&larr; <?=$this->transEsc('Prev Item')?></button>
   <? $uniqueParents = array(); ?>
   <? foreach($this->parents as $trail): ?>
     <? if(!in_array(key($trail), $uniqueParents)): ?>
@@ -68,7 +68,7 @@
   <? else: ?>
     <input type="hidden" name="trail" value="<?=current(array_keys($this->parents[0]))?>"/>
   <? endif; ?>
-  <button class="btn" type="submit" name="next_x" value="1" title="<?=$this->transEsc('Next Item in Collection')?>"><?=$this->transEsc('Next Item')?> &rarr;</button>
+  <button class="btn btn-default" type="submit" name="next_x" value="1" title="<?=$this->transEsc('Next Item in Collection')?>"><?=$this->transEsc('Next Item')?> &rarr;</button>
 </form>
 <div class="vudl">
   <div class="panel-group col-sm-3" id="side-nav">
