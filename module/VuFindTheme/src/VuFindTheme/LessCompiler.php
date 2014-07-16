@@ -107,6 +107,8 @@ class LessCompiler
     /**
      * Get all less files that might exist in a theme.
      *
+     * @param string $theme Theme to retrieve files from
+     *
      * @return array
      */
     protected function getAllLessFiles($theme)
