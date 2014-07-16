@@ -3,7 +3,6 @@ var Zoomy = {
   // Create
   init: function(canvas) {
     this.canvas  = canvas;
-    console.log(canvas.clientWidth);
     this.canvas.width  = Math.floor(this.canvas.clientWidth);
     this.canvas.height = Math.floor(this.canvas.clientHeight);
     addEventListener('mousemove', Zoomy.mouseHandle, false);

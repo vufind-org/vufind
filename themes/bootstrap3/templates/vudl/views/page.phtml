@@ -45,7 +45,7 @@
       $('#zoomy').css('width', '100%');
       $('#zoomy').css('height', sidenav.offsetTop + sidenav.offsetHeight - $('#zoomy').offset().top);
       Zoomy.init(document.getElementById('zoomy'));
-      Zoomy.load(pageData['large'], function() { $('.loading-bar').addClass('hidden');console.log('lbh') });
+      Zoomy.load(pageData['large'], function() { $('.loading-bar').addClass('hidden'); });
     });
 
     var pageData = {
