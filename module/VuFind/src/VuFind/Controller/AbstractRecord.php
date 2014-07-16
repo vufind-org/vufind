@@ -258,14 +258,9 @@ class AbstractRecord extends AbstractBase
         $this->flashMessenger()->setNamespace('info')
             ->addMessage('bulk_save_success');
 
-        // Grab the followup namespace so we know where to send the user next:
-        $followup = new SessionContainer($this->searchClassId . 'SaveFollowup');
-        $url = isset($followup->url) ? (string)$followup->url : false;
-        if (!empty($url)) {
-            // Clear followup URL in session -- we're done with it now:
-            unset($followup->url);
-
-            // Redirect!
+        // redirect to followup url saved in saveAction
+        if ($url = $this->getFollowupUrl()) {
+            $this->clearFollowupUrl();
             return $this->redirect()->toUrl($url);
         }
 
@@ -300,14 +295,17 @@ class AbstractRecord extends AbstractBase
         // ProcessSave action (to get back to where we came from after saving).
         // We shouldn't save follow-up information if it points to the Save
         // screen or the "create list" screen, as this causes confusing workflows;
-        // in these cases, we will simply default to pushing the user to record view.
-        $followup = new SessionContainer($this->searchClassId . 'SaveFollowup');
+        // in these cases, we will simply push the user to record view
+        // by unsetting the followup and relying on default behavior in processSave.
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
         if (substr($referer, -5) != '/Save'
             && stripos($referer, 'MyResearch/EditList/NEW') === false
         ) {
-            $followup->url = $referer;
+            $this->setFollowupUrl();
+        } else {
+            $this->clearFollowupUrl();
         }
+
 
         // Retrieve the record driver:
         $driver = $this->loadRecord();
