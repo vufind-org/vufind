@@ -129,7 +129,7 @@ class HeadLink extends \Zend\View\Helper\HeadLink
      *
      * @return void
      */
-    public function addSassStylesheet($file)
+    public function addScssStylesheet($file)
     {
         $themeParents = array_keys($this->themeInfo->getThemeInfo());
         $currentTheme = $themeParents[0];
