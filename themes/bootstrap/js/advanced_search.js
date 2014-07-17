@@ -21,7 +21,7 @@ function addSearch(group, term, field)
     }
     newSearch += ">" + searchFields[key] + "</option>";
   }
-  newSearch += '</select> <a href="#" onClick="deleteSearch('+group+','+inputIndex+')" class="help-inline delete" title="Remove this term">&times;</a></div>';
+  newSearch += '</select> <a href="#" onClick="deleteSearch('+group+','+inputIndex+')" class="help-inline delete">&times;</a></div>';
 
   // Insert it
   $("#group" + group + "Holder").before(newSearch);
@@ -61,18 +61,18 @@ function addGroup(firstTerm, firstField, join)
   if(join == 'AND') {
     newGroup += ' selected';
   }
-  newGroup += '>ALL Terms</option>'
+  newGroup += '>' +searchJoins['AND'] + '</option>'
     + '<option value="OR"';
   if(join == 'OR') {
     newGroup += ' selected';
   }
-  newGroup += '>ANY Terms</option>'
+  newGroup += '>' +searchJoins['OR'] + '</option>'
     + '<option value="NOT"';
   if(join == 'NOT') {
     newGroup += ' selected';
   }
-  newGroup += '>NO Terms</option>'
-    + '</select><a href="#" onClick="deleteGroup('+nextGroup+')" class="close hide" title="Remove Group">&times;</a></div><div class="span8 pull-left switch-margins row-fluid"><div class="span3 text-right"><span class="help-inline">'+searchLabel+':</span></div>'
+  newGroup += '>' +searchJoins['NOT'] + '</option>'
+    + '</select><a href="#" onClick="deleteGroup('+nextGroup+')" class="close hide" title="'+deleteSearchGroupString+'">&times;</a></div><div class="span8 pull-left switch-margins row-fluid"><div class="span3 text-right"><span class="help-inline">'+searchLabel+':</span></div>'
     + '<div class="span9"><i id="group'+nextGroup+'Holder" class="icon-plus-sign"></i> <a href="#" onClick="addSearch('+nextGroup+')">'+addSearchString+'</a></div></div></div>';
 
   $('#groupPlaceHolder').before(newGroup);
