@@ -5,6 +5,9 @@ h2,#modal h3 {margin-bottom:20px;font-size:21px;font-weight:200;line-height:30px
 .icon-visual:before {content: "\f008"}
 .result {border-top:1px solid #DDD;padding:1em 0}
 .tab-container {border:1px solid #DDD;border-top:0;border-radius:0 0 4px 4px;margin-top:-20px;padding:12px;position:relative}
+.table {word-wrap:break-word;table-layout:fixed}
+.citation .pace-car th,
+.citation .pace-car td {padding:0;border:0;}
 
 /* --- Visualization View --- */
 .node {

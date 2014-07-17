@@ -2,7 +2,7 @@
     // Set page title.
     $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb());
 ?>
-<table class="table table-striped">
+<table class="citation table table-striped">
   <? foreach ($this->driver->getRawData() as $field => $values): ?>
     <tr>
       <th><?=$this->escapeHtml($field)?></th>

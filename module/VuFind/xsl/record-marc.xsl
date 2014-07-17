@@ -9,7 +9,13 @@
   </xsl:template>
 
   <xsl:template match="marc:record">
-      <table style="border: 0px;" class="citation table table-striped">
+      <table class="citation table table-striped">
+        <tr class="pace-car">
+          <th width="15%"/>
+          <td width="5%"/>
+          <td width="5%"/>
+          <td width="*"/>
+        </tr>
         <tr>
           <th>LEADER</th>
           <td colspan="3"><xsl:value-of select="//marc:leader"/></td>
@@ -20,7 +26,7 @@
 
   <xsl:template match="//marc:controlfield">
       <tr>
-        <th style="text-align: right; vertical-align: top;">
+        <th>
           <xsl:value-of select="@tag"/>
         </th>
         <td colspan="3"><xsl:value-of select="."/></td>
@@ -29,7 +35,7 @@
 
   <xsl:template match="//marc:datafield">
       <tr>
-        <th style="text-align: right; vertical-align: top;">
+        <th>
           <xsl:value-of select="@tag"/>
         </th>
         <td><xsl:value-of select="@ind1"/></td>
