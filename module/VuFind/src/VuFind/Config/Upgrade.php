@@ -523,6 +523,15 @@ class Upgrade
             }
         }
 
+        // Warn the user about deprecated WorldCat setting:
+        if (isset($newConfig['WorldCat']['LimitCodes'])) {
+            unset($newConfig['WorldCat']['LimitCodes']);
+            $this->addWarning(
+                'The [WorldCat] LimitCodes setting never had any effect and has been'
+                . ' removed.'
+            );
+        }
+
         // Disable unused, obsolete setting:
         unset($newConfig['Index']['local']);
 
