@@ -378,9 +378,11 @@ $(document).ready(function() {
     Lightbox.confirm(vufindString['bulk_email_success']);
   });
   Lightbox.addFormCallback('saveRecord', function(html) {
+    Lightbox.close();
     checkSaveStatuses();
   });
   Lightbox.addFormCallback('bulkRecord', function(html) {
+    Lightbox.close();
     checkSaveStatuses();
   });
 

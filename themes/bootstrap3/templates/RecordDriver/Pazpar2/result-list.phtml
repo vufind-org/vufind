@@ -56,14 +56,14 @@
     </div>
 
     <div>
-      <div class="callnumAndLocation ajax-availability hide">
+      <div class="callnumAndLocation ajax-availability hidden">
         <? if ($this->driver->supportsAjaxStatus()): ?>
           <strong class="hideIfDetailed"><?=$this->transEsc('Call Number')?>:</strong>
-          <span class="callnumber ajax-availability hide">
+          <span class="callnumber ajax-availability hidden">
             <?=$this->transEsc('Loading')?>...
           </span><br class="hideIfDetailed"/>
           <strong><?=$this->transEsc('Located')?>:</strong>
-          <span class="location ajax-availability hide">
+          <span class="location ajax-availability hidden">
             <?=$this->transEsc('Loading')?>...
           </span>
           <div class="locationDetails"></div>
