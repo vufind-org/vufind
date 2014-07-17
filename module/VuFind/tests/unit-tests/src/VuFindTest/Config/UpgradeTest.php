@@ -238,6 +238,25 @@ class UpgradeTest extends \VuFindTest\Unit\TestCase
     }
 
     /**
+     * Test WorldCat-related warnings.
+     *
+     * @return void
+     */
+    public function testWorldCatWarnings()
+    {
+        $upgrader = $this->getUpgrader('worldcatwarnings');
+        $upgrader->run();
+        $warnings = $upgrader->getWarnings();
+        $this->assertTrue(
+            in_array(
+                'The [WorldCat] LimitCodes setting never had any effect and has been'
+                . ' removed.',
+                $warnings
+            )
+        );
+    }
+
+    /**
      * Test "meaningful line" detection in SolrMarc properties files.
      *
      * @return void
