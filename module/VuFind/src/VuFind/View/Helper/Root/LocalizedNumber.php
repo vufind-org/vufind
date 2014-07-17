@@ -1,6 +1,6 @@
 <?php
 /**
- * Localized based number formatting
+ * Localization based number formatting
  *
  * PHP version 5
  *
@@ -24,63 +24,69 @@
  * @author   Nicolas Karrer <nkarrer@snowflake.ch>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  */
-
 namespace VuFind\View\Helper\Root;
 use Zend\View\Helper\AbstractHelper;
 
 /**
  * Class NumberFormat
- * @package  VuFind\View\Helper\Root
- * @author  Nicolas Karrer <nkarrer@snowflake.ch>
+ * allows localization based formating of numbers in view
+ *
+ * @category VuFind2
+ * @package  View_Helpers
+ * @author   Nicolas Karrer <nkarrer@snowflake.ch>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  */
 class LocalizedNumber extends AbstractHelper
 {
-  /**
-   * @var String
-   */
-  protected $defaultDecimalPoint = '.';
+    /**
+     * @var string
+     */
+    protected $defaultDecimalPoint = '.';
 
 
-  /**
-   * @var String
-   */
-  protected $defaultThousandSep = ',';
+    /**
+     * @var string
+     */
+    protected $defaultThousandSep = ',';
 
 
-  /**
-   * @param   String  $number
-   * @return  String
-   */
-  public function __invoke($number, $decimals = 0)
-  {
-    $translator = $this->getView()->plugin('translate');
+    /**
+     * @param   string  $number
+     * @param   int     $decimals
+     * @return  string
+     */
+    public function __invoke($number, $decimals = 0)
+    {
+      $translator = $this->getView()->plugin('translate');
 
-    return number_format($number,
-                         $decimals,
-                         $this->getDecimalPoint($translator),
-                         $this->getThousandSign($translator)
-    );
-  }
-
-
-  /**
-   * @param   Translate   $translate
-   * @return  String
-   */
-  public function getDecimalPoint(Translate $translate) {
-    $decimalPoint = $translate('number_decimal_point', array(), false);
-
-    return $decimalPoint ? $decimalPoint : $this->defaultDecimalPoint;
-  }
+      return number_format($number,
+                           $decimals,
+                           $this->getDecimalPoint($translator),
+                           $this->getThousandSign($translator)
+      );
+    }
 
 
-  /**
-   * @param   Translate $translate
-   * @return  String
-   */
-  public function getThousandSign(Translate $translate) {
-    $thousandSign = $translate('number_thousands_separator', array(), false);
+    /**
+     * @param   Translate $translate
+     * @return  string
+     */
+    public function getDecimalPoint(Translate $translate)
+    {
+      $decimalPoint = $translate('number_decimal_point', array(), false);
 
-    return $thousandSign ? $thousandSign : $this->defaultThousandSep;
-  }
+      return $decimalPoint ? $decimalPoint : $this->defaultDecimalPoint;
+    }
+
+
+    /**
+     * @param   Translate $translate
+     * @return  string
+     */
+    public function getThousandSign(Translate $translate)
+    {
+      $thousandSign = $translate('number_thousands_separator', array(), false);
+
+      return $thousandSign ? $thousandSign : $this->defaultThousandSep;
+    }
 }
