@@ -1,0 +1,86 @@
+<?php
+/**
+ * Localized based number formatting
+ *
+ * PHP version 5
+ *
+ * Copyright (C) snowflake productions gmbh 2014.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ *
+ * @category VuFind2
+ * @package  View_Helpers
+ * @author   Nicolas Karrer <nkarrer@snowflake.ch>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ */
+
+namespace VuFind\View\Helper\Root;
+use Zend\View\Helper\AbstractHelper;
+
+/**
+ * Class NumberFormat
+ * @package  VuFind\View\Helper\Root
+ * @author  Nicolas Karrer <nkarrer@snowflake.ch>
+ */
+class LocalizedNumber extends AbstractHelper
+{
+  /**
+   * @var String
+   */
+  protected $defaultDecimalPoint = '.';
+
+
+  /**
+   * @var String
+   */
+  protected $defaultThousandSep = ',';
+
+
+  /**
+   * @param   String  $number
+   * @return  String
+   */
+  public function __invoke($number, $decimals = 0)
+  {
+    $translator = $this->getView()->plugin('translate');
+
+    return number_format($number,
+                         $decimals,
+                         $this->getDecimalPoint($translator),
+                         $this->getThousandSign($translator)
+    );
+  }
+
+
+  /**
+   * @param   Translate   $translate
+   * @return  String
+   */
+  public function getDecimalPoint(Translate $translate) {
+    $decimalPoint = $translate('number_decimal_point', array(), false);
+
+    return $decimalPoint ? $decimalPoint : $this->defaultDecimalPoint;
+  }
+
+
+  /**
+   * @param   Translate $translate
+   * @return  String
+   */
+  public function getThousandSign(Translate $translate) {
+    $thousandSign = $translate('number_thousands_separator', array(), false);
+
+    return $thousandSign ? $thousandSign : $this->defaultThousandSep;
+  }
+}

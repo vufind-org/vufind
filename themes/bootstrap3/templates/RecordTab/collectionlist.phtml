@@ -16,7 +16,7 @@
       <?=$this->transEsc("Showing")?>
       <strong><?=$results->getStartRecord()?></strong> - <strong><?=$results->getEndRecord()?></strong>
       <? if (!isset($this->skipTotalCount)): ?>
-        <?=$this->transEsc('of')?> <strong><?=number_format($recordTotal)?></strong> <?=$this->transEsc('Items')?>
+        <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong> <?=$this->transEsc('Items')?>
       <? endif; ?>
     </div>
     <div class="pull-right">
