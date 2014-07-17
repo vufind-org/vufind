@@ -61,32 +61,8 @@ class LocalizedNumber extends AbstractHelper
 
       return number_format($number,
                            $decimals,
-                           $this->getDecimalPoint($translator),
-                           $this->getThousandSep($translator)
+                           $translator('number_decimal_point', array(), $this->defaultDecimalPoint),
+                           $translator('number_thousands_separator', array(), $this->defaultThousandSep)
       );
-    }
-
-
-    /**
-     * @param   Translate $translate
-     * @return  string
-     */
-    public function getDecimalPoint(Translate $translate)
-    {
-      $decimalPoint = $translate('number_decimal_point', array(), false);
-
-      return $decimalPoint ? $decimalPoint : $this->defaultDecimalPoint;
-    }
-
-
-    /**
-     * @param   Translate $translate
-     * @return  string
-     */
-    public function getThousandSep(Translate $translate)
-    {
-      $thousandSep = $translate('number_thousands_separator', array(), false);
-
-      return $thousandSep ? $thousandSep : $this->defaultThousandSep;
     }
 }
