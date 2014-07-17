@@ -228,7 +228,6 @@ class Auth extends \Zend\View\Helper\AbstractHelper
         return array_pop($classParts);
     }
 
-    
     /**
      * Render the new password form template.
      *
@@ -241,7 +240,6 @@ class Auth extends \Zend\View\Helper\AbstractHelper
         return $this->renderTemplate('newpassword.phtml', $context);
     }
 
-    
     /**
      * Render the password recovery form template.
      *
