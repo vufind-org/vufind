@@ -20,7 +20,7 @@ return array(
         'lightbox.js',
     ),
     'less' => array(
-        'active' => true,
+        'active' => false,
         'compiled.less'
     ),
     'scss' => array(
