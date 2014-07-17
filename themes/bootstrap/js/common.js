@@ -10,6 +10,7 @@ function htmlEncode(value){
 }
 function extractClassParams(str) {
   str = $(str).attr('class');
+  if (typeof str === "undefined") return [];
   var params = {};
   var classes = str.split(/\s+/);
   for(var i = 0; i < classes.length; i++) {
@@ -229,7 +230,8 @@ function ajaxLogin(form) {
             if (response.status == 'OK') {
               updatePageForLogin();
               // and we update the modal
-              if(Lightbox.lastPOST && Lightbox.lastPOST['loggingin']) {
+              var params = deparam(Lightbox.lastURL);
+              if (params['subaction'] == 'UserLogin') {
                 Lightbox.close();
               } else {
                 Lightbox.getByUrl(
@@ -388,7 +390,7 @@ $(document).ready(function() {
   });
   Lightbox.addFormCallback('accountForm', function() {
     var params = deparam(Lightbox.openingURL);
-    if (params['subaction'] != 'Login') {
+    if (params['subaction'] != 'UserLogin') {
       Lightbox.getByUrl(Lightbox.openingURL);
       Lightbox.openingURL = false;
     } else {
@@ -409,7 +411,7 @@ $(document).ready(function() {
   });
   // Login link
   $('#loginOptions a.modal-link').click(function() {
-    return Lightbox.get('MyResearch','UserLogin',{},{'loggingin':true});
+    return Lightbox.get('MyResearch','UserLogin');
   });
   // Email search link
   $('.mailSearch').click(function() {
