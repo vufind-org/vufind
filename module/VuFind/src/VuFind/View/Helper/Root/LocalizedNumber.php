@@ -62,7 +62,7 @@ class LocalizedNumber extends AbstractHelper
       return number_format($number,
                            $decimals,
                            $this->getDecimalPoint($translator),
-                           $this->getThousandSign($translator)
+                           $this->getThousandSep($translator)
       );
     }
 
@@ -83,10 +83,10 @@ class LocalizedNumber extends AbstractHelper
      * @param   Translate $translate
      * @return  string
      */
-    public function getThousandSign(Translate $translate)
+    public function getThousandSep(Translate $translate)
     {
-      $thousandSign = $translate('number_thousands_separator', array(), false);
+      $thousandSep = $translate('number_thousands_separator', array(), false);
 
-      return $thousandSign ? $thousandSign : $this->defaultThousandSep;
+      return $thousandSep ? $thousandSep : $this->defaultThousandSep;
     }
 }
