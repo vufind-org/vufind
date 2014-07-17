@@ -1,4 +1,4 @@
-/*global Cookies, path, vufindString, Lightbox, updatePageForLogin */
+/*global Cookies, newAccountHandler, path, vufindString, Lightbox, updatePageForLogin */
 
 var _CART_COOKIE = 'vufind_cart';
 var _CART_COOKIE_SOURCES = 'vufind_cart_src';
@@ -205,24 +205,23 @@ $(document).ready(function() {
     return Lightbox.get('Cart','Cart');
   });
   // Overwrite
-  Lightbox.addFormCallback('accountForm', function() {
+  Lightbox.addFormCallback('accountForm', function(html) {
     updatePageForLogin();
     if (lastCartSubmit !== false) {
       cartSubmit(lastCartSubmit);
       lastCartSubmit = false;
     } else {
-      Lightbox.getByUrl(Lightbox.openingURL);
-      Lightbox.openingURL = false;
+      newAccountHandler(html);
     }
   });
   Lightbox.addFormHandler('cartForm', function(evt) {
     cartSubmit($(evt.target));
     return false;
   });
-  Lightbox.addFormCallback('bulkEmail', function() {
+  Lightbox.addFormCallback('bulkEmail', function(html) {
     Lightbox.confirm(vufindString['bulk_email_success']);
   });
-  Lightbox.addFormCallback('bulkSave', function() {
+  Lightbox.addFormCallback('bulkSave', function(html) {
     // After we close the lightbox, redirect to list view
     Lightbox.addCloseAction(function() {
       document.location.href = path+'/MyResearch/MyList/'+Lightbox.lastPOST['list'];
