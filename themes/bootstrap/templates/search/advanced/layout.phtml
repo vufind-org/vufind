@@ -49,13 +49,13 @@
       <div id="groupJoin" class="pull-right hidden">
         <label for="join"><?=$this->transEsc("search_match")?>:</label>
         <select id="search_bool0" name="join">
-          <option value="AND"<? if($searchDetails && $searchDetails->getOperator()=='ALL'):?> selected<?endif?>><?= $this->transEsc('ALL Groups') ?></option>
-          <option value="OR"<? if($searchDetails && $searchDetails->getOperator()=='OR'):?> selected<?endif?>><?= $this->transEsc('ANY Groups') ?></option>
+          <option value="AND"<? if($searchDetails && $searchDetails->getOperator()=='ALL'):?> selected<?endif?>><?= $this->transEsc('group_AND') ?></option>
+          <option value="OR"<? if($searchDetails && $searchDetails->getOperator()=='OR'):?> selected<?endif?>><?= $this->transEsc('group_OR') ?></option>
         </select>
       </div>
     </div>
     <div id="groupPlaceHolder" class="row-fluid">
-      <i class="icon-plus-sign"></i> <a href="#" onClick="addGroup()"><?= $this->transEsc('Add Group') ?></a>
+      <i class="icon-plus-sign"></i> <a href="#" onClick="addGroup()"><?= $this->transEsc('add_search_group') ?></a>
     </div>
     <input type="submit" value="<?= $this->transEsc('Find')?>" class="btn btn-primary pull-right"/>
     <? if (isset($this->extraAdvancedControls)): ?>

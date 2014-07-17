@@ -40,7 +40,7 @@ function addSearch(group, term, field, op)
     }
     newSearch += ">" + searchFields[key] + "</option>";
   }
-  newSearch += '</select> <a href="#" onClick="deleteSearch('+group+','+inputIndex+')" class="help-block delete" title="Remove this term">&times;</a></div>';
+  newSearch += '</select> <a href="#" onClick="deleteSearch('+group+','+inputIndex+')" class="help-block delete">&times;</a></div>';
 
   // Insert it
   $("#group" + group + "Holder").before(newSearch);
@@ -77,7 +77,7 @@ function addGroup(firstTerm, firstField, join)
   var newGroup = '<div id="group'+nextGroup+'" class="group well clearfix">'
     + '<input type="hidden" name="bool'+nextGroup+'[]" value="AND"/>'
     + '<div class="span11"><div id="group'+nextGroup+'Holder" class="span9 offset3"><i class="icon-plus-sign"></i> <a href="#" onClick="addSearch('+nextGroup+')">'+addSearchString+'</a></div></div>'
-    + '<div class="span1"><a href="#" onClick="deleteGroup('+nextGroup+')" class="close hide" title="Remove Group">&times;</a></div></div>';
+    + '<div class="span1"><a href="#" onClick="deleteGroup('+nextGroup+')" class="close hide" title="'+deleteSearchGroupString+'">&times;</a></div></div>';
 
   $('#groupPlaceHolder').before(newGroup);
   addSearch(nextGroup, firstTerm, firstField);
