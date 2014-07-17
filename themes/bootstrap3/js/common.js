@@ -180,6 +180,16 @@ function updatePageForLogin() {
     ajaxLoadTab(tab);
   }
 }
+function newAccountHandler(html) {
+  updatePageForLogin();
+  var params = deparam(Lightbox.openingURL);
+  if (params['subaction'] != 'UserLogin') {
+    Lightbox.getByUrl(Lightbox.openingURL);
+    Lightbox.openingURL = false;
+  } else {
+    Lightbox.close();
+  }
+}
 
 // This is a full handler for the login form
 function ajaxLogin(form) {
@@ -363,23 +373,14 @@ $(document).ready(function() {
     ajaxLogin(evt.target);
     return false;
   });
-  Lightbox.addFormCallback('accountForm', function() {
-    updatePageForLogin();
-    var params = deparam(Lightbox.openingURL);
-    if (params['subaction'] != 'UserLogin') {
-      Lightbox.getByUrl(Lightbox.openingURL);
-      Lightbox.openingURL = false;
-    } else {
-      Lightbox.close();
-    }
-  });
-  Lightbox.addFormCallback('emailSearch', function(x) {
+  Lightbox.addFormCallback('accountForm', newAccountHandler);
+  Lightbox.addFormCallback('emailSearch', function(html) {
     Lightbox.confirm(vufindString['bulk_email_success']);
   });
-  Lightbox.addFormCallback('saveRecord', function() {
+  Lightbox.addFormCallback('saveRecord', function(html) {
     checkSaveStatuses();
   });
-  Lightbox.addFormCallback('bulkRecord', function() {
+  Lightbox.addFormCallback('bulkRecord', function(html) {
     checkSaveStatuses();
   });
 
