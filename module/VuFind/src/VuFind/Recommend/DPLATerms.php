@@ -43,16 +43,22 @@ class DPLATerms implements RecommendInterface
 
     /**
      * Config
+     *
+     * @var \VuFind\Config
      */
     protected $config;
 
     /**
      * Vufind HTTP Client
+     *
+     * @var \VuFindHttp\HttpServiceInterface
      */
     protected $client;
 
     /**
      * Setting of initial collapsedness
+     *
+     * @var boolean
      */
     protected $collapsed;
 
@@ -153,7 +159,9 @@ class DPLATerms implements RecommendInterface
             'api_key' => $this->config->apiKey
         );
         foreach($filters as $field=>$filter) {
-            $params[$formatMap[$field]] = implode(',', $filter);
+            if (isset($formatMap[$field])) {
+                $params[$formatMap[$field]] = implode(',', $filter);
+            }
         }
 
         $this->client->setUri('http://api.dp.la/v2/items');

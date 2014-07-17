@@ -4,12 +4,12 @@
     <dt class="facet_dpla">DPLA</dt>
     <? foreach($results as $item): ?>
       <dd>
-        <a href="<?=$item['link'] ?>" target="new"><?=$item['title'] ?></a>
+        <a href="<?=$item['link'] ?>" target="new"><?=$this->escapeHtml($item['title']) ?></a>
         <? if(!empty($item['desc'])): ?>
-          <span title="<?=$item['desc'] ?>"><?=$this->truncate($item['desc'], 50) ?></span></br>
+          <span title="<?=$item['desc'] ?>"><?=$this->escapeHtml($this->truncate($item['desc'], 50)) ?></span></br>
         <? endif; ?>
         <span style="font-size:85%;font-style:italic">
-          from <?=$item['provider'] ?>
+          <?=$this->transEsc('from') ?> <?=$this->escapeHtml($item['provider']) ?>
         </span>
       </dd>
     <? endforeach; ?>

@@ -7,11 +7,11 @@
     <div id="side-collapse-dpla" class="collapse<? if(!$this->recommend->isCollapsed()): ?> in<? endif ?>">
     <? foreach($results as $item): ?>
       <li class="list-group-item">
-        <a href="<?=$item['link'] ?>" target="new"><?=$item['title'] ?></a><br/>
+        <a href="<?=$item['link'] ?>" target="new"><?=$this->escapeHtml($item['title']) ?></a><br/>
         <? if(!empty($item['desc'])): ?>
-          <span class="desc" title="<?=$item['desc'] ?>"><?=$this->truncate($item['desc'], 50) ?></span><br/>
+          <span class="desc" title="<?=$item['desc'] ?>"><?=$this->escapeHtml($this->truncate($item['desc'], 50)) ?></span><br/>
         <? endif; ?>
-        <span class="from">from <?=$item['provider'] ?></span>
+        <span class="from"><?=$this->transEsc('from') ?> <?=$this->escapeHtml($item['provider']) ?></span>
       </li>
     <? endforeach; ?>
   </ul>
