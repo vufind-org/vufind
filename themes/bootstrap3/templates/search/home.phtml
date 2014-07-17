@@ -39,7 +39,7 @@
     <div class="<?=$field=='callnumber-first' ? 'col-sm-6' : 'col-sm-3' ?>">
       <p class="lead"><?=$this->transEsc('home_browse') . ' ' . $this->transEsc($details['label'])?></p>
       <div class="row">
-        <ul class="list-unstyled<? if ($field == "callnumber-first"): ?> col-sm-6<?endif?>">
+        <ul class="list-unstyled <?=$field == "callnumber-first" ? 'col-sm-6' : 'col-sm-12' ?>">
         <? /* Special case: two columns for LC call numbers... */ ?>
         <? if ($field == "callnumber-first"): ?>
           <? $i = 0; foreach ($sortedList as $url => $value): ?>

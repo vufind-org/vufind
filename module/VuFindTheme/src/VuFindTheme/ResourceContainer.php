@@ -298,7 +298,7 @@ class ResourceContainer
     {
         list($name, ) = explode('.', $file);
         $name .= '.css';
-        $index = $array_search($name, $this->css);
+        $index = array_search($name, $this->css);
         if (false !== $index) {
             unset($this->css[$index]);
         }
