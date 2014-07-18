@@ -16,5 +16,5 @@
 <? endif; ?>
 <input class="btn btn-default" type="submit" name="print" value="<?=$this->transEsc('Print')?>" title="<?=$this->transEsc('print_selected')?>"/>
 <? if ($this->cart()->isActive()): ?>
-  <input class="btn button floatleft bookbagAdd" id="<?=$this->idPrefix?>updateCart" type="submit" name="add" value="<?=$this->transEsc('Add to Book Bag')?>"/>
+  <input class="btn btn-default" id="<?=$this->idPrefix?>updateCart" type="submit" name="add" value="<?=$this->transEsc('Add to Book Bag')?>"/>
 <? endif; ?>
