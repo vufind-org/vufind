@@ -142,7 +142,7 @@ JS;
               <a href="<?=$addURL ?>" class="list-group-item facet<?=$thisFacet['operator'] ?><? if ($i>5): ?> <?=$moreClass ?><?endif ?>">
             <? endif; ?>
             <span class="badge">
-              <?=number_format($thisFacet['count'])?>
+              <?=$this->localizedNumber($thisFacet['count'])?>
               <? if ($allowExclude): ?>
                 <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="fa fa-times"></i></a>
               <? endif; ?>
