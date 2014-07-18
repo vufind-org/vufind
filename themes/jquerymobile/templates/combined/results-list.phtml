@@ -31,6 +31,6 @@
   <? endforeach; ?>
 <? else: ?>
   <div data-role="controlgroup">
-    <a class="combinedButton" href="<?=$moreUrl?>" data-role="button" rel="external"><?=$this->transEsc("Search Results") . ' (' . $recordTotal . ')' ?></a>
+    <a class="combinedButton" href="<?=$moreUrl?>" data-role="button" rel="external"><?=$this->transEsc("Search Results") . ' (' . $this->localizedNumber($recordTotal) . ')' ?></a>
   </div>
 <? endif; ?>

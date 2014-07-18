@@ -30,14 +30,14 @@ tr td:first-child {
         <span style="font-size:14px"><?=$source ?></span>
         <table class="table table-striped">
         <? foreach($searches as $search): ?>
-          <tr><td><?=$search['value'] ?></td><td><?=$search['count'] ?></td></tr>
+          <tr><td><?=$search['value'] ?></td><td><?=$this->localizedNumber($search['count']) ?></td></tr>
         <? endforeach; ?>
         </table>
       <? endforeach; ?>
     <? else: ?>
       <table class="table table-striped">
         <? foreach($this->topSearches as $search): ?>
-          <tr><td><?=$search['value'] ?></td><td><?=$search['count'] ?></td><td><?=$search['source'] ?></td></tr>
+          <tr><td><?=$search['value'] ?></td><td><?=$this->localizedNumber($search['count']) ?></td><td><?=$search['source'] ?></td></tr>
         <? endforeach; ?>
       </table>
     <? endif; ?>
@@ -50,14 +50,14 @@ tr td:first-child {
         <span style="font-size:14px"><?=$source ?></span>
         <table class="table table-striped">
         <? foreach($records as $record): ?>
-          <tr><td><?=$record['value'] ?></td><td><?=$record['count'] ?></td></tr>
+          <tr><td><?=$record['value'] ?></td><td><?=$this->localizedNumber($record['count']) ?></td></tr>
         <? endforeach; ?>
         </table>
       <? endforeach; ?>
     <? else: ?>
       <table class="table table-striped">
         <? foreach($this->topRecords as $record): ?>
-          <tr><td><?=$record['value'] ?></td><td><?=$record['count'] ?></td><td><?=$record['source'] ?></td></tr>
+          <tr><td><?=$record['value'] ?></td><td><?=$this->localizedNumber($record['count']) ?></td><td><?=$record['source'] ?></td></tr>
         <? endforeach; ?>
       </table>
     <? endif; ?>
@@ -73,12 +73,12 @@ tr td:first-child {
     ?>
     <table class="table table-striped">
     <? foreach($this->browserStats as $browser): ?>
-      <tr><td><?=$browser['browserName'] ?></td><td><?=$browser['count'] ?></td><td><?=round($browser['count']*100/$total, 2) ?>%</td></tr>
+      <tr><td><?=$browser['browserName'] ?></td><td><?=$this->localizedNumber($browser['count']) ?></td><td><?=$this->localizedNumber($browser['count']*100/$total, 2) ?>%</td></tr>
     <? endforeach; ?>
     </table>
     <h4 style="display:inline">Top Versions</h4>:
     <? foreach($this->topVersions as $i=>$browser): ?>
-      <span style="padding:0 3px<? if($this->currentBrowser == $browser['browserName']): ?>;background:#E5ECF9<? endif; ?>"><?=$browser['browserName'] ?> (<?=$browser['count'] ?>)</span><? if(++$i < count($this->topVersions)): ?>,<? endif; ?>
+      <span style="padding:0 3px<? if($this->currentBrowser == $browser['browserName']): ?>;background:#E5ECF9<? endif; ?>"><?=$browser['browserName'] ?> (<?=$this->localizedNumber($browser['count']) ?>)</span><? if(++$i < count($this->topVersions)): ?>,<? endif; ?>
     <? endforeach; ?>
   <? endif; ?>
   

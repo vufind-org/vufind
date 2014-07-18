@@ -28,7 +28,7 @@
           <span class="pull-right"><i class="fa fa-angle-right"></i></span>
         <? else: ?>
           <?=$this->transEsc($category['text'])?>
-          <span class="badge"><?=number_format($category['count'])?></span>
+          <span class="badge"><?=$this->localizedNumber($category['count'])?></span>
         <? endif; ?>
       </a>
     <? endforeach; ?>
@@ -56,7 +56,7 @@
       <? if ($this->findby == 'alphabetical'): ?>
         <span class="pull-right"><i class="fa fa-angle-right"></i></span>
       <? else: ?>
-        <span class="badge"><?=number_format($secondary['count']) ?></span>
+        <span class="badge"><?=$this->localizedNumber($secondary['count']) ?></span>
       <? endif; ?>
     </a>
     <? if($viewRecord): ?>
@@ -71,7 +71,7 @@
   <? foreach($this->resultList as $result): ?>
     <a class="list-group-item clearfix" href="<?=$SEARCH_BASE ?>?<?=$this->paramTitle ?><?=urlencode($result['result']) ?><? if ($this->searchParams): foreach($this->searchParams as $var=>$val): ?>&<?=$var ?>=<?=urlencode($val) ?><? endforeach;endif; ?>">
       <?=$this->escapeHtml($result['result'])?>
-      <span class="badge"><?=number_format($result['count']) ?></span>
+      <span class="badge"><?=$this->localizedNumber($result['count']) ?></span>
     </a>
   <? endforeach; ?>
   </ul>

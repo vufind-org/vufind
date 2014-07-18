@@ -17,9 +17,9 @@
     <? if (($recordTotal = $this->results->getResultTotal()) > 0): ?>
       <p>
         <?=$this->transEsc("Showing")?>
-        <strong><?=$this->results->getStartRecord()?></strong> - <strong><?=$this->results->getEndRecord()?></strong>
+        <strong><?=$this->localizedNumber($this->results->getStartRecord())?></strong> - <strong><?=$this->localizedNumber($this->results->getEndRecord())?></strong>
         <? if (!isset($this->skipTotalCount)): ?>
-          <?=$this->transEsc('of')?> <strong><?=$recordTotal?></strong>
+          <?=$this->transEsc('of')?> <strong><?=$this->localizedNumber($recordTotal)?></strong>
         <? endif; ?>
         <? if (isset($this->overrideSearchHeading)): ?>
           <?=$this->overrideSearchHeading?>

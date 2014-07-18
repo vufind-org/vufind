@@ -7,7 +7,7 @@
       $desc = $info->getParams()->getDisplayQuery();
       echo empty($desc) ? $this->transEsc("history_empty_search") : $this->escapeHtml($desc);
     ?></h3>
-    <span class="ui-li-count"><?=$this->escapeHtml(number_format($info->getResultTotal()))?></span>
+    <span class="ui-li-count"><?=$this->escapeHtml($this->localizedNumber($info->getResultTotal()))?></span>
     <p><strong><?=$this->transEsc("history_time")?></strong>: <?=$this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime("U", $info->getStartTime()))?></p>
     <? $info->getParams()->activateAllFacets(); foreach ($info->getParams()->getFilterList() as $field => $filters): ?>
       <? foreach ($filters as $i => $filter): ?>

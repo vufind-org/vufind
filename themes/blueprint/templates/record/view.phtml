@@ -21,7 +21,7 @@
     <? if (isset($this->scrollData) && ($this->scrollData['previousRecord'] || $this->scrollData['nextRecord'])): ?>
       <div class="resultscroller">
         <? if ($this->scrollData['previousRecord']): ?><a href="<?=$this->recordLink()->getUrl($this->scrollData['previousRecord'])?>">&laquo; <?=$this->transEsc('Prev')?></a><? endif; ?>
-        #<?=$this->escapeHtml($this->scrollData['currentPosition']) . ' ' . $this->transEsc('of') . ' ' . $this->escapeHtml($this->scrollData['resultTotal'])?>
+        #<?=$this->localizedNumber($this->scrollData['currentPosition']) . ' ' . $this->transEsc('of') . ' ' . $this->localizedNumber($this->scrollData['resultTotal'])?>
         <? if ($this->scrollData['nextRecord']): ?><a href="<?=$this->recordLink()->getUrl($this->scrollData['nextRecord'])?>"><?=$this->transEsc('Next')?> &raquo;</a><? endif; ?>
       </div>
     <? endif; ?>

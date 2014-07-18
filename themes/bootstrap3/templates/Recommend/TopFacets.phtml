@@ -22,7 +22,7 @@
         <? if ($thisFacet['isApplied']): ?>
           <?=$this->escapeHtml($thisFacet['displayText'])?> <i class="fa fa-check"></i>
         <? else: ?>
-          <a href="<?=$this->currentPath().$this->recommend->getResults()->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> <span class="badge"><?=number_format($thisFacet['count']) ?>
+          <a href="<?=$this->currentPath().$this->recommend->getResults()->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>"><?=$this->escapeHtml($thisFacet['displayText'])?></a> <span class="badge"><?=$this->localizedNumber($thisFacet['count']) ?>
           <? if ($allowExclude): ?>
             <a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT')?>" title="<?=$this->transEsc('exclude_facet')?>"><i class="fa fa-times"></i></a>
           <? endif; ?>

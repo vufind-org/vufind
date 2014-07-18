@@ -131,9 +131,9 @@ JS;
           <li class="facet<?=$thisFacet['operator'] ?><? if ($i>5): ?> <?=$moreClass ?><?endif ?>">
             <span class="pull-right small">
               <? if ($allowExclude): ?>
-                <?=number_format($thisFacet['count'])?><a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="icon-remove"></i></a>
+                <?=$this->localizedNumber($thisFacet['count'])?><a href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], 'NOT') ?>" title="<?=$this->transEsc('exclude_facet') ?>"><i class="icon-remove"></i></a>
               <? else: ?>
-                <?=number_format($thisFacet['count'])?>
+                <?=$this->localizedNumber($thisFacet['count'])?>
               <? endif; ?>
             </span>
             <a class="main" href="<?=$this->currentPath().$results->getUrlQuery()->addFacet($title, $thisFacet['value'], $thisFacet['operator'])?>">

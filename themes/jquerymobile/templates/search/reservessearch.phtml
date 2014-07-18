@@ -40,7 +40,7 @@
               );
           ?>
           <li>
-            <a rel="external" href="<?=$url?>"><?=$this->escapeHtml($record->getDepartment())?> <?=$this->escapeHtml($record->getCourse())?> <?=$this->escapeHtml($record->getInstructor())?> <span class="ui-li-count"><?=$this->escapeHtml($record->getItemCount())?></span></a>
+            <a rel="external" href="<?=$url?>"><?=$this->escapeHtml($record->getDepartment())?> <?=$this->escapeHtml($record->getCourse())?> <?=$this->escapeHtml($record->getInstructor())?> <span class="ui-li-count"><?=$this->localizedNumber($record->getItemCount())?></span></a>
           </li>
         <? endforeach; ?>
       </ul>

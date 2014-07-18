@@ -24,7 +24,7 @@
           <? endforeach; ?>
         <? endforeach; ?>
       </td>
-      <td><?=$this->escapeHtml(number_format($info->getResultTotal()))?></td>
+      <td><?=$this->escapeHtml($this->localizedNumber($info->getResultTotal()))?></td>
       <td>
         <? if ($this->showSaved): ?>
           <a href="<?=$this->url('myresearch-savesearch')?>?delete=<?=urlencode($info->getSearchId())?>&amp;mode=history" class="delete"><?=$this->transEsc("history_delete_link")?></a>
