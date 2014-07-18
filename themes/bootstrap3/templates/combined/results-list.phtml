@@ -34,7 +34,7 @@
         <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($lookfor)?>'</strong>,
       <? endif; ?>
       <? if ($qtime = $results->getQuerySpeed()): ?>
-        <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($this->escapeHtml(round($qtime, 2)), 2)?>s
+        <?=$this->transEsc('query time')?>: <?=$this->localizedNumber(round($qtime, 2), 2)?>s
       <? endif; ?>
       <?=$this->search()->renderSpellingSuggestions('<strong>' . $this->transEsc('spell_suggest') . '</strong>:', $results, $this); ?>
     <? else: ?>

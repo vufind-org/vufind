@@ -62,7 +62,7 @@
           <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($lookfor)?>'</strong>,
         <? endif; ?>
         <? if ($qtime = $this->results->getQuerySpeed()): ?>
-          <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($this->escapeHtml(round($qtime, 2)), 2)?>s
+          <?=$this->transEsc('query time')?>: <?=$this->localizedNumber(round($qtime, 2), 2)?>s
         <? endif; ?>
       <? else: ?>
         <p class="lead"><?=$this->transEsc('nohit_heading')?></p>

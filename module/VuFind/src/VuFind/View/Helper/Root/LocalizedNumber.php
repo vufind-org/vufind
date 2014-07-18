@@ -51,18 +51,27 @@ class LocalizedNumber extends AbstractHelper
 
 
     /**
-     * @param   string  $number
-     * @param   int     $decimals
+     * @param   int|float $number
+     * @param   int       $decimals
+     * @param   bool      $escapeHtml
      * @return  string
      */
-    public function __invoke($number, $decimals = 0)
+    public function __invoke($number, $decimals = 0, $escapeHtml = true)
     {
       $translator = $this->getView()->plugin('translate');
 
-      return number_format($number,
-                           $decimals,
-                           $translator('number_decimal_point', array(), $this->defaultDecimalPoint),
-                           $translator('number_thousands_separator', array(), $this->defaultThousandSep)
+      $formattedNumber = number_format($number,
+          $decimals,
+          $translator('number_decimal_point', array(), $this->defaultDecimalPoint),
+          $translator('number_thousands_separator', array(), $this->defaultThousandSep)
       );
+
+      if ( $escapeHtml )
+      {
+        $escaper = $this->getView()->plugin('escapeHtml');
+        $formattedNumber = $escaper($formattedNumber);
+      }
+
+      return $formattedNumber;
     }
 }
