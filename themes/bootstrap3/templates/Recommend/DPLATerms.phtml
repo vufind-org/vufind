@@ -11,7 +11,7 @@
         <? if(!empty($item['desc'])): ?>
           <span class="desc" title="<?=$item['desc'] ?>"><?=$this->escapeHtml($this->truncate($item['desc'], 50)) ?></span><br/>
         <? endif; ?>
-        <span class="from"><?=$this->transEsc('from') ?> <?=$this->escapeHtml($item['provider']) ?></span>
+        <span class="from"><?=$this->transEsc('Provider') ?> <?=$this->escapeHtml($item['provider']) ?></span>
       </li>
     <? endforeach; ?>
   </ul>
