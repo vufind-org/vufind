@@ -27,6 +27,7 @@
  */
 namespace VuFind;
 use Zend\Console\Console, Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch;
+use Zend\Mvc\I18n\Translator;
 
 /**
  * VuFind Bootstrapper
@@ -375,6 +376,36 @@ class Bootstrapper
         };
         $this->events->attach('dispatch.error', $callback, 9000);
         $this->events->attach('dispatch', $callback, 9000);
+    }
+
+
+    /**
+     *
+     */
+    public function initTextDomainTranslation()
+    {
+      //Language not supported in CLI mode:
+      if (Console::isConsole()) {
+          return;
+      }
+
+      // Custom namespaces for zendTranslate
+      $textDomains   = $this->config->TextDomains->textDomains;
+
+      $callback = function ($event) use ($textDomains) {
+          /** @var Translator $translator */
+          $translator = $event->getApplication()->getServiceManager()->get('VuFind\Translator');
+          $language     = $translator->getLocale();
+
+          foreach ($textDomains as $textDomain) {
+              $langFile = $textDomain . '/' . $language . '.ini';
+              $translator->addTranslationFile('ExtendedIni', $langFile, $textDomain, $language);
+          }
+      };
+
+      // Attach right AFTER base translator, so it is initialized
+      // not necessary to add callback if no textDomains are defined
+      if( sizeof($textDomains) > 0 ) $this->events->attach('dispatch', $callback, 8998);
     }
 
     /**

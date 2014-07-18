@@ -93,11 +93,11 @@ class ExtendedIni implements FileLoaderInterface
         $this->resetLoadedFiles();
 
         // Load base data:
-        $data = $this->loadLanguageFile($locale . '.ini');
+        $data = (!isset($filename)) ?  $this->loadLanguageFile($locale . '.ini') : $this->loadLanguageFile($filename);
 
-        // Load fallback data, if any:
+         // Load fallback data, if any:
         if (!empty($this->fallbackLocale)) {
-            $newData = $this->loadLanguageFile($this->fallbackLocale . '.ini');
+            $newData = (!isset($filename)) ? $this->loadLanguageFile($this->fallbackLocale . '.ini') : $this->loadFallbackOfFile($filename);
             $newData->merge($data);
             $data = $newData;
         }
@@ -147,8 +147,10 @@ class ExtendedIni implements FileLoaderInterface
 
         $data = false;
         foreach ($this->pathStack as $path) {
-            if (file_exists($path . '/' . $filename)) {
-                $current = $this->languageFileToTextDomain($path . '/' . $filename);
+            $fullFilePath = file_exists($filename) ? $filename : $path . '/' . $filename;
+
+            if ($fullFilePath) {
+                $current = $this->languageFileToTextDomain($fullFilePath);
                 if ($data === false) {
                     $data = $current;
                 } else {
@@ -223,4 +225,30 @@ class ExtendedIni implements FileLoaderInterface
 
         return $data;
     }
+
+  /**
+   * load fallback. Most likely this is a file of a textDomain
+   *
+   * @param   string    $filename
+   * @return  TextDomain
+   */
+  protected function loadFallbackOfFile($filename)
+  {
+    $default = new TextDomain();
+
+    if(is_file($filename)) return $default; //if a full path is given, assume its a special language file and has no fallback
+
+    //rebuild filename with fallback language
+    $parts = explode('/', $filename);
+
+    $parts[count($parts) - 1] = $this->fallbackLocale . '.ini';
+
+    $filename = implode('/', $parts);
+
+    try {
+      return $this->loadLanguageFile($filename);
+    } catch (InvalidArgumentException $e) {
+      return $default;
+    }
+  }
 }
