@@ -27,7 +27,7 @@
         <?=$this->transEsc('for search')?>: <strong>'<?=$this->escapeHtml($reservesLookfor)?>'</strong>,
       <? endif; ?>
       <? if ($qtime = $this->results->getQuerySpeed()): ?>
-        <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2)?>s
+        <?=$this->transEsc('query time')?>: <?=$this->localizedNumber($qtime, 2).$this->transEsc('seconds_abbrev')?>
       <? endif; ?>
     </div>
   
