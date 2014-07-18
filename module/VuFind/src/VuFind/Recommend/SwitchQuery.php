@@ -178,11 +178,11 @@ class SwitchQuery implements RecommendInterface
         $methods = get_class_methods($this);
         foreach ($methods as $method) {
             if (substr($method, 0, 9) == 'transform') {
-                $currentTransform = strtolower(substr($method, 9));
-                if (in_array($currentTransform, $this->transforms)) {
+                $currTrans = strtolower(substr($method, 9));
+                if (in_array($currTrans, $this->transforms)) {
                     $result = $this->$method($query);
                     if ($result) {
-                        $this->suggestions['switchquery_' . $currentTransform] = $result;
+                        $this->suggestions['switchquery_' . $currTrans] = $result;
                     }
                 }
             }
