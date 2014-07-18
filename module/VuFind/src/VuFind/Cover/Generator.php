@@ -64,6 +64,7 @@ class Generator
     {
         $this->themeTools = $themeTools;
         $default = array(
+            'mode'         => 'grid',
             'authorFont'   => 'DroidSerif-Bold.ttf',
             'fontSize'     => 7,
             'lightness'    => 220,
@@ -94,6 +95,87 @@ class Generator
      * @return string contents of image file
      */
     public function generate($title, $author, $callnumber = null)
+    {
+        if ($this->settings->mode == 'solid') {
+            return $this->generateSolid($title, $author, $callnumber);
+        } else {
+            return $this->generateGrid($title, $author, $callnumber);
+        }
+    }
+
+    /**
+     * Generates a solid color background, ala Google
+     *
+     * @param string $title      Title of the book
+     * @param string $author     Author of the book
+     * @param string $callnumber Callnumber of the book
+     *
+     * @return string contents of image file
+     */
+    protected function generateSolid($title, $author, $callnumber)
+    {
+        $half = $this->settings->size/2;
+        // Create image
+        if (!($im = imagecreate($this->settings->size, $this->settings->size))) {
+            throw new \Exception("Cannot Initialize new GD image stream");
+        }
+        // this->white backdrop
+        $this->white = imagecolorallocate($im, 255, 255, 255);
+        // this->black
+        $this->black = imagecolorallocate($im, 0, 0, 0);
+
+        // Generate seed from callnumber, title back up
+        $seed = $this->createSeed($title, $callnumber);
+        // Number to color, hsb to control saturation and lightness
+        $color = $this->makeHSBColor(
+            $im,
+            $seed%256,
+            $this->settings->saturation,
+            $this->settings->lightness
+        );
+
+        // Fill solid color
+        imagefilledrectangle(
+            $im,
+            0,
+            0,
+            $this->settings->size,
+            $this->settings->size,
+            $color
+        );
+
+        $this->drawText(
+            $im,
+            strtoupper($title[0]),
+            $half,
+            $half+30,
+            $this->settings->titleFont,
+            60,
+            $this->white
+        );
+
+        // Output png CHECK THE PARAM
+        ob_start();
+        imagepng($im);
+        $img = ob_get_contents();
+        ob_end_clean();
+
+        // Clear memory
+        imagedestroy($im);
+        // GTFO
+        return $img;
+    }
+
+    /**
+     * Generates a grid of colors as primary feature
+     *
+     * @param string $title      Title of the book
+     * @param string $author     Author of the book
+     * @param string $callnumber Callnumber of the book
+     *
+     * @return string contents of image file
+     */
+    protected function generateGrid($title, $author, $callnumber)
     {
         // Set up common variables
         $half = $this->settings->size/2;
@@ -351,7 +433,7 @@ class Generator
      * @return void
      */
     protected function drawText($im, $text, $x, $y,
-        $font, $fontSize, $mcolor, $scolor, $align = null
+        $font, $fontSize, $mcolor, $scolor=false, $align=null
     ) {
         $txtWidth = $this->textWidth(
             $text,
@@ -377,10 +459,12 @@ class Generator
         }
 
         // Generate 5 lines of text, 4 offset in a border color
-        imagettftext($im, $fontSize, 0, $x,   $y+1, $scolor, $font, $text);
-        imagettftext($im, $fontSize, 0, $x,   $y-1, $scolor, $font, $text);
-        imagettftext($im, $fontSize, 0, $x+1, $y,   $scolor, $font, $text);
-        imagettftext($im, $fontSize, 0, $x-1, $y,   $scolor, $font, $text);
+        if ($scolor) {
+            imagettftext($im, $fontSize, 0, $x,   $y+1, $scolor, $font, $text);
+            imagettftext($im, $fontSize, 0, $x,   $y-1, $scolor, $font, $text);
+            imagettftext($im, $fontSize, 0, $x+1, $y,   $scolor, $font, $text);
+            imagettftext($im, $fontSize, 0, $x-1, $y,   $scolor, $font, $text);
+        }
         // 1 centered in main color
         imagettftext($im, $fontSize, 0, $x,   $y,   $mcolor, $font, $text);
     }

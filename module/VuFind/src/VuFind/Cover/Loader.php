@@ -230,7 +230,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
         }
         return $this->contentType;
     }
-    
+
     /**
      * Get Cover Generator Object
      *
@@ -238,8 +238,12 @@ class Loader implements \Zend\Log\LoggerAwareInterface
      */
     public function getCoverGenerator()
     {
-        return new \VuFind\Cover\Generator($this->themeTools);
+        return new \VuFind\Cover\Generator(
+            $this->themeTools,
+            array('mode'=>$this->config->Content->makeDynamicCovers)
+        );
     }
+
     /**
      * Load an image given an ISBN and/or content type.
      *
@@ -277,7 +281,7 @@ class Loader implements \Zend\Log\LoggerAwareInterface
             && !$this->fetchFromContentType()
         ) {
             if (isset($this->config->Content->makeDynamicCovers)
-                && true == $this->config->Content->makeDynamicCovers
+                && false !== $this->config->Content->makeDynamicCovers
             ) {
                 $this->image = $this->getCoverGenerator()
                     ->generate($title, $author, $callnumber);
