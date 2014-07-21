@@ -26,8 +26,9 @@
  * @link     http://vufind.org   Main Site
  */
 namespace VuFind;
+
+use Zend\Config\Config;
 use Zend\Console\Console, Zend\Mvc\MvcEvent, Zend\Mvc\Router\Http\RouteMatch;
-use Zend\Mvc\I18n\Translator;
 
 /**
  * VuFind Bootstrapper
@@ -365,7 +366,8 @@ class Bootstrapper
             }
 
             $sm = $event->getApplication()->getServiceManager();
-            $sm->get('VuFind\Translator')
+            $translator = $sm->get('VuFind\Translator');
+            $translator
                 ->addTranslationFile('ExtendedIni', null, 'default', $language)
                 ->setLocale($language);
 
@@ -373,41 +375,28 @@ class Bootstrapper
             $viewModel = $sm->get('viewmanager')->getViewModel();
             $viewModel->setVariable('userLang', $language);
             $viewModel->setVariable('allLangs', $config->Languages);
+
+            if (isset($config->TextDomains) && isset($config->TextDomains->textDomains)) $this->addTextDomainTranslation($translator, $config->TextDomains->textDomains);
         };
         $this->events->attach('dispatch.error', $callback, 9000);
         $this->events->attach('dispatch', $callback, 9000);
     }
 
-
     /**
-     *
+     * @param \Zend\I18n\Translator\Translator  $translator
+     * @param Config $textDomains
      */
-    public function initTextDomainTranslation()
+    protected function addTextDomainTranslation(\Zend\I18n\Translator\Translator $translator, $textDomains)
     {
-        //Language not supported in CLI mode:
-        if (Console::isConsole()) {
-            return;
-        }
-
-        // Custom namespaces for zendTranslate
-        $textDomains   = $this->config->TextDomains->textDomains;
-
         // nothing to do if no text-domain is configured
-        if( !sizeof($textDomains) ) return;
+        if (!($textDomains instanceof Config)) return;
 
-        $callback = function ($event) use ($textDomains) {
-            /** @var Translator $translator */
-            $translator = $event->getApplication()->getServiceManager()->get('VuFind\Translator');
-            $language     = $translator->getLocale();
+        $language = $translator->getLocale();
 
-            foreach ($textDomains as $textDomain) {
-                $langFile = $textDomain . '/' . $language . '.ini';
-                $translator->addTranslationFile('ExtendedIni', $langFile, $textDomain, $language);
-            }
-        };
-
-        // Attach right AFTER base translator, so it is initialized
-        $this->events->attach('dispatch', $callback, 8998);
+        foreach ($textDomains as $textDomain) {
+            $langFile = $textDomain . '/' . $language . '.ini';
+            $translator->addTranslationFile('ExtendedIni', $langFile, $textDomain, $language);
+        }
     }
 
     /**

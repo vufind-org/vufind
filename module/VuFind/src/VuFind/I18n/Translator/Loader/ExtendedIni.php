@@ -236,7 +236,7 @@ class ExtendedIni implements FileLoaderInterface
     {
         $default = new TextDomain();
 
-        if(is_file($filename)) return $default; //if a full path is given, assume its a special language file and has no fallback
+        if (is_file($filename)) return $default; //if a full path is given, assume its a special language file and has no fallback
 
         //rebuild filename with fallback language
         $parts = explode('/', $filename);
