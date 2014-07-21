@@ -95,10 +95,10 @@ class Translate extends AbstractTranslatorHelper
      */
     protected function extractTextDomain($str)
     {
-      $parts = explode('::', $str);
+        $parts = explode('::', $str);
 
-      if (count($parts) === 2) return $parts;
+        if (count($parts) === 2) return $parts;
 
-      return array('default', $str);
+        return array('default', $str);
     }
 }
