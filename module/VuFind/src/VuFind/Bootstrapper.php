@@ -384,30 +384,30 @@ class Bootstrapper
      */
     public function initTextDomainTranslation()
     {
-      //Language not supported in CLI mode:
-      if (Console::isConsole()) {
-          return;
-      }
+        //Language not supported in CLI mode:
+        if (Console::isConsole()) {
+            return;
+        }
 
-      // Custom namespaces for zendTranslate
-      $textDomains   = $this->config->TextDomains->textDomains;
+        // Custom namespaces for zendTranslate
+        $textDomains   = $this->config->TextDomains->textDomains;
 
-      // nothing to do if no text-domain is configured
-      if( !sizeof($textDomains) ) return;
+        // nothing to do if no text-domain is configured
+        if( !sizeof($textDomains) ) return;
 
-      $callback = function ($event) use ($textDomains) {
-          /** @var Translator $translator */
-          $translator = $event->getApplication()->getServiceManager()->get('VuFind\Translator');
-          $language     = $translator->getLocale();
+        $callback = function ($event) use ($textDomains) {
+            /** @var Translator $translator */
+            $translator = $event->getApplication()->getServiceManager()->get('VuFind\Translator');
+            $language     = $translator->getLocale();
 
-          foreach ($textDomains as $textDomain) {
-              $langFile = $textDomain . '/' . $language . '.ini';
-              $translator->addTranslationFile('ExtendedIni', $langFile, $textDomain, $language);
-          }
-      };
+            foreach ($textDomains as $textDomain) {
+                $langFile = $textDomain . '/' . $language . '.ini';
+                $translator->addTranslationFile('ExtendedIni', $langFile, $textDomain, $language);
+            }
+        };
 
-      // Attach right AFTER base translator, so it is initialized
-      $this->events->attach('dispatch', $callback, 8998);
+        // Attach right AFTER base translator, so it is initialized
+        $this->events->attach('dispatch', $callback, 8998);
     }
 
     /**
