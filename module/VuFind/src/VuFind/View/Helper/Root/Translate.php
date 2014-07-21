@@ -57,7 +57,10 @@ class Translate extends AbstractTranslatorHelper
             if (!is_object($translator)) {
                 throw new RuntimeException();
             }
-            $msg = $translator->translate($str);
+
+            list($textDomain, $str) = $this->extractTextDomain($str);
+
+            $msg = $translator->translate($str, $textDomain);
         } catch (RuntimeException $e) {
             // If we get called before the translator is set up, it will throw an
             // exception, but we should still try to display some text!
@@ -80,5 +83,22 @@ class Translate extends AbstractTranslatorHelper
         }
 
         return $msg;
+    }
+
+    /**
+     * Extract text-domain from label. Use text-domain "default" if none given.
+     *
+     * Pattern is textDomain::labelKey
+     *
+     * @param   String  $str
+     * @return  array
+     */
+    protected function extractTextDomain($str)
+    {
+      $parts = explode('::', $str);
+
+      if (count($parts) === 2) return $parts;
+
+      return array('default', $str);
     }
 }

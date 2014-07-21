@@ -392,6 +392,9 @@ class Bootstrapper
       // Custom namespaces for zendTranslate
       $textDomains   = $this->config->TextDomains->textDomains;
 
+      // nothing to do if no text-domain is configured
+      if( !sizeof($textDomains) ) return;
+
       $callback = function ($event) use ($textDomains) {
           /** @var Translator $translator */
           $translator = $event->getApplication()->getServiceManager()->get('VuFind\Translator');
@@ -404,8 +407,7 @@ class Bootstrapper
       };
 
       // Attach right AFTER base translator, so it is initialized
-      // not necessary to add callback if no textDomains are defined
-      if( sizeof($textDomains) > 0 ) $this->events->attach('dispatch', $callback, 8998);
+      $this->events->attach('dispatch', $callback, 8998);
     }
 
     /**
