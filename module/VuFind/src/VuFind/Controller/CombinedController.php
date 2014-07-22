@@ -171,14 +171,23 @@ class CombinedController extends AbstractSearch
         // Run the search to obtain recommendations:
         $results->performAndProcessSearch();
 
+        $columns = isset($this->config['Layout']['columns']) && $this->config['Layout']['columns'] <= count($combinedResults)
+            ? $this->config['Layout']['columns']
+            : count($combinedResults);
+        $placement = isset($this->config['Layout']['stack_placement'])
+            ? $this->config['Layout']['stack_placement']
+            : 'right';
+
         // Build view model:
         return $this->createViewModel(
             array(
-                'results' => $results,
-                'params' => $params,
+                'columns' => $columns,
                 'combinedResults' => $combinedResults,
+                'config' => $config,
+                'params' => $params,
+                'placement' => $placement,
+                'results' => $results,
                 'supportsCart' => $supportsCart,
-                'config' => $config
             )
         );
     }
