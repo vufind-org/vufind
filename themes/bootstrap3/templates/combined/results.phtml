@@ -63,7 +63,7 @@
         <div class="col-sm-<?=$span ?><? if('left' == $this->placement): if($columnIndex == $columns-1): ?> col-sm-pull-<?=$span*($columns-1) ?><? else: ?> col-sm-push-<?=$span ?><? endif; ?><? endif; ?> combined-list">
       <? endif; ?>
         <div id="combined_<?=$this->escapeHtml($searchClassId)?>">
-          <? $templateSuffix = (isset($currentSearch['ajax']) && $currentSearch['ajax']) ? 'ajax' . 'list'; ?>
+          <? $templateSuffix = (isset($currentSearch['ajax']) && $currentSearch['ajax']) ? 'ajax' : 'list'; ?>
           <?=$this->render('combined/results-' . $templateSuffix . '.phtml', array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch))?>
         </div>
       <? ++$columnIndex ?>
