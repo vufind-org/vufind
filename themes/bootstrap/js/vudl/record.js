@@ -115,7 +115,7 @@ function prevPage() {
   $('.page-link.selected').prev('.page-link').click();
   scrollToSelected();
 }
-function nextPage() {  
+function nextPage() {
   $('.page-link.selected').next('.page-link').click();
   scrollToSelected();
 }
@@ -123,6 +123,9 @@ function scrollToSelected() {
   $('#collapse1').animate({
     scrollTop: $('#collapse1 .selected').offset().top-$('#collapse1').offset().top+$('#collapse1').scrollTop()-12
   });
+}
+function scrollAdjust() {
+  $('#collapse1').scrollTop($('#'+topScrollItem).offset().top-$('#collapse1').offset().top+$('#collapse1').scrollTop());
 }
 // Accordion size
 function resizeAccordions(offset) {
@@ -168,7 +171,7 @@ $(document).ready(function() {
   $('.page-link').click(function() {
     $('.page-link.selected').removeClass('selected');
     $(this).addClass('selected');
-  });  
+  });
   // Load clicked items
   $('.unloaded').click(function() {
     scrollToSelected();
@@ -182,6 +185,16 @@ $(document).ready(function() {
   });
   setTimeout(findVisible, 1000);
   ajaxGetView(initPage);
+  // Track top item in the scroll bar
+  $('.accordion-body').scroll(function(e){
+    var pageLinks = $('.page-link');
+    for(var i=0;i<pageLinks.length;i++) {
+      if($(pageLinks[i]).position().top >= 0) {
+        topScrollItem = pageLinks[i].id;
+        break;
+      }
+    }
+  });
 });
 // Initial alignment
 $( window ).load( scrollToSelected );
