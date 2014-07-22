@@ -145,7 +145,7 @@ class CombinedController extends AbstractSearch
         $supportsCart = false;
         foreach ($config as $current => $settings) {
             // Special case -- ignore recommendation config:
-            if ($current == 'RecommendationModules') {
+            if ($current == 'Layout' || $current == 'RecommendationModules') {
                 continue;
             }
             $this->adjustQueryForSettings($settings);
@@ -178,6 +178,7 @@ class CombinedController extends AbstractSearch
                 'params' => $params,
                 'combinedResults' => $combinedResults,
                 'supportsCart' => $supportsCart,
+                'config' => $config
             )
         );
     }
