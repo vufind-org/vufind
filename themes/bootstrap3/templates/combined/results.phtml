@@ -63,11 +63,8 @@
         <div class="col-sm-<?=$span ?><? if('left' == $this->placement): if($columnIndex == $columns-1): ?> col-sm-pull-<?=$span*($columns-1) ?><? else: ?> col-sm-push-<?=$span ?><? endif; ?><? endif; ?> combined-list">
       <? endif; ?>
         <div id="combined_<?=$this->escapeHtml($searchClassId)?>">
-          <? if (isset($currentSearch['ajax']) && $currentSearch['ajax']): ?>
-            <?=$this->render('combined/results-ajax.phtml', array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch))?>
-          <? else: ?>
-            <?=$this->render('combined/results-list.phtml', array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch))?>
-          <? endif; ?>
+          <? $templateSuffix = (isset($currentSearch['ajax']) && $currentSearch['ajax']) ? 'ajax' . 'list'; ?>
+          <?=$this->render('combined/results-' . $templateSuffix . '.phtml', array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch))?>
         </div>
       <? ++$columnIndex ?>
       <? if($this->placement == 'distributed' || $columnIndex < $columns || $columnIndex == $sectionCount): ?>
