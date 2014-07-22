@@ -221,10 +221,14 @@ class Ezb implements DriverInterface
             $urlXP = "/OpenURLResponseXML/Full/ElectronicData/ResultList/" .
                 "Result[@state={$state}]/AccessURL";
             $record['href'] = $xpath->query($urlXP, $result)->item($i)->nodeValue;
-            $service_typeXP = "/OpenURLResponseXML/Full/ElectronicData/ResultList/" .
-                "Result[@state={$state}]/AccessLevel";
-            $record['service_type']
-                = $xpath->query($service_typeXP, $result)->item($i)->nodeValue;
+            // Service type needs to be hard-coded for calling code to properly
+            // categorize links. The commented out code below picks a more appropiate
+            // value but won't work for now -- retained for future reference.
+            //$service_typeXP = "/OpenURLResponseXML/Full/ElectronicData/ResultList/"
+            //    . "Result[@state={$state}]/AccessLevel";
+            //$record['service_type']
+            //    = $xpath->query($service_typeXP, $result)->item($i)->nodeValue;
+            $record['service_type'] = 'getFullTxt';
             array_push($records, $record);
             $i++;
         }
@@ -252,10 +256,14 @@ class Ezb implements DriverInterface
             $record['title'] = $coverage;
             $urlXP = "/OpenURLResponseXML/Full/PrintData/References/Reference/URL";
             $record['href'] = $xpath->query($urlXP, $result)->item($i)->nodeValue;
-            $service_typeXP = "/OpenURLResponseXML/Full/PrintData/References"
-                . "/Reference/Label";
-            $record['service_type']
-                = $xpath->query($service_typeXP, $result)->item($i)->nodeValue;
+            // Service type needs to be hard-coded for calling code to properly
+            // categorize links. The commented out code below picks a more appropiate
+            // value but won't work for now -- retained for future reference.
+            //$service_typeXP = "/OpenURLResponseXML/Full/PrintData/References"
+            //    . "/Reference/Label";
+            //$record['service_type']
+            //    = $xpath->query($service_typeXP, $result)->item($i)->nodeValue;
+            $record['service_type'] = 'getHolding';
             array_push($records, $record);
             $i++;
         }
