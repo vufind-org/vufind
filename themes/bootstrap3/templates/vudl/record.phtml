@@ -41,7 +41,7 @@
 ?>
 <script>
   var documentID = '<?=$this->id ?>';
-  var initPage = $.parseJSON('<?=json_encode($this->outline['lists'][$this->initList][$this->initPage], JSON_HEX_APOS | JSON_HEX_AMP) ?>');
+  var initPage = $.parseJSON('<?=str_replace('\"', "\'", json_encode($this->outline['lists'][$this->initList][$this->initPage], JSON_HEX_APOS | JSON_HEX_AMP)) ?>');
 
   counts = $.parseJSON('<?=json_encode($this->outline['counts'], JSON_HEX_APOS | JSON_HEX_AMP) ?>');
   <? if(count($this->outline['lists'][0]) >= $this->outline['counts'][0]): ?>
