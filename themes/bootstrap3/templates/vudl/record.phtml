@@ -112,7 +112,7 @@
             <? endforeach; ?>
             <!-- POST LOADING PLACEHOLDERS -->
             <? if(isset($this->outline['counts'][$key])): ?>
-              <? for($i=$this->page+count($list);$i<$this->outline['counts'][$key];$i++): ?>
+              <? for($i=$this->initPage+count($list);$i<$this->outline['counts'][$key];$i++): ?>
                 <a class="page-link unloaded" id="item<?=($i) ?>" title="<?=$i ?>">Loading...</a>
               <? endfor; ?>
             <? endif; ?>

@@ -123,6 +123,9 @@ function scrollToSelected() {
     scrollTop: $('#collapse1 .selected').offset().top-$('#collapse1').offset().top+$('#collapse1').scrollTop()-12
   });
 }
+function scrollAdjust() {
+  $('#collapse1').scrollTop($('#'+topScrollItem).offset().top-$('#collapse1').offset().top+$('#collapse1').scrollTop());
+}
 // Accordion size
 function resizeAccordions(offset) {
   var accordionHeight = window.innerHeight // Window height
@@ -181,6 +184,16 @@ $(document).ready(function() {
   $('#side-nav-toggle').click(toggleSideNav);
   setTimeout(findVisible, 1000);
   ajaxGetView(initPage);
+  // Track top item in the scroll bar
+  $('.accordion-body').scroll(function(e){
+    var pageLinks = $('.page-link');
+    for(var i=0;i<pageLinks.length;i++) {
+      if($(pageLinks[i]).position().top >= 0) {
+        topScrollItem = pageLinks[i].id;
+        break;
+      }
+    }
+  });
 });
 // Initial alignment
 $( window ).load( scrollToSelected );
