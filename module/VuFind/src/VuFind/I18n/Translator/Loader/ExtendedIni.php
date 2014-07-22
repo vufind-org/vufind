@@ -93,11 +93,15 @@ class ExtendedIni implements FileLoaderInterface
         $this->resetLoadedFiles();
 
         // Load base data:
-        $data = (!isset($filename)) ?  $this->loadLanguageFile($locale . '.ini') : $this->loadLanguageFile($filename);
+        $data = (!isset($filename))
+            ? $this->loadLanguageFile($locale . '.ini')
+            : $this->loadLanguageFile($filename);
 
          // Load fallback data, if any:
         if (!empty($this->fallbackLocale)) {
-            $newData = (!isset($filename)) ? $this->loadLanguageFile($this->fallbackLocale . '.ini') : $this->loadFallbackOfFile($filename);
+            $newData = (!isset($filename))
+                ? $this->loadLanguageFile($this->fallbackLocale . '.ini')
+                : $this->loadFallbackOfFile($filename);
             $newData->merge($data);
             $data = $newData;
         }
@@ -147,7 +151,8 @@ class ExtendedIni implements FileLoaderInterface
 
         $data = false;
         foreach ($this->pathStack as $path) {
-            $fullFilePath = file_exists($filename) ? $filename : $path . '/' . $filename;
+            $fullFilePath = file_exists($filename)
+                ? $filename : $path . '/' . $filename;
 
             if ($fullFilePath) {
                 $current = $this->languageFileToTextDomain($fullFilePath);
@@ -229,14 +234,19 @@ class ExtendedIni implements FileLoaderInterface
     /**
      * load fallback. Most likely this is a file of a textDomain
      *
-     * @param   string    $filename
-     * @return  TextDomain
+     * @param string $filename Filename to detect and load fallback
+     *
+     * @return TextDomain
      */
     protected function loadFallbackOfFile($filename)
     {
         $default = new TextDomain();
 
-        if (is_file($filename)) return $default; //if a full path is given, assume its a special language file and has no fallback
+        //if a full path is given, assume it is
+        //a special language file and has no fallback
+        if (is_file($filename)) {
+            return $default;
+        }
 
         //rebuild filename with fallback language
         $parts = explode('/', $filename);
@@ -245,10 +255,10 @@ class ExtendedIni implements FileLoaderInterface
 
         $filename = implode('/', $parts);
 
-      try {
-         return $this->loadLanguageFile($filename);
-      } catch (InvalidArgumentException $e) {
-         return $default;
-      }
+        try {
+            return $this->loadLanguageFile($filename);
+        } catch (InvalidArgumentException $e) {
+            return $default;
+        }
     }
 }

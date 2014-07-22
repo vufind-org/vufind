@@ -90,14 +90,17 @@ class Translate extends AbstractTranslatorHelper
      *
      * Pattern is textDomain::labelKey
      *
-     * @param   String  $str
-     * @return  array
+     * @param String $str String to detect the text-domain from
+     *
+     * @return array
      */
     protected function extractTextDomain($str)
     {
         $parts = explode('::', $str);
 
-        if (count($parts) === 2) return $parts;
+        if (count($parts) === 2) {
+            return $parts;
+        }
 
         return array('default', $str);
     }
