@@ -58,15 +58,15 @@
     <? $columns = isset($this->config['Layout']['columns']) && $this->config['Layout']['columns'] <= count($this->combinedResults)
       ? $this->config['Layout']['columns']
       : count($this->combinedResults); ?>
-    <? $i = 0; ?>
+    <? $columnIndex = 0; ?>
     <? $span = floor(12/$columns); ?>
-    <? $placement = isset($this->config['Layout']['stack_placement']) && $columns < count($this->combinedResults)
+    <? $placement = isset($this->config['Layout']['stack_placement'])
       ? $this->config['Layout']['stack_placement']
       : 'right'; ?>
     <? foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
       <? if ((!isset($currentSearch['ajax']) || !$currentSearch['ajax']) && isset($currentSearch['hide_if_empty']) && $currentSearch['hide_if_empty'] && $currentSearch['view']->results->getResultTotal() == 0) { continue; } ?>
-      <? if ($i++ < $columns): ?>
-        <div class="col-sm-<?=$span ?><? if($placement == 'left'): if($i == $columns): ?> col-sm-pull-<?=$span*($columns-1) ?><? else: ?> col-sm-push-<?=$span ?><? endif; ?><? endif; ?> combined-list">
+      <? if ($placement == 'distributed' || $columnIndex < $columns): ?>
+        <div class="col-sm-<?=$span ?><? if('left' == $placement): if($columnIndex == $columns-1): ?> col-sm-pull-<?=$span*($columns-1) ?><? else: ?> col-sm-push-<?=$span ?><? endif; ?><? endif; ?> combined-list">
       <? endif; ?>
         <div id="combined_<?=$this->escapeHtml($searchClassId)?>">
           <? if (isset($currentSearch['ajax']) && $currentSearch['ajax']): ?>
@@ -75,8 +75,12 @@
             <?=$this->render('combined/results-list.phtml', array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch))?>
           <? endif; ?>
         </div>
-      <? if($i < $columns): ?>
+      <? ++$columnIndex ?>
+      <? if($placement == 'distributed' || $columnIndex < $columns || $columnIndex == count($this->combinedResults)): ?>
         </div>
+      <? endif; ?>
+      <? if ($columnIndex % $columns == 0 && 'distributed' == $placement): ?>
+        </div><div class="row">
       <? endif; ?>
     <? endforeach; ?>
   </div>
