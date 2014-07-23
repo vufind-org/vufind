@@ -218,10 +218,10 @@ $(document).ready(function() {
     cartSubmit($(evt.target));
     return false;
   });
-  Lightbox.addFormCallback('bulkEmail', function(htnl) {
+  Lightbox.addFormCallback('bulkEmail', function(html) {
     Lightbox.confirm(vufindString['bulk_email_success']);
   });
-  Lightbox.addFormCallback('bulkSave', function(htnl) {
+  Lightbox.addFormCallback('bulkSave', function(html) {
     // After we close the lightbox, redirect to list view
     Lightbox.addCloseAction(function() {
       document.location.href = path+'/MyResearch/MyList/'+Lightbox.lastPOST['list'];
