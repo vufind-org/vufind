@@ -87,7 +87,7 @@ abstract class AbstractBase implements \VuFindHttp\HttpServiceAwareInterface,
      * @return \Zend\Http\Client
      * @throws \Exception
      */
-    protected function getHttpClient($url)
+    protected function getHttpClient($url = null)
     {
         if (null === $this->httpService) {
             throw new \Exception('HTTP service missing.');

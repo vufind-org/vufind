@@ -56,6 +56,7 @@ class AmazonEditorial extends \VuFind\Content\AbstractAmazon
     {
         try {
             $amazon = new Amazon($key, 'US', $this->secret);
+            $amazon->getRestClient()->setHttpClient($this->getHttpClient());
             $params = array(
                 'ResponseGroup' => 'EditorialReview',
                 'AssociateTag' => $this->associate
