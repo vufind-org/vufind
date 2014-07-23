@@ -38,6 +38,7 @@ use ZendService\Amazon\Amazon as AmazonService;
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 class Amazon extends \VuFind\Content\AbstractCover
+    implements \VuFindHttp\HttpServiceAwareInterface
 {
     /**
      * Associate ID
@@ -54,6 +55,13 @@ class Amazon extends \VuFind\Content\AbstractCover
     protected $secret;
 
     /**
+     * HTTP service
+     *
+     * @var \VuFindHttp\HttpServiceInterface
+     */
+    protected $httpService = null;
+
+    /**
      * Constructor
      *
      * @param string $associate Associate ID
@@ -64,6 +72,33 @@ class Amazon extends \VuFind\Content\AbstractCover
         $this->associate = $associate;
         $this->secret = $secret;
         $this->supportsIsbn = true;
+    }
+
+    /**
+     * Get an HTTP client
+     *
+     * @param string $url URL for client to use
+     *
+     * @return \Zend\Http\Client
+     */
+    protected function getHttpClient($url = null)
+    {
+        if (null === $this->httpService) {
+            throw new \Exception('HTTP service missing.');
+        }
+        return $this->httpService->createClient($url);
+    }
+
+    /**
+     * Set the HTTP service to be used for HTTP requests.
+     *
+     * @param HttpServiceInterface $service HTTP service
+     *
+     * @return void
+     */
+    public function setHttpService(\VuFindHttp\HttpServiceInterface $service)
+    {
+        $this->httpService = $service;
     }
 
     /**
@@ -122,6 +157,8 @@ class Amazon extends \VuFind\Content\AbstractCover
      */
     protected function getAmazonService($key)
     {
-        return new AmazonService($key, 'US', $this->secret);
+        $service = new AmazonService($key, 'US', $this->secret);
+        $service->getRestClient()->setHttpClient($this->getHttpClient());
+        return $service;
     }
 }
