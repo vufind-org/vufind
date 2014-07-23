@@ -148,10 +148,12 @@ class Generator
             $im,
             strtoupper($title[0]),
             $half,
-            $half+30,
+            $half+28,
             $this->settings->titleFont,
             60,
-            $this->white
+            $this->white,
+            false,
+            'center'
         );
 
         // Output png CHECK THE PARAM
