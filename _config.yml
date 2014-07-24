@@ -1,0 +1,2 @@
+baseurl: "/vufind"
+lessc: "_plugins/less/bin/lessc"
