@@ -177,7 +177,13 @@ class CombinedController extends AbstractSearch
             : count($combinedResults);
         $placement = isset($config['Layout']['stack_placement'])
             ? $config['Layout']['stack_placement']
-            : 'right';
+            : 'distributed';
+				if (!in_array(
+					$config['Layout']['stack_placement'],
+					array('distributed', 'left', 'right')
+				)) {
+						$placement = 'distributed';
+				}
 
         // Build view model:
         return $this->createViewModel(
