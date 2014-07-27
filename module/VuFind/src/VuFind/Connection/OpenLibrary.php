@@ -135,7 +135,7 @@ class OpenLibrary
             $json = $response->getBody();
             // parse json
             $data = json_decode($json, true);
-            if ($data) {
+            if ($data && !empty($data['works'])) {
                 $i = 1;
                 foreach ($data['works'] as $work) {
                     if ($i <= $limit) {
@@ -176,6 +176,7 @@ class OpenLibrary
         //normalise search term
         $subject = str_replace('"', "", $subject);
         $subject = str_replace(",", "", $subject);
+        $subject = str_replace('/', '', $subject);
         $subject = trim(strtolower($subject));
         $subject = preg_replace("/\s+/", "_", $subject);
         return $subject;
