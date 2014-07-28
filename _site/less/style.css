@@ -6264,7 +6264,7 @@ p {
 .header a:not(.logo) {
   display: inline-block;
   font-size: 13pt;
-  padding: 28px 14px;
+  padding: 28px 10px;
   text-decoration: none;
   vertical-align: top;
 }
@@ -6272,12 +6272,14 @@ p {
   background: #8DC63F;
   color: #FFF;
 }
-@media (max-width: 992px) {
+@media (max-width: 991px) {
+  .header a:not(.logo) {
+    padding: 10px;
+  }
+}
+@media (max-width: 991px) {
   .header {
     padding-bottom: 0;
-  }
-  .header a {
-    padding: 10px 32px;
   }
 }
 .body {
@@ -6402,4 +6404,20 @@ quote span {
 }
 .video a {
   color: #8dc63f;
+}
+.video iframe {
+  display: block;
+  margin: 6px auto;
+}
+.newsfeed .feed-item-title {
+  font-size: 12pt;
+  font-weight: normal;
+  margin: 5px 10px;
+}
+.newsfeed .lead {
+  margin-bottom: 5px;
+}
+.newsfeed .rss2html-note {
+  font-size: 12px;
+  opacity: .5;
 }

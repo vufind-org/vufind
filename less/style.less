@@ -46,19 +46,19 @@ p {line-height:22px;text-align:left;text-indent:2em}
   a:not(.logo) {
     display:inline-block;
     font-size:13pt;
-    padding:28px 14px;
+    padding:28px 10px;
     text-decoration:none;
     vertical-align:top;
     &:hover {
       background:#8DC63F;
       color:#FFF;
     }
-  }
-  @media (max-width:@screen-md) {
-    padding-bottom:0;
-    a {
-      padding:10px 32px;
+    @media (max-width:@screen-sm-max) {
+      padding:10px;
     }
+  }
+  @media (max-width:@screen-sm-max) {
+    padding-bottom:0;
   }
 }
 
@@ -173,5 +173,25 @@ quote {
   text-align:center;
   a {
     color:@green;
+  }
+  iframe {
+    display:block;
+    margin:6px auto;
+  }
+}
+
+.newsfeed {
+  .feed-item-title {
+    font-size:12pt;
+    font-weight:normal;
+    margin:5px 10px;
+  }
+  .lead {
+    margin-bottom:5px;
+  }
+  .rss2html-note {
+    font-size:12px;
+    opacity:.5;
+
   }
 }
