@@ -112,7 +112,7 @@ class XCNCIP2 extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             throw new ILSException("Cannot load pickup locations file: {$pickupLocationsFile}.");
         }
         if (($handle = fopen($pickupLocationsFile, "r")) !== FALSE) {
-            while (($data = fgetcsv($handle, 1000, "\t")) !== FALSE) {
+            while (($data = fgetcsv($handle)) !== FALSE) {
                 $this->pickupLocations[$data[0]][] = 
                     array(
                         'locationID' => $data[1],
