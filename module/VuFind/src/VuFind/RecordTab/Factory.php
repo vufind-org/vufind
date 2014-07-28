@@ -199,4 +199,18 @@ class Factory
             || ($cfg->Social->comments && $cfg->Social->comments !== 'disabled');
         return new UserComments($enabled);
     }
+
+    /**
+     * Factory for Preview tab plugin.
+     *
+     * @param ServiceManager $sm Service manager.
+     *
+     * @return Preview
+     */
+    public static function getPreview(ServiceManager $sm)
+    {
+        return new Preview(
+            $sm->getServiceLocator()->get('VuFind\Config')->get('config')
+        );
+    }
 }

@@ -75,3 +75,8 @@ div.xml.collapsed > div { display:none;margin-left:2px }
     width:75%;
   }
 }
+#gbsViewer {
+  margin:25px 0px 50px 25px;
+  width: 90%;
+  height: 600px;
+}
