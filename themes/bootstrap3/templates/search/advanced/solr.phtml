@@ -32,14 +32,15 @@
   </fieldset>
 <? endif; ?>
 <div class="row">
-<? if (isset($this->illustratedLimit)): ?>
-  <fieldset class="col-sm-4">
-    <legend><?=$this->transEsc("Illustrated")?>:</legend>
-    <? foreach ($this->illustratedLimit as $current): ?>
-      <input id="illustrated_<?=$this->escapeHtmlAttr($current['value'])?>" type="radio" name="illustration" value="<?=$this->escapeHtmlAttr($current['value'])?>"<?=$current['selected']?' checked="checked"':''?>/>
-      <label for="illustrated_<?=$this->escapeHtmlAttr($current['value'])?>"><?=$this->transEsc($current['text'])?></label><br/>
-    <? endforeach; ?>
-  </fieldset>
-<? endif; ?>
-<?=$this->render('search/advanced/limit.phtml')?>
-<?=$this->render('search/advanced/ranges.phtml')?>
+  <? if (isset($this->illustratedLimit)): ?>
+    <fieldset class="col-sm-4">
+      <legend><?=$this->transEsc("Illustrated")?>:</legend>
+      <? foreach ($this->illustratedLimit as $current): ?>
+        <input id="illustrated_<?=$this->escapeHtmlAttr($current['value'])?>" type="radio" name="illustration" value="<?=$this->escapeHtmlAttr($current['value'])?>"<?=$current['selected']?' checked="checked"':''?>/>
+        <label for="illustrated_<?=$this->escapeHtmlAttr($current['value'])?>"><?=$this->transEsc($current['text'])?></label><br/>
+      <? endforeach; ?>
+    </fieldset>
+  <? endif; ?>
+  <?=$this->render('search/advanced/limit.phtml')?>
+  <?=$this->render('search/advanced/ranges.phtml')?>
+</div>
