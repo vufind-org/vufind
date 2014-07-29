@@ -178,10 +178,7 @@ class CombinedController extends AbstractSearch
         $placement = isset($config['Layout']['stack_placement'])
             ? $config['Layout']['stack_placement']
             : 'distributed';
-        if (!in_array(
-            $config['Layout']['stack_placement'],
-            array('distributed', 'left', 'right')
-        )) {
+        if (!in_array($placement, array('distributed', 'left', 'right'))) {
             $placement = 'distributed';
         }
 
