@@ -1,5 +1,5 @@
 <? if (!empty($this->facetList) || !empty($this->checkboxFacets)): ?>
-  <fieldset class="col-sm-12">
+  <fieldset>
     <legend><?=$this->transEsc('Limit To')?></legend>
     <? if (!empty($this->checkboxFacets)): ?>
       <?=$this->render('search/advanced/checkbox-filters.phtml')?>
