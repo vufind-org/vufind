@@ -173,14 +173,14 @@ function getBookPreviews() {
     }
 
     // fetch OpenLibrary preview if enabled
-    if ($('.olPreviewSpan').length > 0) {
+    if ($('[class*="olPreviewSpan"]').length > 0) {
         script = 'http://openlibrary.org/api/books?bibkeys='
             + bibkeys.join(',') + '&callback=processOLBookInfo';
         $.getScript(script);
     }
 
     // fetch HathiTrust preview if enabled
-    if ($('.hathiPreviewSpan').length > 0) {
+    if ($('[class*="hathiPreviewSpan"]').length > 0) {
         getHTPreviews(skeys);
     }
 }
