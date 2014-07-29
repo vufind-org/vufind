@@ -93,7 +93,7 @@ class ResourceContainer
             $less = array($less);
         }
         unset($less['active']);
-        foreach ($less as $index=>$current) {
+        foreach ($less as $current) {
             $this->less[] = $current;
             $this->removeCSS($current);
         }
