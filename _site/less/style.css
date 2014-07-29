@@ -6354,6 +6354,12 @@ p {
   max-height: 300px;
   margin: 0 auto;
 }
+.carousel .item img.stretch {
+  background-position: center center;
+  margin: -1px 0 0 -1px;
+  width: 100%;
+  height: 274px;
+}
 .content {
   color: #FFF;
   padding: 20px;
