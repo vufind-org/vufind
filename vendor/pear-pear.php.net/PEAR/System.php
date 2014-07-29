@@ -9,7 +9,7 @@
  * @author     Tomas V.V.Cox <cox@idecnet.com>
  * @copyright  1997-2009 The Authors
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
- * @version    CVS: $Id: System.php 313024 2011-07-06 19:51:24Z dufuz $
+ * @version    CVS: $Id$
  * @link       http://pear.php.net/package/PEAR
  * @since      File available since Release 0.1
  */
@@ -51,7 +51,7 @@ $GLOBALS['_System_temp_files'] = array();
 * @author     Tomas V.V. Cox <cox@idecnet.com>
 * @copyright  1997-2006 The PHP Group
 * @license    http://opensource.org/licenses/bsd-license.php New BSD License
-* @version    Release: 1.9.4
+* @version    Release: 1.9.5
 * @link       http://pear.php.net/package/PEAR
 * @since      Class available since Release 0.1
 * @static
@@ -71,6 +71,23 @@ class System
     function _parseArgs($argv, $short_options, $long_options = null)
     {
         if (!is_array($argv) && $argv !== null) {
+            /*
+            // Quote all items that are a short option
+            $av = preg_split('/(\A| )--?[a-z0-9]+[ =]?((?<!\\\\)((,\s*)|((?<!,)\s+))?)/i', $argv, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_OFFSET_CAPTURE);
+            $offset = 0;
+            foreach ($av as $a) {
+                $b = trim($a[0]);
+                if ($b{0} == '"' || $b{0} == "'") {
+                    continue;
+                }
+
+                $escape = escapeshellarg($b);
+                $pos = $a[1] + $offset;
+                $argv = substr_replace($argv, $escape, $pos, strlen($b));
+                $offset += 2;
+            }
+            */
+
             // Find all items, quoted or otherwise
             preg_match_all("/(?:[\"'])(.*?)(?:['\"])|([^\s]+)/", $argv, $av);
             $argv = $av[1];
@@ -81,6 +98,7 @@ class System
                 $argv[$k] = trim($a) ;
             }
         }
+
         return Console_Getopt::getopt2($argv, $short_options, $long_options);
     }
 

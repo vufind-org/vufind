@@ -9,7 +9,7 @@
  * @author     Alexander Merz <alexmerz@php.net>
  * @copyright  1997-2009 The Authors
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
- * @version    CVS: $Id: Mirror.php 313023 2011-07-06 19:17:11Z dufuz $
+ * @version    CVS: $Id$
  * @link       http://pear.php.net/package/PEAR
  * @since      File available since Release 1.2.0
  */
@@ -27,7 +27,7 @@ require_once 'PEAR/Command/Common.php';
  * @author     Alexander Merz <alexmerz@php.net>
  * @copyright  1997-2009 The Authors
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
- * @version    Release: 1.9.4
+ * @version    Release: 1.9.5
  * @link       http://pear.php.net/package/PEAR
  * @since      Class available since Release 1.2.0
  */
@@ -82,7 +82,7 @@ packages within preferred_state ({config preferred_state}) will be downloaded'
     * @param string $command the command
     * @param array $options the command options before the command
     * @param array $params the stuff after the command name
-    * @return bool true if succesful
+    * @return bool true if successful
     * @throw PEAR_Error
     */
     function doDownloadAll($command, $options, $params)

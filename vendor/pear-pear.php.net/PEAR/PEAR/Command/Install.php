@@ -10,7 +10,7 @@
  * @author     Greg Beaver <cellog@php.net>
  * @copyright  1997-2009 The Authors
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
- * @version    CVS: $Id: Install.php 313023 2011-07-06 19:17:11Z dufuz $
+ * @version    CVS: $Id$
  * @link       http://pear.php.net/package/PEAR
  * @since      File available since Release 0.1
  */
@@ -30,7 +30,7 @@ require_once 'PEAR/Command/Common.php';
  * @author     Greg Beaver <cellog@php.net>
  * @copyright  1997-2009 The Authors
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
- * @version    Release: 1.9.4
+ * @version    Release: 1.9.5
  * @link       http://pear.php.net/package/PEAR
  * @since      Class available since Release 0.1
  */
@@ -468,7 +468,7 @@ Run post-installation scripts in package <package>, if any exist.
         $ts = preg_match('/Thread Safety.+enabled/', $info) ? '_ts' : '';
         $zend_extension_line = 'zend_extension' . $debug . $ts;
         $all = @file($filename);
-        if (!$all) {
+        if ($all === false) {
             return PEAR::raiseError('php.ini "' . $filename .'" could not be read');
         }
         $zend_extensions = $extensions = array();
@@ -768,17 +768,24 @@ Run post-installation scripts in package <package>, if any exist.
                             if ($param->getPackageType() == 'extsrc' ||
                                   $param->getPackageType() == 'extbin') {
                                 $exttype = 'extension';
+                                $extpath = $pinfo[1]['basename'];
                             } else {
-                                ob_start();
-                                phpinfo(INFO_GENERAL);
-                                $info = ob_get_contents();
-                                ob_end_clean();
-                                $debug = function_exists('leak') ? '_debug' : '';
-                                $ts = preg_match('/Thread Safety.+enabled/', $info) ? '_ts' : '';
+                                if (version_compare(PHP_VERSION, '5.3.0', '<')) {
+                                    ob_start();
+                                    phpinfo(INFO_GENERAL);
+                                    $info = ob_get_contents();
+                                    ob_end_clean();
+                                    $debug = function_exists('leak') ? '_debug' : '';
+                                    $ts = preg_match('/Thread Safety.+enabled/', $info) ? '_ts' : '';
+                                } else {
+                                    $debug = '';
+                                    $ts = '';
+                                }
                                 $exttype = 'zend_extension' . $debug . $ts;
+                                $extpath = $atts['installed_as'];
                             }
                             $extrainfo[] = 'You should add "' . $exttype . '=' .
-                                $pinfo[1]['basename'] . '" to php.ini';
+                                $extpath . '" to php.ini';
                         } else {
                             $extrainfo[] = 'Extension ' . $instpkg->getProvidesExtension() .
                                 ' enabled in php.ini';

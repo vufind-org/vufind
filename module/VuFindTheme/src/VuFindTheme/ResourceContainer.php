@@ -46,13 +46,6 @@ class ResourceContainer
     protected $less = array();
 
     /**
-     * scss CSS files
-     *
-     * @var array
-     */
-    protected $scss = array();
-
-    /**
      * CSS files
      *
      * @var array
@@ -107,25 +100,6 @@ class ResourceContainer
     }
 
     /**
-     * Add a scss CSS file.
-     *
-     * @param array|string $scss scss CSS file (or array of scss CSS files) to add
-     *
-     * @return void
-     */
-    public function addScssCss($scss)
-    {
-        if (!is_array($scss) && !is_a($scss, 'Traversable')) {
-            $scss = array($scss);
-        }
-        unset($scss['active']);
-        foreach ($scss as $index=>$current) {
-            $this->scss[$index] = $current;
-            $this->removeCSS($current);
-        }
-    }
-
-    /**
      * Add a CSS file.
      *
      * @param array|string $css CSS file (or array of CSS files) to add (possibly
@@ -171,15 +145,6 @@ class ResourceContainer
     public function getLessCss()
     {
         return array_unique($this->less);
-    }
-    /**
-     * Get SCSS CSS files.
-     *
-     * @return array
-     */
-    public function getScssCss()
-    {
-        return array_unique($this->scss);
     }
 
     /**
@@ -277,18 +242,16 @@ class ResourceContainer
      */
     protected function dynamicallyParsed($file)
     {
-        if (empty($this->less) && empty($this->scss)) {
+        if (empty($this->less)) {
             return false;
         }
         list($fileName, ) = explode('.', $file);
         $lessFile = $fileName . '.less';
-        $scssFile = $fileName . '.scss';
-        return in_array($lessFile, $this->less, true)
-            || in_array($scssFile, $this->scss, true);
+        return in_array($lessFile, $this->less, true);
     }
 
     /**
-     * Check if a CSS file is being dynamically compiled in SCSS
+     * Remove a CSS file if it matches another file's name
      *
      * @param string $file Filename to remove
      *

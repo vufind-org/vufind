@@ -58,7 +58,6 @@
         "aferrandini/phpqrcode": "1.0.1",
         "jasig/phpCAS": "dev-master",
         "johnwohlers/sip2": "dev-master",
-        "leafo/scssphp": "*",
         "mobileesp/mdetect": "dev-master",
         "oyejorge/less.php": "*",
         "pear-pear.php.net/file_marc": "*",
