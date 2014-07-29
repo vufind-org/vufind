@@ -100,8 +100,8 @@ class ResourceContainer
             $less = array($less);
         }
         unset($less['active']);
-        foreach ($less as $index=>$current) {
-            $this->less[$index] = $current;
+        foreach ($less as $current) {
+            $this->less[] = $current;
             $this->removeCSS($current);
         }
     }
@@ -119,8 +119,8 @@ class ResourceContainer
             $scss = array($scss);
         }
         unset($scss['active']);
-        foreach ($scss as $index=>$current) {
-            $this->scss[$index] = $current;
+        foreach ($scss as $current) {
+            $this->scss[] = $current;
             $this->removeCSS($current);
         }
     }
