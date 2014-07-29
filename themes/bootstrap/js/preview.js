@@ -66,7 +66,8 @@ function processGBSBookInfo(booksInfo) {
         for (var bibkey in booksInfo) {
             var bookInfo = booksInfo[bibkey];
             if (bookInfo) {
-                if (bookInfo.embeddable) {
+                if (viewOptions['tab'].indexOf(bookInfo.preview)>= 0
+                && (bookInfo.embeddable)) {
                     // make tab visible
                     $('ul.recordTabs li.hidden a#Preview').parent().toggleClass('hidden');
                 }
