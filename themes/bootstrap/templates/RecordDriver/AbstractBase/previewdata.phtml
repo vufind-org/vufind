@@ -4,7 +4,7 @@
     if (!empty($previews)) {
         $idClasses = $this->record($this->driver)->getPreviewIds();
 
-        // If we found at least one identifier, we can build the placeholder HTML:
+        // If we found at least one identifier, we can insert the data
         $html = '';
         if (!empty($idClasses)) {
             // Convert to string:

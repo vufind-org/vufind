@@ -53,13 +53,6 @@ class Preview extends AbstractBase
     protected $active = false;
 
     /**
-     * Initial visibility
-     *
-     * @var bool
-     */
-    protected $visible = true;
-
-    /**
      * Constructor
      *
      * @param \Zend\Config\Config $config Configuration
@@ -77,13 +70,6 @@ class Preview extends AbstractBase
                 if (count($tabs) > 0) {
                     $this->active = true;
                 }
-            }
-        }
-        // initially invisible if listed in config [hide_if_empty] contains embedded_previews
-        if ($this->active) {
-            $hide_if_empty = explode(',', strtolower($this->config->Content->hide_if_empty));
-            if (in_array('embedded_previews', $hide_if_empty)) {
-                $this->visible = false;
             }
         }
     }
@@ -115,6 +101,8 @@ class Preview extends AbstractBase
      */
     public function isVisible()
     {
-        return $this->visible;
+        // in this case there is no downside to keeping it hidden
+        // until there is content
+        return false;
     }
 }

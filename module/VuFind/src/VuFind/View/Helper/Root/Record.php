@@ -269,6 +269,11 @@ class Record extends AbstractHelper
         );
     }
 
+    /**
+     * collects ISBN, LCCN, and OCLC numbers to use in calling preview APIs
+     *
+     * @return array
+     */
     public function getPreviewIds()
     {
         // Extract identifiers from record driver if it supports appropriate methods:
