@@ -12,7 +12,7 @@
  * @author     Greg Beaver <cellog@php.net>
  * @copyright  1997-2009 The Authors
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
- * @version    CVS: $Id: Installer.php 313024 2011-07-06 19:51:24Z dufuz $
+ * @version    CVS: $Id$
  * @link       http://pear.php.net/package/PEAR
  * @since      File available since Release 0.1
  */
@@ -36,7 +36,7 @@ define('PEAR_INSTALLER_NOBINARY', -240);
  * @author     Greg Beaver <cellog@php.net>
  * @copyright  1997-2009 The Authors
  * @license    http://opensource.org/licenses/bsd-license.php New BSD License
- * @version    Release: 1.9.4
+ * @version    Release: 1.9.5
  * @link       http://pear.php.net/package/PEAR
  * @since      Class available since Release 0.1
  */
@@ -808,7 +808,10 @@ class PEAR_Installer extends PEAR_Downloader
                             if (!empty($res)) {
                                 $new = $this->_registry->getPackage($result[1], $result[0]);
                                 $this->file_operations[$key] = false;
-                                $this->log(3, "file $data[0] was scheduled for removal from {$this->pkginfo->getName()} but is owned by {$new->getChannel()}/{$new->getName()}, removal has been cancelled.");
+                                $pkginfoName = $this->pkginfo->getName();
+                                $newChannel  = $new->getChannel();
+                                $newPackage  = $new->getName();
+                                $this->log(3, "file $data[0] was scheduled for removal from $pkginfoName but is owned by $newChannel/$newPackage, removal has been cancelled.");
                             }
                         }
                     }
