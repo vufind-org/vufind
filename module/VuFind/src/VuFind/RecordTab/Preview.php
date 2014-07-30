@@ -55,7 +55,7 @@ class Preview extends AbstractBase
     /**
      * Constructor
      *
-     * @param active  bool
+     * @param bool $active Is this tab active?
      */
     public function __construct($active)
     {
