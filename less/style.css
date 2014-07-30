@@ -2,7 +2,7 @@
   font-family: 'Questrial';
   font-style: normal;
   font-weight: 400;
-  src: local('Questrial'), local('Questrial-Regular'), url('./questrial.woff') format('woff'), url(http://fonts.gstatic.com/s/questrial/v5/MYWJ4lYm5dbZ1UBuYox79D8E0i7KZn-EPnyo3HZu7kw.woff) format('woff');
+  src: local('Questrial'), local('Questrial-Regular'), url(questrial.woff) format('woff'), url(http://fonts.gstatic.com/s/questrial/v5/MYWJ4lYm5dbZ1UBuYox79D8E0i7KZn-EPnyo3HZu7kw.woff) format('woff');
 }
 /*! normalize.css v3.0.1 | MIT License | git.io/normalize */
 html {
