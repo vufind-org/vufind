@@ -29,7 +29,7 @@ function getHTPreviews(skeys) {
 
 function applyPreviewUrl($link, url) {
     // Update the preview button:
-    $link.attr('href', url).show();
+    $link.attr('href', url).removeClass('hidden');
 
     // Update associated record thumbnail, if any:
     $link.parents('.result,.record')
