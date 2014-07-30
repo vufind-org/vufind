@@ -834,18 +834,21 @@ class Voyager extends AbstractBase
                "and LINE_ITEM.BIB_ID = :id " .
                "order by LINE_ITEM_COPY_STATUS.MFHD_ID, SERIAL_ISSUES.ISSUE_ID DESC";
         try {
-            $data = array();
             $sqlStmt = $this->executeSQL($sql, array(':id' => $id));
-            while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-                $data[] = array(
-                    'issue' => $row['ENUMCHRON'],
-                    'holdings_id' => $row['MFHD_ID']
-                );
-            }
-            return $data;
         } catch (PDOException $e) {
             throw new ILSException($e->getMessage());
         }
+        $raw = $processed = array();
+        // Collect raw data:
+        while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
+            $raw[] = $row['MFHD_ID'] . '||' . $row['ENUMCHRON'];
+        }
+        // Deduplicate data and format it:
+        foreach (array_unique($raw) as $current) {
+            list($holdings_id, $issue) = explode('||', $current, 2);
+            $processed[] = compact('issue', 'holdings_id');
+        }
+        return $processed;
     }
 
     /**
