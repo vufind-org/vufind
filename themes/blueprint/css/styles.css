@@ -2375,3 +2375,8 @@ div.handle {
 #viz-instructions {
   padding-top:600px;
 }
+#gbsViewer {
+  margin:25px 0px 50px 25px;
+  width: 90%;
+  height: 600px;
+}
