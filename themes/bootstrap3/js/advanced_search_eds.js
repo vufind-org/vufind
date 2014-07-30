@@ -45,7 +45,7 @@ function addSearch(group, term, field, op)
   // Insert it
   $("#group" + group + "Holder").before(newSearch);
   // Show x
-  $('#group'+group+' .search .delete').show();
+  $('#group'+group+' .search .delete').removeClass('hidden');
   groupSearches[group]++;
 }
 
@@ -85,7 +85,7 @@ function addGroup(firstTerm, firstField, join)
   if($('.group').length > 1) {
     $('#groupJoin').removeClass('hidden');
     // Show x
-    $('.group .close').show();
+    $('.group .close').removeClass('hidden');
   }
   return nextGroup++;
 }
