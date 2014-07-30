@@ -50,23 +50,9 @@
     </div>
   <? endif; ?>
   <? if ($this->supportsCart && $this->cart()->isActive()): ?>
-    <div class="clearfix">
-      <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
-    </div>
+    <?=$this->context($this)->renderInContext('search/bulk-action-buttons.phtml', array('idPrefix' => ''))?>
   <? endif; ?>
-  <div class="row">
-    <? $columns = count($this->combinedResults); ?>
-    <? foreach ($this->combinedResults as $searchClassId => $currentSearch): ?>
-      <? if ((!isset($currentSearch['ajax']) || !$currentSearch['ajax']) && isset($currentSearch['hide_if_empty']) && $currentSearch['hide_if_empty'] && $currentSearch['view']->results->getResultTotal() == 0) { continue; } ?>
-      <div class="col-sm-<?=floor(12/$columns)?> combined-list" id="combined_<?=$this->escapeHtml($searchClassId)?>">
-        <? if (isset($currentSearch['ajax']) && $currentSearch['ajax']): ?>
-          <?=$this->render('combined/results-ajax.phtml', array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch))?>
-        <? else: ?>
-          <?=$this->render('combined/results-list.phtml', array('searchClassId' => $searchClassId, 'currentSearch' => $currentSearch))?>
-        <? endif; ?>
-      </div>
-    <? endforeach; ?>
-  </div>
+  <?=$this->context($this)->renderInContext('combined/stack-'.$placement.'.phtml', array('searchClassId' => $searchClassId, 'combinedResults' => $this->combinedResults))?>
   <? $recs = $combinedResults->getRecommendations('bottom'); if (!empty($recs)): ?>
     <div>
       <? foreach ($recs as $current): ?>
