@@ -179,3 +179,8 @@ label.list-group-item {
   word-wrap: break-word;
   table-layout: fixed;
 }
+#gbsViewer {
+  margin:25px 0px 50px 25px;
+  width: 90%;
+  height: 600px;
+}
