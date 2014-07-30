@@ -6318,6 +6318,7 @@ p {
 }
 .carousel {
   box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.2);
+  max-width: 545px;
 }
 .carousel .carousel-caption {
   background: rgba(0, 0, 0, 0.4);
@@ -6351,7 +6352,7 @@ p {
   padding-bottom: 50px;
 }
 .carousel .item img {
-  max-height: 300px;
+  max-height: 325px;
   margin: 0 auto;
 }
 .carousel .item img.stretch {
