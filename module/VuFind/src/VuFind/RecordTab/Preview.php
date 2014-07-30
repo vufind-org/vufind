@@ -55,23 +55,11 @@ class Preview extends AbstractBase
     /**
      * Constructor
      *
-     * @param \Zend\Config\Config $config Configuration
+     * @param active  bool
      */
-    public function __construct(\Zend\Config\Config $config)
+    public function __construct($active)
     {
-        $this->config = $config;
-        // currently only active if config [content] [previews] contains google and googleoptins[tab] is not empty.
-        $content_previews = explode(',', strtolower(str_replace(' ', '', $this->config->Content->previews)));
-        if (in_array('google', $content_previews)
-              && isset($this->config->Content->GoogleOptions)) {
-            $g_options = $this->config->Content->GoogleOptions;
-            if (isset($g_options->tab)) {
-                $tabs = explode(',', $g_options->tab);
-                if (count($tabs) > 0) {
-                    $this->active = true;
-                }
-            }
-        }
+        $this->active = $active;
     }
 
     /**
